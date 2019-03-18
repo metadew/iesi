@@ -1,0 +1,56 @@
+[{
+	"type": "MetadataObject",
+	"data": {
+		"name": "Script",
+		"description": "Design metadata for scripts",
+		"type": "design",
+		"category": "execution",
+		"migrate": "Y",
+		"migrationKey": "B001"
+	}
+},
+{
+	"type": "MetadataObject",
+	"data": {
+		"name": "Component",
+		"description": "Design metadata for components",
+		"type": "design",
+		"category": "structure",
+		"migrate": "Y",
+		"migrationKey": "B003"
+	}
+},
+{
+	"type": "MetadataObject",
+	"data": {
+		"name": "Connection",
+		"description": "Design metadata for connections",
+		"type": "design",
+		"category": "connectivity",
+		"migrate": "Y",
+		"migrationKey": "B005"
+	}
+},
+{
+	"type": "MetadataObject",
+	"data": {
+		"name": "Environment",
+		"description": "Design metadata for environments",
+		"type": "design",
+		"category": "connectivity",
+		"migrate": "Y",
+		"migrationKey": "B008"
+	}
+},
+{
+	"type": "MetadataObject",
+	"data": {
+		"name": "Subroutine",
+		"description": "Design metadata for subroutines",
+		"type": "design",
+		"category": "reference",
+		"migrate": "Y",
+		"migrationKey": "B020"
+	}
+}
+]

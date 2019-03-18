@@ -1,0 +1,10 @@
+/bin/
+/target/
+/assembly/run/log/*.log
+.classpath
+*.conf
+*.cmd
+.settings/
+.project
+.idea/
+iesi-core.iml

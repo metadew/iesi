@@ -1,0 +1,352 @@
+[{
+	"type": "ActionType",
+	"data": {
+		"name": "cli.executeCommand",
+		"description": "Run a Shell Command",
+		"parameters": [
+			{"name": "path","description": "Path where to run the command from","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "command","description": "Command to run","type": "string","mandatory": "Y","encrypted": "N","subroutine": "command","impersonate": "N"},
+			{"name": "setRuntimeVariables","description": "Flag indicating if environment variables will be set as a runtime variable","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "setRuntimeVariablesPrefix","description": "Prefix that will be used when retrieving or setting the variables","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "setRuntimeVariablesMode","description": "Mode used to retrieve or set the variables","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "connection","description": "Connection where to run the shell command","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "Y"}
+	]
+}},
+{
+	"type": "ActionType",
+	"data": {
+		"name": "conn.isAlive",
+		"description": "Verify if the connection can be reached",
+		"parameters": [
+			{"name": "connection","description": "Connection to check","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "Y"}
+	]
+}},
+{
+	"type": "ActionType",
+	"data": {
+		"name": "conn.setStageConnection",
+		"description": "Define a stage connection that can be used in any next step",
+		"parameters": [
+			{"name": "stage","description": "Name of the stage connection","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"}
+	]
+}},
+{
+	"type": "ActionType",
+	"data": {
+		"name": "data.compareDataset",
+		"description": "Compare two datasets",
+		"parameters": [
+			{"name": "leftDataset","description": "Dataset to compare","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "rightDataset","description": "Dataset to compare against","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "mapping","description": "Mapping to use for comparing the dataset","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"}
+	]
+}},
+{
+	"type": "ActionType",
+	"data": {
+		"name": "data.setDatasetConnection",
+		"description": "Define a dataset connection that can be used in any next action",
+		"parameters": [
+			{"name": "name","description": "Name of the dataset to use","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "labels","description": "Labels associated to the dataset instance","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"}
+	]
+}},
+{
+	"type": "ActionType",
+	"data": {
+		"name": "eval.assertEquals",
+		"description": "Evaluate if two values are equal",
+		"parameters": [
+			{"name": "expected","description": "Expected value to evaluate","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "actual","description": "Actual value to evaluate","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"}
+	]
+}},
+{
+	"type": "ActionType",
+	"data": {
+		"name": "eval.executeExpression",
+		"description": "Evaluate an expression using scripted syntax",
+		"parameters": [
+			{"name": "expression","description": "Expression to evaluate","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"}
+	]
+}},
+{
+	"type": "ActionType",
+	"data": {
+		"name": "eval.verifyMandatoryField",
+		"description": "Check if mandatory fields are filled out",
+		"parameters": [
+			{"name": "database","description": "Name of the database containing the schema to check","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "schema","description": "Name of the schema containing the table to check","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "table","description": "Name of the table containing the field to check","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "field","description": "Name of the field to check","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "evaluationField","description": "Optional evaluation field to include in the check","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "evaluationValue","description": "Optional evaluation value to include in the check","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "isMandatory","description": "Flag to indicate if the field must be filled out or not","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "connection","description": "Connection where the check is executed","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "Y"}
+	]
+}},
+{
+	"type": "ActionType",
+	"data": {
+		"name": "eval.verifySingleField",
+		"description": "Check a single field against a specific rule",
+		"parameters": [
+			{"name": "database","description": "Name of the database containing the schema to check","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "schema","description": "Name of the schema containing the table to check","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "table","description": "Name of the table containing the field to check","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "field","description": "Name of the field to check","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "check","description": "Name of the check to perform","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "operator","description": "Operation to use for the check","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "value","description": "Value to use when performing the check","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "connection","description": "Connection where the check is executed","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "Y"}
+	]
+}},
+{
+	"type": "ActionType",
+	"data": {
+		"name": "fho.executeFileTransfer",
+		"description": "Transfer one or more files between locations",
+		"parameters": [
+			{"name": "sourceFilePath","description": "Path where file(s) to transfer are located","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "sourceFileName","description": "File name or expression for the file(s) to transfer","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "sourceConnection","description": "Connection where the file(s) to transfer are located","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "Y"},
+			{"name": "targetFilePath","description": "Path where the file(s) need to be transfered to","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "targetFileName","description": "File name or expression for the file(s) to transfer","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "targetConnection","description": "Connection where the file(s) need to be transfered to","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "Y"}
+	]
+}},
+{
+	"type": "ActionType",
+	"data": {
+		"name": "fwk.dummy",
+		"description": "Dummy for adding a placeholder step",
+		"parameters": [ ]
+}},
+{
+	"type": "ActionType",
+	"data": {
+		"name": "fwk.executeScript",
+		"description": "Run another script",
+		"parameters": [
+			{"name": "script","description": "Script name to execute","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "environment","description": "Environment name where the execution needs to take place","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "paramList","description": "List of parameters to use","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "paramFile","description": "Parameter file to use","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "version","description": "Version of the script to run","type": "string","mandatory": "N","encrypted": "","subroutine": "","impersonate": "N"}
+	]
+}},
+{
+	"type": "ActionType",
+	"data": {
+		"name": "fwk.executeSuite",
+		"description": "Run a test suite of multiple scripts",
+		"parameters": [
+			{"name": "component","description": "Component for which to run a suite","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "suite","description": "Suite name to execute","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "version","description": "Version of the suite to run","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "build","description": "Build of the version to run","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "connection","description": "Connection where the suite is stored","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "Y"},
+			{"name": "componentPath","description": "Path to the component in the repository","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "suitePath","description": "Path to the suite in the repository","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "versionPath","description": "Path to the suite in the repository","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "buildPath","description": "Path to the build in the repository","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "asset","description": "Definition of the build asset","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "environment","description": "Environment name where the execution needs to take place","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"}
+	]
+}},
+{
+	"type": "ActionType",
+	"data": {
+		"name": "fwk.route",
+		"description": "Route to one or more specific actions",
+		"parameters": [
+			{"name": "condition","description": "Condition to apply to follow a route","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "destination","description": "Destination to go to if the condition is met","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"}
+	]
+}},
+{
+	"type": "ActionType",
+	"data": {
+		"name": "fwk.setEnvironment",
+		"description": "Set the environment where the next steps will be executed on",
+		"parameters": [
+			{"name": "environment","description": "Environment name where the next action will be executed on","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"}
+	]
+}},
+{
+	"type": "ActionType",
+	"data": {
+		"name": "fwk.setIteration",
+		"description": "Define an interation that can be used in any next action",
+		"parameters": [
+			{"name": "name","description": "Name of the iteration to define","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "type","description": "The type of iteration that will be performed","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "list","description": "Identifier for the list name that is used to iterate on","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "values","description": "List values to iterate over","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "from","description": "","type": "number","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "to","description": "","type": "number","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "step","description": "","type": "number","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "interrupt","description": "","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"}
+	]
+}},
+{
+	"type": "ActionType",
+	"data": {
+		"name": "fwk.setParameterFile",
+		"description": "Load a parameter file as runtime variables",
+		"parameters": [
+			{"name": "filePath","description": "Path where the file(s) need to be located","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "fileName","description": "File name or expression to check for availability","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "connection","description": "Connection where the file is located","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"}
+	]
+}},
+{
+	"type": "ActionType",
+	"data": {
+		"name": "fwk.setParameterList",
+		"description": "Load a list of parameters as runtime variables",
+		"parameters": [
+			{"name": "list","description": "List of parameters and values to set as runtime variables","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"}
+	]
+}},
+{
+	"type": "ActionType",
+	"data": {
+		"name": "fwk.setParameterValue",
+		"description": "Set a parameter value as runtime variable",
+		"parameters": [
+			{"name": "name","description": "Name of the parameter to set as runtime variable","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "value","description": "Value to set for the runtime variable","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"}
+	]
+}},
+{
+	"type": "ActionType",
+	"data": {
+		"name": "fwk.setRepository",
+		"description": "Define a repository that can be used in any next action",
+		"parameters": [
+			{"name": "name","description": "Reference name for the repository definition","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "repository","description": "Name of the repository","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "instance","description": "Name of the repository instance","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "labels","description": "Labels associated to the repository instance","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"}
+	]
+}},
+{
+	"type": "ActionType",
+	"data": {
+		"name": "fwk.startIteration",
+		"description": "Start an iteration block for the steps",
+		"parameters": [ ]
+}},
+{
+	"type": "ActionType",
+	"data": {
+		"name": "fwk.stopIteration",
+		"description": "Stop the iteration block",
+		"parameters": [ ]
+}},
+{
+	"type": "ActionType",
+	"data": {
+		"name": "http.executeRequest",
+		"description": "Execute a http request",
+		"parameters": [
+			{"name": "type","description": "Type of request","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "request","description": "Name of the request to use","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "setRuntimeVariables","description": "Flag indicating if an expected result will be set as a runtime variable","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "body","description": "Body of the request","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "setDataset","description": "Set the results to a dataset","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"}
+	]
+}},
+{
+	"type": "ActionType",
+	"data": {
+		"name": "sql.evaluateResult",
+		"description": "Checks if a SQL query returns a result or not",
+		"parameters": [
+			{"name": "query","description": "SQL query to run","type": "string","mandatory": "Y","encrypted": "N","subroutine": "query","impersonate": "N"},
+			{"name": "hasResult","description": "Flag indicating if the SQL query should return a result","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "connection","description": "Connection where to run the SQL query","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "Y"}
+	]
+}},
+{
+	"type": "ActionType",
+	"data": {
+		"name": "sql.executeQuery",
+		"description": "Run a SQL query",
+		"parameters": [
+			{"name": "query","description": "SQL query to run","type": "string","mandatory": "Y","encrypted": "N","subroutine": "query","impersonate": "N"},
+			{"name": "connection","description": "Connection where to run the SQL query","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "Y"}
+	]
+}},
+{
+	"type": "ActionType",
+	"data": {
+		"name": "sql.setIterationVariables",
+		"description": "Retrieve iteration variables using a SQL Statement",
+		"parameters": [
+			{"name": "list","description": "Identifier for the list name that is used","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "query","description": "SQL query to run","type": "string","mandatory": "Y","encrypted": "N","subroutine": "query","impersonate": "N"},
+			{"name": "connection","description": "Connection where to run the SQL query","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "Y"}
+	]
+}},
+{
+	"type": "ActionType",
+	"data": {
+		"name": "sql.setRuntimeVariables",
+		"description": "Retrieve runtime variables using a SQL Statement",
+		"parameters": [
+			{"name": "query","description": "SQL query to run","type": "string","mandatory": "Y","encrypted": "N","subroutine": "query","impersonate": "N"},
+			{"name": "connection","description": "Connection where to run the SQL query","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "Y"}
+	]
+}},
+{
+	"type": "ActionType",
+	"data": {
+		"name": "wfa.executeFilePing",
+		"description": "Wait until a File Statement returns a result or not",
+		"parameters": [
+			{"name": "filePath","description": "Path where the file(s) need to be located","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "fileName","description": "File name or expression to check for availability","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "hasResult","description": "Flag indicating if the file should be available or not","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "setRuntimeVariables","description": "Flag indicating if an expected result will be set as a runtime variable","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "connection","description": "Connection where the file(s) will be located","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "Y"},
+			{"name": "wait","description": "Number of seconds to wait between checks","type": "number","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "timeout","description": "Number of seconds to wait for a result","type": "number","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"}
+	]
+}},
+{
+	"type": "ActionType",
+	"data": {
+		"name": "wfa.executeQueryPing",
+		"description": "Wait until a SQL query returns a result or not",
+		"parameters": [
+			{"name": "query","description": "SQL query to run","type": "string","mandatory": "Y","encrypted": "N","subroutine": "query","impersonate": "N"},
+			{"name": "hasResult","description": "Flag indicating if the SQL query should retun a result","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "setRuntimeVariables","description": "Flag indicating if an expected result will be set as a runtime variable","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "connection","description": "Connection where to run the SQL query","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "Y"},
+			{"name": "wait","description": "Number of seconds to wait between checks","type": "number","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "timeout","description": "Number of seconds to wait for a result","type": "number","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"}
+	]
+}},
+{
+	"type": "ActionType",
+	"data": {
+		"name": "wfa.executeWait",
+		"description": "Wait for a defined interval",
+		"parameters": [
+			{"name": "wait","description": "Number of seconds to wait","type": "number","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"}
+	]
+}},
+{
+	"type": "ActionType",
+	"data": {
+		"name": "wfa.getConfirmation",
+		"description": "Wait for user confirmation",
+		"parameters": [
+			{"name": "type","description": "Type of confirmation","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "question","description": "Question to get confirmation for","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "timeout","description": "Number of seconds to wait for a confirmation","type": "number","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"}
+	]
+}}]

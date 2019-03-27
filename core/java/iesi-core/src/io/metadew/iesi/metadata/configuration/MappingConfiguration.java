@@ -24,13 +24,12 @@ public class MappingConfiguration {
 	}
 
 	public Mapping getMapping(String mappingName) {
-		String conf = TypeConfigurationOperation.getTypeConfigurationFile(this.getFrameworkExecution(),
+		String conf = TypeConfigurationOperation.getMappingConfigurationFile(this.getFrameworkExecution(),
 				this.getDataObjectType(), mappingName);
 		DataObjectOperation dataObjectOperation = new DataObjectOperation(this.getFrameworkExecution(), conf);
 		ObjectMapper objectMapper = new ObjectMapper();
-		Mapping mapping = objectMapper.convertValue(dataObjectOperation.getDataObject().getData(),
+		return objectMapper.convertValue(dataObjectOperation.getDataObject().getData(),
 				Mapping.class);
-		return mapping;
 	}
 
 	// Getters and Setters

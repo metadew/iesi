@@ -28,6 +28,15 @@
 {
 	"type": "FrameworkFolder",
 	"data": {
+		"name": "data.mapping",
+		"path": "/data/mapping",
+		"label": "Mapping",
+		"description": "",
+		"permissions": "755"
+}},
+{
+	"type": "FrameworkFolder",
+	"data": {
 		"name": "lib",
 		"path": "/lib",
 		"label": "Lib",

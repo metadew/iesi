@@ -197,7 +197,6 @@ public class MetadataRepositoryConfiguration {
 				this.getType(), this.getMetadataRepositoryCategoryConfiguration()));
 		this.setMetadataObjectConfiguration(
 				new MetadataObjectConfiguration(this.getMetadataRepositoryCategoryConfiguration()));
-
 	}
 
 	// Metadata Repository configuration

@@ -8,26 +8,36 @@ import io.metadew.iesi.framework.operation.FrameworkPluginOperation;
 
 public class TypeConfigurationOperation {
 
-	public TypeConfigurationOperation() {
+    public TypeConfigurationOperation() {
 
-	}
+    }
 
-	public static String getTypeConfigurationFile(FrameworkExecution frameworkExecution, String dataObjectType,
-			String typeName) {
-		String configurationObject = dataObjectType + File.separator + typeName + ".json";
-		String conf = frameworkExecution.getFrameworkConfiguration().getFolderConfiguration()
-				.getFolderAbsolutePath("metadata.conf") + File.separator + configurationObject;
-		
-		if (!FileTools.exists(conf)) {
-			FrameworkPluginOperation frameworkPluginOperation = new FrameworkPluginOperation(frameworkExecution);
-			if (frameworkPluginOperation.verifyPlugins(configurationObject)) {
-				conf = frameworkPluginOperation.getPluginConfigurationFile();
-			} else {
-				throw new RuntimeException("action.type.notfound");
-			}
-		}
+    public static String getTypeConfigurationFile(FrameworkExecution frameworkExecution, String dataObjectType,
+                                                  String typeName) {
+        String configurationObject = dataObjectType + File.separator + typeName + ".json";
+        String conf = frameworkExecution.getFrameworkConfiguration().getFolderConfiguration()
+                .getFolderAbsolutePath("metadata.conf") + File.separator + configurationObject;
 
-		return conf;
-	}
+        if (!FileTools.exists(conf)) {
+            FrameworkPluginOperation frameworkPluginOperation = new FrameworkPluginOperation(frameworkExecution);
+            if (frameworkPluginOperation.verifyPlugins(configurationObject)) {
+                conf = frameworkPluginOperation.getPluginConfigurationFile();
+            } else {
+                throw new RuntimeException("action.type.notfound");
+            }
+        }
+        return conf;
+    }
+
+    public static String getMappingConfigurationFile(FrameworkExecution frameworkExecution, String dataObjectType, String mappingName) {
+        String configurationObject = mappingName + ".json";
+        String conf = frameworkExecution.getFrameworkConfiguration().getFolderConfiguration().getFolderAbsolutePath("data.mapping")
+                + File.separator + configurationObject;
+        if (!FileTools.exists(conf)) {
+            throw new RuntimeException("mapping.notfound");
+        }
+        return conf;
+    }
+
 
 }

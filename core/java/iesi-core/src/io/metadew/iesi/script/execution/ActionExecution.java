@@ -70,7 +70,6 @@ public class ActionExecution {
 			Class classRef = Class.forName(className);
 			Object instance = classRef.newInstance();
 
-			try {
 				Class initParams[] = { FrameworkExecution.class, ExecutionControl.class, ScriptExecution.class,
 						ActionExecution.class };
 				Method init = classRef.getDeclaredMethod("init", initParams);
@@ -108,10 +107,6 @@ public class ActionExecution {
 					// TODO log output
 				}
 
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
 			HashMap<String, ActionParameterOperation> actionParameterOperationMap = null;
 			for (Field field : classRef.getDeclaredFields()) {
 				if (field.getName().equals("actionParameterOperationMap")) {
@@ -127,11 +122,10 @@ public class ActionExecution {
 
 			// Trace function
 			this.traceDesignMetadata(actionParameterOperationMap);
-		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | NoSuchMethodException
-				| SecurityException | IllegalArgumentException | InvocationTargetException e) {
+		} catch (Exception e) {
 			StringWriter stackTrace = new StringWriter();
 			e.printStackTrace(new PrintWriter(stackTrace));
-
+			this.getActionControl().increaseErrorCount();
 			this.getExecutionControl().logMessage(this, "action.error=" + e, Level.INFO);
 			this.getExecutionControl().logMessage(this, "action.stacktrace=" + stackTrace, Level.DEBUG);
 		} finally {

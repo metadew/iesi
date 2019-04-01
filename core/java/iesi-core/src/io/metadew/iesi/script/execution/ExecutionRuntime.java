@@ -437,79 +437,6 @@ public class ExecutionRuntime {
 	}
 
 	// Get cross concept lookup
-	@Deprecated
-	public String resolveConceptLookup(ExecutionControl executionControl, String input) {
-
-		int openPos;
-		int closePos;
-		String variable_char = "{{";
-		String variable_char_close = "}}";
-		String midBit;
-		String replaceValue;
-		String temp = input;
-		while (temp.indexOf(variable_char) > 0 || temp.startsWith(variable_char)) {
-			List<String> items = new ArrayList<>();
-			String tempInstructions = temp;
-			while (tempInstructions.indexOf(variable_char) > 0 || tempInstructions.startsWith(variable_char)) {
-				openPos = tempInstructions.indexOf(variable_char);
-				closePos = tempInstructions.lastIndexOf(variable_char_close);
-				midBit = tempInstructions.substring(openPos + 2, closePos).trim();
-				items.add(midBit);
-				tempInstructions = midBit;
-			}
-
-			// get last value
-			String instruction = items.get(items.size() - 1);
-
-			// check split different types
-			String instructionType = instruction.substring(0, 1).toLowerCase();
-			String instructionOutput = instruction;
-
-			// Lookup
-			if (instructionType.equals("=")) {
-				int lookupOpenPos = instruction.indexOf("(");
-				int lookupClosePos = instruction.indexOf(")", lookupOpenPos + 1);
-				String lookupContext = instruction.substring(1, lookupOpenPos).trim().toLowerCase();
-				String lookupScope = instruction.substring(lookupOpenPos + 1, lookupClosePos).trim();
-				if (lookupContext.equals("connection") || lookupContext.equals("conn")) {
-					instructionOutput = this.lookupConnectionInstruction(executionControl, lookupScope);
-				} else if (lookupContext.equals("environment") || lookupContext.equals("env")) {
-					instructionOutput = this.lookupEnvironmentInstruction(executionControl, lookupScope);
-				} else if (lookupContext.equals("dataset") || lookupContext.equals("ds")) {
-					instructionOutput = this.lookupDatasetInstruction(executionControl, lookupScope);
-				} else if (lookupContext.equals("file") || lookupContext.equals("f")) {
-					instructionOutput = this.lookupFileInstruction(executionControl, lookupScope);
-				}
-				// Generate data
-			} else if (instructionType.equals("*")) {
-				int lookupOpenPos = instruction.indexOf("(");
-				int lookupClosePos = instruction.indexOf(")", lookupOpenPos + 1);
-				String lookupContext = instruction.substring(1, lookupOpenPos).trim().toLowerCase();
-				String lookupScope = instruction.substring(lookupOpenPos + 1, lookupClosePos).trim();
-				instructionOutput = this.generateDataInstruction(executionControl, lookupContext, lookupScope);
-				// run scripts
-			} else if (instructionType.equals("!")) {
-				int lookupOpenPos = instruction.indexOf("(");
-				int lookupClosePos = instruction.indexOf(")", lookupOpenPos + 1);
-				String lookupContext = instruction.substring(1, lookupOpenPos).trim().toLowerCase();
-				String lookupScope = instruction.substring(lookupOpenPos + 1, lookupClosePos).trim();
-				if (lookupContext.equals("jexl") || lookupContext.equals("jxl")) {
-					instructionOutput = this.lookupConnectionInstruction(executionControl, lookupScope);
-				} else if (lookupContext.equals("javascript") || lookupContext.equals("js")) {
-					instructionOutput = this.lookupEnvironmentInstruction(executionControl, lookupScope);
-				}
-			}
-			replaceValue = instructionOutput;
-			// this.decrypt(variable_char + midBit + variable_char_close);
-			if (replaceValue != null) {
-				input = input.replace(variable_char + instruction + variable_char_close, replaceValue);
-			}
-			temp = input;
-		}
-		return input;
-
-	}
-
 	public LookupResult resolveConceptLookup(ExecutionControl executionControl, String input, boolean dup) {
 		LookupResult lookupResult = new LookupResult();
 		int openPos;
@@ -571,6 +498,7 @@ public class ExecutionRuntime {
 				if (lookupScope.startsWith("\"")) lookupScope = lookupScope.substring(1);
 				if (lookupScope.endsWith("\"")) lookupScope = lookupScope.substring(0, lookupScope.length() - 1);
 				instructionOutput = lookupScope;
+				// Verify for javascript / js and jexl / jxl
 			}
 			replaceValue = instructionOutput;
 			// this.decrypt(variable_char + midBit + variable_char_close);

@@ -51,7 +51,12 @@ public class DataObjectOperation {
 			MetadataRepositoryConfiguration metadataRepositoryConfiguration, String inputFile) {
 		this.setFrameworkExecution(frameworkExecution);
 		this.setInputFile(inputFile);
-		this.parseFile();
+		File file = new File(inputFile);
+		if (FileTools.getFileExtension(file).equalsIgnoreCase("json")) {
+			this.parseFile();
+		} else if (FileTools.getFileExtension(file).equalsIgnoreCase("yml")) {
+			this.parseYamlFile();
+		}
 		this.setMetadataRepositoryConfigurationList(new ArrayList());
 		this.getMetadataRepositoryConfigurationList().add(metadataRepositoryConfiguration);
 		this.setDataObjectConfiguration(new DataObjectConfiguration(this.getFrameworkExecution(),
@@ -64,7 +69,13 @@ public class DataObjectOperation {
 		this.setFrameworkExecution(frameworkExecution);
 		this.setMetadataRepositoryConfigurationList(metadataRepositoryConfigurationList);
 		this.setInputFile(inputFile);
-		this.parseFile();
+		File file = new File(inputFile);
+		if (FileTools.getFileExtension(file).equalsIgnoreCase("json")) {
+			this.parseFile();
+		} else if (FileTools.getFileExtension(file).equalsIgnoreCase("yml")) {
+			this.parseYamlFile();
+		}
+		
 	}
 
 	// Methods

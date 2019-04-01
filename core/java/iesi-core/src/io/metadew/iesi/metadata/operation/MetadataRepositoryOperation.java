@@ -247,6 +247,7 @@ public class MetadataRepositoryOperation {
 		// Load files
 		if (input.trim().equals("")) {
 			this.loadConfigurationSelection(metadataRepositoryConfigurationList, inputFolder, workFolder, archiveFolder, errorFolder, ".+\\.json");
+			this.loadConfigurationSelection(metadataRepositoryConfigurationList, inputFolder, workFolder, archiveFolder, errorFolder, ".+\\.yml");
 		} else {
 			if (ParsingTools.isRegexFunction(input)) {
 				this.loadConfigurationSelection(metadataRepositoryConfigurationList, inputFolder, workFolder, archiveFolder, errorFolder,

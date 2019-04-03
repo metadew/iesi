@@ -15,6 +15,7 @@ import io.metadew.iesi.data.generation.configuration.CreditCard;
 import io.metadew.iesi.data.generation.configuration.Date;
 import io.metadew.iesi.data.generation.configuration.Internet;
 import io.metadew.iesi.data.generation.configuration.Lorem;
+import io.metadew.iesi.data.generation.configuration.Motd;
 import io.metadew.iesi.data.generation.configuration.Name;
 import io.metadew.iesi.data.generation.configuration.Pattern;
 import io.metadew.iesi.data.generation.configuration.PhoneNumber;
@@ -48,6 +49,7 @@ public class GenerationObjectExecution {
 	private Date date;
 	private Internet internet;
 	private Lorem lorem;
+	private Motd motd;
 	private Name name;
 	private io.metadew.iesi.data.generation.configuration.Number number;
 	private Pattern pattern;
@@ -90,6 +92,7 @@ public class GenerationObjectExecution {
 		this.setDate(this.execution.getComponent(Date.class));
 		this.setInternet(this.execution.getComponent(Internet.class));
 		this.setLorem(this.execution.getComponent(Lorem.class));
+		this.setMotd(this.execution.getComponent(Motd.class));
 		this.setName(this.execution.getComponent(Name.class));
 		this.setNumber(this.execution
 				.getComponent(io.metadew.iesi.data.generation.configuration.Number.class));
@@ -381,6 +384,14 @@ public class GenerationObjectExecution {
 
 	public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
 		this.frameworkExecution = frameworkExecution;
+	}
+
+	public Motd getMotd() {
+		return motd;
+	}
+
+	public void setMotd(Motd motd) {
+		this.motd = motd;
 	}
 
 }

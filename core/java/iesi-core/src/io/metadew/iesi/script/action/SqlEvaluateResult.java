@@ -74,14 +74,14 @@ public class SqlEvaluateResult {
 	
 	public boolean execute() {
 		try {
-
+		
 			// Get Connection
 			ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution());
 			Connection connection = connectionConfiguration.getConnection(this.getConnectionName().getValue(),
 					this.getExecutionControl().getEnvName());
 			ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
 			DatabaseConnection databaseConnection = connectionOperation.getDatabaseConnection(connection);
-
+			
 			// Run the action
 			CachedRowSet crs = null;
 			// String query = this.getExecutionControl().getExecutionRuntime().resolveVariables(this.getFrameworkExecution().getSqlTools().getFirstSQLStmt(this.getFilePath().getValue(), this.getFileName().getValue()));

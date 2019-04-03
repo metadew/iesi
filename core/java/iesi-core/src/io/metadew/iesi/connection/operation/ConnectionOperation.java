@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.connection.ArtifactoryConnection;
 import io.metadew.iesi.connection.DatabaseConnection;
 import io.metadew.iesi.connection.HostConnection;
+import io.metadew.iesi.connection.database.MysqlDatabaseConnection;
 import io.metadew.iesi.connection.database.NetezzaDatabaseConnection;
 import io.metadew.iesi.connection.database.OracleDatabaseConnection;
 import io.metadew.iesi.connection.database.PostgresqlDatabaseConnection;
@@ -295,6 +296,84 @@ public class ConnectionOperation {
 	
 				PostgresqlDatabaseConnection postgresqlDatabaseConnection = new PostgresqlDatabaseConnection(hostName, portNumber, databaseName, userName, userPassword);
 				databaseConnection = objectMapper.convertValue(postgresqlDatabaseConnection, DatabaseConnection.class);
+			} else if (connection.getType().equalsIgnoreCase("db.mysql")) {
+				String hostName = "";
+				String portNumberTemp = "";
+				int portNumber = 0;
+				String schemaName = "";
+				String userName = "";
+				String userPassword = "";
+	
+				for (ConnectionParameter connectionParameter : connection.getParameters()) {
+					if (connectionParameter.getName().equalsIgnoreCase("host")) {
+						hostName = (connectionParameter.getValue());
+						hostName = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(hostName);
+					} else if (connectionParameter.getName().equalsIgnoreCase("port")) {
+						portNumberTemp = connectionParameter.getValue();
+						portNumberTemp = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(portNumberTemp);
+					} else if (connectionParameter.getName().equalsIgnoreCase("schema")) {
+						schemaName = connectionParameter.getValue();
+						schemaName = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(schemaName);
+					} else if (connectionParameter.getName().equalsIgnoreCase("user")) {
+						userName = connectionParameter.getValue();
+						userName = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(userName);
+					} else if (connectionParameter.getName().equalsIgnoreCase("password")) {
+						userPassword = connectionParameter.getValue();
+						userPassword = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(userPassword);
+					}
+				}
+	
+				// Check Mandatory Parameters
+				this.setMissingMandatoryFields(false);
+				ConnectionType connectionType = this.getConnectionType(connection.getType());
+				for (ConnectionTypeParameter connectionTypeParameter : connectionType.getParameters()) {
+					if (connectionTypeParameter.getMandatory().equalsIgnoreCase("y")) {
+						if (connectionTypeParameter.getName().equalsIgnoreCase("host")) {
+							if (hostName.trim().equals(""))
+								this.addMissingField("host");
+						} else if (connectionTypeParameter.getName().equalsIgnoreCase("port")) {
+							if (portNumberTemp.trim().equals(""))
+								this.addMissingField("port");
+						} else if (connectionTypeParameter.getName().equalsIgnoreCase("schema")) {
+							if (schemaName.trim().equals(""))
+								this.addMissingField("schema");
+						} else if (connectionTypeParameter.getName().equalsIgnoreCase("user")) {
+							if (userName.trim().equals(""))
+								this.addMissingField("user");
+						} else if (connectionTypeParameter.getName().equalsIgnoreCase("password")) {
+							if (userPassword.trim().equals(""))
+								this.addMissingField("password");
+						}
+					}
+				}
+	
+				if (this.isMissingMandatoryFields()) {
+					String message = "Mandatory fields missing for connection " + connection.getName();
+					throw new RuntimeException(message);
+				}
+	
+				// Decrypt Parameters
+				for (ConnectionTypeParameter connectionTypeParameter : connectionType.getParameters()) {
+					if (connectionTypeParameter.getEncrypted().equalsIgnoreCase("y")) {
+						if (connectionTypeParameter.getName().equalsIgnoreCase("host")) {
+							hostName = this.getFrameworkExecution().getFrameworkCrypto().decrypt(hostName);
+						} else if (connectionTypeParameter.getName().equalsIgnoreCase("port")) {
+							portNumberTemp = this.getFrameworkExecution().getFrameworkCrypto().decrypt(portNumberTemp);
+						} else if (connectionTypeParameter.getName().equalsIgnoreCase("schema")) {
+							schemaName = this.getFrameworkExecution().getFrameworkCrypto().decrypt(schemaName);
+						} else if (connectionTypeParameter.getName().equalsIgnoreCase("user")) {
+							userName = this.getFrameworkExecution().getFrameworkCrypto().decrypt(userName);
+						} else if (connectionTypeParameter.getName().equalsIgnoreCase("password")) {
+							userPassword = this.getFrameworkExecution().getFrameworkCrypto().decrypt(userPassword);
+						}
+					}
+				}
+	
+				// Convert encrypted integers
+				portNumber = Integer.parseInt(portNumberTemp);
+	
+				MysqlDatabaseConnection mysqlDatabaseConnection = new MysqlDatabaseConnection(hostName, portNumber, schemaName, userName, userPassword);
+				databaseConnection = objectMapper.convertValue(mysqlDatabaseConnection, DatabaseConnection.class);
 			} else if (connection.getType().equalsIgnoreCase("db.sqlite")) {
 				String filePath = "";
 				String fileName = "";

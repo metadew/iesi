@@ -41,7 +41,7 @@
 {
 	"type": "ConnectionType",
 	"data": {
-		"name": "db.pgsql",
+		"name": "db.postgresql",
 		"description": "Postgresql Database Connection",
 		"parameters": [
 			{"name": "host","description": "The host name of the server where the database is running","type": "string","mandatory": "Y","encrypted": "N"},

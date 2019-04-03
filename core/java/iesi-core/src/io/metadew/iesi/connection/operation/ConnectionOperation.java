@@ -6,6 +6,8 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.FilenameUtils;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.metadew.iesi.connection.ArtifactoryConnection;
@@ -28,9 +30,6 @@ public class ConnectionOperation {
 	private FrameworkExecution frameworkExecution;
 	private boolean missingMandatoryFields;
 	private List<String> missingMandatoryFieldsList;
-
-	public ConnectionOperation() {
-	}
 
 	public ConnectionOperation(FrameworkExecution frameworkExecution) {
 		this.setFrameworkExecution(frameworkExecution);
@@ -58,16 +57,22 @@ public class ConnectionOperation {
 				for (ConnectionParameter connectionParameter : connection.getParameters()) {
 					if (connectionParameter.getName().equalsIgnoreCase("host")) {
 						hostName = (connectionParameter.getValue());
+						hostName = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(hostName);
 					} else if (connectionParameter.getName().equalsIgnoreCase("port")) {
 						portNumberTemp = connectionParameter.getValue();
+						portNumberTemp = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(portNumberTemp);
 					} else if (connectionParameter.getName().equalsIgnoreCase("tnsalias")) {
 						tnsAlias = connectionParameter.getValue();
+						tnsAlias = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(tnsAlias);
 					} else if (connectionParameter.getName().equalsIgnoreCase("user")) {
 						userName = connectionParameter.getValue();
+						userName = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(userName);
 					} else if (connectionParameter.getName().equalsIgnoreCase("password")) {
 						userPassword = connectionParameter.getValue();
+						userPassword = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(userPassword);
 					} else if (connectionParameter.getName().equalsIgnoreCase("service")) {
 						serviceName = connectionParameter.getValue();
+						serviceName = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(serviceName);
 					}
 				}
 	
@@ -144,14 +149,19 @@ public class ConnectionOperation {
 				for (ConnectionParameter connectionParameter : connection.getParameters()) {
 					if (connectionParameter.getName().equalsIgnoreCase("host")) {
 						hostName = (connectionParameter.getValue());
+						hostName = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(hostName);
 					} else if (connectionParameter.getName().equalsIgnoreCase("port")) {
 						portNumberTemp = connectionParameter.getValue();
+						portNumberTemp = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(portNumberTemp);
 					} else if (connectionParameter.getName().equalsIgnoreCase("database")) {
 						databaseName = connectionParameter.getValue();
+						databaseName = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(databaseName);
 					} else if (connectionParameter.getName().equalsIgnoreCase("user")) {
 						userName = connectionParameter.getValue();
+						userName = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(userName);
 					} else if (connectionParameter.getName().equalsIgnoreCase("password")) {
 						userPassword = connectionParameter.getValue();
+						userPassword = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(userPassword);
 					}
 				}
 	
@@ -213,8 +223,10 @@ public class ConnectionOperation {
 				for (ConnectionParameter connectionParameter : connection.getParameters()) {
 					if (connectionParameter.getName().equalsIgnoreCase("filepath")) {
 						filePath = (connectionParameter.getValue());
+						filePath = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(filePath);
 					} else if (connectionParameter.getName().equalsIgnoreCase("filename")) {
 						fileName = connectionParameter.getValue();
+						fileName = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(filePath);
 					}
 				}
 	
@@ -252,7 +264,7 @@ public class ConnectionOperation {
 	
 				// Convert encrypted integers
 	
-				SqliteDatabaseConnection dcSQConnection = new SqliteDatabaseConnection(filePath + File.separator + fileName);
+				SqliteDatabaseConnection dcSQConnection = new SqliteDatabaseConnection(FilenameUtils.normalize(filePath + File.separator + fileName));
 				databaseConnection = objectMapper.convertValue(dcSQConnection, DatabaseConnection.class);
 			}
 		} catch (Exception e) {
@@ -274,8 +286,10 @@ public class ConnectionOperation {
 			for (ConnectionParameter connectionParameter : connection.getParameters()) {
 				if (connectionParameter.getName().equalsIgnoreCase("host")) {
 					hostName = (connectionParameter.getValue());
+					hostName = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(hostName);
 				} else if (connectionParameter.getName().equalsIgnoreCase("temppath")) {
 					tempPath = connectionParameter.getValue();
+					tempPath = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(tempPath);
 				}
 			}
 
@@ -325,18 +339,24 @@ public class ConnectionOperation {
 			for (ConnectionParameter connectionParameter : connection.getParameters()) {
 				if (connectionParameter.getName().equalsIgnoreCase("host")) {
 					hostName = (connectionParameter.getValue());
+					hostName = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(hostName);
 				} else if (connectionParameter.getName().equalsIgnoreCase("port")) {
 					portNumber = Integer.parseInt(connectionParameter.getValue());
 				} else if (connectionParameter.getName().equalsIgnoreCase("user")) {
 					userName = connectionParameter.getValue();
+					userName = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(userName);
 				} else if (connectionParameter.getName().equalsIgnoreCase("password")) {
 					userPassword = connectionParameter.getValue();
+					userPassword = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(userPassword);
 				} else if (connectionParameter.getName().equalsIgnoreCase("temppath")) {
 					tempPath = connectionParameter.getValue();
+					tempPath = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(tempPath);
 				} else if (connectionParameter.getName().equalsIgnoreCase("simulateterminal")) {
 					terminalFlag = connectionParameter.getValue();
+					terminalFlag = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(terminalFlag);
 				} else if (connectionParameter.getName().equalsIgnoreCase("jumphostconnections")) {
 					jumpHostConnectionName = connectionParameter.getValue();
+					jumpHostConnectionName = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(jumpHostConnectionName);
 				}
 			}
 
@@ -415,12 +435,16 @@ public class ConnectionOperation {
 			for (ConnectionParameter connectionParameter : connection.getParameters()) {
 				if (connectionParameter.getName().equalsIgnoreCase("url")) {
 					connectionURL = (connectionParameter.getValue());
+					connectionURL = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(connectionURL);
 				} else if (connectionParameter.getName().equalsIgnoreCase("user")) {
 					userName = connectionParameter.getValue();
+					userName = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(userName);
 				} else if (connectionParameter.getName().equalsIgnoreCase("password")) {
 					userPassword = connectionParameter.getValue();
+					userPassword = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(userPassword);
 				} else if (connectionParameter.getName().equalsIgnoreCase("repository")) {
 					repositoryName = connectionParameter.getValue();
+					repositoryName = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(repositoryName);
 				}
 			}
 

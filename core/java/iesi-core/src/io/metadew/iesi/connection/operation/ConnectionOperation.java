@@ -226,7 +226,7 @@ public class ConnectionOperation {
 						filePath = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(filePath);
 					} else if (connectionParameter.getName().equalsIgnoreCase("filename")) {
 						fileName = connectionParameter.getValue();
-						fileName = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(filePath);
+						fileName = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(fileName);
 					}
 				}
 	
@@ -263,7 +263,6 @@ public class ConnectionOperation {
 				}
 	
 				// Convert encrypted integers
-	
 				SqliteDatabaseConnection dcSQConnection = new SqliteDatabaseConnection(FilenameUtils.normalize(filePath + File.separator + fileName));
 				databaseConnection = objectMapper.convertValue(dcSQConnection, DatabaseConnection.class);
 			}

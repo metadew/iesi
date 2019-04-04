@@ -19,7 +19,8 @@ public class WfaExecuteWait {
 	private ExecutionControl executionControl;
 
 	// Parameters
-	private int waitInterval;
+	private long waitInterval;
+	private ActionParameterOperation waitIntervalInput;
 	private long startTime;
 	private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
 
@@ -42,22 +43,34 @@ public class WfaExecuteWait {
 	public void prepare() {
 		// Set Parameters
 		this.setWaitInterval(1000);
+		this.setWaitIntervalInput(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+				this.getActionExecution(), this.getActionExecution().getAction().getType(), "wait"));
+
 
 		// Get Parameters
 		for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
 			if (actionParameter.getName().equalsIgnoreCase("wait")) {
-				this.setWaitInterval(Integer.parseInt(actionParameter.getValue()));
+				this.getWaitIntervalInput().setInputValue(actionParameter.getValue());;
+				//this.setWaitInterval(Integer.parseInt(actionParameter.getValue()));
 			}
+		}
+		
+		// Set wait interval
+		if (this.getWaitIntervalInput().getValue().trim().isEmpty()) {
+			this.setWaitInterval(0);
+		} else {
+			this.setWaitInterval((long) Double.parseDouble(this.getWaitIntervalInput().getValue()));
 		}
 	
 		//Create parameter list
+		this.getActionParameterOperationMap().put("wait", this.getWaitIntervalInput());
 	}
 	
 	public void execute() {
 		try {
 			// Run the action
 			long wait = this.getWaitInterval() * 1000;
-			if (wait <= 0)
+			if (wait < 0)
 				wait = 1000;
 			boolean done = false;
 			
@@ -110,14 +123,6 @@ public class WfaExecuteWait {
 		this.executionControl = executionControl;
 	}
 
-	public int getWaitInterval() {
-		return waitInterval;
-	}
-
-	public void setWaitInterval(int waitInterval) {
-		this.waitInterval = waitInterval;
-	}
-
 	public long getStartTime() {
 		return startTime;
 	}
@@ -141,5 +146,22 @@ public class WfaExecuteWait {
 	public void setActionParameterOperationMap(HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
 		this.actionParameterOperationMap = actionParameterOperationMap;
 	}
+
+	public ActionParameterOperation getWaitIntervalInput() {
+		return waitIntervalInput;
+	}
+
+	public void setWaitIntervalInput(ActionParameterOperation waitIntervalInput) {
+		this.waitIntervalInput = waitIntervalInput;
+	}
+
+	public long getWaitInterval() {
+		return waitInterval;
+	}
+
+	public void setWaitInterval(long waitInterval) {
+		this.waitInterval = waitInterval;
+	}
+
 
 }

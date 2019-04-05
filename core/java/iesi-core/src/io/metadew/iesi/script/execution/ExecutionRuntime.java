@@ -524,7 +524,7 @@ public class ExecutionRuntime {
 			String tempInstructions = temp;
 			while (tempInstructions.indexOf(variable_char) > 0 || tempInstructions.startsWith(variable_char)) {
 				openPos = tempInstructions.indexOf(variable_char);
-				closePos = tempInstructions.lastIndexOf(variable_char_close);
+				closePos = tempInstructions.indexOf(variable_char_close);
 				midBit = tempInstructions.substring(openPos + 2, closePos).trim();
 				items.add(midBit);
 				tempInstructions = midBit;

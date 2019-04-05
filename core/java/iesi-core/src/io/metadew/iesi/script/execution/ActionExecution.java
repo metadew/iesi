@@ -25,6 +25,7 @@ public class ActionExecution {
 	private Action action;
 	private Long processId;
 	private ComponentAttributeOperation componentAttributeOperation;
+	private Object actionTypeExecution;
 
 	// Constructors
 	public ActionExecution(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
@@ -119,6 +120,9 @@ public class ActionExecution {
 			// Store runtime parameters for next action usage
 			this.getActionControl().getActionRuntime().setRuntimeParameters(actionParameterOperationMap);
 
+			// Store actionTypeExecution
+			this.setActionTypeExecution(instance);
+			
 			// Trace function
 			this.traceDesignMetadata(actionParameterOperationMap);
 		} catch (Exception e) {
@@ -206,6 +210,14 @@ public class ActionExecution {
 
 	public void setActionControl(ActionControl actionControl) {
 		this.actionControl = actionControl;
+	}
+
+	public Object getActionTypeExecution() {
+		return actionTypeExecution;
+	}
+
+	public void setActionTypeExecution(Object actionTypeExecution) {
+		this.actionTypeExecution = actionTypeExecution;
 	}
 
 }

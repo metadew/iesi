@@ -127,7 +127,7 @@
 	"type": "ActionType",
 	"data": {
 		"name": "fwk.executeScript",
-		"description": "Run another script",
+		"description": "Execute another script",
 		"parameters": [
 			{"name": "script","description": "Script name to execute","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
 			{"name": "environment","description": "Environment name where the execution needs to take place","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"},
@@ -140,7 +140,7 @@
 	"type": "ActionType",
 	"data": {
 		"name": "fwk.executeSuite",
-		"description": "Run a test suite of multiple scripts",
+		"description": "Execute a test suite of multiple scripts",
 		"parameters": [
 			{"name": "component","description": "Component for which to run a suite","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
 			{"name": "suite","description": "Suite name to execute","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
@@ -153,6 +153,25 @@
 			{"name": "buildPath","description": "Path to the build in the repository","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
 			{"name": "asset","description": "Definition of the build asset","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
 			{"name": "environment","description": "Environment name where the execution needs to take place","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"}
+	]
+}},
+{
+	"type": "ActionType",
+	"data": {
+		"name": "fwk.exitScript",
+		"description": "Exit the script execution",
+		"parameters": [
+			{"name": "status","description": "Exit status for the script","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"}
+	]
+}},
+{
+	"type": "ActionType",
+	"data": {
+		"name": "fwk.includeScript",
+		"description": "Include the actions of another script and execute as one script",
+		"parameters": [
+			{"name": "script","description": "Script name to execute","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "version","description": "Version of the script to run","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"}
 	]
 }},
 {

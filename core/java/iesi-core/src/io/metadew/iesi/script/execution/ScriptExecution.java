@@ -1,6 +1,8 @@
 package io.metadew.iesi.script.execution;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletionService;
@@ -10,9 +12,12 @@ import java.util.concurrent.Future;
 
 import org.apache.logging.log4j.Level;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.Action;
 import io.metadew.iesi.metadata.definition.Script;
+import io.metadew.iesi.script.action.FwkIncludeScript;
 import io.metadew.iesi.script.operation.ActionSelectOperation;
 import io.metadew.iesi.script.operation.RouteOperation;
 
@@ -138,7 +143,9 @@ public class ScriptExecution {
          * Loop all actions inside the script
          */
         boolean execute = true;
-        for (Action action : this.getScript().getActions()) {
+        List<Action> actions = this.getScript().getActions();
+        for (int i = 0; i < actions.size(); i++) {
+        	Action action = actions.get(i);
             // Check if the action needs to be executed
             if (this.isRootScript()) {
                 if (!this.getActionSelectOperation().getExecutionStatus(action)) {
@@ -153,7 +160,7 @@ public class ScriptExecution {
                     this, action);
             if (execute) {
                 // Route
-                if (action.getType().equals("fwk.route")) {
+                if (action.getType().equalsIgnoreCase("fwk.route")) {
                     actionExecution.execute();
 
                     // Create future variables
@@ -214,8 +221,27 @@ public class ScriptExecution {
                     if (iterationExecution.getIterationNumber() > 1) actionExecution.initialize();
                     actionExecution.execute();
                 }
-
-                // Error handling
+                
+            	// Include script
+            	if (action.getType().equalsIgnoreCase("fwk.includeScript")) {
+            		ObjectMapper objectMapper = new ObjectMapper();
+            		FwkIncludeScript fwkIncludeScript = objectMapper.convertValue(actionExecution.getActionTypeExecution(),FwkIncludeScript.class);
+            		
+            		List<Action> includeActions = new ArrayList();
+            		// Subselect the past actions including the include action itself
+            		includeActions.addAll(actions.subList(0, i + 1));
+            		// Add the include script
+            		includeActions.addAll(fwkIncludeScript.getScript().getActions());
+            		// If not at the end of the script, add the remainder of actions
+            		if (i < actions.size()-1) {
+            			includeActions.addAll(actions.subList(i + 1, actions.size()));	
+            		}
+            		
+            		// Adjust the action list that is iterated over
+            		actions = includeActions;
+            	}
+            	
+            	// Error handling
                 if (actionExecution.getActionControl().getExecutionMetrics().getErrorCount() > 0) {
                     if (action.getErrorExpected().equalsIgnoreCase("n")) {
                         getExecutionMetrics().increaseErrorCount(1);
@@ -237,6 +263,13 @@ public class ScriptExecution {
                         }
                     }
                 }
+                
+            	// Exit script
+            	if (action.getType().equalsIgnoreCase("fwk.exitScript")) {
+            		this.getExecutionControl().logMessage(this, "script.exit", Level.INFO);
+            		this.getExecutionControl().setScriptExit(true);
+            		break;
+            	}
             } else {
                 actionExecution.skip();
             }

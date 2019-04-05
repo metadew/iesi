@@ -2,8 +2,8 @@ package io.metadew.iesi.metadata.definition;
 
 public class ScriptVersion {
 
-	private long number;
-	private String description;
+	private long number = 0;
+	private String description = "Default version";
 
 	// Constructors
 	public ScriptVersion() {

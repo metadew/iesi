@@ -36,8 +36,6 @@ public class ScriptConfiguration {
 	private void verifyVersionExists() {
 		if (this.getScript().getVersion() == null) {
 			this.getScript().setVersion(new ScriptVersion());
-			this.getScript().getVersion().setNumber(0);
-			this.getScript().getVersion().setDescription("Default version");
 		}
 	}
 

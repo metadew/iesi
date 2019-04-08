@@ -37,12 +37,12 @@ public class ImpersonationConfiguration {
 	public String getDeleteStatement() {
 		String sql = "";
 
-		sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Impersonations");
+		sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("Impersonations");
 		sql += " WHERE IMP_NM = "
 				+ SQLTools.GetStringForSQL(this.getImpersonation().getName());
 		sql += ";";
 		sql += "\n";
-		sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("ImpersonationParameters");
+		sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("ImpersonationParameters");
 		sql += " WHERE IMP_NM = "
 				+ SQLTools.GetStringForSQL(this.getImpersonation().getName());
 		sql += ";";
@@ -60,7 +60,7 @@ public class ImpersonationConfiguration {
 			sql += this.getDeleteStatement();
 		}
 
-		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Impersonations");
+		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("Impersonations");
 		sql += " (IMP_NM, IMP_DSC) ";
 		sql += "VALUES ";
 		sql += "(";
@@ -104,9 +104,9 @@ public class ImpersonationConfiguration {
 		Impersonation impersonation = new Impersonation();
 		CachedRowSet crsImpersonation = null;
 		String queryImpersonation = "select IMP_NM, IMP_DSC from "
-				+ this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Impersonations") + " where IMP_NM = '"
+				+ this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("Impersonations") + " where IMP_NM = '"
 				+ impersonationName + "'";
-		crsImpersonation = this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().executeQuery(queryImpersonation);
+		crsImpersonation = this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().executeQuery(queryImpersonation, "reader");
 		ImpersonationParameterConfiguration impersonationParameterConfiguration = new ImpersonationParameterConfiguration(this.getFrameworkExecution());
 		try {
 			while (crsImpersonation.next()) {
@@ -116,10 +116,10 @@ public class ImpersonationConfiguration {
 				// Get parameters
 				CachedRowSet crsImpersonationParameters = null;
 				String queryImpersonationParameters = "select IMP_NM, CONN_NM from "
-						+ this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("ImpersonationParameters")
+						+ this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("ImpersonationParameters")
 						+ " where IMP_NM = '" + impersonationName + "'";
-				crsImpersonationParameters = this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration()
-						.executeQuery(queryImpersonationParameters);
+				crsImpersonationParameters = this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository()
+						.executeQuery(queryImpersonationParameters, "reader");
 				List<ImpersonationParameter> impersonationParameterList = new ArrayList();
 				while (crsImpersonationParameters.next()) {
 					impersonationParameterList.add(impersonationParameterConfiguration.getImpersonationParameter(impersonationName,
@@ -139,9 +139,9 @@ public class ImpersonationConfiguration {
 	public ListObject getImpersonations() {
 		List<Impersonation> impersonationList = new ArrayList<>();
 		CachedRowSet crs = null;
-		String query = "select IMP_NM from " + this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Impersonations")
+		String query = "select IMP_NM from " + this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("Impersonations")
 				+ " order by IMP_NM ASC";
-		crs = this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().executeQuery(query);
+		crs = this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().executeQuery(query, "reader");
 		ImpersonationConfiguration impersonationConfiguration = new ImpersonationConfiguration(this.getFrameworkExecution());
 		try {
 			String impersonationName = "";
@@ -171,7 +171,7 @@ public class ImpersonationConfiguration {
 
 				InputStream inputStream = FileTools
 						.convertToInputStream(output, this.getFrameworkExecution().getFrameworkControl());
-				this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().executeScript(inputStream);
+				this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().executeScript(inputStream);
 
 			}
 		} else {
@@ -181,7 +181,7 @@ public class ImpersonationConfiguration {
 
 			InputStream inputStream = FileTools.convertToInputStream(output,
 					this.getFrameworkExecution().getFrameworkControl());
-			this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().executeScript(inputStream);
+			this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().executeScript(inputStream);
 		}
 
 	}
@@ -193,7 +193,7 @@ public class ImpersonationConfiguration {
 
 		InputStream inputStream = FileTools
 				.convertToInputStream(output, this.getFrameworkExecution().getFrameworkControl());
-		this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().executeScript(inputStream);
+		this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().executeScript(inputStream);
 	}
 	
 	public void copyImpersonation(String fromImpersonationName, String toImpersonationName) {
@@ -207,7 +207,7 @@ public class ImpersonationConfiguration {
 
 		InputStream inputStream = FileTools.convertToInputStream(output,
 				this.getFrameworkExecution().getFrameworkControl());
-		this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().executeScript(inputStream);		
+		this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().executeScript(inputStream);
 	}
 
 	// Exists

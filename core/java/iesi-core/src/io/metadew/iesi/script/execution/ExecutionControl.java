@@ -8,6 +8,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.metadew.iesi.metadata.definition.MetadataTable;
 import org.apache.logging.log4j.Level;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -67,13 +68,10 @@ public class ExecutionControl
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void initializeExecutionRuntime(FrameworkExecution frameworkExecution, String runId) {
-		String customExecutionRuntime = frameworkExecution.getFrameworkControl().getProperty(frameworkExecution
-				.getFrameworkConfiguration().getSettingConfiguration().getSettingPath("script.execution.runtime"));
-		if (customExecutionRuntime.trim().equals("")) {
-			this.setExecutionRuntime(new ExecutionRuntime(frameworkExecution, runId));
-		} else {
+		if (frameworkExecution.getFrameworkConfiguration().getSettingConfiguration().getSettingPath("script.execution.runtime").isPresent() &&
+				!frameworkExecution.getFrameworkControl().getProperty(frameworkExecution.getFrameworkConfiguration().getSettingConfiguration().getSettingPath("script.execution.runtime").get()).isEmpty()) {
 			try {
-				Class classRef = Class.forName(customExecutionRuntime);
+				Class classRef = Class.forName(frameworkExecution.getFrameworkConfiguration().getSettingConfiguration().getSettingPath("script.execution.runtime").get());
 				Object instance = classRef.newInstance();
 
 				Class initParams[] = { FrameworkExecution.class, String.class };
@@ -89,8 +87,9 @@ public class ExecutionControl
 				e.printStackTrace();
 			}
 
+		} else {
+			this.setExecutionRuntime(new ExecutionRuntime(frameworkExecution, runId));
 		}
-
 	}
 
 	public void setEnvironment(String environmentName)
@@ -99,11 +98,12 @@ public class ExecutionControl
 
 		// Set environment variables
 		this.getExecutionRuntime().setRuntimeVariablesFromList(this.getFrameworkExecution().getMetadataControl()
-				.getConnectivityRepositoryConfiguration()
+				.getConnectivityMetadataRepository()
 				.executeQuery("select env_par_nm, env_par_val from "
-						+ this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration()
-								.getMetadataTableConfiguration().getTableName("EnvironmentParameters")
-						+ " where env_nm = '" + this.getEnvName() + "' order by env_par_nm asc, env_par_val asc"));
+						+ this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().getMetadataTables().stream()
+						.filter(metadataTable -> metadataTable.getLabel().equalsIgnoreCase("EnvironmentParameters"))
+						.map(MetadataTable::getName).findFirst().get()
+						+ " where env_nm = '" + this.getEnvName() + "' order by env_par_nm asc, env_par_val asc", "writer"));
 	}
 
 	public void terminate()
@@ -123,11 +123,12 @@ public class ExecutionControl
 			parentProcessId = 0L;
 			// Initialize runtime variables
 			this.getExecutionRuntime().setRuntimeVariablesFromList(this.getFrameworkExecution().getMetadataControl()
-					.getConnectivityRepositoryConfiguration()
+					.getConnectivityMetadataRepository()
 					.executeQuery("select env_par_nm, env_par_val from "
-							+ this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration()
-									.getMetadataTableConfiguration().getTableName("EnvironmentParameters")
-							+ " where env_nm = '" + this.getEnvName() + "' order by env_par_nm asc, env_par_val asc"));
+							+ this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().getMetadataTables().stream()
+							.filter(metadataTable -> metadataTable.getLabel().equalsIgnoreCase("EnvironmentParameters"))
+							.map(MetadataTable::getName).findFirst().get()
+							+ " where env_nm = '" + this.getEnvName() + "' order by env_par_nm asc, env_par_val asc", "reader"));
 		} else if (scriptExecution.isRouteScript()) {
 			// Set parent Process Id
 			parentProcessId = scriptExecution.getParentScriptExecution().getProcessId();
@@ -139,8 +140,9 @@ public class ExecutionControl
 		this.getNewProcessId();
 
 		String query = "INSERT INTO "
-				+ this.getFrameworkExecution().getMetadataControl().getResultRepositoryConfiguration().getMetadataTableConfiguration()
-						.getTableName("ScriptResults")
+				+ this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().getMetadataTables().stream()
+				.filter(metadataTable -> metadataTable.getLabel().equalsIgnoreCase("ScriptResults"))
+				.map(MetadataTable::getName).findFirst().get()
 				+ " (RUN_ID, PRC_ID, PARENT_PRC_ID, SCRIPT_ID, SCRIPT_VRS_NB, ENV_NM, ST_NM, STRT_TMS, END_TMS)";
 		query += " VALUES ";
 		query += "(";
@@ -158,15 +160,14 @@ public class ExecutionControl
 		query += ",";
 		query += SQLTools.GetStringForSQL("ACTIVE");
 		query += ",";
-		query += this.getFrameworkExecution().getMetadataControl().getResultRepositoryConfiguration()
-				.getSystemTimestampExpression();
+		query += this.getFrameworkExecution().getMetadataControl().getResultMetadataRepository().getRepository().getDatabases().values().stream().findFirst().get().getSystemTimestampExpression();
 		query += ",";
 		query += "null";
 		query += ")";
 		query += ";";
 
 		InputStream inputStream = new ByteArrayInputStream(query.getBytes(StandardCharsets.UTF_8));
-		this.getFrameworkExecution().getMetadataControl().getResultRepositoryConfiguration().executeScript(inputStream);
+		this.getFrameworkExecution().getMetadataControl().getResultMetadataRepository().executeScript(inputStream);
 
 		this.setScriptLog(new ScriptLog());
 		this.getScriptLog().setRun(this.getRunId());
@@ -187,8 +188,9 @@ public class ExecutionControl
 		this.getNewProcessId();
 
 		String query = "INSERT INTO "
-				+ this.getFrameworkExecution().getMetadataControl().getResultRepositoryConfiguration().getMetadataTableConfiguration()
-						.getTableName("ActionResults")
+				+ this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().getMetadataTables().stream()
+				.filter(metadataTable -> metadataTable.getLabel().equalsIgnoreCase("ActionResults"))
+				.map(MetadataTable::getName).findFirst().get()
 				+ " (RUN_ID, PRC_ID, ACTION_ID, ENV_NM, ST_NM, STRT_TMS, END_TMS)";
 		query += " VALUES ";
 		query += "(";
@@ -202,15 +204,14 @@ public class ExecutionControl
 		query += ",";
 		query += SQLTools.GetStringForSQL("ACTIVE");
 		query += ",";
-		query += this.getFrameworkExecution().getMetadataControl().getResultRepositoryConfiguration()
-				.getSystemTimestampExpression();
+		query += this.getFrameworkExecution().getMetadataControl().getResultMetadataRepository().getRepository().getDatabases().values().stream().findFirst().get().getSystemTimestampExpression();
 		query += ",";
 		query += "null";
 		query += ")";
 		query += ";";
 
 		InputStream inputStream = new ByteArrayInputStream(query.getBytes(StandardCharsets.UTF_8));
-		this.getFrameworkExecution().getMetadataControl().getResultRepositoryConfiguration().executeScript(inputStream);
+		this.getFrameworkExecution().getMetadataControl().getResultMetadataRepository().executeScript(inputStream);
 	}
 
 	public void logSkip(ActionExecution actionExecution)
@@ -219,8 +220,9 @@ public class ExecutionControl
 		this.getNewProcessId();
 
 		String query = "INSERT INTO "
-				+ this.getFrameworkExecution().getMetadataControl().getResultRepositoryConfiguration().getMetadataTableConfiguration()
-						.getTableName("ActionResults")
+				+ this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().getMetadataTables().stream()
+				.filter(metadataTable -> metadataTable.getLabel().equalsIgnoreCase("ActionResults"))
+				.map(MetadataTable::getName).findFirst().get()
 				+ " (RUN_ID, PRC_ID, ACTION_ID, ENV_NM, ST_NM, STRT_TMS, END_TMS)";
 		query += " VALUES ";
 		query += "(";
@@ -234,17 +236,14 @@ public class ExecutionControl
 		query += ",";
 		query += SQLTools.GetStringForSQL("SKIPPED");
 		query += ",";
-		query += this.getFrameworkExecution().getMetadataControl().getResultRepositoryConfiguration()
-				.getSystemTimestampExpression();
+		query += this.getFrameworkExecution().getMetadataControl().getResultMetadataRepository().getRepository().getDatabases().values().stream().findFirst().get().getSystemTimestampExpression();
 		query += ",";
-		query += this.getFrameworkExecution().getMetadataControl().getResultRepositoryConfiguration()
-				.getSystemTimestampExpression();
-		;
+		query += this.getFrameworkExecution().getMetadataControl().getResultMetadataRepository().getRepository().getDatabases().values().stream().findFirst().get().getSystemTimestampExpression();
 		query += ")";
 		query += ";";
 
 		InputStream inputStream = new ByteArrayInputStream(query.getBytes(StandardCharsets.UTF_8));
-		this.getFrameworkExecution().getMetadataControl().getResultRepositoryConfiguration().executeScript(inputStream);
+		this.getFrameworkExecution().getMetadataControl().getResultMetadataRepository().executeScript(inputStream);
 
 		String status = FrameworkStatus.SKIPPED.value();
 
@@ -282,14 +281,15 @@ public class ExecutionControl
 	{
 		String status = this.getStatus(scriptExecution);
 		String query = "update "
-				+ this.getFrameworkExecution().getMetadataControl().getResultRepositoryConfiguration().getMetadataTableConfiguration()
-						.getTableName("ScriptResults")
-				+ " set ST_NM = '" + status + "', END_TMS = " + this.getFrameworkExecution().getMetadataControl()
-						.getResultRepositoryConfiguration().getSystemTimestampExpression();
+				+ this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().getMetadataTables().stream()
+				.filter(metadataTable -> metadataTable.getLabel().equalsIgnoreCase("ScriptResults"))
+				.map(MetadataTable::getName).findFirst().get()
+				+ " set ST_NM = '" + status + "', END_TMS = " +
+				this.getFrameworkExecution().getMetadataControl().getResultMetadataRepository().getRepository().getDatabases().values().stream().findFirst().get().getSystemTimestampExpression();
 		query += " where RUN_ID = '" + this.getRunId() + "' and PRC_ID = " + scriptExecution.getProcessId() + ";";
 
 		InputStream inputStream = new ByteArrayInputStream(query.getBytes(StandardCharsets.UTF_8));
-		this.getFrameworkExecution().getMetadataControl().getResultRepositoryConfiguration().executeScript(inputStream);
+		this.getFrameworkExecution().getMetadataControl().getResultMetadataRepository().executeScript(inputStream);
 
 		// Clear processing variables
 		// Only is the script is a root script, this will be cleaned
@@ -312,14 +312,15 @@ public class ExecutionControl
 	{
 		String status = this.getStatus(actionExecution, scriptExecution);
 		String query = "update "
-				+ this.getFrameworkExecution().getMetadataControl().getResultRepositoryConfiguration().getMetadataTableConfiguration()
-						.getTableName("ActionResults")
-				+ " set ST_NM = '" + status + "', END_TMS = " + this.getFrameworkExecution().getMetadataControl()
-						.getResultRepositoryConfiguration().getSystemTimestampExpression();
+				+ this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().getMetadataTables().stream()
+				.filter(metadataTable -> metadataTable.getLabel().equalsIgnoreCase("ActionResults"))
+				.map(MetadataTable::getName).findFirst().get()
+				+ " set ST_NM = '" + status + "', END_TMS = " +
+				this.getFrameworkExecution().getMetadataControl().getResultMetadataRepository().getRepository().getDatabases().values().stream().findFirst().get().getSystemTimestampExpression();
 		query += " where RUN_ID = '" + this.getRunId() + "' and PRC_ID = " + actionExecution.getProcessId() + ";";
 
 		InputStream inputStream = new ByteArrayInputStream(query.getBytes(StandardCharsets.UTF_8));
-		this.getFrameworkExecution().getMetadataControl().getResultRepositoryConfiguration().executeScript(inputStream);
+		this.getFrameworkExecution().getMetadataControl().getResultMetadataRepository().executeScript(inputStream);
 	}
 
 	public void logEnd(BackupExecution backupExecution)
@@ -397,8 +398,10 @@ public class ExecutionControl
 		outputValue = this.getFrameworkExecution().getFrameworkCrypto().redact(outputValue);
 		outputValue = TextTools.shortenTextForDatabase(outputValue, 2000);
 
-		String query = "INSERT INTO " + this.getFrameworkExecution().getMetadataControl()
-				.getResultRepositoryConfiguration().getMetadataTableConfiguration().getTableName("ScriptOutputs")
+		String query = "INSERT INTO "
+				+ this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().getMetadataTables().stream()
+				.filter(metadataTable -> metadataTable.getLabel().equalsIgnoreCase("ScriptOutputs"))
+				.map(MetadataTable::getName).findFirst().get()
 				+ " (RUN_ID, PRC_ID, SCRIPT_ID, OUT_NM, OUT_VAL)";
 		query += " VALUES ";
 		query += "(";
@@ -415,7 +418,7 @@ public class ExecutionControl
 		query += ";";
 
 		InputStream inputStream = new ByteArrayInputStream(query.getBytes(StandardCharsets.UTF_8));
-		this.getFrameworkExecution().getMetadataControl().getResultRepositoryConfiguration().executeScript(inputStream);
+		this.getFrameworkExecution().getMetadataControl().getResultMetadataRepository().executeScript(inputStream);
 	}
 
 	public void logExecutionOutput(ActionExecution actionExecution, String outputName, int outputValue)
@@ -434,8 +437,10 @@ public class ExecutionControl
 		outputValue = this.getFrameworkExecution().getFrameworkCrypto().redact(outputValue);
 		outputValue = TextTools.shortenTextForDatabase(outputValue, 2000);
 
-		String query = "INSERT INTO " + this.getFrameworkExecution().getMetadataControl()
-				.getResultRepositoryConfiguration().getMetadataTableConfiguration().getTableName("ActionOutputs")
+		String query = "INSERT INTO "
+				+ this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().getMetadataTables().stream()
+				.filter(metadataTable -> metadataTable.getLabel().equalsIgnoreCase("ActionOutputs"))
+				.map(MetadataTable::getName).findFirst().get()
 				+ " (RUN_ID, PRC_ID, ACTION_ID, OUT_NM, OUT_VAL)";
 		query += " VALUES ";
 		query += "(";
@@ -451,7 +456,7 @@ public class ExecutionControl
 		query += ")";
 		query += ";";
 
-		this.getFrameworkExecution().getMetadataControl().getResultRepositoryConfiguration().executeUpdate(query);
+		this.getFrameworkExecution().getMetadataControl().getResultMetadataRepository().executeUpdate(query);
 	}
 
 	// Log message

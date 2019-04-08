@@ -11,8 +11,8 @@ import javax.sql.rowset.CachedRowSet;
 import io.metadew.iesi.common.json.JsonParsed;
 import io.metadew.iesi.common.json.JsonParsedItem;
 import io.metadew.iesi.connection.DatabaseConnection;
-import io.metadew.iesi.connection.database.SqliteDatabaseConnection;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.metadata_repository.repository.database.connection.SqliteDatabaseConnection;
 
 /**
  * Operation to manage the datasets that have been defined in the script

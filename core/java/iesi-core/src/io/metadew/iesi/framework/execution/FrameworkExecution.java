@@ -1,12 +1,19 @@
 package io.metadew.iesi.framework.execution;
 
-import java.io.File;
-
-import io.metadew.iesi.connection.database.SqliteDatabaseConnection;
 import io.metadew.iesi.framework.configuration.FrameworkConfiguration;
 import io.metadew.iesi.framework.crypto.FrameworkCrypto;
-import io.metadew.iesi.metadata.configuration.MetadataRepositoryConfiguration;
 import io.metadew.iesi.metadata.execution.MetadataControl;
+import io.metadew.iesi.metadata_repository.ExecutionServerMetadataRepository;
+import io.metadew.iesi.metadata_repository.repository.Repository;
+import io.metadew.iesi.metadata_repository.repository.database.Database;
+import io.metadew.iesi.metadata_repository.repository.database.SqliteDatabase;
+import io.metadew.iesi.metadata_repository.repository.database.connection.SqliteDatabaseConnection;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class FrameworkExecution {
 
@@ -17,7 +24,7 @@ public class FrameworkExecution {
 	private FrameworkControl frameworkControl;
 	private FrameworkLog frameworkLog;
 	private MetadataControl metadataControl;
-	private MetadataRepositoryConfiguration executionServerRepositoryConfiguration;
+	private ExecutionServerMetadataRepository executionServerRepositoryConfiguration;
 
 
 	// Constructors
@@ -49,16 +56,23 @@ public class FrameworkExecution {
 		
 		// Prepare configuration and shared Metadata
 		this.setFrameworkControl(new FrameworkControl(this.getFrameworkConfiguration(), logonType));
-		this.setMetadataControl(new MetadataControl(this.getFrameworkControl().getMetadataRepositoryConfigurationList()));
+		this.setMetadataControl(new MetadataControl(this.getFrameworkControl().getMetadataRepositoryConfigurations().stream().map(configuration -> configuration.toMetadataRepositories(frameworkConfiguration)).collect(ArrayList::new, List::addAll, List::addAll)));
 		
 		this.setSettingsList(this.getFrameworkExecutionSettings().getSettingsList());
 		this.setFrameworkLog(new FrameworkLog(this.getFrameworkConfiguration(), this.getFrameworkExecutionContext(), this.getFrameworkControl(), this.getFrameworkCrypto()));
 
 		// Set up connection to the metadata repository
-		SqliteDatabaseConnection executionServerRepositoryConnection = new SqliteDatabaseConnection(
+		SqliteDatabaseConnection executionServerDatabaseConnection = new SqliteDatabaseConnection(
 				this.getFrameworkConfiguration().getFolderConfiguration().getFolderAbsolutePath("run.exec") + File.separator + "ExecutionServerRepository.db3");
-		this.setExecutionServerRepositoryConfiguration(
-				new MetadataRepositoryConfiguration(this.getFrameworkConfiguration(), this.frameworkControl, executionServerRepositoryConnection));
+		SqliteDatabase sqliteDatabase = new SqliteDatabase(executionServerDatabaseConnection);
+		Map<String, Database> databases = new HashMap<>();
+		databases.put("reader", sqliteDatabase);
+		databases.put("writer", sqliteDatabase);
+		databases.put("owner", sqliteDatabase);
+		Repository repository = new Repository(databases);
+		this.setExecutionServerRepositoryConfiguration(new ExecutionServerMetadataRepository(frameworkConfiguration.getFrameworkCode(), null, null, null, repository,
+				frameworkConfiguration.getFolderConfiguration().getFolderAbsolutePath("metadata.def"),
+				frameworkConfiguration.getFolderConfiguration().getFolderAbsolutePath("metadata.def")));
 
 	}
 
@@ -67,12 +81,12 @@ public class FrameworkExecution {
 	}
 
 	// Getters and Setters
-	public MetadataRepositoryConfiguration getExecutionServerRepositoryConfiguration() {
+	public ExecutionServerMetadataRepository getExecutionServerRepositoryConfiguration() {
 		return executionServerRepositoryConfiguration;
 	}
 
 	public void setExecutionServerRepositoryConfiguration(
-			MetadataRepositoryConfiguration executionServerRepositoryConfiguration) {
+			ExecutionServerMetadataRepository executionServerRepositoryConfiguration) {
 		this.executionServerRepositoryConfiguration = executionServerRepositoryConfiguration;
 	}
 

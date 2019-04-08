@@ -30,7 +30,7 @@ public class DataRepositoryConfiguration {
 	private String repositoryCategoryPrefix = "DAT_";
 	private String repositoryTableNamePrefix;
 	private String schema;
-	private DatabaseConnection databaseConnection; 
+	private DatabaseConnection databaseConnection;
 	private ConfigFile configFile;
 	
 	public DataRepositoryConfiguration(FrameworkExecution frameworkExecution, String repositoryName,
@@ -81,7 +81,7 @@ public class DataRepositoryConfiguration {
 	
 	
 	
-	// Database
+	// database
 	public CachedRowSet executeQuery(String query) {
 		CachedRowSet crs = null;
 		try {

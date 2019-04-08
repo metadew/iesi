@@ -11,9 +11,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.connection.ArtifactoryConnection;
 import io.metadew.iesi.connection.DatabaseConnection;
 import io.metadew.iesi.connection.HostConnection;
-import io.metadew.iesi.connection.database.NetezzaDatabaseConnection;
-import io.metadew.iesi.connection.database.OracleDatabaseConnection;
-import io.metadew.iesi.connection.database.SqliteDatabaseConnection;
 import io.metadew.iesi.connection.host.LinuxHostConnection;
 import io.metadew.iesi.connection.host.WindowsHostConnection;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
@@ -22,6 +19,7 @@ import io.metadew.iesi.metadata.definition.Connection;
 import io.metadew.iesi.metadata.definition.ConnectionParameter;
 import io.metadew.iesi.metadata.definition.ConnectionType;
 import io.metadew.iesi.metadata.definition.ConnectionTypeParameter;
+import io.metadew.iesi.metadata_repository.repository.database.connection.*;
 
 public class ConnectionOperation {
 
@@ -130,8 +128,12 @@ public class ConnectionOperation {
 	
 				// Convert encrypted integers
 				portNumber = Integer.parseInt(portNumberTemp);
-
-				OracleDatabaseConnection oracleDatabaseConnection = new OracleDatabaseConnection(hostName, portNumber, tnsAlias, userName, userPassword, serviceName);
+				OracleDatabaseConnection oracleDatabaseConnection;
+				if (tnsAlias != null && tnsAlias.isEmpty()) {
+					oracleDatabaseConnection = new TnsAliasOracleDatabaseConnection(hostName, portNumber, tnsAlias, userName, userPassword);
+				} else {
+					oracleDatabaseConnection = new ServiceNameOracleDatabaseConnection(hostName, portNumber, serviceName, userName, userPassword);
+				}
 				databaseConnection = objectMapper.convertValue(oracleDatabaseConnection, DatabaseConnection.class);
 			} else if (connection.getType().equalsIgnoreCase("db.netezza")) {
 				String hostName = "";

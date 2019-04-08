@@ -28,7 +28,7 @@ public class ImpersonationParameterConfiguration {
 	public String getInsertStatement(String impersonationName) {
 		String sql = "";
 		
-		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("ImpersonationParameters");
+		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("ImpersonationParameters");
 		sql += " (IMP_NM, CONN_NM, CONN_IMP_NM, CONN_IMP_DSC) ";
 		sql += "VALUES ";
 		sql += "(";
@@ -48,9 +48,9 @@ public class ImpersonationParameterConfiguration {
 	public ImpersonationParameter getImpersonationParameter(String impersonationName, String impersonationParameterName) {
 		ImpersonationParameter impersonationParameter = new ImpersonationParameter();
 		CachedRowSet crsImpersonationParameter = null;
-		String queryImpersonationParameter = "select IMP_NM, CONN_NM, CONN_IMP_NM, CONN_IMP_DSC from " + this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("ImpersonationParameters")
+		String queryImpersonationParameter = "select IMP_NM, CONN_NM, CONN_IMP_NM, CONN_IMP_DSC from " + this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("ImpersonationParameters")
 				+ " where IMP_NM = '" + impersonationName + "' and CONN_NM = '" + impersonationParameterName + "'";
-		crsImpersonationParameter = this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().executeQuery(queryImpersonationParameter);
+		crsImpersonationParameter = this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().executeQuery(queryImpersonationParameter, "reader");
 		try {
 			while (crsImpersonationParameter.next()) {
 				impersonationParameter.setConnection(impersonationParameterName);

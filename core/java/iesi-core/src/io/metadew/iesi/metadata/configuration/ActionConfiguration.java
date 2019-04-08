@@ -31,15 +31,23 @@ public class ActionConfiguration {
 	public String getInsertStatement(String scriptName, long scriptVersionNumber, int actionNumber) {
 		String sql = "";
 
-		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Actions");
+		sql += "INSERT INTO "
+				+ this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository()
+				.getMetadataTables().stream().filter(metadataTable -> metadataTable.getLabel().equalsIgnoreCase("Actions")).findFirst().get().getName();
 		sql += " (SCRIPT_ID, SCRIPT_VRS_NB, ACTION_ID, ACTION_NB, ACTION_TYP_NM, ACTION_NM, ACTION_DSC, COMP_NM, ITERATION_VAL, CONDITION_VAL, EXP_ERR_FL, STOP_ERR_FL) ";
 		sql += "VALUES ";
 		sql += "(";
-		sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Scripts"), "SCRIPT_ID", "SCRIPT_NM", scriptName) + ")";
+		sql += "(" + SQLTools.GetLookupIdStatement(
+				this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository()
+						.getMetadataTables().stream().filter(metadataTable -> metadataTable.getLabel().equalsIgnoreCase("Scripts")).findFirst().get().getName(),
+				"SCRIPT_ID", "SCRIPT_NM", scriptName) + ")";
 		sql += ",";
 		sql += SQLTools.GetStringForSQL(scriptVersionNumber);
 		sql += ",";
-		sql += "(" + SQLTools.GetNextIdStatement(this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Actions"), "ACTION_ID") + ")";
+		sql += "(" + SQLTools.GetNextIdStatement(
+				this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository()
+						.getMetadataTables().stream().filter(metadataTable -> metadataTable.getLabel().equalsIgnoreCase("Actions")).findFirst().get().getName(),
+				"ACTION_ID") + ")";
 		sql += ",";
 		sql += SQLTools.GetStringForSQL(actionNumber);
 		sql += ",";
@@ -89,10 +97,10 @@ public class ActionConfiguration {
 		Action action = new Action();
 		CachedRowSet crsAction = null;
 		String queryAction = "select SCRIPT_ID, SCRIPT_VRS_NB, ACTION_ID, ACTION_NB, ACTION_TYP_NM, ACTION_NM, ACTION_DSC, COMP_NM, ITERATION_VAL, CONDITION_VAL, EXP_ERR_FL, STOP_ERR_FL from "
-					+ this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration()
-								.getMetadataTableConfiguration().getTableName("Actions")
+					+ this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository()
+				.getMetadataTables().stream().filter(metadataTable -> metadataTable.getLabel().equalsIgnoreCase("Actions")).findFirst().get().getName()
 					+ " where ACTION_ID = " + actionId;
-		crsAction = this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().executeQuery(queryAction);
+		crsAction = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(queryAction, "reader");
 		ActionParameterConfiguration actionParameterConfiguration = new ActionParameterConfiguration(this.getFrameworkExecution());
 		try {
 			while (crsAction.next()) {
@@ -109,9 +117,11 @@ public class ActionConfiguration {
 				
 				// Get parameters
 				CachedRowSet crsActionParameters = null;
-				String queryActionParameters = "select ACTION_ID, ACTION_PAR_NM from " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("ActionParameters")
+				String queryActionParameters = "select ACTION_ID, ACTION_PAR_NM from "
+						+ this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository()
+						.getMetadataTables().stream().filter(metadataTable -> metadataTable.getLabel().equalsIgnoreCase("ActionParameters")).findFirst().get().getName()
 						+ " where ACTION_ID = " + actionId;
-				crsActionParameters = this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().executeQuery(queryActionParameters);
+				crsActionParameters = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(queryActionParameters, "reader");
 				List<ActionParameter> actionParameterList = new ArrayList();
 				while (crsActionParameters.next()) {
 					actionParameterList

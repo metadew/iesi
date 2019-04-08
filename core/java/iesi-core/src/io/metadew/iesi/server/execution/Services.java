@@ -19,7 +19,7 @@ public class Services {
 		context.setScope("");
 		this.setFrameworkExecution(new FrameworkExecution(new FrameworkExecutionContext(context)));
 		
-		requestServerRunnable = new RequestRunnable(this.getFrameworkExecution());
+		//requestServerRunnable = new RequestRunnable(this.getFrameworkExecution());
 		requestServerThread = new Thread(requestServerRunnable);
 		requestServerThread.setName("RequestServer");
 		// schedulerServerRunnable = new SchedulerServerRunnable();

@@ -1,64 +1,52 @@
 package io.metadew.iesi.metadata.configuration;
 
-import java.io.File;
-import java.io.InputStream;
-import java.util.List;
-
-import org.apache.logging.log4j.Level;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.connection.tools.FolderTools;
 import io.metadew.iesi.framework.configuration.FrameworkObjectConfiguration;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
-import io.metadew.iesi.metadata.definition.Component;
-import io.metadew.iesi.metadata.definition.Connection;
-import io.metadew.iesi.metadata.definition.DataObject;
-import io.metadew.iesi.metadata.definition.Dataframe;
-import io.metadew.iesi.metadata.definition.Environment;
-import io.metadew.iesi.metadata.definition.Impersonation;
-import io.metadew.iesi.metadata.definition.Ledger;
-import io.metadew.iesi.metadata.definition.MetadataObject;
-import io.metadew.iesi.metadata.definition.MetadataTable;
-import io.metadew.iesi.metadata.definition.Repository;
-import io.metadew.iesi.metadata.definition.Script;
-import io.metadew.iesi.metadata.definition.Subroutine;
+import io.metadew.iesi.metadata.definition.*;
 import io.metadew.iesi.metadata.operation.MetadataRepositoryOperation;
+import io.metadew.iesi.metadata_repository.MetadataRepository;
 import io.metadew.iesi.script.operation.ScriptOperation;
+import org.apache.logging.log4j.Level;
+
+import java.io.File;
+import java.io.InputStream;
+import java.util.List;
 
 public class DataObjectConfiguration {
 
 	private FrameworkExecution frameworkExecution;
 	private List<DataObject> dataObjects;
-	private MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+	private MetadataRepository metadataRepository;
 	private MetadataRepositoryOperation metadataRepositoryOperation;
 
 	// Constructors
 	public DataObjectConfiguration(FrameworkExecution frameworkExecution) {
 		this.setFrameworkExecution(frameworkExecution);
 		if (this.getFrameworkExecution() != null)
-			this.setMetadataRepositoryConfiguration(
-					this.getFrameworkExecution().getMetadataControl().getGeneralRepositoryConfiguration());
+			this.setMetadataRepository(
+					this.getFrameworkExecution().getMetadataControl().getGeneralMetadataRepository());
 	}
 
 	public DataObjectConfiguration(FrameworkExecution frameworkExecution, List<DataObject> dataObjects) {
 		this.setFrameworkExecution(frameworkExecution);
 		if (this.getFrameworkExecution() != null)
-			this.setMetadataRepositoryConfiguration(
-					this.getFrameworkExecution().getMetadataControl().getGeneralRepositoryConfiguration());
+			this.setMetadataRepository(
+					this.getFrameworkExecution().getMetadataControl().getGeneralMetadataRepository());
 		this.setDataObjects(dataObjects);
 	}
 
 	public DataObjectConfiguration(FrameworkExecution frameworkExecution,
-			MetadataRepositoryConfiguration metadataRepositoryConfiguration, List<DataObject> dataObjects) {
+								   MetadataRepository metadataRepository, List<DataObject> dataObjects) {
 		this.setFrameworkExecution(frameworkExecution);
 		if (this.getFrameworkExecution() != null)
-			this.setMetadataRepositoryConfiguration(metadataRepositoryConfiguration);
+			this.setMetadataRepository(metadataRepository);
 		this.setMetadataRepositoryOperation(new MetadataRepositoryOperation(this.getFrameworkExecution(),
-				this.getMetadataRepositoryConfiguration()));
+				this.getMetadataRepository()));
 		this.setDataObjects(dataObjects);
 	}
 
@@ -137,22 +125,98 @@ public class DataObjectConfiguration {
 	}
 
 	public void saveToMetadataRepository() {
+		int count = 0;
+		System.out.println("DataObjects " + dataObjects.size());
 		for (DataObject dataObject : dataObjects) {
-			InputStream inputStream = FileTools.convertToInputStream(
-					this.getMetadataRepositoryInsertStatement(dataObject),
-					this.getFrameworkExecution().getFrameworkControl());
-			this.getMetadataRepositoryConfiguration().executeScript(inputStream);
+			System.out.println(count);
+			this.getMetadataRepository().save(dataObject, getFrameworkExecution());
+			count++;
+			//
+			//InputStream inputStream = FileTools.convertToInputStream(
+			//		this.getMetadataRepositoryInsertStatement(dataObject),
+			//		this.getFrameworkExecution().getFrameworkControl());
+			// TODO: with which logon type is this done
+			//this.getMetadataRepository().executeScript(inputStream);
 		}
 	}
 
 	private String appendOutput(String type, String input) {
-		if (this.getMetadataRepositoryConfiguration().getMetadataObjectConfiguration().exists(type)) {
-			return input;
-		} else {
-			return "";
-		}
+//		if (this.getMetadataRepository().getMetadataObjectConfiguration().exists(type)) {
+//			return input;
+//		} else {
+//			return "";
+//		}
+		return "";
 	}
 
+	@SuppressWarnings("unused")
+	public void saveToMetadataFileStore() {
+//		ObjectMapper objectMapper = new ObjectMapper();
+//		String postSql = "";
+//		for (DataObject dataObject : dataObjects) {
+//			String output = "";
+//
+//			// Environment
+//			if (dataObject.getType().equalsIgnoreCase("environment")) {
+//				Environment environment = objectMapper.convertValue(dataObject.getData(), Environment.class);
+//
+//			}
+//
+//			// Connections
+//			if (dataObject.getType().equalsIgnoreCase("connection")) {
+//				Connection connection = objectMapper.convertValue(dataObject.getData(), Connection.class);
+//
+//			}
+//
+//			// Impersonations
+//			if (dataObject.getType().equalsIgnoreCase("impersonation")) {
+//
+//			}
+//
+//			// Subroutines
+//			if (dataObject.getType().equalsIgnoreCase("subroutine")) {
+//				Subroutine subroutine = objectMapper.convertValue(dataObject.getData(), Subroutine.class);
+//
+//			}
+//
+//			// Scripts
+//			if (dataObject.getType().equalsIgnoreCase("script")) {
+//				Script script = objectMapper.convertValue(dataObject.getData(), Script.class);
+//
+//			}
+//
+//			// Component Types
+//			if (dataObject.getType().equalsIgnoreCase("component")) {
+//				Component component = objectMapper.convertValue(dataObject.getData(), Component.class);
+//
+//			}
+//
+//			// Metadata Tables
+//			if (dataObject.getType().equalsIgnoreCase("metadatatable")) {
+//				MetadataTable metadataTable = objectMapper.convertValue(dataObject.getData(), MetadataTable.class);
+//
+//			}
+//
+//			// Metadata Objects
+//			if (dataObject.getType().equalsIgnoreCase("metadataobject")) {
+//				MetadataObject metadataObject = objectMapper.convertValue(dataObject.getData(), MetadataObject.class);
+//				this.createFolder(this.getMetadataRepository().getFileStoreConnection().getPath(),
+//						metadataObject.getName());
+//			}
+//
+//			// Execute
+//
+//		}
+//
+//		if (!postSql.trim().equals("")) {
+//			InputStream inputStreamPostSql = FileTools.convertToInputStream(postSql,
+//					this.getFrameworkExecution().getFrameworkControl());
+//			this.getMetadataRepository().executeScript(inputStreamPostSql);
+//		}
+
+	}
+
+	// Metadatarepository save
 	private String getMetadataRepositoryInsertStatement(DataObject dataObject) {
 		ObjectMapper objectMapper = new ObjectMapper();
 		String output = "";
@@ -234,82 +298,14 @@ public class DataObjectConfiguration {
 
 		// Metadata Tables
 		if (dataObject.getType().equalsIgnoreCase("metadatatable")) {
-			MetadataTable metadataTable = objectMapper.convertValue(dataObject.getData(), MetadataTable.class);
-			MetadataTableConfiguration metadataTableConfiguration = new MetadataTableConfiguration(metadataTable,
-					this.getMetadataRepositoryConfiguration());
-
-			// TODO
-			output = metadataTableConfiguration.getCreateStatement();
+//			MetadataTable metadataTable = objectMapper.convertValue(dataObject.getData(), MetadataTable.class);
+//			MetadataTableConfiguration metadataTableConfiguration = new MetadataTableConfiguration(metadataTable, this.getMetadataRepository());
+//
+//			// TODO
+//			output = metadataTableConfiguration.getCreateStatement();
 		}
 
 		return output;
-
-	}
-
-	@SuppressWarnings("unused")
-	public void saveToMetadataFileStore() {
-		ObjectMapper objectMapper = new ObjectMapper();
-		String postSql = "";
-		for (DataObject dataObject : dataObjects) {
-			String output = "";
-
-			// Environment
-			if (dataObject.getType().equalsIgnoreCase("environment")) {
-				Environment environment = objectMapper.convertValue(dataObject.getData(), Environment.class);
-
-			}
-
-			// Connections
-			if (dataObject.getType().equalsIgnoreCase("connection")) {
-				Connection connection = objectMapper.convertValue(dataObject.getData(), Connection.class);
-
-			}
-
-			// Impersonations
-			if (dataObject.getType().equalsIgnoreCase("impersonation")) {
-
-			}
-
-			// Subroutines
-			if (dataObject.getType().equalsIgnoreCase("subroutine")) {
-				Subroutine subroutine = objectMapper.convertValue(dataObject.getData(), Subroutine.class);
-
-			}
-
-			// Scripts
-			if (dataObject.getType().equalsIgnoreCase("script")) {
-				Script script = objectMapper.convertValue(dataObject.getData(), Script.class);
-
-			}
-
-			// Component Types
-			if (dataObject.getType().equalsIgnoreCase("component")) {
-				Component component = objectMapper.convertValue(dataObject.getData(), Component.class);
-
-			}
-
-			// Metadata Tables
-			if (dataObject.getType().equalsIgnoreCase("metadatatable")) {
-				MetadataTable metadataTable = objectMapper.convertValue(dataObject.getData(), MetadataTable.class);
-
-			}
-
-			// Metadata Objects
-			if (dataObject.getType().equalsIgnoreCase("metadataobject")) {
-				MetadataObject metadataObject = objectMapper.convertValue(dataObject.getData(), MetadataObject.class);
-				this.createFolder(this.getMetadataRepositoryConfiguration().getFileStoreConnection().getPath(),
-						metadataObject.getName());
-			}
-
-			// Execute
-
-		}
-
-		if (!postSql.trim().equals("")) {
-			InputStream inputStreamPostSql = FileTools.convertToInputStream(postSql,
-					this.getFrameworkExecution().getFrameworkControl());
-			this.getMetadataRepositoryConfiguration().executeScript(inputStreamPostSql);
-		}
 
 	}
 
@@ -334,12 +330,12 @@ public class DataObjectConfiguration {
 		this.dataObjects = dataObjects;
 	}
 
-	public MetadataRepositoryConfiguration getMetadataRepositoryConfiguration() {
-		return metadataRepositoryConfiguration;
+	public MetadataRepository getMetadataRepository() {
+		return metadataRepository;
 	}
 
-	public void setMetadataRepositoryConfiguration(MetadataRepositoryConfiguration metadataRepositoryConfiguration) {
-		this.metadataRepositoryConfiguration = metadataRepositoryConfiguration;
+	public void setMetadataRepository(MetadataRepository metadataRepository) {
+		this.metadataRepository = metadataRepository;
 	}
 
 	public MetadataRepositoryOperation getMetadataRepositoryOperation() {

@@ -31,11 +31,11 @@ public class ComponentAttributeConfiguration {
 	public String getInsertStatement(String componentName) {
 		String sql = "";
 
-		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("ComponentAttributes");
+		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ComponentAttributes");
 		sql += " (COMP_ID, COMP_VRS_NB, ENV_NM, COMP_ATT_NM, COMP_ATT_VAL) ";
 		sql += "VALUES ";
 		sql += "(";
-		sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Components"), "COMP_ID", "where COMP_NM = '"+ componentName) + "')";
+		sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Components"), "COMP_ID", "where COMP_NM = '"+ componentName) + "')";
 		sql += ",";
 		sql += SQLTools.GetStringForSQL(this.getComponentVersion().getNumber());
 		sql += ",";
@@ -53,9 +53,9 @@ public class ComponentAttributeConfiguration {
 	public ComponentAttribute getComponentAttribute(long componentId, String componentAttributeName, long componentVersionNumber) {
 		ComponentAttribute componentAttribute = new ComponentAttribute();
 		CachedRowSet crsComponentAttribute = null;
-		String queryComponentAttribute = "select COMP_ID, COMP_ATT_NM, ENV_NM, COMP_ATT_VAL from " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("ComponentAttributes")
+		String queryComponentAttribute = "select COMP_ID, COMP_ATT_NM, ENV_NM, COMP_ATT_VAL from " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ComponentAttributes")
 				+ " where COMP_ID = " + componentId + " and COMP_ATT_NM = '" + componentAttributeName + "'" + " and COMP_VRS_NB = " + componentVersionNumber;
-		crsComponentAttribute = this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().executeQuery(queryComponentAttribute);
+		crsComponentAttribute = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(queryComponentAttribute, "reader");
 		try {
 			while (crsComponentAttribute.next()) {
 				componentAttribute.setName(componentAttributeName);

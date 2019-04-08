@@ -90,15 +90,15 @@ public class MetadataTableConfiguration
 
 		if (this.getMetadataRepositoryType().equals("oracle"))
 		{
-			this.setSchema(properties.getProperty(settingsConfig.getSettingPath("metadata.repository.oracle.schema")));
+			this.setSchema(properties.getProperty(settingsConfig.getSettingPath("metadata.repository.oracle.schema").get()));
 		}
 		else if (this.getMetadataRepositoryType().equals("netezza"))
 		{
-			this.setSchema(properties.getProperty(settingsConfig.getSettingPath("metadata.repository.netezza.schema")));
+			this.setSchema(properties.getProperty(settingsConfig.getSettingPath("metadata.repository.netezza.schema").get()));
 		}
 		else if (this.getMetadataRepositoryType().equals("postgresql"))
 		{
-			this.setSchema(properties.getProperty(settingsConfig.getSettingPath("metadata.repository.postgresql.schema")));
+			this.setSchema(properties.getProperty(settingsConfig.getSettingPath("metadata.repository.postgresql.schema").get()));
 		}
 		else if (this.getMetadataRepositoryType().equals("sqlite"))
 		{

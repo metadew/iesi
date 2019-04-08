@@ -31,15 +31,15 @@ public class DataframeItemConfiguration {
 	public String getInsertStatement(String scriptName, long scriptVersionNumber, int dataframeItemNumber) {
 		String sql = "";
 
-		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getCatalogRepositoryConfiguration().getMetadataTableConfiguration().getTableName("DataframeItems");
+		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("DataframeItems");
 		sql += " (DATAFRAME_ID, DATAFRAME_VRS_NB, DATAFRAME_ITEM_ID, DATAFRAME_ITEM_NB, DATAFRAME_ITEM_TYP_NM, DATAFRAME_ITEM_NM, DATAFRAME_ITEM_DSC) ";
 		sql += "VALUES ";
 		sql += "(";
-		sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkExecution().getMetadataControl().getCatalogRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Dataviews"), "DATAFRAME_ID", "DATAFRAME_NM", scriptName) + ")";
+		sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkExecution().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("Dataviews"), "DATAFRAME_ID", "DATAFRAME_NM", scriptName) + ")";
 		sql += ",";
 		sql += SQLTools.GetStringForSQL(scriptVersionNumber);
 		sql += ",";
-		sql += "(" + SQLTools.GetNextIdStatement(this.getFrameworkExecution().getMetadataControl().getCatalogRepositoryConfiguration().getMetadataTableConfiguration().getTableName("DataframeItems"), "DATAFRAME_ITEM_ID") + ")";
+		sql += "(" + SQLTools.GetNextIdStatement(this.getFrameworkExecution().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("DataframeItems"), "DATAFRAME_ITEM_ID") + ")";
 		sql += ",";
 		sql += SQLTools.GetStringForSQL(dataframeItemNumber);
 		sql += ",";
@@ -79,8 +79,8 @@ public class DataframeItemConfiguration {
 		DataframeItem dataframeItem = new DataframeItem();
 		CachedRowSet crsDataframeItem = null;
 		String queryDataframeItem = "select DATAFRAME_ID, DATAFRAME_VRS_NB, DATAFRAME_ITEM_ID, DATAFRAME_ITEM_NB, DATAFRAME_ITEM_TYP_NM, DATAFRAME_ITEM_NM, DATAFRAME_ITEM_DSC from "
-				+ this.getFrameworkExecution().getMetadataControl().getCatalogRepositoryConfiguration().getMetadataTableConfiguration().getTableName("DataframeItems") + " where DATAFRAME_ITEM_ID = " + dataframeItemId;
-		crsDataframeItem = this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().executeQuery(queryDataframeItem);
+				+ this.getFrameworkExecution().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("DataframeItems") + " where DATAFRAME_ITEM_ID = " + dataframeItemId;
+		crsDataframeItem = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(queryDataframeItem, "reader");
 		DataframeItemParameterConfiguration dataframeItemParameterConfiguration = new DataframeItemParameterConfiguration(this.getFrameworkExecution());
 		try {
 			while (crsDataframeItem.next()) {
@@ -92,9 +92,9 @@ public class DataframeItemConfiguration {
 				
 				// Get parameters
 				CachedRowSet crsDataframeItemParameters = null;
-				String queryDataframeItemParameters = "select DATAFRAME_ITEM_ID, DATAFRAME_ITEM_PAR_NM from " + this.getFrameworkExecution().getMetadataControl().getCatalogRepositoryConfiguration().getMetadataTableConfiguration().getTableName("DataframeItemParameters")
+				String queryDataframeItemParameters = "select DATAFRAME_ITEM_ID, DATAFRAME_ITEM_PAR_NM from " + this.getFrameworkExecution().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("DataframeItemParameters")
 						+ " where DATAFRAME_ITEM_ID = " + dataframeItemId;
-				crsDataframeItemParameters = this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().executeQuery(queryDataframeItemParameters);
+				crsDataframeItemParameters = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(queryDataframeItemParameters, "reader");
 				List<DataframeItemParameter> dataframeItemParameterList = new ArrayList();
 				while (crsDataframeItemParameters.next()) {
 					dataframeItemParameterList

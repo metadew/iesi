@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.metadew.iesi.metadata_repository.MetadataRepository;
+import io.metadew.iesi.metadata_repository.configuration.MetadataRepositoryConfiguration;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -16,7 +18,6 @@ import io.metadew.iesi.common.config.ConfigFile;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.framework.execution.FrameworkExecutionContext;
 import io.metadew.iesi.metadata.backup.BackupExecution;
-import io.metadew.iesi.metadata.configuration.MetadataRepositoryConfiguration;
 import io.metadew.iesi.metadata.definition.Context;
 import io.metadew.iesi.metadata.operation.MetadataRepositoryOperation;
 import io.metadew.iesi.metadata.restore.RestoreExecution;
@@ -102,79 +103,62 @@ public class MetadataLauncher
 			context.setScope("");
 			FrameworkExecution frameworkExecution = new FrameworkExecution(new FrameworkExecutionContext(context), "owner");
 			MetadataRepositoryOperation metadataRepositoryOperation = null;
-			List<MetadataRepositoryConfiguration> metadataRepositoryConfigurationList = new ArrayList();
+			List<MetadataRepository> metadataRepositoryList = new ArrayList();
 
 			String type = "";
-			if (line.hasOption("type"))
-			{
+			if (line.hasOption("type")) {
 				type = line.getOptionValue("type");
 				System.out.println("Option -type (type) value = " + type);
-			}
-			else
-			{
+			} else {
 				System.out.println("Option -type (type) missing");
 				System.exit(1);
 			}
 
-			if (line.hasOption("config"))
-			{
+			if (line.hasOption("config")) {
 				String config = line.getOptionValue("config");
 
 				ConfigFile configFile = frameworkExecution.getFrameworkControl().getConfigFile("keyvalue",
-							frameworkExecution.getFrameworkConfiguration().getFolderConfiguration().getFolderAbsolutePath("conf")
-										+ File.separator + config);
+						frameworkExecution.getFrameworkConfiguration().getFolderConfiguration().getFolderAbsolutePath("conf")
+								+ File.separator + config);
 
-				MetadataRepositoryConfiguration metadataRepositoryConfiguration = new MetadataRepositoryConfiguration(
-							frameworkExecution.getFrameworkConfiguration(), frameworkExecution.getFrameworkControl(), configFile, "owner");
+				List<MetadataRepository> metadataRepositories = new MetadataRepositoryConfiguration(configFile, frameworkExecution.getFrameworkConfiguration().getSettingConfiguration())
+						.toMetadataRepositories(frameworkExecution.getFrameworkConfiguration());
 
-				metadataRepositoryConfigurationList.add(metadataRepositoryConfiguration);
+				metadataRepositoryList.addAll(metadataRepositories);
 
-			}
-			else
-			{
-				switch (type)
-				{
-					case "connectivity" :
-						metadataRepositoryConfigurationList
-									.add(frameworkExecution.getMetadataControl().getConnectivityRepositoryConfiguration());
+			} else {
+				switch (type) {
+					case "connectivity":
+						metadataRepositoryList.add(frameworkExecution.getMetadataControl().getConnectivityMetadataRepository());
 						break;
-					case "control" :
-						metadataRepositoryConfigurationList
-									.add(frameworkExecution.getMetadataControl().getControlRepositoryConfiguration());
+					case "control":
+						metadataRepositoryList.add(frameworkExecution.getMetadataControl().getControlMetadataRepository());
 						break;
-					case "design" :
-						metadataRepositoryConfigurationList
-									.add(frameworkExecution.getMetadataControl().getDesignRepositoryConfiguration());
+					case "design":
+						metadataRepositoryList.add(frameworkExecution.getMetadataControl().getDesignMetadataRepository());
 						break;
-					case "result" :
-						metadataRepositoryConfigurationList
-									.add(frameworkExecution.getMetadataControl().getResultRepositoryConfiguration());
+					case "result":
+						metadataRepositoryList.add(frameworkExecution.getMetadataControl().getResultMetadataRepository());
 						break;
-					case "trace" :
-						metadataRepositoryConfigurationList
-									.add(frameworkExecution.getMetadataControl().getTraceRepositoryConfiguration());
+					case "trace":
+						metadataRepositoryList.add(frameworkExecution.getMetadataControl().getTraceMetadataRepository());
 						break;
-					case "general" :
-						metadataRepositoryConfigurationList
-									.add(frameworkExecution.getMetadataControl().getConnectivityRepositoryConfiguration());
-						metadataRepositoryConfigurationList
-									.add(frameworkExecution.getMetadataControl().getControlRepositoryConfiguration());
-						metadataRepositoryConfigurationList
-									.add(frameworkExecution.getMetadataControl().getDesignRepositoryConfiguration());
-						metadataRepositoryConfigurationList
-									.add(frameworkExecution.getMetadataControl().getResultRepositoryConfiguration());
-						metadataRepositoryConfigurationList
-									.add(frameworkExecution.getMetadataControl().getTraceRepositoryConfiguration());
+					case "general":
+						metadataRepositoryList.add(frameworkExecution.getMetadataControl().getConnectivityMetadataRepository());
+						metadataRepositoryList.add(frameworkExecution.getMetadataControl().getControlMetadataRepository());
+						metadataRepositoryList.add(frameworkExecution.getMetadataControl().getDesignMetadataRepository());
+						metadataRepositoryList.add(frameworkExecution.getMetadataControl().getResultMetadataRepository());
+						metadataRepositoryList.add(frameworkExecution.getMetadataControl().getTraceMetadataRepository());
 						break;
-					default :
-						System.out.println("Unkknow Option -type (type) = " + type);
+					default:
+						System.out.println("Unknown Option -type (type) = " + type);
 						System.exit(1);
 				}
 			}
 			// Backup
 			if (line.hasOption("backup"))
 			{
-				for (MetadataRepositoryConfiguration metadataRepositoryConfiguration : metadataRepositoryConfigurationList)
+				for (MetadataRepository metadataRepository : metadataRepositoryList)
 				{
 					if (actionMatch)
 					{
@@ -207,7 +191,7 @@ public class MetadataLauncher
 			// Restore
 			if (line.hasOption("restore"))
 			{
-				for (MetadataRepositoryConfiguration metadataRepositoryConfiguration : metadataRepositoryConfigurationList)
+				for (MetadataRepository metadataRepository : metadataRepositoryList)
 				{
 					if (actionMatch)
 					{
@@ -242,9 +226,9 @@ public class MetadataLauncher
 			// Drop
 			if (line.hasOption("drop"))
 			{
-				for (MetadataRepositoryConfiguration metadataRepositoryConfiguration : metadataRepositoryConfigurationList)
+				for (MetadataRepository metadataRepository : metadataRepositoryList)
 				{
-					metadataRepositoryOperation = new MetadataRepositoryOperation(frameworkExecution, metadataRepositoryConfiguration);
+					metadataRepositoryOperation = new MetadataRepositoryOperation(frameworkExecution, metadataRepository);
 
 					if (actionMatch)
 					{
@@ -260,7 +244,7 @@ public class MetadataLauncher
 			}
 
 			// Create
-			for (MetadataRepositoryConfiguration metadataRepositoryConfiguration : metadataRepositoryConfigurationList)
+			for (MetadataRepository metadataRepositoryConfiguration : metadataRepositoryList)
 			{
 				metadataRepositoryOperation = new MetadataRepositoryOperation(frameworkExecution, metadataRepositoryConfiguration);
 				if (line.hasOption("create"))
@@ -291,7 +275,7 @@ public class MetadataLauncher
 			// clean
 			if (line.hasOption("clean"))
 			{
-				for (MetadataRepositoryConfiguration metadataRepositoryConfiguration : metadataRepositoryConfigurationList)
+				for (MetadataRepository metadataRepositoryConfiguration : metadataRepositoryList)
 				{
 					metadataRepositoryOperation = new MetadataRepositoryOperation(frameworkExecution, metadataRepositoryConfiguration);
 					if (actionMatch)
@@ -323,11 +307,11 @@ public class MetadataLauncher
 				{
 					String files = "";
 					files = line.getOptionValue("files");
-					metadataRepositoryOperation.loadMetadataRepository(metadataRepositoryConfigurationList, files);
+					metadataRepositoryOperation.loadMetadataRepository(metadataRepositoryList, files);
 				}
 				else
 				{
-					metadataRepositoryOperation.loadMetadataRepository(metadataRepositoryConfigurationList);
+					metadataRepositoryOperation.loadMetadataRepository(metadataRepositoryList);
 				}
 				writeFooterMessage();
 			}

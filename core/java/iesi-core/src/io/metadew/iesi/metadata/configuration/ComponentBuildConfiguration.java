@@ -28,11 +28,11 @@ public class ComponentBuildConfiguration {
 	public String getInsertStatement(String componentName, String versionName) {
 		String sql = "";
 
-		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("ComponentVersionBuilds");
+		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ComponentVersionBuilds");
 		sql += " (COMP_ID, COMP_VRS_NM, COMP_BLD_NM, COMP_BLD_DSC) ";
 		sql += "VALUES ";
 		sql += "(";
-		sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Components"), "COMP_ID", "where COMP_NM = '"+ componentName) + "')";
+		sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Components"), "COMP_ID", "where COMP_NM = '"+ componentName) + "')";
 		sql += ",";
 		sql += SQLTools.GetStringForSQL(versionName);
 		sql += ",";
@@ -48,9 +48,9 @@ public class ComponentBuildConfiguration {
 	public ComponentBuild getComponentBuild(long componentId, String componentVersionName, String componentBuildName) {
 		ComponentBuild componentBuild = new ComponentBuild();
 		CachedRowSet crsComponentBuild = null;
-		String queryComponentBuild = "select COMP_ID, COMP_VRS_NM, COMP_BLD_NM, COMP_BLD_DSC from " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("ComponentVersionBuilds")
+		String queryComponentBuild = "select COMP_ID, COMP_VRS_NM, COMP_BLD_NM, COMP_BLD_DSC from " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ComponentVersionBuilds")
 				+ " where COMP_ID = " + componentId + " and COMP_VRS_NM = '" + componentVersionName + "'" + " and COMP_BLD_NM = '" + componentBuildName + "'";
-		crsComponentBuild = this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().executeQuery(queryComponentBuild);
+		crsComponentBuild = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(queryComponentBuild, "reader");
 		try {
 			while (crsComponentBuild.next()) {
 				componentBuild.setName(componentBuildName);

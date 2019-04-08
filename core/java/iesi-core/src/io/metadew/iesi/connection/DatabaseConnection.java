@@ -26,7 +26,7 @@ import io.metadew.iesi.connection.operation.database.ScriptRunner;
  * @author peter.billen
  *
  */
-public class DatabaseConnection {
+public abstract class DatabaseConnection {
 
 	private String type = "";
 	private String driver = "";
@@ -50,6 +50,10 @@ public class DatabaseConnection {
 		// Derive driver
 		this.deriveDriver();
 	}
+
+	public abstract String getSystemTimestampExpression();
+
+	public abstract String getAllTablesQuery();
 
 	// Derive Driver
 	private void deriveDriver() {
@@ -77,7 +81,7 @@ public class DatabaseConnection {
 		return input;
 	}
 
-	// Database interactions
+	// database interactions
 	public CachedRowSet executeQuery(String query) {
 
 		// Remove illegal characters at the end
@@ -128,7 +132,7 @@ public class DatabaseConnection {
 			} catch (SQLException e) {
 				StringWriter StackTrace = new StringWriter();
 				e.printStackTrace(new PrintWriter(StackTrace));
-				System.out.println("Database actions Failed");
+				System.out.println("database actions Failed");
 			} finally {
 				// Close the connection
 				try {
@@ -198,7 +202,7 @@ public class DatabaseConnection {
 			} catch (SQLException e) {
 				StringWriter StackTrace = new StringWriter();
 				e.printStackTrace(new PrintWriter(StackTrace));
-				System.out.println("Database actions Failed");
+				System.out.println("database actions Failed");
 			} finally {
 				// Close the connection
 				try {
@@ -251,7 +255,7 @@ public class DatabaseConnection {
 			} catch (SQLException e) {
 				StringWriter StackTrace = new StringWriter();
 				e.printStackTrace(new PrintWriter(StackTrace));
-				System.out.println("Database Actions Failed");
+				System.out.println("database Actions Failed");
 				throw new RuntimeException(e.getMessage());
 			} finally {
 				// Close the connection
@@ -318,7 +322,7 @@ public class DatabaseConnection {
 			} catch (SQLException e) {
 				StringWriter StackTrace = new StringWriter();
 				e.printStackTrace(new PrintWriter(StackTrace));
-				System.out.println("Database Actions Failed");
+				System.out.println("database Actions Failed");
 				throw new RuntimeException(e.getMessage());
 			} finally {
 				// Close the connection
@@ -386,7 +390,7 @@ public class DatabaseConnection {
 			} catch (SQLException e) {
 				StringWriter StackTrace = new StringWriter();
 				e.printStackTrace(new PrintWriter(StackTrace));
-				System.out.println("Database Actions Failed");
+				System.out.println("database Actions Failed");
 				throw new RuntimeException(e.getMessage());
 			} finally {
 				// Close the connection

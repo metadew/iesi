@@ -16,14 +16,14 @@ import io.metadew.iesi.common.config.LinuxConfigFile;
 import io.metadew.iesi.common.config.WindowsConfigFile;
 import io.metadew.iesi.framework.configuration.FrameworkConfiguration;
 import io.metadew.iesi.metadata.configuration.FrameworkPluginConfiguration;
-import io.metadew.iesi.metadata.configuration.MetadataRepositoryConfiguration;
 import io.metadew.iesi.metadata.operation.MetadataRepositoryCategoryOperation;
+import io.metadew.iesi.metadata_repository.configuration.MetadataRepositoryConfiguration;
 
 public class FrameworkControl {
 
 	private Properties properties;
 	private MetadataRepositoryCategoryOperation metadataRepositoryCategoryOperation;
-	private List<MetadataRepositoryConfiguration> metadataRepositoryConfigurationList;
+	private List<MetadataRepositoryConfiguration> metadataRepositoryConfigurations;
 	private List<FrameworkPluginConfiguration> frameworkPluginConfigurationList;
 	private String logonType;
 
@@ -32,7 +32,7 @@ public class FrameworkControl {
 		try {
 			this.setLogonType(logonType);
 			this.setProperties(new Properties());
-			this.setMetadataRepositoryConfigurationList(new ArrayList());
+			this.setMetadataRepositoryConfigurations(new ArrayList());
 			this.setFrameworkPluginConfigurationList(new ArrayList());
 			this.getProperties().put(frameworkConfiguration.getFrameworkCode() + ".home",
 					frameworkConfiguration.getFrameworkHome());
@@ -91,9 +91,8 @@ public class FrameworkControl {
 				}
 
 				if (type.trim().equalsIgnoreCase("repository")) {
-					MetadataRepositoryConfiguration metadataRepositoryConfiguration = new MetadataRepositoryConfiguration(
-							frameworkConfiguration, this, configFile, this.getLogonType());
-					this.getMetadataRepositoryConfigurationList().add(metadataRepositoryConfiguration);
+					MetadataRepositoryConfiguration metadataRepositoryConfiguration = new MetadataRepositoryConfiguration(configFile, frameworkConfiguration.getSettingConfiguration());
+					this.getMetadataRepositoryConfigurations().add(metadataRepositoryConfiguration);
 				} else if (type.trim().equalsIgnoreCase("plugin")) {
 					FrameworkPluginConfiguration frameworkPluginConfiguration = new FrameworkPluginConfiguration(frameworkConfiguration, configFile);
 					this.getFrameworkPluginConfigurationList().add(frameworkPluginConfiguration);
@@ -192,13 +191,13 @@ public class FrameworkControl {
 		this.properties = properties;
 	}
 
-	public List<MetadataRepositoryConfiguration> getMetadataRepositoryConfigurationList() {
-		return metadataRepositoryConfigurationList;
+	public List<MetadataRepositoryConfiguration> getMetadataRepositoryConfigurations() {
+		return metadataRepositoryConfigurations;
 	}
 
-	public void setMetadataRepositoryConfigurationList(
-			List<MetadataRepositoryConfiguration> metadataRepositoryConfigurationList) {
-		this.metadataRepositoryConfigurationList = metadataRepositoryConfigurationList;
+	public void setMetadataRepositoryConfigurations(
+			List<MetadataRepositoryConfiguration> metadataRepositoryConfigurations) {
+		this.metadataRepositoryConfigurations = metadataRepositoryConfigurations;
 	}
 
 	public String getLogonType() {

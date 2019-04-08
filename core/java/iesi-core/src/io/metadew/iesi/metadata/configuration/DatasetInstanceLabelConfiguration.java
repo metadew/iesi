@@ -30,23 +30,23 @@ public class DatasetInstanceLabelConfiguration {
 		String sql = "";
 
 		sql += "INSERT INTO "
-				+ this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration()
-						.getMetadataTableConfiguration().getTableName("DatasetInstanceLabels");
+				+ this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository()
+						.getTableNameByLabel("DatasetInstanceLabels");
 		sql += " (DST_ID, DST_INST_ID, DST_INST_LBL_VAL) ";
 		sql += "VALUES ";
 		sql += "(";
 		sql += "(" + SQLTools.GetLookupIdStatement(
-				this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration()
-						.getMetadataTableConfiguration().getTableName("Datasets"),
+				this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository()
+						.getTableNameByLabel("Datasets"),
 				"DST_ID", "where DST_NM = '" + datasetName) + "')";
 		sql += ",";
 		sql += "(" + SQLTools.GetLookupIdStatement(
-				this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration()
-						.getMetadataTableConfiguration().getTableName("DatasetInstances"),
+				this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository()
+						.getTableNameByLabel("DatasetInstances"),
 				"DST_INST_ID",
 				"where DST_ID = (" + SQLTools.GetLookupIdStatement(
-						this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration()
-								.getMetadataTableConfiguration().getTableName("Repositories"),
+						this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository()
+								.getTableNameByLabel("Repositories"),
 						"DST_ID", "where DST_NM = '" + datasetName) + "') and DST_INST_NM = '"
 						+ datasetInstanceName)
 				+ "')";
@@ -63,11 +63,11 @@ public class DatasetInstanceLabelConfiguration {
 		DatasetInstanceLabel datasetInstanceLabel = new DatasetInstanceLabel();
 		CachedRowSet crsDatasetInstanceLabel = null;
 		String queryDatasetInstanceLabel = "select DST_ID, DST_INST_ID, DST_INST_LBL_VAL from "
-				+ this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration()
-						.getMetadataTableConfiguration().getTableName("DatasetInstanceLabels")
+				+ this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository()
+						.getTableNameByLabel("DatasetInstanceLabels")
 				+ " where DST_ID = " + datasetId + " and DST_INST_ID = " + datasetInstanceId + " and DST_INST_LBL_VAL = '" + datasetInstanceLabelName + "'";
 		crsDatasetInstanceLabel = this.getFrameworkExecution().getMetadataControl()
-				.getConnectivityRepositoryConfiguration().executeQuery(queryDatasetInstanceLabel);
+				.getConnectivityMetadataRepository().executeQuery(queryDatasetInstanceLabel, "reader");
 		try {
 			while (crsDatasetInstanceLabel.next()) {
 				datasetInstanceLabel.setValue(datasetInstanceLabelName);

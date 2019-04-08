@@ -20,13 +20,13 @@ public class ScriptBuilder
 
 	// Insert Statements
 	public String generateInsertStmts(DatabaseConnection databaseConnection, String schemaName, String tableName, String stmt,
-				String output_loc)
+									  String output_loc)
 	{
 		return this.generateInsertStmts(databaseConnection, schemaName, tableName, stmt, "return", "", "");
 	}
 
 	public String generateInsertStmts(DatabaseConnection databaseConnection, String schemaName, String tableName,
-				String sqlStatement, String outputLocation, String filePath, String fileName)
+									  String sqlStatement, String outputLocation, String filePath, String fileName)
 	{
 		String textToWrite = "";
 

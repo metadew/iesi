@@ -1,5 +1,6 @@
 package io.metadew.iesi.common.config;
 
+import java.util.Optional;
 import java.util.Properties;
 
 public class ConfigFile {
@@ -21,9 +22,12 @@ public class ConfigFile {
 		this.properties = properties;
 	}
 
-	public String getProperty(String key) {
-		String value = this.properties.getProperty(key);
-		return value;
+	public Optional<String> getProperty(String key) {
+		if (properties.getProperty(key).isEmpty()) {
+			return Optional.empty();
+		} else {
+			return Optional.ofNullable(this.properties.getProperty(key));
+		}
 	}
 
 	public void setProperty(String key, String value) {

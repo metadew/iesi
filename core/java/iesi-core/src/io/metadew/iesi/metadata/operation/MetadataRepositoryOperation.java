@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import io.metadew.iesi.metadata_repository.MetadataRepository;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.Level;
 
@@ -20,55 +21,28 @@ import io.metadew.iesi.common.text.ParsingTools;
 import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.configuration.MetadataRepositoryCategoryConfiguration;
-import io.metadew.iesi.metadata.configuration.MetadataRepositoryConfiguration;
 
 public class MetadataRepositoryOperation {
 
 	private FrameworkExecution frameworkExecution;
-	private MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+	private MetadataRepository metadataRepository;
 	private String action;
 	private boolean generateDdl;
 
 	// Constructors
 
 	public MetadataRepositoryOperation(FrameworkExecution frameworkExecution,
-			MetadataRepositoryConfiguration metadataRepositoryConfiguration) {
+			MetadataRepository metadataRepository) {
 		this.setFrameworkExecution(frameworkExecution);
-		this.setMetadataRepositoryConfiguration(metadataRepositoryConfiguration);
+		this.setMetadataRepository(metadataRepository);
 	}
 
 	// Methods
 	public void cleanAllTables() {
 		this.getFrameworkExecution().getFrameworkLog().log("metadata.clean.start", Level.INFO);
 
-		CachedRowSet crsCleanInventory = null;
-		String queryCleanInventory = this.getAllTablesQuery();
-		this.getFrameworkExecution().getFrameworkLog().log("metadata.clean.query=" + queryCleanInventory, Level.TRACE);
-		crsCleanInventory = this.getMetadataRepositoryConfiguration().executeQuery(queryCleanInventory);
-		try {
-			String tableName = "";
-			String schemaName = "";
-			while (crsCleanInventory.next()) {
-				schemaName = crsCleanInventory.getString("OWNER");
-				tableName = crsCleanInventory.getString("TABLE_NAME");
-
-				// Exeception for metadata about the data model
-				if (tableName.endsWith("CFG_MTD_TBL") || tableName.endsWith("CFG_MTD_FLD"))
-					continue;
-
-				if (schemaName.equals("")) {
-					this.getFrameworkExecution().getFrameworkLog().log("metadata.clean.table=" + tableName, Level.INFO);
-				} else {
-					this.getFrameworkExecution().getFrameworkLog()
-							.log("metadata.clean.table=" + schemaName + "." + tableName, Level.INFO);
-				}
-				this.getMetadataRepositoryConfiguration().cleanTable(schemaName, tableName);
-			}
-			crsCleanInventory.close();
-		} catch (Exception e) {
-			StringWriter StackTrace = new StringWriter();
-			e.printStackTrace(new PrintWriter(StackTrace));
-		}
+		this.getFrameworkExecution().getFrameworkLog().log("metadata.clean.query=" + "", Level.TRACE);
+		this.getMetadataRepository().cleanAllTables(frameworkExecution.getFrameworkLog());
 
 		this.getFrameworkExecution().getFrameworkLog().log("metadata.clean.end", Level.INFO);
 
@@ -76,100 +50,104 @@ public class MetadataRepositoryOperation {
 
 	// Drop the metadata data store
 	public void drop() {
-		if (this.getMetadataRepositoryConfiguration().getGroup().equalsIgnoreCase("filestore")) {
-			MetadataFileStoreRepositoryImpl metadataFileStoreRepositoryImpl = new MetadataFileStoreRepositoryImpl(
-					this.getFrameworkExecution());
-			metadataFileStoreRepositoryImpl.dropStructure();
-		} else if (this.getMetadataRepositoryConfiguration().getGroup().equalsIgnoreCase("database")) {
-			this.dropAllTables();
-		} else {
-			throw new RuntimeException("metadata.repository.group.invalid");
-		}
+//		if (this.getMetadataRepository().getGroup().equalsIgnoreCase("filestore")) {
+//			MetadataFileStoreRepositoryImpl metadataFileStoreRepositoryImpl = new MetadataFileStoreRepositoryImpl(
+//					this.getFrameworkExecution());
+//			metadataFileStoreRepositoryImpl.dropStructure();
+//		}
+//		else if (this.getMetadataRepository().getGroup().equalsIgnoreCase("database")) {
+//			this.dropAllTables();
+//		} else {
+//			throw new RuntimeException("metadata.repository.group.invalid");
+//		}
+		this.dropAllTables();
 	}
 
 	public void dropAllTables() {
 		this.getFrameworkExecution().getFrameworkLog().log("metadata.drop.start", Level.INFO);
-
-		CachedRowSet crsDropInventory = null;
-		String queryDropInventory = this.getAllTablesQuery();
-		this.getFrameworkExecution().getFrameworkLog().log("metadata.drop.query=" + queryDropInventory, Level.TRACE);
-		crsDropInventory = this.getMetadataRepositoryConfiguration().executeQuery(queryDropInventory);
-		try {
-			String tableName = "";
-			String schemaName = "";
-			while (crsDropInventory.next()) {
-				schemaName = crsDropInventory.getString("OWNER");
-				tableName = crsDropInventory.getString("TABLE_NAME");
-				if (schemaName.equals("")) {
-					this.getFrameworkExecution().getFrameworkLog().log("metadata.drop.table=" + tableName, Level.INFO);
-				} else {
-					this.getFrameworkExecution().getFrameworkLog()
-							.log("metadata.drop.table=" + schemaName + "." + tableName, Level.INFO);
-				}
-				this.getMetadataRepositoryConfiguration().dropTable(schemaName, tableName);
-			}
-			crsDropInventory.close();
-		} catch (Exception e) {
-			StringWriter StackTrace = new StringWriter();
-			e.printStackTrace(new PrintWriter(StackTrace));
-		}
+		this.getMetadataRepository().dropAllTables(frameworkExecution.getFrameworkLog());
+//		CachedRowSet crsDropInventory;
+//		String queryDropInventory = this.getAllTablesQuery();
+//		this.getFrameworkExecution().getFrameworkLog().log("metadata.drop.query=" + queryDropInventory, Level.TRACE);
+//		crsDropInventory = this.getMetadataRepository().executeQuery(queryDropInventory, "owner");
+//		try {
+//			String tableName;
+//			String schemaName;
+//			while (crsDropInventory.next()) {
+//				schemaName = crsDropInventory.getString("OWNER");
+//				tableName = crsDropInventory.getString("TABLE_NAME");
+//				if (schemaName.equals("")) {
+//					this.getFrameworkExecution().getFrameworkLog().log("metadata.drop.table=" + tableName, Level.INFO);
+//				} else {
+//					this.getFrameworkExecution().getFrameworkLog()
+//							.log("metadata.drop.table=" + schemaName + "." + tableName, Level.INFO);
+//				}
+//				this.getMetadataRepository().dropTable(schemaName, tableName, "owner");
+//			}
+//			crsDropInventory.close();
+//		} catch (Exception e) {
+//			StringWriter StackTrace = new StringWriter();
+//			e.printStackTrace(new PrintWriter(StackTrace));
+//		}
 
 		this.getFrameworkExecution().getFrameworkLog().log("metadata.drop.end", Level.INFO);
 
 	}
 
-	private String getAllTablesQuery() {
-		String query = "";
-		if (this.getMetadataRepositoryConfiguration().getDatabaseConnection().getType().toLowerCase()
-				.equals("oracle")) {
-			query = "select OWNER, TABLE_NAME from ALL_TABLES where owner = '"
-					+ this.getMetadataRepositoryConfiguration().getMetadataTableConfiguration().getSchema() + "' and TABLE_NAME like '"
-					+ this.getMetadataRepositoryConfiguration().getMetadataTableConfiguration().getTableNamePrefix()
-					+ this.getMetadataRepositoryConfiguration().getMetadataRepositoryCategoryConfiguration().getPrefix()
-					+ "%' order by TABLE_NAME ASC";
-		} else if (this.getMetadataRepositoryConfiguration().getDatabaseConnection().getType().toLowerCase()
-				.equals("sqlite")) {
-			query = "select tbl_name 'TABLE_NAME', '' 'OWNER' from sqlite_master where tbl_name like '"
-					+ this.getMetadataRepositoryConfiguration().getMetadataTableConfiguration().getTableNamePrefix()
-					+ this.getMetadataRepositoryConfiguration().getMetadataRepositoryCategoryConfiguration().getPrefix()
-					+ "%' order by tbl_name asc";
-		} else if (this.getMetadataRepositoryConfiguration().getDatabaseConnection().getType().toLowerCase()
-				.equals("netezza")) {
-			query = "select SCHEMA as \"OWNER\", TABLENAME as \"TABLE_NAME\" from _V_TABLE where OWNER = '"
-					+ this.getFrameworkExecution().getFrameworkControl().getProperty(
-							this.getFrameworkExecution().getFrameworkConfiguration().getSettingConfiguration()
-									.getSettingPath("metadata.repository.netezza.schema.user"))
-					+ "' and TABLENAME like '"
-					+ this.getMetadataRepositoryConfiguration().getMetadataTableConfiguration().getTableNamePrefix()
-					+ this.getMetadataRepositoryConfiguration().getMetadataRepositoryCategoryConfiguration().getPrefix()
-					+ "%' order by TABLENAME asc";
-		} else if (this.getMetadataRepositoryConfiguration().getDatabaseConnection().getType().toLowerCase()
-				.equals("postgresql")) {
-			query = "select table_schema as \"OWNER\", table_name as \"TABLE_NAME\" from information_schema.tables where table_schema = '"
-					+ this.getFrameworkExecution().getFrameworkControl()
-							.getProperty(this.getFrameworkExecution().getFrameworkConfiguration()
-									.getSettingConfiguration().getSettingPath("metadata.repository.postgresql.schema"))
-					+ "' and table_name like '"
-					+ this.getMetadataRepositoryConfiguration().getMetadataTableConfiguration().getTableNamePrefix().toLowerCase()
-					+ this.getMetadataRepositoryConfiguration().getMetadataRepositoryCategoryConfiguration().getPrefix()
-					+ "%' order by table_name asc";
-		}
-		return query;
-	}
+//	private String getAllTablesQuery() {
+//		String query = "";
+//		if (this.getMetadataRepository().getDatabaseConnection().getType().toLowerCase()
+//				.equals("oracle")) {
+//			query = "select OWNER, TABLE_NAME from ALL_TABLES where owner = '"
+//					+ this.getMetadataRepository().getMetadataTableConfiguration().getSchema() + "' and TABLE_NAME like '"
+//					+ this.getMetadataRepository().getMetadataTableConfiguration().getTableNamePrefix()
+//					+ this.getMetadataRepository().getMetadataRepositoryCategoryConfiguration().getPrefix()
+//					+ "%' order by TABLE_NAME ASC";
+//		} else if (this.getMetadataRepository().getDatabaseConnection().getType().toLowerCase()
+//				.equals("sqlite")) {
+//			query = "select tbl_name 'TABLE_NAME', '' 'OWNER' from sqlite_master where tbl_name like '"
+//					+ this.getMetadataRepository().getMetadataTableConfiguration().getTableNamePrefix()
+//					+ this.getMetadataRepository().getMetadataRepositoryCategoryConfiguration().getPrefix()
+//					+ "%' order by tbl_name asc";
+//		} else if (this.getMetadataRepository().getDatabaseConnection().getType().toLowerCase()
+//				.equals("netezza")) {
+//			query = "select SCHEMA as \"OWNER\", TABLENAME as \"TABLE_NAME\" from _V_TABLE where OWNER = '"
+//					+ this.getFrameworkExecution().getFrameworkControl().getProperty(
+//							this.getFrameworkExecution().getFrameworkConfiguration().getSettingConfiguration()
+//									.getSettingPath("metadata.repository.netezza.schema.user"))
+//					+ "' and TABLENAME like '"
+//					+ this.getMetadataRepository().getMetadataTableConfiguration().getTableNamePrefix()
+//					+ this.getMetadataRepository().getMetadataRepositoryCategoryConfiguration().getPrefix()
+//					+ "%' order by TABLENAME asc";
+//		} else if (this.getMetadataRepository().getDatabaseConnection().getType().toLowerCase()
+//				.equals("postgresql")) {
+//			query = "select table_schema as \"OWNER\", table_name as \"TABLE_NAME\" from information_schema.tables where table_schema = '"
+//					+ this.getFrameworkExecution().getFrameworkControl()
+//							.getProperty(this.getFrameworkExecution().getFrameworkConfiguration()
+//									.getSettingConfiguration().getSettingPath("metadata.repository.postgresql.schema"))
+//					+ "' and table_name like '"
+//					+ this.getMetadataRepository().getMetadataTableConfiguration().getTableNamePrefix().toLowerCase()
+//					+ this.getMetadataRepository().getMetadataRepositoryCategoryConfiguration().getPrefix()
+//					+ "%' order by table_name asc";
+//		}
+//		return query;
+//	}
 
 	// Create the metadata data store
 	public void create(boolean generateDdl) {
 		this.setAction("create");
 		this.setGenerateDdl(generateDdl);
-		if (this.getMetadataRepositoryConfiguration().getGroup().equalsIgnoreCase("filestore")) {
-			MetadataFileStoreRepositoryImpl metadataFileStoreRepositoryImpl = new MetadataFileStoreRepositoryImpl(
-					this.getFrameworkExecution());
-			metadataFileStoreRepositoryImpl.createStructure();
-		} else if (this.getMetadataRepositoryConfiguration().getGroup().equalsIgnoreCase("database")) {
-			this.createAllTables();
-		} else {
-			throw new RuntimeException("metadata.repository.group.invalid");
-		}
+		this.createAllTables();
+//		if (this.getMetadataRepository().getGroup().equalsIgnoreCase("filestore")) {
+//			MetadataFileStoreRepositoryImpl metadataFileStoreRepositoryImpl = new MetadataFileStoreRepositoryImpl(
+//					this.getFrameworkExecution());
+//			metadataFileStoreRepositoryImpl.createStructure();
+//		}
+//		else if (this.getMetadataRepository().getGroup().equalsIgnoreCase("database")) {
+//			this.createAllTables();
+//		} else {
+//			throw new RuntimeException("metadata.repository.group.invalid");
+//		}
 	}
 
 	@SuppressWarnings({ "unused", "unchecked", "rawtypes" })
@@ -180,13 +158,13 @@ public class MetadataRepositoryOperation {
 				.getFolderAbsolutePath("metadata.def"));
 		this.getFrameworkExecution().getFrameworkLog().log("metadata.create.folder=" + folder.getPath(), Level.INFO);
 
-		List<MetadataRepositoryConfiguration> metadataRepositoryConfigurationList = new ArrayList();
-		metadataRepositoryConfigurationList.add(this.getMetadataRepositoryConfiguration());
+		List<MetadataRepository> metadataRepositories = new ArrayList();
+		metadataRepositories.add(this.getMetadataRepository());
 		
 		// Select appropriate definition file
 		String[] files = null;
 		MetadataRepositoryCategoryConfiguration[] metadataRepositoryCategoryConfigurations = null;
-		String metadataRepositoryCategory = this.getMetadataRepositoryConfiguration().getCategory();
+		String metadataRepositoryCategory = this.getMetadataRepository().getCategory();
 		if (metadataRepositoryCategory == null)
 			metadataRepositoryCategory = "";
 		if (metadataRepositoryCategory.equals("metadew")) {
@@ -205,33 +183,28 @@ public class MetadataRepositoryOperation {
 			files = new String[] { "ConnectivityTables.json", "ControlTables.json", "DesignTables.json",
 					"ResultTables.json", "TraceTables.json" };
 			metadataRepositoryCategoryConfigurations = new MetadataRepositoryCategoryConfiguration[] {
-					this.getFrameworkExecution().getFrameworkControl().getMetadataRepositoryConfig()
-							.getConnectivityMetadataRepository(),
-					this.getFrameworkExecution().getFrameworkControl().getMetadataRepositoryConfig()
-							.getControlMetadataRepository(),
-					this.getFrameworkExecution().getFrameworkControl().getMetadataRepositoryConfig()
-							.getDesignMetadataRepository(),
-					this.getFrameworkExecution().getFrameworkControl().getMetadataRepositoryConfig()
-							.getResultMetadataRepository(),
-					this.getFrameworkExecution().getFrameworkControl().getMetadataRepositoryConfig()
-							.getTraceMetadataRepository() };
+					this.getFrameworkExecution().getFrameworkControl().getMetadataRepositoryConfig().getConnectivityMetadataRepository(),
+					this.getFrameworkExecution().getFrameworkControl().getMetadataRepositoryConfig().getControlMetadataRepository(),
+					this.getFrameworkExecution().getFrameworkControl().getMetadataRepositoryConfig().getDesignMetadataRepository(),
+					this.getFrameworkExecution().getFrameworkControl().getMetadataRepositoryConfig().getResultMetadataRepository(),
+					this.getFrameworkExecution().getFrameworkControl().getMetadataRepositoryConfig().getTraceMetadataRepository() };
 		} else {
 			files = new String[] { "ConnectivityTables.json", "DesignTables.json", "ResultTables.json",
 					"TraceTables.json" };
 		}
 
-		this.loadConfigurationSelection(metadataRepositoryConfigurationList, this.getFrameworkExecution().getFrameworkConfiguration()
+		this.loadConfigurationSelection(metadataRepositories, this.getFrameworkExecution().getFrameworkConfiguration()
 				.getFolderConfiguration().getFolderAbsolutePath("metadata.def"), "", "", "", files);
 
 		this.getFrameworkExecution().getFrameworkLog().log("metadata.create.end", Level.INFO);
 
 	}
 
-	public void loadMetadataRepository(List<MetadataRepositoryConfiguration> metadataRepositoryConfigurationList) {
-		this.loadMetadataRepository(metadataRepositoryConfigurationList, "");
+	public void loadMetadataRepository(List<MetadataRepository> metadataRepositoryList) {
+		this.loadMetadataRepository(metadataRepositoryList, "");
 	}
 
-	public void loadMetadataRepository(List<MetadataRepositoryConfiguration> metadataRepositoryConfigurationList, String input) {
+	public void loadMetadataRepository(List<MetadataRepository> metadataRepositories, String input) {
 		this.getFrameworkExecution().getFrameworkLog().log("metadata.load.start", Level.INFO);
 
 		// Folder definition
@@ -246,15 +219,15 @@ public class MetadataRepositoryOperation {
 
 		// Load files
 		if (input.trim().equals("")) {
-			this.loadConfigurationSelection(metadataRepositoryConfigurationList, inputFolder, workFolder, archiveFolder, errorFolder, ".+\\.json");
+			this.loadConfigurationSelection(metadataRepositories, inputFolder, workFolder, archiveFolder, errorFolder, ".+\\.json");
 		} else {
 			if (ParsingTools.isRegexFunction(input)) {
-				this.loadConfigurationSelection(metadataRepositoryConfigurationList, inputFolder, workFolder, archiveFolder, errorFolder,
+				this.loadConfigurationSelection(metadataRepositories, inputFolder, workFolder, archiveFolder, errorFolder,
 						ParsingTools.getRegexFunctionValue(input));
 			} else {
 				List<String> fileList = ListTools.convertStringList(input, ",");
 				for (String file : fileList) {
-					this.loadConfigurationItem(metadataRepositoryConfigurationList, inputFolder, workFolder, archiveFolder, errorFolder, file);
+					this.loadConfigurationItem(metadataRepositories, inputFolder, workFolder, archiveFolder, errorFolder, file);
 				}
 			}
 		}
@@ -264,24 +237,25 @@ public class MetadataRepositoryOperation {
 	}
 
 	// Load a single file
-	private void loadConfigurationItem(List<MetadataRepositoryConfiguration> metadataRepositoryConfigurationList, String inputFolder, String workFolder, String archiveFolder, String errorFolder,
-			String inputFileName) {
+	private void loadConfigurationItem(List<MetadataRepository> metadataRepositoryList, String inputFolder, String workFolder, String archiveFolder, String errorFolder,
+									   String inputFileName) {
 		File file = new File(FilenameUtils.normalize(inputFolder + File.separator + inputFileName));
-		this.loadConfigurationFile(metadataRepositoryConfigurationList, file, inputFolder, workFolder, archiveFolder, errorFolder);
+		this.loadConfigurationFile(metadataRepositoryList, file, inputFolder, workFolder, archiveFolder, errorFolder);
 	}
 
 	// Load entire folder
-	private void loadConfigurationSelection(List<MetadataRepositoryConfiguration> metadataRepositoryConfigurationList, String inputFolder, String workFolder, String archiveFolder,
-			String errorFolder, String[] files) {
+	private void loadConfigurationSelection(List<MetadataRepository> metadataRepositories, String inputFolder, String workFolder, String archiveFolder,
+											String errorFolder, String[] files) {
 		for (String file : files) {
+			System.out.println(file);
 			File activeFile = new File(FilenameUtils.normalize(inputFolder + File.separator + file));
-			this.loadConfigurationFile(metadataRepositoryConfigurationList, activeFile, inputFolder, workFolder, archiveFolder, errorFolder);
+			this.loadConfigurationFile(metadataRepositories, activeFile, inputFolder, workFolder, archiveFolder, errorFolder);
 		}
 	}
 
 	// Load entire folder
-	private void loadConfigurationSelection(List<MetadataRepositoryConfiguration> metadataRepositoryConfigurationList, String inputFolder, String workFolder, String archiveFolder,
-			String errorFolder, String regex) {
+	private void loadConfigurationSelection(List<MetadataRepository> metadataRepositories, String inputFolder, String workFolder, String archiveFolder,
+											String errorFolder, String regex) {
 		final File folder = new File(FilenameUtils.normalize(inputFolder));
 		final String file_filter = regex;
 		final File[] files = folder.listFiles(new FilenameFilter() {
@@ -292,12 +266,12 @@ public class MetadataRepositoryOperation {
 		});
 
 		for (final File file : files) {
-			this.loadConfigurationFile(metadataRepositoryConfigurationList, file, inputFolder, workFolder, archiveFolder, errorFolder);
+			this.loadConfigurationFile(metadataRepositories, file, inputFolder, workFolder, archiveFolder, errorFolder);
 		}
 	}
 
-	private void loadConfigurationFile(List<MetadataRepositoryConfiguration> metadataRepositoryConfigurationList, File file, String inputFolder, String workFolder, String archiveFolder,
-			String errorFolder) {
+	private void loadConfigurationFile(List<MetadataRepository> metadataRepositories, File file, String inputFolder, String workFolder, String archiveFolder,
+									   String errorFolder) {
 		
 		UUID uuid = UUID.randomUUID();
 
@@ -328,11 +302,11 @@ public class MetadataRepositoryOperation {
 		if (!workFile.isDirectory()) {
 			try {
 				this.getFrameworkExecution().getFrameworkLog().log("metadata.file=" + file.getName(), Level.INFO);
-				DataObjectOperation dataObjectOperation = new DataObjectOperation(this.getFrameworkExecution(),
-						metadataRepositoryConfigurationList, workFile.getAbsolutePath());
+				DataObjectOperation dataObjectOperation = new DataObjectOperation(this.getFrameworkExecution(),metadataRepositories, workFile.getAbsolutePath());
 				if (this.isGenerateDdl()) {
 					this.saveMetadataRepositoryDDL(dataObjectOperation.getMetadataRepositoryDdl());
 				} else {
+					System.out.println("DataObjectOperation size: " + dataObjectOperation.getDataObjects().size());
 					dataObjectOperation.saveToMetadataRepository();
 				}
 
@@ -381,7 +355,7 @@ public class MetadataRepositoryOperation {
 			try {
 				this.getFrameworkExecution().getFrameworkLog().log("metadata.file=" + file.getName(), Level.INFO);
 				DataObjectOperation dataObjectOperation = new DataObjectOperation(this.getFrameworkExecution(),
-						this.getMetadataRepositoryConfiguration(), file.getAbsolutePath());
+						this.getMetadataRepository(), file.getAbsolutePath());
 				if (this.isGenerateDdl()) {
 					this.saveMetadataRepositoryDDL(dataObjectOperation.getMetadataRepositoryDdl());
 				} else {
@@ -417,9 +391,9 @@ public class MetadataRepositoryOperation {
 		targetFilePath.append(this.getFrameworkExecution().getFrameworkConfiguration().getFolderConfiguration()
 				.getFolderAbsolutePath("metadata.out.ddl"));
 		targetFilePath.append(File.separator);
-		targetFilePath.append(this.getMetadataRepositoryConfiguration().getName());
+		targetFilePath.append(this.getMetadataRepository().getName());
 		targetFilePath.append("_");
-		targetFilePath.append(this.getMetadataRepositoryConfiguration().getCategory());
+		targetFilePath.append(this.getMetadataRepository().getCategory());
 		targetFilePath.append("_");
 		targetFilePath.append("create");
 		targetFilePath.append(".ddl");
@@ -436,12 +410,12 @@ public class MetadataRepositoryOperation {
 		this.frameworkExecution = frameworkExecution;
 	}
 
-	public MetadataRepositoryConfiguration getMetadataRepositoryConfiguration() {
-		return metadataRepositoryConfiguration;
+	public MetadataRepository getMetadataRepository() {
+		return metadataRepository;
 	}
 
-	public void setMetadataRepositoryConfiguration(MetadataRepositoryConfiguration metadataRepositoryConfiguration) {
-		this.metadataRepositoryConfiguration = metadataRepositoryConfiguration;
+	public void setMetadataRepository(MetadataRepository metadataRepository) {
+		this.metadataRepository = metadataRepository;
 	}
 
 	public String getAction() {

@@ -108,6 +108,28 @@ public class IterationConfiguration {
 			this.setIterationVariable(runId, -1, iterationList, -1, setName, setNumber, "key." + setNumber, innerpart);
 		}
 	}
+	
+	public void setIterationFor(String runId, String iterationList, String from, String to, String step) {
+		this.cleanIterationVariables(runId, iterationList);
+
+		// Iterate over the iteration sets
+		String setName = "";
+		int setNumber = 0;
+
+		// Parse for values
+		int iFrom = Integer.parseInt(from);
+		int iTo = Integer.parseInt(to);
+		int iStep = Integer.parseInt(step);
+		int i = iFrom;
+		if (iFrom < iTo) {
+			
+		}
+		for (int i2 = iFrom; i <= iTo; i++) {
+			setNumber++;
+			setName = "auto generated iteration set " + setNumber;
+			//this.setIterationVariable(runId, -1, iterationList, -1, setName, setNumber, "key." + setNumber, innerpart);
+		}		
+	}
 
 	public void setIterationVariable(String runId, int listId, String listName, int setId, String setName, int order,
 			String name, String value) {

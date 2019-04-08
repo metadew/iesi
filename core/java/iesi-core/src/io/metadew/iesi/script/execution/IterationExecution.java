@@ -33,6 +33,8 @@ public class IterationExecution {
 					this.getIterationOperation().getIteration().getValues());
 			this.setIterationType("values");
 			this.setIterationOff(false);
+		} else if (this.getIterationOperation().getIteration().getType().trim().equalsIgnoreCase("for")) {
+			
 		}
 	}
 

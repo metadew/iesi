@@ -1,0 +1,35 @@
+---
+type: "script"
+data:
+  name: "hellocondition"
+  description: "Hello Condition Tutorial Script"
+  parameters: []
+  actions:
+  - number: 1
+    type: "fwk.outputMessage"
+    name: "Action1"
+    description: "First action"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "message"
+      value : "First action"
+    - name: "onScreen"
+      value : "Y"
+  - number: 2
+    type: "fwk.outputMessage"
+    name: "Action2"
+    description: "Second action"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "message"
+      value : "Second action"
+    - name: "onScreen"
+      value : "Y"

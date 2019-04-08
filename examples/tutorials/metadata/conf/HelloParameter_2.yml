@@ -1,0 +1,21 @@
+---
+type: "script"
+data:
+  name: "helloparameter"
+  description: "Hello Parameter Tutorial Script"
+  parameters: []
+  actions:
+  - number: 1
+    type: "fwk.outputMessage"
+    name: "outputParameter"
+    description: "View the parameter value"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "message"
+      value : "my first parameter: #param1# and my second parameter: #param2#"
+    - name: "onScreen"
+      value : "Y"

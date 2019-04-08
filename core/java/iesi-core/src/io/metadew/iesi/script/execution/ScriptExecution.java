@@ -201,24 +201,29 @@ public class ScriptExecution {
                     break;
                 }
 
-                if (action.getType().equalsIgnoreCase("fwk.startIteration")) {
-
-
-                }
 
                 // Initialize
                 actionExecution.initialize();
+                
+                
+                if (action.getType().equalsIgnoreCase("fwk.startIteration")) {
+                    
+                    //Iteration
+                    IterationExecution iterationExecution = new IterationExecution();
+                    if (action.getIteration() != null && !action.getIteration().trim().isEmpty()) {
+                        iterationExecution.initialize(this.getFrameworkExecution(), this.getExecutionControl(),
+                                this.getExecutionControl().getExecutionRuntime()
+                                        .getIterationOperation(action.getIteration()));
+                    }
 
-                // Iteration
-                IterationExecution iterationExecution = new IterationExecution();
-                if (action.getIteration() != null && !action.getIteration().trim().isEmpty()) {
-                    iterationExecution.initialize(this.getFrameworkExecution(), this.getExecutionControl(),
-                            this.getExecutionControl().getExecutionRuntime()
-                                    .getIterationOperation(action.getIteration()));
-                }
+                    while (iterationExecution.hasNext()) {
+                        if (iterationExecution.getIterationNumber() > 1) actionExecution.initialize();
+                        actionExecution.execute();
+                    }
 
-                while (iterationExecution.hasNext()) {
-                    if (iterationExecution.getIterationNumber() > 1) actionExecution.initialize();
+                } else {
+
+                    //Single action
                     actionExecution.execute();
                 }
                 

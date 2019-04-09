@@ -205,8 +205,8 @@ public class MetadataRepositoryConfiguration {
 
 		if (!this.getConfigFile().getProperty(this.getFrameworkConfiguration().getSettingConfiguration()
 				.getSettingPath("metadata.repository.connection.string")).trim().isEmpty()) {
-			connectionURL = this.getFrameworkConfiguration().getSettingConfiguration()
-					.getSettingPath("metadata.repository.connection.string");
+			connectionURL = this.getConfigFile().getProperty(this.getFrameworkConfiguration().getSettingConfiguration()
+					.getSettingPath("metadata.repository.connection.string"));
 		} else if (!this.getConfigFile().getProperty(this.getFrameworkConfiguration().getSettingConfiguration()
 				.getSettingPath("metadata.repository.oracle.service")).trim().isEmpty()) {
 			connectionURL = "jdbc:oracle:thin:@//"
@@ -280,8 +280,8 @@ public class MetadataRepositoryConfiguration {
 
 		if (!this.getConfigFile().getProperty(this.getFrameworkConfiguration().getSettingConfiguration()
 				.getSettingPath("metadata.repository.connection.string")).trim().isEmpty()) {
-			connectionURL = this.getFrameworkConfiguration().getSettingConfiguration()
-					.getSettingPath("metadata.repository.connection.string");
+			connectionURL = this.getConfigFile().getProperty(this.getFrameworkConfiguration().getSettingConfiguration()
+					.getSettingPath("metadata.repository.connection.string"));
 		} else {
 			connectionURL = "jdbc:netezza://"
 					+ this.getConfigFile()
@@ -343,8 +343,8 @@ public class MetadataRepositoryConfiguration {
 		if (this.getConfigFile().getProperty(this.getFrameworkConfiguration().getSettingConfiguration()
 				.getSettingPath("metadata.repository.connection.string")) != null && !this.getConfigFile().getProperty(this.getFrameworkConfiguration().getSettingConfiguration()
 				.getSettingPath("metadata.repository.connection.string")).trim().isEmpty()) {
-			connectionURL = this.getFrameworkConfiguration().getSettingConfiguration()
-					.getSettingPath("metadata.repository.connection.string");
+			connectionURL = this.getConfigFile().getProperty(this.getFrameworkConfiguration().getSettingConfiguration()
+					.getSettingPath("metadata.repository.connection.string"));
 			dcSQConnection = new SqliteDatabaseConnection(connectionURL, "", "");
 		} else {
 			dcSQConnection = new SqliteDatabaseConnection(
@@ -366,8 +366,8 @@ public class MetadataRepositoryConfiguration {
 
 		if (!this.getConfigFile().getProperty(this.getFrameworkConfiguration().getSettingConfiguration()
 				.getSettingPath("metadata.repository.connection.string")).trim().isEmpty()) {
-			connectionURL = this.getFrameworkConfiguration().getSettingConfiguration()
-					.getSettingPath("metadata.repository.connection.string");
+			connectionURL = this.getConfigFile().getProperty(this.getFrameworkConfiguration().getSettingConfiguration()
+					.getSettingPath("metadata.repository.connection.string"));
 		} else {
 			connectionURL = "jdbc:postgresql://"
 					+ this.getConfigFile()

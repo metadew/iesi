@@ -1,0 +1,17 @@
+[{
+	"type": "connection",
+	"data": {
+		"name": "iesi-instance",
+		"description": "Connection to our local system server",
+		"type": "host.linux",
+		"environment": "acc",
+		"parameters": [
+			{"name": "host","value": "iesi"},
+			{"name": "port","value": "22"},
+			{"name": "user","value": "dummy_user_and_pass"},
+			{"name": "password","value": "ENC(XKq6zFCFqyeKIHPjoWya9aHdHVbTvLpP9A==)"},
+			{"name": "tempPath","value": "/tmp/"},
+			{"name": "simulateTerminal","value": "N"}
+		]
+	}
+}]

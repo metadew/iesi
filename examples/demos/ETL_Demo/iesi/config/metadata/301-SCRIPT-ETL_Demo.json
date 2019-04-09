@@ -1,0 +1,93 @@
+[{
+	"type": "Script",
+	"data": {
+		"name": "ordersETL",
+		"description": "This is a basic demo of an ETL implementation",
+		"version": {
+			"number": "1",
+			"description": "initial version"
+		},
+		"actions": [{
+		"number": "1",
+			"type": "wfa.executeQueryPing",
+			"name": "poll_export",
+			"description": "Polls the source untill the export of yersterday is ready and get the filenames of the exports",
+			"component": "",
+			"errorExpected": "N",
+			"errorStop": "Y",
+			"parameters": [
+				{"name": "query", "value": "SELECT orders_file, products_file FROM exports WHERE export_date = to_date('{{*date.today()}}', 'ddmmyy');"},
+				{"name": "hasResult", "value": "Y"},
+				{"name": "setRuntimeVariables", "value": "Y"},
+				{"name": "connection", "value": "crm_postgres"},
+				{"name": "wait", "value": "20"},
+				{"name": "timeout", "value": "600"}
+			]
+		},
+		{		
+			"number": "2",
+			"type": "fho.executeFileTransfer",
+			"name": "copy_orders",
+			"description": "Fetches orders file from the source machine",
+			"component": "",
+			"errorExpected": "N",
+			"errorStop": "Y",
+			"parameters": [
+				{"name": "sourceFilePath", "value": "shared/source/"},
+				{"name": "sourceFileName", "value": "#orders_file#"},
+				{"name": "sourceConnection", "value": "unix_server_ftp"},
+				{"name": "targetFilePath", "value": "/tmp/"},
+				{"name": "targetFileName", "value": "orders.csv"},
+				{"name": "targetConnection", "value": "iesi-instance"}
+			]
+		},
+		{
+			"number": "3",
+			"type": "fho.executeFileTransfer",
+			"name": "copy_products",
+			"description": "Fetches products file from the source machine",
+			"component": "",
+			"errorExpected": "N",
+			"errorStop": "Y",
+			"parameters": [
+				{"name": "sourceFilePath", "value": "shared/source/"},
+				{"name": "sourceFileName", "value": "#products_file#"},
+				{"name": "sourceConnection", "value": "unix_server_ftp"},
+				{"name": "targetFilePath", "value": "/tmp/"},
+				{"name": "targetFileName", "value": "products.csv"},
+				{"name": "targetConnection", "value": "iesi-instance"}
+			]
+		},
+		{
+			"number": "4",
+			"type": "cli.executeCommand",
+			"name": "runETL",
+			"description": "Will join the data and output to an excel file as well as upload to target db",
+			"component": "",
+			"errorExpected": "N",
+			"errorStop": "Y",
+			"parameters": [
+				{"name": "command", "value": "/home/pan.sh /file:/home/ETL/basic_join.ktr /param:ordersFile=/tmp/orders.csv /param:productsFile=/tmp/products.csv /param:targetFile=/tmp/result /param:dbHost={{=connection(target_postgres,host)}} /param:dbPort={{=connection(target_postgres,port)}} /param:dbUser={{=connection(target_postgres,user)}} /param:dbPass={{=connection(target_postgres,password)}}"},
+				{"name": "connection", "value": "iesi-instance"}
+			]
+		},
+		{
+			"number": "5",
+			"type": "fho.executeFileTransfer",
+			"name": "copy_targetSheet",
+			"description": "Pushes the excel to the target machine",
+			"component": "",
+			"errorExpected": "N",
+			"errorStop": "Y",
+			"parameters": [
+				{"name": "sourceFilePath", "value": "/tmp/"},
+				{"name": "sourceFileName", "value": "result.xls"},
+				{"name": "sourceConnection", "value": "iesi-instance"},
+				{"name": "targetFilePath", "value": "/shared/target/"},
+				{"name": "targetFileName", "value": "results_{{*date.today()}}.xls"},
+				{"name": "targetConnection", "value": "unix_server_ftp"}
+			]
+		}
+		]
+	}
+}]

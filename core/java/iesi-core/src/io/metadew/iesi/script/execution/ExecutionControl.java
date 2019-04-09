@@ -42,6 +42,7 @@ public class ExecutionControl
 	private List<Long> processIdList;
 
 	private boolean actionErrorStop = false;
+	private boolean scriptExit = false;
 
 	// Constructors
 	public ExecutionControl(FrameworkExecution frameworkExecution) {
@@ -362,6 +363,9 @@ public class ExecutionControl
 
 		if (this.isActionErrorStop()) {
 			status = FrameworkStatus.STOPPED.value();
+		} else if (this.isScriptExit()) {
+			status = FrameworkStatus.STOPPED.value();
+			// TODO: get status from input parameters in action
 		} else if (scriptExecution.getExecutionMetrics().getSuccessCount() == 0
 				&& scriptExecution.getExecutionMetrics().getWarningCount() == 0
 				&& scriptExecution.getExecutionMetrics().getErrorCount() > 0) {
@@ -590,5 +594,13 @@ public class ExecutionControl
 	public void setExecutionLog(ExecutionLog executionLog)
 	{
 		this.executionLog = executionLog;
+	}
+
+	public boolean isScriptExit() {
+		return scriptExit;
+	}
+
+	public void setScriptExit(boolean scriptExit) {
+		this.scriptExit = scriptExit;
 	}
 }

@@ -31,7 +31,7 @@ public class TimeFormat implements DataInstruction
 		Matcher inputParameterMatcher = INPUT_PARAMETER_PATTERN.matcher(parameters);
 		if (!inputParameterMatcher.find())
 		{
-			throw new IllegalArgumentException(MessageFormat.format("Illegal arguments provided to date format: {0}", parameters));
+			throw new IllegalArgumentException(MessageFormat.format("Illegal arguments provided to " + this.getKeyword() + ": {0}", parameters));
 		}
 		else
 		{
@@ -44,7 +44,7 @@ public class TimeFormat implements DataInstruction
 			}
 			catch (ParseException e)
 			{
-				throw new IllegalArgumentException(MessageFormat.format("Cannot generate Date from {0}",
+				throw new IllegalArgumentException(MessageFormat.format("Cannot generate Time from {0}",
 							inputParameterMatcher.group(ORIGINAL_TIME_REPRESENTATION_KEY)));
 			}
 		}

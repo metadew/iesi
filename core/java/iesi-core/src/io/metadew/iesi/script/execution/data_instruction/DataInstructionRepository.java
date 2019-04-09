@@ -8,6 +8,7 @@ import io.metadew.iesi.script.execution.data_instruction.date.DateBetween;
 import io.metadew.iesi.script.execution.data_instruction.date.DateFormat;
 import io.metadew.iesi.script.execution.data_instruction.date.DateToday;
 import io.metadew.iesi.script.execution.data_instruction.date.DateTravel;
+import io.metadew.iesi.script.execution.data_instruction.number.NumberBetween;
 import io.metadew.iesi.script.execution.data_instruction.person.PersonEmail;
 import io.metadew.iesi.script.execution.data_instruction.person.PersonFirstName;
 import io.metadew.iesi.script.execution.data_instruction.person.PersonLastName;
@@ -50,6 +51,9 @@ public class DataInstructionRepository
 
 		BelgiumNationalRegisterNumber belgiumNationalRegisterNumber = new BelgiumNationalRegisterNumber();
 		dataInstructions.put(belgiumNationalRegisterNumber.getKeyword(), belgiumNationalRegisterNumber);
+		
+		NumberBetween numberBetween = new NumberBetween(generationObjectExecution);
+		dataInstructions.put(numberBetween.getKeyword(), numberBetween);
 
 		return dataInstructions;
 	}

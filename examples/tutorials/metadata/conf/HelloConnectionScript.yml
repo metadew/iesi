@@ -1,0 +1,20 @@
+---
+type: Script
+data:
+  type: "script"
+  name: "helloconnection"
+  description: "Hello Connection Tutorial Script"
+  actions:
+  - number: 1
+    type: "sql.evaluateResult"
+    name: "VerifyData"
+    description: "Verify if Table1 contains data"
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "query"
+      value: "select * from Table1"
+    - name: "hasResult"
+      value: "Y"
+    - name: "connection"
+      value: "simplesyntheticdataset"

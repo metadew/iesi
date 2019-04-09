@@ -14,7 +14,6 @@ import io.metadew.iesi.script.operation.ConditionOperation;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public class ActionExecution {
@@ -26,6 +25,7 @@ public class ActionExecution {
 	private Action action;
 	private Long processId;
 	private ComponentAttributeOperation componentAttributeOperation;
+	private Object actionTypeExecution;
 
 	// Constructors
 	public ActionExecution(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
@@ -70,7 +70,6 @@ public class ActionExecution {
 			Class classRef = Class.forName(className);
 			Object instance = classRef.newInstance();
 
-			try {
 				Class initParams[] = { FrameworkExecution.class, ExecutionControl.class, ScriptExecution.class,
 						ActionExecution.class };
 				Method init = classRef.getDeclaredMethod("init", initParams);
@@ -108,10 +107,6 @@ public class ActionExecution {
 					// TODO log output
 				}
 
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
 			HashMap<String, ActionParameterOperation> actionParameterOperationMap = null;
 			for (Field field : classRef.getDeclaredFields()) {
 				if (field.getName().equals("actionParameterOperationMap")) {
@@ -125,13 +120,15 @@ public class ActionExecution {
 			// Store runtime parameters for next action usage
 			this.getActionControl().getActionRuntime().setRuntimeParameters(actionParameterOperationMap);
 
+			// Store actionTypeExecution
+			this.setActionTypeExecution(instance);
+			
 			// Trace function
 			this.traceDesignMetadata(actionParameterOperationMap);
-		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | NoSuchMethodException
-				| SecurityException | IllegalArgumentException | InvocationTargetException e) {
+		} catch (Exception e) {
 			StringWriter stackTrace = new StringWriter();
 			e.printStackTrace(new PrintWriter(stackTrace));
-
+			this.getActionControl().increaseErrorCount();
 			this.getExecutionControl().logMessage(this, "action.error=" + e, Level.INFO);
 			this.getExecutionControl().logMessage(this, "action.stacktrace=" + stackTrace, Level.DEBUG);
 		} finally {
@@ -213,6 +210,14 @@ public class ActionExecution {
 
 	public void setActionControl(ActionControl actionControl) {
 		this.actionControl = actionControl;
+	}
+
+	public Object getActionTypeExecution() {
+		return actionTypeExecution;
+	}
+
+	public void setActionTypeExecution(Object actionTypeExecution) {
+		this.actionTypeExecution = actionTypeExecution;
 	}
 
 }

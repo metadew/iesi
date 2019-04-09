@@ -14,6 +14,7 @@ import io.metadew.iesi.data.generation.configuration.CreditCard;
 import io.metadew.iesi.data.generation.configuration.Date;
 import io.metadew.iesi.data.generation.configuration.Internet;
 import io.metadew.iesi.data.generation.configuration.Lorem;
+import io.metadew.iesi.data.generation.configuration.Motd;
 import io.metadew.iesi.data.generation.configuration.Name;
 import io.metadew.iesi.data.generation.configuration.Pattern;
 import io.metadew.iesi.data.generation.configuration.PhoneNumber;
@@ -49,6 +50,7 @@ public class GenerationDataExecution {
         		new Date(this),
         		new Internet(this),
         		new Lorem(this),
+        		new Motd(this),
         		new Name(this),
         		new io.metadew.iesi.data.generation.configuration.Number (this),
         		new Pattern(this),

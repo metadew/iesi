@@ -1,0 +1,17 @@
+---
+type: Script
+data:
+  type: "script"
+  name: "helloworldversion"
+  description: "Hello World Tutorial Script"
+  version:
+    number: 1
+    description: "Version 1"
+  actions:
+  - number: 1
+    type: "fwk.dummy"
+    name: "HelloWorld"
+    description: "HelloWorld Action"
+    errorExpected: "N"
+    errorStop: "N"
+    parameters: []

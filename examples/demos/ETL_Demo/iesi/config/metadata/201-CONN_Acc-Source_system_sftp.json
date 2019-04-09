@@ -1,0 +1,18 @@
+[{
+	"type": "connection",
+	"data": {
+		"name": "unix_server_ftp",
+		"description": "Connection to the operational linux server",
+		"type": "host.linux",
+		"environment": "acc",
+		"parameters": [
+			{"name": "host","value": "sftpserver"},
+			{"name": "port","value": "22"},
+			{"name": "user","value": "linuxuser"},
+			{"name": "password","value": "ENC(XKq6zFCFqyeKIHPjoWya9aHdHVbTvLpP9A==)"},
+			{"name": "tempPath","value": "/tmp/"},
+			{"name": "simulateTerminal","value": "N"},
+			{"name": "jumphostConnections","value": "N"}
+		]
+	}
+}]

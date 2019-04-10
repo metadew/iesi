@@ -1,4 +1,131 @@
 {% include navigation.html %}
 
-# type
+# fwk.setIteration
 
+This action defines an interation that can be used in any next action.
+It represents the definition of where to iterate over.
+
+## Use cases
+
+* Define a list of values to iterate over
+* Iterate a number of times over a certain action or set of actions
+* Iterate over a pre-defined or statically defined list
+
+## Parameters
+
+### 1: name
+
+`name: "name of the iteration"`
+* define the name of the iteration that can be used in any next action as a reference
+* this name will be associated with the other parameter values that are defined
+
+### 2: type
+
+`type: "values" / "for"`
+* define the type of iteration to use:
+  * values: iterate over a list of values -> complete parameter values
+  * for: iterate over a set of numbers -> complete parameters from, to, step
+
+### 3: values
+
+`values: "values to iterate over"`
+* applicable for type `values`
+* define the values that will be iterated over
+* different values are delimited with a `,` symbol. For instance: value1,value2 -> this will iterate twice, once for value1 and once for value2.
+
+### 4: from
+
+`from: "value to start the iteration"`
+* applicable for type `for`
+* define the **integer** value for starting the iteration
+* the from value is included in the iteration evaluation
+
+### 5: to
+
+`to: "value to end the iteration"`
+* applicable for type `for`
+* define the **integer** value for stopping the iteration
+* the to value is included in the iteration evaluation
+
+### 6: step
+
+`step: "value to use for incrementing or decrementing the iteration"`
+* applicable for type `for`
+* define the **integer** value for incrementing or decrementing the iteration
+* if no step value is provided, this will be set by default to `1`
+
+### 7: list
+
+`list: "working on it"`
+* applicable for type `list`
+* work in progress
+
+### 8: interrupt
+
+`interrupt: "working on it"`
+* work in progress
+
+## Examples
+
+### Define an iteration using a list of values
+
+```yaml
+  - number: 1
+    type: "fwk.setIteration"
+    name: "example1"
+    description: "Define an iteration using a list of values"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "name"
+      value : "iteration1"
+    - name: "type"
+      value: "values"
+    - name: "values"
+      value: "value1,value2,value3"
+```
+
+### Define an iteration using a for loop
+
+```yaml
+  - number: 2
+    type: "fwk.outputMessage"
+    name: "example2"
+    description: "Define an iteration using a for loop"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "name"
+      value : "iteration2"
+    - name: "type"
+      value: "for"
+    - name: "from"
+      value: "1"
+	- name: "to"
+      value: "5"
+	- name: "step"
+      value: "1"
+```
+
+```yaml
+  - number: 3
+    type: "fwk.outputMessage"
+    name: "example1"
+    description: "Adding variables in the message"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "message"
+      value : "#count# records have been found"
+    - name: "onScreen"
+      value: "Y"
+```

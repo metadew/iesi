@@ -31,7 +31,6 @@ public class NumberBetween implements DataInstruction
 	@Override
 	public String generateOutput(String parameters)
 	{
-		System.out.println(parameters);
 		Matcher inputParameterMatcher = INPUT_PARAMETER_PATTERN.matcher(parameters);
 		if (!inputParameterMatcher.find())
 		{

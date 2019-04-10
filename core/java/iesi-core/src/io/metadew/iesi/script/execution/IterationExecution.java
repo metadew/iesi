@@ -34,7 +34,13 @@ public class IterationExecution {
 			this.setIterationType("values");
 			this.setIterationOff(false);
 		} else if (this.getIterationOperation().getIteration().getType().trim().equalsIgnoreCase("for")) {
-			
+			this.getIterationConfiguration().setIterationFor(this.getExecutionControl().getRunId(),
+					this.getIterationOperation().getIteration().getName(),
+					this.getIterationOperation().getIteration().getFrom(),
+					this.getIterationOperation().getIteration().getTo(),
+					this.getIterationOperation().getIteration().getStep());
+			this.setIterationType("for");
+			this.setIterationOff(false);
 		}
 	}
 
@@ -46,8 +52,10 @@ public class IterationExecution {
 			} else {
 				return false;
 			}
-		} else if (this.getIterationType().equalsIgnoreCase("values")) {
-			IterationInstance iterationInstance = this.getIterationConfiguration().hasNext(this.getExecutionControl().getRunId(), this.getIterationNumber());
+		} else if (this.getIterationType().equalsIgnoreCase("values")
+				|| this.getIterationType().equalsIgnoreCase("for")) {
+			IterationInstance iterationInstance = this.getIterationConfiguration()
+					.hasNext(this.getExecutionControl().getRunId(), this.getIterationNumber());
 			return !iterationInstance.isEmpty();
 		} else {
 			return false;

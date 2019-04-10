@@ -108,7 +108,12 @@ public class FwkSetIteration {
 			iteration.setValues(this.getIterationValues().getValue());
 			iteration.setFrom(this.getIterationFrom().getValue());
 			iteration.setTo(this.getIterationTo().getValue());
-			iteration.setStep(this.getIterationStep().getValue());
+			// Set default step if not provided
+			if (this.getIterationStep().getValue().trim().isEmpty()) {
+				iteration.setStep("1");
+			} else {
+				iteration.setStep(this.getIterationStep().getValue());
+			}
 			iteration.setInterrupt(this.getIterationInterrupt().getValue());
 			this.getExecutionControl().getExecutionRuntime().setIteration(iteration);
 

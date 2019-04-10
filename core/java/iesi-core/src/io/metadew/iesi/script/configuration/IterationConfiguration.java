@@ -117,18 +117,30 @@ public class IterationConfiguration {
 		int setNumber = 0;
 
 		// Parse for values
-		int iFrom = Integer.parseInt(from);
-		int iTo = Integer.parseInt(to);
-		int iStep = Integer.parseInt(step);
-		int i = iFrom;
+		int iFrom = (int) Double.parseDouble(from);
+		int iTo = (int) Double.parseDouble(to);
+		int iStep = (int) Double.parseDouble(step);
 		if (iFrom < iTo) {
-			
-		}
-		for (int i2 = iFrom; i <= iTo; i++) {
+			while (iFrom <= iTo) {
+				setNumber++;
+				setName = "auto generated iteration set " + setNumber;
+				this.setIterationVariable(runId, -1, iterationList, -1, setName, setNumber, "key." + setNumber, String.valueOf(iFrom));
+				
+				iFrom= iFrom + iStep;
+			}			
+		} else if (iFrom > iTo) {
+			while (iFrom >= iTo) {
+				setNumber++;
+				setName = "auto generated iteration set " + setNumber;
+				this.setIterationVariable(runId, -1, iterationList, -1, setName, setNumber, "key." + setNumber, String.valueOf(iFrom));
+				
+				iFrom= iFrom - iStep;
+			}			
+		} else {
 			setNumber++;
 			setName = "auto generated iteration set " + setNumber;
-			//this.setIterationVariable(runId, -1, iterationList, -1, setName, setNumber, "key." + setNumber, innerpart);
-		}		
+			this.setIterationVariable(runId, -1, iterationList, -1, setName, setNumber, "key." + setNumber, String.valueOf(iFrom));
+		}
 	}
 
 	public void setIterationVariable(String runId, int listId, String listName, int setId, String setName, int order,

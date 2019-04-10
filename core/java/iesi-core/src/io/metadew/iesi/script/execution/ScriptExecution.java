@@ -201,29 +201,23 @@ public class ScriptExecution {
                     break;
                 }
 
+                if (action.getType().equalsIgnoreCase("fwk.startIteration")) {
+                	// Do not change - work in progress
+                }
 
                 // Initialize
                 actionExecution.initialize();
-                
-                
-                if (action.getType().equalsIgnoreCase("fwk.startIteration")) {
-                    
-                    //Iteration
-                    IterationExecution iterationExecution = new IterationExecution();
-                    if (action.getIteration() != null && !action.getIteration().trim().isEmpty()) {
-                        iterationExecution.initialize(this.getFrameworkExecution(), this.getExecutionControl(),
-                                this.getExecutionControl().getExecutionRuntime()
-                                        .getIterationOperation(action.getIteration()));
-                    }
 
-                    while (iterationExecution.hasNext()) {
-                        if (iterationExecution.getIterationNumber() > 1) actionExecution.initialize();
-                        actionExecution.execute();
-                    }
+                // Iteration
+                IterationExecution iterationExecution = new IterationExecution();
+                if (action.getIteration() != null && !action.getIteration().trim().isEmpty()) {
+                    iterationExecution.initialize(this.getFrameworkExecution(), this.getExecutionControl(),
+                            this.getExecutionControl().getExecutionRuntime()
+                                    .getIterationOperation(action.getIteration()));
+                }
 
-                } else {
-
-                    //Single action
+                while (iterationExecution.hasNext()) {
+                    if (iterationExecution.getIterationNumber() > 1) actionExecution.initialize();
                     actionExecution.execute();
                 }
                 

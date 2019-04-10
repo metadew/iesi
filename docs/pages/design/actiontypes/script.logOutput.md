@@ -24,7 +24,6 @@ It allows to log script related outputs specifically in the script output for re
 * define the output value to store in the `ScriptResults` table
 * make use of any function that is resolved by the framework including settings, variables and instructions
 
-
 ## Examples
 
 ```yaml

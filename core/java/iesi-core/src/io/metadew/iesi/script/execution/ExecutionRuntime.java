@@ -521,8 +521,8 @@ public class ExecutionRuntime {
 
 		// Parse input
 		String[] parts = input.split(",");
-		String connectionName = parts[0];
-		String connectionParameterName = parts[1];
+		String connectionName = parts[0].trim();
+		String connectionParameterName = parts[1].trim();
 
 		ConnectionParameterConfiguration connectionParameterConfiguration = new ConnectionParameterConfiguration(
 				this.getFrameworkExecution());

@@ -26,7 +26,7 @@ public class IterationExecution {
 		this.setExecutionControl(executionControl);
 		this.setIterationOperation(iterationOperation);
 		this.setIterationConfiguration(new IterationConfiguration(this.getFrameworkExecution(),
-				this.getExecutionControl().getExecutionRuntime().getRunCacheFolderName()));
+				this.getExecutionControl().getExecutionRuntime().getRunCacheFolderName(), executionControl));
 		if (this.getIterationOperation().getIteration().getType().trim().equalsIgnoreCase("values")) {
 			this.getIterationConfiguration().setIterationValues(this.getExecutionControl().getRunId(),
 					this.getIterationOperation().getIteration().getName(),
@@ -40,6 +40,9 @@ public class IterationExecution {
 					this.getIterationOperation().getIteration().getTo(),
 					this.getIterationOperation().getIteration().getStep());
 			this.setIterationType("for");
+			this.setIterationOff(false);
+		} else if (this.getIterationOperation().getIteration().getType().trim().equalsIgnoreCase("condition")) {
+			this.setIterationType("condition");
 			this.setIterationOff(false);
 		}
 	}
@@ -57,10 +60,14 @@ public class IterationExecution {
 			IterationInstance iterationInstance = this.getIterationConfiguration()
 					.hasNext(this.getExecutionControl().getRunId(), this.getIterationNumber());
 			return !iterationInstance.isEmpty();
+		} else if (this.getIterationType().equalsIgnoreCase("condition")) {
+			
+			IterationInstance iterationInstance = this.getIterationConfiguration().hasNext(
+					this.getExecutionControl().getRunId(), this.getIterationOperation().getIteration().getCondition());
+			return !iterationInstance.isEmpty();
 		} else {
 			return false;
 		}
-
 	}
 
 	// Getters and setters

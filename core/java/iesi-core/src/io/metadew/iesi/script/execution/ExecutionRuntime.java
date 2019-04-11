@@ -261,7 +261,9 @@ public class ExecutionRuntime {
 		result = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(input);
 
 		// Second: Action attributes
-		result = this.resolveConfiguration(actionExecution, result);
+		if (actionExecution != null) {
+			result = this.resolveConfiguration(actionExecution, result);
+		}
 
 		// third level: runtime variables
 		result = this.resolveRuntimeVariables(result);
@@ -519,8 +521,8 @@ public class ExecutionRuntime {
 
 		// Parse input
 		String[] parts = input.split(",");
-		String connectionName = parts[0];
-		String connectionParameterName = parts[1];
+		String connectionName = parts[0].trim();
+		String connectionParameterName = parts[1].trim();
 
 		ConnectionParameterConfiguration connectionParameterConfiguration = new ConnectionParameterConfiguration(
 				this.getFrameworkExecution());
@@ -539,8 +541,8 @@ public class ExecutionRuntime {
 
 		// Parse input
 		String[] parts = input.split(",");
-		String environmentName = parts[0];
-		String environmentParameterName = parts[1];
+		String environmentName = parts[0].trim();
+		String environmentParameterName = parts[1].trim();
 
 		EnvironmentParameterConfiguration environmentParameterConfiguration = new EnvironmentParameterConfiguration(
 				this.getFrameworkExecution());
@@ -559,8 +561,8 @@ public class ExecutionRuntime {
 
 		// Parse input
 		String[] parts = input.split(",");
-		String datasetName = parts[0];
-		String datasetItem = parts[1];
+		String datasetName = parts[0].trim();
+		String datasetItem = parts[1].trim();
 
 		DatasetOperation datasetOperation = executionControl.getExecutionRuntime().getDatasetOperation(datasetName);
 
@@ -572,7 +574,7 @@ public class ExecutionRuntime {
 	}
 
 	private String lookupFileInstruction(ExecutionControl executionControl, String input) {
-		String output = input;
+		String output = input.trim();
 		output = SQLTools.getFirstSQLStmt(input);
 		return output;
 	}

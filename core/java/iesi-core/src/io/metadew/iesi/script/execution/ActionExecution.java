@@ -26,6 +26,8 @@ public class ActionExecution {
 	private Long processId;
 	private ComponentAttributeOperation componentAttributeOperation;
 	private Object actionTypeExecution;
+	private boolean initialized = false;
+	private boolean executed = false;
 
 	// Constructors
 	public ActionExecution(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
@@ -39,11 +41,14 @@ public class ActionExecution {
 	// Methods
 	public void initialize() {
 		this.setProcessId(this.getExecutionControl().getProcessId());
+		this.setInitialized(true);
+		this.setExecuted(false);
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void execute() {
-
+		this.setExecuted(true);
+		
 		this.getExecutionControl().logMessage(this, "action.name=" + this.getAction().getName(), Level.INFO);
 		this.getExecutionControl().logMessage(this, "action.id=" + this.getAction().getId(), Level.DEBUG);
 
@@ -218,6 +223,22 @@ public class ActionExecution {
 
 	public void setActionTypeExecution(Object actionTypeExecution) {
 		this.actionTypeExecution = actionTypeExecution;
+	}
+
+	public boolean isInitialized() {
+		return initialized;
+	}
+
+	public void setInitialized(boolean initialized) {
+		this.initialized = initialized;
+	}
+
+	public boolean isExecuted() {
+		return executed;
+	}
+
+	public void setExecuted(boolean executed) {
+		this.executed = executed;
 	}
 
 }

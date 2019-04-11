@@ -114,7 +114,12 @@ public class FwkSetIteration {
 			} else {
 				iteration.setStep(this.getIterationStep().getValue());
 			}
-			iteration.setInterrupt(this.getIterationInterrupt().getValue());
+			// Set default interrupt if not provided
+			if (this.getIterationInterrupt().getValue().equalsIgnoreCase("y")) {
+				iteration.setInterrupt("y");
+			} else {
+				iteration.setInterrupt("n");
+			}
 			this.getExecutionControl().getExecutionRuntime().setIteration(iteration);
 
 			return true;

@@ -231,6 +231,13 @@ public class ScriptExecution {
                     }
                 }
                 
+                // Check if iteration condition has not prevented execution
+                if (!actionExecution.isExecuted()) {
+                	this.getExecutionMetrics().increaseWarningCount(1);
+                	this.getExecutionControl().logMessage(this, "action.warning -> iteration.condition.block", Level.INFO);
+                	break;
+                }
+                
             	// Include script
             	if (action.getType().equalsIgnoreCase("fwk.includeScript")) {
             		ObjectMapper objectMapper = new ObjectMapper();
@@ -253,7 +260,7 @@ public class ScriptExecution {
             	// Error handling
                 if (actionExecution.getActionControl().getExecutionMetrics().getErrorCount() > 0) {
                     if (action.getErrorExpected().equalsIgnoreCase("n")) {
-                        getExecutionMetrics().increaseErrorCount(1);
+                        this.getExecutionMetrics().increaseErrorCount(1);
                         if (action.getErrorStop().equalsIgnoreCase("y")) {
                             this.getExecutionControl().logMessage(this, "action.error -> script.stop", Level.INFO);
                             this.getExecutionControl().setActionErrorStop(true);

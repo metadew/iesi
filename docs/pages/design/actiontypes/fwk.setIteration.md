@@ -21,10 +21,11 @@ It represents the definition of where to iterate over.
 
 ### 2: type
 
-`type: "values" / "for"`
+`type: "values" / "for" / "condition"`
 * define the type of iteration to use:
   * values: iterate over a list of values -> complete parameter values
   * for: iterate over a set of numbers -> complete parameters from, to, step
+  * condition: iteration as long as a condition returns `true` -> complete parameter condition
 
 ### 3: values
 
@@ -54,13 +55,20 @@ It represents the definition of where to iterate over.
 * define the **integer** value for incrementing or decrementing the iteration
 * if no step value is provided, this will be set by default to `1`
 
-### 7: list
+### 7: condition
+
+`list: "identifier for the list name that is used to iterate on"`
+* applicable for type `condition`
+* define the condition to evaluate in the iteration
+* the iteration will continue as long as the condition is `true`
+
+### 8: list
 
 `list: "identifier for the list name that is used to iterate on"`
 * applicable for type `list`
 * work in progress
 
-### 8: interrupt
+### 9: interrupt
 
 `interrupt: "Y" / "N"`
 * define if an iteration needs to break if an error inside occurs

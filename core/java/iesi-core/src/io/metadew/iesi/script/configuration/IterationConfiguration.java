@@ -13,10 +13,13 @@ import io.metadew.iesi.connection.database.SqliteDatabaseConnection;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.RuntimeVariable;
+import io.metadew.iesi.script.execution.ExecutionControl;
+import io.metadew.iesi.script.operation.ConditionOperation;
 
 public class IterationConfiguration {
 
 	private FrameworkExecution frameworkExecution;
+	private ExecutionControl executionControl;
 	private String runCacheFolderName;
 	private String runCacheFileName = "iterationExecutions.db3";
 	private String runCacheFilePath;
@@ -24,8 +27,10 @@ public class IterationConfiguration {
 	private String PRC_ITERATION_EXEC = "PRC_ITERATION_EXEC";
 
 	// Constructors
-	public IterationConfiguration(FrameworkExecution frameworkExecution, String runCacheFolderName) {
+	public IterationConfiguration(FrameworkExecution frameworkExecution, String runCacheFolderName,
+			ExecutionControl executionControl) {
 		this.setFrameworkExecution(frameworkExecution);
+		this.setExecutionControl(executionControl);
 
 		// Define path
 		this.setRunCacheFolderName(runCacheFolderName);
@@ -108,7 +113,7 @@ public class IterationConfiguration {
 			this.setIterationVariable(runId, -1, iterationList, -1, setName, setNumber, "key." + setNumber, innerpart);
 		}
 	}
-	
+
 	public void setIterationFor(String runId, String iterationList, String from, String to, String step) {
 		this.cleanIterationVariables(runId, iterationList);
 
@@ -124,22 +129,25 @@ public class IterationConfiguration {
 			while (iFrom <= iTo) {
 				setNumber++;
 				setName = "auto generated iteration set " + setNumber;
-				this.setIterationVariable(runId, -1, iterationList, -1, setName, setNumber, "key." + setNumber, String.valueOf(iFrom));
-				
-				iFrom= iFrom + iStep;
-			}			
+				this.setIterationVariable(runId, -1, iterationList, -1, setName, setNumber, "key." + setNumber,
+						String.valueOf(iFrom));
+
+				iFrom = iFrom + iStep;
+			}
 		} else if (iFrom > iTo) {
 			while (iFrom >= iTo) {
 				setNumber++;
 				setName = "auto generated iteration set " + setNumber;
-				this.setIterationVariable(runId, -1, iterationList, -1, setName, setNumber, "key." + setNumber, String.valueOf(iFrom));
-				
-				iFrom= iFrom - iStep;
-			}			
+				this.setIterationVariable(runId, -1, iterationList, -1, setName, setNumber, "key." + setNumber,
+						String.valueOf(iFrom));
+
+				iFrom = iFrom - iStep;
+			}
 		} else {
 			setNumber++;
 			setName = "auto generated iteration set " + setNumber;
-			this.setIterationVariable(runId, -1, iterationList, -1, setName, setNumber, "key." + setNumber, String.valueOf(iFrom));
+			this.setIterationVariable(runId, -1, iterationList, -1, setName, setNumber, "key." + setNumber,
+					String.valueOf(iFrom));
 		}
 	}
 
@@ -188,11 +196,11 @@ public class IterationConfiguration {
 		}
 		return value;
 	}
-	
+
 	public IterationInstance hasNext(String runId, long orderNumber) {
 		CachedRowSet crs = null;
-		String query = "select run_id, prc_id, list_id, list_nm, set_id, set_nm, order_nb, var_nm, var_val from " + this.getPRC_ITERATION_EXEC() + " where run_id = '" + runId
-				+ "' and order_nb = " + orderNumber; 
+		String query = "select run_id, prc_id, list_id, list_nm, set_id, set_nm, order_nb, var_nm, var_val from "
+				+ this.getPRC_ITERATION_EXEC() + " where run_id = '" + runId + "' and order_nb = " + orderNumber;
 		crs = this.getSqliteDatabaseConnection().executeQuery(query);
 		IterationInstance iterationInstance = new IterationInstance();
 		try {
@@ -205,6 +213,25 @@ public class IterationConfiguration {
 			StringWriter StackTrace = new StringWriter();
 			e.printStackTrace(new PrintWriter(StackTrace));
 		}
+		return iterationInstance;
+	}
+
+	public IterationInstance hasNext(String runId, String condition) {
+		IterationInstance iterationInstance = new IterationInstance();
+
+		boolean conditionResult = true;
+		ConditionOperation conditionOperation = new ConditionOperation(this.getExecutionControl(), condition);
+		try {
+			conditionResult = conditionOperation.evaluateCondition();
+		} catch (Exception exception) {
+			conditionResult = true;
+		}
+
+		if (conditionResult) {
+			iterationInstance.setEmpty(false);
+			iterationInstance.getVariableMap().put("iterate", "y");
+		}
+
 		return iterationInstance;
 	}
 
@@ -278,6 +305,14 @@ public class IterationConfiguration {
 
 	public void setPRC_ITERATION_EXEC(String pRC_ITERATION_EXEC) {
 		PRC_ITERATION_EXEC = pRC_ITERATION_EXEC;
+	}
+
+	public ExecutionControl getExecutionControl() {
+		return executionControl;
+	}
+
+	public void setExecutionControl(ExecutionControl executionControl) {
+		this.executionControl = executionControl;
 	}
 
 }

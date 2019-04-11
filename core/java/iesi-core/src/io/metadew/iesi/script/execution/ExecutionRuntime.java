@@ -261,7 +261,9 @@ public class ExecutionRuntime {
 		result = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(input);
 
 		// Second: Action attributes
-		result = this.resolveConfiguration(actionExecution, result);
+		if (actionExecution != null) {
+			result = this.resolveConfiguration(actionExecution, result);
+		}
 
 		// third level: runtime variables
 		result = this.resolveRuntimeVariables(result);

@@ -2,13 +2,13 @@
 
 # Introduction
 
-Intelligent ETL Solution Industrialization or *IESI* is an automation framework created at Accenture to automate end-to-end delivery and 
-testing processes for data driven initiatives (integration or migration). It allows the configuration, execution and 
-reporting on automated executions driving development, testing and deployment automation.
+**Automation for everyone.** Our vision is that automation should be easy; our mission that it should be available to everyone. Whether you are working in a small company or a large one, working on a small project or automating end-to-end processes across an entire organization, working from your laptop or running your infrastructure in the cloud; you should be able to leverage our framework to be up and running very fast.
 
-Although our name includes the term *ETL*, the framework is so much more. Read this term from its conceptual essence: extract, transform, load or rather input, process, output. So, this applies to all types of systems and processes, from backend to data platforms and connectivity.
+> Our objective is to be up and running in less than 1 hour
 
-> Test automation (and data-driven automation in general) should not be considered a commodity but will provide many ways of differentiation in the future
+Intelligent ETL Solution Industrialization or **IESI** is an automation framework orgininally created at Accenture to automate end-to-end delivery and testing processes for data driven initiatives (integration or migration). It allows the configuration, execution and reporting on automated executions driving development, testing and deployment automation. Although our name includes the term *ETL*, the framework is so much more. Read this term from its conceptual essence: extract, transform, load or rather input, process, output. So, this applies to all types of systems and processes, from backend to data platforms and connectivity.
+
+> It becomes easier to automate than to do it manually
 
 Our framework aims to differientiate itself by making automation services accessible and affordable for any project or organization.
 
@@ -17,7 +17,7 @@ Our framework aims to differientiate itself by making automation services access
 |Easy to use|Reusable configuration making automation faster|
 |Agnostic|Technology, vendor and industry agnostic|
 
-> It becomes easier to automate than to do it manually
+> Test automation (and data-driven automation in general) should not be considered a commodity but will provide many ways of differentiation in the future
 
 Learn more on our [introduction](/{{site.repository}}/pages/introduction.html) page.
 
@@ -26,6 +26,8 @@ It has been used at several projects and clients over the past years and evolves
 Please consider that the open source release is underway and efforts are undertaken to improve features and documentation. 
 In the meantime, feel free to download and experiment with the automation framework and get acquainted with our approach. 
 [We welcome contributors](/{{site.repository}}/pages/contribute/contribute.html) from any organization or background to help us grow the framework.
+
+> We grow our framework best when we combine innovation with real life experiences and common sense
 
 # Features
 

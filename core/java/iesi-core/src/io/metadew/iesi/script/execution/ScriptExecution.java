@@ -221,6 +221,14 @@ public class ScriptExecution {
                 while (iterationExecution.hasNext()) {
                     if (iterationExecution.getIterationNumber() > 1) actionExecution.initialize();
                     actionExecution.execute();
+                    
+                    if (!iterationExecution.isIterationOff()) {
+                    	if (iterationExecution.getIterationOperation().getIteration().getInterrupt().equalsIgnoreCase("y")) {
+                    		if (actionExecution.getActionControl().getExecutionMetrics().getErrorCount() > 0) {
+                    			break;
+                    		}
+                    	}
+                    }
                 }
                 
             	// Include script

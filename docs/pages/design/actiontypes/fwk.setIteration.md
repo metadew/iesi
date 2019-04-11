@@ -56,14 +56,17 @@ It represents the definition of where to iterate over.
 
 ### 7: list
 
-`list: "working on it"`
+`list: "identifier for the list name that is used to iterate on"`
 * applicable for type `list`
 * work in progress
 
 ### 8: interrupt
 
-`interrupt: "working on it"`
-* work in progress
+`interrupt: "Y" / "N"`
+* define if an iteration needs to break if an error inside occurs
+* this can be achieved by setting the value to `Y`
+* by default the value is set to `N`
+
 
 ## Examples
 
@@ -113,19 +116,29 @@ It represents the definition of where to iterate over.
       value: "1"
 ```
 
+### Interrupt the iteration upon error
+
 ```yaml
-  - number: 3
+  - number: 2
     type: "fwk.outputMessage"
-    name: "example1"
-    description: "Adding variables in the message"
+    name: "example2"
+    description: "Define an iteration using a for loop"
     component: ""
     condition: ""
     iteration: ""
     errorExpected: "N"
     errorStop: "N"
     parameters:
-    - name: "message"
-      value : "#count# records have been found"
-    - name: "onScreen"
+    - name: "name"
+      value : "iteration2"
+    - name: "type"
+      value: "for"
+    - name: "from"
+      value: "1"
+	- name: "to"
+      value: "5"
+	- name: "step"
+      value: "1"
+	- name: "interrupt"
       value: "Y"
 ```

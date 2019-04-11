@@ -67,6 +67,7 @@ public class ScriptExecution {
         this.setParentScriptExecution(this.getRootScriptExecution());
         this.setRootScript(true);
         this.setRouteScript(false);
+        this.setProcessId(this.getExecutionControl().getProcessId());
         return true;
     }
 
@@ -81,6 +82,7 @@ public class ScriptExecution {
         this.setParentScriptExecution(parentScriptExecution);
         this.setRootScript(false);
         this.setRouteScript(false);
+        this.setProcessId(this.getExecutionControl().getProcessId());
         return true;
     }
 

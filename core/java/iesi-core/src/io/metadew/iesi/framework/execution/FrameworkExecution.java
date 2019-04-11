@@ -53,6 +53,9 @@ public class FrameworkExecution {
 		if (frameworkInitializationFile == null) {
 			this.setFrameworkInitializationFile(new FrameworkInitializationFile());
 			this.getFrameworkInitializationFile().setName(this.getFrameworkConfiguration().getFrameworkCode() + "-conf.ini");
+		} else if (frameworkInitializationFile.getName().trim().isEmpty()) {
+			this.setFrameworkInitializationFile(new FrameworkInitializationFile());
+			this.getFrameworkInitializationFile().setName(this.getFrameworkConfiguration().getFrameworkCode() + "-conf.ini");			
 		} else {
 			this.setFrameworkInitializationFile(frameworkInitializationFile);
 		}

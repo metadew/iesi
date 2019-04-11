@@ -147,7 +147,7 @@ public class ExecutionControl
 		query += "(";
 		query += SQLTools.GetStringForSQL(this.getRunId());
 		query += ",";
-		query += SQLTools.GetStringForSQL(this.getProcessId());
+		query += SQLTools.GetStringForSQL(scriptExecution.getProcessId());
 		query += ",";
 		query += SQLTools.GetStringForSQL(parentProcessId);
 		query += ",";
@@ -195,7 +195,7 @@ public class ExecutionControl
 		query += "(";
 		query += SQLTools.GetStringForSQL(this.getRunId());
 		query += ",";
-		query += SQLTools.GetStringForSQL(this.getProcessId());
+		query += SQLTools.GetStringForSQL(actionExecution.getProcessId());
 		query += ",";
 		query += SQLTools.GetStringForSQL(actionExecution.getAction().getId());
 		query += ",";

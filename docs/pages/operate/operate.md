@@ -17,6 +17,7 @@ The following options are available for the command:
 |-drop|drop all metadata tables in the metadata repository|
 |-files|filename(s) to load from the input folder into the metadata repository|
 |-help|displays the help message|
+|-ini|define the initialization file|
 |-load|load metadata file from the input folder into the metadata repository|
 |-path|path to be used to for backup or restore|
 |-restore|restore a backup of the metadata repository|
@@ -66,10 +67,11 @@ The following options are available for the command:
 |------|-----------|
 |-actions <arg>|select actions to execute or not|
 |-env <arg>|define the environment name where the execution needs to take place|
+|-file <arg>|define the file to execute|
 |-help|displays the help message|
 |-impersonation <arg>|define impersonation name to use|
 |-impersonate <arg>|define custom impersonations to use|
-|-file <arg>|define the file to execute|
+|-ini|define the initialization file|
 |-paramlist <arg>|define a list of parameters to use|
 |-paramfile <arg>|define a parameter file to use|
 |-script <arg>|define the script name to execute|
@@ -140,6 +142,24 @@ It is possible to define specific setting valus when executing a script using th
 |Setting|Description|Values|
 |-------|-----------|------|
 |iesi.commandline.display.runtime.variable|Display all operations when setting runtime variables|Y,N|
+
+## Defining a specific initialization file
+
+It is possible to define a specific initialization file when starting the execution using the `ini` option. 
+This makes it possible to define multiple initialization of the framework and execute on different ones easily. 
+* The initialization file needs to be provided including extension: `iesi-conf.ini`
+* The initialization file needs to be located in folder `conf`
+* By default the file `iesi-conf.ini` will be used
+
+```
+-ini [FILENAME]
+```
+
+Example
+
+```
+-ini iesi-test.ini
+```
 
 ## External triggering
 

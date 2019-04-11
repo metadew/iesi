@@ -45,10 +45,16 @@
 
 6. Run again for another environment
 
-	`./iesi-launch.sh -script ordersETL -env dev`
+	`./iesi-launch.sh -script ordersETL -env acc`
 	
 	You can now similarly verify the results table of the target-db-acc is populated.
 
+7. Bring docker environment down
+ 
+	Open a command prompt in the folder containing this file
+	
+	 `docker-compose down`
+	 
 ## Demo setup
 
 The demo has been packaged fully into a multi-container docker set. These docker containers simulate the various systems that make a typical enterprise landscape.

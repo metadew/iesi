@@ -1,5 +1,0 @@
----
-type: Environment
-data:
-  name: "test"
-  description: "test environment"

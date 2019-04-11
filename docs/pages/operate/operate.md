@@ -15,6 +15,7 @@ The following options are available for the command:
 |-clean|clean all tables in the metadata repository|
 |-create|create all metadata tables in the metadata repository|
 |-drop|drop all metadata tables in the metadata repository|
+|-exit|define if an explicit exit is required|
 |-files|filename(s) to load from the input folder into the metadata repository|
 |-help|displays the help message|
 |-ini|define the initialization file|
@@ -67,6 +68,7 @@ The following options are available for the command:
 |------|-----------|
 |-actions <arg>|select actions to execute or not|
 |-env <arg>|define the environment name where the execution needs to take place|
+|-exit|define if an explicit exit is required|
 |-file <arg>|define the file to execute|
 |-help|displays the help message|
 |-impersonation <arg>|define impersonation name to use|
@@ -155,10 +157,27 @@ This makes it possible to define multiple initialization of the framework and ex
 -ini [FILENAME]
 ```
 
+Example:
+```
+-ini iesi-test.ini
+```
+
+## Defining if an explicit exit is required
+
+It is possible to define explicitely if a process needs to exit. 
+This is useful when running a *server* or *automated* type approach launching several launches one after the other.
+* The value can be `true` of `y` for confirming to exit explicitely
+* The value can be `false` or `n` for confirming that exit cannot be explicite
+* By default the value will be set to `true`
+
+```
+-exit [VALUE]
+```
+
 Example
 
 ```
--ini iesi-test.ini
+-exit false
 ```
 
 ## External triggering

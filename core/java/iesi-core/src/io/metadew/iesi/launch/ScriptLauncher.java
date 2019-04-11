@@ -50,6 +50,7 @@ public class ScriptLauncher {
 		Option oSettings = new Option("settings", true, "set specific setting values");
 		Option oImpersonation = new Option("impersonation", true, "define impersonation name to use");
 		Option oImpersonate = new Option("impersonate", true, "define custom impersonations to use");
+		Option oExit = new Option("exit", true, "define if an explicit exit is required");
 
 		// create Options object
 		Options options = new Options();
@@ -66,9 +67,11 @@ public class ScriptLauncher {
 		options.addOption(oSettings);
 		options.addOption(oImpersonation);
 		options.addOption(oImpersonate);
+		options.addOption(oExit);
 
 		// create the parser
 		CommandLineParser parser = new DefaultParser();
+		boolean exit = true;
 		String initializationFile = "";
 		String environmentName = "";
 		String executionMode = "";
@@ -92,6 +95,22 @@ public class ScriptLauncher {
 				System.exit(0);
 			}
 
+			// Define the exit behaviour
+			if (line.hasOption("exit")) {
+				switch (line.getOptionValue("exit").trim().toLowerCase()) {
+				case "y":
+				case "true":
+					exit = true;
+					break;
+				case "n":
+				case "false":
+					exit = false;
+					break;
+				default:
+					break;
+				}
+			}
+			
 			// Define the initialization file
 			if (line.hasOption("ini")) {
 				initializationFile = line.getOptionValue("ini");
@@ -241,6 +260,7 @@ public class ScriptLauncher {
 		scriptExecution.initializeAsRootScript(environmentName);
 		scriptExecution.setActionSelectOperation(new ActionSelectOperation(actionSelect));
 		scriptExecution.setImpersonations(impersonationName, impersonationCustom);
+		scriptExecution.setExitOnCompletion(exit);
 
 		if (!paramList.equals("")) {
 			scriptExecution.setParamList(paramList);

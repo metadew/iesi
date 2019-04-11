@@ -12,6 +12,7 @@ import org.apache.commons.cli.ParseException;
 import org.apache.logging.log4j.Level;
 
 import io.metadew.iesi.connection.tools.FileTools;
+import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.framework.execution.FrameworkExecutionContext;
 import io.metadew.iesi.framework.execution.FrameworkExecutionSettings;
@@ -28,13 +29,12 @@ import io.metadew.iesi.script.operation.YamlInputOperation;
  *
  * @author peter.billen
  */
-public class ScriptLauncher
-{
+public class ScriptLauncher {
 
-	public static void main(String[] args)
-	{
+	public static void main(String[] args) {
 
 		Option oHelp = new Option("help", "print this message");
+		Option oIni = new Option("ini", true, "define the initialization file");
 		Option oScript = new Option("script", true, "define the script name to execute");
 		Option oVersion = new Option("version", true, "define the version of the script to execute");
 		Option oFile = new Option("file", true, "define the configuration file to execute");
@@ -43,7 +43,8 @@ public class ScriptLauncher
 		// Example: -paramlist var1=value1,var2=value
 		Option oParamFile = new Option("paramfile", true, "define a parameter file to use");
 		// Example: -paramfile C:/dir/file.conf
-		// multiple values are separated by commas: -paramfile C:/dir/file.conf,C:/dir/file.conf
+		// multiple values are separated by commas: -paramfile
+		// C:/dir/file.conf,C:/dir/file.conf
 		Option oActionSelect = new Option("actions", true, "select actions to execute or not");
 		// Example -actions type=number,mode=include,scope=2-3,6
 		Option oSettings = new Option("settings", true, "set specific setting values");
@@ -54,6 +55,7 @@ public class ScriptLauncher
 		Options options = new Options();
 		// add options
 		options.addOption(oHelp);
+		options.addOption(oIni);
 		options.addOption(oScript);
 		options.addOption(oVersion);
 		options.addOption(oFile);
@@ -67,6 +69,7 @@ public class ScriptLauncher
 
 		// create the parser
 		CommandLineParser parser = new DefaultParser();
+		String initializationFile = "";
 		String environmentName = "";
 		String executionMode = "";
 		String scriptName = "";
@@ -78,118 +81,99 @@ public class ScriptLauncher
 		String settings = "";
 		String impersonationName = "";
 		String impersonationCustom = "";
-		try
-		{
+		try {
 			// parse the command line arguments
 			CommandLine line = parser.parse(options, args);
 
-			if (line.hasOption("help"))
-			{
+			if (line.hasOption("help")) {
 				// automatically generate the help statement
 				HelpFormatter formatter = new HelpFormatter();
 				formatter.printHelp("[command]", options);
 				System.exit(0);
 			}
 
+			// Define the initialization file
+			if (line.hasOption("ini")) {
+				initializationFile = line.getOptionValue("ini");
+			}
+			System.out.println("Option -ini (ini) value = " + initializationFile);
+
 			// Get the script
 			// Script is leading, Json option is trailing
-			if (line.hasOption("script"))
-			{
+			if (line.hasOption("script")) {
 				executionMode = "script";
 				scriptName = line.getOptionValue("script");
 				System.out.println("Option -script (script) value = " + scriptName);
 
-				if (line.hasOption("version"))
-				{
+				if (line.hasOption("version")) {
 					String scriptVersionInput = line.getOptionValue("version");
-					try
-					{
+					try {
 						scriptVersionNumber = Long.parseLong(scriptVersionInput);
-					}
-					catch (Exception e)
-					{
+					} catch (Exception e) {
 						System.out.println("Option -version (version) is not in the correct format");
 						System.exit(1);
 					}
 					System.out.println("Option -version (version) value = " + scriptVersionNumber);
-				}
-				else
-				{
+				} else {
 					System.out.println("Option -version (version) value = ");
 				}
 
-			}
-			else
-			{
+			} else {
 				// Json option
-				if (line.hasOption("file"))
-				{
+				if (line.hasOption("file")) {
 					executionMode = "file";
 					fileName = line.getOptionValue("file");
 					System.out.println("Option -file (file) value = " + fileName);
-				}
-				else
-				{
+				} else {
 					System.out.println("Option -script (script) or -file (file) missing");
 					System.exit(1);
 				}
 			}
 
 			// Get the environment
-			if (line.hasOption("env"))
-			{
+			if (line.hasOption("env")) {
 				environmentName = line.getOptionValue("env");
 				System.out.println("Option -env (environment) value = " + environmentName);
-			}
-			else
-			{
+			} else {
 				System.out.println("Option -env (environment) missing");
 				System.exit(1);
 			}
 
 			// Get variable configurations
-			if (line.hasOption("paramlist"))
-			{
+			if (line.hasOption("paramlist")) {
 				paramList = line.getOptionValue("paramlist");
 			}
 			System.out.println("Option -paramlist (parameter list) value = " + paramList);
-			if (line.hasOption("paramfile"))
-			{
+			if (line.hasOption("paramfile")) {
 				paramFile = line.getOptionValue("paramfile");
 			}
 			System.out.println("Option -paramfile (parameter file) value = " + paramFile);
 
 			// Get action select settings
-			if (line.hasOption("actions"))
-			{
+			if (line.hasOption("actions")) {
 				actionSelect = line.getOptionValue("actions");
 			}
 			System.out.println("Option -actions (actions) value = " + actionSelect);
 
 			// Get settings input
-			if (line.hasOption("settings"))
-			{
+			if (line.hasOption("settings")) {
 				settings = line.getOptionValue("settings");
 			}
 			System.out.println("Option -settings (settings) value = " + settings);
 
 			// Get impersonation input
-			if (line.hasOption("impersonation"))
-			{
+			if (line.hasOption("impersonation")) {
 				impersonationName = line.getOptionValue("impersonation");
 			}
 			System.out.println("Option -impersonation (impersonation) value = " + impersonationName);
 
 			// Get impersonation input
-			if (line.hasOption("impersonate"))
-			{
+			if (line.hasOption("impersonate")) {
 				impersonationCustom = line.getOptionValue("impersonate");
 			}
 			System.out.println("Option -impersonate (impersonate) value = " + impersonationCustom);
 
-		}
-		catch (ParseException e)
-		{
+		} catch (ParseException e) {
 			e.printStackTrace();
 			System.exit(1);
 		}
@@ -204,10 +188,13 @@ public class ScriptLauncher
 		Context context = new Context();
 		context.setName("script");
 		context.setScope(scriptName);
+		FrameworkInitializationFile frameworkInitializationFile = new FrameworkInitializationFile();
+		frameworkInitializationFile.setName(initializationFile);
 		FrameworkExecution frameworkExecution = new FrameworkExecution(new FrameworkExecutionContext(context),
-					frameworkExecutionSettings);
+				frameworkExecutionSettings, frameworkInitializationFile);
 
 		// Logging
+		frameworkExecution.getFrameworkLog().log("option.ini=" + initializationFile, Level.INFO);
 		frameworkExecution.getFrameworkLog().log("option.script=" + scriptName, Level.INFO);
 		frameworkExecution.getFrameworkLog().log("option.version=" + scriptVersionNumber, Level.INFO);
 		frameworkExecution.getFrameworkLog().log("option.file=" + fileName, Level.INFO);
@@ -222,42 +209,30 @@ public class ScriptLauncher
 		// Get the Script
 		ScriptConfiguration scriptConfiguration = null;
 		Script script = null;
-		if (executionMode.equalsIgnoreCase("script"))
-		{
+		if (executionMode.equalsIgnoreCase("script")) {
 			scriptConfiguration = new ScriptConfiguration(frameworkExecution);
-			if (scriptVersionNumber == -1)
-			{
+			if (scriptVersionNumber == -1) {
 				script = scriptConfiguration.getScript(scriptName);
-			}
-			else
-			{
+			} else {
 				script = scriptConfiguration.getScript(scriptName, scriptVersionNumber);
 			}
 
-		}
-		else if (executionMode.equalsIgnoreCase("file"))
-		{
+		} else if (executionMode.equalsIgnoreCase("file")) {
 			File file = new File(fileName);
-			if (FileTools.getFileExtension(file).equalsIgnoreCase("json"))
-			{
+			if (FileTools.getFileExtension(file).equalsIgnoreCase("json")) {
 				JsonInputOperation jsonInputOperation = new JsonInputOperation(frameworkExecution, fileName);
 				script = jsonInputOperation.getScript();
-			}
-			else if (FileTools.getFileExtension(file).equalsIgnoreCase("yml"))
-			{
+			} else if (FileTools.getFileExtension(file).equalsIgnoreCase("yml")) {
 				YamlInputOperation yamlInputOperation = new YamlInputOperation(frameworkExecution, fileName);
 				script = yamlInputOperation.getScript();
 			}
 
-			if (script == null)
-			{
+			if (script == null) {
 				System.out.println("No script found for execution");
 				System.exit(1);
 			}
 
-		}
-		else
-		{
+		} else {
 			System.out.println("script.exec.mode.invalid");
 			System.exit(1);
 		}
@@ -267,12 +242,10 @@ public class ScriptLauncher
 		scriptExecution.setActionSelectOperation(new ActionSelectOperation(actionSelect));
 		scriptExecution.setImpersonations(impersonationName, impersonationCustom);
 
-		if (!paramList.equals(""))
-		{
+		if (!paramList.equals("")) {
 			scriptExecution.setParamList(paramList);
 		}
-		if (!paramFile.equals(""))
-		{
+		if (!paramFile.equals("")) {
 			scriptExecution.setParamFile(paramFile);
 		}
 

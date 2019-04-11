@@ -29,7 +29,7 @@ public class BackupExecution {
 		Context context = new Context();
 		context.setName("backup");
 		context.setScope("");
-		this.setFrameworkExecution(new FrameworkExecution(new FrameworkExecutionContext(context)));
+		this.setFrameworkExecution(new FrameworkExecution(new FrameworkExecutionContext(context), null));
 		this.setExecutionControl(new ExecutionControl(this.getFrameworkExecution()));
 	}
 

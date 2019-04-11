@@ -13,6 +13,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
 import io.metadew.iesi.common.config.ConfigFile;
+import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.framework.execution.FrameworkExecutionContext;
 import io.metadew.iesi.metadata.backup.BackupExecution;
@@ -36,6 +37,7 @@ public class MetadataLauncher
 	{
 
 		Option oHelp = new Option("help", "print this message");
+		Option oIni = new Option("ini", true, "define the initialization file");
 		Option oType = new Option("type", true, "define the type of metadata repository");
 		Option oConfig = new Option("config", true, "define the metadata repository config");
 		Option oBackup = new Option("backup", "create a backup of the entire metadata repository");
@@ -70,6 +72,7 @@ public class MetadataLauncher
 		Options options = new Options();
 		// add options
 		options.addOption(oHelp);
+		options.addOption(oIni);
 		options.addOption(oType);
 		options.addOption(oConfig);
 		options.addOption(oBackup);
@@ -97,10 +100,18 @@ public class MetadataLauncher
 				System.exit(0);
 			}
 
+			
+			// Define the ini file
+			FrameworkInitializationFile frameworkInitializationFile = new FrameworkInitializationFile();
+			if (line.hasOption("ini")) {
+				frameworkInitializationFile.setName(line.getOptionValue("ini"));
+				System.out.println("Option -ini (ini) value = " + frameworkInitializationFile.getName());
+			}
+			
 			Context context = new Context();
 			context.setName("metadata");
 			context.setScope("");
-			FrameworkExecution frameworkExecution = new FrameworkExecution(new FrameworkExecutionContext(context), "owner");
+			FrameworkExecution frameworkExecution = new FrameworkExecution(new FrameworkExecutionContext(context), "owner", frameworkInitializationFile);
 			MetadataRepositoryOperation metadataRepositoryOperation = null;
 			List<MetadataRepositoryConfiguration> metadataRepositoryConfigurationList = new ArrayList();
 

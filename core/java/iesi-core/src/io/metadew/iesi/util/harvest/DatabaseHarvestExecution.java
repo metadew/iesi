@@ -29,7 +29,7 @@ public class DatabaseHarvestExecution {
 		Context context = new Context();
 		context.setName("harvest");
 		context.setScope("");
-		this.setFrameworkExecution(new FrameworkExecution(new FrameworkExecutionContext(context)));
+		this.setFrameworkExecution(new FrameworkExecution(new FrameworkExecutionContext(context), null));
 	}
 
 	// Methods

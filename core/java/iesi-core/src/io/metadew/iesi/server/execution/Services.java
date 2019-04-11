@@ -17,7 +17,7 @@ public class Services {
 		Context context = new Context();
 		context.setName("server");
 		context.setScope("");
-		this.setFrameworkExecution(new FrameworkExecution(new FrameworkExecutionContext(context)));
+		this.setFrameworkExecution(new FrameworkExecution(new FrameworkExecutionContext(context), null));
 		
 		requestServerRunnable = new RequestRunnable(this.getFrameworkExecution());
 		requestServerThread = new Thread(requestServerRunnable);

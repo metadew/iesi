@@ -25,7 +25,7 @@ public class DatabaseOffloadExecution
 		Context context = new Context();
 		context.setName("offload");
 		context.setScope("");
-		this.setFrameworkExecution(new FrameworkExecution(new FrameworkExecutionContext(context)));
+		this.setFrameworkExecution(new FrameworkExecution(new FrameworkExecutionContext(context), null));
 	}
 
 	// Methods

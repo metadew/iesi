@@ -117,7 +117,7 @@ public class GenerationLauncher {
 		Context context = new Context();
 		context.setName("generation");
 		context.setScope(generationName);
-		FrameworkExecution frameworkExecution = new FrameworkExecution(new FrameworkExecutionContext(context));
+		FrameworkExecution frameworkExecution = new FrameworkExecution(new FrameworkExecutionContext(context), null);
 		
 		// Logging
 		frameworkExecution.getFrameworkLog().log("option.generation=" + generationName, Level.INFO);

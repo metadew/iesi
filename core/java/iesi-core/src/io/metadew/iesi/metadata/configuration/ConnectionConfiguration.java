@@ -2,6 +2,7 @@ package io.metadew.iesi.metadata.configuration;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +28,58 @@ public class ConnectionConfiguration {
 	public ConnectionConfiguration(Connection connection, FrameworkExecution frameworkExecution) {
 		this.setConnection(connection);
 		this.setFrameworkExecution(frameworkExecution);
+	}
+
+	public List<Connection> getConnections() {
+		List<Connection> connections = new ArrayList<>();
+		String query = "select * from " + this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Connections")
+				+ " order by CONN_NM ASC";
+		CachedRowSet crs = this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().executeQuery(query);
+		ConnectionParameterConfiguration connectionParameterConfiguration = new ConnectionParameterConfiguration(frameworkExecution);
+		try {
+			while (crs.next()) {
+				String connectionName = crs.getString("CONN_NM");
+				String queryConnectionParameters = "select CONN_NM, ENV_NM, CONN_PAR_NM, CONN_PAR_VAL from "
+						+ this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("ConnectionParameters")
+						+ " where CONN_NM = '" + connectionName + "'";
+				CachedRowSet crsConnectionParameters = this.getFrameworkExecution().getMetadataControl()
+						.getConnectivityRepositoryConfiguration().executeQuery(queryConnectionParameters);
+
+				String queryEnvironment = "select distinct ENV_NM from "
+						+ this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("ConnectionParameters")
+						+ " where CONN_NM = '"
+						+  connectionName + "' order by ENV_NM ASC";
+				CachedRowSet crsEnvironment = this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().executeQuery(queryEnvironment);
+				while (crsEnvironment.next()) {
+					List<ConnectionParameter> connectionParameters = new ArrayList<>();
+					String environmentName = crsEnvironment.getString("ENV_NM");
+					while (crsConnectionParameters.next()) {
+						connectionParameters.add(connectionParameterConfiguration.getConnectionParameter(
+								connectionName,
+								environmentName,
+								crsConnectionParameters.getString("CONN_PAR_NM")));
+					}
+					connections.add(new Connection(
+							connectionName,
+							crs.getString("CONN_TYP_NM"),
+							crs.getString("CONN_DSC"),
+							environmentName,
+							connectionParameters));
+				}
+				crsEnvironment.close();
+			}
+			crs.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return connections;
+	}
+
+	public List<Connection> getConnectionsByEnvironment(String environmentName) {
+		List<Connection> connections = new ArrayList<>();
+		// TODO: first fetch connections on env_nm from parameters, then fetch info from connections
+
+		return connections;
 	}
 
 	// Insert
@@ -134,10 +187,9 @@ public class ConnectionConfiguration {
 
 	public ListObject getConnections(String environmentName) {
 		List<Connection> connectionList = new ArrayList<>();
-		CachedRowSet crs = null;
-		String query = "select CONN_NM from " + this.getFrameworkExecution().getMetadataControl()
-				.getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Connections") + " order by CONN_NM ASC";
-		crs = this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().executeQuery(query);
+		String query = "select CONN_NM from " + this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Connections")
+				+ " order by CONN_NM ASC";
+		CachedRowSet crs = this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().executeQuery(query);
 		ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution());
 		try {
 			String connectionName = "";

@@ -1,5 +1,6 @@
 package io.metadew.iesi.metadata.definition;
 
+import javax.sql.rowset.CachedRowSet;
 import java.util.List;
 
 public class Connection {
@@ -13,6 +14,14 @@ public class Connection {
 	// Constructors
 	public Connection() {
 
+	}
+
+	public Connection(String name, String type, String description, String environment, List<ConnectionParameter> parameters) {
+		this.name = name;
+		this.type = type;
+		this.description = description;
+		this.environment = environment;
+		this.parameters = parameters;
 	}
 
 	// Getters and Setters

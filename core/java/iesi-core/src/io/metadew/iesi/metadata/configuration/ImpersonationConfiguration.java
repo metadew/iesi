@@ -3,6 +3,8 @@ package io.metadew.iesi.metadata.configuration;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.sql.SQLException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,6 +19,7 @@ import io.metadew.iesi.metadata.definition.DataObject;
 import io.metadew.iesi.metadata.definition.Impersonation;
 import io.metadew.iesi.metadata.definition.ImpersonationParameter;
 import io.metadew.iesi.metadata.definition.ListObject;
+import org.apache.logging.log4j.Level;
 
 public class ImpersonationConfiguration {
 
@@ -31,6 +34,114 @@ public class ImpersonationConfiguration {
 	public ImpersonationConfiguration(Impersonation impersonation, FrameworkExecution frameworkExecution) {
 		this.setImpersonation(impersonation);
 		this.setFrameworkExecution(frameworkExecution);
+	}
+
+	public List<Impersonation> getAllImpersonations() {
+		frameworkExecution.getFrameworkLog().log("Getting all impersonations {0}.", Level.TRACE);
+		List<Impersonation> impersonations = new ArrayList<>();
+		String query = "select IMP_NM from " + this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Impersonations")
+				+ " order by IMP_NM ASC";
+		CachedRowSet crs = this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().executeQuery(query);
+		try {
+			while (crs.next()) {
+				String impersonationName = crs.getString("IMP_NM");
+				impersonations.add(getImpersonation(impersonationName));
+			}
+			crs.close();
+		} catch (SQLException e) {
+			StringWriter StackTrace = new StringWriter();
+			e.printStackTrace(new PrintWriter(StackTrace));
+		}
+		return impersonations;
+	}
+
+	public void deleteImpersonation(Impersonation impersonation) {
+		frameworkExecution.getFrameworkLog().log(MessageFormat.format(
+				"Deleting impersonation {0}.", impersonation.getName()), Level.TRACE);
+		String query = getDeleteStatement(impersonation);
+		this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().executeUpdate(query);
+	}
+
+	public void insertImpersonation(Impersonation impersonation) {
+		frameworkExecution.getFrameworkLog().log(MessageFormat.format(
+				"Inserting impersonation {0}.", impersonation.getName()), Level.TRACE);
+		String query = getInsertStatement(impersonation);
+		this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().executeUpdate(query);
+	}
+
+	public void updateImpersonation(Impersonation impersonation) {
+		frameworkExecution.getFrameworkLog().log(MessageFormat.format(
+				"Updating impersonation {0}.", impersonation.getName()), Level.TRACE);
+		if (getImpersonation(impersonation.getName()) != null ) {
+			deleteImpersonation(impersonation);
+			insertImpersonation(impersonation);
+		} else {
+			frameworkExecution.getFrameworkLog().log(MessageFormat.format(
+					"Impersonation {0} is not present in the repository so cannot be updated", impersonation.getName()),
+					Level.TRACE);
+		}
+	}
+
+	public String getDeleteStatement(Impersonation impersonation) {
+		String sql = "";
+
+		sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Impersonations");
+		sql += " WHERE IMP_NM = "
+				+ SQLTools.GetStringForSQL(impersonation.getName());
+		sql += ";";
+		sql += "\n";
+		sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("ImpersonationParameters");
+		sql += " WHERE IMP_NM = "
+				+ SQLTools.GetStringForSQL(impersonation.getName());
+		sql += ";";
+		sql += "\n";
+
+		return sql;
+	}
+
+	public String getInsertStatement(Impersonation impersonation) {
+		String sql = "";
+
+		if (this.exists()) {
+			sql += this.getDeleteStatement();
+		}
+
+		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Impersonations");
+		sql += " (IMP_NM, IMP_DSC) ";
+		sql += "VALUES ";
+		sql += "(";
+		sql += SQLTools.GetStringForSQL(impersonation.getName());
+		sql += ",";
+		sql += SQLTools.GetStringForSQL(impersonation.getDescription());
+		sql += ")";
+		sql += ";";
+
+		// add Parameters
+		String sqlParameters = this.getParameterInsertStatements(impersonation);
+		if (!sqlParameters.equals("")) {
+			sql += "\n";
+			sql += sqlParameters;
+		}
+
+		return sql;
+	}
+
+	private String getParameterInsertStatements(Impersonation impersonation) {
+		String result = "";
+
+		// Catch null parameters
+		if (this.getImpersonation().getParameters() == null)
+			return result;
+
+		for (ImpersonationParameter impersonationParameter : impersonation.getParameters()) {
+			ImpersonationParameterConfiguration impersonationParameterConfiguration = new ImpersonationParameterConfiguration(
+					this.getFrameworkExecution());
+			if (!result.equals(""))
+				result += "\n";
+			result += impersonationParameterConfiguration.getInsertStatement(impersonation.getName(), impersonationParameter);
+		}
+
+		return result;
 	}
 
 	// Delete
@@ -80,6 +191,8 @@ public class ImpersonationConfiguration {
 		return sql;
 	}
 
+
+
 	private String getParameterInsertStatements(String impersonationName) {
 		String result = "";
 
@@ -101,37 +214,33 @@ public class ImpersonationConfiguration {
 	// GEt Impersonation
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public Impersonation getImpersonation(String impersonationName) {
-		Impersonation impersonation = new Impersonation();
-		CachedRowSet crsImpersonation = null;
+		// TODO: Make it return an Optional. value if impersonation can be found, else return an empty
+		Impersonation impersonation = null;
 		String queryImpersonation = "select IMP_NM, IMP_DSC from "
-				+ this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Impersonations") + " where IMP_NM = '"
-				+ impersonationName + "'";
-		crsImpersonation = this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().executeQuery(queryImpersonation);
-		ImpersonationParameterConfiguration impersonationParameterConfiguration = new ImpersonationParameterConfiguration(this.getFrameworkExecution());
+				+ this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Impersonations")
+				+ " where IMP_NM = '" + impersonationName + "'";
+		CachedRowSet crsImpersonation = this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().executeQuery(queryImpersonation);
 		try {
 			while (crsImpersonation.next()) {
-				impersonation.setName(impersonationName);
-				impersonation.setDescription(crsImpersonation.getString("IMP_DSC"));
+				String description = crsImpersonation.getString("IMP_DSC");
 
 				// Get parameters
-				CachedRowSet crsImpersonationParameters = null;
 				String queryImpersonationParameters = "select IMP_NM, CONN_NM from "
 						+ this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("ImpersonationParameters")
 						+ " where IMP_NM = '" + impersonationName + "'";
-				crsImpersonationParameters = this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration()
+				CachedRowSet crsImpersonationParameters = this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration()
 						.executeQuery(queryImpersonationParameters);
 				List<ImpersonationParameter> impersonationParameterList = new ArrayList();
 				while (crsImpersonationParameters.next()) {
-					impersonationParameterList.add(impersonationParameterConfiguration.getImpersonationParameter(impersonationName,
-							crsImpersonationParameters.getString("CONN_NM")));
+					impersonationParameterList.add(new ImpersonationParameterConfiguration(this.getFrameworkExecution())
+							.getImpersonationParameter(impersonationName, crsImpersonationParameters.getString("CONN_NM")));
 				}
-				impersonation.setParameters(impersonationParameterList);
 				crsImpersonationParameters.close();
+				impersonation = new Impersonation(impersonationName, description, impersonationParameterList);
 			}
 			crsImpersonation.close();
-		} catch (Exception e) {
-			StringWriter StackTrace = new StringWriter();
-			e.printStackTrace(new PrintWriter(StackTrace));
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
 		return impersonation;
 	}

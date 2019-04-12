@@ -3,6 +3,7 @@ package io.metadew.iesi.metadata.configuration;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,6 +18,7 @@ import io.metadew.iesi.metadata.definition.DataObject;
 import io.metadew.iesi.metadata.definition.Environment;
 import io.metadew.iesi.metadata.definition.EnvironmentParameter;
 import io.metadew.iesi.metadata.definition.ListObject;
+import org.apache.logging.log4j.Level;
 
 public class EnvironmentConfiguration {
 
@@ -32,6 +34,130 @@ public class EnvironmentConfiguration {
 		this.setEnvironment(environment);
 		this.setFrameworkExecution(frameworkExecution);
 	}
+
+	public Environment getEnvironment(String environmentName) {
+		Environment environment = null;
+		String queryEnvironment = "select ENV_NM, ENV_DSC from "
+				+ this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Environments") + " where ENV_NM = '"
+				+ environmentName + "'";
+		CachedRowSet crsEnvironment = this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().executeQuery(queryEnvironment);
+		EnvironmentParameterConfiguration environmentParameterConfiguration = new EnvironmentParameterConfiguration(this.getFrameworkExecution());
+		try {
+			while (crsEnvironment.next()) {
+				// Get parameters
+				String queryEnvironmentParameters = "select ENV_NM, ENV_PAR_NM, ENV_PAR_VAL from "
+						+ this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("EnvironmentParameters")
+						+ " where ENV_NM = '" + environmentName + "'";
+				CachedRowSet crsEnvironmentParameters = this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration()
+						.executeQuery(queryEnvironmentParameters);
+				List<EnvironmentParameter> environmentParameters = new ArrayList<>();
+				while (crsEnvironmentParameters.next()) {
+					environmentParameters.add(environmentParameterConfiguration.getEnvironmentParameter(environmentName,
+							crsEnvironmentParameters.getString("ENV_PAR_NM")));
+				}
+				environment = new Environment(environmentName, crsEnvironment.getString("ENV_DSC"), environmentParameters);
+				crsEnvironmentParameters.close();
+			}
+			crsEnvironment.close();
+		} catch (Exception e) {
+			StringWriter StackTrace = new StringWriter();
+			e.printStackTrace(new PrintWriter(StackTrace));
+		}
+		return environment;
+	}
+
+	public List<Environment> getAllEnvironments() {
+		List<Environment> environments = new ArrayList<>();
+		String query = "select ENV_NM from " + this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Environments")
+				+ " order by ENV_NM ASC";
+		CachedRowSet crs = this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().executeQuery(query);
+		EnvironmentConfiguration environmentConfiguration = new EnvironmentConfiguration(this.getFrameworkExecution());
+		try {
+			while (crs.next()) {
+				String environmentName = crs.getString("ENV_NM");
+				environments.add(environmentConfiguration.getEnvironment(environmentName));
+			}
+			crs.close();
+		} catch (Exception e) {
+			StringWriter StackTrace = new StringWriter();
+			e.printStackTrace(new PrintWriter(StackTrace));
+		}
+		return environments;
+	}
+
+	public void deleteEnvironment(Environment environment) {
+		frameworkExecution.getFrameworkLog().log(
+				MessageFormat.format("Deleting environment {0}", environment.getName()), Level.TRACE);
+		String query = getDeleteStatement(environment);
+		this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().executeUpdate(query);
+	}
+
+	public String getDeleteStatement(Environment environment) {
+		String sql = "";
+
+		sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Environments");
+		sql += " WHERE ENV_NM = "
+				+ SQLTools.GetStringForSQL(environment.getName());
+		sql += ";";
+		sql += "\n";
+		sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("EnvironmentParameters");
+		sql += " WHERE ENV_NM = "
+				+ SQLTools.GetStringForSQL(environment.getName());
+		sql += ";";
+		sql += "\n";
+
+		return sql;
+
+	}
+
+	public void insertEnvironment(Environment environment) {
+		frameworkExecution.getFrameworkLog().log(
+				MessageFormat.format("Inserting environment {0}", environment.getName()), Level.TRACE);
+		String query = getInsertStatement(environment);
+		this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().executeUpdate(query);
+	}
+
+	public String getInsertStatement(Environment environment) {
+
+		String sql = "";
+
+		if (this.exists()) {
+			sql += this.getDeleteStatement();
+		}
+
+		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Environments");
+		sql += " (ENV_NM, ENV_DSC) ";
+		sql += "VALUES ";
+		sql += "(";
+		sql += SQLTools.GetStringForSQL(environment.getName());
+		sql += ",";
+		sql += SQLTools.GetStringForSQL(environment.getDescription());
+		sql += ")";
+		sql += ";";
+
+		// add Parameters
+		String sqlParameters = this.getParameterInsertStatements(environment);
+		if (!sqlParameters.equals("")) {
+			sql += "\n";
+			sql += sqlParameters;
+		}
+
+		return sql;
+	}
+
+	public void updateEnvironment(Environment environment) {
+		frameworkExecution.getFrameworkLog().log(MessageFormat.format(
+				"Updating environment {0}.", environment.getName()), Level.TRACE);
+		if (getEnvironment(environment.getName()) != null ) {
+			deleteEnvironment(environment);
+			updateEnvironment(environment);
+		} else {
+			frameworkExecution.getFrameworkLog().log(MessageFormat.format(
+					"Environment {0} is not present in the repository so cannot be updated", environment.getName()),
+					Level.TRACE);
+		}
+	}
+
 
 	// Delete
 	public String getDeleteStatement() {
@@ -80,6 +206,24 @@ public class EnvironmentConfiguration {
 		return sql;
 	}
 
+	private String getParameterInsertStatements(Environment environment) {
+		String result = "";
+
+		// Catch null parameters
+		if (environment.getParameters() == null)
+			return result;
+
+		for (EnvironmentParameter environmentParameter : environment.getParameters()) {
+			EnvironmentParameterConfiguration environmentParameterConfiguration = new EnvironmentParameterConfiguration(this.getFrameworkExecution());
+			if (!result.equals(""))
+				result += "\n";
+			result += environmentParameterConfiguration.getInsertStatement(environment.getName(), environmentParameter);
+		}
+
+		return result;
+	}
+
+
 	private String getParameterInsertStatements(String environmentName) {
 		String result = "";
 
@@ -98,43 +242,9 @@ public class EnvironmentConfiguration {
 		return result;
 	}
 
-	// GEt Environment
+	// Get Environment
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public Environment getEnvironment(String environmentName) {
-		Environment environment = new Environment();
-		CachedRowSet crsEnvironment = null;
-		String queryEnvironment = "select ENV_NM, ENV_DSC from "
-				+ this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Environments") + " where ENV_NM = '"
-				+ environmentName + "'";
-		crsEnvironment = this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().executeQuery(queryEnvironment);
-		EnvironmentParameterConfiguration environmentParameterConfiguration = new EnvironmentParameterConfiguration(this.getFrameworkExecution());
-		try {
-			while (crsEnvironment.next()) {
-				environment.setName(environmentName);
-				environment.setDescription(crsEnvironment.getString("ENV_DSC"));
 
-				// Get parameters
-				CachedRowSet crsEnvironmentParameters = null;
-				String queryEnvironmentParameters = "select ENV_NM, ENV_PAR_NM, ENV_PAR_VAL from "
-						+ this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("EnvironmentParameters")
-						+ " where ENV_NM = '" + environmentName + "'";
-				crsEnvironmentParameters = this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration()
-						.executeQuery(queryEnvironmentParameters);
-				List<EnvironmentParameter> environmentParameterList = new ArrayList();
-				while (crsEnvironmentParameters.next()) {
-					environmentParameterList.add(environmentParameterConfiguration.getEnvironmentParameter(environmentName,
-							crsEnvironmentParameters.getString("ENV_PAR_NM")));
-				}
-				environment.setParameters(environmentParameterList);
-				crsEnvironmentParameters.close();
-			}
-			crsEnvironment.close();
-		} catch (Exception e) {
-			StringWriter StackTrace = new StringWriter();
-			e.printStackTrace(new PrintWriter(StackTrace));
-		}
-		return environment;
-	}
 
 	public ListObject getEnvironments() {
 		List<Environment> environmentList = new ArrayList<>();

@@ -66,7 +66,7 @@ You can verify the first execution of the framework by completing the following 
 The automation framework is designed around the principle to configure scripts once and execute them many times. 
 The system landscape is defined upfront so that it can be referred to while designing scripts.
 
-The process of automating consists of three steps:
+The process of automating consists of four steps:
 * Define the system landscape
 * Configure the script
 * Execute the script

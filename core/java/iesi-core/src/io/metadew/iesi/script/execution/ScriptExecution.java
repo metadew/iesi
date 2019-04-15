@@ -120,7 +120,6 @@ public class ScriptExecution {
 			this.getExecutionControl().logMessage(this, "exec.env=" + this.getExecutionControl().getEnvName(),
 					Level.INFO);
 			this.getExecutionControl().logStart(this, this.getParentScriptExecution());
-			this.setProcessId(this.getExecutionControl().getProcessId());
 
 			/*
 			 * Initialize parameters. A parameter file has priority over a parameter list

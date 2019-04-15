@@ -129,6 +129,8 @@ public class FwkSetIteration {
 			}
 			this.getExecutionControl().getExecutionRuntime().setIteration(iteration);
 
+			this.getActionExecution().getActionControl().increaseSuccessCount();
+			
 			return true;
 		} catch (Exception e) {
 			StringWriter StackTrace = new StringWriter();

@@ -147,12 +147,12 @@ public class FwkExecuteScript
 
 				scriptExecution.execute();
 
-				if (scriptExecution.getResult().equals(FrameworkStatus.SUCCESS.value()))
+				if (scriptExecution.getResult().equalsIgnoreCase(FrameworkStatus.SUCCESS.value()))
 				{
 					this.getActionExecution().getActionControl().increaseSuccessCount();
 				}
 				else if (scriptExecution.getResult()
-							.equals(FrameworkStatus.WARNING.value()))
+							.equalsIgnoreCase(FrameworkStatus.WARNING.value()))
 				{
 					this.getActionExecution().getActionControl().increaseSuccessCount();
 				}

@@ -77,6 +77,8 @@ public class ScriptLogOutput {
 			// Log the output in the action as well
 			this.getActionExecution().getActionControl().logOutput("output.name",this.getOutputName().getValue());
 			this.getActionExecution().getActionControl().logOutput("output.value",this.getOutputValue().getValue());
+			
+			this.getActionExecution().getActionControl().increaseSuccessCount();
 
 			return true;
 		} catch (Exception e) {

@@ -176,7 +176,7 @@ public class WfaExecuteQueryPing {
 			StringWriter StackTrace = new StringWriter();
 			e.printStackTrace(new PrintWriter(StackTrace));
 
-			this.getActionExecution().getActionControl().increaseSuccessCount();
+			this.getActionExecution().getActionControl().increaseErrorCount();
 
 			this.getActionExecution().getActionControl().logOutput("exception",e.getMessage());
 			this.getActionExecution().getActionControl().logOutput("stacktrace",StackTrace.toString());

@@ -130,6 +130,24 @@ public class ActionExecution {
 			
 			// Trace function
 			this.traceDesignMetadata(actionParameterOperationMap);
+			
+			// Evaluate error expected
+			if (this.getActionControl().getExecutionMetrics().getErrorCount() > 0) {
+				if (this.getAction().getErrorExpected().equalsIgnoreCase("y")) {
+					this.getActionControl().getExecutionMetrics().resetErrorCount();
+					this.getActionControl().getExecutionMetrics().increaseSuccessCount(1);
+					this.getExecutionControl().logMessage(this, "action.status=ERROR:expected",
+							Level.INFO);
+				}
+			} else {
+				if (this.getAction().getErrorExpected().equalsIgnoreCase("y")) {
+					this.getActionControl().getExecutionMetrics().resetSuccessCount();
+					this.getActionControl().getExecutionMetrics().increaseErrorCount(1);
+					this.getExecutionControl().logMessage(this, "action.status=ERROR:expected",
+							Level.INFO);
+				}
+			}
+			
 		} catch (Exception e) {
 			StringWriter stackTrace = new StringWriter();
 			e.printStackTrace(new PrintWriter(stackTrace));

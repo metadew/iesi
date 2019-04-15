@@ -259,26 +259,10 @@ public class ScriptExecution {
 				// Check if iteration condition has not prevented execution
 				if (actionExecution.isExecuted()) {
 					if (actionExecution.getActionControl().getExecutionMetrics().getErrorCount() > 0) {
-						if (action.getErrorExpected().equalsIgnoreCase("n")) {
-							this.getExecutionMetrics().increaseErrorCount(1);
-							if (action.getErrorStop().equalsIgnoreCase("y")) {
-								this.getExecutionControl().logMessage(this, "action.error -> script.stop", Level.INFO);
-								this.getExecutionControl().setActionErrorStop(true);
-								break;
-							}
-						} else {
-							this.getExecutionControl().logMessage(this, "action.error expected -> script.continue",
-									Level.INFO);
-						}
-					} else {
-						if (action.getErrorExpected().equalsIgnoreCase("y")) {
-							getExecutionMetrics().increaseErrorCount(1);
-							if (action.getErrorStop().equalsIgnoreCase("y")) {
-								this.getExecutionControl().logMessage(this, "action.error expected -> script.stop",
-										Level.INFO);
-								this.getExecutionControl().setActionErrorStop(true);
-								break;
-							}
+						if (action.getErrorStop().equalsIgnoreCase("y")) {
+							this.getExecutionControl().logMessage(this, "action.error -> script.stop", Level.INFO);
+							this.getExecutionControl().setActionErrorStop(true);
+							break;
 						}
 					}
 				} else {

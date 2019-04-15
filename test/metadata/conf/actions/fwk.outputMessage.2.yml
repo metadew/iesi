@@ -1,0 +1,21 @@
+---
+type: "script"
+data:
+  name: "fwk.outputMessage.2"
+  description: "test fwk.outputMessage with generated message after empty input"
+  parameters: []
+  actions:
+  - number: 1
+    type: "fwk.outputMessage"
+    name: "action1"
+    description: "output generated message after empty input"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "message"
+      value : ""
+    - name: "onScreen"
+      value : "Y"

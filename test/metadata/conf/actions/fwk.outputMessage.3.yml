@@ -1,0 +1,21 @@
+---
+type: "script"
+data:
+  name: "fwk.outputMessage.3"
+  description: "test fwk.outputMessage with generated message using email generation instruction"
+  parameters: []
+  actions:
+  - number: 1
+    type: "fwk.outputMessage"
+    name: "action1"
+    description: "output generated message using email generation instruction"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "message"
+      value : "{{*person.email()}}"
+    - name: "onScreen"
+      value : "Y"

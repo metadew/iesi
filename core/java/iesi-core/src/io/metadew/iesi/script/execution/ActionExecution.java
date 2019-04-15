@@ -64,7 +64,7 @@ public class ActionExecution {
 
 		try {
 			// Set Attributes
-			if (this.getAction().getComponent() != null && !this.getAction().getComponent().trim().equals("")) {
+			if (this.getAction().getComponent() != null && !this.getAction().getComponent().trim().equalsIgnoreCase("")) {
 				this.setComponentAttributeOperation(new ComponentAttributeOperation(this.getFrameworkExecution(),
 						this.getExecutionControl(), this, this.getAction().getComponent().trim()));
 			}
@@ -114,7 +114,7 @@ public class ActionExecution {
 
 			HashMap<String, ActionParameterOperation> actionParameterOperationMap = null;
 			for (Field field : classRef.getDeclaredFields()) {
-				if (field.getName().equals("actionParameterOperationMap")) {
+				if (field.getName().equalsIgnoreCase("actionParameterOperationMap")) {
 					Method getActionParameterOperationMap = classRef
 							.getDeclaredMethod("getActionParameterOperationMap");
 					actionParameterOperationMap = (HashMap<String, ActionParameterOperation>) getActionParameterOperationMap

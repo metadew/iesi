@@ -262,10 +262,10 @@ public class ScriptLauncher {
 		scriptExecution.setImpersonations(impersonationName, impersonationCustom);
 		scriptExecution.setExitOnCompletion(exit);
 
-		if (!paramList.equals("")) {
+		if (!paramList.equalsIgnoreCase("")) {
 			scriptExecution.setParamList(paramList);
 		}
-		if (!paramFile.equals("")) {
+		if (!paramFile.equalsIgnoreCase("")) {
 			scriptExecution.setParamFile(paramFile);
 		}
 

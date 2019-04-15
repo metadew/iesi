@@ -62,7 +62,7 @@ public class FileTransferOperation {
 			c.cd(targetFilePath);
 			final File folder = new File(sourceFilePath);
 
-			if (sourceFileName.equals("*")) {
+			if (sourceFileName.equalsIgnoreCase("*")) {
 				for (final File file : folder.listFiles()) {
 					if (file.isDirectory()) {
 						// Ignore
@@ -167,7 +167,7 @@ public class FileTransferOperation {
 
 			Vector vv = null;
 
-			if (sourceFileName.equals("*")) {
+			if (sourceFileName.equalsIgnoreCase("*")) {
 				vv = c.ls(sourceFilePath);
 				if (vv != null) {
 					for (int ii = 0; ii < vv.size(); ii++) {
@@ -183,7 +183,7 @@ public class FileTransferOperation {
 					// Loop files
 					for (FileToTransfer fileToTransfer : fileToTransferList) {
 
-						if (fileToTransfer.getAttributes().substring(0, 1).equals("d")) {
+						if (fileToTransfer.getAttributes().substring(0, 1).equalsIgnoreCase("d")) {
 							// Ignore
 						} else {
 							c.get(fileToTransfer.getFileName(), fileToTransfer.getFileName());
@@ -218,7 +218,7 @@ public class FileTransferOperation {
 
 					// Loop files
 					for (FileToTransfer fileToTransfer : fileToTransferList) {
-						if (fileToTransfer.getAttributes().substring(0, 1).equals("d")) {
+						if (fileToTransfer.getAttributes().substring(0, 1).equalsIgnoreCase("d")) {
 							// Ignore
 						} else {
 							c.get(fileToTransfer.getFileName(), fileToTransfer.getFileName());
@@ -243,7 +243,7 @@ public class FileTransferOperation {
 						Object obj = vv.elementAt(ii);
 						if (obj instanceof com.jcraft.jsch.ChannelSftp.LsEntry) {
 							String file_match = ((com.jcraft.jsch.ChannelSftp.LsEntry) obj).getFilename();
-							if (file_match.equals(file_filter)) {
+							if (file_match.equalsIgnoreCase(file_filter)) {
 								fileToTransferList.add(
 										new FileToTransfer(((com.jcraft.jsch.ChannelSftp.LsEntry) obj).getLongname(),
 												((com.jcraft.jsch.ChannelSftp.LsEntry) obj).getFilename(),
@@ -254,7 +254,7 @@ public class FileTransferOperation {
 
 					// Loop files
 					for (FileToTransfer fileToTransfer : fileToTransferList) {
-						if (fileToTransfer.getAttributes().substring(0, 1).equals("d")) {
+						if (fileToTransfer.getAttributes().substring(0, 1).equalsIgnoreCase("d")) {
 							// Ignore
 						} else {
 							c.get(fileToTransfer.getFileName(), targetFileName);
@@ -317,7 +317,7 @@ public class FileTransferOperation {
 			String filepath = sourceFilePath + File.separator + sourceFileName;
 			final File folder = new File(sourceFilePath);
 
-			if (sourceFileName.equals("*")) {
+			if (sourceFileName.equalsIgnoreCase("*")) {
 				for (final File file : folder.listFiles()) {
 					if (file.isDirectory()) {
 						// Ignore

@@ -140,7 +140,7 @@ public class WfaGetConfirmation {
 		this.getActionExecution().getActionControl().logOutput("confirmation", readInput);
 
 		// Stopping process on user request
-		if (readInput.equals("STOP")) {
+		if (readInput.equalsIgnoreCase("STOP")) {
 			this.getActionExecution().getAction().setErrorStop("Y");
 			return false;
 		} else {
@@ -175,7 +175,7 @@ public class WfaGetConfirmation {
 
 			if (!getInput) {
 				if (readInput.equalsIgnoreCase("Y") || readInput.equalsIgnoreCase("N")
-						|| readInput.toUpperCase().equals("STOP")) {
+						|| readInput.toUpperCase().equalsIgnoreCase("STOP")) {
 					getInput = true;
 				} else {
 					System.out.print(prompt);
@@ -186,11 +186,11 @@ public class WfaGetConfirmation {
 		// Log result
 		readInput = readInput.toUpperCase();
 		String userComment = "";
-		if (readInput.equals("N"))
+		if (readInput.equalsIgnoreCase("N"))
 			userComment = this.getConfirmationComment();
 		this.getActionExecution().getActionControl().logOutput("confirmation", readInput);
 
-		if (readInput.equals("N"))
+		if (readInput.equalsIgnoreCase("N"))
 			this.getActionExecution().getActionControl().logOutput("comment", userComment);
 
 		// Stopping process on user request

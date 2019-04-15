@@ -44,10 +44,10 @@ public class GenerationRuleBlankInjectionExecution {
 				// Define number of blanks
 				long numberOfBlanks = 0;
 				if (this.getGenerationRuleExecution().getGenerationRule().getBlankInjectionUnit().trim().toLowerCase()
-						.equals("number")) {
+						.equalsIgnoreCase("number")) {
 					numberOfBlanks = this.getGenerationRuleExecution().getGenerationRule().getBlankInjectionMeasure();
 				} else if (this.getGenerationRuleExecution().getGenerationRule().getBlankInjectionUnit().trim().toLowerCase()
-						.equals("percentage")) {
+						.equalsIgnoreCase("percentage")) {
 					float temp = (float) this.getGenerationRuleExecution().getGenerationRule().getBlankInjectionMeasure()
 							* this.getGenerationRuleExecution().getGenerationExecution().getNumberOfRecords() / 100;
 					numberOfBlanks = Math.round(temp);

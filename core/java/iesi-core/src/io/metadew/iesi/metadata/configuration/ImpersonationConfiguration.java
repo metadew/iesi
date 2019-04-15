@@ -118,7 +118,7 @@ public class ImpersonationConfiguration {
 
 		// add Parameters
 		String sqlParameters = this.getParameterInsertStatements(impersonation);
-		if (!sqlParameters.equals("")) {
+		if (!sqlParameters.equalsIgnoreCase("")) {
 			sql += "\n";
 			sql += sqlParameters;
 		}
@@ -136,7 +136,7 @@ public class ImpersonationConfiguration {
 		for (ImpersonationParameter impersonationParameter : impersonation.getParameters()) {
 			ImpersonationParameterConfiguration impersonationParameterConfiguration = new ImpersonationParameterConfiguration(
 					this.getFrameworkExecution());
-			if (!result.equals(""))
+			if (!result.equalsIgnoreCase(""))
 				result += "\n";
 			result += impersonationParameterConfiguration.getInsertStatement(impersonation.getName(), impersonationParameter);
 		}
@@ -183,7 +183,7 @@ public class ImpersonationConfiguration {
 
 		// add Parameters
 		String sqlParameters = this.getParameterInsertStatements(this.getImpersonation().getName());
-		if (!sqlParameters.equals("")) {
+		if (!sqlParameters.equalsIgnoreCase("")) {
 			sql += "\n";
 			sql += sqlParameters;
 		}
@@ -203,7 +203,7 @@ public class ImpersonationConfiguration {
 		for (ImpersonationParameter impersonationParameter : this.getImpersonation().getParameters()) {
 			ImpersonationParameterConfiguration impersonationParameterConfiguration = new ImpersonationParameterConfiguration(impersonationParameter,
 					this.getFrameworkExecution());
-			if (!result.equals(""))
+			if (!result.equalsIgnoreCase(""))
 				result += "\n";
 			result += impersonationParameterConfiguration.getInsertStatement(impersonationName);
 		}

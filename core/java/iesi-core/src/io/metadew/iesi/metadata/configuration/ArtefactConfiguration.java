@@ -86,7 +86,7 @@ public class ArtefactConfiguration
 		// add classifications
 		String sqlClassifications = this.getClassificationInsertStatements(this.getArtefact().getName(),
 					this.getArtefact().getType());
-		if (!sqlClassifications.equals(""))
+		if (!sqlClassifications.equalsIgnoreCase(""))
 		{
 			sql += "\n";
 			sql += sqlClassifications;
@@ -109,7 +109,7 @@ public class ArtefactConfiguration
 		{
 			ClassificationConfiguration classificationConfiguration = new ClassificationConfiguration(classification,
 						this.getFrameworkExecution());
-			if (!result.equals(""))
+			if (!result.equalsIgnoreCase(""))
 			{
 				result += "\n";
 			}

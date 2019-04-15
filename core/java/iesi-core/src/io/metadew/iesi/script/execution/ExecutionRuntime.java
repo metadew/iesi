@@ -467,31 +467,31 @@ public class ExecutionRuntime {
 			String instructionOutput = instruction;
 
 			// Lookup
-			if (instructionType.equals("=")) {
+			if (instructionType.equalsIgnoreCase("=")) {
 				int lookupOpenPos = instruction.indexOf("(");
 				int lookupClosePos = instruction.indexOf(")", lookupOpenPos + 1);
 				String lookupContext = instruction.substring(1, lookupOpenPos).trim().toLowerCase();
 				String lookupScope = instruction.substring(lookupOpenPos + 1, lookupClosePos).trim();
-				if (lookupContext.equals("connection") || lookupContext.equals("conn")) {
+				if (lookupContext.equalsIgnoreCase("connection") || lookupContext.equalsIgnoreCase("conn")) {
 					instructionOutput = this.lookupConnectionInstruction(executionControl, lookupScope);
-				} else if (lookupContext.equals("environment") || lookupContext.equals("env")) {
+				} else if (lookupContext.equalsIgnoreCase("environment") || lookupContext.equalsIgnoreCase("env")) {
 					instructionOutput = this.lookupEnvironmentInstruction(executionControl, lookupScope);
-				} else if (lookupContext.equals("dataset") || lookupContext.equals("ds")) {
+				} else if (lookupContext.equalsIgnoreCase("dataset") || lookupContext.equalsIgnoreCase("ds")) {
 					instructionOutput = this.lookupDatasetInstruction(executionControl, lookupScope);
-				} else if (lookupContext.equals("file") || lookupContext.equals("f")) {
+				} else if (lookupContext.equalsIgnoreCase("file") || lookupContext.equalsIgnoreCase("f")) {
 					instructionOutput = this.lookupFileInstruction(executionControl, lookupScope);
-				}  else if (lookupContext.equals("coalesce") || lookupContext.equals("ifnull") || lookupContext.equals("nvl")) {
+				}  else if (lookupContext.equalsIgnoreCase("coalesce") || lookupContext.equalsIgnoreCase("ifnull") || lookupContext.equalsIgnoreCase("nvl")) {
 					instructionOutput = this.lookupCoalesceResult(executionControl, lookupScope);
 				}
 				// Generate data
-			} else if (instructionType.equals("*")) {
+			} else if (instructionType.equalsIgnoreCase("*")) {
 				int lookupOpenPos = instruction.indexOf("(");
 				int lookupClosePos = instruction.indexOf(")", lookupOpenPos + 1);
 				String lookupContext = instruction.substring(1, lookupOpenPos).trim().toLowerCase();
 				String lookupScope = instruction.substring(lookupOpenPos + 1, lookupClosePos).trim();
 				instructionOutput = this.generateDataInstruction(executionControl, lookupContext, lookupScope);
 				// run scripts
-			} else if (instructionType.equals("!")) {
+			} else if (instructionType.equalsIgnoreCase("!")) {
 				int lookupOpenPos = instruction.indexOf("(");
 				int lookupClosePos = instruction.lastIndexOf(")");
 				String lookupContext = instruction.substring(1, lookupOpenPos).trim().toLowerCase();
@@ -566,7 +566,7 @@ public class ExecutionRuntime {
 
 		DatasetOperation datasetOperation = executionControl.getExecutionRuntime().getDatasetOperation(datasetName);
 
-		if (datasetItem != null && !datasetItem.equals("")) {
+		if (datasetItem != null && !datasetItem.equalsIgnoreCase("")) {
 			output = datasetOperation.getDataItem(datasetItem);
 		}
 
@@ -628,7 +628,7 @@ public class ExecutionRuntime {
 		if (this.getFrameworkExecution().getFrameworkControl()
 				.getProperty(this.getFrameworkExecution().getFrameworkConfiguration().getSettingConfiguration()
 						.getSettingPath("commandline.display.runtime.variable"))
-				.equals("Y")) {
+				.equalsIgnoreCase("Y")) {
 			this.setLevel(Level.INFO);
 		} else {
 			this.setLevel(Level.TRACE);

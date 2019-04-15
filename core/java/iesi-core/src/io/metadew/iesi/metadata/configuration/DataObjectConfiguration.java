@@ -305,7 +305,7 @@ public class DataObjectConfiguration {
 
 		}
 
-		if (!postSql.trim().equals("")) {
+		if (!postSql.trim().equalsIgnoreCase("")) {
 			InputStream inputStreamPostSql = FileTools.convertToInputStream(postSql,
 					this.getFrameworkExecution().getFrameworkControl());
 			this.getMetadataRepositoryConfiguration().executeScript(inputStreamPostSql);

@@ -149,14 +149,14 @@ public class HttpExecuteRequest {
 			this.getActionExecution().getActionControl().logOutput("entity", httpResponse.getEntityString());
 
 			// Parsing entity
-			if (httpResponse.getEntityString() != null && !httpResponse.getEntityString().equals("")) {
+			if (httpResponse.getEntityString() != null && !httpResponse.getEntityString().equalsIgnoreCase("")) {
 
 				JsonParsed jsonParsed = new JsonParsed();
 				try {
 					jsonParsed = new JsonTools().parseJson("string", httpResponse.getEntityString());
 					this.setRuntimeVariable(jsonParsed);
 
-					if (!this.getSetDataset().getValue().equals("")) {
+					if (!this.getSetDataset().getValue().equalsIgnoreCase("")) {
 						String[] parts = this.getSetDataset().getValue().split("\\.");
 						String datasetName = parts[0];
 						String datasetTableName = parts[1];

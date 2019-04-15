@@ -216,7 +216,7 @@ public class WfaExecuteFilePing {
 	private List<FileConnection> checkLocalFolder() {
 		List<FileConnection> connectionsFound = new ArrayList();
 		final File folder = new File(this.getFilePath().getValue());
-		if (this.getFileName().getValue().equals("*") || this.getFileName().getValue().equals("")) {
+		if (this.getFileName().getValue().equalsIgnoreCase("*") || this.getFileName().getValue().equalsIgnoreCase("")) {
 			// Check all files
 			for (final File file : folder.listFiles()) {
 				if (file.isDirectory()) {
@@ -292,7 +292,7 @@ public class WfaExecuteFilePing {
 
 			Vector vv = null;
 
-			if (this.getFileName().getValue().equals("*") || this.getFileName().getValue().equals("")) {
+			if (this.getFileName().getValue().equalsIgnoreCase("*") || this.getFileName().getValue().equalsIgnoreCase("")) {
 				// Check all files
 				vv = c.ls(this.getFilePath().getValue());
 				if (vv != null) {
@@ -301,7 +301,7 @@ public class WfaExecuteFilePing {
 						Object obj = vv.elementAt(ii);
 						if (obj instanceof com.jcraft.jsch.ChannelSftp.LsEntry) {
 							String attributes = ((com.jcraft.jsch.ChannelSftp.LsEntry) obj).getAttrs().toString();
-							if (attributes.substring(0, 1).equals("d")) {
+							if (attributes.substring(0, 1).equalsIgnoreCase("d")) {
 								// Ignore directories
 							} else {
 								FileConnection connectionFound = new FileConnection();
@@ -327,7 +327,7 @@ public class WfaExecuteFilePing {
 							String file_match = ((com.jcraft.jsch.ChannelSftp.LsEntry) obj).getFilename();
 							if (file_match.matches(fileFilter)) {
 								String attributes = ((com.jcraft.jsch.ChannelSftp.LsEntry) obj).getAttrs().toString();
-								if (attributes.substring(0, 1).equals("d")) {
+								if (attributes.substring(0, 1).equalsIgnoreCase("d")) {
 									// Ignore directories
 								} else {
 									FileConnection connectionFound = new FileConnection();
@@ -352,7 +352,7 @@ public class WfaExecuteFilePing {
 						Object obj = vv.elementAt(ii);
 						if (obj instanceof com.jcraft.jsch.ChannelSftp.LsEntry) {
 							String attributes = ((com.jcraft.jsch.ChannelSftp.LsEntry) obj).getAttrs().toString();
-							if (attributes.substring(0, 1).equals("d")) {
+							if (attributes.substring(0, 1).equalsIgnoreCase("d")) {
 								// Ignore directories
 							} else {
 								FileConnection connectionFound = new FileConnection();

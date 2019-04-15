@@ -41,14 +41,14 @@ public class DatabaseHarvestExecution {
 		sqlStatement.append("select ");
 		sqlStatement.append(columns);
 		sqlStatement.append(" from ");
-		if (schemaName.trim().equals("")) {
+		if (schemaName.trim().equalsIgnoreCase("")) {
 			sqlStatement.append(tableName);
 		} else {
 			sqlStatement.append(schemaName);
 			sqlStatement.append(".");
 			sqlStatement.append(tableName);
 		}
-		if (!filter.trim().equals("")) {
+		if (!filter.trim().equalsIgnoreCase("")) {
 			sqlStatement.append(" where ");
 			sqlStatement.append(filter);
 		}

@@ -59,7 +59,7 @@ public class ScriptConfiguration {
 			e.printStackTrace(new PrintWriter(StackTrace));
 		}
 
-		if (script.getName() == null || script.getName().equals("")) {
+		if (script.getName() == null || script.getName().equalsIgnoreCase("")) {
 			return false;
 		} else {
 			return true;
@@ -134,21 +134,21 @@ public class ScriptConfiguration {
 
 		// add ScriptVersion
 		String sqlVersion = this.getVersionInsertStatements();
-		if (!sqlVersion.equals("")) {
+		if (!sqlVersion.equalsIgnoreCase("")) {
 			sql += "\n";
 			sql += sqlVersion;
 		}
 
 		// add Actions
 		String sqlActions = this.getActionInsertStatements();
-		if (!sqlActions.equals("")) {
+		if (!sqlActions.equalsIgnoreCase("")) {
 			sql += "\n";
 			sql += sqlActions;
 		}
 
 		// add Parameters
 		String sqlParameters = this.getParameterInsertStatements();
-		if (!sqlParameters.equals("")) {
+		if (!sqlParameters.equalsIgnoreCase("")) {
 			sql += "\n";
 			sql += sqlParameters;
 		}
@@ -179,7 +179,7 @@ public class ScriptConfiguration {
 		for (Action action : this.getScript().getActions()) {
 			counter++;
 			ActionConfiguration actionConfiguration = new ActionConfiguration(action, this.getFrameworkExecution());
-			if (!result.equals(""))
+			if (!result.equalsIgnoreCase(""))
 				result += "\n";
 			result += actionConfiguration.getInsertStatement(this.getScript().getName(),
 					this.getScript().getVersion().getNumber(), counter);
@@ -197,7 +197,7 @@ public class ScriptConfiguration {
 		for (ScriptParameter scriptParameter : this.getScript().getParameters()) {
 			ScriptParameterConfiguration scriptParameterConfiguration = new ScriptParameterConfiguration(
 					this.getScript().getVersion(), scriptParameter, this.getFrameworkExecution());
-			if (!result.equals(""))
+			if (!result.equalsIgnoreCase(""))
 				result += "\n";
 			result += scriptParameterConfiguration.getInsertStatement(this.getScript().getName());
 		}
@@ -294,7 +294,7 @@ public class ScriptConfiguration {
 			e.printStackTrace(new PrintWriter(StackTrace));
 		}
 
-		if (script.getName() == null || script.getName().equals("")) {
+		if (script.getName() == null || script.getName().equalsIgnoreCase("")) {
 			throw new RuntimeException("script.error.notfound");
 		}
 

@@ -213,7 +213,7 @@ public class EvalVerifyMandatoryField {
 	private boolean defineTestQueries(String check_type) {
 
 		boolean resTestQueries = true;
-		if (check_type.equals("target_field")) {
+		if (check_type.equalsIgnoreCase("target_field")) {
 			// Rule 1
 			this.setSqlSuccess("select count(*) as \"RES_SUC\" from " + this.getSchemaName().getValue() + "."
 					+ this.getTableName().getValue() + " where " + this.getFieldName().getValue()
@@ -221,7 +221,7 @@ public class EvalVerifyMandatoryField {
 			this.setSqlError("select count(*) as \"RES_ERR\" from " + this.getSchemaName().getValue() + "."
 					+ this.getTableName().getValue() + " where " + this.getFieldName().getValue() + " is null or trim("
 					+ this.getFieldName().getValue() + ") = ''");
-		} else if (check_type.equals("evaluation_field")) {
+		} else if (check_type.equalsIgnoreCase("evaluation_field")) {
 			this.setSqlSuccess("select count(*) as \"RES_SUC\" from " + this.getSchemaName().getValue() + "."
 					+ this.getTableName().getValue() + " where (" + this.getFieldName().getValue()
 					+ " is not null or trim(" + this.getFieldName().getValue() + ") <> '') and ("
@@ -231,7 +231,7 @@ public class EvalVerifyMandatoryField {
 					+ this.getTableName().getValue() + " where (" + this.getFieldName().getValue() + " is null or trim("
 					+ this.getFieldName().getValue() + ") = '') and (" + this.getEvaluationFieldName().getValue()
 					+ " is not null or trim(" + this.getEvaluationFieldName().getValue() + ") <> '')");
-		} else if (check_type.equals("evaluation_value")) {
+		} else if (check_type.equalsIgnoreCase("evaluation_value")) {
 			this.setSqlSuccess("select count(*) as \"RES_SUC\" from " + this.getSchemaName().getValue() + "."
 					+ this.getTableName().getValue() + " where (" + this.getFieldName().getValue()
 					+ " is not null or trim(" + this.getFieldName().getValue() + ") <> '') and "

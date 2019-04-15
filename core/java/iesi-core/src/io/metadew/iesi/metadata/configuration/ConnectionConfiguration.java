@@ -62,7 +62,7 @@ public class ConnectionConfiguration {
 
 		// add Parameters
 		String sqlParameters = this.getParameterInsertStatements();
-		if (!sqlParameters.equals("")) {
+		if (!sqlParameters.equalsIgnoreCase("")) {
 			sql += "\n";
 			sql += sqlParameters;
 		}
@@ -76,7 +76,7 @@ public class ConnectionConfiguration {
 		for (ConnectionParameter connectionParameter : this.getConnection().getParameters()) {
 			ConnectionParameterConfiguration connectionParameterConfiguration = new ConnectionParameterConfiguration(
 					connectionParameter, this.getFrameworkExecution());
-			if (!result.equals(""))
+			if (!result.equalsIgnoreCase(""))
 				result += "\n";
 			result += connectionParameterConfiguration.getInsertStatement(this.getConnection().getName(),
 					this.getConnection().getEnvironment());
@@ -144,7 +144,7 @@ public class ConnectionConfiguration {
 			while (crs.next()) {
 				connectionName = crs.getString("CONN_NM");
 
-				if (environmentName.trim().equals("")) {
+				if (environmentName.trim().equalsIgnoreCase("")) {
 					CachedRowSet crsEnvironment = null;
 					String queryEnvironment = "select distinct ENV_NM from "
 							+ this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration()

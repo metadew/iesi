@@ -33,7 +33,7 @@ public class ImpersonationOperation {
 
 	// Methods
 	public void setImpersonation(String impersonationName) {
-		if (!impersonationName.trim().equals("")) {
+		if (!impersonationName.trim().equalsIgnoreCase("")) {
 			ImpersonationConfiguration impersonationConfiguration = new ImpersonationConfiguration(this.getFrameworkExecution());
 			Impersonation impersonation = impersonationConfiguration.getImpersonation(impersonationName);
 			

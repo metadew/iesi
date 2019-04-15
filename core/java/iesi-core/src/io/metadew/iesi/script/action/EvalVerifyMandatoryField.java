@@ -17,8 +17,7 @@ import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 
-public class EvalVerifyMandatoryField
-{
+public class EvalVerifyMandatoryField {
 
 	private ActionExecution actionExecution;
 
@@ -51,79 +50,61 @@ public class EvalVerifyMandatoryField
 	private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
 
 	// Constructors
-	public EvalVerifyMandatoryField()
-	{
+	public EvalVerifyMandatoryField() {
 
 	}
 
 	public EvalVerifyMandatoryField(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
-				ScriptExecution scriptExecution, ActionExecution actionExecution)
-	{
+			ScriptExecution scriptExecution, ActionExecution actionExecution) {
 		this.init(frameworkExecution, executionControl, scriptExecution, actionExecution);
 	}
 
-	public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl, ScriptExecution scriptExecution,
-				ActionExecution actionExecution)
-	{
+	public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+			ScriptExecution scriptExecution, ActionExecution actionExecution) {
 		this.setFrameworkExecution(frameworkExecution);
 		this.setExecutionControl(executionControl);
 		this.setActionExecution(actionExecution);
 		this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
 	}
 
-	public void prepare()
-	{
+	public void prepare() {
 		// Reset Parameters
 		this.setDatabaseName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
-					this.getActionExecution(), this.getActionExecution().getAction().getType(), "database"));
+				this.getActionExecution(), this.getActionExecution().getAction().getType(), "database"));
 		this.setSchemaName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
-					this.getActionExecution(), this.getActionExecution().getAction().getType(), "schema"));
+				this.getActionExecution(), this.getActionExecution().getAction().getType(), "schema"));
 		this.setTableName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
-					this.getActionExecution(), this.getActionExecution().getAction().getType(), "table"));
+				this.getActionExecution(), this.getActionExecution().getAction().getType(), "table"));
 		this.setFieldName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
-					this.getActionExecution(), this.getActionExecution().getAction().getType(), "field"));
-		this.setEvaluationFieldName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
-					this.getActionExecution(), this.getActionExecution().getAction().getType(), "evaluationField"));
-		this.setEvaluationFieldValue(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
-					this.getActionExecution(), this.getActionExecution().getAction().getType(), "evaluationValue"));
+				this.getActionExecution(), this.getActionExecution().getAction().getType(), "field"));
+		this.setEvaluationFieldName(
+				new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+						this.getActionExecution(), this.getActionExecution().getAction().getType(), "evaluationField"));
+		this.setEvaluationFieldValue(
+				new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+						this.getActionExecution(), this.getActionExecution().getAction().getType(), "evaluationValue"));
 		this.setMandatoryFlag(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
-					this.getActionExecution(), this.getActionExecution().getAction().getType(), "isMandatory"));
+				this.getActionExecution(), this.getActionExecution().getAction().getType(), "isMandatory"));
 		this.setConnectionName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
-					this.getActionExecution(), this.getActionExecution().getAction().getType(), "connection"));
+				this.getActionExecution(), this.getActionExecution().getAction().getType(), "connection"));
 
 		// Get Parameters
-		for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters())
-		{
-			if (actionParameter.getName().equalsIgnoreCase("database"))
-			{
+		for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
+			if (actionParameter.getName().equalsIgnoreCase("database")) {
 				this.getDatabaseName().setInputValue(actionParameter.getValue());
-			}
-			else if (actionParameter.getName().equalsIgnoreCase("schema"))
-			{
+			} else if (actionParameter.getName().equalsIgnoreCase("schema")) {
 				this.getSchemaName().setInputValue(actionParameter.getValue());
-			}
-			else if (actionParameter.getName().equalsIgnoreCase("table"))
-			{
+			} else if (actionParameter.getName().equalsIgnoreCase("table")) {
 				this.getTableName().setInputValue(actionParameter.getValue());
-			}
-			else if (actionParameter.getName().equalsIgnoreCase("field"))
-			{
+			} else if (actionParameter.getName().equalsIgnoreCase("field")) {
 				this.getFieldName().setInputValue(actionParameter.getValue());
-			}
-			else if (actionParameter.getName().equalsIgnoreCase("evaluationfield"))
-			{
+			} else if (actionParameter.getName().equalsIgnoreCase("evaluationfield")) {
 				this.getEvaluationFieldName().setInputValue(actionParameter.getValue());
-			}
-			else if (actionParameter.getName().equalsIgnoreCase("evaluationvalue"))
-			{
+			} else if (actionParameter.getName().equalsIgnoreCase("evaluationvalue")) {
 				this.getEvaluationFieldValue().setInputValue(actionParameter.getValue());
-			}
-			else if (actionParameter.getName().equalsIgnoreCase("ismandatory"))
-			{
+			} else if (actionParameter.getName().equalsIgnoreCase("ismandatory")) {
 				this.getMandatoryFlag().setInputValue(actionParameter.getValue());
-			}
-			else if (actionParameter.getName().equalsIgnoreCase("connection"))
-			{
+			} else if (actionParameter.getName().equalsIgnoreCase("connection")) {
 				this.getConnectionName().setInputValue(actionParameter.getValue());
 			}
 		}
@@ -139,14 +120,12 @@ public class EvalVerifyMandatoryField
 		this.getActionParameterOperationMap().put("connection", this.getConnectionName());
 	}
 
-	public boolean execute()
-	{
-		try
-		{
+	public boolean execute() {
+		try {
 			// Get Connection
 			ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution());
 			Connection connection = connectionConfiguration.getConnection(this.getConnectionName().getValue(),
-						this.getExecutionControl().getEnvName());
+					this.getExecutionControl().getEnvName());
 			ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
 			DatabaseConnection databaseConnection = connectionOperation.getDatabaseConnection(connection);
 
@@ -158,8 +137,7 @@ public class EvalVerifyMandatoryField
 
 			// Success
 			crs = databaseConnection.executeQuery(this.getSqlSuccess());
-			while (crs.next())
-			{
+			while (crs.next()) {
 				successTotal = crs.getLong("RES_SUC");
 			}
 			crs.close();
@@ -167,41 +145,21 @@ public class EvalVerifyMandatoryField
 
 			// Error
 			crs = databaseConnection.executeQuery(this.getSqlError());
-			while (crs.next())
-			{
+			while (crs.next()) {
 				errorTotal = crs.getLong("RES_ERR");
 			}
 			crs.close();
 			this.getActionExecution().getActionControl().logOutput("fail", Long.toString(errorTotal));
 
 			// Evaluation
-			if (errorTotal == 0)
-			{
-				if (this.getActionExecution().getAction().getErrorExpected().equalsIgnoreCase("y"))
-				{
-					this.getActionExecution().getActionControl().increaseErrorCount();
-				}
-				else
-				{
-					this.getActionExecution().getActionControl().increaseSuccessCount();
-				}
+			if (errorTotal == 0) {
+				this.getActionExecution().getActionControl().increaseSuccessCount();
+				return true;
+			} else {
+				this.getActionExecution().getActionControl().increaseErrorCount();
 				return true;
 			}
-			else
-			{
-				if (this.getActionExecution().getAction().getErrorExpected().equalsIgnoreCase("y"))
-				{
-					this.getActionExecution().getActionControl().increaseSuccessCount();
-				}
-				else
-				{
-					this.getActionExecution().getActionControl().increaseErrorCount();
-				}
-				return true;
-			}
-		}
-		catch (Exception e)
-		{
+		} catch (Exception e) {
 			StringWriter StackTrace = new StringWriter();
 			e.printStackTrace(new PrintWriter(StackTrace));
 
@@ -216,28 +174,24 @@ public class EvalVerifyMandatoryField
 	}
 
 	// Perform verification
-	private boolean getTestQueries()
-	{
+	private boolean getTestQueries() {
 		boolean resTestQueries = false;
 
-		if (this.getMandatoryFlag().getValue().trim().equalsIgnoreCase("y"))
-		{
+		if (this.getMandatoryFlag().getValue().trim().equalsIgnoreCase("y")) {
 			// field is always mandatory - target_field
 			if ((this.getEvaluationFieldName().getValue() == null || this.getEvaluationFieldName().getValue().isEmpty())
-						&& (this.getEvaluationFieldValue().getValue() == null || this.getEvaluationFieldValue().getValue().isEmpty()))
-			{
-				if (this.getFieldName().getValue() != null && !this.getFieldName().getValue().isEmpty())
-				{
+					&& (this.getEvaluationFieldValue().getValue() == null
+							|| this.getEvaluationFieldValue().getValue().isEmpty())) {
+				if (this.getFieldName().getValue() != null && !this.getFieldName().getValue().isEmpty()) {
 					resTestQueries = this.defineTestQueries("target_field");
 				}
 			}
 
 			// Mandatory field check on evaluation column - evaluation_field
 			if (this.getEvaluationFieldName().getValue() != null && !this.getEvaluationFieldName().getValue().isEmpty()
-						&& (this.getEvaluationFieldValue().getValue() == null || this.getEvaluationFieldValue().getValue().isEmpty()))
-			{
-				if (this.getFieldName().getValue() != null && !this.getFieldName().getValue().isEmpty())
-				{
+					&& (this.getEvaluationFieldValue().getValue() == null
+							|| this.getEvaluationFieldValue().getValue().isEmpty())) {
+				if (this.getFieldName().getValue() != null && !this.getFieldName().getValue().isEmpty()) {
 					resTestQueries = this.defineTestQueries("evaluation_field");
 				}
 			}
@@ -245,10 +199,9 @@ public class EvalVerifyMandatoryField
 			// Mandatory field check on evaluation column and value -
 			// evaluation_value
 			if (this.getEvaluationFieldName().getValue() != null && !this.getEvaluationFieldName().getValue().isEmpty()
-						&& this.getEvaluationFieldValue().getValue() != null && !this.getEvaluationFieldValue().getValue().isEmpty())
-			{
-				if (this.getFieldName().getValue() != null && !this.getFieldName().getValue().isEmpty())
-				{
+					&& this.getEvaluationFieldValue().getValue() != null
+					&& !this.getEvaluationFieldValue().getValue().isEmpty()) {
+				if (this.getFieldName().getValue() != null && !this.getFieldName().getValue().isEmpty()) {
 					resTestQueries = this.defineTestQueries("evaluation_value");
 				}
 			}
@@ -257,44 +210,38 @@ public class EvalVerifyMandatoryField
 		return resTestQueries;
 	}
 
-	private boolean defineTestQueries(String check_type)
-	{
+	private boolean defineTestQueries(String check_type) {
 
 		boolean resTestQueries = true;
-		if (check_type.equals("target_field"))
-		{
+		if (check_type.equals("target_field")) {
 			// Rule 1
 			this.setSqlSuccess("select count(*) as \"RES_SUC\" from " + this.getSchemaName().getValue() + "."
-						+ this.getTableName().getValue() + " where " + this.getFieldName().getValue() + " is not null or trim("
-						+ this.getFieldName().getValue() + ") <> ''");
+					+ this.getTableName().getValue() + " where " + this.getFieldName().getValue()
+					+ " is not null or trim(" + this.getFieldName().getValue() + ") <> ''");
 			this.setSqlError("select count(*) as \"RES_ERR\" from " + this.getSchemaName().getValue() + "."
-						+ this.getTableName().getValue() + " where " + this.getFieldName().getValue() + " is null or trim("
-						+ this.getFieldName().getValue() + ") = ''");
-		}
-		else if (check_type.equals("evaluation_field"))
-		{
+					+ this.getTableName().getValue() + " where " + this.getFieldName().getValue() + " is null or trim("
+					+ this.getFieldName().getValue() + ") = ''");
+		} else if (check_type.equals("evaluation_field")) {
 			this.setSqlSuccess("select count(*) as \"RES_SUC\" from " + this.getSchemaName().getValue() + "."
-						+ this.getTableName().getValue() + " where (" + this.getFieldName().getValue() + " is not null or trim("
-						+ this.getFieldName().getValue() + ") <> '') and (" + this.getEvaluationFieldName().getValue()
-						+ " is not null or trim(" + this.getEvaluationFieldName().getValue() + ") <> '')");
+					+ this.getTableName().getValue() + " where (" + this.getFieldName().getValue()
+					+ " is not null or trim(" + this.getFieldName().getValue() + ") <> '') and ("
+					+ this.getEvaluationFieldName().getValue() + " is not null or trim("
+					+ this.getEvaluationFieldName().getValue() + ") <> '')");
 			this.setSqlError("select count(*) as \"RES_ERR\" from " + this.getSchemaName().getValue() + "."
-						+ this.getTableName().getValue() + " where (" + this.getFieldName().getValue() + " is null or trim("
-						+ this.getFieldName().getValue() + ") = '') and (" + this.getEvaluationFieldName().getValue()
-						+ " is not null or trim(" + this.getEvaluationFieldName().getValue() + ") <> '')");
-		}
-		else if (check_type.equals("evaluation_value"))
-		{
+					+ this.getTableName().getValue() + " where (" + this.getFieldName().getValue() + " is null or trim("
+					+ this.getFieldName().getValue() + ") = '') and (" + this.getEvaluationFieldName().getValue()
+					+ " is not null or trim(" + this.getEvaluationFieldName().getValue() + ") <> '')");
+		} else if (check_type.equals("evaluation_value")) {
 			this.setSqlSuccess("select count(*) as \"RES_SUC\" from " + this.getSchemaName().getValue() + "."
-						+ this.getTableName().getValue() + " where (" + this.getFieldName().getValue() + " is not null or trim("
-						+ this.getFieldName().getValue() + ") <> '') and " + this.getEvaluationFieldName().getValue() + "='"
-						+ this.getEvaluationFieldValue().getValue() + "'");
+					+ this.getTableName().getValue() + " where (" + this.getFieldName().getValue()
+					+ " is not null or trim(" + this.getFieldName().getValue() + ") <> '') and "
+					+ this.getEvaluationFieldName().getValue() + "='" + this.getEvaluationFieldValue().getValue()
+					+ "'");
 			this.setSqlError("select count(*) as \"RES_ERR\" from " + this.getSchemaName().getValue() + "."
-						+ this.getTableName().getValue() + " where (" + this.getFieldName().getValue() + " is null or trim("
-						+ this.getFieldName().getValue() + ") = '') and " + this.getEvaluationFieldName().getValue() + "='"
-						+ this.getEvaluationFieldValue().getValue() + "'");
-		}
-		else
-		{
+					+ this.getTableName().getValue() + " where (" + this.getFieldName().getValue() + " is null or trim("
+					+ this.getFieldName().getValue() + ") = '') and " + this.getEvaluationFieldName().getValue() + "='"
+					+ this.getEvaluationFieldValue().getValue() + "'");
+		} else {
 			resTestQueries = false;
 		}
 
@@ -302,143 +249,115 @@ public class EvalVerifyMandatoryField
 	}
 
 	// Getters and Setters
-	public FrameworkExecution getFrameworkExecution()
-	{
+	public FrameworkExecution getFrameworkExecution() {
 		return frameworkExecution;
 	}
 
-	public void setFrameworkExecution(FrameworkExecution frameworkExecution)
-	{
+	public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
 		this.frameworkExecution = frameworkExecution;
 	}
 
-	public ExecutionControl getExecutionControl()
-	{
+	public ExecutionControl getExecutionControl() {
 		return executionControl;
 	}
 
-	public void setExecutionControl(ExecutionControl executionControl)
-	{
+	public void setExecutionControl(ExecutionControl executionControl) {
 		this.executionControl = executionControl;
 	}
 
-	public ActionExecution getActionExecution()
-	{
+	public ActionExecution getActionExecution() {
 		return actionExecution;
 	}
 
-	public void setActionExecution(ActionExecution actionExecution)
-	{
+	public void setActionExecution(ActionExecution actionExecution) {
 		this.actionExecution = actionExecution;
 	}
 
-	public ActionParameterOperation getDatabaseName()
-	{
+	public ActionParameterOperation getDatabaseName() {
 		return databaseName;
 	}
 
-	public void setDatabaseName(ActionParameterOperation databaseName)
-	{
+	public void setDatabaseName(ActionParameterOperation databaseName) {
 		this.databaseName = databaseName;
 	}
 
-	public ActionParameterOperation getSchemaName()
-	{
+	public ActionParameterOperation getSchemaName() {
 		return schemaName;
 	}
 
-	public void setSchemaName(ActionParameterOperation schemaName)
-	{
+	public void setSchemaName(ActionParameterOperation schemaName) {
 		this.schemaName = schemaName;
 	}
 
-	public ActionParameterOperation getTableName()
-	{
+	public ActionParameterOperation getTableName() {
 		return tableName;
 	}
 
-	public void setTableName(ActionParameterOperation tableName)
-	{
+	public void setTableName(ActionParameterOperation tableName) {
 		this.tableName = tableName;
 	}
 
-	public ActionParameterOperation getFieldName()
-	{
+	public ActionParameterOperation getFieldName() {
 		return fieldName;
 	}
 
-	public void setFieldName(ActionParameterOperation fieldName)
-	{
+	public void setFieldName(ActionParameterOperation fieldName) {
 		this.fieldName = fieldName;
 	}
 
-	public ActionParameterOperation getEvaluationFieldName()
-	{
+	public ActionParameterOperation getEvaluationFieldName() {
 		return evaluationFieldName;
 	}
 
-	public void setEvaluationFieldName(ActionParameterOperation evaluationFieldName)
-	{
+	public void setEvaluationFieldName(ActionParameterOperation evaluationFieldName) {
 		this.evaluationFieldName = evaluationFieldName;
 	}
 
-	public ActionParameterOperation getEvaluationFieldValue()
-	{
+	public ActionParameterOperation getEvaluationFieldValue() {
 		return evaluationFieldValue;
 	}
 
-	public void setEvaluationFieldValue(ActionParameterOperation evaluationFieldValue)
-	{
+	public void setEvaluationFieldValue(ActionParameterOperation evaluationFieldValue) {
 		this.evaluationFieldValue = evaluationFieldValue;
 	}
 
-	public ActionParameterOperation getMandatoryFlag()
-	{
+	public ActionParameterOperation getMandatoryFlag() {
 		return mandatoryFlag;
 	}
 
-	public void setMandatoryFlag(ActionParameterOperation mandatoryFlag)
-	{
+	public void setMandatoryFlag(ActionParameterOperation mandatoryFlag) {
 		this.mandatoryFlag = mandatoryFlag;
 	}
 
-	public ActionParameterOperation getConnectionName()
-	{
+	public ActionParameterOperation getConnectionName() {
 		return connectionName;
 	}
 
-	public void setConnectionName(ActionParameterOperation connectionName)
-	{
+	public void setConnectionName(ActionParameterOperation connectionName) {
 		this.connectionName = connectionName;
 	}
 
-	public String getSqlSuccess()
-	{
+	public String getSqlSuccess() {
 		return sqlSuccess;
 	}
 
-	public void setSqlSuccess(String sqlSuccess)
-	{
+	public void setSqlSuccess(String sqlSuccess) {
 		this.sqlSuccess = sqlSuccess;
 	}
 
-	public String getSqlError()
-	{
+	public String getSqlError() {
 		return sqlError;
 	}
 
-	public void setSqlError(String sqlError)
-	{
+	public void setSqlError(String sqlError) {
 		this.sqlError = sqlError;
 	}
 
-	public HashMap<String, ActionParameterOperation> getActionParameterOperationMap()
-	{
+	public HashMap<String, ActionParameterOperation> getActionParameterOperationMap() {
 		return actionParameterOperationMap;
 	}
 
-	public void setActionParameterOperationMap(HashMap<String, ActionParameterOperation> actionParameterOperationMap)
-	{
+	public void setActionParameterOperationMap(HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
 		this.actionParameterOperationMap = actionParameterOperationMap;
 	}
 

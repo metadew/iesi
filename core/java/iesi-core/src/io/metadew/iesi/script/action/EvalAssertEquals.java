@@ -32,8 +32,8 @@ public class EvalAssertEquals {
 		this.init(frameworkExecution, executionControl, scriptExecution, actionExecution);
 	}
 
-	public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl, ScriptExecution scriptExecution,
-			ActionExecution actionExecution) {
+	public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+			ScriptExecution scriptExecution, ActionExecution actionExecution) {
 		this.setFrameworkExecution(frameworkExecution);
 		this.setExecutionControl(executionControl);
 		this.setActionExecution(actionExecution);
@@ -60,26 +60,19 @@ public class EvalAssertEquals {
 		this.getActionParameterOperationMap().put("expected", this.getExpectedValue());
 		this.getActionParameterOperationMap().put("actual", this.getActualValue());
 	}
-	
+
 	//
 	public boolean execute() {
 		try {
 			// Run the action
 			boolean evaluation = false;
-			if (this.getExpectedValue().getValue().equals(this.getActualValue().getValue())) evaluation = true;
+			if (this.getExpectedValue().getValue().equals(this.getActualValue().getValue()))
+				evaluation = true;
 
 			if (evaluation) {
-				if (this.getActionExecution().getAction().getErrorExpected().equalsIgnoreCase("y")) {
-					this.getActionExecution().getActionControl().increaseErrorCount();
-				} else {
-					this.getActionExecution().getActionControl().increaseSuccessCount();
-				}
+				this.getActionExecution().getActionControl().increaseSuccessCount();
 			} else {
-				if (this.getActionExecution().getAction().getErrorExpected().equalsIgnoreCase("n")) {
-					this.getActionExecution().getActionControl().increaseErrorCount();
-				} else {
-					this.getActionExecution().getActionControl().increaseSuccessCount();
-				}
+				this.getActionExecution().getActionControl().increaseErrorCount();
 			}
 
 			return true;
@@ -89,8 +82,8 @@ public class EvalAssertEquals {
 
 			this.getActionExecution().getActionControl().increaseErrorCount();
 
-			this.getActionExecution().getActionControl().logOutput("exception",e.getMessage());
-			this.getActionExecution().getActionControl().logOutput("stacktrace",StackTrace.toString());
+			this.getActionExecution().getActionControl().logOutput("exception", e.getMessage());
+			this.getActionExecution().getActionControl().logOutput("stacktrace", StackTrace.toString());
 
 			return false;
 		}

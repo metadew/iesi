@@ -91,6 +91,8 @@ public class FwkOutputMessage {
 			this.getExecutionControl().logMessage(this.getActionExecution(),
 					"action.message=" + this.getMessage().getValue(), level);
 
+			this.getActionExecution().getActionControl().increaseSuccessCount();
+			
 			return true;
 		} catch (Exception e) {
 			StringWriter StackTrace = new StringWriter();

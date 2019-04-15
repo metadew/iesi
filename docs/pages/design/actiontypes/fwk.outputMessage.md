@@ -22,7 +22,6 @@ It is integrated with the framework's execution engine that manage settings and 
 
 For instance:
 * iesi.home is set to location #iesi.home#
-* 
 
 ### 2: onScreen
 

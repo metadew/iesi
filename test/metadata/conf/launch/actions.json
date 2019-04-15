@@ -69,4 +69,52 @@
 		"description": "test sql.executeQuery with a select query and an input parameter",
 		"parameterList": ""
 	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "sql.evaluateResult.1",
+		"description": "test sql.evaluateResult when data is expected",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "sql.evaluateResult.1.2",
+		"description": "test sql.evaluateResult when data is expected taking input from a file",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "sql.evaluateResult.2",
+		"description": "test sql.evaluateResult when no data is expected",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "sql.evaluateResult.2.2",
+		"description": "test sql.evaluateResult when no data is expected taking input from a file",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "sql.evaluateResult.3",
+		"description": "test sql.evaluateResult when data is expected but not available",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "sql.evaluateResult.4",
+		"description": "test sql.evaluateResult when no data is expected but is available",
+		"parameterList": ""
+	}
 }]

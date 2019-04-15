@@ -1,0 +1,23 @@
+---
+type: "script"
+data:
+  name: "sql.evaluateResult.4"
+  description: "test sql.evaluateResult when no data is expected but is available"
+  parameters: []
+  actions:
+  - number: 1
+    type: "sql.evaluateResult"
+    name: "action1"
+    description: "run an evaluation query not expecting results but is available"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "Y"
+    errorStop: "N"
+    parameters:
+    - name: "query"
+      value : "select * from Table1"
+    - name: "hasResult"
+      value : "N"
+    - name: "connection"
+      value : "sql.evaluateResult.4"

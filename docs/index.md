@@ -23,7 +23,7 @@ Learn more on our [introduction](/{{site.repository}}/pages/introduction.html) p
 
 IESI was designed primarily with configuration and reuse in mind. 
 It has been used at several projects and clients over the past years and evolves along with these initiatives. 
-Please consider that the open source release is underway and efforts are undertaken to improve features and documentation. 
+Please consider that we are aware of some shortcomings but many efforts are undertaken to improve features and documentation. 
 In the meantime, feel free to download and experiment with the automation framework and get acquainted with our approach. 
 [We welcome contributors](/{{site.repository}}/pages/contribute/contribute.html) from any organization or background to help us grow the framework.
 

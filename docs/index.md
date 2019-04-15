@@ -1,6 +1,6 @@
 {% include navigation.html %}
 
-# Introduction
+# Our framework
 
 **Automation for everyone.** Our vision is that automation should be easy; our mission that it should be available to everyone. Whether you are working in a small company or a large one, working on a small project or automating end-to-end processes across an entire organization, working from your laptop or running your infrastructure in the cloud; you should be able to leverage our framework to be up and running very fast.
 

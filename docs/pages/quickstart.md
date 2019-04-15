@@ -47,12 +47,13 @@ Next, the configuration repository will need to be created. Open a command windo
 * all configuration management is via the `bin/iesi-metadata.sh` (or `iesi-metadata.cmd` on Windows) command [![info](/{{site.repository}}/images/icons/question-dot.png)](/{{site.repository}}/pages/operate/operate.html)
 
 ```
-bin/iesi-metadata.sh -drop -create -load
+bin/iesi-metadata.sh -drop -create -load -type general
 ```
 
 > * drop ensures that even if the tables exist they are removed first 
 > * create ensures that all necessary tables are created 
 > * load will load any data that is made available in the folder metadata/in/new 
+> * type is related to the type of metadata repository
 
 ## Verify first execution 
 

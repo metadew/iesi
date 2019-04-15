@@ -66,7 +66,7 @@ public class EvalAssertEquals {
 		try {
 			// Run the action
 			boolean evaluation = false;
-			if (this.getExpectedValue().getValue().equals(this.getActualValue().getValue()))
+			if (this.getExpectedValue().getValue().equalsIgnoreCase(this.getActualValue().getValue()))
 				evaluation = true;
 
 			if (evaluation) {

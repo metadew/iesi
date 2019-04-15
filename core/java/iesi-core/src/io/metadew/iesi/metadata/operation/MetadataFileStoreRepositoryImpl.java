@@ -43,7 +43,7 @@ public class MetadataFileStoreRepositoryImpl {
 		// Copy all files to work folder
 		boolean moveToWorkFolder = false;
 
-		if (!workFolder.trim().equals(""))
+		if (!workFolder.trim().equalsIgnoreCase(""))
 			moveToWorkFolder = true;
 		
 		if (moveToWorkFolder) {
@@ -75,9 +75,9 @@ public class MetadataFileStoreRepositoryImpl {
 		boolean moveToArchiveFolder = false;
 		boolean moveToErrorFolder = false;
 
-		if (!archiveFolder.trim().equals(""))
+		if (!archiveFolder.trim().equalsIgnoreCase(""))
 			moveToArchiveFolder = true;
-		if (!errorFolder.trim().equals(""))
+		if (!errorFolder.trim().equalsIgnoreCase(""))
 			moveToErrorFolder = true;
 		
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");

@@ -114,7 +114,7 @@ public class FwkExecuteScript
 			// Add reuse options in a script
 
 			// Check on Running a script in a loop
-			if (this.getScriptExecution().getScript().getName().equals(this.getScriptName().getValue()))
+			if (this.getScriptExecution().getScript().getName().equalsIgnoreCase(this.getScriptName().getValue()))
 			{
 				throw new RuntimeException("Not allowed to run the script recursively");
 			}
@@ -124,7 +124,7 @@ public class FwkExecuteScript
 				ScriptConfiguration scriptConfiguration = new ScriptConfiguration(this.getFrameworkExecution());
 				// Script script = scriptConfiguration.getScript(this.getScriptName().getValue());
 				Script script = null;
-				if (this.getScriptVersion().getValue().equals(""))
+				if (this.getScriptVersion().getValue().equalsIgnoreCase(""))
 				{
 					script = scriptConfiguration.getScript(this.getScriptName().getValue());
 				}
@@ -136,11 +136,11 @@ public class FwkExecuteScript
 				ScriptExecution scriptExecution = new ScriptExecution(this.getFrameworkExecution(), script);
 				scriptExecution.initializeAsNonRootExecution(this.getExecutionControl(), this.getScriptExecution());
 
-				if (!this.getParamList().getValue().equals(""))
+				if (!this.getParamList().getValue().equalsIgnoreCase(""))
 				{
 					scriptExecution.setParamList(this.getParamList().getValue());
 				}
-				if (!this.getParamFile().getValue().equals(""))
+				if (!this.getParamFile().getValue().equalsIgnoreCase(""))
 				{
 					scriptExecution.setParamFile(this.getParamFile().getValue());
 				}
@@ -157,7 +157,7 @@ public class FwkExecuteScript
 					this.getActionExecution().getActionControl().increaseSuccessCount();
 				}
 				else if (scriptExecution.getResult()
-							.equals(FrameworkStatus.ERROR.value()))
+							.equalsIgnoreCase(FrameworkStatus.ERROR.value()))
 				{
 					this.getActionExecution().getActionControl().increaseErrorCount();
 				}

@@ -41,10 +41,10 @@ public class GenerationExecution {
 
 		// Parameters
 		// ParamList has priority of ParamFile
-		if (!this.getParamFile().trim().equals("")) {
+		if (!this.getParamFile().trim().equalsIgnoreCase("")) {
 			this.getExecutionControl().getExecutionRuntime().loadParamFiles(this.getParamFile());
 		}
-		if (!this.getParamList().trim().equals("")) {
+		if (!this.getParamList().trim().equalsIgnoreCase("")) {
 			this.getExecutionControl().getExecutionRuntime().loadParamList(this.getParamList());
 		}
 		

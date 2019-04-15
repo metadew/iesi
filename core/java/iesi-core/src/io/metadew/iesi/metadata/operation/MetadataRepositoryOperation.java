@@ -56,7 +56,7 @@ public class MetadataRepositoryOperation {
 				if (tableName.endsWith("CFG_MTD_TBL") || tableName.endsWith("CFG_MTD_FLD"))
 					continue;
 
-				if (schemaName.equals("")) {
+				if (schemaName.equalsIgnoreCase("")) {
 					this.getFrameworkExecution().getFrameworkLog().log("metadata.clean.table=" + tableName, Level.INFO);
 				} else {
 					this.getFrameworkExecution().getFrameworkLog()
@@ -100,7 +100,7 @@ public class MetadataRepositoryOperation {
 			while (crsDropInventory.next()) {
 				schemaName = crsDropInventory.getString("OWNER");
 				tableName = crsDropInventory.getString("TABLE_NAME");
-				if (schemaName.equals("")) {
+				if (schemaName.equalsIgnoreCase("")) {
 					this.getFrameworkExecution().getFrameworkLog().log("metadata.drop.table=" + tableName, Level.INFO);
 				} else {
 					this.getFrameworkExecution().getFrameworkLog()
@@ -121,20 +121,20 @@ public class MetadataRepositoryOperation {
 	private String getAllTablesQuery() {
 		String query = "";
 		if (this.getMetadataRepositoryConfiguration().getDatabaseConnection().getType().toLowerCase()
-				.equals("oracle")) {
+				.equalsIgnoreCase("oracle")) {
 			query = "select OWNER, TABLE_NAME from ALL_TABLES where owner = '"
 					+ this.getMetadataRepositoryConfiguration().getMetadataTableConfiguration().getSchema() + "' and TABLE_NAME like '"
 					+ this.getMetadataRepositoryConfiguration().getMetadataTableConfiguration().getTableNamePrefix()
 					+ this.getMetadataRepositoryConfiguration().getMetadataRepositoryCategoryConfiguration().getPrefix()
 					+ "%' order by TABLE_NAME ASC";
 		} else if (this.getMetadataRepositoryConfiguration().getDatabaseConnection().getType().toLowerCase()
-				.equals("sqlite")) {
+				.equalsIgnoreCase("sqlite")) {
 			query = "select tbl_name 'TABLE_NAME', '' 'OWNER' from sqlite_master where tbl_name like '"
 					+ this.getMetadataRepositoryConfiguration().getMetadataTableConfiguration().getTableNamePrefix()
 					+ this.getMetadataRepositoryConfiguration().getMetadataRepositoryCategoryConfiguration().getPrefix()
 					+ "%' order by tbl_name asc";
 		} else if (this.getMetadataRepositoryConfiguration().getDatabaseConnection().getType().toLowerCase()
-				.equals("netezza")) {
+				.equalsIgnoreCase("netezza")) {
 			query = "select SCHEMA as \"OWNER\", TABLENAME as \"TABLE_NAME\" from _V_TABLE where OWNER = '"
 					+ this.getFrameworkExecution().getFrameworkControl().getProperty(
 							this.getFrameworkExecution().getFrameworkConfiguration().getSettingConfiguration()
@@ -144,7 +144,7 @@ public class MetadataRepositoryOperation {
 					+ this.getMetadataRepositoryConfiguration().getMetadataRepositoryCategoryConfiguration().getPrefix()
 					+ "%' order by TABLENAME asc";
 		} else if (this.getMetadataRepositoryConfiguration().getDatabaseConnection().getType().toLowerCase()
-				.equals("postgresql")) {
+				.equalsIgnoreCase("postgresql")) {
 			query = "select table_schema as \"OWNER\", table_name as \"TABLE_NAME\" from information_schema.tables where table_schema = '"
 					+ this.getFrameworkExecution().getFrameworkControl()
 							.getProperty(this.getFrameworkExecution().getFrameworkConfiguration()
@@ -189,19 +189,19 @@ public class MetadataRepositoryOperation {
 		String metadataRepositoryCategory = this.getMetadataRepositoryConfiguration().getCategory();
 		if (metadataRepositoryCategory == null)
 			metadataRepositoryCategory = "";
-		if (metadataRepositoryCategory.equals("metadew")) {
+		if (metadataRepositoryCategory.equalsIgnoreCase("metadew")) {
 			files = new String[] { "MetadewTables.json" };
-		} else if (metadataRepositoryCategory.equals("connectivity")) {
+		} else if (metadataRepositoryCategory.equalsIgnoreCase("connectivity")) {
 			files = new String[] { "ConnectivityTables.json" };
-		} else if (metadataRepositoryCategory.equals("control")) {
+		} else if (metadataRepositoryCategory.equalsIgnoreCase("control")) {
 			files = new String[] { "ControlTables.json" };
-		} else if (metadataRepositoryCategory.equals("design")) {
+		} else if (metadataRepositoryCategory.equalsIgnoreCase("design")) {
 			files = new String[] { "DesignTables.json" };
-		} else if (metadataRepositoryCategory.equals("trace")) {
+		} else if (metadataRepositoryCategory.equalsIgnoreCase("trace")) {
 			files = new String[] { "TraceTables.json" };
-		} else if (metadataRepositoryCategory.equals("result")) {
+		} else if (metadataRepositoryCategory.equalsIgnoreCase("result")) {
 			files = new String[] { "ResultTables.json" };
-		} else if (metadataRepositoryCategory.equals("general")) {
+		} else if (metadataRepositoryCategory.equalsIgnoreCase("general")) {
 			files = new String[] { "ConnectivityTables.json", "ControlTables.json", "DesignTables.json",
 					"ResultTables.json", "TraceTables.json" };
 			metadataRepositoryCategoryConfigurations = new MetadataRepositoryCategoryConfiguration[] {
@@ -245,7 +245,7 @@ public class MetadataRepositoryOperation {
 				.getFolderConfiguration().getFolderAbsolutePath("metadata.in.done"));
 
 		// Load files
-		if (input.trim().equals("")) {
+		if (input.trim().equalsIgnoreCase("")) {
 			this.loadConfigurationSelection(metadataRepositoryConfigurationList, inputFolder, workFolder, archiveFolder, errorFolder, ".+\\.json");
 			this.loadConfigurationSelection(metadataRepositoryConfigurationList, inputFolder, workFolder, archiveFolder, errorFolder, ".+\\.yml");
 		} else {
@@ -306,7 +306,7 @@ public class MetadataRepositoryOperation {
 		boolean moveToArchiveFolder = false;
 		boolean moveToErrorFolder = false;
 
-		if (!workFolder.trim().equals(""))
+		if (!workFolder.trim().equalsIgnoreCase(""))
 			moveToWorkFolder = true;
 
 		if (moveToWorkFolder) {
@@ -317,9 +317,9 @@ public class MetadataRepositoryOperation {
 			workFolder = inputFolder;
 		}
 
-		if (!archiveFolder.trim().equals(""))
+		if (!archiveFolder.trim().equalsIgnoreCase(""))
 			moveToArchiveFolder = true;
-		if (!errorFolder.trim().equals(""))
+		if (!errorFolder.trim().equalsIgnoreCase(""))
 			moveToErrorFolder = true;
 
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
@@ -368,9 +368,9 @@ public class MetadataRepositoryOperation {
 		boolean moveToArchiveFolder = false;
 		boolean moveToErrorFolder = false;
 
-		if (!archiveFolder.trim().equals(""))
+		if (!archiveFolder.trim().equalsIgnoreCase(""))
 			moveToArchiveFolder = true;
-		if (!errorFolder.trim().equals(""))
+		if (!errorFolder.trim().equalsIgnoreCase(""))
 			moveToErrorFolder = true;
 
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");

@@ -60,14 +60,14 @@ public class RepositoryInstanceConfiguration {
 		
 		// add Parameters
 		String sqlParameters = this.getParameterInsertStatements(repositoryName);
-		if (!sqlParameters.equals("")) {
+		if (!sqlParameters.equalsIgnoreCase("")) {
 			sql += "\n";
 			sql += sqlParameters;
 		}
 
 		// add Lables
 		String sqlLabels = this.getLabelInsertStatements(repositoryName);
-		if (!sqlLabels.equals("")) {
+		if (!sqlLabels.equalsIgnoreCase("")) {
 			sql += "\n";
 			sql += sqlLabels;
 		}
@@ -85,7 +85,7 @@ public class RepositoryInstanceConfiguration {
 		for (RepositoryInstanceParameter repositoryInstanceParameter : this.getRepositoryInstance().getParameters()) {
 			RepositoryInstanceParameterConfiguration repositoryInstanceParameterConfiguration = new RepositoryInstanceParameterConfiguration(
 					repositoryInstanceParameter, this.getFrameworkExecution());
-			if (!result.equals(""))
+			if (!result.equalsIgnoreCase(""))
 				result += "\n";
 			result += repositoryInstanceParameterConfiguration.getInsertStatement(repositoryName, this.getRepositoryInstance().getName());
 		}
@@ -104,7 +104,7 @@ public class RepositoryInstanceConfiguration {
 		for (RepositoryInstanceLabel repositoryInstanceLabel : this.getRepositoryInstance().getLabels()) {
 			RepositoryInstanceLabelConfiguration repositoryInstanceLabelConfiguration = new RepositoryInstanceLabelConfiguration(
 					repositoryInstanceLabel, this.getFrameworkExecution());
-			if (!result.equals(""))
+			if (!result.equalsIgnoreCase(""))
 				result += "\n";
 			result += repositoryInstanceLabelConfiguration.getInsertStatement(repositoryName, this.getRepositoryInstance().getName());
 		}

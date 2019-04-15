@@ -53,7 +53,7 @@ public class ExecutionTrace {
 	
 		// add Parameters
 		String sqlParameters = this.getParameterInsertStatements(scriptExecution);
-		if (!sqlParameters.equals("")) {
+		if (!sqlParameters.equalsIgnoreCase("")) {
 			sql += "\n";
 			sql += sqlParameters;
 		}
@@ -103,7 +103,7 @@ public class ExecutionTrace {
 	
 		// add Parameters
 		String sqlParameters = this.getOperationInsertStatements(actionExecution, actionParameterOperationMap);
-		if (!sqlParameters.equals("")) {
+		if (!sqlParameters.equalsIgnoreCase("")) {
 			sql += sqlParameters;
 		}
 		
@@ -128,7 +128,7 @@ public class ExecutionTrace {
 	        if (actionParameterOperation == null) continue;
 	        
 			String sql = this.getOperationInsertStatement(actionExecution, actionParameterOperation);
-	        if (!sql.equals("")) {
+	        if (!sql.equalsIgnoreCase("")) {
 				result += "\n";
 				result += sql;
 			}

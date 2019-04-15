@@ -20,7 +20,7 @@ public class GenerationOutputExecution {
 		this.setExecutionControl(executionControl);
 		this.setGenerationExecution(generationExecution);
 		for (GenerationOutput generationOutput : this.getGenerationExecution().getGeneration().getOutputs()) {
-			if (generationOutput.getName().trim().equals(generationOutputName.trim())) {
+			if (generationOutput.getName().trim().equalsIgnoreCase(generationOutputName.trim())) {
 				this.setGenerationOutput(generationOutput);
 			}
 		}

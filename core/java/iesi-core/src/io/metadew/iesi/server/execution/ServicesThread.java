@@ -35,10 +35,10 @@ public class ServicesThread extends Thread {
 
         int i = 0;
         while ((inputLine = in.readLine()) != null) {
-        	if (inputLine.equals("ACK")) {
+        	if (inputLine.equalsIgnoreCase("ACK")) {
 				i++;
 				outputLine = (String) outputMessage.get(i);    			
-    			if (outputLine.equals("EOM")) {
+    			if (outputLine.equalsIgnoreCase("EOM")) {
     		        out.println(outputLine);
     				outputMessage.clear();
     		        i = 0;
@@ -51,7 +51,7 @@ public class ServicesThread extends Thread {
 		        out.println(outputLine);
     		}
 
-        if (inputLine.equals("exit"))
+        if (inputLine.equalsIgnoreCase("exit"))
             break;
         }
         out.close();
@@ -69,7 +69,7 @@ public class ServicesThread extends Thread {
     	String[] tokens = command.split(delims);
     	ArrayList out = new ArrayList();
     	
-		if (tokens[0].equals("help")) {
+		if (tokens[0].equalsIgnoreCase("help")) {
 			//help
 			out.add("");
 			out.add("List of available commands");
@@ -81,7 +81,7 @@ public class ServicesThread extends Thread {
 			out.add("exit");
 			out.add("");
 			out.add("EOM");
-		} else if (tokens[0].equals("services")) {
+		} else if (tokens[0].equalsIgnoreCase("services")) {
 			//Services
 			out.add("");
 			out.add("List of available services");
@@ -91,7 +91,7 @@ public class ServicesThread extends Thread {
 	      	}	
 			out.add("");
 			out.add("EOM");
-		} else if (tokens[0].equals("status")) {
+		} else if (tokens[0].equalsIgnoreCase("status")) {
 			//Status
 			if (tokens.length < 2) {
 				out.add("Please enter the appropriate arguments for the command");
@@ -104,7 +104,7 @@ public class ServicesThread extends Thread {
 			}
 			out.add("");
 			out.add("EOM");
-		} else if (tokens[0].equals("start")) {
+		} else if (tokens[0].equalsIgnoreCase("start")) {
 			//start
 			if (tokens.length < 2) {
 				out.add("Please enter the appropriate arguments for the command");
@@ -117,7 +117,7 @@ public class ServicesThread extends Thread {
 			}
 			out.add("");
 			out.add("EOM");
-		} else if (tokens[0].equals("stop")) {
+		} else if (tokens[0].equalsIgnoreCase("stop")) {
 			//Stop
 			if (tokens.length < 2) {
 				out.add("Please enter the appropriate arguments for the command");
@@ -147,7 +147,7 @@ public class ServicesThread extends Thread {
     	boolean tempResult = false;
     	
     	for (String curVal : list){
-    	  if (curVal.equals(checkItem)){
+    	  if (curVal.equalsIgnoreCase(checkItem)){
     	    tempResult = true;
     	  }
     	}

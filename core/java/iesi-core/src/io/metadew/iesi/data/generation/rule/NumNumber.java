@@ -87,12 +87,12 @@ public class NumNumber {
 										Long.parseLong(this.getMaximumValue().getValue())));
 					} else {
 						int numberOfDecimals = DEFAULT_DECIMAL_NUMBER;
-						if (!this.getDecimalNumber().getValue().trim().equals("")) {
+						if (!this.getDecimalNumber().getValue().trim().equalsIgnoreCase("")) {
 							numberOfDecimals = Integer.valueOf(this.getDecimalNumber().getValue());
 						}
 						
 						DecimalFormatSymbols otherSymbols = new DecimalFormatSymbols(Locale.ROOT);
-						if (this.getDecimalChar().getValue().trim().equals("")) {
+						if (this.getDecimalChar().getValue().trim().equalsIgnoreCase("")) {
 							String temp = DEFAULT_DECIMAL_CHAR;
 							char charTemp = temp.charAt(0);
 							otherSymbols.setDecimalSeparator(charTemp);

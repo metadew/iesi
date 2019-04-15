@@ -147,31 +147,31 @@ public class MetadataRepositoryConfiguration {
 		this.setType(configFile.getProperty(
 				this.getFrameworkConfiguration().getSettingConfiguration().getSettingPath("metadata.repository.type"))
 				.toLowerCase());
-		if (this.getType().equals("elasticsearch")) {
+		if (this.getType().equalsIgnoreCase("elasticsearch")) {
 			this.setElasticsearchConnection(this.getElasticsearchConnectionConfiguration(configFile));
 			this.setType("elasticsearch");
-		} else if (this.getType().equals("sqlite")) {
+		} else if (this.getType().equalsIgnoreCase("sqlite")) {
 			SqliteDatabaseConnection sqliteDatabaseConnection = this.getSqliteDatabaseConnection();
 			ObjectMapper objectMapper = new ObjectMapper();
 			this.databaseConnection = objectMapper.convertValue(sqliteDatabaseConnection,
 					SqliteDatabaseConnection.class);
 			this.setGroup("database");
-		} else if (this.getType().equals("oracle")) {
+		} else if (this.getType().equalsIgnoreCase("oracle")) {
 			ObjectMapper objectMapper = new ObjectMapper();
 			this.setDatabaseConnection(objectMapper.convertValue(this.getOracleDatabaseConnection(logonType),
 					OracleDatabaseConnection.class));
 			this.setGroup("database");
-		} else if (this.getType().equals("netezza")) {
+		} else if (this.getType().equalsIgnoreCase("netezza")) {
 			ObjectMapper objectMapper = new ObjectMapper();
 			this.setDatabaseConnection(objectMapper.convertValue(this.getNetezzaDatabaseConnection(logonType),
 					NetezzaDatabaseConnection.class));
 			this.setGroup("database");
-		} else if (this.getType().equals("postgresql")) {
+		} else if (this.getType().equalsIgnoreCase("postgresql")) {
 			ObjectMapper objectMapper = new ObjectMapper();
 			this.setDatabaseConnection(objectMapper.convertValue(this.getPostgresqlDatabaseConnection(logonType),
 					PostgresqlDatabaseConnection.class));
 			this.setGroup("database");
-		} else if (this.getType().equals("filestore")) {
+		} else if (this.getType().equalsIgnoreCase("filestore")) {
 			ObjectMapper objectMapper = new ObjectMapper();
 			this.setFileStoreConnection(
 					objectMapper.convertValue(this.getMetadataFileStoreConnection(), FileStoreConnection.class));
@@ -464,7 +464,7 @@ public class MetadataRepositoryConfiguration {
 
 	public void dropTable(String schemaName, String tableName) {
 		String queryDropTable = "";
-		if (schemaName.equals("")) {
+		if (schemaName.equalsIgnoreCase("")) {
 			queryDropTable = "drop table " + tableName;
 		} else {
 			queryDropTable = "drop table " + schemaName + "." + tableName;
@@ -474,7 +474,7 @@ public class MetadataRepositoryConfiguration {
 
 	public void cleanTable(String schemaName, String tableName) {
 		String queryCleanTable = "";
-		if (schemaName.equals("")) {
+		if (schemaName.equalsIgnoreCase("")) {
 			queryCleanTable = "delete from " + tableName;
 		} else {
 			queryCleanTable = "delete from " + schemaName + "." + tableName;
@@ -483,13 +483,13 @@ public class MetadataRepositoryConfiguration {
 	}
 
 	public String getSystemTimestampExpression() {
-		if (this.getDatabaseConnection().getType().equals("oracle")) {
+		if (this.getDatabaseConnection().getType().equalsIgnoreCase("oracle")) {
 			return "systimestamp";
-		} else if (this.getDatabaseConnection().getType().equals("sqlite")) {
+		} else if (this.getDatabaseConnection().getType().equalsIgnoreCase("sqlite")) {
 			return ("datetime(CURRENT_TIMESTAMP, 'localtime')");
-		} else if (this.getDatabaseConnection().getType().equals("netezza")) {
+		} else if (this.getDatabaseConnection().getType().equalsIgnoreCase("netezza")) {
 			return "CURRENT_TIMESTAMP";
-		} else if (this.getDatabaseConnection().getType().equals("postgresql")) {
+		} else if (this.getDatabaseConnection().getType().equalsIgnoreCase("postgresql")) {
 			return "CURRENT_TIMESTAMP";
 		} else {
 			return "";

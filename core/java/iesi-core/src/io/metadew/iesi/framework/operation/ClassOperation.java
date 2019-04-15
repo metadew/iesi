@@ -19,7 +19,7 @@ public class ClassOperation {
 	public static Class getActionClass(String actionType) {
 		Class result = null;
 		for (Class currentClass : ReflectionTools.getClasses("io.metadew.iesi.script.action")) {
-			if (actionType.replace(".", "").toLowerCase().equals(currentClass.getSimpleName().toLowerCase()) ) {
+			if (actionType.replace(".", "").toLowerCase().equalsIgnoreCase(currentClass.getSimpleName().toLowerCase()) ) {
 				result = currentClass;
 				break;
 			}
@@ -37,7 +37,7 @@ public class ClassOperation {
                             .setUrls(ClasspathHelper.forClassLoader()).setScanners(new SubTypesScanner(false)));
 
           Class<?> matchedClazz = reflections.getSubTypesOf(Object.class).stream()
-                            .filter(clazz -> clazz.getSimpleName().toLowerCase().equals(StringUtils.remove(actionType, '.').toLowerCase()))
+                            .filter(clazz -> clazz.getSimpleName().toLowerCase().equalsIgnoreCase(StringUtils.remove(actionType, '.').toLowerCase()))
                             .findFirst().orElseThrow(NoSuchElementException::new);
 
           return matchedClazz;

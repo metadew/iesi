@@ -62,21 +62,21 @@ public class MetadataTableConfiguration {
 			}
 
 			// Data Types
-			if (field.getType().equals("string")) {
+			if (field.getType().equalsIgnoreCase("string")) {
 				sql += "VARCHAR2";
 				sql += " (";
 				sql += field.getLength();
 				sql += " CHAR";
 				sql += ")";
-			} else if (field.getType().equals("flag")) {
+			} else if (field.getType().equalsIgnoreCase("flag")) {
 				sql += "CHAR";
 				sql += " (";
 				sql += field.getLength();
 				sql += " CHAR";
 				sql += ")";
-			} else if (field.getType().equals("number")) {
+			} else if (field.getType().equalsIgnoreCase("number")) {
 				sql += "NUMBER";
-			} else if (field.getType().equals("timestamp")) {
+			} else if (field.getType().equalsIgnoreCase("timestamp")) {
 				sql += "TIMESTAMP (6)";
 			}
 
@@ -91,7 +91,7 @@ public class MetadataTableConfiguration {
 			}
 
 			// Add comments
-			if (!field.getDescription().trim().equals("")) {
+			if (!field.getDescription().trim().equalsIgnoreCase("")) {
 				fieldComments += "\n";
 				fieldComments += "COMMENT ON COLUMN ";
 				fieldComments += this.getMetadataRepositoryConfiguration().getMetadataTableConfiguration().getSchema() + "."
@@ -160,19 +160,19 @@ public class MetadataTableConfiguration {
 			}
 
 			// Data Types
-			if (field.getType().equals("string")) {
+			if (field.getType().equalsIgnoreCase("string")) {
 				sql += "VARCHAR";
 				sql += " (";
 				sql += field.getLength();
 				sql += ")";
-			} else if (field.getType().equals("flag")) {
+			} else if (field.getType().equalsIgnoreCase("flag")) {
 				sql += "CHAR";
 				sql += " (";
 				sql += field.getLength();
 				sql += ")";
-			} else if (field.getType().equals("number")) {
+			} else if (field.getType().equalsIgnoreCase("number")) {
 				sql += "NUMERIC";
-			} else if (field.getType().equals("timestamp")) {
+			} else if (field.getType().equalsIgnoreCase("timestamp")) {
 				sql += "TIMESTAMP";
 			}
 
@@ -187,7 +187,7 @@ public class MetadataTableConfiguration {
 			}
 
 			// Add comments
-			if (!field.getDescription().trim().equals("")) {
+			if (!field.getDescription().trim().equalsIgnoreCase("")) {
 				fieldComments += "\n";
 				fieldComments += "COMMENT ON COLUMN ";
 				fieldComments += this.getMetadataRepositoryConfiguration().getMetadataTableConfiguration().getSchema() + "."
@@ -250,19 +250,19 @@ public class MetadataTableConfiguration {
 			}
 
 			// Data Types
-			if (field.getType().equals("string")) {
+			if (field.getType().equalsIgnoreCase("string")) {
 				sql += "VARCHAR";
 				sql += " (";
 				sql += field.getLength();
 				sql += ")";
-			} else if (field.getType().equals("flag")) {
+			} else if (field.getType().equalsIgnoreCase("flag")) {
 				sql += "CHAR";
 				sql += " (";
 				sql += field.getLength();
 				sql += ")";
-			} else if (field.getType().equals("number")) {
+			} else if (field.getType().equalsIgnoreCase("number")) {
 				sql += "NUMERIC";
-			} else if (field.getType().equals("timestamp")) {
+			} else if (field.getType().equalsIgnoreCase("timestamp")) {
 				sql += "TIMESTAMP";
 			}
 
@@ -277,7 +277,7 @@ public class MetadataTableConfiguration {
 			}
 
 			// Add comments
-			if (!field.getDescription().trim().equals("")) {
+			if (!field.getDescription().trim().equalsIgnoreCase("")) {
 				fieldComments += "\n";
 				fieldComments += "COMMENT ON COLUMN ";
 				fieldComments += this.getMetadataRepositoryConfiguration().getMetadataTableConfiguration().getSchema() + "."
@@ -341,13 +341,13 @@ public class MetadataTableConfiguration {
 			}
 
 			// Data Types
-			if (field.getType().equals("string")) {
+			if (field.getType().equalsIgnoreCase("string")) {
 				sql += "TEXT";
-			} else if (field.getType().equals("flag")) {
+			} else if (field.getType().equalsIgnoreCase("flag")) {
 				sql += "TEXT";
-			} else if (field.getType().equals("number")) {
+			} else if (field.getType().equalsIgnoreCase("number")) {
 				sql += "NUMERIC";
-			} else if (field.getType().equals("timestamp")) {
+			} else if (field.getType().equalsIgnoreCase("timestamp")) {
 				sql += "TEXT";
 			}
 

@@ -137,7 +137,7 @@ public class EnvironmentConfiguration {
 
 		// add Parameters
 		String sqlParameters = this.getParameterInsertStatements(environment);
-		if (!sqlParameters.equals("")) {
+		if (!sqlParameters.equalsIgnoreCase("")) {
 			sql += "\n";
 			sql += sqlParameters;
 		}
@@ -198,7 +198,7 @@ public class EnvironmentConfiguration {
 
 		// add Parameters
 		String sqlParameters = this.getParameterInsertStatements(this.getEnvironment().getName());
-		if (!sqlParameters.equals("")) {
+		if (!sqlParameters.equalsIgnoreCase("")) {
 			sql += "\n";
 			sql += sqlParameters;
 		}
@@ -215,7 +215,7 @@ public class EnvironmentConfiguration {
 
 		for (EnvironmentParameter environmentParameter : environment.getParameters()) {
 			EnvironmentParameterConfiguration environmentParameterConfiguration = new EnvironmentParameterConfiguration(this.getFrameworkExecution());
-			if (!result.equals(""))
+			if (!result.equalsIgnoreCase(""))
 				result += "\n";
 			result += environmentParameterConfiguration.getInsertStatement(environment.getName(), environmentParameter);
 		}
@@ -234,7 +234,7 @@ public class EnvironmentConfiguration {
 		for (EnvironmentParameter environmentParameter : this.getEnvironment().getParameters()) {
 			EnvironmentParameterConfiguration environmentParameterConfiguration = new EnvironmentParameterConfiguration(environmentParameter,
 					this.getFrameworkExecution());
-			if (!result.equals(""))
+			if (!result.equalsIgnoreCase(""))
 				result += "\n";
 			result += environmentParameterConfiguration.getInsertStatement(environmentName);
 		}

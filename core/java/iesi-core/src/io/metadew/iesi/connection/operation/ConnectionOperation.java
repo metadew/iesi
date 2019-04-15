@@ -84,29 +84,29 @@ public class ConnectionOperation {
 				for (ConnectionTypeParameter connectionTypeParameter : connectionType.getParameters()) {
 					if (connectionTypeParameter.getMandatory().equalsIgnoreCase("y")) {
 						if (connectionTypeParameter.getName().equalsIgnoreCase("host")) {
-							if (hostName.trim().equals(""))
+							if (hostName.trim().equalsIgnoreCase(""))
 								this.addMissingField("host");
 						} else if (connectionTypeParameter.getName().equalsIgnoreCase("port")) {
-							if (portNumberTemp.trim().equals(""))
+							if (portNumberTemp.trim().equalsIgnoreCase(""))
 								this.addMissingField("port");
 						} else if (connectionTypeParameter.getName().equalsIgnoreCase("tnsalias")) {
-							if (tnsAlias.trim().equals(""))
+							if (tnsAlias.trim().equalsIgnoreCase(""))
 								this.addMissingField("tnsalias");
 						} else if (connectionTypeParameter.getName().equalsIgnoreCase("user")) {
-							if (userName.trim().equals(""))
+							if (userName.trim().equalsIgnoreCase(""))
 								this.addMissingField("user");
 						} else if (connectionTypeParameter.getName().equalsIgnoreCase("password")) {
-							if (userPassword.trim().equals(""))
+							if (userPassword.trim().equalsIgnoreCase(""))
 								this.addMissingField("password");
 						} else if (connectionTypeParameter.getName().equalsIgnoreCase("service")) {
-							if (userPassword.trim().equals(""))
+							if (userPassword.trim().equalsIgnoreCase(""))
 								this.addMissingField("service");
 						}
 					}
 				}
 				
 				// Addition for combined mandatory behavour of SERVICE_NM and TNS_ALIAS
-				if (tnsAlias.trim().equals("") && serviceName.trim().equals("")) {
+				if (tnsAlias.trim().equalsIgnoreCase("") && serviceName.trim().equalsIgnoreCase("")) {
 					this.addMissingField("service");
 					this.addMissingField("tnsalias");
 				}
@@ -173,19 +173,19 @@ public class ConnectionOperation {
 				for (ConnectionTypeParameter connectionTypeParameter : connectionType.getParameters()) {
 					if (connectionTypeParameter.getMandatory().equalsIgnoreCase("y")) {
 						if (connectionTypeParameter.getName().equalsIgnoreCase("host")) {
-							if (hostName.trim().equals(""))
+							if (hostName.trim().equalsIgnoreCase(""))
 								this.addMissingField("host");
 						} else if (connectionTypeParameter.getName().equalsIgnoreCase("port")) {
-							if (portNumberTemp.trim().equals(""))
+							if (portNumberTemp.trim().equalsIgnoreCase(""))
 								this.addMissingField("port");
 						} else if (connectionTypeParameter.getName().equalsIgnoreCase("database")) {
-							if (databaseName.trim().equals(""))
+							if (databaseName.trim().equalsIgnoreCase(""))
 								this.addMissingField("database");
 						} else if (connectionTypeParameter.getName().equalsIgnoreCase("user")) {
-							if (userName.trim().equals(""))
+							if (userName.trim().equalsIgnoreCase(""))
 								this.addMissingField("user");
 						} else if (connectionTypeParameter.getName().equalsIgnoreCase("password")) {
-							if (userPassword.trim().equals(""))
+							if (userPassword.trim().equalsIgnoreCase(""))
 								this.addMissingField("password");
 						}
 					}
@@ -251,19 +251,19 @@ public class ConnectionOperation {
 				for (ConnectionTypeParameter connectionTypeParameter : connectionType.getParameters()) {
 					if (connectionTypeParameter.getMandatory().equalsIgnoreCase("y")) {
 						if (connectionTypeParameter.getName().equalsIgnoreCase("host")) {
-							if (hostName.trim().equals(""))
+							if (hostName.trim().equalsIgnoreCase(""))
 								this.addMissingField("host");
 						} else if (connectionTypeParameter.getName().equalsIgnoreCase("port")) {
-							if (portNumberTemp.trim().equals(""))
+							if (portNumberTemp.trim().equalsIgnoreCase(""))
 								this.addMissingField("port");
 						} else if (connectionTypeParameter.getName().equalsIgnoreCase("database")) {
-							if (databaseName.trim().equals(""))
+							if (databaseName.trim().equalsIgnoreCase(""))
 								this.addMissingField("database");
 						} else if (connectionTypeParameter.getName().equalsIgnoreCase("user")) {
-							if (userName.trim().equals(""))
+							if (userName.trim().equalsIgnoreCase(""))
 								this.addMissingField("user");
 						} else if (connectionTypeParameter.getName().equalsIgnoreCase("password")) {
-							if (userPassword.trim().equals(""))
+							if (userPassword.trim().equalsIgnoreCase(""))
 								this.addMissingField("password");
 						}
 					}
@@ -329,19 +329,19 @@ public class ConnectionOperation {
 				for (ConnectionTypeParameter connectionTypeParameter : connectionType.getParameters()) {
 					if (connectionTypeParameter.getMandatory().equalsIgnoreCase("y")) {
 						if (connectionTypeParameter.getName().equalsIgnoreCase("host")) {
-							if (hostName.trim().equals(""))
+							if (hostName.trim().equalsIgnoreCase(""))
 								this.addMissingField("host");
 						} else if (connectionTypeParameter.getName().equalsIgnoreCase("port")) {
-							if (portNumberTemp.trim().equals(""))
+							if (portNumberTemp.trim().equalsIgnoreCase(""))
 								this.addMissingField("port");
 						} else if (connectionTypeParameter.getName().equalsIgnoreCase("schema")) {
-							if (schemaName.trim().equals(""))
+							if (schemaName.trim().equalsIgnoreCase(""))
 								this.addMissingField("schema");
 						} else if (connectionTypeParameter.getName().equalsIgnoreCase("user")) {
-							if (userName.trim().equals(""))
+							if (userName.trim().equalsIgnoreCase(""))
 								this.addMissingField("user");
 						} else if (connectionTypeParameter.getName().equalsIgnoreCase("password")) {
-							if (userPassword.trim().equals(""))
+							if (userPassword.trim().equalsIgnoreCase(""))
 								this.addMissingField("password");
 						}
 					}
@@ -394,10 +394,10 @@ public class ConnectionOperation {
 				for (ConnectionTypeParameter connectionTypeParameter : connectionType.getParameters()) {
 					if (connectionTypeParameter.getMandatory().equalsIgnoreCase("y")) {
 						if (connectionTypeParameter.getName().equalsIgnoreCase("filepath")) {
-							if (filePath.trim().equals(""))
+							if (filePath.trim().equalsIgnoreCase(""))
 								this.addMissingField("filePath");
 						} else if (connectionTypeParameter.getName().equalsIgnoreCase("filename")) {
-							if (fileName.trim().equals(""))
+							if (fileName.trim().equalsIgnoreCase(""))
 								this.addMissingField("fileName");
 						}
 					}
@@ -459,10 +459,10 @@ public class ConnectionOperation {
 			for (ConnectionTypeParameter connectionTypeParameter : connectionType.getParameters()) {
 				if (connectionTypeParameter.getMandatory().equalsIgnoreCase("y")) {
 					if (connectionTypeParameter.getName().equalsIgnoreCase("host")) {
-						if (hostName.trim().equals(""))
+						if (hostName.trim().equalsIgnoreCase(""))
 							this.addMissingField("host");
 					} else if (connectionTypeParameter.getName().equalsIgnoreCase("temppath")) {
-						if (tempPath.trim().equals(""))
+						if (tempPath.trim().equalsIgnoreCase(""))
 							this.addMissingField("tempPath");
 					}
 				}
@@ -526,25 +526,25 @@ public class ConnectionOperation {
 			for (ConnectionTypeParameter connectionTypeParameter : connectionType.getParameters()) {
 				if (connectionTypeParameter.getMandatory().equalsIgnoreCase("y")) {
 					if (connectionTypeParameter.getName().equalsIgnoreCase("host")) {
-						if (hostName.trim().equals(""))
+						if (hostName.trim().equalsIgnoreCase(""))
 							this.addMissingField("host");
 					} else if (connectionTypeParameter.getName().equalsIgnoreCase("port")) {
 						if (portNumber == 0)
 							this.addMissingField("port");
 					} else if (connectionTypeParameter.getName().equalsIgnoreCase("user")) {
-						if (userName.trim().equals(""))
+						if (userName.trim().equalsIgnoreCase(""))
 							this.addMissingField("user");
 					} else if (connectionTypeParameter.getName().equalsIgnoreCase("password")) {
-						if (userPassword.trim().equals(""))
+						if (userPassword.trim().equalsIgnoreCase(""))
 							this.addMissingField("password");
 					} else if (connectionTypeParameter.getName().equalsIgnoreCase("temppath")) {
-						if (tempPath.trim().equals(""))
+						if (tempPath.trim().equalsIgnoreCase(""))
 							this.addMissingField("tempPath");
 					} else if (connectionTypeParameter.getName().equalsIgnoreCase("simulateterminal")) {
-						if (terminalFlag.trim().equals(""))
+						if (terminalFlag.trim().equalsIgnoreCase(""))
 							this.addMissingField("simulateTerminal");
 					} else if (connectionTypeParameter.getName().equalsIgnoreCase("jumphostconnections")) {
-						if (jumpHostConnectionName.trim().equals(""))
+						if (jumpHostConnectionName.trim().equalsIgnoreCase(""))
 							this.addMissingField("jumphostConnections");
 					}
 				}
@@ -614,16 +614,16 @@ public class ConnectionOperation {
 			for (ConnectionTypeParameter connectionTypeParameter : connectionType.getParameters()) {
 				if (connectionTypeParameter.getMandatory().equalsIgnoreCase("y")) {
 					if (connectionTypeParameter.getName().equalsIgnoreCase("url")) {
-						if (connectionURL.trim().equals(""))
+						if (connectionURL.trim().equalsIgnoreCase(""))
 							this.addMissingField("url");
 					} else if (connectionTypeParameter.getName().equalsIgnoreCase("user")) {
-						if (userName.trim().equals(""))
+						if (userName.trim().equalsIgnoreCase(""))
 							this.addMissingField("user");
 					} else if (connectionTypeParameter.getName().equalsIgnoreCase("password")) {
-						if (userPassword.trim().equals(""))
+						if (userPassword.trim().equalsIgnoreCase(""))
 							this.addMissingField("password");
 					} else if (connectionTypeParameter.getName().equalsIgnoreCase("repository")) {
-						if (repositoryName.trim().equals(""))
+						if (repositoryName.trim().equalsIgnoreCase(""))
 							this.addMissingField("repository");
 					}
 				}

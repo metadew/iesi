@@ -61,7 +61,7 @@ public class DataRepositoryOperation {
 				if (tableName.endsWith("CFG_MTD_TBL") || tableName.endsWith("CFG_MTD_FLD"))
 					continue;
 
-				if (schemaName.equals("")) {
+				if (schemaName.equalsIgnoreCase("")) {
 					this.getFrameworkExecution().getFrameworkLog().log("data.clean.table=" + tableName, Level.INFO);
 				} else {
 					this.getFrameworkExecution().getFrameworkLog()
@@ -97,7 +97,7 @@ public class DataRepositoryOperation {
 			while (crsDropInventory.next()) {
 				schemaName = crsDropInventory.getString("OWNER");
 				tableName = crsDropInventory.getString("TABLE_NAME");
-				if (schemaName.equals("")) {
+				if (schemaName.equalsIgnoreCase("")) {
 					this.getFrameworkExecution().getFrameworkLog().log("data.drop.table=" + tableName, Level.INFO);
 				} else {
 					this.getFrameworkExecution().getFrameworkLog()
@@ -117,23 +117,23 @@ public class DataRepositoryOperation {
 
 	private String getAllTablesQuery() {
 		String query = "";
-		if (this.getDataRepositoryConfiguration().getDatabaseConnection().getType().toLowerCase().equals("oracle")) {
+		if (this.getDataRepositoryConfiguration().getDatabaseConnection().getType().toLowerCase().equalsIgnoreCase("oracle")) {
 			query = "select OWNER, TABLE_NAME from ALL_TABLES where owner = '"
 					+ this.getDataRepositoryConfiguration().getSchema() + "' and TABLE_NAME like '"
 					+ this.getDataRepositoryConfiguration().getRepositoryTableNamePrefix()
 					+ "%' order by TABLE_NAME ASC";
 		} else if (this.getDataRepositoryConfiguration().getDatabaseConnection().getType().toLowerCase()
-				.equals("sqlite")) {
+				.equalsIgnoreCase("sqlite")) {
 			query = "select tbl_name 'TABLE_NAME', '' 'OWNER' from sqlite_master where tbl_name like '"
 					+ this.getDataRepositoryConfiguration().getRepositoryTableNamePrefix() + "%' order by tbl_name asc";
 		} else if (this.getDataRepositoryConfiguration().getDatabaseConnection().getType().toLowerCase()
-				.equals("netezza")) {
+				.equalsIgnoreCase("netezza")) {
 			query = "select SCHEMA as \"OWNER\", TABLENAME as \"TABLE_NAME\" from _V_TABLE where OWNER = '"
 					+ this.getDataRepositoryConfiguration().getSchema() + "' and TABLENAME like '"
 					+ this.getDataRepositoryConfiguration().getRepositoryTableNamePrefix()
 					+ "%' order by TABLENAME asc";
 		} else if (this.getDataRepositoryConfiguration().getDatabaseConnection().getType().toLowerCase()
-				.equals("postgresql")) {
+				.equalsIgnoreCase("postgresql")) {
 			query = "select table_schema as \"OWNER\", table_name as \"TABLE_NAME\" from information_schema.tables where table_schema = '"
 					+ this.getDataRepositoryConfiguration().getSchema() + "' and table_name like '"
 					+ this.getDataRepositoryConfiguration().getRepositoryTableNamePrefix()
@@ -185,7 +185,7 @@ public class DataRepositoryOperation {
 				.getFolderConfiguration().getFolderAbsolutePath("data.in.done"));
 
 		// Load files
-		if (input.trim().equals("")) {
+		if (input.trim().equalsIgnoreCase("")) {
 			this.loadConfigurationSelection(inputFolder, workFolder, archiveFolder, errorFolder, ".+\\.json");
 		} else {
 			if (ParsingTools.isRegexFunction(input)) {
@@ -245,7 +245,7 @@ public class DataRepositoryOperation {
 		boolean moveToArchiveFolder = false;
 		boolean moveToErrorFolder = false;
 
-		if (!workFolder.trim().equals(""))
+		if (!workFolder.trim().equalsIgnoreCase(""))
 			moveToWorkFolder = true;
 
 		if (moveToWorkFolder) {
@@ -256,9 +256,9 @@ public class DataRepositoryOperation {
 			workFolder = inputFolder;
 		}
 
-		if (!archiveFolder.trim().equals(""))
+		if (!archiveFolder.trim().equalsIgnoreCase(""))
 			moveToArchiveFolder = true;
-		if (!errorFolder.trim().equals(""))
+		if (!errorFolder.trim().equalsIgnoreCase(""))
 			moveToErrorFolder = true;
 
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");

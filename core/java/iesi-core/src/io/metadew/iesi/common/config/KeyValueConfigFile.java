@@ -20,7 +20,7 @@ public class KeyValueConfigFile extends ConfigFile {
 			while ((readLine = bufferedReader.readLine()) != null) {
 				String innerpart = readLine.trim();
 				int delim = innerpart.indexOf("=");
-				if (!innerpart.startsWith("#") && !innerpart.equals("")) {
+				if (!innerpart.startsWith("#") && !innerpart.equalsIgnoreCase("")) {
 					if (delim > 0) {
 						String key = innerpart.substring(0, delim);
 						String value = innerpart.substring(delim + 1);
@@ -46,7 +46,7 @@ public class KeyValueConfigFile extends ConfigFile {
 			while ((readLine = bufferedReader.readLine()) != null) {
 				String innerpart = readLine.trim();
 				int delim = innerpart.indexOf("=");
-				if (!innerpart.startsWith("#") && !innerpart.equals("")) {
+				if (!innerpart.startsWith("#") && !innerpart.equalsIgnoreCase("")) {
 					if (delim > 0) {
 						String key = innerpart.substring(0, delim);
 						String value = innerpart.substring(delim + 1);

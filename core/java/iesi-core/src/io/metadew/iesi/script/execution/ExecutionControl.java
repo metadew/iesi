@@ -70,7 +70,7 @@ public class ExecutionControl
 	private void initializeExecutionRuntime(FrameworkExecution frameworkExecution, String runId) {
 		String customExecutionRuntime = frameworkExecution.getFrameworkControl().getProperty(frameworkExecution
 				.getFrameworkConfiguration().getSettingConfiguration().getSettingPath("script.execution.runtime"));
-		if (customExecutionRuntime.trim().equals("")) {
+		if (customExecutionRuntime.trim().equalsIgnoreCase("")) {
 			this.setExecutionRuntime(new ExecutionRuntime(frameworkExecution, runId));
 		} else {
 			try {

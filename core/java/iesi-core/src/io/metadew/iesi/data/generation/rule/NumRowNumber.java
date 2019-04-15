@@ -50,7 +50,7 @@ public class NumRowNumber {
 			// Run the generationRule
 			try {			
 				long counter = 1;
-				if (!this.getStartNumber().getValue().trim().equals("")) {
+				if (!this.getStartNumber().getValue().trim().equalsIgnoreCase("")) {
 					counter = Long.parseLong(this.getStartNumber().getValue());
 				}
 

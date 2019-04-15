@@ -1,0 +1,72 @@
+[{
+	"type": "LaunchItem",
+	"data": {
+		"script": "fwk.dummy.1",
+		"description": "test fwk.dummy",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "fwk.outputMessage.1",
+		"description": "test fwk.outputMessage with default message",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "fwk.outputMessage.2",
+		"description": "test fwk.outputMessage with generated message after empty input",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "fwk.outputMessage.3",
+		"description": "test fwk.outputMessage with generated message using email generation instruction",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "fwk.outputMessage.4",
+		"description": "test fwk.outputMessage with parameter in the message",
+		"parameterList": "param1=myParameter"
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "sql.executeQuery.1",
+		"description": "test sql.executeQuery with a select query",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "sql.executeQuery.2",
+		"description": "test sql.executeQuery with an insert query",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "sql.executeQuery.3",
+		"description": "test sql.executeQuery with a select query and an input parameter",
+		"parameterList": "param1=Table1"
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "sql.executeQuery.4",
+		"description": "test sql.executeQuery with a select query and an input parameter",
+		"parameterList": ""
+	}
+}]

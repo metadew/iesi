@@ -245,7 +245,7 @@ public class ScriptLauncher {
 				YamlInputOperation yamlInputOperation = new YamlInputOperation(frameworkExecution, fileName);
 				script = yamlInputOperation.getScript();
 			}
-
+			
 			if (script == null) {
 				System.out.println("No script found for execution");
 				System.exit(1);

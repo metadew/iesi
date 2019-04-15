@@ -1,7 +1,7 @@
 # ETL Demo
 ## Quickstart
 
- 1. Spin up docker environment
+1. Spin up docker environment
  
 	Open a command prompt in the folder containing this file
 	

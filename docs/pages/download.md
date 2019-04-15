@@ -12,7 +12,7 @@ The distribution that you need to download to use the framework has the followin
 
 ## Documentation
 
-* Framework documentation: [https://metadew.github.io/iesi-doc/](https://metadew.github.io/iesi-doc/)
+* Framework documentation: [https://metadew.github.io/iesi/](/{{site.repository}}/pages/documentation.html)
 
 ## Sources
 

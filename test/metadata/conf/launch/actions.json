@@ -117,4 +117,12 @@
 		"description": "test sql.evaluateResult when no data is expected but is available",
 		"parameterList": ""
 	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "fwk.setParameterValue.1",
+		"description": "test fwk.setParameterValue",
+		"parameterList": ""
+	}
 }]

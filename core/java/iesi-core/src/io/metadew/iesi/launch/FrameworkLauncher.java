@@ -21,7 +21,7 @@ public class FrameworkLauncher {
 	public static void main(String[] args) {
 
 		Option oHelp = new Option("help", "print this message");
-		Option oVersion = new Option("version", "print the version of the framework");
+		Option oVersion = new Option("version", "display the version of the framework");
 
 		// create Options object
 		Options options = new Options();

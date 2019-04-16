@@ -125,4 +125,12 @@
 		"description": "test fwk.setParameterValue",
 		"parameterList": ""
 	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "fwk.setParameterList.1",
+		"description": "test fwk.setParameterList",
+		"parameterList": ""
+	}
 }]

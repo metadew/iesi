@@ -32,6 +32,8 @@ import io.metadew.iesi.metadata.definition.RuntimeVariable;
 import io.metadew.iesi.runtime.definition.LookupResult;
 import io.metadew.iesi.script.execution.data_instruction.DataInstruction;
 import io.metadew.iesi.script.execution.data_instruction.DataInstructionRepository;
+import io.metadew.iesi.script.execution.instruction.variable.VariableInstruction;
+import io.metadew.iesi.script.execution.instruction.variable.VariableInstructionRepository;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 import io.metadew.iesi.script.operation.DatasetOperation;
 import io.metadew.iesi.script.operation.ImpersonationOperation;
@@ -61,6 +63,7 @@ public class ExecutionRuntime {
 	private ImpersonationOperation impersonationOperation;
 
 	private HashMap<String, DataInstruction> dataInstructions;
+	private HashMap<String, VariableInstruction> variableInstructions;
 
 	public ExecutionRuntime() {
 
@@ -99,6 +102,7 @@ public class ExecutionRuntime {
 
 		// Initialize data instructions
 		dataInstructions = DataInstructionRepository.getReposistory(new GenerationObjectExecution(this.getFrameworkExecution()));
+		this.setVariableInstructions(VariableInstructionRepository.getReposistory());
 	}
 
 	public void terminate() {
@@ -483,6 +487,10 @@ public class ExecutionRuntime {
 				}  else if (lookupContext.equalsIgnoreCase("coalesce") || lookupContext.equalsIgnoreCase("ifnull") || lookupContext.equalsIgnoreCase("nvl")) {
 					instructionOutput = this.lookupCoalesceResult(executionControl, lookupScope);
 				}
+				// Variable lookup
+			} else if (instructionType.equalsIgnoreCase("$")) {
+				String lookupContext = instruction.substring(1).trim().toLowerCase();
+				instructionOutput = this.getVariableInstruction(executionControl, lookupContext, "");
 				// Generate data
 			} else if (instructionType.equalsIgnoreCase("*")) {
 				int lookupOpenPos = instruction.indexOf("(");
@@ -592,6 +600,15 @@ public class ExecutionRuntime {
 		return output;
 	}
 
+	private String getVariableInstruction(ExecutionControl executionControl, String context, String input) {
+		VariableInstruction variableInstruction = this.getVariableInstructions().get(context);
+		if (variableInstruction == null) {
+			throw new IllegalArgumentException(MessageFormat.format("No variable instruction named {0} found.", context));
+		} else {
+			return variableInstruction.generateOutput();
+		}
+	}
+	
 	private String generateDataInstruction(ExecutionControl executionControl, String context, String input)
 	{
 		DataInstruction dataInstruction = dataInstructions.get(context);
@@ -818,6 +835,13 @@ public class ExecutionRuntime {
 
 	public void setRepositoryOperationMap(HashMap<String, RepositoryOperation> repositoryOperationMap) {
 		this.repositoryOperationMap = repositoryOperationMap;
+	}
+	public HashMap<String, VariableInstruction> getVariableInstructions() {
+		return variableInstructions;
+	}
+
+	public void setVariableInstructions(HashMap<String, VariableInstruction> variableInstructions) {
+		this.variableInstructions = variableInstructions;
 	}
 
 }

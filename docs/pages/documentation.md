@@ -12,6 +12,7 @@
     * [Create first connection](/{{site.repository}}/pages/tutorial/createfirstconnection.html)
 	* [Execute script using a parameter list](/{{site.repository}}/pages/tutorial/executescriptusingparameterlist.html)
   * Always useful to know or refresh
+    * [Display the version of the framework](/{{site.repository}}/pages/tutorial/displayframeworkversion.html)
     * Define a script and its actions
     * [Load configuration](/{{site.repository}}/pages/tutorial/loadconfiguration.html)  
 	* [Execute script](/{{site.repository}}/pages/tutorial/executescript.html)  

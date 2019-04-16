@@ -243,9 +243,6 @@ public class EnvironmentConfiguration {
 	}
 
 	// Get Environment
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-
-
 	public ListObject getEnvironments() {
 		List<Environment> environmentList = new ArrayList<>();
 		CachedRowSet crs = null;

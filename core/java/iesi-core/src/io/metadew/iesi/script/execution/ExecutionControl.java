@@ -71,7 +71,7 @@ public class ExecutionControl
 		String customExecutionRuntime = frameworkExecution.getFrameworkControl().getProperty(frameworkExecution
 				.getFrameworkConfiguration().getSettingConfiguration().getSettingPath("script.execution.runtime"));
 		if (customExecutionRuntime.trim().equalsIgnoreCase("")) {
-			this.setExecutionRuntime(new ExecutionRuntime(frameworkExecution, runId));
+			this.setExecutionRuntime(new ExecutionRuntime(frameworkExecution,this, runId));
 		} else {
 			try {
 				Class classRef = Class.forName(customExecutionRuntime);

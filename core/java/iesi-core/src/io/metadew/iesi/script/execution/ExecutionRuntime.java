@@ -45,6 +45,8 @@ public class ExecutionRuntime {
 
 	private FrameworkExecution frameworkExecution;
 
+	private ExecutionControl executionControl;
+	
 	private RuntimeVariableConfiguration runtimeVariableConfiguration;
 	private IterationVariableConfiguration iterationVariableConfiguration;
 
@@ -69,7 +71,8 @@ public class ExecutionRuntime {
 
 	}
 
-	public ExecutionRuntime(FrameworkExecution frameworkExecution, String runId) {
+	public ExecutionRuntime(FrameworkExecution frameworkExecution, ExecutionControl executionControl, String runId) {
+		this.setExecutionControl(executionControl);
 		this.init(frameworkExecution, runId);
 	}
 
@@ -102,7 +105,7 @@ public class ExecutionRuntime {
 
 		// Initialize data instructions
 		dataInstructions = DataInstructionRepository.getReposistory(new GenerationObjectExecution(this.getFrameworkExecution()));
-		this.setVariableInstructions(VariableInstructionRepository.getReposistory());
+		this.setVariableInstructions(VariableInstructionRepository.getReposistory(this.getExecutionControl()));
 	}
 
 	public void terminate() {
@@ -842,6 +845,14 @@ public class ExecutionRuntime {
 
 	public void setVariableInstructions(HashMap<String, VariableInstruction> variableInstructions) {
 		this.variableInstructions = variableInstructions;
+	}
+
+	public ExecutionControl getExecutionControl() {
+		return executionControl;
+	}
+
+	public void setExecutionControl(ExecutionControl executionControl) {
+		this.executionControl = executionControl;
 	}
 
 }

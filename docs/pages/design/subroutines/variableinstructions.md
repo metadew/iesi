@@ -10,3 +10,12 @@ Variable instructions retrieve a specific variable that is being used by the fra
 
 `{{$fwk.version}}`
 * get the current version of the framework
+
+## Runtime variables
+
+Runtime variables are active in the general execution engine.
+
+### run.env
+
+`{{$run.env}}`
+* get the current environment that is active in the framework

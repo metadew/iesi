@@ -133,4 +133,12 @@
 		"description": "test fwk.setParameterList",
 		"parameterList": ""
 	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "fwk.setEnvironment.1",
+		"description": "test fwk.setEnvironment",
+		"parameterList": ""
+	}
 }]

@@ -2,7 +2,7 @@ package io.metadew.iesi.script.execution.instruction.variable;
 
 public final class VariableInstructionTools {
 
-	public static String getSynonymKey(String input) {	
+	public static String getSynonymKey(String input) {
 		String output = "";
 		switch (input) {
 		case "fwk.version":
@@ -23,6 +23,5 @@ public final class VariableInstructionTools {
 		}
 		return output;
 	}
-
 
 }

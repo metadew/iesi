@@ -1,0 +1,87 @@
+---
+type: "script"
+data:
+  name: "fwk.setEnvironment.1"
+  description: "test fwk.setEnvironment"
+  parameters: []
+  actions:
+  - number: 1
+    type: "fwk.setEnvironment"
+    name: "action1"
+    description: "set environment to iesi-acceptance"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "environment"
+      value : "iesi-acceptance"
+  - number: 2
+    type: "fwk.outputMessage"
+    name: "action2"
+    description: "output active environment"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "message"
+      value : "active environment: {{$run.env}}"
+    - name: "onScreen"
+      value : "Y"
+  - number: 3
+    type: "eval.assertEquals"
+    name: "action3"
+    description: "verify environment value"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "expected"
+      value : "{{$run.env}}"
+    - name: "actual"
+      value : "iesi-acceptance"
+  - number: 4
+    type: "fwk.setEnvironment"
+    name: "action4"
+    description: "set environment to iesi-test"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "environment"
+      value : "iesi-test"
+  - number: 5
+    type: "fwk.outputMessage"
+    name: "action5"
+    description: "output active environment"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "message"
+      value : "active environment: {{$run.env}}"
+    - name: "onScreen"
+      value : "Y"
+  - number: 6
+    type: "eval.assertEquals"
+    name: "action6"
+    description: "verify environment value"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "expected"
+      value : "{{$run.env}}"
+    - name: "actual"
+      value : "iesi-test"

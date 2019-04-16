@@ -2,11 +2,8 @@ version: '3.2'
 services:
   iesi-test-linux1:
     build: './linuxhost'
-    entrypoint: /bin/bash
-    stdin_open: true
-    tty: true
     ports:
-      - '2223:22'
+      - '2222:22'
     container_name: iesi-test-linux1
     hostname: iesi-test-linux1
     restart: unless-stopped

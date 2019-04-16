@@ -56,7 +56,7 @@ public class FwkSetParameterList {
 	public boolean execute() {
 		try {
 			// Run the action
-			try {
+			try {			
 				this.getExecutionControl().getExecutionRuntime().loadParamList(this.getParameterList().getValue());
 				this.getActionExecution().getActionControl().increaseSuccessCount();
 			} catch (Exception e) {

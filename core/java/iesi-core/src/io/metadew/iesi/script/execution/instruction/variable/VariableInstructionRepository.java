@@ -5,6 +5,7 @@ import java.util.HashMap;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.instruction.variable.framework.VersionInstruction;
 import io.metadew.iesi.script.execution.instruction.variable.runtime.EnvironmentInstruction;
+import io.metadew.iesi.script.execution.instruction.variable.runtime.RunidInstruction;
 
 public class VariableInstructionRepository
 {
@@ -16,9 +17,13 @@ public class VariableInstructionRepository
 		VersionInstruction versionInstruction = new VersionInstruction();
 		variableInstructions.put(versionInstruction.getKeyword(), versionInstruction);
 		
+		// Runtime
 		EnvironmentInstruction environmentInstruction = new EnvironmentInstruction(executionControl);
 		variableInstructions.put(environmentInstruction.getKeyword(), environmentInstruction);
-
+		RunidInstruction runidInstruction = new RunidInstruction(executionControl);
+		variableInstructions.put(runidInstruction.getKeyword(), runidInstruction);
+		
+		
 		return variableInstructions;
 	}
 

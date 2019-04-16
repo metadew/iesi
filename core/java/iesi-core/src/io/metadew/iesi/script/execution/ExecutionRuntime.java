@@ -34,6 +34,7 @@ import io.metadew.iesi.script.execution.data_instruction.DataInstruction;
 import io.metadew.iesi.script.execution.data_instruction.DataInstructionRepository;
 import io.metadew.iesi.script.execution.instruction.variable.VariableInstruction;
 import io.metadew.iesi.script.execution.instruction.variable.VariableInstructionRepository;
+import io.metadew.iesi.script.execution.instruction.variable.VariableInstructionTools;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 import io.metadew.iesi.script.operation.DatasetOperation;
 import io.metadew.iesi.script.operation.ImpersonationOperation;
@@ -492,7 +493,7 @@ public class ExecutionRuntime {
 				}
 				// Variable lookup
 			} else if (instructionType.equalsIgnoreCase("$")) {
-				String lookupContext = instruction.substring(1).trim().toLowerCase();
+				String lookupContext = VariableInstructionTools.getSynonymKey(instruction.substring(1).trim().toLowerCase());
 				instructionOutput = this.getVariableInstruction(executionControl, lookupContext, "");
 				// Generate data
 			} else if (instructionType.equalsIgnoreCase("*")) {

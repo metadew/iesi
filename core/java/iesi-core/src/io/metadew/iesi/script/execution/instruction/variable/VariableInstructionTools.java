@@ -1,0 +1,28 @@
+package io.metadew.iesi.script.execution.instruction.variable;
+
+public final class VariableInstructionTools {
+
+	public static String getSynonymKey(String input) {	
+		String output = "";
+		switch (input) {
+		case "fwk.version":
+		case "fwk.v":
+			output = "fwk.version";
+			break;
+		case "run.env":
+		case "run.environment":
+			output = "run.env";
+			break;
+		case "run.id":
+		case "run.identifier":
+			output = "run.id";
+			break;
+		default:
+			output = input;
+			break;
+		}
+		return output;
+	}
+
+
+}

@@ -19,12 +19,13 @@ Subroutines are always identified using the following syntax : `{{<instruction><
 Note that synonyms of a same subroutine are also supported
 * The (optional) `<args>` section allows to specify any input parameter required for the subroutine
 
-### Instruction types
+### Subroutine types
 
 |Instruction|Title|Description|
 |:---:|---|---|
 |=|Lookup|Lookup relevant information|
 |*|Generate|Generate synthetic data on the fly|
+|$|[Variable](/{{site.repository}}/pages/design/subroutines/variableinstructions.html)|Get the value of a specific (framework) variable|
 
 ### Subroutine items
 

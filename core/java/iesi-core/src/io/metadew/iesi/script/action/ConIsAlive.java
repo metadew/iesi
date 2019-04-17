@@ -69,7 +69,7 @@ public class ConIsAlive {
 			// Get Connection
 			ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution());
 			Connection connection = connectionConfiguration.getConnection(this.getConnectionName().getValue(),
-					this.getExecutionControl().getEnvName());
+					this.getExecutionControl().getEnvName()).get();
 
 			try {
 

@@ -61,7 +61,7 @@ public class DataRepositoryConfiguration {
 		// Connection
 		ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution());
 		Connection connection = connectionConfiguration.getConnection(this.getRepositoryInstanceConnectionName(),
-				environmentName);
+				environmentName).get();
 		ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
 		this.setDatabaseConnection(connectionOperation
 				.getDatabaseConnection(connection));

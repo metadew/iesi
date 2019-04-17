@@ -141,4 +141,12 @@
 		"description": "test fwk.setEnvironment",
 		"parameterList": ""
 	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "script.logOutput.1",
+		"description": "test script.logOutput",
+		"parameterList": ""
+	}
 }]

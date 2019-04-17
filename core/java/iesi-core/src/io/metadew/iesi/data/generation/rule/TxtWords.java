@@ -51,7 +51,7 @@ public class TxtWords {
 			try {				
 				for (int currentRecord = 0; currentRecord < this.getGenerationRuleExecution().getGenerationExecution().getNumberOfRecords(); currentRecord++) {
 					String generatedValue = "";
-					if (this.getWordNumber().getValue().trim().equals("")) {
+					if (this.getWordNumber().getValue().trim().equalsIgnoreCase("")) {
 						generatedValue = this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().getGenerationObjectExecution().getLorem().words();
 					} else {
 						generatedValue = this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().getGenerationObjectExecution().getLorem().words(Integer.parseInt(this.getWordNumber().getValue()));

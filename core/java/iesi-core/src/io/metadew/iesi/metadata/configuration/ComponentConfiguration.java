@@ -59,7 +59,7 @@ public class ComponentConfiguration {
 			e.printStackTrace(new PrintWriter(StackTrace));
 		}
 
-		if (component.getName() == null || component.getName().equals("")) {
+		if (component.getName() == null || component.getName().equalsIgnoreCase("")) {
 			return false;
 		} else {
 			return true;
@@ -127,21 +127,21 @@ public class ComponentConfiguration {
 
 		// add Versions
 		String sqlVersions = this.getVersionInsertStatements();
-		if (!sqlVersions.equals("")) {
+		if (!sqlVersions.equalsIgnoreCase("")) {
 			sql += "\n";
 			sql += sqlVersions;
 		}
 
 		// add Parameters
 		String sqlParameters = this.getParameterInsertStatements();
-		if (!sqlParameters.equals("")) {
+		if (!sqlParameters.equalsIgnoreCase("")) {
 			sql += "\n";
 			sql += sqlParameters;
 		}
 
 		// add Attributes
 		String sqlAttributes = this.getAttributeInsertStatements();
-		if (!sqlAttributes.equals("")) {
+		if (!sqlAttributes.equalsIgnoreCase("")) {
 			sql += "\n";
 			sql += sqlAttributes;
 		}
@@ -158,7 +158,7 @@ public class ComponentConfiguration {
 		for (ComponentAttribute componentAttribute : this.getComponent().getAttributes()) {
 			ComponentAttributeConfiguration componentAttributeConfiguration = new ComponentAttributeConfiguration(
 					this.getComponent().getVersion(), componentAttribute, this.getFrameworkExecution());
-			if (!result.equals(""))
+			if (!result.equalsIgnoreCase(""))
 				result += "\n";
 			result += componentAttributeConfiguration.getInsertStatement(this.getComponent().getName());
 		}
@@ -188,7 +188,7 @@ public class ComponentConfiguration {
 		for (ComponentParameter componentParameter : this.getComponent().getParameters()) {
 			ComponentParameterConfiguration componentParameterConfiguration = new ComponentParameterConfiguration(
 					this.getComponent().getVersion(), componentParameter, this.getFrameworkExecution());
-			if (!result.equals(""))
+			if (!result.equalsIgnoreCase(""))
 				result += "\n";
 			result += componentParameterConfiguration.getInsertStatement(this.getComponent().getName());
 		}
@@ -287,7 +287,7 @@ public class ComponentConfiguration {
 			e.printStackTrace(new PrintWriter(StackTrace));
 		}
 
-		if (component.getName() == null || component.getName().equals("")) {
+		if (component.getName() == null || component.getName().equalsIgnoreCase("")) {
 			throw new RuntimeException("Component (NAME) " + componentName + " does not exist");
 		}
 

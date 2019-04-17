@@ -34,14 +34,16 @@ public class FhoExecuteFileTransfer {
 
 	// Constructors
 	public FhoExecuteFileTransfer() {
-		
+
 	}
-	
-	public FhoExecuteFileTransfer(FrameworkExecution frameworkExecution, ExecutionControl executionControl, ScriptExecution scriptExecution, ActionExecution actionExecution) {
+
+	public FhoExecuteFileTransfer(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+			ScriptExecution scriptExecution, ActionExecution actionExecution) {
 		this.init(frameworkExecution, executionControl, scriptExecution, actionExecution);
 	}
-	
-	public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl, ScriptExecution scriptExecution, ActionExecution actionExecution) {
+
+	public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+			ScriptExecution scriptExecution, ActionExecution actionExecution) {
 		this.setFrameworkExecution(frameworkExecution);
 		this.setExecutionControl(executionControl);
 		this.setActionExecution(actionExecution);
@@ -50,18 +52,20 @@ public class FhoExecuteFileTransfer {
 
 	public void prepare() {
 		// Set Parameters
-		this.setSourceFilePath(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(), this.getActionExecution(),
-				this.getActionExecution().getAction().getType(), "sourceFilePath"));
-		this.setSourceFileName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(), this.getActionExecution(),
-				this.getActionExecution().getAction().getType(), "sourceFileName"));
-		this.setSourceConnectionName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
-				this.getActionExecution(), this.getActionExecution().getAction().getType(), "sourceConnection"));
-		this.setTargetFilePath(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(), this.getActionExecution(),
-				this.getActionExecution().getAction().getType(), "targetFilePath"));
-		this.setTargetFileName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(), this.getActionExecution(),
-				this.getActionExecution().getAction().getType(), "targetFileName"));
-		this.setTargetConnectionName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
-				this.getActionExecution(), this.getActionExecution().getAction().getType(), "targetConnection"));
+		this.setSourceFilePath(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+				this.getActionExecution(), this.getActionExecution().getAction().getType(), "sourceFilePath"));
+		this.setSourceFileName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+				this.getActionExecution(), this.getActionExecution().getAction().getType(), "sourceFileName"));
+		this.setSourceConnectionName(new ActionParameterOperation(this.getFrameworkExecution(),
+				this.getExecutionControl(), this.getActionExecution(), this.getActionExecution().getAction().getType(),
+				"sourceConnection"));
+		this.setTargetFilePath(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+				this.getActionExecution(), this.getActionExecution().getAction().getType(), "targetFilePath"));
+		this.setTargetFileName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+				this.getActionExecution(), this.getActionExecution().getAction().getType(), "targetFileName"));
+		this.setTargetConnectionName(new ActionParameterOperation(this.getFrameworkExecution(),
+				this.getExecutionControl(), this.getActionExecution(), this.getActionExecution().getAction().getType(),
+				"targetConnection"));
 
 		// Get Parameters
 		for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
@@ -79,8 +83,8 @@ public class FhoExecuteFileTransfer {
 				this.getTargetConnectionName().setInputValue(actionParameter.getValue());
 			}
 		}
-		
-		//Create parameter list
+
+		// Create parameter list
 		this.getActionParameterOperationMap().put("sourceFilePath", this.getSourceFilePath());
 		this.getActionParameterOperationMap().put("sourceFileName", this.getSourceFileName());
 		this.getActionParameterOperationMap().put("sourceConnection", this.getSourceConnectionName());
@@ -88,75 +92,63 @@ public class FhoExecuteFileTransfer {
 		this.getActionParameterOperationMap().put("targetFileName", this.getTargetFileName());
 		this.getActionParameterOperationMap().put("targetConnection", this.getTargetConnectionName());
 	}
-	
+
 	// Methods
 	public boolean execute() {
 		try {
 			// Get Connections
 			ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution());
-			Connection sourceConnection = connectionConfiguration.getConnection(this.getSourceConnectionName().getValue(),
-					this.getExecutionControl().getEnvName());
+			Connection sourceConnection = connectionConfiguration
+					.getConnection(this.getSourceConnectionName().getValue(), this.getExecutionControl().getEnvName());
 			ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
 			HostConnection sourceHostConnection = connectionOperation.getHostConnection(sourceConnection);
-			Connection targetConnection = connectionConfiguration.getConnection(this.getTargetConnectionName().getValue(),
-					this.getExecutionControl().getEnvName());
+			Connection targetConnection = connectionConfiguration
+					.getConnection(this.getTargetConnectionName().getValue(), this.getExecutionControl().getEnvName());
 			HostConnection targetHostConnection = connectionOperation.getHostConnection(targetConnection);
 
 			// Check if source or target are localhost
-			boolean sourceIsOnLocalHost = connectionOperation
-					.isOnLocalConnection(sourceHostConnection);
-			boolean targetIsOnLocalHost = connectionOperation
-					.isOnLocalConnection(targetHostConnection);
+			boolean sourceIsOnLocalHost = connectionOperation.isOnLocalConnection(sourceHostConnection);
+			boolean targetIsOnLocalHost = connectionOperation.isOnLocalConnection(targetHostConnection);
 
 			// Run the action
 			FileTransferOperation fileTransferOperation = new FileTransferOperation(this.getFrameworkExecution());
 			FileTransferResult fileTransferResult = null;
 			if (sourceIsOnLocalHost && !targetIsOnLocalHost) {
-				fileTransferResult = fileTransferOperation.transferLocalToRemote(
-						this.getSourceFilePath().getValue(), this.getSourceFileName().getValue(), sourceConnection,
-						this.getTargetFilePath().getValue(), this.getTargetFileName().getValue(), targetConnection);
+				fileTransferResult = fileTransferOperation.transferLocalToRemote(this.getSourceFilePath().getValue(),
+						this.getSourceFileName().getValue(), sourceConnection, this.getTargetFilePath().getValue(),
+						this.getTargetFileName().getValue(), targetConnection);
 			} else if (!sourceIsOnLocalHost && targetIsOnLocalHost) {
-				fileTransferResult = fileTransferOperation.transferRemoteToLocal(
-						this.getSourceFilePath().getValue(), this.getSourceFileName().getValue(), sourceConnection,
-						this.getTargetFilePath().getValue(), this.getTargetFileName().getValue(), targetConnection);
+				fileTransferResult = fileTransferOperation.transferRemoteToLocal(this.getSourceFilePath().getValue(),
+						this.getSourceFileName().getValue(), sourceConnection, this.getTargetFilePath().getValue(),
+						this.getTargetFileName().getValue(), targetConnection);
 			} else if (sourceIsOnLocalHost && targetIsOnLocalHost) {
-				fileTransferResult = fileTransferOperation.transferLocalToLocal(
-						this.getSourceFilePath().getValue(), this.getSourceFileName().getValue(), sourceConnection,
-						this.getTargetFilePath().getValue(), this.getTargetFileName().getValue(), targetConnection);
+				fileTransferResult = fileTransferOperation.transferLocalToLocal(this.getSourceFilePath().getValue(),
+						this.getSourceFileName().getValue(), sourceConnection, this.getTargetFilePath().getValue(),
+						this.getTargetFileName().getValue(), targetConnection);
 			} else if (!sourceIsOnLocalHost && !targetIsOnLocalHost) {
 				throw new RuntimeException("Method not supported yet");
 			}
 
 			if (fileTransferResult.getReturnCode() == 0) {
-				if (this.getActionExecution().getAction().getErrorExpected().equalsIgnoreCase("y")) {
-					this.getActionExecution().getActionControl().increaseErrorCount();
-				} else {
-					this.getActionExecution().getActionControl().increaseSuccessCount();
-				}
+				this.getActionExecution().getActionControl().increaseSuccessCount();
 			} else {
-				if (this.getActionExecution().getAction().getErrorExpected().equalsIgnoreCase("n")) {
-					this.getActionExecution().getActionControl().increaseErrorCount();
-				} else {
-					this.getActionExecution().getActionControl().increaseSuccessCount();
-				}
+				this.getActionExecution().getActionControl().increaseErrorCount();
 			}
 
-			this.getActionExecution().getActionControl().logOutput("rc",Integer.toString(fileTransferResult.getReturnCode()));
-			this.getActionExecution().getActionControl().logOutput("files",Integer.toString(fileTransferResult.getDcFileTransferedList().size()));
-			
+			this.getActionExecution().getActionControl().logOutput("rc",
+					Integer.toString(fileTransferResult.getReturnCode()));
+			this.getActionExecution().getActionControl().logOutput("files",
+					Integer.toString(fileTransferResult.getDcFileTransferedList().size()));
+
 			return true;
 		} catch (Exception e) {
 			StringWriter StackTrace = new StringWriter();
 			e.printStackTrace(new PrintWriter(StackTrace));
 
-			if (this.getActionExecution().getAction().getErrorExpected().equalsIgnoreCase("n")) {
-				this.getActionExecution().getActionControl().increaseErrorCount();
-			} else {
-				this.getActionExecution().getActionControl().increaseSuccessCount();
-			}
+			this.getActionExecution().getActionControl().increaseErrorCount();
 
-			this.getActionExecution().getActionControl().logOutput("exception",e.getMessage());
-			this.getActionExecution().getActionControl().logOutput("stacktrace",StackTrace.toString());
+			this.getActionExecution().getActionControl().logOutput("exception", e.getMessage());
+			this.getActionExecution().getActionControl().logOutput("stacktrace", StackTrace.toString());
 
 			return false;
 		}
@@ -195,7 +187,7 @@ public class FhoExecuteFileTransfer {
 	public void setSourceFilePath(ActionParameterOperation sourceFilePath) {
 		this.sourceFilePath = sourceFilePath;
 	}
-	
+
 	public ActionParameterOperation getSourceFileName() {
 		return sourceFileName;
 	}

@@ -118,11 +118,17 @@ It can be compared to a spreadsheet function.
 As a user, you need to know the function name and what it does, not how it works in the background.
 
 There are two categories of subroutines: built-in subroutines or subroutines defined by the automation engineer. 
+Built-in subroutines cover different types covering lookups, data generation, variable retrieval and much more. 
 The outcome of the subroutine will be substitured in the parameter field. 
-At the same time, all parameters that are defined inside the subroutine are also replaced on runtime. 
-In this way, the subroutine can be used in a truly reusable manner.
+In this way we make access to common functions easier and more convenient.
 
 In order to use subroutines, the syntax `{{<instruction><subroutine>(<args>}}` can be applied.
+  * The `<instruction>` refers to its functionality: lookup, data generation, etc.
+  * The '<subroutine>` is the name of the function: connection, environment, etc.
+  * The `<args> define the parameters that need to be used as input for the subroutine
+
+At the same time, all variables that are defined inside the subroutine's argument are also replaced on runtime. 
+In this way, the subroutine can be used in a truly reusable manner.
 
 More information on defining and using subroutines can be foud [here](/{{site.repository}}/pages/design/subroutines.html).
 

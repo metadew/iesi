@@ -29,7 +29,7 @@ public class Password {
                 "The stored password have the form 'salt$hash'");
         }
         String hashOfInput = hash(password, Base64.getDecoder().decode(saltAndPass[0]));
-        return hashOfInput.equals(saltAndPass[1]);
+        return hashOfInput.equalsIgnoreCase(saltAndPass[1]);
     }
 
     private static String hash(String password, byte[] salt) throws Exception {

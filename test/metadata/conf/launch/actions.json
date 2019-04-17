@@ -1,0 +1,152 @@
+[{
+	"type": "LaunchItem",
+	"data": {
+		"script": "fwk.dummy.1",
+		"description": "test fwk.dummy",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "fwk.outputMessage.1",
+		"description": "test fwk.outputMessage with default message",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "fwk.outputMessage.2",
+		"description": "test fwk.outputMessage with generated message after empty input",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "fwk.outputMessage.3",
+		"description": "test fwk.outputMessage with generated message using email generation instruction",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "fwk.outputMessage.4",
+		"description": "test fwk.outputMessage with parameter in the message",
+		"parameterList": "param1=myParameter"
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "sql.executeQuery.1",
+		"description": "test sql.executeQuery with a select query",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "sql.executeQuery.2",
+		"description": "test sql.executeQuery with an insert query",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "sql.executeQuery.3",
+		"description": "test sql.executeQuery with a select query and an input parameter",
+		"parameterList": "param1=Table1"
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "sql.executeQuery.4",
+		"description": "test sql.executeQuery with a select query and an input parameter",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "sql.evaluateResult.1",
+		"description": "test sql.evaluateResult when data is expected",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "sql.evaluateResult.1.2",
+		"description": "test sql.evaluateResult when data is expected taking input from a file",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "sql.evaluateResult.2",
+		"description": "test sql.evaluateResult when no data is expected",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "sql.evaluateResult.2.2",
+		"description": "test sql.evaluateResult when no data is expected taking input from a file",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "sql.evaluateResult.3",
+		"description": "test sql.evaluateResult when data is expected but not available",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "sql.evaluateResult.4",
+		"description": "test sql.evaluateResult when no data is expected but is available",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "fwk.setParameterValue.1",
+		"description": "test fwk.setParameterValue",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "fwk.setParameterList.1",
+		"description": "test fwk.setParameterList",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "fwk.setEnvironment.1",
+		"description": "test fwk.setEnvironment",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "script.logOutput.1",
+		"description": "test script.logOutput",
+		"parameterList": ""
+	}
+}]

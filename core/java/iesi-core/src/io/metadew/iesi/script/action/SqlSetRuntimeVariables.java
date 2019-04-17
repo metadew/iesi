@@ -82,6 +82,7 @@ public class SqlSetRuntimeVariables {
 			} catch (Exception e) {
 				throw new RuntimeException("Issue setting runtime variables: " + e, e);
 			}
+			
 			return true;
 		} catch (Exception e) {
 			StringWriter StackTrace = new StringWriter();

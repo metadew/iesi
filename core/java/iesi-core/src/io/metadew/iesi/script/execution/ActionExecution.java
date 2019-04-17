@@ -64,7 +64,7 @@ public class ActionExecution {
 
 		try {
 			// Set Attributes
-			if (this.getAction().getComponent() != null && !this.getAction().getComponent().trim().equals("")) {
+			if (this.getAction().getComponent() != null && !this.getAction().getComponent().trim().equalsIgnoreCase("")) {
 				this.setComponentAttributeOperation(new ComponentAttributeOperation(this.getFrameworkExecution(),
 						this.getExecutionControl(), this, this.getAction().getComponent().trim()));
 			}
@@ -114,7 +114,7 @@ public class ActionExecution {
 
 			HashMap<String, ActionParameterOperation> actionParameterOperationMap = null;
 			for (Field field : classRef.getDeclaredFields()) {
-				if (field.getName().equals("actionParameterOperationMap")) {
+				if (field.getName().equalsIgnoreCase("actionParameterOperationMap")) {
 					Method getActionParameterOperationMap = classRef
 							.getDeclaredMethod("getActionParameterOperationMap");
 					actionParameterOperationMap = (HashMap<String, ActionParameterOperation>) getActionParameterOperationMap
@@ -130,6 +130,24 @@ public class ActionExecution {
 			
 			// Trace function
 			this.traceDesignMetadata(actionParameterOperationMap);
+			
+			// Evaluate error expected
+			if (this.getActionControl().getExecutionMetrics().getErrorCount() > 0) {
+				if (this.getAction().getErrorExpected().equalsIgnoreCase("y")) {
+					this.getActionControl().getExecutionMetrics().resetErrorCount();
+					this.getActionControl().getExecutionMetrics().increaseSuccessCount(1);
+					this.getExecutionControl().logMessage(this, "action.status=ERROR:expected",
+							Level.INFO);
+				}
+			} else {
+				if (this.getAction().getErrorExpected().equalsIgnoreCase("y")) {
+					this.getActionControl().getExecutionMetrics().resetSuccessCount();
+					this.getActionControl().getExecutionMetrics().increaseErrorCount(1);
+					this.getExecutionControl().logMessage(this, "action.status=ERROR:expected",
+							Level.INFO);
+				}
+			}
+			
 		} catch (Exception e) {
 			StringWriter stackTrace = new StringWriter();
 			e.printStackTrace(new PrintWriter(stackTrace));

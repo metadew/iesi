@@ -51,7 +51,7 @@ public class BackupExecution {
 		Date date = new Date();
 		Timestamp timestamp = new Timestamp(date.getTime());
 		String folderName = "";
-		if (path.trim().equals("")) {
+		if (path.trim().equalsIgnoreCase("")) {
 			folderName = this.getFrameworkExecution().getFrameworkConfiguration().getFolderConfiguration().getFolderAbsolutePath("metadata.def") + File.separator + sdf.format(timestamp);;		
 		
 			// Ensure the base folder structure exists

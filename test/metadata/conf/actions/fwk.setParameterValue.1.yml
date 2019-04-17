@@ -1,0 +1,49 @@
+---
+type: "script"
+data:
+  name: "fwk.setParameterValue.1"
+  description: "test fwk.setParameterValue"
+  parameters: []
+  actions:
+  - number: 1
+    type: "fwk.setParameterValue"
+    name: "action1"
+    description: "set parameter"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "name"
+      value : "param1"
+    - name: "value"
+      value : "value1"
+  - number: 2
+    type: "fwk.outputMessage"
+    name: "action2"
+    description: "display parameter"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "message"
+      value : "param1 has value: #param1#"
+    - name: "onScreen"
+      value : "Y"
+  - number: 3
+    type: "eval.assertEquals"
+    name: "action3"
+    description: "verify parameter value"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "expected"
+      value : "value1"
+    - name: "actual"
+      value : "#param1#"

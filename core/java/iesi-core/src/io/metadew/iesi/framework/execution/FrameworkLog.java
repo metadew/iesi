@@ -55,8 +55,8 @@ public class FrameworkLog {
 		fileName.append(this.getFrameworkConfiguration().getFolderConfiguration().getFolderAbsolutePath("logs"));
 		fileName.append(File.separator);
 		fileName.append(dateFormat.format(new Date()));
-		fileName.append((!this.getExecutionContext().getContext().getName().equals("")?"." + this.getExecutionContext().getContext().getName():""));
-		fileName.append((!this.getExecutionContext().getContext().getScope().equals("")?"." + this.getExecutionContext().getContext().getScope():""));
+		fileName.append((!this.getExecutionContext().getContext().getName().equalsIgnoreCase("")?"." + this.getExecutionContext().getContext().getName():""));
+		fileName.append((!this.getExecutionContext().getContext().getScope().equalsIgnoreCase("")?"." + this.getExecutionContext().getContext().getScope():""));
 		fileName.append(".");
 		fileName.append(this.getUuid().toString());
 		fileName.append(".log");

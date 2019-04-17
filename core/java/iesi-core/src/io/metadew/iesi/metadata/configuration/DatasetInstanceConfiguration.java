@@ -57,14 +57,14 @@ public class DatasetInstanceConfiguration {
 
 		// add Parameters
 		String sqlParameters = this.getParameterInsertStatements(datasetName);
-		if (!sqlParameters.equals("")) {
+		if (!sqlParameters.equalsIgnoreCase("")) {
 			sql += "\n";
 			sql += sqlParameters;
 		}
 
 		// add Lables
 		String sqlLabels = this.getLabelInsertStatements(datasetName);
-		if (!sqlLabels.equals("")) {
+		if (!sqlLabels.equalsIgnoreCase("")) {
 			sql += "\n";
 			sql += sqlLabels;
 		}
@@ -82,7 +82,7 @@ public class DatasetInstanceConfiguration {
 		for (DatasetInstanceParameter datasetInstanceParameter : this.getDatasetInstance().getParameters()) {
 			DatasetInstanceParameterConfiguration datasetInstanceParameterConfiguration = new DatasetInstanceParameterConfiguration(
 					datasetInstanceParameter, this.getFrameworkExecution());
-			if (!result.equals(""))
+			if (!result.equalsIgnoreCase(""))
 				result += "\n";
 			result += datasetInstanceParameterConfiguration.getInsertStatement(datasetName,
 					this.getDatasetInstance().getName());
@@ -101,7 +101,7 @@ public class DatasetInstanceConfiguration {
 		for (DatasetInstanceLabel datasetInstanceLabel : this.getDatasetInstance().getLabels()) {
 			DatasetInstanceLabelConfiguration datasetInstanceLabelConfiguration = new DatasetInstanceLabelConfiguration(
 					datasetInstanceLabel, this.getFrameworkExecution());
-			if (!result.equals(""))
+			if (!result.equalsIgnoreCase(""))
 				result += "\n";
 			result += datasetInstanceLabelConfiguration.getInsertStatement(datasetName,
 					this.getDatasetInstance().getName());

@@ -40,34 +40,37 @@ public class CliExecuteCommand {
 
 	// Constructors
 	public CliExecuteCommand() {
-		
+
 	}
-	
-	public CliExecuteCommand(FrameworkExecution frameworkExecution, ExecutionControl executionControl, ScriptExecution scriptExecution, ActionExecution actionExecution) {
+
+	public CliExecuteCommand(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+			ScriptExecution scriptExecution, ActionExecution actionExecution) {
 		this.init(frameworkExecution, executionControl, scriptExecution, actionExecution);
 	}
-	
-	public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl, ScriptExecution scriptExecution,  ActionExecution actionExecution) {
+
+	public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+			ScriptExecution scriptExecution, ActionExecution actionExecution) {
 		this.setFrameworkExecution(frameworkExecution);
 		this.setExecutionControl(executionControl);
 		this.setActionExecution(actionExecution);
 		this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
 	}
-	
+
 	public void prepare() {
 		// Reset Parameters
-		this.setShellPath(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(), this.getActionExecution(),
-				this.getActionExecution().getAction().getType(), "path"));
-		this.setShellCommand(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(), this.getActionExecution(),
-				this.getActionExecution().getAction().getType(), "command"));
-		this.setSetRunVar(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(), this.getActionExecution(),
-				this.getActionExecution().getAction().getType(), "setRuntimeVariables"));
+		this.setShellPath(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+				this.getActionExecution(), this.getActionExecution().getAction().getType(), "path"));
+		this.setShellCommand(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+				this.getActionExecution(), this.getActionExecution().getAction().getType(), "command"));
+		this.setSetRunVar(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+				this.getActionExecution(), this.getActionExecution().getAction().getType(), "setRuntimeVariables"));
 		this.setSetRunVarPrefix(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
-				this.getActionExecution(), this.getActionExecution().getAction().getType(), "setRuntimeVariablesPrefix"));
-		this.setSetRunVarMode(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(), this.getActionExecution(),
-				this.getActionExecution().getAction().getType(), "setRuntimeVariablesMode"));
-		this.setConnectionName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(), this.getActionExecution(),
-				this.getActionExecution().getAction().getType(), "connection"));
+				this.getActionExecution(), this.getActionExecution().getAction().getType(),
+				"setRuntimeVariablesPrefix"));
+		this.setSetRunVarMode(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+				this.getActionExecution(), this.getActionExecution().getAction().getType(), "setRuntimeVariablesMode"));
+		this.setConnectionName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+				this.getActionExecution(), this.getActionExecution().getAction().getType(), "connection"));
 
 		// Get Parameters
 		for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
@@ -126,40 +129,30 @@ public class CliExecuteCommand {
 
 			// Set runtime variables
 			if (this.getSetRunVar().getValue().trim().equalsIgnoreCase("y")) {
-				this.getExecutionControl().getExecutionRuntime().setRuntimeVariables(shellCommandResult.getRuntimeVariablesOutput());
+				this.getExecutionControl().getExecutionRuntime()
+						.setRuntimeVariables(shellCommandResult.getRuntimeVariablesOutput());
 			}
 
 			if (shellCommandResult.getReturnCode() == 0) {
-				if (this.getActionExecution().getAction().getErrorExpected().equalsIgnoreCase("y")) {
-					this.getActionExecution().getActionControl().increaseErrorCount();
-				} else {
-					this.getActionExecution().getActionControl().increaseSuccessCount();
-				}
+				this.getActionExecution().getActionControl().increaseSuccessCount();
 			} else {
-				if (this.getActionExecution().getAction().getErrorExpected().equalsIgnoreCase("n")) {
-					this.getActionExecution().getActionControl().increaseErrorCount();
-				} else {
-					this.getActionExecution().getActionControl().increaseSuccessCount();
-				}
+				this.getActionExecution().getActionControl().increaseErrorCount();
 			}
 
-			this.getActionExecution().getActionControl().logOutput("rc",Integer.toString(shellCommandResult.getReturnCode()));
-			this.getActionExecution().getActionControl().logOutput("sys.out",shellCommandResult.getSystemOutput());
-			this.getActionExecution().getActionControl().logOutput("err.out",shellCommandResult.getErrorOutput());
+			this.getActionExecution().getActionControl().logOutput("rc",
+					Integer.toString(shellCommandResult.getReturnCode()));
+			this.getActionExecution().getActionControl().logOutput("sys.out", shellCommandResult.getSystemOutput());
+			this.getActionExecution().getActionControl().logOutput("err.out", shellCommandResult.getErrorOutput());
 
 			return true;
 		} catch (Exception e) {
 			StringWriter StackTrace = new StringWriter();
 			e.printStackTrace(new PrintWriter(StackTrace));
 
-			if (this.getActionExecution().getAction().getErrorExpected().equalsIgnoreCase("n")) {
-				this.getActionExecution().getActionControl().increaseErrorCount();
-			} else {
-				this.getActionExecution().getActionControl().increaseSuccessCount();
-			}
+			this.getActionExecution().getActionControl().increaseErrorCount();
 
-			this.getActionExecution().getActionControl().logOutput("exception",e.getMessage());
-			this.getActionExecution().getActionControl().logOutput("stacktrace",StackTrace.toString());
+			this.getActionExecution().getActionControl().logOutput("exception", e.getMessage());
+			this.getActionExecution().getActionControl().logOutput("stacktrace", StackTrace.toString());
 
 			return false;
 		}

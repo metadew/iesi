@@ -245,7 +245,7 @@ public class ScriptLauncher {
 				YamlInputOperation yamlInputOperation = new YamlInputOperation(frameworkExecution, fileName);
 				script = yamlInputOperation.getScript();
 			}
-
+			
 			if (script == null) {
 				System.out.println("No script found for execution");
 				System.exit(1);
@@ -262,10 +262,10 @@ public class ScriptLauncher {
 		scriptExecution.setImpersonations(impersonationName, impersonationCustom);
 		scriptExecution.setExitOnCompletion(exit);
 
-		if (!paramList.equals("")) {
+		if (!paramList.equalsIgnoreCase("")) {
 			scriptExecution.setParamList(paramList);
 		}
-		if (!paramFile.equals("")) {
+		if (!paramFile.equalsIgnoreCase("")) {
 			scriptExecution.setParamFile(paramFile);
 		}
 

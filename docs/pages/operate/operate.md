@@ -2,6 +2,31 @@
 
 # Operate the framework
 
+## Get framework information
+
+General framework information can be retrieved via the `bin/iesi-fwk.sh` (or `iesi-fwk.cmd` on Windows) command. 
+
+The following options are available for the command:
+
+|Option|Description|
+|------|-----------|
+|-help|displays the help message|
+|-version|display the version of the framework|
+
+### Display the version of the framework
+
+The version of the framework can be displayed using the following command:
+
+```bash
+bin/iesi-fwk.sh -version
+```
+
+The following output will appear on the screen:
+
+```
+v?.?.?
+```
+
 ## Manage Metadata Configuration
 
 The configuration stored in the configuration repository is managed via the `bin/iesi-metadata.sh` (or `bin/iesi-metadata.cmd` on Windows) command. 

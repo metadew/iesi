@@ -73,7 +73,7 @@ public class ConIsAlive {
 
 			try {
 
-				if (connection.getType().equals("")) {
+				if (connection.getType().equalsIgnoreCase("")) {
 
 				}
 

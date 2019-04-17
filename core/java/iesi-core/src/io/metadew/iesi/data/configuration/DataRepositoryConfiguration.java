@@ -114,7 +114,7 @@ public class DataRepositoryConfiguration {
 
 	public void dropTable(String schemaName, String tableName) {
 		String queryDropTable = "";
-		if (schemaName.equals("")) {
+		if (schemaName.equalsIgnoreCase("")) {
 			queryDropTable = "drop table " + tableName;
 		} else {
 			queryDropTable = "drop table " + schemaName + "." + tableName;
@@ -124,7 +124,7 @@ public class DataRepositoryConfiguration {
 
 	public void cleanTable(String schemaName, String tableName) {
 		String queryCleanTable = "";
-		if (schemaName.equals("")) {
+		if (schemaName.equalsIgnoreCase("")) {
 			queryCleanTable = "delete from " + tableName;
 		} else {
 			queryCleanTable = "delete from " + schemaName + "." + tableName;
@@ -133,13 +133,13 @@ public class DataRepositoryConfiguration {
 	}
 
 	public String getSystemTimestampExpression() {
-		if (this.getDatabaseConnection().getType().equals("oracle")) {
+		if (this.getDatabaseConnection().getType().equalsIgnoreCase("oracle")) {
 			return "systimestamp";
-		} else if (this.getDatabaseConnection().getType().equals("sqlite")) {
+		} else if (this.getDatabaseConnection().getType().equalsIgnoreCase("sqlite")) {
 			return ("datetime(CURRENT_TIMESTAMP, 'localtime')");
-		} else if (this.getDatabaseConnection().getType().equals("netezza")) {
+		} else if (this.getDatabaseConnection().getType().equalsIgnoreCase("netezza")) {
 			return "CURRENT_TIMESTAMP";
-		} else if (this.getDatabaseConnection().getType().equals("postgresql")) {
+		} else if (this.getDatabaseConnection().getType().equalsIgnoreCase("postgresql")) {
 			return "CURRENT_TIMESTAMP";
 		} else {
 			return "";

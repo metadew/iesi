@@ -84,6 +84,8 @@ public class FwkIncludeScript {
 				this.setScript(scriptConfiguration.getScript(this.getScriptName().getValue(), Long.parseLong(this.getScriptVersion().getValue())));
 			}
 
+			this.getActionExecution().getActionControl().increaseSuccessCount();
+			
 			return true;
 		} catch (Exception e) {
 			StringWriter StackTrace = new StringWriter();

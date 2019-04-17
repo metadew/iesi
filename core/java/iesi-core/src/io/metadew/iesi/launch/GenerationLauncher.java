@@ -128,7 +128,7 @@ public class GenerationLauncher {
 		frameworkExecution.getFrameworkLog().log("option.settings=" + settings, Level.INFO);
 
 		// Set specific settings
-		if (!settings.equals("")) {
+		if (!settings.equalsIgnoreCase("")) {
 			frameworkExecution.getFrameworkControl().setSettingsList(settings);
 		}
 		
@@ -139,7 +139,7 @@ public class GenerationLauncher {
 		
 		// Get the number of records
 		long numberOfRecords = 0;
-		if (records.trim().equals("")) {
+		if (records.trim().equalsIgnoreCase("")) {
 			numberOfRecords = 10;
 		} else {
 			try {
@@ -152,10 +152,10 @@ public class GenerationLauncher {
 		
 		eoGeneration.setNumberOfRecords(numberOfRecords);
 				
-		if (!paramList.equals("")) {
+		if (!paramList.equalsIgnoreCase("")) {
 			eoGeneration.setParamList(paramList);
 		}
-		if (!paramFile.equals("")) {
+		if (!paramFile.equalsIgnoreCase("")) {
 			eoGeneration.setParamFile(paramFile);
 		}
 

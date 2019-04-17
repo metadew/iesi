@@ -56,12 +56,12 @@ public class DatasetOperation {
         CachedRowSet crs = null;
 
         String query = "select a.DATASET_INV_ID, a.DATASET_FILE_NM from CFG_DATASET_INV a inner join CFG_DATASET_LBL b on a.DATASET_INV_ID = b.DATASET_INV_ID";
-        if (!this.getDatasetLabels().trim().equals("")) {
+        if (!this.getDatasetLabels().trim().equalsIgnoreCase("")) {
             String where = "";
             String[] parts = this.getDatasetLabels().split(",");
             for (int i = 0; i < parts.length; i++) {
                 String innerpart = parts[i];
-                if (where.trim().equals("")) {
+                if (where.trim().equalsIgnoreCase("")) {
                     where += " where ";
                 } else {
                     where += " and ";
@@ -85,7 +85,7 @@ public class DatasetOperation {
         }
 
         // New dataset file name
-        if (datasetFileName.trim().equals("")) {
+        if (datasetFileName.trim().equalsIgnoreCase("")) {
             datasetFileName = UUID.randomUUID().toString() + ".db3";
             // register in the metadata
             String sql = "insert into CFG_DATASET_INV (DATASET_INV_ID, DATASET_FILE_NM) Values (";
@@ -105,7 +105,7 @@ public class DatasetOperation {
         }
         CachedRowSet crs = null;
         String query = "";
-        if (!datasetItem.trim().equals("")) {
+        if (!datasetItem.trim().equalsIgnoreCase("")) {
             query = "select ";
             query += "value";
             query += " from ";

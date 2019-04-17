@@ -22,7 +22,7 @@ public class OracleDatabaseConnection extends DatabaseConnection {
 		
 		// Update for service name use
 		// Both tns alias and service name are both in use
-		if (!serviceName.equals("") ) {
+		if (!serviceName.equalsIgnoreCase("") ) {
 			this.setConnectionURL("jdbc:oracle:thin:@//" + hostName + ":" + portNumber + "/" + serviceName);
 		}
 		

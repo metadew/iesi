@@ -39,7 +39,7 @@ public class SubroutineOperation {
 		String typeChar = "=";
 		if (input.startsWith(typeChar)) {
 			// Check last character
-			if (!input.substring(input.length() - 1).equals(")")) {
+			if (!input.substring(input.length() - 1).equalsIgnoreCase(")")) {
 				throw new RuntimeException("Incorrect parameter syntax for: " + input);
 			}
 			

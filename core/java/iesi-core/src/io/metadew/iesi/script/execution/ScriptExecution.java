@@ -102,10 +102,10 @@ public class ScriptExecution {
 		/*
 		 * Apply impersonation. The custom input takes priority over the profile
 		 */
-		if (!impersonationName.equals("")) {
+		if (!impersonationName.equalsIgnoreCase("")) {
 			this.getExecutionControl().getExecutionRuntime().setImpersonationName(impersonationName);
 		}
-		if (!impersonationCustom.equals("")) {
+		if (!impersonationCustom.equalsIgnoreCase("")) {
 			this.getExecutionControl().getExecutionRuntime().setImpersonationCustom(impersonationCustom);
 		}
 	}
@@ -120,15 +120,14 @@ public class ScriptExecution {
 			this.getExecutionControl().logMessage(this, "exec.env=" + this.getExecutionControl().getEnvName(),
 					Level.INFO);
 			this.getExecutionControl().logStart(this, this.getParentScriptExecution());
-			this.setProcessId(this.getExecutionControl().getProcessId());
 
 			/*
 			 * Initialize parameters. A parameter file has priority over a parameter list
 			 */
-			if (!this.getParamFile().trim().equals("")) {
+			if (!this.getParamFile().trim().equalsIgnoreCase("")) {
 				this.getExecutionControl().getExecutionRuntime().loadParamFiles(this.getParamFile());
 			}
-			if (!this.getParamList().trim().equals("")) {
+			if (!this.getParamList().trim().equalsIgnoreCase("")) {
 				this.getExecutionControl().getExecutionRuntime().loadParamList(this.getParamList());
 			}
 
@@ -260,26 +259,10 @@ public class ScriptExecution {
 				// Check if iteration condition has not prevented execution
 				if (actionExecution.isExecuted()) {
 					if (actionExecution.getActionControl().getExecutionMetrics().getErrorCount() > 0) {
-						if (action.getErrorExpected().equalsIgnoreCase("n")) {
-							this.getExecutionMetrics().increaseErrorCount(1);
-							if (action.getErrorStop().equalsIgnoreCase("y")) {
-								this.getExecutionControl().logMessage(this, "action.error -> script.stop", Level.INFO);
-								this.getExecutionControl().setActionErrorStop(true);
-								break;
-							}
-						} else {
-							this.getExecutionControl().logMessage(this, "action.error expected -> script.continue",
-									Level.INFO);
-						}
-					} else {
-						if (action.getErrorExpected().equalsIgnoreCase("y")) {
-							getExecutionMetrics().increaseErrorCount(1);
-							if (action.getErrorStop().equalsIgnoreCase("y")) {
-								this.getExecutionControl().logMessage(this, "action.error expected -> script.stop",
-										Level.INFO);
-								this.getExecutionControl().setActionErrorStop(true);
-								break;
-							}
+						if (action.getErrorStop().equalsIgnoreCase("y")) {
+							this.getExecutionControl().logMessage(this, "action.error -> script.stop", Level.INFO);
+							this.getExecutionControl().setActionErrorStop(true);
+							break;
 						}
 					}
 				} else {

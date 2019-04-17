@@ -51,7 +51,7 @@ public class TxtSentences {
 			try {				
 				for (int currentRecord = 0; currentRecord < this.getGenerationRuleExecution().getGenerationExecution().getNumberOfRecords(); currentRecord++) {
 					String generatedValue = "";
-					if (this.getSentenceNumber().getValue().trim().equals("")) {
+					if (this.getSentenceNumber().getValue().trim().equalsIgnoreCase("")) {
 						generatedValue = this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().getGenerationObjectExecution().getLorem().paragraph();
 					} else {
 						generatedValue = this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().getGenerationObjectExecution().getLorem().paragraph(Integer.parseInt(this.getSentenceNumber().getValue()));

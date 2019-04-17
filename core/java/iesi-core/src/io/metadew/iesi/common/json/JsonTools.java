@@ -145,7 +145,7 @@ public class JsonTools {
 				JsonToken current2 = jp2.nextToken();
 				jp3.nextToken();
 				JsonToken current3 = jp3.nextToken();
-				if (parentPaths.getLast().equals("")) {
+				if (parentPaths.getLast().equalsIgnoreCase("")) {
 					parentPaths.add(key);
 				} else {
 					parentPaths.add(pathSeparator + key);
@@ -317,7 +317,7 @@ public class JsonTools {
 		// all the elements will have same group id below
 		inGroupIds.add(0);
 		while (internalElements.hasNext()) {
-			if (parentPaths.getLast().equals("")) {
+			if (parentPaths.getLast().equalsIgnoreCase("")) {
 				parentPaths.add(key);
 			} else {
 				parentPaths.add(pathSeparator + key);
@@ -354,7 +354,7 @@ public class JsonTools {
 			this.getJsonParsedItem().setValue(value);
 			this.write(value);
 			this.write(delimiter);
-			if (parentPaths.getLast().equals("")) {
+			if (parentPaths.getLast().equalsIgnoreCase("")) {
 				parentPaths.add(element.getKey());
 			} else {
 				parentPaths.add(pathSeparator + element.getKey());
@@ -389,7 +389,7 @@ public class JsonTools {
 					jsonTokens.add(current2);
 					inGroupIds.add(ingroupId);
 					parentIds.add(messageId);
-					if (parentPaths.getLast().equals("")) {
+					if (parentPaths.getLast().equalsIgnoreCase("")) {
 						parentPaths.add(element.getKey());
 					} else {
 						parentPaths.add(pathSeparator + element.getKey());
@@ -405,7 +405,7 @@ public class JsonTools {
 					jsonTokens.add(current2);
 					inGroupIds.add(ingroupId);
 					parentIds.add(messageId);
-					if (parentPaths.getLast().equals("")) {
+					if (parentPaths.getLast().equalsIgnoreCase("")) {
 						parentPaths.add(element.getKey());
 					} else {
 						parentPaths.add(pathSeparator + element.getKey());

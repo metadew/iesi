@@ -88,6 +88,7 @@ public class SqlSetIterationVariables {
 			} catch (Exception e) {
 				throw new RuntimeException("Issue setting iteration variables: " + e, e);
 			}
+			
 			return true;
 		} catch (Exception e) {
 			StringWriter StackTrace = new StringWriter();

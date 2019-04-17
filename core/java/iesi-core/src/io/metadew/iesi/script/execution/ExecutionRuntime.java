@@ -26,12 +26,16 @@ import io.metadew.iesi.metadata.configuration.ConnectionParameterConfiguration;
 import io.metadew.iesi.metadata.configuration.EnvironmentParameterConfiguration;
 import io.metadew.iesi.metadata.configuration.IterationVariableConfiguration;
 import io.metadew.iesi.metadata.configuration.RuntimeVariableConfiguration;
+import io.metadew.iesi.metadata.configuration.ScriptResultOutputConfiguration;
 import io.metadew.iesi.metadata.definition.ComponentAttribute;
 import io.metadew.iesi.metadata.definition.Iteration;
 import io.metadew.iesi.metadata.definition.RuntimeVariable;
 import io.metadew.iesi.runtime.definition.LookupResult;
 import io.metadew.iesi.script.execution.data_instruction.DataInstruction;
 import io.metadew.iesi.script.execution.data_instruction.DataInstructionRepository;
+import io.metadew.iesi.script.execution.instruction.variable.VariableInstruction;
+import io.metadew.iesi.script.execution.instruction.variable.VariableInstructionRepository;
+import io.metadew.iesi.script.execution.instruction.variable.VariableInstructionTools;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 import io.metadew.iesi.script.operation.DatasetOperation;
 import io.metadew.iesi.script.operation.ImpersonationOperation;
@@ -43,6 +47,8 @@ public class ExecutionRuntime {
 
 	private FrameworkExecution frameworkExecution;
 
+	private ExecutionControl executionControl;
+	
 	private RuntimeVariableConfiguration runtimeVariableConfiguration;
 	private IterationVariableConfiguration iterationVariableConfiguration;
 
@@ -61,12 +67,14 @@ public class ExecutionRuntime {
 	private ImpersonationOperation impersonationOperation;
 
 	private HashMap<String, DataInstruction> dataInstructions;
+	private HashMap<String, VariableInstruction> variableInstructions;
 
 	public ExecutionRuntime() {
 
 	}
 
-	public ExecutionRuntime(FrameworkExecution frameworkExecution, String runId) {
+	public ExecutionRuntime(FrameworkExecution frameworkExecution, ExecutionControl executionControl, String runId) {
+		this.setExecutionControl(executionControl);
 		this.init(frameworkExecution, runId);
 	}
 
@@ -99,6 +107,7 @@ public class ExecutionRuntime {
 
 		// Initialize data instructions
 		dataInstructions = DataInstructionRepository.getReposistory(new GenerationObjectExecution(this.getFrameworkExecution()));
+		this.setVariableInstructions(VariableInstructionRepository.getReposistory(this.getExecutionControl()));
 	}
 
 	public void terminate() {
@@ -467,31 +476,37 @@ public class ExecutionRuntime {
 			String instructionOutput = instruction;
 
 			// Lookup
-			if (instructionType.equals("=")) {
+			if (instructionType.equalsIgnoreCase("=")) {
 				int lookupOpenPos = instruction.indexOf("(");
 				int lookupClosePos = instruction.indexOf(")", lookupOpenPos + 1);
 				String lookupContext = instruction.substring(1, lookupOpenPos).trim().toLowerCase();
 				String lookupScope = instruction.substring(lookupOpenPos + 1, lookupClosePos).trim();
-				if (lookupContext.equals("connection") || lookupContext.equals("conn")) {
+				if (lookupContext.equalsIgnoreCase("connection") || lookupContext.equalsIgnoreCase("conn")) {
 					instructionOutput = this.lookupConnectionInstruction(executionControl, lookupScope);
-				} else if (lookupContext.equals("environment") || lookupContext.equals("env")) {
+				} else if (lookupContext.equalsIgnoreCase("environment") || lookupContext.equalsIgnoreCase("env")) {
 					instructionOutput = this.lookupEnvironmentInstruction(executionControl, lookupScope);
-				} else if (lookupContext.equals("dataset") || lookupContext.equals("ds")) {
+				} else if (lookupContext.equalsIgnoreCase("dataset") || lookupContext.equalsIgnoreCase("ds")) {
 					instructionOutput = this.lookupDatasetInstruction(executionControl, lookupScope);
-				} else if (lookupContext.equals("file") || lookupContext.equals("f")) {
+				} else if (lookupContext.equalsIgnoreCase("file") || lookupContext.equalsIgnoreCase("f")) {
 					instructionOutput = this.lookupFileInstruction(executionControl, lookupScope);
-				}  else if (lookupContext.equals("coalesce") || lookupContext.equals("ifnull") || lookupContext.equals("nvl")) {
+				}  else if (lookupContext.equalsIgnoreCase("coalesce") || lookupContext.equalsIgnoreCase("ifnull") || lookupContext.equalsIgnoreCase("nvl")) {
 					instructionOutput = this.lookupCoalesceResult(executionControl, lookupScope);
+				}  else if (lookupContext.equalsIgnoreCase("script.output") || lookupContext.equalsIgnoreCase("s.out")) {
+					instructionOutput = this.lookupScriptResultInstruction(executionControl, lookupScope);
 				}
+				// Variable lookup
+			} else if (instructionType.equalsIgnoreCase("$")) {
+				String lookupContext = VariableInstructionTools.getSynonymKey(instruction.substring(1).trim().toLowerCase());
+				instructionOutput = this.getVariableInstruction(executionControl, lookupContext, "");
 				// Generate data
-			} else if (instructionType.equals("*")) {
+			} else if (instructionType.equalsIgnoreCase("*")) {
 				int lookupOpenPos = instruction.indexOf("(");
 				int lookupClosePos = instruction.indexOf(")", lookupOpenPos + 1);
 				String lookupContext = instruction.substring(1, lookupOpenPos).trim().toLowerCase();
 				String lookupScope = instruction.substring(lookupOpenPos + 1, lookupClosePos).trim();
 				instructionOutput = this.generateDataInstruction(executionControl, lookupContext, lookupScope);
 				// run scripts
-			} else if (instructionType.equals("!")) {
+			} else if (instructionType.equalsIgnoreCase("!")) {
 				int lookupOpenPos = instruction.indexOf("(");
 				int lookupClosePos = instruction.lastIndexOf(")");
 				String lookupContext = instruction.substring(1, lookupOpenPos).trim().toLowerCase();
@@ -556,6 +571,23 @@ public class ExecutionRuntime {
 		return output;
 	}
 
+	
+	private String lookupScriptResultInstruction(ExecutionControl executionControl, String input) {
+		String output = input;
+
+
+		ScriptResultOutputConfiguration scriptResultOutputConfiguration = new ScriptResultOutputConfiguration(
+				this.getFrameworkExecution());
+		// TODO only for root scripts - extend to others
+		String scriptResultOutputValue = (scriptResultOutputConfiguration.getScriptOutput(executionControl.getRunId(), 0, input)).getValue();
+
+		if (scriptResultOutputValue != null) {
+			output = scriptResultOutputValue;
+		}
+
+		return output;
+	}
+
 	private String lookupDatasetInstruction(ExecutionControl executionControl, String input) {
 		String output = input;
 
@@ -566,7 +598,7 @@ public class ExecutionRuntime {
 
 		DatasetOperation datasetOperation = executionControl.getExecutionRuntime().getDatasetOperation(datasetName);
 
-		if (datasetItem != null && !datasetItem.equals("")) {
+		if (datasetItem != null && !datasetItem.equalsIgnoreCase("")) {
 			output = datasetOperation.getDataItem(datasetItem);
 		}
 
@@ -592,6 +624,15 @@ public class ExecutionRuntime {
 		return output;
 	}
 
+	private String getVariableInstruction(ExecutionControl executionControl, String context, String input) {
+		VariableInstruction variableInstruction = this.getVariableInstructions().get(context);
+		if (variableInstruction == null) {
+			throw new IllegalArgumentException(MessageFormat.format("No variable instruction named {0} found.", context));
+		} else {
+			return variableInstruction.generateOutput();
+		}
+	}
+	
 	private String generateDataInstruction(ExecutionControl executionControl, String context, String input)
 	{
 		DataInstruction dataInstruction = dataInstructions.get(context);
@@ -628,7 +669,7 @@ public class ExecutionRuntime {
 		if (this.getFrameworkExecution().getFrameworkControl()
 				.getProperty(this.getFrameworkExecution().getFrameworkConfiguration().getSettingConfiguration()
 						.getSettingPath("commandline.display.runtime.variable"))
-				.equals("Y")) {
+				.equalsIgnoreCase("Y")) {
 			this.setLevel(Level.INFO);
 		} else {
 			this.setLevel(Level.TRACE);
@@ -818,6 +859,21 @@ public class ExecutionRuntime {
 
 	public void setRepositoryOperationMap(HashMap<String, RepositoryOperation> repositoryOperationMap) {
 		this.repositoryOperationMap = repositoryOperationMap;
+	}
+	public HashMap<String, VariableInstruction> getVariableInstructions() {
+		return variableInstructions;
+	}
+
+	public void setVariableInstructions(HashMap<String, VariableInstruction> variableInstructions) {
+		this.variableInstructions = variableInstructions;
+	}
+
+	public ExecutionControl getExecutionControl() {
+		return executionControl;
+	}
+
+	public void setExecutionControl(ExecutionControl executionControl) {
+		this.executionControl = executionControl;
 	}
 
 }

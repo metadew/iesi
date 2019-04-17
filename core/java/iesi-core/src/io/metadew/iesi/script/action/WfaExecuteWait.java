@@ -42,7 +42,6 @@ public class WfaExecuteWait {
 
 	public void prepare() {
 		// Set Parameters
-		this.setWaitInterval(1000);
 		this.setWaitIntervalInput(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
 				this.getActionExecution(), this.getActionExecution().getAction().getType(), "wait"));
 

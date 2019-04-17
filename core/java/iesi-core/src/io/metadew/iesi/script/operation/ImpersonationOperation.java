@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Optional;
 
 import org.apache.logging.log4j.Level;
 
@@ -35,15 +36,16 @@ public class ImpersonationOperation {
 	public void setImpersonation(String impersonationName) {
 		if (!impersonationName.trim().equalsIgnoreCase("")) {
 			ImpersonationConfiguration impersonationConfiguration = new ImpersonationConfiguration(this.getFrameworkExecution());
-			Impersonation impersonation = impersonationConfiguration.getImpersonation(impersonationName);
-			
-			if (impersonation == null) {
+			Optional<Impersonation> impersonation = impersonationConfiguration.getImpersonation(impersonationName);
+
+
+			if (!impersonation.isPresent()) {
 				this.getFrameworkExecution().getFrameworkLog().log("impersonation.notfound=" + impersonationName, Level.INFO);
 			} else {
-				if (impersonation.getParameters() == null) {
+				if (impersonation.get().getParameters() == null) {
 					this.getFrameworkExecution().getFrameworkLog().log("impersonation.conn.notfound=" + impersonationName, Level.INFO);
 				} else {
-					for (ImpersonationParameter impersonationParameter : impersonation.getParameters()) {
+					for (ImpersonationParameter impersonationParameter : impersonation.get().getParameters()) {
 						this.setImpersonation(impersonationParameter.getConnection(), impersonationParameter.getImpersonatedConnection());
 					}
 				}

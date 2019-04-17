@@ -69,6 +69,15 @@ public class EnvironmentConfiguration {
 		return Optional.ofNullable(environment);
 	}
 
+	public boolean exists(Environment environment) {
+		String queryEnvironment = "select * from "
+				+ this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Environments")
+				+ " where ENV_NM = '"
+				+ environment.getName() + "'";
+		CachedRowSet crsEnvironment = this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().executeQuery(queryEnvironment);
+		return crsEnvironment.size() == 1;
+	}
+
 	public List<Environment> getAllEnvironments() {
 		List<Environment> environments = new ArrayList<>();
 		String query = "select ENV_NM from " + this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Environments")
@@ -135,14 +144,6 @@ public class EnvironmentConfiguration {
 		sql += "\n";
 
 		return sql;
-	}
-
-	public boolean exists(Environment environment) {
-		String queryEnvironment = "select * from "
-				+ this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Environments") + " where ENV_NM = '"
-				+ environment.getName() + "'";
-		CachedRowSet crsEnvironment = this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().executeQuery(queryEnvironment);
-		return crsEnvironment.size() == 1;
 	}
 
 	public void insertEnvironment(Environment environment) throws EnvironmentAlreadyExistsException {

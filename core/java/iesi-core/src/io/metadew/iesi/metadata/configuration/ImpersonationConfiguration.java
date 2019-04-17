@@ -114,7 +114,7 @@ public class ImpersonationConfiguration {
 		this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().executeUpdate(query);
 	}
 
-	public void deleteAllEnvironments() {
+	public void deleteAllImpersonations() {
 		frameworkExecution.getFrameworkLog().log("Deleting all impersonations", Level.TRACE);
 		String query = getDeleteAllStatement();
 		this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().executeUpdate(query);

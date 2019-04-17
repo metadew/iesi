@@ -26,6 +26,7 @@ import io.metadew.iesi.metadata.configuration.ConnectionParameterConfiguration;
 import io.metadew.iesi.metadata.configuration.EnvironmentParameterConfiguration;
 import io.metadew.iesi.metadata.configuration.IterationVariableConfiguration;
 import io.metadew.iesi.metadata.configuration.RuntimeVariableConfiguration;
+import io.metadew.iesi.metadata.configuration.ScriptResultOutputConfiguration;
 import io.metadew.iesi.metadata.definition.ComponentAttribute;
 import io.metadew.iesi.metadata.definition.Iteration;
 import io.metadew.iesi.metadata.definition.RuntimeVariable;
@@ -490,6 +491,8 @@ public class ExecutionRuntime {
 					instructionOutput = this.lookupFileInstruction(executionControl, lookupScope);
 				}  else if (lookupContext.equalsIgnoreCase("coalesce") || lookupContext.equalsIgnoreCase("ifnull") || lookupContext.equalsIgnoreCase("nvl")) {
 					instructionOutput = this.lookupCoalesceResult(executionControl, lookupScope);
+				}  else if (lookupContext.equalsIgnoreCase("script.output") || lookupContext.equalsIgnoreCase("s.out")) {
+					instructionOutput = this.lookupScriptResultInstruction(executionControl, lookupScope);
 				}
 				// Variable lookup
 			} else if (instructionType.equalsIgnoreCase("$")) {
@@ -563,6 +566,23 @@ public class ExecutionRuntime {
 
 		if (environmentParameterValue != null) {
 			output = environmentParameterValue;
+		}
+
+		return output;
+	}
+
+	
+	private String lookupScriptResultInstruction(ExecutionControl executionControl, String input) {
+		String output = input;
+
+
+		ScriptResultOutputConfiguration scriptResultOutputConfiguration = new ScriptResultOutputConfiguration(
+				this.getFrameworkExecution());
+		// TODO only for root scripts - extend to others
+		String scriptResultOutputValue = (scriptResultOutputConfiguration.getScriptOutput(executionControl.getRunId(), 0, input)).getValue();
+
+		if (scriptResultOutputValue != null) {
+			output = scriptResultOutputValue;
 		}
 
 		return output;

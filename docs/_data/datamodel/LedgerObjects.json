@@ -1,0 +1,13 @@
+[{
+	"type": "MetadataObject",
+	"data": {
+		"name": "Ledger",
+		"label": "Ledgers",
+		"description": "Design metadata for ledgers",
+		"type": "ledger",
+		"category": "execution",
+		"migrate": "Y",
+		"migrationKey": "B001"
+	}
+}
+]

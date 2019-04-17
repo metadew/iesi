@@ -69,10 +69,9 @@ The configuration data can be divided in different categories.
 |--------|-----------|
 |Design|Automation configuration as designed by the automation engineer. This can include parameters and other reusable constructs that are resolved during execution.|
 |Connectivity|Connectivity configuration to automate actions. This can include parameters that are resolved during execution.|
-|Trace|The resolution of the automation configuration design as it has been executed by the framework. All parameters and reusable constructs are replaced by actual values.|
 |Result|The technical outcome for the different actions as executed by the framework.|
+|Trace|The resolution of the automation configuration design as it has been executed by the framework. All parameters and reusable constructs are replaced by actual values.|
 |Reporting|The interpretation of the technical outcome using reporting views to give context to the execution.|
-
 
 
 ### Users
@@ -87,17 +86,21 @@ The framework is built around 3 users having access  to the configuration reposi
 
 ### Tables
 
-* Table name structure: IESI_[instance]_[name]
-* The instance part is available to allow multiple logical instances to run inside a single physical instance
+* Table name structure: IESI_[instance]_[prefix]_[name]
+* The instance part is available to allow multiple logical instances to run inside a single physical instance. 
+The instance is defined in the appropriate configuration file that is stored in the `conf` folder. 
+* The prefix is specific for a given type of configuration data. It allows to group tables based on this configuration data type.
 * Detailed tables (e.g. parameters) reuse the table name that they extend adding a specific suffix (e.g. _PAR)
 
 Prefixes:
 
 |Prefix|Description|
 |------|-----------|
-|||
-
-We are working providing more details on this.
+|CTL|Control tables|
+|CXN|Connectivity tables|
+|DES|Design tables|
+|RES|Result tables|
+|TRC|Trace tables|
 
 ### Data Model
 

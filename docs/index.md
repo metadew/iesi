@@ -25,6 +25,8 @@ Please consider that the open source release is underway and efforts are underta
 In the meantime, feel free to download and experiment with the automation framework and get acquainted with our approach. 
 [We welcome contributors](/{{site.repository}}/pages/contribute/contribute.html) from any organization or background to help us grow the framework.
 
+> We grow our framework in steps, adding new functionality when it is needed
+
 # Features
 
 * Processing engine driven by configuration

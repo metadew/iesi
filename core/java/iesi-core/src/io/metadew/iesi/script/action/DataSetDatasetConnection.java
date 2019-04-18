@@ -70,8 +70,7 @@ public class DataSetDatasetConnection {
 	public boolean execute() {
 		try {
 			// Run the action
-			this.getExecutionControl().getExecutionRuntime().setDataset(this.getDatasetName().getValue(),
-					this.getDatasetLabels().getValue());
+			this.getExecutionControl().getExecutionRuntime().setDataset(referenceName.getValue(), datasetName.getValue(), datasetLabels.getValue());
 
 			return true;
 		} catch (Exception e) {

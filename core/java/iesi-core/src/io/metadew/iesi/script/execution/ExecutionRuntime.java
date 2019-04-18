@@ -698,10 +698,9 @@ public class ExecutionRuntime {
 	}
 
 	// Dataset Management
-	public void setDataset(String datasetName, String datasetLabels) {
-		DatasetOperation datasetOperation = new DatasetOperation(this.getFrameworkExecution(), datasetName,
-				datasetLabels);
-		this.getDatasetOperationMap().put(datasetName, datasetOperation);
+	public void setDataset(String referenceName, String datasetName, String datasetLabels) {
+		DatasetOperation datasetOperation = new DatasetOperation(this.getFrameworkExecution(), datasetName, datasetLabels);
+		this.getDatasetOperationMap().put(referenceName, datasetOperation);
 	}
 
 	public void setDatasetOperation(String datasetName, DatasetOperation datasetOperation) {

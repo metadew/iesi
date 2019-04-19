@@ -39,11 +39,6 @@ public class ExecutionServerMetadataRepository extends MetadataRepository{
     }
 
     @Override
-    public void createAllTables() {
-        System.out.println("create all tables");
-    }
-
-    @Override
     public void createMetadataRepository(File file, String archiveFolder, String errorFolder, UUID uuid) {
         System.out.println("create metadata repository");
     }

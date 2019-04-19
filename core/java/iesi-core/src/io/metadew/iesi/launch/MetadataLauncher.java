@@ -1,6 +1,7 @@
 package io.metadew.iesi.launch;
 
 import java.io.File;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,330 +28,293 @@ import io.metadew.iesi.metadata.restore.RestoreExecution;
  *
  * @author peter.billen
  */
-public class MetadataLauncher
-{
+public class MetadataLauncher {
 
-	private static boolean actionMatch = false;
+    private static boolean actionMatch = false;
 
-	@SuppressWarnings({"unchecked", "rawtypes", "unused"})
-	public static void main(String[] args)
-	{
+    @SuppressWarnings({"unchecked", "rawtypes", "unused"})
+    public static void main(String[] args) {
 
-		Option oHelp = new Option("help", "print this message");
-		Option oType = new Option("type", true, "define the type of metadata repository");
-		Option oConfig = new Option("config", true, "define the metadata repository config");
-		Option oBackup = new Option("backup", "create a backup of the entire metadata repository");
-		Option oRestore = new Option("restore", "restore a backup of the metadata repository");
-		Option oPath = new Option("path", true, "path to be used to for backup or restore");
-		Option oDrop = new Option("drop", "drop all metadata tables in the metadata repository");
-		Option oCreate = new Option("create", "create all metadata tables in the metadata repository");
-		Option oClean = new Option("clean", "clean all tables in the metadata repository");
-		Option oLoad = new Option("load", "load metadata file from the input folder into the metadata repository");
-		Option oDdl = new Option("ddl",
-					"generate ddl output instead of execution in the metadata repository, to be combined with options: create, drop");
+        Option oHelp = new Option("help", "print this message");
+        Option oType = new Option("type", true, "define the type of metadata repository");
+        Option oConfig = new Option("config", true, "define the metadata repository config");
+        Option oBackup = new Option("backup", "create a backup of the entire metadata repository");
+        Option oRestore = new Option("restore", "restore a backup of the metadata repository");
+        Option oPath = new Option("path", true, "path to be used to for backup or restore");
+        Option oDrop = new Option("drop", "drop all metadata tables in the metadata repository");
+        Option oCreate = new Option("create", "create all metadata tables in the metadata repository");
+        Option oClean = new Option("clean", "clean all tables in the metadata repository");
+        Option oLoad = new Option("load", "load metadata file from the input folder into the metadata repository");
+        Option oDdl = new Option("ddl",
+                "generate ddl output instead of execution in the metadata repository, to be combined with options: create, drop");
 
-		String filesHelp = "";
-		filesHelp += "Following options are possible:";
-		filesHelp += "\n";
-		filesHelp += "-(1) a single file name including extension";
-		filesHelp += "\n";
-		filesHelp += "--Example: Script.json";
-		filesHelp += "\n";
-		filesHelp += "-(2) list of files separated by commas";
-		filesHelp += "\n";
-		filesHelp += "--Example: Script1.json,Script2.json";
-		filesHelp += "\n";
-		filesHelp += "-(3) a regular expression written as function =regex([your expression])";
-		filesHelp += "\n";
-		filesHelp += "--Example: =regex(.+\\json) > this will load all files";
-		filesHelp += "\n";
-		Option oFiles = new Option("files", true,
-					"filename(s) to load from the input folder into the metadata repository" + "\n" + filesHelp);
+        String filesHelp = "";
+        filesHelp += "Following options are possible:";
+        filesHelp += "\n";
+        filesHelp += "-(1) a single file name including extension";
+        filesHelp += "\n";
+        filesHelp += "--Example: Script.json";
+        filesHelp += "\n";
+        filesHelp += "-(2) list of files separated by commas";
+        filesHelp += "\n";
+        filesHelp += "--Example: Script1.json,Script2.json";
+        filesHelp += "\n";
+        filesHelp += "-(3) a regular expression written as function =regex([your expression])";
+        filesHelp += "\n";
+        filesHelp += "--Example: =regex(.+\\json) > this will load all files";
+        filesHelp += "\n";
+        Option oFiles = new Option("files", true,
+                "filename(s) to load from the input folder into the metadata repository" + "\n" + filesHelp);
 
-		// create Options object
-		Options options = new Options();
-		// add options
-		options.addOption(oHelp);
-		options.addOption(oType);
-		options.addOption(oConfig);
-		options.addOption(oBackup);
-		options.addOption(oRestore);
-		options.addOption(oPath);
-		options.addOption(oDrop);
-		options.addOption(oCreate);
-		options.addOption(oClean);
-		options.addOption(oLoad);
-		options.addOption(oDdl);
-		options.addOption(oFiles);
+        // create Options object
+        Options options = new Options();
+        // add options
+        options.addOption(oHelp);
+        options.addOption(oType);
+        options.addOption(oConfig);
+        options.addOption(oBackup);
+        options.addOption(oRestore);
+        options.addOption(oPath);
+        options.addOption(oDrop);
+        options.addOption(oCreate);
+        options.addOption(oClean);
+        options.addOption(oLoad);
+        options.addOption(oDdl);
+        options.addOption(oFiles);
 
-		// create the parser
-		CommandLineParser parser = new DefaultParser();
-		try
-		{
-			// parse the command line arguments
-			CommandLine line = parser.parse(options, args);
+        // create the parser
+        CommandLineParser parser = new DefaultParser();
+        try {
+            // parse the command line arguments
+            CommandLine line = parser.parse(options, args);
 
-			if (line.hasOption("help"))
-			{
-				// automatically generate the help statement
-				HelpFormatter formatter = new HelpFormatter();
-				formatter.printHelp("[command]", options);
-				System.exit(0);
-			}
+            if (line.hasOption("help")) {
+                // automatically generate the help statement
+                HelpFormatter formatter = new HelpFormatter();
+                formatter.printHelp("[command]", options);
+                System.exit(0);
+            }
 
-			Context context = new Context();
-			context.setName("metadata");
-			context.setScope("");
-			FrameworkExecution frameworkExecution = new FrameworkExecution(new FrameworkExecutionContext(context), "owner");
-			MetadataRepositoryOperation metadataRepositoryOperation = null;
-			List<MetadataRepository> metadataRepositoryList = new ArrayList();
+            Context context = new Context();
+            context.setName("metadata");
+            context.setScope("");
+            FrameworkExecution frameworkExecution = new FrameworkExecution(new FrameworkExecutionContext(context), "owner");
+            MetadataRepositoryOperation metadataRepositoryOperation = null;
+            List<MetadataRepository> metadataRepositories = new ArrayList();
 
-			String type = "";
-			if (line.hasOption("type")) {
-				type = line.getOptionValue("type");
-				System.out.println("Option -type (type) value = " + type);
-			} else {
-				System.out.println("Option -type (type) missing");
-				System.exit(1);
-			}
+            String type = "";
+            if (line.hasOption("type")) {
+                type = line.getOptionValue("type");
+                System.out.println("Option -type (type) value = " + type);
+            } else {
+                System.out.println("Option -type (type) missing");
+                System.exit(1);
+            }
 
-			if (line.hasOption("config")) {
-				String config = line.getOptionValue("config");
+            if (line.hasOption("config")) {
+                String config = line.getOptionValue("config");
 
-				ConfigFile configFile = frameworkExecution.getFrameworkControl().getConfigFile("keyvalue",
-						frameworkExecution.getFrameworkConfiguration().getFolderConfiguration().getFolderAbsolutePath("conf")
-								+ File.separator + config);
+                ConfigFile configFile = frameworkExecution.getFrameworkControl().getConfigFile("keyvalue",
+                        frameworkExecution.getFrameworkConfiguration().getFolderConfiguration().getFolderAbsolutePath("conf")
+                                + File.separator + config);
 
-				List<MetadataRepository> metadataRepositories = new MetadataRepositoryConfiguration(configFile, frameworkExecution.getFrameworkConfiguration().getSettingConfiguration())
-						.toMetadataRepositories(frameworkExecution.getFrameworkConfiguration());
+                metadataRepositories = new MetadataRepositoryConfiguration(configFile, frameworkExecution.getFrameworkConfiguration().getSettingConfiguration())
+                        .toMetadataRepositories(frameworkExecution.getFrameworkConfiguration());
 
-				metadataRepositoryList.addAll(metadataRepositories);
+                // metadataRepositories.addAll(metadataRepositories);
 
-			} else {
-				switch (type) {
-					case "connectivity":
-						metadataRepositoryList.add(frameworkExecution.getMetadataControl().getConnectivityMetadataRepository());
-						break;
-					case "control":
-						metadataRepositoryList.add(frameworkExecution.getMetadataControl().getControlMetadataRepository());
-						break;
-					case "design":
-						metadataRepositoryList.add(frameworkExecution.getMetadataControl().getDesignMetadataRepository());
-						break;
-					case "result":
-						metadataRepositoryList.add(frameworkExecution.getMetadataControl().getResultMetadataRepository());
-						break;
-					case "trace":
-						metadataRepositoryList.add(frameworkExecution.getMetadataControl().getTraceMetadataRepository());
-						break;
-					case "general":
-						metadataRepositoryList.add(frameworkExecution.getMetadataControl().getConnectivityMetadataRepository());
-						metadataRepositoryList.add(frameworkExecution.getMetadataControl().getControlMetadataRepository());
-						metadataRepositoryList.add(frameworkExecution.getMetadataControl().getDesignMetadataRepository());
-						metadataRepositoryList.add(frameworkExecution.getMetadataControl().getResultMetadataRepository());
-						metadataRepositoryList.add(frameworkExecution.getMetadataControl().getTraceMetadataRepository());
-						break;
-					default:
-						System.out.println("Unknown Option -type (type) = " + type);
-						System.exit(1);
-				}
-			}
-			// Backup
-			if (line.hasOption("backup"))
-			{
-				for (MetadataRepository metadataRepository : metadataRepositoryList)
-				{
-					if (actionMatch)
-					{
-						System.out.println();
-					}
-					writeHeaderMessage();
-					System.out.println("Option -backup (backup) selected");
-					actionMatch = true;
+            } else {
+                switch (type) {
+                    case "connectivity":
+                        metadataRepositories.add(frameworkExecution.getMetadataControl().getConnectivityMetadataRepository());
+                        break;
+                    case "control":
+                        metadataRepositories.add(frameworkExecution.getMetadataControl().getControlMetadataRepository());
+                        break;
+                    case "design":
+                        metadataRepositories.add(frameworkExecution.getMetadataControl().getDesignMetadataRepository());
+                        break;
+                    case "result":
+                        metadataRepositories.add(frameworkExecution.getMetadataControl().getResultMetadataRepository());
+                        break;
+                    case "trace":
+                        metadataRepositories.add(frameworkExecution.getMetadataControl().getTraceMetadataRepository());
+                        break;
+                    case "general":
+                        metadataRepositories.add(frameworkExecution.getMetadataControl().getConnectivityMetadataRepository());
+                        metadataRepositories.add(frameworkExecution.getMetadataControl().getControlMetadataRepository());
+                        metadataRepositories.add(frameworkExecution.getMetadataControl().getDesignMetadataRepository());
+                        metadataRepositories.add(frameworkExecution.getMetadataControl().getResultMetadataRepository());
+                        metadataRepositories.add(frameworkExecution.getMetadataControl().getTraceMetadataRepository());
+                        break;
+                    default:
+                        System.out.println("Unknown Option -type (type) = " + type);
+                        System.exit(1);
+                }
+            }
+            // Backup
+            if (line.hasOption("backup")) {
+                for (MetadataRepository metadataRepository : metadataRepositories) {
+                    if (actionMatch) {
+                        System.out.println();
+                    }
+                    writeHeaderMessage();
+                    System.out.println("Option -backup (backup) selected");
+                    actionMatch = true;
 
-					// Get path value
-					String path = "";
-					if (line.hasOption("path"))
-					{
-						path = line.getOptionValue("path");
-						System.out.println("Option -path (path) value = " + path);
-					}
-					else
-					{
-						System.out.println("Option -path (path) not provided, using default location");
-					}
+                    // Get path value
+                    String path = "";
+                    if (line.hasOption("path")) {
+                        path = line.getOptionValue("path");
+                        System.out.println("Option -path (path) value = " + path);
+                    } else {
+                        System.out.println("Option -path (path) not provided, using default location");
+                    }
 
-					// Execute
-					BackupExecution backupExecution = new BackupExecution();
-					backupExecution.execute(path);
-					writeFooterMessage();
-					System.exit(0);
-				}
-			}
+                    // Execute
+                    BackupExecution backupExecution = new BackupExecution();
+                    backupExecution.execute(path);
+                    writeFooterMessage();
+                    System.exit(0);
+                }
+            }
 
-			// Restore
-			if (line.hasOption("restore"))
-			{
-				for (MetadataRepository metadataRepository : metadataRepositoryList)
-				{
-					if (actionMatch)
-					{
-						System.out.println();
-					}
-					writeHeaderMessage();
-					System.out.println("Option -restore (restore) selected");
-					System.out.println();
-					actionMatch = true;
+            // Restore
+            if (line.hasOption("restore")) {
+                for (MetadataRepository metadataRepository : metadataRepositories) {
+                    if (actionMatch) {
+                        System.out.println();
+                    }
+                    writeHeaderMessage();
+                    System.out.println("Option -restore (restore) selected");
+                    System.out.println();
+                    actionMatch = true;
 
-					// Get path value
-					String path = "";
-					if (line.hasOption("path"))
-					{
-						path = line.getOptionValue("path");
-						System.out.println("Option -path (path) value = " + path);
-					}
-					else
-					{
-						System.out.println("Option -path (path) missing");
-						System.exit(1);
-					}
+                    // Get path value
+                    String path = "";
+                    if (line.hasOption("path")) {
+                        path = line.getOptionValue("path");
+                        System.out.println("Option -path (path) value = " + path);
+                    } else {
+                        System.out.println("Option -path (path) missing");
+                        System.exit(1);
+                    }
 
-					// Execute
-					RestoreExecution restoreExecution = new RestoreExecution();
-					restoreExecution.execute(path);
-					writeFooterMessage();
-					System.exit(0);
-				}
-			}
+                    // Execute
+                    RestoreExecution restoreExecution = new RestoreExecution();
+                    restoreExecution.execute(path);
+                    writeFooterMessage();
+                    System.exit(0);
+                }
+            }
 
-			// Drop
-			if (line.hasOption("drop"))
-			{
-				for (MetadataRepository metadataRepository : metadataRepositoryList)
-				{
-					metadataRepositoryOperation = new MetadataRepositoryOperation(frameworkExecution, metadataRepository);
+            // Drop
+            if (line.hasOption("drop")) {
+                for (MetadataRepository metadataRepository : metadataRepositories) {
+                    metadataRepositoryOperation = new MetadataRepositoryOperation(frameworkExecution, metadataRepository);
 
-					if (actionMatch)
-					{
-						System.out.println();
-					}
-					writeHeaderMessage();
-					System.out.println("Option -drop (drop) selected");
-					System.out.println();
-					actionMatch = true;
-					metadataRepositoryOperation.drop();
-					writeFooterMessage();
-				}
-			}
+                    if (actionMatch) {
+                        System.out.println();
+                    }
+                    writeHeaderMessage();
+                    System.out.println("Option -drop (drop) selected");
+                    System.out.println();
+                    actionMatch = true;
+                    metadataRepository.dropAllTables();
+                    //metadataRepositoryOperation.drop();
+                    writeFooterMessage();
+                }
+            }
 
-			// Create
-			for (MetadataRepository metadataRepositoryConfiguration : metadataRepositoryList)
-			{
-				metadataRepositoryOperation = new MetadataRepositoryOperation(frameworkExecution, metadataRepositoryConfiguration);
-				if (line.hasOption("create"))
-				{
-					if (actionMatch)
-					{
-						System.out.println();
-					}
-					writeHeaderMessage();
-					System.out.println("Option -create (create) selected");
-					actionMatch = true;
-					boolean ddl;
-					if (line.hasOption("ddl"))
-					{
-						System.out.println("Option -ddl (ddl) selected");
-						ddl = true;
-					}
-					else
-					{
-						ddl = false;
-					}
-					System.out.println();
-					metadataRepositoryOperation.create(ddl);
-					writeFooterMessage();
-				}
-			}
+            // Create
+            for (MetadataRepository metadataRepository : metadataRepositories) {
+                metadataRepositoryOperation = new MetadataRepositoryOperation(frameworkExecution, metadataRepository);
+                if (line.hasOption("create")) {
+                    if (actionMatch) {
+                        System.out.println();
+                    }
+                    writeHeaderMessage();
+                    System.out.println("Option -create (create) selected");
+                    actionMatch = true;
+                    boolean ddl;
+                    if (line.hasOption("ddl")) {
+                        System.out.println("Option -ddl (ddl) selected");
+                        ddl = true;
+                    } else {
+                        ddl = false;
+                    }
+                    System.out.println();
+                    System.out.println(MessageFormat.format("Creating metadata repository {0}", metadataRepository.getCategory()));
+                    metadataRepository.createAllTables();
+                    //metadataRepositoryOperation.create(ddl);
+                    writeFooterMessage();
+                }
+            }
 
-			// clean
-			if (line.hasOption("clean"))
-			{
-				for (MetadataRepository metadataRepositoryConfiguration : metadataRepositoryList)
-				{
-					metadataRepositoryOperation = new MetadataRepositoryOperation(frameworkExecution, metadataRepositoryConfiguration);
-					if (actionMatch)
-					{
-						System.out.println();
-					}
-					writeHeaderMessage();
-					System.out.println("Option -clean (clean) selected");
-					System.out.println();
-					actionMatch = true;
-					metadataRepositoryOperation.cleanAllTables();
-					writeFooterMessage();
-				}
+            // clean
+            if (line.hasOption("clean")) {
+                for (MetadataRepository metadataRepository : metadataRepositories) {
+                    metadataRepositoryOperation = new MetadataRepositoryOperation(frameworkExecution, metadataRepository);
+                    if (actionMatch) {
+                        System.out.println();
+                    }
+                    writeHeaderMessage();
+                    System.out.println("Option -clean (clean) selected");
+                    System.out.println();
+                    actionMatch = true;
+                    metadataRepository.cleanAllTables();
+                    //metadataRepositoryOperation.cleanAllTables();
+                    writeFooterMessage();
+                }
 
-			}
+            }
 
-			// load
-			if (line.hasOption("load"))
-			{
-				if (actionMatch)
-				{
-					System.out.println();
-				}
-				writeHeaderMessage();
-				System.out.println("Option -load (load) selected");
-				System.out.println();
-				actionMatch = true;
-				if (line.hasOption("files"))
-				{
-					String files = "";
-					files = line.getOptionValue("files");
-					metadataRepositoryOperation.loadMetadataRepository(metadataRepositoryList, files);
-				}
-				else
-				{
-					metadataRepositoryOperation.loadMetadataRepository(metadataRepositoryList);
-				}
-				writeFooterMessage();
-			}
+            // load
+            if (line.hasOption("load")) {
+                if (actionMatch) {
+                    System.out.println();
+                }
+                writeHeaderMessage();
+                System.out.println("Option -load (load) selected");
+                System.out.println();
+                actionMatch = true;
+                if (line.hasOption("files")) {
+                    String files = "";
+                    files = line.getOptionValue("files");
+                    metadataRepositoryOperation.loadMetadataRepository(metadataRepositories, files);
+                } else {
+                    metadataRepositoryOperation.loadMetadataRepository(metadataRepositories);
+                }
+                writeFooterMessage();
+            }
 
-			if (actionMatch)
-			{
-				System.out.println();
-				System.out.println("metadata.launcher.end");
-				System.exit(0);
-			}
-			else
-			{
-				System.out.println("No valid arguments have been provided, type -help for help.");
-			}
+            if (actionMatch) {
+                System.out.println();
+                System.out.println("metadata.launcher.end");
+                System.exit(0);
+            } else {
+                System.out.println("No valid arguments have been provided, type -help for help.");
+            }
 
-		}
-		catch (
+        } catch (
 
-		ParseException e)
-		{
-			e.printStackTrace();
-			System.exit(1);
-		}
+                ParseException e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
 
-	}
+    }
 
-	private static void writeHeaderMessage()
-	{
-		if (!actionMatch)
-		{
-			System.out.println("metadata.launcher.start");
-			System.out.println();
-		}
-		System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-	}
+    private static void writeHeaderMessage() {
+        if (!actionMatch) {
+            System.out.println("metadata.launcher.start");
+            System.out.println();
+        }
+        System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+    }
 
-	private static void writeFooterMessage()
-	{
-		System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-	}
+    private static void writeFooterMessage() {
+        System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+    }
 
 }

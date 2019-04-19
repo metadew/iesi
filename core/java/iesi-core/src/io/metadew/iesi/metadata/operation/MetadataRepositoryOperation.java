@@ -137,7 +137,8 @@ public class MetadataRepositoryOperation {
 	public void create(boolean generateDdl) {
 		this.setAction("create");
 		this.setGenerateDdl(generateDdl);
-		this.createAllTables();
+		this.getMetadataRepository().createAllTables();
+		//this.createAllTables();
 //		if (this.getMetadataRepository().getGroup().equalsIgnoreCase("filestore")) {
 //			MetadataFileStoreRepositoryImpl metadataFileStoreRepositoryImpl = new MetadataFileStoreRepositoryImpl(
 //					this.getFrameworkExecution());

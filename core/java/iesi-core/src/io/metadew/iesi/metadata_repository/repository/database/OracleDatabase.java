@@ -145,6 +145,16 @@ public class OracleDatabase extends Database {
         databaseConnection.executeQuery(query);
     }
 
+    @Override
+    String getCleanStatement(MetadataTable metadataTable, String tableNamePrefix) {
+        return getSchema().map(schema -> "delete from " + schema + "." + tableNamePrefix + metadataTable.getName()).orElse("delete from " + tableNamePrefix + metadataTable.getName());
+    }
+
+    @Override
+    public String getDropStatement(MetadataTable table, String tableNamePrefix) {
+        return getSchema().map(schema -> "drop table " + schema + "." + tableNamePrefix + table.getName()).orElse("drop table " + tableNamePrefix + table.getName());
+    }
+
     public Optional<String> getSchema() {
         return Optional.ofNullable(schema);
     }

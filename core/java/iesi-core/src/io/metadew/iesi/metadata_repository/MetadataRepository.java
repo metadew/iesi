@@ -13,6 +13,7 @@ import org.apache.logging.log4j.Level;
 import javax.sql.rowset.CachedRowSet;
 import java.io.File;
 import java.io.InputStream;
+import java.text.MessageFormat;
 import java.util.*;
 
 public abstract class MetadataRepository {
@@ -47,13 +48,17 @@ public abstract class MetadataRepository {
             }
         }
 
+        System.out.println(MessageFormat.format("Getting tables from file {0}", repositoryTablePath + File.separator + getDefinitionFileName()));
+
         dataObjectOperation = new DataObjectOperation();
         dataObjectOperation.setInputFile(repositoryTablePath + File.separator + getDefinitionFileName());
         dataObjectOperation.parseFile();
         //
         for (DataObject dataObject : dataObjectOperation.getDataObjects()) {
-            if (dataObject.getType().equalsIgnoreCase("metadatatables")) {
-                metadataTables.add(objectMapper.convertValue(dataObject.getData(), MetadataTable.class));
+            if (dataObject.getType().equalsIgnoreCase("metadatatable")) {
+                MetadataTable metadataTable = objectMapper.convertValue(dataObject.getData(), MetadataTable.class);
+                System.out.println(MessageFormat.format("Loading metadata table {0}", metadataTable.getName()));
+                metadataTables.add(metadataTable);
             }
         }
 
@@ -77,11 +82,8 @@ public abstract class MetadataRepository {
 
     public void cleanAllTables(FrameworkLog frameworkLog) {
         frameworkLog.log("metadata.clean.start", Level.INFO);
-
         frameworkLog.log("metadata.clean.query=" + "", Level.TRACE);
-
         this.repository.cleanAllTables(getTableNamePrefix(), frameworkLog);
-
         frameworkLog.log("metadata.clean.end", Level.INFO);
 
     }
@@ -90,6 +92,22 @@ public abstract class MetadataRepository {
 
     public List<String> getAllTables(FrameworkLog frameworkLog) {
         return repository.getAllTables(getTableNamePrefix());
+    }
+
+    private void dropTable(MetadataTable metadataTable) {
+        repository.dropTable(metadataTable, getTableNamePrefix());
+    }
+
+    public void dropAllTables() {
+        metadataTables.forEach(this::dropTable);
+    }
+
+    public void cleanTable(MetadataTable metadataTable) {
+        repository.cleanTable(metadataTable, getTableNamePrefix());
+    }
+
+    public void cleanAllTables() {
+        metadataTables.forEach(this::cleanTable);
     }
 
     public void dropAllTables(FrameworkLog frameworkLog) {
@@ -134,11 +152,14 @@ public abstract class MetadataRepository {
 //    }
 
     public void createTable(MetadataTable metadataTable) {
-
+        System.out.println(MessageFormat.format("Creating table {0}", metadataTable.getName()));
+        this.repository.createTable(metadataTable, getTableNamePrefix());
     }
 
-    @SuppressWarnings({ "unused", "unchecked", "rawtypes" })
-    public abstract void createAllTables();
+    public void createAllTables() {
+        System.out.println("Creating all tables");
+        metadataTables.forEach(this::createTable);
+    }
 //    {
 //        this.getFrameworkExecution().getFrameworkLog().log("metadata.create.start", Level.INFO);
 //

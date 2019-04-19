@@ -25,4 +25,14 @@ public class TemporaryDatabase extends Database {
         return null;
     }
 
+    @Override
+    String getCleanStatement(MetadataTable metadataTable, String tableNamePrefix) {
+        return null;
+    }
+
+    @Override
+    public String getDropStatement(MetadataTable table, String tableNamePrefix) {
+        return null;
+    }
+
 }

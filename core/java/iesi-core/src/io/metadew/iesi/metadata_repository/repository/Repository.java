@@ -1,6 +1,7 @@
 package io.metadew.iesi.metadata_repository.repository;
 
 import io.metadew.iesi.connection.database.sql.SqlScriptResult;
+import io.metadew.iesi.framework.definition.Framework;
 import io.metadew.iesi.framework.execution.FrameworkLog;
 import io.metadew.iesi.metadata.definition.MetadataTable;
 import io.metadew.iesi.metadata_repository.repository.database.Database;
@@ -54,6 +55,14 @@ public class Repository {
 
     public void dropAllTables(String pattern, FrameworkLog frameworkLog) {
         this.databases.get("owner").dropAllTables(pattern, frameworkLog);
+    }
+
+    public void dropTable(MetadataTable metadataTable, String tableNamePrefix) {
+        this.getDatabases().get("owner").dropTable(metadataTable, tableNamePrefix);
+    }
+
+    public void cleanTable(MetadataTable metadataTable, String tableNamePrefix) {
+        this.getDatabases().get("owner").cleanTable(metadataTable, tableNamePrefix);
     }
 
     public void dropTable(String tableName, FrameworkLog frameworkLog) {

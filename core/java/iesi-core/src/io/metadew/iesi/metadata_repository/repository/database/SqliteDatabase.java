@@ -6,7 +6,7 @@ import io.metadew.iesi.metadata_repository.repository.database.connection.Sqlite
 
 import javax.sql.rowset.CachedRowSet;
 
-public class SqliteDatabase extends Database{
+public class SqliteDatabase extends Database {
 
 
     public SqliteDatabase(SqliteDatabaseConnection databaseConnection) {
@@ -24,7 +24,6 @@ public class SqliteDatabase extends Database{
                 + pattern
                 + "%' order by tbl_name asc";
     }
-
 
     @Override
     public String getCreateStatement(MetadataTable table, String tableNamePrefix) {

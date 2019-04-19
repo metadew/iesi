@@ -62,7 +62,7 @@ public abstract class Database {
 
     public void dropTable(String tableName, FrameworkLog frameworkLog) {
         String query = "drop table " + tableName;
-        databaseConnection.executeQuery(query);
+        databaseConnection.executeUpdate(query);
     }
 
     public void executeUpdate(String query) {
@@ -84,5 +84,23 @@ public abstract class Database {
     public void createTable(MetadataTable metadataTable, String tableNamePrefix) {
         executeUpdate(getCreateStatement(metadataTable, tableNamePrefix));
     }
+
+    public void dropTable(MetadataTable metadataTable, String tableNamePrefix) {
+        executeUpdate(getDropStatement(metadataTable, tableNamePrefix));
+    }
+
+    public void cleanTable(MetadataTable metadataTable, String tableNamePrefix) {
+        executeUpdate(getCleanStatement(metadataTable, tableNamePrefix));
+    }
+
+    String getCleanStatement(MetadataTable metadataTable, String tableNamePrefix) {
+        return "delete from " + tableNamePrefix + metadataTable.getName();
+    }
+
+    public String getDropStatement(MetadataTable table, String tableNamePrefix) {
+        return "drop table " + tableNamePrefix + table.getName();
+    }
+
+
 
 }

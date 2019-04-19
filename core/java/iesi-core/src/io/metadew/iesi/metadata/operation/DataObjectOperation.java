@@ -68,7 +68,6 @@ public class DataObjectOperation {
 	// Methods
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void parseFile() {
-		System.out.println(getInputFile());
 		// Define input file
 		File file = new File(this.getInputFile());
 		BufferedReader bufferedReader = null;
@@ -80,7 +79,6 @@ public class DataObjectOperation {
 			while ((readLine = bufferedReader.readLine()) != null) {
 				if (readLine.trim().toLowerCase().startsWith("[") && (!readLine.trim().equals(""))) {
 					jsonArray = true;
-					System.out.println("Array");
 					break;
 				} else if (!readLine.trim().equals("")) {
 					jsonArray = false;
@@ -92,7 +90,6 @@ public class DataObjectOperation {
 			if (jsonArray) {
 				this.setDataObjects(objectMapper.readValue(file, new TypeReference<List<DataObject>>() {
 				}));
-				System.out.println(getDataObjects().size());
 			} else {
 				this.setDataObject(objectMapper.readValue(file, new TypeReference<DataObject>() {
 				}));

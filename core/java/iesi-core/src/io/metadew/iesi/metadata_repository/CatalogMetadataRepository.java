@@ -39,11 +39,6 @@ public class CatalogMetadataRepository extends MetadataRepository {
     }
 
     @Override
-    public void createAllTables() {
-
-    }
-
-    @Override
     public void createMetadataRepository(File file, String archiveFolder, String errorFolder, UUID uuid) {
 
     }

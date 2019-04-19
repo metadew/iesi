@@ -55,5 +55,13 @@ public class PostgresqlDatabase extends Database{
         return Optional.ofNullable(schema);
     }
 
+    @Override
+    String getCleanStatement(MetadataTable metadataTable, String tableNamePrefix) {
+        return getSchema().map(schema -> "delete from " + schema + "." + tableNamePrefix + metadataTable.getName()).orElse("delete from " + tableNamePrefix + metadataTable.getName());
+    }
 
+    @Override
+    public String getDropStatement(MetadataTable table, String tableNamePrefix) {
+        return getSchema().map(schema -> "drop table " + schema + "." + tableNamePrefix + table.getName()).orElse("drop table " + tableNamePrefix + table.getName());
+    }
 }

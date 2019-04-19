@@ -54,23 +54,21 @@ public class ConnectivityMetadataRepository extends MetadataRepository {
     public void save(DataObject dataObject, FrameworkExecution frameworkExecution) {
         // TODO: based on MetadataRepository object decide to insert or not insert the objects
         // TODO: insert should be handled on database level as insert can differ from database type/dialect? JDBC Dialect/Spring
-        System.out.println("save");
-        System.out.println(dataObject.getType());
         ObjectMapper objectMapper = new ObjectMapper();
         if (dataObject.getType().equalsIgnoreCase("connection")) {
             Connection connection = objectMapper.convertValue(dataObject.getData(), Connection.class);
             ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(connection,
                     frameworkExecution);
-            executeQuery(connectionConfiguration.getInsertStatement(), "writer");
+            executeUpdate(connectionConfiguration.getInsertStatement());
         } else if (dataObject.getType().equalsIgnoreCase("environment")) {
             Environment environment = objectMapper.convertValue(dataObject.getData(), Environment.class);
             EnvironmentConfiguration environmentConfiguration = new EnvironmentConfiguration(environment,
                     frameworkExecution);
-            executeQuery(environmentConfiguration.getInsertStatement(), "writer");
+            executeUpdate(environmentConfiguration.getInsertStatement());
         } else if (dataObject.getType().equalsIgnoreCase("impersonation")) {
             Impersonation impersonation = objectMapper.convertValue(dataObject.getData(), Impersonation.class);
             ImpersonationConfiguration impersonationConfiguration = new ImpersonationConfiguration(impersonation, frameworkExecution);
-            executeQuery(impersonationConfiguration.getInsertStatement(), "writer");
+            executeUpdate(impersonationConfiguration.getInsertStatement());
         } else if (dataObject.getType().equalsIgnoreCase("repository")) {
             // TODO
         } else 	{

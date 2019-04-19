@@ -33,12 +33,12 @@ public class ScriptParameterConfiguration {
 
 		sql += "INSERT INTO "
 				+ this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository()
-				.getMetadataTables().stream().filter(metadataTable -> metadataTable.getLabel().equalsIgnoreCase("ScriptParameters")).findFirst().get().getName();
+				.getTableNameByLabel("ScriptParameters");
 		sql += " (SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_PAR_NM, SCRIPT_PAR_VAL) ";
 		sql += "VALUES ";
 		sql += "(";
 		sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository()
-				.getMetadataTables().stream().filter(metadataTable -> metadataTable.getLabel().equalsIgnoreCase("ScriptParameters")).findFirst().get().getName(), "SCRIPT_ID", "where SCRIPT_NM = '"+ scriptName) + "')";
+				.getTableNameByLabel("ScriptParameters"), "SCRIPT_ID", "where SCRIPT_NM = '"+ scriptName) + "')";
 		sql += ",";
 		sql += SQLTools.GetStringForSQL(this.getScriptVersion().getNumber());
 		sql += ",";
@@ -54,7 +54,7 @@ public class ScriptParameterConfiguration {
 	public ScriptParameter getScriptParameter(long scriptId, long scriptVersionNumber, String scriptParameterName) {
 		ScriptParameter scriptParameter = new ScriptParameter();
 		CachedRowSet crsScriptParameter = null;
-		String queryScriptParameter = "select SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_PAR_NM, SCRIPT_PAR_VAL from " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getMetadataTables().stream().filter(metadataTable -> metadataTable.getLabel().equalsIgnoreCase("ScriptParameters")).findFirst().get().getName()
+		String queryScriptParameter = "select SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_PAR_NM, SCRIPT_PAR_VAL from " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ScriptParameters")
 				+ " where SCRIPT_ID = " + scriptId + " and SCRIPT_VRS_NB = " + scriptVersionNumber + " and SCRIPT_PAR_NM = '" + scriptParameterName + "'";
 		crsScriptParameter = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(queryScriptParameter, "reader");
 		try {

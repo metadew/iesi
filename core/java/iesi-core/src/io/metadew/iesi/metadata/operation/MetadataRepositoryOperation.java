@@ -307,7 +307,6 @@ public class MetadataRepositoryOperation {
 				if (this.isGenerateDdl()) {
 					this.saveMetadataRepositoryDDL(dataObjectOperation.getMetadataRepositoryDdl());
 				} else {
-					System.out.println("DataObjectOperation size: " + dataObjectOperation.getDataObjects().size());
 					dataObjectOperation.saveToMetadataRepository();
 				}
 

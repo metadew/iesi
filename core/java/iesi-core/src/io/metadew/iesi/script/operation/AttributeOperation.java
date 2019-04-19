@@ -43,9 +43,9 @@ public class AttributeOperation {
 		String query = "";
 		if (this.getType().equals("component")) {
 			query = "select a.comp_id, a.comp_att_nm, a.comp_att_val from "
-					+ this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getMetadataTables().stream().filter(metadataTable -> metadataTable.getLabel().equalsIgnoreCase("ComponentAttributes")).findFirst().get().getName()
+					+ this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ComponentAttributes")
 					+ " a inner join "
-					+ this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getMetadataTables().stream().filter(metadataTable -> metadataTable.getLabel().equalsIgnoreCase("Components")).findFirst().get().getName()
+					+ this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Components")
 					+ " b on a.comp_id = b.comp_id where b.comp_nm = '" + this.getName() + "'";
 		}
 		

@@ -125,12 +125,8 @@ public class DataObjectConfiguration {
 	}
 
 	public void saveToMetadataRepository() {
-		int count = 0;
-		System.out.println("DataObjects " + dataObjects.size());
 		for (DataObject dataObject : dataObjects) {
-			System.out.println(count);
 			this.getMetadataRepository().save(dataObject, getFrameworkExecution());
-			count++;
 			//
 			//InputStream inputStream = FileTools.convertToInputStream(
 			//		this.getMetadataRepositoryInsertStatement(dataObject),

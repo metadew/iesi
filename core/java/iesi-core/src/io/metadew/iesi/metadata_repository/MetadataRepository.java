@@ -281,7 +281,7 @@ public abstract class MetadataRepository {
     }
 
     public String getTableNameByLabel(String label) {
-        return getMetadataTables().stream().filter(metadataTable -> metadataTable.getLabel().equalsIgnoreCase(label)).findFirst().get().getName();
+        return getTableNamePrefix() + getMetadataTables().stream().filter(metadataTable -> metadataTable.getLabel().equalsIgnoreCase(label)).findFirst().get().getName();
     }
 
     public String getName() {
@@ -305,4 +305,5 @@ public abstract class MetadataRepository {
     }
 
     public abstract void save(DataObject dataObject, FrameworkExecution frameworkExecution);
+
 }

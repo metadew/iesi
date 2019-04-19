@@ -30,7 +30,7 @@ public class ExecutionTrace {
 		String sql = "";
 
 		sql += "INSERT INTO "
-				+ this.getFrameworkExecution().getMetadataControl().getTraceMetadataRepository().getMetadataTables().stream().filter(metadataTable -> metadataTable.getLabel().equalsIgnoreCase("ScriptTraces")).findFirst().get().getName();
+				+ this.getFrameworkExecution().getMetadataControl().getTraceMetadataRepository().getTableNameByLabel("ScriptTraces");
 		sql += " (RUN_ID, PRC_ID, PARENT_PRC_ID, SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_TYP_NM, SCRIPT_NM, SCRIPT_DSC) ";
 		sql += "VALUES ";
 		sql += "(";
@@ -74,7 +74,7 @@ public class ExecutionTrace {
 	public void setExecution(ScriptExecution scriptExecution, ActionExecution actionExecution, HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
 		String sql = "";
 
-		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getTraceMetadataRepository().getMetadataTables().stream().filter(metadataTable -> metadataTable.getLabel().equalsIgnoreCase("ActionTraces")).findFirst().get().getName();
+		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getTraceMetadataRepository().getTableNameByLabel("ActionTraces");
 		sql += " (RUN_ID, PRC_ID, SCRIPT_ID, ACTION_ID, ACTION_NB, ACTION_TYP_NM, ACTION_NM, ACTION_DSC, COMP_NM, EXP_ERR_FL, STOP_ERR_FL) ";
 		sql += "VALUES ";
 		sql += "(";
@@ -143,7 +143,7 @@ public class ExecutionTrace {
 		String sql = "";
 
 		sql += "INSERT INTO "
-				+ this.getFrameworkExecution().getMetadataControl().getTraceMetadataRepository().getMetadataTables().stream().filter(metadataTable -> metadataTable.getLabel().equalsIgnoreCase("ActionParameterTraces")).findFirst().get().getName();
+				+ this.getFrameworkExecution().getMetadataControl().getTraceMetadataRepository().getTableNameByLabel("ActionParameterTraces");
 		sql += " (RUN_ID, PRC_ID, ACTION_ID, ACTION_PAR_NM, ACTION_PAR_VAL) ";
 		sql += "VALUES ";
 		sql += "(";

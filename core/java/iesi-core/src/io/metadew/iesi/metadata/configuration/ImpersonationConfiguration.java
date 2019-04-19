@@ -183,10 +183,6 @@ public class ImpersonationConfiguration {
 	public String getInsertStatement(Impersonation impersonation) {
 		String sql = "";
 
-		if (this.exists()) {
-			sql += this.getDeleteStatement();
-		}
-
 		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Impersonations");
 		sql += " (IMP_NM, IMP_DSC) ";
 		sql += "VALUES ";

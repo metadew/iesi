@@ -14,7 +14,10 @@ import javax.sql.rowset.CachedRowSet;
 import java.io.File;
 import java.io.InputStream;
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
 
 public abstract class MetadataRepository {
 
@@ -23,7 +26,6 @@ public abstract class MetadataRepository {
     String name;
     String scope;
     String instanceName;
-    private HashMap<String, String> objects;
     private List<MetadataObject> metadataObjects;
     private List<MetadataTable> metadataTables;
 
@@ -48,8 +50,6 @@ public abstract class MetadataRepository {
             }
         }
 
-        System.out.println(MessageFormat.format("Getting tables from file {0}", repositoryTablePath + File.separator + getDefinitionFileName()));
-
         dataObjectOperation = new DataObjectOperation();
         dataObjectOperation.setInputFile(repositoryTablePath + File.separator + getDefinitionFileName());
         dataObjectOperation.parseFile();
@@ -57,7 +57,6 @@ public abstract class MetadataRepository {
         for (DataObject dataObject : dataObjectOperation.getDataObjects()) {
             if (dataObject.getType().equalsIgnoreCase("metadatatable")) {
                 MetadataTable metadataTable = objectMapper.convertValue(dataObject.getData(), MetadataTable.class);
-                System.out.println(MessageFormat.format("Loading metadata table {0}", metadataTable.getName()));
                 metadataTables.add(metadataTable);
             }
         }
@@ -115,7 +114,7 @@ public abstract class MetadataRepository {
     }
 
     public CachedRowSet executeQuery(String query, String logonType) {
-        return repository.executeQuery(query,logonType);
+        return repository.executeQuery(query, logonType);
     }
 
     public void executeUpdate(String query) {
@@ -134,150 +133,13 @@ public abstract class MetadataRepository {
         repository.executeScript(inputStream, "writer");
     }
 
-
-    // Create the metadata data store
-    public abstract void create(boolean generateDdl);
-//    {
-//        this.setAction("create");
-//        this.setGenerateDdl(generateDdl);
-//        if (this.getMetadataRepository().getGroup().equalsIgnoreCase("filestore")) {
-//            MetadataFileStoreRepositoryImpl metadataFileStoreRepositoryImpl = new MetadataFileStoreRepositoryImpl(
-//                    this.getFrameworkExecution());
-//            metadataFileStoreRepositoryImpl.createStructure();
-//        } else if (this.getMetadataRepository().getGroup().equalsIgnoreCase("database")) {
-//            this.createAllTables();
-//        } else {
-//            throw new RuntimeException("metadata.repository.group.invalid");
-//        }
-//    }
-
     public void createTable(MetadataTable metadataTable) {
         System.out.println(MessageFormat.format("Creating table {0}", metadataTable.getName()));
         this.repository.createTable(metadataTable, getTableNamePrefix());
     }
 
     public void createAllTables() {
-        System.out.println("Creating all tables");
         metadataTables.forEach(this::createTable);
-    }
-//    {
-//        this.getFrameworkExecution().getFrameworkLog().log("metadata.create.start", Level.INFO);
-//
-//        final File folder = new File(this.getFrameworkExecution().getFrameworkConfiguration().getFolderConfiguration()
-//                .getFolderAbsolutePath("metadata.def"));
-//        this.getFrameworkExecution().getFrameworkLog().log("metadata.create.folder=" + folder.getPath(), Level.INFO);
-//
-//        List<MetadataRepositoryConfigurationBack> metadataRepositoryConfigurationList = new ArrayList();
-//        metadataRepositoryConfigurationList.add(this.getMetadataRepository());
-//
-//        // Select appropriate definition file
-//        String[] files = null;
-//        MetadataRepositoryCategoryConfiguration[] metadataRepositoryCategoryConfigurations = null;
-//        String metadataRepositoryCategory = this.getMetadataRepository().getCategory();
-//        if (metadataRepositoryCategory == null)
-//            metadataRepositoryCategory = "";
-//        if (metadataRepositoryCategory.equals("metadew")) {
-//            files = new String[] { "MetadewTables.json" };
-//        } else if (metadataRepositoryCategory.equals("connectivity")) {
-//            files = new String[] { "ConnectivityTables.json" };
-//        } else if (metadataRepositoryCategory.equals("control")) {
-//            files = new String[] { "ControlTables.json" };
-//        } else if (metadataRepositoryCategory.equals("design")) {
-//            files = new String[] { "DesignTables.json" };
-//        } else if (metadataRepositoryCategory.equals("trace")) {
-//            files = new String[] { "TraceTables.json" };
-//        } else if (metadataRepositoryCategory.equals("result")) {
-//            files = new String[] { "ResultTables.json" };
-//        } else if (metadataRepositoryCategory.equals("general")) {
-//            files = new String[] { "ConnectivityTables.json", "ControlTables.json", "DesignTables.json",
-//                    "ResultTables.json", "TraceTables.json" };
-//            metadataRepositoryCategoryConfigurations = new MetadataRepositoryCategoryConfiguration[] {
-//                    this.getFrameworkExecution().getFrameworkControl().getMetadataRepositoryConfig()
-//                            .getConnectivityMetadataRepository(),
-//                    this.getFrameworkExecution().getFrameworkControl().getMetadataRepositoryConfig()
-//                            .getControlMetadataRepository(),
-//                    this.getFrameworkExecution().getFrameworkControl().getMetadataRepositoryConfig()
-//                            .getDesignMetadataRepository(),
-//                    this.getFrameworkExecution().getFrameworkControl().getMetadataRepositoryConfig()
-//                            .getResultMetadataRepository(),
-//                    this.getFrameworkExecution().getFrameworkControl().getMetadataRepositoryConfig()
-//                            .getTraceMetadataRepository() };
-//        } else {
-//            files = new String[] { "ConnectivityTables.json", "DesignTables.json", "ResultTables.json",
-//                    "TraceTables.json" };
-//        }
-//
-//        this.loadConfigurationSelection(metadataRepositoryConfigurationList, this.getFrameworkExecution().getFrameworkConfiguration()
-//                .getFolderConfiguration().getFolderAbsolutePath("metadata.def"), "", "", "", files);
-//
-//        this.getFrameworkExecution().getFrameworkLog().log("metadata.create.end", Level.INFO);
-//
-//    }
-
-    public abstract void createMetadataRepository(File file, String archiveFolder, String errorFolder, UUID uuid);
-//    {
-//
-//        boolean moveToArchiveFolder = false;
-//        boolean moveToErrorFolder = false;
-//
-//        if (!archiveFolder.trim().equals(""))
-//            moveToArchiveFolder = true;
-//        if (!errorFolder.trim().equals(""))
-//            moveToErrorFolder = true;
-//
-//        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
-//        SimpleDateFormat timeFormat = new SimpleDateFormat("HHmmss");
-//
-//        if (file.isDirectory()) {
-//            // Ignore
-//        } else {
-//            try {
-//                this.getFrameworkExecution().getFrameworkLog().log("metadata.file=" + file.getName(), Level.INFO);
-//                DataObjectOperation dataObjectOperation = new DataObjectOperation(this.getFrameworkExecution(),
-//                        this.getMetadataRepository(), file.getAbsolutePath());
-//                if (this.isGenerateDdl()) {
-//                    this.saveMetadataRepositoryDDL(dataObjectOperation.getMetadataRepositoryDdl());
-//                } else {
-//                    dataObjectOperation.saveToMetadataRepository();
-//                }
-//
-//                // Move file to archive folder
-//                if (moveToArchiveFolder) {
-//                    String archiveFileName = dateFormat.format(new Date()) + "-" + timeFormat.format(new Date()) + "-"
-//                            + uuid + "-" + file.getName();
-//                    FileTools.copyFromFileToFile(file.getAbsolutePath(),
-//                            archiveFolder + File.separator + archiveFileName);
-//                    FileTools.delete(file.getAbsolutePath());
-//                }
-//
-//            } catch (Exception e) {
-//
-//                // Move file to archive folder
-//                if (moveToErrorFolder) {
-//                    String errorFileName = dateFormat.format(new Date()) + "-" + timeFormat.format(new Date()) + "-"
-//                            + uuid + "-" + file.getName();
-//                    FileTools.copyFromFileToFile(file.getAbsolutePath(), errorFolder + File.separator + errorFileName);
-//                    FileTools.delete(file.getAbsolutePath());
-//                }
-//
-//            }
-//        }
-//
-//    }
-
-    private void saveMetadataRepositoryDDL(String ddl) {
-//        StringBuilder targetFilePath = new StringBuilder();
-//        targetFilePath.append(this.getFrameworkExecution().getFrameworkConfiguration().getFolderConfiguration()
-//                .getFolderAbsolutePath("metadata.out.ddl"));
-//        targetFilePath.append(File.separator);
-//        targetFilePath.append(this.getMetadataRepository().getName());
-//        targetFilePath.append("_");
-//        targetFilePath.append(this.getMetadataRepository().getCategory());
-//        targetFilePath.append("_");
-//        targetFilePath.append("create");
-//        targetFilePath.append(".ddl");
-//        FileTools.delete(targetFilePath.toString());
-//        FileTools.appendToFile(targetFilePath.toString(), "", ddl);
     }
 
     public String getTableNameByLabel(String label) {

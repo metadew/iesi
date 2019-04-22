@@ -4,9 +4,6 @@ import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.DataObject;
 import io.metadew.iesi.metadata_repository.repository.Repository;
 
-import java.io.File;
-import java.util.UUID;
-
 public class GeneralMetadataRepository  extends MetadataRepository {
 
     public GeneralMetadataRepository(String frameworkCode, String name, String scope, String instanceName, Repository repository, String repositoryObjectsPath,  String repositoryTablesPath) {
@@ -32,16 +29,6 @@ public class GeneralMetadataRepository  extends MetadataRepository {
     @Override
     public String getCategoryPrefix() {
         return "___";
-    }
-
-    @Override
-    public void create(boolean generateDdl) {
-
-    }
-
-    @Override
-    public void createMetadataRepository(File file, String archiveFolder, String errorFolder, UUID uuid) {
-
     }
 
     @Override

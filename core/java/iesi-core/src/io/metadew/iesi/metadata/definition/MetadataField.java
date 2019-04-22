@@ -1,5 +1,7 @@
 package io.metadew.iesi.metadata.definition;
 
+import java.util.Optional;
+
 public class MetadataField {
 	
 	private String name;
@@ -7,8 +9,8 @@ public class MetadataField {
 	private int order;
 	private String type;
 	private int length;
-	private String nullable;
-	private String defaultTimestamp;
+	private String nullable = "Y";
+	private String defaultTimestamp = "N";
 	
 	//Constructors
 	public MetadataField() {
@@ -24,8 +26,8 @@ public class MetadataField {
 		this.name = name;
 	}
 
-	public String getDescription() {
-		return description;
+	public Optional<String> getDescription() {
+		return Optional.ofNullable(description);
 	}
 
 	public void setDescription(String description) {

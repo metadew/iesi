@@ -12,12 +12,10 @@ public class SqliteDatabaseConnection extends DatabaseConnection {
 
 	public SqliteDatabaseConnection(String connectionURL, String userName, String userPassword) {
 		super(type, connectionURL, userName, userPassword);
-		System.out.println(connectionURL);
 	}
 
 	public SqliteDatabaseConnection(String fileName) {
 		super(type, "jdbc:sqlite:" + fileName, "", "");
-		System.out.println("jdbc:sqlite:" + fileName);
 	}
 
 

@@ -1,6 +1,7 @@
 package io.metadew.iesi.metadata_repository.repository.database;
 
 import io.metadew.iesi.framework.execution.FrameworkLog;
+import io.metadew.iesi.metadata.definition.MetadataField;
 import io.metadew.iesi.metadata.definition.MetadataTable;
 import io.metadew.iesi.metadata_repository.repository.database.connection.NetezzaDatabaseConnection;
 import org.apache.logging.log4j.Level;
@@ -25,45 +26,56 @@ public class NetezzaDatabase extends Database{
 
     @Override
     public String getAllTablesQuery(String pattern) {
-        return "select SCHEMA as \"OWNER\", TABLENAME as \"TABLE_NAME\" from _V_TABLE where OWNER = '"
-                + schema
-                + "' and TABLENAME like '"
+        return "select SCHEMA as \"OWNER\", TABLENAME as \"TABLE_NAME\" from _V_TABLE where"
+                + getSchema().map(schema -> " OWNER = '" + schema + "' and").orElse("")
+                + " TABLENAME like '"
                 + pattern
                 + "%' order by TABLENAME asc";
     }
 
-    @Override
-    public String getCreateStatement(MetadataTable table, String tableNamePrefix) {
-        return null;
-    }
+	@Override
+	public String createQueryExtras() {
+		return "";
+	}
 
+	@Override
+	public boolean addComments() {
+		return true;
+	}
 
-    @Override
-    public void cleanTable(String tableName, FrameworkLog frameworkLog) {
-        frameworkLog.log(MessageFormat.format("metadata.clean.table={0}", getSchema().map(schema -> schema + "." + tableName).orElse(tableName)), Level.INFO);
-        String query = getSchema().map(schema -> "delete from " + schema + "." + tableName).orElse("delete from " + tableName);
-        databaseConnection.executeQuery(query);
-    }
+	@Override
+	public String toQueryString(MetadataField field) {
+		StringBuilder fieldQuery = new StringBuilder();
+		// Data Types
+		switch (field.getType()) {
+			case "string":
+				fieldQuery.append("VARCHAR (").append(field.getLength()).append(" CHAR)");
+				break;
+			case "flag":
+				fieldQuery.append("CHAR (").append(field.getLength()).append(")");
+				break;
+			case "number":
+				fieldQuery.append("NUMERIC");
+				break;
+			case "timestamp":
+				fieldQuery.append("TIMESTAMP");
+				break;
+		}
 
-    @Override
-    public void dropTable(String tableName, FrameworkLog frameworkLog) {
-        frameworkLog.log(MessageFormat.format("metadata.drop.table={0}", getSchema().map(schema -> schema + "." + tableName).orElse(tableName)), Level.INFO);
-        String query = getSchema().map(schema -> "drop table " + schema + "." + tableName).orElse("drop table " + tableName);
-        databaseConnection.executeQuery(query);
-    }
+		// Default DtTimestamp
+		if (field.getDefaultTimestamp().trim().equalsIgnoreCase("y")) {
+			fieldQuery.append(" DEFAULT CURRENT_TIMESTAMP");
+		}
 
-    public Optional<String> getSchema() {
+		// Nullable
+		if (field.getNullable().trim().equalsIgnoreCase("n")) {
+			fieldQuery.append(" NOT NULL");
+		}
+		return fieldQuery.toString();
+	}
+
+	public Optional<String> getSchema() {
         return Optional.ofNullable(schema);
-    }
-
-    @Override
-    String getCleanStatement(MetadataTable metadataTable, String tableNamePrefix) {
-        return getSchema().map(schema -> "delete from " + schema + "." + tableNamePrefix + metadataTable.getName()).orElse("delete from " + tableNamePrefix + metadataTable.getName());
-    }
-
-    @Override
-    public String getDropStatement(MetadataTable table, String tableNamePrefix) {
-        return getSchema().map(schema -> "drop table " + schema + "." + tableNamePrefix + table.getName()).orElse("drop table " + tableNamePrefix + table.getName());
     }
 
 }

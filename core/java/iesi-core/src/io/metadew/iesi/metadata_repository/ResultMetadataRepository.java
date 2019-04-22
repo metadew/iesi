@@ -10,9 +10,7 @@ import io.metadew.iesi.metadata.definition.Script;
 import io.metadew.iesi.metadata_repository.repository.Repository;
 import org.apache.logging.log4j.Level;
 
-import java.io.File;
 import java.text.MessageFormat;
-import java.util.UUID;
 
 public class ResultMetadataRepository extends MetadataRepository {
 
@@ -35,20 +33,9 @@ public class ResultMetadataRepository extends MetadataRepository {
         return "result";
     }
 
-
     @Override
     public String getCategoryPrefix() {
         return "RES";
-    }
-
-    @Override
-    public void create(boolean generateDdl) {
-
-    }
-
-    @Override
-    public void createMetadataRepository(File file, String archiveFolder, String errorFolder, UUID uuid) {
-
     }
 
     @Override

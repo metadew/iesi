@@ -313,7 +313,6 @@ public class DataframeConfiguration {
 		CachedRowSet crs = null;
 		String query = "select DATAFRAME_NM, DATAFRAME_DSC from "
 				+ this.getFrameworkExecution().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("Dataviews") + " order by DATAFRAME_NM ASC";
-		System.out.println(query);
 		crs = this.getMetadataRepositoryOperation().getMetadataRepository().executeQuery(query, "reader");
 		DataframeConfiguration dataframeConfiguration = new DataframeConfiguration(this.getFrameworkExecution());
 		try {

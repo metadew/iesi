@@ -1,5 +1,6 @@
 package io.metadew.iesi.metadata_repository.repository.database;
 
+import io.metadew.iesi.metadata.definition.MetadataField;
 import io.metadew.iesi.metadata.definition.MetadataTable;
 import io.metadew.iesi.metadata_repository.repository.database.connection.TeradataDatabaseConnection;
 
@@ -23,6 +24,21 @@ public class TeradataDatabase extends Database {
     @Override
     public String getCreateStatement(MetadataTable table, String tableNamePrefix) {
         return null;
+    }
+
+    @Override
+    public String createQueryExtras() {
+        return "";
+    }
+
+    @Override
+    public boolean addComments() {
+        return false;
+    }
+
+    @Override
+    public String toQueryString(MetadataField field) {
+        return "";
     }
 
 }

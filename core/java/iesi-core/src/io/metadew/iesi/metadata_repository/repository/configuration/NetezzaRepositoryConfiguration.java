@@ -5,7 +5,9 @@ import io.metadew.iesi.framework.configuration.FrameworkSettingConfiguration;
 import io.metadew.iesi.metadata_repository.repository.Repository;
 import io.metadew.iesi.metadata_repository.repository.database.Database;
 import io.metadew.iesi.metadata_repository.repository.database.NetezzaDatabase;
+import io.metadew.iesi.metadata_repository.repository.database.OracleDatabase;
 import io.metadew.iesi.metadata_repository.repository.database.connection.NetezzaDatabaseConnection;
+import io.metadew.iesi.metadata_repository.repository.database.connection.OracleDatabaseConnection;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -88,19 +90,29 @@ public class NetezzaRepositoryConfiguration extends RepositoryConfiguration {
         Map<String, Database> databases = new HashMap<>();
 
         getUser().ifPresent(owner -> {
-            databases.put("owner", new NetezzaDatabase(new NetezzaDatabaseConnection(getJdbcConnectionString(), owner, getUserPassword().orElse("")), getSchema().orElse("")));
-            databases.put("writer", new NetezzaDatabase(new NetezzaDatabaseConnection(getJdbcConnectionString(), owner, getUserPassword().orElse("")), getSchema().orElse("")));
-            databases.put("reader", new NetezzaDatabase(new NetezzaDatabaseConnection(getJdbcConnectionString(), owner, getUserPassword().orElse("")), getSchema().orElse("")));
+            NetezzaDatabaseConnection netezzaDatabaseConnection = new NetezzaDatabaseConnection(getJdbcConnectionString(), owner, getUserPassword().orElse(""));
+            getSchema().ifPresent(netezzaDatabaseConnection::setSchema);
+            NetezzaDatabase netezzaDatabase = new NetezzaDatabase(netezzaDatabaseConnection, getSchema().orElse(""));
+            databases.put("owner", netezzaDatabase);
+            databases.put("writer", netezzaDatabase);
+            databases.put("reader", netezzaDatabase);
         });
 
         getWriter().ifPresent(writer -> {
-            databases.put("writer", new NetezzaDatabase(new NetezzaDatabaseConnection(getJdbcConnectionString(), writer, getWriterPassword().orElse("")), getSchema().orElse("")));
-            databases.put("reader", new NetezzaDatabase(new NetezzaDatabaseConnection(getJdbcConnectionString(), writer, getWriterPassword().orElse("")), getSchema().orElse("")));
+            NetezzaDatabaseConnection netezzaDatabaseConnection = new NetezzaDatabaseConnection(getJdbcConnectionString(), writer, getWriterPassword().orElse(""));
+            getSchema().ifPresent(netezzaDatabaseConnection::setSchema);
+            NetezzaDatabase netezzaDatabase = new NetezzaDatabase(netezzaDatabaseConnection, getSchema().orElse(""));
+            databases.put("writer", netezzaDatabase);
+            databases.put("reader", netezzaDatabase);
         });
 
         getReader().ifPresent(reader -> {
-            databases.put("reader", new NetezzaDatabase(new NetezzaDatabaseConnection(getJdbcConnectionString(), reader, getReaderPassword().orElse("")), getSchema().orElse("")));
+            NetezzaDatabaseConnection netezzaDatabaseConnection = new NetezzaDatabaseConnection(getJdbcConnectionString(), reader, getReaderPassword().orElse(""));
+            getSchema().ifPresent(netezzaDatabaseConnection::setSchema);
+            NetezzaDatabase netezzaDatabase = new NetezzaDatabase(netezzaDatabaseConnection, getSchema().orElse(""));
+            databases.put("reader", netezzaDatabase);
         });
+        
         return new Repository(databases);
     }
 

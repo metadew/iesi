@@ -26,10 +26,13 @@ public abstract class DatabaseConnection {
 		this.connectionURL = connectionURL;
 		this.userName = userName;
 		this.userPassword = userPassword;
-		System.out.println(connectionURL);
 	}
 
 	public abstract String getDriver();
+
+	public Connection getConnection() throws SQLException {
+		return DriverManager.getConnection(connectionURL, userName, userPassword);
+	}
 
 	// Illegal character manipulation
 	private String removeIllgegalCharactersForSingleQuery(String input) {
@@ -58,10 +61,7 @@ public abstract class DatabaseConnection {
 
 		Connection connection;
 		try {
-			System.out.println(connectionURL);
-			System.out.println(userName);
-			System.out.println(userPassword);
-			connection = DriverManager.getConnection(connectionURL, userName, userPassword);
+			connection = getConnection();
 		} catch (SQLException e) {
 			StringWriter StackTrace = new StringWriter();
 			e.printStackTrace(new PrintWriter(StackTrace));
@@ -75,7 +75,6 @@ public abstract class DatabaseConnection {
 						ResultSet.CONCUR_READ_ONLY);
 
 				try {
-					System.out.println("Executing:\n"+query);
 					ResultSet rs = statement.executeQuery(query);
 					crs = RowSetProvider.newFactory().createCachedRowSet();
 					crs.populate(rs);
@@ -133,7 +132,7 @@ public abstract class DatabaseConnection {
 		Connection connection;
 
 		try {
-			connection = DriverManager.getConnection(connectionURL, userName, userPassword);
+			connection = getConnection();
 		} catch (SQLException e) {
 			StringWriter StackTrace = new StringWriter();
 			e.printStackTrace(new PrintWriter(StackTrace));
@@ -200,7 +199,7 @@ public abstract class DatabaseConnection {
 
 		Connection connection;
 		try {
-			connection = DriverManager.getConnection(connectionURL, userName, userPassword);
+			connection = getConnection();
 		} catch (SQLException e) {
 			StringWriter StackTrace = new StringWriter();
 			e.printStackTrace(new PrintWriter(StackTrace));
@@ -252,7 +251,7 @@ public abstract class DatabaseConnection {
 		Connection connection;
 
 		try {
-			connection = DriverManager.getConnection(connectionURL, userName, userPassword);
+			connection = getConnection();
 		} catch (SQLException e) {
 			StringWriter StackTrace = new StringWriter();
 			e.printStackTrace(new PrintWriter(StackTrace));
@@ -320,7 +319,7 @@ public abstract class DatabaseConnection {
 		Connection connection;
 
 		try {
-			connection = DriverManager.getConnection(connectionURL, userName, userPassword);
+			connection = getConnection();
 		} catch (SQLException e) {
 			StringWriter StackTrace = new StringWriter();
 			e.printStackTrace(new PrintWriter(StackTrace));
@@ -377,7 +376,7 @@ public abstract class DatabaseConnection {
 	public PreparedStatement createLivePreparedStatement(String sqlStatement) {
 		PreparedStatement preparedStatement = null;
 		try {
-			Connection connection = DriverManager.getConnection(connectionURL, userName, userPassword);
+			Connection connection = getConnection();
 			preparedStatement = connection.prepareStatement(sqlStatement);
 		} catch (SQLException e) {
 			e.printStackTrace();

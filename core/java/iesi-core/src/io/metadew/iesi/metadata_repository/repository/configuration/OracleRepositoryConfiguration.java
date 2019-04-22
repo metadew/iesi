@@ -106,19 +106,29 @@ public class OracleRepositoryConfiguration extends RepositoryConfiguration {
         Map<String, Database> databases = new HashMap<>();
 
         getUser().ifPresent(owner -> {
-            databases.put("owner", new OracleDatabase(new OracleDatabaseConnection(getJdbcConnectionString(), owner, getUserPassword().orElse("")), getSchema().orElse("")));
-            databases.put("writer", new OracleDatabase(new OracleDatabaseConnection(getJdbcConnectionString(), owner, getUserPassword().orElse("")), getSchema().orElse("")));
-            databases.put("reader", new OracleDatabase(new OracleDatabaseConnection(getJdbcConnectionString(), owner, getUserPassword().orElse("")), getSchema().orElse("")));
+            OracleDatabaseConnection oracleDatabaseConnection = new OracleDatabaseConnection(getJdbcConnectionString(), owner, getUserPassword().orElse(""));
+            getSchema().ifPresent(oracleDatabaseConnection::setSchema);
+            OracleDatabase oracleDatabase = new OracleDatabase(oracleDatabaseConnection, getSchema().orElse(""));
+            databases.put("owner", oracleDatabase);
+            databases.put("writer", oracleDatabase);
+            databases.put("reader", oracleDatabase);
         });
 
         getWriter().ifPresent(writer -> {
-            databases.put("writer", new OracleDatabase(new OracleDatabaseConnection(getJdbcConnectionString(), writer, getWriterPassword().orElse("")), getSchema().orElse("")));
-            databases.put("reader", new OracleDatabase(new OracleDatabaseConnection(getJdbcConnectionString(), writer, getWriterPassword().orElse("")), getSchema().orElse("")));
+            OracleDatabaseConnection oracleDatabaseConnection = new OracleDatabaseConnection(getJdbcConnectionString(), writer, getWriterPassword().orElse(""));
+            getSchema().ifPresent(oracleDatabaseConnection::setSchema);
+            OracleDatabase oracleDatabase = new OracleDatabase(oracleDatabaseConnection, getSchema().orElse(""));
+            databases.put("writer", oracleDatabase);
+            databases.put("reader", oracleDatabase);
         });
 
         getReader().ifPresent(reader -> {
-            databases.put("reader", new OracleDatabase(new OracleDatabaseConnection(getJdbcConnectionString(), reader, getReaderPassword().orElse("")), getSchema().orElse("")));
+            OracleDatabaseConnection oracleDatabaseConnection = new OracleDatabaseConnection(getJdbcConnectionString(), reader, getReaderPassword().orElse(""));
+            getSchema().ifPresent(oracleDatabaseConnection::setSchema);
+            OracleDatabase oracleDatabase = new OracleDatabase(oracleDatabaseConnection, getSchema().orElse(""));
+            databases.put("reader", oracleDatabase);
         });
+
         return new Repository(databases);
     }
 

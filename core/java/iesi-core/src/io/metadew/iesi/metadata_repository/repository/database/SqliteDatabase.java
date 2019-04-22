@@ -8,7 +8,6 @@ import javax.sql.rowset.CachedRowSet;
 
 public class SqliteDatabase extends Database {
 
-
     public SqliteDatabase(SqliteDatabaseConnection databaseConnection) {
         super(databaseConnection);
     }
@@ -26,65 +25,44 @@ public class SqliteDatabase extends Database {
     }
 
     @Override
-    public String getCreateStatement(MetadataTable table, String tableNamePrefix) {
-        String sql = "";
-        String tempTableName = tableNamePrefix + table.getName();
+    public String createQueryExtras() {
+        return "";
+    }
 
-        sql += "CREATE TABLE " + tempTableName;
-        sql += "\n";
-        sql += "(";
-        sql += "\n";
+    @Override
+    public boolean addComments() {
+        return false;
+    }
 
-        int counter = 1;
-        for (MetadataField field : table.getFields()) {
-            if (counter > 1) {
-                sql += ",";
-                sql += "\n";
-            }
-
-            sql += "\t";
-            sql += field.getName();
-
-            int tabNumber = 1;
-            if (field.getName().length() >= 8) {
-                tabNumber = (int) (4 - Math.ceil(field.getName().length() / 8));
-            } else {
-                tabNumber = 4;
-            }
-
-            for (int tabCount = 1; tabCount <= tabNumber; tabCount++) {
-                sql += "\t";
-            }
-
-            // Data Types
-            if (field.getType().equals("string")) {
-                sql += "TEXT";
-            } else if (field.getType().equals("flag")) {
-                sql += "TEXT";
-            } else if (field.getType().equals("number")) {
-                sql += "NUMERIC";
-            } else if (field.getType().equals("timestamp")) {
-                sql += "TEXT";
-            }
-
-            // Nullable
-            if (field.getNullable().trim().equalsIgnoreCase("n")) {
-                sql += " NOT NULL";
-            }
-
-            // Default DtTimestamp
-            if (field.getDefaultTimestamp().trim().equalsIgnoreCase("y")) {
-                //sql += " DEFAULT CURRENT_TIMESTAMP";
-                sql += " DEFAULT (DATETIME(CURRENT_TIMESTAMP, 'LOCALTIME'))";
-            }
-
-            counter++;
+    @Override
+    public String toQueryString(MetadataField field) {
+        StringBuilder fieldQuery = new StringBuilder();
+        // Data Types
+        switch (field.getType()) {
+            case "string":
+                fieldQuery.append("TEXT");
+                break;
+            case "flag":
+                fieldQuery.append("TEXT");
+                break;
+            case "number":
+                fieldQuery.append("NUMERIC");
+                break;
+            case "timestamp":
+                fieldQuery.append("TEXT");
+                break;
         }
-        sql += "\n";
-        sql += ");";
-        sql += "\n";
 
-        return sql;
+        // Default DtTimestamp
+        if (field.getDefaultTimestamp().trim().equalsIgnoreCase("y")) {
+            fieldQuery.append(" DEFAULT (DATETIME(CURRENT_TIMESTAMP, 'LOCALTIME'))");
+        }
+
+        // Nullable
+        if (field.getNullable().trim().equalsIgnoreCase("n")) {
+            fieldQuery.append(" NOT NULL");
+        }
+        return fieldQuery.toString();
     }
 
 }

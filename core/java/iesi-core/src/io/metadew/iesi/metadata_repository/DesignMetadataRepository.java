@@ -2,15 +2,15 @@ package io.metadew.iesi.metadata_repository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
-import io.metadew.iesi.metadata.configuration.*;
-import io.metadew.iesi.metadata.definition.*;
+import io.metadew.iesi.metadata.configuration.ComponentConfiguration;
+import io.metadew.iesi.metadata.configuration.ScriptConfiguration;
+import io.metadew.iesi.metadata.definition.Component;
+import io.metadew.iesi.metadata.definition.DataObject;
+import io.metadew.iesi.metadata.definition.Script;
 import io.metadew.iesi.metadata_repository.repository.Repository;
-import io.metadew.iesi.script.operation.ScriptOperation;
 import org.apache.logging.log4j.Level;
 
-import java.io.File;
 import java.text.MessageFormat;
-import java.util.UUID;
 
 public class DesignMetadataRepository extends MetadataRepository {
 
@@ -37,15 +37,6 @@ public class DesignMetadataRepository extends MetadataRepository {
     @Override
     public String getCategoryPrefix() {
         return "DES";
-    }
-
-    @Override
-    public void create(boolean generateDdl) {
-    }
-
-    @Override
-    public void createMetadataRepository(File file, String archiveFolder, String errorFolder, UUID uuid) {
-
     }
 
     @Override

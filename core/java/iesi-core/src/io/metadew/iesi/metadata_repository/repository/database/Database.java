@@ -2,6 +2,7 @@ package io.metadew.iesi.metadata_repository.repository.database;
 
 import io.metadew.iesi.connection.database.sql.SqlScriptResult;
 import io.metadew.iesi.framework.execution.FrameworkLog;
+import io.metadew.iesi.metadata.definition.MetadataField;
 import io.metadew.iesi.metadata.definition.MetadataTable;
 import io.metadew.iesi.metadata_repository.repository.database.connection.DatabaseConnection;
 
@@ -11,6 +12,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.LinkedList;
 import java.util.List;
+
 
 public abstract class Database {
 
@@ -23,8 +25,6 @@ public abstract class Database {
     public abstract String getSystemTimestampExpression();
 
     public abstract String getAllTablesQuery(String pattern);
-
-    public abstract String getCreateStatement(MetadataTable table, String tableNamePrefix);
 
     public List<String> getAllTables(String pattern) {
         List<String> tables = new LinkedList<>();
@@ -101,6 +101,50 @@ public abstract class Database {
         return "drop table " + tableNamePrefix + table.getName();
     }
 
+    public String getCreateStatement(MetadataTable table, String tableNamePrefix) {
+        StringBuilder createQuery = new StringBuilder();
+        StringBuilder fieldComments = new StringBuilder();
 
+        String tableName = tableNamePrefix + table.getName();
+
+        createQuery.append("CREATE TABLE ").append(tableName).append("\n(\n");
+        int counter = 1;
+        for (MetadataField field : table.getFields()) {
+            if (counter > 1) {
+                createQuery.append(",\n");
+            }
+            createQuery.append("\t").append(field.getName());
+
+            int tabNumber = 1;
+            if (field.getName().length() >= 8) {
+                tabNumber = (int) (4 - Math.ceil((double) field.getName().length() / 8));
+            } else {
+                tabNumber = 4;
+            }
+
+            for (int tabCount = 1; tabCount <= tabNumber; tabCount++) {
+                createQuery.append("\t");
+            }
+
+            createQuery.append(toQueryString(field));
+            if (addComments() && field.getDescription().isPresent()) {
+                fieldComments.append("\nCOMMENT ON COLUMN ").append(tableName).append(".").append(field.getName())
+                        .append(" IS '").append(field.getDescription().get()).append("';");
+            }
+            counter++;
+        }
+
+        createQuery.append("\n);\n");
+        createQuery.append(createQueryExtras());
+        createQuery.append(fieldComments).append("\n\n");
+
+        return createQuery.toString();
+    }
+
+    public abstract String createQueryExtras();
+
+    public abstract boolean addComments();
+
+    public abstract String toQueryString(MetadataField field);
 
 }

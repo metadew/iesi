@@ -5,14 +5,14 @@ import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.configuration.ConnectionConfiguration;
 import io.metadew.iesi.metadata.configuration.EnvironmentConfiguration;
 import io.metadew.iesi.metadata.configuration.ImpersonationConfiguration;
-import io.metadew.iesi.metadata.configuration.MetadataTableConfiguration;
-import io.metadew.iesi.metadata.definition.*;
+import io.metadew.iesi.metadata.definition.Connection;
+import io.metadew.iesi.metadata.definition.DataObject;
+import io.metadew.iesi.metadata.definition.Environment;
+import io.metadew.iesi.metadata.definition.Impersonation;
 import io.metadew.iesi.metadata_repository.repository.Repository;
 import org.apache.logging.log4j.Level;
 
-import java.io.File;
 import java.text.MessageFormat;
-import java.util.UUID;
 
 public class ConnectivityMetadataRepository extends MetadataRepository {
 
@@ -38,16 +38,6 @@ public class ConnectivityMetadataRepository extends MetadataRepository {
     @Override
     public String getCategoryPrefix() {
         return "CXN";
-    }
-
-    @Override
-    public void create(boolean generateDdl) {
-        System.out.println("create");
-    }
-
-    @Override
-    public void createMetadataRepository(File file, String archiveFolder, String errorFolder, UUID uuid) {
-        System.out.println("create metadata repository");
     }
 
     @Override

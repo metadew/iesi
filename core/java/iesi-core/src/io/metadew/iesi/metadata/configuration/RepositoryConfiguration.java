@@ -109,14 +109,14 @@ public class RepositoryConfiguration {
 
 		// add Parameters
 		String sqlParameters = this.getParameterInsertStatements();
-		if (!sqlParameters.equals("")) {
+		if (!sqlParameters.equalsIgnoreCase("")) {
 			sql += "\n";
 			sql += sqlParameters;
 		}
 
 		// add Instances
 		String sqlInstances = this.getInstanceInsertStatements();
-		if (!sqlInstances.equals("")) {
+		if (!sqlInstances.equalsIgnoreCase("")) {
 			sql += "\n";
 			sql += sqlInstances;
 		}
@@ -134,7 +134,7 @@ public class RepositoryConfiguration {
 		for (RepositoryParameter repositoryParameter : this.getRepository().getParameters()) {
 			RepositoryParameterConfiguration repositoryParameterConfiguration = new RepositoryParameterConfiguration(
 					repositoryParameter, this.getFrameworkExecution());
-			if (!result.equals(""))
+			if (!result.equalsIgnoreCase(""))
 				result += "\n";
 			result += repositoryParameterConfiguration.getInsertStatement(this.getRepository().getName());
 		}
@@ -152,7 +152,7 @@ public class RepositoryConfiguration {
 		for (RepositoryInstance repositoryInstance : this.getRepository().getInstances()) {
 			RepositoryInstanceConfiguration repositoryInstanceConfiguration = new RepositoryInstanceConfiguration(
 					repositoryInstance, this.getFrameworkExecution());
-			if (!result.equals(""))
+			if (!result.equalsIgnoreCase(""))
 				result += "\n";
 			result += repositoryInstanceConfiguration.getInsertStatement(this.getRepository().getName());
 		}

@@ -51,7 +51,7 @@ public class TxtCharacters {
 			try {				
 				for (int currentRecord = 0; currentRecord < this.getGenerationRuleExecution().getGenerationExecution().getNumberOfRecords(); currentRecord++) {
 					String generatedValue = "";
-					if (this.getCharacterNumber().getValue().trim().equals("")) {
+					if (this.getCharacterNumber().getValue().trim().equalsIgnoreCase("")) {
 						generatedValue = this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().getGenerationObjectExecution().getLorem().characters();
 					} else {
 						generatedValue = this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().getGenerationObjectExecution().getLorem().characters(Integer.parseInt(this.getCharacterNumber().getValue()));

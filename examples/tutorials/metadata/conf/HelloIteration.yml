@@ -1,0 +1,39 @@
+---
+type: "script"
+data:
+  name: "helloiteration"
+  description: "Hello Iteration Tutorial Script"
+  parameters: []
+  actions:
+  - number: 1
+    type: "fwk.setIteration"
+    name: "Action1"
+    description: "Define the iteration"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "name"
+      value: "Iteration1"
+    - name: "type"
+      value: "for"
+    - name: "from"
+      value: "1"
+    - name: "to"
+      value: "3"
+  - number: 2
+    type: "fwk.outputMessage"
+    name: "Action2"
+    description: "Apply the iteration on an action"
+    component: ""
+    condition: ""
+    iteration: "Iteration1"
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "message"
+      value : ""
+    - name: "onScreen"
+      value : "Y"

@@ -89,13 +89,13 @@ public class HostConnection {
 		if (this.getType().equalsIgnoreCase("windows")) {
 			// For Windows Commands, "cmd /c" needs to be put in front of the
 			// command
-			if (executionShellPath.equals("")) {
+			if (executionShellPath.equalsIgnoreCase("")) {
 				executionShellCommand = "cmd /c " + "\"" + shellCommand + "\"";
 			} else {
 				executionShellCommand = "cmd /c " + "\"cd " + executionShellPath + " & " + shellCommand + "\"";
 			}
 		} else {
-			if (executionShellPath.equals("")) {
+			if (executionShellPath.equalsIgnoreCase("")) {
 				executionShellCommand = shellCommand;
 			} else {
 				executionShellCommand = "cd " + executionShellPath + " && " + shellCommand;
@@ -115,7 +115,7 @@ public class HostConnection {
 
 			try {
 				while ((line = input.readLine()) != null) {
-					if (!lines.equals(""))
+					if (!lines.equalsIgnoreCase(""))
 						lines = lines + "\n";
 					lines = lines + line;
 				}
@@ -168,7 +168,7 @@ public class HostConnection {
 		if (shellPath == null)
 			shellPath = "";
 		executionShellPath = shellPath.trim();
-		if (executionShellPath.equals("")) {
+		if (executionShellPath.equalsIgnoreCase("")) {
 			executionShellCommand = compiledShellCommand;
 		} else {
 			executionShellCommand = "cd " + executionShellPath + " && " + compiledShellCommand;
@@ -271,7 +271,7 @@ public class HostConnection {
 		if (shellPath == null)
 			shellPath = "";
 		executionShellPath = shellPath.trim();
-		if (executionShellPath.equals("")) {
+		if (executionShellPath.equalsIgnoreCase("")) {
 			executionShellCommand = compiledShellCommand;
 		} else {
 			executionShellCommand = "cd " + executionShellPath + " && " + compiledShellCommand;
@@ -287,7 +287,7 @@ public class HostConnection {
 
 			Session session = null;
 			Session[] sessions = null;
-			if (this.getJumphostConnectionName().trim().equals("")) {
+			if (this.getJumphostConnectionName().trim().equalsIgnoreCase("")) {
 				sessions = new Session[1];
 				sessions[0] = session = this.sessionConnect(jsch, this.getHostName(), this.getPortNumber(),
 						this.getUserName(), this.getUserPassword());
@@ -301,7 +301,7 @@ public class HostConnection {
 						jumphostConnection = jumphostConnections[i];
 						ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(shellCommandSettings.getFrameworkExecution());
 						Connection connection = connectionConfiguration.getConnection(jumphostConnection,
-								shellCommandSettings.getEnvironment());
+								shellCommandSettings.getEnvironment()).get();
 						ConnectionOperation connectionOperation = new ConnectionOperation(shellCommandSettings.getFrameworkExecution());
 						hostConnection = connectionOperation.getHostConnection(connection);
 					} else {
@@ -396,7 +396,7 @@ public class HostConnection {
 		if (shellPath == null)
 			shellPath = "";
 		executionShellPath = shellPath.trim();
-		if (executionShellPath.equals("")) {
+		if (executionShellPath.equalsIgnoreCase("")) {
 			executionShellCommand = shellCommand;
 		} else {
 			executionShellCommand = "cd " + executionShellPath + " && " + shellCommand;
@@ -491,7 +491,7 @@ public class HostConnection {
 		if (shellPath == null)
 			shellPath = "";
 		executionShellPath = shellPath.trim();
-		if (executionShellPath.equals("")) {
+		if (executionShellPath.equalsIgnoreCase("")) {
 			executionShellCommand = compiledShellCommand;
 		} else {
 			executionShellCommand = "cd " + executionShellPath + " && " + compiledShellCommand;
@@ -507,7 +507,7 @@ public class HostConnection {
 
 			Session session = null;
 			Session[] sessions = null;
-			if (this.getJumphostConnectionName().trim().equals("")) {
+			if (this.getJumphostConnectionName().trim().equalsIgnoreCase("")) {
 				sessions = new Session[1];
 				sessions[0] = session = this.sessionConnect(jsch, this.getHostName(), this.getPortNumber(),
 						this.getUserName(), this.getUserPassword());
@@ -521,7 +521,7 @@ public class HostConnection {
 						jumphostConnection = jumphostConnections[i];
 						ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(shellCommandSettings.getFrameworkExecution());
 						Connection connection = connectionConfiguration.getConnection(jumphostConnection,
-								shellCommandSettings.getEnvironment());
+								shellCommandSettings.getEnvironment()).get();
 						ConnectionOperation connectionOperation = new ConnectionOperation(shellCommandSettings.getFrameworkExecution());
 						hostConnection = connectionOperation.getHostConnection(connection);
 					} else {
@@ -638,34 +638,34 @@ public class HostConnection {
 				// Text
 				if (!this.inList(this.getSystemOutputKeywordList(), line.trim())) {
 					if (boolCommandOutput) {
-						if (!tempCommandOutput.equals(""))
+						if (!tempCommandOutput.equalsIgnoreCase(""))
 							tempCommandOutput += "\n";
 						tempCommandOutput += line;
 					}
 					if (boolCommandReturnCode) {
-						if (!tempCommandReturnCode.equals(""))
+						if (!tempCommandReturnCode.equalsIgnoreCase(""))
 							tempCommandReturnCode += "\n";
 						tempCommandReturnCode += line;
 					}
 					if (boolCommandRuntimeVariables) {
-						if (!tempCommandRuntimeVariables.equals(""))
+						if (!tempCommandRuntimeVariables.equalsIgnoreCase(""))
 							tempCommandRuntimeVariables += "\n";
 						tempCommandRuntimeVariables += line;
 					}
 				}
 
 				// Keywords
-				if (line.trim().equals("SHELL_RUN_CMD")) {
+				if (line.trim().equalsIgnoreCase("SHELL_RUN_CMD")) {
 					boolCommandOutput = true;
 					boolCommandReturnCode = false;
 					boolCommandRuntimeVariables = false;
 				}
-				if (line.trim().equals("SHELL_RUN_CMD_RC")) {
+				if (line.trim().equalsIgnoreCase("SHELL_RUN_CMD_RC")) {
 					boolCommandOutput = false;
 					boolCommandReturnCode = true;
 					boolCommandRuntimeVariables = false;
 				}
-				if (line.trim().equals("SHELL_RUN_CMD_RUN_VAR")) {
+				if (line.trim().equalsIgnoreCase("SHELL_RUN_CMD_RUN_VAR")) {
 					boolCommandOutput = false;
 					boolCommandReturnCode = false;
 					boolCommandRuntimeVariables = true;
@@ -684,7 +684,7 @@ public class HostConnection {
 		boolean tempResult = false;
 
 		for (String curVal : list) {
-			if (curVal.equals(checkItem)) {
+			if (curVal.equalsIgnoreCase(checkItem)) {
 				tempResult = true;
 			}
 		}

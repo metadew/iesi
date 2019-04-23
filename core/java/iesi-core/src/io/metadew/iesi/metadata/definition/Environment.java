@@ -13,6 +13,12 @@ public class Environment {
 		
 	}
 
+	public Environment(String name, String description, List<EnvironmentParameter> parameters) {
+		this.name = name;
+		this.description = description;
+		this.parameters = parameters;
+	}
+
 	//Getters and Setters
 	public String getName() {
 		return name;

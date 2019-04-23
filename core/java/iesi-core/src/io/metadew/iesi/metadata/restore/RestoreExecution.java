@@ -23,7 +23,7 @@ public class RestoreExecution {
 		Context context = new Context();
 		context.setName("restore");
 		context.setScope("");
-		this.setFrameworkExecution(new FrameworkExecution(new FrameworkExecutionContext(context)));
+		this.setFrameworkExecution(new FrameworkExecution(new FrameworkExecutionContext(context), null));
 		this.setExecutionControl(new ExecutionControl(this.getFrameworkExecution()));
 	}
 

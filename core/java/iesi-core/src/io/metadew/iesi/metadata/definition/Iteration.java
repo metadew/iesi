@@ -9,6 +9,7 @@ public class Iteration {
 	private String from;
 	private String to;
 	private String step;
+	private String condition;
 	private String interrupt;
 	
 	//Constructors
@@ -79,6 +80,14 @@ public class Iteration {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getCondition() {
+		return condition;
+	}
+
+	public void setCondition(String condition) {
+		this.condition = condition;
 	}
 
 }

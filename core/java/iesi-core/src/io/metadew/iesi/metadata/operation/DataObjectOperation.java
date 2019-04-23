@@ -90,10 +90,10 @@ public class DataObjectOperation {
 			boolean jsonArray = true;
 
 			while ((readLine = bufferedReader.readLine()) != null) {
-				if (readLine.trim().toLowerCase().startsWith("[") && (!readLine.trim().equals(""))) {
+				if (readLine.trim().toLowerCase().startsWith("[") && (!readLine.trim().equalsIgnoreCase(""))) {
 					jsonArray = true;
 					break;
-				} else if (!readLine.trim().equals("")) {
+				} else if (!readLine.trim().equalsIgnoreCase("")) {
 					jsonArray = false;
 					break;
 				}
@@ -131,10 +131,10 @@ public class DataObjectOperation {
 			boolean yamlArray = true;
 
 			while ((readLine = bufferedReader.readLine()) != null) {
-				if (readLine.trim().toLowerCase().startsWith("[") && (!readLine.trim().equals(""))) {
+				if (readLine.trim().toLowerCase().startsWith("[") && (!readLine.trim().equalsIgnoreCase(""))) {
 					yamlArray = true;
 					break;
-				} else if (!readLine.trim().equals("")) {
+				} else if (!readLine.trim().equalsIgnoreCase("")) {
 					yamlArray = false;
 					break;
 				}

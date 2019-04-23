@@ -68,7 +68,7 @@ public class GuardLauncher {
 			context.setName("guard");
 			context.setScope("user");
 			FrameworkExecution frameworkExecution = new FrameworkExecution(new FrameworkExecutionContext(context),
-					frameworkExecutionSettings);
+					frameworkExecutionSettings, null);
 
 			String userName = "";
 			String active = "";

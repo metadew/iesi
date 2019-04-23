@@ -55,12 +55,12 @@ public class BelgiumNationalRegisterNumber implements DataInstruction
 		// National Register Number: Rules based on sex
 		Random randomGenerator = new Random();
 		long maleFemaleRepresentation;
-		if (sex.equals("1"))
+		if (sex.equalsIgnoreCase("1"))
 		{
 			// Male
 			maleFemaleRepresentation = 1 + randomGenerator.nextInt(498) * 2;
 		}
-		else if (sex.equals("2"))
+		else if (sex.equalsIgnoreCase("2"))
 		{
 			// Female
 			maleFemaleRepresentation = 2 + randomGenerator.nextInt(498) * 2;

@@ -17,7 +17,7 @@ public class Services {
 		Context context = new Context();
 		context.setName("server");
 		context.setScope("");
-		this.setFrameworkExecution(new FrameworkExecution(new FrameworkExecutionContext(context)));
+		this.setFrameworkExecution(new FrameworkExecution(new FrameworkExecutionContext(context), null));
 		
 		requestServerRunnable = new RequestRunnable(this.getFrameworkExecution());
 		requestServerThread = new Thread(requestServerRunnable);
@@ -43,10 +43,10 @@ public class Services {
 		boolean temp_status = false;
 		boolean temp_service = false;
 
-		if (serviceName.equals("REQUESTSERVER")) {
+		if (serviceName.equalsIgnoreCase("REQUESTSERVER")) {
 			temp_status = this.statusRequestServer();
 			temp_service = true;
-		} else if (serviceName.equals("SCHEDULERSERVER")) {
+		} else if (serviceName.equalsIgnoreCase("SCHEDULERSERVER")) {
 			temp_status = this.statusSchedulerServer();
 			temp_service = true;
 		} else {
@@ -69,10 +69,10 @@ public class Services {
 	public String start(String serviceName) {
 		boolean temp_service = false;
 
-		if (serviceName.equals("REQUESTSERVER")) {
+		if (serviceName.equalsIgnoreCase("REQUESTSERVER")) {
 			this.startRequestServer();
 			temp_service = true;
-		} else if (serviceName.equals("SCHEDULERSERVER")) {
+		} else if (serviceName.equalsIgnoreCase("SCHEDULERSERVER")) {
 			this.startSchedulerServer();
 			temp_service = true;
 		} else {
@@ -89,10 +89,10 @@ public class Services {
 	public String stop(String serviceName) {
 		boolean temp_service = false;
 
-		if (serviceName.equals("REQUESTSERVER")) {
+		if (serviceName.equalsIgnoreCase("REQUESTSERVER")) {
 			this.stopRequestServer();
 			temp_service = true;
-		} else if (serviceName.equals("SCHEDULERSERVER")) {
+		} else if (serviceName.equalsIgnoreCase("SCHEDULERSERVER")) {
 			this.stopSchedulerServer();
 			temp_service = true;
 		} else {

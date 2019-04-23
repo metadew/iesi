@@ -1,0 +1,21 @@
+---
+type: "script"
+data:
+  name: "fwk.outputMessage.1"
+  description: "test fwk.outputMessage with default message"
+  parameters: []
+  actions:
+  - number: 1
+    type: "fwk.outputMessage"
+    name: "action1"
+    description: "output default message"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "message"
+      value : "default1"
+    - name: "onScreen"
+      value : "Y"

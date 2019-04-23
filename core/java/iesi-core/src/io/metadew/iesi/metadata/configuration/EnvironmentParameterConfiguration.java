@@ -28,6 +28,27 @@ public class EnvironmentParameterConfiguration
 		this.setFrameworkExecution(frameworkExecution);
 	}
 
+	public String getInsertStatement(String environmentName, EnvironmentParameter environmentParameter)
+	{
+		String sql = "";
+
+		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration()
+				.getMetadataTableConfiguration().getTableName("EnvironmentParameters");
+		sql += " (ENV_NM, ENV_PAR_NM, ENV_PAR_VAL) ";
+		sql += "VALUES ";
+		sql += "(";
+		sql += SQLTools.GetStringForSQL(environmentName);
+		sql += ",";
+		sql += SQLTools.GetStringForSQL(environmentParameter.getName());
+		sql += ",";
+		sql += SQLTools.GetStringForSQL(environmentParameter.getValue());
+		sql += ")";
+		sql += ";";
+
+		return sql;
+	}
+
+
 	// Insert
 	public String getInsertStatement(String environmentName)
 	{

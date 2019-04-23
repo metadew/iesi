@@ -25,7 +25,7 @@ public class Main {
     		System.err.println("Unable to read host configuration");
     		System.exit(1); 
     	}
-    	if (host.equals("")) {
+    	if (host.isEmpty()) {
             System.err.println("No host defined for Workshop Server");
             System.exit(1);    		
     	}
@@ -56,11 +56,11 @@ public class Main {
         String fromUser;
 
         while ((fromServer = in.readLine()) != null) {
-    		if (fromServer.equals("EOM")) {
+    		if (fromServer.equalsIgnoreCase("EOM")) {
                 System.out.print("> ");
                 fromUser = stdIn.readLine();
     		}
-            else if (fromServer.equals("CON")) {
+            else if (fromServer.equalsIgnoreCase("CON")) {
                 System.out.println("Execution client connection successful");
                 System.out.println("Host: " + host);
                 System.out.println("Port: " + port);
@@ -76,7 +76,7 @@ public class Main {
            
         if (fromUser != null) {
                 out.println(fromUser);
-            if (fromUser.equals("exit")) {
+            if (fromUser.equalsIgnoreCase("exit")) {
             	System.out.println("Exiting execution client ... Goodbye!");
             	System.exit(0);
             }

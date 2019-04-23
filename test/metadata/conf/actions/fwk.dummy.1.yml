@@ -1,0 +1,14 @@
+---
+type: Script
+data:
+  type: "script"
+  name: "fwk.dummy.1"
+  description: "test fwk.dummy"
+  actions:
+  - number: 1
+    type: "fwk.dummy"
+    name: "action1"
+    description: "default"
+    errorExpected: "N"
+    errorStop: "N"
+    parameters: []

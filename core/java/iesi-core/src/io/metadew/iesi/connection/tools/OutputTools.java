@@ -65,7 +65,7 @@ public final class OutputTools {
 			File f = new File(absoluteFileName);
 			if (!f.exists()) {
 				out = new PrintWriter(new BufferedWriter(new FileWriter(absoluteFileName, true)));
-				if (!header.trim().equals("")) out.println(header);
+				if (!header.trim().equalsIgnoreCase("")) out.println(header);
 			} else {
 				out = new PrintWriter(new BufferedWriter(new FileWriter(absoluteFileName, true)));
 			}
@@ -92,7 +92,7 @@ public final class OutputTools {
 			}
 			
 			out = new PrintWriter(new BufferedWriter(new FileWriter(absoluteFileName, true)));
-			if (!header.trim().equals("")) out.println(header);
+			if (!header.trim().equalsIgnoreCase("")) out.println(header);
 
 			out.println(record);
 			out.close();

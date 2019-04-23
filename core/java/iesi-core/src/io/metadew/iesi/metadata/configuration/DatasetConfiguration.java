@@ -109,14 +109,14 @@ public class DatasetConfiguration {
 
 		// add Parameters
 		String sqlParameters = this.getParameterInsertStatements();
-		if (!sqlParameters.equals("")) {
+		if (!sqlParameters.equalsIgnoreCase("")) {
 			sql += "\n";
 			sql += sqlParameters;
 		}
 
 		// add Instances
 		String sqlInstances = this.getInstanceInsertStatements();
-		if (!sqlInstances.equals("")) {
+		if (!sqlInstances.equalsIgnoreCase("")) {
 			sql += "\n";
 			sql += sqlInstances;
 		}
@@ -134,7 +134,7 @@ public class DatasetConfiguration {
 		for (DatasetParameter datasetParameter : this.getDataset().getParameters()) {
 			DatasetParameterConfiguration datasetParameterConfiguration = new DatasetParameterConfiguration(
 					datasetParameter, this.getFrameworkExecution());
-			if (!result.equals(""))
+			if (!result.equalsIgnoreCase(""))
 				result += "\n";
 			result += datasetParameterConfiguration.getInsertStatement(this.getDataset().getName());
 		}
@@ -152,7 +152,7 @@ public class DatasetConfiguration {
 		for (DatasetInstance datasetInstance : this.getDataset().getInstances()) {
 			DatasetInstanceConfiguration datasetInstanceConfiguration = new DatasetInstanceConfiguration(
 					datasetInstance, this.getFrameworkExecution());
-			if (!result.equals(""))
+			if (!result.equalsIgnoreCase(""))
 				result += "\n";
 			result += datasetInstanceConfiguration.getInsertStatement(this.getDataset().getName());
 		}

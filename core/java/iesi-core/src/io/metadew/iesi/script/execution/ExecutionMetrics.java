@@ -68,6 +68,22 @@ public class ExecutionMetrics {
 		this.setErrorCount(0);
 		this.setSkipCount(0);
 	}
+	
+	public void resetErrorCount() {
+		this.setErrorCount(0);
+	}
+	
+	public void resetWarningCount() {
+		this.setWarningCount(0);
+	}
+	
+	public void resetSuccessCount() {
+		this.setSuccessCount(0);
+	}
+	
+	public void resetSkipCount() {
+		this.setSkipCount(0);
+	}
 
 	public long getSkipCount() {
 		return skipCount;

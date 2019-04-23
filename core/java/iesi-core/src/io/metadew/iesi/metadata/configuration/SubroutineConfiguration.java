@@ -56,7 +56,7 @@ public class SubroutineConfiguration {
 
 		// add Parameters
 		String sqlParameters = this.getParameterInsertStatements();
-		if (!sqlParameters.equals("")) {
+		if (!sqlParameters.equalsIgnoreCase("")) {
 			sql += "\n";
 			sql += sqlParameters;
 		}
@@ -70,7 +70,7 @@ public class SubroutineConfiguration {
 		for (SubroutineParameter subroutineParameter : this.getSubroutine().getParameters()) {
 			SubroutineParameterConfiguration subroutineParameterConfiguration = new SubroutineParameterConfiguration(
 					subroutineParameter, this.getFrameworkExecution());
-			if (!result.equals(""))
+			if (!result.equalsIgnoreCase(""))
 				result += "\n";
 			result += subroutineParameterConfiguration.getInsertStatement(this.getSubroutine().getName());
 		}

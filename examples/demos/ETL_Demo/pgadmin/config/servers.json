@@ -1,0 +1,31 @@
+{
+    "Servers": {
+        "1": {
+            "Name": "source-CRM",
+            "Group": "Demo-Servers",
+            "Host": "postgres-crm",
+            "Port": 5432,
+            "MaintenanceDB": "postgres",
+            "Username": "crm",
+            "SSLMode": "prefer"
+        },
+        "2": {
+            "Name": "target-db",
+            "Group": "Demo-Servers",
+            "Host": "postgres-target",
+            "Port": 5432,
+            "MaintenanceDB": "postgres",
+            "Username": "target",
+            "SSLMode": "prefer"
+        },
+        "3": {
+            "Name": "target-db-Acceptance",
+            "Group": "Demo-Servers",
+            "Host": "postgres-target-acc",
+            "Port": 5432,
+            "MaintenanceDB": "postgres",
+            "Username": "target",
+            "SSLMode": "prefer"
+        }
+    }
+}

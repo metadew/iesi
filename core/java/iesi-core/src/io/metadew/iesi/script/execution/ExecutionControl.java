@@ -70,8 +70,8 @@ public class ExecutionControl
 	private void initializeExecutionRuntime(FrameworkExecution frameworkExecution, String runId) {
 		String customExecutionRuntime = frameworkExecution.getFrameworkControl().getProperty(frameworkExecution
 				.getFrameworkConfiguration().getSettingConfiguration().getSettingPath("script.execution.runtime"));
-		if (customExecutionRuntime.trim().equals("")) {
-			this.setExecutionRuntime(new ExecutionRuntime(frameworkExecution, runId));
+		if (customExecutionRuntime.trim().equalsIgnoreCase("")) {
+			this.setExecutionRuntime(new ExecutionRuntime(frameworkExecution,this, runId));
 		} else {
 			try {
 				Class classRef = Class.forName(customExecutionRuntime);
@@ -147,7 +147,7 @@ public class ExecutionControl
 		query += "(";
 		query += SQLTools.GetStringForSQL(this.getRunId());
 		query += ",";
-		query += SQLTools.GetStringForSQL(this.getProcessId());
+		query += SQLTools.GetStringForSQL(scriptExecution.getProcessId());
 		query += ",";
 		query += SQLTools.GetStringForSQL(parentProcessId);
 		query += ",";
@@ -195,7 +195,7 @@ public class ExecutionControl
 		query += "(";
 		query += SQLTools.GetStringForSQL(this.getRunId());
 		query += ",";
-		query += SQLTools.GetStringForSQL(this.getProcessId());
+		query += SQLTools.GetStringForSQL(actionExecution.getProcessId());
 		query += ",";
 		query += SQLTools.GetStringForSQL(actionExecution.getAction().getId());
 		query += ",";

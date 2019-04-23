@@ -70,7 +70,7 @@ public class Negotiator {
 		Context context = new Context();
 		context.setName("negotiator");
 		context.setScope("");
-		FrameworkExecution frameworkExecution = new FrameworkExecution(new FrameworkExecutionContext(context));
+		FrameworkExecution frameworkExecution = new FrameworkExecution(new FrameworkExecutionContext(context), null);
 		// Get the Script
 		ScriptConfiguration scriptConfiguration = null;
 		Script script = null;

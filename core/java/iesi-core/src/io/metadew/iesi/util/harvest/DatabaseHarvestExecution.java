@@ -29,7 +29,7 @@ public class DatabaseHarvestExecution {
 		Context context = new Context();
 		context.setName("harvest");
 		context.setScope("");
-		this.setFrameworkExecution(new FrameworkExecution(new FrameworkExecutionContext(context)));
+		this.setFrameworkExecution(new FrameworkExecution(new FrameworkExecutionContext(context), null));
 	}
 
 	// Methods
@@ -41,14 +41,14 @@ public class DatabaseHarvestExecution {
 		sqlStatement.append("select ");
 		sqlStatement.append(columns);
 		sqlStatement.append(" from ");
-		if (schemaName.trim().equals("")) {
+		if (schemaName.trim().equalsIgnoreCase("")) {
 			sqlStatement.append(tableName);
 		} else {
 			sqlStatement.append(schemaName);
 			sqlStatement.append(".");
 			sqlStatement.append(tableName);
 		}
-		if (!filter.trim().equals("")) {
+		if (!filter.trim().equalsIgnoreCase("")) {
 			sqlStatement.append(" where ");
 			sqlStatement.append(filter);
 		}
@@ -79,7 +79,7 @@ public class DatabaseHarvestExecution {
 
 		// Get Connection
 		ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution());
-		Connection connection = connectionConfiguration.getConnection(sourceConnectionName, environmentName);
+		Connection connection = connectionConfiguration.getConnection(sourceConnectionName, environmentName).get();
 		ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
 		DatabaseConnection databaseConnection = connectionOperation.getDatabaseConnection(connection);
 		

@@ -52,7 +52,7 @@ public class TxtParagraphs {
 				for (int currentRecord = 0; currentRecord < this.getGenerationRuleExecution().getGenerationExecution().getNumberOfRecords(); currentRecord++) {
 					String generatedValue = "";
 					int numberOfParagraphs = 0; 
-					if (this.getParagraphNumber().getValue().trim().equals("")) {
+					if (this.getParagraphNumber().getValue().trim().equalsIgnoreCase("")) {
 						numberOfParagraphs = this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().getGenerationObjectExecution().getGenerationTools().getRandomTools().range(1,10);
 					} else {
 						numberOfParagraphs = Integer.parseInt(this.getParagraphNumber().getValue());

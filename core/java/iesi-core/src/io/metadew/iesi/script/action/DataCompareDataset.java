@@ -89,7 +89,7 @@ public class DataCompareDataset {
 						.getDataItem(leftDatasetparts[1] + "." + transformation.getLeftField());
 				String rightFieldValue = rightDatasetOperation
 						.getDataItem(rightDatasetparts[1] + "." + transformation.getRightField());
-				if (!leftFieldValue.equals(rightFieldValue)) {
+				if (!leftFieldValue.equalsIgnoreCase(rightFieldValue)) {
 					String errorMessage = transformation.getLeftField() + ": " + leftFieldValue + " <> "
 							+ transformation.getRightField() + ": " + rightFieldValue;
 					this.getActionExecution().getActionControl().logOutput("err",errorMessage);

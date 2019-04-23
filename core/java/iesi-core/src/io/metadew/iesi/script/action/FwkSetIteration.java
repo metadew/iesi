@@ -26,6 +26,7 @@ public class FwkSetIteration {
 	private ActionParameterOperation iterationFrom;
 	private ActionParameterOperation iterationTo;
 	private ActionParameterOperation iterationStep;
+	private ActionParameterOperation iterationCondition;
 	private ActionParameterOperation iterationInterrupt;
 	private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
 
@@ -63,6 +64,8 @@ public class FwkSetIteration {
 				this.getActionExecution(), this.getActionExecution().getAction().getType(), "to"));
 		this.setIterationStep(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
 				this.getActionExecution(), this.getActionExecution().getAction().getType(), "step"));
+		this.setIterationCondition(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+				this.getActionExecution(), this.getActionExecution().getAction().getType(), "condition"));
 		this.setIterationInterrupt(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
 				this.getActionExecution(), this.getActionExecution().getAction().getType(), "interrupt"));
 		// Get Parameters
@@ -81,6 +84,8 @@ public class FwkSetIteration {
 				this.getIterationTo().setInputValue(actionParameter.getValue());
 			} else if (actionParameter.getName().equalsIgnoreCase("step")) {
 				this.getIterationStep().setInputValue(actionParameter.getValue());
+			} else if (actionParameter.getName().equalsIgnoreCase("condition")) {
+				this.getIterationCondition().setInputValue(actionParameter.getValue());
 			} else if (actionParameter.getName().equalsIgnoreCase("interrupt")) {
 				this.getIterationInterrupt().setInputValue(actionParameter.getValue());
 			}
@@ -94,6 +99,7 @@ public class FwkSetIteration {
 		this.getActionParameterOperationMap().put("from", this.getIterationFrom());
 		this.getActionParameterOperationMap().put("to", this.getIterationTo());
 		this.getActionParameterOperationMap().put("step", this.getIterationStep());
+		this.getActionParameterOperationMap().put("condition", this.getIterationCondition());
 		this.getActionParameterOperationMap().put("interrupt", this.getIterationInterrupt());
 	}
 
@@ -108,10 +114,23 @@ public class FwkSetIteration {
 			iteration.setValues(this.getIterationValues().getValue());
 			iteration.setFrom(this.getIterationFrom().getValue());
 			iteration.setTo(this.getIterationTo().getValue());
-			iteration.setStep(this.getIterationStep().getValue());
-			iteration.setInterrupt(this.getIterationInterrupt().getValue());
+			// Set default step if not provided
+			if (this.getIterationStep().getValue().trim().isEmpty()) {
+				iteration.setStep("1");
+			} else {
+				iteration.setStep(this.getIterationStep().getValue());
+			}
+			iteration.setCondition(this.getIterationCondition().getValue());
+			// Set default interrupt if not provided
+			if (this.getIterationInterrupt().getValue().equalsIgnoreCase("y")) {
+				iteration.setInterrupt("y");
+			} else {
+				iteration.setInterrupt("n");
+			}
 			this.getExecutionControl().getExecutionRuntime().setIteration(iteration);
 
+			this.getActionExecution().getActionControl().increaseSuccessCount();
+			
 			return true;
 		} catch (Exception e) {
 			StringWriter StackTrace = new StringWriter();
@@ -222,6 +241,14 @@ public class FwkSetIteration {
 
 	public void setIterationInterrupt(ActionParameterOperation iterationInterrupt) {
 		this.iterationInterrupt = iterationInterrupt;
+	}
+
+	public ActionParameterOperation getIterationCondition() {
+		return iterationCondition;
+	}
+
+	public void setIterationCondition(ActionParameterOperation iterationCondition) {
+		this.iterationCondition = iterationCondition;
 	}
 
 }

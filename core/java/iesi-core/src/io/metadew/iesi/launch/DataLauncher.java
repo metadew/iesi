@@ -27,6 +27,7 @@ public class DataLauncher {
 
 	private static boolean actionMatch = false;
 
+	@SuppressWarnings("unused")
 	public static void main(String[] args) {
 
 		Option oHelp = new Option("help", "print this message");
@@ -124,7 +125,7 @@ public class DataLauncher {
 			context.setName("data");
 			context.setScope("");
 			FrameworkExecution frameworkExecution = new FrameworkExecution(new FrameworkExecutionContext(context),
-					"owner");
+					"owner",null);
 			
 			DataRepositoryConfiguration dataRepositoryConfiguration = new DataRepositoryConfiguration(
 					frameworkExecution, repository, instanceName, instanceLabels, environment);

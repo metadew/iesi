@@ -34,8 +34,8 @@ public class WfaGetConfirmation {
 		this.init(frameworkExecution, executionControl, scriptExecution, actionExecution);
 	}
 
-	public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl, ScriptExecution scriptExecution,
-			ActionExecution actionExecution) {
+	public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+			ScriptExecution scriptExecution, ActionExecution actionExecution) {
 		this.setFrameworkExecution(frameworkExecution);
 		this.setExecutionControl(executionControl);
 		this.setActionExecution(actionExecution);
@@ -66,7 +66,7 @@ public class WfaGetConfirmation {
 		this.getActionParameterOperationMap().put("type", this.getConfirmationType());
 		this.getActionParameterOperationMap().put("question", this.getConfirmationQuestion());
 	}
-	
+
 	public boolean execute() {
 		try {
 			// Run the action
@@ -81,29 +81,18 @@ public class WfaGetConfirmation {
 			}
 
 			// Evaluate result
-			if (this.getActionExecution().getAction().getErrorExpected().equalsIgnoreCase("y")) {
-				if (result) {
-					this.getActionExecution().getActionControl().increaseErrorCount();
-				} else {
-					this.getActionExecution().getActionControl().increaseSuccessCount();
-				}
+			if (result) {
+				this.getActionExecution().getActionControl().increaseSuccessCount();
 			} else {
-				if (result) {
-					this.getActionExecution().getActionControl().increaseSuccessCount();
-				} else {
-					this.getActionExecution().getActionControl().increaseErrorCount();
-				}
+				this.getActionExecution().getActionControl().increaseErrorCount();
 			}
+
 			return true;
 		} catch (Exception e) {
 			StringWriter StackTrace = new StringWriter();
 			e.printStackTrace(new PrintWriter(StackTrace));
 
-			if (this.getActionExecution().getAction().getErrorExpected().equalsIgnoreCase("n")) {
-				this.getActionExecution().getActionControl().increaseErrorCount();
-			} else {
-				this.getActionExecution().getActionControl().increaseSuccessCount();
-			}
+			this.getActionExecution().getActionControl().increaseErrorCount();
 
 			this.getActionExecution().getActionControl().logOutput("exception", e.getMessage());
 			this.getActionExecution().getActionControl().logOutput("stacktrace", StackTrace.toString());
@@ -151,7 +140,7 @@ public class WfaGetConfirmation {
 		this.getActionExecution().getActionControl().logOutput("confirmation", readInput);
 
 		// Stopping process on user request
-		if (readInput.equals("STOP")) {
+		if (readInput.equalsIgnoreCase("STOP")) {
 			this.getActionExecution().getAction().setErrorStop("Y");
 			return false;
 		} else {
@@ -186,7 +175,7 @@ public class WfaGetConfirmation {
 
 			if (!getInput) {
 				if (readInput.equalsIgnoreCase("Y") || readInput.equalsIgnoreCase("N")
-						|| readInput.toUpperCase().equals("STOP")) {
+						|| readInput.toUpperCase().equalsIgnoreCase("STOP")) {
 					getInput = true;
 				} else {
 					System.out.print(prompt);
@@ -197,11 +186,11 @@ public class WfaGetConfirmation {
 		// Log result
 		readInput = readInput.toUpperCase();
 		String userComment = "";
-		if (readInput.equals("N"))
+		if (readInput.equalsIgnoreCase("N"))
 			userComment = this.getConfirmationComment();
 		this.getActionExecution().getActionControl().logOutput("confirmation", readInput);
 
-		if (readInput.equals("N"))
+		if (readInput.equalsIgnoreCase("N"))
 			this.getActionExecution().getActionControl().logOutput("comment", userComment);
 
 		// Stopping process on user request

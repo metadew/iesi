@@ -2,9 +2,13 @@ package io.metadew.iesi.script.action;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -23,6 +27,14 @@ import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 import io.metadew.iesi.script.operation.RequestOperation;
 import io.metadew.iesi.script.operation.RequestParameterOperation;
+import io.metadew.iesi.sqlinsert.engine.ConfigFile;
+import org.apache.http.Header;
+import org.apache.http.HttpHeaders;
+import org.apache.http.entity.ContentType;
+
+import javax.activation.MimeType;
+
+import static org.apache.http.entity.ContentType.APPLICATION_JSON;
 
 public class HttpExecuteRequest {
 
@@ -44,6 +56,12 @@ public class HttpExecuteRequest {
 	private ActionParameterOperation setDataset;
 
 	private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
+
+	private final Pattern INFORMATION_STATUS_CODE = Pattern.compile("1\\d\\d*");
+	private final Pattern SUCCESS_STATUS_CODE = Pattern.compile("2\\d\\d*");
+	private final Pattern REDIRECT_STATUS_CODE = Pattern.compile("3\\d\\d*");
+	private final Pattern SERVER_ERROR_STATUS_CODE = Pattern.compile("4\\d\\d*");
+	private final Pattern CLIENT_ERROR_STATUS_CODE = Pattern.compile("5\\d\\d*");
 
 	// Constructors
 	public HttpExecuteRequest() {
@@ -147,41 +165,13 @@ public class HttpExecuteRequest {
 			this.getActionExecution().getActionControl().logOutput("response", httpResponse.getResponse().toString());
 			this.getActionExecution().getActionControl().logOutput("status", httpResponse.getStatusLine().toString());
 			this.getActionExecution().getActionControl().logOutput("entity", httpResponse.getEntityString());
-
+			this.getActionExecution().getActionControl().logOutput("headers", httpResponse.getHeaders().stream()
+					.map(header -> header.getName() + ":" + header.getValue())
+					.collect(Collectors.joining(",\n")));
 			// Parsing entity
-			if (httpResponse.getEntityString() != null && !httpResponse.getEntityString().equalsIgnoreCase("")) {
-
-				JsonParsed jsonParsed = new JsonParsed();
-				try {
-					jsonParsed = new JsonTools().parseJson("string", httpResponse.getEntityString());
-					this.setRuntimeVariable(jsonParsed);
-
-					if (!this.getSetDataset().getValue().equalsIgnoreCase("")) {
-						String[] parts = this.getSetDataset().getValue().split("\\.");
-						String datasetName = parts[0];
-						String datasetTableName = parts[1];
-						this.getExecutionControl().getExecutionRuntime().getDatasetOperation(datasetName)
-								.setDataset(datasetTableName, jsonParsed);
-					}
-
-				} catch (Exception e) {
-					this.getActionExecution().getActionControl().logError("json", e.getMessage());
-				}
-			}
-
-			// Add success codes if configured
-
+			writeResponseToOutputDataset(httpResponse);
 			// Check error code
-			if (httpResponse.getStatusLine().getStatusCode() >= 200
-					&& httpResponse.getStatusLine().getStatusCode() < 300) {
-				this.getActionExecution().getActionControl().increaseErrorCount();
-			} else {
-				throw new RuntimeException(
-						"Error status code detected: " + httpResponse.getStatusLine().getStatusCode());
-			}
-
-			this.getActionExecution().getActionControl().increaseSuccessCount();
-
+			checkStatusCode(httpResponse);
 			return true;
 		} catch (Exception e) {
 			StringWriter StackTrace = new StringWriter();
@@ -195,6 +185,68 @@ public class HttpExecuteRequest {
 			return false;
 		}
 
+	}
+
+	private void checkStatusCode(HttpResponse httpResponse) {
+		if (SUCCESS_STATUS_CODE.matcher(Integer.toString(httpResponse.getStatusLine().getStatusCode())).find()) {
+			this.getActionExecution().getActionControl().increaseSuccessCount();
+		} else if (INFORMATION_STATUS_CODE.matcher(Integer.toString(httpResponse.getStatusLine().getStatusCode())).find()) {
+			this.getActionExecution().getActionControl().increaseSuccessCount();
+		} else if (REDIRECT_STATUS_CODE.matcher(Integer.toString(httpResponse.getStatusLine().getStatusCode())).find()) {
+			this.getActionExecution().getActionControl().increaseSuccessCount();
+		} else {
+			this.getActionExecution().getActionControl().increaseErrorCount();
+		}
+	}
+
+	private void writeResponseToOutputDataset(HttpResponse httpResponse) {
+		// TODO: how to handle multiple content-types
+		List<Header> contentTypeHeaders = httpResponse.getHeaders().stream()
+				.filter(header -> header.getName().equals(HttpHeaders.CONTENT_TYPE))
+				.collect(Collectors.toList());
+		if (contentTypeHeaders.size() > 1) {
+			this.getActionExecution().getActionControl().logWarning("content-type",
+					MessageFormat.format("Http response contains multiple headers ({0}) defining the content type", contentTypeHeaders.size()));
+		} else if (contentTypeHeaders.size() == 0) {
+			this.getActionExecution().getActionControl().logWarning("content-type","Http response contains no header defining the content type.");
+			return;
+		}
+
+		if (contentTypeHeaders.stream().anyMatch(header -> header.getValue().contains(ContentType.APPLICATION_JSON.getMimeType()))) {
+			writeJSONResponseToOutputDataset(httpResponse);
+		} else if (contentTypeHeaders.stream().anyMatch(header -> header.getValue().contains(ContentType.TEXT_PLAIN.getMimeType()))) {
+			writeTextPlainResponseToOutputDataset(httpResponse);
+		} else {
+			this.getActionExecution().getActionControl().logWarning("content-type","Http response contains unsupported content-type header. Response will be written to dataset as plain text.");
+		}
+	}
+
+	private void writeTextPlainResponseToOutputDataset(HttpResponse httpResponse) {
+		if (!this.getSetDataset().getValue().equalsIgnoreCase("")) {
+			String[] parts = this.getSetDataset().getValue().split("\\.");
+			String datasetName = parts[0];
+			String datasetTableName = parts[1];
+			this.getExecutionControl().getExecutionRuntime().getDatasetOperation(datasetName).resetDataset(datasetTableName);
+			this.getExecutionControl().getExecutionRuntime().getDatasetOperation(datasetName).setDatasetEntry(datasetTableName, "response", httpResponse.getEntityString());
+		}
+	}
+
+	private void writeJSONResponseToOutputDataset(HttpResponse httpResponse) {
+		JsonParsed jsonParsed;
+		try {
+			jsonParsed = new JsonTools().parseJson("string", httpResponse.getEntityString());
+			this.setRuntimeVariable(jsonParsed);
+
+			if (!this.getSetDataset().getValue().equalsIgnoreCase("")) {
+				String[] parts = this.getSetDataset().getValue().split("\\.");
+				String datasetName = parts[0];
+				String datasetTableName = parts[1];
+				this.getExecutionControl().getExecutionRuntime().getDatasetOperation(datasetName)
+						.setDataset(datasetTableName, jsonParsed);
+			}
+		} catch (Exception e) {
+			this.getActionExecution().getActionControl().logError("json", e.getMessage());
+		}
 	}
 
 	private void setRuntimeVariable(JsonParsed jsonParsed) {

@@ -10,7 +10,7 @@ import io.metadew.iesi.script.execution.instruction.variable.runtime.RunidInstru
 public class VariableInstructionRepository
 {
 
-	public static HashMap<String, VariableInstruction> getReposistory(ExecutionControl executionControl)
+	public static HashMap<String, VariableInstruction> getRepository(ExecutionControl executionControl)
 	{
 		HashMap<String, VariableInstruction> variableInstructions = new HashMap<>();
 

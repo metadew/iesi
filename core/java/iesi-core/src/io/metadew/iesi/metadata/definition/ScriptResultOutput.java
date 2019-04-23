@@ -11,6 +11,11 @@ public class ScriptResultOutput {
 		
 	}
 
+	public ScriptResultOutput(String name, String value) {
+		this.name = name;
+		this.value = value;
+	}
+
 	//Getters and Setters
 	public String getName() {
 		return name;

@@ -5,6 +5,10 @@ public final class VariableInstructionTools {
 	public static String getSynonymKey(String input) {
 		String output = "";
 		switch (input) {
+		case "fwk.home":
+		case "iesi.home":
+			output = "fwk.home";
+			break;
 		case "fwk.version":
 		case "fwk.v":
 			output = "fwk.version";

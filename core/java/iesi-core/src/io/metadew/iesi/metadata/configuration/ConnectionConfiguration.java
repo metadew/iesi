@@ -120,6 +120,7 @@ public class ConnectionConfiguration {
 				this.getFrameworkExecution());
 		try {
 			while (crsConnection.next()) {
+				// TODO: if no parameters are found for environment_name, it does not exist?!
 				// Get parameters
 				String queryConnectionParameters = "select CONN_NM, ENV_NM, CONN_PAR_NM, CONN_PAR_VAL from "
 						+ this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration()
@@ -181,7 +182,7 @@ public class ConnectionConfiguration {
 
 		// If this was the last remaining connection with name CONN_NM, remove entirely from connections
 		String countQuery = "SELECT COUNT(DISTINCT ENV_NM ) AS total_environments FROM "
-				+ this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Connections")
+				+ this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("ConnectionParameters")
 				+ " WHERE ENV_NM != "
 				+ connection.getEnvironment() + ";";
 		CachedRowSet crs = this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().executeQuery(countQuery);

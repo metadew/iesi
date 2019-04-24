@@ -149,4 +149,28 @@
 		"description": "test script.logOutput",
 		"parameterList": ""
 	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "sql.setRuntimeVariables.1",
+		"description": "test sql.setRuntimeVariables",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "sql.setRuntimeVariables.2",
+		"description": "test sql.setRuntimeVariables with more than 1 result and expect and error",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "sql.setRuntimeVariables.3",
+		"description": "test sql.setRuntimeVariables taking input from a file",
+		"parameterList": ""
+	}
 }]

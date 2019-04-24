@@ -15,6 +15,8 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.logging.log4j.Level;
 
@@ -68,6 +70,15 @@ public class ExecutionRuntime {
 
 	private HashMap<String, DataInstruction> dataInstructions;
 	private HashMap<String, VariableInstruction> variableInstructions;
+
+	private final String INSTRUCTION_TYPE_KEY = "instructionType";
+
+	private final String INSTRUCTION_KEYWORD_KEY = "instructionKeyword";
+
+	private final String INSTRUCTION_ARGUMENTS_KEY = "instructionArguments";
+
+	private final Pattern CONCEPT_LOOKUP_PATTERN = Pattern
+			.compile("\\{\\{(?<"+INSTRUCTION_TYPE_KEY+">[\\*=\\$!])(?<"+INSTRUCTION_KEYWORD_KEY+">\\w+)\\((?<"+INSTRUCTION_ARGUMENTS_KEY+">.*)\\)\\}\\}");
 
 	public ExecutionRuntime() {
 
@@ -447,6 +458,24 @@ public class ExecutionRuntime {
 		return input;
 	}
 
+	public LookupResult resolveConceptLookup(ExecutionControl executionControl, String input) {
+		LookupResult lookupResult = new LookupResult();
+		String resolvedInput = input;
+		Matcher ConceptLookupMatcher = CONCEPT_LOOKUP_PATTERN.matcher(resolvedInput);
+		if (!ConceptLookupMatcher.find()) {
+			lookupResult.setValue(resolvedInput);
+			return lookupResult;
+		} else {
+			// TODO get list of parameters
+			String instructionArguments = ConceptLookupMatcher.group(INSTRUCTION_ARGUMENTS_KEY);
+			// resolve the list of parameters. Do this first to ensure inner parameters get resolved
+			// execute the correct instruction based on the instruction type and keyword.
+			String instructionType = ConceptLookupMatcher.group(INSTRUCTION_TYPE_KEY);
+			String instructionKeyword = ConceptLookupMatcher.group(INSTRUCTION_KEYWORD_KEY);
+			lookupResult.setValue(resolvedInput);
+			return lookupResult;
+		}
+	}
 	// Get cross concept lookup
 	public LookupResult resolveConceptLookup(ExecutionControl executionControl, String input, boolean dup) {
 		LookupResult lookupResult = new LookupResult();

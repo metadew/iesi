@@ -535,6 +535,7 @@ public class ExecutionRuntime {
 				instructionArguments.add(splittedInstructionArguments[0].trim());
 				instructionArgumentsString = splittedInstructionArguments[1].trim();
 			}
+
 			// function argument before one or more other arguments
 			else {
 				int nextInstructionStartIndex = instructionArgumentsString.indexOf(instructionStart, instructionStartIndex+1);

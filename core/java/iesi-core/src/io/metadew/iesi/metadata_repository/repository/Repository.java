@@ -85,6 +85,10 @@ public class Repository {
         this.databases.get("writer").cleanAllTables(pattern, frameworkLog);
     }
 
+    public String generateDDL(MetadataTable metadataTable, String tableNamePrefix) {
+        return this.databases.get("reader").getCreateStatement(metadataTable, tableNamePrefix);
+    }
+
     public Map<String, Database> getDatabases() {
         return databases;
     }

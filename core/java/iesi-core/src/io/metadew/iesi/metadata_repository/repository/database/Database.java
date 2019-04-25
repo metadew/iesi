@@ -81,6 +81,7 @@ public abstract class Database {
         return this.databaseConnection.executeScript(inputStream);
     }
 
+
     public void createTable(MetadataTable metadataTable, String tableNamePrefix) {
         executeUpdate(getCreateStatement(metadataTable, tableNamePrefix));
     }

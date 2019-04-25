@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public abstract class MetadataRepository {
 
@@ -69,6 +70,8 @@ public abstract class MetadataRepository {
 
     public abstract String getCategory();
 
+    public abstract String getCategoryPrefix();
+
     public String getTableNamePrefix() {
         String frameworkCodeString = getFrameworkCode().map(frameworkCode -> frameworkCode + "_").orElse("");
         String instanceNameString = getInstanceName().map(instanceName -> instanceName + "_").orElse("");
@@ -87,8 +90,6 @@ public abstract class MetadataRepository {
 
     }
 
-    public abstract String getCategoryPrefix();
-
     public List<String> getAllTables(FrameworkLog frameworkLog) {
         return repository.getAllTables(getTableNamePrefix());
     }
@@ -101,7 +102,7 @@ public abstract class MetadataRepository {
         metadataTables.forEach(this::dropTable);
     }
 
-    public void cleanTable(MetadataTable metadataTable) {
+    private void cleanTable(MetadataTable metadataTable) {
         repository.cleanTable(metadataTable, getTableNamePrefix());
     }
 
@@ -113,27 +114,32 @@ public abstract class MetadataRepository {
         repository.dropAllTables(getTableNamePrefix(), frameworkLog);
     }
 
+    // TODO: remove because security danger: query can target objects outside of repository responsibilities
     public CachedRowSet executeQuery(String query, String logonType) {
         return repository.executeQuery(query, logonType);
     }
 
+    // TODO: remove because security danger: query can target objects outside of repository responsibilities
     public void executeUpdate(String query) {
         repository.executeUpdate(query);
     }
 
+    // TODO: remove because security danger: query can target objects outside of repository responsibilities
     public void executeScript(String fileName, String logonType) {
         repository.executeScript(fileName, logonType);
     }
 
+    // TODO: remove because security danger: query can target objects outside of repository responsibilities
     public void executeScript(InputStream inputStream, String logonType) {
         repository.executeScript(inputStream, logonType);
     }
 
+    // TODO: remove because security danger: query can target objects outside of repository responsibilities
     public void executeScript(InputStream inputStream) {
         repository.executeScript(inputStream, "writer");
     }
 
-    public void createTable(MetadataTable metadataTable) {
+    private void createTable(MetadataTable metadataTable) {
         System.out.println(MessageFormat.format("Creating table {0}", metadataTable.getName()));
         this.repository.createTable(metadataTable, getTableNamePrefix());
     }
@@ -142,8 +148,18 @@ public abstract class MetadataRepository {
         metadataTables.forEach(this::createTable);
     }
 
+    public String generateDDL() {
+        return metadataTables.stream()
+                .map(metadataTable -> repository.generateDDL(metadataTable, getTableNamePrefix()))
+                .collect(Collectors.joining("\n\n"));
+    }
+
     public String getTableNameByLabel(String label) {
-        return getTableNamePrefix() + getMetadataTables().stream().filter(metadataTable -> metadataTable.getLabel().equalsIgnoreCase(label)).findFirst().get().getName();
+        if (getMetadataTables().stream().anyMatch(metadataTable -> metadataTable.getLabel().equalsIgnoreCase(label))) {
+            return getTableNamePrefix() + getMetadataTables().stream().filter(metadataTable -> metadataTable.getLabel().equalsIgnoreCase(label)).findFirst().get().getName();
+        } else {
+            return "";
+        }
     }
 
     public String getName() {

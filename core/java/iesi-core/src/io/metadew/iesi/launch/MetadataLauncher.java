@@ -226,6 +226,13 @@ public class MetadataLauncher {
                 }
             }
 
+            // DDL
+            if (line.hasOption("ddl")) {
+                for (MetadataRepository metadataRepository : metadataRepositories) {
+                    System.out.println(metadataRepository.generateDDL());
+                }
+            }
+
             // Create
             for (MetadataRepository metadataRepository : metadataRepositories) {
                 metadataRepositoryOperation = new MetadataRepositoryOperation(frameworkExecution, metadataRepository);
@@ -236,13 +243,6 @@ public class MetadataLauncher {
                     writeHeaderMessage();
                     System.out.println("Option -create (create) selected");
                     actionMatch = true;
-                    boolean ddl;
-                    if (line.hasOption("ddl")) {
-                        System.out.println("Option -ddl (ddl) selected");
-                        ddl = true;
-                    } else {
-                        ddl = false;
-                    }
                     System.out.println();
                     System.out.println(MessageFormat.format("Creating metadata repository {0}", metadataRepository.getCategory()));
                     metadataRepository.createAllTables();

@@ -15,6 +15,7 @@ import io.metadew.iesi.metadata.definition.ListObject;
 import io.metadew.iesi.metadata.definition.Script;
 import io.metadew.iesi.metadata.definition.ScriptParameter;
 import io.metadew.iesi.metadata.definition.ScriptVersion;
+import io.metadew.iesi.script.operation.ScriptOperation;
 
 public class ScriptConfiguration {
 
@@ -27,9 +28,13 @@ public class ScriptConfiguration {
 	}
 
 	public ScriptConfiguration(Script script, FrameworkExecution frameworkExecution) {
-		this.setScript(script);
-		this.verifyVersionExists();
 		this.setFrameworkExecution(frameworkExecution);
+		this.setScript(script);
+		if (ScriptOperation.validateScriptQuality(this.getScript())) {
+			this.verifyVersionExists();
+		} else {
+			throw new RuntimeException("script.quality.error=duplicate action names");
+		}
 	}
 
 	// Checks
@@ -43,9 +48,11 @@ public class ScriptConfiguration {
 		Script script = new Script();
 		CachedRowSet crsScript = null;
 		String queryScript = "select SCRIPT_ID, SCRIPT_TYP_NM, SCRIPT_NM, SCRIPT_DSC from "
-				+ this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Scripts") + " where SCRIPT_NM = '"
-				+ scriptName + "'";
-		crsScript = this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().executeQuery(queryScript);
+				+ this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration()
+						.getMetadataTableConfiguration().getTableName("Scripts")
+				+ " where SCRIPT_NM = '" + scriptName + "'";
+		crsScript = this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration()
+				.executeQuery(queryScript);
 		try {
 			while (crsScript.next()) {
 				script.setId(crsScript.getLong("SCRIPT_ID"));
@@ -71,41 +78,45 @@ public class ScriptConfiguration {
 		String sql = "";
 
 		if (this.exists()) {
-			sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("ActionParameters");
+			sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration()
+					.getMetadataTableConfiguration().getTableName("ActionParameters");
 			sql += " WHERE ACTION_ID in (";
-			sql += "select ACTION_ID FROM " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Actions");
+			sql += "select ACTION_ID FROM " + this.getFrameworkExecution().getMetadataControl()
+					.getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Actions");
 			sql += " WHERE SCRIPT_ID = (";
-			sql += "select SCRIPT_ID FROM " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Scripts");
-			sql += " WHERE SCRIPT_NM = "
-					+ SQLTools.GetStringForSQL(this.getScript().getName());
+			sql += "select SCRIPT_ID FROM " + this.getFrameworkExecution().getMetadataControl()
+					.getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Scripts");
+			sql += " WHERE SCRIPT_NM = " + SQLTools.GetStringForSQL(this.getScript().getName());
 			sql += ")";
 			sql += " AND SCRIPT_VRS_NB = " + this.getScript().getVersion().getNumber();
 			sql += ")";
 			sql += ";";
 			sql += "\n";
-			sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Actions");
+			sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration()
+					.getMetadataTableConfiguration().getTableName("Actions");
 			sql += " WHERE SCRIPT_ID = (";
-			sql += "select SCRIPT_ID FROM " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Scripts");
-			sql += " WHERE SCRIPT_NM = "
-					+ SQLTools.GetStringForSQL(this.getScript().getName());
+			sql += "select SCRIPT_ID FROM " + this.getFrameworkExecution().getMetadataControl()
+					.getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Scripts");
+			sql += " WHERE SCRIPT_NM = " + SQLTools.GetStringForSQL(this.getScript().getName());
 			sql += ")";
 			sql += " AND SCRIPT_VRS_NB = " + this.getScript().getVersion().getNumber();
 			sql += ";";
 			sql += "\n";
-			sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("ScriptVersions");
+			sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration()
+					.getMetadataTableConfiguration().getTableName("ScriptVersions");
 			sql += " WHERE SCRIPT_ID = (";
-			sql += "select SCRIPT_ID FROM " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Scripts");
-			sql += " WHERE SCRIPT_NM = "
-					+ SQLTools.GetStringForSQL(this.getScript().getName());
+			sql += "select SCRIPT_ID FROM " + this.getFrameworkExecution().getMetadataControl()
+					.getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Scripts");
+			sql += " WHERE SCRIPT_NM = " + SQLTools.GetStringForSQL(this.getScript().getName());
 			sql += ")";
 			sql += " AND SCRIPT_VRS_NB = " + this.getScript().getVersion().getNumber();
 			sql += ";";
 
 			/*
 			 * Remove delete option for any version of a script sql += "\n"; sql +=
-			 * "DELETE FROM " +
-			 * this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getCFG_SCRIPT();
-			 * sql += " WHERE SCRIPT_NM = " +
+			 * "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().
+			 * getDesignRepositoryConfiguration().getMetadataTableConfiguration().
+			 * getCFG_SCRIPT(); sql += " WHERE SCRIPT_NM = " +
 			 * this.getFrameworkExecution().getSqlTools().GetStringForSQL(this.getScript().
 			 * getName()); sql += ";";
 			 */
@@ -114,14 +125,14 @@ public class ScriptConfiguration {
 		}
 
 		if (!this.verifyScriptConfigurationExists(this.getScript().getName())) {
-			sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Scripts");
+			sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration()
+					.getMetadataTableConfiguration().getTableName("Scripts");
 			sql += " (SCRIPT_ID, SCRIPT_TYP_NM, SCRIPT_NM, SCRIPT_DSC) ";
 			sql += "VALUES ";
 			sql += "(";
-			sql += "("
-					+ SQLTools.GetNextIdStatement(
-							this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Scripts"), "SCRIPT_ID")
-					+ ")";
+			sql += "(" + SQLTools.GetNextIdStatement(this.getFrameworkExecution().getMetadataControl()
+					.getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Scripts"),
+					"SCRIPT_ID") + ")";
 			sql += ",";
 			sql += SQLTools.GetStringForSQL(this.getScript().getType());
 			sql += ",";
@@ -209,10 +220,14 @@ public class ScriptConfiguration {
 		long scriptVersionNumber = -1;
 		CachedRowSet crsScriptVersion = null;
 		String queryScriptVersion = "select max(SCRIPT_VRS_NB) as \"MAX_VRS_NB\" from "
-				+ this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("ScriptVersions") + " a inner join "
-				+ this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Scripts")
+				+ this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration()
+						.getMetadataTableConfiguration().getTableName("ScriptVersions")
+				+ " a inner join "
+				+ this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration()
+						.getMetadataTableConfiguration().getTableName("Scripts")
 				+ " b on a.script_id = b.script_id where b.script_nm = '" + scriptName + "'";
-		crsScriptVersion = this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().executeQuery(queryScriptVersion);
+		crsScriptVersion = this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration()
+				.executeQuery(queryScriptVersion);
 		try {
 			while (crsScriptVersion.next()) {
 				scriptVersionNumber = crsScriptVersion.getLong("MAX_VRS_NB");
@@ -226,7 +241,7 @@ public class ScriptConfiguration {
 		if (scriptVersionNumber == -1) {
 			throw new RuntimeException("No script version found for Script (NAME) " + scriptName);
 		}
-		
+
 		return scriptVersionNumber;
 	}
 
@@ -239,9 +254,11 @@ public class ScriptConfiguration {
 		Script script = new Script();
 		CachedRowSet crsScript = null;
 		String queryScript = "select SCRIPT_ID, SCRIPT_TYP_NM, SCRIPT_NM, SCRIPT_DSC from "
-				+ this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Scripts") + " where SCRIPT_NM = '"
-				+ scriptName + "'";
-		crsScript = this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().executeQuery(queryScript);
+				+ this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration()
+						.getMetadataTableConfiguration().getTableName("Scripts")
+				+ " where SCRIPT_NM = '" + scriptName + "'";
+		crsScript = this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration()
+				.executeQuery(queryScript);
 		ActionConfiguration actionConfiguration = new ActionConfiguration(this.getFrameworkExecution());
 		ScriptParameterConfiguration scriptParameterConfiguration = new ScriptParameterConfiguration(
 				this.getFrameworkExecution());
@@ -255,17 +272,20 @@ public class ScriptConfiguration {
 				script.setDescription(crsScript.getString("SCRIPT_DSC"));
 
 				// Get the version
-				ScriptVersion scriptVersion = scriptVersionConfiguration.getScriptVersion(script.getId(), scriptVersionNumber);
+				ScriptVersion scriptVersion = scriptVersionConfiguration.getScriptVersion(script.getId(),
+						scriptVersionNumber);
 				script.setVersion(scriptVersion);
-				
+
 				// Get the actions
 				List<Action> actionList = new ArrayList();
 				String queryActions = "select SCRIPT_ID, SCRIPT_VRS_NB, ACTION_ID, ACTION_NB from "
-						+ this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Actions")
+						+ this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration()
+								.getMetadataTableConfiguration().getTableName("Actions")
 						+ " where SCRIPT_ID = " + script.getId() + " and SCRIPT_VRS_NB = " + scriptVersionNumber
 						+ " order by ACTION_NB asc ";
 				CachedRowSet crsActions = null;
-				crsActions = this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().executeQuery(queryActions);
+				crsActions = this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration()
+						.executeQuery(queryActions);
 				while (crsActions.next()) {
 					actionList.add(actionConfiguration.getAction(crsActions.getLong("ACTION_ID")));
 				}
@@ -275,10 +295,11 @@ public class ScriptConfiguration {
 				// Get parameters
 				CachedRowSet crsScriptParameters = null;
 				String queryScriptParameters = "select SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_PAR_NM from "
-						+ this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("ScriptParameters")
+						+ this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration()
+								.getMetadataTableConfiguration().getTableName("ScriptParameters")
 						+ " where SCRIPT_ID = " + script.getId() + " and SCRIPT_VRS_NB = " + scriptVersionNumber;
-				crsScriptParameters = this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration()
-						.executeQuery(queryScriptParameters);
+				crsScriptParameters = this.getFrameworkExecution().getMetadataControl()
+						.getDesignRepositoryConfiguration().executeQuery(queryScriptParameters);
 				List<ScriptParameter> scriptParameterList = new ArrayList();
 				while (crsScriptParameters.next()) {
 					scriptParameterList.add(scriptParameterConfiguration.getScriptParameter(script.getId(),
@@ -298,15 +319,20 @@ public class ScriptConfiguration {
 			throw new RuntimeException("script.error.notfound");
 		}
 
-		return script;
+		if (ScriptOperation.validateScriptQuality(script)) {
+			return script;
+		} else {
+			throw new RuntimeException("script.quality.error=duplicate action names");
+		}
 	}
 
 	// Get
 	public ListObject getScripts() {
 		List<Script> scriptList = new ArrayList<>();
 		CachedRowSet crs = null;
-		String query = "select SCRIPT_NM, SCRIPT_DSC from "
-				+ this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Scripts") + " order by SCRIPT_NM ASC";
+		String query = "select SCRIPT_NM, SCRIPT_DSC from " + this.getFrameworkExecution().getMetadataControl()
+				.getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Scripts")
+				+ " order by SCRIPT_NM ASC";
 		crs = this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().executeQuery(query);
 		ScriptConfiguration scriptConfiguration = new ScriptConfiguration(this.getFrameworkExecution());
 		try {
@@ -321,9 +347,7 @@ public class ScriptConfiguration {
 			e.printStackTrace(new PrintWriter(StackTrace));
 		}
 
-		return new ListObject(
-				FrameworkObjectConfiguration.getFrameworkObjectType(new Script()),
-				scriptList);
+		return new ListObject(FrameworkObjectConfiguration.getFrameworkObjectType(new Script()), scriptList);
 	}
 
 	// Exists

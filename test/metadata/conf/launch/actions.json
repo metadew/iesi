@@ -173,4 +173,20 @@
 		"description": "test sql.setRuntimeVariables taking input from a file",
 		"parameterList": ""
 	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "sql.setIterationVariables.1",
+		"description": "test sql.setIterationVariables for filling an iteration list",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "sql.setIterationVariables.2",
+		"description": "test sql.setIterationVariables taking input from a file",
+		"parameterList": ""
+	}
 }]

@@ -12,6 +12,7 @@ import javax.sql.rowset.CachedRowSet;
 import io.metadew.iesi.connection.database.SqliteDatabaseConnection;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.metadata.configuration.IterationVariableConfiguration;
 import io.metadew.iesi.metadata.definition.RuntimeVariable;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.operation.ConditionOperation;
@@ -151,6 +152,33 @@ public class IterationConfiguration {
 		}
 	}
 
+	// Type: list
+	public void setIterationList(String runId, String iterationList, String inputList) {
+		this.cleanIterationVariables(runId, iterationList);
+
+		// Get iteration variable configuration
+		IterationVariableConfiguration iterationVariableConfiguration = new IterationVariableConfiguration(
+				this.getFrameworkExecution(), this.getRunCacheFolderName(), false);
+		CachedRowSet crs = iterationVariableConfiguration.getIterationList(runId, inputList);
+
+		// Iterate over the iteration sets
+		String setName = "";
+		int setNumber = 0;
+
+		try {
+			while (crs.next()) {
+				setNumber++;
+				setName = "auto generated iteration set " + setNumber;
+				this.setIterationVariable(runId, -1, iterationList, -1, setName, crs.getInt("ORDER_NB"),
+						crs.getString("VAR_NM"), crs.getString("VAR_VAL"));
+			}
+			crs.close();
+		} catch (SQLException e) {
+			StringWriter StackTrace = new StringWriter();
+			e.printStackTrace(new PrintWriter(StackTrace));
+		}
+	}
+
 	public void setIterationVariable(String runId, int listId, String listName, int setId, String setName, int order,
 			String name, String value) {
 		String query = "";
@@ -232,6 +260,31 @@ public class IterationConfiguration {
 			iterationInstance.getVariableMap().put("iterate", "y");
 		}
 
+		return iterationInstance;
+	}
+
+	public IterationInstance hasNextListItem(String runId, String listName, long orderNumber) {
+		CachedRowSet crs = null;
+		String query = "select run_id, prc_id, list_id, list_nm, set_id, set_nm, order_nb, var_nm, var_val from "
+				+ this.getPRC_ITERATION_EXEC() + " where run_id = '" + runId + "' and list_nm = '" + listName
+				+ "' and order_nb = " + orderNumber;
+		crs = this.getSqliteDatabaseConnection().executeQuery(query);
+		IterationInstance iterationInstance = new IterationInstance();
+		int items = 0;
+		try {
+			while (crs.next()) {
+				items++;
+
+				if (items == 1)
+					iterationInstance.setEmpty(false);
+
+				iterationInstance.getVariableMap().put(crs.getString("VAR_NM"), crs.getString("VAR_VAL"));
+			}
+			crs.close();
+		} catch (SQLException e) {
+			StringWriter StackTrace = new StringWriter();
+			e.printStackTrace(new PrintWriter(StackTrace));
+		}
 		return iterationInstance;
 	}
 

@@ -216,8 +216,7 @@ public class ScriptExecution {
 				// Iteration
 				IterationExecution iterationExecution = new IterationExecution();
 				if (action.getIteration() != null && !action.getIteration().trim().isEmpty()) {
-					iterationExecution.initialize(this.getFrameworkExecution(), this.getExecutionControl(), this
-							.getExecutionControl().getExecutionRuntime().getIterationOperation(action.getIteration()));
+					iterationExecution.initialize(this.getFrameworkExecution(), this.getExecutionControl(), action.getIteration());
 				}
 
 				while (iterationExecution.hasNext()) {

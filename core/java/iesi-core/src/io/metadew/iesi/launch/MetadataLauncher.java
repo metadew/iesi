@@ -48,6 +48,9 @@ public class MetadataLauncher {
 		Option oLoad = new Option("load", "load metadata file from the input folder into the metadata repository");
 		Option oDdl = new Option("ddl",
 				"generate ddl output instead of execution in the metadata repository, to be combined with options: create, drop");
+		Option oExport = new Option("export", "export an object from the metadata repository");
+		Option oScript = new Option("script", true, "define the script name");
+		Option oVersion = new Option("version", true, "define the version");
 
 		String filesHelp = "";
 		filesHelp += "Following options are possible:";
@@ -83,6 +86,9 @@ public class MetadataLauncher {
 		options.addOption(oClean);
 		options.addOption(oLoad);
 		options.addOption(oDdl);
+		options.addOption(oExport);
+		options.addOption(oScript);
+		options.addOption(oVersion);
 		options.addOption(oFiles);
 		options.addOption(oExit);
 
@@ -192,6 +198,22 @@ public class MetadataLauncher {
 					System.exit(1);
 				}
 			}
+
+			// Export
+			if (line.hasOption("export")) {
+				if (actionMatch) {
+					System.out.println();
+				}
+				writeHeaderMessage();
+				System.out.println("Option -export (export) selected");
+				actionMatch = true;
+
+				// Execute
+
+				writeFooterMessage();
+				System.exit(0);
+			}
+
 			// Backup
 			if (line.hasOption("backup")) {
 				for (MetadataRepositoryConfiguration metadataRepositoryConfiguration : metadataRepositoryConfigurationList) {

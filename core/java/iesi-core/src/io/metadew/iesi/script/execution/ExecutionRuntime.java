@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.Level;
 
@@ -467,15 +468,90 @@ public class ExecutionRuntime {
 			return lookupResult;
 		} else {
 			// TODO get list of parameters
-			String instructionArguments = ConceptLookupMatcher.group(INSTRUCTION_ARGUMENTS_KEY);
+			String instructionArgumentsString = ConceptLookupMatcher.group(INSTRUCTION_ARGUMENTS_KEY);
 			// resolve the list of parameters. Do this first to ensure inner parameters get resolved
+			List<String> instructionArguments = splitInstructionArguments(instructionArgumentsString);
+			String instructionArgumentsResolved = instructionArguments.stream()
+					.map(instructionArgument -> resolveConceptLookup(executionControl, instructionArgument).getValue())
+					.collect(Collectors.joining(", "));
 			// execute the correct instruction based on the instruction type and keyword.
 			String instructionType = ConceptLookupMatcher.group(INSTRUCTION_TYPE_KEY);
 			String instructionKeyword = ConceptLookupMatcher.group(INSTRUCTION_KEYWORD_KEY);
+
+			// Lookup
+			switch (instructionType) {
+				case "=":
+					if (instructionKeyword.equalsIgnoreCase("connection") || instructionKeyword.equalsIgnoreCase("conn")) {
+						resolvedInput = this.lookupConnectionInstruction(executionControl, instructionArgumentsResolved);
+					} else if (instructionKeyword.equalsIgnoreCase("environment") || instructionKeyword.equalsIgnoreCase("env")) {
+						resolvedInput = this.lookupEnvironmentInstruction(executionControl, instructionArgumentsResolved);
+					} else if (instructionKeyword.equalsIgnoreCase("dataset") || instructionKeyword.equalsIgnoreCase("ds")) {
+						resolvedInput = this.lookupDatasetInstruction(executionControl, instructionArgumentsResolved);
+					} else if (instructionKeyword.equalsIgnoreCase("file") || instructionKeyword.equalsIgnoreCase("f")) {
+						resolvedInput = this.lookupFileInstruction(executionControl, instructionArgumentsResolved);
+					}  else if (instructionKeyword.equalsIgnoreCase("coalesce") || instructionKeyword.equalsIgnoreCase("ifnull") || instructionKeyword.equalsIgnoreCase("nvl")) {
+						resolvedInput = this.lookupCoalesceResult(executionControl, instructionArgumentsResolved);
+					}  else if (instructionKeyword.equalsIgnoreCase("script.output") || instructionKeyword.equalsIgnoreCase("s.out")) {
+						resolvedInput = this.lookupScriptResultInstruction(executionControl, instructionArgumentsResolved);
+					}
+					break;
+				case "$":
+					resolvedInput = this.getVariableInstruction(executionControl, VariableInstructionTools.getSynonymKey(instructionKeyword), instructionArgumentsResolved);
+					break;
+				case "*":
+					resolvedInput = this.generateDataInstruction(executionControl, instructionKeyword, instructionArgumentsResolved);
+					break;
+				case "!":
+					if (instructionArgumentsResolved.startsWith("\"")) instructionArgumentsResolved = instructionArgumentsString.substring(1);
+					if (instructionArgumentsResolved.endsWith("\"")) instructionArgumentsResolved = instructionArgumentsString.substring(0, instructionArgumentsResolved.length()-1);
+					resolvedInput = instructionArgumentsResolved;
+					break;
+			}
+			lookupResult.setInputValue(input);
+			lookupResult.setType(instructionType);
+			lookupResult.setContext(instructionKeyword);
 			lookupResult.setValue(resolvedInput);
 			return lookupResult;
 		}
 	}
+
+	private List<String> splitInstructionArguments(String instructionArgumentsString) {
+		// TODO: move to Antler
+		List<String> instructionArguments = new ArrayList<>();
+		String instructionStart = "{{";
+		String instructionStop = "}}";
+		String argumentSeparator = ",";
+
+		while (!instructionArgumentsString.isEmpty()) {
+			int instructionStartIndex = instructionArgumentsString.indexOf(instructionStart);
+			int argumentSeparatorIndex = instructionArgumentsString.indexOf(argumentSeparator);
+			// only or last argument
+			if (argumentSeparatorIndex == -1 ) {
+				instructionArguments.add(instructionArgumentsString.trim());
+				break;
+			}
+			// only simple arguments left or a simple argument before a function argument
+			else if (instructionStartIndex == -1 || instructionStartIndex > argumentSeparatorIndex) {
+				String[] splittedInstructionArguments = instructionArgumentsString.split(argumentSeparator, 1);
+				instructionArguments.add(splittedInstructionArguments[0].trim());
+				instructionArgumentsString = splittedInstructionArguments[1].trim();
+			}
+			// function argument before one or more other arguments
+			else {
+				int nextInstructionStartIndex = instructionArgumentsString.indexOf(instructionStart, instructionStartIndex+1);
+				int instructionStopIndex = instructionArgumentsString.indexOf(instructionStop);
+				while (nextInstructionStartIndex != -1 && nextInstructionStartIndex < instructionStopIndex) {
+					instructionStopIndex = instructionArgumentsString.indexOf(instructionStop, instructionStopIndex+1);
+					nextInstructionStartIndex = instructionArgumentsString.indexOf(instructionStart, nextInstructionStartIndex+1);
+				}
+				instructionArguments.add(instructionArgumentsString.substring(0, instructionStopIndex+1));
+				argumentSeparatorIndex = instructionArgumentsString.indexOf(argumentSeparator, instructionStopIndex+1);
+				instructionArgumentsString = instructionArgumentsString.substring(argumentSeparatorIndex+1).trim();
+			}
+		}
+		return instructionArguments;
+	}
+
 	// Get cross concept lookup
 	public LookupResult resolveConceptLookup(ExecutionControl executionControl, String input, boolean dup) {
 		LookupResult lookupResult = new LookupResult();

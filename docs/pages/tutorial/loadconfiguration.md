@@ -16,7 +16,7 @@ We will load the configuration file into the configuration repository as follows
 * Load the configuration file via the `bin/iesi-metadata.sh` (or `iesi-metadata.cmd` on Windows) command [![info](/{{site.repository}}/images/icons/question-dot.png)](/{{site.repository}}/pages/operate/operate.html)
 
 ```bash
-bin/iesi-metadata.sh -load
+bin/iesi-metadata.sh -load -type general
 ```
 
 This process is universal for all configuration types: environments, connections, scripts, etc.

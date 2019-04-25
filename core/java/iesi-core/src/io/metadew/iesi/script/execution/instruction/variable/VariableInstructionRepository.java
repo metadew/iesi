@@ -3,6 +3,7 @@ package io.metadew.iesi.script.execution.instruction.variable;
 import java.util.HashMap;
 
 import io.metadew.iesi.script.execution.ExecutionControl;
+import io.metadew.iesi.script.execution.instruction.variable.framework.FrameworkHomeInstruction;
 import io.metadew.iesi.script.execution.instruction.variable.framework.VersionInstruction;
 import io.metadew.iesi.script.execution.instruction.variable.runtime.EnvironmentInstruction;
 import io.metadew.iesi.script.execution.instruction.variable.runtime.RunidInstruction;
@@ -14,6 +15,9 @@ public class VariableInstructionRepository
 	{
 		HashMap<String, VariableInstruction> variableInstructions = new HashMap<>();
 
+		// Framework
+		FrameworkHomeInstruction frameworkHomeInstruction = new FrameworkHomeInstruction(executionControl);
+		variableInstructions.put(frameworkHomeInstruction.getKeyword(), frameworkHomeInstruction);
 		VersionInstruction versionInstruction = new VersionInstruction();
 		variableInstructions.put(versionInstruction.getKeyword(), versionInstruction);
 		

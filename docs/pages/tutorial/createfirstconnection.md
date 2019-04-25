@@ -11,6 +11,7 @@ In this tutorial we will create a script `helloconnection` that will execute a s
 ## Pre-requisites
 
 * The tutorial environment has been created. See the tutorial [create tutorial environment](/{{site.repository}}/pages/tutorial/tutorialenvironment.html) for more information.
+* Download the simplesyntheticdataset.db3 from [https://github.com/metadew/iesi/tree/master/examples/tutorials/data](https://github.com/metadew/iesi/tree/master/examples/tutorials/data)
 
 ## Create connection
 

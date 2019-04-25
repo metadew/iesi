@@ -2,6 +2,10 @@
 
 # Important highlights
 
+## Installation
+
+* We have noticed mixed experiences when installing our framework on a Microsoft One Drive synced folder. We recommend an installation on a local drive.
+
 ## Naming conventions
 
 * There is no naming standard imposed by the framework

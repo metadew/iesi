@@ -13,6 +13,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -79,7 +80,7 @@ public class ExecutionRuntime {
 	private final String INSTRUCTION_ARGUMENTS_KEY = "instructionArguments";
 
 	private final Pattern CONCEPT_LOOKUP_PATTERN = Pattern
-			.compile("\\{\\{(?<"+INSTRUCTION_TYPE_KEY+">[\\*=\\$!])(?<"+INSTRUCTION_KEYWORD_KEY+">\\w+)\\((?<"+INSTRUCTION_ARGUMENTS_KEY+">.*)\\)\\}\\}");
+			.compile("\\s*\\{\\{(?<"+INSTRUCTION_TYPE_KEY+">[\\*=\\$!])(?<"+INSTRUCTION_KEYWORD_KEY+">[\\w\\.]+)\\((?<"+INSTRUCTION_ARGUMENTS_KEY+">.*)\\)\\}\\}\\s*");
 
 	public ExecutionRuntime() {
 
@@ -430,6 +431,10 @@ public class ExecutionRuntime {
 	}
 
 	public String resolveConfiguration(ActionExecution actionExecution, String input) {
+		getFrameworkExecution().getFrameworkLog().log(
+				MessageFormat.format("Resolving {0} for configuration", input),
+				Level.DEBUG);
+
 		int openPos;
 		int closePos;
 		String variable_char = "#";
@@ -456,29 +461,42 @@ public class ExecutionRuntime {
 			temp = temp.substring(closePos + 1, temp.length());
 
 		}
+
+		getFrameworkExecution().getFrameworkLog().log(
+				MessageFormat.format("Resolved to {0}", input),
+				Level.DEBUG);
+
 		return input;
 	}
 
 	public LookupResult resolveConceptLookup(ExecutionControl executionControl, String input) {
+		getFrameworkExecution().getFrameworkLog().log(
+				MessageFormat.format("Resolving {0} for instructions", input),
+				Level.DEBUG);
 		LookupResult lookupResult = new LookupResult();
 		String resolvedInput = input;
 		Matcher ConceptLookupMatcher = CONCEPT_LOOKUP_PATTERN.matcher(resolvedInput);
 		if (!ConceptLookupMatcher.find()) {
 			lookupResult.setValue(resolvedInput);
+			getFrameworkExecution().getFrameworkLog().log(
+					MessageFormat.format("No Lookup instruction found for {0}", input),
+					Level.DEBUG);
 			return lookupResult;
 		} else {
-			// TODO get list of parameters
 			String instructionArgumentsString = ConceptLookupMatcher.group(INSTRUCTION_ARGUMENTS_KEY);
-			// resolve the list of parameters. Do this first to ensure inner parameters get resolved
+			String instructionType = ConceptLookupMatcher.group(INSTRUCTION_TYPE_KEY);
+			String instructionKeyword = ConceptLookupMatcher.group(INSTRUCTION_KEYWORD_KEY).toLowerCase();
+			getFrameworkExecution().getFrameworkLog().log(
+					MessageFormat.format("Executing instruction of type {0} with keyword {1} and unresolved parameters {2}", instructionType, instructionKeyword, instructionArgumentsString),
+					Level.TRACE);
 			List<String> instructionArguments = splitInstructionArguments(instructionArgumentsString);
 			String instructionArgumentsResolved = instructionArguments.stream()
 					.map(instructionArgument -> resolveConceptLookup(executionControl, instructionArgument).getValue())
 					.collect(Collectors.joining(", "));
-			// execute the correct instruction based on the instruction type and keyword.
-			String instructionType = ConceptLookupMatcher.group(INSTRUCTION_TYPE_KEY);
-			String instructionKeyword = ConceptLookupMatcher.group(INSTRUCTION_KEYWORD_KEY);
+			getFrameworkExecution().getFrameworkLog().log(
+					MessageFormat.format("Resolved instructions parameters to {0}", instructionArgumentsString),
+					Level.TRACE);
 
-			// Lookup
 			switch (instructionType) {
 				case "=":
 					if (instructionKeyword.equalsIgnoreCase("connection") || instructionKeyword.equalsIgnoreCase("conn")) {
@@ -507,6 +525,10 @@ public class ExecutionRuntime {
 					resolvedInput = instructionArgumentsResolved;
 					break;
 			}
+			getFrameworkExecution().getFrameworkLog().log(
+					MessageFormat.format("Resolved {0} to {1}", input, resolvedInput),
+					Level.DEBUG);
+
 			lookupResult.setInputValue(input);
 			lookupResult.setType(instructionType);
 			lookupResult.setContext(instructionKeyword);
@@ -518,8 +540,8 @@ public class ExecutionRuntime {
 	private List<String> splitInstructionArguments(String instructionArgumentsString) {
 		// TODO: move to Antler
 		List<String> instructionArguments = new ArrayList<>();
-		String instructionStart = "{{";
-		String instructionStop = "}}";
+		String instructionStart = "(";
+		String instructionStop = ")";
 		String argumentSeparator = ",";
 
 		while (!instructionArgumentsString.isEmpty()) {
@@ -532,7 +554,7 @@ public class ExecutionRuntime {
 			}
 			// only simple arguments left or a simple argument before a function argument
 			else if (instructionStartIndex == -1 || instructionStartIndex > argumentSeparatorIndex) {
-				String[] splittedInstructionArguments = instructionArgumentsString.split(argumentSeparator, 1);
+				String[] splittedInstructionArguments = instructionArgumentsString.split(argumentSeparator, 2);
 				instructionArguments.add(splittedInstructionArguments[0].trim());
 				instructionArgumentsString = splittedInstructionArguments[1].trim();
 			}
@@ -544,8 +566,8 @@ public class ExecutionRuntime {
 					instructionStopIndex = instructionArgumentsString.indexOf(instructionStop, instructionStopIndex+1);
 					nextInstructionStartIndex = instructionArgumentsString.indexOf(instructionStart, nextInstructionStartIndex+1);
 				}
-				instructionArguments.add(instructionArgumentsString.substring(0, instructionStopIndex+1));
 				argumentSeparatorIndex = instructionArgumentsString.indexOf(argumentSeparator, instructionStopIndex+1);
+				instructionArguments.add(instructionArgumentsString.substring(0, argumentSeparatorIndex));
 				instructionArgumentsString = instructionArgumentsString.substring(argumentSeparatorIndex+1).trim();
 			}
 		}

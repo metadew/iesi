@@ -129,15 +129,19 @@ public class ConnectionConfiguration {
 				CachedRowSet crsConnectionParameters = this.getFrameworkExecution().getMetadataControl()
 						.getConnectivityRepositoryConfiguration().executeQuery(queryConnectionParameters);
 				List<ConnectionParameter> connectionParameters = new ArrayList<>();
+				boolean containsParameters = false;
 				while (crsConnectionParameters.next()) {
+					containsParameters = true;
 					connectionParameters.add(connectionParameterConfiguration.getConnectionParameter(connectionName,
 							environmentName, crsConnectionParameters.getString("CONN_PAR_NM")));
 				}
-				connection = new Connection(connectionName,
-						crsConnection.getString("CONN_TYP_NM"),
-						crsConnection.getString("CONN_DSC"),
-						environmentName,
-						connectionParameters);
+				if (containsParameters) {
+					connection = new Connection(connectionName,
+							crsConnection.getString("CONN_TYP_NM"),
+							crsConnection.getString("CONN_DSC"),
+							environmentName,
+							connectionParameters);
+				}
 				crsConnectionParameters.close();
 			}
 			crsConnection.close();
@@ -262,6 +266,7 @@ public class ConnectionConfiguration {
 	}
 
 	private String getInsertQuery(Connection connection) {
+		// TODO: if name already exists but not yet environment only add environment
 		String sql = "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration()
 				.getMetadataTableConfiguration().getTableName("Connections");
 		sql += " (CONN_NM, CONN_TYP_NM, CONN_DSC) ";

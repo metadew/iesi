@@ -281,8 +281,27 @@ public class ScriptExecution {
             // Set status if the next action needs to be executed
             if (this.isRootScript()) {
                 this.getActionSelectOperation().setContinueStatus(action);
+
             }
         }
+
+        if (!this.isRouteScript()) {
+            /*
+             * Log script end and status
+             */
+            this.setResult(this.getExecutionControl().logEnd(this));
+
+            /*
+             * End the execution only in case of a root script
+             */
+            if (this.isRootScript()) {
+                this.getExecutionControl().terminate();
+                if (this.isExitOnCompletion()) {
+                    this.getExecutionControl().endExecution();
+                }
+            }
+        }
+
     }
 
 

@@ -8,6 +8,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.metadew.iesi.framework.operation.ClassOperation;
 import io.metadew.iesi.metadata.definition.MetadataTable;
 import org.apache.logging.log4j.Level;
 
@@ -72,8 +73,13 @@ public class ExecutionControl
 		if (frameworkExecution.getFrameworkConfiguration().getSettingConfiguration().getSettingPath("script.execution.runtime").isPresent() &&
 				!frameworkExecution.getFrameworkControl().getProperty(frameworkExecution.getFrameworkConfiguration().getSettingConfiguration().getSettingPath("script.execution.runtime").get()).isEmpty()) {
 			try {
-				Class classRef = Class.forName(frameworkExecution.getFrameworkConfiguration().getSettingConfiguration().getSettingPath("script.execution.runtime").get());
+
+
+				Class classRef = Class.forName(frameworkExecution.getFrameworkControl().getProperty(frameworkExecution.getFrameworkConfiguration().getSettingConfiguration().getSettingPath("script.execution.runtime").get()));
 				Object instance = classRef.newInstance();
+
+//				classRef = ClassOperation.getExecutionRuntime(frameworkExecution.getFrameworkControl().getProperty(frameworkExecution.getFrameworkConfiguration().getSettingConfiguration().getSettingPath("script.execution.runtime").get()));
+//				instance = classRef.newInstance();
 
 				Class initParams[] = { FrameworkExecution.class, String.class };
 				Method init = classRef.getDeclaredMethod("init", initParams);

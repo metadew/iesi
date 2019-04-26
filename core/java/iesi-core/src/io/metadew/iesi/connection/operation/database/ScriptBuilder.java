@@ -8,8 +8,8 @@ import java.util.Date;
 
 import javax.sql.rowset.CachedRowSet;
 
-import io.metadew.iesi.connection.DatabaseConnection;
 import io.metadew.iesi.connection.tools.OutputTools;
+import io.metadew.iesi.metadata_repository.repository.database.connection.DatabaseConnection;
 
 public class ScriptBuilder
 {

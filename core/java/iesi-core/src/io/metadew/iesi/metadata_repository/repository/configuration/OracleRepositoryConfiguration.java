@@ -46,29 +46,29 @@ public class OracleRepositoryConfiguration extends RepositoryConfiguration {
             name = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.name").get()).get();
         }
         // set users and passwords
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.schema.user").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.schema.user").get()).isPresent()) {
-            schemaUser = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.schema.user").get()).get();
+        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.schema").isPresent() &&
+                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.schema").get()).isPresent()) {
+            schemaUser = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.schema").get()).get();
         }
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.schema.user.password").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.schema.user.password").get()).isPresent()) {
-            schemaUserPassword = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.schema.user.password").get()).get();
+        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.schema.password").isPresent() &&
+                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.schema.password").get()).isPresent()) {
+            schemaUserPassword = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.schema.password").get()).get();
         }
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.schema.writer").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.schema.writer").get()).isPresent()) {
-            writerUser = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.schema.writer").get()).get();
+        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.writer").isPresent() &&
+                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.writer").get()).isPresent()) {
+            writerUser = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.writer").get()).get();
         }
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.schema.writer.password").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.schema.writer.password").get()).isPresent()) {
-            writerUserPassword = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.schema.writer.password").get()).get();
+        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.writer.password").isPresent() &&
+                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.writer.password").get()).isPresent()) {
+            writerUserPassword = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.writer.password").get()).get();
         }
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.schema.reader").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.schema.reader").get()).isPresent()) {
-            readerUser = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.schema.reader").get()).get();
+        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.reader").isPresent() &&
+                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.reader").get()).isPresent()) {
+            readerUser = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.reader").get()).get();
         }
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.schema.reader.password").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.schema.reader.password").get()).isPresent()) {
-            readerUserPassword = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.schema.reader.password").get()).get();
+        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.reader.password").isPresent() &&
+                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.reader.password").get()).isPresent()) {
+            readerUserPassword = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.reader.password").get()).get();
         }
 
         // get jdbc connection url

@@ -49,21 +49,21 @@ public class NetezzaRepositoryConfiguration extends RepositoryConfiguration {
                 configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.netezza.schema.user.password").get()).isPresent()) {
             schemaUserPassword = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.netezza.schema.user.password").get()).get();
         }
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.netezza.schema.writer").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.netezza.schema.writer").get()).isPresent()) {
-            writerUser = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.netezza.schema.writer").get()).get();
+        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.netezza.writer").isPresent() &&
+                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.netezza.writer").get()).isPresent()) {
+            writerUser = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.netezza.writer").get()).get();
         }
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.netezza.schema.writer.password").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.netezza.schema.writer.password").get()).isPresent()) {
-            writerUserPassword = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.netezza.schema.writer.password").get()).get();
+        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.netezza.writer.password").isPresent() &&
+                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.netezza.writer.password").get()).isPresent()) {
+            writerUserPassword = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.netezza.writer.password").get()).get();
         }
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.netezza.schema.reader").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.netezza.schema.reader").get()).isPresent()) {
-            readerUser = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.netezza.schema.reader").get()).get();
+        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.netezza.reader").isPresent() &&
+                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.netezza.reader").get()).isPresent()) {
+            readerUser = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.netezza.reader").get()).get();
         }
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.netezza.schema.reader.password").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.netezza.schema.reader.password").get()).isPresent()) {
-            readerUserPassword = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.netezza.schema.reader.password").get()).get();
+        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.netezza.reader.password").isPresent() &&
+                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.netezza.reader.password").get()).isPresent()) {
+            readerUserPassword = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.netezza.reader.password").get()).get();
         }
 
         // get jdbc connection url

@@ -73,7 +73,7 @@ public class RuntimeActionCacheConfiguration {
 		// if so, the previous values will be deleted
 		if (SQLTools.getRowCount(crs) > 0) {
 			query = "delete from " + this.getPRC_RUN_CACHE()
-					+ " where run_id = '" + runId + "' and cache_type_nm = '" + type + "'" + "' and cache_nm = '" + name + "'";
+					+ " where run_id = '" + runId + "' and cache_typ_nm = '" + type +  "' and cache_nm = '" + name + "'";
 			this.getSqliteDatabaseConnection().executeUpdate(query);
 		}
 
@@ -99,7 +99,7 @@ public class RuntimeActionCacheConfiguration {
 	public String getRuntimeCacheValue(String runId, String type, String name) {
 		CachedRowSet crs = null;
 		String query = "select CACHE_VAL from " + this.getPRC_RUN_CACHE()
-				+ " where run_id = '" + runId + "' and cache_typ_nm = '" + type + "'" + "' and cache_nm = '" + name + "'";
+				+ " where run_id = '" + runId + "' and cache_typ_nm = '" + type + "' and cache_nm = '" + name + "'";
 		crs = this.getSqliteDatabaseConnection().executeQuery(query);
 		String value = "";
 		try {
@@ -120,7 +120,7 @@ public class RuntimeActionCacheConfiguration {
 		
 		CachedRowSet crs = null;
 		String query = "select CACHE_VAL from " + this.getPRC_RUN_CACHE()
-				+ " where run_id = '" + runId + "' and cache_typ_nm = '" + type + "'" + "' and cache_nm = '" + name + "'";
+				+ " where run_id = '" + runId + "' and cache_typ_nm = '" + type + "' and cache_nm = '" + name + "'";
 		crs = this.getSqliteDatabaseConnection().executeQuery(query);
 		String value = "";
 		try {

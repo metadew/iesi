@@ -14,8 +14,8 @@ import javax.sql.rowset.CachedRowSet;
 
 import io.metadew.iesi.common.json.JsonParsed;
 import io.metadew.iesi.common.json.JsonParsedItem;
-import io.metadew.iesi.connection.DatabaseConnection;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.metadata_repository.repository.database.connection.DatabaseConnection;
 import io.metadew.iesi.metadata_repository.repository.database.connection.SqliteDatabaseConnection;
 
 /**
@@ -82,6 +82,7 @@ public class DatasetOperation {
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
+            System.out.println(query);
         }
 
         // New dataset file name
@@ -95,7 +96,7 @@ public class DatasetOperation {
 
         datasetFileName = datasetFolderName + File.separator + "data" + File.separator + datasetFileName;
         dcSQLiteConnection = new SqliteDatabaseConnection(datasetFileName);
-        this.setDatasetConnection(objectMapper.convertValue(dcSQLiteConnection, DatabaseConnection.class));
+        this.setDatasetConnection(dcSQLiteConnection);
     }
 
     public String getDataItem(String datasetItem) {

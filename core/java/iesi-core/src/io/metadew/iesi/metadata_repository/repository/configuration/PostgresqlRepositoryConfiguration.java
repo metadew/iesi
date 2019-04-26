@@ -49,21 +49,21 @@ public class PostgresqlRepositoryConfiguration extends RepositoryConfiguration {
                 configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.postgresql.schema.user.password").get()).isPresent()) {
             schemaUserPassword = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.postgresql.schema.user.password").get()).get();
         }
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.postgresql.schema.writer").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.postgresql.schema.writer").get()).isPresent()) {
-            writerUser = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.postgresql.schema.writer").get()).get();
+        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.postgresql.writer").isPresent() &&
+                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.postgresql.writer").get()).isPresent()) {
+            writerUser = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.postgresql.writer").get()).get();
         }
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.postgresql.schema.writer.password").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.postgresql.schema.writer.password").get()).isPresent()) {
-            writerUserPassword = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.postgresql.schema.writer.password").get()).get();
+        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.postgresql.writer.password").isPresent() &&
+                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.postgresql.writer.password").get()).isPresent()) {
+            writerUserPassword = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.postgresql.writer.password").get()).get();
         }
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.postgresql.schema.reader").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.postgresql.schema.reader").get()).isPresent()) {
-            readerUser = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.postgresql.schema.reader").get()).get();
+        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.postgresql.reader").isPresent() &&
+                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.postgresql.reader").get()).isPresent()) {
+            readerUser = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.postgresql.reader").get()).get();
         }
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.postgresql.schema.reader.password").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.postgresql.schema.reader.password").get()).isPresent()) {
-            readerUserPassword = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.postgresql.schema.reader.password").get()).get();
+        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.postgresql.reader.password").isPresent() &&
+                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.postgresql.reader.password").get()).isPresent()) {
+            readerUserPassword = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.postgresql.reader.password").get()).get();
         }
 
         // get jdbc connection url

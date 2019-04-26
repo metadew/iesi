@@ -11,7 +11,6 @@ import org.apache.commons.io.FilenameUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.metadew.iesi.connection.ArtifactoryConnection;
-import io.metadew.iesi.connection.DatabaseConnection;
 import io.metadew.iesi.connection.HostConnection;
 import io.metadew.iesi.connection.host.LinuxHostConnection;
 import io.metadew.iesi.connection.host.WindowsHostConnection;

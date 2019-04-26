@@ -35,10 +35,12 @@ public class OracleDatabaseConnection extends DatabaseConnection {
 
 	public Connection getConnection() throws SQLException {
 		Connection connection = super.getConnection();
+
 		Optional<String> schema = getSchema();
 		if (schema.isPresent()) {
-			connection.setSchema(schema.get());
-
+			// TODO: The old JDBC API does not support the setSchema call
+			connection.createStatement().execute("alter session set current_schema=" + schema.get());
+			// connection.setSchema(schema.get());
 		}
 		return connection;
 	}

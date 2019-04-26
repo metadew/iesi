@@ -1,12 +1,14 @@
 package io.metadew.iesi.sqlinsert.oracle;
 
-import java.io.File;
-import java.sql.*;
-
 import io.metadew.iesi.framework.configuration.FrameworkConfiguration;
 import io.metadew.iesi.sqlinsert.engine.ConfigFile;
 import io.metadew.iesi.sqlinsert.engine.Engine;
 import io.metadew.iesi.sqlinsert.engine.OutputFile;
+
+import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.sql.*;
 
 public class GetInfo {
 
@@ -75,8 +77,10 @@ public class GetInfo {
 				statement.close();
 
 			} catch (SQLException e) {
-				System.out.println("database Actions Failed");
-				e.printStackTrace();
+				StringWriter StackTrace = new StringWriter();
+				e.printStackTrace(new PrintWriter(StackTrace));
+				System.out.println("database actions Failed");
+				System.out.println(e.getMessage());
 			} finally {
 				// Close the connection
 				try {

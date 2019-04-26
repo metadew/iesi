@@ -3,7 +3,6 @@ package io.metadew.iesi.script.execution;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.metadew.iesi.framework.execution.FrameworkExecution;
-import io.metadew.iesi.metadata.configuration.repository.MetadataRepository;
 import io.metadew.iesi.metadata.definition.ScriptLog;
 
 public class ExecutionLog {

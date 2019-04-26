@@ -130,9 +130,7 @@ public class ActionExecution {
 			
 			// Trace function
 			this.traceDesignMetadata(actionParameterOperationMap);
-<<<<<<< HEAD
-=======
-			
+
 			// Evaluate error expected
 			if (this.getActionControl().getExecutionMetrics().getErrorCount() > 0) {
 				if (this.getAction().getErrorExpected().equalsIgnoreCase("y")) {
@@ -150,7 +148,6 @@ public class ActionExecution {
 				}
 			}
 			
->>>>>>> develop
 		} catch (Exception e) {
 			StringWriter stackTrace = new StringWriter();
 			e.printStackTrace(new PrintWriter(stackTrace));

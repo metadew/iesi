@@ -27,7 +27,7 @@ public class ImpersonationParameterConfiguration {
 	public String getInsertStatement(String impersonationName, ImpersonationParameter impersonationParameter) {
 		String sql = "";
 
-		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("ImpersonationParameters");
+		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("ImpersonationParameters");
 		sql += " (IMP_NM, CONN_NM, CONN_IMP_NM, CONN_IMP_DSC) ";
 		sql += "VALUES ";
 		sql += "(";

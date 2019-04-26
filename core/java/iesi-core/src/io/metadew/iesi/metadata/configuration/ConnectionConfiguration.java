@@ -41,24 +41,24 @@ public class ConnectionConfiguration {
 
 	public List<Connection> getConnections() {
 		List<Connection> connections = new ArrayList<>();
-		String query = "select * from " + this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Connections")
+		String query = "select * from " + this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("Connections")
 				+ " order by CONN_NM ASC";
-		CachedRowSet crs = this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().executeQuery(query);
+		CachedRowSet crs = this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().executeQuery(query, "reader");
 		ConnectionParameterConfiguration connectionParameterConfiguration = new ConnectionParameterConfiguration(frameworkExecution);
 		try {
 			while (crs.next()) {
 				String connectionName = crs.getString("CONN_NM");
 				String queryConnectionParameters = "select CONN_NM, ENV_NM, CONN_PAR_NM, CONN_PAR_VAL from "
-						+ this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("ConnectionParameters")
+						+ this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("ConnectionParameters")
 						+ " where CONN_NM = '" + connectionName + "'";
 				CachedRowSet crsConnectionParameters = this.getFrameworkExecution().getMetadataControl()
-						.getConnectivityRepositoryConfiguration().executeQuery(queryConnectionParameters);
+						.getConnectivityMetadataRepository().executeQuery(queryConnectionParameters, "reader");
 
 				String queryEnvironment = "select distinct ENV_NM from "
-						+ this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("ConnectionParameters")
+						+ this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("ConnectionParameters")
 						+ " where CONN_NM = '"
 						+  connectionName + "' order by ENV_NM ASC";
-				CachedRowSet crsEnvironment = this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().executeQuery(queryEnvironment);
+				CachedRowSet crsEnvironment = this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().executeQuery(queryEnvironment, "reader");
 				while (crsEnvironment.next()) {
 					List<ConnectionParameter> connectionParameters = new ArrayList<>();
 					String environmentName = crsEnvironment.getString("ENV_NM");
@@ -93,10 +93,10 @@ public class ConnectionConfiguration {
 		List<Connection> connections = new ArrayList<>();
 
 		String connectionsByEnvironmentQuery = "select distinct CONN_NM from "
-				+ this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("ConnectionParameters")
+				+ this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("ConnectionParameters")
 				+ " where ENV_NM = '" + environmentName + "'";
 		CachedRowSet connectionsByEnvironment = this.getFrameworkExecution().getMetadataControl()
-				.getConnectivityRepositoryConfiguration().executeQuery(connectionsByEnvironmentQuery);
+				.getConnectivityMetadataRepository().executeQuery(connectionsByEnvironmentQuery, "reader");
 		try {
 			while (connectionsByEnvironment.next()) {
 				getConnection(connectionsByEnvironment.getString("CONN_NM"), environmentName).ifPresent(connections::add);
@@ -112,21 +112,21 @@ public class ConnectionConfiguration {
 		Connection connection = null;
 		CachedRowSet crsConnection;
 		String queryConnection = "select CONN_NM, CONN_TYP_NM, CONN_DSC from " + this.getFrameworkExecution()
-				.getMetadataControl().getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Connections")
+				.getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("Connections")
 				+ " where CONN_NM = '" + connectionName + "'";
-		crsConnection = this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration()
-				.executeQuery(queryConnection);
+		crsConnection = this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository()
+				.executeQuery(queryConnection, "reader");
 		ConnectionParameterConfiguration connectionParameterConfiguration = new ConnectionParameterConfiguration(
 				this.getFrameworkExecution());
 		try {
 			while (crsConnection.next()) {
 				// Get parameters
 				String queryConnectionParameters = "select CONN_NM, ENV_NM, CONN_PAR_NM, CONN_PAR_VAL from "
-						+ this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration()
-						.getMetadataTableConfiguration().getTableName("ConnectionParameters")
+						+ this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository()
+						.getTableNameByLabel("ConnectionParameters")
 						+ " where CONN_NM = '" + connectionName + "'and ENV_NM = '" + environmentName + "'";
 				CachedRowSet crsConnectionParameters = this.getFrameworkExecution().getMetadataControl()
-						.getConnectivityRepositoryConfiguration().executeQuery(queryConnectionParameters);
+						.getConnectivityMetadataRepository().executeQuery(queryConnectionParameters, "reader");
 				List<ConnectionParameter> connectionParameters = new ArrayList<>();
 				while (crsConnectionParameters.next()) {
 					connectionParameters.add(connectionParameterConfiguration.getConnectionParameter(connectionName,
@@ -165,13 +165,13 @@ public class ConnectionConfiguration {
 
 		}
 		String deleteQuery = getDeleteQuery(connection);
-		this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().executeUpdate(deleteQuery);
+		this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().executeUpdate(deleteQuery);
 	}
 
 	public String getDeleteQuery(Connection connection) {
 		String deleteQuery = "";
 
-		deleteQuery += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("ConnectionParameters");
+		deleteQuery += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("ConnectionParameters");
 		deleteQuery += " WHERE CONN_NM = "
 				+ SQLTools.GetStringForSQL(connection.getName())
 				+ "AND ENV_NM = "
@@ -181,14 +181,14 @@ public class ConnectionConfiguration {
 
 		// If this was the last remaining connection with name CONN_NM, remove entirely from connections
 		String countQuery = "SELECT COUNT(DISTINCT ENV_NM ) AS total_environments FROM "
-				+ this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Connections")
+				+ this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("Connections")
 				+ " WHERE ENV_NM != "
 				+ connection.getEnvironment() + ";";
-		CachedRowSet crs = this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().executeQuery(countQuery);
+		CachedRowSet crs = this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().executeQuery(countQuery, "reader");
 
 		try {
 			if (crs.next() && Integer.parseInt(crs.getString("total_environments")) == 0) {
-				deleteQuery += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Connections");
+				deleteQuery += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("Connections");
 				deleteQuery += " WHERE CONN_NM = "
 						+ SQLTools.GetStringForSQL(connection.getName());
 				deleteQuery += ";";
@@ -211,18 +211,18 @@ public class ConnectionConfiguration {
 
 		}
 		String deleteQuery = getDeleteConnectionByNameQuery(connectionName);
-		this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().executeUpdate(deleteQuery);
+		this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().executeUpdate(deleteQuery);
 	}
 
 	public String getDeleteConnectionByNameQuery(String connectionName) {
 		String sql = "";
 
-		sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Connections");
+		sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("Connections");
 		sql += " WHERE CONN_NM = "
 				+ SQLTools.GetStringForSQL(connection.getName());
 		sql += ";";
 		sql += "\n";
-		sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("ConnectionParameters");
+		sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("ConnectionParameters");
 		sql += " WHERE CONN_NM = "
 				+ SQLTools.GetStringForSQL(connection.getName());
 		sql += ";";
@@ -233,16 +233,16 @@ public class ConnectionConfiguration {
 	public void deleteAllConnections() {
 		frameworkExecution.getFrameworkLog().log("Deleting all connections", Level.TRACE);
 		String query = getDeleteAllStatement();
-		this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().executeUpdate(query);
+		this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().executeUpdate(query);
 	}
 
 	private String getDeleteAllStatement() {
 		String sql = "";
 
-		sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Connections");
+		sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("Connections");
 		sql += ";";
 		sql += "\n";
-		sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("ConnectionParameters");
+		sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("ConnectionParameters");
 		sql += ";";
 		sql += "\n";
 
@@ -257,12 +257,12 @@ public class ConnectionConfiguration {
 					"Connection {0}-{1} already exists", connection.getName(), connection.getEnvironment()));
 		}
 		String insertQuery = getInsertQuery(connection);
-		this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().executeUpdate(insertQuery);
+		this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().executeUpdate(insertQuery);
 	}
 
 	private String getInsertQuery(Connection connection) {
-		String sql = "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration()
-				.getMetadataTableConfiguration().getTableName("Connections");
+		String sql = "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository()
+				.getTableNameByLabel("Connections");
 		sql += " (CONN_NM, CONN_TYP_NM, CONN_DSC) ";
 		sql += "VALUES ";
 		sql += "(";
@@ -378,70 +378,15 @@ public class ConnectionConfiguration {
 		return result;
 	}
 
-<<<<<<< HEAD
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public Connection getConnection(String connectionName, String environmentName) {
-		Connection connection = new Connection();
-		CachedRowSet crsConnection = null;
-		String queryConnection = "select CONN_NM, CONN_TYP_NM, CONN_DSC from "
-				+ this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository()
-				.getTableNameByLabel("Connections")
-				+ " where CONN_NM = '" + connectionName + "'";
-		crsConnection = this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository()
-				.executeQuery(queryConnection, "reader");
-		ConnectionParameterConfiguration connectionParameterConfiguration = new ConnectionParameterConfiguration(
-				this.getFrameworkExecution());
-		try {
-			while (crsConnection.next()) {
-				connection.setName(connectionName);
-				connection.setType(crsConnection.getString("CONN_TYP_NM"));
-				connection.setDescription(crsConnection.getString("CONN_DSC"));
-				connection.setEnvironment(environmentName);
-
-				// Get parameters
-				CachedRowSet crsConnectionParameters = null;
-				String queryConnectionParameters = "select CONN_NM, ENV_NM, CONN_PAR_NM, CONN_PAR_VAL from "
-						+ this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository()
-						.getTableNameByLabel("ConnectionParameters")
-						+ " where CONN_NM = '" + connectionName + "'and ENV_NM = '" + environmentName + "'";
-				crsConnectionParameters = this.getFrameworkExecution().getMetadataControl()
-						.getConnectivityMetadataRepository().executeQuery(queryConnectionParameters, "reader");
-				List<ConnectionParameter> connectionParameterList = new ArrayList();
-				while (crsConnectionParameters.next()) {
-					connectionParameterList.add(connectionParameterConfiguration.getConnectionParameter(connectionName,
-							environmentName, crsConnectionParameters.getString("CONN_PAR_NM")));
-				}
-				connection.setParameters(connectionParameterList);
-				crsConnectionParameters.close();
-			}
-			crsConnection.close();
-		} catch (Exception e) {
-			StringWriter StackTrace = new StringWriter();
-			e.printStackTrace(new PrintWriter(StackTrace));
-		}
-
-		if (connection.getName() == null) {
-			throw new RuntimeException("No Connection found" + connectionName);
-		}
-
-		return connection;
-	}
 
 	public ListObject getConnections(String environmentName) {
-		List<Connection> connectionList = new ArrayList<>();
-		CachedRowSet crs = null;
+		List<Connection> connections = new ArrayList<>();
+		CachedRowSet crs;
 		String query = "select CONN_NM from "
 				+ this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository()
 				.getTableNameByLabel("Connections")
 				+ " order by CONN_NM ASC";
 		crs = this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().executeQuery(query, "reader");
-=======
-	public ListObject getConnections(String environmentName) {
-		List<Connection> connections = new ArrayList<>();
-		String query = "select CONN_NM from " + this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Connections")
-				+ " order by CONN_NM ASC";
-		CachedRowSet crs = this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().executeQuery(query);
->>>>>>> develop
 		ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution());
 		try {
 			String connectionName = "";

@@ -13,12 +13,9 @@ import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.configuration.IterationVariableConfiguration;
 import io.metadew.iesi.metadata.definition.RuntimeVariable;
-<<<<<<< HEAD
 import io.metadew.iesi.metadata_repository.repository.database.connection.SqliteDatabaseConnection;
-=======
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.operation.ConditionOperation;
->>>>>>> develop
 
 public class IterationConfiguration {
 

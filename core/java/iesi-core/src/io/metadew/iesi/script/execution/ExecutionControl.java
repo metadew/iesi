@@ -69,16 +69,8 @@ public class ExecutionControl
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void initializeExecutionRuntime(FrameworkExecution frameworkExecution, String runId) {
-<<<<<<< HEAD
 		if (frameworkExecution.getFrameworkConfiguration().getSettingConfiguration().getSettingPath("script.execution.runtime").isPresent() &&
 				!frameworkExecution.getFrameworkControl().getProperty(frameworkExecution.getFrameworkConfiguration().getSettingConfiguration().getSettingPath("script.execution.runtime").get()).isEmpty()) {
-=======
-		String customExecutionRuntime = frameworkExecution.getFrameworkControl().getProperty(frameworkExecution
-				.getFrameworkConfiguration().getSettingConfiguration().getSettingPath("script.execution.runtime"));
-		if (customExecutionRuntime.trim().equalsIgnoreCase("")) {
-			this.setExecutionRuntime(new ExecutionRuntime(frameworkExecution,this, runId));
-		} else {
->>>>>>> develop
 			try {
 				Class classRef = Class.forName(frameworkExecution.getFrameworkConfiguration().getSettingConfiguration().getSettingPath("script.execution.runtime").get());
 				Object instance = classRef.newInstance();
@@ -97,7 +89,7 @@ public class ExecutionControl
 			}
 
 		} else {
-			this.setExecutionRuntime(new ExecutionRuntime(frameworkExecution, runId));
+			this.setExecutionRuntime(new ExecutionRuntime(frameworkExecution, this, runId));
 		}
 	}
 

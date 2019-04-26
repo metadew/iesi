@@ -32,8 +32,8 @@ public class EnvironmentParameterConfiguration
 	{
 		String sql = "";
 
-		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration()
-				.getMetadataTableConfiguration().getTableName("EnvironmentParameters");
+		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository()
+				.getTableNameByLabel("EnvironmentParameters");
 		sql += " (ENV_NM, ENV_PAR_NM, ENV_PAR_VAL) ";
 		sql += "VALUES ";
 		sql += "(";

@@ -41,17 +41,12 @@ public class AttributeOperation {
 		
 		// Get component attributes
 		String query = "";
-<<<<<<< HEAD
 		if (this.getType().equals("component")) {
 			query = "select a.comp_id, a.comp_att_nm, a.comp_att_val from "
 					+ this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ComponentAttributes")
 					+ " a inner join "
 					+ this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Components")
 					+ " b on a.comp_id = b.comp_id where b.comp_nm = '" + this.getName() + "'";
-=======
-		if (this.getType().equalsIgnoreCase("component")) {
-			query = "select a.comp_id, a.comp_att_nm, a.comp_att_val from " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("ComponentAttributes")  + " a inner join " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Components") + " b on a.comp_id = b.comp_id where b.comp_nm = '" + this.getName() + "'";
->>>>>>> develop
 		}
 		
 		// Set attribute values

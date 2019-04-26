@@ -49,20 +49,14 @@ public class DataObjectOperation {
 							   MetadataRepository metadataRepositories, String inputFile) {
 		this.setFrameworkExecution(frameworkExecution);
 		this.setInputFile(inputFile);
-<<<<<<< HEAD
-		this.parseFile();
-		this.setMetadataRepositories(new ArrayList());
-		this.getMetadataRepositories().add(metadataRepositories);
-=======
 		File file = new File(inputFile);
 		if (FileTools.getFileExtension(file).equalsIgnoreCase("json")) {
 			this.parseFile();
 		} else if (FileTools.getFileExtension(file).equalsIgnoreCase("yml")) {
 			this.parseYamlFile();
 		}
-		this.setMetadataRepositoryConfigurationList(new ArrayList());
-		this.getMetadataRepositoryConfigurationList().add(metadataRepositoryConfiguration);
->>>>>>> develop
+		this.setMetadataRepositories(new ArrayList());
+		this.getMetadataRepositories().add(metadataRepositories);
 		this.setDataObjectConfiguration(new DataObjectConfiguration(this.getFrameworkExecution(),
 				metadataRepositories, this.getDataObjects()));
 
@@ -169,22 +163,6 @@ public class DataObjectOperation {
 		for (MetadataRepository metadataRepository : this.getMetadataRepositories()) {
 			this.setDataObjectConfiguration(new DataObjectConfiguration(this.getFrameworkExecution(), metadataRepository, this.getDataObjects()));
 			this.getDataObjectConfiguration().saveToMetadataRepository();
-		}
-	}
-
-	public String getMetadataRepositoryDdl() {
-		StringBuilder output = new StringBuilder();
-		for (MetadataRepository metadataRepositoryConfiguration : this.getMetadataRepositories()) {
-			this.setDataObjectConfiguration(new DataObjectConfiguration(this.getFrameworkExecution(),metadataRepositoryConfiguration, this.getDataObjects()));
-			output.append(this.getDataObjectConfiguration().getMetadataRepositoryDdl());
-		}
-		return output.toString();
-	}
-
-	public void saveToMetadataFileStore() {
-		for (MetadataRepository metadataRepositoryConfiguration : this.getMetadataRepositories()) {
-			this.setDataObjectConfiguration(new DataObjectConfiguration(this.getFrameworkExecution(),metadataRepositoryConfiguration, this.getDataObjects()));
-			this.getDataObjectConfiguration().saveToMetadataFileStore();
 		}
 	}
 

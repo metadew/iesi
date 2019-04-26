@@ -17,13 +17,11 @@ import io.metadew.iesi.common.config.WindowsConfigFile;
 import io.metadew.iesi.framework.configuration.FrameworkConfiguration;
 import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
 import io.metadew.iesi.metadata.configuration.FrameworkPluginConfiguration;
-import io.metadew.iesi.metadata.operation.MetadataRepositoryCategoryOperation;
 import io.metadew.iesi.metadata_repository.configuration.MetadataRepositoryConfiguration;
 
 public class FrameworkControl {
 
 	private Properties properties;
-	private MetadataRepositoryCategoryOperation metadataRepositoryCategoryOperation;
 	private List<MetadataRepositoryConfiguration> metadataRepositoryConfigurations;
 	private List<FrameworkPluginConfiguration> frameworkPluginConfigurationList;
 	private String logonType;
@@ -38,8 +36,6 @@ public class FrameworkControl {
 			this.getProperties().put(frameworkConfiguration.getFrameworkCode() + ".home",
 					frameworkConfiguration.getFrameworkHome());
 			this.readSettingFiles(frameworkConfiguration, frameworkInitializationFile.getName());
-			this.setMetadataRepositoryConfig(
-					new MetadataRepositoryCategoryOperation(frameworkConfiguration.getFolderConfiguration()));
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -209,13 +205,6 @@ public class FrameworkControl {
 		this.logonType = logonType;
 	}
 
-	public MetadataRepositoryCategoryOperation getMetadataRepositoryConfig() {
-		return metadataRepositoryCategoryOperation;
-	}
-
-	public void setMetadataRepositoryConfig(MetadataRepositoryCategoryOperation metadataRepositoryCategoryOperation) {
-		this.metadataRepositoryCategoryOperation = metadataRepositoryCategoryOperation;
-	}
 
 	public List<FrameworkPluginConfiguration> getFrameworkPluginConfigurationList() {
 		return frameworkPluginConfigurationList;

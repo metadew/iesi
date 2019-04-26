@@ -795,13 +795,8 @@ public class ExecutionRuntime {
 	private void defineLoggingLevel() {
 		if (this.getFrameworkExecution().getFrameworkControl()
 				.getProperty(this.getFrameworkExecution().getFrameworkConfiguration().getSettingConfiguration()
-<<<<<<< HEAD
 						.getSettingPath("commandline.display.runtime.variable").get())
 				.equals("Y")) {
-=======
-						.getSettingPath("commandline.display.runtime.variable"))
-				.equalsIgnoreCase("Y")) {
->>>>>>> develop
 			this.setLevel(Level.INFO);
 		} else {
 			this.setLevel(Level.TRACE);

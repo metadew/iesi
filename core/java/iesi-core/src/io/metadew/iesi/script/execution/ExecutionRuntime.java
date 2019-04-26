@@ -13,8 +13,12 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.Level;
 
@@ -69,6 +73,15 @@ public class ExecutionRuntime {
 	private HashMap<String, DataInstruction> dataInstructions;
 	private HashMap<String, VariableInstruction> variableInstructions;
 
+	private final String INSTRUCTION_TYPE_KEY = "instructionType";
+
+	private final String INSTRUCTION_KEYWORD_KEY = "instructionKeyword";
+
+	private final String INSTRUCTION_ARGUMENTS_KEY = "instructionArguments";
+
+	private final Pattern CONCEPT_LOOKUP_PATTERN = Pattern
+			.compile("\\s*\\{\\{(?<"+INSTRUCTION_TYPE_KEY+">[\\*=\\$!])(?<"+INSTRUCTION_KEYWORD_KEY+">[\\w\\.]+)\\((?<"+INSTRUCTION_ARGUMENTS_KEY+">.*)\\)\\}\\}\\s*");
+
 	public ExecutionRuntime() {
 
 	}
@@ -90,7 +103,7 @@ public class ExecutionRuntime {
 		this.setRuntimeVariableConfiguration(
 				new RuntimeVariableConfiguration(this.getFrameworkExecution(), this.getRunCacheFolderName()));
 		this.setIterationVariableConfiguration(
-				new IterationVariableConfiguration(this.getFrameworkExecution(), this.getRunCacheFolderName()));
+				new IterationVariableConfiguration(this.getFrameworkExecution(), this.getRunCacheFolderName(), true));
 		this.defineLoggingLevel();
 
 		// Initialize maps
@@ -112,7 +125,7 @@ public class ExecutionRuntime {
 
 	public void terminate() {
 		// remove cache folder
-		FolderTools.deleteFolder(this.getRunCacheFolderName(), true);
+		//FolderTools.deleteFolder(this.getRunCacheFolderName(), true);
 
 	}
 
@@ -418,6 +431,10 @@ public class ExecutionRuntime {
 	}
 
 	public String resolveConfiguration(ActionExecution actionExecution, String input) {
+		getFrameworkExecution().getFrameworkLog().log(
+				MessageFormat.format("Resolving {0} for configuration", input),
+				Level.DEBUG);
+
 		int openPos;
 		int closePos;
 		String variable_char = "#";
@@ -444,7 +461,117 @@ public class ExecutionRuntime {
 			temp = temp.substring(closePos + 1, temp.length());
 
 		}
+
+		getFrameworkExecution().getFrameworkLog().log(
+				MessageFormat.format("Resolved to {0}", input),
+				Level.DEBUG);
+
 		return input;
+	}
+
+	public LookupResult resolveConceptLookup(ExecutionControl executionControl, String input) {
+		getFrameworkExecution().getFrameworkLog().log(
+				MessageFormat.format("Resolving {0} for instructions", input),
+				Level.DEBUG);
+		LookupResult lookupResult = new LookupResult();
+		String resolvedInput = input;
+		Matcher ConceptLookupMatcher = CONCEPT_LOOKUP_PATTERN.matcher(resolvedInput);
+		if (!ConceptLookupMatcher.find()) {
+			lookupResult.setValue(resolvedInput);
+			getFrameworkExecution().getFrameworkLog().log(
+					MessageFormat.format("No Lookup instruction found for {0}", input),
+					Level.DEBUG);
+			return lookupResult;
+		} else {
+			String instructionArgumentsString = ConceptLookupMatcher.group(INSTRUCTION_ARGUMENTS_KEY);
+			String instructionType = ConceptLookupMatcher.group(INSTRUCTION_TYPE_KEY);
+			String instructionKeyword = ConceptLookupMatcher.group(INSTRUCTION_KEYWORD_KEY).toLowerCase();
+			getFrameworkExecution().getFrameworkLog().log(
+					MessageFormat.format("Executing instruction of type {0} with keyword {1} and unresolved parameters {2}", instructionType, instructionKeyword, instructionArgumentsString),
+					Level.TRACE);
+			List<String> instructionArguments = splitInstructionArguments(instructionArgumentsString);
+			String instructionArgumentsResolved = instructionArguments.stream()
+					.map(instructionArgument -> resolveConceptLookup(executionControl, instructionArgument).getValue())
+					.collect(Collectors.joining(", "));
+			getFrameworkExecution().getFrameworkLog().log(
+					MessageFormat.format("Resolved instructions parameters to {0}", instructionArgumentsString),
+					Level.TRACE);
+
+			switch (instructionType) {
+				case "=":
+					if (instructionKeyword.equalsIgnoreCase("connection") || instructionKeyword.equalsIgnoreCase("conn")) {
+						resolvedInput = this.lookupConnectionInstruction(executionControl, instructionArgumentsResolved);
+					} else if (instructionKeyword.equalsIgnoreCase("environment") || instructionKeyword.equalsIgnoreCase("env")) {
+						resolvedInput = this.lookupEnvironmentInstruction(executionControl, instructionArgumentsResolved);
+					} else if (instructionKeyword.equalsIgnoreCase("dataset") || instructionKeyword.equalsIgnoreCase("ds")) {
+						resolvedInput = this.lookupDatasetInstruction(executionControl, instructionArgumentsResolved);
+					} else if (instructionKeyword.equalsIgnoreCase("file") || instructionKeyword.equalsIgnoreCase("f")) {
+						resolvedInput = this.lookupFileInstruction(executionControl, instructionArgumentsResolved);
+					}  else if (instructionKeyword.equalsIgnoreCase("coalesce") || instructionKeyword.equalsIgnoreCase("ifnull") || instructionKeyword.equalsIgnoreCase("nvl")) {
+						resolvedInput = this.lookupCoalesceResult(executionControl, instructionArgumentsResolved);
+					}  else if (instructionKeyword.equalsIgnoreCase("script.output") || instructionKeyword.equalsIgnoreCase("s.out")) {
+						resolvedInput = this.lookupScriptResultInstruction(executionControl, instructionArgumentsResolved);
+					}
+					break;
+				case "$":
+					resolvedInput = this.getVariableInstruction(executionControl, VariableInstructionTools.getSynonymKey(instructionKeyword), instructionArgumentsResolved);
+					break;
+				case "*":
+					resolvedInput = this.generateDataInstruction(executionControl, instructionKeyword, instructionArgumentsResolved);
+					break;
+				case "!":
+					if (instructionArgumentsResolved.startsWith("\"")) instructionArgumentsResolved = instructionArgumentsString.substring(1);
+					if (instructionArgumentsResolved.endsWith("\"")) instructionArgumentsResolved = instructionArgumentsString.substring(0, instructionArgumentsResolved.length()-1);
+					resolvedInput = instructionArgumentsResolved;
+					break;
+			}
+			getFrameworkExecution().getFrameworkLog().log(
+					MessageFormat.format("Resolved {0} to {1}", input, resolvedInput),
+					Level.DEBUG);
+
+			lookupResult.setInputValue(input);
+			lookupResult.setType(instructionType);
+			lookupResult.setContext(instructionKeyword);
+			lookupResult.setValue(resolvedInput);
+			return lookupResult;
+		}
+	}
+
+	private List<String> splitInstructionArguments(String instructionArgumentsString) {
+		// TODO: move to Antler
+		List<String> instructionArguments = new ArrayList<>();
+		String instructionStart = "(";
+		String instructionStop = ")";
+		String argumentSeparator = ",";
+
+		while (!instructionArgumentsString.isEmpty()) {
+			int instructionStartIndex = instructionArgumentsString.indexOf(instructionStart);
+			int argumentSeparatorIndex = instructionArgumentsString.indexOf(argumentSeparator);
+			// only or last argument
+			if (argumentSeparatorIndex == -1 ) {
+				instructionArguments.add(instructionArgumentsString.trim());
+				break;
+			}
+			// only simple arguments left or a simple argument before a function argument
+			else if (instructionStartIndex == -1 || instructionStartIndex > argumentSeparatorIndex) {
+				String[] splittedInstructionArguments = instructionArgumentsString.split(argumentSeparator, 2);
+				instructionArguments.add(splittedInstructionArguments[0].trim());
+				instructionArgumentsString = splittedInstructionArguments[1].trim();
+			}
+			// function argument before one or more other arguments
+			else {
+				int nextInstructionStartIndex = instructionArgumentsString.indexOf(instructionStart, instructionStartIndex+1);
+				int instructionStopIndex = instructionArgumentsString.indexOf(instructionStop);
+				while (nextInstructionStartIndex != -1 && nextInstructionStartIndex < instructionStopIndex) {
+					instructionStopIndex = instructionArgumentsString.indexOf(instructionStop, instructionStopIndex+1);
+					nextInstructionStartIndex = instructionArgumentsString.indexOf(instructionStart, nextInstructionStartIndex+1);
+				}
+				argumentSeparatorIndex = instructionArgumentsString.indexOf(argumentSeparator, instructionStopIndex+1);
+				instructionArguments.add(instructionArgumentsString.substring(0, argumentSeparatorIndex));
+				instructionArgumentsString = instructionArgumentsString.substring(argumentSeparatorIndex+1).trim();
+			}
+		}
+		return instructionArguments;
 	}
 
 	// Get cross concept lookup
@@ -698,10 +825,9 @@ public class ExecutionRuntime {
 	}
 
 	// Dataset Management
-	public void setDataset(String datasetName, String datasetLabels) {
-		DatasetOperation datasetOperation = new DatasetOperation(this.getFrameworkExecution(), datasetName,
-				datasetLabels);
-		this.getDatasetOperationMap().put(datasetName, datasetOperation);
+	public void setDataset(String referenceName, String datasetName, String datasetLabels) {
+		DatasetOperation datasetOperation = new DatasetOperation(this.getFrameworkExecution(), datasetName, datasetLabels);
+		this.getDatasetOperationMap().put(referenceName, datasetOperation);
 	}
 
 	public void setDatasetOperation(String datasetName, DatasetOperation datasetOperation) {

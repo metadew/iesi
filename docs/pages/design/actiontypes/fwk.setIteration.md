@@ -66,7 +66,9 @@ It represents the definition of where to iterate over.
 
 `list: "identifier for the list name that is used to iterate on"`
 * applicable for type `list`
-* work in progress
+* define the list name will be used for the iteration
+* lists can be filled using one of the following action types:
+  * sql.setIterationVariables
 
 ### 9: interrupt
 
@@ -124,12 +126,33 @@ It represents the definition of where to iterate over.
       value: "1"
 ```
 
+### Define an iteration using a list
+
+```yaml
+  - number: 1
+    type: "fwk.setIteration"
+    name: "example3"
+    description: "Define an iteration using a list"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "name"
+      value : "iteration1"
+    - name: "type"
+      value: "list"
+    - name: "list"
+      value: "list1"
+```
+
 ### Interrupt the iteration upon error
 
 ```yaml
-  - number: 2
+  - number: 1
     type: "fwk.outputMessage"
-    name: "example2"
+    name: "example4"
     description: "Define an iteration using a for loop"
     component: ""
     condition: ""

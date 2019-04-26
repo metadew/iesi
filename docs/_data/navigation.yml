@@ -1,12 +1,12 @@
-- link: /iesi-doc/index.html
+- link: /iesi/index.html
   name: Home
-- link: /iesi-doc/pages/introduction.html
+- link: /iesi/pages/introduction.html
   name: Introduction
-- link: /iesi-doc/pages/download.html
+- link: /iesi/pages/download.html
   name: Download
-- link: /iesi-doc/pages/quickstart.html
+- link: /iesi/pages/quickstart.html
   name: Quick start
-- link: /iesi-doc/pages/documentation.html
+- link: /iesi/pages/documentation.html
   name: Documentation
-- link: /iesi-doc/pages/about.html
+- link: /iesi/pages/about.html
   name: About

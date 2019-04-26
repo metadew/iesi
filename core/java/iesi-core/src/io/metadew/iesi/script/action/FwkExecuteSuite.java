@@ -139,7 +139,7 @@ public class FwkExecuteSuite {
 				// Get Connection
 				ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution());
 				Connection connection = connectionConfiguration.getConnection(this.getRepositoryConnectionName().getValue(),
-						this.getExecutionControl().getEnvName());
+						this.getExecutionControl().getEnvName()).get();
 
 				// Artifactory
 				// *********************************************************

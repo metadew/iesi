@@ -6,6 +6,14 @@ Variable instructions retrieve a specific variable that is being used by the fra
 
 ## Framework variables
 
+### fwk.home
+
+`{{$fwk.home}}`
+* get the home folder of the framework
+
+Available synonyms: 
+* iesi.home
+
 ### fwk.version
 
 `{{$fwk.version}}`

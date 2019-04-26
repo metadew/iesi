@@ -154,6 +154,7 @@ public class ScriptBuilder
 					stringBuffer.append("\n");
 				}
 			}
+			crs.close();
 			insert_stmts = stringBuffer.toString();
 
 		}

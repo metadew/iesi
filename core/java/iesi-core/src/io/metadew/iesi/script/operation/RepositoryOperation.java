@@ -70,7 +70,7 @@ public class RepositoryOperation {
 		// Get Connection
 		ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution());
 		Connection connection = connectionConfiguration.getConnection(this.getRepositoryInstanceConnectionName().getValue(),
-				this.getExecutionControl().getEnvName());
+				this.getExecutionControl().getEnvName()).get();
 		ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
 		this.setRepositoryInstanceConnection(connectionOperation
 				.getDatabaseConnection(connection));

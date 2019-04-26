@@ -55,5 +55,5 @@ The only constraint is that the output needs to be a number to define the number
     errorStop: "N"
     parameters:
     - name: "wait"
-      value : "{{*number.between(5,20)}}"
+      value : "{% raw %}{{*number.between(5,20)}}{% endraw %}"
 ```

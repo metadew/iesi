@@ -87,7 +87,7 @@ Next, we will load the configuration files into the configuration repository:
 * Load the configuration file via the `bin/iesi-metadata.sh` (or `iesi-metadata.cmd` on Windows) command [![info](/{{site.repository}}/images/icons/question-dot.png)](/{{site.repository}}/pages/operate/operate.html)
 
 ```bash
-bin/iesi-metadata.sh -load
+bin/iesi-metadata.sh -load -type general
 ```
 
 ## Execute the scripts

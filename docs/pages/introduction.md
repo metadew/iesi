@@ -38,7 +38,7 @@ It is a toolbelt rather than a one-stop solution:
  * effective in growing the coverage of automation.
 
 The framework decouples the configuration from the data aspects and manages it in a distributed manner. 
-It is distributed by design allowing to use on any size of project: low entry installation and onboarding (missing UI interactions for now).
+It is distributed by design allowing to be used on any size of project: low entry installation and onboarding (missing UI interactions for now).
 
 An automation framework on its own is not a miraculous solution. 
 You need to add solid data management, creative automation design and great engineering skills to the mix. 

@@ -301,7 +301,7 @@ public class HostConnection {
 						jumphostConnection = jumphostConnections[i];
 						ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(shellCommandSettings.getFrameworkExecution());
 						Connection connection = connectionConfiguration.getConnection(jumphostConnection,
-								shellCommandSettings.getEnvironment());
+								shellCommandSettings.getEnvironment()).get();
 						ConnectionOperation connectionOperation = new ConnectionOperation(shellCommandSettings.getFrameworkExecution());
 						hostConnection = connectionOperation.getHostConnection(connection);
 					} else {
@@ -521,7 +521,7 @@ public class HostConnection {
 						jumphostConnection = jumphostConnections[i];
 						ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(shellCommandSettings.getFrameworkExecution());
 						Connection connection = connectionConfiguration.getConnection(jumphostConnection,
-								shellCommandSettings.getEnvironment());
+								shellCommandSettings.getEnvironment()).get();
 						ConnectionOperation connectionOperation = new ConnectionOperation(shellCommandSettings.getFrameworkExecution());
 						hostConnection = connectionOperation.getHostConnection(connection);
 					} else {

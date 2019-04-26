@@ -1,0 +1,1 @@
+select Field1, Field2, Field3 from Table1 where Field1 = 1;

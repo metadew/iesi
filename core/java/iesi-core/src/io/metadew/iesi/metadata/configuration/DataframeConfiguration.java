@@ -66,7 +66,7 @@ public class DataframeConfiguration {
 			e.printStackTrace(new PrintWriter(StackTrace));
 		}
 
-		if (dataframe.getName() == null || dataframe.getName().equals("")) {
+		if (dataframe.getName() == null || dataframe.getName().equalsIgnoreCase("")) {
 			return false;
 		} else {
 			return true;
@@ -140,21 +140,21 @@ public class DataframeConfiguration {
 
 		// add DataframeVersion
 		String sqlVersion = this.getVersionInsertStatements();
-		if (!sqlVersion.equals("")) {
+		if (!sqlVersion.equalsIgnoreCase("")) {
 			sql += "\n";
 			sql += sqlVersion;
 		}
 
 		// add Items
 		String sqlItems = this.getDataframeItemInsertStatements();
-		if (!sqlItems.equals("")) {
+		if (!sqlItems.equalsIgnoreCase("")) {
 			sql += "\n";
 			sql += sqlItems;
 		}
 
 		// add Parameters
 		String sqlParameters = this.getParameterInsertStatements();
-		if (!sqlParameters.equals("")) {
+		if (!sqlParameters.equalsIgnoreCase("")) {
 			sql += "\n";
 			sql += sqlParameters;
 		}
@@ -185,7 +185,7 @@ public class DataframeConfiguration {
 		for (DataframeItem dataframeItem : this.getDataframe().getItems()) {
 			counter++;
 			DataframeItemConfiguration dataframeItemConfiguration = new DataframeItemConfiguration(dataframeItem, this.getFrameworkExecution());
-			if (!result.equals(""))
+			if (!result.equalsIgnoreCase(""))
 				result += "\n";
 			result += dataframeItemConfiguration.getInsertStatement(this.getDataframe().getName(),
 					this.getDataframe().getVersion().getNumber(), counter);
@@ -203,7 +203,7 @@ public class DataframeConfiguration {
 		for (DataframeParameter dataframeParameter : this.getDataframe().getParameters()) {
 			DataframeParameterConfiguration dataframeParameterConfiguration = new DataframeParameterConfiguration(
 					this.getDataframe().getVersion(), dataframeParameter, this.getFrameworkExecution());
-			if (!result.equals(""))
+			if (!result.equalsIgnoreCase(""))
 				result += "\n";
 			result += dataframeParameterConfiguration.getInsertStatement(this.getDataframe().getName());
 		}
@@ -300,7 +300,7 @@ public class DataframeConfiguration {
 			e.printStackTrace(new PrintWriter(StackTrace));
 		}
 
-		if (dataframe.getName() == null || dataframe.getName().equals("")) {
+		if (dataframe.getName() == null || dataframe.getName().equalsIgnoreCase("")) {
 			throw new RuntimeException("Dataframe (NAME) " + dataframeName + " does not exist");
 		}
 

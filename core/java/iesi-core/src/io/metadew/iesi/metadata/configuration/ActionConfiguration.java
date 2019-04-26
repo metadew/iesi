@@ -71,7 +71,7 @@ public class ActionConfiguration {
 
 		// add Parameters
 		String sqlParameters = this.getParameterInsertStatements(scriptName, scriptVersionNumber);
-		if (!sqlParameters.equals("")) {
+		if (!sqlParameters.equalsIgnoreCase("")) {
 			sql += "\n";
 			sql += sqlParameters;
 		}
@@ -84,7 +84,7 @@ public class ActionConfiguration {
 
 		for (ActionParameter actionParameter : this.getAction().getParameters()) {
 			ActionParameterConfiguration actionParameterConfiguration = new ActionParameterConfiguration(actionParameter, this.getFrameworkExecution());
-			if (!result.equals(""))
+			if (!result.equalsIgnoreCase(""))
 				result += "\n";
 			result += actionParameterConfiguration.getInsertStatement(scriptName, scriptVersionNumber, this.getAction().getName());
 		}

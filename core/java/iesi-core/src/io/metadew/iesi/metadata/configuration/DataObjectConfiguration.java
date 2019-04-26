@@ -305,6 +305,76 @@ public class DataObjectConfiguration {
 
 	}
 
+<<<<<<< HEAD
+=======
+	@SuppressWarnings("unused")
+	public void saveToMetadataFileStore() {
+		ObjectMapper objectMapper = new ObjectMapper();
+		String postSql = "";
+		for (DataObject dataObject : dataObjects) {
+			String output = "";
+
+			// Environment
+			if (dataObject.getType().equalsIgnoreCase("environment")) {
+				Environment environment = objectMapper.convertValue(dataObject.getData(), Environment.class);
+
+			}
+
+			// Connections
+			if (dataObject.getType().equalsIgnoreCase("connection")) {
+				Connection connection = objectMapper.convertValue(dataObject.getData(), Connection.class);
+
+			}
+
+			// Impersonations
+			if (dataObject.getType().equalsIgnoreCase("impersonation")) {
+
+			}
+
+			// Subroutines
+			if (dataObject.getType().equalsIgnoreCase("subroutine")) {
+				Subroutine subroutine = objectMapper.convertValue(dataObject.getData(), Subroutine.class);
+
+			}
+
+			// Scripts
+			if (dataObject.getType().equalsIgnoreCase("script")) {
+				Script script = objectMapper.convertValue(dataObject.getData(), Script.class);
+
+			}
+
+			// Component Types
+			if (dataObject.getType().equalsIgnoreCase("component")) {
+				Component component = objectMapper.convertValue(dataObject.getData(), Component.class);
+
+			}
+
+			// Metadata Tables
+			if (dataObject.getType().equalsIgnoreCase("metadatatable")) {
+				MetadataTable metadataTable = objectMapper.convertValue(dataObject.getData(), MetadataTable.class);
+
+			}
+
+			// Metadata Objects
+			if (dataObject.getType().equalsIgnoreCase("metadataobject")) {
+				MetadataObject metadataObject = objectMapper.convertValue(dataObject.getData(), MetadataObject.class);
+				this.createFolder(this.getMetadataRepositoryConfiguration().getFileStoreConnection().getPath(),
+						metadataObject.getName());
+			}
+
+			// Execute
+
+		}
+
+		if (!postSql.trim().equalsIgnoreCase("")) {
+			InputStream inputStreamPostSql = FileTools.convertToInputStream(postSql,
+					this.getFrameworkExecution().getFrameworkControl());
+			this.getMetadataRepositoryConfiguration().executeScript(inputStreamPostSql);
+		}
+
+	}
+
+>>>>>>> develop
 	private void createFolder(String path, String folderName) {
 		FolderTools.createFolder(path + File.separator + folderName);
 	}

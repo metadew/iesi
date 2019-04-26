@@ -92,7 +92,7 @@ public class WfaExecuteQueryPing {
 			// Get Connection
 			ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution());
 			Connection connection = connectionConfiguration.getConnection(this.getConnectionName().getValue(),
-					this.getExecutionControl().getEnvName());
+					this.getExecutionControl().getEnvName()).get();
 			ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
 			DatabaseConnection databaseConnection = connectionOperation.getDatabaseConnection(connection);
 
@@ -176,7 +176,7 @@ public class WfaExecuteQueryPing {
 			StringWriter StackTrace = new StringWriter();
 			e.printStackTrace(new PrintWriter(StackTrace));
 
-			this.getActionExecution().getActionControl().increaseSuccessCount();
+			this.getActionExecution().getActionControl().increaseErrorCount();
 
 			this.getActionExecution().getActionControl().logOutput("exception",e.getMessage());
 			this.getActionExecution().getActionControl().logOutput("stacktrace",StackTrace.toString());

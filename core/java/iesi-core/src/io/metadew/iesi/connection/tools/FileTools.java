@@ -47,7 +47,7 @@ public final class FileTools {
 			File f = new File(fileName);
 			if (!f.exists()) {
 				out = new PrintWriter(new BufferedWriter(new java.io.FileWriter(fileName, true)));
-				if (!header.equals(""))
+				if (!header.equalsIgnoreCase(""))
 					out.println(header);
 			} else {
 				out = new PrintWriter(new BufferedWriter(new java.io.FileWriter(fileName, true)));

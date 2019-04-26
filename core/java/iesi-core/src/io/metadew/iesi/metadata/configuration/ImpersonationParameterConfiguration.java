@@ -24,6 +24,26 @@ public class ImpersonationParameterConfiguration {
 		this.setFrameworkExecution(frameworkExecution);
 	}
 
+	public String getInsertStatement(String impersonationName, ImpersonationParameter impersonationParameter) {
+		String sql = "";
+
+		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("ImpersonationParameters");
+		sql += " (IMP_NM, CONN_NM, CONN_IMP_NM, CONN_IMP_DSC) ";
+		sql += "VALUES ";
+		sql += "(";
+		sql += SQLTools.GetStringForSQL(impersonationName);
+		sql += ",";
+		sql += SQLTools.GetStringForSQL(impersonationParameter.getConnection());
+		sql += ",";
+		sql += SQLTools.GetStringForSQL(impersonationParameter.getImpersonatedConnection());
+		sql += ",";
+		sql += SQLTools.GetStringForSQL(impersonationParameter.getDescription());
+		sql += ")";
+		sql += ";";
+
+		return sql;
+	}
+
 	// Insert
 	public String getInsertStatement(String impersonationName) {
 		String sql = "";

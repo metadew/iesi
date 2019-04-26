@@ -1,0 +1,4 @@
+generation:
+  default:
+    motd:
+      message: ["Automation rocks!", "This is so cool!", "Just waiting...", "Still waiting...", "Where have you been all my life?"]

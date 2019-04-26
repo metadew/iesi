@@ -8,7 +8,8 @@ public class Script {
 	private String type = "script";
 	private String name;
 	private String description;
-	private ScriptVersion version;
+	// Set a default script version if not provided
+	private ScriptVersion version = new ScriptVersion();
 	private List<ScriptParameter> parameters;
 	private List<Action> actions;
 

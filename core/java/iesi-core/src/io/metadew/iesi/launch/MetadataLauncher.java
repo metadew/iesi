@@ -16,6 +16,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
 import io.metadew.iesi.common.config.ConfigFile;
+import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.framework.execution.FrameworkExecutionContext;
 import io.metadew.iesi.metadata.backup.BackupExecution;
@@ -24,7 +25,8 @@ import io.metadew.iesi.metadata.operation.MetadataRepositoryOperation;
 import io.metadew.iesi.metadata.restore.RestoreExecution;
 
 /**
- * The metadata launcher is entry point to launch all configuration management operations.
+ * The metadata launcher is entry point to launch all configuration management
+ * operations.
  *
  * @author peter.billen
  */
@@ -36,6 +38,7 @@ public class MetadataLauncher {
     public static void main(String[] args) {
 
         Option oHelp = new Option("help", "print this message");
+		Option oIni = new Option("ini", true, "define the initialization file");
         Option oType = new Option("type", true, "define the type of metadata repository");
         Option oConfig = new Option("config", true, "define the metadata repository config");
         Option oBackup = new Option("backup", "create a backup of the entire metadata repository");
@@ -95,10 +98,17 @@ public class MetadataLauncher {
                 System.exit(0);
             }
 
-            Context context = new Context();
+			// Define the ini file
+			FrameworkInitializationFile frameworkInitializationFile = new FrameworkInitializationFile();
+			if (line.hasOption("ini")) {
+				frameworkInitializationFile.setName(line.getOptionValue("ini"));
+				System.out.println("Option -ini (ini) value = " + frameworkInitializationFile.getName());
+			}
+
+			Context context = new Context();
             context.setName("metadata");
             context.setScope("");
-            FrameworkExecution frameworkExecution = new FrameworkExecution(new FrameworkExecutionContext(context), "owner");
+            FrameworkExecution frameworkExecution = new FrameworkExecution(new FrameworkExecutionContext(context), "owner", frameworkInitializationFile);
             MetadataRepositoryOperation metadataRepositoryOperation = null;
             List<MetadataRepository> metadataRepositories = new ArrayList();
 
@@ -111,7 +121,9 @@ public class MetadataLauncher {
                 System.exit(1);
             }
 
-            if (line.hasOption("config")) {
+
+
+			if (line.hasOption("config")) {
                 String config = line.getOptionValue("config");
 
                 ConfigFile configFile = frameworkExecution.getFrameworkControl().getConfigFile("keyvalue",

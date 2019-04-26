@@ -11,6 +11,7 @@ import org.apache.commons.jexl2.MapContext;
 
 import io.metadew.iesi.runtime.definition.LookupResult;
 import io.metadew.iesi.script.execution.ActionExecution;
+import io.metadew.iesi.script.execution.ExecutionControl;
 
 /**
  * Operation to manage the conditions that have been defined in the script
@@ -21,6 +22,7 @@ import io.metadew.iesi.script.execution.ActionExecution;
 public class ConditionOperation {
 
 	private ActionExecution actionExecution;
+	private ExecutionControl executionControl;
 	private String inputValue;
 	private String value;
 	private String syntax;
@@ -38,6 +40,12 @@ public class ConditionOperation {
 	
 	public ConditionOperation(ActionExecution actionExecution, String inputValue) {
 		this.setActionExecution(actionExecution);
+		this.setExecutionControl(actionExecution.getExecutionControl());
+		this.setInputValue(inputValue);
+	}
+	
+	public ConditionOperation(ExecutionControl executionControl, String inputValue) {
+		this.setExecutionControl(executionControl);
 		this.setInputValue(inputValue);
 	}
 
@@ -108,8 +116,8 @@ public class ConditionOperation {
 		this.setValue(inputValue);
 
 		// Cross concept lookup
-		LookupResult lookupResult = this.getActionExecution().getExecutionControl().getExecutionRuntime()
-				.resolveConceptLookup(this.getActionExecution().getExecutionControl(), this.getValue(), true);
+		LookupResult lookupResult = this.getExecutionControl().getExecutionRuntime()
+				.resolveConceptLookup(this.getExecutionControl(), this.getValue());
 		this.setValue(lookupResult.getValue());
 		this.setSyntax(lookupResult.getContext());
 	}
@@ -119,7 +127,7 @@ public class ConditionOperation {
 	}
 
 	public void setValue(String value) {
-		this.value = this.getActionExecution().getExecutionControl().getExecutionRuntime()
+		this.value = this.getExecutionControl().getExecutionRuntime()
 				.resolveVariables(this.getActionExecution(), value);
 	}
 
@@ -141,5 +149,13 @@ public class ConditionOperation {
 		} else {
 			this.syntax = syntax.toLowerCase();
 		}
+	}
+
+	public ExecutionControl getExecutionControl() {
+		return executionControl;
+	}
+
+	public void setExecutionControl(ExecutionControl executionControl) {
+		this.executionControl = executionControl;
 	}
 }

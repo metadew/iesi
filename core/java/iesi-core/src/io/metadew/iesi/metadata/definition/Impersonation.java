@@ -10,7 +10,12 @@ public class Impersonation {
 	
 	//Constructors
 	public Impersonation() {
-		
+	}
+
+	public Impersonation(String name, String description, List<ImpersonationParameter> parameters) {
+		this.name = name;
+		this.description = description;
+		this.parameters = parameters;
 	}
 
 	//Getters and Setters

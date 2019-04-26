@@ -19,7 +19,7 @@ public class GenerationControlExecution {
 		this.setExecutionControl(executionControl);
 		this.setGenerationExecution(generationExecution);
 		for (GenerationControl generationControl : this.getGenerationExecution().getGeneration().getControls()) {
-			if (generationControl.getName().trim().equals(generationControlName.trim())) {
+			if (generationControl.getName().trim().equalsIgnoreCase(generationControlName.trim())) {
 				this.setGenerationControl(generationControl);
 			}
 		}

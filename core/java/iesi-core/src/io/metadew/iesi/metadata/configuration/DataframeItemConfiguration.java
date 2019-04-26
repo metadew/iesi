@@ -53,7 +53,7 @@ public class DataframeItemConfiguration {
 
 		// add Parameters
 		String sqlParameters = this.getParameterInsertStatements(scriptName, scriptVersionNumber);
-		if (!sqlParameters.equals("")) {
+		if (!sqlParameters.equalsIgnoreCase("")) {
 			sql += "\n";
 			sql += sqlParameters;
 		}
@@ -66,7 +66,7 @@ public class DataframeItemConfiguration {
 
 		for (DataframeItemParameter dataframeItemParameter : this.getDataframeItem().getParameters()) {
 			DataframeItemParameterConfiguration dataframeItemParameterConfiguration = new DataframeItemParameterConfiguration(dataframeItemParameter, this.getFrameworkExecution());
-			if (!result.equals(""))
+			if (!result.equalsIgnoreCase(""))
 				result += "\n";
 			result += dataframeItemParameterConfiguration.getInsertStatement(scriptName, scriptVersionNumber, this.getDataframeItem().getName());
 		}

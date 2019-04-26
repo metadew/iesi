@@ -1,0 +1,12 @@
+---
+type: Connection
+data:
+  name: "sql.executeQuery.2"
+  type: "db.sqlite"
+  description: "sql.executeQuery.2 connection"
+  environment: "iesi-test"
+  parameters:
+  - name: "filePath"
+    value: "#iesi.home#/data/iesi-test/actions/data/actions"
+  - name: "fileName"
+    value: "sql.executeQuery.2.db3"

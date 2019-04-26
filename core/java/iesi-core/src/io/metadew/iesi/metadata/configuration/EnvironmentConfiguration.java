@@ -3,8 +3,10 @@ package io.metadew.iesi.metadata.configuration;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javax.sql.rowset.CachedRowSet;
@@ -13,10 +15,13 @@ import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.configuration.FrameworkObjectConfiguration;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.metadata.configuration.exception.EnvironmentAlreadyExistsException;
+import io.metadew.iesi.metadata.configuration.exception.EnvironmentDoesNotExistException;
 import io.metadew.iesi.metadata.definition.DataObject;
 import io.metadew.iesi.metadata.definition.Environment;
 import io.metadew.iesi.metadata.definition.EnvironmentParameter;
 import io.metadew.iesi.metadata.definition.ListObject;
+import org.apache.logging.log4j.Level;
 
 public class EnvironmentConfiguration {
 
@@ -33,6 +38,7 @@ public class EnvironmentConfiguration {
 		this.setFrameworkExecution(frameworkExecution);
 	}
 
+<<<<<<< HEAD
 	public static String getDeleteStatement(String environmentName, String environmentTable, String environmentParametersTable) {
 		String sql = "";
 
@@ -49,6 +55,169 @@ public class EnvironmentConfiguration {
 		return sql;
 	}
 
+=======
+	public Optional<Environment> getEnvironment(String environmentName) {
+		Environment environment = null;
+		String queryEnvironment = "select ENV_NM, ENV_DSC from "
+				+ this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Environments") + " where ENV_NM = '"
+				+ environmentName + "'";
+		CachedRowSet crsEnvironment = this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().executeQuery(queryEnvironment);
+		EnvironmentParameterConfiguration environmentParameterConfiguration = new EnvironmentParameterConfiguration(this.getFrameworkExecution());
+		try {
+			while (crsEnvironment.next()) {
+				// Get parameters
+				String queryEnvironmentParameters = "select ENV_NM, ENV_PAR_NM, ENV_PAR_VAL from "
+						+ this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("EnvironmentParameters")
+						+ " where ENV_NM = '" + environmentName + "'";
+				CachedRowSet crsEnvironmentParameters = this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration()
+						.executeQuery(queryEnvironmentParameters);
+				List<EnvironmentParameter> environmentParameters = new ArrayList<>();
+				while (crsEnvironmentParameters.next()) {
+					environmentParameters.add(environmentParameterConfiguration.getEnvironmentParameter(environmentName,
+							crsEnvironmentParameters.getString("ENV_PAR_NM")));
+				}
+				environment = new Environment(environmentName, crsEnvironment.getString("ENV_DSC"), environmentParameters);
+				crsEnvironmentParameters.close();
+			}
+			crsEnvironment.close();
+		} catch (Exception e) {
+			StringWriter StackTrace = new StringWriter();
+			e.printStackTrace(new PrintWriter(StackTrace));
+		}
+		return Optional.ofNullable(environment);
+	}
+
+	public boolean exists(Environment environment) {
+		String queryEnvironment = "select * from "
+				+ this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Environments")
+				+ " where ENV_NM = '"
+				+ environment.getName() + "'";
+		CachedRowSet crsEnvironment = this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().executeQuery(queryEnvironment);
+		return crsEnvironment.size() == 1;
+	}
+
+	public List<Environment> getAllEnvironments() {
+		List<Environment> environments = new ArrayList<>();
+		String query = "select ENV_NM from " + this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Environments")
+				+ " order by ENV_NM ASC";
+		CachedRowSet crs = this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().executeQuery(query);
+		EnvironmentConfiguration environmentConfiguration = new EnvironmentConfiguration(this.getFrameworkExecution());
+		try {
+			while (crs.next()) {
+				String environmentName = crs.getString("ENV_NM");
+				environmentConfiguration.getEnvironment(environmentName).ifPresent(environments::add);
+			}
+			crs.close();
+		} catch (Exception e) {
+			StringWriter StackTrace = new StringWriter();
+			e.printStackTrace(new PrintWriter(StackTrace));
+		}
+		return environments;
+	}
+
+	public void deleteEnvironment(Environment environment) throws EnvironmentDoesNotExistException {
+		frameworkExecution.getFrameworkLog().log(
+				MessageFormat.format("Deleting environment {0}", environment.getName()), Level.TRACE);
+		if (!exists(environment)) {
+			throw new EnvironmentDoesNotExistException(
+					MessageFormat.format("Environment {0} is not present in the repository so cannot be updated",
+							environment.getName()));
+		}
+		String query = getDeleteStatement(environment);
+		this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().executeUpdate(query);
+	}
+
+	public String getDeleteStatement(Environment environment) {
+		String sql = "";
+
+		sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Environments");
+		sql += " WHERE ENV_NM = "
+				+ SQLTools.GetStringForSQL(environment.getName());
+		sql += ";";
+		sql += "\n";
+		sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("EnvironmentParameters");
+		sql += " WHERE ENV_NM = "
+				+ SQLTools.GetStringForSQL(environment.getName());
+		sql += ";";
+		sql += "\n";
+
+		return sql;
+
+	}
+
+	public void deleteAllEnvironments() {
+		frameworkExecution.getFrameworkLog().log("Deleting all environments", Level.TRACE);
+		String query = getDeleteAllStatement();
+		this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().executeUpdate(query);
+	}
+
+	private String getDeleteAllStatement() {
+		String sql = "";
+
+		sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Environments");
+		sql += ";";
+		sql += "\n";
+		sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("EnvironmentParameters");
+		sql += ";";
+		sql += "\n";
+
+		return sql;
+	}
+
+	public void insertEnvironment(Environment environment) throws EnvironmentAlreadyExistsException {
+		frameworkExecution.getFrameworkLog().log(
+				MessageFormat.format("Inserting environment {0}", environment.getName()), Level.TRACE);
+		if (exists(environment)) {
+			throw new EnvironmentAlreadyExistsException(MessageFormat.format("Environment {0} already exists",environment.getName()));
+		}
+		String query = getInsertStatement(environment);
+		this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().executeUpdate(query);
+	}
+
+	public String getInsertStatement(Environment environment) {
+		String sql = "";
+		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Environments");
+		sql += " (ENV_NM, ENV_DSC) ";
+		sql += "VALUES ";
+		sql += "(";
+		sql += SQLTools.GetStringForSQL(environment.getName());
+		sql += ",";
+		sql += SQLTools.GetStringForSQL(environment.getDescription());
+		sql += ")";
+		sql += ";";
+
+		// add Parameters
+		String sqlParameters = this.getParameterInsertStatements(environment);
+		if (!sqlParameters.equalsIgnoreCase("")) {
+			sql += "\n";
+			sql += sqlParameters;
+		}
+
+		return sql;
+	}
+
+	public void updateEnvironment(Environment environment) throws EnvironmentDoesNotExistException {
+		frameworkExecution.getFrameworkLog().log(MessageFormat.format(
+				"Updating environment {0}.", environment.getName()), Level.TRACE);
+		try {
+			deleteEnvironment(environment);
+			insertEnvironment(environment);
+		} catch (EnvironmentDoesNotExistException e) {
+			frameworkExecution.getFrameworkLog().log(MessageFormat.format(
+					"Environment {0} is not present in the repository so cannot be updated", environment.getName()),
+					Level.TRACE);
+			throw new EnvironmentDoesNotExistException(MessageFormat.format(
+					"Environment {0} is not present in the repository so cannot be updated", environment.getName()));
+
+		} catch (EnvironmentAlreadyExistsException e) {
+			frameworkExecution.getFrameworkLog().log(MessageFormat.format(
+					"Environment {0} is not deleted correctly during update. {1}", environment.getName(), e.toString()),
+					Level.WARN);
+		}
+	}
+
+
+>>>>>>> develop
 	// Delete
 	public String getDeleteStatement() {
 		String sql = "";
@@ -88,13 +257,31 @@ public class EnvironmentConfiguration {
 
 		// add Parameters
 		String sqlParameters = this.getParameterInsertStatements(this.getEnvironment().getName());
-		if (!sqlParameters.equals("")) {
+		if (!sqlParameters.equalsIgnoreCase("")) {
 			sql += "\n";
 			sql += sqlParameters;
 		}
 
 		return sql;
 	}
+
+	private String getParameterInsertStatements(Environment environment) {
+		String result = "";
+
+		// Catch null parameters
+		if (environment.getParameters() == null)
+			return result;
+
+		for (EnvironmentParameter environmentParameter : environment.getParameters()) {
+			EnvironmentParameterConfiguration environmentParameterConfiguration = new EnvironmentParameterConfiguration(this.getFrameworkExecution());
+			if (!result.equalsIgnoreCase(""))
+				result += "\n";
+			result += environmentParameterConfiguration.getInsertStatement(environment.getName(), environmentParameter);
+		}
+
+		return result;
+	}
+
 
 	private String getParameterInsertStatements(String environmentName) {
 		String result = "";
@@ -106,7 +293,7 @@ public class EnvironmentConfiguration {
 		for (EnvironmentParameter environmentParameter : this.getEnvironment().getParameters()) {
 			EnvironmentParameterConfiguration environmentParameterConfiguration = new EnvironmentParameterConfiguration(environmentParameter,
 					this.getFrameworkExecution());
-			if (!result.equals(""))
+			if (!result.equalsIgnoreCase(""))
 				result += "\n";
 			result += environmentParameterConfiguration.getInsertStatement(environmentName);
 		}
@@ -114,6 +301,7 @@ public class EnvironmentConfiguration {
 		return result;
 	}
 
+<<<<<<< HEAD
 	// GEt Environment
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public Environment getEnvironment(String environmentName) {
@@ -152,6 +340,9 @@ public class EnvironmentConfiguration {
 		return environment;
 	}
 
+=======
+	// Get Environment
+>>>>>>> develop
 	public ListObject getEnvironments() {
 		List<Environment> environmentList = new ArrayList<>();
 		CachedRowSet crs = null;
@@ -163,7 +354,7 @@ public class EnvironmentConfiguration {
 			String environmentName = "";
 			while (crs.next()) {
 				environmentName = crs.getString("ENV_NM");
-				environmentList.add(environmentConfiguration.getEnvironment(environmentName));
+				environmentConfiguration.getEnvironment(environmentName).ifPresent(environmentList::add);
 			}
 			crs.close();
 		} catch (Exception e) {
@@ -203,17 +394,27 @@ public class EnvironmentConfiguration {
 	}
 	
 	public void deleteEnvironment(String environmentName) {
-		Environment environment = this.getEnvironment(environmentName);
-		EnvironmentConfiguration environmentConfiguration = new EnvironmentConfiguration(environment, this.getFrameworkExecution());
-		String output = environmentConfiguration.getDeleteStatement();
+		this.getEnvironment(environmentName).ifPresent(environment -> {
+				EnvironmentConfiguration environmentConfiguration = new EnvironmentConfiguration(environment, this.getFrameworkExecution());
+				String output = environmentConfiguration.getDeleteStatement();
 
+				InputStream inputStream = FileTools
+						.convertToInputStream(output, this.getFrameworkExecution().getFrameworkControl());
+				this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().executeScript(inputStream);
+			}
+		);
+
+<<<<<<< HEAD
 		InputStream inputStream = FileTools
 				.convertToInputStream(output, this.getFrameworkExecution().getFrameworkControl());
 		this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().executeScript(inputStream);
+=======
+>>>>>>> develop
 	}
 	
 	public void copyEnvironment(String fromEnvironmentName, String toEnvironmentName) {
-		Environment environment = this.getEnvironment(fromEnvironmentName);
+		// TODO: check optional
+		Environment environment = this.getEnvironment(fromEnvironmentName).get();
 		
 		// Set new environment name
 		environment.setName(toEnvironmentName);

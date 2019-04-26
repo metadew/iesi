@@ -50,13 +50,13 @@ public class ParallelExecutionLauncher extends Thread {
 		if (this.getType().equalsIgnoreCase("windows")) {
 			// For Windows Commands, "cmd /c" needs to be put in front of the
 			// command
-			if (executionShellPath.equals("")) {
+			if (executionShellPath.equalsIgnoreCase("")) {
 				executionShellCommand = "cmd /c " + "\"" + shellCommand + "\"";
 			} else {
 				executionShellCommand = "cmd /c " + "\"cd " + executionShellPath + " & " + shellCommand + "\"";
 			}
 		} else {
-			if (executionShellPath.equals("")) {
+			if (executionShellPath.equalsIgnoreCase("")) {
 				executionShellCommand = shellCommand;
 			} else {
 				executionShellCommand = "cd " + executionShellPath + " && " + shellCommand;
@@ -76,7 +76,7 @@ public class ParallelExecutionLauncher extends Thread {
 
 			try {
 				while ((line = input.readLine()) != null) {
-					if (!lines.equals(""))
+					if (!lines.equalsIgnoreCase(""))
 						lines = lines + "\n";
 					lines = lines + line;
 					System.out.println(line);

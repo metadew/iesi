@@ -75,14 +75,14 @@ public class LedgerConfiguration {
 
 		// add Items
 		String sqlItems = this.getItemInsertStatements();
-		if (!sqlItems.equals("")) {
+		if (!sqlItems.equalsIgnoreCase("")) {
 			sql += "\n";
 			sql += sqlItems;
 		}
 
 		// add Parameters
 		String sqlParameters = this.getParameterInsertStatements();
-		if (!sqlParameters.equals("")) {
+		if (!sqlParameters.equalsIgnoreCase("")) {
 			sql += "\n";
 			sql += sqlParameters;
 		}
@@ -98,7 +98,7 @@ public class LedgerConfiguration {
 
 		for (LedgerItem ledgerItem : this.getLedger().getItems()) {
 			LedgerItemConfiguration ledgerItemConfiguration = new LedgerItemConfiguration(ledgerItem, this.getFrameworkExecution());
-			if (!result.equals(""))
+			if (!result.equalsIgnoreCase(""))
 				result += "\n";
 			result += ledgerItemConfiguration.getInsertStatement(this.getLedger().getName());
 		}
@@ -115,7 +115,7 @@ public class LedgerConfiguration {
 		for (LedgerParameter ledgerParameter : this.getLedger().getParameters()) {
 			LedgerParameterConfiguration ledgerParameterConfiguration = new LedgerParameterConfiguration(
 					ledgerParameter, this.getFrameworkExecution());
-			if (!result.equals(""))
+			if (!result.equalsIgnoreCase(""))
 				result += "\n";
 			result += ledgerParameterConfiguration.getInsertStatement(this.getLedger().getName());
 		}
@@ -177,7 +177,7 @@ public class LedgerConfiguration {
 			e.printStackTrace(new PrintWriter(StackTrace));
 		}
 
-		if (ledger.getName() == null || ledger.getName().equals("")) {
+		if (ledger.getName() == null || ledger.getName().equalsIgnoreCase("")) {
 			throw new RuntimeException("Ledger (NAME) " + ledgerName + " does not exist");
 		}
 

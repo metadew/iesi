@@ -13,8 +13,12 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.Level;
 
@@ -26,12 +30,16 @@ import io.metadew.iesi.metadata.configuration.ConnectionParameterConfiguration;
 import io.metadew.iesi.metadata.configuration.EnvironmentParameterConfiguration;
 import io.metadew.iesi.metadata.configuration.IterationVariableConfiguration;
 import io.metadew.iesi.metadata.configuration.RuntimeVariableConfiguration;
+import io.metadew.iesi.metadata.configuration.ScriptResultOutputConfiguration;
 import io.metadew.iesi.metadata.definition.ComponentAttribute;
 import io.metadew.iesi.metadata.definition.Iteration;
 import io.metadew.iesi.metadata.definition.RuntimeVariable;
 import io.metadew.iesi.runtime.definition.LookupResult;
 import io.metadew.iesi.script.execution.data_instruction.DataInstruction;
 import io.metadew.iesi.script.execution.data_instruction.DataInstructionRepository;
+import io.metadew.iesi.script.execution.instruction.variable.VariableInstruction;
+import io.metadew.iesi.script.execution.instruction.variable.VariableInstructionRepository;
+import io.metadew.iesi.script.execution.instruction.variable.VariableInstructionTools;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 import io.metadew.iesi.script.operation.DatasetOperation;
 import io.metadew.iesi.script.operation.ImpersonationOperation;
@@ -43,6 +51,8 @@ public class ExecutionRuntime {
 
 	private FrameworkExecution frameworkExecution;
 
+	private ExecutionControl executionControl;
+	
 	private RuntimeVariableConfiguration runtimeVariableConfiguration;
 	private IterationVariableConfiguration iterationVariableConfiguration;
 
@@ -61,12 +71,23 @@ public class ExecutionRuntime {
 	private ImpersonationOperation impersonationOperation;
 
 	private HashMap<String, DataInstruction> dataInstructions;
+	private HashMap<String, VariableInstruction> variableInstructions;
+
+	private final String INSTRUCTION_TYPE_KEY = "instructionType";
+
+	private final String INSTRUCTION_KEYWORD_KEY = "instructionKeyword";
+
+	private final String INSTRUCTION_ARGUMENTS_KEY = "instructionArguments";
+
+	private final Pattern CONCEPT_LOOKUP_PATTERN = Pattern
+			.compile("\\s*\\{\\{(?<"+INSTRUCTION_TYPE_KEY+">[\\*=\\$!])(?<"+INSTRUCTION_KEYWORD_KEY+">[\\w\\.]+)\\((?<"+INSTRUCTION_ARGUMENTS_KEY+">.*)\\)\\}\\}\\s*");
 
 	public ExecutionRuntime() {
 
 	}
 
-	public ExecutionRuntime(FrameworkExecution frameworkExecution, String runId) {
+	public ExecutionRuntime(FrameworkExecution frameworkExecution, ExecutionControl executionControl, String runId) {
+		this.setExecutionControl(executionControl);
 		this.init(frameworkExecution, runId);
 	}
 
@@ -82,7 +103,7 @@ public class ExecutionRuntime {
 		this.setRuntimeVariableConfiguration(
 				new RuntimeVariableConfiguration(this.getFrameworkExecution(), this.getRunCacheFolderName()));
 		this.setIterationVariableConfiguration(
-				new IterationVariableConfiguration(this.getFrameworkExecution(), this.getRunCacheFolderName()));
+				new IterationVariableConfiguration(this.getFrameworkExecution(), this.getRunCacheFolderName(), true));
 		this.defineLoggingLevel();
 
 		// Initialize maps
@@ -99,11 +120,12 @@ public class ExecutionRuntime {
 
 		// Initialize data instructions
 		dataInstructions = DataInstructionRepository.getReposistory(new GenerationObjectExecution(this.getFrameworkExecution()));
+		this.setVariableInstructions(VariableInstructionRepository.getReposistory(this.getExecutionControl()));
 	}
 
 	public void terminate() {
 		// remove cache folder
-		FolderTools.deleteFolder(this.getRunCacheFolderName(), true);
+		//FolderTools.deleteFolder(this.getRunCacheFolderName(), true);
 
 	}
 
@@ -261,7 +283,9 @@ public class ExecutionRuntime {
 		result = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(input);
 
 		// Second: Action attributes
-		result = this.resolveConfiguration(actionExecution, result);
+		if (actionExecution != null) {
+			result = this.resolveConfiguration(actionExecution, result);
+		}
 
 		// third level: runtime variables
 		result = this.resolveRuntimeVariables(result);
@@ -407,6 +431,10 @@ public class ExecutionRuntime {
 	}
 
 	public String resolveConfiguration(ActionExecution actionExecution, String input) {
+		getFrameworkExecution().getFrameworkLog().log(
+				MessageFormat.format("Resolving {0} for configuration", input),
+				Level.DEBUG);
+
 		int openPos;
 		int closePos;
 		String variable_char = "#";
@@ -433,83 +461,120 @@ public class ExecutionRuntime {
 			temp = temp.substring(closePos + 1, temp.length());
 
 		}
+
+		getFrameworkExecution().getFrameworkLog().log(
+				MessageFormat.format("Resolved to {0}", input),
+				Level.DEBUG);
+
 		return input;
+	}
+
+	public LookupResult resolveConceptLookup(ExecutionControl executionControl, String input) {
+		getFrameworkExecution().getFrameworkLog().log(
+				MessageFormat.format("Resolving {0} for instructions", input),
+				Level.DEBUG);
+		LookupResult lookupResult = new LookupResult();
+		String resolvedInput = input;
+		Matcher ConceptLookupMatcher = CONCEPT_LOOKUP_PATTERN.matcher(resolvedInput);
+		if (!ConceptLookupMatcher.find()) {
+			lookupResult.setValue(resolvedInput);
+			getFrameworkExecution().getFrameworkLog().log(
+					MessageFormat.format("No Lookup instruction found for {0}", input),
+					Level.DEBUG);
+			return lookupResult;
+		} else {
+			String instructionArgumentsString = ConceptLookupMatcher.group(INSTRUCTION_ARGUMENTS_KEY);
+			String instructionType = ConceptLookupMatcher.group(INSTRUCTION_TYPE_KEY);
+			String instructionKeyword = ConceptLookupMatcher.group(INSTRUCTION_KEYWORD_KEY).toLowerCase();
+			getFrameworkExecution().getFrameworkLog().log(
+					MessageFormat.format("Executing instruction of type {0} with keyword {1} and unresolved parameters {2}", instructionType, instructionKeyword, instructionArgumentsString),
+					Level.TRACE);
+			List<String> instructionArguments = splitInstructionArguments(instructionArgumentsString);
+			String instructionArgumentsResolved = instructionArguments.stream()
+					.map(instructionArgument -> resolveConceptLookup(executionControl, instructionArgument).getValue())
+					.collect(Collectors.joining(", "));
+			getFrameworkExecution().getFrameworkLog().log(
+					MessageFormat.format("Resolved instructions parameters to {0}", instructionArgumentsString),
+					Level.TRACE);
+
+			switch (instructionType) {
+				case "=":
+					if (instructionKeyword.equalsIgnoreCase("connection") || instructionKeyword.equalsIgnoreCase("conn")) {
+						resolvedInput = this.lookupConnectionInstruction(executionControl, instructionArgumentsResolved);
+					} else if (instructionKeyword.equalsIgnoreCase("environment") || instructionKeyword.equalsIgnoreCase("env")) {
+						resolvedInput = this.lookupEnvironmentInstruction(executionControl, instructionArgumentsResolved);
+					} else if (instructionKeyword.equalsIgnoreCase("dataset") || instructionKeyword.equalsIgnoreCase("ds")) {
+						resolvedInput = this.lookupDatasetInstruction(executionControl, instructionArgumentsResolved);
+					} else if (instructionKeyword.equalsIgnoreCase("file") || instructionKeyword.equalsIgnoreCase("f")) {
+						resolvedInput = this.lookupFileInstruction(executionControl, instructionArgumentsResolved);
+					}  else if (instructionKeyword.equalsIgnoreCase("coalesce") || instructionKeyword.equalsIgnoreCase("ifnull") || instructionKeyword.equalsIgnoreCase("nvl")) {
+						resolvedInput = this.lookupCoalesceResult(executionControl, instructionArgumentsResolved);
+					}  else if (instructionKeyword.equalsIgnoreCase("script.output") || instructionKeyword.equalsIgnoreCase("s.out")) {
+						resolvedInput = this.lookupScriptResultInstruction(executionControl, instructionArgumentsResolved);
+					}
+					break;
+				case "$":
+					resolvedInput = this.getVariableInstruction(executionControl, VariableInstructionTools.getSynonymKey(instructionKeyword), instructionArgumentsResolved);
+					break;
+				case "*":
+					resolvedInput = this.generateDataInstruction(executionControl, instructionKeyword, instructionArgumentsResolved);
+					break;
+				case "!":
+					if (instructionArgumentsResolved.startsWith("\"")) instructionArgumentsResolved = instructionArgumentsString.substring(1);
+					if (instructionArgumentsResolved.endsWith("\"")) instructionArgumentsResolved = instructionArgumentsString.substring(0, instructionArgumentsResolved.length()-1);
+					resolvedInput = instructionArgumentsResolved;
+					break;
+			}
+			getFrameworkExecution().getFrameworkLog().log(
+					MessageFormat.format("Resolved {0} to {1}", input, resolvedInput),
+					Level.DEBUG);
+
+			lookupResult.setInputValue(input);
+			lookupResult.setType(instructionType);
+			lookupResult.setContext(instructionKeyword);
+			lookupResult.setValue(resolvedInput);
+			return lookupResult;
+		}
+	}
+
+	private List<String> splitInstructionArguments(String instructionArgumentsString) {
+		// TODO: move to Antler
+		List<String> instructionArguments = new ArrayList<>();
+		String instructionStart = "(";
+		String instructionStop = ")";
+		String argumentSeparator = ",";
+
+		while (!instructionArgumentsString.isEmpty()) {
+			int instructionStartIndex = instructionArgumentsString.indexOf(instructionStart);
+			int argumentSeparatorIndex = instructionArgumentsString.indexOf(argumentSeparator);
+			// only or last argument
+			if (argumentSeparatorIndex == -1 ) {
+				instructionArguments.add(instructionArgumentsString.trim());
+				break;
+			}
+			// only simple arguments left or a simple argument before a function argument
+			else if (instructionStartIndex == -1 || instructionStartIndex > argumentSeparatorIndex) {
+				String[] splittedInstructionArguments = instructionArgumentsString.split(argumentSeparator, 2);
+				instructionArguments.add(splittedInstructionArguments[0].trim());
+				instructionArgumentsString = splittedInstructionArguments[1].trim();
+			}
+			// function argument before one or more other arguments
+			else {
+				int nextInstructionStartIndex = instructionArgumentsString.indexOf(instructionStart, instructionStartIndex+1);
+				int instructionStopIndex = instructionArgumentsString.indexOf(instructionStop);
+				while (nextInstructionStartIndex != -1 && nextInstructionStartIndex < instructionStopIndex) {
+					instructionStopIndex = instructionArgumentsString.indexOf(instructionStop, instructionStopIndex+1);
+					nextInstructionStartIndex = instructionArgumentsString.indexOf(instructionStart, nextInstructionStartIndex+1);
+				}
+				argumentSeparatorIndex = instructionArgumentsString.indexOf(argumentSeparator, instructionStopIndex+1);
+				instructionArguments.add(instructionArgumentsString.substring(0, argumentSeparatorIndex));
+				instructionArgumentsString = instructionArgumentsString.substring(argumentSeparatorIndex+1).trim();
+			}
+		}
+		return instructionArguments;
 	}
 
 	// Get cross concept lookup
-	@Deprecated
-	public String resolveConceptLookup(ExecutionControl executionControl, String input) {
-
-		int openPos;
-		int closePos;
-		String variable_char = "{{";
-		String variable_char_close = "}}";
-		String midBit;
-		String replaceValue;
-		String temp = input;
-		while (temp.indexOf(variable_char) > 0 || temp.startsWith(variable_char)) {
-			List<String> items = new ArrayList<>();
-			String tempInstructions = temp;
-			while (tempInstructions.indexOf(variable_char) > 0 || tempInstructions.startsWith(variable_char)) {
-				openPos = tempInstructions.indexOf(variable_char);
-				closePos = tempInstructions.lastIndexOf(variable_char_close);
-				midBit = tempInstructions.substring(openPos + 2, closePos).trim();
-				items.add(midBit);
-				tempInstructions = midBit;
-			}
-
-			// get last value
-			String instruction = items.get(items.size() - 1);
-
-			// check split different types
-			String instructionType = instruction.substring(0, 1).toLowerCase();
-			String instructionOutput = instruction;
-
-			// Lookup
-			if (instructionType.equals("=")) {
-				int lookupOpenPos = instruction.indexOf("(");
-				int lookupClosePos = instruction.indexOf(")", lookupOpenPos + 1);
-				String lookupContext = instruction.substring(1, lookupOpenPos).trim().toLowerCase();
-				String lookupScope = instruction.substring(lookupOpenPos + 1, lookupClosePos).trim();
-				if (lookupContext.equals("connection") || lookupContext.equals("conn")) {
-					instructionOutput = this.lookupConnectionInstruction(executionControl, lookupScope);
-				} else if (lookupContext.equals("environment") || lookupContext.equals("env")) {
-					instructionOutput = this.lookupEnvironmentInstruction(executionControl, lookupScope);
-				} else if (lookupContext.equals("dataset") || lookupContext.equals("ds")) {
-					instructionOutput = this.lookupDatasetInstruction(executionControl, lookupScope);
-				} else if (lookupContext.equals("file") || lookupContext.equals("f")) {
-					instructionOutput = this.lookupFileInstruction(executionControl, lookupScope);
-				}
-				// Generate data
-			} else if (instructionType.equals("*")) {
-				int lookupOpenPos = instruction.indexOf("(");
-				int lookupClosePos = instruction.indexOf(")", lookupOpenPos + 1);
-				String lookupContext = instruction.substring(1, lookupOpenPos).trim().toLowerCase();
-				String lookupScope = instruction.substring(lookupOpenPos + 1, lookupClosePos).trim();
-				instructionOutput = this.generateDataInstruction(executionControl, lookupContext, lookupScope);
-				// run scripts
-			} else if (instructionType.equals("!")) {
-				int lookupOpenPos = instruction.indexOf("(");
-				int lookupClosePos = instruction.indexOf(")", lookupOpenPos + 1);
-				String lookupContext = instruction.substring(1, lookupOpenPos).trim().toLowerCase();
-				String lookupScope = instruction.substring(lookupOpenPos + 1, lookupClosePos).trim();
-				if (lookupContext.equals("jexl") || lookupContext.equals("jxl")) {
-					instructionOutput = this.lookupConnectionInstruction(executionControl, lookupScope);
-				} else if (lookupContext.equals("javascript") || lookupContext.equals("js")) {
-					instructionOutput = this.lookupEnvironmentInstruction(executionControl, lookupScope);
-				}
-			}
-			replaceValue = instructionOutput;
-			// this.decrypt(variable_char + midBit + variable_char_close);
-			if (replaceValue != null) {
-				input = input.replace(variable_char + instruction + variable_char_close, replaceValue);
-			}
-			temp = input;
-		}
-		return input;
-
-	}
-
 	public LookupResult resolveConceptLookup(ExecutionControl executionControl, String input, boolean dup) {
 		LookupResult lookupResult = new LookupResult();
 		int openPos;
@@ -524,7 +589,7 @@ public class ExecutionRuntime {
 			String tempInstructions = temp;
 			while (tempInstructions.indexOf(variable_char) > 0 || tempInstructions.startsWith(variable_char)) {
 				openPos = tempInstructions.indexOf(variable_char);
-				closePos = tempInstructions.lastIndexOf(variable_char_close);
+				closePos = tempInstructions.indexOf(variable_char_close);
 				midBit = tempInstructions.substring(openPos + 2, closePos).trim();
 				items.add(midBit);
 				tempInstructions = midBit;
@@ -538,31 +603,37 @@ public class ExecutionRuntime {
 			String instructionOutput = instruction;
 
 			// Lookup
-			if (instructionType.equals("=")) {
+			if (instructionType.equalsIgnoreCase("=")) {
 				int lookupOpenPos = instruction.indexOf("(");
 				int lookupClosePos = instruction.indexOf(")", lookupOpenPos + 1);
 				String lookupContext = instruction.substring(1, lookupOpenPos).trim().toLowerCase();
 				String lookupScope = instruction.substring(lookupOpenPos + 1, lookupClosePos).trim();
-				if (lookupContext.equals("connection") || lookupContext.equals("conn")) {
+				if (lookupContext.equalsIgnoreCase("connection") || lookupContext.equalsIgnoreCase("conn")) {
 					instructionOutput = this.lookupConnectionInstruction(executionControl, lookupScope);
-				} else if (lookupContext.equals("environment") || lookupContext.equals("env")) {
+				} else if (lookupContext.equalsIgnoreCase("environment") || lookupContext.equalsIgnoreCase("env")) {
 					instructionOutput = this.lookupEnvironmentInstruction(executionControl, lookupScope);
-				} else if (lookupContext.equals("dataset") || lookupContext.equals("ds")) {
+				} else if (lookupContext.equalsIgnoreCase("dataset") || lookupContext.equalsIgnoreCase("ds")) {
 					instructionOutput = this.lookupDatasetInstruction(executionControl, lookupScope);
-				} else if (lookupContext.equals("file") || lookupContext.equals("f")) {
+				} else if (lookupContext.equalsIgnoreCase("file") || lookupContext.equalsIgnoreCase("f")) {
 					instructionOutput = this.lookupFileInstruction(executionControl, lookupScope);
-				}  else if (lookupContext.equals("coalesce") || lookupContext.equals("ifnull") || lookupContext.equals("nvl")) {
+				}  else if (lookupContext.equalsIgnoreCase("coalesce") || lookupContext.equalsIgnoreCase("ifnull") || lookupContext.equalsIgnoreCase("nvl")) {
 					instructionOutput = this.lookupCoalesceResult(executionControl, lookupScope);
+				}  else if (lookupContext.equalsIgnoreCase("script.output") || lookupContext.equalsIgnoreCase("s.out")) {
+					instructionOutput = this.lookupScriptResultInstruction(executionControl, lookupScope);
 				}
+				// Variable lookup
+			} else if (instructionType.equalsIgnoreCase("$")) {
+				String lookupContext = VariableInstructionTools.getSynonymKey(instruction.substring(1).trim().toLowerCase());
+				instructionOutput = this.getVariableInstruction(executionControl, lookupContext, "");
 				// Generate data
-			} else if (instructionType.equals("*")) {
+			} else if (instructionType.equalsIgnoreCase("*")) {
 				int lookupOpenPos = instruction.indexOf("(");
 				int lookupClosePos = instruction.indexOf(")", lookupOpenPos + 1);
 				String lookupContext = instruction.substring(1, lookupOpenPos).trim().toLowerCase();
 				String lookupScope = instruction.substring(lookupOpenPos + 1, lookupClosePos).trim();
 				instructionOutput = this.generateDataInstruction(executionControl, lookupContext, lookupScope);
 				// run scripts
-			} else if (instructionType.equals("!")) {
+			} else if (instructionType.equalsIgnoreCase("!")) {
 				int lookupOpenPos = instruction.indexOf("(");
 				int lookupClosePos = instruction.lastIndexOf(")");
 				String lookupContext = instruction.substring(1, lookupOpenPos).trim().toLowerCase();
@@ -571,6 +642,7 @@ public class ExecutionRuntime {
 				if (lookupScope.startsWith("\"")) lookupScope = lookupScope.substring(1);
 				if (lookupScope.endsWith("\"")) lookupScope = lookupScope.substring(0, lookupScope.length() - 1);
 				instructionOutput = lookupScope;
+				// Verify for javascript / js and jexl / jxl
 			}
 			replaceValue = instructionOutput;
 			// this.decrypt(variable_char + midBit + variable_char_close);
@@ -591,8 +663,8 @@ public class ExecutionRuntime {
 
 		// Parse input
 		String[] parts = input.split(",");
-		String connectionName = parts[0];
-		String connectionParameterName = parts[1];
+		String connectionName = parts[0].trim();
+		String connectionParameterName = parts[1].trim();
 
 		ConnectionParameterConfiguration connectionParameterConfiguration = new ConnectionParameterConfiguration(
 				this.getFrameworkExecution());
@@ -611,8 +683,8 @@ public class ExecutionRuntime {
 
 		// Parse input
 		String[] parts = input.split(",");
-		String environmentName = parts[0];
-		String environmentParameterName = parts[1];
+		String environmentName = parts[0].trim();
+		String environmentParameterName = parts[1].trim();
 
 		EnvironmentParameterConfiguration environmentParameterConfiguration = new EnvironmentParameterConfiguration(
 				this.getFrameworkExecution());
@@ -626,17 +698,34 @@ public class ExecutionRuntime {
 		return output;
 	}
 
+	
+	private String lookupScriptResultInstruction(ExecutionControl executionControl, String input) {
+		String output = input;
+
+
+		ScriptResultOutputConfiguration scriptResultOutputConfiguration = new ScriptResultOutputConfiguration(
+				this.getFrameworkExecution());
+		// TODO only for root scripts - extend to others
+		String scriptResultOutputValue = (scriptResultOutputConfiguration.getScriptOutput(executionControl.getRunId(), 0, input)).getValue();
+
+		if (scriptResultOutputValue != null) {
+			output = scriptResultOutputValue;
+		}
+
+		return output;
+	}
+
 	private String lookupDatasetInstruction(ExecutionControl executionControl, String input) {
 		String output = input;
 
 		// Parse input
 		String[] parts = input.split(",");
-		String datasetName = parts[0];
-		String datasetItem = parts[1];
+		String datasetName = parts[0].trim();
+		String datasetItem = parts[1].trim();
 
 		DatasetOperation datasetOperation = executionControl.getExecutionRuntime().getDatasetOperation(datasetName);
 
-		if (datasetItem != null && !datasetItem.equals("")) {
+		if (datasetItem != null && !datasetItem.equalsIgnoreCase("")) {
 			output = datasetOperation.getDataItem(datasetItem);
 		}
 
@@ -644,7 +733,7 @@ public class ExecutionRuntime {
 	}
 
 	private String lookupFileInstruction(ExecutionControl executionControl, String input) {
-		String output = input;
+		String output = input.trim();
 		output = SQLTools.getFirstSQLStmt(input);
 		return output;
 	}
@@ -662,6 +751,15 @@ public class ExecutionRuntime {
 		return output;
 	}
 
+	private String getVariableInstruction(ExecutionControl executionControl, String context, String input) {
+		VariableInstruction variableInstruction = this.getVariableInstructions().get(context);
+		if (variableInstruction == null) {
+			throw new IllegalArgumentException(MessageFormat.format("No variable instruction named {0} found.", context));
+		} else {
+			return variableInstruction.generateOutput();
+		}
+	}
+	
 	private String generateDataInstruction(ExecutionControl executionControl, String context, String input)
 	{
 		DataInstruction dataInstruction = dataInstructions.get(context);
@@ -697,8 +795,13 @@ public class ExecutionRuntime {
 	private void defineLoggingLevel() {
 		if (this.getFrameworkExecution().getFrameworkControl()
 				.getProperty(this.getFrameworkExecution().getFrameworkConfiguration().getSettingConfiguration()
+<<<<<<< HEAD
 						.getSettingPath("commandline.display.runtime.variable").get())
 				.equals("Y")) {
+=======
+						.getSettingPath("commandline.display.runtime.variable"))
+				.equalsIgnoreCase("Y")) {
+>>>>>>> develop
 			this.setLevel(Level.INFO);
 		} else {
 			this.setLevel(Level.TRACE);
@@ -727,10 +830,9 @@ public class ExecutionRuntime {
 	}
 
 	// Dataset Management
-	public void setDataset(String datasetName, String datasetLabels) {
-		DatasetOperation datasetOperation = new DatasetOperation(this.getFrameworkExecution(), datasetName,
-				datasetLabels);
-		this.getDatasetOperationMap().put(datasetName, datasetOperation);
+	public void setDataset(String referenceName, String datasetName, String datasetLabels) {
+		DatasetOperation datasetOperation = new DatasetOperation(this.getFrameworkExecution(), datasetName, datasetLabels);
+		this.getDatasetOperationMap().put(referenceName, datasetOperation);
 	}
 
 	public void setDatasetOperation(String datasetName, DatasetOperation datasetOperation) {
@@ -888,6 +990,21 @@ public class ExecutionRuntime {
 
 	public void setRepositoryOperationMap(HashMap<String, RepositoryOperation> repositoryOperationMap) {
 		this.repositoryOperationMap = repositoryOperationMap;
+	}
+	public HashMap<String, VariableInstruction> getVariableInstructions() {
+		return variableInstructions;
+	}
+
+	public void setVariableInstructions(HashMap<String, VariableInstruction> variableInstructions) {
+		this.variableInstructions = variableInstructions;
+	}
+
+	public ExecutionControl getExecutionControl() {
+		return executionControl;
+	}
+
+	public void setExecutionControl(ExecutionControl executionControl) {
+		this.executionControl = executionControl;
 	}
 
 }

@@ -26,7 +26,7 @@ public class BufferData {
 		this.localdb = cfg.getProperty("localdb");
 		this.dataset = cfg.getProperty("dataset");
 		String sTemp = cfg.getProperty("dropprev");
-		if (sTemp.equals("no")) {
+		if (sTemp.equalsIgnoreCase("no")) {
 			this.dropPrev = false;
 		} else {
 			this.dropPrev = true;

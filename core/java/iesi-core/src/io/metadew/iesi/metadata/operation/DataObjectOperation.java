@@ -49,9 +49,20 @@ public class DataObjectOperation {
 							   MetadataRepository metadataRepositories, String inputFile) {
 		this.setFrameworkExecution(frameworkExecution);
 		this.setInputFile(inputFile);
+<<<<<<< HEAD
 		this.parseFile();
 		this.setMetadataRepositories(new ArrayList());
 		this.getMetadataRepositories().add(metadataRepositories);
+=======
+		File file = new File(inputFile);
+		if (FileTools.getFileExtension(file).equalsIgnoreCase("json")) {
+			this.parseFile();
+		} else if (FileTools.getFileExtension(file).equalsIgnoreCase("yml")) {
+			this.parseYamlFile();
+		}
+		this.setMetadataRepositoryConfigurationList(new ArrayList());
+		this.getMetadataRepositoryConfigurationList().add(metadataRepositoryConfiguration);
+>>>>>>> develop
 		this.setDataObjectConfiguration(new DataObjectConfiguration(this.getFrameworkExecution(),
 				metadataRepositories, this.getDataObjects()));
 
@@ -62,7 +73,13 @@ public class DataObjectOperation {
 		this.setFrameworkExecution(frameworkExecution);
 		this.setMetadataRepositories(metadataRepositoryConfigurationList);
 		this.setInputFile(inputFile);
-		this.parseFile();
+		File file = new File(inputFile);
+		if (FileTools.getFileExtension(file).equalsIgnoreCase("json")) {
+			this.parseFile();
+		} else if (FileTools.getFileExtension(file).equalsIgnoreCase("yml")) {
+			this.parseYamlFile();
+		}
+		
 	}
 
 	// Methods
@@ -77,10 +94,10 @@ public class DataObjectOperation {
 			boolean jsonArray = true;
 
 			while ((readLine = bufferedReader.readLine()) != null) {
-				if (readLine.trim().toLowerCase().startsWith("[") && (!readLine.trim().equals(""))) {
+				if (readLine.trim().toLowerCase().startsWith("[") && (!readLine.trim().equalsIgnoreCase(""))) {
 					jsonArray = true;
 					break;
-				} else if (!readLine.trim().equals("")) {
+				} else if (!readLine.trim().equalsIgnoreCase("")) {
 					jsonArray = false;
 					break;
 				}
@@ -118,10 +135,10 @@ public class DataObjectOperation {
 			boolean yamlArray = true;
 
 			while ((readLine = bufferedReader.readLine()) != null) {
-				if (readLine.trim().toLowerCase().startsWith("[") && (!readLine.trim().equals(""))) {
+				if (readLine.trim().toLowerCase().startsWith("[") && (!readLine.trim().equalsIgnoreCase(""))) {
 					yamlArray = true;
 					break;
-				} else if (!readLine.trim().equals("")) {
+				} else if (!readLine.trim().equalsIgnoreCase("")) {
 					yamlArray = false;
 					break;
 				}

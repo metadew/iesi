@@ -29,11 +29,11 @@ public class FrameworkCrypto {
 
 	public String decrypt(String input) {
 		String output = "";
-		if (input.trim().equals(""))
+		if (input.trim().equalsIgnoreCase(""))
 			return output;
 
-		if (input.substring(0, 4).equals("ENC(")) {
-			if (!input.substring(input.length() - 1).equals(")")) {
+		if (input.substring(0, 4).equalsIgnoreCase("ENC(")) {
+			if (!input.substring(input.length() - 1).equalsIgnoreCase(")")) {
 				throw new RuntimeException("Encrypted password not set correctly");
 			}
 

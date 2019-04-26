@@ -59,7 +59,7 @@ public class GenerationRuleConfiguration {
 
 		// add Parameters
 		String sqlParameters = this.getParameterInsertStatements(generationName);
-		if (!sqlParameters.equals("")) {
+		if (!sqlParameters.equalsIgnoreCase("")) {
 			sql += "\n";
 			sql += sqlParameters;
 		}
@@ -72,7 +72,7 @@ public class GenerationRuleConfiguration {
 
 		for (GenerationRuleParameter generationRuleParameter : this.getgenerationRule().getParameters()) {
 			GenerationRuleParameterConfiguration generationRuleParameterConfiguration = new GenerationRuleParameterConfiguration(generationRuleParameter, this.getFrameworkExecution());
-			if (!result.equals(""))
+			if (!result.equalsIgnoreCase(""))
 				result += "\n";
 			result += generationRuleParameterConfiguration.getInsertStatement(generationName, this.getgenerationRule().getField());
 		}

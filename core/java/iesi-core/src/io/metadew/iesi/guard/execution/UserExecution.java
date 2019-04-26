@@ -88,6 +88,7 @@ public class UserExecution {
 				.executeUpdate(userConfiguration.resetIndividualLoginFails(userName));
 	}
 
+	@SuppressWarnings("unused")
 	private String getPassword() {
 		Console console = System.console();
 		if (console == null) {

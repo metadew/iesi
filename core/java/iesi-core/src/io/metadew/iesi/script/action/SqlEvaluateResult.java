@@ -32,14 +32,16 @@ public class SqlEvaluateResult {
 
 	// Constructors
 	public SqlEvaluateResult() {
-		
+
 	}
-	
-	public SqlEvaluateResult(FrameworkExecution frameworkExecution, ExecutionControl executionControl, ScriptExecution scriptExecution, ActionExecution actionExecution) {
+
+	public SqlEvaluateResult(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+			ScriptExecution scriptExecution, ActionExecution actionExecution) {
 		this.init(frameworkExecution, executionControl, scriptExecution, actionExecution);
 	}
-	
-	public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl, ScriptExecution scriptExecution, ActionExecution actionExecution) {
+
+	public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+			ScriptExecution scriptExecution, ActionExecution actionExecution) {
 		this.setFrameworkExecution(frameworkExecution);
 		this.setExecutionControl(executionControl);
 		this.setActionExecution(actionExecution);
@@ -48,12 +50,12 @@ public class SqlEvaluateResult {
 
 	public void prepare() {
 		// Reset Parameters
-		this.setSqlQuery(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(), this.getActionExecution(),
-				this.getActionExecution().getAction().getType(), "query"));
-		this.setExpectedResult(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(), this.getActionExecution(),
-				this.getActionExecution().getAction().getType(), "hasResult"));
-		this.setConnectionName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(), this.getActionExecution(),
-				this.getActionExecution().getAction().getType(), "connection"));
+		this.setSqlQuery(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+				this.getActionExecution(), this.getActionExecution().getAction().getType(), "query"));
+		this.setExpectedResult(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+				this.getActionExecution(), this.getActionExecution().getAction().getType(), "hasResult"));
+		this.setConnectionName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+				this.getActionExecution(), this.getActionExecution().getAction().getType(), "connection"));
 
 		// Get Parameters
 		for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
@@ -66,59 +68,45 @@ public class SqlEvaluateResult {
 			}
 		}
 
-		//Create parameter list
+		// Create parameter list
 		this.getActionParameterOperationMap().put("query", this.getSqlQuery());
 		this.getActionParameterOperationMap().put("hasResult", this.getExpectedResult());
 		this.getActionParameterOperationMap().put("connection", this.getConnectionName());
 	}
-	
+
 	public boolean execute() {
 		try {
 
 			// Get Connection
 			ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution());
 			Connection connection = connectionConfiguration.getConnection(this.getConnectionName().getValue(),
-					this.getExecutionControl().getEnvName());
+					this.getExecutionControl().getEnvName()).get();
 			ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
 			DatabaseConnection databaseConnection = connectionOperation.getDatabaseConnection(connection);
 
 			// Run the action
 			CachedRowSet crs = null;
-			// String query = this.getExecutionControl().getExecutionRuntime().resolveVariables(this.getFrameworkExecution().getSqlTools().getFirstSQLStmt(this.getFilePath().getValue(), this.getFileName().getValue()));
-			crs = databaseConnection.executeQueryLimitRows(this.getSqlQuery().getValue(),10);
+			// String query =
+			// this.getExecutionControl().getExecutionRuntime().resolveVariables(this.getFrameworkExecution().getSqlTools().getFirstSQLStmt(this.getFilePath().getValue(),
+			// this.getFileName().getValue()));
+			crs = databaseConnection.executeQueryLimitRows(this.getSqlQuery().getValue(), 10);
 			int rowCount = SQLTools.getRowCount(crs);
-			this.getActionExecution().getActionControl().logOutput("count",Integer.toString(rowCount));
+			this.getActionExecution().getActionControl().logOutput("count", Integer.toString(rowCount));
 
 			if (rowCount > 0) {
 				if (this.getExpectedResult().getValue().equalsIgnoreCase("y")) {
-					if (this.getActionExecution().getAction().getErrorExpected().equalsIgnoreCase("y")) {
-						this.getActionExecution().getActionControl().increaseErrorCount();
-					} else {
-						this.getActionExecution().getActionControl().increaseSuccessCount();
-					}
+					this.getActionExecution().getActionControl().increaseSuccessCount();
 					return true;
 				} else {
-					if (this.getActionExecution().getAction().getErrorExpected().equalsIgnoreCase("n")) {
-						this.getActionExecution().getActionControl().increaseErrorCount();
-					} else {
-						this.getActionExecution().getActionControl().increaseSuccessCount();
-					}
+					this.getActionExecution().getActionControl().increaseErrorCount();
 					return false;
 				}
 			} else {
 				if (this.getExpectedResult().getValue().equalsIgnoreCase("n")) {
-					if (this.getActionExecution().getAction().getErrorExpected().equalsIgnoreCase("y")) {
-						this.getActionExecution().getActionControl().increaseErrorCount();
-					} else {
-						this.getActionExecution().getActionControl().increaseSuccessCount();
-					}
+					this.getActionExecution().getActionControl().increaseSuccessCount();
 					return true;
 				} else {
-					if (this.getActionExecution().getAction().getErrorExpected().equalsIgnoreCase("n")) {
-						this.getActionExecution().getActionControl().increaseErrorCount();
-					} else {
-						this.getActionExecution().getActionControl().increaseSuccessCount();
-					}
+					this.getActionExecution().getActionControl().increaseErrorCount();
 					return false;
 				}
 			}
@@ -128,8 +116,8 @@ public class SqlEvaluateResult {
 
 			this.getActionExecution().getActionControl().increaseErrorCount();
 
-			this.getActionExecution().getActionControl().logOutput("exception",e.getMessage());
-			this.getActionExecution().getActionControl().logOutput("stacktrace",StackTrace.toString());
+			this.getActionExecution().getActionControl().logOutput("exception", e.getMessage());
+			this.getActionExecution().getActionControl().logOutput("stacktrace", StackTrace.toString());
 
 			return false;
 		}

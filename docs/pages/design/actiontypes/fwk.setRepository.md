@@ -1,0 +1,4 @@
+{% include navigation.html %}
+
+# type
+

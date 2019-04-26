@@ -18,6 +18,7 @@ public class DataSetDatasetConnection {
 	private ExecutionControl executionControl;
 
 	// Parameters
+	private ActionParameterOperation referenceName;
 	private ActionParameterOperation datasetName;
 	private ActionParameterOperation datasetLabels;
 	private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
@@ -42,13 +43,17 @@ public class DataSetDatasetConnection {
 
 	public void prepare() {
 		// Reset Parameters
-		this.setDatasetName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+		this.setReferenceName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
 				this.getActionExecution(), this.getActionExecution().getAction().getType(), "name"));
+		this.setDatasetName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+				this.getActionExecution(), this.getActionExecution().getAction().getType(), "dataset"));
 		this.setDatasetLabels(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
 				this.getActionExecution(), this.getActionExecution().getAction().getType(), "labels"));
 		// Get Parameters
 		for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
 			if (actionParameter.getName().equalsIgnoreCase("name")) {
+				this.getReferenceName().setInputValue(actionParameter.getValue());
+			} else if (actionParameter.getName().equalsIgnoreCase("dataset")) {
 				this.getDatasetName().setInputValue(actionParameter.getValue());
 			} else if (actionParameter.getName().equalsIgnoreCase("labels")) {
 				this.getDatasetLabels().setInputValue(actionParameter.getValue());
@@ -56,7 +61,8 @@ public class DataSetDatasetConnection {
 		}
 
 		// Create parameter list
-		this.getActionParameterOperationMap().put("name", this.getDatasetName());
+		this.getActionParameterOperationMap().put("name", this.getReferenceName());
+		this.getActionParameterOperationMap().put("dataset", this.getDatasetName());
 		this.getActionParameterOperationMap().put("labels", this.getDatasetLabels());
 	}
 	
@@ -64,8 +70,7 @@ public class DataSetDatasetConnection {
 	public boolean execute() {
 		try {
 			// Run the action
-			this.getExecutionControl().getExecutionRuntime().setDataset(this.getDatasetName().getValue(),
-					this.getDatasetLabels().getValue());
+			this.getExecutionControl().getExecutionRuntime().setDataset(referenceName.getValue(), datasetName.getValue(), datasetLabels.getValue());
 
 			return true;
 		} catch (Exception e) {
@@ -129,6 +134,14 @@ public class DataSetDatasetConnection {
 
 	public void setDatasetLabels(ActionParameterOperation datasetLabels) {
 		this.datasetLabels = datasetLabels;
+	}
+
+	public ActionParameterOperation getReferenceName() {
+		return referenceName;
+	}
+
+	public void setReferenceName(ActionParameterOperation referenceName) {
+		this.referenceName = referenceName;
 	}
 
 }

@@ -1,30 +1,33 @@
-///*
 //package io.metadew.iesi.launch;
 //
+//import org.apache.commons.cli.CommandLine;
+//import org.apache.commons.cli.CommandLineParser;
+//import org.apache.commons.cli.DefaultParser;
+//import org.apache.commons.cli.HelpFormatter;
+//import org.apache.commons.cli.Option;
+//import org.apache.commons.cli.Options;
+//import org.apache.commons.cli.ParseException;
+//
 //import io.metadew.iesi.data.configuration.DataRepositoryConfiguration;
-//import io.metadew.iesi.framework.execution.FrameworkExecution;
+//import io.metadew.iesi.data.operation.DataRepositoryOperation;
 //import io.metadew.iesi.framework.execution.FrameworkExecutionContext;
+//import io.metadew.iesi.framework.execution.FrameworkExecution;
+//import io.metadew.iesi.metadata.configuration.MetadataRepositoryConfiguration;
 //import io.metadew.iesi.metadata.definition.Context;
 //import io.metadew.iesi.metadata.operation.MetadataRepositoryOperation;
-//import io.metadew.iesi.metadata_repository.MetadataRepository;
-//import io.metadew.iesi.metadata_repository.configuration.MetadataRepositoryConfiguration;
-//import org.apache.commons.cli.*;
 //
-//import java.util.List;
-//
-//*/
 ///**
 // * The metadata launcher is entry point to launch all data management
 // * operations.
 // *
 // * @author peter.billen
 // *
-// *//*
-//
+// */
 //public class DataLauncher {
 //
 //	private static boolean actionMatch = false;
 //
+//	@SuppressWarnings("unused")
 //	public static void main(String[] args) {
 //
 //		Option oHelp = new Option("help", "print this message");
@@ -122,18 +125,17 @@
 //			context.setName("data");
 //			context.setScope("");
 //			FrameworkExecution frameworkExecution = new FrameworkExecution(new FrameworkExecutionContext(context),
-//					"owner");
+//					"owner",null);
 //
 //			DataRepositoryConfiguration dataRepositoryConfiguration = new DataRepositoryConfiguration(
 //					frameworkExecution, repository, instanceName, instanceLabels, environment);
-//			List<MetadataRepository> metadataRepository = new MetadataRepositoryConfiguration(dataRepositoryConfiguration.getConfigFile(),
-//					frameworkExecution.getFrameworkConfiguration().getSettingConfiguration()).toMetadataRepositories(frameworkExecution.getFrameworkConfiguration());
 //
-////			MetadataRepositoryConfigurationBack metadataRepositoryConfiguration = new MetadataRepositoryConfigurationBack(
-////					frameworkExecution.getFrameworkConfiguration(), frameworkExecution.getFrameworkControl(),
-////					dataRepositoryConfiguration.getConfigFile(), "owner");
+//			MetadataRepositoryConfiguration metadataRepositoryConfiguration = new MetadataRepositoryConfiguration(
+//					frameworkExecution.getFrameworkConfiguration(), frameworkExecution.getFrameworkControl(),
+//					dataRepositoryConfiguration.getConfigFile(), "owner");
 //
-//			MetadataRepositoryOperation metadataRepositoryOperation = new MetadataRepositoryOperation(frameworkExecution, metadataRepository.get(0));
+//			MetadataRepositoryOperation metadataRepositoryOperation = new MetadataRepositoryOperation(frameworkExecution,
+//					metadataRepositoryConfiguration);
 //
 //			DataRepositoryOperation dataRepositoryOperation = new DataRepositoryOperation(frameworkExecution,
 //					dataRepositoryConfiguration);
@@ -231,4 +233,4 @@
 //		System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 //	}
 //
-//}*/
+//}

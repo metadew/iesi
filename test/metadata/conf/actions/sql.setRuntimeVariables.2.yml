@@ -1,0 +1,21 @@
+---
+type: "script"
+data:
+  name: "sql.setRuntimeVariables.2"
+  description: "test sql.setRuntimeVariables with more than 1 result and expect and error"
+  parameters: []
+  actions:
+  - number: 1
+    type: "sql.setRuntimeVariables"
+    name: "action1"
+    description: "run a sql select query with more than 1 result and expect and error"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "Y"
+    errorStop: "N"
+    parameters:
+    - name: "query"
+      value : "select Field1, Field2, Field3 from Table1"
+    - name: "connection"
+      value : "sql.setRuntimeVariables.2"

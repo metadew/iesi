@@ -1,0 +1,17 @@
+[{
+	"type": "connection",
+	"data": {
+		"name": "target_postgres",
+		"description": "Connection to the target database on Postgres server",
+		"type": "db.pgsql",
+		"environment": "dev",
+		"parameters": [
+			{"name": "host","value": "postgres-target"},
+			{"name": "port","value": "5432"},
+			{"name": "database","value": "target"},
+			{"name": "user","value": "target"},
+			{"name": "password","value": "ENC(RKKm3k2BujWKVajdbdWXeALkRVioqboSQaQ=)"}
+			
+		]
+	}
+}]

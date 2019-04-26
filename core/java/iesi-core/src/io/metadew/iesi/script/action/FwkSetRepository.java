@@ -83,6 +83,8 @@ public class FwkSetRepository {
 					this.getRepositoryName().getValue(), this.getRepositoryInstanceName().getValue(),
 					this.getRepositoryInstanceLabels().getValue());
 
+			this.getActionExecution().getActionControl().increaseSuccessCount();
+			
 			return true;
 		} catch (Exception e) {
 			StringWriter StackTrace = new StringWriter();

@@ -24,7 +24,8 @@ public class IterationVariableConfiguration {
 	private String PRC_ITERATION_VAR = "PRC_ITERATION_VAR";
 
 	// Constructors
-	public IterationVariableConfiguration(FrameworkExecution frameworkExecution, String runCacheFolderName) {
+	public IterationVariableConfiguration(FrameworkExecution frameworkExecution, String runCacheFolderName,
+			boolean initialize) {
 		this.setFrameworkExecution(frameworkExecution);
 
 		// Define path
@@ -33,7 +34,11 @@ public class IterationVariableConfiguration {
 
 		// Create database
 		this.setSqliteDatabaseConnection(new SqliteDatabaseConnection(this.getRunCacheFilePath()));
-		this.createIterationVarTable();
+
+		// Initialize
+		if (initialize) {
+			this.createIterationVarTable();
+		}
 
 	}
 
@@ -123,8 +128,8 @@ public class IterationVariableConfiguration {
 
 	public String getRuntimeVariableValue(String runId, String name) {
 		CachedRowSet crs = null;
-		String query = "select VAR_VAL from " + this.getPRC_ITERATION_VAR() + " where run_id = '" + runId + "' and var_nm = '"
-				+ name + "'";
+		String query = "select VAR_VAL from " + this.getPRC_ITERATION_VAR() + " where run_id = '" + runId
+				+ "' and var_nm = '" + name + "'";
 		crs = this.getSqliteDatabaseConnection().executeQuery(query);
 		String value = "";
 		try {
@@ -139,13 +144,22 @@ public class IterationVariableConfiguration {
 		return value;
 	}
 
+	public CachedRowSet getIterationList(String runId, String name) {
+		CachedRowSet crs = null;
+		String query = "select run_id, prc_id, list_id, list_nm, set_id, set_nm, order_nb, var_nm, var_val from "
+				+ this.getPRC_ITERATION_VAR() + " where run_id = '" + runId + "' and list_nm = '" + name
+				+ "' order by order_nb asc, var_nm asc";
+		crs = this.getSqliteDatabaseConnection().executeQuery(query);
+		return crs;
+	}
+
 	public RuntimeVariable getRuntimeVariable(String runId, String name) {
 		RuntimeVariable runtimeVariable = new RuntimeVariable();
 		runtimeVariable.setName(name);
 
 		CachedRowSet crs = null;
-		String query = "select VAR_VAL from " + this.getPRC_ITERATION_VAR() + " where run_id = '" + runId + "' and var_nm = '"
-				+ name + "'";
+		String query = "select VAR_VAL from " + this.getPRC_ITERATION_VAR() + " where run_id = '" + runId
+				+ "' and var_nm = '" + name + "'";
 		crs = this.getSqliteDatabaseConnection().executeQuery(query);
 		String value = "";
 		try {

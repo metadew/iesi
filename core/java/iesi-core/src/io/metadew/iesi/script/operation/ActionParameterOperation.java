@@ -62,7 +62,7 @@ public class ActionParameterOperation {
 
 	private void lookupSubroutine() {
 		if (this.getActionTypeParameter().getSubroutine() == null
-				|| this.getActionTypeParameter().getSubroutine().equals(""))
+				|| this.getActionTypeParameter().getSubroutine().equalsIgnoreCase(""))
 			return;
 		this.setSubroutineOperation(new SubroutineOperation(this.getFrameworkExecution(), this.getValue()));
 		if (this.getSubroutineOperation().isValid()) {
@@ -123,7 +123,7 @@ public class ActionParameterOperation {
 
 		// Cross concept lookup
 		LookupResult lookupResult = this.getExecutionControl().getExecutionRuntime().resolveConceptLookup(this.getExecutionControl(),
-				this.getValue(), true); 
+				this.getValue());
 		this.setValue(lookupResult.getValue());
 
 		// Resolve internal encryption
@@ -135,7 +135,7 @@ public class ActionParameterOperation {
 		if (this.getActionTypeParameter().getImpersonate().trim().equalsIgnoreCase("y")) {
 			String impersonatedConnectionName = this.getExecutionControl().getExecutionRuntime()
 					.getImpersonationOperation().getImpersonatedConnection(this.getValue());
-			if (!impersonatedConnectionName.equals("")) {
+			if (!impersonatedConnectionName.equalsIgnoreCase("")) {
 				this.getExecutionControl().logMessage(this.getActionExecution(), "action." + this.getName()
 						+ ".impersonate=" + this.getValue() + ":" + impersonatedConnectionName, Level.DEBUG);
 				this.setValue(impersonatedConnectionName);

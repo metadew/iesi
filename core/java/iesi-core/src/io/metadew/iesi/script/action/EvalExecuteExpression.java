@@ -73,17 +73,9 @@ public class EvalExecuteExpression {
 			}
 
 			if (evaluation) {
-				if (this.getActionExecution().getAction().getErrorExpected().equalsIgnoreCase("y")) {
-					this.getActionExecution().getActionControl().increaseErrorCount();
-				} else {
-					this.getActionExecution().getActionControl().increaseSuccessCount();
-				}
+				this.getActionExecution().getActionControl().increaseSuccessCount();
 			} else {
-				if (this.getActionExecution().getAction().getErrorExpected().equalsIgnoreCase("n")) {
-					this.getActionExecution().getActionControl().increaseErrorCount();
-				} else {
-					this.getActionExecution().getActionControl().increaseSuccessCount();
-				}
+				this.getActionExecution().getActionControl().increaseErrorCount();
 			}
 			return true;
 		} catch (

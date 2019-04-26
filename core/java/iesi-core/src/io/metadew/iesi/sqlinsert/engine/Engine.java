@@ -64,8 +64,8 @@ public class Engine {
 		this.connectionURL = cfg.getProperty("connectionURL");
 		this.user = cfg.getProperty("user");
 		String temp = cfg.getProperty("password");
-		if (temp.substring(0, 4).equals("ENC(")) {
-			if (!temp.substring(temp.length() - 1).equals(")")) {
+		if (temp.substring(0, 4).equalsIgnoreCase("ENC(")) {
+			if (!temp.substring(temp.length() - 1).equalsIgnoreCase(")")) {
 				try {
 					throw new IOException("Encrypted password not set correctly");
 				} catch (IOException e) {

@@ -15,6 +15,7 @@ import io.metadew.iesi.common.config.KeyValueConfigList;
 import io.metadew.iesi.common.config.LinuxConfigFile;
 import io.metadew.iesi.common.config.WindowsConfigFile;
 import io.metadew.iesi.framework.configuration.FrameworkConfiguration;
+import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
 import io.metadew.iesi.metadata.configuration.FrameworkPluginConfiguration;
 import io.metadew.iesi.metadata.operation.MetadataRepositoryCategoryOperation;
 import io.metadew.iesi.metadata_repository.configuration.MetadataRepositoryConfiguration;
@@ -28,7 +29,7 @@ public class FrameworkControl {
 	private String logonType;
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public FrameworkControl(FrameworkConfiguration frameworkConfiguration, String logonType) {
+	public FrameworkControl(FrameworkConfiguration frameworkConfiguration, String logonType, FrameworkInitializationFile frameworkInitializationFile) {
 		try {
 			this.setLogonType(logonType);
 			this.setProperties(new Properties());
@@ -36,7 +37,7 @@ public class FrameworkControl {
 			this.setFrameworkPluginConfigurationList(new ArrayList());
 			this.getProperties().put(frameworkConfiguration.getFrameworkCode() + ".home",
 					frameworkConfiguration.getFrameworkHome());
-			this.readSettingFiles(frameworkConfiguration);
+			this.readSettingFiles(frameworkConfiguration, frameworkInitializationFile.getName());
 			this.setMetadataRepositoryConfig(
 					new MetadataRepositoryCategoryOperation(frameworkConfiguration.getFolderConfiguration()));
 
@@ -60,10 +61,10 @@ public class FrameworkControl {
 	}
 
 	// Methods
-	private void readSettingFiles(FrameworkConfiguration frameworkConfiguration) {
+	private void readSettingFiles(FrameworkConfiguration frameworkConfiguration, String initializationFile) {
 		try {
 			File file = new File(this.resolveConfiguration("#" + frameworkConfiguration.getFrameworkCode()
-					+ ".home#/conf/" + frameworkConfiguration.getFrameworkCode() + "-conf.ini"));
+					+ ".home#/conf/" + initializationFile));
 			@SuppressWarnings("resource")
 			BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
 			String readLine = "";

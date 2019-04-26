@@ -14,6 +14,7 @@ public class IterationExecution {
 	private IterationConfiguration iterationConfiguration;
 	private boolean iterationOff;
 	private String iterationType;
+	private String iterationName;
 
 	public IterationExecution() {
 		this.setIterationOff(true);
@@ -22,16 +23,35 @@ public class IterationExecution {
 
 	// Methods
 	public void initialize(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
-			IterationOperation iterationOperation) {
+			String iterationName) {
 		this.setExecutionControl(executionControl);
-		this.setIterationOperation(iterationOperation);
+		this.setIterationName(iterationName);
+		this.setIterationOperation(
+				this.getExecutionControl().getExecutionRuntime().getIterationOperation(this.getIterationName()));
 		this.setIterationConfiguration(new IterationConfiguration(this.getFrameworkExecution(),
-				this.getExecutionControl().getExecutionRuntime().getRunCacheFolderName()));
+				this.getExecutionControl().getExecutionRuntime().getRunCacheFolderName(), executionControl));
 		if (this.getIterationOperation().getIteration().getType().trim().equalsIgnoreCase("values")) {
 			this.getIterationConfiguration().setIterationValues(this.getExecutionControl().getRunId(),
 					this.getIterationOperation().getIteration().getName(),
 					this.getIterationOperation().getIteration().getValues());
 			this.setIterationType("values");
+			this.setIterationOff(false);
+		} else if (this.getIterationOperation().getIteration().getType().trim().equalsIgnoreCase("for")) {
+			this.getIterationConfiguration().setIterationFor(this.getExecutionControl().getRunId(),
+					this.getIterationOperation().getIteration().getName(),
+					this.getIterationOperation().getIteration().getFrom(),
+					this.getIterationOperation().getIteration().getTo(),
+					this.getIterationOperation().getIteration().getStep());
+			this.setIterationType("for");
+			this.setIterationOff(false);
+		} else if (this.getIterationOperation().getIteration().getType().trim().equalsIgnoreCase("condition")) {
+			this.setIterationType("condition");
+			this.setIterationOff(false);
+		} else if (this.getIterationOperation().getIteration().getType().trim().equalsIgnoreCase("list")) {
+			this.getIterationConfiguration().setIterationList(this.getExecutionControl().getRunId(),
+					this.getIterationOperation().getIteration().getName(),
+					this.getIterationOperation().getIteration().getList());
+			this.setIterationType("list");
 			this.setIterationOff(false);
 		}
 	}
@@ -44,13 +64,24 @@ public class IterationExecution {
 			} else {
 				return false;
 			}
-		} else if (this.getIterationType().equalsIgnoreCase("values")) {
-			IterationInstance iterationInstance = this.getIterationConfiguration().hasNext(this.getExecutionControl().getRunId(), this.getIterationNumber());
+		} else if (this.getIterationType().equalsIgnoreCase("values")
+				|| this.getIterationType().equalsIgnoreCase("for")) {
+			IterationInstance iterationInstance = this.getIterationConfiguration()
+					.hasNext(this.getExecutionControl().getRunId(), this.getIterationNumber());
 			return !iterationInstance.isEmpty();
+		} else if (this.getIterationType().equalsIgnoreCase("condition")) {
+			IterationInstance iterationInstance = this.getIterationConfiguration().hasNext(
+					this.getExecutionControl().getRunId(), this.getIterationOperation().getIteration().getCondition());
+			return !iterationInstance.isEmpty();
+		} else if (this.getIterationType().equalsIgnoreCase("list")) {
+			IterationInstance iterationInstance = this.getIterationConfiguration().hasNextListItem(
+					this.getExecutionControl().getRunId(), this.getIterationName(),
+					this.getIterationNumber());
+			return !iterationInstance.isEmpty();
+
 		} else {
 			return false;
 		}
-
 	}
 
 	// Getters and setters
@@ -108,6 +139,14 @@ public class IterationExecution {
 
 	public void setIterationType(String iterationType) {
 		this.iterationType = iterationType;
+	}
+
+	public String getIterationName() {
+		return iterationName;
+	}
+
+	public void setIterationName(String iterationName) {
+		this.iterationName = iterationName;
 	}
 
 }

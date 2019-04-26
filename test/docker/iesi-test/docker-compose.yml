@@ -1,0 +1,9 @@
+version: '3.2'
+services:
+  iesi-test-linux1:
+    build: './linuxhost'
+    ports:
+      - '2222:22'
+    container_name: iesi-test-linux1
+    hostname: iesi-test-linux1
+    restart: unless-stopped

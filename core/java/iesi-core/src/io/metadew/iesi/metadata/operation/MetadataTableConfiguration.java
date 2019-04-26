@@ -51,9 +51,9 @@ public class MetadataTableConfiguration
 		// Set table name prefix
 		String instanceName = (String)properties.get(settingsConfig.getSettingPath("metadata.repository.instance.name"));
 		String tempTableNamePrefix = "";
-		if (instanceName == null || instanceName.equals(""))
+		if (instanceName == null || instanceName.equalsIgnoreCase(""))
 		{
-			if (frameworkConfiguration.getFrameworkCode() == null || frameworkConfiguration.getFrameworkCode().equals(""))
+			if (frameworkConfiguration.getFrameworkCode() == null || frameworkConfiguration.getFrameworkCode().equalsIgnoreCase(""))
 			{
 				tempTableNamePrefix = "";
 			}
@@ -64,7 +64,7 @@ public class MetadataTableConfiguration
 		}
 		else
 		{
-			if (frameworkConfiguration.getFrameworkCode() == null || frameworkConfiguration.getFrameworkCode().equals(""))
+			if (frameworkConfiguration.getFrameworkCode() == null || frameworkConfiguration.getFrameworkCode().equalsIgnoreCase(""))
 			{
 				tempTableNamePrefix = instanceName;
 			}
@@ -88,23 +88,23 @@ public class MetadataTableConfiguration
 			}
 		}
 
-		if (this.getMetadataRepositoryType().equals("oracle"))
+		if (this.getMetadataRepositoryType().equalsIgnoreCase("oracle"))
 		{
 			this.setSchema(properties.getProperty(settingsConfig.getSettingPath("metadata.repository.oracle.schema").get()));
 		}
-		else if (this.getMetadataRepositoryType().equals("netezza"))
+		else if (this.getMetadataRepositoryType().equalsIgnoreCase("netezza"))
 		{
 			this.setSchema(properties.getProperty(settingsConfig.getSettingPath("metadata.repository.netezza.schema").get()));
 		}
-		else if (this.getMetadataRepositoryType().equals("postgresql"))
+		else if (this.getMetadataRepositoryType().equalsIgnoreCase("postgresql"))
 		{
 			this.setSchema(properties.getProperty(settingsConfig.getSettingPath("metadata.repository.postgresql.schema").get()));
 		}
-		else if (this.getMetadataRepositoryType().equals("sqlite"))
+		else if (this.getMetadataRepositoryType().equalsIgnoreCase("sqlite"))
 		{
 			this.setSchema("");
 		}
-		else if (this.getMetadataRepositoryType().equals("elasticsearch"))
+		else if (this.getMetadataRepositoryType().equalsIgnoreCase("elasticsearch"))
 		{
 			this.setSchema("");
 		}
@@ -126,23 +126,23 @@ public class MetadataTableConfiguration
 	public String getSchemaPrefix()
 	{
 		String tempSchema = "";
-		if (this.getMetadataRepositoryType().equals("oracle"))
+		if (this.getMetadataRepositoryType().equalsIgnoreCase("oracle"))
 		{
 			tempSchema = this.getSchema();
 		}
-		else if (this.getMetadataRepositoryType().equals("sqlite"))
+		else if (this.getMetadataRepositoryType().equalsIgnoreCase("sqlite"))
 		{
 			tempSchema = "";
 		}
-		else if (this.getMetadataRepositoryType().equals("elasticsearch"))
+		else if (this.getMetadataRepositoryType().equalsIgnoreCase("elasticsearch"))
 		{
 			tempSchema = "";
 		}
-		else if (this.getMetadataRepositoryType().equals("netezza"))
+		else if (this.getMetadataRepositoryType().equalsIgnoreCase("netezza"))
 		{
 			tempSchema = this.getSchema();
 		}
-		else if (this.getMetadataRepositoryType().equals("postgresql"))
+		else if (this.getMetadataRepositoryType().equalsIgnoreCase("postgresql"))
 		{
 			tempSchema = this.getSchema();
 		}
@@ -152,7 +152,7 @@ public class MetadataTableConfiguration
 			;
 		}
 
-		if (!tempSchema.equals(""))
+		if (!tempSchema.equalsIgnoreCase(""))
 		{
 			return tempSchema += ".";
 		}
@@ -165,7 +165,7 @@ public class MetadataTableConfiguration
 
 	public String getTableNamePrefix()
 	{
-		if (tableNamePrefix.equals(""))
+		if (tableNamePrefix.equalsIgnoreCase(""))
 		{
 			return "";
 		}

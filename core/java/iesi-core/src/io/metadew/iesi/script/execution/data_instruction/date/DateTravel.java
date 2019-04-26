@@ -31,7 +31,7 @@ public class DateTravel implements DataInstruction
 		Matcher inputParameterMatcher = INPUT_PARAMETER_PATTERN.matcher(parameters);
 		if (!inputParameterMatcher.find())
 		{
-			throw new IllegalArgumentException(MessageFormat.format("Illegal arguments provided to date format: {0}", parameters));
+			throw new IllegalArgumentException(MessageFormat.format("Illegal arguments provided to " + this.getKeyword() + ": {0}", parameters));
 		}
 		else
 		{

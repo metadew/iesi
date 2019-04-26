@@ -1,0 +1,12 @@
+---
+type: Connection
+data:
+  name: "simplesyntheticdataset"
+  type: "db.sqlite"
+  description: "Simple Synthetic Dataset for tutorials"
+  environment: "tutorial"
+  parameters:
+  - name: "filePath"
+    value: "#iesi.home#/data/tutorials"
+  - name: "fileName"
+    value: "simplesyntheticdataset.db3"

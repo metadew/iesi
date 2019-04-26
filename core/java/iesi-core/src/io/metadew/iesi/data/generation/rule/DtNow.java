@@ -58,7 +58,7 @@ public class DtNow {
 
 				// Set format
 				SimpleDateFormat dateFormat = null;
-				if (this.getFormat().getValue().trim().equals("")) {
+				if (this.getFormat().getValue().trim().equalsIgnoreCase("")) {
 					dateFormat = new SimpleDateFormat(DEFAULT_FORMAT);	
 				} else {
 					dateFormat = new SimpleDateFormat(this.getFormat().getValue());

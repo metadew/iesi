@@ -143,28 +143,28 @@ public class GenerationConfiguration {
 
 		// add Rules
 		String sqlRules = this.getGenerationRuleInsertStatements();
-		if (!sqlRules.equals("")) {
+		if (!sqlRules.equalsIgnoreCase("")) {
 			sql += "\n";
 			sql += sqlRules;
 		}
 
 		// add Outputs
 		String sqlOutputs = this.getGenerationOutputInsertStatements();
-		if (!sqlOutputs.equals("")) {
+		if (!sqlOutputs.equalsIgnoreCase("")) {
 			sql += "\n";
 			sql += sqlOutputs;
 		}
 
 		// add Controls
 		String sqlControls = this.getGenerationControlInsertStatements();
-		if (!sqlControls.equals("")) {
+		if (!sqlControls.equalsIgnoreCase("")) {
 			sql += "\n";
 			sql += sqlControls;
 		}
 		
 		// add Parameters
 		String sqlParameters = this.getParameterInsertStatements();
-		if (!sqlParameters.equals("")) {
+		if (!sqlParameters.equalsIgnoreCase("")) {
 			sql += "\n";
 			sql += sqlParameters;
 		}
@@ -181,7 +181,7 @@ public class GenerationConfiguration {
 		for (GenerationRule generationRule : this.getGeneration().getRules()) {
 			counter++;
 			GenerationRuleConfiguration generationRuleConfiguration = new GenerationRuleConfiguration(generationRule, this.getFrameworkExecution());
-			if (!result.equals(""))
+			if (!result.equalsIgnoreCase(""))
 				result += "\n";		
 			result += generationRuleConfiguration.getInsertStatement(this.getGeneration().getName(), counter);
 		}
@@ -196,7 +196,7 @@ public class GenerationConfiguration {
 		
 		for (GenerationOutput generationOutput : this.getGeneration().getOutputs()) {
 			GenerationOutputConfiguration generationOutputConfiguration = new GenerationOutputConfiguration(generationOutput, this.getFrameworkExecution());
-			if (!result.equals(""))
+			if (!result.equalsIgnoreCase(""))
 				result += "\n";		
 			result += generationOutputConfiguration.getInsertStatement(this.getGeneration().getName());
 		}
@@ -211,7 +211,7 @@ public class GenerationConfiguration {
 		
 		for (GenerationControl generationControl : this.getGeneration().getControls()) {
 			GenerationControlConfiguration generationControlConfiguration = new GenerationControlConfiguration(generationControl, this.getFrameworkExecution());
-			if (!result.equals(""))
+			if (!result.equalsIgnoreCase(""))
 				result += "\n";		
 			result += generationControlConfiguration.getInsertStatement(this.getGeneration().getName());
 		}
@@ -226,7 +226,7 @@ public class GenerationConfiguration {
 		
 		for (GenerationParameter generationParameter : this.getGeneration().getParameters()) {
 			GenerationParameterConfiguration generationParameterConfiguration = new GenerationParameterConfiguration(generationParameter, this.getFrameworkExecution());
-			if (!result.equals(""))
+			if (!result.equalsIgnoreCase(""))
 				result += "\n";
 			result += generationParameterConfiguration.getInsertStatement(this.getGeneration().getName());
 		}
@@ -307,7 +307,7 @@ public class GenerationConfiguration {
 			e.printStackTrace(new PrintWriter(StackTrace));
 		}
 		
-		if (generation.getName() == null || generation.getName().equals("")) {
+		if (generation.getName() == null || generation.getName().equalsIgnoreCase("")) {
 			throw new RuntimeException("Generation (NAME) " + generationName + " does not exist");
 		}
 		

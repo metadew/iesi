@@ -2,9 +2,13 @@ package io.metadew.iesi.script.action;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -23,9 +27,16 @@ import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 import io.metadew.iesi.script.operation.RequestOperation;
 import io.metadew.iesi.script.operation.RequestParameterOperation;
+import io.metadew.iesi.sqlinsert.engine.ConfigFile;
+import org.apache.http.Header;
+import org.apache.http.HttpHeaders;
+import org.apache.http.entity.ContentType;
 
-public class HttpExecuteRequest
-{
+import javax.activation.MimeType;
+
+import static org.apache.http.entity.ContentType.APPLICATION_JSON;
+
+public class HttpExecuteRequest {
 
 	private ActionExecution actionExecution;
 
@@ -46,21 +57,24 @@ public class HttpExecuteRequest
 
 	private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
 
+	private final Pattern INFORMATION_STATUS_CODE = Pattern.compile("1\\d\\d*");
+	private final Pattern SUCCESS_STATUS_CODE = Pattern.compile("2\\d\\d*");
+	private final Pattern REDIRECT_STATUS_CODE = Pattern.compile("3\\d\\d*");
+	private final Pattern SERVER_ERROR_STATUS_CODE = Pattern.compile("4\\d\\d*");
+	private final Pattern CLIENT_ERROR_STATUS_CODE = Pattern.compile("5\\d\\d*");
+
 	// Constructors
-	public HttpExecuteRequest()
-	{
+	public HttpExecuteRequest() {
 
 	}
 
-	public HttpExecuteRequest(FrameworkExecution frameworkExecution, ExecutionControl executionControl, ScriptExecution scriptExecution,
-				ActionExecution actionExecution)
-	{
+	public HttpExecuteRequest(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+			ScriptExecution scriptExecution, ActionExecution actionExecution) {
 		this.init(frameworkExecution, executionControl, scriptExecution, actionExecution);
 	}
 
-	public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl, ScriptExecution scriptExecution,
-				ActionExecution actionExecution)
-	{
+	public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+			ScriptExecution scriptExecution, ActionExecution actionExecution) {
 		this.setFrameworkExecution(frameworkExecution);
 		this.setExecutionControl(executionControl);
 		this.setActionExecution(actionExecution);
@@ -70,37 +84,28 @@ public class HttpExecuteRequest
 	public void prepare() {
 		// Reset Parameters
 		this.setRequestType(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
-					this.getActionExecution(), this.getActionExecution().getAction().getType(), "type"));
+				this.getActionExecution(), this.getActionExecution().getAction().getType(), "type"));
 		this.setRequestName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
-					this.getActionExecution(), this.getActionExecution().getAction().getType(), "request"));
+				this.getActionExecution(), this.getActionExecution().getAction().getType(), "request"));
 		this.setRequestBody(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
-					this.getActionExecution(), this.getActionExecution().getAction().getType(), "body"));
-		this.setSetRuntimeVariables(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
-					this.getActionExecution(), this.getActionExecution().getAction().getType(), "setRuntimeVariables"));
+				this.getActionExecution(), this.getActionExecution().getAction().getType(), "body"));
+		this.setSetRuntimeVariables(new ActionParameterOperation(this.getFrameworkExecution(),
+				this.getExecutionControl(), this.getActionExecution(), this.getActionExecution().getAction().getType(),
+				"setRuntimeVariables"));
 		this.setSetDataset(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
-					this.getActionExecution(), this.getActionExecution().getAction().getType(), "setDataset"));
+				this.getActionExecution(), this.getActionExecution().getAction().getType(), "setDataset"));
 
 		// Get Parameters
-		for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters())
-		{
-			if (actionParameter.getName().equalsIgnoreCase("request"))
-			{
+		for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
+			if (actionParameter.getName().equalsIgnoreCase("request")) {
 				this.getRequestName().setInputValue(actionParameter.getValue());
-			}
-			else if (actionParameter.getName().equalsIgnoreCase("type"))
-			{
+			} else if (actionParameter.getName().equalsIgnoreCase("type")) {
 				this.getRequestType().setInputValue(actionParameter.getValue());
-			}
-			else if (actionParameter.getName().equalsIgnoreCase("body"))
-			{
+			} else if (actionParameter.getName().equalsIgnoreCase("body")) {
 				this.getRequestBody().setInputValue(actionParameter.getValue());
-			}
-			else if (actionParameter.getName().equalsIgnoreCase("setruntimevariables"))
-			{
+			} else if (actionParameter.getName().equalsIgnoreCase("setruntimevariables")) {
 				this.getSetRuntimeVariables().setInputValue(actionParameter.getValue());
-			}
-			else if (actionParameter.getName().equalsIgnoreCase("setdataset"))
-			{
+			} else if (actionParameter.getName().equalsIgnoreCase("setdataset")) {
 				this.getSetDataset().setInputValue(actionParameter.getValue());
 			}
 		}
@@ -112,15 +117,13 @@ public class HttpExecuteRequest
 		this.getActionParameterOperationMap().put("setRuntimeVariables", this.getSetRuntimeVariables());
 		this.getActionParameterOperationMap().put("setDataset", this.getSetDataset());
 	}
-	
+
 	@SuppressWarnings("rawtypes")
-	public boolean execute()
-	{
-		try
-		{
+	public boolean execute() {
+		try {
 			// Get request configuration
-			RequestOperation requestOperation = new RequestOperation(this.getFrameworkExecution(), this.getExecutionControl(),
-						this.getActionExecution(), this.getRequestName().getValue());
+			RequestOperation requestOperation = new RequestOperation(this.getFrameworkExecution(),
+					this.getExecutionControl(), this.getActionExecution(), this.getRequestName().getValue());
 
 			// Run the action
 			HttpRequest httpRequest = new HttpRequest(requestOperation.getUrl().getValue());
@@ -128,26 +131,24 @@ public class HttpExecuteRequest
 			ObjectMapper objectMapper = new ObjectMapper();
 			// Headers
 			iterator = requestOperation.getHeaderMap().entrySet().iterator();
-			while (iterator.hasNext())
-			{
-				Map.Entry pair = (Map.Entry)iterator.next();
+			while (iterator.hasNext()) {
+				Map.Entry pair = (Map.Entry) iterator.next();
 				RequestParameterOperation requestParameterOperation = objectMapper.convertValue(pair.getValue(),
-							RequestParameterOperation.class);
+						RequestParameterOperation.class);
 				String[] headerPair = ParsingTools.getValuesForDelimitedList(true,
-							requestParameterOperation.getValue());
+						requestParameterOperation.getValue());
 				httpRequest.addHeader(headerPair[0], headerPair[1]);
 				iterator.remove();
 			}
 
 			// QueryParams
 			iterator = requestOperation.getQueryParamMap().entrySet().iterator();
-			while (iterator.hasNext())
-			{
-				Map.Entry pair = (Map.Entry)iterator.next();
+			while (iterator.hasNext()) {
+				Map.Entry pair = (Map.Entry) iterator.next();
 				RequestParameterOperation requestParameterOperation = objectMapper.convertValue(pair.getValue(),
-							RequestParameterOperation.class);
+						RequestParameterOperation.class);
 				String[] headerPair = ParsingTools.getValuesForDelimitedList(true,
-							requestParameterOperation.getValue());
+						requestParameterOperation.getValue());
 				httpRequest.addQueryParam(headerPair[0], headerPair[1]);
 				iterator.remove();
 			}
@@ -155,95 +156,107 @@ public class HttpExecuteRequest
 			HttpConnection httpConnection = new HttpConnection(httpRequest);
 			HttpResponse httpResponse = new HttpResponse();
 
-			if (this.getRequestType().getValue().trim().equalsIgnoreCase("get"))
-			{
+			if (this.getRequestType().getValue().trim().equalsIgnoreCase("get")) {
 				httpResponse = httpConnection.executeGetRequest();
-			}
-			else if (this.getRequestType().getValue().trim().equalsIgnoreCase("post"))
-			{
+			} else if (this.getRequestType().getValue().trim().equalsIgnoreCase("post")) {
 				httpResponse = httpConnection.executePostRequest(this.getRequestBody().getValue());
 			}
 
-			this.getActionExecution().getActionControl().logOutput("response",httpResponse.getResponse().toString());
-			this.getActionExecution().getActionControl().logOutput("status",httpResponse.getStatusLine().toString());
-			this.getActionExecution().getActionControl().logOutput("entity",httpResponse.getEntityString());
-
+			this.getActionExecution().getActionControl().logOutput("response", httpResponse.getResponse().toString());
+			this.getActionExecution().getActionControl().logOutput("status", httpResponse.getStatusLine().toString());
+			this.getActionExecution().getActionControl().logOutput("entity", httpResponse.getEntityString());
+			this.getActionExecution().getActionControl().logOutput("headers", httpResponse.getHeaders().stream()
+					.map(header -> header.getName() + ":" + header.getValue())
+					.collect(Collectors.joining(",\n")));
 			// Parsing entity
-			if (httpResponse.getEntityString() != null && !httpResponse.getEntityString().equals(""))
-			{
-
-				JsonParsed jsonParsed = new JsonParsed();
-				try
-				{
-					jsonParsed = new JsonTools().parseJson("string", httpResponse.getEntityString());
-					this.setRuntimeVariable(jsonParsed);
-
-					if (!this.getSetDataset().getValue().equals(""))
-					{
-						String[] parts = this.getSetDataset().getValue().split("\\.");
-						String datasetName = parts[0];
-						String datasetTableName = parts[1];
-						this.getExecutionControl().getExecutionRuntime().getDatasetOperation(datasetName).setDataset(datasetTableName,
-									jsonParsed);
-					}
-
-				}
-				catch (Exception e)
-				{
-					this.getActionExecution().getActionControl().logError("json",e.getMessage());
-				}
-			}
-
-			// Add success codes if configured
-
+			writeResponseToOutputDataset(httpResponse);
 			// Check error code
-			if (httpResponse.getStatusLine().getStatusCode() >= 200 && httpResponse.getStatusLine().getStatusCode() < 300)
-			{
-				this.getActionExecution().getActionControl().increaseErrorCount();
-			}
-			else
-			{
-				throw new RuntimeException("Error status code detected: " + httpResponse.getStatusLine().getStatusCode());
-			}
-
+			checkStatusCode(httpResponse);
 			return true;
-		}
-		catch (Exception e)
-		{
+		} catch (Exception e) {
 			StringWriter StackTrace = new StringWriter();
 			e.printStackTrace(new PrintWriter(StackTrace));
 
-			if (this.getActionExecution().getAction().getErrorExpected().equalsIgnoreCase("n"))
-			{
-				this.getActionExecution().getActionControl().increaseErrorCount();
-			}
-			else
-			{
-				this.getActionExecution().getActionControl().increaseSuccessCount();
-			}
+			this.getActionExecution().getActionControl().increaseErrorCount();
 
-			this.getActionExecution().getActionControl().logOutput("exception",e.getMessage());
-			this.getActionExecution().getActionControl().logOutput("stacktrace",StackTrace.toString());
+			this.getActionExecution().getActionControl().logOutput("exception", e.getMessage());
+			this.getActionExecution().getActionControl().logOutput("stacktrace", StackTrace.toString());
 
 			return false;
 		}
 
 	}
 
-	private void setRuntimeVariable(JsonParsed jsonParsed)
-	{
-		if (this.getSetRuntimeVariables().getValue().equalsIgnoreCase("y"))
-		{
-			try
-			{
-				for (JsonParsedItem jsonParsedItem : jsonParsed.getJsonParsedItemList())
-				{
-					this.getExecutionControl().getExecutionRuntime().setRuntimeVariable(jsonParsedItem.getPath(),
-								jsonParsedItem.getValue());
-				}
+	private void checkStatusCode(HttpResponse httpResponse) {
+		if (SUCCESS_STATUS_CODE.matcher(Integer.toString(httpResponse.getStatusLine().getStatusCode())).find()) {
+			this.getActionExecution().getActionControl().increaseSuccessCount();
+		} else if (INFORMATION_STATUS_CODE.matcher(Integer.toString(httpResponse.getStatusLine().getStatusCode())).find()) {
+			this.getActionExecution().getActionControl().increaseSuccessCount();
+		} else if (REDIRECT_STATUS_CODE.matcher(Integer.toString(httpResponse.getStatusLine().getStatusCode())).find()) {
+			this.getActionExecution().getActionControl().increaseSuccessCount();
+		} else {
+			this.getActionExecution().getActionControl().increaseErrorCount();
+		}
+	}
+
+	private void writeResponseToOutputDataset(HttpResponse httpResponse) {
+		// TODO: how to handle multiple content-types
+		List<Header> contentTypeHeaders = httpResponse.getHeaders().stream()
+				.filter(header -> header.getName().equals(HttpHeaders.CONTENT_TYPE))
+				.collect(Collectors.toList());
+		if (contentTypeHeaders.size() > 1) {
+			this.getActionExecution().getActionControl().logWarning("content-type",
+					MessageFormat.format("Http response contains multiple headers ({0}) defining the content type", contentTypeHeaders.size()));
+		} else if (contentTypeHeaders.size() == 0) {
+			this.getActionExecution().getActionControl().logWarning("content-type","Http response contains no header defining the content type.");
+			return;
+		}
+
+		if (contentTypeHeaders.stream().anyMatch(header -> header.getValue().contains(ContentType.APPLICATION_JSON.getMimeType()))) {
+			writeJSONResponseToOutputDataset(httpResponse);
+		} else if (contentTypeHeaders.stream().anyMatch(header -> header.getValue().contains(ContentType.TEXT_PLAIN.getMimeType()))) {
+			writeTextPlainResponseToOutputDataset(httpResponse);
+		} else {
+			this.getActionExecution().getActionControl().logWarning("content-type","Http response contains unsupported content-type header. Response will be written to dataset as plain text.");
+		}
+	}
+
+	private void writeTextPlainResponseToOutputDataset(HttpResponse httpResponse) {
+		if (!this.getSetDataset().getValue().equalsIgnoreCase("")) {
+			String[] parts = this.getSetDataset().getValue().split("\\.");
+			String datasetName = parts[0];
+			String datasetTableName = parts[1];
+			this.getExecutionControl().getExecutionRuntime().getDatasetOperation(datasetName).resetDataset(datasetTableName);
+			this.getExecutionControl().getExecutionRuntime().getDatasetOperation(datasetName).setDatasetEntry(datasetTableName, "response", httpResponse.getEntityString());
+		}
+	}
+
+	private void writeJSONResponseToOutputDataset(HttpResponse httpResponse) {
+		JsonParsed jsonParsed;
+		try {
+			jsonParsed = new JsonTools().parseJson("string", httpResponse.getEntityString());
+			this.setRuntimeVariable(jsonParsed);
+
+			if (!this.getSetDataset().getValue().equalsIgnoreCase("")) {
+				String[] parts = this.getSetDataset().getValue().split("\\.");
+				String datasetName = parts[0];
+				String datasetTableName = parts[1];
+				this.getExecutionControl().getExecutionRuntime().getDatasetOperation(datasetName)
+						.setDataset(datasetTableName, jsonParsed);
 			}
-			catch (Exception e)
-			{
+		} catch (Exception e) {
+			this.getActionExecution().getActionControl().logError("json", e.getMessage());
+		}
+	}
+
+	private void setRuntimeVariable(JsonParsed jsonParsed) {
+		if (this.getSetRuntimeVariables().getValue().equalsIgnoreCase("y")) {
+			try {
+				for (JsonParsedItem jsonParsedItem : jsonParsed.getJsonParsedItemList()) {
+					this.getExecutionControl().getExecutionRuntime().setRuntimeVariable(jsonParsedItem.getPath(),
+							jsonParsedItem.getValue());
+				}
+			} catch (Exception e) {
 				this.getActionExecution().getActionControl().increaseWarningCount();
 				this.getExecutionControl().logExecutionOutput(this.getActionExecution(), "SET_RUN_VAR", e.getMessage());
 			}
@@ -251,98 +264,79 @@ public class HttpExecuteRequest
 	}
 
 	// Getters and Setters
-	public FrameworkExecution getFrameworkExecution()
-	{
+	public FrameworkExecution getFrameworkExecution() {
 		return frameworkExecution;
 	}
 
-	public void setFrameworkExecution(FrameworkExecution frameworkExecution)
-	{
+	public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
 		this.frameworkExecution = frameworkExecution;
 	}
 
-	public ExecutionControl getExecutionControl()
-	{
+	public ExecutionControl getExecutionControl() {
 		return executionControl;
 	}
 
-	public void setExecutionControl(ExecutionControl executionControl)
-	{
+	public void setExecutionControl(ExecutionControl executionControl) {
 		this.executionControl = executionControl;
 	}
 
-	public ActionExecution getActionExecution()
-	{
+	public ActionExecution getActionExecution() {
 		return actionExecution;
 	}
 
-	public void setActionExecution(ActionExecution actionExecution)
-	{
+	public void setActionExecution(ActionExecution actionExecution) {
 		this.actionExecution = actionExecution;
 	}
 
-	public HashMap<String, ActionParameterOperation> getActionParameterOperationMap()
-	{
+	public HashMap<String, ActionParameterOperation> getActionParameterOperationMap() {
 		return actionParameterOperationMap;
 	}
 
-	public void setActionParameterOperationMap(HashMap<String, ActionParameterOperation> actionParameterOperationMap)
-	{
+	public void setActionParameterOperationMap(HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
 		this.actionParameterOperationMap = actionParameterOperationMap;
 	}
 
-	public ActionParameterOperation getActionParameterOperation(String key)
-	{
+	public ActionParameterOperation getActionParameterOperation(String key) {
 		return this.getActionParameterOperationMap().get(key);
 	}
 
-	public ActionParameterOperation getRequestName()
-	{
+	public ActionParameterOperation getRequestName() {
 		return requestName;
 	}
 
-	public void setRequestName(ActionParameterOperation requestName)
-	{
+	public void setRequestName(ActionParameterOperation requestName) {
 		this.requestName = requestName;
 	}
 
-	public ActionParameterOperation getSetRuntimeVariables()
-	{
+	public ActionParameterOperation getSetRuntimeVariables() {
 		return setRuntimeVariables;
 	}
 
-	public void setSetRuntimeVariables(ActionParameterOperation setRuntimeVariables)
-	{
+	public void setSetRuntimeVariables(ActionParameterOperation setRuntimeVariables) {
 		this.setRuntimeVariables = setRuntimeVariables;
 	}
 
-	public ActionParameterOperation getRequestType()
-	{
+	public ActionParameterOperation getRequestType() {
 		return requestType;
 	}
 
-	public void setRequestType(ActionParameterOperation requestType)
-	{
+	public void setRequestType(ActionParameterOperation requestType) {
 		this.requestType = requestType;
 	}
 
-	public ActionParameterOperation getRequestBody()
-	{
+	public ActionParameterOperation getRequestBody() {
 		return requestBody;
 	}
 
-	public void setRequestBody(ActionParameterOperation requestBody)
-	{
+	public void setRequestBody(ActionParameterOperation requestBody) {
 		this.requestBody = requestBody;
 	}
 
-	public ActionParameterOperation getSetDataset()
-	{
+	public ActionParameterOperation getSetDataset() {
 		return setDataset;
 	}
 
-	public void setSetDataset(ActionParameterOperation setDataset)
-	{
+	public void setSetDataset(ActionParameterOperation setDataset) {
 		this.setDataset = setDataset;
 	}
 

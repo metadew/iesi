@@ -50,14 +50,14 @@ public class GenerationControlConfiguration {
 
 		// add Parameters
 		String sqlParameters = this.getParameterInsertStatements(generationName);
-		if (!sqlParameters.equals("")) {
+		if (!sqlParameters.equalsIgnoreCase("")) {
 			sql += "\n";
 			sql += sqlParameters;
 		}
 		
 		// add rules
 		String sqlRules = this.getRuleInsertStatements(generationName, this.getgenerationControl().getName());
-		if (!sqlRules.equals("")) {
+		if (!sqlRules.equalsIgnoreCase("")) {
 			sql += "\n";
 			sql += sqlRules;
 		}
@@ -73,7 +73,7 @@ public class GenerationControlConfiguration {
 
 		for (GenerationControlParameter generationControlParameter : this.getgenerationControl().getParameters()) {
 			GenerationControlParameterConfiguration generationControlParameterConfiguration = new GenerationControlParameterConfiguration(generationControlParameter, this.getFrameworkExecution());
-			if (!result.equals(""))
+			if (!result.equalsIgnoreCase(""))
 				result += "\n";
 			result += generationControlParameterConfiguration.getInsertStatement(generationName, this.getgenerationControl().getName());
 		}
@@ -90,7 +90,7 @@ public class GenerationControlConfiguration {
 		for (GenerationControlRule generationControlRule : this.getgenerationControl().getRules()) {
 			counter++;
 			GenerationControlRuleConfiguration generationControlRuleConfiguration = new GenerationControlRuleConfiguration(generationControlRule, this.getFrameworkExecution());
-			if (!result.equals(""))
+			if (!result.equalsIgnoreCase(""))
 				result += "\n";
 			result += generationControlRuleConfiguration.getInsertStatement(generationName, generationControlName, counter);
 		}

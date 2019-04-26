@@ -135,7 +135,7 @@ public class DelimitedFile {
 
 	private String composeFileName() {
 		String tempFileName = "";
-		if (this.getFileName().getValue().trim().equals("")) {
+		if (this.getFileName().getValue().trim().equalsIgnoreCase("")) {
 			// Set default file name
 			tempFileName = this.getGenerationOutputExecution().getGenerationExecution().getGeneration().getName() + ".txt";
 		} else {

@@ -49,7 +49,7 @@ public class GenerationOutputConfiguration {
 
 		// add Parameters
 		String sqlParameters = this.getParameterInsertStatements(generationName);
-		if (!sqlParameters.equals("")) {
+		if (!sqlParameters.equalsIgnoreCase("")) {
 			sql += "\n";
 			sql += sqlParameters;
 		}
@@ -64,7 +64,7 @@ public class GenerationOutputConfiguration {
 
 		for (GenerationOutputParameter generationOutputParameter : this.getgenerationOutput().getParameters()) {
 			GenerationOutputParameterConfiguration generationOutputParameterConfiguration = new GenerationOutputParameterConfiguration(generationOutputParameter, this.getFrameworkExecution());
-			if (!result.equals(""))
+			if (!result.equalsIgnoreCase(""))
 				result += "\n";
 			result += generationOutputParameterConfiguration.getInsertStatement(generationName, this.getgenerationOutput().getName());
 		}

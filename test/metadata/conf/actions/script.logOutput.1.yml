@@ -1,0 +1,49 @@
+---
+type: "script"
+data:
+  name: "script.logOutput.1"
+  description: "test script.logOutput"
+  parameters: []
+  actions:
+  - number: 1
+    type: "script.logOutput"
+    name: "action1"
+    description: "output default message"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "name"
+      value : "output1"
+    - name: "value"
+      value : "value1"
+  - number: 2
+    type: "fwk.outputMessage"
+    name: "action2"
+    description: "print output value"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "message"
+      value : "output value: {{=script.output(output1)}}"
+    - name: "onScreen"
+      value : "Y"
+  - number: 3
+    type: "eval.assertEquals"
+    name: "action3"
+    description: "verify output value"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "expected"
+      value : "value1"
+    - name: "actual"
+      value : "{{=script.output(output1)}}"

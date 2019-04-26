@@ -9,7 +9,7 @@ public final class ListTools {
 		boolean tempResult = false;
 
 		for (String curVal : list) {
-			if (curVal.equals(checkItem)) {
+			if (curVal.equalsIgnoreCase(checkItem)) {
 				tempResult = true;
 			}
 		}

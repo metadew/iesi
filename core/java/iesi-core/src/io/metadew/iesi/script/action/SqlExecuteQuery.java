@@ -39,8 +39,8 @@ public class SqlExecuteQuery {
 		this.init(frameworkExecution, executionControl, scriptExecution, actionExecution);
 	}
 
-	public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl, ScriptExecution scriptExecution,
-			ActionExecution actionExecution) {
+	public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+			ScriptExecution scriptExecution, ActionExecution actionExecution) {
 		this.setFrameworkExecution(frameworkExecution);
 		this.setExecutionControl(executionControl);
 		this.setActionExecution(actionExecution);
@@ -67,55 +67,49 @@ public class SqlExecuteQuery {
 		this.getActionParameterOperationMap().put("query", this.getSqlQuery());
 		this.getActionParameterOperationMap().put("connection", this.getConnectionName());
 	}
-	
+
 	public boolean execute() {
 		try {
 			// Get Connection
 			ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution());
 			Connection connection = connectionConfiguration.getConnection(this.getConnectionName().getValue(),
-					this.getExecutionControl().getEnvName());
+					this.getExecutionControl().getEnvName()).get();
 			ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
-			DatabaseConnection databaseConnection = connectionOperation
-					.getDatabaseConnection(connection);
+			DatabaseConnection databaseConnection = connectionOperation.getDatabaseConnection(connection);
+
+			if (databaseConnection == null) {
+				throw new RuntimeException("Error establishing DB connection");
+			}
 
 			// Run the action
 			// Make sure the SQL statement is ended with a ;
-			if (!this.getSqlQuery().getValue().trim().endsWith(";") ) {
-				this.getSqlQuery().setValue(this.getSqlQuery().getValue() + ";");	
+			if (!this.getSqlQuery().getValue().trim().endsWith(";")) {
+				this.getSqlQuery().setValue(this.getSqlQuery().getValue() + ";");
 			}
-			
+
 			// Convert to inputstream
-			InputStream inputStream = FileTools
-					.convertToInputStream(this.getSqlQuery().getValue(), this.getFrameworkExecution().getFrameworkControl());
+			InputStream inputStream = FileTools.convertToInputStream(this.getSqlQuery().getValue(),
+					this.getFrameworkExecution().getFrameworkControl());
 			SqlScriptResult dcSQLScriptResult = databaseConnection.executeScript(inputStream);
 
 			// Evaluate result
-			this.getActionExecution().getActionControl().logOutput("sys.out",dcSQLScriptResult.getSystemOutput());
-			
+			this.getActionExecution().getActionControl().logOutput("sys.out", dcSQLScriptResult.getSystemOutput());
 
 			if (dcSQLScriptResult.getReturnCode() != 0) {
-				this.getActionExecution().getActionControl().logOutput("err.out",dcSQLScriptResult.getErrorOutput());
+				this.getActionExecution().getActionControl().logOutput("err.out", dcSQLScriptResult.getErrorOutput());
 				throw new RuntimeException("Error execting SQL query");
 			}
 
-			if (this.getActionExecution().getAction().getErrorExpected().equalsIgnoreCase("y")) {
-				this.getActionExecution().getActionControl().increaseErrorCount();
-			} else {
-				this.getActionExecution().getActionControl().increaseSuccessCount();
-			}
+			this.getActionExecution().getActionControl().increaseSuccessCount();
 			return true;
 		} catch (Exception e) {
 			StringWriter StackTrace = new StringWriter();
 			e.printStackTrace(new PrintWriter(StackTrace));
 
-			if (this.getActionExecution().getAction().getErrorExpected().equalsIgnoreCase("n")) {
-				this.getActionExecution().getActionControl().increaseErrorCount();
-			} else {
-				this.getActionExecution().getActionControl().increaseSuccessCount();
-			}
+			this.getActionExecution().getActionControl().increaseErrorCount();
 
-			this.getActionExecution().getActionControl().logOutput("exception",e.getMessage());
-			this.getActionExecution().getActionControl().logOutput("stacktrace",StackTrace.toString());
+			this.getActionExecution().getActionControl().logOutput("exception", e.getMessage());
+			this.getActionExecution().getActionControl().logOutput("stacktrace", StackTrace.toString());
 
 			return false;
 		}

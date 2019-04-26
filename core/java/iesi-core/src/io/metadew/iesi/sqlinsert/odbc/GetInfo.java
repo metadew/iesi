@@ -55,25 +55,25 @@ public class GetInfo {
 			    ResultSet rs = null;
 			    
 			    //Split per supported RDBMS
-			    if (this.RDBMS.equals("MySQL")) {
+			    if (this.RDBMS.equalsIgnoreCase("MySQL")) {
     				io.metadew.iesi.sqlinsert.mysql.GetInfo getInfo = new io.metadew.iesi.sqlinsert.mysql.GetInfo(this.getFrameworkConfiguration());
     				QueryString = getInfo.getInfoSQL();
-			    } else if (this.RDBMS.equals("Netezza")) {
+			    } else if (this.RDBMS.equalsIgnoreCase("Netezza")) {
 			    	io.metadew.iesi.sqlinsert.netezza.GetInfo getInfo = new io.metadew.iesi.sqlinsert.netezza.GetInfo(this.getFrameworkConfiguration());
 				    QueryString = getInfo.getInfoSQL(); 			    	
-			    } else if (this.RDBMS.equals("Oracle")) {
+			    } else if (this.RDBMS.equalsIgnoreCase("Oracle")) {
 			    	io.metadew.iesi.sqlinsert.oracle.GetInfo getInfo = new io.metadew.iesi.sqlinsert.oracle.GetInfo(this.getFrameworkConfiguration());
 				    QueryString = getInfo.getInfoSQL(); 
-			    } else if (this.RDBMS.equals("PGSQL")) {
+			    } else if (this.RDBMS.equalsIgnoreCase("PGSQL")) {
 			    	io.metadew.iesi.sqlinsert.pgsql.GetInfo getInfo = new io.metadew.iesi.sqlinsert.pgsql.GetInfo(this.getFrameworkConfiguration());
 				    QueryString = getInfo.getInfoSQL(); 
-			    } else if (this.RDBMS.equals("SQLite")) {
+			    } else if (this.RDBMS.equalsIgnoreCase("SQLite")) {
 			    	io.metadew.iesi.sqlinsert.sqlite.GetInfo getInfo = new io.metadew.iesi.sqlinsert.sqlite.GetInfo(this.getFrameworkConfiguration());
 				    QueryString = getInfo.getInfoSQL(); 
-			    } else if (this.RDBMS.equals("SQLServer")) {
+			    } else if (this.RDBMS.equalsIgnoreCase("SQLServer")) {
 			    	io.metadew.iesi.sqlinsert.sqlserver.GetInfo getInfo = new io.metadew.iesi.sqlinsert.sqlserver.GetInfo(this.getFrameworkConfiguration());
 				    QueryString = getInfo.getInfoSQL(); 
-			    } else if (this.RDBMS.equals("Hive")) {
+			    } else if (this.RDBMS.equalsIgnoreCase("Hive")) {
 			    	io.metadew.iesi.sqlinsert.hive.GetInfo getInfo = new io.metadew.iesi.sqlinsert.hive.GetInfo(this.getFrameworkConfiguration());
 				    QueryString = getInfo.getInfoSQL(); 
 			    } else {

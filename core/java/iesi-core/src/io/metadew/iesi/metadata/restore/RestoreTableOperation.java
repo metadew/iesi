@@ -42,13 +42,13 @@ public class RestoreTableOperation {
 					continue;
 
 				// Fields
-				if (!sqlFields.equals(""))
+				if (!sqlFields.equalsIgnoreCase(""))
 					sqlFields += ",";
 				sqlFields += dataField.getName();
 
 				// Values
 				String value = "";
-				if (!sqlValues.equals(""))
+				if (!sqlValues.equalsIgnoreCase(""))
 					sqlValues += ",";
 
 				if (dataField.getValue().trim().equalsIgnoreCase("null")) {

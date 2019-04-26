@@ -138,7 +138,7 @@ public class ScriptRunner {
                                 } else if (!fullLineDelimiter
                                                 && trimmedLine.endsWith(getDelimiter())
                                                 || fullLineDelimiter
-                                                && trimmedLine.equals(getDelimiter())) {
+                                                && trimmedLine.equalsIgnoreCase(getDelimiter())) {
                                         command.append(line.substring(0, line
                                                         .lastIndexOf(getDelimiter())));
                                         command.append(" ");

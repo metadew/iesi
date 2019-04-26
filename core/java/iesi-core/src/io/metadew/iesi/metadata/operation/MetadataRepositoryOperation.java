@@ -41,8 +41,39 @@ public class MetadataRepositoryOperation {
 	public void cleanAllTables() {
 		this.getFrameworkExecution().getFrameworkLog().log("metadata.clean.start", Level.INFO);
 
+<<<<<<< HEAD
 		this.getFrameworkExecution().getFrameworkLog().log("metadata.clean.query=" + "", Level.TRACE);
 		this.getMetadataRepository().cleanAllTables(frameworkExecution.getFrameworkLog());
+=======
+		CachedRowSet crsCleanInventory = null;
+		String queryCleanInventory = this.getAllTablesQuery();
+		this.getFrameworkExecution().getFrameworkLog().log("metadata.clean.query=" + queryCleanInventory, Level.TRACE);
+		crsCleanInventory = this.getMetadataRepositoryConfiguration().executeQuery(queryCleanInventory);
+		try {
+			String tableName = "";
+			String schemaName = "";
+			while (crsCleanInventory.next()) {
+				schemaName = crsCleanInventory.getString("OWNER");
+				tableName = crsCleanInventory.getString("TABLE_NAME");
+
+				// Exeception for metadata about the data model
+				if (tableName.endsWith("CFG_MTD_TBL") || tableName.endsWith("CFG_MTD_FLD"))
+					continue;
+
+				if (schemaName.equalsIgnoreCase("")) {
+					this.getFrameworkExecution().getFrameworkLog().log("metadata.clean.table=" + tableName, Level.INFO);
+				} else {
+					this.getFrameworkExecution().getFrameworkLog()
+							.log("metadata.clean.table=" + schemaName + "." + tableName, Level.INFO);
+				}
+				this.getMetadataRepositoryConfiguration().cleanTable(schemaName, tableName);
+			}
+			crsCleanInventory.close();
+		} catch (Exception e) {
+			StringWriter StackTrace = new StringWriter();
+			e.printStackTrace(new PrintWriter(StackTrace));
+		}
+>>>>>>> develop
 
 		this.getFrameworkExecution().getFrameworkLog().log("metadata.clean.end", Level.INFO);
 
@@ -65,6 +96,7 @@ public class MetadataRepositoryOperation {
 
 	public void dropAllTables() {
 		this.getFrameworkExecution().getFrameworkLog().log("metadata.drop.start", Level.INFO);
+<<<<<<< HEAD
 		this.getMetadataRepository().dropAllTables(frameworkExecution.getFrameworkLog());
 //		CachedRowSet crsDropInventory;
 //		String queryDropInventory = this.getAllTablesQuery();
@@ -89,11 +121,38 @@ public class MetadataRepositoryOperation {
 //			StringWriter StackTrace = new StringWriter();
 //			e.printStackTrace(new PrintWriter(StackTrace));
 //		}
+=======
+
+		CachedRowSet crsDropInventory = null;
+		String queryDropInventory = this.getAllTablesQuery();
+		this.getFrameworkExecution().getFrameworkLog().log("metadata.drop.query=" + queryDropInventory, Level.TRACE);
+		crsDropInventory = this.getMetadataRepositoryConfiguration().executeQuery(queryDropInventory);
+		try {
+			String tableName = "";
+			String schemaName = "";
+			while (crsDropInventory.next()) {
+				schemaName = crsDropInventory.getString("OWNER");
+				tableName = crsDropInventory.getString("TABLE_NAME");
+				if (schemaName.equalsIgnoreCase("")) {
+					this.getFrameworkExecution().getFrameworkLog().log("metadata.drop.table=" + tableName, Level.INFO);
+				} else {
+					this.getFrameworkExecution().getFrameworkLog()
+							.log("metadata.drop.table=" + schemaName + "." + tableName, Level.INFO);
+				}
+				this.getMetadataRepositoryConfiguration().dropTable(schemaName, tableName);
+			}
+			crsDropInventory.close();
+		} catch (Exception e) {
+			StringWriter StackTrace = new StringWriter();
+			e.printStackTrace(new PrintWriter(StackTrace));
+		}
+>>>>>>> develop
 
 		this.getFrameworkExecution().getFrameworkLog().log("metadata.drop.end", Level.INFO);
 
 	}
 
+<<<<<<< HEAD
 //	private String getAllTablesQuery() {
 //		String query = "";
 //		if (this.getMetadataRepository().getDatabaseConnection().getType().toLowerCase()
@@ -132,6 +191,46 @@ public class MetadataRepositoryOperation {
 //		}
 //		return query;
 //	}
+=======
+	private String getAllTablesQuery() {
+		String query = "";
+		if (this.getMetadataRepositoryConfiguration().getDatabaseConnection().getType().toLowerCase()
+				.equalsIgnoreCase("oracle")) {
+			query = "select OWNER, TABLE_NAME from ALL_TABLES where owner = '"
+					+ this.getMetadataRepositoryConfiguration().getMetadataTableConfiguration().getSchema() + "' and TABLE_NAME like '"
+					+ this.getMetadataRepositoryConfiguration().getMetadataTableConfiguration().getTableNamePrefix()
+					+ this.getMetadataRepositoryConfiguration().getMetadataRepositoryCategoryConfiguration().getPrefix()
+					+ "%' order by TABLE_NAME ASC";
+		} else if (this.getMetadataRepositoryConfiguration().getDatabaseConnection().getType().toLowerCase()
+				.equalsIgnoreCase("sqlite")) {
+			query = "select tbl_name 'TABLE_NAME', '' 'OWNER' from sqlite_master where tbl_name like '"
+					+ this.getMetadataRepositoryConfiguration().getMetadataTableConfiguration().getTableNamePrefix()
+					+ this.getMetadataRepositoryConfiguration().getMetadataRepositoryCategoryConfiguration().getPrefix()
+					+ "%' order by tbl_name asc";
+		} else if (this.getMetadataRepositoryConfiguration().getDatabaseConnection().getType().toLowerCase()
+				.equalsIgnoreCase("netezza")) {
+			query = "select SCHEMA as \"OWNER\", TABLENAME as \"TABLE_NAME\" from _V_TABLE where OWNER = '"
+					+ this.getFrameworkExecution().getFrameworkControl().getProperty(
+							this.getFrameworkExecution().getFrameworkConfiguration().getSettingConfiguration()
+									.getSettingPath("metadata.repository.netezza.schema.user"))
+					+ "' and TABLENAME like '"
+					+ this.getMetadataRepositoryConfiguration().getMetadataTableConfiguration().getTableNamePrefix()
+					+ this.getMetadataRepositoryConfiguration().getMetadataRepositoryCategoryConfiguration().getPrefix()
+					+ "%' order by TABLENAME asc";
+		} else if (this.getMetadataRepositoryConfiguration().getDatabaseConnection().getType().toLowerCase()
+				.equalsIgnoreCase("postgresql")) {
+			query = "select table_schema as \"OWNER\", table_name as \"TABLE_NAME\" from information_schema.tables where table_schema = '"
+					+ this.getFrameworkExecution().getFrameworkControl()
+							.getProperty(this.getFrameworkExecution().getFrameworkConfiguration()
+									.getSettingConfiguration().getSettingPath("metadata.repository.postgresql.schema"))
+					+ "' and table_name like '"
+					+ this.getMetadataRepositoryConfiguration().getMetadataTableConfiguration().getTableNamePrefix().toLowerCase()
+					+ this.getMetadataRepositoryConfiguration().getMetadataRepositoryCategoryConfiguration().getPrefix()
+					+ "%' order by table_name asc";
+		}
+		return query;
+	}
+>>>>>>> develop
 
 	// Create the metadata data store
 	public void create(boolean generateDdl) {
@@ -168,19 +267,19 @@ public class MetadataRepositoryOperation {
 		String metadataRepositoryCategory = this.getMetadataRepository().getCategory();
 		if (metadataRepositoryCategory == null)
 			metadataRepositoryCategory = "";
-		if (metadataRepositoryCategory.equals("metadew")) {
+		if (metadataRepositoryCategory.equalsIgnoreCase("metadew")) {
 			files = new String[] { "MetadewTables.json" };
-		} else if (metadataRepositoryCategory.equals("connectivity")) {
+		} else if (metadataRepositoryCategory.equalsIgnoreCase("connectivity")) {
 			files = new String[] { "ConnectivityTables.json" };
-		} else if (metadataRepositoryCategory.equals("control")) {
+		} else if (metadataRepositoryCategory.equalsIgnoreCase("control")) {
 			files = new String[] { "ControlTables.json" };
-		} else if (metadataRepositoryCategory.equals("design")) {
+		} else if (metadataRepositoryCategory.equalsIgnoreCase("design")) {
 			files = new String[] { "DesignTables.json" };
-		} else if (metadataRepositoryCategory.equals("trace")) {
+		} else if (metadataRepositoryCategory.equalsIgnoreCase("trace")) {
 			files = new String[] { "TraceTables.json" };
-		} else if (metadataRepositoryCategory.equals("result")) {
+		} else if (metadataRepositoryCategory.equalsIgnoreCase("result")) {
 			files = new String[] { "ResultTables.json" };
-		} else if (metadataRepositoryCategory.equals("general")) {
+		} else if (metadataRepositoryCategory.equalsIgnoreCase("general")) {
 			files = new String[] { "ConnectivityTables.json", "ControlTables.json", "DesignTables.json",
 					"ResultTables.json", "TraceTables.json" };
 			metadataRepositoryCategoryConfigurations = new MetadataRepositoryCategoryConfiguration[] {
@@ -219,8 +318,14 @@ public class MetadataRepositoryOperation {
 				.getFolderConfiguration().getFolderAbsolutePath("metadata.in.done"));
 
 		// Load files
+<<<<<<< HEAD
 		if (input.trim().equals("")) {
 			this.loadConfigurationSelection(metadataRepositories, inputFolder, workFolder, archiveFolder, errorFolder, ".+\\.json");
+=======
+		if (input.trim().equalsIgnoreCase("")) {
+			this.loadConfigurationSelection(metadataRepositoryConfigurationList, inputFolder, workFolder, archiveFolder, errorFolder, ".+\\.json");
+			this.loadConfigurationSelection(metadataRepositoryConfigurationList, inputFolder, workFolder, archiveFolder, errorFolder, ".+\\.yml");
+>>>>>>> develop
 		} else {
 			if (ParsingTools.isRegexFunction(input)) {
 				this.loadConfigurationSelection(metadataRepositories, inputFolder, workFolder, archiveFolder, errorFolder,
@@ -280,7 +385,7 @@ public class MetadataRepositoryOperation {
 		boolean moveToArchiveFolder = false;
 		boolean moveToErrorFolder = false;
 
-		if (!workFolder.trim().equals(""))
+		if (!workFolder.trim().equalsIgnoreCase(""))
 			moveToWorkFolder = true;
 
 		if (moveToWorkFolder) {
@@ -291,9 +396,9 @@ public class MetadataRepositoryOperation {
 			workFolder = inputFolder;
 		}
 
-		if (!archiveFolder.trim().equals(""))
+		if (!archiveFolder.trim().equalsIgnoreCase(""))
 			moveToArchiveFolder = true;
-		if (!errorFolder.trim().equals(""))
+		if (!errorFolder.trim().equalsIgnoreCase(""))
 			moveToErrorFolder = true;
 
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
@@ -341,9 +446,9 @@ public class MetadataRepositoryOperation {
 		boolean moveToArchiveFolder = false;
 		boolean moveToErrorFolder = false;
 
-		if (!archiveFolder.trim().equals(""))
+		if (!archiveFolder.trim().equalsIgnoreCase(""))
 			moveToArchiveFolder = true;
-		if (!errorFolder.trim().equals(""))
+		if (!errorFolder.trim().equalsIgnoreCase(""))
 			moveToErrorFolder = true;
 
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");

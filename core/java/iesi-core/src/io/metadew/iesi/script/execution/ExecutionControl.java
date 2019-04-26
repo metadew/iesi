@@ -43,6 +43,7 @@ public class ExecutionControl
 	private List<Long> processIdList;
 
 	private boolean actionErrorStop = false;
+	private boolean scriptExit = false;
 
 	// Constructors
 	public ExecutionControl(FrameworkExecution frameworkExecution) {
@@ -68,8 +69,16 @@ public class ExecutionControl
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void initializeExecutionRuntime(FrameworkExecution frameworkExecution, String runId) {
+<<<<<<< HEAD
 		if (frameworkExecution.getFrameworkConfiguration().getSettingConfiguration().getSettingPath("script.execution.runtime").isPresent() &&
 				!frameworkExecution.getFrameworkControl().getProperty(frameworkExecution.getFrameworkConfiguration().getSettingConfiguration().getSettingPath("script.execution.runtime").get()).isEmpty()) {
+=======
+		String customExecutionRuntime = frameworkExecution.getFrameworkControl().getProperty(frameworkExecution
+				.getFrameworkConfiguration().getSettingConfiguration().getSettingPath("script.execution.runtime"));
+		if (customExecutionRuntime.trim().equalsIgnoreCase("")) {
+			this.setExecutionRuntime(new ExecutionRuntime(frameworkExecution,this, runId));
+		} else {
+>>>>>>> develop
 			try {
 				Class classRef = Class.forName(frameworkExecution.getFrameworkConfiguration().getSettingConfiguration().getSettingPath("script.execution.runtime").get());
 				Object instance = classRef.newInstance();
@@ -142,7 +151,7 @@ public class ExecutionControl
 		query += "(";
 		query += SQLTools.GetStringForSQL(this.getRunId());
 		query += ",";
-		query += SQLTools.GetStringForSQL(this.getProcessId());
+		query += SQLTools.GetStringForSQL(scriptExecution.getProcessId());
 		query += ",";
 		query += SQLTools.GetStringForSQL(parentProcessId);
 		query += ",";
@@ -188,7 +197,7 @@ public class ExecutionControl
 		query += "(";
 		query += SQLTools.GetStringForSQL(this.getRunId());
 		query += ",";
-		query += SQLTools.GetStringForSQL(this.getProcessId());
+		query += SQLTools.GetStringForSQL(actionExecution.getProcessId());
 		query += ",";
 		query += SQLTools.GetStringForSQL(actionExecution.getAction().getId());
 		query += ",";
@@ -349,6 +358,9 @@ public class ExecutionControl
 
 		if (this.isActionErrorStop()) {
 			status = FrameworkStatus.STOPPED.value();
+		} else if (this.isScriptExit()) {
+			status = FrameworkStatus.STOPPED.value();
+			// TODO: get status from input parameters in action
 		} else if (scriptExecution.getExecutionMetrics().getSuccessCount() == 0
 				&& scriptExecution.getExecutionMetrics().getWarningCount() == 0
 				&& scriptExecution.getExecutionMetrics().getErrorCount() > 0) {
@@ -577,5 +589,13 @@ public class ExecutionControl
 	public void setExecutionLog(ExecutionLog executionLog)
 	{
 		this.executionLog = executionLog;
+	}
+
+	public boolean isScriptExit() {
+		return scriptExit;
+	}
+
+	public void setScriptExit(boolean scriptExit) {
+		this.scriptExit = scriptExit;
 	}
 }

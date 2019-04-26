@@ -41,9 +41,9 @@ public class ActionSelectOperation {
 
 				if (key.equalsIgnoreCase("mode")) {
 					this.setMode(value);
-					if (this.getMode().equals("include")) {
+					if (this.getMode().equalsIgnoreCase("include")) {
 						this.setActive(false);
-					} else if (this.getMode().equals("exclude")) {
+					} else if (this.getMode().equalsIgnoreCase("exclude")) {
 						this.setActive(true);
 					}
 				}
@@ -80,7 +80,7 @@ public class ActionSelectOperation {
 	}
 
 	public boolean getExecutionStatus(Action action) {	
-		if (this.getMode().equals("include")) {
+		if (this.getMode().equalsIgnoreCase("include")) {
 			if (inList(this.getFromList(),Long.toString(action.getNumber()))) {
 				if (!this.isActive()) {
 					this.setActive(true);
@@ -89,7 +89,7 @@ public class ActionSelectOperation {
 			} else {
 				return this.isActive();
 			}
-		} else if (this.getMode().equals("exclude")) {
+		} else if (this.getMode().equalsIgnoreCase("exclude")) {
 			if (inList(this.getFromList(),Long.toString(action.getNumber()))) {
 				if (this.isActive()) {
 					this.setActive(false);
@@ -104,13 +104,13 @@ public class ActionSelectOperation {
 	}
 
 	public void setContinueStatus(Action action) {
-		if (this.getMode().equals("include")) {
+		if (this.getMode().equalsIgnoreCase("include")) {
 			if (inList(this.getToList(),Long.toString(action.getNumber()))) {
 				if (this.isActive()) {
 					this.setActive(false);
 				}
 			}
-		} else if (this.getMode().equals("exclude")) {
+		} else if (this.getMode().equalsIgnoreCase("exclude")) {
 			if (inList(this.getToList(),Long.toString(action.getNumber()))) {
 				if (!this.isActive()) {
 					this.setActive(true);
@@ -125,7 +125,7 @@ public class ActionSelectOperation {
 		boolean tempResult = false;
 
 		for (String curVal : list) {
-			if (curVal.equals(checkItem)) {
+			if (curVal.equalsIgnoreCase(checkItem)) {
 				tempResult = true;
 			}
 		}

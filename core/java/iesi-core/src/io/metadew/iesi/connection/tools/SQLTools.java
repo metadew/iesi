@@ -53,7 +53,7 @@ public final class SQLTools {
 	public static String GetLookupIdStatement(String tableName, String idFieldName, String lookupWhereClause) {
 		String result = "";
 		if (lookupWhereClause == null) lookupWhereClause = "";
-		if (lookupWhereClause.equals("")) {
+		if (lookupWhereClause.equalsIgnoreCase("")) {
 			result += "select " + idFieldName + " from " + tableName;			
 		} else {
 			result += "select " + idFieldName + " from " + tableName + " " + lookupWhereClause;						
@@ -87,13 +87,13 @@ public final class SQLTools {
 			String line;
 			while ((line = br.readLine()) != null) {
 				if (line.indexOf(";") < 0) {
-					if (!result.equals(""))
+					if (!result.equalsIgnoreCase(""))
 						result = result + " ";
 					result = result + line;
 				} else if (line.indexOf(";") == 0) {
 					break;
 				} else if (line.indexOf(";") > 0) {
-					if (!result.equals(""))
+					if (!result.equalsIgnoreCase(""))
 						result = result + " ";
 					result = result + line.substring(0, line.indexOf(";"));
 					break;

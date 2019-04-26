@@ -1,8 +1,12 @@
 package io.metadew.iesi.connection.http;
 
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.StatusLine;
 import org.apache.http.client.methods.CloseableHttpResponse;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Object used to manage the http response resulting from the http connection object.
@@ -16,11 +20,6 @@ public class HttpResponse {
 	private StatusLine statusLine;
 	private HttpEntity entity;
 	private String entityString;
-	
-	// Constructor
-	public HttpResponse() {
-		super();
-	}
 
 	// Getters and setters
 	public StatusLine getStatusLine() {
@@ -55,5 +54,8 @@ public class HttpResponse {
 		this.entityString = entityString;
 	}
 
+	public List<Header> getHeaders() {
+		return Arrays.asList(response.getAllHeaders());
+	}
 
 }

@@ -181,9 +181,9 @@ public class ConnectionConfiguration {
 
 		// If this was the last remaining connection with name CONN_NM, remove entirely from connections
 		String countQuery = "SELECT COUNT(DISTINCT ENV_NM ) AS total_environments FROM "
-				+ this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("Connections")
-				+ " WHERE ENV_NM != "
-				+ connection.getEnvironment() + ";";
+				+ this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("ConnectionParameters")
+				+ " WHERE ENV_NM != '"
+				+ connection.getEnvironment() + "';";
 		CachedRowSet crs = this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().executeQuery(countQuery, "reader");
 
 		try {

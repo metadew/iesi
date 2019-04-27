@@ -43,7 +43,7 @@ public class TraceMetadataRepository extends MetadataRepository {
         if (dataObject.getType().equalsIgnoreCase("trace")) {
             // TODO
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("This repository is not responsible for loading saving {0}", dataObject.getType()), Level.DEBUG);
+            frameworkExecution.getFrameworkLog().log(MessageFormat.format("Trace repository is not responsible for loading saving {0}", dataObject.getType()), Level.TRACE);
         }
     }
 }

@@ -19,7 +19,6 @@ public class MetadataControl {
 	private TraceMetadataRepository traceMetadataRepository;
 	private ResultMetadataRepository resultMetadataRepository;
 	private MonitorMetadataRepository monitorMetadataRepository;
-	private GeneralMetadataRepository generalMetadataRepository;
 	private LedgerMetadataRepository ledgerMetadataRepository;
 	private CatalogMetadataRepository catalogMetadataRepository;
 	private boolean general = false;
@@ -98,14 +97,6 @@ public class MetadataControl {
 
 	public void setDesignMetadataRepository(DesignMetadataRepository designMetadataRepository) {
 		this.designMetadataRepository = designMetadataRepository;
-	}
-
-	public MetadataRepository getGeneralMetadataRepository() {
-		return generalMetadataRepository;
-	}
-
-	public void setGeneralMetadataRepository(GeneralMetadataRepository generalMetadataRepository) {
-		this.generalMetadataRepository = generalMetadataRepository;
 	}
 
 	public MonitorMetadataRepository getMonitorMetadataRepository() {

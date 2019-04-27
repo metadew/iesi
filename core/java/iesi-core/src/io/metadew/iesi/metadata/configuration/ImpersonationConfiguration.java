@@ -307,33 +307,33 @@ public class ImpersonationConfiguration {
 		return new ListObject(FrameworkObjectConfiguration.getFrameworkObjectType(new Impersonation()), impersonationList);
 	}
 
-	public void createImpersonation(String data) {
-		DataObjectConfiguration dataObjectConfiguration = new DataObjectConfiguration(this.getFrameworkExecution());
-		ObjectMapper objectMapper = new ObjectMapper();
-		
-		if (dataObjectConfiguration.isJSONArray(data)) {
-			for (DataObject doDataObject : dataObjectConfiguration.getDataArray(data)) {
-
-				Impersonation impersonation = objectMapper.convertValue(doDataObject.getData(), Impersonation.class);
-				ImpersonationConfiguration impersonationConfiguration = new ImpersonationConfiguration(impersonation, this.getFrameworkExecution());
-				String output = impersonationConfiguration.getInsertStatement();
-
-				InputStream inputStream = FileTools
-						.convertToInputStream(output, this.getFrameworkExecution().getFrameworkControl());
-				this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().executeScript(inputStream);
-
-			}
-		} else {
-			Impersonation impersonation = objectMapper.convertValue(dataObjectConfiguration.getDataObject(data).getData(), Impersonation.class);
-			ImpersonationConfiguration impersonationConfiguration = new ImpersonationConfiguration(impersonation, this.getFrameworkExecution());
-			String output = impersonationConfiguration.getInsertStatement();
-
-			InputStream inputStream = FileTools.convertToInputStream(output,
-					this.getFrameworkExecution().getFrameworkControl());
-			this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().executeScript(inputStream);
-		}
-
-	}
+//	public void createImpersonation(String data) {
+//		DataObjectConfiguration dataObjectConfiguration = new DataObjectConfiguration(this.getFrameworkExecution());
+//		ObjectMapper objectMapper = new ObjectMapper();
+//
+//		if (dataObjectConfiguration.isJSONArray(data)) {
+//			for (DataObject doDataObject : dataObjectConfiguration.getDataArray(data)) {
+//
+//				Impersonation impersonation = objectMapper.convertValue(doDataObject.getData(), Impersonation.class);
+//				ImpersonationConfiguration impersonationConfiguration = new ImpersonationConfiguration(impersonation, this.getFrameworkExecution());
+//				String output = impersonationConfiguration.getInsertStatement();
+//
+//				InputStream inputStream = FileTools
+//						.convertToInputStream(output, this.getFrameworkExecution().getFrameworkControl());
+//				this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().executeScript(inputStream);
+//
+//			}
+//		} else {
+//			Impersonation impersonation = objectMapper.convertValue(dataObjectConfiguration.getDataObject(data).getData(), Impersonation.class);
+//			ImpersonationConfiguration impersonationConfiguration = new ImpersonationConfiguration(impersonation, this.getFrameworkExecution());
+//			String output = impersonationConfiguration.getInsertStatement();
+//
+//			InputStream inputStream = FileTools.convertToInputStream(output,
+//					this.getFrameworkExecution().getFrameworkControl());
+//			this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().executeScript(inputStream);
+//		}
+//
+//	}
 	
 	public void deleteImpersonation(String impersonationName) {
 		this.getImpersonation(impersonationName).ifPresent(impersonation -> {

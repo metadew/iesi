@@ -48,7 +48,7 @@ public class LedgerMetadataRepository extends MetadataRepository {
             LedgerConfiguration ledgerConfiguration = new LedgerConfiguration(ledger, frameworkExecution);
             executeUpdate(ledgerConfiguration.getInsertStatement());
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("This repository is not responsible for loading saving {0}", dataObject.getType()), Level.DEBUG);
+            frameworkExecution.getFrameworkLog().log(MessageFormat.format("Ledger repository is not responsible for loading saving {0}", dataObject.getType()), Level.TRACE);
         }
     }
 }

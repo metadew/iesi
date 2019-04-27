@@ -53,7 +53,7 @@ public class DesignMetadataRepository extends MetadataRepository {
         } else if (dataObject.getType().equalsIgnoreCase("subroutine")) {
             // TODO
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("This repository is not responsible for loading saving {0}", dataObject.getType()), Level.DEBUG);
+            frameworkExecution.getFrameworkLog().log(MessageFormat.format("Design repository is not responsible for loading saving {0}", dataObject.getType()), Level.TRACE);
         }
     }
 

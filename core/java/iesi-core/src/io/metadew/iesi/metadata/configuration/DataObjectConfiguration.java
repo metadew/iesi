@@ -27,16 +27,10 @@ public class DataObjectConfiguration {
 	// Constructors
 	public DataObjectConfiguration(FrameworkExecution frameworkExecution) {
 		this.setFrameworkExecution(frameworkExecution);
-		if (this.getFrameworkExecution() != null)
-			this.setMetadataRepository(
-					this.getFrameworkExecution().getMetadataControl().getGeneralMetadataRepository());
 	}
 
 	public DataObjectConfiguration(FrameworkExecution frameworkExecution, List<DataObject> dataObjects) {
 		this.setFrameworkExecution(frameworkExecution);
-		if (this.getFrameworkExecution() != null)
-			this.setMetadataRepository(
-					this.getFrameworkExecution().getMetadataControl().getGeneralMetadataRepository());
 		this.setDataObjects(dataObjects);
 	}
 

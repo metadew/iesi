@@ -52,7 +52,7 @@ public class ControlMetadataRepository extends MetadataRepository {
         } else if (dataObject.getType().equalsIgnoreCase("spaceuser")) {
             // TODO
         } else 	{
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("This repository is not responsible for loading saving {0}", dataObject.getType()), Level.DEBUG);
+            frameworkExecution.getFrameworkLog().log(MessageFormat.format("Control repository is not responsible for loading saving {0}", dataObject.getType()), Level.TRACE);
         }
     }
 }

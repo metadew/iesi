@@ -14,7 +14,7 @@ import java.text.MessageFormat;
 
 public class DesignMetadataRepository extends MetadataRepository {
 
-    public DesignMetadataRepository(String frameworkCode, String name, String scope, String instanceName, Repository repository,  String repositoryObjectsPath, String repositoryTablesPath ) {
+    public DesignMetadataRepository(String frameworkCode, String name, String scope, String instanceName, Repository repository, String repositoryObjectsPath, String repositoryTablesPath) {
         super(frameworkCode, name, scope, instanceName, repository, repositoryObjectsPath, repositoryTablesPath);
     }
 
@@ -46,20 +46,27 @@ public class DesignMetadataRepository extends MetadataRepository {
         ObjectMapper objectMapper = new ObjectMapper();
         if (dataObject.getType().equalsIgnoreCase("script")) {
             Script script = objectMapper.convertValue(dataObject.getData(), Script.class);
-            ScriptConfiguration scriptConfiguration = new ScriptConfiguration(script,
-                    frameworkExecution);
-            executeUpdate(scriptConfiguration.getInsertStatement());
+            save(script, frameworkExecution);
         } else if (dataObject.getType().equalsIgnoreCase("component")) {
             Component component = objectMapper.convertValue(dataObject.getData(), Component.class);
-            ComponentConfiguration componentConfiguration = new ComponentConfiguration(component,
-                    frameworkExecution);
-            executeUpdate(componentConfiguration.getInsertStatement());
+            save(component, frameworkExecution);
         } else if (dataObject.getType().equalsIgnoreCase("subroutine")) {
             // TODO
-        } else 	{
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("This repository is not responsible for loading saving {0}", dataObject.getType()), Level.WARN);
+        } else {
+            frameworkExecution.getFrameworkLog().log(MessageFormat.format("This repository is not responsible for loading saving {0}", dataObject.getType()), Level.DEBUG);
         }
     }
 
+    public void save(Script script, FrameworkExecution frameworkExecution) {
+        ScriptConfiguration scriptConfiguration = new ScriptConfiguration(script,
+                frameworkExecution);
+        executeUpdate(scriptConfiguration.getInsertStatement());
+    }
+
+    public void save(Component component, FrameworkExecution frameworkExecution) {
+        ComponentConfiguration componentConfiguration = new ComponentConfiguration(component,
+                frameworkExecution);
+        executeUpdate(componentConfiguration.getInsertStatement());
+    }
 
 }

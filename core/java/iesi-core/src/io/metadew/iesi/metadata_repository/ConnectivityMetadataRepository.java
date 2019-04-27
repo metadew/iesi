@@ -5,6 +5,7 @@ import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.configuration.ConnectionConfiguration;
 import io.metadew.iesi.metadata.configuration.EnvironmentConfiguration;
 import io.metadew.iesi.metadata.configuration.ImpersonationConfiguration;
+import io.metadew.iesi.metadata.configuration.exception.*;
 import io.metadew.iesi.metadata.definition.Connection;
 import io.metadew.iesi.metadata.definition.DataObject;
 import io.metadew.iesi.metadata.definition.Environment;
@@ -12,6 +13,7 @@ import io.metadew.iesi.metadata.definition.Impersonation;
 import io.metadew.iesi.metadata_repository.repository.Repository;
 import org.apache.logging.log4j.Level;
 
+import java.io.FileReader;
 import java.text.MessageFormat;
 
 public class ConnectivityMetadataRepository extends MetadataRepository {
@@ -47,22 +49,69 @@ public class ConnectivityMetadataRepository extends MetadataRepository {
         ObjectMapper objectMapper = new ObjectMapper();
         if (dataObject.getType().equalsIgnoreCase("connection")) {
             Connection connection = objectMapper.convertValue(dataObject.getData(), Connection.class);
-            ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(connection,
-                    frameworkExecution);
-            executeUpdate(connectionConfiguration.getInsertStatement());
+            save(connection, frameworkExecution);
         } else if (dataObject.getType().equalsIgnoreCase("environment")) {
             Environment environment = objectMapper.convertValue(dataObject.getData(), Environment.class);
-            EnvironmentConfiguration environmentConfiguration = new EnvironmentConfiguration(environment,
-                    frameworkExecution);
-            executeUpdate(environmentConfiguration.getInsertStatement());
+            save(environment, frameworkExecution);
         } else if (dataObject.getType().equalsIgnoreCase("impersonation")) {
             Impersonation impersonation = objectMapper.convertValue(dataObject.getData(), Impersonation.class);
-            ImpersonationConfiguration impersonationConfiguration = new ImpersonationConfiguration(impersonation, frameworkExecution);
-            executeUpdate(impersonationConfiguration.getInsertStatement());
+            save(impersonation, frameworkExecution);
         } else if (dataObject.getType().equalsIgnoreCase("repository")) {
             // TODO
         } else 	{
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("This repository is not responsible for loading saving {0}", dataObject.getType()), Level.WARN);
+            frameworkExecution.getFrameworkLog().log(MessageFormat.format("This repository is not responsible for loading saving {0}", dataObject.getType()), Level.DEBUG);
         }
     }
+
+    public void save(Connection connection, FrameworkExecution frameworkExecution) {
+        frameworkExecution.getFrameworkLog().log(MessageFormat.format("Inserting connection {0}-{1} into connectivity repository",
+                connection.getName(), connection.getEnvironment()), Level.INFO);
+        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(frameworkExecution);
+        try {
+            connectionConfiguration.insertConnection(connection);
+        } catch (ConnectionAlreadyExistsException e1) {
+            frameworkExecution.getFrameworkLog().log(MessageFormat.format("Connection {0}-{1} already exists in connectivity repository. Updating connection {0}-{1} instead.",
+                    connection.getName(), connection.getEnvironment()), Level.DEBUG);
+            try {
+                connectionConfiguration.updateConnection(connection);
+            } catch (ConnectionDoesNotExistException e2) {
+                e2.printStackTrace();
+            }
+        }
+    }
+
+    public void save(Environment environment, FrameworkExecution frameworkExecution) {
+        frameworkExecution.getFrameworkLog().log(MessageFormat.format("Inserting environment {0} into connectivity repository",
+                environment.getName()), Level.INFO);
+        EnvironmentConfiguration environmentConfiguration = new EnvironmentConfiguration(frameworkExecution);
+        try {
+            environmentConfiguration.insertEnvironment(environment);
+        } catch (EnvironmentAlreadyExistsException e) {
+            frameworkExecution.getFrameworkLog().log(MessageFormat.format("Environment {0} already exists in connectivity repository. Updating connection {0} instead.",
+                    environment.getName()), Level.DEBUG);
+            try {
+                environmentConfiguration.updateEnvironment(environment);
+            } catch (EnvironmentDoesNotExistException e1) {
+                e1.printStackTrace();
+            }
+        }
+    }
+
+    public void save(Impersonation impersonation, FrameworkExecution frameworkExecution) {
+        frameworkExecution.getFrameworkLog().log(MessageFormat.format("Inserting impersonation {0} into connectivity repository",
+                impersonation.getName()), Level.INFO);
+        ImpersonationConfiguration impersonationConfiguration = new ImpersonationConfiguration(frameworkExecution);
+        try {
+            impersonationConfiguration.insertImpersonation(impersonation);
+        } catch (ImpersonationAlreadyExistsException e) {
+            frameworkExecution.getFrameworkLog().log(MessageFormat.format("Impersonation {0} already exists in connectivity repository. Updating impersonation {0} instead.",
+                    impersonation.getName()), Level.DEBUG);
+            try {
+                impersonationConfiguration.updateImpersonation(impersonation);
+            } catch (ImpersonationDoesNotExistException e1) {
+                e1.printStackTrace();
+            }
+        }
+    }
+
 }

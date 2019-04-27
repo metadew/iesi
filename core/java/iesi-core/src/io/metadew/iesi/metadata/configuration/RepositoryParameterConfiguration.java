@@ -28,11 +28,11 @@ public class RepositoryParameterConfiguration {
 	public String getInsertStatement(String repositoryName) {
 		String sql = "";
 
-		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("RepositoryParameters");
+		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("RepositoryParameters");
 		sql += " (REPO_ID, REPO_PAR_NM, REPO_PAR_VAL) ";
 		sql += "VALUES ";
 		sql += "(";
-		sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Repositories"), "REPO_ID", "where REPO_NM = '"+ repositoryName) + "')";
+		sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("Repositories"), "REPO_ID", "where REPO_NM = '"+ repositoryName) + "')";
 		sql += ",";
 		sql += SQLTools.GetStringForSQL(this.getRepositoryParameter().getName());
 		sql += ",";
@@ -46,9 +46,9 @@ public class RepositoryParameterConfiguration {
 	public RepositoryParameter getRepositoryParameter(long repositoryId, String repositoryParameterName) {
 		RepositoryParameter repositoryParameter = new RepositoryParameter();
 		CachedRowSet crsRepositoryParameter = null;
-		String queryRepositoryParameter = "select REPO_ID, REPO_PAR_NM, REPO_PAR_VAL from " + this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("RepositoryParameters")
+		String queryRepositoryParameter = "select REPO_ID, REPO_PAR_NM, REPO_PAR_VAL from " + this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("RepositoryParameters")
 				+ " where REPO_ID = " + repositoryId + " and REPO_PAR_NM = '" + repositoryParameterName + "'";
-		crsRepositoryParameter = this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().executeQuery(queryRepositoryParameter);
+		crsRepositoryParameter = this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().executeQuery(queryRepositoryParameter, "reader");
 		try {
 			while (crsRepositoryParameter.next()) {
 				repositoryParameter.setName(repositoryParameterName);

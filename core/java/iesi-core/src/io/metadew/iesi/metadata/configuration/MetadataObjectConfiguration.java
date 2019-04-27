@@ -22,6 +22,7 @@ public class MetadataObjectConfiguration {
 		dataObjectOperation.setInputFile(metadataRepositoryCategoryConfiguration.getObjectDefinitionFilePath());
 		dataObjectOperation.parseFile();
 		ObjectMapper objectMapper = new ObjectMapper();
+		//
 		for (DataObject dataObject : dataObjectOperation.getDataObjects()) {
 			if (dataObject.getType().equalsIgnoreCase("metadataobject")) {
 				MetadataObject metadataObject = objectMapper.convertValue(dataObject.getData(), MetadataObject.class);

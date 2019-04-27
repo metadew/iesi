@@ -1,14 +1,15 @@
 package io.metadew.iesi.metadata.definition;
 
 import java.util.List;
+import java.util.Optional;
 
 public class MetadataTable {
 	
 	private String name;
 	private String label;
 	private String description;
-	private String type = "";
-	private String category = "";
+	private String type;
+	private String category;
 	private String migrate = "N";
 	private String migrationKey = "A000";
 	private List<MetadataField> fields;
@@ -43,16 +44,16 @@ public class MetadataTable {
 		this.fields = fields;
 	}
 
-	public String getType() {
-		return type;
+	public Optional<String> getType() {
+		return Optional.ofNullable(type);
 	}
 
 	public void setType(String type) {
 		this.type = type;
 	}
 
-	public String getCategory() {
-		return category;
+	public Optional<String> getCategory() {
+		return Optional.ofNullable(category);
 	}
 
 	public void setCategory(String category) {

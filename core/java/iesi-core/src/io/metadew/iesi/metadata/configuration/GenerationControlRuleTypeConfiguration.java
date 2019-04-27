@@ -23,15 +23,14 @@ public class GenerationControlRuleTypeConfiguration {
 		this.setFrameworkExecution(frameworkExecution);
 	}
 	
-	// Methods
+//	// Methods
 	public GenerationControlRuleType getGenerationControlRuleType(String GenerationControlRuleTypeName) {
 		String conf = TypeConfigurationOperation.getTypeConfigurationFile(this.getFrameworkExecution(),
 				this.getDataObjectType(), GenerationControlRuleTypeName);
 		DataObjectOperation dataObjectOperation = new DataObjectOperation(this.getFrameworkExecution(), conf);
 		ObjectMapper objectMapper = new ObjectMapper();
-		GenerationControlRuleType GenerationControlRuleType = objectMapper.convertValue(dataObjectOperation.getDataObject().getData(),
+		return objectMapper.convertValue(dataObjectOperation.getDataObject().getData(),
 				GenerationControlRuleType.class);
-		return GenerationControlRuleType;
 	}
 
 	// Getters and Setters

@@ -18,7 +18,7 @@ public class FrameworkPluginConfiguration {
 		this.setFrameworkPlugin(new FrameworkPlugin());
 		this.getFrameworkPlugin()
 				.setName(configFile.getProperty(
-						this.getFrameworkConfiguration().getSettingConfiguration().getSettingPath("plugin.name"))
+						this.getFrameworkConfiguration().getSettingConfiguration().getSettingPath("plugin.name").get()).get()
 						.toLowerCase());
 		StringBuilder path = new StringBuilder();
 		path.append(this.getFrameworkConfiguration().getFolderConfiguration().getFolderAbsolutePath("plugins"));

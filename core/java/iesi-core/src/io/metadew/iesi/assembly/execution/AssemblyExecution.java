@@ -329,7 +329,7 @@ public class AssemblyExecution {
 					runExecHome + File.separator + "ExecutionServerRepository.db3");
 			DataObjectOperation executionServerTablesOperation = new DataObjectOperation(null,
 					metadataDefHome + File.separator + "ExecutionServerTables.json");
-			MetadataRepositoryConfiguration metadataRepositoryConfiguration = new MetadataRepositoryConfiguration(
+			MetadataRepositoryConfigurationBack metadataRepositoryConfiguration = new MetadataRepositoryConfigurationBack(
 					this.getAssemblyContext().getConfigTools(), executionServerRepositoryConnection);
 
 			ObjectMapper objectMapper = new ObjectMapper();

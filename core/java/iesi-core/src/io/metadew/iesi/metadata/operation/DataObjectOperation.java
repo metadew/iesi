@@ -1,23 +1,21 @@
 package io.metadew.iesi.metadata.operation;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import io.metadew.iesi.connection.tools.FileTools;
+import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.metadata.configuration.DataObjectConfiguration;
+import io.metadew.iesi.metadata.definition.DataObject;
+import io.metadew.iesi.metadata_repository.MetadataRepository;
+import org.apache.commons.io.FilenameUtils;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.commons.io.FilenameUtils;
-
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-
-import io.metadew.iesi.connection.tools.FileTools;
-import io.metadew.iesi.framework.execution.FrameworkExecution;
-import io.metadew.iesi.metadata.configuration.DataObjectConfiguration;
-import io.metadew.iesi.metadata.configuration.MetadataRepositoryConfiguration;
-import io.metadew.iesi.metadata.definition.DataObject;
 
 public class DataObjectOperation {
 
@@ -26,7 +24,7 @@ public class DataObjectOperation {
 	private List<DataObject> dataObjects;
 	private DataObject dataObject;
 	private DataObjectConfiguration dataObjectConfiguration;
-	private List<MetadataRepositoryConfiguration> metadataRepositoryConfigurationList;
+	private List<MetadataRepository> metadataRepositories;
 
 	// Constructors
 	public DataObjectOperation() {
@@ -48,7 +46,7 @@ public class DataObjectOperation {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public DataObjectOperation(FrameworkExecution frameworkExecution,
-			MetadataRepositoryConfiguration metadataRepositoryConfiguration, String inputFile) {
+							   MetadataRepository metadataRepositories, String inputFile) {
 		this.setFrameworkExecution(frameworkExecution);
 		this.setInputFile(inputFile);
 		File file = new File(inputFile);
@@ -57,17 +55,17 @@ public class DataObjectOperation {
 		} else if (FileTools.getFileExtension(file).equalsIgnoreCase("yml")) {
 			this.parseYamlFile();
 		}
-		this.setMetadataRepositoryConfigurationList(new ArrayList());
-		this.getMetadataRepositoryConfigurationList().add(metadataRepositoryConfiguration);
+		this.setMetadataRepositories(new ArrayList());
+		this.getMetadataRepositories().add(metadataRepositories);
 		this.setDataObjectConfiguration(new DataObjectConfiguration(this.getFrameworkExecution(),
-				metadataRepositoryConfiguration, this.getDataObjects()));
+				metadataRepositories, this.getDataObjects()));
 
 	}
 
 	public DataObjectOperation(FrameworkExecution frameworkExecution,
-			List<MetadataRepositoryConfiguration> metadataRepositoryConfigurationList, String inputFile) {
+                               List<MetadataRepository> metadataRepositoryConfigurationList, String inputFile) {
 		this.setFrameworkExecution(frameworkExecution);
-		this.setMetadataRepositoryConfigurationList(metadataRepositoryConfigurationList);
+		this.setMetadataRepositories(metadataRepositoryConfigurationList);
 		this.setInputFile(inputFile);
 		File file = new File(inputFile);
 		if (FileTools.getFileExtension(file).equalsIgnoreCase("json")) {
@@ -162,31 +160,9 @@ public class DataObjectOperation {
 	}
 
 	public void saveToMetadataRepository() {
-		for (MetadataRepositoryConfiguration metadataRepositoryConfiguration : this
-				.getMetadataRepositoryConfigurationList()) {
-			this.setDataObjectConfiguration(new DataObjectConfiguration(this.getFrameworkExecution(),
-					metadataRepositoryConfiguration, this.getDataObjects()));
+		for (MetadataRepository metadataRepository : this.getMetadataRepositories()) {
+			this.setDataObjectConfiguration(new DataObjectConfiguration(this.getFrameworkExecution(), metadataRepository, this.getDataObjects()));
 			this.getDataObjectConfiguration().saveToMetadataRepository();
-		}
-	}
-
-	public String getMetadataRepositoryDdl() {
-		StringBuilder output = new StringBuilder();
-		for (MetadataRepositoryConfiguration metadataRepositoryConfiguration : this
-				.getMetadataRepositoryConfigurationList()) {
-			this.setDataObjectConfiguration(new DataObjectConfiguration(this.getFrameworkExecution(),
-					metadataRepositoryConfiguration, this.getDataObjects()));
-			output.append(this.getDataObjectConfiguration().getMetadataRepositoryDdl());
-		}
-		return output.toString();
-	}
-
-	public void saveToMetadataFileStore() {
-		for (MetadataRepositoryConfiguration metadataRepositoryConfiguration : this
-				.getMetadataRepositoryConfigurationList()) {
-			this.setDataObjectConfiguration(new DataObjectConfiguration(this.getFrameworkExecution(),
-					metadataRepositoryConfiguration, this.getDataObjects()));
-			this.getDataObjectConfiguration().saveToMetadataFileStore();
 		}
 	}
 
@@ -231,13 +207,13 @@ public class DataObjectOperation {
 		this.dataObject = dataObject;
 	}
 
-	public List<MetadataRepositoryConfiguration> getMetadataRepositoryConfigurationList() {
-		return metadataRepositoryConfigurationList;
+	public List<MetadataRepository> getMetadataRepositories() {
+		return metadataRepositories;
 	}
 
-	public void setMetadataRepositoryConfigurationList(
-			List<MetadataRepositoryConfiguration> metadataRepositoryConfigurationList) {
-		this.metadataRepositoryConfigurationList = metadataRepositoryConfigurationList;
+	public void setMetadataRepositories(
+			List<MetadataRepository> metadataRepositories) {
+		this.metadataRepositories = metadataRepositories;
 	}
 
 }

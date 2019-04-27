@@ -69,7 +69,7 @@ public class GetData {
 
 		        
 			} catch (SQLException e) {
-				System.out.println("Database Actions Failed");
+				System.out.println("database Actions Failed");
 				e.printStackTrace();
 			} finally {
 			      //Close the connection

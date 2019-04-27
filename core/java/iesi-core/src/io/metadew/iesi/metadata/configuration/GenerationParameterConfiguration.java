@@ -28,11 +28,11 @@ public class GenerationParameterConfiguration {
 	public String getInsertStatement(String generationName) {
 		String sql = "";
 
-		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("GenerationParameters");
+		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("GenerationParameters");
 		sql += " (GEN_ID, GEN_PAR_NM, GEN_PAR_VAL) ";
 		sql += "VALUES ";
 		sql += "(";
-		sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Generations"), "GEN_ID", "where GEN_NM = '"+ generationName) + "')";
+		sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Generations"), "GEN_ID", "where GEN_NM = '"+ generationName) + "')";
 		sql += ",";
 		sql += SQLTools.GetStringForSQL(this.getgenerationParameter().getName());
 		sql += ",";
@@ -46,9 +46,9 @@ public class GenerationParameterConfiguration {
 	public GenerationParameter getGenerationParameter(long generationId, String generationParameterName) {
 		GenerationParameter generationParameter = new GenerationParameter();
 		CachedRowSet crsGenerationParameter = null;
-		String queryGenerationParameter = "select GEN_ID, GEN_PAR_NM, GEN_PAR_VAL from " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("GenerationParameters")
+		String queryGenerationParameter = "select GEN_ID, GEN_PAR_NM, GEN_PAR_VAL from " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("GenerationParameters")
 				+ " where GEN_ID = " + generationId + " and GEN_PAR_NM = '" + generationParameterName + "'";
-		crsGenerationParameter = this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().executeQuery(queryGenerationParameter);
+		crsGenerationParameter = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(queryGenerationParameter, "reader");
 		try {
 			while (crsGenerationParameter.next()) {
 				generationParameter.setName(generationParameterName);

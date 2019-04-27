@@ -28,11 +28,11 @@ public class GenerationRuleParameterConfiguration {
 	public String getInsertStatement(String generationName, String generationField) {
 		String sql = "";
 
-		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("GenerationRuleParameters");
+		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("GenerationRuleParameters");
 		sql += " (GEN_RULE_ID, GEN_RULE_PAR_NM, GEN_RULE_PAR_VAL) ";
 		sql += "VALUES ";
 		sql += "(";
-		sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("GenerationRules"), "GEN_RULE_ID", "where FIELD_NM = '"+ generationField + "' and GEN_ID = (" + SQLTools.GetLookupIdStatement(this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Generations"), "GEN_ID", "GEN_NM", generationName)) + "))";
+		sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("GenerationRules"), "GEN_RULE_ID", "where FIELD_NM = '"+ generationField + "' and GEN_ID = (" + SQLTools.GetLookupIdStatement(this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Generations"), "GEN_ID", "GEN_NM", generationName)) + "))";
 		sql += ",";
 		sql += SQLTools.GetStringForSQL(this.getgenerationRuleParameter().getName());
 		sql += ",";
@@ -46,9 +46,9 @@ public class GenerationRuleParameterConfiguration {
 	public GenerationRuleParameter getGenerationRuleParameter(long generationRuleId, String generationRuleParameterName) {
 		GenerationRuleParameter generationRuleParameter = new GenerationRuleParameter();
 		CachedRowSet crsGenerationRuleParameter = null;
-		String queryGenerationRuleParameter = "select GEN_RULE_ID, GEN_RULE_PAR_NM, GEN_RULE_PAR_VAL from " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("GenerationRuleParameters")
+		String queryGenerationRuleParameter = "select GEN_RULE_ID, GEN_RULE_PAR_NM, GEN_RULE_PAR_VAL from " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("GenerationRuleParameters")
 				+ " where GEN_RULE_ID = " + generationRuleId + " and GEN_RULE_PAR_NM = '" + generationRuleParameterName + "'";
-		crsGenerationRuleParameter = this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().executeQuery(queryGenerationRuleParameter);
+		crsGenerationRuleParameter = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(queryGenerationRuleParameter, "reader");
 		try {
 			while (crsGenerationRuleParameter.next()) {
 				generationRuleParameter.setName(generationRuleParameterName);

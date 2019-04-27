@@ -31,13 +31,13 @@ public class GenerationOutputConfiguration {
 	public String getInsertStatement(String generationName) {
 		String sql = "";
 
-		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("GenerationOutputs");
+		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("GenerationOutputs");
 		sql += " (GEN_ID, GEN_OUT_ID, GEN_OUT_NM, GEN_OUT_TYP_NM, GEN_OUT_DSC) ";
 		sql += "VALUES ";
 		sql += "(";
-		sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Generations"), "GEN_ID", "GEN_NM", generationName) + ")";
+		sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Generations"), "GEN_ID", "GEN_NM", generationName) + ")";
 		sql += ",";
-		sql += "(" + SQLTools.GetNextIdStatement(this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("GenerationOutputs"), "GEN_OUT_ID") + ")";
+		sql += "(" + SQLTools.GetNextIdStatement(this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("GenerationOutputs"), "GEN_OUT_ID") + ")";
 		sql += ",";
 		sql += SQLTools.GetStringForSQL(this.getgenerationOutput().getName());
 		sql += ",";
@@ -77,8 +77,8 @@ public class GenerationOutputConfiguration {
 		GenerationOutput generationOutput = new GenerationOutput();
 		CachedRowSet crsGenerationOutput = null;
 		String queryGenerationOutput = "select GEN_ID, GEN_OUT_ID, GEN_OUT_NM, GEN_OUT_TYP_NM, GEN_OUT_DSC from "
-				+ this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("GenerationOutputs") + " where GEN_OUT_ID = " + generationOutputId;
-		crsGenerationOutput = this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().executeQuery(queryGenerationOutput);
+				+ this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("GenerationOutputs") + " where GEN_OUT_ID = " + generationOutputId;
+		crsGenerationOutput = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(queryGenerationOutput, "reader");
 		GenerationOutputParameterConfiguration generationOutputParameterConfiguration = new GenerationOutputParameterConfiguration(this.getFrameworkExecution());
 		try {
 			while (crsGenerationOutput.next()) {
@@ -89,9 +89,9 @@ public class GenerationOutputConfiguration {
 				
 				// Get parameters
 				CachedRowSet crsGenerationOutputParameters = null;
-				String queryGenerationOutputParameters = "select GEN_OUT_ID, GEN_OUT_PAR_NM from " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("GenerationOutputParameters")
+				String queryGenerationOutputParameters = "select GEN_OUT_ID, GEN_OUT_PAR_NM from " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("GenerationOutputParameters")
 						+ " where GEN_OUT_ID = " + generationOutputId;
-				crsGenerationOutputParameters = this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().executeQuery(queryGenerationOutputParameters);
+				crsGenerationOutputParameters = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(queryGenerationOutputParameters, "reader");
 				List<GenerationOutputParameter> generationOutputParameterList = new ArrayList();
 				while (crsGenerationOutputParameters.next()) {
 					generationOutputParameterList

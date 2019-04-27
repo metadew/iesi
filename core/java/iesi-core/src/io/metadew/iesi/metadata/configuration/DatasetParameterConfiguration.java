@@ -28,11 +28,11 @@ public class DatasetParameterConfiguration {
 	public String getInsertStatement(String datasetName) {
 		String sql = "";
 
-		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("DatasetParameters");
+		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("DatasetParameters");
 		sql += " (DST_ID, DST_PAR_NM, DST_PAR_VAL) ";
 		sql += "VALUES ";
 		sql += "(";
-		sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Repositories"), "DST_ID", "where DST_NM = '"+ datasetName) + "')";
+		sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Repositories"), "DST_ID", "where DST_NM = '"+ datasetName) + "')";
 		sql += ",";
 		sql += SQLTools.GetStringForSQL(this.getDatasetParameter().getName());
 		sql += ",";
@@ -46,9 +46,9 @@ public class DatasetParameterConfiguration {
 	public DatasetParameter getDatasetParameter(long datasetId, String datasetParameterName) {
 		DatasetParameter datasetParameter = new DatasetParameter();
 		CachedRowSet crsDatasetParameter = null;
-		String queryDatasetParameter = "select DST_ID, DST_PAR_NM, DST_PAR_VAL from " + this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("DatasetParameters")
+		String queryDatasetParameter = "select DST_ID, DST_PAR_NM, DST_PAR_VAL from " + this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("DatasetParameters")
 				+ " where DST_ID = " + datasetId + " and DST_PAR_NM = '" + datasetParameterName + "'";
-		crsDatasetParameter = this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().executeQuery(queryDatasetParameter);
+		crsDatasetParameter = this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().executeQuery(queryDatasetParameter, "reader");
 		try {
 			while (crsDatasetParameter.next()) {
 				datasetParameter.setName(datasetParameterName);

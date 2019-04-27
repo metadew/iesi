@@ -28,7 +28,6 @@ public class ClassOperation {
 	}
 	*/
 
-    @SuppressWarnings("rawtypes")
     public static Class getActionClass(String actionType)
     {
 
@@ -36,12 +35,21 @@ public class ClassOperation {
                             .filterInputsBy(new FilterBuilder().include(FilterBuilder.prefix("io.metadew.iesi.script.action")))
                             .setUrls(ClasspathHelper.forClassLoader()).setScanners(new SubTypesScanner(false)));
 
-          Class<?> matchedClazz = reflections.getSubTypesOf(Object.class).stream()
-                            .filter(clazz -> clazz.getSimpleName().toLowerCase().equalsIgnoreCase(StringUtils.remove(actionType, '.').toLowerCase()))
-                            .findFirst().orElseThrow(NoSuchElementException::new);
-
-          return matchedClazz;
+        return reflections.getSubTypesOf(Object.class).stream()
+                          .filter(clazz -> clazz.getSimpleName().toLowerCase().equalsIgnoreCase(StringUtils.remove(actionType, '.').toLowerCase()))
+                          .findFirst().orElseThrow(NoSuchElementException::new);
     }
 
+    public static Class getExecutionRuntime(String executionRuntime)
+    {
+
+        Reflections reflections = new Reflections(new ConfigurationBuilder()
+                .filterInputsBy(new FilterBuilder().include(FilterBuilder.prefix("io.metadew.iesi.script.execution")))
+                .setUrls(ClasspathHelper.forClassLoader()).setScanners(new SubTypesScanner(false)));
+
+        return reflections.getSubTypesOf(Object.class).stream()
+                .filter(clazz -> clazz.getSimpleName().toLowerCase().equalsIgnoreCase(StringUtils.remove(executionRuntime, '.').toLowerCase()))
+                .findFirst().orElseThrow(NoSuchElementException::new);
+    }
 	
 }

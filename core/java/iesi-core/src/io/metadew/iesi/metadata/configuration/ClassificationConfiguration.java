@@ -28,15 +28,15 @@ public class ClassificationConfiguration {
 	public String getInsertStatement(String artefactName, String artefactType) {
 		String sql = "";
 
-		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getCatalogRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Classifications");
+		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("Classifications");
 		sql += " (ARTIFACT_ID, CLASSIF_ID, CLASSIF_TYP_NM, CLASSIF_NM, CLASSIF_VAL) ";
 		sql += "VALUES ";
 		sql += "(";
-		sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkExecution().getMetadataControl().getCatalogRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Artefacts"), "ARTEFACT_ID", "where ARTEFACT_NM = '"+ artefactName + "' and ARTEFACT_TYP_NM = '" + artefactType + "')");
+		sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkExecution().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("Artefacts"), "ARTEFACT_ID", "where ARTEFACT_NM = '"+ artefactName + "' and ARTEFACT_TYP_NM = '" + artefactType + "')");
 		sql += ",";
 		sql += "("
 				+ SQLTools.GetNextIdStatement(
-						this.getFrameworkExecution().getMetadataControl().getCatalogRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Classifications"), "CLASSIF_ID")
+						this.getFrameworkExecution().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("Classifications"), "CLASSIF_ID")
 				+ ")";
 		sql += ",";
 		sql += SQLTools.GetStringForSQL(this.getClassification().getType());
@@ -53,9 +53,9 @@ public class ClassificationConfiguration {
 	public Classification getClassification(long classificationId) {
 		Classification classification = new Classification();
 		CachedRowSet crsClassification = null;
-		String queryClassification = "select ARTIFACT_ID, CLASSIF_ID, CLASSIF_TYP_NM, CLASSIF_NM, CLASSIF_VAL from " + this.getFrameworkExecution().getMetadataControl().getCatalogRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Classifications")
+		String queryClassification = "select ARTIFACT_ID, CLASSIF_ID, CLASSIF_TYP_NM, CLASSIF_NM, CLASSIF_VAL from " + this.getFrameworkExecution().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("Classifications")
 				+ " where CLASSIF_ID = " + classificationId;
-		crsClassification = this.getFrameworkExecution().getMetadataControl().getCatalogRepositoryConfiguration().executeQuery(queryClassification);
+		crsClassification = this.getFrameworkExecution().getMetadataControl().getCatalogMetadataRepository().executeQuery(queryClassification, "reader");
 		try {
 			while (crsClassification.next()) {
 				classification.setId(classificationId);

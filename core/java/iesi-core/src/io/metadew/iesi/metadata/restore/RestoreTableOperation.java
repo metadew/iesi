@@ -64,10 +64,11 @@ public class RestoreTableOperation {
 			// Get table name
 			// lookup table name based on key
 			// DtNow only to the same schema is possible
-
+			// TODO
 			sql = "";
-			sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getSchemaPrefix()
-					+ this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableNamePrefix()
+			sql += "INSERT INTO "
+					// + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getMetadataTableConfiguration().getSchemaPrefix()
+					+ this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNamePrefix()
 					+ this.getDataTable().getName();
 			sql += " (";
 			sql += sqlFields;
@@ -76,7 +77,7 @@ public class RestoreTableOperation {
 			sql += ");";
 
 			// TODO repo redesign 
-			this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().executeUpdate(sql);
+			this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeUpdate(sql);
 		}
 
 	}

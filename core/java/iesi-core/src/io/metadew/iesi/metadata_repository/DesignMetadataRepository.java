@@ -1,0 +1,72 @@
+package io.metadew.iesi.metadata_repository;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.metadata.configuration.ComponentConfiguration;
+import io.metadew.iesi.metadata.configuration.ScriptConfiguration;
+import io.metadew.iesi.metadata.definition.Component;
+import io.metadew.iesi.metadata.definition.DataObject;
+import io.metadew.iesi.metadata.definition.Script;
+import io.metadew.iesi.metadata_repository.repository.Repository;
+import org.apache.logging.log4j.Level;
+
+import java.text.MessageFormat;
+
+public class DesignMetadataRepository extends MetadataRepository {
+
+    public DesignMetadataRepository(String frameworkCode, String name, String scope, String instanceName, Repository repository, String repositoryObjectsPath, String repositoryTablesPath) {
+        super(frameworkCode, name, scope, instanceName, repository, repositoryObjectsPath, repositoryTablesPath);
+    }
+
+    @Override
+    public String getDefinitionFileName() {
+        return "DesignTables.json";
+    }
+
+    @Override
+    public String getObjectDefinitionFileName() {
+        return "DesignObjects.json";
+    }
+
+    @Override
+    public String getCategory() {
+        return "design";
+    }
+
+
+    @Override
+    public String getCategoryPrefix() {
+        return "DES";
+    }
+
+    @Override
+    public void save(DataObject dataObject, FrameworkExecution frameworkExecution) {
+        // TODO: based on MetadataRepository object decide to insert or not insert the objects
+        // TODO: insert should be handled on database level as insert can differ from database type/dialect? JDBC Dialect/Spring
+        ObjectMapper objectMapper = new ObjectMapper();
+        if (dataObject.getType().equalsIgnoreCase("script")) {
+            Script script = objectMapper.convertValue(dataObject.getData(), Script.class);
+            save(script, frameworkExecution);
+        } else if (dataObject.getType().equalsIgnoreCase("component")) {
+            Component component = objectMapper.convertValue(dataObject.getData(), Component.class);
+            save(component, frameworkExecution);
+        } else if (dataObject.getType().equalsIgnoreCase("subroutine")) {
+            // TODO
+        } else {
+            frameworkExecution.getFrameworkLog().log(MessageFormat.format("Design repository is not responsible for loading saving {0}", dataObject.getType()), Level.TRACE);
+        }
+    }
+
+    public void save(Script script, FrameworkExecution frameworkExecution) {
+        ScriptConfiguration scriptConfiguration = new ScriptConfiguration(script,
+                frameworkExecution);
+        executeUpdate(scriptConfiguration.getInsertStatement());
+    }
+
+    public void save(Component component, FrameworkExecution frameworkExecution) {
+        ComponentConfiguration componentConfiguration = new ComponentConfiguration(component,
+                frameworkExecution);
+        executeUpdate(componentConfiguration.getInsertStatement());
+    }
+
+}

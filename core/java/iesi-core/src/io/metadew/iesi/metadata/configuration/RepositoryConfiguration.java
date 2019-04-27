@@ -33,47 +33,47 @@ public class RepositoryConfiguration {
 		String sql = "";
 
 		sql += "DELETE FROM "
-				+ this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration()
-						.getMetadataTableConfiguration().getTableName("RepositoryInstanceLabels");
+				+ this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository()
+						.getTableNameByLabel("RepositoryInstanceLabels");
 		sql += " WHERE REPO_ID = (";
 		sql += "select REPO_ID FROM " + this.getFrameworkExecution().getMetadataControl()
-				.getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Repositories");
+				.getConnectivityMetadataRepository().getTableNameByLabel("Repositories");
 		sql += " WHERE REPO_NM = " + SQLTools.GetStringForSQL(this.getRepository().getName());
 		sql += ")";
 		sql += ";";
 		sql += "\n";
 		sql += "DELETE FROM "
-				+ this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration()
-						.getMetadataTableConfiguration().getTableName("RepositoryInstanceParameters");
+				+ this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository()
+						.getTableNameByLabel("RepositoryInstanceParameters");
 		sql += " WHERE REPO_ID = (";
 		sql += "select REPO_ID FROM " + this.getFrameworkExecution().getMetadataControl()
-				.getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Repositories");
+				.getConnectivityMetadataRepository().getTableNameByLabel("Repositories");
 		sql += " WHERE REPO_NM = " + SQLTools.GetStringForSQL(this.getRepository().getName());
 		sql += ")";
 		sql += ";";
 		sql += "\n";
 		sql += "DELETE FROM "
-				+ this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration()
-						.getMetadataTableConfiguration().getTableName("RepositoryInstances");
+				+ this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository()
+						.getTableNameByLabel("RepositoryInstances");
 		sql += " WHERE REPO_ID = (";
 		sql += "select REPO_ID FROM " + this.getFrameworkExecution().getMetadataControl()
-				.getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Repositories");
+				.getConnectivityMetadataRepository().getTableNameByLabel("Repositories");
 		sql += " WHERE REPO_NM = " + SQLTools.GetStringForSQL(this.getRepository().getName());
 		sql += ")";
 		sql += ";";
 		sql += "\n";
 		sql += "DELETE FROM "
-				+ this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration()
-						.getMetadataTableConfiguration().getTableName("RepositoryParameters");
+				+ this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository()
+						.getTableNameByLabel("RepositoryParameters");
 		sql += " WHERE REPO_ID = (";
 		sql += "select REPO_ID FROM " + this.getFrameworkExecution().getMetadataControl()
-				.getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Repositories");
+				.getConnectivityMetadataRepository().getTableNameByLabel("Repositories");
 		sql += " WHERE REPO_NM = " + SQLTools.GetStringForSQL(this.getRepository().getName());
 		sql += ")";
 		sql += ";";
 		sql += "\n";
 		sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl()
-				.getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Repositories");
+				.getConnectivityMetadataRepository().getTableNameByLabel("Repositories");
 		sql += " WHERE REPO_NM = " + SQLTools.GetStringForSQL(this.getRepository().getName());
 		sql += ";";
 		sql += "\n";
@@ -91,12 +91,12 @@ public class RepositoryConfiguration {
 		}
 
 		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl()
-				.getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Repositories");
+				.getConnectivityMetadataRepository().getTableNameByLabel("Repositories");
 		sql += " (REPO_ID, REPO_NM, REPO_TYP_NM, REPO_DSC) ";
 		sql += "VALUES ";
 		sql += "(";
 		sql += "(" + SQLTools.GetNextIdStatement(this.getFrameworkExecution().getMetadataControl()
-				.getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Repositories"),
+				.getConnectivityMetadataRepository().getTableNameByLabel("Repositories"),
 				"REPO_ID") + ")";
 		sql += ",";
 		sql += SQLTools.GetStringForSQL(this.getRepository().getName());
@@ -166,11 +166,11 @@ public class RepositoryConfiguration {
 		Repository repository = new Repository();
 		CachedRowSet crsRepository = null;
 		String queryRepository = "select REPO_ID, REPO_NM, REPO_TYP_NM, REPO_DSC from "
-				+ this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration()
-						.getMetadataTableConfiguration().getTableName("Repositories")
+				+ this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository()
+						.getTableNameByLabel("Repositories")
 				+ " where REPO_NM = '" + repositoryName + "'";
-		crsRepository = this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration()
-				.executeQuery(queryRepository);
+		crsRepository = this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository()
+				.executeQuery(queryRepository, "reader");
 		RepositoryParameterConfiguration repositoryParameterConfiguration = new RepositoryParameterConfiguration(
 				this.getFrameworkExecution());
 		RepositoryInstanceConfiguration repositoryInstanceConfiguration = new RepositoryInstanceConfiguration(
@@ -185,11 +185,11 @@ public class RepositoryConfiguration {
 				// Get parameters
 				CachedRowSet crsRepositoryParameters = null;
 				String queryRepositoryParameters = "select REPO_ID, REPO_PAR_NM, REPO_PAR_VAL from "
-						+ this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration()
-								.getMetadataTableConfiguration().getTableName("RepositoryParameters")
+						+ this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository()
+								.getTableNameByLabel("RepositoryParameters")
 						+ " where REPO_ID = " + repository.getId();
 				crsRepositoryParameters = this.getFrameworkExecution().getMetadataControl()
-						.getConnectivityRepositoryConfiguration().executeQuery(queryRepositoryParameters);
+						.getConnectivityMetadataRepository().executeQuery(queryRepositoryParameters, "reader");
 				List<RepositoryParameter> repositoryParameterList = new ArrayList();
 				while (crsRepositoryParameters.next()) {
 					repositoryParameterList.add(repositoryParameterConfiguration.getRepositoryParameter(
@@ -201,11 +201,11 @@ public class RepositoryConfiguration {
 				// Get Instances
 				CachedRowSet crsRepositoryInstances = null;
 				String queryRepositoryInstances = "select REPO_ID, REPO_INST_ID, REPO_INST_NM from "
-						+ this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration()
-								.getMetadataTableConfiguration().getTableName("RepositoryInstances")
+						+ this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository()
+								.getTableNameByLabel("RepositoryInstances")
 						+ " where REPO_ID = " + repository.getId();
 				crsRepositoryInstances = this.getFrameworkExecution().getMetadataControl()
-						.getConnectivityRepositoryConfiguration().executeQuery(queryRepositoryInstances);
+						.getConnectivityMetadataRepository().executeQuery(queryRepositoryInstances, "reader");
 				List<RepositoryInstance> repositoryInstanceList = new ArrayList();
 				while (crsRepositoryInstances.next()) {
 					repositoryInstanceList.add(repositoryInstanceConfiguration.getRepositoryInstance(
@@ -227,11 +227,11 @@ public class RepositoryConfiguration {
 		Repository repository = new Repository();
 		CachedRowSet crsRepository = null;
 		String queryRepository = "select REPO_ID, REPO_NM, REPO_TYP_NM, REPO_DSC from "
-				+ this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration()
-						.getMetadataTableConfiguration().getTableName("Repositories")
+				+ this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository()
+						.getTableNameByLabel("Repositories")
 				+ " where REPO_NM = '" + repositoryName + "'";
-		crsRepository = this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration()
-				.executeQuery(queryRepository);
+		crsRepository = this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository()
+				.executeQuery(queryRepository, "reader");
 		try {
 			while (crsRepository.next()) {
 				repository.setName(repositoryName);

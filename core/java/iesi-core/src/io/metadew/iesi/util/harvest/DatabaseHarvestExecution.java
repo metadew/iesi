@@ -7,9 +7,9 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import io.metadew.iesi.metadata_repository.repository.database.connection.DatabaseConnection;
 import org.apache.logging.log4j.Level;
 
-import io.metadew.iesi.connection.DatabaseConnection;
 import io.metadew.iesi.connection.operation.ConnectionOperation;
 import io.metadew.iesi.connection.operation.DatabaseOperation;
 import io.metadew.iesi.connection.tools.FileTools;
@@ -83,11 +83,11 @@ public class DatabaseHarvestExecution {
 		ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
 		DatabaseConnection databaseConnection = connectionOperation.getDatabaseConnection(connection);
 		
-		if (databaseConnection.getType().trim().equalsIgnoreCase("oracle")) {
-			this.getFrameworkExecution().getFrameworkLog().log("repository.type=" + databaseConnection.getType(), Level.DEBUG);
-		} else {
-			this.getFrameworkExecution().getFrameworkLog().log("repository.type.notsupported", Level.INFO);
-		}
+//		if (databaseConnection.getType().trim().equalsIgnoreCase("oracle")) {
+//			this.getFrameworkExecution().getFrameworkLog().log("repository.type=" + databaseConnection.getType(), Level.DEBUG);
+//		} else {
+//			this.getFrameworkExecution().getFrameworkLog().log("repository.type.notsupported", Level.INFO);
+//		}
 
 		// Execute
 		try {

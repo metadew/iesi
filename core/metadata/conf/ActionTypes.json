@@ -401,4 +401,15 @@
 			{"name": "question","description": "Question to get confirmation for","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"},
 			{"name": "timeout","description": "Number of seconds to wait for a confirmation","type": "number","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"}
 	]
+}},
+{
+	"type": "ActionType",
+	"data": {
+		"name": "fho.deleteFolder",
+		"description": "Delete one or more folders and all contents",
+		"parameters": [
+			{"name": "path","description": "Path where the folder is located","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "folder","description": "Folder(s) to delete","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "connection","description": "Connection where the folder is located","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "Y"}
+	]
 }}]

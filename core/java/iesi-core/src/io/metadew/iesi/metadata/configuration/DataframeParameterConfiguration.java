@@ -31,11 +31,11 @@ public class DataframeParameterConfiguration {
 	public String getInsertStatement(String dataframeName) {
 		String sql = "";
 
-		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getCatalogRepositoryConfiguration().getMetadataTableConfiguration().getTableName("DataframeParameters");
+		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("DataframeParameters");
 		sql += " (DATAFRAME_ID, DATAFRAME_VRS_NB, DATAFRAME_PAR_NM, DATAFRAME_PAR_VAL) ";
 		sql += "VALUES ";
 		sql += "(";
-		sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkExecution().getMetadataControl().getCatalogRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Dataviews"), "DATAFRAME_ID", "where DATAFRAME_NM = '"+ dataframeName) + "')";
+		sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkExecution().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("Dataviews"), "DATAFRAME_ID", "where DATAFRAME_NM = '"+ dataframeName) + "')";
 		sql += ",";
 		sql += SQLTools.GetStringForSQL(this.getDataframeVersion().getNumber());
 		sql += ",";
@@ -51,9 +51,9 @@ public class DataframeParameterConfiguration {
 	public DataframeParameter getDataframeParameter(long dataframeId, long dataframeVersionNumber, String dataframeParameterName) {
 		DataframeParameter dataframeParameter = new DataframeParameter();
 		CachedRowSet crsDataframeParameter = null;
-		String queryDataframeParameter = "select DATAFRAME_ID, DATAFRAME_VRS_NB, DATAFRAME_PAR_NM, DATAFRAME_PAR_VAL from " + this.getFrameworkExecution().getMetadataControl().getCatalogRepositoryConfiguration().getMetadataTableConfiguration().getTableName("DataframeParameters")
+		String queryDataframeParameter = "select DATAFRAME_ID, DATAFRAME_VRS_NB, DATAFRAME_PAR_NM, DATAFRAME_PAR_VAL from " + this.getFrameworkExecution().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("DataframeParameters")
 				+ " where DATAFRAME_ID = " + dataframeId + " and DATAFRAME_VRS_NB = " + dataframeVersionNumber + " and DATAFRAME_PAR_NM = '" + dataframeParameterName + "'";
-		crsDataframeParameter = this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().executeQuery(queryDataframeParameter);
+		crsDataframeParameter = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(queryDataframeParameter, "reader");
 		try {
 			while (crsDataframeParameter.next()) {
 				dataframeParameter.setName(dataframeParameterName);

@@ -3,7 +3,6 @@ package io.metadew.iesi.script.execution;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.metadew.iesi.framework.execution.FrameworkExecution;
-import io.metadew.iesi.metadata.configuration.MetadataRepositoryConfiguration;
 import io.metadew.iesi.metadata.definition.ScriptLog;
 
 public class ExecutionLog {
@@ -20,15 +19,15 @@ public class ExecutionLog {
 		ObjectMapper mapper = new ObjectMapper();
 		try {
 
-			for (MetadataRepositoryConfiguration metadataRepositoryConfiguration : this.getFrameworkExecution()
-					.getFrameworkControl().getMetadataRepositoryConfigurationList()) {
-
-				if (metadataRepositoryConfiguration.getType().equalsIgnoreCase("elasticsearch")) {
-					metadataRepositoryConfiguration.getElasticsearchConnection()
-							.putStringEntity(mapper.writeValueAsString(scriptLog), this.getFrameworkExecution().getMetadataControl().getMonitorRepositoryConfiguration().getMetadataTableConfiguration().getTableName("ScriptResults").toLowerCase(), scriptLog.getRun());
-				}
-
-			}
+//			for (MetadataRepositoryConfigurationBack metadataRepositoryConfiguration : this.getFrameworkExecution()
+//					.getFrameworkControl().getMetadataRepositoryConfigurations()) {
+//
+//				if (metadataRepositoryConfiguration.getType().equalsIgnoreCase("elasticsearch")) {
+//					metadataRepositoryConfiguration.getElasticsearchConnection()
+//							.putStringEntity(mapper.writeValueAsString(scriptLog), this.getFrameworkExecution().getMetadataControl().getMonitorMetadataRepository().getMetadataTableConfiguration().getTableName("ScriptResults").toLowerCase(), scriptLog.getRun());
+//				}
+//
+//			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

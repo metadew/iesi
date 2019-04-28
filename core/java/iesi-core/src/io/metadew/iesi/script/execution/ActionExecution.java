@@ -130,7 +130,7 @@ public class ActionExecution {
 			
 			// Trace function
 			this.traceDesignMetadata(actionParameterOperationMap);
-			
+
 			// Evaluate error expected
 			if (this.getActionControl().getExecutionMetrics().getErrorCount() > 0) {
 				if (this.getAction().getErrorExpected().equalsIgnoreCase("y")) {

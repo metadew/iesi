@@ -33,15 +33,15 @@ public class LedgerItemConfiguration
 	{
 		String sql = "";
 
-		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getLedgerRepositoryConfiguration()
-					.getMetadataTableConfiguration().getTableName("LedgerItems");
+		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getLedgerMetadataRepository()
+					.getTableNameByLabel("LedgerItems");
 		sql += " (LEDGER_ID, ITEM_NM, ITEM_VAL) ";
 		sql += "VALUES ";
 		sql += "(";
 		sql += "("
 					+ SQLTools.GetLookupIdStatement(
-								this.getFrameworkExecution().getMetadataControl().getLedgerRepositoryConfiguration()
-											.getMetadataTableConfiguration().getTableName("Ledgers"),
+								this.getFrameworkExecution().getMetadataControl().getLedgerMetadataRepository()
+											.getTableNameByLabel("Ledgers"),
 								"LEDGER_ID", "where LEDGER_NM = '" + ledgerName)
 					+ "')";
 		sql += ",";
@@ -59,11 +59,11 @@ public class LedgerItemConfiguration
 		LedgerItem ledgerItem = new LedgerItem();
 		CachedRowSet crsLedgerItem = null;
 		String queryLedgerItem = "select LEDGER_ID, ITEM_NM, ITEM_VAL from "
-					+ this.getFrameworkExecution().getMetadataControl().getLedgerRepositoryConfiguration()
-								.getMetadataTableConfiguration().getTableName("LedgerItems")
+					+ this.getFrameworkExecution().getMetadataControl().getLedgerMetadataRepository()
+								.getTableNameByLabel("LedgerItems")
 					+ " where LEDGER_ID = " + ledgerId + " and ITEM_NM = '" + ledgerItemName + "'";
-		crsLedgerItem = this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration()
-					.executeQuery(queryLedgerItem);
+		crsLedgerItem = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository()
+					.executeQuery(queryLedgerItem, "reader");
 		try
 		{
 			while (crsLedgerItem.next())

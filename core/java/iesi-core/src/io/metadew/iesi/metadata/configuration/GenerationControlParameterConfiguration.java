@@ -28,11 +28,11 @@ public class GenerationControlParameterConfiguration {
 	public String getInsertStatement(String generationName, String generationControlName) {
 		String sql = "";
 
-		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("GenerationControlParameters");
+		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("GenerationControlParameters");
 		sql += " (GEN_CTL_ID, GEN_CTL_PAR_NM, GEN_CTL_PAR_VAL) ";
 		sql += "VALUES ";
 		sql += "(";
-		sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("GenerationControls"), "GEN_CTL_ID", "where GEN_CTL_NM = '"+ generationControlName + "' and GEN_ID = (" + SQLTools.GetLookupIdStatement(this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Generations"), "GEN_ID", "GEN_NM", generationName)) + "))";
+		sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("GenerationControls"), "GEN_CTL_ID", "where GEN_CTL_NM = '"+ generationControlName + "' and GEN_ID = (" + SQLTools.GetLookupIdStatement(this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Generations"), "GEN_ID", "GEN_NM", generationName)) + "))";
 		sql += ",";
 		sql += SQLTools.GetStringForSQL(this.getgenerationControlParameter().getName());
 		sql += ",";
@@ -46,9 +46,9 @@ public class GenerationControlParameterConfiguration {
 	public GenerationControlParameter getGenerationControlParameter(long generationControlId,String generationControlParameterName) {
 		GenerationControlParameter generationControlParameter = new GenerationControlParameter();
 		CachedRowSet crsGenerationControlParameter = null;
-		String queryGenerationControlParameter = "select GEN_CTL_ID, GEN_CTL_PAR_NM, GEN_CTL_PAR_VAL from " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("GenerationControlParameters")
+		String queryGenerationControlParameter = "select GEN_CTL_ID, GEN_CTL_PAR_NM, GEN_CTL_PAR_VAL from " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("GenerationControlParameters")
 				+ " where GEN_CTL_ID = " + generationControlId + " and GEN_CTL_PAR_NM = '" + generationControlParameterName + "'";
-		crsGenerationControlParameter = this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().executeQuery(queryGenerationControlParameter);
+		crsGenerationControlParameter = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(queryGenerationControlParameter, "reader");
 		try {
 			while (crsGenerationControlParameter.next()) {
 				generationControlParameter.setName(generationControlParameterName);

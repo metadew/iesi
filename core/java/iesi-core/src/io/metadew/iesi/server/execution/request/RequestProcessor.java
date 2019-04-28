@@ -31,23 +31,23 @@ public class RequestProcessor {
 	}
 
 	public void setProcessor() {
-		String QueryString = "update " + this.getFrameworkExecution().getExecutionServerRepositoryConfiguration().getMetadataTableConfiguration().getPRC_CTL()
+		String QueryString = "update " + "PRC_CTL"
 				+ " set request_id = " + this.que_id + " where prc_id = " + this.prc_id;
 		this.getFrameworkExecution().getExecutionServerRepositoryConfiguration().executeUpdate(QueryString);
 
-		QueryString = "update " + this.getFrameworkExecution().getExecutionServerRepositoryConfiguration().getMetadataTableConfiguration().getPRC_REQ()
+		QueryString = "update " + "PRC_REQ"
 				+ " set prc_id = " + this.prc_id + " where request_id = " + this.que_id;
 		this.getFrameworkExecution().getExecutionServerRepositoryConfiguration().executeUpdate(QueryString);
 	}
 
 	public void clearProcessor() {
-		String QueryString = "update " + this.getFrameworkExecution().getExecutionServerRepositoryConfiguration().getMetadataTableConfiguration().getPRC_CTL()
+		String QueryString = "update " + "PRC_CTL"
 				+ " set request_id = -1 where prc_id = " + this.prc_id;
 		this.getFrameworkExecution().getExecutionServerRepositoryConfiguration().executeUpdate(QueryString);
 	}
 
 	public void removeFromQueue() {
-		String QueryString = "delete from " + this.getFrameworkExecution().getExecutionServerRepositoryConfiguration().getMetadataTableConfiguration().getPRC_REQ()
+		String QueryString = "delete from " + "PRC_REQ"
 				+ " where request_id = " + this.que_id;
 		this.getFrameworkExecution().getExecutionServerRepositoryConfiguration().executeUpdate(QueryString);
 	}
@@ -56,9 +56,9 @@ public class RequestProcessor {
 		String QueryString = "";
 		CachedRowSet crs = null;
 		QueryString = "select request_id, request_type, script_nm, env_nm, prc_id from "
-				+ this.getFrameworkExecution().getExecutionServerRepositoryConfiguration().getMetadataTableConfiguration().getPRC_REQ() + " where request_id = "
+				+ "PRC_REQ" + " where request_id = "
 				+ this.que_id;
-		crs = this.getFrameworkExecution().getExecutionServerRepositoryConfiguration().executeQuery(QueryString);
+		crs = this.getFrameworkExecution().getExecutionServerRepositoryConfiguration().executeQuery(QueryString, "reader");
 
 		try {
 			while (crs.next()) {

@@ -35,20 +35,20 @@ public class RepositoryInstanceConfiguration {
 		String sql = "";
 
 		sql += "INSERT INTO "
-				+ this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration()
-						.getMetadataTableConfiguration().getTableName("RepositoryInstances");
+				+ this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository()
+						.getTableNameByLabel("RepositoryInstances");
 		sql += " (REPO_ID, REPO_INST_ID, REPO_INST_NM, REPO_INST_DSC) ";
 		sql += "VALUES ";
 		sql += "(";
 		sql += "(" + SQLTools.GetLookupIdStatement(
-				this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration()
-						.getMetadataTableConfiguration().getTableName("Repositories"),
+				this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository()
+						.getTableNameByLabel("Repositories"),
 				"REPO_ID", "where REPO_NM = '" + repositoryName) + "')";
 		sql += ",";
 		sql += "("
 				+ SQLTools.GetNextIdStatement(
-						this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration()
-								.getMetadataTableConfiguration().getTableName("RepositoryInstances"),
+						this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository()
+								.getTableNameByLabel("RepositoryInstances"),
 						"REPO_INST_ID")
 				+ ")";
 		sql += ",";
@@ -117,11 +117,11 @@ public class RepositoryInstanceConfiguration {
 		RepositoryInstance repositoryInstance = new RepositoryInstance();
 		CachedRowSet crsRepositoryInstance = null;
 		String queryRepositoryInstance = "select REPO_ID, REPO_INST_ID, REPO_INST_NM, REPO_INST_DSC from "
-				+ this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration()
-						.getMetadataTableConfiguration().getTableName("RepositoryInstances")
+				+ this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository()
+						.getTableNameByLabel("RepositoryInstances")
 				+ " where REPO_ID = " + repositoryId + " and REPO_INST_NM = '" + repositoryInstanceName + "'";
-		crsRepositoryInstance = this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration()
-				.executeQuery(queryRepositoryInstance);
+		crsRepositoryInstance = this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository()
+				.executeQuery(queryRepositoryInstance, "reader");
 		RepositoryInstanceParameterConfiguration repositoryInstanceParameterConfiguration = new RepositoryInstanceParameterConfiguration(
 				this.getFrameworkExecution());
 		RepositoryInstanceLabelConfiguration repositoryInstanceLabelConfiguration = new RepositoryInstanceLabelConfiguration(
@@ -135,11 +135,11 @@ public class RepositoryInstanceConfiguration {
 				// Get parameters
 				CachedRowSet crsRepositoryInstanceParameters = null;
 				String queryRepositoryInstanceParameters = "select REPO_ID, REPO_INST_ID, REPO_INST_PAR_NM, REPO_INST_PAR_VAL from "
-						+ this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration()
-								.getMetadataTableConfiguration().getTableName("RepositoryInstanceParameters")
+						+ this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository()
+								.getTableNameByLabel("RepositoryInstanceParameters")
 						+ " where REPO_ID = " + repositoryId + " and REPO_INST_ID = " + repositoryInstance.getId();
 				crsRepositoryInstanceParameters = this.getFrameworkExecution().getMetadataControl()
-						.getConnectivityRepositoryConfiguration().executeQuery(queryRepositoryInstanceParameters);
+						.getConnectivityMetadataRepository().executeQuery(queryRepositoryInstanceParameters, "reader");
 				List<RepositoryInstanceParameter> repositoryInstanceParameterList = new ArrayList();
 				while (crsRepositoryInstanceParameters.next()) {
 					repositoryInstanceParameterList.add(repositoryInstanceParameterConfiguration.getRepositoryInstanceParameter(
@@ -151,11 +151,11 @@ public class RepositoryInstanceConfiguration {
 				// Get labels
 				CachedRowSet crsRepositoryInstanceLabels = null;
 				String queryRepositoryInstanceLabels = "select REPO_ID, REPO_INST_ID, REPO_INST_LBL_VAL from "
-						+ this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration()
-								.getMetadataTableConfiguration().getTableName("RepositoryInstanceLabels")
+						+ this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository()
+								.getTableNameByLabel("RepositoryInstanceLabels")
 						+ " where REPO_ID = " + repositoryId + " and REPO_INST_ID = " + repositoryInstance.getId();
 				crsRepositoryInstanceLabels = this.getFrameworkExecution().getMetadataControl()
-						.getConnectivityRepositoryConfiguration().executeQuery(queryRepositoryInstanceLabels);
+						.getConnectivityMetadataRepository().executeQuery(queryRepositoryInstanceLabels, "reader");
 				List<RepositoryInstanceLabel> repositoryInstanceLabelList = new ArrayList();
 				while (crsRepositoryInstanceLabels.next()) {
 					repositoryInstanceLabelList.add(repositoryInstanceLabelConfiguration.getRepositoryInstanceLabel(

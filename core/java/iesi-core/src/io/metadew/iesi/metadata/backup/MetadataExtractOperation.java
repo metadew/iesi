@@ -40,9 +40,11 @@ public class MetadataExtractOperation {
 		// Log Start
 		// this.getEoControl().logStart(this);
 		// this.setProcessId(this.getEoControl().getProcessId());
-
-		String schemaName = this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getSchemaPrefix();
-		String tableNamePrefix = this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableNamePrefix();
+		// TODO
+		String schemaName = "";
+		// this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getRepository().getDatabases().get("reader");
+		//		.getMetadataTableConfiguration().getSchemaPrefix();
+		String tableNamePrefix = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNamePrefix();
 		String tableName = schemaName + tableNamePrefix + metadataTable.getName();
 		DataTable dataTable = new DataTable();
 		// Setting the table name without instance
@@ -54,7 +56,7 @@ public class MetadataExtractOperation {
 
 			CachedRowSet crs = null;
 			// TODO repo redesign 
-			crs = this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().executeQuery(query);
+			crs = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(query, "reader");
 			ResultSetMetaData rsmd = crs.getMetaData();
 			int cols = rsmd.getColumnCount();
 			int rows = 1;

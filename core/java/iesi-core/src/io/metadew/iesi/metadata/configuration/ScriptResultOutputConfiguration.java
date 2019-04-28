@@ -31,9 +31,9 @@ public class ScriptResultOutputConfiguration {
 	public Optional<ScriptResultOutput> getScriptOutput(String runId, long processId, String scriptResultOutputName) {
 		ScriptResultOutput scriptResultOutput = null;
 		CachedRowSet crsScriptResultOutput;
-		String queryScriptResultOutput = "select RUN_ID, PRC_ID, SCRIPT_ID, OUT_NM, OUT_VAL from " + this.getFrameworkExecution().getMetadataControl().getResultRepositoryConfiguration().getMetadataTableConfiguration().getTableName("ScriptOutputs")
+		String queryScriptResultOutput = "select RUN_ID, PRC_ID, SCRIPT_ID, OUT_NM, OUT_VAL from " + this.getFrameworkExecution().getMetadataControl().getResultMetadataRepository().getTableNameByLabel("ScriptOutputs")
 				+ " where RUN_ID = '" + runId + "' and PRC_ID = " + processId + " and OUT_NM = '" + scriptResultOutputName + "'";
-		crsScriptResultOutput = this.getFrameworkExecution().getMetadataControl().getResultRepositoryConfiguration().executeQuery(queryScriptResultOutput);
+		crsScriptResultOutput = this.getFrameworkExecution().getMetadataControl().getResultMetadataRepository().executeQuery(queryScriptResultOutput, "reader");
 		try {
 			while (crsScriptResultOutput.next()) {
 				scriptResultOutput = new ScriptResultOutput(scriptResultOutputName,

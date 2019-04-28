@@ -1,7 +1,7 @@
 package io.metadew.iesi.datatypes;
 
-import io.metadew.iesi.connection.DatabaseConnection;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.metadata_repository.repository.database.connection.DatabaseConnection;
 
 import java.util.List;
 

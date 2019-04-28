@@ -28,11 +28,11 @@ public class ComponentVersionConfiguration {
 	public String getInsertStatement(String componentName) {
 		String sql = "";
 		
-		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("ComponentVersions");
+		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ComponentVersions");
 		sql += " (COMP_ID, COMP_VRS_NB, COMP_VRS_DSC) ";
 		sql += "VALUES ";
 		sql += "(";
-		sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Components"), "COMP_ID", "where COMP_NM = '"+ componentName) + "')";
+		sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Components"), "COMP_ID", "where COMP_NM = '"+ componentName) + "')";
 		sql += ",";
 		sql += SQLTools.GetStringForSQL(this.getComponentVersion().getNumber());
 		sql += ",";
@@ -46,11 +46,11 @@ public class ComponentVersionConfiguration {
 	public String getDefaultInsertStatement(String componentName) {
 		String sql = "";
 
-		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("ComponentVersions");
+		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ComponentVersions");
 		sql += " (COMP_ID, COMP_VRS_NB, COMP_VRS_DSC) ";
 		sql += "VALUES ";
 		sql += "(";
-		sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Components"), "COMP_ID", "where COMP_NM = '"+ componentName) + "')";
+		sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Components"), "COMP_ID", "where COMP_NM = '"+ componentName) + "')";
 		sql += ",";
 		sql += SQLTools.GetStringForSQL("0");
 		sql += ",";
@@ -64,9 +64,9 @@ public class ComponentVersionConfiguration {
 	public ComponentVersion getComponentVersion(long componentId, long componentVersionNumber) {
 		ComponentVersion componentVersion = new ComponentVersion();
 		CachedRowSet crsComponentVersion = null;
-		String queryComponentVersion = "select COMP_ID, COMP_VRS_NB, COMP_VRS_DSC from " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("ComponentVersions")
+		String queryComponentVersion = "select COMP_ID, COMP_VRS_NB, COMP_VRS_DSC from " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ComponentVersions")
 				+ " where COMP_ID = " + componentId + " and COMP_VRS_NB = " + componentVersionNumber;
-		crsComponentVersion = this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().executeQuery(queryComponentVersion);
+		crsComponentVersion = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(queryComponentVersion, "reader");
 		try {
 			while (crsComponentVersion.next()) {
 				componentVersion.setNumber(componentVersionNumber);

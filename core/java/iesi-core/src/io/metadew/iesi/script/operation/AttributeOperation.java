@@ -41,14 +41,18 @@ public class AttributeOperation {
 		
 		// Get component attributes
 		String query = "";
-		if (this.getType().equalsIgnoreCase("component")) {
-			query = "select a.comp_id, a.comp_att_nm, a.comp_att_val from " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("ComponentAttributes")  + " a inner join " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Components") + " b on a.comp_id = b.comp_id where b.comp_nm = '" + this.getName() + "'";
+		if (this.getType().equals("component")) {
+			query = "select a.comp_id, a.comp_att_nm, a.comp_att_val from "
+					+ this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ComponentAttributes")
+					+ " a inner join "
+					+ this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Components")
+					+ " b on a.comp_id = b.comp_id where b.comp_nm = '" + this.getName() + "'";
 		}
 		
 		// Set attribute values
 		CachedRowSet crs = null;
 		this.getExecutionControl().logMessage(this.getActionExecution(), "component.name=" + name, Level.DEBUG);
-		crs = this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().executeQuery(query);
+		crs = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(query, "reader");
 		try {
 			while (crs.next()) {
 				String key = crs.getString("COMP_ATT_NM");

@@ -3,3 +3,5 @@
 .classpath
 *.conf
 *.cmd
+.idea
+iesi-test.iml

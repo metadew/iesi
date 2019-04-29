@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.MessageFormat;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -99,24 +100,22 @@ public class DatasetOperation {
         this.setDatasetConnection(dcSQLiteConnection);
     }
 
-    public String getDataItem(String datasetItem) {
+    public Optional<String> getDataItem(String datasetItem) {
         Matcher matcher = datasetItemPattern.matcher(datasetItem);
         if (!matcher.find()) {
             throw new RuntimeException(MessageFormat.format("Dataset item {0} does not follow the correct syntax of table.table_field", datasetItem));
         }
-        CachedRowSet crs = null;
-        String query = "";
-        if (!datasetItem.trim().equalsIgnoreCase("")) {
-            query = "select ";
-            query += "value";
-            query += " from ";
-            query += matcher.group("table");
-            query += " where key = '";
-            query += matcher.group("tableField");
-            query += "'";
-        }
+        CachedRowSet crs;
+        String query;
+        query = "select ";
+        query += "value";
+        query += " from ";
+        query += matcher.group("table");
+        query += " where key = '";
+        query += matcher.group("tableField");
+        query += "'";
 
-        String value = "";
+        String value = null;
         crs = this.getDatasetConnection().executeQuery(query);
         try {
             while (crs.next()) {
@@ -126,9 +125,9 @@ public class DatasetOperation {
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
+            return Optional.empty();
         }
-
-        return value;
+        return Optional.ofNullable(value);
     }
 
     public void setDataset(String datasetTableName, JsonParsed jsonParsed) {

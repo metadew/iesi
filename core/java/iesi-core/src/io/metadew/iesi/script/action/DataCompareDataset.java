@@ -2,7 +2,9 @@ package io.metadew.iesi.script.action;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.text.MessageFormat;
 import java.util.HashMap;
+import java.util.Optional;
 
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.configuration.MappingConfiguration;
@@ -85,25 +87,26 @@ public class DataCompareDataset {
 			MappingConfiguration mappingConfiguration = new MappingConfiguration(this.getFrameworkExecution());
 			Mapping mapping = mappingConfiguration.getMapping(this.getMappingName().getValue());
 			for (Transformation transformation : mapping.getTransformations()) {
-				String leftFieldValue = leftDatasetOperation
-						.getDataItem(leftDatasetparts[1] + "." + transformation.getLeftField());
-				String rightFieldValue = rightDatasetOperation
-						.getDataItem(rightDatasetparts[1] + "." + transformation.getRightField());
-				if (!leftFieldValue.equalsIgnoreCase(rightFieldValue)) {
-					String errorMessage = transformation.getLeftField() + ": " + leftFieldValue + " <> "
-							+ transformation.getRightField() + ": " + rightFieldValue;
-					this.getActionExecution().getActionControl().logOutput("err",errorMessage);
+				Optional<String> leftFieldValue = leftDatasetOperation.getDataItem(leftDatasetparts[1] + "." + transformation.getLeftField());
+				Optional<String> rightFieldValue = rightDatasetOperation.getDataItem(rightDatasetparts[1] + "." + transformation.getRightField());
+				if (!leftFieldValue.isPresent()) {
+					this.getActionExecution().getActionControl().logWarning("field.left",
+							MessageFormat.format("Cannot find value for {0}.",leftDatasetparts[1] + "." + transformation.getLeftField()));
+				}
+				if (!rightFieldValue.isPresent()) {
+					this.getActionExecution().getActionControl().logWarning("field.right",
+							MessageFormat.format("Cannot find value for {0}.",leftDatasetparts[1] + "." + transformation.getLeftField()));
+				}
+				if (!leftFieldValue.equals(rightFieldValue)) {
+					this.getActionExecution().getActionControl().logError("field.mismatch", MessageFormat.format(
+							"{0}:{1}<>{2}:{3}", transformation.getLeftField(), leftFieldValue, transformation.getRightField(), rightFieldValue));
+					this.getActionExecution().getActionControl().increaseErrorCount();
 					errorsDetected++;
+				} else {
+					this.getActionExecution().getActionControl().increaseSuccessCount();
 				}
 			}
-
-			if (errorsDetected > 0) {
-				this.getActionExecution().getActionControl().increaseErrorCount(errorsDetected);
-				return false;
-			} else {
-				this.getActionExecution().getActionControl().increaseSuccessCount();
-				return true;
-			}
+			return errorsDetected <= 0;
 
 		} catch (Exception e) {
 			StringWriter StackTrace = new StringWriter();

@@ -73,7 +73,7 @@ public class SqlSetRuntimeVariables {
 					this.getExecutionControl().getEnvName()).get();
 			ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
 			DatabaseConnection databaseConnection = connectionOperation.getDatabaseConnection(connection);
-
+			System.out.println(this.getSqlQuery().getValue());
 			// Run the action
 			CachedRowSet sqlResultSet = databaseConnection.executeQuery(this.getSqlQuery().getValue());
 			try {

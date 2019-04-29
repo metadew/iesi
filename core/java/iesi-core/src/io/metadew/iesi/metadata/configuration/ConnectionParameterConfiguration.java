@@ -2,8 +2,10 @@ package io.metadew.iesi.metadata.configuration;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Optional;
 
 import javax.sql.rowset.CachedRowSet;
+import javax.swing.text.html.Option;
 
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
@@ -65,10 +67,10 @@ public class ConnectionParameterConfiguration {
 		return connectionParameter;
 	}
 	
-	public String getConnectionParameterValue(String connectionName, String environmentName,
-			String connectionParameterName) {
-		String output = "";
-		CachedRowSet crsConnectionParameter = null;
+	public Optional<String> getConnectionParameterValue(String connectionName, String environmentName,
+														String connectionParameterName) {
+		String output = null;
+		CachedRowSet crsConnectionParameter;
 		String queryConnectionParameter = "select CONN_NM, ENV_NM, CONN_PAR_NM, CONN_PAR_VAL from "
 				+ this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("ConnectionParameters") + " where CONN_NM = '"
 				+ connectionName + "' and ENV_NM = '" + environmentName + "' and CONN_PAR_NM = '" + connectionParameterName + "'";
@@ -81,9 +83,10 @@ public class ConnectionParameterConfiguration {
 		} catch (Exception e) {
 			StringWriter StackTrace = new StringWriter();
 			e.printStackTrace(new PrintWriter(StackTrace));
+			return Optional.empty();
 		}
 
-		return output;
+		return Optional.ofNullable(output);
 	}
 
 

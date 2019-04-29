@@ -1,0 +1,21 @@
+---
+type: "script"
+data:
+  name: "fwk.outputMessage.5"
+  description: "test fwk.outputMessage with parameter in the message"
+  parameters: []
+  actions:
+  - number: 1
+    type: "fwk.outputMessage"
+    name: "action1"
+    description: "output message with a concept resolvement in the message"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "message"
+      value : "This is the date of today {{*date.today()}} and this is the date of tomorrow {{*date.travel({{*date.today()}}, \"day\", 1)}}"
+    - name: "onScreen"
+      value : "Y"

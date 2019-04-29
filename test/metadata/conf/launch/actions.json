@@ -41,6 +41,14 @@
 {
 	"type": "LaunchItem",
 	"data": {
+		"script": "fwk.outputMessage.5",
+		"description": "test fwk.outputMessage with resolvement in the message",
+		"parameterList": "param1=myParameter"
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
 		"script": "sql.executeQuery.1",
 		"description": "test sql.executeQuery with a select query",
 		"parameterList": ""

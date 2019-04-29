@@ -2,6 +2,7 @@ package io.metadew.iesi.metadata.configuration;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Optional;
 
 import javax.sql.rowset.CachedRowSet;
 
@@ -97,10 +98,10 @@ public class EnvironmentParameterConfiguration
 		return environmentParameter;
 	}
 
-	public String getEnvironmentParameterValue(String environmentName, String environmentParameterName)
+	public Optional<String> getEnvironmentParameterValue(String environmentName, String environmentParameterName)
 	{
-		String output = "";
-		CachedRowSet crsEnvironmentParameter = null;
+		String output = null;
+		CachedRowSet crsEnvironmentParameter;
 		String queryEnvironmentParameter = "select ENV_NM, ENV_PAR_NM, ENV_PAR_VAL from "
 					+ this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository()
 								.getTableNameByLabel("EnvironmentParameters")
@@ -119,9 +120,10 @@ public class EnvironmentParameterConfiguration
 		{
 			StringWriter StackTrace = new StringWriter();
 			e.printStackTrace(new PrintWriter(StackTrace));
+			return Optional.empty();
 		}
 
-		return output;
+		return Optional.ofNullable(output);
 	}
 
 	// Getters and Setters

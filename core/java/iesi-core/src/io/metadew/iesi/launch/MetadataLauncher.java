@@ -73,6 +73,7 @@ public class MetadataLauncher {
         Options options = new Options();
         // add options
         options.addOption(oHelp);
+        options.addOption(oIni);
         options.addOption(oType);
         options.addOption(oConfig);
         options.addOption(oBackup);

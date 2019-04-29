@@ -127,6 +127,7 @@ public class FhoDeleteFolder {
 				// placeholder
 				// check if allowed
 				// delete remote
+				// new file object - consolidate over file and lsentry
 			}
 
 			return true;

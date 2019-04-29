@@ -3,10 +3,8 @@ package io.metadew.iesi.metadata_repository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.configuration.LedgerConfiguration;
-import io.metadew.iesi.metadata.definition.Component;
 import io.metadew.iesi.metadata.definition.DataObject;
 import io.metadew.iesi.metadata.definition.Ledger;
-import io.metadew.iesi.metadata.definition.Script;
 import io.metadew.iesi.metadata_repository.repository.Repository;
 import org.apache.logging.log4j.Level;
 

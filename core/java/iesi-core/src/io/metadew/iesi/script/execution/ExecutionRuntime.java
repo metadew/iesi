@@ -13,7 +13,6 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -81,7 +80,7 @@ public class ExecutionRuntime {
 
 	private final Pattern CONCEPT_LOOKUP_PATTERN = Pattern
 			.compile("\\s*\\{\\{(?<"+INSTRUCTION_TYPE_KEY+">[\\*=\\$!])(?<"+INSTRUCTION_KEYWORD_KEY+">[\\w\\.]+)\\((?<"+INSTRUCTION_ARGUMENTS_KEY+">.*)\\)\\}\\}\\s*");
-
+	
 	public ExecutionRuntime() {
 
 	}
@@ -476,6 +475,7 @@ public class ExecutionRuntime {
 		LookupResult lookupResult = new LookupResult();
 		String resolvedInput = input;
 		Matcher ConceptLookupMatcher = CONCEPT_LOOKUP_PATTERN.matcher(resolvedInput);
+		
 		if (!ConceptLookupMatcher.find()) {
 			lookupResult.setValue(resolvedInput);
 			getFrameworkExecution().getFrameworkLog().log(

@@ -1,6 +1,5 @@
 package io.metadew.iesi.metadata.definition;
 
-import javax.sql.rowset.CachedRowSet;
 import java.util.List;
 
 public class Connection {

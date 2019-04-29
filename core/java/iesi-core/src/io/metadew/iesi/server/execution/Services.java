@@ -3,7 +3,6 @@ package io.metadew.iesi.server.execution;
 import io.metadew.iesi.framework.execution.FrameworkExecutionContext;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.Context;
-import io.metadew.iesi.server.execution.request.RequestRunnable;
 
 public class Services {
 	public Runnable requestServerRunnable;

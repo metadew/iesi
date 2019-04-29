@@ -1,10 +1,7 @@
 package io.metadew.iesi.metadata_repository.repository.database;
 
 import io.metadew.iesi.metadata.definition.MetadataField;
-import io.metadew.iesi.metadata.definition.MetadataTable;
 import io.metadew.iesi.metadata_repository.repository.database.connection.SqliteDatabaseConnection;
-
-import javax.sql.rowset.CachedRowSet;
 
 public class SqliteDatabase extends Database {
 

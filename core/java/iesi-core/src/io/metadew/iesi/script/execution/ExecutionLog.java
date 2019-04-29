@@ -15,6 +15,7 @@ public class ExecutionLog {
 	}
 
 	// Insert
+	@SuppressWarnings("unused")
 	public void setLog(ScriptLog scriptLog) {
 		ObjectMapper mapper = new ObjectMapper();
 		try {

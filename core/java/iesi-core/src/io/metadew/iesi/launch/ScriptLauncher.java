@@ -261,6 +261,7 @@ public class ScriptLauncher {
         scriptExecution.initializeAsRootScript(environmentName);
         scriptExecution.setActionSelectOperation(new ActionSelectOperation(actionSelect));
         scriptExecution.setImpersonations(impersonationName, impersonationCustom);
+        scriptExecution.setExitOnCompletion(exit);
 
         if (!paramList.equals("")) {
             scriptExecution.setParamList(paramList);

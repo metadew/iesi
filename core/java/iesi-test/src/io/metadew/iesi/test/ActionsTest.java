@@ -19,24 +19,32 @@ public class ActionsTest {
     @SuppressWarnings({"rawtypes", "unchecked"})
     public static void main(String[] args) {
 
-        Option repositoryOption = new Option("repository", true, "Absolute location of the iesi repository");
-        repositoryOption.setRequired(true);
-        Option sandboxOption = new Option("sandbox", true, "Absolute location of the iesi sandbox");
-        sandboxOption.setRequired(true);
-        Option instanceOption = new Option("instance", true, "Name of the iesi instance");
-        instanceOption.setRequired(true);
-        Option versionOption = new Option("version", true, "Version of the iesi instance");
-        instanceOption.setRequired(true);
-
-        Options options = new Options();
-        options.addOption(repositoryOption);
-        options.addOption(sandboxOption);
-        options.addOption(instanceOption);
-        options.addOption(versionOption);
+        Options options = new Options()
+                .addOption(Option.builder("repository")
+                        .hasArg()
+                        .required()
+                        .desc("Absolute location of the iesi repository")
+                        .build())
+                .addOption(Option.builder("sandbox")
+                        .hasArg()
+                        .required()
+                        .desc("Absolute location of the iesi sandbox")
+                        .build())
+                .addOption(Option.builder("instance")
+                        .hasArg()
+                        .required()
+                        .desc("Name of the iesi instance")
+                        .build())
+                .addOption(Option.builder("version")
+                        .hasArg()
+                        .required()
+                        .desc("Version of the iesi instance")
+                        .build());
 
         CommandLineParser parser = new DefaultParser();
         try {
             CommandLine cmd = parser.parse(options, args);
+
             String repository = cmd.getOptionValue("repository");
             String sandbox = cmd.getOptionValue("sandbox");
             String instance = cmd.getOptionValue("instance");

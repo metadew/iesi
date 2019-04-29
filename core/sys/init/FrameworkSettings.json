@@ -503,4 +503,15 @@
 		"group": "Framework",
 		"category": "Runtime",
 		"type": ""
+}},
+{
+	"type": "FrameworkSetting",
+	"data": {
+		"name": "guard.authenticate",
+		"path": "iesi.guard.authenticate",
+		"label": "GuardAuthenticate",
+		"description": "",
+		"group": "Framework",
+		"category": "Guard",
+		"type": ""
 }}]

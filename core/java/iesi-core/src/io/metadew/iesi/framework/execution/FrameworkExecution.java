@@ -36,7 +36,7 @@ public class FrameworkExecution {
 	}
 
 	public FrameworkExecution(FrameworkExecutionContext frameworkExecutionContext, FrameworkExecutionSettings frameworkExecutionSettings, FrameworkInitializationFile frameworkInitializationFile) {
-		this.initializeFrameworkExecution(frameworkExecutionContext, frameworkExecutionSettings, "write", frameworkInitializationFile);
+	this.initializeFrameworkExecution(frameworkExecutionContext, frameworkExecutionSettings, "write", frameworkInitializationFile);
 	}
 
 	public FrameworkExecution(FrameworkExecutionContext frameworkExecutionContext, String logonType, FrameworkInitializationFile frameworkInitializationFile) {

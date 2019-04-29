@@ -32,6 +32,7 @@
     * [Subroutine types](/{{site.repository}}/pages/design/subroutinetypes.html)
 * [Operate the framework](/{{site.repository}}/pages/operate/operate.html)
 * [Manage the framework](/{{site.repository}}/pages/manage/manage.html)
+* [Secure the framework](/{{site.repository}}/pages/secure/secure.html)
 * [Deploy the framework](/{{site.repository}}/pages/deploy/deploy.html)
   * Configuration files
 * [Understand the framework](/{{site.repository}}/pages/understand/understand.html)

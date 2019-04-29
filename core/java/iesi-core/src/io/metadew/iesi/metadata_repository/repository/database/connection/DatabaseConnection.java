@@ -1,24 +1,12 @@
-package io.metadew.iesi.connection;
-
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-
-import javax.sql.rowset.CachedRowSet;
-import javax.sql.rowset.RowSetProvider;
+package io.metadew.iesi.metadata_repository.repository.database.connection;
 
 import io.metadew.iesi.connection.database.sql.SqlScriptResult;
 import io.metadew.iesi.connection.operation.database.ScriptRunner;
+
+import javax.sql.rowset.CachedRowSet;
+import javax.sql.rowset.RowSetProvider;
+import java.io.*;
+import java.sql.*;
 
 /**
  * Connection object for databases. This is extended depending on the database type.
@@ -26,46 +14,25 @@ import io.metadew.iesi.connection.operation.database.ScriptRunner;
  * @author peter.billen
  *
  */
-public class DatabaseConnection {
+public abstract class DatabaseConnection {
 
-	private String type = "";
-	private String driver = "";
-	private String connectionURL = "";
-	private String userName = "";
-	private String userPassword = null;
-
-	private Connection connection;
-
-	public DatabaseConnection() {
-
-	}
+	private String type;
+	private String connectionURL;
+	private String userName;
+	private String userPassword;
 
 	public DatabaseConnection(String type, String connectionURL, String userName, String userPassword) {
-		super();
-		this.setType(type);
-		this.setConnectionURL(connectionURL);
-		this.setUserName(userName);
-		this.setUserPassword(userPassword);
-
-		// Derive driver
-		this.deriveDriver();
+		this.type = type;
+		this.connectionURL = connectionURL;
+		this.userName = userName;
+		this.userPassword = userPassword;
 	}
 
-	// Derive Driver
-	private void deriveDriver() {
-		if (this.getType().equalsIgnoreCase("oracle")) {
-			this.setDriver("oracle.jdbc.driver.OracleDriver");
-		} else if (this.getType().equalsIgnoreCase("mysql")) {
-			this.setDriver("com.mysql.jdbc.Driver");
-		} else if (this.getType().equalsIgnoreCase("netezza")) {
-			this.setDriver("org.netezza.Driver");
-		} else if (this.getType().equalsIgnoreCase("postgresql")) {
-			this.setDriver("org.postgresql.Driver");
-		} else if (this.getType().equalsIgnoreCase("sqlite")) {
-			this.setDriver("org.sqlite.JDBC");
-		} else if (this.getType().equalsIgnoreCase("teradata")) {
-			this.setDriver("com.teradata.jdbc.TeraDriver");
-		}
+	public abstract String getDriver();
+
+	public Connection getConnection() throws SQLException {
+//		System.out.println("Creating connection " + connectionURL + " " + userName + " " + userPassword);
+		return DriverManager.getConnection(connectionURL, userName, userPassword);
 	}
 
 	// Illegal character manipulation
@@ -77,12 +44,11 @@ public class DatabaseConnection {
 		return input;
 	}
 
-	// Database interactions
+	// database interactions
 	public CachedRowSet executeQuery(String query) {
 
 		// Remove illegal characters at the end
 		query = this.removeIllgegalCharactersForSingleQuery(query);
-
 		CachedRowSet crs = null;
 
 		try {
@@ -94,11 +60,9 @@ public class DatabaseConnection {
 			throw new RuntimeException(e.getMessage());
 		}
 
-		Connection connection = null;
-
+		Connection connection;
 		try {
-			connection = DriverManager.getConnection(this.getConnectionURL(), this.getUserName(),
-					this.getUserPassword());
+			connection = getConnection();
 		} catch (SQLException e) {
 			StringWriter StackTrace = new StringWriter();
 			e.printStackTrace(new PrintWriter(StackTrace));
@@ -120,6 +84,8 @@ public class DatabaseConnection {
 					StringWriter StackTrace = new StringWriter();
 					e.printStackTrace(new PrintWriter(StackTrace));
 					System.out.println("Query Actions Failed");
+					System.out.println(e.getMessage());
+					System.out.println(query);
 					throw new RuntimeException(e.getMessage());
 				}
 
@@ -128,7 +94,8 @@ public class DatabaseConnection {
 			} catch (SQLException e) {
 				StringWriter StackTrace = new StringWriter();
 				e.printStackTrace(new PrintWriter(StackTrace));
-				System.out.println("Database actions Failed");
+				System.out.println("database actions Failed");
+				System.out.println(e.getMessage());
 			} finally {
 				// Close the connection
 				try {
@@ -163,11 +130,10 @@ public class DatabaseConnection {
 			throw new RuntimeException(e.getMessage());
 		}
 
-		Connection connection = null;
+		Connection connection;
 
 		try {
-			connection = DriverManager.getConnection(this.getConnectionURL(), this.getUserName(),
-					this.getUserPassword());
+			connection = getConnection();
 		} catch (SQLException e) {
 			StringWriter StackTrace = new StringWriter();
 			e.printStackTrace(new PrintWriter(StackTrace));
@@ -198,7 +164,8 @@ public class DatabaseConnection {
 			} catch (SQLException e) {
 				StringWriter StackTrace = new StringWriter();
 				e.printStackTrace(new PrintWriter(StackTrace));
-				System.out.println("Database actions Failed");
+				System.out.println("database actions Failed");
+				System.out.println(e.getMessage());
 			} finally {
 				// Close the connection
 				try {
@@ -231,11 +198,9 @@ public class DatabaseConnection {
 			throw new RuntimeException(e.getMessage());
 		}
 
-		Connection connection = null;
-
+		Connection connection;
 		try {
-			connection = DriverManager.getConnection(this.getConnectionURL(), this.getUserName(),
-					this.getUserPassword());
+			connection = getConnection();
 		} catch (SQLException e) {
 			StringWriter StackTrace = new StringWriter();
 			e.printStackTrace(new PrintWriter(StackTrace));
@@ -251,7 +216,9 @@ public class DatabaseConnection {
 			} catch (SQLException e) {
 				StringWriter StackTrace = new StringWriter();
 				e.printStackTrace(new PrintWriter(StackTrace));
-				System.out.println("Database Actions Failed");
+				System.out.println("database Actions Failed");
+				System.out.println(e.getMessage());
+				System.out.println(query);
 				throw new RuntimeException(e.getMessage());
 			} finally {
 				// Close the connection
@@ -261,6 +228,7 @@ public class DatabaseConnection {
 					StringWriter StackTrace = new StringWriter();
 					e.printStackTrace(new PrintWriter(StackTrace));
 					System.out.println("Connection Close Failed");
+					System.out.println(e.getMessage());
 					throw new RuntimeException(e.getMessage());
 				}
 			}
@@ -282,11 +250,10 @@ public class DatabaseConnection {
 			throw new RuntimeException(e.getMessage());
 		}
 
-		Connection connection = null;
+		Connection connection;
 
 		try {
-			connection = DriverManager.getConnection(this.getConnectionURL(), this.getUserName(),
-					this.getUserPassword());
+			connection = getConnection();
 		} catch (SQLException e) {
 			StringWriter StackTrace = new StringWriter();
 			e.printStackTrace(new PrintWriter(StackTrace));
@@ -299,7 +266,7 @@ public class DatabaseConnection {
 				//
 				ScriptRunner scriptRunner = new ScriptRunner(connection, false, false);
 
-				InputStreamReader reader = null;
+				InputStreamReader reader;
 
 				try {
 					reader = new InputStreamReader(new FileInputStream(fileName));
@@ -318,7 +285,8 @@ public class DatabaseConnection {
 			} catch (SQLException e) {
 				StringWriter StackTrace = new StringWriter();
 				e.printStackTrace(new PrintWriter(StackTrace));
-				System.out.println("Database Actions Failed");
+				System.out.println("database Actions Failed");
+				System.out.println(e.getMessage());
 				throw new RuntimeException(e.getMessage());
 			} finally {
 				// Close the connection
@@ -350,11 +318,10 @@ public class DatabaseConnection {
 			System.out.println("JDBC Driver Not Available");
 		}
 
-		Connection connection = null;
+		Connection connection;
 
 		try {
-			connection = DriverManager.getConnection(this.getConnectionURL(), this.getUserName(),
-					this.getUserPassword());
+			connection = getConnection();
 		} catch (SQLException e) {
 			StringWriter StackTrace = new StringWriter();
 			e.printStackTrace(new PrintWriter(StackTrace));
@@ -367,7 +334,7 @@ public class DatabaseConnection {
 				//
 				ScriptRunner scriptRunner = new ScriptRunner(connection, false, false);
 
-				InputStreamReader reader = null;
+				InputStreamReader reader;
 
 				try {
 					reader = new InputStreamReader(inputStream);
@@ -386,7 +353,8 @@ public class DatabaseConnection {
 			} catch (SQLException e) {
 				StringWriter StackTrace = new StringWriter();
 				e.printStackTrace(new PrintWriter(StackTrace));
-				System.out.println("Database Actions Failed");
+				System.out.println("database Actions Failed");
+				System.out.println(e.getMessage());
 				throw new RuntimeException(e.getMessage());
 			} finally {
 				// Close the connection
@@ -410,7 +378,8 @@ public class DatabaseConnection {
 	public PreparedStatement createLivePreparedStatement(String sqlStatement) {
 		PreparedStatement preparedStatement = null;
 		try {
-			preparedStatement = this.getConnection().prepareStatement(sqlStatement);
+			Connection connection = getConnection();
+			preparedStatement = connection.prepareStatement(sqlStatement);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -419,91 +388,42 @@ public class DatabaseConnection {
 
 	public void createLiveConnection() {
 
-		try {
-			Class.forName(this.getDriver());
-		} catch (ClassNotFoundException e) {
-			StringWriter StackTrace = new StringWriter();
-			e.printStackTrace(new PrintWriter(StackTrace));
-			System.out.println("JDBC Driver Not Available");
-			throw new RuntimeException(e.getMessage());
-		}
-
-		try {
-			this.setConnection(
-					DriverManager.getConnection(this.getConnectionURL(), this.getUserName(), this.getUserPassword()));
-		} catch (SQLException e) {
-			StringWriter StackTrace = new StringWriter();
-			e.printStackTrace(new PrintWriter(StackTrace));
-			System.out.println("Connection Failed");
-			throw new RuntimeException(e.getMessage());
-		}
+//		try {
+//			Class.forName(this.getDriver());
+//		} catch (ClassNotFoundException e) {
+//			StringWriter StackTrace = new StringWriter();
+//			e.printStackTrace(new PrintWriter(StackTrace));
+//			System.out.println("JDBC Driver Not Available");
+//			throw new RuntimeException(e.getMessage());
+//		}
+//
+//		try {
+//			this.setConnection(
+//					DriverManager.getConnection(this.getConnectionURL(), this.getUserName(), this.getUserPassword()));
+//		} catch (SQLException e) {
+//			StringWriter StackTrace = new StringWriter();
+//			e.printStackTrace(new PrintWriter(StackTrace));
+//			System.out.println("Connection Failed");
+//			throw new RuntimeException(e.getMessage());
+//		}
 
 	}
 
 	public void closeLiveConnection() {
-
-		if (this.getConnection() != null) {
-			try {
-				connection.close();
-			} catch (SQLException e) {
-				StringWriter StackTrace = new StringWriter();
-				e.printStackTrace(new PrintWriter(StackTrace));
-				System.out.println("Connection Close Failed");
-				throw new RuntimeException(e.getMessage());
-			}
-
-		} else {
-			System.out.println("Connection lost");
-		}
-	}
-
-	// Getters and Setters
-	public String getDriver() {
-		return driver;
-	}
-
-	public void setDriver(String driver) {
-		this.driver = driver;
-	}
-
-	public String getConnectionURL() {
-		return connectionURL;
-	}
-
-	public void setConnectionURL(String connectionURL) {
-		this.connectionURL = connectionURL;
-	}
-
-	public String getUserName() {
-		return userName;
-	}
-
-	public void setUserName(String userName) {
-		this.userName = userName;
-	}
-
-	public String getUserPassword() {
-		return userPassword;
-	}
-
-	public void setUserPassword(String userPassword) {
-		this.userPassword = userPassword;
-	}
-
-	public String getType() {
-		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type.toLowerCase();
-	}
-
-	public Connection getConnection() {
-		return connection;
-	}
-
-	public void setConnection(Connection connection) {
-		this.connection = connection;
+//
+//		if (this.getConnection() != null) {
+//			try {
+//				connection.close();
+//			} catch (SQLException e) {
+//				StringWriter StackTrace = new StringWriter();
+//				e.printStackTrace(new PrintWriter(StackTrace));
+//				System.out.println("Connection Close Failed");
+//				throw new RuntimeException(e.getMessage());
+//			}
+//
+//		} else {
+//			System.out.println("Connection lost");
+//		}
 	}
 
 }

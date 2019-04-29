@@ -32,17 +32,17 @@ public class SubroutineConfiguration {
 		String sql = "";
 
 		if (this.exists()) {
-			sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("SubroutineParameters");
+			sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("SubroutineParameters");
 			sql += " WHERE SRT_NM = " + SQLTools.GetStringForSQL(this.getSubroutine().getName());
 			sql += ";";
 			sql += "\n";			
-			sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Subroutines");
+			sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Subroutines");
 			sql += " WHERE SRT_NM = " + SQLTools.GetStringForSQL(this.getSubroutine().getName());
 			sql += ";";
 			sql += "\n";
 		}
 		
-		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Subroutines");
+		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Subroutines");
 		sql += " (SRT_NM, SRT_TYP_NM, SRT_DSC) ";
 		sql += "VALUES ";
 		sql += "(";
@@ -82,8 +82,8 @@ public class SubroutineConfiguration {
 	public Subroutine getSubroutine(String subroutineName) {
 		Subroutine subroutine = new Subroutine();
 		CachedRowSet crsSubroutine = null;
-		String querySubroutine = "select SRT_NM, SRT_TYP_NM, SRT_DSC from " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Subroutines") + " where SRT_NM = '" + subroutineName + "'";
-		crsSubroutine = this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().executeQuery(querySubroutine);
+		String querySubroutine = "select SRT_NM, SRT_TYP_NM, SRT_DSC from " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Subroutines") + " where SRT_NM = '" + subroutineName + "'";
+		crsSubroutine = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(querySubroutine, "reader");
 		SubroutineParameterConfiguration subroutineParameterConfiguration = new SubroutineParameterConfiguration(this.getFrameworkExecution());
 		try {
 			while (crsSubroutine.next()) {
@@ -93,9 +93,9 @@ public class SubroutineConfiguration {
 				
 				// Get parameters
 				CachedRowSet crsSubroutineParameters = null;
-				String querySubroutineParameters = "select SRT_NM, SRT_PAR_NM, SRT_PAR_VAL from " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("SubroutineParameters")
+				String querySubroutineParameters = "select SRT_NM, SRT_PAR_NM, SRT_PAR_VAL from " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("SubroutineParameters")
 						+ " where SRT_NM = '" + subroutineName + "'";
-				crsSubroutineParameters = this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().executeQuery(querySubroutineParameters);
+				crsSubroutineParameters = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(querySubroutineParameters, "reader");
 				List<SubroutineParameter> subroutineParameterList = new ArrayList();
 				while (crsSubroutineParameters.next()) {
 					subroutineParameterList

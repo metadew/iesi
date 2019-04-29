@@ -28,11 +28,11 @@ public class DataframeVersionConfiguration {
 	public String getInsertStatement(String dataframeName) {
 		String sql = "";
 
-		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getCatalogRepositoryConfiguration().getMetadataTableConfiguration().getTableName("DataframeVersions");
+		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("DataframeVersions");
 		sql += " (DATAFRAME_ID, DATAFRAME_VRS_NB, DATAFRAME_VRS_DSC) ";
 		sql += "VALUES ";
 		sql += "(";
-		sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkExecution().getMetadataControl().getCatalogRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Dataviews"), "DATAFRAME_ID", "where DATAFRAME_NM = '"+ dataframeName) + "')";
+		sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkExecution().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("Dataviews"), "DATAFRAME_ID", "where DATAFRAME_NM = '"+ dataframeName) + "')";
 		sql += ",";
 		sql += SQLTools.GetStringForSQL(this.getDataframeVersion().getNumber());
 		sql += ",";
@@ -47,11 +47,11 @@ public class DataframeVersionConfiguration {
 	public String getDefaultInsertStatement(String dataframeName) {
 		String sql = "";
 
-		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getCatalogRepositoryConfiguration().getMetadataTableConfiguration().getTableName("DataframeVersions");
+		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("DataframeVersions");
 		sql += " (DATAFRAME_ID, DATAFRAME_VRS_NB, DATAFRAME_VRS_DSC) ";
 		sql += "VALUES ";
 		sql += "(";
-		sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkExecution().getMetadataControl().getCatalogRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Dataviews"), "DATAFRAME_ID", "where DATAFRAME_NM = '"+ dataframeName) + "')";
+		sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkExecution().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("Dataviews"), "DATAFRAME_ID", "where DATAFRAME_NM = '"+ dataframeName) + "')";
 		sql += ",";
 		sql += SQLTools.GetStringForSQL("0");
 		sql += ",";
@@ -65,9 +65,9 @@ public class DataframeVersionConfiguration {
 	public DataframeVersion getDataframeVersion(long dataframeId, long dataframeVersionNumber) {
 		DataframeVersion dataframeVersion = new DataframeVersion();
 		CachedRowSet crsDataframeVersion = null;
-		String queryDataframeVersion = "select DATAFRAME_ID, DATAFRAME_VRS_NB, DATAFRAME_VRS_DSC from " + this.getFrameworkExecution().getMetadataControl().getCatalogRepositoryConfiguration().getMetadataTableConfiguration().getTableName("DataframeVersions")
+		String queryDataframeVersion = "select DATAFRAME_ID, DATAFRAME_VRS_NB, DATAFRAME_VRS_DSC from " + this.getFrameworkExecution().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("DataframeVersions")
 				+ " where DATAFRAME_ID = " + dataframeId + " and DATAFRAME_VRS_NB = " + dataframeVersionNumber;
-		crsDataframeVersion = this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().executeQuery(queryDataframeVersion);
+		crsDataframeVersion = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(queryDataframeVersion, "reader");
 		try {
 			while (crsDataframeVersion.next()) {
 				dataframeVersion.setNumber(dataframeVersionNumber);

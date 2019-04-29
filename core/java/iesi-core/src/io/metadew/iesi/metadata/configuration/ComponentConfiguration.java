@@ -43,9 +43,9 @@ public class ComponentConfiguration {
 		Component component = new Component();
 		CachedRowSet crsComponent = null;
 		String queryComponent = "select COMP_ID, COMP_TYP_NM, COMP_NM, COMP_DSC from "
-				+ this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Components") + " where COMP_NM = '"
+				+ this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Components") + " where COMP_NM = '"
 				+ componentName + "'";
-		crsComponent = this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().executeQuery(queryComponent);
+		crsComponent = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(queryComponent, "reader");
 		try {
 			while (crsComponent.next()) {
 				component.setId(crsComponent.getLong("COMP_ID"));
@@ -71,27 +71,27 @@ public class ComponentConfiguration {
 		String sql = "";
 
 		if (this.exists()) {
-			sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("ComponentAttributes");
+			sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ComponentAttributes");
 			sql += " WHERE COMP_ID in (";
-			sql += "select COMP_ID FROM " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Components");
+			sql += "select COMP_ID FROM " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Components");
 			sql += " WHERE COMP_NM = "
 					+ SQLTools.GetStringForSQL(this.getComponent().getName());
 			sql += ")";
 			sql += " AND COMP_VRS_NB = " + this.getComponent().getVersion().getNumber();
 			sql += ";";
 			sql += "\n";
-			sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("ComponentParameters");
+			sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ComponentParameters");
 			sql += " WHERE COMP_ID in (";
-			sql += "select COMP_ID FROM " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Components");
+			sql += "select COMP_ID FROM " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Components");
 			sql += " WHERE COMP_NM = "
 					+ SQLTools.GetStringForSQL(this.getComponent().getName());
 			sql += ")";
 			sql += " AND COMP_VRS_NB = " + this.getComponent().getVersion().getNumber();
 			sql += ";";
 			sql += "\n";
-			sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("ComponentVersions");
+			sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ComponentVersions");
 			sql += " WHERE COMP_ID in (";
-			sql += "select COMP_ID FROM " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Components");
+			sql += "select COMP_ID FROM " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Components");
 			sql += " WHERE COMP_NM = "
 					+ SQLTools.GetStringForSQL(this.getComponent().getName());
 			sql += ")";
@@ -101,7 +101,7 @@ public class ComponentConfiguration {
 
 			/*
 			 * sql += "DELETE FROM " +
-			 * this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getTableConfig().getCFG_COMP(); sql
+			 * this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableConfig().getCFG_COMP(); sql
 			 * += " WHERE COMP_NM = " +
 			 * this.getFrameworkExecution().getSqlTools().GetStringForSQL(this.getComponent().
 			 * getName()); sql += ";"; sql += "\n";
@@ -109,12 +109,12 @@ public class ComponentConfiguration {
 		}
 
 		if (!this.verifyComponentConfigurationExists(this.getComponent().getName())) {
-			sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Components");
+			sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Components");
 			sql += " (COMP_ID, COMP_TYP_NM, COMP_NM, COMP_DSC) ";
 			sql += "VALUES ";
 			sql += "(";
 			sql += "(" + SQLTools.GetNextIdStatement(
-					this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Components"), "COMP_ID") + ")";
+					this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Components"), "COMP_ID") + ")";
 			sql += ",";
 			sql += SQLTools.GetStringForSQL(this.getComponent().getType());
 			sql += ",";
@@ -200,10 +200,10 @@ public class ComponentConfiguration {
 		long componentVersionNumber = -1;
 		CachedRowSet crsComponentVersion = null;
 		String queryComponentVersion = "select max(COMP_VRS_NB) as \"MAX_VRS_NB\" from "
-				+ this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("ComponentVersions") + " a inner join "
-				+ this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Components")
+				+ this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ComponentVersions") + " a inner join "
+				+ this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Components")
 				+ " b on a.COMP_ID = b.COMP_ID where b.COMP_NM = '" + componentName + "'";
-		crsComponentVersion = this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().executeQuery(queryComponentVersion);
+		crsComponentVersion = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(queryComponentVersion, "reader");
 		try {
 			while (crsComponentVersion.next()) {
 				componentVersionNumber = crsComponentVersion.getLong("MAX_VRS_NB");
@@ -230,9 +230,9 @@ public class ComponentConfiguration {
 		Component component = new Component();
 		CachedRowSet crsComponent = null;
 		String queryComponent = "select COMP_ID, COMP_TYP_NM, COMP_NM, COMP_DSC from "
-				+ this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Components") + " where COMP_NM = '"
+				+ this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Components") + " where COMP_NM = '"
 				+ componentName + "'";
-		crsComponent = this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().executeQuery(queryComponent);
+		crsComponent = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(queryComponent, "reader");
 		ComponentAttributeConfiguration componentAttributeConfiguration = new ComponentAttributeConfiguration(
 				this.getFrameworkExecution());
 		ComponentVersionConfiguration componentVersionConfiguration = new ComponentVersionConfiguration(
@@ -254,10 +254,10 @@ public class ComponentConfiguration {
 				// Get parameters
 				CachedRowSet crsComponentParameters = null;
 				String queryComponentParameters = "select COMP_ID, COMP_PAR_NM from "
-						+ this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("ComponentParameters")
+						+ this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ComponentParameters")
 						+ " where COMP_ID = " + component.getId() + " and COMP_VRS_NB = " + componentVersionNumber;
-				crsComponentParameters = this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration()
-						.executeQuery(queryComponentParameters);
+				crsComponentParameters = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository()
+						.executeQuery(queryComponentParameters, "reader");
 				List<ComponentParameter> componentParameterList = new ArrayList();
 				while (crsComponentParameters.next()) {
 					componentParameterList.add(componentParameterConfiguration.getComponentParameter(component.getId(),
@@ -269,10 +269,10 @@ public class ComponentConfiguration {
 				// Get attributes
 				CachedRowSet crsComponentAttributes = null;
 				String queryComponentAttributes = "select COMP_ID, COMP_ATT_NM from "
-						+ this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("ComponentAttributes")
+						+ this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ComponentAttributes")
 						+ " where COMP_ID = " + component.getId() + " and COMP_VRS_NB = " + componentVersionNumber;
-				crsComponentAttributes = this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration()
-						.executeQuery(queryComponentAttributes);
+				crsComponentAttributes = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository()
+						.executeQuery(queryComponentAttributes, "reader");
 				List<ComponentAttribute> componentAttributeList = new ArrayList();
 				while (crsComponentAttributes.next()) {
 					componentAttributeList.add(componentAttributeConfiguration.getComponentAttribute(component.getId(),

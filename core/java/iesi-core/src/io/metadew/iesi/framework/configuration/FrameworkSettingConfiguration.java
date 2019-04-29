@@ -2,6 +2,7 @@ package io.metadew.iesi.framework.configuration;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.Optional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -44,8 +45,14 @@ public class FrameworkSettingConfiguration {
 	}
 
 	// Create Getters and Setters
-	public String getSettingPath (String key) {
-		return this.getSettingMap().get(key);
+
+	/**
+	 *
+	 * @param key: key to lookup in framework settings
+	 * @return: Optional of the value if key is present in the settings map. If no value or an empty value is present an Optional empty is returned
+	 */
+	public Optional<String> getSettingPath (String key) {
+		return Optional.ofNullable(this.getSettingMap().get(key)).filter(s -> !s.isEmpty());
 	}
 
 	public String getSolutionHome() {

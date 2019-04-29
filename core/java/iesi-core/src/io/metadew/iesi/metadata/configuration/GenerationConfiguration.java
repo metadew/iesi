@@ -37,101 +37,101 @@ public class GenerationConfiguration {
 		String sql = "";
 		
 		if (this.exists()) {
-			sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("GenerationOutputParameters");
+			sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("GenerationOutputParameters");
 			sql += " WHERE GEN_OUT_ID in (";
-			sql += "select GEN_OUT_ID FROM " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("GenerationOutputs");
+			sql += "select GEN_OUT_ID FROM " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("GenerationOutputs");
 			sql += " WHERE GEN_ID = (";
-			sql += "select GEN_ID FROM " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Generations");
+			sql += "select GEN_ID FROM " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Generations");
 			sql += " WHERE GEN_NM = " + SQLTools.GetStringForSQL(this.getGeneration().getName());
 			sql += ")";
 			sql += ")";
 			sql += ";";
 			sql += "\n";
-			sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("GenerationOutputs");
+			sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("GenerationOutputs");
 			sql += " WHERE GEN_ID = (";
-			sql += "select GEN_ID FROM " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Generations");
+			sql += "select GEN_ID FROM " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Generations");
 			sql += " WHERE GEN_NM = " + SQLTools.GetStringForSQL(this.getGeneration().getName());
 			sql += ")";
 			sql += ";";
 			sql += "\n";			
-			sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("GenerationControlRuleParameters");
+			sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("GenerationControlRuleParameters");
 			sql += " WHERE GEN_CTL_RULE_ID in (";
-			sql += "select GEN_CTL_RULE_ID FROM " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("GenerationControlRules");
+			sql += "select GEN_CTL_RULE_ID FROM " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("GenerationControlRules");
 			sql += " WHERE GEN_CTL_ID in (";
-			sql += "select GEN_CTL_ID FROM " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("GenerationControls");
+			sql += "select GEN_CTL_ID FROM " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("GenerationControls");
 			sql += " WHERE GEN_ID in (";
-			sql += "select GEN_ID FROM " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Generations");
+			sql += "select GEN_ID FROM " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Generations");
 			sql += " WHERE GEN_NM = " + SQLTools.GetStringForSQL(this.getGeneration().getName());
 			sql += ")";
 			sql += ")";
 			sql += ")";
 			sql += ";";
 			sql += "\n";
-			sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("GenerationControlRules");
+			sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("GenerationControlRules");
 			sql += " WHERE GEN_CTL_RULE_ID in (";
-			sql += "select GEN_CTL_RULE_ID FROM " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("GenerationControlRules");
+			sql += "select GEN_CTL_RULE_ID FROM " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("GenerationControlRules");
 			sql += " WHERE GEN_CTL_ID in (";
-			sql += "select GEN_CTL_ID FROM " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("GenerationControls");
+			sql += "select GEN_CTL_ID FROM " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("GenerationControls");
 			sql += " WHERE GEN_ID in (";
-			sql += "select GEN_ID FROM " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Generations");
+			sql += "select GEN_ID FROM " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Generations");
 			sql += " WHERE GEN_NM = " + SQLTools.GetStringForSQL(this.getGeneration().getName());
 			sql += ")";
 			sql += ")";
 			sql += ")";
 			sql += ";";
 			sql += "\n";			
-			sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("GenerationControlParameters");
+			sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("GenerationControlParameters");
 			sql += " WHERE GEN_CTL_ID in (";
-			sql += "select GEN_CTL_ID FROM " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("GenerationControls");
+			sql += "select GEN_CTL_ID FROM " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("GenerationControls");
 			sql += " WHERE GEN_ID in (";
-			sql += "select GEN_ID FROM " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Generations");
+			sql += "select GEN_ID FROM " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Generations");
 			sql += " WHERE GEN_NM = " + SQLTools.GetStringForSQL(this.getGeneration().getName());
 			sql += ")";
 			sql += ")";
 			sql += ";";
 			sql += "\n";
-			sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("GenerationControls");
+			sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("GenerationControls");
 			sql += " WHERE GEN_ID in (";
-			sql += "select GEN_ID FROM " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Generations");
+			sql += "select GEN_ID FROM " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Generations");
 			sql += " WHERE GEN_NM = " + SQLTools.GetStringForSQL(this.getGeneration().getName());
 			sql += ")";
 			sql += ";";
 			sql += "\n";			
-			sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("GenerationRuleParameters");
+			sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("GenerationRuleParameters");
 			sql += " WHERE GEN_RULE_ID in (";
-			sql += "select GEN_RULE_ID FROM " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("GenerationRules");
+			sql += "select GEN_RULE_ID FROM " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("GenerationRules");
 			sql += " WHERE GEN_ID in (";
-			sql += "select GEN_ID FROM " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Generations");
+			sql += "select GEN_ID FROM " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Generations");
 			sql += " WHERE GEN_NM = " + SQLTools.GetStringForSQL(this.getGeneration().getName());
 			sql += ")";
 			sql += ")";
 			sql += ";";
 			sql += "\n";
-			sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("GenerationRules");
+			sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("GenerationRules");
 			sql += " WHERE GEN_ID in (";
-			sql += "select GEN_ID FROM " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Generations");
+			sql += "select GEN_ID FROM " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Generations");
 			sql += " WHERE GEN_NM = " + SQLTools.GetStringForSQL(this.getGeneration().getName());
 			sql += ")";
 			sql += ";";
 			sql += "\n";			
-			sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("GenerationParameters");
+			sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("GenerationParameters");
 			sql += " WHERE GEN_ID in (";
-			sql += "select GEN_ID FROM " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Generations");
+			sql += "select GEN_ID FROM " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Generations");
 			sql += " WHERE GEN_NM = " + SQLTools.GetStringForSQL(this.getGeneration().getName());
 			sql += ")";
 			sql += ";";
 			sql += "\n";			
-			sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Generations");
+			sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Generations");
 			sql += " WHERE GEN_NM = " + SQLTools.GetStringForSQL(this.getGeneration().getName());
 			sql += ";";
 			sql += "\n";
 		}
 	
-		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Generations");
+		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Generations");
 		sql += " (GEN_ID, GEN_TYP_NM, GEN_NM, GEN_DSC) ";
 		sql += "VALUES ";
 		sql += "(";
-		sql += "(" + SQLTools.GetNextIdStatement(this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Generations"), "GEN_ID") + ")";
+		sql += "(" + SQLTools.GetNextIdStatement(this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Generations"), "GEN_ID") + ")";
 		sql += ",";
 		sql += SQLTools.GetStringForSQL(this.getGeneration().getType());
 		sql += ",";
@@ -238,8 +238,8 @@ public class GenerationConfiguration {
 	public Generation getGeneration(String generationName) {
 		Generation generation = new Generation();
 		CachedRowSet crsGeneration = null;
-		String queryGeneration = "select GEN_ID, GEN_TYP_NM, GEN_NM, GEN_DSC from " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Generations") + " where GEN_NM = '" + generationName +"'";
-		crsGeneration = this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().executeQuery(queryGeneration);
+		String queryGeneration = "select GEN_ID, GEN_TYP_NM, GEN_NM, GEN_DSC from " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Generations") + " where GEN_NM = '" + generationName +"'";
+		crsGeneration = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(queryGeneration, "reader");
 		GenerationRuleConfiguration generationRuleConfiguration = new GenerationRuleConfiguration(this.getFrameworkExecution());
 		GenerationOutputConfiguration generationOutputConfiguration = new GenerationOutputConfiguration(this.getFrameworkExecution());
 		GenerationControlConfiguration generationControlConfiguration = new GenerationControlConfiguration(this.getFrameworkExecution());
@@ -253,10 +253,10 @@ public class GenerationConfiguration {
 				
 				// Get the generationRules
 				List<GenerationRule> generationRuleList = new ArrayList();
-				String queryRules = "select GEN_ID, GEN_RULE_ID, GEN_RULE_NB from " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("GenerationRules")
+				String queryRules = "select GEN_ID, GEN_RULE_ID, GEN_RULE_NB from " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("GenerationRules")
 						+ " where GEN_ID = " + generation.getId() + " order by GEN_RULE_NB asc ";
 				CachedRowSet crsRules = null;
-				crsRules = this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().executeQuery(queryRules);
+				crsRules = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(queryRules, "reader");
 				while (crsRules.next()) {
 					generationRuleList.add(generationRuleConfiguration.getGenerationRule(crsRules.getLong("GEN_RULE_ID")));
 				}
@@ -265,10 +265,10 @@ public class GenerationConfiguration {
 				
 				// Get the generationOutputs
 				List<GenerationOutput> generationOutputList = new ArrayList();
-				String queryOutputs = "select GEN_ID, GEN_OUT_ID from " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("GenerationOutputs")
+				String queryOutputs = "select GEN_ID, GEN_OUT_ID from " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("GenerationOutputs")
 						+ " where GEN_ID = " + generation.getId() + " order by GEN_OUT_ID asc ";
 				CachedRowSet crsOutputs = null;
-				crsOutputs = this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().executeQuery(queryOutputs);
+				crsOutputs = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(queryOutputs, "reader");
 				while (crsOutputs.next()) {
 					generationOutputList.add(generationOutputConfiguration.getGenerationOutput(crsOutputs.getLong("GEN_OUT_ID")));
 				}
@@ -277,10 +277,10 @@ public class GenerationConfiguration {
 
 				// Get the generationControls
 				List<GenerationControl> generationControlList = new ArrayList();
-				String queryControls = "select GEN_ID, GEN_CTL_ID from " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("GenerationControls")
+				String queryControls = "select GEN_ID, GEN_CTL_ID from " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("GenerationControls")
 						+ " where GEN_ID = " + generation.getId() + " order by GEN_CTL_ID asc ";
 				CachedRowSet crsControls = null;
-				crsControls = this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().executeQuery(queryControls);
+				crsControls = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(queryControls, "reader");
 				while (crsControls.next()) {
 					generationControlList.add(generationControlConfiguration.getGenerationControl(crsControls.getLong("GEN_CTL_ID")));
 				}
@@ -289,9 +289,9 @@ public class GenerationConfiguration {
 
 				// Get parameters
 				CachedRowSet crsGenerationParameters = null;
-				String queryGenerationParameters = "select GEN_ID, GEN_PAR_NM from " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("GenerationParameters")
+				String queryGenerationParameters = "select GEN_ID, GEN_PAR_NM from " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("GenerationParameters")
 						+ " where GEN_ID = " + generation.getId();
-				crsGenerationParameters = this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().executeQuery(queryGenerationParameters);
+				crsGenerationParameters = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(queryGenerationParameters, "reader");
 				List<GenerationParameter> generationParameterList = new ArrayList();
 				while (crsGenerationParameters.next()) {
 					generationParameterList
@@ -318,9 +318,9 @@ public class GenerationConfiguration {
 	public ListObject getGenerations() {
 		List<Generation> generationList = new ArrayList<>();
 		CachedRowSet crs = null;
-		String query = "select GEN_NM, GEN_DSC from " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Generations")
+		String query = "select GEN_NM, GEN_DSC from " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Generations")
 				+ " order by GEN_NM ASC";
-		crs = this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().executeQuery(query);
+		crs = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(query, "reader");
 		GenerationConfiguration generationConfiguration = new GenerationConfiguration(this.getFrameworkExecution());
 		try {
 			String generationName = "";

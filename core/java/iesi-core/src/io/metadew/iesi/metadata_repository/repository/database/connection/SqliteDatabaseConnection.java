@@ -1,6 +1,4 @@
-package io.metadew.iesi.connection.database;
-
-import io.metadew.iesi.connection.DatabaseConnection;
+package io.metadew.iesi.metadata_repository.repository.database.connection;
 
 /**
  * Connection object for SQLite databases. This class extends the default database connection object.
@@ -20,4 +18,9 @@ public class SqliteDatabaseConnection extends DatabaseConnection {
 		super(type, "jdbc:sqlite:" + fileName, "", "");
 	}
 
+
+	@Override
+	public String getDriver() {
+		return "org.sqlite.JDBC";
+	}
 }

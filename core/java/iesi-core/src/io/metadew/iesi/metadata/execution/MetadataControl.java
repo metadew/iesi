@@ -1,8 +1,9 @@
 package io.metadew.iesi.metadata.execution;
 
-import java.util.List;
+import io.metadew.iesi.metadata_repository.*;
 
-import io.metadew.iesi.metadata.configuration.MetadataRepositoryConfiguration;
+import java.text.MessageFormat;
+import java.util.List;
 
 /**
  * Class to centralize the shared metadata that will be used by the framework
@@ -12,45 +13,23 @@ import io.metadew.iesi.metadata.configuration.MetadataRepositoryConfiguration;
  */
 public class MetadataControl {
 
-	private MetadataRepositoryConfiguration designRepositoryConfiguration;
-	private MetadataRepositoryConfiguration connectivityRepositoryConfiguration;
-	private MetadataRepositoryConfiguration controlRepositoryConfiguration;
-	private MetadataRepositoryConfiguration traceRepositoryConfiguration;
-	private MetadataRepositoryConfiguration resultRepositoryConfiguration;
-	private MetadataRepositoryConfiguration monitorRepositoryConfiguration;
-	private MetadataRepositoryConfiguration generalRepositoryConfiguration;
-	private MetadataRepositoryConfiguration ledgerRepositoryConfiguration;
-	private MetadataRepositoryConfiguration catalogRepositoryConfiguration;
+	private DesignMetadataRepository designMetadataRepository;
+	private ConnectivityMetadataRepository connectivityMetadataRepository;
+	private ControlMetadataRepository controlMetadataRepository;
+	private TraceMetadataRepository traceMetadataRepository;
+	private ResultMetadataRepository resultMetadataRepository;
+	private MonitorMetadataRepository monitorMetadataRepository;
+	private LedgerMetadataRepository ledgerMetadataRepository;
+	private CatalogMetadataRepository catalogMetadataRepository;
 	private boolean general = false;
 	private boolean valid = false;
 
-	public MetadataControl(List<MetadataRepositoryConfiguration> metadataRepositoryConfigurationList) {
+	public MetadataControl(List<MetadataRepository> metadataRepositories) {
 
 		// Set shared metadata
-		for (MetadataRepositoryConfiguration metadataRepositoryConfiguration : metadataRepositoryConfigurationList) {
-			this.setMetadataRepositoryConfiguration(metadataRepositoryConfiguration);
+		for (MetadataRepository metadataRepository : metadataRepositories) {
+			this.setMetadataRepository(metadataRepository);
 		}
-
-		// Automatically set repositories if category is set to general
-		if (this.getGeneralRepositoryConfiguration() != null) {
-			this.setGeneral(true);
-			
-			this.setConnectivityRepositoryConfiguration(this.getGeneralRepositoryConfiguration().clone());
-			this.getConnectivityRepositoryConfiguration().setCategory("connectivity");
-			
-			this.setControlRepositoryConfiguration(this.getGeneralRepositoryConfiguration().clone());
-			this.getControlRepositoryConfiguration().setCategory("control");
-
-			this.setDesignRepositoryConfiguration(this.getGeneralRepositoryConfiguration().clone());
-			this.getDesignRepositoryConfiguration().setCategory("design");
-
-			this.setTraceRepositoryConfiguration(this.getGeneralRepositoryConfiguration().clone());
-			this.getTraceRepositoryConfiguration().setCategory("trace");
-						
-			this.setResultRepositoryConfiguration(this.getGeneralRepositoryConfiguration().clone());
-			this.getResultRepositoryConfiguration().setCategory("result");
-		}
-
 		// Check if repositories are correctly set
 		this.checkValidity();
 		if (!this.isValid()) {
@@ -61,106 +40,71 @@ public class MetadataControl {
 	private void checkValidity() {
 		boolean result = true;
 		// Mandatory repository settings
-		if (this.getConnectivityRepositoryConfiguration() == null) result = false;
-		if (this.getControlRepositoryConfiguration() == null) result = false;
-		if (this.getDesignRepositoryConfiguration() == null) result = false;
-		if (this.getResultRepositoryConfiguration() == null) result = false;
-		if (this.getTraceRepositoryConfiguration() == null) result = false;
+		if (this.getConnectivityMetadataRepository() == null) result = false;
+		if (this.getControlMetadataRepository() == null) result = false;
+		if (this.getDesignMetadataRepository() == null) result = false;
+		if (this.getResultMetadataRepository() == null) result = false;
+		if (this.getTraceMetadataRepository() == null) result = false;
 		
 		this.setValid(result);
 	}
 
-	private void setMetadataRepositoryConfiguration(MetadataRepositoryConfiguration metadataRepositoryConfiguration) {
-		String categories = metadataRepositoryConfiguration.getCategory().toLowerCase();
-		int delim = categories.indexOf(",");
-		if (delim > 0) {
-			String[] category = categories.split(",");
-			for (int i = 0; i < category.length; i++) {
-				metadataRepositoryConfiguration.setCategory(category[i]);
-				this.setMetadataRepositoryConfigurationObject(metadataRepositoryConfiguration);
-			}
+	private void setMetadataRepository(MetadataRepository metadataRepository) {
+		if (metadataRepository.getCategory().equalsIgnoreCase("connectivity")) {
+			this.setConnectivityMetadataRepository((ConnectivityMetadataRepository) metadataRepository);
+		} else if (metadataRepository.getCategory().equalsIgnoreCase("control")) {
+			this.setControlMetadataRepository((ControlMetadataRepository) metadataRepository);
+		} else if (metadataRepository.getCategory().equalsIgnoreCase("design")) {
+			this.setDesignMetadataRepository((DesignMetadataRepository) metadataRepository);
+		} else if (metadataRepository.getCategory().equalsIgnoreCase("trace")) {
+			this.setTraceMetadataRepository((TraceMetadataRepository) metadataRepository);
+		} else if (metadataRepository.getCategory().equalsIgnoreCase("result")) {
+			this.setResultMetadataRepository((ResultMetadataRepository) metadataRepository);
 		} else {
-			this.setMetadataRepositoryConfigurationObject(metadataRepositoryConfiguration);
-		}
-	}
-
-	private void setMetadataRepositoryConfigurationObject(
-			MetadataRepositoryConfiguration metadataRepositoryConfiguration) {
-		if (metadataRepositoryConfiguration.getCategory().equalsIgnoreCase("connectivity")) {
-			this.setConnectivityRepositoryConfiguration(metadataRepositoryConfiguration);
-			this.getConnectivityRepositoryConfiguration().setCategory("connectivity");
-		} else if (metadataRepositoryConfiguration.getCategory().equalsIgnoreCase("control")) {
-			this.setControlRepositoryConfiguration(metadataRepositoryConfiguration);
-			this.getControlRepositoryConfiguration().setCategory("control");
-		} else if (metadataRepositoryConfiguration.getCategory().equalsIgnoreCase("design")) {
-			this.setDesignRepositoryConfiguration(metadataRepositoryConfiguration);
-			this.getDesignRepositoryConfiguration().setCategory("design");
-		} else if (metadataRepositoryConfiguration.getCategory().equalsIgnoreCase("trace")) {
-			this.setTraceRepositoryConfiguration(metadataRepositoryConfiguration);
-			this.getTraceRepositoryConfiguration().setCategory("trace");
-		} else if (metadataRepositoryConfiguration.getCategory().equalsIgnoreCase("result")) {
-			this.setResultRepositoryConfiguration(metadataRepositoryConfiguration);
-			this.getResultRepositoryConfiguration().setCategory("result");
-		} else if (metadataRepositoryConfiguration.getCategory().equalsIgnoreCase("general")) {
-			this.setGeneralRepositoryConfiguration(metadataRepositoryConfiguration);
-			this.getGeneralRepositoryConfiguration().setCategory("general");
+			throw new RuntimeException(MessageFormat.format("No Metadata repository of type {0} can be set", metadataRepository.getCategory()));
 		}
 	}
 
 	// Getters and Setters
-	public MetadataRepositoryConfiguration getConnectivityRepositoryConfiguration() {
-		return connectivityRepositoryConfiguration;
+	public ConnectivityMetadataRepository getConnectivityMetadataRepository() {
+		return connectivityMetadataRepository;
 	}
 
-	public void setConnectivityRepositoryConfiguration(
-			MetadataRepositoryConfiguration connectivityRepositoryConfiguration) {
-		this.connectivityRepositoryConfiguration = connectivityRepositoryConfiguration;
-		this.connectivityRepositoryConfiguration.initCategoryConfiguration("connectivity");
+	public void setConnectivityMetadataRepository(
+			ConnectivityMetadataRepository connectivityMetadataRepository) {
+		this.connectivityMetadataRepository = connectivityMetadataRepository;
 	}
 
-	public MetadataRepositoryConfiguration getTraceRepositoryConfiguration() {
-		return traceRepositoryConfiguration;
+	public TraceMetadataRepository getTraceMetadataRepository() {
+		return traceMetadataRepository;
 	}
 
-	public void setTraceRepositoryConfiguration(MetadataRepositoryConfiguration traceRepositoryConfiguration) {
-		this.traceRepositoryConfiguration = traceRepositoryConfiguration;
-		this.traceRepositoryConfiguration.initCategoryConfiguration("trace");
+	public void setTraceMetadataRepository(TraceMetadataRepository traceMetadataRepository) {
+		this.traceMetadataRepository = traceMetadataRepository;
 	}
 
-	public MetadataRepositoryConfiguration getResultRepositoryConfiguration() {
-		return resultRepositoryConfiguration;
+	public ResultMetadataRepository getResultMetadataRepository() {
+		return resultMetadataRepository;
 	}
 
-	public void setResultRepositoryConfiguration(MetadataRepositoryConfiguration resultRepositoryConfiguration) {
-		this.resultRepositoryConfiguration = resultRepositoryConfiguration;
-		this.resultRepositoryConfiguration.initCategoryConfiguration("result");
+	public void setResultMetadataRepository(ResultMetadataRepository resultMetadataRepository) {
+		this.resultMetadataRepository = resultMetadataRepository;
 	}
 
-	public MetadataRepositoryConfiguration getDesignRepositoryConfiguration() {
-		return designRepositoryConfiguration;
+	public DesignMetadataRepository getDesignMetadataRepository() {
+		return designMetadataRepository;
 	}
 
-	public void setDesignRepositoryConfiguration(MetadataRepositoryConfiguration designRepositoryConfiguration) {
-		this.designRepositoryConfiguration = designRepositoryConfiguration;
-		this.designRepositoryConfiguration.initCategoryConfiguration("design");
-
+	public void setDesignMetadataRepository(DesignMetadataRepository designMetadataRepository) {
+		this.designMetadataRepository = designMetadataRepository;
 	}
 
-	public MetadataRepositoryConfiguration getGeneralRepositoryConfiguration() {
-		return generalRepositoryConfiguration;
+	public MonitorMetadataRepository getMonitorMetadataRepository() {
+		return monitorMetadataRepository;
 	}
 
-	public void setGeneralRepositoryConfiguration(MetadataRepositoryConfiguration generalRepositoryConfiguration) {
-		this.generalRepositoryConfiguration = generalRepositoryConfiguration;
-	}
-
-	public MetadataRepositoryConfiguration getMonitorRepositoryConfiguration() {
-		return monitorRepositoryConfiguration;
-	}
-
-	public void setMonitorRepositoryConfiguration(MetadataRepositoryConfiguration monitorRepositoryConfiguration) {
-		this.monitorRepositoryConfiguration = monitorRepositoryConfiguration;
-		this.monitorRepositoryConfiguration.initCategoryConfiguration("monitoring");
+	public void setMonitorMetadataRepository(MonitorMetadataRepository monitorMetadataRepository) {
+		this.monitorMetadataRepository = monitorMetadataRepository;
 	}
 
 	public boolean isGeneral() {
@@ -171,31 +115,28 @@ public class MetadataControl {
 		this.general = general;
 	}
 
-	public MetadataRepositoryConfiguration getLedgerRepositoryConfiguration() {
-		return ledgerRepositoryConfiguration;
+	public LedgerMetadataRepository getLedgerMetadataRepository() {
+		return ledgerMetadataRepository;
 	}
 
-	public void setLedgerRepositoryConfiguration(MetadataRepositoryConfiguration ledgerRepositoryConfiguration) {
-		this.ledgerRepositoryConfiguration = ledgerRepositoryConfiguration;
-		this.ledgerRepositoryConfiguration.initCategoryConfiguration("ledger");
+	public void setLedgerMetadataRepository(LedgerMetadataRepository ledgerMetadataRepository) {
+		this.ledgerMetadataRepository = ledgerMetadataRepository;
 	}
 
-	public MetadataRepositoryConfiguration getCatalogRepositoryConfiguration() {
-		return catalogRepositoryConfiguration;
+	public CatalogMetadataRepository getCatalogMetadataRepository() {
+		return catalogMetadataRepository;
 	}
 
-	public void setCatalogRepositoryConfiguration(MetadataRepositoryConfiguration catalogRepositoryConfiguration) {
-		this.catalogRepositoryConfiguration = catalogRepositoryConfiguration;
-		this.catalogRepositoryConfiguration.initCategoryConfiguration("catalog");
+	public void setCatalogMetadataRepository(CatalogMetadataRepository catalogMetadataRepository) {
+		this.catalogMetadataRepository = catalogMetadataRepository;
 	}
 
-	public MetadataRepositoryConfiguration getControlRepositoryConfiguration() {
-		return controlRepositoryConfiguration;
+	public ControlMetadataRepository getControlMetadataRepository() {
+		return controlMetadataRepository;
 	}
 
-	public void setControlRepositoryConfiguration(MetadataRepositoryConfiguration controlRepositoryConfiguration) {
-		this.controlRepositoryConfiguration = controlRepositoryConfiguration;
-		this.controlRepositoryConfiguration.initCategoryConfiguration("control");
+	public void setControlMetadataRepository(ControlMetadataRepository controlMetadataRepository) {
+		this.controlMetadataRepository = controlMetadataRepository;
 	}
 
 	public boolean isValid() {

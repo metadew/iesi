@@ -48,9 +48,9 @@ public class DataframeConfiguration {
 		Dataframe dataframe = new Dataframe();
 		CachedRowSet crsDataframe = null;
 		String queryDataframe = "select DATAFRAME_ID, DATAFRAME_TYP_NM, DATAFRAME_NM, DATAFRAME_DSC from "
-				+ this.getFrameworkExecution().getMetadataControl().getCatalogRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Dataviews") + " where DATAFRAME_NM = '"
+				+ this.getFrameworkExecution().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("Dataviews") + " where DATAFRAME_NM = '"
 				+ dataframeName + "'";
-		crsDataframe = this.getMetadataRepositoryOperation().getMetadataRepositoryConfiguration().executeQuery(queryDataframe);
+		crsDataframe = this.getMetadataRepositoryOperation().getMetadataRepository().executeQuery(queryDataframe, "reader");
 		// Metadew repository change - replicate across
 		
 		try {
@@ -77,11 +77,11 @@ public class DataframeConfiguration {
 	public String getInsertStatement() {
 		String sql = "";
 		if (this.exists()) {
-			sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getCatalogRepositoryConfiguration().getMetadataTableConfiguration().getTableName("DataframeItemParameters");
+			sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("DataframeItemParameters");
 			sql += " WHERE DATAFRAME_ITEM_ID in (";
-			sql += "select DATAFRAME_ITEM_ID FROM " + this.getFrameworkExecution().getMetadataControl().getCatalogRepositoryConfiguration().getMetadataTableConfiguration().getTableName("DataframeItems");
+			sql += "select DATAFRAME_ITEM_ID FROM " + this.getFrameworkExecution().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("DataframeItems");
 			sql += " WHERE DATAFRAME_ID = (";
-			sql += "select DATAFRAME_ID FROM " + this.getFrameworkExecution().getMetadataControl().getCatalogRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Dataviews");
+			sql += "select DATAFRAME_ID FROM " + this.getFrameworkExecution().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("Dataviews");
 			sql += " WHERE DATAFRAME_NM = "
 					+ SQLTools.GetStringForSQL(this.getDataframe().getName());
 			sql += ")";
@@ -89,18 +89,18 @@ public class DataframeConfiguration {
 			sql += ")";
 			sql += ";";
 			sql += "\n";
-			sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getCatalogRepositoryConfiguration().getMetadataTableConfiguration().getTableName("DataframeItems");
+			sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("DataframeItems");
 			sql += " WHERE DATAFRAME_ID = (";
-			sql += "select DATAFRAME_ID FROM " + this.getFrameworkExecution().getMetadataControl().getCatalogRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Dataviews");
+			sql += "select DATAFRAME_ID FROM " + this.getFrameworkExecution().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("Dataviews");
 			sql += " WHERE DATAFRAME_NM = "
 					+ SQLTools.GetStringForSQL(this.getDataframe().getName());
 			sql += ")";
 			sql += " AND DATAFRAME_VRS_NB = " + this.getDataframe().getVersion().getNumber();
 			sql += ";";
 			sql += "\n";
-			sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getCatalogRepositoryConfiguration().getMetadataTableConfiguration().getTableName("DataframeVersions");
+			sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("DataframeVersions");
 			sql += " WHERE DATAFRAME_ID = (";
-			sql += "select DATAFRAME_ID FROM " + this.getFrameworkExecution().getMetadataControl().getCatalogRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Dataviews");
+			sql += "select DATAFRAME_ID FROM " + this.getFrameworkExecution().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("Dataviews");
 			sql += " WHERE DATAFRAME_NM = "
 					+ SQLTools.GetStringForSQL(this.getDataframe().getName());
 			sql += ")";
@@ -110,7 +110,7 @@ public class DataframeConfiguration {
 			/*
 			 * Remove delete option for any version of a dataframe sql += "\n"; sql +=
 			 * "DELETE FROM " +
-			 * this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getCFG_DATAFRAME();
+			 * this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getMetadataTableConfiguration().getCFG_DATAFRAME();
 			 * sql += " WHERE DATAFRAME_NM = " +
 			 * this.getFrameworkExecution().getSqlTools().GetStringForSQL(this.getDataframe().
 			 * getName()); sql += ";";
@@ -120,13 +120,13 @@ public class DataframeConfiguration {
 		}
 
 		if (!this.verifyDataframeConfigurationExists(this.getDataframe().getName())) {
-			sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getCatalogRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Dataviews");
+			sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("Dataviews");
 			sql += " (DATAFRAME_ID, DATAFRAME_TYP_NM, DATAFRAME_NM, DATAFRAME_DSC) ";
 			sql += "VALUES ";
 			sql += "(";
 			sql += "("
 					+ SQLTools.GetNextIdStatement(
-							this.getFrameworkExecution().getMetadataControl().getCatalogRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Dataviews"), "DATAFRAME_ID")
+							this.getFrameworkExecution().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("Dataviews"), "DATAFRAME_ID")
 					+ ")";
 			sql += ",";
 			sql += SQLTools.GetStringForSQL(this.getDataframe().getType());
@@ -215,10 +215,10 @@ public class DataframeConfiguration {
 		long dataframeVersionNumber = -1;
 		CachedRowSet crsDataframeVersion = null;
 		String queryDataframeVersion = "select max(DATAFRAME_VRS_NB) as \"MAX_VRS_NB\" from "
-				+ this.getFrameworkExecution().getMetadataControl().getCatalogRepositoryConfiguration().getMetadataTableConfiguration().getTableName("DataframeVersions") + " a inner join "
-				+ this.getFrameworkExecution().getMetadataControl().getCatalogRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Dataviews")
+				+ this.getFrameworkExecution().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("DataframeVersions") + " a inner join "
+				+ this.getFrameworkExecution().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("Dataviews")
 				+ " b on a.dataframe_id = b.dataframe_id where b.dataframe_nm = '" + dataframeName + "'";
-		crsDataframeVersion = this.getMetadataRepositoryOperation().getMetadataRepositoryConfiguration().executeQuery(queryDataframeVersion);
+		crsDataframeVersion = this.getMetadataRepositoryOperation().getMetadataRepository().executeQuery(queryDataframeVersion, "reader");
 		try {
 			while (crsDataframeVersion.next()) {
 				dataframeVersionNumber = crsDataframeVersion.getLong("MAX_VRS_NB");
@@ -245,9 +245,9 @@ public class DataframeConfiguration {
 		Dataframe dataframe = new Dataframe();
 		CachedRowSet crsDataframe = null;
 		String queryDataframe = "select DATAFRAME_ID, DATAFRAME_TYP_NM, DATAFRAME_NM, DATAFRAME_DSC from "
-				+ this.getFrameworkExecution().getMetadataControl().getCatalogRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Dataviews") + " where DATAFRAME_NM = '"
+				+ this.getFrameworkExecution().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("Dataviews") + " where DATAFRAME_NM = '"
 				+ dataframeName + "'";
-		crsDataframe = this.getMetadataRepositoryOperation().getMetadataRepositoryConfiguration().executeQuery(queryDataframe);
+		crsDataframe = this.getMetadataRepositoryOperation().getMetadataRepository().executeQuery(queryDataframe, "reader");
 		DataframeItemConfiguration dataframeItemConfiguration = new DataframeItemConfiguration(this.getFrameworkExecution());
 		DataframeParameterConfiguration dataframeParameterConfiguration = new DataframeParameterConfiguration(
 				this.getFrameworkExecution());
@@ -267,11 +267,11 @@ public class DataframeConfiguration {
 				// Get the dataframeItems
 				List<DataframeItem> dataframeItemList = new ArrayList();
 				String queryItems = "select DATAFRAME_ID, DATAFRAME_VRS_NB, DATAFRAME_ITEM_ID, DATAFRAME_ITEM_NB from "
-						+ this.getFrameworkExecution().getMetadataControl().getCatalogRepositoryConfiguration().getMetadataTableConfiguration().getTableName("DataframeItems")
+						+ this.getFrameworkExecution().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("DataframeItems")
 						+ " where DATAFRAME_ID = " + dataframe.getId() + " and DATAFRAME_VRS_NB = " + dataframeVersionNumber
 						+ " order by DATAFRAME_ITEM_NB asc ";
 				CachedRowSet crsItems = null;
-				crsItems = this.getMetadataRepositoryOperation().getMetadataRepositoryConfiguration().executeQuery(queryItems);
+				crsItems = this.getMetadataRepositoryOperation().getMetadataRepository().executeQuery(queryItems, "reader");
 				while (crsItems.next()) {
 					dataframeItemList.add(dataframeItemConfiguration.getDataframeItem(crsItems.getLong("DATAFRAME_ITEM_ID")));
 				}
@@ -281,10 +281,10 @@ public class DataframeConfiguration {
 				// Get parameters
 				CachedRowSet crsDataframeParameters = null;
 				String queryDataframeParameters = "select DATAFRAME_ID, DATAFRAME_VRS_NB, DATAFRAME_PAR_NM from "
-						+ this.getFrameworkExecution().getMetadataControl().getCatalogRepositoryConfiguration().getMetadataTableConfiguration().getTableName("DataframeParameters")
+						+ this.getFrameworkExecution().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("DataframeParameters")
 						+ " where DATAFRAME_ID = " + dataframe.getId() + " and DATAFRAME_VRS_NB = " + dataframeVersionNumber;
-				crsDataframeParameters = this.getMetadataRepositoryOperation().getMetadataRepositoryConfiguration()
-						.executeQuery(queryDataframeParameters);
+				crsDataframeParameters = this.getMetadataRepositoryOperation().getMetadataRepository()
+						.executeQuery(queryDataframeParameters, "reader");
 				List<DataframeParameter> dataframeParameterList = new ArrayList();
 				while (crsDataframeParameters.next()) {
 					dataframeParameterList.add(dataframeParameterConfiguration.getDataframeParameter(dataframe.getId(),
@@ -312,9 +312,8 @@ public class DataframeConfiguration {
 		List<Dataframe> dataframeList = new ArrayList<>();
 		CachedRowSet crs = null;
 		String query = "select DATAFRAME_NM, DATAFRAME_DSC from "
-				+ this.getFrameworkExecution().getMetadataControl().getCatalogRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Dataviews") + " order by DATAFRAME_NM ASC";
-		System.out.println(query);
-		crs = this.getMetadataRepositoryOperation().getMetadataRepositoryConfiguration().executeQuery(query);
+				+ this.getFrameworkExecution().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("Dataviews") + " order by DATAFRAME_NM ASC";
+		crs = this.getMetadataRepositoryOperation().getMetadataRepository().executeQuery(query, "reader");
 		DataframeConfiguration dataframeConfiguration = new DataframeConfiguration(this.getFrameworkExecution());
 		try {
 			String dataframeName = "";

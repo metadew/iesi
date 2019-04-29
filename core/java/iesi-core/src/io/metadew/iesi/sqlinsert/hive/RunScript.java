@@ -64,8 +64,10 @@ public class RunScript {
 
 		        
 			} catch (SQLException e) {
-				System.out.println("Database Actions Failed");
-				e.printStackTrace();
+				StringWriter StackTrace = new StringWriter();
+				e.printStackTrace(new PrintWriter(StackTrace));
+				System.out.println("database actions Failed");
+				System.out.println(e.getMessage());
 			} finally {
 			      //Close the connection
 			      try {

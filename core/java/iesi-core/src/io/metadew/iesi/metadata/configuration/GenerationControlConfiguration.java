@@ -32,13 +32,13 @@ public class GenerationControlConfiguration {
 	public String getInsertStatement(String generationName) {
 		String sql = "";
 
-		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("GenerationControls");
+		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("GenerationControls");
 		sql += " (GEN_ID, GEN_CTL_ID, GEN_CTL_NM, GEN_CTL_TYP_NM, GEN_CTL_DSC) ";
 		sql += "VALUES ";
 		sql += "(";
-		sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Generations"), "GEN_ID", "GEN_NM", generationName) + ")";
+		sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Generations"), "GEN_ID", "GEN_NM", generationName) + ")";
 		sql += ",";
-		sql += "(" + SQLTools.GetNextIdStatement(this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("GenerationControls"), "GEN_CTL_ID") + ")";
+		sql += "(" + SQLTools.GetNextIdStatement(this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("GenerationControls"), "GEN_CTL_ID") + ")";
 		sql += ",";
 		sql += SQLTools.GetStringForSQL(this.getgenerationControl().getName());
 		sql += ",";
@@ -103,8 +103,8 @@ public class GenerationControlConfiguration {
 		GenerationControl generationControl = new GenerationControl();
 		CachedRowSet crsGenerationControl = null;
 		String queryGenerationControl = "select GEN_ID, GEN_CTL_ID, GEN_CTL_NM, GEN_CTL_TYP_NM, GEN_CTL_DSC from "
-				+ this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("GenerationControls") + " where GEN_CTL_ID = " + generationControlId;
-		crsGenerationControl = this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().executeQuery(queryGenerationControl);
+				+ this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("GenerationControls") + " where GEN_CTL_ID = " + generationControlId;
+		crsGenerationControl = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(queryGenerationControl, "reader");
 		GenerationControlParameterConfiguration generationControlParameterConfiguration = new GenerationControlParameterConfiguration(this.getFrameworkExecution());
 		GenerationControlRuleConfiguration generationControlRuleConfiguration = new GenerationControlRuleConfiguration(this.getFrameworkExecution());
 		try {
@@ -116,9 +116,9 @@ public class GenerationControlConfiguration {
 				
 				// Get parameters
 				CachedRowSet crsGenerationControlParameters = null;
-				String queryGenerationControlParameters = "select GEN_CTL_ID, GEN_CTL_PAR_NM from " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("GenerationControlParameters")
+				String queryGenerationControlParameters = "select GEN_CTL_ID, GEN_CTL_PAR_NM from " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("GenerationControlParameters")
 						+ " where GEN_CTL_ID = " + generationControlId;
-				crsGenerationControlParameters = this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().executeQuery(queryGenerationControlParameters);
+				crsGenerationControlParameters = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(queryGenerationControlParameters, "reader");
 				List<GenerationControlParameter> generationControlParameterList = new ArrayList();
 				while (crsGenerationControlParameters.next()) {
 					generationControlParameterList
@@ -129,9 +129,9 @@ public class GenerationControlConfiguration {
 
 				// Get rules
 				CachedRowSet crsGenerationControlRules = null;
-				String queryGenerationControlRules = "select GEN_CTL_RULE_ID, GEN_CTL_RULE_NM from " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("GenerationControlRules")
+				String queryGenerationControlRules = "select GEN_CTL_RULE_ID, GEN_CTL_RULE_NM from " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("GenerationControlRules")
 						+ " where GEN_CTL_ID = " + generationControlId;
-				crsGenerationControlRules = this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().executeQuery(queryGenerationControlRules);
+				crsGenerationControlRules = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(queryGenerationControlRules, "reader");
 				List<GenerationControlRule> generationControlRuleList = new ArrayList();
 				while (crsGenerationControlRules.next()) {
 					generationControlRuleList

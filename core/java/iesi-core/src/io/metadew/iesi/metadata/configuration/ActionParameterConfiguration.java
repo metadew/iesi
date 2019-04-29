@@ -28,11 +28,11 @@ public class ActionParameterConfiguration {
 	public String getInsertStatement(String scriptName, long scriptVersionNumber, String actionName) {
 		String sql = "";
 
-		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("ActionParameters");
+		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ActionParameters");
 		sql += " (ACTION_ID, ACTION_PAR_NM, ACTION_PAR_VAL) ";
 		sql += "VALUES ";
 		sql += "(";
-		sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Actions"), "ACTION_ID", "where ACTION_NM = '"+ actionName + "' and SCRIPT_ID = (" + SQLTools.GetLookupIdStatement(this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Scripts"), "SCRIPT_ID", "SCRIPT_NM", scriptName)) + ") and SCRIPT_VRS_NB =" + scriptVersionNumber + ")";
+		sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Actions"), "ACTION_ID", "where ACTION_NM = '"+ actionName + "' and SCRIPT_ID = (" + SQLTools.GetLookupIdStatement(this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Scripts"), "SCRIPT_ID", "SCRIPT_NM", scriptName)) + ") and SCRIPT_VRS_NB =" + scriptVersionNumber + ")";
 		sql += ",";
 		sql += SQLTools.GetStringForSQL(this.getActionParameter().getName());
 		sql += ",";
@@ -46,9 +46,9 @@ public class ActionParameterConfiguration {
 	public ActionParameter getActionParameter(long actionId, String actionParameterName) {
 		ActionParameter actionParameter = new ActionParameter();
 		CachedRowSet crsActionParameter = null;
-		String queryActionParameter = "select ACTION_ID, ACTION_PAR_NM, ACTION_PAR_VAL from " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("ActionParameters")
+		String queryActionParameter = "select ACTION_ID, ACTION_PAR_NM, ACTION_PAR_VAL from " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ActionParameters")
 				+ " where ACTION_ID = " + actionId + " and ACTION_PAR_NM = '" + actionParameterName + "'";
-		crsActionParameter = this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().executeQuery(queryActionParameter);
+		crsActionParameter = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(queryActionParameter, "reader");
 		try {
 			while (crsActionParameter.next()) {
 				actionParameter.setName(actionParameterName);

@@ -28,7 +28,7 @@ public class ConnectionParameterConfiguration {
 	public String getInsertStatement(String connectionName, String environmentName) {
 		String sql = "";
 
-		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("ConnectionParameters");
+		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("ConnectionParameters");
 		sql += " (CONN_NM, ENV_NM, CONN_PAR_NM, CONN_PAR_VAL) ";
 		sql += "VALUES ";
 		sql += "(";
@@ -48,9 +48,9 @@ public class ConnectionParameterConfiguration {
 	public ConnectionParameter getConnectionParameter(String cpnnectionName, String environmentName, String connectionParameterName) {
 		ConnectionParameter connectionParameter = new ConnectionParameter();
 		CachedRowSet crsConnectionParameter = null;
-		String queryConnectionParameter = "select CONN_NM, ENV_NM, CONN_PAR_NM, CONN_PAR_VAL from " + this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("ConnectionParameters")
+		String queryConnectionParameter = "select CONN_NM, ENV_NM, CONN_PAR_NM, CONN_PAR_VAL from " + this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("ConnectionParameters")
 				+ " where CONN_NM = '" + cpnnectionName + "' and CONN_PAR_NM = '" + connectionParameterName + "' and ENV_NM = '" + environmentName + "'";
-		crsConnectionParameter = this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().executeQuery(queryConnectionParameter);
+		crsConnectionParameter = this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().executeQuery(queryConnectionParameter, "reader");
 		try {
 			while (crsConnectionParameter.next()) {
 				connectionParameter.setName(connectionParameterName);
@@ -70,9 +70,9 @@ public class ConnectionParameterConfiguration {
 		String output = "";
 		CachedRowSet crsConnectionParameter = null;
 		String queryConnectionParameter = "select CONN_NM, ENV_NM, CONN_PAR_NM, CONN_PAR_VAL from "
-				+ this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().getMetadataTableConfiguration().getTableName("ConnectionParameters") + " where CONN_NM = '"
+				+ this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("ConnectionParameters") + " where CONN_NM = '"
 				+ connectionName + "' and ENV_NM = '" + environmentName + "' and CONN_PAR_NM = '" + connectionParameterName + "'";
-		crsConnectionParameter = this.getFrameworkExecution().getMetadataControl().getConnectivityRepositoryConfiguration().executeQuery(queryConnectionParameter);
+		crsConnectionParameter = this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().executeQuery(queryConnectionParameter, "reader");
 		try {
 			while (crsConnectionParameter.next()) {
 				output = crsConnectionParameter.getString("CONN_PAR_VAL");

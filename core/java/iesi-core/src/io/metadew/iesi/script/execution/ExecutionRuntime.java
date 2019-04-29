@@ -468,7 +468,12 @@ public class ExecutionRuntime {
 		return input;
 	}
 
-	public LookupResult resolveConceptLookup(ExecutionControl executionControl, String input) {
+	/*
+	 * New function or concept lookups
+	 * Work in progress
+	 * We will move only here when stable
+	 */
+	public LookupResult resolveConceptLookup(ExecutionControl executionControl, String input, boolean dup) {
 		getFrameworkExecution().getFrameworkLog().log(
 				MessageFormat.format("Resolving {0} for instructions", input),
 				Level.DEBUG);
@@ -491,7 +496,7 @@ public class ExecutionRuntime {
 					Level.TRACE);
 			List<String> instructionArguments = splitInstructionArguments(instructionArgumentsString);
 			String instructionArgumentsResolved = instructionArguments.stream()
-					.map(instructionArgument -> resolveConceptLookup(executionControl, instructionArgument).getValue())
+					.map(instructionArgument -> resolveConceptLookup(executionControl, instructionArgument, true).getValue())
 					.collect(Collectors.joining(", "));
 			getFrameworkExecution().getFrameworkLog().log(
 					MessageFormat.format("Resolved instructions parameters to {0}", instructionArgumentsString),
@@ -575,7 +580,7 @@ public class ExecutionRuntime {
 	}
 
 	// Get cross concept lookup
-	public LookupResult resolveConceptLookup(ExecutionControl executionControl, String input, boolean dup) {
+	public LookupResult resolveConceptLookup(ExecutionControl executionControl, String input) {
 		LookupResult lookupResult = new LookupResult();
 		int openPos;
 		int closePos;

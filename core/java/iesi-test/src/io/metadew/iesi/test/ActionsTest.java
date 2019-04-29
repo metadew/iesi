@@ -8,11 +8,17 @@ import io.metadew.iesi.test.launch.LaunchArgument;
 import io.metadew.iesi.test.launch.LaunchItem;
 import io.metadew.iesi.test.launch.LaunchItemOperation;
 import io.metadew.iesi.test.launch.Launcher;
-import org.apache.commons.cli.*;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 
 public class ActionsTest {
 

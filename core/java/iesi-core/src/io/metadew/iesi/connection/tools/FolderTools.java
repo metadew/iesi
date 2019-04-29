@@ -12,6 +12,7 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 
+import io.metadew.iesi.common.text.ParsingTools;
 import io.metadew.iesi.connection.FileConnection;
 
 public final class FolderTools {
@@ -19,6 +20,31 @@ public final class FolderTools {
 	public static File[] getFilesInFolder(String folderName, String filterType, String filterExpression) {
 		File[] files = null;
 
+		if (filterType.equalsIgnoreCase("all")) {
+			files = getAllFilesInFolder(folderName);
+		} else if (filterType.equalsIgnoreCase("match")) {
+			files = getFilesInFolderUsingMatch(folderName, filterExpression);
+		} else if (filterType.equalsIgnoreCase("regex")) {
+			files = getFilesInFolderUsingRegex(folderName, filterExpression);
+		}
+
+		return files;
+	}
+	
+	public static File[] getFilesInFolder(String folderName, String filterExpression) {
+		File[] files = null;
+		String filterType = "";
+		
+		// Define filterType
+		if (filterExpression.equalsIgnoreCase("*") || filterExpression.equalsIgnoreCase("")) {
+			filterType = "all";
+		} else if (ParsingTools.isRegexFunction(filterExpression)) {
+			filterType = "regex";
+		} else {
+			filterType = "match";
+		}
+
+		// Get files
 		if (filterType.equalsIgnoreCase("all")) {
 			files = getAllFilesInFolder(folderName);
 		} else if (filterType.equalsIgnoreCase("match")) {

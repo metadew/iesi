@@ -1,9 +1,14 @@
 package io.metadew.iesi.script.action;
 
+import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
+import io.metadew.iesi.common.text.ParsingTools;
+import io.metadew.iesi.connection.FileConnection;
 import io.metadew.iesi.connection.tools.FolderTools;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.ActionParameter;
@@ -94,15 +99,25 @@ public class FhoDeleteFolder {
 				if (this.getFolderPath().getValue().isEmpty()) {
 					FolderTools.deleteFolder(this.getFolderName().getValue(), true);
 				} else {
-					// add logic cfr file transfer
+					File[] subjectFiles = FolderTools.getFilesInFolder(this.getFolderPath().getValue(), this.getFolderName().getValue());
+					for (File file : subjectFiles) {
+						if (file.isDirectory()) {
+							this.getActionExecution().getActionControl().logOutput("folder.delete", file.getAbsolutePath());
+							try {
+								FolderTools.deleteFolder(file.getAbsolutePath(), true);				
+								this.getActionExecution().getActionControl().increaseSuccessCount();
+								this.getActionExecution().getActionControl().logOutput("folder.delete.success", "confirmed");
+							} catch (Exception e) {
+								this.getActionExecution().getActionControl().logOutput("folder.delete.error", e.getMessage());
+								this.getActionExecution().getActionControl().increaseErrorCount();
+							}
+						}
+					}
 				}
 				
 			} else {
 				// placeholder
 			}
-			
-			this.getActionExecution().getActionControl().increaseSuccessCount();
-			this.getActionExecution().getActionControl().increaseErrorCount();
 
 			return true;
 		} catch (Exception e) {

@@ -165,7 +165,7 @@ public class UserConfiguration
 	{
 		User user = new User();
 		CachedRowSet crs = null;
-		String query = "select USER_NM, USER_TYP_NM, USER_FIRST_NM, USER_LAST_NM, USER_ACT_FL, USER_PWD_HASH, USER_PWD_EXP_FL, LOGIN_FAIL_CUM_NB, LOGIN_FAIL_IND_NB, USER_BLOCK_FL from "
+		String query = "select USER_NM, USER_TYP_NM, USER_FIRST_NM, USER_LAST_NM, USER_ACT_FL, USER_PWD_HASH, USER_PWD_EXP_FL, LOGIN_FAIL_CUM_NB, LOGIN_FAIL_IND_NB, USER_LOCK_FL from "
 					+ this.getFrameworkExecution().getMetadataControl().getControlRepositoryConfiguration()
 								.getMetadataTableConfiguration().getTableName("Users")
 					+ " where USER_NM = '" + userName + "'";

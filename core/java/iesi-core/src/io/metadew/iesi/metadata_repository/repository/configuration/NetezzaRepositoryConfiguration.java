@@ -5,9 +5,7 @@ import io.metadew.iesi.framework.configuration.FrameworkSettingConfiguration;
 import io.metadew.iesi.metadata_repository.repository.Repository;
 import io.metadew.iesi.metadata_repository.repository.database.Database;
 import io.metadew.iesi.metadata_repository.repository.database.NetezzaDatabase;
-import io.metadew.iesi.metadata_repository.repository.database.OracleDatabase;
 import io.metadew.iesi.metadata_repository.repository.database.connection.NetezzaDatabaseConnection;
-import io.metadew.iesi.metadata_repository.repository.database.connection.OracleDatabaseConnection;
 
 import java.util.HashMap;
 import java.util.Map;

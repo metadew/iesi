@@ -2,8 +2,6 @@ package io.metadew.iesi.metadata_repository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
-import io.metadew.iesi.metadata.configuration.ComponentConfiguration;
-import io.metadew.iesi.metadata.configuration.ScriptConfiguration;
 import io.metadew.iesi.metadata.configuration.UserConfiguration;
 import io.metadew.iesi.metadata.definition.*;
 import io.metadew.iesi.metadata_repository.repository.Repository;

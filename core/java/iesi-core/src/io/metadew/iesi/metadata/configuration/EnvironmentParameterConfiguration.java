@@ -1,16 +1,13 @@
 package io.metadew.iesi.metadata.configuration;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.sql.SQLException;
-import java.util.Optional;
-
-import javax.sql.rowset.CachedRowSet;
-import javax.swing.text.html.Option;
-
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.EnvironmentParameter;
+
+import javax.sql.rowset.CachedRowSet;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.Optional;
 
 public class EnvironmentParameterConfiguration {
 
@@ -92,7 +89,7 @@ public class EnvironmentParameterConfiguration {
 
     public Optional<String> getEnvironmentParameterValue(String environmentName, String environmentParameterName) {
         String output = null;
-        CachedRowSet crsEnvironmentParameter = null;
+        CachedRowSet crsEnvironmentParameter;
         String queryEnvironmentParameter = "select ENV_NM, ENV_PAR_NM, ENV_PAR_VAL from "
                 + this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository()
                 .getTableNameByLabel("EnvironmentParameters")

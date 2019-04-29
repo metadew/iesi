@@ -104,7 +104,7 @@ public class RequestParameterOperation {
 		
 		// Cross concept lookup
 		LookupResult lookupResult = this.getExecutionControl().getExecutionRuntime().resolveConceptLookup(this.getExecutionControl(),
-				this.getValue());
+				this.getValue(), true);
 		this.setValue(lookupResult.getValue());
 		
 		// Resolve internal encryption

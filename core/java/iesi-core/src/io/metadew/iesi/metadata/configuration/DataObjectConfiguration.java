@@ -3,18 +3,14 @@ package io.metadew.iesi.metadata.configuration;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.connection.tools.FolderTools;
 import io.metadew.iesi.framework.configuration.FrameworkObjectConfiguration;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.*;
 import io.metadew.iesi.metadata.operation.MetadataRepositoryOperation;
 import io.metadew.iesi.metadata_repository.MetadataRepository;
-import io.metadew.iesi.script.operation.ScriptOperation;
-import org.apache.logging.log4j.Level;
 
 import java.io.File;
-import java.io.InputStream;
 import java.util.List;
 
 public class DataObjectConfiguration {
@@ -113,6 +109,7 @@ public class DataObjectConfiguration {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private void createFolder(String path, String folderName) {
 		FolderTools.createFolder(path + File.separator + folderName);
 	}

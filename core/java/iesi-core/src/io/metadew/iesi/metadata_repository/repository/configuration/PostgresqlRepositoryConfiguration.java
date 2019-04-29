@@ -4,9 +4,7 @@ import io.metadew.iesi.common.config.ConfigFile;
 import io.metadew.iesi.framework.configuration.FrameworkSettingConfiguration;
 import io.metadew.iesi.metadata_repository.repository.Repository;
 import io.metadew.iesi.metadata_repository.repository.database.Database;
-import io.metadew.iesi.metadata_repository.repository.database.OracleDatabase;
 import io.metadew.iesi.metadata_repository.repository.database.PostgresqlDatabase;
-import io.metadew.iesi.metadata_repository.repository.database.connection.OracleDatabaseConnection;
 import io.metadew.iesi.metadata_repository.repository.database.connection.PostgresqlDatabaseConnection;
 
 import java.util.HashMap;

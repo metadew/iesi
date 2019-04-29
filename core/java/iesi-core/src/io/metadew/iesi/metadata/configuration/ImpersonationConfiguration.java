@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import javax.sql.rowset.CachedRowSet;
 
 import io.metadew.iesi.connection.tools.FileTools;
@@ -18,7 +17,6 @@ import io.metadew.iesi.framework.configuration.FrameworkObjectConfiguration;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.configuration.exception.ImpersonationAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.ImpersonationDoesNotExistException;
-import io.metadew.iesi.metadata.definition.DataObject;
 import io.metadew.iesi.metadata.definition.Impersonation;
 import io.metadew.iesi.metadata.definition.ImpersonationParameter;
 import io.metadew.iesi.metadata.definition.ListObject;

@@ -27,14 +27,10 @@ import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 import io.metadew.iesi.script.operation.RequestOperation;
 import io.metadew.iesi.script.operation.RequestParameterOperation;
-import io.metadew.iesi.sqlinsert.engine.ConfigFile;
 import org.apache.http.Header;
 import org.apache.http.HttpHeaders;
 import org.apache.http.entity.ContentType;
 
-import javax.activation.MimeType;
-
-import static org.apache.http.entity.ContentType.APPLICATION_JSON;
 
 public class HttpExecuteRequest {
 
@@ -60,7 +56,9 @@ public class HttpExecuteRequest {
 	private final Pattern INFORMATION_STATUS_CODE = Pattern.compile("1\\d\\d*");
 	private final Pattern SUCCESS_STATUS_CODE = Pattern.compile("2\\d\\d*");
 	private final Pattern REDIRECT_STATUS_CODE = Pattern.compile("3\\d\\d*");
+	@SuppressWarnings("unused")
 	private final Pattern SERVER_ERROR_STATUS_CODE = Pattern.compile("4\\d\\d*");
+	@SuppressWarnings("unused")
 	private final Pattern CLIENT_ERROR_STATUS_CODE = Pattern.compile("5\\d\\d*");
 
 	// Constructors

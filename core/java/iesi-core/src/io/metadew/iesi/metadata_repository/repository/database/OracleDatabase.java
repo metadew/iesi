@@ -1,7 +1,6 @@
 package io.metadew.iesi.metadata_repository.repository.database;
 
 import io.metadew.iesi.metadata.definition.MetadataField;
-import io.metadew.iesi.metadata.definition.MetadataTable;
 import io.metadew.iesi.metadata_repository.repository.database.connection.OracleDatabaseConnection;
 
 import java.util.Optional;

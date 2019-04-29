@@ -28,7 +28,8 @@ public class ClassOperation {
 	}
 	*/
 
-    public static Class getActionClass(String actionType)
+    @SuppressWarnings("rawtypes")
+	public static Class getActionClass(String actionType)
     {
 
           Reflections reflections = new Reflections(new ConfigurationBuilder()
@@ -40,7 +41,8 @@ public class ClassOperation {
                           .findFirst().orElseThrow(NoSuchElementException::new);
     }
 
-    public static Class getExecutionRuntime(String executionRuntime)
+    @SuppressWarnings("rawtypes")
+	public static Class getExecutionRuntime(String executionRuntime)
     {
 
         Reflections reflections = new Reflections(new ConfigurationBuilder()

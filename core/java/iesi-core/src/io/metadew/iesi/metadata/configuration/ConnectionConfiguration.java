@@ -16,11 +16,8 @@ import io.metadew.iesi.framework.configuration.FrameworkObjectConfiguration;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.configuration.exception.ConnectionAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.ConnectionDoesNotExistException;
-import io.metadew.iesi.metadata.configuration.exception.ImpersonationAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.exception.ImpersonationDoesNotExistException;
 import io.metadew.iesi.metadata.definition.Connection;
 import io.metadew.iesi.metadata.definition.ConnectionParameter;
-import io.metadew.iesi.metadata.definition.Impersonation;
 import io.metadew.iesi.metadata.definition.ListObject;
 import org.apache.logging.log4j.Level;
 

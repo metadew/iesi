@@ -1,7 +1,5 @@
 package io.metadew.iesi.server.execution.request;
 
-import io.metadew.iesi.framework.execution.FrameworkExecution;
-
 public class RequestRunnable implements Runnable {
 	@Override
 	public void run() {

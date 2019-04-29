@@ -13,6 +13,7 @@ public class KeyValueConfigFile extends ConfigFile {
 	@SuppressWarnings("resource")
 	public KeyValueConfigFile(FrameworkControl frameworkControl, String fileName) {
 		super();
+		this.setFilePath(fileName);
 		try {
 			File file = new File(FilenameUtils.normalize(fileName));
 			BufferedReader bufferedReader = new BufferedReader(new FileReader(file));

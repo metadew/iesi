@@ -68,11 +68,13 @@ public class MetadataLauncher {
         filesHelp += "\n";
         Option oFiles = new Option("files", true,
                 "filename(s) to load from the input folder into the metadata repository" + "\n" + filesHelp);
+        Option oExit = new Option("exit", true, "define if an explicit exit is required");
 
         // create Options object
         Options options = new Options();
         // add options
         options.addOption(oHelp);
+        options.addOption(oIni);
         options.addOption(oType);
         options.addOption(oConfig);
         options.addOption(oBackup);
@@ -84,6 +86,7 @@ public class MetadataLauncher {
         options.addOption(oLoad);
         options.addOption(oDdl);
         options.addOption(oFiles);
+        options.addOption(oExit);
 
         // create the parser
         CommandLineParser parser = new DefaultParser();
@@ -97,6 +100,23 @@ public class MetadataLauncher {
                 formatter.printHelp("[command]", options);
                 System.exit(0);
             }
+            
+			// Define the exit behaviour
+			boolean exit = true;
+			if (line.hasOption("exit")) {
+				switch (line.getOptionValue("exit").trim().toLowerCase()) {
+				case "y":
+				case "true":
+					exit = true;
+					break;
+				case "n":
+				case "false":
+					exit = false;
+					break;
+				default:
+					break;
+				}
+			}
 
 			// Define the ini file
 			FrameworkInitializationFile frameworkInitializationFile = new FrameworkInitializationFile();
@@ -303,8 +323,8 @@ public class MetadataLauncher {
             if (actionMatch) {
                 System.out.println();
                 System.out.println("metadata.launcher.end");
-                System.exit(0);
-            } else {
+            	endLauncher(0, exit);
+			} else {
                 System.out.println("No valid arguments have been provided, type -help for help.");
             }
 
@@ -317,6 +337,12 @@ public class MetadataLauncher {
 
     }
 
+	private static void endLauncher(int status, boolean exit) {
+		if (exit) {
+			System.exit(status);
+		}
+	}
+	
     private static void writeHeaderMessage() {
         if (!actionMatch) {
             System.out.println("metadata.launcher.start");

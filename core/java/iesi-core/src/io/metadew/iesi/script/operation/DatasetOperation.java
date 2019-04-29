@@ -106,16 +106,14 @@ public class DatasetOperation {
             throw new RuntimeException(MessageFormat.format("Dataset item {0} does not follow the correct syntax of table.table_field", datasetItem));
         }
         CachedRowSet crs;
-        String query = "";
-        if (!datasetItem.trim().equalsIgnoreCase("")) {
-            query = "select ";
-            query += "value";
-            query += " from ";
-            query += matcher.group("table");
-            query += " where key = '";
-            query += matcher.group("tableField");
-            query += "'";
-        }
+        String query;
+        query = "select ";
+        query += "value";
+        query += " from ";
+        query += matcher.group("table");
+        query += " where key = '";
+        query += matcher.group("tableField");
+        query += "'";
 
         String value = null;
         crs = this.getDatasetConnection().executeQuery(query);
@@ -129,7 +127,6 @@ public class DatasetOperation {
             e.printStackTrace(new PrintWriter(StackTrace));
             return Optional.empty();
         }
-
         return Optional.ofNullable(value);
     }
 

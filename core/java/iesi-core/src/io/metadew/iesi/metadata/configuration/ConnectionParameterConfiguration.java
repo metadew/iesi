@@ -5,6 +5,7 @@ import java.io.StringWriter;
 import java.util.Optional;
 
 import javax.sql.rowset.CachedRowSet;
+import javax.swing.text.html.Option;
 
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
@@ -67,9 +68,9 @@ public class ConnectionParameterConfiguration {
 	}
 	
 	public Optional<String> getConnectionParameterValue(String connectionName, String environmentName,
-			String connectionParameterName) {
+														String connectionParameterName) {
 		String output = null;
-		CachedRowSet crsConnectionParameter = null;
+		CachedRowSet crsConnectionParameter;
 		String queryConnectionParameter = "select CONN_NM, ENV_NM, CONN_PAR_NM, CONN_PAR_VAL from "
 				+ this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("ConnectionParameters") + " where CONN_NM = '"
 				+ connectionName + "' and ENV_NM = '" + environmentName + "' and CONN_PAR_NM = '" + connectionParameterName + "'";

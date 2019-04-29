@@ -2,9 +2,7 @@ package io.metadew.iesi.metadata_repository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
-import io.metadew.iesi.metadata.configuration.LedgerConfiguration;
 import io.metadew.iesi.metadata.definition.DataObject;
-import io.metadew.iesi.metadata.definition.Ledger;
 import io.metadew.iesi.metadata_repository.repository.Repository;
 import org.apache.logging.log4j.Level;
 
@@ -37,7 +35,8 @@ public class TraceMetadataRepository extends MetadataRepository {
         return "TRC";
     }
 
-    @Override
+    @SuppressWarnings("unused")
+	@Override
     public void save(DataObject dataObject, FrameworkExecution frameworkExecution) {
         ObjectMapper objectMapper = new ObjectMapper();
         if (dataObject.getType().equalsIgnoreCase("trace")) {

@@ -28,7 +28,6 @@ public class SqliteRepositoryConfiguration extends RepositoryConfiguration {
         // get jdbc connection url
         if (frameworkSettingConfiguration.getSettingPath("metadata.repository.connection.string").isPresent() &&
                 configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.connection.string").get()).isPresent()) {
-            System.out.println("connection url");
             jdbcConnectionString = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.connection.string").get()).get();
         } else if (frameworkSettingConfiguration.getSettingPath("metadata.repository.sqlite.file").isPresent() &&
                 configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.sqlite.file").get()).isPresent()) {

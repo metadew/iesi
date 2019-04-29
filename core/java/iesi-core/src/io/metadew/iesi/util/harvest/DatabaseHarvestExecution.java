@@ -8,7 +8,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import io.metadew.iesi.metadata_repository.repository.database.connection.DatabaseConnection;
-import org.apache.logging.log4j.Level;
 
 import io.metadew.iesi.connection.operation.ConnectionOperation;
 import io.metadew.iesi.connection.operation.DatabaseOperation;

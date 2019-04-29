@@ -91,7 +91,11 @@ public class MetadataRepositoryConfiguration {
 				configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.instance.name").get()).isPresent()) {
 			instanceName = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.instance.name").get()).get();
 		}
+		try {
 		repositoryConfiguration = new RepositoryConfigurationFactory().createRepositoryConfiguration(configFile, frameworkSettingConfiguration);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	public List<MetadataRepository> toMetadataRepositories(FrameworkConfiguration frameworkConfiguration) {

@@ -64,7 +64,7 @@ public class FrameworkControl {
 			@SuppressWarnings("resource")
 			BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
 			String readLine = "";
-
+			
 			while ((readLine = bufferedReader.readLine()) != null) {
 				String innerpart = readLine.trim();
 				String[] parts = innerpart.split(",");
@@ -73,7 +73,7 @@ public class FrameworkControl {
 				String type = parts[1];
 				String value = parts[2];
 				value = this.resolveConfiguration(value);
-
+				
 				ObjectMapper objectMapper = new ObjectMapper();
 				ConfigFile configFile = null;
 				if (key.equalsIgnoreCase("linux")) {

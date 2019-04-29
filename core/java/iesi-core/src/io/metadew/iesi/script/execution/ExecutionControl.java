@@ -8,8 +8,6 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.metadew.iesi.framework.operation.ClassOperation;
-import io.metadew.iesi.metadata.definition.MetadataTable;
 import org.apache.logging.log4j.Level;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -395,7 +393,7 @@ public class ExecutionControl
 		outputValue = TextTools.shortenTextForDatabase(outputValue, 2000);
 
 		String query = "INSERT INTO "
-				+ this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("ScriptOutputs")
+				+ this.getFrameworkExecution().getMetadataControl().getResultMetadataRepository().getTableNameByLabel("ScriptOutputs")
 				+ " (RUN_ID, PRC_ID, SCRIPT_ID, OUT_NM, OUT_VAL)";
 		query += " VALUES ";
 		query += "(";
@@ -432,7 +430,7 @@ public class ExecutionControl
 		outputValue = TextTools.shortenTextForDatabase(outputValue, 2000);
 
 		String query = "INSERT INTO "
-				+ this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("ActionOutputs")
+				+ this.getFrameworkExecution().getMetadataControl().getResultMetadataRepository().getTableNameByLabel("ActionOutputs")
 				+ " (RUN_ID, PRC_ID, ACTION_ID, OUT_NM, OUT_VAL)";
 		query += " VALUES ";
 		query += "(";

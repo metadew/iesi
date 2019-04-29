@@ -16,6 +16,7 @@ import java.sql.*;
  */
 public abstract class DatabaseConnection {
 
+	@SuppressWarnings("unused")
 	private String type;
 	private String connectionURL;
 	private String userName;

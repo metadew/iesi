@@ -1,12 +1,8 @@
 package io.metadew.iesi.metadata_repository.repository.database;
 
-import io.metadew.iesi.framework.execution.FrameworkLog;
 import io.metadew.iesi.metadata.definition.MetadataField;
-import io.metadew.iesi.metadata.definition.MetadataTable;
 import io.metadew.iesi.metadata_repository.repository.database.connection.NetezzaDatabaseConnection;
-import org.apache.logging.log4j.Level;
 
-import java.text.MessageFormat;
 import java.util.Optional;
 
 public class NetezzaDatabase extends Database{

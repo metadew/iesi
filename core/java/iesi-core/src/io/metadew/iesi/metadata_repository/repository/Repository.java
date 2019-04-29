@@ -1,7 +1,6 @@
 package io.metadew.iesi.metadata_repository.repository;
 
 import io.metadew.iesi.connection.database.sql.SqlScriptResult;
-import io.metadew.iesi.framework.definition.Framework;
 import io.metadew.iesi.framework.execution.FrameworkLog;
 import io.metadew.iesi.metadata.definition.MetadataTable;
 import io.metadew.iesi.metadata_repository.repository.database.Database;

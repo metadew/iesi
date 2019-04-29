@@ -67,7 +67,7 @@ public class RepositoryParameterOperation {
 
 		// Cross concept lookup
 		LookupResult lookupResult = this.getExecutionControl().getExecutionRuntime()
-				.resolveConceptLookup(this.getExecutionControl(), this.getValue());
+				.resolveConceptLookup(this.getExecutionControl(), this.getValue(), true);
 		this.setValue(lookupResult.getValue());
 
 		// Resolve internal encryption

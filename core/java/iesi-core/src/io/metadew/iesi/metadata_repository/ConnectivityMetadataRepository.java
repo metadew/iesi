@@ -13,7 +13,6 @@ import io.metadew.iesi.metadata.definition.Impersonation;
 import io.metadew.iesi.metadata_repository.repository.Repository;
 import org.apache.logging.log4j.Level;
 
-import java.io.FileReader;
 import java.text.MessageFormat;
 
 public class ConnectivityMetadataRepository extends MetadataRepository {

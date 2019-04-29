@@ -100,15 +100,14 @@ public class DataCompareDataset {
 							MessageFormat.format("Cannot find value for {0}.",leftDatasetparts[1] + "." + transformation.getLeftField()));
 				}
 				if (!leftFieldValue.equals(rightFieldValue)) {
-					this.getActionExecution().getActionControl().increaseSuccessCount();
-				} else {
-					this.getActionExecution().getActionControl().logOutput("err", MessageFormat.format(
+					this.getActionExecution().getActionControl().logError("field.mismatch", MessageFormat.format(
 							"{0}:{1}<>{2}:{3}", transformation.getLeftField(), leftFieldValue, transformation.getRightField(), rightFieldValue));
 					this.getActionExecution().getActionControl().increaseErrorCount();
 					errorsDetected++;
+				} else {
+					this.getActionExecution().getActionControl().increaseSuccessCount();
 				}
 			}
-
 			return errorsDetected <= 0;
 
 		} catch (Exception e) {

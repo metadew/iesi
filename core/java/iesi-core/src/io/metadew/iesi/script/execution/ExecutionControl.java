@@ -57,7 +57,7 @@ public class ExecutionControl
 	private void initializeRootScript()
 	{
 		// Generate unique run id
-		this.setRunId(this.getFrameworkExecution().getFrameworkLog().getUuid().toString());
+		this.setRunId(this.getFrameworkExecution().getFrameworkRuntime().getRunId());
 		// Create execution runtime
 		this.initializeExecutionRuntime(this.getFrameworkExecution(), this.getRunId());
 
@@ -246,7 +246,7 @@ public class ExecutionControl
 	}
 
 	public void logStart(BackupExecution backupExecution) {
-		this.setRunId(this.getFrameworkExecution().getFrameworkLog().getUuid().toString());
+		this.setRunId(this.getFrameworkExecution().getFrameworkRuntime().getRunId());
 
 		// Reset Process Id
 		this.resetProcessId();
@@ -254,7 +254,7 @@ public class ExecutionControl
 	}
 
 	public void logStart(RestoreExecution restoreExecution) {
-		this.setRunId(this.getFrameworkExecution().getFrameworkLog().getUuid().toString());
+		this.setRunId(this.getFrameworkExecution().getFrameworkRuntime().getRunId());
 
 		// Reset Process Id
 		this.resetProcessId();

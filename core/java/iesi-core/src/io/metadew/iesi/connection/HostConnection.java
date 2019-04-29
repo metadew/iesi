@@ -56,8 +56,8 @@ public class HostConnection {
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public HostConnection(String type, String hostName, int portNumber, String userName, String userPassword, String tempPath,
-			String terminalFlag, String jumphostConnectionName) {
+	public HostConnection(String type, String hostName, int portNumber, String userName, String userPassword,
+			String tempPath, String terminalFlag, String jumphostConnectionName) {
 		super();
 		this.setType(type);
 		this.setHostName(hostName);
@@ -80,6 +80,61 @@ public class HostConnection {
 	}
 
 	// Methods
+	private String formatCommand(String input) {
+		String output = "";
+
+		if (this.getType().equalsIgnoreCase("windows")) {
+			// For Windows Commands, "cmd /c" needs to be put in front of the command
+			output = "cmd /c " + "\"" + input + "\"";
+		} else {
+			output = input;
+		}
+
+		return output;
+	}
+
+	public boolean fileExists(String fileName) {
+		String command = "";
+
+		if (this.getType().equalsIgnoreCase("windows")) {
+			command = this.formatCommand("dir " + fileName);
+		} else {
+			command = this.formatCommand("ls " + fileName);
+		}
+
+		// Execute command
+		int rc;
+		try {
+			final Process p = Runtime.getRuntime().exec(command);
+
+			BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
+			String line = null;
+			String lines = "";
+
+			try {
+				while ((line = input.readLine()) != null) {
+					if (!lines.equalsIgnoreCase(""))
+						lines = lines + "\n";
+					lines = lines + line;
+				}
+			} catch (IOException e) {
+				throw new RuntimeException(e.getMessage(), e);
+			}
+
+			rc = p.waitFor();
+
+		} catch (InterruptedException | IOException e) {
+			throw new RuntimeException(e.getMessage(), e);
+		}
+
+		if (rc == 0) {
+			return true;
+		} else {
+			return false;
+		}
+
+	}
+
 	public ShellCommandResult executeLocalCommand(String shellPath, String shellCommand,
 			ShellCommandSettings shellCommandSettings) {
 		String executionShellPath = "";
@@ -136,9 +191,9 @@ public class HostConnection {
 
 	public ShellCommandResult executeRemoteCommand(String shellPath, String shellCommand,
 			ShellCommandSettings shellCommandSettings) {
-		//return this.executeRemoteCommandShell2(shellPath, shellCommand, dcCommandSettings);
-		return this.executeRemoteCommandExec2(shellPath, shellCommand,
-		 shellCommandSettings);
+		// return this.executeRemoteCommandShell2(shellPath, shellCommand,
+		// dcCommandSettings);
+		return this.executeRemoteCommandExec2(shellPath, shellCommand, shellCommandSettings);
 	}
 
 	public ShellCommandResult executeRemoteCommandExec(String shellPath, String shellCommand,
@@ -299,10 +354,12 @@ public class HostConnection {
 					HostConnection hostConnection = null;
 					if (i < jumphostConnections.length) {
 						jumphostConnection = jumphostConnections[i];
-						ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(shellCommandSettings.getFrameworkExecution());
-						Connection connection = connectionConfiguration.getConnection(jumphostConnection,
-								shellCommandSettings.getEnvironment()).get();
-						ConnectionOperation connectionOperation = new ConnectionOperation(shellCommandSettings.getFrameworkExecution());
+						ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(
+								shellCommandSettings.getFrameworkExecution());
+						Connection connection = connectionConfiguration
+								.getConnection(jumphostConnection, shellCommandSettings.getEnvironment()).get();
+						ConnectionOperation connectionOperation = new ConnectionOperation(
+								shellCommandSettings.getFrameworkExecution());
 						hostConnection = connectionOperation.getHostConnection(connection);
 					} else {
 						hostConnection = this;
@@ -312,7 +369,8 @@ public class HostConnection {
 					if (i == 0) {
 						assignedPort = hostConnection.getPortNumber();
 					} else {
-						assignedPort = session.setPortForwardingL(0, hostConnection.getHostName(), hostConnection.getPortNumber());
+						assignedPort = session.setPortForwardingL(0, hostConnection.getHostName(),
+								hostConnection.getPortNumber());
 					}
 					// System.out.println("portforwarding: " + "localhost:" + assignedPort + " -> "
 					// + dcHost.getHostName()
@@ -322,8 +380,8 @@ public class HostConnection {
 						sessions[i] = session = this.sessionConnect(jsch, hostConnection.getHostName(), assignedPort,
 								hostConnection.getUserName(), hostConnection.getUserPassword());
 					} else {
-						sessions[i] = session = this.sessionJumpConnect(jsch, hostConnection.getHostName(), assignedPort,
-								hostConnection.getUserName(), hostConnection.getUserPassword());
+						sessions[i] = session = this.sessionJumpConnect(jsch, hostConnection.getHostName(),
+								assignedPort, hostConnection.getUserName(), hostConnection.getUserPassword());
 					}
 
 					// System.out.println("The session has been established to " +
@@ -478,7 +536,6 @@ public class HostConnection {
 		compiledShellCommand += "sx su - dsadm";
 		compiledShellCommand += "\n ";
 		compiledShellCommand += "sleep 1s ";
-		
 
 		if (shellCommandSettings.getSetRunVar().trim().equalsIgnoreCase("y")) {
 			compiledShellCommand += " && ";
@@ -519,10 +576,12 @@ public class HostConnection {
 					HostConnection hostConnection = null;
 					if (i < jumphostConnections.length) {
 						jumphostConnection = jumphostConnections[i];
-						ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(shellCommandSettings.getFrameworkExecution());
-						Connection connection = connectionConfiguration.getConnection(jumphostConnection,
-								shellCommandSettings.getEnvironment()).get();
-						ConnectionOperation connectionOperation = new ConnectionOperation(shellCommandSettings.getFrameworkExecution());
+						ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(
+								shellCommandSettings.getFrameworkExecution());
+						Connection connection = connectionConfiguration
+								.getConnection(jumphostConnection, shellCommandSettings.getEnvironment()).get();
+						ConnectionOperation connectionOperation = new ConnectionOperation(
+								shellCommandSettings.getFrameworkExecution());
 						hostConnection = connectionOperation.getHostConnection(connection);
 					} else {
 						hostConnection = this;
@@ -532,7 +591,8 @@ public class HostConnection {
 					if (i == 0) {
 						assignedPort = hostConnection.getPortNumber();
 					} else {
-						assignedPort = session.setPortForwardingL(0, hostConnection.getHostName(), hostConnection.getPortNumber());
+						assignedPort = session.setPortForwardingL(0, hostConnection.getHostName(),
+								hostConnection.getPortNumber());
 					}
 					// System.out.println("portforwarding: " + "localhost:" + assignedPort + " -> "
 					// + dcHost.getHostName()
@@ -542,8 +602,8 @@ public class HostConnection {
 						sessions[i] = session = this.sessionConnect(jsch, hostConnection.getHostName(), assignedPort,
 								hostConnection.getUserName(), hostConnection.getUserPassword());
 					} else {
-						sessions[i] = session = this.sessionJumpConnect(jsch, hostConnection.getHostName(), assignedPort,
-								hostConnection.getUserName(), hostConnection.getUserPassword());
+						sessions[i] = session = this.sessionJumpConnect(jsch, hostConnection.getHostName(),
+								assignedPort, hostConnection.getUserName(), hostConnection.getUserPassword());
 					}
 
 					// System.out.println("The session has been established to " +
@@ -558,7 +618,8 @@ public class HostConnection {
 			// Enable agent-forwarding.
 			// ((ChannelShell)channel).setAgentForwarding(true);
 
-			//channel.setInputStream(this.convertToInputStream(executionShellCommand + "\n exit"));
+			// channel.setInputStream(this.convertToInputStream(executionShellCommand + "\n
+			// exit"));
 			channel.setInputStream(System.in);
 			InputStream in = channel.getInputStream();
 

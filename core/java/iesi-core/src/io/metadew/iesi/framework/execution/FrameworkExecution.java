@@ -24,6 +24,7 @@ public class FrameworkExecution {
 	private FrameworkCrypto frameworkCrypto;
 	private FrameworkControl frameworkControl;
 	private FrameworkLog frameworkLog;
+	private FrameworkRuntime frameworkRuntime;
 	private MetadataControl metadataControl;
 	private ExecutionServerMetadataRepository executionServerRepositoryConfiguration;
 	private FrameworkInitializationFile frameworkInitializationFile;
@@ -72,7 +73,10 @@ public class FrameworkExecution {
 		this.setMetadataControl(new MetadataControl(this.getFrameworkControl().getMetadataRepositoryConfigurations().stream().map(configuration -> configuration.toMetadataRepositories(frameworkConfiguration)).collect(ArrayList::new, List::addAll, List::addAll)));
 
 		this.setSettingsList(this.getFrameworkExecutionSettings().getSettingsList());
-		this.setFrameworkLog(new FrameworkLog(this.getFrameworkConfiguration(), this.getFrameworkExecutionContext(), this.getFrameworkControl(), this.getFrameworkCrypto()));
+
+		// Setup framework runtime
+		this.setFrameworkRuntime(new FrameworkRuntime(this.getFrameworkConfiguration()));
+		this.setFrameworkLog(new FrameworkLog(this.getFrameworkConfiguration(), this.getFrameworkExecutionContext(), this.getFrameworkControl(), this.getFrameworkCrypto(), this.getFrameworkRuntime()));
 
 		// Set up connection to the metadata repository
 		SqliteDatabaseConnection executionServerDatabaseConnection = new SqliteDatabaseConnection(
@@ -165,5 +169,13 @@ public class FrameworkExecution {
 
 	public void setFrameworkInitializationFile(FrameworkInitializationFile frameworkInitializationFile) {
 		this.frameworkInitializationFile = frameworkInitializationFile;
+	}
+
+	public FrameworkRuntime getFrameworkRuntime() {
+		return frameworkRuntime;
+	}
+
+	public void setFrameworkRuntime(FrameworkRuntime frameworkRuntime) {
+		this.frameworkRuntime = frameworkRuntime;
 	}
 }

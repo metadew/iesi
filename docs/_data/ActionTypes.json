@@ -59,6 +59,7 @@
 		"description": "Define a dataset connection that can be used in any next action",
 		"parameters": [
 			{"name": "name","description": "Reference name for the dataset definition","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "type","description": "Type of dataset","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"},
 			{"name": "dataset","description": "Dataset to use","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
 			{"name": "labels","description": "Labels associated to the dataset instance","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"}
 	]
@@ -329,7 +330,9 @@
 		"description": "Run a SQL query",
 		"parameters": [
 			{"name": "query","description": "SQL query to run","type": "string","mandatory": "Y","encrypted": "N","subroutine": "query","impersonate": "N"},
-			{"name": "connection","description": "Connection where to run the SQL query","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "Y"}
+			{"name": "connection","description": "Connection where to run the SQL query","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "Y"},
+			{"name": "outputDataset","description": "Dataset to write the output to","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "appendOutput","description": "Flag indicating if previous output needs to be removed","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"}
 	]
 }},
 {

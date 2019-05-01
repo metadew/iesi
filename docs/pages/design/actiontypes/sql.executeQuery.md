@@ -3,7 +3,7 @@
 # sql.executeQuery
 
 This action executes a sql statement on a relational database. 
-No output values are captured after statement execution.
+Output values can captured after select statement execution if required.
 
 ## Use cases
 
@@ -21,13 +21,25 @@ No output values are captured after statement execution.
 
 `query: "any query to execute"`
 * executes any query
-* since no ouput is stored, select queries are not advised. We typically see insert and delete queries being used here.
+* since ouput is only stored in combination with the `outputDataset` parameter, select queries are only advised in the case. 
+* insert and delete queries are typically being used for unattended operations on the database.
 * queries can be retrieved from a configuration file using the file lookup instruction `{{=file([filePath]}}`
 
 ### 2: connection
 
 `connection: "connection where the query needs to be executed on"`
 * name of the connection to execute the query on
+
+### 3: outputDataset
+
+`outputDataset: "dataset reference name"`
+* name of the dataset where to store the output to
+* this parameters only needs to be used in combination with a select statement
+
+### 4: appendOutput
+
+`appendOutput: "Y" / "N"`
+* flag to indicate if the output needs to be overwritten
 
 ## Examples
 

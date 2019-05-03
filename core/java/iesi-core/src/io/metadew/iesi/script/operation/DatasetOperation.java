@@ -51,7 +51,7 @@ public class DatasetOperation {
 		this.setDatasetLabels(datasetLabels);
 
 		if (this.getDatasetType().equalsIgnoreCase("stage")) {
-			SqliteDatabaseConnection dcSQLiteConnection = new SqliteDatabaseConnection(this.getExecutionControl().getExecutionRuntime().getStageOperation("myStage").getStageFilePath());
+			SqliteDatabaseConnection dcSQLiteConnection = new SqliteDatabaseConnection(this.getExecutionControl().getExecutionRuntime().getStageOperation(this.getDatasetName()).getStageFilePath());
 			this.setDatasetConnection(dcSQLiteConnection);
 		} else {
 			ObjectMapper objectMapper = new ObjectMapper();

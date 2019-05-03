@@ -189,4 +189,12 @@
 		"description": "test sql.setIterationVariables taking input from a file",
 		"parameterList": ""
 	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "sql.executeQuery.5",
+		"description": "test sql.executeQuery with output to a staging dataset",
+		"parameterList": ""
+	}
 }]

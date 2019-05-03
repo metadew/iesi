@@ -69,7 +69,7 @@ public class ExecutionRuntime {
     private final String INSTRUCTION_ARGUMENTS_KEY = "instructionArguments";
 
     private final Pattern CONCEPT_LOOKUP_PATTERN = Pattern
-            .compile("\\s*\\{\\{(?<" + INSTRUCTION_TYPE_KEY + ">[\\*=\\$!])(?<" + INSTRUCTION_KEYWORD_KEY + ">[\\w\\.]+)(\\((?<" + INSTRUCTION_ARGUMENTS_KEY + ">.*)\\))?\\}\\}\\s*");
+            .compile("\\s*\\{\\{(?<" + INSTRUCTION_TYPE_KEY + ">[^\\w])(?<" + INSTRUCTION_KEYWORD_KEY + ">[\\w\\.]+)(\\((?<" + INSTRUCTION_ARGUMENTS_KEY + ">.*)\\))?\\}\\}\\s*");
 
     public ExecutionRuntime() {
 
@@ -335,30 +335,30 @@ public class ExecutionRuntime {
         return input;
     }
 
-    public String resolveActionTypeVariables(String input,
-                                             HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
-        int openPos;
-        int closePos;
-        String variable_char_open = "[";
-        String variable_char_close = "]";
-        String midBit;
-        String replaceValue;
-        String temp = input;
-        while (temp.indexOf(variable_char_open) > 0 || temp.startsWith(variable_char_open)) {
-            openPos = temp.indexOf(variable_char_open);
-            closePos = temp.indexOf(variable_char_close, openPos + 1);
-            midBit = temp.substring(openPos + 1, closePos);
-
-            // Replace
-            replaceValue = actionParameterOperationMap.get(midBit).getValue();
-            if (replaceValue != null) {
-                input = input.replace(variable_char_open + midBit + variable_char_close, replaceValue);
-            }
-            temp = temp.substring(closePos + 1, temp.length());
-
-        }
-        return input;
-    }
+//    public String resolveActionTypeVariables(String input,
+//                                             HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
+//        int openPos;
+//        int closePos;
+//        String variable_char_open = "[";
+//        String variable_char_close = "]";
+//        String midBit;
+//        String replaceValue;
+//        String temp = input;
+//        while (temp.indexOf(variable_char_open) > 0 || temp.startsWith(variable_char_open)) {
+//            openPos = temp.indexOf(variable_char_open);
+//            closePos = temp.indexOf(variable_char_close, openPos + 1);
+//            midBit = temp.substring(openPos + 1, closePos);
+//
+//            // Replace
+//            replaceValue = actionParameterOperationMap.get(midBit).getValue();
+//            if (replaceValue != null) {
+//                input = input.replace(variable_char_open + midBit + variable_char_close, replaceValue);
+//            }
+//            temp = temp.substring(closePos + 1, temp.length());
+//
+//        }
+//        return input;
+//    }
 
     public String resolveMapVariables(String input, HashMap<String, String> variableMap) {
         int openPos;
@@ -483,15 +483,15 @@ public class ExecutionRuntime {
         int lookupConceptStartIndex;
         int lookupConceptStopIndex = 0;
         int nextLookupConceptStartIndex;
-        while (input.contains(lookupConceptStartKey)) {
-            if (!input.contains(lookupConceptStopKey)) {
+        while (input.indexOf(lookupConceptStartKey, lookupConceptStopIndex) != -1) {
+            lookupConceptStartIndex = input.indexOf(lookupConceptStartKey, lookupConceptStopIndex);
+            if (input.indexOf(lookupConceptStopKey, lookupConceptStartIndex) == -1) {
                 frameworkExecution.getFrameworkLog().log(
                         MessageFormat.format("concept.lookup.resolve.error=error during concept lookup resolvement of {0}. Concept lookup instruction not properly closed.", input),
                         Level.WARN);
                 lookupResult.setValue(input);
                 return lookupResult;
             }
-            lookupConceptStartIndex = input.indexOf(lookupConceptStartKey, lookupConceptStopIndex);
             lookupConceptStopIndex = input.indexOf(lookupConceptStopKey, lookupConceptStartIndex);
             nextLookupConceptStartIndex = input.indexOf(lookupConceptStartKey, lookupConceptStartIndex + lookupConceptStartKey.length());
             while (nextLookupConceptStartIndex > 0 && nextLookupConceptStartIndex < lookupConceptStopIndex) {
@@ -506,7 +506,9 @@ public class ExecutionRuntime {
                 nextLookupConceptStartIndex = input.indexOf(lookupConceptStartKey, nextLookupConceptStartIndex + lookupConceptStartKey.length());
             }
             String resolvement = executeConceptLookup(executionControl, input.substring(lookupConceptStartIndex, lookupConceptStopIndex + lookupConceptStopKey.length())).getValue();
-            input = input.substring(0, lookupConceptStartIndex) + resolvement + input.substring(lookupConceptStopIndex + lookupConceptStopKey.length());
+            input = input.substring(0, lookupConceptStartIndex) +
+                    resolvement +
+                    input.substring(lookupConceptStopIndex + lookupConceptStopKey.length());
         }
         getFrameworkExecution().getFrameworkLog().log(
                 MessageFormat.format("concept.lookup.resolve.result={0}:{1}", lookupResult.getInputValue(), input),
@@ -535,14 +537,14 @@ public class ExecutionRuntime {
             String instructionKeyword = ConceptLookupMatcher.group(INSTRUCTION_KEYWORD_KEY).toLowerCase();
             getFrameworkExecution().getFrameworkLog().log(
                     MessageFormat.format("concept.lookup.resolve.instruction=executing instruction of type {0} with keyword {1} and unresolved parameters {2}", instructionType, instructionKeyword, instructionArgumentsString),
-                    Level.TRACE);
+                    Level.DEBUG);
             List<String> instructionArguments = splitInstructionArguments(instructionArgumentsString);
             String instructionArgumentsResolved = instructionArguments.stream()
                     .map(instructionArgument -> resolveConceptLookup(executionControl, instructionArgument, true).getValue())
                     .collect(Collectors.joining(", "));
             getFrameworkExecution().getFrameworkLog().log(
                     MessageFormat.format("concept.lookup.resolve.instruction.parameters=resolved instructions parameters to {0}", instructionArgumentsString),
-                    Level.TRACE);
+                    Level.DEBUG);
 
             switch (instructionType) {
                 case "=":
@@ -562,9 +564,12 @@ public class ExecutionRuntime {
                     resolvedInput = instructionArgumentsResolved;
                     break;
                 default:
+
                     getFrameworkExecution().getFrameworkLog().log(
-                            MessageFormat.format("concept.lookup.resolve.instruction.notfound=no instruction type found for", instructionType),
+                            MessageFormat.format("concept.lookup.resolve.instruction.notfound=no instruction type found for {0}", instructionType),
                             Level.WARN);
+                    // TODO: not correct
+                    resolvedInput = "{{" + instructionType + instructionKeyword + "(" + instructionArgumentsResolved + ")}}";
             }
             getFrameworkExecution().getFrameworkLog().log(
                     MessageFormat.format("concept.lookup.resolve.instruction.result=resolved {0} to {1}", input, resolvedInput),
@@ -611,8 +616,13 @@ public class ExecutionRuntime {
                     nextInstructionStartIndex = instructionArgumentsString.indexOf(instructionStart, nextInstructionStartIndex + 1);
                 }
                 argumentSeparatorIndex = instructionArgumentsString.indexOf(argumentSeparator, instructionStopIndex + 1);
-                instructionArguments.add(instructionArgumentsString.substring(0, argumentSeparatorIndex));
-                instructionArgumentsString = instructionArgumentsString.substring(argumentSeparatorIndex + 1).trim();
+                if (argumentSeparatorIndex == -1) {
+                    instructionArguments.add(instructionArgumentsString.trim());
+                    break;
+                } else {
+                    instructionArguments.add(instructionArgumentsString.substring(0, argumentSeparatorIndex));
+                    instructionArgumentsString = instructionArgumentsString.substring(argumentSeparatorIndex + 1).trim();
+                }
             }
         }
         return instructionArguments;

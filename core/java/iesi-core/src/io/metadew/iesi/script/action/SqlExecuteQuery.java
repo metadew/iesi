@@ -3,11 +3,14 @@ package io.metadew.iesi.script.action;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.text.MessageFormat;
 import java.util.HashMap;
 
 import io.metadew.iesi.connection.database.sql.SqlScriptResult;
 import io.metadew.iesi.connection.operation.ConnectionOperation;
 import io.metadew.iesi.connection.tools.FileTools;
+import io.metadew.iesi.datatypes.DataType;
+import io.metadew.iesi.datatypes.Text;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.configuration.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.ActionParameter;
@@ -17,6 +20,7 @@ import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
+import org.apache.logging.log4j.Level;
 
 public class SqlExecuteQuery {
 
@@ -68,40 +72,14 @@ public class SqlExecuteQuery {
 		this.getActionParameterOperationMap().put("connection", this.getConnectionName());
 	}
 
+
 	public boolean execute() {
 		try {
-			// Get Connection
-			ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution());
-			Connection connection = connectionConfiguration.getConnection(this.getConnectionName().getValue(),
-					this.getExecutionControl().getEnvName()).get();
-			ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
-			DatabaseConnection databaseConnection = connectionOperation.getDatabaseConnection(connection);
+			String query = convertQuery(getSqlQuery().getValue());
+			String connection = convertConnectionName(getConnectionName().getValue());
+			return executeQuery(query, connection);
 
-			if (databaseConnection == null) {
-				throw new RuntimeException("Error establishing DB connection");
-			}
-
-			// Run the action
-			// Make sure the SQL statement is ended with a ;
-			if (!this.getSqlQuery().getValue().trim().endsWith(";")) {
-				this.getSqlQuery().setValue(this.getSqlQuery().getValue() + ";");
-			}
-
-			// Convert to inputstream
-			InputStream inputStream = FileTools.convertToInputStream(this.getSqlQuery().getValue(),
-					this.getFrameworkExecution().getFrameworkControl());
-			SqlScriptResult dcSQLScriptResult = databaseConnection.executeScript(inputStream);
-
-			// Evaluate result
-			this.getActionExecution().getActionControl().logOutput("sys.out", dcSQLScriptResult.getSystemOutput());
-
-			if (dcSQLScriptResult.getReturnCode() != 0) {
-				this.getActionExecution().getActionControl().logOutput("err.out", dcSQLScriptResult.getErrorOutput());
-				throw new RuntimeException("Error execting SQL query");
-			}
-
-			this.getActionExecution().getActionControl().increaseSuccessCount();
-			return true;
+			//return execute(getSqlQuery().getValue(), getConnectionName().getValue());
 		} catch (Exception e) {
 			StringWriter StackTrace = new StringWriter();
 			e.printStackTrace(new PrintWriter(StackTrace));
@@ -114,6 +92,58 @@ public class SqlExecuteQuery {
 			return false;
 		}
 
+	}
+
+	private boolean executeQuery(String query, String connectionName) {
+		ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution());
+		Connection connection = connectionConfiguration.getConnection(connectionName,
+				this.getExecutionControl().getEnvName()).get();
+		ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
+		DatabaseConnection databaseConnection = connectionOperation.getDatabaseConnection(connection);
+
+		if (databaseConnection == null) {
+			throw new RuntimeException("Error establishing DB connection");
+		}
+
+		// Run the action
+		// Make sure the SQL statement is ended with a ;
+		query = query.trim().endsWith(";") ? query : query + ";";
+
+		// Convert to inputstream
+		InputStream inputStream = FileTools.convertToInputStream(query,
+				this.getFrameworkExecution().getFrameworkControl());
+		SqlScriptResult dcSQLScriptResult = databaseConnection.executeScript(inputStream);
+
+		// Evaluate result
+		this.getActionExecution().getActionControl().logOutput("sys.out", dcSQLScriptResult.getSystemOutput());
+
+		if (dcSQLScriptResult.getReturnCode() != 0) {
+			this.getActionExecution().getActionControl().logOutput("err.out", dcSQLScriptResult.getErrorOutput());
+			throw new RuntimeException("Error execting SQL query");
+		}
+
+		this.getActionExecution().getActionControl().increaseSuccessCount();
+		return true;
+	}
+
+	private String convertConnectionName(DataType connectionName) {
+		if (connectionName instanceof Text) {
+			return connectionName.toString();
+		} else {
+			frameworkExecution.getFrameworkLog().log(MessageFormat.format("sql.executeQuery does not accept {0} as type for connection name",
+					connectionName.getClass()), Level.WARN);
+			return connectionName.toString();
+		}
+	}
+
+	private String convertQuery(DataType query) {
+		if (query instanceof Text) {
+			return query.toString();
+		} else {
+			frameworkExecution.getFrameworkLog().log(MessageFormat.format("sql.executeQuery does not accept {0} as type for query",
+					query.getClass()), Level.WARN);
+			return query.toString();
+		}
 	}
 
 	// Getters and Setters

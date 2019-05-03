@@ -82,43 +82,43 @@ public class FhoDeleteFolder {
 	// Methods
 	public boolean execute() {
 		try {
-			boolean isOnLocalHost = true;
-
-			if (this.getConnectionName().getValue().isEmpty()) {
-				isOnLocalHost = true;
-			} else {
-				if (this.getConnectionName().getValue().equalsIgnoreCase("localhost")) {
-					isOnLocalHost = true;
-				} else {
-					// placeholder
-				}
-			}
-
-			if (isOnLocalHost) {
-				
-				if (this.getFolderPath().getValue().isEmpty()) {
-					FolderTools.deleteFolder(this.getFolderName().getValue(), true);
-				} else {
-					File[] subjectFiles = FolderTools.getFilesInFolder(this.getFolderPath().getValue(), this.getFolderName().getValue());
-					for (File file : subjectFiles) {
-						if (file.isDirectory()) {
-							this.getActionExecution().getActionControl().logOutput("folder.delete", file.getAbsolutePath());
-							try {
-								FolderTools.deleteFolder(file.getAbsolutePath(), true);				
-								this.getActionExecution().getActionControl().increaseSuccessCount();
-								this.getActionExecution().getActionControl().logOutput("folder.delete.success", "confirmed");
-							} catch (Exception e) {
-								this.getActionExecution().getActionControl().logOutput("folder.delete.error", e.getMessage());
-								this.getActionExecution().getActionControl().increaseErrorCount();
-							}
-						}
-					}
-				}
-				
-			} else {
-				// placeholder
-			}
-
+//			boolean isOnLocalHost = true;
+//
+//			if (this.getConnectionName().getValue().isEmpty()) {
+//				isOnLocalHost = true;
+//			} else {
+//				if (this.getConnectionName().getValue().equalsIgnoreCase("localhost")) {
+//					isOnLocalHost = true;
+//				} else {
+//					// placeholder
+//				}
+//			}
+//
+//			if (isOnLocalHost) {
+//
+//				if (this.getFolderPath().getValue().isEmpty()) {
+//					FolderTools.deleteFolder(this.getFolderName().getValue(), true);
+//				} else {
+//					File[] subjectFiles = FolderTools.getFilesInFolder(this.getFolderPath().getValue(), this.getFolderName().getValue());
+//					for (File file : subjectFiles) {
+//						if (file.isDirectory()) {
+//							this.getActionExecution().getActionControl().logOutput("folder.delete", file.getAbsolutePath());
+//							try {
+//								FolderTools.deleteFolder(file.getAbsolutePath(), true);
+//								this.getActionExecution().getActionControl().increaseSuccessCount();
+//								this.getActionExecution().getActionControl().logOutput("folder.delete.success", "confirmed");
+//							} catch (Exception e) {
+//								this.getActionExecution().getActionControl().logOutput("folder.delete.error", e.getMessage());
+//								this.getActionExecution().getActionControl().increaseErrorCount();
+//							}
+//						}
+//					}
+//				}
+//
+//			} else {
+//				// placeholder
+//			}
+//
 			return true;
 		} catch (Exception e) {
 			StringWriter StackTrace = new StringWriter();

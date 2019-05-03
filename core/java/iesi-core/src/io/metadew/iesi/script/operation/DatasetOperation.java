@@ -26,7 +26,11 @@ import io.metadew.iesi.metadata_repository.repository.database.connection.Sqlite
  */
 public class DatasetOperation {
 
-    private final Pattern datasetItemPattern = Pattern.compile("(?<table>\\w+)\\.(?<tableField>(\\w+$|\\w+\\.)+)");
+    private final String tableKey = "table";
+
+    private final String fieldKey = "field";
+
+    private final Pattern datasetItemPattern = Pattern.compile("(?<"+tableKey+">\\w+)\\.(?<"+fieldKey+">(\\w+$|\\w+\\.)+)");
 
     private FrameworkExecution frameworkExecution;
 
@@ -107,13 +111,7 @@ public class DatasetOperation {
         }
         CachedRowSet crs;
         String query;
-        query = "select ";
-        query += "value";
-        query += " from ";
-        query += matcher.group("table");
-        query += " where key = '";
-        query += matcher.group("tableField");
-        query += "'";
+        query = "select value from " + matcher.group(tableKey) + " where key = '" + matcher.group(fieldKey) + "'";
 
         String value = null;
         crs = this.getDatasetConnection().executeQuery(query);

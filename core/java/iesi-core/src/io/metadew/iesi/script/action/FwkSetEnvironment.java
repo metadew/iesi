@@ -2,14 +2,18 @@ package io.metadew.iesi.script.action;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.text.MessageFormat;
 import java.util.HashMap;
 
+import io.metadew.iesi.datatypes.DataType;
+import io.metadew.iesi.datatypes.Text;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.ActionParameter;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
+import org.apache.logging.log4j.Level;
 
 public class FwkSetEnvironment {
 
@@ -52,16 +56,12 @@ public class FwkSetEnvironment {
 		//Create parameter list
 		this.getActionParameterOperationMap().put("environment", this.getEnvironmentName());
 	}
-	
+
 	public boolean execute() {
 		try {
-			// Run the action
-			try {
-				this.getExecutionControl().setEnvironment(this.getEnvironmentName().getValue());
-				this.getActionExecution().getActionControl().increaseSuccessCount();
-			} catch (Exception e) {
-				throw new RuntimeException("Issue setting environment: " + e, e);
-			}
+			String environmentName = convertEnvironmentName(getEnvironmentName().getValue());
+			this.getExecutionControl().setEnvironment(environmentName);
+			this.getActionExecution().getActionControl().increaseSuccessCount();
 			return true;
 		} catch (Exception e) {
 			StringWriter StackTrace = new StringWriter();
@@ -75,6 +75,16 @@ public class FwkSetEnvironment {
 			return false;
 		}
 
+	}
+
+	private String convertEnvironmentName(DataType environmentName) {
+		if (environmentName instanceof Text) {
+			return environmentName.toString();
+		} else {
+			frameworkExecution.getFrameworkLog().log(MessageFormat.format("fwk.setEnvironment does not accept {0} as type for expect environmentName",
+					environmentName.getClass()), Level.WARN);
+			return environmentName.toString();
+		}
 	}
 
 	// Getters and Setters

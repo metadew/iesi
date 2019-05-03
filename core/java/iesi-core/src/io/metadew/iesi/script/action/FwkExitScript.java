@@ -64,13 +64,13 @@ public class FwkExitScript {
 
 	public boolean execute() {
 		try {
-			// Verify if the status is empty
-			if (this.getStatus().getValue().trim().isEmpty()) {
-				this.getStatus().setInputValue(FrameworkStatus.SUCCESS.value());
-			}
-			
-			// Verify if the message needs to appear on the screen
-
+//			// Verify if the status is empty
+//			if (this.getStatus().getValue().trim().isEmpty()) {
+//				this.getStatus().setInputValue(FrameworkStatus.SUCCESS.value());
+//			}
+//
+//			// Verify if the message needs to appear on the screen
+//
 			return true;
 		} catch (Exception e) {
 			StringWriter StackTrace = new StringWriter();

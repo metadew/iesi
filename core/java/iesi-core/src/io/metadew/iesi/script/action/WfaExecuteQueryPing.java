@@ -89,58 +89,58 @@ public class WfaExecuteQueryPing {
 	
 	public void execute() {
 		try {
-			// Get Connection
-			ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution());
-			Connection connection = connectionConfiguration.getConnection(this.getConnectionName().getValue(),
-					this.getExecutionControl().getEnvName()).get();
-			ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
-			DatabaseConnection databaseConnection = connectionOperation.getDatabaseConnection(connection);
-
-			// Run the action
-			int i = 1;
-			long wait = this.getWaitInterval() * 1000;
-			if (wait <= 0)
-				wait = 1000;
-			boolean checkTimeout = false;
-			long timeout = this.getTimeoutInterval() * 1000;
-			long timeoutCounter = 0;
-			if (timeout > 0)
-				checkTimeout = true;
-
-			boolean done = false;
-			this.setStartTime(System.currentTimeMillis());
-			while (i == 1) {
-				if (this.doneWaiting(databaseConnection)) {
-					done = true;
-					break;
-				}
-
-				if (checkTimeout) {
-					timeoutCounter += wait;
-					if (timeoutCounter >= timeout)
-						break;
-				}
-
-				try {
-					Thread.sleep(wait);
-				} catch (InterruptedException ex) {
-					Thread.currentThread().interrupt();
-				}
-
-			}
-
-			long elapsedTime = System.currentTimeMillis() - this.getStartTime();
-			if (done) {
-				this.getActionExecution().getActionControl().increaseSuccessCount();
-
-				this.getActionExecution().getActionControl().logOutput("out","result found");
-				this.getActionExecution().getActionControl().logOutput("time",Long.toString(elapsedTime));
-			} else {
-				this.getActionExecution().getActionControl().increaseErrorCount();
-
-				this.getActionExecution().getActionControl().logOutput("out","time-out");
-				this.getActionExecution().getActionControl().logOutput("time",Long.toString(elapsedTime));
-			}
+//			// Get Connection
+//			ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution());
+//			Connection connection = connectionConfiguration.getConnection(this.getConnectionName().getValue(),
+//					this.getExecutionControl().getEnvName()).get();
+//			ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
+//			DatabaseConnection databaseConnection = connectionOperation.getDatabaseConnection(connection);
+//
+//			// Run the action
+//			int i = 1;
+//			long wait = this.getWaitInterval() * 1000;
+//			if (wait <= 0)
+//				wait = 1000;
+//			boolean checkTimeout = false;
+//			long timeout = this.getTimeoutInterval() * 1000;
+//			long timeoutCounter = 0;
+//			if (timeout > 0)
+//				checkTimeout = true;
+//
+//			boolean done = false;
+//			this.setStartTime(System.currentTimeMillis());
+//			while (i == 1) {
+//				if (this.doneWaiting(databaseConnection)) {
+//					done = true;
+//					break;
+//				}
+//
+//				if (checkTimeout) {
+//					timeoutCounter += wait;
+//					if (timeoutCounter >= timeout)
+//						break;
+//				}
+//
+//				try {
+//					Thread.sleep(wait);
+//				} catch (InterruptedException ex) {
+//					Thread.currentThread().interrupt();
+//				}
+//
+//			}
+//
+//			long elapsedTime = System.currentTimeMillis() - this.getStartTime();
+//			if (done) {
+//				this.getActionExecution().getActionControl().increaseSuccessCount();
+//
+//				this.getActionExecution().getActionControl().logOutput("out","result found");
+//				this.getActionExecution().getActionControl().logOutput("time",Long.toString(elapsedTime));
+//			} else {
+//				this.getActionExecution().getActionControl().increaseErrorCount();
+//
+//				this.getActionExecution().getActionControl().logOutput("out","time-out");
+//				this.getActionExecution().getActionControl().logOutput("time",Long.toString(elapsedTime));
+//			}
 		} catch (Exception e) {
 			StringWriter StackTrace = new StringWriter();
 			e.printStackTrace(new PrintWriter(StackTrace));
@@ -156,22 +156,22 @@ public class WfaExecuteQueryPing {
 
 	private boolean doneWaiting(DatabaseConnection databaseConnection) {
 		try {
-			CachedRowSet crs = null;
-			crs = databaseConnection.executeQuery(this.getSqlQuery().getValue());
-			if (SQLTools.getRowCount(crs) > 0) {
-				if (this.getExpectedResult().getValue().equalsIgnoreCase("y")) {
-					this.setRuntimeVariable(crs);
-					return true;
-				} else {
-					return false;
-				}
-			} else {
-				if (this.getExpectedResult().getValue().equalsIgnoreCase("n")) {
-					return true;
-				} else {
-					return false;
-				}
-			}
+//			CachedRowSet crs = null;
+//			crs = databaseConnection.executeQuery(this.getSqlQuery().getValue());
+//			if (SQLTools.getRowCount(crs) > 0) {
+//				if (this.getExpectedResult().getValue().equalsIgnoreCase("y")) {
+//					this.setRuntimeVariable(crs);
+//					return true;
+//				} else {
+//					return false;
+//				}
+//			} else {
+//				if (this.getExpectedResult().getValue().equalsIgnoreCase("n")) {
+//					return true;
+//				} else {
+//					return false;
+//				}
+//			}
 		} catch (Exception e) {
 			StringWriter StackTrace = new StringWriter();
 			e.printStackTrace(new PrintWriter(StackTrace));
@@ -183,18 +183,19 @@ public class WfaExecuteQueryPing {
 
 			throw new RuntimeException(e.getMessage());
 		}
+		return true;
 
 	}
 
 	private void setRuntimeVariable(CachedRowSet crs) {
-		if (this.getSetRuntimeVariables().getValue().equalsIgnoreCase("y")) {
-			try {
-				this.getExecutionControl().getExecutionRuntime().setRuntimeVariables(crs);
-			} catch (Exception e) {
-				this.getActionExecution().getActionControl().increaseWarningCount();
-				this.getExecutionControl().logExecutionOutput(this.getActionExecution(), "SET_RUN_VAR", e.getMessage());
-			}
-		}
+//		if (this.getSetRuntimeVariables().getValue().equalsIgnoreCase("y")) {
+//			try {
+//				this.getExecutionControl().getExecutionRuntime().setRuntimeVariables(crs);
+//			} catch (Exception e) {
+//				this.getActionExecution().getActionControl().increaseWarningCount();
+//				this.getExecutionControl().logExecutionOutput(this.getActionExecution(), "SET_RUN_VAR", e.getMessage());
+//			}
+//		}
 	}
 
 	// Getters and Setters

@@ -2,20 +2,34 @@ package io.metadew.iesi.script.action;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.text.MessageFormat;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import io.metadew.iesi.datatypes.Array;
+import io.metadew.iesi.datatypes.DataType;
+import io.metadew.iesi.datatypes.DataTypeResolver;
+import io.metadew.iesi.datatypes.Text;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.ActionParameter;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
+import org.apache.logging.log4j.Level;
+
+import javax.xml.crypto.Data;
 
 public class FwkSetParameterList {
 
 	private ActionExecution actionExecution;
 	private FrameworkExecution frameworkExecution;
 	private ExecutionControl executionControl;
+
+	private final Pattern keyValuePattern = Pattern.compile("\\s*(?<parameter>.+)\\s*=\\s*(?<value>.+)\\s*");
 
 	// Parameters
 	private ActionParameterOperation parameterList;
@@ -34,7 +48,7 @@ public class FwkSetParameterList {
 		this.setFrameworkExecution(frameworkExecution);
 		this.setExecutionControl(executionControl);
 		this.setActionExecution(actionExecution);
-		this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
+		this.setActionParameterOperationMap(new HashMap<>());
 	}
 
 	public void prepare() {
@@ -52,16 +66,11 @@ public class FwkSetParameterList {
 		//Create parameter list
 		this.getActionParameterOperationMap().put("list", this.getParameterList());
 	}
-	
+
 	public boolean execute() {
 		try {
-			// Run the action
-			try {			
-				this.getExecutionControl().getExecutionRuntime().loadParamList(this.getParameterList().getValue());
-				this.getActionExecution().getActionControl().increaseSuccessCount();
-			} catch (Exception e) {
-				throw new RuntimeException("Issue setting runtime variables: " + e, e);
-			}
+			Map<String, String> list = convertList(getParameterList().getValue());
+			list.forEach((name, value) -> executionControl.getExecutionRuntime().setRuntimeVariable(name, value));
 			return true;
 		} catch (Exception e) {
 			StringWriter StackTrace = new StringWriter();
@@ -75,6 +84,42 @@ public class FwkSetParameterList {
 			return false;
 		}
 
+	}
+
+	private Map<String, String> convertList(DataType list) {
+		Map<String, String> parameterMap = new HashMap<>();
+		if (list instanceof Text) {
+			Arrays.stream(list.toString().split(","))
+					.forEach(parameterEntry -> parameterMap.putAll(convertParameterEntry(DataTypeResolver.resolveToDatatype(parameterEntry))));
+			return parameterMap;
+		} else if (list instanceof Array) {
+			for  (DataType parameterEntry : ((Array) list).getList()){
+				parameterMap.putAll(convertParameterEntry(parameterEntry));
+			}
+			return parameterMap;
+		} else {
+			frameworkExecution.getFrameworkLog().log(MessageFormat.format("fwk.setParameterList does not accept {0} as type for list",
+					list.getClass()), Level.WARN);
+			return parameterMap;
+		}
+	}
+
+	private Map<String, String> convertParameterEntry(DataType parameterEntry) {
+		Map<String, String> parameterMap = new HashMap<>();
+		if (parameterEntry instanceof Text) {
+			Matcher matcher = keyValuePattern.matcher(parameterEntry.toString());
+			if (matcher.find()) {
+				parameterMap.put(matcher.group("parameter"), matcher.group("value"));
+			} else {
+				frameworkExecution.getFrameworkLog().log(MessageFormat.format("fwk.setParameterList: parameter entry ''{0}'' does not follow correct syntax",
+						parameterEntry), Level.WARN);
+			}
+			return parameterMap;
+		} else {
+			frameworkExecution.getFrameworkLog().log(MessageFormat.format("fwk.setParameterList does not accept {0} as type for parameter entry",
+					parameterEntry.getClass()), Level.WARN);
+			return parameterMap;
+		}
 	}
 
 	// Getters and Setters

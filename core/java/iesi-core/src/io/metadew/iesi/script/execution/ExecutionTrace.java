@@ -155,7 +155,7 @@ public class ExecutionTrace {
 		sql += ",";
 		sql += SQLTools.GetStringForSQL(actionParameterOperation.getName());
 		sql += ",";
-		sql += SQLTools.GetStringForSQL(actionParameterOperation.getValue());
+		sql += SQLTools.GetStringForSQL(actionParameterOperation.getValue() != null ? actionParameterOperation.getValue().toString() : null);
 		sql += ")";
 		sql += ";";
 

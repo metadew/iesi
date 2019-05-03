@@ -41,28 +41,28 @@ public class WfaExecuteWait {
 	}
 
 	public void prepare() {
-		// Set Parameters
-		this.setWaitIntervalInput(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
-				this.getActionExecution(), this.getActionExecution().getAction().getType(), "wait"));
-
-
-		// Get Parameters
-		for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-			if (actionParameter.getName().equalsIgnoreCase("wait")) {
-				this.getWaitIntervalInput().setInputValue(actionParameter.getValue());;
-				//this.setWaitInterval(Integer.parseInt(actionParameter.getValue()));
-			}
-		}
-		
-		// Set wait interval
-		if (this.getWaitIntervalInput().getValue().trim().isEmpty()) {
-			this.setWaitInterval(0);
-		} else {
-			this.setWaitInterval((long) Double.parseDouble(this.getWaitIntervalInput().getValue()));
-		}
-	
-		//Create parameter list
-		this.getActionParameterOperationMap().put("wait", this.getWaitIntervalInput());
+//		// Set Parameters
+//		this.setWaitIntervalInput(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+//				this.getActionExecution(), this.getActionExecution().getAction().getType(), "wait"));
+//
+//
+//		// Get Parameters
+//		for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
+//			if (actionParameter.getName().equalsIgnoreCase("wait")) {
+//				this.getWaitIntervalInput().setInputValue(actionParameter.getValue());;
+//				//this.setWaitInterval(Integer.parseInt(actionParameter.getValue()));
+//			}
+//		}
+//
+//		// Set wait interval
+//		if (this.getWaitIntervalInput().getValue().trim().isEmpty()) {
+//			this.setWaitInterval(0);
+//		} else {
+//			this.setWaitInterval((long) Double.parseDouble(this.getWaitIntervalInput().getValue()));
+//		}
+//
+//		//Create parameter list
+//		this.getActionParameterOperationMap().put("wait", this.getWaitIntervalInput());
 	}
 	
 	public void execute() {

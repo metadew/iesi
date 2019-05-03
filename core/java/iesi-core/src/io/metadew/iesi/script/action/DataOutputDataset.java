@@ -2,14 +2,21 @@ package io.metadew.iesi.script.action;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.text.MessageFormat;
 import java.util.HashMap;
 
+import io.metadew.iesi.datatypes.DataType;
+import io.metadew.iesi.datatypes.Dataset;
+import io.metadew.iesi.datatypes.Text;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.ActionParameter;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
+import org.apache.logging.log4j.Level;
+
+import javax.print.DocFlavor;
 
 /**
  * This action prints a dataset for logging and debugging purposes
@@ -62,24 +69,22 @@ public class DataOutputDataset {
 				this.getDatasetName().setInputValue(actionParameter.getValue());
 			} else if (actionParameter.getName().equalsIgnoreCase("labels")) {
 				this.getDatasetLabels().setInputValue(actionParameter.getValue());
-			} else if (actionParameter.getName().equalsIgnoreCase("onscreen")) {
+			} else if (actionParameter.getName().equalsIgnoreCase("onScreen")) {
 				this.getOnScreen().setInputValue(actionParameter.getValue());
 			}
 		}
 
 		// Create parameter list
-		this.getActionParameterOperationMap().put("message", this.getDatasetName());
+		this.getActionParameterOperationMap().put("name", this.getDatasetName());
 		this.getActionParameterOperationMap().put("labels", this.getDatasetLabels());
 		this.getActionParameterOperationMap().put("onScreen", this.getOnScreen());
 	}
 
 	public boolean execute() {
 		try {
-			// do the magic
-			System.out.println(this.getDatasetName().getValue());
-			
-			this.getActionExecution().getActionControl().increaseSuccessCount();
-			
+			Dataset dataset = new Dataset(getDatasetName().getValue(), getDatasetLabels().getValue());
+			boolean onScreen = convertOnScreen(getOnScreen().getValue());
+			outputDataset(dataset, onScreen);
 			return true;
 		} catch (Exception e) {
 			StringWriter StackTrace = new StringWriter();
@@ -93,6 +98,22 @@ public class DataOutputDataset {
 			return false;
 		}
 
+	}
+
+	private void outputDataset(Dataset dataset, boolean onScreen) {
+		// TODO: loop over all dataset item and print them
+		this.getActionExecution().getActionControl().increaseSuccessCount();
+	}
+
+
+	private boolean convertOnScreen(DataType onScreen) {
+		if (onScreen instanceof Text) {
+			return onScreen.toString().equalsIgnoreCase("y");
+		} else {
+			frameworkExecution.getFrameworkLog().log(MessageFormat.format("fwk.outputMessage does not accept {0} as type for onScreen",
+					onScreen.getClass()), Level.WARN);
+			return false;
+		}
 	}
 
 	// Getters and Setters

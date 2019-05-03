@@ -115,10 +115,8 @@ public class ActionExecution {
 			HashMap<String, ActionParameterOperation> actionParameterOperationMap = null;
 			for (Field field : classRef.getDeclaredFields()) {
 				if (field.getName().equalsIgnoreCase("actionParameterOperationMap")) {
-					Method getActionParameterOperationMap = classRef
-							.getDeclaredMethod("getActionParameterOperationMap");
-					actionParameterOperationMap = (HashMap<String, ActionParameterOperation>) getActionParameterOperationMap
-							.invoke(instance);
+					Method getActionParameterOperationMap = classRef.getDeclaredMethod("getActionParameterOperationMap");
+					actionParameterOperationMap = (HashMap<String, ActionParameterOperation>) getActionParameterOperationMap.invoke(instance);
 				}
 			}
 

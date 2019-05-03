@@ -2,8 +2,11 @@ package io.metadew.iesi.script.action;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.text.MessageFormat;
 import java.util.HashMap;
 
+import io.metadew.iesi.datatypes.DataType;
+import io.metadew.iesi.datatypes.Text;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.ActionParameter;
 import io.metadew.iesi.script.execution.ActionExecution;
@@ -11,6 +14,7 @@ import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 import io.metadew.iesi.script.operation.ConditionOperation;
+import org.apache.logging.log4j.Level;
 
 public class EvalExecuteExpression {
 
@@ -59,25 +63,8 @@ public class EvalExecuteExpression {
 
 	public boolean execute() {
 		try {
-			// Run the action
-			boolean evaluation = false;
-			ConditionOperation conditionOperation = new ConditionOperation(this.getActionExecution(),
-					this.getEvaluationExpression().getValue());
-			try {
-				evaluation = conditionOperation.evaluateCondition();
-			} catch (Exception exception) {
-				evaluation = false;
-				this.getActionExecution().getActionControl().logWarning("expression",
-						this.getEvaluationExpression().getValue());
-				this.getActionExecution().getActionControl().logWarning("expression.error", exception.getMessage());
-			}
-
-			if (evaluation) {
-				this.getActionExecution().getActionControl().increaseSuccessCount();
-			} else {
-				this.getActionExecution().getActionControl().increaseErrorCount();
-			}
-			return true;
+			String expression = convertExpression(getEvaluationExpression().getValue());
+			return evaluatedExpression(expression);
 		} catch (
 
 		Exception e) {
@@ -92,6 +79,34 @@ public class EvalExecuteExpression {
 			return false;
 		}
 
+	}
+
+	private String convertExpression(DataType expression) {
+		if (expression instanceof Text) {
+			return expression.toString();
+		} else {
+			frameworkExecution.getFrameworkLog().log(MessageFormat.format("eval.executeExpression does not accept {0} as type for expression",
+					expression.getClass()), Level.WARN);
+			return expression.toString();
+		}
+	}
+
+	private boolean evaluatedExpression(String expression) {
+		boolean evaluation;
+		ConditionOperation conditionOperation = new ConditionOperation(this.getActionExecution(), expression);
+		try {
+			evaluation = conditionOperation.evaluateCondition();
+		} catch (Exception exception) {
+			evaluation = false;
+			this.getActionExecution().getActionControl().logWarning("expression", expression);
+			this.getActionExecution().getActionControl().logWarning("expression.error", exception.getMessage());
+		}
+		if (evaluation) {
+			this.getActionExecution().getActionControl().increaseSuccessCount();
+		} else {
+			this.getActionExecution().getActionControl().increaseErrorCount();
+		}
+		return true;
 	}
 
 	// Getters and Setters

@@ -2,8 +2,14 @@ package io.metadew.iesi.script.action;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
+import io.metadew.iesi.datatypes.DataType;
+import io.metadew.iesi.datatypes.Array;
+import io.metadew.iesi.datatypes.Text;
 import org.apache.logging.log4j.Level;
 
 import io.metadew.iesi.data.generation.execution.GenerationObjectExecution;
@@ -46,7 +52,7 @@ public class FwkOutputMessage {
 		this.setFrameworkExecution(frameworkExecution);
 		this.setExecutionControl(executionControl);
 		this.setActionExecution(actionExecution);
-		this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
+		this.setActionParameterOperationMap(new HashMap<>());
 	}
 
 	public void prepare() {
@@ -70,30 +76,12 @@ public class FwkOutputMessage {
 		this.getActionParameterOperationMap().put("onScreen", this.getOnScreen());
 	}
 
+
 	public boolean execute() {
 		try {
-			// Verify if the message is empty
-			if (this.getMessage().getValue().trim().isEmpty()) {
-				GenerationObjectExecution generationObjectExecution = new GenerationObjectExecution(this.getFrameworkExecution());
-				this.getMessage().setInputValue(generationObjectExecution.getMotd().message());
-			}
-			
-			// Verify if onScreen is empty
-			if (this.getOnScreen().getValue().trim().isEmpty()) {
-				this.getOnScreen().setInputValue("N");
-			}
-			
-			// Verify if the message needs to appear on the screen
-			Level level = Level.DEBUG;
-			if (this.getOnScreen().getValue().equalsIgnoreCase("y")) {
-				level = Level.INFO;
-			}
-			this.getExecutionControl().logMessage(this.getActionExecution(),
-					"action.message=" + this.getMessage().getValue(), level);
-
-			this.getActionExecution().getActionControl().increaseSuccessCount();
-			
-			return true;
+			List<String> messages = convertMessages(getMessage().getValue());
+			boolean onScreen = convertOnScreen(getOnScreen().getValue());
+			outputMessage(messages, onScreen);
 		} catch (Exception e) {
 			StringWriter StackTrace = new StringWriter();
 			e.printStackTrace(new PrintWriter(StackTrace));
@@ -105,7 +93,49 @@ public class FwkOutputMessage {
 
 			return false;
 		}
+		return true;
+	}
 
+	private boolean convertOnScreen(DataType onScreen) {
+		if (onScreen instanceof Text) {
+			return onScreen.toString().equalsIgnoreCase("y");
+		} else {
+			frameworkExecution.getFrameworkLog().log(MessageFormat.format("fwk.outputMessage does not accept {0} as type for onScreen",
+					onScreen.getClass()), Level.WARN);
+			return false;
+		}
+	}
+
+	private List<String> convertMessages(DataType messages) {
+		ArrayList<String> messageList = new ArrayList<>();
+		if (messages instanceof Text) {
+			messageList.add(messages.toString());
+		} else if (messages instanceof Array){
+			for (DataType listElement: ((Array) messages).getList()) {
+				messageList.addAll(convertMessages(listElement));
+			}
+		} else {
+			frameworkExecution.getFrameworkLog().log(MessageFormat.format("fwk.outputMessage does not accept {0} as type for message",
+					messages.getClass()), Level.WARN);
+			messageList.add(messages.toString());
+		}
+		return messageList;
+	}
+
+	private void outputMessage(List<String> messages, boolean onScreen) {
+		final Level level = onScreen ? Level.INFO : Level.DEBUG;
+
+		messages.forEach(message -> {
+			if (message.trim().isEmpty()) {
+				GenerationObjectExecution generationObjectExecution = new GenerationObjectExecution(this.getFrameworkExecution());
+				this.getExecutionControl().logMessage(this.getActionExecution(),
+						"action.message=" + generationObjectExecution.getMotd().message(), level);
+			} else {
+				this.getExecutionControl().logMessage(this.getActionExecution(),
+						"action.message=" + message, level);
+			}
+			this.getActionExecution().getActionControl().increaseSuccessCount();
+		});
 	}
 
 	// Getters and Setters

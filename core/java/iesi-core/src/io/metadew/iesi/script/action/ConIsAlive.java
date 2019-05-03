@@ -2,8 +2,11 @@ package io.metadew.iesi.script.action;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.text.MessageFormat;
 import java.util.HashMap;
 
+import io.metadew.iesi.datatypes.DataType;
+import io.metadew.iesi.datatypes.Text;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.configuration.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.ActionParameter;
@@ -12,6 +15,7 @@ import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
+import org.apache.logging.log4j.Level;
 
 /**
  * Action type to verify if a connection is alive or not.
@@ -63,25 +67,27 @@ public class ConIsAlive {
 		this.getActionParameterOperationMap().put("connection", this.getConnectionName());
 	}
 
+	private boolean execute(String connectionName) {
+		// Get Connection
+		ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution());
+		Connection connection = connectionConfiguration.getConnection(connectionName,
+				this.getExecutionControl().getEnvName()).get();
+
+		try {
+			if (connection.getType().equalsIgnoreCase("")) {
+			}
+			this.getActionExecution().getActionControl().increaseSuccessCount();
+		} catch (Exception e) {
+			throw new RuntimeException("tbd " + e, e);
+		}
+		return true;
+	}
+
 	//
 	public boolean execute() {
 		try {
-			// Get Connection
-			ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution());
-			Connection connection = connectionConfiguration.getConnection(this.getConnectionName().getValue(),
-					this.getExecutionControl().getEnvName()).get();
-
-			try {
-
-				if (connection.getType().equalsIgnoreCase("")) {
-
-				}
-
-				this.getActionExecution().getActionControl().increaseSuccessCount();
-			} catch (Exception e) {
-				throw new RuntimeException("tbd " + e, e);
-			}
-			return true;
+			String connectionName = convertConnectionName(getConnectionName().getValue());
+			return execute(connectionName);
 		} catch (Exception e) {
 			StringWriter StackTrace = new StringWriter();
 			e.printStackTrace(new PrintWriter(StackTrace));
@@ -94,6 +100,16 @@ public class ConIsAlive {
 			return false;
 		}
 
+	}
+
+	private String convertConnectionName(DataType connectionName) {
+		if (connectionName instanceof Text) {
+			return connectionName.toString();
+		} else {
+			frameworkExecution.getFrameworkLog().log(MessageFormat.format("con.isAlive does not accept {0} as type for connection name",
+					connectionName.getClass()), Level.WARN);
+			return connectionName.toString();
+		}
 	}
 
 	// Getters and Setters

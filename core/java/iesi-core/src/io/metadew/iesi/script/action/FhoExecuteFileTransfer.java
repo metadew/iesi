@@ -97,48 +97,48 @@ public class FhoExecuteFileTransfer {
 	public boolean execute() {
 		try {
 			// Get Connections
-			ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution());
-			Connection sourceConnection = connectionConfiguration
-					.getConnection(this.getSourceConnectionName().getValue(), this.getExecutionControl().getEnvName()).get();
-			ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
-			HostConnection sourceHostConnection = connectionOperation.getHostConnection(sourceConnection);
-			Connection targetConnection = connectionConfiguration
-					.getConnection(this.getTargetConnectionName().getValue(), this.getExecutionControl().getEnvName()).get();
-			HostConnection targetHostConnection = connectionOperation.getHostConnection(targetConnection);
-
-			// Check if source or target are localhost
-			boolean sourceIsOnLocalHost = connectionOperation.isOnLocalConnection(sourceHostConnection);
-			boolean targetIsOnLocalHost = connectionOperation.isOnLocalConnection(targetHostConnection);
-
-			// Run the action
-			FileTransferOperation fileTransferOperation = new FileTransferOperation(this.getFrameworkExecution());
-			FileTransferResult fileTransferResult = null;
-			if (sourceIsOnLocalHost && !targetIsOnLocalHost) {
-				fileTransferResult = fileTransferOperation.transferLocalToRemote(this.getSourceFilePath().getValue(),
-						this.getSourceFileName().getValue(), sourceConnection, this.getTargetFilePath().getValue(),
-						this.getTargetFileName().getValue(), targetConnection);
-			} else if (!sourceIsOnLocalHost && targetIsOnLocalHost) {
-				fileTransferResult = fileTransferOperation.transferRemoteToLocal(this.getSourceFilePath().getValue(),
-						this.getSourceFileName().getValue(), sourceConnection, this.getTargetFilePath().getValue(),
-						this.getTargetFileName().getValue(), targetConnection);
-			} else if (sourceIsOnLocalHost && targetIsOnLocalHost) {
-				fileTransferResult = fileTransferOperation.transferLocalToLocal(this.getSourceFilePath().getValue(),
-						this.getSourceFileName().getValue(), sourceConnection, this.getTargetFilePath().getValue(),
-						this.getTargetFileName().getValue(), targetConnection);
-			} else if (!sourceIsOnLocalHost && !targetIsOnLocalHost) {
-				throw new RuntimeException("Method not supported yet");
-			}
-
-			if (fileTransferResult.getReturnCode() == 0) {
-				this.getActionExecution().getActionControl().increaseSuccessCount();
-			} else {
-				this.getActionExecution().getActionControl().increaseErrorCount();
-			}
-
-			this.getActionExecution().getActionControl().logOutput("rc",
-					Integer.toString(fileTransferResult.getReturnCode()));
-			this.getActionExecution().getActionControl().logOutput("files",
-					Integer.toString(fileTransferResult.getDcFileTransferedList().size()));
+//			ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution());
+//			Connection sourceConnection = connectionConfiguration
+//					.getConnection(this.getSourceConnectionName().getValue(), this.getExecutionControl().getEnvName()).get();
+//			ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
+//			HostConnection sourceHostConnection = connectionOperation.getHostConnection(sourceConnection);
+//			Connection targetConnection = connectionConfiguration
+//					.getConnection(this.getTargetConnectionName().getValue(), this.getExecutionControl().getEnvName()).get();
+//			HostConnection targetHostConnection = connectionOperation.getHostConnection(targetConnection);
+//
+//			// Check if source or target are localhost
+//			boolean sourceIsOnLocalHost = connectionOperation.isOnLocalConnection(sourceHostConnection);
+//			boolean targetIsOnLocalHost = connectionOperation.isOnLocalConnection(targetHostConnection);
+//
+//			// Run the action
+//			FileTransferOperation fileTransferOperation = new FileTransferOperation(this.getFrameworkExecution());
+//			FileTransferResult fileTransferResult = null;
+//			if (sourceIsOnLocalHost && !targetIsOnLocalHost) {
+//				fileTransferResult = fileTransferOperation.transferLocalToRemote(this.getSourceFilePath().getValue(),
+//						this.getSourceFileName().getValue(), sourceConnection, this.getTargetFilePath().getValue(),
+//						this.getTargetFileName().getValue(), targetConnection);
+//			} else if (!sourceIsOnLocalHost && targetIsOnLocalHost) {
+//				fileTransferResult = fileTransferOperation.transferRemoteToLocal(this.getSourceFilePath().getValue(),
+//						this.getSourceFileName().getValue(), sourceConnection, this.getTargetFilePath().getValue(),
+//						this.getTargetFileName().getValue(), targetConnection);
+//			} else if (sourceIsOnLocalHost && targetIsOnLocalHost) {
+//				fileTransferResult = fileTransferOperation.transferLocalToLocal(this.getSourceFilePath().getValue(),
+//						this.getSourceFileName().getValue(), sourceConnection, this.getTargetFilePath().getValue(),
+//						this.getTargetFileName().getValue(), targetConnection);
+//			} else if (!sourceIsOnLocalHost && !targetIsOnLocalHost) {
+//				throw new RuntimeException("Method not supported yet");
+//			}
+//
+//			if (fileTransferResult.getReturnCode() == 0) {
+//				this.getActionExecution().getActionControl().increaseSuccessCount();
+//			} else {
+//				this.getActionExecution().getActionControl().increaseErrorCount();
+//			}
+//
+//			this.getActionExecution().getActionControl().logOutput("rc",
+//					Integer.toString(fileTransferResult.getReturnCode()));
+//			this.getActionExecution().getActionControl().logOutput("files",
+//					Integer.toString(fileTransferResult.getDcFileTransferedList().size()));
 
 			return true;
 		} catch (Exception e) {

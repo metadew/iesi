@@ -2,8 +2,16 @@ package io.metadew.iesi.script.action;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
+import io.metadew.iesi.datatypes.Array;
+import io.metadew.iesi.datatypes.DataType;
+import io.metadew.iesi.datatypes.DataTypeResolver;
+import io.metadew.iesi.datatypes.Text;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.ActionParameter;
 import io.metadew.iesi.script.execution.ActionExecution;
@@ -65,14 +73,14 @@ public class DataSetDatasetConnection {
 		this.getActionParameterOperationMap().put("dataset", this.getDatasetName());
 		this.getActionParameterOperationMap().put("labels", this.getDatasetLabels());
 	}
-	
+
 	//
 	public boolean execute() {
 		try {
-			// Run the action
-			this.getExecutionControl().getExecutionRuntime().setDataset(referenceName.getValue(), datasetName.getValue(), datasetLabels.getValue());
-
-			return true;
+			String referenceName = convertDatasetReferenceName(getReferenceName().getValue());
+			String datasetName = convertDatasetName(getDatasetName().getValue());
+			List<String> labels = convertDatasetLabels(getDatasetLabels().getValue());
+			return setDatasetConnection(referenceName, datasetName, labels);
 		} catch (Exception e) {
 			StringWriter StackTrace = new StringWriter();
 			e.printStackTrace(new PrintWriter(StackTrace));
@@ -85,6 +93,64 @@ public class DataSetDatasetConnection {
 			return false;
 		}
 
+	}
+
+	private boolean setDatasetConnection(String referenceName, String datasetName, List<String> labels) {
+		// TODO: use dataset data type
+		this.getExecutionControl().getExecutionRuntime().setDataset(referenceName, datasetName, String.join(",",labels));
+		return false;
+	}
+
+	private String convertDatasetReferenceName(DataType referenceName) {
+		if (referenceName instanceof Text) {
+			return referenceName.toString();
+		} else {
+			// TODO: log
+			System.out.println(MessageFormat.format("data.setDatasetConnection does not accept {0} as type for reference name",
+					referenceName.getClass()));
+			return referenceName.toString();
+		}
+	}
+
+
+	private List<String> convertDatasetLabels(DataType datasetLabels) {
+		List<String> labels = new ArrayList<>();
+		if (datasetLabels instanceof Text) {
+			Arrays.stream(datasetLabels.toString().split(","))
+					.forEach(datasetLabel -> labels.add(convertDatasetLabel(DataTypeResolver.resolveToDatatype(datasetLabel.trim()))));
+			return labels;
+		} else if (datasetLabels instanceof Array) {
+			((Array) datasetLabels).getList()
+					.forEach(datasetLabel -> labels.add(convertDatasetLabel(datasetLabel)));
+			return labels;
+		} else {
+			// TODO: log with framework
+			System.out.println(MessageFormat.format("data.setDatasetConnection does not accept {0} as type for dataset labels",
+					datasetLabels.getClass()));
+			return labels;
+		}
+	}
+
+	private String convertDatasetName(DataType datasetName) {
+		if (datasetName instanceof Text) {
+			return datasetName.toString();
+		} else {
+			// TODO: log
+			System.out.println(MessageFormat.format("data.setDatasetConnection does not accept {0} as type for dataset name",
+					datasetName.getClass()));
+			return datasetName.toString();
+		}
+	}
+
+	private String convertDatasetLabel(DataType datasetLabel) {
+		if (datasetLabel instanceof Text) {
+			return datasetLabel.toString();
+		} else {
+			// TODO: log
+			System.out.println(MessageFormat.format("Dataset does not accept {0} as type for a dataset label",
+					datasetLabel.getClass()));
+			return datasetLabel.toString();
+		}
 	}
 
 	// Getters and Setters

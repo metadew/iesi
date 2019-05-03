@@ -2,11 +2,15 @@ package io.metadew.iesi.script.action;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.sql.SQLException;
+import java.text.MessageFormat;
 import java.util.HashMap;
 
 import javax.sql.rowset.CachedRowSet;
 
 import io.metadew.iesi.connection.operation.ConnectionOperation;
+import io.metadew.iesi.datatypes.DataType;
+import io.metadew.iesi.datatypes.Text;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.configuration.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.ActionParameter;
@@ -16,6 +20,7 @@ import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
+import org.apache.logging.log4j.Level;
 
 public class EvalVerifyMandatoryField {
 
@@ -122,43 +127,15 @@ public class EvalVerifyMandatoryField {
 
 	public boolean execute() {
 		try {
-			// Get Connection
-			ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution());
-			Connection connection = connectionConfiguration.getConnection(this.getConnectionName().getValue(),
-					this.getExecutionControl().getEnvName()).get();
-			ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
-			DatabaseConnection databaseConnection = connectionOperation.getDatabaseConnection(connection);
-
-			// Run the action
-			this.getTestQueries();
-			long successTotal = 0;
-			long errorTotal = 0;
-			CachedRowSet crs = null;
-
-			// Success
-			crs = databaseConnection.executeQuery(this.getSqlSuccess());
-			while (crs.next()) {
-				successTotal = crs.getLong("RES_SUC");
-			}
-			crs.close();
-			this.getActionExecution().getActionControl().logOutput("pass", Long.toString(successTotal));
-
-			// Error
-			crs = databaseConnection.executeQuery(this.getSqlError());
-			while (crs.next()) {
-				errorTotal = crs.getLong("RES_ERR");
-			}
-			crs.close();
-			this.getActionExecution().getActionControl().logOutput("fail", Long.toString(errorTotal));
-
-			// Evaluation
-			if (errorTotal == 0) {
-				this.getActionExecution().getActionControl().increaseSuccessCount();
-				return true;
-			} else {
-				this.getActionExecution().getActionControl().increaseErrorCount();
-				return true;
-			}
+			String databaseName = convertDatabaseName(getDatabaseName().getValue());
+			String schemaName = convertSchemaName(getSchemaName().getValue());
+			String tableName = convertTableName(getTableName().getValue());
+			String fieldName = convertFieldName(getFieldName().getValue());
+			String evaluationFieldName = convertEvaluationFieldName(getEvaluationFieldName().getValue());
+			String evaluationFieldValue = convertEvaluationFieldValue(getEvaluationFieldValue().getValue());
+			boolean isMandatory = convertIsMandatory(getMandatoryFlag().getValue());
+			String connectionName = convertConnectionName(getConnectionName().getValue());
+			return verifyMandatoryField(databaseName, schemaName, tableName, fieldName, evaluationFieldName, evaluationFieldValue, isMandatory, connectionName);
 		} catch (Exception e) {
 			StringWriter StackTrace = new StringWriter();
 			e.printStackTrace(new PrintWriter(StackTrace));
@@ -173,36 +150,143 @@ public class EvalVerifyMandatoryField {
 
 	}
 
+	private boolean verifyMandatoryField(String databaseName, String schemaName, String tableName, String fieldName, String evaluationFieldName, String evaluationFieldValue, boolean isMandatory, String connectionName) throws SQLException {
+		// Get Connection
+		ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution());
+		Connection connection = connectionConfiguration.getConnection(connectionName, this.getExecutionControl().getEnvName()).get();
+		ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
+		DatabaseConnection databaseConnection = connectionOperation.getDatabaseConnection(connection);
+
+		// Run the action
+		this.getTestQueries(schemaName, tableName, fieldName, evaluationFieldName, evaluationFieldValue, isMandatory);
+		long successTotal = 0;
+		long errorTotal = 0;
+		CachedRowSet cachedRowSet;
+
+		// Success
+		cachedRowSet = databaseConnection.executeQuery(this.getSqlSuccess());
+		while (cachedRowSet.next()) {
+			successTotal = cachedRowSet.getLong("RES_SUC");
+		}
+		cachedRowSet.close();
+		this.getActionExecution().getActionControl().logOutput("pass", Long.toString(successTotal));
+
+		// Error
+		cachedRowSet = databaseConnection.executeQuery(this.getSqlError());
+		while (cachedRowSet.next()) {
+			errorTotal = cachedRowSet.getLong("RES_ERR");
+		}
+		cachedRowSet.close();
+		this.getActionExecution().getActionControl().logOutput("fail", Long.toString(errorTotal));
+
+		// Evaluation
+		if (errorTotal == 0) {
+			this.getActionExecution().getActionControl().increaseSuccessCount();
+			return true;
+		} else {
+			this.getActionExecution().getActionControl().increaseErrorCount();
+			return true;
+		}
+	}
+
+	private boolean convertIsMandatory(DataType isMandatory) {
+		if (isMandatory instanceof Text) {
+			return isMandatory.toString().equalsIgnoreCase("y");
+		} else {
+			frameworkExecution.getFrameworkLog().log(MessageFormat.format("eval.verifyMandatoryFlag does not accept {0} as type for mandatory flag",
+					isMandatory.getClass()), Level.WARN);
+			return false;
+		}
+	}
+
+	private String convertEvaluationFieldValue(DataType evaluationFieldValue) {
+		if (evaluationFieldValue instanceof Text) {
+			return evaluationFieldValue.toString();
+		} else {
+			frameworkExecution.getFrameworkLog().log(MessageFormat.format("eval.verifyMandatoryFlag does not accept {0} as type for evaluation field value",
+					evaluationFieldValue.getClass()), Level.WARN);
+			return evaluationFieldValue.toString();
+		}
+	}
+
+	private String convertEvaluationFieldName(DataType evaluatonFieldName) {
+		if (evaluatonFieldName instanceof Text) {
+			return evaluatonFieldName.toString();
+		} else {
+			frameworkExecution.getFrameworkLog().log(MessageFormat.format("eval.verifyMandatoryFlag does not accept {0} as type for evaluation field name",
+					evaluatonFieldName.getClass()), Level.WARN);
+			return evaluatonFieldName.toString();
+		}
+	}
+
+
+	private String convertTableName(DataType tableName) {
+		if (tableName instanceof Text) {
+			return tableName.toString();
+		} else {
+			frameworkExecution.getFrameworkLog().log(MessageFormat.format("eval.verifyMandatoryFlag does not accept {0} as type for table name",
+					tableName.getClass()), Level.WARN);
+			return tableName.toString();
+		}
+	}
+
+	private String convertFieldName(DataType fieldName) {
+		if (fieldName instanceof Text) {
+			return fieldName.toString();
+		} else {
+			frameworkExecution.getFrameworkLog().log(MessageFormat.format("eval.verifyMandatoryFlag does not accept {0} as type for field name",
+					fieldName.getClass()), Level.WARN);
+			return fieldName.toString();
+		}
+	}
+
+	private String convertSchemaName(DataType schemaName) {
+		if (schemaName instanceof Text) {
+			return schemaName.toString();
+		} else {
+			frameworkExecution.getFrameworkLog().log(MessageFormat.format("eval.verifyMandatoryFlag does not accept {0} as type for schema name",
+					schemaName.getClass()), Level.WARN);
+			return schemaName.toString();
+		}
+	}
+
+	private String convertDatabaseName(DataType databaseName) {
+		if (databaseName instanceof Text) {
+			return databaseName.toString();
+		} else {
+			frameworkExecution.getFrameworkLog().log(MessageFormat.format("eval.verifyMandatoryFlag does not accept {0} as type for database name",
+					databaseName.getClass()), Level.WARN);
+			return databaseName.toString();
+		}
+	}
+
+	private String convertConnectionName(DataType connectionName) {
+		if (connectionName instanceof Text) {
+			return connectionName.toString();
+		} else {
+			frameworkExecution.getFrameworkLog().log(MessageFormat.format("eval.verifyMandatoryFlag does not accept {0} as type for connection name",
+					connectionName.getClass()), Level.WARN);
+			return connectionName.toString();
+		}
+	}
+
 	// Perform verification
-	private boolean getTestQueries() {
+	private boolean getTestQueries(String schemaName, String tableName, String fieldName, String evaluationFieldName, String evaluationFieldValue, boolean mandatory) {
 		boolean resTestQueries = false;
 
-		if (this.getMandatoryFlag().getValue().trim().equalsIgnoreCase("y")) {
+		if (mandatory) {
 			// field is always mandatory - target_field
-			if ((this.getEvaluationFieldName().getValue() == null || this.getEvaluationFieldName().getValue().isEmpty())
-					&& (this.getEvaluationFieldValue().getValue() == null
-							|| this.getEvaluationFieldValue().getValue().isEmpty())) {
-				if (this.getFieldName().getValue() != null && !this.getFieldName().getValue().isEmpty()) {
-					resTestQueries = this.defineTestQueries("target_field");
+			if (evaluationFieldName.isEmpty() && evaluationFieldValue.isEmpty()) {
+				if (!fieldName.isEmpty()) {
+					resTestQueries = this.defineTestQueries("target_field", schemaName, tableName, fieldName, evaluationFieldName, evaluationFieldValue);
 				}
-			}
-
-			// Mandatory field check on evaluation column - evaluation_field
-			if (this.getEvaluationFieldName().getValue() != null && !this.getEvaluationFieldName().getValue().isEmpty()
-					&& (this.getEvaluationFieldValue().getValue() == null
-							|| this.getEvaluationFieldValue().getValue().isEmpty())) {
-				if (this.getFieldName().getValue() != null && !this.getFieldName().getValue().isEmpty()) {
-					resTestQueries = this.defineTestQueries("evaluation_field");
+			} else if (!evaluationFieldName.isEmpty() && evaluationFieldValue.isEmpty()) {
+				if (!fieldName.isEmpty()) {
+					resTestQueries = this.defineTestQueries("evaluation_field", schemaName, tableName, fieldName, evaluationFieldName, evaluationFieldValue);
 				}
-			}
-
-			// Mandatory field check on evaluation column and value -
-			// evaluation_value
-			if (this.getEvaluationFieldName().getValue() != null && !this.getEvaluationFieldName().getValue().isEmpty()
-					&& this.getEvaluationFieldValue().getValue() != null
-					&& !this.getEvaluationFieldValue().getValue().isEmpty()) {
-				if (this.getFieldName().getValue() != null && !this.getFieldName().getValue().isEmpty()) {
-					resTestQueries = this.defineTestQueries("evaluation_value");
+			} else if (!evaluationFieldName.isEmpty() && !evaluationFieldValue.isEmpty()) {
+				if (!fieldName.isEmpty()) {
+					resTestQueries = this.defineTestQueries("evaluation_value", schemaName, tableName, fieldName, evaluationFieldName, evaluationFieldValue);
 				}
 			}
 		}
@@ -210,37 +294,37 @@ public class EvalVerifyMandatoryField {
 		return resTestQueries;
 	}
 
-	private boolean defineTestQueries(String check_type) {
+	private boolean defineTestQueries(String checkType, String schemaName, String tableName, String fieldName, String evaluationFieldName, String evaluationFieldValue) {
 
 		boolean resTestQueries = true;
-		if (check_type.equalsIgnoreCase("target_field")) {
+		if (checkType.equalsIgnoreCase("target_field")) {
 			// Rule 1
-			this.setSqlSuccess("select count(*) as \"RES_SUC\" from " + this.getSchemaName().getValue() + "."
-					+ this.getTableName().getValue() + " where " + this.getFieldName().getValue()
-					+ " is not null or trim(" + this.getFieldName().getValue() + ") <> ''");
-			this.setSqlError("select count(*) as \"RES_ERR\" from " + this.getSchemaName().getValue() + "."
-					+ this.getTableName().getValue() + " where " + this.getFieldName().getValue() + " is null or trim("
-					+ this.getFieldName().getValue() + ") = ''");
-		} else if (check_type.equalsIgnoreCase("evaluation_field")) {
-			this.setSqlSuccess("select count(*) as \"RES_SUC\" from " + this.getSchemaName().getValue() + "."
-					+ this.getTableName().getValue() + " where (" + this.getFieldName().getValue()
-					+ " is not null or trim(" + this.getFieldName().getValue() + ") <> '') and ("
-					+ this.getEvaluationFieldName().getValue() + " is not null or trim("
-					+ this.getEvaluationFieldName().getValue() + ") <> '')");
-			this.setSqlError("select count(*) as \"RES_ERR\" from " + this.getSchemaName().getValue() + "."
-					+ this.getTableName().getValue() + " where (" + this.getFieldName().getValue() + " is null or trim("
-					+ this.getFieldName().getValue() + ") = '') and (" + this.getEvaluationFieldName().getValue()
-					+ " is not null or trim(" + this.getEvaluationFieldName().getValue() + ") <> '')");
-		} else if (check_type.equalsIgnoreCase("evaluation_value")) {
-			this.setSqlSuccess("select count(*) as \"RES_SUC\" from " + this.getSchemaName().getValue() + "."
-					+ this.getTableName().getValue() + " where (" + this.getFieldName().getValue()
-					+ " is not null or trim(" + this.getFieldName().getValue() + ") <> '') and "
-					+ this.getEvaluationFieldName().getValue() + "='" + this.getEvaluationFieldValue().getValue()
+			this.setSqlSuccess("select count(*) as \"RES_SUC\" from " + schemaName + "."
+					+tableName + " where " + fieldName
+					+ " is not null or trim(" + fieldName + ") <> ''");
+			this.setSqlError("select count(*) as \"RES_ERR\" from " + schemaName + "."
+					+tableName + " where " + fieldName + " is null or trim("
+					+ fieldName + ") = ''");
+		} else if (checkType.equalsIgnoreCase("evaluation_field")) {
+			this.setSqlSuccess("select count(*) as \"RES_SUC\" from " + schemaName + "."
+					+tableName + " where (" + fieldName
+					+ " is not null or trim(" + fieldName + ") <> '') and ("
+					+ evaluationFieldName + " is not null or trim("
+					+ evaluationFieldName + ") <> '')");
+			this.setSqlError("select count(*) as \"RES_ERR\" from " + schemaName + "."
+					+tableName + " where (" + fieldName + " is null or trim("
+					+ fieldName + ") = '') and (" + evaluationFieldName
+					+ " is not null or trim(" + evaluationFieldName + ") <> '')");
+		} else if (checkType.equalsIgnoreCase("evaluation_value")) {
+			this.setSqlSuccess("select count(*) as \"RES_SUC\" from " + schemaName + "."
+					+tableName + " where (" + fieldName
+					+ " is not null or trim(" + fieldName + ") <> '') and "
+					+ evaluationFieldName + "='" +  evaluationFieldValue
 					+ "'");
-			this.setSqlError("select count(*) as \"RES_ERR\" from " + this.getSchemaName().getValue() + "."
-					+ this.getTableName().getValue() + " where (" + this.getFieldName().getValue() + " is null or trim("
-					+ this.getFieldName().getValue() + ") = '') and " + this.getEvaluationFieldName().getValue() + "='"
-					+ this.getEvaluationFieldValue().getValue() + "'");
+			this.setSqlError("select count(*) as \"RES_ERR\" from " + schemaName + "."
+					+tableName + " where (" + fieldName + " is null or trim("
+					+ fieldName + ") = '') and " + evaluationFieldName + "='"
+					+  evaluationFieldValue + "'");
 		} else {
 			resTestQueries = false;
 		}

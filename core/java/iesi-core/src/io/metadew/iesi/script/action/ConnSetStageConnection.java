@@ -2,14 +2,18 @@ package io.metadew.iesi.script.action;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.text.MessageFormat;
 import java.util.HashMap;
 
+import io.metadew.iesi.datatypes.DataType;
+import io.metadew.iesi.datatypes.Text;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.ActionParameter;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
+import org.apache.logging.log4j.Level;
 
 public class ConnSetStageConnection {
 
@@ -53,10 +57,16 @@ public class ConnSetStageConnection {
 		this.getActionParameterOperationMap().put("stage", this.getStageName());
 	}
 
+	private boolean execute(DataType stageName) {
+		throw new RuntimeException(MessageFormat.format("Cannot execute conn.setStageConnection for arguments '{0}'",
+				stageName.toString()));
+	}
+
 	//
 	public boolean execute() {
 		try {
 			// Run the action
+			String stageName = convertStageName(getStageName().getValue());
 			//this.getExecutionControl().getExecutionRuntime().setStage(this.getStageName().getValue());
 
 			return true;
@@ -72,6 +82,16 @@ public class ConnSetStageConnection {
 			return false;
 		}
 
+	}
+
+	private String convertStageName(DataType stageName) {
+		if (stageName instanceof Text) {
+			return stageName.toString();
+		} else {
+			frameworkExecution.getFrameworkLog().log(MessageFormat.format("conn.setStageConnection does not accept {0} as type for stage name",
+					stageName.getClass()), Level.WARN);
+			return stageName.toString();
+		}
 	}
 
 	// Getters and Setters

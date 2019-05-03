@@ -2,12 +2,15 @@ package io.metadew.iesi.script.action;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.text.MessageFormat;
 import java.util.HashMap;
 
 import javax.sql.rowset.CachedRowSet;
 
 import io.metadew.iesi.connection.operation.ConnectionOperation;
 import io.metadew.iesi.connection.tools.SQLTools;
+import io.metadew.iesi.datatypes.DataType;
+import io.metadew.iesi.datatypes.Text;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.configuration.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.ActionParameter;
@@ -17,6 +20,7 @@ import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
+import org.apache.logging.log4j.Level;
 
 public class SqlEvaluateResult {
 
@@ -76,40 +80,10 @@ public class SqlEvaluateResult {
 
 	public boolean execute() {
 		try {
-
-			// Get Connection
-			ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution());
-			Connection connection = connectionConfiguration.getConnection(this.getConnectionName().getValue(),
-					this.getExecutionControl().getEnvName()).get();
-			ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
-			DatabaseConnection databaseConnection = connectionOperation.getDatabaseConnection(connection);
-
-			// Run the action
-			CachedRowSet crs = null;
-			// String query =
-			// this.getExecutionControl().getExecutionRuntime().resolveVariables(this.getFrameworkExecution().getSqlTools().getFirstSQLStmt(this.getFilePath().getValue(),
-			// this.getFileName().getValue()));
-			crs = databaseConnection.executeQueryLimitRows(this.getSqlQuery().getValue(), 10);
-			int rowCount = SQLTools.getRowCount(crs);
-			this.getActionExecution().getActionControl().logOutput("count", Integer.toString(rowCount));
-
-			if (rowCount > 0) {
-				if (this.getExpectedResult().getValue().equalsIgnoreCase("y")) {
-					this.getActionExecution().getActionControl().increaseSuccessCount();
-					return true;
-				} else {
-					this.getActionExecution().getActionControl().increaseErrorCount();
-					return false;
-				}
-			} else {
-				if (this.getExpectedResult().getValue().equalsIgnoreCase("n")) {
-					this.getActionExecution().getActionControl().increaseSuccessCount();
-					return true;
-				} else {
-					this.getActionExecution().getActionControl().increaseErrorCount();
-					return false;
-				}
-			}
+			String query = convertQuery(getSqlQuery().getValue());
+			boolean expectedResult = convertHasResult(getExpectedResult().getValue());
+			String connectionName = convertConnectionName(getConnectionName().getValue());
+			return performAction(query, expectedResult, connectionName);
 		} catch (Exception e) {
 			StringWriter StackTrace = new StringWriter();
 			e.printStackTrace(new PrintWriter(StackTrace));
@@ -122,6 +96,69 @@ public class SqlEvaluateResult {
 			return false;
 		}
 
+	}
+
+	private boolean performAction(String query, boolean hasResult, String connectionName) {
+		ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution());
+		Connection connection = connectionConfiguration.getConnection(connectionName,
+				this.getExecutionControl().getEnvName()).get();
+		ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
+		DatabaseConnection databaseConnection = connectionOperation.getDatabaseConnection(connection);
+
+		// Run the action
+		CachedRowSet crs;
+		crs = databaseConnection.executeQueryLimitRows(query, 10);
+		int rowCount = SQLTools.getRowCount(crs);
+		this.getActionExecution().getActionControl().logOutput("count", Integer.toString(rowCount));
+
+		if (rowCount > 0) {
+			if (hasResult) {
+				this.getActionExecution().getActionControl().increaseSuccessCount();
+				return true;
+			} else {
+				this.getActionExecution().getActionControl().increaseErrorCount();
+				return false;
+			}
+		} else {
+			if (!hasResult) {
+				this.getActionExecution().getActionControl().increaseSuccessCount();
+				return true;
+			} else {
+				this.getActionExecution().getActionControl().increaseErrorCount();
+				return false;
+			}
+		}
+	}
+
+
+	private boolean convertHasResult(DataType hasResult) {
+		if (hasResult instanceof Text) {
+			return hasResult.toString().equalsIgnoreCase("y");
+		} else {
+			frameworkExecution.getFrameworkLog().log(MessageFormat.format("sql.evaluateResult does not accept {0} as type for expect result",
+					hasResult.getClass()), Level.WARN);
+			return false;
+		}
+	}
+
+	private String convertConnectionName(DataType connectionName) {
+		if (connectionName instanceof Text) {
+			return connectionName.toString();
+		} else {
+			frameworkExecution.getFrameworkLog().log(MessageFormat.format("sql.evaluateResult does not accept {0} as type for connection name",
+					connectionName.getClass()), Level.WARN);
+			return connectionName.toString();
+		}
+	}
+
+	private String convertQuery(DataType query) {
+		if (query instanceof Text) {
+			return query.toString();
+		} else {
+			frameworkExecution.getFrameworkLog().log(MessageFormat.format("sql.evaluateResult does not accept {0} as type for query",
+					query.getClass()), Level.WARN);
+			return query.toString();
+		}
 	}
 
 	// Getters and Setters

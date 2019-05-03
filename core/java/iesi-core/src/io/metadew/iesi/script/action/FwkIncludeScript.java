@@ -75,17 +75,17 @@ public class FwkIncludeScript {
 
 	public boolean execute() {
 		try {
-			ScriptConfiguration scriptConfiguration = null;
-			scriptConfiguration = new ScriptConfiguration(this.getFrameworkExecution());
-
-			if (this.getScriptVersion().getValue().trim().isEmpty()) {
-				this.setScript(scriptConfiguration.getScript(this.getScriptName().getValue()));
-			} else {
-				this.setScript(scriptConfiguration.getScript(this.getScriptName().getValue(), Long.parseLong(this.getScriptVersion().getValue())));
-			}
-
-			this.getActionExecution().getActionControl().increaseSuccessCount();
-			
+//			ScriptConfiguration scriptConfiguration = null;
+//			scriptConfiguration = new ScriptConfiguration(this.getFrameworkExecution());
+//
+//			if (this.getScriptVersion().getValue().trim().isEmpty()) {
+//				this.setScript(scriptConfiguration.getScript(this.getScriptName().getValue()));
+//			} else {
+//				this.setScript(scriptConfiguration.getScript(this.getScriptName().getValue(), Long.parseLong(this.getScriptVersion().getValue())));
+//			}
+//
+//			this.getActionExecution().getActionControl().increaseSuccessCount();
+//
 			return true;
 		} catch (Exception e) {
 			StringWriter StackTrace = new StringWriter();

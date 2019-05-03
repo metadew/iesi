@@ -39,21 +39,37 @@ public class ActionRuntime {
 
 	@SuppressWarnings("rawtypes")
 	public void setRuntimeParameters(HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
-		Iterator iterator = actionParameterOperationMap.entrySet().iterator();
-		ObjectMapper objectMapper = new ObjectMapper();
-		while (iterator.hasNext()) {
-			Map.Entry pair = (Map.Entry) iterator.next();
-			ActionParameterOperation actionParameterOperation = objectMapper.convertValue(pair.getValue(),
-					ActionParameterOperation.class);
-
-			// Handle null values when parameter has not been set
-			if (actionParameterOperation == null)
-				continue;
-
-			this.getRuntimeActionCacheConfiguration().setRuntimeCache(this.getRunId(),"param",
-					actionParameterOperation.getName(), actionParameterOperation.getValue());
-			iterator.remove(); // avoids a ConcurrentModificationException
-		}
+		actionParameterOperationMap.forEach((parameterName, actionParameterOperation) -> {
+			if (actionParameterOperation != null) {
+				// TODO: handle null somewhere else. in prepare the parameters should be set to optional and only
+				//  cached if they are filled in.
+				if (actionParameterOperation.getValue() != null) {
+					this.getRuntimeActionCacheConfiguration().setRuntimeCache(this.getRunId(),"param",
+							actionParameterOperation.getName(), actionParameterOperation.getValue().toString());
+				} else {
+					this.getRuntimeActionCacheConfiguration().setRuntimeCache(this.getRunId(),"param",
+							actionParameterOperation.getName(), null);
+				}
+			}
+		});
+//		Iterator iterator = actionParameterOperationMap.entrySet().iterator();
+//		ObjectMapper objectMapper = new ObjectMapper();
+//		while (iterator.hasNext()) {
+//			Map.Entry pair = (Map.Entry) iterator.next();
+//			ActionParameterOperation actionParameterOperation = objectMapper.convertValue(pair.getValue(),
+//					ActionParameterOperation.class);
+//
+//			// Handle null values when parameter has not been set
+//			if (actionParameterOperation == null)
+//				continue;
+//
+//			System.out.println(actionParameterOperation.getInputValue());
+//			System.out.println(actionParameterOperation.getValue());
+//
+//			this.getRuntimeActionCacheConfiguration().setRuntimeCache(this.getRunId(),"param",
+//					actionParameterOperation.getName(), actionParameterOperation.getValue().toString());
+//			iterator.remove(); // avoids a ConcurrentModificationException
+//		}
 
 	}
 

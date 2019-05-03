@@ -2,11 +2,14 @@ package io.metadew.iesi.script.action;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.text.MessageFormat;
 import java.util.HashMap;
 
 import javax.sql.rowset.CachedRowSet;
 
 import io.metadew.iesi.connection.operation.ConnectionOperation;
+import io.metadew.iesi.datatypes.DataType;
+import io.metadew.iesi.datatypes.Text;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.configuration.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.ActionParameter;
@@ -16,6 +19,7 @@ import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
+import org.apache.logging.log4j.Level;
 
 public class SqlSetIterationVariables {
 
@@ -73,17 +77,21 @@ public class SqlSetIterationVariables {
 	
 	public boolean execute() {
 		try {
+			String query = convertQuery(getSqlQuery().getValue());
+			String connectionName = convertConnectionName(getConnectionName().getValue());
+			String listName = convertListName(getListName().getValue());
+
 			// Get Connection
 			ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution());
-			Connection connection = connectionConfiguration.getConnection(this.getConnectionName().getValue(),
+			Connection connection = connectionConfiguration.getConnection(connectionName,
 					this.getExecutionControl().getEnvName()).get();
 			ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
 			DatabaseConnection databaseConnection = connectionOperation.getDatabaseConnection(connection);
 
 			// Run the action
-			CachedRowSet sqlResultSet = databaseConnection.executeQuery(this.getSqlQuery().getValue());
+			CachedRowSet sqlResultSet = databaseConnection.executeQuery(query);
 			try {
-				this.getExecutionControl().getExecutionRuntime().setIterationVariables(this.getListName().getValue(), sqlResultSet);
+				this.getExecutionControl().getExecutionRuntime().setIterationVariables(listName, sqlResultSet);
 				this.getActionExecution().getActionControl().increaseSuccessCount();
 			} catch (Exception e) {
 				throw new RuntimeException("Issue setting iteration variables: " + e, e);
@@ -102,6 +110,36 @@ public class SqlSetIterationVariables {
 			return false;
 		}
 
+	}
+
+	private String convertListName(DataType listName) {
+		if (listName instanceof Text) {
+			return listName.toString();
+		} else {
+			frameworkExecution.getFrameworkLog().log(MessageFormat.format("sql.setIterationVariables does not accept {0} as type for listName",
+					listName.getClass()), Level.WARN);
+			return listName.toString();
+		}
+	}
+
+	private String convertConnectionName(DataType connectionName) {
+		if (connectionName instanceof Text) {
+			return connectionName.toString();
+		} else {
+			frameworkExecution.getFrameworkLog().log(MessageFormat.format("sql.setIterationVariables does not accept {0} as type for connection name",
+					connectionName.getClass()), Level.WARN);
+			return connectionName.toString();
+		}
+	}
+
+	private String convertQuery(DataType query) {
+		if (query instanceof Text) {
+			return query.toString();
+		} else {
+			frameworkExecution.getFrameworkLog().log(MessageFormat.format("sql.setIterationVariables does not accept {0} as type for query",
+					query.getClass()), Level.WARN);
+			return query.toString();
+		}
 	}
 
 	// Getters and Setters

@@ -2,14 +2,18 @@ package io.metadew.iesi.script.action;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.text.MessageFormat;
 import java.util.HashMap;
 
+import io.metadew.iesi.datatypes.DataType;
+import io.metadew.iesi.datatypes.Text;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.ActionParameter;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
+import org.apache.logging.log4j.Level;
 
 /**
  * This action stores an output value as part of the script results
@@ -69,15 +73,17 @@ public class ScriptLogOutput {
 
 	public boolean execute() {
 		try {
+			String outputName = convertOutputName(getOutputName().getValue());
+			String outputValue = convertOutputValue(getOutputValue().getValue());
 			// log the output in the script
 			this.getActionExecution().getScriptExecution().getExecutionControl().logExecutionOutput(
-					this.getActionExecution().getScriptExecution(), this.getOutputName().getValue(),
-					this.getOutputValue().getValue());
+					this.getActionExecution().getScriptExecution(), outputName,
+					outputValue);
 
 			// Log the output in the action as well
-			this.getActionExecution().getActionControl().logOutput("output.name",this.getOutputName().getValue());
-			this.getActionExecution().getActionControl().logOutput("output.value",this.getOutputValue().getValue());
-			
+			this.getActionExecution().getActionControl().logOutput("output.name", outputName);
+			this.getActionExecution().getActionControl().logOutput("output.value", outputValue);
+
 			this.getActionExecution().getActionControl().increaseSuccessCount();
 
 			return true;
@@ -93,6 +99,20 @@ public class ScriptLogOutput {
 			return false;
 		}
 
+	}
+
+	private String convertOutputValue(DataType outputValue) {
+		return outputValue.toString();
+	}
+
+	private String convertOutputName(DataType outputName) {
+		if (outputName instanceof Text) {
+			return outputName.toString();
+		} else {
+			frameworkExecution.getFrameworkLog().log(MessageFormat.format("script.logOutput does not accept {0} as type for expect outputName",
+					outputName.getClass()), Level.WARN);
+			return outputName.toString();
+		}
 	}
 
 	// Getters and Setters

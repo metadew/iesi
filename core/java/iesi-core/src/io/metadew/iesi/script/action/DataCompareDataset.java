@@ -5,7 +5,12 @@ import java.io.StringWriter;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import io.metadew.iesi.datatypes.DataType;
+import io.metadew.iesi.datatypes.Dataset;
+import io.metadew.iesi.datatypes.Text;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.configuration.MappingConfiguration;
 import io.metadew.iesi.metadata.definition.ActionParameter;
@@ -16,14 +21,15 @@ import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 import io.metadew.iesi.script.operation.DatasetOperation;
-
-import javax.swing.text.html.Option;
+import org.apache.logging.log4j.Level;
 
 public class DataCompareDataset {
 
 	private ActionExecution actionExecution;
 	private FrameworkExecution frameworkExecution;
 	private ExecutionControl executionControl;
+
+	private final Pattern  datasetNamePattern = Pattern.compile("\\s*(?<name>\\w+)\\.(?<table>[\\w\\.]+)\\s*");
 
 	// Parameters
 	private ActionParameterOperation leftDatasetName;
@@ -46,7 +52,7 @@ public class DataCompareDataset {
 		this.setFrameworkExecution(frameworkExecution);
 		this.setExecutionControl(executionControl);
 		this.setActionExecution(actionExecution);
-		this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
+		this.setActionParameterOperationMap(new HashMap<>());
 	}
 
 	public void prepare() {
@@ -73,43 +79,14 @@ public class DataCompareDataset {
 		this.getActionParameterOperationMap().put("rightDataset", this.getRightDatasetName());
 		this.getActionParameterOperationMap().put("mapping", this.getMappingName());
 	}
-	
+
 	//
 	public boolean execute() {
 		try {
-			// Run the action
-			String[] leftDatasetparts = this.getLeftDatasetName().getValue().split("\\.");
-			String[] rightDatasetparts = this.getRightDatasetName().getValue().split("\\.");
-			DatasetOperation leftDatasetOperation = this.getExecutionControl().getExecutionRuntime()
-					.getDatasetOperation(leftDatasetparts[0]);
-			DatasetOperation rightDatasetOperation = this.getExecutionControl().getExecutionRuntime()
-					.getDatasetOperation(rightDatasetparts[0]);
-
-			long errorsDetected = 0;
-			MappingConfiguration mappingConfiguration = new MappingConfiguration(this.getFrameworkExecution());
-			Mapping mapping = mappingConfiguration.getMapping(this.getMappingName().getValue());
-			for (Transformation transformation : mapping.getTransformations()) {
-				Optional<String> leftFieldValue = leftDatasetOperation.getDataItem(leftDatasetparts[1] + "." + transformation.getLeftField());
-				Optional<String> rightFieldValue = rightDatasetOperation.getDataItem(rightDatasetparts[1] + "." + transformation.getRightField());
-				if (!leftFieldValue.isPresent()) {
-					this.getActionExecution().getActionControl().logWarning("field.left",
-							MessageFormat.format("Cannot find value for {0}.",leftDatasetparts[1] + "." + transformation.getLeftField()));
-				}
-				if (!rightFieldValue.isPresent()) {
-					this.getActionExecution().getActionControl().logWarning("field.right",
-							MessageFormat.format("Cannot find value for {0}.",leftDatasetparts[1] + "." + transformation.getLeftField()));
-				}
-				if (!leftFieldValue.equals(rightFieldValue)) {
-					this.getActionExecution().getActionControl().logError("field.mismatch", MessageFormat.format(
-							"{0}:{1}<>{2}:{3}", transformation.getLeftField(), leftFieldValue, transformation.getRightField(), rightFieldValue));
-					this.getActionExecution().getActionControl().increaseErrorCount();
-					errorsDetected++;
-				} else {
-					this.getActionExecution().getActionControl().increaseSuccessCount();
-				}
-			}
-			return errorsDetected <= 0;
-
+			String leftDatasetName = convertDatasetName(getLeftDatasetName().getValue());
+			String rightDatasetName = convertDatasetName(getRightDatasetName().getValue());
+			String mappingName = convertMappingName(getMappingName().getValue());
+			return compareDataset(leftDatasetName, rightDatasetName, mappingName);
 		} catch (Exception e) {
 			StringWriter StackTrace = new StringWriter();
 			e.printStackTrace(new PrintWriter(StackTrace));
@@ -123,6 +100,87 @@ public class DataCompareDataset {
 		}
 
 	}
+
+	private boolean compareDataset(String leftDatasetName, String rightDatasetName, String mappingName) {
+		// Run the action
+		Matcher leftDatasetNameMatcher = datasetNamePattern.matcher(leftDatasetName);
+		Matcher rightDatasetNameMatcher = datasetNamePattern.matcher(rightDatasetName);
+		if (!leftDatasetNameMatcher.find()) {
+			throw new RuntimeException(MessageFormat.format("data.comparedataset does not accept {0} as left dataset name", leftDatasetName));
+		}
+		if (!rightDatasetNameMatcher.find()) {
+			throw new RuntimeException(MessageFormat.format("data.comparedataset does not accept {0} as right dataset name", rightDatasetName));
+		}
+		String leftDatasetReferenceName = leftDatasetNameMatcher.group("name");
+		String leftDatasetTable = leftDatasetNameMatcher.group("table");
+		String rightDatasetReferenceName = rightDatasetNameMatcher.group("name");
+		String rightDatasetTable = rightDatasetNameMatcher.group("table");
+
+		DatasetOperation leftDatasetOperation = this.getExecutionControl().getExecutionRuntime()
+				.getDatasetOperation(leftDatasetReferenceName);
+		DatasetOperation rightDatasetOperation = this.getExecutionControl().getExecutionRuntime()
+				.getDatasetOperation(rightDatasetReferenceName);
+
+		long errorsDetected = 0;
+		MappingConfiguration mappingConfiguration = new MappingConfiguration(this.getFrameworkExecution());
+		Mapping mapping = mappingConfiguration.getMapping(mappingName);
+		for (Transformation transformation : mapping.getTransformations()) {
+			Optional<String> leftFieldValue = leftDatasetOperation.getDataItem(leftDatasetTable + "." + transformation.getLeftField());
+			Optional<String> rightFieldValue = rightDatasetOperation.getDataItem(rightDatasetTable + "." + transformation.getRightField());
+			if (!leftFieldValue.isPresent()) {
+				this.getActionExecution().getActionControl().logWarning("field.left",
+						MessageFormat.format("cannot find value for {0} in dataset {1}.",leftDatasetTable + "." + transformation.getLeftField(), leftDatasetName));
+			}
+			if (!rightFieldValue.isPresent()) {
+				this.getActionExecution().getActionControl().logWarning("field.right",
+						MessageFormat.format("cannot find value for {0} in dataset {1}.",rightDatasetTable + "." + transformation.getRightField(), rightDatasetName));
+			}
+			if (!leftFieldValue.equals(rightFieldValue)) {
+				this.getActionExecution().getActionControl().logError("field.mismatch", MessageFormat.format(
+						"{0}:{1}<>{2}:{3}", transformation.getLeftField(), leftFieldValue, transformation.getRightField(), rightFieldValue));
+				this.getActionExecution().getActionControl().increaseErrorCount();
+				errorsDetected++;
+			} else {
+				this.getActionExecution().getActionControl().increaseSuccessCount();
+			}
+		}
+		return errorsDetected <= 0;
+	}
+
+	private String convertDatasetName(DataType datasetName) {
+		if (datasetName instanceof Text) {
+			return datasetName.toString();
+		} else {
+			frameworkExecution.getFrameworkLog().log(MessageFormat.format("data.compareDataset does not accept {0} as type for dataset name",
+					datasetName.getClass()), Level.WARN);
+			return datasetName.toString();
+		}
+	}
+
+	private String convertMappingName(DataType mappingName) {
+		if (mappingName instanceof Text) {
+			return mappingName.toString();
+		} else {
+			frameworkExecution.getFrameworkLog().log(MessageFormat.format("data.compareDataset does not accept {0} as type for mapping name",
+					mappingName.getClass()), Level.WARN);
+			return mappingName.toString();
+		}
+	}
+
+//	private Dataset convertDataset(DataType dataset) {
+//		if (dataset instanceof Text) {
+//			// TODO: clean up --> dataset only by reachable by reference? make ExecutionRuntime hold map with referenceName to dataset?
+//			return new Dataset(new Text(executionControl.getExecutionRuntime().getDatasetOperation(dataset.toString()).getDatasetName()),
+//					new Text(executionControl.getExecutionRuntime().getDatasetOperation(dataset.toString()).getDatasetLabels()));
+//		} else if (dataset instanceof Dataset) {
+//			return (Dataset) dataset;
+//		} else {
+//			frameworkExecution.getFrameworkLog().log(MessageFormat.format("data.compareDataset does not accept {0} as type for dataset",
+//					dataset.getClass()), Level.WARN);
+//			throw new RuntimeException(MessageFormat.format("data.compareDataset does not accept {0} as type for dataset",
+//					dataset.getClass()));
+//		}
+//	}
 
 	// Getters and Setters
 	public FrameworkExecution getFrameworkExecution() {

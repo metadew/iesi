@@ -157,7 +157,7 @@ public class HostConnection {
 		compiledShellCommand += " && ";
 		compiledShellCommand += "echo $SHELL_RUN_CMD_RC";
 
-		if (shellCommandSettings.getSetRunVar().trim().equalsIgnoreCase("y")) {
+		if (shellCommandSettings.getSetRunVar()) {
 			compiledShellCommand += " && ";
 			compiledShellCommand += "echo SHELL_RUN_CMD_RUN_VAR";
 			compiledShellCommand += " && ";
@@ -260,7 +260,7 @@ public class HostConnection {
 		compiledShellCommand += " && ";
 		compiledShellCommand += "echo $SHELL_RUN_CMD_RC";
 
-		if (shellCommandSettings.getSetRunVar().trim().equalsIgnoreCase("y")) {
+		if (shellCommandSettings.getSetRunVar()) {
 			compiledShellCommand += " && ";
 			compiledShellCommand += "echo SHELL_RUN_CMD_RUN_VAR";
 			compiledShellCommand += " && ";
@@ -480,7 +480,7 @@ public class HostConnection {
 		compiledShellCommand += "sleep 1s ";
 		
 
-		if (shellCommandSettings.getSetRunVar().trim().equalsIgnoreCase("y")) {
+		if (shellCommandSettings.getSetRunVar()) {
 			compiledShellCommand += " && ";
 			compiledShellCommand += "echo SHELL_RUN_CMD_RUN_VAR";
 			compiledShellCommand += " && ";

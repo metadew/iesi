@@ -49,6 +49,14 @@
 {
 	"type": "LaunchItem",
 	"data": {
+		"script": "fwk.outputMessage.6",
+		"description": "test fwk.outputMessage with a list as message",
+		"parameterList": "param1=myParameter"
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
 		"script": "sql.executeQuery.1",
 		"description": "test sql.executeQuery with a select query",
 		"parameterList": ""
@@ -193,8 +201,8 @@
 {
 	"type": "LaunchItem",
 	"data": {
-		"script": "sql.setIterationVariables.2",
-		"description": "test sql.setIterationVariables taking input from a file",
+		"script": "data.compareDataset.1",
+		"description": "test data.compareDataset",
 		"parameterList": ""
 	}
 }]

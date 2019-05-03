@@ -1,11 +1,13 @@
 package io.metadew.iesi.script.operation;
 
+import io.metadew.iesi.datatypes.DataType;
+import io.metadew.iesi.datatypes.DataTypeResolver;
+import io.metadew.iesi.datatypes.Text;
 import org.apache.logging.log4j.Level;
 
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.configuration.ActionTypeParameterConfiguration;
 import io.metadew.iesi.metadata.definition.ActionTypeParameter;
-import io.metadew.iesi.runtime.definition.LookupResult;
 import io.metadew.iesi.runtime.subroutine.ShellCommandSubroutine;
 import io.metadew.iesi.runtime.subroutine.SqlStatementSubroutine;
 import io.metadew.iesi.script.execution.ActionExecution;
@@ -24,7 +26,7 @@ public class ActionParameterOperation {
 	private ActionExecution actionExecution;
 	private String actionTypeName;
 	private String name;
-	private String value = "";
+	private DataType value;
 	private String inputValue = "";
 
 	private ActionTypeParameter actionTypeParameter;
@@ -60,18 +62,36 @@ public class ActionParameterOperation {
 				actionTypeParameterConfiguration.getActionTypeParameter(this.getActionTypeName(), this.getName()));
 	}
 
-	private void lookupSubroutine() {
+//	private void lookupSubroutine() {
+//		if (this.getActionTypeParameter().getSubroutine() == null
+//				|| this.getActionTypeParameter().getSubroutine().equalsIgnoreCase(""))
+//			return;
+//		this.setSubroutineOperation(new SubroutineOperation(this.getFrameworkExecution(), this.getValue()));
+//		if (this.getSubroutineOperation().isValid()) {
+//			if (this.getSubroutineOperation().getSubroutine().getType().equalsIgnoreCase("query")) {
+//				this.setValue(new Text(new SqlStatementSubroutine(this.getSubroutineOperation().getSubroutine()).getValue()));
+//			} else if (this.getSubroutineOperation().getSubroutine().getType().equalsIgnoreCase("command")) {
+//				this.setValue(new Text(new ShellCommandSubroutine(this.getSubroutineOperation().getSubroutine()).getValue()));
+//			}
+//
+//		}
+//	}
+
+	private String lookupSubroutine(String input) {
 		if (this.getActionTypeParameter().getSubroutine() == null
 				|| this.getActionTypeParameter().getSubroutine().equalsIgnoreCase(""))
-			return;
-		this.setSubroutineOperation(new SubroutineOperation(this.getFrameworkExecution(), this.getValue()));
+			return input;
+		this.setSubroutineOperation(new SubroutineOperation(this.getFrameworkExecution(), input));
 		if (this.getSubroutineOperation().isValid()) {
 			if (this.getSubroutineOperation().getSubroutine().getType().equalsIgnoreCase("query")) {
-				this.setValue(new SqlStatementSubroutine(this.getSubroutineOperation().getSubroutine()).getValue());
+				return new SqlStatementSubroutine(this.getSubroutineOperation().getSubroutine()).getValue();
 			} else if (this.getSubroutineOperation().getSubroutine().getType().equalsIgnoreCase("command")) {
-				this.setValue(new ShellCommandSubroutine(this.getSubroutineOperation().getSubroutine()).getValue());
+				return new ShellCommandSubroutine(this.getSubroutineOperation().getSubroutine()).getValue();
+			} else {
+				return input;
 			}
-
+		} else {
+			return input;
 		}
 	}
 
@@ -84,13 +104,13 @@ public class ActionParameterOperation {
 		this.name = name;
 	}
 
-	public String getValue() {
+	public DataType getValue() {
 		return value;
 	}
 
-	public void setValue(String value) {
-		this.value = this.getExecutionControl().getExecutionRuntime().resolveVariables(this.getActionExecution(),
-				value);
+	public void setValue(DataType value) {
+		// TODO: list -> resolvement to a data type?
+		this.value = value;
 	}
 
 	public String getActionTypeName() {
@@ -114,33 +134,31 @@ public class ActionParameterOperation {
 	}
 
 	public void setInputValue(String inputValue) {
+		// TODO: list resolvement to a data type
 		this.inputValue = inputValue;
-		this.setValue(inputValue);
-		this.lookupSubroutine();
-
+		String resolvedInputValue = this.getExecutionControl().getExecutionRuntime().resolveVariables(this.getActionExecution(), inputValue);
+		value = new Text(inputValue);
+		resolvedInputValue = lookupSubroutine(resolvedInputValue);
 		this.getExecutionControl().logMessage(this.getActionExecution(),
-				"action.param=" + this.getName() + ":" + this.getValue(), Level.DEBUG);
-
-		// Cross concept lookup
-		LookupResult lookupResult = this.getExecutionControl().getExecutionRuntime().resolveConceptLookup(this.getExecutionControl(),
-				this.getValue(), true);
-		this.setValue(lookupResult.getValue());
-
-		// Resolve internal encryption
-		String decryptedValue = this.getFrameworkExecution().getFrameworkCrypto().resolve(this.getFrameworkExecution(),
-				this.getValue());
-		this.setValue(decryptedValue);
+				"action.param=" + this.getName() + ":" + resolvedInputValue, Level.DEBUG);
+		resolvedInputValue = this.getExecutionControl().getExecutionRuntime().resolveConceptLookup(this.getExecutionControl(),
+				resolvedInputValue, true).getValue();
+		String decryptedInputValue = this.getFrameworkExecution().getFrameworkCrypto().resolve(this.getFrameworkExecution(),
+				resolvedInputValue);
 
 		// Impersonate
 		if (this.getActionTypeParameter().getImpersonate().trim().equalsIgnoreCase("y")) {
 			String impersonatedConnectionName = this.getExecutionControl().getExecutionRuntime()
-					.getImpersonationOperation().getImpersonatedConnection(this.getValue());
+					.getImpersonationOperation().getImpersonatedConnection(decryptedInputValue);
 			if (!impersonatedConnectionName.equalsIgnoreCase("")) {
 				this.getExecutionControl().logMessage(this.getActionExecution(), "action." + this.getName()
 						+ ".impersonate=" + this.getValue() + ":" + impersonatedConnectionName, Level.DEBUG);
-				this.setValue(impersonatedConnectionName);
+				resolvedInputValue = impersonatedConnectionName;
 			}
 		}
+
+		// Resolve to data type
+		value = DataTypeResolver.resolveToDatatype(resolvedInputValue);
 	}
 
 	public ExecutionControl getExecutionControl() {

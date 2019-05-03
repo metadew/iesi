@@ -12,7 +12,7 @@ public class ShellCommandSettings {
 
 	private FrameworkExecution frameworkExecution = null;
 	private String environment = "";
-	private String setRunVar = "N";
+	private boolean setRunVar = false;
 	private String setRunVarPrefix = "";
 	private String setRunVarMode = "";
 
@@ -20,18 +20,18 @@ public class ShellCommandSettings {
 		
 	}
 	
-	public ShellCommandSettings(String setRunVar, String setRunVarPrefix, String setRunVarMode) {
+	public ShellCommandSettings(boolean setRunVar, String setRunVarPrefix, String setRunVarMode) {
 		this.setSetRunVar(setRunVar);
 		this.setSetRunVarPrefix(setRunVarPrefix);
 		this.setSetRunVarMode(setRunVarMode);
 	}
 
 	// Getters and Setters
-	public String getSetRunVar() {
+	public boolean getSetRunVar() {
 		return setRunVar;
 	}
 
-	public void setSetRunVar(String setRunVar) {
+	public void setSetRunVar(boolean setRunVar) {
 		this.setRunVar = setRunVar;
 	}
 

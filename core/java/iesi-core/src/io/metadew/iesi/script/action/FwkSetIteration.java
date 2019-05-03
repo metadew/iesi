@@ -1,9 +1,7 @@
 package io.metadew.iesi.script.action;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.HashMap;
-
+import io.metadew.iesi.datatypes.DataType;
+import io.metadew.iesi.datatypes.Text;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.ActionParameter;
 import io.metadew.iesi.metadata.definition.Iteration;
@@ -11,6 +9,12 @@ import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
+import org.apache.logging.log4j.Level;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.text.MessageFormat;
+import java.util.HashMap;
 
 public class FwkSetIteration {
 
@@ -45,10 +49,11 @@ public class FwkSetIteration {
 		this.setFrameworkExecution(frameworkExecution);
 		this.setExecutionControl(executionControl);
 		this.setActionExecution(actionExecution);
-		this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
+		this.setActionParameterOperationMap(new HashMap<>());
 	}
 	
 	public void prepare() {
+		// TODO: based on type a different class should be defined? e.g. fwk.setIteration.list or fwk.setIteration.range or fwk.setIteration.values
 		// Reset Parameters
 		this.setIterationName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
 				this.getActionExecution(), this.getActionExecution().getAction().getType(), "name"));
@@ -106,32 +111,16 @@ public class FwkSetIteration {
 	//
 	public boolean execute() {
 		try {
-			// Run the action
-			Iteration iteration = new Iteration();
-			iteration.setName(this.getIterationName().getValue());
-			iteration.setType(this.getIterationType().getValue());
-			iteration.setList(this.getIterationList().getValue());
-			iteration.setValues(this.getIterationValues().getValue());
-			iteration.setFrom(this.getIterationFrom().getValue());
-			iteration.setTo(this.getIterationTo().getValue());
-			// Set default step if not provided
-			if (this.getIterationStep().getValue().trim().isEmpty()) {
-				iteration.setStep("1");
-			} else {
-				iteration.setStep(this.getIterationStep().getValue());
-			}
-			iteration.setCondition(this.getIterationCondition().getValue());
-			// Set default interrupt if not provided
-			if (this.getIterationInterrupt().getValue().equalsIgnoreCase("y")) {
-				iteration.setInterrupt("y");
-			} else {
-				iteration.setInterrupt("n");
-			}
-			this.getExecutionControl().getExecutionRuntime().setIteration(iteration);
-
-			this.getActionExecution().getActionControl().increaseSuccessCount();
-			
-			return true;
+			String name = convertIterationName(getIterationName().getValue());
+			String type = convertIterationType(getIterationType().getValue());
+			String list = convertIterationList(getIterationList().getValue());
+			String values = convertIterationValues(getIterationValues().getValue());
+			String from = convertIterationFrom(getIterationFrom().getValue());
+			String to = convertIterationTo(getIterationTo().getValue());
+			String step = convertIterationStep(getIterationStep().getValue());
+			String condition = convertIterationCondition(getIterationCondition().getValue());
+			boolean interrupt = convertIterationInterrupt(getIterationInterrupt().getValue());
+			return setIteration(name, type, list, values, from, to, step, condition, interrupt);
 		} catch (Exception e) {
 			StringWriter StackTrace = new StringWriter();
 			e.printStackTrace(new PrintWriter(StackTrace));
@@ -144,6 +133,145 @@ public class FwkSetIteration {
 			return false;
 		}
 
+	}
+
+	private boolean setIteration(String name, String type, String list, String values, String from, String to, String step, String condition, boolean interrupt) {
+		Iteration iteration = new Iteration();
+		iteration.setName(name);
+		iteration.setType(type);
+		iteration.setList(list);
+		iteration.setValues(values);
+		iteration.setFrom(from);
+		iteration.setTo(to);
+		// Set default step if not provided
+		if (step == null) {
+			iteration.setStep("1");
+		} else {
+			iteration.setStep(step);
+		}
+		iteration.setCondition(condition);
+		// Set default interrupt if not provided
+		if (interrupt) {
+			iteration.setInterrupt("y");
+		} else {
+			iteration.setInterrupt("n");
+		}
+		this.getExecutionControl().getExecutionRuntime().setIteration(iteration);
+		this.getActionExecution().getActionControl().increaseSuccessCount();
+
+		return true;
+	}
+
+
+	private boolean convertIterationInterrupt(DataType iterationInterrupt) {
+		// TODO: remove if different class for every iteration variable
+		if (iterationInterrupt == null) {
+			return false;
+		} else if (iterationInterrupt instanceof Text) {
+			return iterationInterrupt.toString().equalsIgnoreCase("y");
+		} else {
+			frameworkExecution.getFrameworkLog().log(MessageFormat.format("fwk.setIteration does not accept {0} as type for iterationInterrupt",
+					iterationInterrupt.getClass()), Level.WARN);
+			return false;
+		}
+	}
+
+	private String convertIterationCondition(DataType iterationCondition) {
+		// TODO: remove if different class for every iteration variable
+		if (iterationCondition == null) {
+			return null;
+		} else if (iterationCondition instanceof Text) {
+			return iterationCondition.toString();
+		} else {
+			frameworkExecution.getFrameworkLog().log(MessageFormat.format("fwk.setIteration does not accept {0} as type for iterationCondition",
+					iterationCondition.getClass()), Level.WARN);
+			return iterationCondition.toString();
+		}
+	}
+
+	private String convertIterationStep(DataType iterationStep) {
+		// TODO: remove if different class for every iteration variable
+		if (iterationStep == null) {
+			return null;
+		} else if (iterationStep instanceof Text) {
+			return iterationStep.toString();
+		} else {
+			frameworkExecution.getFrameworkLog().log(MessageFormat.format("fwk.setIteration does not accept {0} as type for iterationStep",
+					iterationStep.getClass()), Level.WARN);
+			return iterationStep.toString();
+		}
+	}
+
+	private String convertIterationTo(DataType iterationTo) {
+		// TODO: remove if different class for every iteration variable
+		if (iterationTo == null) {
+			return null;
+		} else if (iterationTo instanceof Text) {
+			return iterationTo.toString();
+		} else {
+			frameworkExecution.getFrameworkLog().log(MessageFormat.format("fwk.setIteration does not accept {0} as type for iterationTo",
+					iterationTo.getClass()), Level.WARN);
+			return iterationTo.toString();
+		}
+	}
+
+	private String convertIterationFrom(DataType iterationFrom) {
+		// TODO: remove if different class for every iteration variable
+		if (iterationFrom == null) {
+			return null;
+		} else if (iterationFrom instanceof Text) {
+			return iterationFrom.toString();
+		} else {
+			frameworkExecution.getFrameworkLog().log(MessageFormat.format("fwk.setIteration does not accept {0} as type for iterationFrom",
+					iterationFrom.getClass()), Level.WARN);
+			return iterationFrom.toString();
+		}
+	}
+
+	private String convertIterationValues(DataType iterationValues) {
+		// TODO: remove if different class for every iteration variable
+		if (iterationValues == null) {
+			return null;
+		} else if (iterationValues instanceof Text) {
+			return iterationValues.toString();
+		} else {
+			frameworkExecution.getFrameworkLog().log(MessageFormat.format("fwk.setIteration does not accept {0} as type for iterationValues",
+					iterationValues.getClass()), Level.WARN);
+			return iterationValues.toString();
+		}
+	}
+
+	private String convertIterationList(DataType iterationList) {
+		// TODO: remove if different class for every iteration variable
+		if (iterationList == null) {
+			return null;
+		} else if (iterationList instanceof Text) {
+			return iterationList.toString();
+		} else {
+			frameworkExecution.getFrameworkLog().log(MessageFormat.format("fwk.setIteration does not accept {0} as type for iterationList",
+					iterationList.getClass()), Level.WARN);
+			return iterationList.toString();
+		}
+	}
+
+	private String convertIterationType(DataType iterationType) {
+		if (iterationType instanceof Text) {
+			return iterationType.toString();
+		} else {
+			frameworkExecution.getFrameworkLog().log(MessageFormat.format("fwk.setIteration does not accept {0} as type for iterationType",
+					iterationType.getClass()), Level.WARN);
+			return iterationType.toString();
+		}
+	}
+
+	private String convertIterationName(DataType iterationName) {
+		if (iterationName instanceof Text) {
+			return iterationName.toString();
+		} else {
+			frameworkExecution.getFrameworkLog().log(MessageFormat.format("fwk.setIteration does not accept {0} as type for iterationName",
+					iterationName.getClass()), Level.WARN);
+			return iterationName.toString();
+		}
 	}
 
 	// Getters and Setters

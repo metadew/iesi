@@ -107,61 +107,61 @@ public class WfaExecuteFilePing {
 	
 	public void execute() {
 		try {
-			// Get Connection
-			ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution());
-			Connection connection = connectionConfiguration.getConnection(this.getConnectionName().getValue(),
-					this.getExecutionControl().getEnvName()).get();
-			ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
-			HostConnection dcConnection = connectionOperation.getHostConnection(connection);
-
-			// Check if connection is localhost
-			boolean connectionIsLocalHost = connectionOperation.isOnLocalConnection(dcConnection);
-
-			// Run the action
-			int i = 1;
-			long wait = this.getWaitInterval() * 1000;
-			if (wait <= 0)
-				wait = 1000;
-			boolean checkTimeout = false;
-			long timeout = this.getTimeoutInterval() * 1000;
-			long timeoutCounter = 0;
-			if (timeout > 0)
-				checkTimeout = true;
-
-			boolean done = false;
-			this.setStartTime(System.currentTimeMillis());
-			while (i == 1) {
-				if (this.doneWaiting(connection, connectionIsLocalHost)) {
-					done = true;
-					break;
-				}
-
-				if (checkTimeout) {
-					timeoutCounter += wait;
-					if (timeoutCounter >= timeout)
-						break;
-				}
-
-				try {
-					Thread.sleep(wait);
-				} catch (InterruptedException ex) {
-					Thread.currentThread().interrupt();
-				}
-
-			}
-
-			long elapsedTime = System.currentTimeMillis() - this.getStartTime();
-			if (done) {
-				this.getActionExecution().getActionControl().increaseSuccessCount();
-
-				this.getActionExecution().getActionControl().logOutput("out","result found");
-				this.getActionExecution().getActionControl().logOutput("time",Long.toString(elapsedTime));
-			} else {
-				this.getActionExecution().getActionControl().increaseErrorCount();
-
-				this.getActionExecution().getActionControl().logOutput("out","time-out");
-				this.getActionExecution().getActionControl().logOutput("time",Long.toString(elapsedTime));
-			}
+//			// Get Connection
+//			ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution());
+//			Connection connection = connectionConfiguration.getConnection(this.getConnectionName().getValue(),
+//					this.getExecutionControl().getEnvName()).get();
+//			ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
+//			HostConnection dcConnection = connectionOperation.getHostConnection(connection);
+//
+//			// Check if connection is localhost
+//			boolean connectionIsLocalHost = connectionOperation.isOnLocalConnection(dcConnection);
+//
+//			// Run the action
+//			int i = 1;
+//			long wait = this.getWaitInterval() * 1000;
+//			if (wait <= 0)
+//				wait = 1000;
+//			boolean checkTimeout = false;
+//			long timeout = this.getTimeoutInterval() * 1000;
+//			long timeoutCounter = 0;
+//			if (timeout > 0)
+//				checkTimeout = true;
+//
+//			boolean done = false;
+//			this.setStartTime(System.currentTimeMillis());
+//			while (i == 1) {
+//				if (this.doneWaiting(connection, connectionIsLocalHost)) {
+//					done = true;
+//					break;
+//				}
+//
+//				if (checkTimeout) {
+//					timeoutCounter += wait;
+//					if (timeoutCounter >= timeout)
+//						break;
+//				}
+//
+//				try {
+//					Thread.sleep(wait);
+//				} catch (InterruptedException ex) {
+//					Thread.currentThread().interrupt();
+//				}
+//
+//			}
+//
+//			long elapsedTime = System.currentTimeMillis() - this.getStartTime();
+//			if (done) {
+//				this.getActionExecution().getActionControl().increaseSuccessCount();
+//
+//				this.getActionExecution().getActionControl().logOutput("out","result found");
+//				this.getActionExecution().getActionControl().logOutput("time",Long.toString(elapsedTime));
+//			} else {
+//				this.getActionExecution().getActionControl().increaseErrorCount();
+//
+//				this.getActionExecution().getActionControl().logOutput("out","time-out");
+//				this.getActionExecution().getActionControl().logOutput("time",Long.toString(elapsedTime));
+//			}
 		} catch (Exception e) {
 			StringWriter StackTrace = new StringWriter();
 			e.printStackTrace(new PrintWriter(StackTrace));
@@ -177,27 +177,27 @@ public class WfaExecuteFilePing {
 
 	private boolean doneWaiting(Connection connection, boolean connectionIsLocalHost) {
 		try {
-			List<FileConnection> connectionsFound = null;
-			if (connectionIsLocalHost) {
-				connectionsFound = this.checkLocalFolder();
-			} else {
-				connectionsFound = this.checkRemoteFolder(connection);
-			}
-
-			if (connectionsFound.size() > 0) {
-				if (this.getExpectedResult().getValue().equalsIgnoreCase("y")) {
-					// this.setRuntimeVariable(crs);
-					return true;
-				} else {
-					return false;
-				}
-			} else {
-				if (this.getExpectedResult().getValue().equalsIgnoreCase("n")) {
-					return true;
-				} else {
-					return false;
-				}
-			}
+//			List<FileConnection> connectionsFound = null;
+//			if (connectionIsLocalHost) {
+//				connectionsFound = this.checkLocalFolder();
+//			} else {
+//				connectionsFound = this.checkRemoteFolder(connection);
+//			}
+//
+//			if (connectionsFound.size() > 0) {
+//				if (this.getExpectedResult().getValue().equalsIgnoreCase("y")) {
+//					// this.setRuntimeVariable(crs);
+//					return true;
+//				} else {
+//					return false;
+//				}
+//			} else {
+//				if (this.getExpectedResult().getValue().equalsIgnoreCase("n")) {
+//					return true;
+//				} else {
+//					return false;
+//				}
+//			}
 		} catch (Exception e) {
 			StringWriter StackTrace = new StringWriter();
 			e.printStackTrace(new PrintWriter(StackTrace));
@@ -209,58 +209,58 @@ public class WfaExecuteFilePing {
 
 			throw new RuntimeException(e.getMessage());
 		}
-
+		return true;
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked"})
 	private List<FileConnection> checkLocalFolder() {
 		List<FileConnection> connectionsFound = new ArrayList();
-		final File folder = new File(this.getFilePath().getValue());
-		if (this.getFileName().getValue().equalsIgnoreCase("*") || this.getFileName().getValue().equalsIgnoreCase("")) {
-			// Check all files
-			for (final File file : folder.listFiles()) {
-				if (file.isDirectory()) {
-					// Ignore
-				} else {
-					FileConnection connectionFound = new FileConnection();
-					connectionFound.setLongName(file.getAbsolutePath());
-					connectionFound.setFileName(file.getName());
-					connectionFound.setFilePath(file.getPath());
-					connectionsFound.add(connectionFound);
-				}
-			}
-		} else if (ParsingTools.isRegexFunction(this.getFileName().getValue())) {
-			// Check regex expression files
-			final String fileFilter = this.getFileName().getValue();
-			final File[] files = FolderTools.getFilesInFolder(folder.getAbsolutePath(), "regex", fileFilter);
-
-			for (final File file : files) {
-				if (file.isDirectory()) {
-					// Ignore
-				} else {
-					FileConnection connectionFound = new FileConnection();
-					connectionFound.setLongName(file.getAbsolutePath());
-					connectionFound.setFileName(file.getName());
-					connectionFound.setFilePath(file.getPath());
-					connectionsFound.add(connectionFound);
-				}
-			}
-		} else {
-			// Check exact file name
-			final String fileFilter = this.getFileName().getValue();
-			final File[] files = FolderTools.getFilesInFolder(folder.getAbsolutePath(), "match", fileFilter);
-			for (final File file : files) {
-				if (file.isDirectory()) {
-					// Ignore
-				} else {
-					FileConnection connectionFound = new FileConnection();
-					connectionFound.setLongName(file.getAbsolutePath());
-					connectionFound.setFileName(file.getName());
-					connectionFound.setFilePath(file.getPath());
-					connectionsFound.add(connectionFound);
-				}
-			}
-		}
+//		final File folder = new File(this.getFilePath().getValue());
+//		if (this.getFileName().getValue().equalsIgnoreCase("*") || this.getFileName().getValue().equalsIgnoreCase("")) {
+//			// Check all files
+//			for (final File file : folder.listFiles()) {
+//				if (file.isDirectory()) {
+//					// Ignore
+//				} else {
+//					FileConnection connectionFound = new FileConnection();
+//					connectionFound.setLongName(file.getAbsolutePath());
+//					connectionFound.setFileName(file.getName());
+//					connectionFound.setFilePath(file.getPath());
+//					connectionsFound.add(connectionFound);
+//				}
+//			}
+//		} else if (ParsingTools.isRegexFunction(this.getFileName().getValue())) {
+//			// Check regex expression files
+//			final String fileFilter = this.getFileName().getValue();
+//			final File[] files = FolderTools.getFilesInFolder(folder.getAbsolutePath(), "regex", fileFilter);
+//
+//			for (final File file : files) {
+//				if (file.isDirectory()) {
+//					// Ignore
+//				} else {
+//					FileConnection connectionFound = new FileConnection();
+//					connectionFound.setLongName(file.getAbsolutePath());
+//					connectionFound.setFileName(file.getName());
+//					connectionFound.setFilePath(file.getPath());
+//					connectionsFound.add(connectionFound);
+//				}
+//			}
+//		} else {
+//			// Check exact file name
+//			final String fileFilter = this.getFileName().getValue();
+//			final File[] files = FolderTools.getFilesInFolder(folder.getAbsolutePath(), "match", fileFilter);
+//			for (final File file : files) {
+//				if (file.isDirectory()) {
+//					// Ignore
+//				} else {
+//					FileConnection connectionFound = new FileConnection();
+//					connectionFound.setLongName(file.getAbsolutePath());
+//					connectionFound.setFileName(file.getName());
+//					connectionFound.setFilePath(file.getPath());
+//					connectionsFound.add(connectionFound);
+//				}
+//			}
+//		}
 
 		return connectionsFound;
 
@@ -269,122 +269,122 @@ public class WfaExecuteFilePing {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private List<FileConnection> checkRemoteFolder(Connection connection) {
 		List<FileConnection> connectionsFound = new ArrayList();
-		ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
-		HostConnection hostConnection = connectionOperation.getHostConnection(connection);
-		this.getActionExecution().getActionControl().logOutput("conn.name",connection.getName());
-
-		try {
-			JSch jsch = new JSch();
-			Session session = jsch.getSession(hostConnection.getUserName(), hostConnection.getHostName(),
-					hostConnection.getPortNumber());
-			session.setConfig("StrictHostKeyChecking", "no");
-			UserInfo ui = new LinuxHostUserInfo(hostConnection.getUserPassword());
-			session.setUserInfo(ui);
-			session.connect();
-
-			Channel channel = session.openChannel("sftp");
-			channel.connect();
-			ChannelSftp c = (ChannelSftp) channel;
-
-			c.cd(this.getFilePath().getValue());
-
-			String fileFilter;
-
-			Vector vv = null;
-
-			if (this.getFileName().getValue().equalsIgnoreCase("*") || this.getFileName().getValue().equalsIgnoreCase("")) {
-				// Check all files
-				vv = c.ls(this.getFilePath().getValue());
-				if (vv != null) {
-					for (int ii = 0; ii < vv.size(); ii++) {
-
-						Object obj = vv.elementAt(ii);
-						if (obj instanceof com.jcraft.jsch.ChannelSftp.LsEntry) {
-							String attributes = ((com.jcraft.jsch.ChannelSftp.LsEntry) obj).getAttrs().toString();
-							if (attributes.substring(0, 1).equalsIgnoreCase("d")) {
-								// Ignore directories
-							} else {
-								FileConnection connectionFound = new FileConnection();
-								connectionFound.setLongName(((com.jcraft.jsch.ChannelSftp.LsEntry) obj).getLongname());
-								connectionFound.setFileName(((com.jcraft.jsch.ChannelSftp.LsEntry) obj).getFilename());
-								connectionFound.setAttributes(
-										((com.jcraft.jsch.ChannelSftp.LsEntry) obj).getAttrs().toString());
-								connectionsFound.add(connectionFound);
-							}
-						}
-					}
-				}
-
-			} else if (ParsingTools.isRegexFunction(this.getFileName().getValue())) {
-				// Check regex expression files
-				fileFilter = this.getFileName().getValue();
-				vv = c.ls(this.getFilePath().getValue());
-				if (vv != null) {
-					for (int ii = 0; ii < vv.size(); ii++) {
-
-						Object obj = vv.elementAt(ii);
-						if (obj instanceof com.jcraft.jsch.ChannelSftp.LsEntry) {
-							String file_match = ((com.jcraft.jsch.ChannelSftp.LsEntry) obj).getFilename();
-							if (file_match.matches(fileFilter)) {
-								String attributes = ((com.jcraft.jsch.ChannelSftp.LsEntry) obj).getAttrs().toString();
-								if (attributes.substring(0, 1).equalsIgnoreCase("d")) {
-									// Ignore directories
-								} else {
-									FileConnection connectionFound = new FileConnection();
-									connectionFound.setLongName(((com.jcraft.jsch.ChannelSftp.LsEntry) obj).getLongname());
-									connectionFound.setFileName(((com.jcraft.jsch.ChannelSftp.LsEntry) obj).getFilename());
-									connectionFound.setAttributes(
-											((com.jcraft.jsch.ChannelSftp.LsEntry) obj).getAttrs().toString());
-									connectionsFound.add(connectionFound);
-								}
-							}
-						}
-					}
-				}
-
-			} else {
-				// Check exact file name
-				fileFilter = this.getFileName().getValue();
-				vv = c.ls(this.getFilePath().getName());
-				if (vv != null) {
-					for (int ii = 0; ii < vv.size(); ii++) {
-
-						Object obj = vv.elementAt(ii);
-						if (obj instanceof com.jcraft.jsch.ChannelSftp.LsEntry) {
-							String attributes = ((com.jcraft.jsch.ChannelSftp.LsEntry) obj).getAttrs().toString();
-							if (attributes.substring(0, 1).equalsIgnoreCase("d")) {
-								// Ignore directories
-							} else {
-								FileConnection connectionFound = new FileConnection();
-								connectionFound.setLongName(((com.jcraft.jsch.ChannelSftp.LsEntry) obj).getLongname());
-								connectionFound.setFileName(((com.jcraft.jsch.ChannelSftp.LsEntry) obj).getFilename());
-								connectionFound.setAttributes(
-										((com.jcraft.jsch.ChannelSftp.LsEntry) obj).getAttrs().toString());
-								connectionsFound.add(connectionFound);
-							}
-						}
-					}
-				}
-
-			}
-		} catch (Exception e) {
-			StringWriter StackTrace = new StringWriter();
-			e.printStackTrace(new PrintWriter(StackTrace));
-		}
+//		ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
+//		HostConnection hostConnection = connectionOperation.getHostConnection(connection);
+//		this.getActionExecution().getActionControl().logOutput("conn.name",connection.getName());
+//
+//		try {
+//			JSch jsch = new JSch();
+//			Session session = jsch.getSession(hostConnection.getUserName(), hostConnection.getHostName(),
+//					hostConnection.getPortNumber());
+//			session.setConfig("StrictHostKeyChecking", "no");
+//			UserInfo ui = new LinuxHostUserInfo(hostConnection.getUserPassword());
+//			session.setUserInfo(ui);
+//			session.connect();
+//
+//			Channel channel = session.openChannel("sftp");
+//			channel.connect();
+//			ChannelSftp c = (ChannelSftp) channel;
+//
+//			c.cd(this.getFilePath().getValue());
+//
+//			String fileFilter;
+//
+//			Vector vv = null;
+//
+//			if (this.getFileName().getValue().equalsIgnoreCase("*") || this.getFileName().getValue().equalsIgnoreCase("")) {
+//				// Check all files
+//				vv = c.ls(this.getFilePath().getValue());
+//				if (vv != null) {
+//					for (int ii = 0; ii < vv.size(); ii++) {
+//
+//						Object obj = vv.elementAt(ii);
+//						if (obj instanceof com.jcraft.jsch.ChannelSftp.LsEntry) {
+//							String attributes = ((com.jcraft.jsch.ChannelSftp.LsEntry) obj).getAttrs().toString();
+//							if (attributes.substring(0, 1).equalsIgnoreCase("d")) {
+//								// Ignore directories
+//							} else {
+//								FileConnection connectionFound = new FileConnection();
+//								connectionFound.setLongName(((com.jcraft.jsch.ChannelSftp.LsEntry) obj).getLongname());
+//								connectionFound.setFileName(((com.jcraft.jsch.ChannelSftp.LsEntry) obj).getFilename());
+//								connectionFound.setAttributes(
+//										((com.jcraft.jsch.ChannelSftp.LsEntry) obj).getAttrs().toString());
+//								connectionsFound.add(connectionFound);
+//							}
+//						}
+//					}
+//				}
+//
+//			} else if (ParsingTools.isRegexFunction(this.getFileName().getValue())) {
+//				// Check regex expression files
+//				fileFilter = this.getFileName().getValue();
+//				vv = c.ls(this.getFilePath().getValue());
+//				if (vv != null) {
+//					for (int ii = 0; ii < vv.size(); ii++) {
+//
+//						Object obj = vv.elementAt(ii);
+//						if (obj instanceof com.jcraft.jsch.ChannelSftp.LsEntry) {
+//							String file_match = ((com.jcraft.jsch.ChannelSftp.LsEntry) obj).getFilename();
+//							if (file_match.matches(fileFilter)) {
+//								String attributes = ((com.jcraft.jsch.ChannelSftp.LsEntry) obj).getAttrs().toString();
+//								if (attributes.substring(0, 1).equalsIgnoreCase("d")) {
+//									// Ignore directories
+//								} else {
+//									FileConnection connectionFound = new FileConnection();
+//									connectionFound.setLongName(((com.jcraft.jsch.ChannelSftp.LsEntry) obj).getLongname());
+//									connectionFound.setFileName(((com.jcraft.jsch.ChannelSftp.LsEntry) obj).getFilename());
+//									connectionFound.setAttributes(
+//											((com.jcraft.jsch.ChannelSftp.LsEntry) obj).getAttrs().toString());
+//									connectionsFound.add(connectionFound);
+//								}
+//							}
+//						}
+//					}
+//				}
+//
+//			} else {
+//				// Check exact file name
+//				fileFilter = this.getFileName().getValue();
+//				vv = c.ls(this.getFilePath().getName());
+//				if (vv != null) {
+//					for (int ii = 0; ii < vv.size(); ii++) {
+//
+//						Object obj = vv.elementAt(ii);
+//						if (obj instanceof com.jcraft.jsch.ChannelSftp.LsEntry) {
+//							String attributes = ((com.jcraft.jsch.ChannelSftp.LsEntry) obj).getAttrs().toString();
+//							if (attributes.substring(0, 1).equalsIgnoreCase("d")) {
+//								// Ignore directories
+//							} else {
+//								FileConnection connectionFound = new FileConnection();
+//								connectionFound.setLongName(((com.jcraft.jsch.ChannelSftp.LsEntry) obj).getLongname());
+//								connectionFound.setFileName(((com.jcraft.jsch.ChannelSftp.LsEntry) obj).getFilename());
+//								connectionFound.setAttributes(
+//										((com.jcraft.jsch.ChannelSftp.LsEntry) obj).getAttrs().toString());
+//								connectionsFound.add(connectionFound);
+//							}
+//						}
+//					}
+//				}
+//
+//			}
+//		} catch (Exception e) {
+//			StringWriter StackTrace = new StringWriter();
+//			e.printStackTrace(new PrintWriter(StackTrace));
+//		}
 		return connectionsFound;
 
 	}
 	
 	@SuppressWarnings("unused")
 	private void setRuntimeVariable(CachedRowSet crs) {
-		if (this.getSetRuntimeVariables().getValue().equalsIgnoreCase("y")) {
-			try {
-				this.getExecutionControl().getExecutionRuntime().setRuntimeVariables(crs);
-			} catch (Exception e) {
-				this.getActionExecution().getActionControl().increaseWarningCount();
-				this.getActionExecution().getActionControl().logWarning("set.runvar",e.getMessage());
-			}
-		}
+//		if (this.getSetRuntimeVariables().getValue().equalsIgnoreCase("y")) {
+//			try {
+//				this.getExecutionControl().getExecutionRuntime().setRuntimeVariables(crs);
+//			} catch (Exception e) {
+//				this.getActionExecution().getActionControl().increaseWarningCount();
+//				this.getActionExecution().getActionControl().logWarning("set.runvar",e.getMessage());
+//			}
+//		}
 	}
 
 	// Getters and Setters

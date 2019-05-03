@@ -2,14 +2,18 @@ package io.metadew.iesi.script.action;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.text.MessageFormat;
 import java.util.HashMap;
 
+import io.metadew.iesi.datatypes.DataType;
+import io.metadew.iesi.datatypes.Text;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.ActionParameter;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
+import org.apache.logging.log4j.Level;
 
 public class FwkSetParameterValue {
 
@@ -61,15 +65,9 @@ public class FwkSetParameterValue {
 	
 	public boolean execute() {
 		try {
-			// Run the action
-			try {
-				this.getExecutionControl().getExecutionRuntime().setRuntimeVariable(this.getOperationName().getValue(),
-						this.getOperationValue().getValue());
-				this.getActionExecution().getActionControl().increaseSuccessCount();
-			} catch (Exception e) {
-				throw new RuntimeException("Issue setting runtime variables: " + e, e);
-			}
-			return true;
+			String name = convertName(getOperationName().getValue());
+			String value = convertValue(getOperationValue().getValue());
+			return setParameter(name, value);
 		} catch (Exception e) {
 			StringWriter StackTrace = new StringWriter();
 			e.printStackTrace(new PrintWriter(StackTrace));
@@ -82,6 +80,32 @@ public class FwkSetParameterValue {
 			return false;
 		}
 
+	}
+
+	private boolean setParameter(String name, String value) {
+		this.getExecutionControl().getExecutionRuntime().setRuntimeVariable(name, value);
+		this.getActionExecution().getActionControl().increaseSuccessCount();
+		return true;
+	}
+
+	private String convertValue(DataType value) {
+		if (value instanceof Text) {
+			return value.toString();
+		} else {
+			frameworkExecution.getFrameworkLog().log(MessageFormat.format("fwk.setParameterValue does not accept {0} as type for value",
+					value.getClass()), Level.WARN);
+			return value.toString();
+		}
+	}
+
+	private String convertName(DataType name) {
+		if (name instanceof Text) {
+			return name.toString();
+		} else {
+			frameworkExecution.getFrameworkLog().log(MessageFormat.format("fwk.setParameterValue does not accept {0} as type for name",
+					name.getClass()), Level.WARN);
+			return name.toString();
+		}
 	}
 
 	// Getters and Setters

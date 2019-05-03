@@ -1,7 +1,7 @@
 package io.metadew.iesi.datatypes;
 
-public interface DataType {
+public abstract class DataType {
 
-    public String toString();
+    public abstract String toString();
 
 }

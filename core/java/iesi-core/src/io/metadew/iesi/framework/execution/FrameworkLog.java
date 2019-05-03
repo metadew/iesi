@@ -4,7 +4,6 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.UUID;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -20,14 +19,14 @@ public class FrameworkLog {
 
 	private FrameworkConfiguration frameworkConfiguration;
 	private FrameworkExecutionContext frameworkExecutionContext;
+	private FrameworkRuntime frameworkRuntime;
 	private Logger logger;
 	private String logFile;
-	private UUID uuid;
 	private FrameworkCrypto frameworkCrypto;
 	private ArrayList<String> encryptionRedactionList;
 	private ArrayList<RedactionSource> redactionList;
 
-	public FrameworkLog(FrameworkConfiguration frameworkConfiguration, FrameworkExecutionContext frameworkExecutionContext, FrameworkControl frameworkControl, FrameworkCrypto frameworkCrypto) {
+	public FrameworkLog(FrameworkConfiguration frameworkConfiguration, FrameworkExecutionContext frameworkExecutionContext, FrameworkControl frameworkControl, FrameworkCrypto frameworkCrypto, FrameworkRuntime frameworkRuntime) {
 		if (frameworkExecutionContext == null) {
 			Context context = new Context();
 			context.setName("");
@@ -42,6 +41,7 @@ public class FrameworkLog {
 		this.setRedactionList(new ArrayList<RedactionSource>());
 		
 		// Get to work
+		this.setFrameworkRuntime(frameworkRuntime);
 		this.setFrameworkConfiguration(frameworkConfiguration);
 		this.setFrameworkCrypto(frameworkCrypto);
 		System.setProperty("log4j.configurationFile",
@@ -50,7 +50,6 @@ public class FrameworkLog {
 		
 		// Set log file name
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmssSSS");
-		this.setUuid(UUID.randomUUID());
 		StringBuilder fileName = new StringBuilder();
 		fileName.append(this.getFrameworkConfiguration().getFolderConfiguration().getFolderAbsolutePath("logs"));
 		fileName.append(File.separator);
@@ -58,7 +57,7 @@ public class FrameworkLog {
 		fileName.append((!this.getExecutionContext().getContext().getName().equalsIgnoreCase("")?"." + this.getExecutionContext().getContext().getName():""));
 		fileName.append((!this.getExecutionContext().getContext().getScope().equalsIgnoreCase("")?"." + this.getExecutionContext().getContext().getScope():""));
 		fileName.append(".");
-		fileName.append(this.getUuid().toString());
+		fileName.append(this.getFrameworkRuntime().getRunId());
 		fileName.append(".log");
 		this.setLogFile(fileName.toString());
 		System.setProperty("logFilename", this.getLogFile());
@@ -117,14 +116,6 @@ public class FrameworkLog {
 	}
 
 	// Getters and Setters
-	public UUID getUuid() {
-		return uuid;
-	}
-
-	public void setUuid(UUID uuid) {
-		this.uuid = uuid;
-	}
-
 	public Logger getLogger() {
 		return logger;
 	}
@@ -179,5 +170,13 @@ public class FrameworkLog {
 
 	public void setFrameworkConfiguration(FrameworkConfiguration frameworkConfiguration) {
 		this.frameworkConfiguration = frameworkConfiguration;
+	}
+
+	public FrameworkRuntime getFrameworkRuntime() {
+		return frameworkRuntime;
+	}
+
+	public void setFrameworkRuntime(FrameworkRuntime frameworkRuntime) {
+		this.frameworkRuntime = frameworkRuntime;
 	}
 }

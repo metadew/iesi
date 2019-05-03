@@ -492,4 +492,26 @@
 		"group": "Framework",
 		"category": "Plugin",
 		"type": ""
+}},
+{
+	"type": "FrameworkSetting",
+	"data": {
+		"name": "localhost.challenge",
+		"path": "iesi.localhost.challenge",
+		"label": "LocalHostChallenge",
+		"description": "",
+		"group": "Framework",
+		"category": "Runtime",
+		"type": ""
+}},
+{
+	"type": "FrameworkSetting",
+	"data": {
+		"name": "guard.authenticate",
+		"path": "iesi.guard.authenticate",
+		"label": "GuardAuthenticate",
+		"description": "",
+		"group": "Framework",
+		"category": "Guard",
+		"type": ""
 }}]

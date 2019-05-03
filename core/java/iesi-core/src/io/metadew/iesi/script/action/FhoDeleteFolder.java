@@ -3,15 +3,15 @@ package io.metadew.iesi.script.action;
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
-import io.metadew.iesi.common.text.ParsingTools;
-import io.metadew.iesi.connection.FileConnection;
+import io.metadew.iesi.connection.HostConnection;
+import io.metadew.iesi.connection.operation.ConnectionOperation;
 import io.metadew.iesi.connection.tools.FolderTools;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.metadata.configuration.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.ActionParameter;
+import io.metadew.iesi.metadata.definition.Connection;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
@@ -90,12 +90,21 @@ public class FhoDeleteFolder {
 				if (this.getConnectionName().getValue().equalsIgnoreCase("localhost")) {
 					isOnLocalHost = true;
 				} else {
-					// placeholder
+					ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution());
+					Connection connection = connectionConfiguration.getConnection(this.getConnectionName().getValue(),
+							this.getExecutionControl().getEnvName()).get();
+					ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
+					HostConnection hostConnection = connectionOperation.getHostConnection(connection);
+
+					if(hostConnection.fileExists(this.getFrameworkExecution().getFrameworkRuntime().getLocalHostChallengeFileName())) {
+						isOnLocalHost = true;
+					} else {
+						isOnLocalHost = false;
+					}
 				}
 			}
 
 			if (isOnLocalHost) {
-				
 				if (this.getFolderPath().getValue().isEmpty()) {
 					FolderTools.deleteFolder(this.getFolderName().getValue(), true);
 				} else {
@@ -114,9 +123,11 @@ public class FhoDeleteFolder {
 						}
 					}
 				}
-				
 			} else {
 				// placeholder
+				// check if allowed
+				// delete remote
+				// new file object - consolidate over file and lsentry
 			}
 
 			return true;

@@ -56,9 +56,9 @@ public class ConnSetStageConnection {
 	//
 	public boolean execute() {
 		try {
-			// Run the action
-			//this.getExecutionControl().getExecutionRuntime().setStage(this.getStageName().getValue());
-
+			this.getExecutionControl().getExecutionRuntime().setStage(this.getStageName().getValue());
+			this.getActionExecution().getActionControl().increaseSuccessCount();
+			
 			return true;
 		} catch (Exception e) {
 			StringWriter StackTrace = new StringWriter();

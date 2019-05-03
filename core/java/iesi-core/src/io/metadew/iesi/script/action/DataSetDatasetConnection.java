@@ -19,6 +19,7 @@ public class DataSetDatasetConnection {
 
 	// Parameters
 	private ActionParameterOperation referenceName;
+	private ActionParameterOperation datasetType;
 	private ActionParameterOperation datasetName;
 	private ActionParameterOperation datasetLabels;
 	private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
@@ -33,8 +34,8 @@ public class DataSetDatasetConnection {
 		this.init(frameworkExecution, executionControl, scriptExecution, actionExecution);
 	}
 
-	public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl, ScriptExecution scriptExecution,
-			ActionExecution actionExecution) {
+	public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+			ScriptExecution scriptExecution, ActionExecution actionExecution) {
 		this.setFrameworkExecution(frameworkExecution);
 		this.setExecutionControl(executionControl);
 		this.setActionExecution(actionExecution);
@@ -45,6 +46,8 @@ public class DataSetDatasetConnection {
 		// Reset Parameters
 		this.setReferenceName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
 				this.getActionExecution(), this.getActionExecution().getAction().getType(), "name"));
+		this.setDatasetType(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+				this.getActionExecution(), this.getActionExecution().getAction().getType(), "type"));
 		this.setDatasetName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
 				this.getActionExecution(), this.getActionExecution().getAction().getType(), "dataset"));
 		this.setDatasetLabels(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
@@ -53,6 +56,8 @@ public class DataSetDatasetConnection {
 		for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
 			if (actionParameter.getName().equalsIgnoreCase("name")) {
 				this.getReferenceName().setInputValue(actionParameter.getValue());
+			} else if (actionParameter.getName().equalsIgnoreCase("type")) {
+				this.getDatasetType().setInputValue(actionParameter.getValue());
 			} else if (actionParameter.getName().equalsIgnoreCase("dataset")) {
 				this.getDatasetName().setInputValue(actionParameter.getValue());
 			} else if (actionParameter.getName().equalsIgnoreCase("labels")) {
@@ -62,15 +67,19 @@ public class DataSetDatasetConnection {
 
 		// Create parameter list
 		this.getActionParameterOperationMap().put("name", this.getReferenceName());
+		this.getActionParameterOperationMap().put("type", this.getDatasetType());
 		this.getActionParameterOperationMap().put("dataset", this.getDatasetName());
 		this.getActionParameterOperationMap().put("labels", this.getDatasetLabels());
 	}
-	
+
 	//
 	public boolean execute() {
 		try {
-			// Run the action
-			this.getExecutionControl().getExecutionRuntime().setDataset(referenceName.getValue(), datasetName.getValue(), datasetLabels.getValue());
+			this.getExecutionControl().getExecutionRuntime().setDataset(this.getReferenceName().getValue(),
+					this.getDatasetType().getValue(), this.getDatasetName().getValue(),
+					this.getDatasetLabels().getValue());
+
+			this.getActionExecution().getActionControl().increaseSuccessCount();
 
 			return true;
 		} catch (Exception e) {
@@ -79,8 +88,8 @@ public class DataSetDatasetConnection {
 
 			this.getActionExecution().getActionControl().increaseErrorCount();
 
-			this.getActionExecution().getActionControl().logOutput("exception",e.getMessage());
-			this.getActionExecution().getActionControl().logOutput("stacktrace",StackTrace.toString());
+			this.getActionExecution().getActionControl().logOutput("exception", e.getMessage());
+			this.getActionExecution().getActionControl().logOutput("stacktrace", StackTrace.toString());
 
 			return false;
 		}
@@ -142,6 +151,14 @@ public class DataSetDatasetConnection {
 
 	public void setReferenceName(ActionParameterOperation referenceName) {
 		this.referenceName = referenceName;
+	}
+
+	public ActionParameterOperation getDatasetType() {
+		return datasetType;
+	}
+
+	public void setDatasetType(ActionParameterOperation datasetType) {
+		this.datasetType = datasetType;
 	}
 
 }

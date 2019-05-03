@@ -185,7 +185,12 @@ public class UserConfiguration
 			StringWriter StackTrace = new StringWriter();
 			e.printStackTrace(new PrintWriter(StackTrace));
 		}
-		return user;
+		
+		if (user.getName() == null) {
+			return null;
+		} else {
+			return user;	
+		}
 	}
 
 	// Exists

@@ -47,6 +47,7 @@ import io.metadew.iesi.script.operation.ImpersonationOperation;
 import io.metadew.iesi.script.operation.IterationOperation;
 import io.metadew.iesi.script.operation.RepositoryOperation;
 //import io.metadew.iesi.script.operation.StageOperation;
+import io.metadew.iesi.script.operation.StageOperation;
 
 public class ExecutionRuntime {
 
@@ -62,7 +63,7 @@ public class ExecutionRuntime {
 
 	private Level level = Level.TRACE;
 
-	//private HashMap<String, StageOperation> stageOperationMap;
+	private HashMap<String, StageOperation> stageOperationMap;
 	private HashMap<String, RepositoryOperation> repositoryOperationMap;
 	private HashMap<String, DatasetOperation> datasetOperationMap;
 	private HashMap<String, IterationOperation> iterationOperationMap;
@@ -108,7 +109,7 @@ public class ExecutionRuntime {
 		this.defineLoggingLevel();
 
 		// Initialize maps
-//		this.setStageOperationMap(new HashMap<String, StageOperation>());
+		this.setStageOperationMap(new HashMap<String, StageOperation>());
 		this.setRepositoryOperationMap(new HashMap<String, RepositoryOperation>());
 		this.setDatasetOperationMap(new HashMap<String, DatasetOperation>());
 		this.setIterationOperationMap(new HashMap<String, IterationOperation>());
@@ -863,18 +864,18 @@ public class ExecutionRuntime {
 	}
 
 	// Stage Management
-//	public void setStage(String stageName) {
-//		StageOperation stageOperation = new StageOperation(this.getFrameworkExecution(), stageName);
-//		this.getStageOperationMap().put(stageName, stageOperation);
-//	}
+	public void setStage(String stageName) {
+		StageOperation stageOperation = new StageOperation(this.getFrameworkExecution(), stageName);
+		this.getStageOperationMap().put(stageName, stageOperation);
+	}
 
-//	public void setOperation(String stageName, StageOperation stageOperation) {
-//		this.getStageOperationMap().put(stageName, stageOperation);
-//	}
-//
-//	public StageOperation getOperation(String stageName) {
-//		return this.getStageOperationMap().get(stageName);
-//	}
+	public void setStageOperation(String stageName, StageOperation stageOperation) {
+		this.getStageOperationMap().put(stageName, stageOperation);
+	}
+
+	public StageOperation getStageOperation(String stageName) {
+		return this.getStageOperationMap().get(stageName);
+	}
 
 	// Repository Management
 	public void setRepository(ExecutionControl executionControl, String repositoryReferenceName, String repositoryName, String repositoryInstanceName, String repositoryInstanceLabels) {
@@ -884,8 +885,8 @@ public class ExecutionRuntime {
 	}
 
 	// Dataset Management
-	public void setDataset(String referenceName, String datasetName, String datasetLabels) {
-		DatasetOperation datasetOperation = new DatasetOperation(this.getFrameworkExecution(), datasetName, datasetLabels);
+	public void setDataset(String referenceName, String datasetType, String datasetName, String datasetLabels) {
+		DatasetOperation datasetOperation = new DatasetOperation(this.getFrameworkExecution(), this.getExecutionControl(), datasetType, datasetName,  datasetLabels);
 		this.getDatasetOperationMap().put(referenceName, datasetOperation);
 	}
 
@@ -981,13 +982,13 @@ public class ExecutionRuntime {
 		this.level = level;
 	}
 
-//	public HashMap<String, StageOperation> getStageOperationMap() {
-//		return stageOperationMap;
-//	}
-//
-//	public void setStageOperationMap(HashMap<String, StageOperation> stageOperationMap) {
-//		this.stageOperationMap = stageOperationMap;
-//	}
+	public HashMap<String, StageOperation> getStageOperationMap() {
+		return stageOperationMap;
+	}
+
+	public void setStageOperationMap(HashMap<String, StageOperation> stageOperationMap) {
+		this.stageOperationMap = stageOperationMap;
+	}
 
 	public ImpersonationOperation getImpersonationOperation() {
 		return impersonationOperation;

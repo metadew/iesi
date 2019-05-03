@@ -52,48 +52,6 @@ public class FrameworkExecution {
 				frameworkInitializationFile);
 	}
 
-	/*
-	 * @Deprecated To be replaced with combination FrameworkInstance - FrameworkExecution  
-	 */
-	@Deprecated
-	public FrameworkExecution(FrameworkExecutionContext frameworkExecutionContext,
-			FrameworkInitializationFile frameworkInitializationFile) {
-		this.initializeFrameworkExecution(frameworkExecutionContext, new FrameworkExecutionSettings(""), "write",
-				frameworkInitializationFile);
-	}
-
-	/*
-	 * @Deprecated To be replaced with combination FrameworkInstance - FrameworkExecution  
-	 */
-	@Deprecated
-	public FrameworkExecution(FrameworkExecutionContext frameworkExecutionContext,
-			FrameworkExecutionSettings frameworkExecutionSettings,
-			FrameworkInitializationFile frameworkInitializationFile) {
-		this.initializeFrameworkExecution(frameworkExecutionContext, frameworkExecutionSettings, "write",
-				frameworkInitializationFile);
-	}
-
-	/*
-	 * @Deprecated To be replaced with combination FrameworkInstance - FrameworkExecution  
-	 */
-	@Deprecated
-	public FrameworkExecution(FrameworkExecutionContext frameworkExecutionContext, String logonType,
-			FrameworkInitializationFile frameworkInitializationFile) {
-		this.initializeFrameworkExecution(frameworkExecutionContext, new FrameworkExecutionSettings(""), logonType,
-				frameworkInitializationFile);
-	}
-
-	/*
-	 * @Deprecated To be replaced with combination FrameworkInstance - FrameworkExecution  
-	 */
-	@Deprecated
-	public FrameworkExecution(FrameworkExecutionContext frameworkExecutionContext,
-			FrameworkExecutionSettings frameworkExecutionSettings, String logonType,
-			FrameworkInitializationFile frameworkInitializationFile) {
-		this.initializeFrameworkExecution(frameworkExecutionContext, frameworkExecutionSettings, logonType,
-				frameworkInitializationFile);
-	}
-
 	// Methods
 	private void initializeFrameworkExecution(FrameworkExecutionContext frameworkExecutionContext,
 			FrameworkExecutionSettings frameworkExecutionSettings, String logonType,

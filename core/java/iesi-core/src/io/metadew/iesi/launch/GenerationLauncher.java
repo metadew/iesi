@@ -11,6 +11,7 @@ import org.apache.logging.log4j.Level;
 
 import io.metadew.iesi.data.generation.execution.GenerationExecution;
 import io.metadew.iesi.framework.execution.FrameworkExecutionContext;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.configuration.GenerationConfiguration;
 import io.metadew.iesi.metadata.definition.Context;
@@ -113,11 +114,14 @@ public class GenerationLauncher {
 		System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 		System.out.println();
 
-		// Get the sharedContext
+		// Create the framework instance
+		FrameworkInstance frameworkInstance = new FrameworkInstance();
+
+		// Create the framework execution
 		Context context = new Context();
 		context.setName("generation");
 		context.setScope(generationName);
-		FrameworkExecution frameworkExecution = new FrameworkExecution(new FrameworkExecutionContext(context), null);
+		FrameworkExecution frameworkExecution = new FrameworkExecution(frameworkInstance, new FrameworkExecutionContext(context), null);
 		
 		// Logging
 		frameworkExecution.getFrameworkLog().log("option.generation=" + generationName, Level.INFO);

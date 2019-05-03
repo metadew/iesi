@@ -19,6 +19,7 @@ import io.metadew.iesi.common.config.ConfigFile;
 import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.framework.execution.FrameworkExecutionContext;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.backup.BackupExecution;
 import io.metadew.iesi.metadata.definition.Context;
 import io.metadew.iesi.metadata.operation.MetadataRepositoryOperation;
@@ -118,17 +119,20 @@ public class MetadataLauncher {
 				}
 			}
 
-			// Define the ini file
+			// Create the framework instance
 			FrameworkInitializationFile frameworkInitializationFile = new FrameworkInitializationFile();
 			if (line.hasOption("ini")) {
 				frameworkInitializationFile.setName(line.getOptionValue("ini"));
 				System.out.println("Option -ini (ini) value = " + frameworkInitializationFile.getName());
 			}
 
+			FrameworkInstance frameworkInstance = new FrameworkInstance(frameworkInitializationFile);
+
+			// Create the framework execution
 			Context context = new Context();
             context.setName("metadata");
             context.setScope("");
-            FrameworkExecution frameworkExecution = new FrameworkExecution(new FrameworkExecutionContext(context), "owner", frameworkInitializationFile);
+            FrameworkExecution frameworkExecution = new FrameworkExecution(frameworkInstance, new FrameworkExecutionContext(context), "owner", frameworkInitializationFile);
             MetadataRepositoryOperation metadataRepositoryOperation = null;
             List<MetadataRepository> metadataRepositories = new ArrayList();
 

@@ -1,6 +1,7 @@
 package io.metadew.iesi.server.execution;
 
 import io.metadew.iesi.framework.execution.FrameworkExecutionContext;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.Context;
 
@@ -12,11 +13,14 @@ public class Services {
 	private FrameworkExecution frameworkExecution;
 
 	public Services() {
-		// Set the shared context
+		// Create the framework instance
+		FrameworkInstance frameworkInstance = new FrameworkInstance();
+		
+		// Create the framework execution
 		Context context = new Context();
 		context.setName("server");
 		context.setScope("");
-		this.setFrameworkExecution(new FrameworkExecution(new FrameworkExecutionContext(context), null));
+		this.setFrameworkExecution(new FrameworkExecution(frameworkInstance, new FrameworkExecutionContext(context), null));
 		
 		//requestServerRunnable = new RequestRunnable(this.getFrameworkExecution());
 		requestServerThread = new Thread(requestServerRunnable);

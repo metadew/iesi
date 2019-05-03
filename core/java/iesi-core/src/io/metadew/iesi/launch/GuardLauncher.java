@@ -11,6 +11,7 @@ import org.apache.commons.cli.ParseException;
 import io.metadew.iesi.framework.execution.FrameworkExecutionContext;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.framework.execution.FrameworkExecutionSettings;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.guard.execution.GuardExecution;
 import io.metadew.iesi.metadata.definition.Context;
 
@@ -62,13 +63,16 @@ public class GuardLauncher {
 			System.out.println("guard.launcher.start");
 			System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 
-			// Set the shared context
+			// Create the framework instance
+			FrameworkInstance frameworkInstance = new FrameworkInstance();
+
+			// Create the framework execution
 			FrameworkExecutionSettings frameworkExecutionSettings = new FrameworkExecutionSettings(settings);
 			Context context = new Context();
 			context.setName("guard");
 			context.setScope("user");
-			FrameworkExecution frameworkExecution = new FrameworkExecution(new FrameworkExecutionContext(context),
-					frameworkExecutionSettings, null, null);
+			FrameworkExecution frameworkExecution = new FrameworkExecution(frameworkInstance,
+					new FrameworkExecutionContext(context), frameworkExecutionSettings, null, null);
 
 			String userName = "";
 			String active = "";
@@ -81,7 +85,7 @@ public class GuardLauncher {
 					GuardExecution guardExecution = new GuardExecution(frameworkExecution);
 					guardExecution.createUser(userName);
 				}
-				
+
 				if (line.hasOption("password")) {
 					GuardExecution guardExecution = new GuardExecution(frameworkExecution);
 					guardExecution.resetPassword(userName);
@@ -98,12 +102,12 @@ public class GuardLauncher {
 					GuardExecution guardExecution = new GuardExecution(frameworkExecution);
 					guardExecution.updateLocked(userName, locked);
 				}
-				
+
 				if (line.hasOption("reset")) {
 					GuardExecution guardExecution = new GuardExecution(frameworkExecution);
 					guardExecution.resetIndividualLoginFails(userName);
 				}
-				
+
 			}
 		} catch (ParseException e) {
 			e.printStackTrace();

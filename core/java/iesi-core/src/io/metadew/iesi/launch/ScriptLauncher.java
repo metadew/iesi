@@ -16,6 +16,7 @@ import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.framework.execution.FrameworkExecutionContext;
 import io.metadew.iesi.framework.execution.FrameworkExecutionSettings;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.guard.configuration.UserAccessConfiguration;
 import io.metadew.iesi.guard.definition.UserAccess;
 import io.metadew.iesi.metadata.configuration.ScriptConfiguration;
@@ -222,16 +223,19 @@ public class ScriptLauncher {
 		System.out.println("script.launcher.start");
 		System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 
-		// Set the shared context
+		// Create framework instance
+		FrameworkInitializationFile frameworkInitializationFile = new FrameworkInitializationFile();
+		frameworkInitializationFile.setName(initializationFile);
+
+		FrameworkInstance frameworkInstance = new FrameworkInstance(frameworkInitializationFile);
+		
+		// Create framework execution
 		FrameworkExecutionSettings frameworkExecutionSettings = new FrameworkExecutionSettings(settings);
 		Context context = new Context();
 		context.setName("script");
 		context.setScope(scriptName);
 
-		FrameworkInitializationFile frameworkInitializationFile = new FrameworkInitializationFile();
-		frameworkInitializationFile.setName(initializationFile);
-
-		FrameworkExecution frameworkExecution = new FrameworkExecution(new FrameworkExecutionContext(context),
+		FrameworkExecution frameworkExecution = new FrameworkExecution(frameworkInstance, new FrameworkExecutionContext(context),
 				frameworkExecutionSettings, frameworkInitializationFile);
 
 		// Logging

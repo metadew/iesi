@@ -9,6 +9,7 @@ import io.metadew.iesi.connection.operation.ConnectionOperation;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.framework.execution.FrameworkExecutionContext;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.Connection;
 import io.metadew.iesi.metadata.definition.Context;
@@ -22,10 +23,14 @@ public class DatabaseOffloadExecution
 	// Constructors
 	public DatabaseOffloadExecution()
 	{
+		// Create the framework instance
+		FrameworkInstance frameworkInstance = new FrameworkInstance();
+
+		// Create the framework execution
 		Context context = new Context();
 		context.setName("offload");
 		context.setScope("");
-		this.setFrameworkExecution(new FrameworkExecution(new FrameworkExecutionContext(context), null));
+		this.setFrameworkExecution(new FrameworkExecution(frameworkInstance, new FrameworkExecutionContext(context), null));
 	}
 
 	// Methods

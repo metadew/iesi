@@ -6,6 +6,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 import io.metadew.iesi.framework.execution.FrameworkExecutionContext;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.configuration.ScriptConfiguration;
 import io.metadew.iesi.metadata.definition.Context;
@@ -67,10 +68,14 @@ public class Negotiator {
 	}
 
 	public void runScript() {
+		// Create the framework instance
+		FrameworkInstance frameworkInstance = new FrameworkInstance();
+
+		// Create the framework execution
 		Context context = new Context();
 		context.setName("negotiator");
 		context.setScope("");
-		FrameworkExecution frameworkExecution = new FrameworkExecution(new FrameworkExecutionContext(context), null);
+		FrameworkExecution frameworkExecution = new FrameworkExecution(frameworkInstance, new FrameworkExecutionContext(context), null);
 		// Get the Script
 		ScriptConfiguration scriptConfiguration = null;
 		Script script = null;

@@ -415,4 +415,15 @@
 			{"name": "folder","description": "Folder(s) to delete","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
 			{"name": "connection","description": "Connection where the folder is located","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "Y"}
 	]
+}},
+{
+	"type": "ActionType",
+	"data": {
+		"name": "fho.createFolder",
+		"description": "Create a folder",
+		"parameters": [
+			{"name": "path","description": "Path where the folder will be located","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "folder","description": "Folder to create","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "connection","description": "Connection where the folder will be located","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "Y"}
+	]
 }}]

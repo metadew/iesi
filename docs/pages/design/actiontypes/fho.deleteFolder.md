@@ -26,7 +26,7 @@ This action deletes a folder and all its contents. All subfolders and contents a
   * regular expression: this will delete all folders that match the regular expression as specified. 
 * if the value for the path is empty, then the full path name in the folder that is available will be used.
   * Typically, a single file name can be provided
-  * But, ig this is not the case, the default folder in the jvm is applicable.
+  * But, if this is not the case, the default folder in the jvm is applicable.
 
 ### 3: connection
 

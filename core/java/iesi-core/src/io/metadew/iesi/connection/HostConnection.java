@@ -83,6 +83,18 @@ public class HostConnection {
 	}
 
 	// Methods
+	public String getFileSeparator() {
+		String output = "";
+
+		if (this.getType().equalsIgnoreCase("windows")) {
+			output = "\\";
+		} else {
+			output = "/";
+		}
+
+		return output;
+	}
+	
 	private String formatCommand(String input) {
 		String output = "";
 
@@ -299,8 +311,10 @@ public class HostConnection {
 
 			((ChannelExec) channel).setCommand(executionShellCommand);
 			channel.setInputStream(null);
-			((ChannelExec) channel).setErrStream(System.err);
+			//TODO get error output
+			//((ChannelExec) channel).setErrStream(System.err);
 			InputStream in = channel.getInputStream();
+			
 			channel.connect();
 
 			systemOutput = "";

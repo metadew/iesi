@@ -13,7 +13,7 @@ public class WindowsHostConnection extends HostConnection {
 	private static String type = "windows";
 
 	public WindowsHostConnection(String hostName, String tempPath) {
-		super(type, hostName, 0, "", "", tempPath, "", "");
+		super(type, hostName, 0, "", "", tempPath, "", "", "Y");
 	}
 
 }

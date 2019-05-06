@@ -24,6 +24,7 @@ import io.metadew.iesi.connection.host.LinuxHostUserInfo;
 import io.metadew.iesi.connection.host.ShellCommandResult;
 import io.metadew.iesi.connection.host.ShellCommandSettings;
 import io.metadew.iesi.connection.operation.ConnectionOperation;
+import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.configuration.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.Connection;
 
@@ -43,6 +44,7 @@ public class HostConnection {
 	private String tempPath = "";
 	private String terminalFlag = "Y";
 	private String jumphostConnectionName = "";
+	private String allowLocalhostExecution = "Y";
 	private String outputSystemOutput = "";
 	private String outputReturnCode = "";
 	private String outputRuntimeVariablesOutput = "";
@@ -57,7 +59,7 @@ public class HostConnection {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public HostConnection(String type, String hostName, int portNumber, String userName, String userPassword,
-			String tempPath, String terminalFlag, String jumphostConnectionName) {
+			String tempPath, String terminalFlag, String jumphostConnectionName, String allowLocalhostExecution) {
 		super();
 		this.setType(type);
 		this.setHostName(hostName);
@@ -67,6 +69,7 @@ public class HostConnection {
 		this.setTempPath(tempPath);
 		this.setTerminalFlag(terminalFlag);
 		this.setJumphostConnectionName(jumphostConnectionName);
+		this.setAllowLocalhostExecution(allowLocalhostExecution);
 		this.setSystemOutputKeywordList(new ArrayList());
 		this.getSystemOutputKeywordList().add("SHELL_RUN_CMD");
 		this.getSystemOutputKeywordList().add("SHELL_RUN_CMD_RC");
@@ -93,7 +96,23 @@ public class HostConnection {
 		return output;
 	}
 
-	public boolean fileExists(String fileName) {
+	public boolean isOnLocalhost(FrameworkExecution frameworkExecution) {
+		boolean result = true;
+
+		// Check if execution can be performed as being on localhost
+		if (this.getAllowLocalhostExecution().equalsIgnoreCase("y")) {
+			if (this.localhostFileExists(frameworkExecution.getFrameworkRuntime().getLocalHostChallengeFileName())) {
+				result = true;
+			} else {
+				result = false;
+			}
+		} else {
+			result = false;
+		}
+		return result;
+	}
+
+	private boolean localhostFileExists(String fileName) {
 		String command = "";
 
 		if (this.getType().equalsIgnoreCase("windows")) {
@@ -123,8 +142,8 @@ public class HostConnection {
 
 			rc = p.waitFor();
 
-		} catch (InterruptedException | IOException e) {
-			throw new RuntimeException(e.getMessage(), e);
+		} catch (Exception e) {
+			rc = 1;
 		}
 
 		if (rc == 0) {
@@ -191,12 +210,140 @@ public class HostConnection {
 
 	public ShellCommandResult executeRemoteCommand(String shellPath, String shellCommand,
 			ShellCommandSettings shellCommandSettings) {
-		// return this.executeRemoteCommandShell2(shellPath, shellCommand,
-		// dcCommandSettings);
-		return this.executeRemoteCommandExec2(shellPath, shellCommand, shellCommandSettings);
+		return this.executeRemoteCommandExec(shellPath, shellCommand, shellCommandSettings);
 	}
 
+	// TODO allow for capturing set command when user simulated terminal (otherwise
+	// not possible) - too error prone.
 	public ShellCommandResult executeRemoteCommandExec(String shellPath, String shellCommand,
+			ShellCommandSettings shellCommandSettings) {
+		String executionShellPath = "";
+		String executionShellCommand = "";
+
+		// CompiledShellCommand
+		if (shellPath == null)
+			shellPath = "";
+		executionShellPath = shellPath.trim();
+		if (executionShellPath.equalsIgnoreCase("")) {
+			executionShellCommand = shellCommand;
+		} else {
+			executionShellCommand = "cd " + executionShellPath + " && " + shellCommand;
+		}
+
+		// Execution
+		int rc = -1;
+		String systemOutput = "";
+		String errorOutput = "";
+		try {
+
+			JSch jsch = this.jschConnect();
+
+			Session session = null;
+			Session[] sessions = null;
+			if (this.getJumphostConnectionName().trim().equalsIgnoreCase("")) {
+				sessions = new Session[1];
+				sessions[0] = session = this.sessionConnect(jsch, this.getHostName(), this.getPortNumber(),
+						this.getUserName(), this.getUserPassword());
+			} else {
+				String[] jumphostConnections = this.getJumphostConnectionName().split(",");
+				sessions = new Session[jumphostConnections.length + 1];
+				for (int i = 0; i <= jumphostConnections.length; i++) {
+					String jumphostConnection = "";
+					HostConnection hostConnection = null;
+					if (i < jumphostConnections.length) {
+						jumphostConnection = jumphostConnections[i];
+						ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(
+								shellCommandSettings.getFrameworkExecution());
+						Connection connection = connectionConfiguration
+								.getConnection(jumphostConnection, shellCommandSettings.getEnvironment()).get();
+						ConnectionOperation connectionOperation = new ConnectionOperation(
+								shellCommandSettings.getFrameworkExecution());
+						hostConnection = connectionOperation.getHostConnection(connection);
+					} else {
+						hostConnection = this;
+					}
+
+					int assignedPort = -1;
+					if (i == 0) {
+						assignedPort = hostConnection.getPortNumber();
+					} else {
+						assignedPort = session.setPortForwardingL(0, hostConnection.getHostName(),
+								hostConnection.getPortNumber());
+					}
+					// System.out.println("portforwarding: " + "localhost:" + assignedPort + " -> "
+					// + dcHost.getHostName()
+					// + ":" + assignedPort);
+
+					if (i == 0) {
+						sessions[i] = session = this.sessionConnect(jsch, hostConnection.getHostName(), assignedPort,
+								hostConnection.getUserName(), hostConnection.getUserPassword());
+					} else {
+						sessions[i] = session = this.sessionJumpConnect(jsch, hostConnection.getHostName(),
+								assignedPort, hostConnection.getUserName(), hostConnection.getUserPassword());
+					}
+
+					// System.out.println("The session has been established to " +
+					// dcHost.getUserName() + "@" + dcHost.getHostName());
+
+				}
+
+			}
+
+			Channel channel = session.openChannel("exec");
+
+			if (this.getTerminalFlag().equalsIgnoreCase("y")) {
+				((ChannelExec) channel).setPty(true);
+			} else {
+				((ChannelExec) channel).setPty(false);
+			}
+
+			((ChannelExec) channel).setCommand(executionShellCommand);
+			channel.setInputStream(null);
+			((ChannelExec) channel).setErrStream(System.err);
+			InputStream in = channel.getInputStream();
+			channel.connect();
+
+			systemOutput = "";
+			byte[] tmp = new byte[1024];
+			while (true) {
+				while (in.available() > 0) {
+					int i = in.read(tmp, 0, 1024);
+					if (i < 0)
+						break;
+					systemOutput = systemOutput + new String(tmp, 0, i);
+					// No screen output
+					// System.out.print(new String(tmp, 0, i));
+				}
+				if (channel.isClosed()) {
+					if (in.available() > 0)
+						continue;
+					rc = channel.getExitStatus();
+					break;
+				}
+				try {
+					Thread.sleep(1000);
+				} catch (Exception e) {
+					throw new RuntimeException(e.getMessage(), e);
+				}
+			}
+
+			channel.disconnect();
+			this.sessionDisconnect(sessions);
+		} catch (Exception e) {
+			throw new RuntimeException(e.getMessage(), e);
+		}
+
+		if (rc == 0) {
+			// TODO review shellcommandresult object
+			// this.splitOutput(systemOutput);
+			return new ShellCommandResult(rc, systemOutput, errorOutput, "");
+		} else {
+			return new ShellCommandResult(rc, systemOutput, errorOutput);
+		}
+
+	}
+
+	public ShellCommandResult executeRemoteCommandExec1(String shellPath, String shellCommand,
 			ShellCommandSettings shellCommandSettings) {
 		String compiledShellCommand = "";
 		String executionShellPath = "";
@@ -891,6 +1038,14 @@ public class HostConnection {
 
 	public void setJumphostConnectionName(String jumphostConnectionName) {
 		this.jumphostConnectionName = jumphostConnectionName;
+	}
+
+	public String getAllowLocalhostExecution() {
+		return allowLocalhostExecution;
+	}
+
+	public void setAllowLocalhostExecution(String allowLocalhostExecution) {
+		this.allowLocalhostExecution = allowLocalhostExecution;
 	}
 
 }

@@ -13,6 +13,7 @@ public class FileConnection {
 	private String longName;
 	private String extension;
 	private String attributes;
+	private boolean directory;
 		
 	public FileConnection() {
 
@@ -57,6 +58,14 @@ public class FileConnection {
 
 	public void setAttributes(String attributes) {
 		this.attributes = attributes;
+	}
+
+	public boolean isDirectory() {
+		return directory;
+	}
+
+	public void setDirectory(boolean directory) {
+		this.directory = directory;
 	}
 
 

@@ -485,7 +485,6 @@ public class ConnectionOperation {
 
 			WindowsHostConnection windowsHostConnection = new WindowsHostConnection(hostName, tempPath);
 			hostConnection = objectMapper.convertValue(windowsHostConnection, HostConnection.class);
-
 		} else if (connection.getType().equalsIgnoreCase("host.linux")) {
 			String hostName = "";
 			int portNumber = 0;
@@ -494,6 +493,7 @@ public class ConnectionOperation {
 			String tempPath = "";
 			String terminalFlag = "";
 			String jumpHostConnectionName = "";
+			String allowLocalhostExecution = "";
 
 			for (ConnectionParameter connectionParameter : connection.getParameters()) {
 				if (connectionParameter.getName().equalsIgnoreCase("host")) {
@@ -516,6 +516,9 @@ public class ConnectionOperation {
 				} else if (connectionParameter.getName().equalsIgnoreCase("jumphostconnections")) {
 					jumpHostConnectionName = connectionParameter.getValue();
 					jumpHostConnectionName = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(jumpHostConnectionName);
+				} else if (connectionParameter.getName().equalsIgnoreCase("allowlocalhostexecution")) {
+					allowLocalhostExecution = connectionParameter.getValue();
+					allowLocalhostExecution = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(allowLocalhostExecution);
 				}
 			}
 
@@ -545,6 +548,9 @@ public class ConnectionOperation {
 					} else if (connectionTypeParameter.getName().equalsIgnoreCase("jumphostconnections")) {
 						if (jumpHostConnectionName.trim().equalsIgnoreCase(""))
 							this.addMissingField("jumphostConnections");
+					} else if (connectionTypeParameter.getName().equalsIgnoreCase("allowlocalhostexecution")) {
+						if (allowLocalhostExecution.trim().equalsIgnoreCase(""))
+							this.addMissingField("allowLocalhostExecution");
 					}
 				}
 			}
@@ -569,11 +575,13 @@ public class ConnectionOperation {
 						terminalFlag = this.getFrameworkExecution().getFrameworkCrypto().decrypt(terminalFlag);
 					} else if (connectionTypeParameter.getName().equalsIgnoreCase("jumphostconnections")) {
 						jumpHostConnectionName = this.getFrameworkExecution().getFrameworkCrypto().decrypt(jumpHostConnectionName);
+					} else if (connectionTypeParameter.getName().equalsIgnoreCase("allowLocalhostexecution")) {
+						allowLocalhostExecution = this.getFrameworkExecution().getFrameworkCrypto().decrypt(allowLocalhostExecution);
 					}
 				}
 			}
 
-			LinuxHostConnection linuxHostConnection = new LinuxHostConnection(hostName, portNumber, userName, userPassword, tempPath, terminalFlag, jumpHostConnectionName);
+			LinuxHostConnection linuxHostConnection = new LinuxHostConnection(hostName, portNumber, userName, userPassword, tempPath, terminalFlag, jumpHostConnectionName, allowLocalhostExecution);
 			hostConnection = objectMapper.convertValue(linuxHostConnection, HostConnection.class);
 		}
 

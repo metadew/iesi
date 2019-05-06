@@ -31,8 +31,10 @@ public final class FolderTools {
 		return files;
 	}
 	
-	public static File[] getFilesInFolder(String folderName, String filterExpression) {
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public static List<FileConnection> getFilesInFolder(String folderName, String filterExpression) {
 		File[] files = null;
+		List<FileConnection> connectionsFound = new ArrayList();
 		String filterType = "";
 		
 		// Define filterType
@@ -52,8 +54,17 @@ public final class FolderTools {
 		} else if (filterType.equalsIgnoreCase("regex")) {
 			files = getFilesInFolderUsingRegex(folderName, filterExpression);
 		}
+		
+		for (File file : files) {
+			FileConnection connectionFound =  new FileConnection();
+			connectionFound.setFileName(file.getName());
+			connectionFound.setFilePath(file.getAbsolutePath());
+			connectionFound.setExtension(FileTools.getFileExtension(file));
+			connectionFound.setDirectory(file.isDirectory());
+			connectionsFound.add(connectionFound);
+		}
 
-		return files;
+		return connectionsFound;
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })

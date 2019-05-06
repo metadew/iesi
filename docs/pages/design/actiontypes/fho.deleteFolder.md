@@ -31,8 +31,11 @@ This action deletes a folder and all its contents. All subfolders and contents a
 ### 3: connection
 
 `connection: "connection where the folder to delete is located"`
-* currently only localhost is supported
-* working on it
+* define the connection name where the folder is located
+* currently on ssh type remote connections will work
+  * if the parameter is empty, or defined as `localhost` then the process will be executed locally by the framework's user
+  * if the connection is located remotely, then a ssh connection will be established
+  * if the connection parameter `allowLocalhostExecution` is set to `N` then ssh execution will be forced
 
 ## Examples
 

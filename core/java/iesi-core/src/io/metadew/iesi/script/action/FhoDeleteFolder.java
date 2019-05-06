@@ -1,13 +1,18 @@
 package io.metadew.iesi.script.action;
 
-import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.HashMap;
+import java.util.List;
 
+import io.metadew.iesi.connection.FileConnection;
 import io.metadew.iesi.connection.HostConnection;
+import io.metadew.iesi.connection.host.ShellCommandResult;
+import io.metadew.iesi.connection.host.ShellCommandSettings;
 import io.metadew.iesi.connection.operation.ConnectionOperation;
 import io.metadew.iesi.connection.tools.FolderTools;
+import io.metadew.iesi.connection.tools.HostConnectionTools;
+import io.metadew.iesi.connection.tools.fho.FileConnectionTools;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.configuration.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.ActionParameter;
@@ -82,52 +87,66 @@ public class FhoDeleteFolder {
 	// Methods
 	public boolean execute() {
 		try {
-			boolean isOnLocalHost = true;
+			boolean isOnLocalhost = HostConnectionTools.isOnLocalhost(this.getFrameworkExecution(),
+					this.getConnectionName().getValue(), this.getExecutionControl().getEnvName());
 
-			if (this.getConnectionName().getValue().isEmpty()) {
-				isOnLocalHost = true;
-			} else {
-				if (this.getConnectionName().getValue().equalsIgnoreCase("localhost")) {
-					isOnLocalHost = true;
-				} else {
-					ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution());
-					Connection connection = connectionConfiguration.getConnection(this.getConnectionName().getValue(),
-							this.getExecutionControl().getEnvName()).get();
-					ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
-					HostConnection hostConnection = connectionOperation.getHostConnection(connection);
-
-					if(hostConnection.fileExists(this.getFrameworkExecution().getFrameworkRuntime().getLocalHostChallengeFileName())) {
-						isOnLocalHost = true;
-					} else {
-						isOnLocalHost = false;
-					}
-				}
-			}
-
-			if (isOnLocalHost) {
+			if (isOnLocalhost) {
 				if (this.getFolderPath().getValue().isEmpty()) {
 					FolderTools.deleteFolder(this.getFolderName().getValue(), true);
 				} else {
-					File[] subjectFiles = FolderTools.getFilesInFolder(this.getFolderPath().getValue(), this.getFolderName().getValue());
-					for (File file : subjectFiles) {
-						if (file.isDirectory()) {
-							this.getActionExecution().getActionControl().logOutput("folder.delete", file.getAbsolutePath());
+					List<FileConnection> fileConnections = FolderTools.getFilesInFolder(this.getFolderPath().getValue(),
+							this.getFolderName().getValue());
+					for (FileConnection fileConnection : fileConnections) {
+						if (fileConnection.isDirectory()) {
+							this.getActionExecution().getActionControl().logOutput("folder.delete",
+									fileConnection.getFilePath());
 							try {
-								FolderTools.deleteFolder(file.getAbsolutePath(), true);				
+								FolderTools.deleteFolder(fileConnection.getFilePath(), true);
 								this.getActionExecution().getActionControl().increaseSuccessCount();
-								this.getActionExecution().getActionControl().logOutput("folder.delete.success", "confirmed");
+								this.getActionExecution().getActionControl().logOutput("folder.delete.success",
+										"confirmed");
 							} catch (Exception e) {
-								this.getActionExecution().getActionControl().logOutput("folder.delete.error", e.getMessage());
+								this.getActionExecution().getActionControl().logOutput("folder.delete.error",
+										e.getMessage());
 								this.getActionExecution().getActionControl().increaseErrorCount();
 							}
 						}
 					}
 				}
 			} else {
-				// placeholder
-				// check if allowed
-				// delete remote
-				// new file object - consolidate over file and lsentry
+				ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(
+						this.getFrameworkExecution());
+				Connection connection = connectionConfiguration
+						.getConnection(this.getConnectionName().getValue(), this.getExecutionControl().getEnvName())
+						.get();
+				ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
+				HostConnection hostConnection = connectionOperation.getHostConnection(connection);
+
+				for (FileConnection fileConnection : FileConnectionTools.getFileConnections(hostConnection,
+						this.getFolderPath().getValue(), this.getFolderName().getValue(), true)) {
+					ShellCommandSettings shellCommandSettings = new ShellCommandSettings();
+					this.getActionExecution().getActionControl().logOutput("folder.delete",
+							fileConnection.getFilePath());
+
+					ShellCommandResult shellCommandResult = null;
+					try {
+						shellCommandResult = hostConnection.executeRemoteCommand("",
+								"rm -rf " + fileConnection.getFilePath(), shellCommandSettings);
+
+						if (shellCommandResult.getReturnCode() == 0) {
+							this.getActionExecution().getActionControl().increaseSuccessCount();
+							this.getActionExecution().getActionControl().logOutput("folder.delete.success",
+									"confirmed");
+						} else {
+							this.getActionExecution().getActionControl().logOutput("folder.delete.error",
+									shellCommandResult.getErrorOutput());
+							this.getActionExecution().getActionControl().increaseErrorCount();
+						}
+					} catch (Exception e) {
+						this.getActionExecution().getActionControl().logOutput("folder.delete.error", e.getMessage());
+						this.getActionExecution().getActionControl().increaseErrorCount();
+					}
+				}
 			}
 
 			return true;

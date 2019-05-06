@@ -344,6 +344,7 @@ public class WfaExecuteFilePing {
 
 			} else {
 				// Check exact file name
+				// TODO check if not an issue on the filter
 				fileFilter = this.getFileName().getValue();
 				vv = c.ls(this.getFilePath().getName());
 				if (vv != null) {

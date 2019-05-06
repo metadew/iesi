@@ -3,14 +3,18 @@ package io.metadew.iesi.script.action;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.text.MessageFormat;
 import java.util.HashMap;
 
+import io.metadew.iesi.datatypes.DataType;
+import io.metadew.iesi.datatypes.Text;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.ActionParameter;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
+import org.apache.logging.log4j.Level;
 
 public class WfaExecuteWait {
 
@@ -19,7 +23,8 @@ public class WfaExecuteWait {
 	private ExecutionControl executionControl;
 
 	// Parameters
-	private long waitInterval;
+	private ActionParameterOperation waitInterval;
+	private final int defaultWaitInterval = 0;
 	private ActionParameterOperation waitIntervalInput;
 	private long startTime;
 	private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
@@ -37,62 +42,30 @@ public class WfaExecuteWait {
 		this.setFrameworkExecution(frameworkExecution);
 		this.setExecutionControl(executionControl);
 		this.setActionExecution(actionExecution);
-		this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
+		this.setActionParameterOperationMap(new HashMap<>());
 	}
 
 	public void prepare() {
-//		// Set Parameters
-//		this.setWaitIntervalInput(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
-//				this.getActionExecution(), this.getActionExecution().getAction().getType(), "wait"));
-//
-//
-//		// Get Parameters
-//		for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-//			if (actionParameter.getName().equalsIgnoreCase("wait")) {
-//				this.getWaitIntervalInput().setInputValue(actionParameter.getValue());;
-//				//this.setWaitInterval(Integer.parseInt(actionParameter.getValue()));
-//			}
-//		}
-//
-//		// Set wait interval
-//		if (this.getWaitIntervalInput().getValue().trim().isEmpty()) {
-//			this.setWaitInterval(0);
-//		} else {
-//			this.setWaitInterval((long) Double.parseDouble(this.getWaitIntervalInput().getValue()));
-//		}
-//
-//		//Create parameter list
-//		this.getActionParameterOperationMap().put("wait", this.getWaitIntervalInput());
+		// Set Parameters
+		this.setWaitInterval(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(), this.getActionExecution(),
+				this.getActionExecution().getAction().getType(), "wait"));
+
+
+		// Get Parameters
+		for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
+			if (actionParameter.getName().equalsIgnoreCase("wait")) {
+				this.getWaitInterval().setInputValue(actionParameter.getValue());
+			}
+		}
+		this.getActionParameterOperationMap().put("wait", this.getWaitInterval());
+
 	}
 	
-	public void execute() {
+	public boolean execute() {
 		try {
-			// Run the action
-			long wait = this.getWaitInterval() * 1000;
-			if (wait < 0)
-				wait = 1000;
-			boolean done = false;
-			
-			this.setStartTime(System.currentTimeMillis());
-			try {
-				Thread.sleep(wait);
-				done = true;
-			} catch (InterruptedException ex) {
-				Thread.currentThread().interrupt();
-			}
+			int waitInterval = convertWaitInterval(getWaitInterval().getValue());
+			return executeWait(waitInterval);
 
-			long elapsedTime = System.currentTimeMillis() - this.getStartTime();
-			if (done) {
-				this.getActionExecution().getActionControl().increaseSuccessCount();
-
-				this.getActionExecution().getActionControl().logOutput("out","result found");
-				this.getActionExecution().getActionControl().logOutput("time",Long.toString(elapsedTime));
-			} else {
-				this.getActionExecution().getActionControl().increaseErrorCount();
-
-				this.getActionExecution().getActionControl().logOutput("out","time-out");
-				this.getActionExecution().getActionControl().logOutput("time",Long.toString(elapsedTime));
-			}
 		} catch (Exception e) {
 			StringWriter StackTrace = new StringWriter();
 			e.printStackTrace(new PrintWriter(StackTrace));
@@ -101,10 +74,54 @@ public class WfaExecuteWait {
 
 			this.getActionExecution().getActionControl().logOutput("exception",e.getMessage());
 			this.getActionExecution().getActionControl().logOutput("stacktrace",StackTrace.toString());
-
+			return false;
 		}
 
 	}
+
+	private boolean executeWait(int waitInterval) {
+		// Run the action
+		long wait = waitInterval * 1000;
+		if (wait < 0)
+			wait = 1000;
+		boolean done = false;
+
+		this.setStartTime(System.currentTimeMillis());
+		try {
+			Thread.sleep(wait);
+			done = true;
+		} catch (InterruptedException ex) {
+			Thread.currentThread().interrupt();
+		}
+
+		long elapsedTime = System.currentTimeMillis() - this.getStartTime();
+		if (done) {
+			this.getActionExecution().getActionControl().increaseSuccessCount();
+
+			this.getActionExecution().getActionControl().logOutput("out","result found");
+			this.getActionExecution().getActionControl().logOutput("time",Long.toString(elapsedTime));
+		} else {
+			this.getActionExecution().getActionControl().increaseErrorCount();
+
+			this.getActionExecution().getActionControl().logOutput("out","time-out");
+			this.getActionExecution().getActionControl().logOutput("time",Long.toString(elapsedTime));
+		}
+		return true;
+	}
+
+	private int convertWaitInterval(DataType waitInterval) {
+		if (waitInterval == null) {
+			return defaultWaitInterval;
+		}
+		if (waitInterval instanceof Text) {
+			return Integer.parseInt(waitInterval.toString());
+		} else {
+			frameworkExecution.getFrameworkLog().log(MessageFormat.format("wfa.executeQueryPing does not accept {0} as type for wait interval",
+					waitInterval.getClass()), Level.WARN);
+			return defaultWaitInterval;
+		}
+	}
+
 	// Getters and Setters
 	public FrameworkExecution getFrameworkExecution() {
 		return frameworkExecution;
@@ -154,11 +171,11 @@ public class WfaExecuteWait {
 		this.waitIntervalInput = waitIntervalInput;
 	}
 
-	public long getWaitInterval() {
+	public ActionParameterOperation getWaitInterval() {
 		return waitInterval;
 	}
 
-	public void setWaitInterval(long waitInterval) {
+	public void setWaitInterval(ActionParameterOperation waitInterval) {
 		this.waitInterval = waitInterval;
 	}
 

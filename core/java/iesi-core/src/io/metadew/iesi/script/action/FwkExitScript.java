@@ -2,8 +2,12 @@ package io.metadew.iesi.script.action;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.text.MessageFormat;
 import java.util.HashMap;
+import java.util.Optional;
 
+import io.metadew.iesi.datatypes.DataType;
+import io.metadew.iesi.datatypes.Text;
 import io.metadew.iesi.framework.configuration.FrameworkStatus;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.ActionParameter;
@@ -11,6 +15,7 @@ import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
+import org.apache.logging.log4j.Level;
 
 /**
  * This action exits a script
@@ -64,12 +69,12 @@ public class FwkExitScript {
 
 	public boolean execute() {
 		try {
+			Optional<String> status = convertStatus(getStatus().getValue());
+			// TODO
 //			// Verify if the status is empty
 //			if (this.getStatus().getValue().trim().isEmpty()) {
 //				this.getStatus().setInputValue(FrameworkStatus.SUCCESS.value());
 //			}
-//
-//			// Verify if the message needs to appear on the screen
 //
 			return true;
 		} catch (Exception e) {
@@ -84,6 +89,19 @@ public class FwkExitScript {
 			return false;
 		}
 
+	}
+
+	private Optional<String> convertStatus(DataType status) {
+		if (status == null) {
+			return Optional.empty();
+		}
+		if (status instanceof Text) {
+			return Optional.of(status.toString());
+		} else {
+			frameworkExecution.getFrameworkLog().log(MessageFormat.format("fwk.exitScript does not accept {0} as type for status",
+					status.getClass()), Level.WARN);
+			return Optional.of(status.toString());
+		}
 	}
 
 	// Getters and Setters

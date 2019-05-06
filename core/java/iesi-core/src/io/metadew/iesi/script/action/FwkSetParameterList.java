@@ -21,8 +21,6 @@ import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 import org.apache.logging.log4j.Level;
 
-import javax.xml.crypto.Data;
-
 public class FwkSetParameterList {
 
 	private ActionExecution actionExecution;

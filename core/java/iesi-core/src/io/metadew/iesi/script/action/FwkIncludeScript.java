@@ -2,8 +2,12 @@ package io.metadew.iesi.script.action;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.text.MessageFormat;
 import java.util.HashMap;
+import java.util.Optional;
 
+import io.metadew.iesi.datatypes.DataType;
+import io.metadew.iesi.datatypes.Text;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.configuration.ScriptConfiguration;
 import io.metadew.iesi.metadata.definition.ActionParameter;
@@ -12,6 +16,7 @@ import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
+import org.apache.logging.log4j.Level;
 
 /**
  * This action includes a script
@@ -75,18 +80,9 @@ public class FwkIncludeScript {
 
 	public boolean execute() {
 		try {
-//			ScriptConfiguration scriptConfiguration = null;
-//			scriptConfiguration = new ScriptConfiguration(this.getFrameworkExecution());
-//
-//			if (this.getScriptVersion().getValue().trim().isEmpty()) {
-//				this.setScript(scriptConfiguration.getScript(this.getScriptName().getValue()));
-//			} else {
-//				this.setScript(scriptConfiguration.getScript(this.getScriptName().getValue(), Long.parseLong(this.getScriptVersion().getValue())));
-//			}
-//
-//			this.getActionExecution().getActionControl().increaseSuccessCount();
-//
-			return true;
+			String scriptName = convertScriptName(getScriptName().getValue());
+			Optional<Long> scriptVersion = convertScriptVersion(getScriptVersion().getValue());
+			return includeScript(scriptName, scriptVersion);
 		} catch (Exception e) {
 			StringWriter StackTrace = new StringWriter();
 			e.printStackTrace(new PrintWriter(StackTrace));
@@ -98,7 +94,40 @@ public class FwkIncludeScript {
 
 			return false;
 		}
+	}
 
+	private boolean includeScript(String scriptName, Optional<Long> scriptVersion) {
+		ScriptConfiguration scriptConfiguration = new ScriptConfiguration(this.getFrameworkExecution());
+		Script script = scriptVersion
+				.map(scriptVersion1 -> scriptConfiguration.getScript(scriptName, scriptVersion1))
+				.orElse(scriptConfiguration.getScript(scriptName));
+		setScript(script);
+		this.getActionExecution().getActionControl().increaseSuccessCount();
+		return true;
+	}
+
+	private Optional<Long> convertScriptVersion(DataType scriptVersion) {
+		if (scriptVersion == null) {
+			return Optional.empty();
+		}
+		if (scriptVersion instanceof Text) {
+			return Optional.of(Long.parseLong(scriptVersion.toString()));
+		} else {
+			frameworkExecution.getFrameworkLog().log(MessageFormat.format("fwk.includeScript does not accept {0} as type for script name",
+					scriptVersion.getClass()), Level.WARN);
+			return Optional.empty();
+		}
+	}
+
+
+	private String convertScriptName(DataType scriptName) {
+		if (scriptName instanceof Text) {
+			return scriptName.toString();
+		} else {
+			frameworkExecution.getFrameworkLog().log(MessageFormat.format("fwk.includeScript does not accept {0} as type for script name",
+					scriptName.getClass()), Level.WARN);
+			return scriptName.toString();
+		}
 	}
 
 	// Getters and Setters

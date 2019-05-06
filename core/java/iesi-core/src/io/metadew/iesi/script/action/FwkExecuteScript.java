@@ -3,10 +3,7 @@ package io.metadew.iesi.script.action;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.MessageFormat;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -24,6 +21,8 @@ import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 import org.apache.logging.log4j.Level;
+
+import javax.swing.text.html.Option;
 
 public class FwkExecuteScript {
 
@@ -161,12 +160,12 @@ public class FwkExecuteScript {
     public boolean execute() {
         try {
             String scriptName = convertScriptName(getScriptName().getValue());
-            long version = convertScriptVersion(getScriptVersion().getValue());
+            Optional<Long> scriptVersion = convertScriptVersion(getScriptVersion().getValue());
             String environmentName = convertEnvironmentName(getEnvironmentName().getValue());
-            Map<String, String> parameterList = convertParameterList(getParamList().getValue());
-            String parameterFileName = convertParameterFileName(getParamFile().getValue());
-
-            return execute();
+            // TODO: see setParameterList for nicer version
+            Optional<String> parameterList = convertParameterList2(getParamList().getValue());
+            Optional<String> parameterFileName = convertParameterFileName(getParamFile().getValue());
+            return executeScript(scriptName, scriptVersion, environmentName, parameterList, parameterFileName);
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
@@ -178,6 +177,58 @@ public class FwkExecuteScript {
 
             return false;
         }
+    }
+
+    private Optional<String> convertParameterList2(DataType parameterList) {
+        if (parameterList == null) {
+            return Optional.empty();
+        }
+        if (parameterList instanceof Text) {
+            return Optional.of(parameterList.toString());
+        } else {
+            frameworkExecution.getFrameworkLog().log(MessageFormat.format("fwk.setParameterList does not accept {0} as type for parameterList",
+                    parameterList.getClass()), Level.WARN);
+            return Optional.empty();
+        }
+    }
+
+    private boolean executeScript(String scriptName, Optional<Long> scriptVersion, String environmentName, Optional<String> parameterList, Optional<String> parameterFileName) {
+        // Check on Running a script in a loop
+        if (this.getScriptExecution().getScript().getName().equalsIgnoreCase(scriptName)) {
+            throw new RuntimeException("Not allowed to run the script recursively");
+        }
+
+        try {
+            ScriptConfiguration scriptConfiguration = new ScriptConfiguration(this.getFrameworkExecution());
+            // Script script = scriptConfiguration.getScript(this.getScriptName().getValue());
+            Script script = scriptVersion
+                    .map(version -> scriptConfiguration.getScript(scriptName, version))
+                    .orElse(scriptConfiguration.getScript(scriptName));
+
+            ScriptExecution scriptExecution = new ScriptExecution(this.getFrameworkExecution(), script);
+            scriptExecution.initializeAsNonRootExecution(this.getExecutionControl(), this.getScriptExecution());
+
+            parameterFileName.ifPresent(scriptExecution::setParamFile);
+            // TODO: do it nicer
+            parameterList.ifPresent(scriptExecution::setParamList);
+            scriptExecution.execute();
+
+            if (scriptExecution.getResult().equalsIgnoreCase(FrameworkStatus.SUCCESS.value())) {
+                this.getActionExecution().getActionControl().increaseSuccessCount();
+            } else if (scriptExecution.getResult()
+                    .equalsIgnoreCase(FrameworkStatus.WARNING.value())) {
+                this.getActionExecution().getActionControl().increaseSuccessCount();
+            } else if (scriptExecution.getResult()
+                    .equalsIgnoreCase(FrameworkStatus.ERROR.value())) {
+                this.getActionExecution().getActionControl().increaseErrorCount();
+            } else {
+                this.getActionExecution().getActionControl().increaseErrorCount();
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException("Issue setting runtime variables: " + e, e);
+        }
+        return true;
     }
 
     private Map<String, String> convertParameterEntry(DataType parameterEntry) {
@@ -198,41 +249,50 @@ public class FwkExecuteScript {
         }
     }
 
-    private Map<String, String> convertParameterList(DataType list) {
+    private Optional<Map<String, String>> convertParameterList(DataType list) {
+        if (list == null) {
+            return Optional.empty();
+        }
         Map<String, String> parameterMap = new HashMap<>();
         if (list instanceof Text) {
             Arrays.stream(list.toString().split(","))
                     .forEach(parameterEntry -> parameterMap.putAll(convertParameterEntry(DataTypeResolver.resolveToDatatype(parameterEntry))));
-            return parameterMap;
+            return Optional.of(parameterMap);
         } else if (list instanceof Array) {
             for  (DataType parameterEntry : ((Array) list).getList()){
                 parameterMap.putAll(convertParameterEntry(parameterEntry));
             }
-            return parameterMap;
+            return Optional.of(parameterMap);
         } else {
             frameworkExecution.getFrameworkLog().log(MessageFormat.format("fwk.setParameterList does not accept {0} as type for list",
                     list.getClass()), Level.WARN);
-            return parameterMap;
+            return Optional.empty();
         }
     }
 
-    private long convertScriptVersion(DataType scriptVersion) {
+    private Optional<Long> convertScriptVersion(DataType scriptVersion) {
+        if (scriptVersion == null) {
+            return Optional.empty();
+        }
         if (scriptVersion instanceof Text) {
-            return Long.parseLong(scriptVersion.toString());
+            return Optional.of(Long.parseLong(scriptVersion.toString()));
         } else {
             frameworkExecution.getFrameworkLog().log(MessageFormat.format("fwk.executeScript does not accept {0} as type for script name",
                     scriptVersion.getClass()), Level.WARN);
-            return -1;
+            return Optional.empty();
         }
     }
 
-    private String convertParameterFileName(DataType parameterFileName) {
+    private Optional<String> convertParameterFileName(DataType parameterFileName) {
+        if (parameterFileName == null) {
+            return Optional.empty();
+        }
         if (parameterFileName instanceof Text) {
-            return parameterFileName.toString();
+            return Optional.of(parameterFileName.toString());
         } else {
             frameworkExecution.getFrameworkLog().log(MessageFormat.format("fwk.executeScript does not accept {0} as type for parameter file name",
                     parameterFileName.getClass()), Level.WARN);
-            return parameterFileName.toString();
+            return Optional.empty();
         }
     }
 

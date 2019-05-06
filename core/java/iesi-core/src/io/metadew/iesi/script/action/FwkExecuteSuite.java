@@ -130,7 +130,6 @@ public class FwkExecuteSuite {
 		this.getActionParameterOperationMap().put("ENV_NM", this.getEnvironmentName());
 	}
 	
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public boolean execute() {
 		try {
 			// Check on Running a script in a loop

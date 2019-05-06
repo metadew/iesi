@@ -2,8 +2,16 @@ package io.metadew.iesi.script.action;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
+import io.metadew.iesi.datatypes.Array;
+import io.metadew.iesi.datatypes.DataType;
+import io.metadew.iesi.datatypes.DataTypeResolver;
+import io.metadew.iesi.datatypes.Text;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.ActionParameter;
 import io.metadew.iesi.script.execution.ActionExecution;
@@ -78,13 +86,17 @@ public class FwkSetRepository {
 	//
 	public boolean execute() {
 		try {
-//			// Run the action
-//			this.getExecutionControl().getExecutionRuntime().setRepository(this.getExecutionControl(), this.getRepositoryReferenceName().getValue(),
-//					this.getRepositoryName().getValue(), this.getRepositoryInstanceName().getValue(),
-//					this.getRepositoryInstanceLabels().getValue());
-//
-//			this.getActionExecution().getActionControl().increaseSuccessCount();
-//
+			String repositoryReferenceName = convertRepositoryReferenceName(getRepositoryReferenceName().getValue());
+			String repositoryName = convertRepositoryName(getRepositoryName().getValue());
+			String repositoryInstanceName = convertRepositoryInstanceName(getRepositoryInstanceName().getValue());
+			List<String> repositoryInstanceLabels = convertRepositoryInstanceLabels(getRepositoryInstanceLabels().getValue());
+
+			// Run the action
+			this.getExecutionControl().getExecutionRuntime().setRepository(this.getExecutionControl(), repositoryReferenceName,
+					repositoryName, repositoryInstanceName, String.join(",", repositoryInstanceLabels));
+
+			this.getActionExecution().getActionControl().increaseSuccessCount();
+
 			return true;
 		} catch (Exception e) {
 			StringWriter StackTrace = new StringWriter();
@@ -97,8 +109,69 @@ public class FwkSetRepository {
 
 			return false;
 		}
-
 	}
+
+	private String convertRepositoryInstanceName(DataType repositoryInstanceName) {
+		if (repositoryInstanceName instanceof Text) {
+			return repositoryInstanceName.toString();
+		} else {
+			System.out.println(MessageFormat.format("fwk.setRepository does not accept {0} as type for repository instance name",
+					repositoryInstanceName.getClass()));
+			return repositoryInstanceName.toString();
+		}
+	}
+
+	private String convertRepositoryReferenceName(DataType referenceName) {
+		if (referenceName instanceof Text) {
+			return referenceName.toString();
+		} else {
+			System.out.println(MessageFormat.format("fwk.setRepository does not accept {0} as type for reference name",
+					referenceName.getClass()));
+			return referenceName.toString();
+		}
+	}
+
+
+	private List<String> convertRepositoryInstanceLabels(DataType repositoryLabels) {
+		List<String> labels = new ArrayList<>();
+		if (repositoryLabels instanceof Text) {
+			Arrays.stream(repositoryLabels.toString().split(","))
+					.forEach(repositoryLabel -> labels.add(convertRepositoryInstanceLabel(DataTypeResolver.resolveToDatatype(repositoryLabel.trim()))));
+			return labels;
+		} else if (repositoryLabels instanceof Array) {
+			((Array) repositoryLabels).getList()
+					.forEach(datasetLabel -> labels.add(convertRepositoryInstanceLabel(datasetLabel)));
+			return labels;
+		} else {
+			// TODO: log with framework
+			System.out.println(MessageFormat.format("fwk.setRepository does not accept {0} as type for repository instance labels",
+					repositoryLabels.getClass()));
+			return labels;
+		}
+	}
+
+	private String convertRepositoryName(DataType repositoryName) {
+		if (repositoryName instanceof Text) {
+			return repositoryName.toString();
+		} else {
+			// TODO: log
+			System.out.println(MessageFormat.format("fwk.stRepository does not accept {0} as type for repository name",
+					repositoryName.getClass()));
+			return repositoryName.toString();
+		}
+	}
+
+	private String convertRepositoryInstanceLabel(DataType datasetLabel) {
+		if (datasetLabel instanceof Text) {
+			return datasetLabel.toString();
+		} else {
+			// TODO: log
+			System.out.println(MessageFormat.format("Repository instance does not accept {0} as type for a repository label",
+					datasetLabel.getClass()));
+			return datasetLabel.toString();
+		}
+	}
+
 
 	// Getters and Setters
 	public FrameworkExecution getFrameworkExecution() {

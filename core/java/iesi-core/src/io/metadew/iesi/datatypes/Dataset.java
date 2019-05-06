@@ -19,12 +19,11 @@ import java.util.stream.Collectors;
 
 public class Dataset extends DataType {
 
-    private final Pattern datasetItemPattern = Pattern.compile("(?<table>\\w+)\\.(?<tableField>(\\w+$|\\w+\\.)+)");
-
     private final DataType name;
     private final DataType labels;
 
     private Database dataset;
+    private String tableName;
     private Database datasetMetadataConnection;
 
     public Dataset(DataType name, DataType labels) {
@@ -41,16 +40,12 @@ public class Dataset extends DataType {
         return labels;
     }
 
-    public Optional<DataType> getDatasetItem(String datasetItem) {
-        Matcher matcher = datasetItemPattern.matcher(datasetItem);
-        if (!matcher.find()) {
-            throw new RuntimeException(MessageFormat.format("Dataset item {0} does not follow the correct syntax of table.table_field", datasetItem));
-        }
+    public Optional<DataType> getDataItem(String dataItem) {
         CachedRowSet crs;
         String query;
         query = "select value from " +
-                matcher.group("table") +
-                " where key = '" + matcher.group("tableField") + "'";
+                tableName +
+                " where key = '" + dataItem + "'";
 
         DataType value = null;
         crs = dataset.executeQuery(query);
@@ -65,6 +60,27 @@ public class Dataset extends DataType {
             return Optional.empty();
         }
         return Optional.ofNullable(value);
+    }
+
+    public Map<String, DataType> getDataItems() {
+        CachedRowSet crs;
+        String query;
+        query = "select key, value from " +
+                tableName + ";";
+
+        Map<String, DataType> dataItems = new HashMap<>();
+        crs = dataset.executeQuery(query);
+        try {
+            while (crs.next()) {
+                dataItems.put(crs.getString("key"), DataTypeResolver.resolveToDatatype(crs.getString("value")));
+            }
+            crs.close();
+        } catch (Exception e) {
+            StringWriter StackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(StackTrace));
+            return dataItems;
+        }
+        return dataItems;
     }
 
     public Database getDataset() {
@@ -125,7 +141,7 @@ public class Dataset extends DataType {
     private Database getDataset(String datasetName, List<String> labels) {
         // TODO: should labels be saved in the metadata.db3 as a iesiList or not?
         datasetMetadataConnection = getDatasetMetadata(datasetName);
-        String query = "select a.DATASET_INV_ID, a.DATASET_FILE_NM " +
+        String query = "select a.DATASET_INV_ID, a.DATASET_FILE_NM, a.DATASET_TABLE_NM " +
                 "from CFG_DATASET_INV a inner join CFG_DATASET_LBL b on a.DATASET_INV_ID = b.DATASET_INV_ID " +
                 "where " +
                 labels.stream()
@@ -134,10 +150,12 @@ public class Dataset extends DataType {
         CachedRowSet cachedRowSet = datasetMetadataConnection.executeQuery(query);
 
         if (cachedRowSet.size() == 0) {
+            tableName = "data";
             return createNewDatasetConnection(datasetName, labels);
         } else if (cachedRowSet.size() == 1) {
             try {
                 cachedRowSet.next();
+                tableName = cachedRowSet.getString("DATASET_TABLE_NM");
                 return new SqliteDatabase(new SqliteDatabaseConnection(datasetName + File.separator + "data" + File.separator + cachedRowSet.getString("DATASET_FILE_NM")));
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -148,6 +166,7 @@ public class Dataset extends DataType {
                     name, String.join(", ", labels)));
             try {
                 cachedRowSet.next();
+                tableName = cachedRowSet.getString("DATASET_TABLE_NM");
                 return new SqliteDatabase(new SqliteDatabaseConnection(datasetName + File.separator + "data" + File.separator + cachedRowSet.getString("DATASET_FILE_NM")));
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -160,8 +179,8 @@ public class Dataset extends DataType {
     private Database createNewDatasetConnection(String datasetName, List<String> labels) {
         String datasetFilename = UUID.randomUUID().toString() + ".db3";
         // register in the metadata
-        String sql = "insert into CFG_DATASET_INV (DATASET_INV_ID, DATASET_FILE_NM) Values (\"" +
-                datasetFilename + "\", \"" + String.join(",", labels) + "\"";
+        String sql = "insert into CFG_DATASET_INV (DATASET_INV_ID, DATASET_FILE_NM, DATASET_TABLE_NM) Values (\"" +
+                datasetFilename + "\", \"" + String.join(",", labels) + "\", \"data\")";
         datasetMetadataConnection.executeQuery(sql);
         return new SqliteDatabase(new SqliteDatabaseConnection(datasetName + File.separator + "data" + File.separator + datasetFilename));
     }

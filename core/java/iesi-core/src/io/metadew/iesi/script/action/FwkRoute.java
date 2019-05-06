@@ -20,105 +20,96 @@ import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 import io.metadew.iesi.script.operation.RouteOperation;
 
-public class FwkRoute
-{
+public class FwkRoute {
 
-	private ActionExecution actionExecution;
+    private ActionExecution actionExecution;
 
-	private ScriptExecution scriptExecution;
+    private ScriptExecution scriptExecution;
 
-	private FrameworkExecution frameworkExecution;
+    private FrameworkExecution frameworkExecution;
 
-	private ExecutionControl executionControl;
+    private ExecutionControl executionControl;
 
-	// Parameters
-	private ActionParameterOperation destination;
-	private HashMap<String, RouteOperation> routeOperationMap;
+    // Parameters
+    private ActionParameterOperation destination;
+    private HashMap<String, RouteOperation> routeOperationMap;
 
-	private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
+    private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
 
-	// Constructors
-	public FwkRoute()
-	{
+    // Constructors
+    public FwkRoute() {
 
-	}
+    }
 
-	public FwkRoute(FrameworkExecution frameworkExecution, ExecutionControl executionControl, ScriptExecution scriptExecution,
-				ActionExecution actionExecution)
-	{
-		this.init(frameworkExecution, executionControl, scriptExecution, actionExecution);
-	}
+    public FwkRoute(FrameworkExecution frameworkExecution, ExecutionControl executionControl, ScriptExecution scriptExecution,
+                    ActionExecution actionExecution) {
+        this.init(frameworkExecution, executionControl, scriptExecution, actionExecution);
+    }
 
-	public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl, ScriptExecution scriptExecution,
-				ActionExecution actionExecution)
-	{
-		this.setFrameworkExecution(frameworkExecution);
-		this.setExecutionControl(executionControl);
-		this.setActionExecution(actionExecution);
-		this.setScriptExecution(scriptExecution);
-		this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
-		this.setRouteOperationMap(new HashMap<String, RouteOperation>());
-	}
+    public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl, ScriptExecution scriptExecution,
+                     ActionExecution actionExecution) {
+        this.setFrameworkExecution(frameworkExecution);
+        this.setExecutionControl(executionControl);
+        this.setActionExecution(actionExecution);
+        this.setScriptExecution(scriptExecution);
+        this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
+        this.setRouteOperationMap(new HashMap<String, RouteOperation>());
+    }
 
-	public void prepare() {
-		// Reset Parameters
-		this.setDestination(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
-					this.getActionExecution(), this.getActionExecution().getAction().getType(), "destination"));
+    public void prepare() {
+        // Reset Parameters
+        this.setDestination(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+                this.getActionExecution(), this.getActionExecution().getAction().getType(), "destination"));
 
-		// Get Parameters
-		for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters())
-		{
-			if (actionParameter.getName().toLowerCase().startsWith("condition"))
-			{
-				ActionParameterOperation condition = new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
-						this.getActionExecution(), this.getActionExecution().getAction().getType(), "condition");
+        // Get Parameters
+        for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
+            if (actionParameter.getName().toLowerCase().startsWith("condition")) {
+                ActionParameterOperation condition = new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+                        this.getActionExecution(), this.getActionExecution().getAction().getType(), "condition");
 
-				condition.setInputValue(actionParameter.getValue());
-				
-				int id = 0;
-				int delim = actionParameter.getName().indexOf(".");
-				if (delim > 0) {
-					String[] item = actionParameter.getName().split(".");
-					id = Integer.parseInt(item[1]);
-				}
-				
-				RouteOperation routeOperation = this.getRouteOperation(id);
-				routeOperation.setId(id);
-				routeOperation.setCondition(condition);
-				this.setRouteOperation(routeOperation);
-				
-				this.getActionParameterOperationMap().put(actionParameter.getName(), condition);
-			}
-			else if (actionParameter.getName().equalsIgnoreCase("destination"))
-			{
-				ActionParameterOperation destination = new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
-						this.getActionExecution(), this.getActionExecution().getAction().getType(), "destination");
+                condition.setInputValue(actionParameter.getValue());
 
-				destination.setInputValue(actionParameter.getValue());
-				
-				int id = 0;
-				int delim = actionParameter.getName().indexOf(".");
-				if (delim > 0) {
-					String[] item = actionParameter.getName().split(".");
-					id = Integer.parseInt(item[1]);
-				}
-				
-				RouteOperation routeOperation = this.getRouteOperation(id);
-				routeOperation.setId(id);
-				routeOperation.setDestination(destination);
-				this.setRouteOperation(routeOperation);
-				
-				this.getActionParameterOperationMap().put(actionParameter.getName(), destination);
-			}
-			
-		}
-	}
-	
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public boolean execute()
-	{
-		try
-		{
+                int id = 0;
+                int delim = actionParameter.getName().indexOf(".");
+                if (delim > 0) {
+                    String[] item = actionParameter.getName().split(".");
+                    id = Integer.parseInt(item[1]);
+                }
+
+                RouteOperation routeOperation = this.getRouteOperation(id);
+                routeOperation.setId(id);
+                routeOperation.setCondition(condition);
+                this.setRouteOperation(routeOperation);
+
+                this.getActionParameterOperationMap().put(actionParameter.getName(), condition);
+            } else if (actionParameter.getName().equalsIgnoreCase("destination")) {
+                ActionParameterOperation destination = new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+                        this.getActionExecution(), this.getActionExecution().getAction().getType(), "destination");
+
+                destination.setInputValue(actionParameter.getValue());
+
+                int id = 0;
+                int delim = actionParameter.getName().indexOf(".");
+                if (delim > 0) {
+                    String[] item = actionParameter.getName().split(".");
+                    id = Integer.parseInt(item[1]);
+                }
+
+                RouteOperation routeOperation = this.getRouteOperation(id);
+                routeOperation.setId(id);
+                routeOperation.setDestination(destination);
+                this.setRouteOperation(routeOperation);
+
+                this.getActionParameterOperationMap().put(actionParameter.getName(), destination);
+            }
+
+        }
+    }
+
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    public boolean execute() {
+        try {
+
 //
 //			// Evaluate conditions
 //
@@ -166,100 +157,88 @@ public class FwkRoute
 //
 //				iterator.remove();
 //			}
-								
-			return true;
-		}
-		catch (Exception e)
-		{
-			StringWriter StackTrace = new StringWriter();
-			e.printStackTrace(new PrintWriter(StackTrace));
 
-			this.getActionExecution().getActionControl().increaseErrorCount();
+            return true;
+        } catch (Exception e) {
+            StringWriter StackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(StackTrace));
 
-			this.getActionExecution().getActionControl().logOutput("exception",e.getMessage());
-			this.getActionExecution().getActionControl().logOutput("stacktrace",StackTrace.toString());
+            this.getActionExecution().getActionControl().increaseErrorCount();
 
-			return false;
-		}
+            this.getActionExecution().getActionControl().logOutput("exception", e.getMessage());
+            this.getActionExecution().getActionControl().logOutput("stacktrace", StackTrace.toString());
 
-	}
+            return false;
+        }
 
-	private RouteOperation getRouteOperation(int id) {
-		if (this.getRouteOperationMap().containsKey(Integer.toString(id))) {
-			return this.getRouteOperationMap().get(Integer.toString(id));
-		} else {
-			return new RouteOperation();
-		}
-	}
-	
-	private void setRouteOperation(RouteOperation routeOperation) {
-		this.getRouteOperationMap().put(Integer.toString(routeOperation.getId()), routeOperation);
-	}
-	
-	// Getters and Setters
-	public FrameworkExecution getFrameworkExecution()
-	{
-		return frameworkExecution;
-	}
+    }
 
-	public void setFrameworkExecution(FrameworkExecution frameworkExecution)
-	{
-		this.frameworkExecution = frameworkExecution;
-	}
+    private RouteOperation getRouteOperation(int id) {
+        if (this.getRouteOperationMap().containsKey(Integer.toString(id))) {
+            return this.getRouteOperationMap().get(Integer.toString(id));
+        } else {
+            return new RouteOperation();
+        }
+    }
 
-	public ExecutionControl getExecutionControl()
-	{
-		return executionControl;
-	}
+    private void setRouteOperation(RouteOperation routeOperation) {
+        this.getRouteOperationMap().put(Integer.toString(routeOperation.getId()), routeOperation);
+    }
 
-	public void setExecutionControl(ExecutionControl executionControl)
-	{
-		this.executionControl = executionControl;
-	}
+    // Getters and Setters
+    public FrameworkExecution getFrameworkExecution() {
+        return frameworkExecution;
+    }
 
-	public ActionExecution getActionExecution()
-	{
-		return actionExecution;
-	}
+    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
+        this.frameworkExecution = frameworkExecution;
+    }
 
-	public void setActionExecution(ActionExecution actionExecution)
-	{
-		this.actionExecution = actionExecution;
-	}
+    public ExecutionControl getExecutionControl() {
+        return executionControl;
+    }
 
-	public ScriptExecution getScriptExecution()
-	{
-		return scriptExecution;
-	}
+    public void setExecutionControl(ExecutionControl executionControl) {
+        this.executionControl = executionControl;
+    }
 
-	public void setScriptExecution(ScriptExecution scriptExecution)
-	{
-		this.scriptExecution = scriptExecution;
-	}
-	
-	public HashMap<String, ActionParameterOperation> getActionParameterOperationMap()
-	{
-		return actionParameterOperationMap;
-	}
+    public ActionExecution getActionExecution() {
+        return actionExecution;
+    }
 
-	public void setActionParameterOperationMap(HashMap<String, ActionParameterOperation> actionParameterOperationMap)
-	{
-		this.actionParameterOperationMap = actionParameterOperationMap;
-	}
+    public void setActionExecution(ActionExecution actionExecution) {
+        this.actionExecution = actionExecution;
+    }
 
-	public ActionParameterOperation getDestination() {
-		return destination;
-	}
+    public ScriptExecution getScriptExecution() {
+        return scriptExecution;
+    }
 
-	public void setDestination(ActionParameterOperation destination) {
-		this.destination = destination;
-	}
+    public void setScriptExecution(ScriptExecution scriptExecution) {
+        this.scriptExecution = scriptExecution;
+    }
 
-	public HashMap<String, RouteOperation> getRouteOperationMap() {
-		return routeOperationMap;
-	}
+    public HashMap<String, ActionParameterOperation> getActionParameterOperationMap() {
+        return actionParameterOperationMap;
+    }
 
-	public void setRouteOperationMap(HashMap<String, RouteOperation> routeOperationMap) {
-		this.routeOperationMap = routeOperationMap;
-	}
+    public void setActionParameterOperationMap(HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
+        this.actionParameterOperationMap = actionParameterOperationMap;
+    }
+
+    public ActionParameterOperation getDestination() {
+        return destination;
+    }
+
+    public void setDestination(ActionParameterOperation destination) {
+        this.destination = destination;
+    }
+
+    public HashMap<String, RouteOperation> getRouteOperationMap() {
+        return routeOperationMap;
+    }
+
+    public void setRouteOperationMap(HashMap<String, RouteOperation> routeOperationMap) {
+        this.routeOperationMap = routeOperationMap;
+    }
 }

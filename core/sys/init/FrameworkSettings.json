@@ -1,23 +1,12 @@
 [{
 	"type": "FrameworkSetting",
 	"data": {
-		"name": "identifier",
-		"path": "iesi.identifier",
-		"label": "SolutionIdentifier",
+		"name": "commandline.display.runtime.variable",
+		"path": "iesi.commandline.display.runtime.variable",
+		"label": "CommandlineDisplayRuntimeVariable",
 		"description": "",
 		"group": "Framework",
-		"category": "General",
-		"type": ""
-}},
-{
-	"type": "FrameworkSetting",
-	"data": {
-		"name": "home",
-		"path": "iesi.home",
-		"label": "SolutionHome",
-		"description": "",
-		"group": "Framework",
-		"category": "General",
+		"category": "Runtime",
 		"type": ""
 }},
 {
@@ -34,23 +23,23 @@
 {
 	"type": "FrameworkSetting",
 	"data": {
-		"name": "metadata.repository.name",
-		"path": "iesi.metadata.repository.name",
-		"label": "MetadataRepositoryName",
+		"name": "guard.authenticate",
+		"path": "iesi.guard.authenticate",
+		"label": "GuardAuthenticate",
 		"description": "",
-		"group": "MetadataRepository",
-		"category": "General",
+		"group": "Framework",
+		"category": "Guard",
 		"type": ""
 }},
 {
 	"type": "FrameworkSetting",
 	"data": {
-		"name": "metadata.repository.type",
-		"path": "iesi.metadata.repository.type",
-		"label": "MetadataRepositoryType",
+		"name": "localhost.challenge",
+		"path": "iesi.localhost.challenge",
+		"label": "LocalHostChallenge",
 		"description": "",
-		"group": "MetadataRepository",
-		"category": "General",
+		"group": "Framework",
+		"category": "Runtime",
 		"type": ""
 }},
 {
@@ -59,28 +48,6 @@
 		"name": "metadata.repository.category",
 		"path": "iesi.metadata.repository.category",
 		"label": "MetadataRepositoryCategory",
-		"description": "",
-		"group": "MetadataRepository",
-		"category": "General",
-		"type": ""
-}},
-{
-	"type": "FrameworkSetting",
-	"data": {
-		"name": "metadata.repository.scope",
-		"path": "iesi.metadata.repository.scope",
-		"label": "MetadataRepositoryScope",
-		"description": "",
-		"group": "MetadataRepository",
-		"category": "General",
-		"type": ""
-}},
-{
-	"type": "FrameworkSetting",
-	"data": {
-		"name": "metadata.repository.instance.name",
-		"path": "iesi.metadata.repository.instance.name",
-		"label": "MetadataRepositoryInstanceName",
 		"description": "",
 		"group": "MetadataRepository",
 		"category": "General",
@@ -100,145 +67,145 @@
 {
 	"type": "FrameworkSetting",
 	"data": {
-		"name": "metadata.repository.oracle.host",
-		"path": "iesi.metadata.repository.oracle.host",
-		"label": "MetadataRepositoryOracleHost",
+		"name": "metadata.repository.elasticsearch.url",
+		"path": "iesi.metadata.repository.elasticsearch.url",
+		"label": "MetadataRepositoryElasticsearchUrl",
 		"description": "",
 		"group": "MetadataRepository",
-		"category": "Database",
-		"type": "Oracle"
+		"category": "Elasticsearch",
+		"type": "Elasticsearch"
 }},
 {
 	"type": "FrameworkSetting",
 	"data": {
-		"name": "metadata.repository.oracle.port",
-		"path": "iesi.metadata.repository.oracle.port",
-		"label": "MetadataRepositoryOraclePort",
+		"name": "metadata.repository.filestore.path",
+		"path": "iesi.metadata.repository.filestore.path",
+		"label": "MetadataRepositoryFileStorePath",
 		"description": "",
 		"group": "MetadataRepository",
-		"category": "Database",
-		"type": "Oracle"
+		"category": "Filestore",
+		"type": "Filestore"
 }},
 {
 	"type": "FrameworkSetting",
 	"data": {
-		"name": "metadata.repository.oracle.tnsalias",
-		"path": "iesi.metadata.repository.oracle.tnsalias",
-		"label": "MetadataRepositoryOracleTNSAlias",
+		"name": "metadata.repository.h2.file",
+		"path": "iesi.metadata.repository.h2.file",
+		"label": "MetadataRepositoryH2File",
 		"description": "",
 		"group": "MetadataRepository",
 		"category": "Database",
-		"type": "Oracle"
+		"type": "H2"
 }},
 {
 	"type": "FrameworkSetting",
 	"data": {
-		"name": "metadata.repository.oracle.service",
-		"path": "iesi.metadata.repository.oracle.service",
-		"label": "MetadataRepositoryOracleService",
+		"name": "metadata.repository.h2.host",
+		"path": "iesi.metadata.repository.h2.host",
+		"label": "MetadataRepositoryH2Host",
 		"description": "",
 		"group": "MetadataRepository",
 		"category": "Database",
-		"type": "Oracle"
+		"type": "H2"
 }},
 {
 	"type": "FrameworkSetting",
 	"data": {
-		"name": "metadata.repository.oracle.schema",
-		"path": "iesi.metadata.repository.oracle.schema",
-		"label": "MetadataRepositoryOracleSchema",
+		"name": "metadata.repository.h2.reader",
+		"path": "iesi.metadata.repository.h2.reader",
+		"label": "MetadataRepositoryH2LogonRead",
 		"description": "",
 		"group": "MetadataRepository",
 		"category": "Database",
-		"type": "Oracle"
+		"type": "H2"
 }},
 {
 	"type": "FrameworkSetting",
 	"data": {
-		"name": "metadata.repository.oracle.schema.password",
-		"path": "iesi.metadata.repository.oracle.schema.password",
-		"label": "MetadataRepositoryOracleSchemaPassword",
+		"name": "metadata.repository.h2.reader.password",
+		"path": "iesi.metadata.repository.h2.reader.password",
+		"label": "MetadataRepositoryH2LogonReadPassword",
 		"description": "",
 		"group": "MetadataRepository",
 		"category": "Database",
-		"type": "Oracle"
+		"type": "H2"
 }},
 {
 	"type": "FrameworkSetting",
 	"data": {
-		"name": "metadata.repository.oracle.writer",
-		"path": "iesi.metadata.repository.oracle.writer",
-		"label": "MetadataRepositoryOracleLogonWrite",
+		"name": "metadata.repository.h2.writer",
+		"path": "iesi.metadata.repository.h2.writer",
+		"label": "MetadataRepositoryH2LogonWrite",
 		"description": "",
 		"group": "MetadataRepository",
 		"category": "Database",
-		"type": "Oracle"
+		"type": "H2"
 }},
 {
 	"type": "FrameworkSetting",
 	"data": {
-		"name": "metadata.repository.oracle.writer.password",
-		"path": "iesi.metadata.repository.oracle.writer.password",
-		"label": "MetadataRepositoryOracleLogonWritePassword",
+		"name": "metadata.repository.h2.writer.password",
+		"path": "iesi.metadata.repository.h2.writer.password",
+		"label": "MetadataRepositoryH2LogonWritePassword",
 		"description": "",
 		"group": "MetadataRepository",
 		"category": "Database",
-		"type": "Oracle"
+		"type": "H2"
 }},
 {
 	"type": "FrameworkSetting",
 	"data": {
-		"name": "metadata.repository.oracle.reader",
-		"path": "iesi.metadata.repository.oracle.reader",
-		"label": "MetadataRepositoryOracleLogonRead",
+		"name": "metadata.repository.h2.port",
+		"path": "iesi.metadata.repository.h2.port",
+		"label": "MetadataRepositoryH2Port",
 		"description": "",
 		"group": "MetadataRepository",
 		"category": "Database",
-		"type": "Oracle"
+		"type": "H2"
 }},
 {
 	"type": "FrameworkSetting",
 	"data": {
-		"name": "metadata.repository.oracle.reader.password",
-		"path": "iesi.metadata.repository.oracle.reader.password",
-		"label": "MetadataRepositoryOracleLogonReadPassword",
+		"name": "metadata.repository.h2.schema",
+		"path": "iesi.metadata.repository.h2.schema",
+		"label": "MetadataRepositoryH2Schema",
 		"description": "",
 		"group": "MetadataRepository",
 		"category": "Database",
-		"type": "Oracle"
+		"type": "H2"
 }},
 {
 	"type": "FrameworkSetting",
 	"data": {
-		"name": "metadata.repository.sqlite.file",
-		"path": "iesi.metadata.repository.sqlite.file",
-		"label": "MetadataRepositorySQLiteFile",
+		"name": "metadata.repository.h2.schema.password",
+		"path": "iesi.metadata.repository.h2.schema.password",
+		"label": "MetadataRepositoryH2SchemaPassword",
 		"description": "",
 		"group": "MetadataRepository",
 		"category": "Database",
-		"type": "SQLite"
+		"type": "H2"
 }},
 {
 	"type": "FrameworkSetting",
 	"data": {
-		"name": "metadata.repository.netezza.host",
-		"path": "iesi.metadata.repository.netezza.host",
-		"label": "MetadataRepositoryNetezzaHost",
+		"name": "metadata.repository.instance.name",
+		"path": "iesi.metadata.repository.instance.name",
+		"label": "MetadataRepositoryInstanceName",
 		"description": "",
 		"group": "MetadataRepository",
-		"category": "Database",
-		"type": "Netezza"
+		"category": "General",
+		"type": ""
 }},
 {
 	"type": "FrameworkSetting",
 	"data": {
-		"name": "metadata.repository.netezza.port",
-		"path": "iesi.metadata.repository.netezza.port",
-		"label": "MetadataRepositoryNetezzaPort",
+		"name": "metadata.repository.name",
+		"path": "iesi.metadata.repository.name",
+		"label": "MetadataRepositoryName",
 		"description": "",
 		"group": "MetadataRepository",
-		"category": "Database",
-		"type": "Netezza"
+		"category": "General",
+		"type": ""
 }},
 {
 	"type": "FrameworkSetting",
@@ -254,53 +221,9 @@
 {
 	"type": "FrameworkSetting",
 	"data": {
-		"name": "metadata.repository.netezza.schema",
-		"path": "iesi.metadata.repository.netezza.schema",
-		"label": "MetadataRepositoryNetezzaSchema",
-		"description": "",
-		"group": "MetadataRepository",
-		"category": "Database",
-		"type": "Netezza"
-}},
-{
-	"type": "FrameworkSetting",
-	"data": {
-		"name": "metadata.repository.netezza.schema.user",
-		"path": "iesi.metadata.repository.netezza.schema.user",
-		"label": "MetadataRepositoryNetezzaSchemaUser",
-		"description": "",
-		"group": "MetadataRepository",
-		"category": "Database",
-		"type": "Netezza"
-}},
-{
-	"type": "FrameworkSetting",
-	"data": {
-		"name": "metadata.repository.netezza.schema.user.password",
-		"path": "iesi.metadata.repository.netezza.schema.user.password",
-		"label": "MetadataRepositoryNetezzaSchemaPassword",
-		"description": "",
-		"group": "MetadataRepository",
-		"category": "Database",
-		"type": "Netezza"
-}},
-{
-	"type": "FrameworkSetting",
-	"data": {
-		"name": "metadata.repository.netezza.writer",
-		"path": "iesi.metadata.repository.netezza.writer",
-		"label": "MetadataRepositoryNetezzaLogonWrite",
-		"description": "",
-		"group": "MetadataRepository",
-		"category": "Database",
-		"type": "Netezza"
-}},
-{
-	"type": "FrameworkSetting",
-	"data": {
-		"name": "metadata.repository.netezza.writer.password",
-		"path": "iesi.metadata.repository.netezza.writer.password",
-		"label": "MetadataRepositoryNetezzaLogonWritePassword",
+		"name": "metadata.repository.netezza.host",
+		"path": "iesi.metadata.repository.netezza.host",
+		"label": "MetadataRepositoryNetezzaHost",
 		"description": "",
 		"group": "MetadataRepository",
 		"category": "Database",
@@ -331,24 +254,178 @@
 {
 	"type": "FrameworkSetting",
 	"data": {
-		"name": "metadata.repository.postgresql.host",
-		"path": "iesi.metadata.repository.postgresql.host",
-		"label": "MetadataRepositoryPostgresqlHost",
+		"name": "metadata.repository.netezza.writer",
+		"path": "iesi.metadata.repository.netezza.writer",
+		"label": "MetadataRepositoryNetezzaLogonWrite",
 		"description": "",
 		"group": "MetadataRepository",
 		"category": "Database",
-		"type": "Postgresql"
+		"type": "Netezza"
 }},
 {
 	"type": "FrameworkSetting",
 	"data": {
-		"name": "metadata.repository.postgresql.port",
-		"path": "iesi.metadata.repository.postgresql.port",
-		"label": "MetadataRepositoryPostgresqlPort",
+		"name": "metadata.repository.netezza.writer.password",
+		"path": "iesi.metadata.repository.netezza.writer.password",
+		"label": "MetadataRepositoryNetezzaLogonWritePassword",
 		"description": "",
 		"group": "MetadataRepository",
 		"category": "Database",
-		"type": "Postgresql"
+		"type": "Netezza"
+}},
+{
+	"type": "FrameworkSetting",
+	"data": {
+		"name": "metadata.repository.netezza.port",
+		"path": "iesi.metadata.repository.netezza.port",
+		"label": "MetadataRepositoryNetezzaPort",
+		"description": "",
+		"group": "MetadataRepository",
+		"category": "Database",
+		"type": "Netezza"
+}},
+{
+	"type": "FrameworkSetting",
+	"data": {
+		"name": "metadata.repository.netezza.schema",
+		"path": "iesi.metadata.repository.netezza.schema",
+		"label": "MetadataRepositoryNetezzaSchema",
+		"description": "",
+		"group": "MetadataRepository",
+		"category": "Database",
+		"type": "Netezza"
+}},
+{
+	"type": "FrameworkSetting",
+	"data": {
+		"name": "metadata.repository.netezza.schema.user.password",
+		"path": "iesi.metadata.repository.netezza.schema.user.password",
+		"label": "MetadataRepositoryNetezzaSchemaPassword",
+		"description": "",
+		"group": "MetadataRepository",
+		"category": "Database",
+		"type": "Netezza"
+}},
+{
+	"type": "FrameworkSetting",
+	"data": {
+		"name": "metadata.repository.netezza.schema.user",
+		"path": "iesi.metadata.repository.netezza.schema.user",
+		"label": "MetadataRepositoryNetezzaSchemaUser",
+		"description": "",
+		"group": "MetadataRepository",
+		"category": "Database",
+		"type": "Netezza"
+}},
+{
+	"type": "FrameworkSetting",
+	"data": {
+		"name": "metadata.repository.oracle.host",
+		"path": "iesi.metadata.repository.oracle.host",
+		"label": "MetadataRepositoryOracleHost",
+		"description": "",
+		"group": "MetadataRepository",
+		"category": "Database",
+		"type": "Oracle"
+}},
+{
+	"type": "FrameworkSetting",
+	"data": {
+		"name": "metadata.repository.oracle.reader",
+		"path": "iesi.metadata.repository.oracle.reader",
+		"label": "MetadataRepositoryOracleLogonRead",
+		"description": "",
+		"group": "MetadataRepository",
+		"category": "Database",
+		"type": "Oracle"
+}},
+{
+	"type": "FrameworkSetting",
+	"data": {
+		"name": "metadata.repository.oracle.reader.password",
+		"path": "iesi.metadata.repository.oracle.reader.password",
+		"label": "MetadataRepositoryOracleLogonReadPassword",
+		"description": "",
+		"group": "MetadataRepository",
+		"category": "Database",
+		"type": "Oracle"
+}},
+{
+	"type": "FrameworkSetting",
+	"data": {
+		"name": "metadata.repository.oracle.writer",
+		"path": "iesi.metadata.repository.oracle.writer",
+		"label": "MetadataRepositoryOracleLogonWrite",
+		"description": "",
+		"group": "MetadataRepository",
+		"category": "Database",
+		"type": "Oracle"
+}},
+{
+	"type": "FrameworkSetting",
+	"data": {
+		"name": "metadata.repository.oracle.writer.password",
+		"path": "iesi.metadata.repository.oracle.writer.password",
+		"label": "MetadataRepositoryOracleLogonWritePassword",
+		"description": "",
+		"group": "MetadataRepository",
+		"category": "Database",
+		"type": "Oracle"
+}},
+{
+	"type": "FrameworkSetting",
+	"data": {
+		"name": "metadata.repository.oracle.port",
+		"path": "iesi.metadata.repository.oracle.port",
+		"label": "MetadataRepositoryOraclePort",
+		"description": "",
+		"group": "MetadataRepository",
+		"category": "Database",
+		"type": "Oracle"
+}},
+{
+	"type": "FrameworkSetting",
+	"data": {
+		"name": "metadata.repository.oracle.schema",
+		"path": "iesi.metadata.repository.oracle.schema",
+		"label": "MetadataRepositoryOracleSchema",
+		"description": "",
+		"group": "MetadataRepository",
+		"category": "Database",
+		"type": "Oracle"
+}},
+{
+	"type": "FrameworkSetting",
+	"data": {
+		"name": "metadata.repository.oracle.schema.password",
+		"path": "iesi.metadata.repository.oracle.schema.password",
+		"label": "MetadataRepositoryOracleSchemaPassword",
+		"description": "",
+		"group": "MetadataRepository",
+		"category": "Database",
+		"type": "Oracle"
+}},
+{
+	"type": "FrameworkSetting",
+	"data": {
+		"name": "metadata.repository.oracle.service",
+		"path": "iesi.metadata.repository.oracle.service",
+		"label": "MetadataRepositoryOracleService",
+		"description": "",
+		"group": "MetadataRepository",
+		"category": "Database",
+		"type": "Oracle"
+}},
+{
+	"type": "FrameworkSetting",
+	"data": {
+		"name": "metadata.repository.oracle.tnsalias",
+		"path": "iesi.metadata.repository.oracle.tnsalias",
+		"label": "MetadataRepositoryOracleTNSAlias",
+		"description": "",
+		"group": "MetadataRepository",
+		"category": "Database",
+		"type": "Oracle"
 }},
 {
 	"type": "FrameworkSetting",
@@ -364,53 +441,9 @@
 {
 	"type": "FrameworkSetting",
 	"data": {
-		"name": "metadata.repository.postgresql.writer",
-		"path": "iesi.metadata.repository.postgresql.writer",
-		"label": "MetadataRepositoryPostgresqlLogonWrite",
-		"description": "",
-		"group": "MetadataRepository",
-		"category": "Database",
-		"type": "Postgresql"
-}},
-{
-	"type": "FrameworkSetting",
-	"data": {
-		"name": "metadata.repository.postgresql.writer.password",
-		"path": "iesi.metadata.repository.postgresql.writer.password",
-		"label": "MetadataRepositoryPostgresqlLogonWritePassword",
-		"description": "",
-		"group": "MetadataRepository",
-		"category": "Database",
-		"type": "Postgresql"
-}},
-{
-	"type": "FrameworkSetting",
-	"data": {
-		"name": "metadata.repository.postgresql.schema",
-		"path": "iesi.metadata.repository.postgresql.schema",
-		"label": "MetadataRepositoryPostgresqlSchema",
-		"description": "",
-		"group": "MetadataRepository",
-		"category": "Database",
-		"type": "Postgresql"
-}},
-{
-	"type": "FrameworkSetting",
-	"data": {
-		"name": "metadata.repository.postgresql.schema.user",
-		"path": "iesi.metadata.repository.postgresql.schema.user",
-		"label": "MetadataRepositoryPostgresqlSchemaUser",
-		"description": "",
-		"group": "MetadataRepository",
-		"category": "Database",
-		"type": "Postgresql"
-}},
-{
-	"type": "FrameworkSetting",
-	"data": {
-		"name": "metadata.repository.postgresql.schema.user.password",
-		"path": "iesi.metadata.repository.postgresql.schema.user.password",
-		"label": "MetadataRepositoryPostgresqlSchemaPassword",
+		"name": "metadata.repository.postgresql.host",
+		"path": "iesi.metadata.repository.postgresql.host",
+		"label": "MetadataRepositoryPostgresqlHost",
 		"description": "",
 		"group": "MetadataRepository",
 		"category": "Database",
@@ -441,45 +474,100 @@
 {
 	"type": "FrameworkSetting",
 	"data": {
-		"name": "metadata.repository.filestore.path",
-		"path": "iesi.metadata.repository.filestore.path",
-		"label": "MetadataRepositoryFileStorePath",
+		"name": "metadata.repository.postgresql.writer",
+		"path": "iesi.metadata.repository.postgresql.writer",
+		"label": "MetadataRepositoryPostgresqlLogonWrite",
 		"description": "",
 		"group": "MetadataRepository",
-		"category": "Filestore",
-		"type": "Filestore"
+		"category": "Database",
+		"type": "Postgresql"
 }},
 {
 	"type": "FrameworkSetting",
 	"data": {
-		"name": "metadata.repository.elasticsearch.url",
-		"path": "iesi.metadata.repository.elasticsearch.url",
-		"label": "MetadataRepositoryElasticsearchUrl",
+		"name": "metadata.repository.postgresql.writer.password",
+		"path": "iesi.metadata.repository.postgresql.writer.password",
+		"label": "MetadataRepositoryPostgresqlLogonWritePassword",
 		"description": "",
 		"group": "MetadataRepository",
-		"category": "Elasticsearch",
-		"type": "Elasticsearch"
+		"category": "Database",
+		"type": "Postgresql"
 }},
 {
 	"type": "FrameworkSetting",
 	"data": {
-		"name": "commandline.display.runtime.variable",
-		"path": "iesi.commandline.display.runtime.variable",
-		"label": "CommandlineDisplayRuntimeVariable",
+		"name": "metadata.repository.postgresql.port",
+		"path": "iesi.metadata.repository.postgresql.port",
+		"label": "MetadataRepositoryPostgresqlPort",
 		"description": "",
-		"group": "Framework",
-		"category": "Runtime",
+		"group": "MetadataRepository",
+		"category": "Database",
+		"type": "Postgresql"
+}},
+{
+	"type": "FrameworkSetting",
+	"data": {
+		"name": "metadata.repository.postgresql.schema",
+		"path": "iesi.metadata.repository.postgresql.schema",
+		"label": "MetadataRepositoryPostgresqlSchema",
+		"description": "",
+		"group": "MetadataRepository",
+		"category": "Database",
+		"type": "Postgresql"
+}},
+{
+	"type": "FrameworkSetting",
+	"data": {
+		"name": "metadata.repository.postgresql.schema.user.password",
+		"path": "iesi.metadata.repository.postgresql.schema.user.password",
+		"label": "MetadataRepositoryPostgresqlSchemaPassword",
+		"description": "",
+		"group": "MetadataRepository",
+		"category": "Database",
+		"type": "Postgresql"
+}},
+{
+	"type": "FrameworkSetting",
+	"data": {
+		"name": "metadata.repository.postgresql.schema.user",
+		"path": "iesi.metadata.repository.postgresql.schema.user",
+		"label": "MetadataRepositoryPostgresqlSchemaUser",
+		"description": "",
+		"group": "MetadataRepository",
+		"category": "Database",
+		"type": "Postgresql"
+}},
+{
+	"type": "FrameworkSetting",
+	"data": {
+		"name": "metadata.repository.scope",
+		"path": "iesi.metadata.repository.scope",
+		"label": "MetadataRepositoryScope",
+		"description": "",
+		"group": "MetadataRepository",
+		"category": "General",
 		"type": ""
 }},
 {
 	"type": "FrameworkSetting",
 	"data": {
-		"name": "script.execution.runtime",
-		"path": "iesi.script.execution.runtime",
-		"label": "ScriptExecutionRuntime",
+		"name": "metadata.repository.sqlite.file",
+		"path": "iesi.metadata.repository.sqlite.file",
+		"label": "MetadataRepositorySQLiteFile",
 		"description": "",
-		"group": "Framework",
-		"category": "Runtime",
+		"group": "MetadataRepository",
+		"category": "Database",
+		"type": "SQLite"
+}},
+{
+	"type": "FrameworkSetting",
+	"data": {
+		"name": "metadata.repository.type",
+		"path": "iesi.metadata.repository.type",
+		"label": "MetadataRepositoryType",
+		"description": "",
+		"group": "MetadataRepository",
+		"category": "General",
 		"type": ""
 }},
 {
@@ -496,9 +584,9 @@
 {
 	"type": "FrameworkSetting",
 	"data": {
-		"name": "localhost.challenge",
-		"path": "iesi.localhost.challenge",
-		"label": "LocalHostChallenge",
+		"name": "script.execution.runtime",
+		"path": "iesi.script.execution.runtime",
+		"label": "ScriptExecutionRuntime",
 		"description": "",
 		"group": "Framework",
 		"category": "Runtime",
@@ -507,11 +595,22 @@
 {
 	"type": "FrameworkSetting",
 	"data": {
-		"name": "guard.authenticate",
-		"path": "iesi.guard.authenticate",
-		"label": "GuardAuthenticate",
+		"name": "home",
+		"path": "iesi.home",
+		"label": "SolutionHome",
 		"description": "",
 		"group": "Framework",
-		"category": "Guard",
+		"category": "General",
+		"type": ""
+}},
+{
+	"type": "FrameworkSetting",
+	"data": {
+		"name": "identifier",
+		"path": "iesi.identifier",
+		"label": "SolutionIdentifier",
+		"description": "",
+		"group": "Framework",
+		"category": "General",
 		"type": ""
 }}]

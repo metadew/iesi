@@ -1,6 +1,19 @@
 [{
 	"type": "ConnectionType",
 	"data": {
+		"name": "db.h2",
+		"description": "H2 Database Connection",
+		"parameters": [
+			{"name": "host","description": "The host name of the server where the database file is located","type": "string","mandatory": "N","encrypted": "N"},
+			{"name": "port","description": "The port number for connecting to the host","type": "number","mandatory": "N","encrypted": "N"},
+			{"name": "file","description": "The database file name to connect to","type": "string","mandatory": "Y","encrypted": "N"},
+			{"name": "user","description": "The user name to connect to the database","type": "string","mandatory": "Y","encrypted": "N"},
+			{"name": "password","description": "The encrypted password to connect to the database","type": "string","mandatory": "Y","encrypted": "Y"}
+	]
+}},
+{
+	"type": "ConnectionType",
+	"data": {
 		"name": "db.mysql",
 		"description": "MySql Database Connection",
 		"parameters": [

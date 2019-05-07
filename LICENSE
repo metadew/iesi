@@ -71,6 +71,10 @@ org.jfrog.artifactory.client:artifactory-java-client-services
 org.mybatis:mybatis
 org.xerial:sqlite-jdbc
 
+Eclipse Public License 1.0
+--------------------------
+com.h2database:h2
+
 JSch License
 ------------
 com.jcraft:jsch

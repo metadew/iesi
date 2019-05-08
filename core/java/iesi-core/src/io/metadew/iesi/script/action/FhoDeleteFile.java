@@ -93,24 +93,24 @@ public class FhoDeleteFile {
 
 			if (isOnLocalhost) {
 				if (this.getFilePath().getValue().isEmpty()) {
-					// TODO align with rest of the method and cascade to fho objects
-					FileTools.delete(this.getFileName().getValue());
+					this.setScope(this.getFileName().getValue());
+					try {
+						FileTools.delete(this.getFileName().getValue());
+						this.setSuccess();
+					} catch (Exception e) {
+						this.setError(e.getMessage());
+					}
 				} else {
 					List<FileConnection> fileConnections = FolderTools.getFilesInFolder(this.getFilePath().getValue(),
 							this.getFileName().getValue());
 					for (FileConnection fileConnection : fileConnections) {
 						if (!fileConnection.isDirectory()) {
-							this.getActionExecution().getActionControl().logOutput("file.delete",
-									fileConnection.getFilePath());
+							this.setScope(fileConnection.getFilePath());
 							try {
 								FileTools.delete(fileConnection.getFilePath());
-								this.getActionExecution().getActionControl().increaseSuccessCount();
-								this.getActionExecution().getActionControl().logOutput("file.delete.success",
-										"confirmed");
+								this.setSuccess();
 							} catch (Exception e) {
-								this.getActionExecution().getActionControl().logOutput("file.delete.error",
-										e.getMessage());
-								this.getActionExecution().getActionControl().increaseErrorCount();
+								this.setError(e.getMessage());
 							}
 						}
 					}
@@ -124,29 +124,16 @@ public class FhoDeleteFile {
 				ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
 				HostConnection hostConnection = connectionOperation.getHostConnection(connection);
 
-				for (FileConnection fileConnection : FileConnectionTools.getFileConnections(hostConnection,
-						this.getFilePath().getValue(), this.getFileName().getValue(), true)) {
-					ShellCommandSettings shellCommandSettings = new ShellCommandSettings();
-					this.getActionExecution().getActionControl().logOutput("folder.delete",
-							fileConnection.getFilePath());
-
-					ShellCommandResult shellCommandResult = null;
-					try {
-						shellCommandResult = hostConnection.executeRemoteCommand("",
-								"rm -rf " + fileConnection.getFilePath(), shellCommandSettings);
-
-						if (shellCommandResult.getReturnCode() == 0) {
-							this.getActionExecution().getActionControl().increaseSuccessCount();
-							this.getActionExecution().getActionControl().logOutput("folder.delete.success",
-									"confirmed");
-						} else {
-							this.getActionExecution().getActionControl().logOutput("folder.delete.error",
-									shellCommandResult.getErrorOutput());
-							this.getActionExecution().getActionControl().increaseErrorCount();
+				if (this.getFilePath().getValue().isEmpty()) {
+					this.setScope(this.getFileName().getValue());
+					this.deleteRemoteFile(hostConnection, this.getFileName().getValue());
+				} else {
+					for (FileConnection fileConnection : FileConnectionTools.getFileConnections(hostConnection,
+							this.getFilePath().getValue(), this.getFileName().getValue(), false)) {
+						if (!fileConnection.isDirectory()) {
+							this.setScope(fileConnection.getFilePath());
+							this.deleteRemoteFile(hostConnection, fileConnection.getFilePath());
 						}
-					} catch (Exception e) {
-						this.getActionExecution().getActionControl().logOutput("folder.delete.error", e.getMessage());
-						this.getActionExecution().getActionControl().increaseErrorCount();
 					}
 				}
 			}
@@ -164,6 +151,36 @@ public class FhoDeleteFile {
 			return false;
 		}
 
+	}
+
+	private void deleteRemoteFile(HostConnection hostConnection, String filePath) {
+		ShellCommandSettings shellCommandSettings = new ShellCommandSettings();
+		ShellCommandResult shellCommandResult = null;
+		try {
+			shellCommandResult = hostConnection.executeRemoteCommand("", "rm -f " + filePath, shellCommandSettings);
+
+			if (shellCommandResult.getReturnCode() == 0) {
+				this.setSuccess();
+			} else {
+				this.setError(shellCommandResult.getErrorOutput());
+			}
+		} catch (Exception e) {
+			this.setError(e.getMessage());
+		}
+	}
+
+	private void setScope(String input) {
+		this.getActionExecution().getActionControl().logOutput("file.delete", input);
+	}
+
+	private void setError(String input) {
+		this.getActionExecution().getActionControl().logOutput("file.delete.error", input);
+		this.getActionExecution().getActionControl().increaseErrorCount();
+	}
+
+	private void setSuccess() {
+		this.getActionExecution().getActionControl().logOutput("file.delete.success", "confirmed");
+		this.getActionExecution().getActionControl().increaseSuccessCount();
 	}
 
 	// Getters and Setters

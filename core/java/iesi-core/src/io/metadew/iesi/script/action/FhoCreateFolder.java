@@ -99,14 +99,12 @@ public class FhoCreateFolder {
 							this.getFolderPath().getValue() + File.separator + this.getFolderName().getValue());
 				}
 
-				this.getActionExecution().getActionControl().logOutput("folder.create", subjectFolderPath);
+				this.setScope(subjectFolderPath);
 				try {
 					FolderTools.createFolder(subjectFolderPath, true);
-					this.getActionExecution().getActionControl().increaseSuccessCount();
-					this.getActionExecution().getActionControl().logOutput("folder.create.success", "confirmed");
+					this.setSuccess();
 				} catch (Exception e) {
-					this.getActionExecution().getActionControl().logOutput("folder.create.error", e.getMessage());
-					this.getActionExecution().getActionControl().increaseErrorCount();
+					this.setError(e.getMessage());
 				}
 
 			} else {
@@ -122,29 +120,25 @@ public class FhoCreateFolder {
 				if (this.getFolderPath().getValue().isEmpty()) {
 					subjectFolderPath = this.getFolderName().getValue();
 				} else {
-					subjectFolderPath = 
-							this.getFolderPath().getValue() + hostConnection.getFileSeparator() + this.getFolderName().getValue();
+					subjectFolderPath = this.getFolderPath().getValue() + hostConnection.getFileSeparator()
+							+ this.getFolderName().getValue();
 				}
 
-				this.getActionExecution().getActionControl().logOutput("folder.create", subjectFolderPath);
-				
+				this.setScope(subjectFolderPath);
+
 				ShellCommandSettings shellCommandSettings = new ShellCommandSettings();
 				ShellCommandResult shellCommandResult = null;
 				try {
-					shellCommandResult = hostConnection.executeRemoteCommand("",
-							"mkdir " + subjectFolderPath, shellCommandSettings);
+					shellCommandResult = hostConnection.executeRemoteCommand("", "mkdir " + subjectFolderPath,
+							shellCommandSettings);
 
 					if (shellCommandResult.getReturnCode() == 0) {
-						this.getActionExecution().getActionControl().increaseSuccessCount();
-						this.getActionExecution().getActionControl().logOutput("folder.create.success", "confirmed");
+						this.setSuccess();
 					} else {
-						this.getActionExecution().getActionControl().logOutput("folder.create.error",
-								shellCommandResult.getErrorOutput());
-						this.getActionExecution().getActionControl().increaseErrorCount();
+						this.setError(shellCommandResult.getErrorOutput());
 					}
 				} catch (Exception e) {
-					this.getActionExecution().getActionControl().logOutput("folder.create.error", e.getMessage());
-					this.getActionExecution().getActionControl().increaseErrorCount();
+					this.setError(e.getMessage());
 				}
 			}
 			return true;
@@ -160,6 +154,20 @@ public class FhoCreateFolder {
 			return false;
 		}
 
+	}
+
+	private void setScope(String input) {
+		this.getActionExecution().getActionControl().logOutput("folder.create", input);
+	}
+
+	private void setError(String input) {
+		this.getActionExecution().getActionControl().logOutput("folder.create.error", input);
+		this.getActionExecution().getActionControl().increaseErrorCount();
+	}
+
+	private void setSuccess() {
+		this.getActionExecution().getActionControl().logOutput("folder.create.success", "confirmed");
+		this.getActionExecution().getActionControl().increaseSuccessCount();
 	}
 
 	// Getters and Setters

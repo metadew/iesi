@@ -92,23 +92,26 @@ public class FhoDeleteFolder {
 
 			if (isOnLocalhost) {
 				if (this.getFolderPath().getValue().isEmpty()) {
-					FolderTools.deleteFolder(this.getFolderName().getValue(), true);
+					this.setScope(this.getFolderName().getValue());
+
+					try {
+						FolderTools.deleteFolder(this.getFolderName().getValue(), true);
+						this.setSuccess();
+					} catch (Exception e) {
+						this.setError(e.getMessage());
+					}
+
 				} else {
 					List<FileConnection> fileConnections = FolderTools.getFilesInFolder(this.getFolderPath().getValue(),
 							this.getFolderName().getValue());
 					for (FileConnection fileConnection : fileConnections) {
 						if (fileConnection.isDirectory()) {
-							this.getActionExecution().getActionControl().logOutput("folder.delete",
-									fileConnection.getFilePath());
+							this.setScope(fileConnection.getFilePath());
 							try {
 								FolderTools.deleteFolder(fileConnection.getFilePath(), true);
-								this.getActionExecution().getActionControl().increaseSuccessCount();
-								this.getActionExecution().getActionControl().logOutput("folder.delete.success",
-										"confirmed");
+								this.setSuccess();
 							} catch (Exception e) {
-								this.getActionExecution().getActionControl().logOutput("folder.delete.error",
-										e.getMessage());
-								this.getActionExecution().getActionControl().increaseErrorCount();
+								this.setError(e.getMessage());
 							}
 						}
 					}
@@ -122,29 +125,14 @@ public class FhoDeleteFolder {
 				ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
 				HostConnection hostConnection = connectionOperation.getHostConnection(connection);
 
-				for (FileConnection fileConnection : FileConnectionTools.getFileConnections(hostConnection,
-						this.getFolderPath().getValue(), this.getFolderName().getValue(), true)) {
-					ShellCommandSettings shellCommandSettings = new ShellCommandSettings();
-					this.getActionExecution().getActionControl().logOutput("folder.delete",
-							fileConnection.getFilePath());
-
-					ShellCommandResult shellCommandResult = null;
-					try {
-						shellCommandResult = hostConnection.executeRemoteCommand("",
-								"rm -rf " + fileConnection.getFilePath(), shellCommandSettings);
-
-						if (shellCommandResult.getReturnCode() == 0) {
-							this.getActionExecution().getActionControl().increaseSuccessCount();
-							this.getActionExecution().getActionControl().logOutput("folder.delete.success",
-									"confirmed");
-						} else {
-							this.getActionExecution().getActionControl().logOutput("folder.delete.error",
-									shellCommandResult.getErrorOutput());
-							this.getActionExecution().getActionControl().increaseErrorCount();
-						}
-					} catch (Exception e) {
-						this.getActionExecution().getActionControl().logOutput("folder.delete.error", e.getMessage());
-						this.getActionExecution().getActionControl().increaseErrorCount();
+				if (this.getFolderPath().getValue().isEmpty()) {
+					this.setScope(this.getFolderName().getValue());
+					this.deleteRemoteFolder(hostConnection, this.getFolderName().getValue());
+				} else {
+					for (FileConnection fileConnection : FileConnectionTools.getFileConnections(hostConnection,
+							this.getFolderPath().getValue(), this.getFolderName().getValue(), true)) {
+						this.setScope(fileConnection.getFilePath());
+						this.deleteRemoteFolder(hostConnection, fileConnection.getFilePath());
 					}
 				}
 			}
@@ -162,6 +150,37 @@ public class FhoDeleteFolder {
 			return false;
 		}
 
+	}
+
+	private void deleteRemoteFolder(HostConnection hostConnection, String folderFilePath) {
+		ShellCommandSettings shellCommandSettings = new ShellCommandSettings();
+		ShellCommandResult shellCommandResult = null;
+		try {
+			shellCommandResult = hostConnection.executeRemoteCommand("", "rm -rf " + folderFilePath,
+					shellCommandSettings);
+
+			if (shellCommandResult.getReturnCode() == 0) {
+				this.setSuccess();
+			} else {
+				this.setError(shellCommandResult.getErrorOutput());
+			}
+		} catch (Exception e) {
+			this.setError(e.getMessage());
+		}
+	}
+
+	private void setScope(String input) {
+		this.getActionExecution().getActionControl().logOutput("folder.delete", input);
+	}
+
+	private void setError(String input) {
+		this.getActionExecution().getActionControl().logOutput("folder.delete.error", input);
+		this.getActionExecution().getActionControl().increaseErrorCount();
+	}
+
+	private void setSuccess() {
+		this.getActionExecution().getActionControl().logOutput("folder.delete.success", "confirmed");
+		this.getActionExecution().getActionControl().increaseSuccessCount();
 	}
 
 	// Getters and Setters

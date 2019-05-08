@@ -61,9 +61,9 @@ public class H2DatabaseConnection extends DatabaseConnection {
 
 		Optional<String> schema = getSchema();
 		if (schema.isPresent()) {
-			// TODO: The old JDBC API does not support the setSchema call
-			connection.createStatement().execute("alter session set current_schema=" + schema.get());
-			// connection.setSchema(schema.get());
+			connection.createStatement().execute("SET SCHEMA " + schema.get());
+			// TODO test the set schema call
+			//connection.setSchema(schema.get());
 		}
 		return connection;
 	}

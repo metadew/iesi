@@ -29,7 +29,7 @@ public class H2Database extends Database {
     public String getAllTablesQuery(String pattern) {
         // pattern = tableNamePrefix + categoryPrefix
         return "select TABLE_SCHEMA, TABLE_NAME from information_schema.TABLES where"
-                + getSchema().map(schema -> " TABLE_SCHEMA = '" + schema + "' and").orElse("")
+                + getSchema().map(schema -> " TABLE_SCHEMA = '" + schema + "' and").orElse(" TABLE_SCHEMA = 'PUBLIC' and")
                 + " TABLE_NAME like '"
                 + pattern
                 + "%' order by TABLE_NAME ASC";

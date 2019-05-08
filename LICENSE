@@ -38,7 +38,6 @@ com.fasterxml.jackson:jackson-annotations
 com.fasterxml.jackson:jackson-core
 com.fasterxml.jackson:jackson-databind
 com.fasterxml.jackson:jackson-dataformat-yaml
-com.facebook.presto:presto-jdbc
 com.github.bmoliveira:snake-yaml
 com.github.javafaker:javafaker
 com.google.guava:guava
@@ -49,6 +48,7 @@ commons-compress:commons-compress
 commons-exec:commons-exec
 commons-lang:commons-lang
 commons-logging:commons-logging
+io.prestosql:presto-jdbc
 nl.flotsam:xeger
 org.apache.commons:commons-io
 org.apache.commons:commons-jexl

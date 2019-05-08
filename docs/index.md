@@ -47,6 +47,7 @@ Our framework can run on Linux/Unix and Windows systems.
 |Netezza|![green](/{{site.repository}}/images/icons/green-dot.png)|![green](/{{site.repository}}/images/icons/green-dot.png)|![red](/{{site.repository}}/images/icons/red-dot.png)|
 |Oracle|![green](/{{site.repository}}/images/icons/green-dot.png)|![green](/{{site.repository}}/images/icons/green-dot.png)|![yellow](/{{site.repository}}/images/icons/yellow-dot.png)|
 |Postgresql|![green](/{{site.repository}}/images/icons/green-dot.png)|![green](/{{site.repository}}/images/icons/green-dot.png)|![red](/{{site.repository}}/images/icons/red-dot.png)|
+|Presto|![red](/{{site.repository}}/images/icons/red-dot.png)|![green](/{{site.repository}}/images/icons/green-dot.png)|![red](/{{site.repository}}/images/icons/red-dot.png)|
 |SQLite|![green](/{{site.repository}}/images/icons/green-dot.png)|![green](/{{site.repository}}/images/icons/green-dot.png)|![red](/{{site.repository}}/images/icons/red-dot.png)|
 |Teradata|![red](/{{site.repository}}/images/icons/red-dot.png)|![green](/{{site.repository}}/images/icons/green-dot.png)|![red](/{{site.repository}}/images/icons/red-dot.png)|
 

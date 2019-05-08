@@ -458,6 +458,10 @@ public class ConnectionOperation {
 				DbH2ConnectionOperation dbH2ConnectionOperation = new DbH2ConnectionOperation(
 						this.getFrameworkExecution());
 				databaseConnection = dbH2ConnectionOperation.getConnectionOperation(connection);
+			} else if (connection.getType().equalsIgnoreCase("db.presto")) {
+				DbPrestoConnectionOperation dbPrestoConnectionOperation = new DbPrestoConnectionOperation(
+						this.getFrameworkExecution());
+				databaseConnection = dbPrestoConnectionOperation.getConnectionOperation(connection);
 			} else {
 				String message = "Database type is not (yet) supported: " + connection.getType();
 				throw new RuntimeException(message);

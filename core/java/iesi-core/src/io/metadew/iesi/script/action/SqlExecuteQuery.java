@@ -1,16 +1,12 @@
 package io.metadew.iesi.script.action;
 
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.HashMap;
-
 import javax.sql.rowset.CachedRowSet;
-
 import io.metadew.iesi.connection.database.connection.DatabaseConnection;
 import io.metadew.iesi.connection.database.sql.SqlScriptResult;
 import io.metadew.iesi.connection.operation.ConnectionOperation;
-import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.connection.tools.sql.SQLDataTransfer;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.configuration.ConnectionConfiguration;
@@ -105,11 +101,19 @@ public class SqlExecuteQuery {
 
 			SqlScriptResult sqlScriptResult = null;
 			if (this.getOutputDataset().getValue().isEmpty()) {
-				InputStream inputStream = FileTools.convertToInputStream(this.getSqlQuery().getValue(),
-						this.getFrameworkExecution().getFrameworkControl());
-				sqlScriptResult = databaseConnection.executeScript(inputStream);
+				 //InputStream inputStream =
+				 //FileTools.convertToInputStream(this.getSqlQuery().getValue(),
+				 //this.getFrameworkExecution().getFrameworkControl());
+				//sqlScriptResult = databaseConnection.executeScript(inputStream);
+				// TODO instability for inputstream together with scriptrunner
+				// TODO compile script to input script (from scriptrunner) + resolve
+
+				CachedRowSet crs = databaseConnection.executeQuery(this.getSqlQuery().getValue());
+				this.getActionExecution().getActionControl().logOutput("sql.execute.size", Integer.toString(crs.size()));
+				sqlScriptResult = new SqlScriptResult(0, "sql.execute.complete", "");
 			} else {
-				DatasetOperation datasetOperation = this.getExecutionControl().getExecutionRuntime().getDatasetOperation(this.getOutputDataset().getValue());
+				DatasetOperation datasetOperation = this.getExecutionControl().getExecutionRuntime()
+						.getDatasetOperation(this.getOutputDataset().getValue());
 				CachedRowSet crs = null;
 				DatabaseConnection outputDatabaseConnection = datasetOperation.getDatasetConnection();
 				crs = databaseConnection.executeQuery(this.getSqlQuery().getValue());
@@ -120,11 +124,11 @@ public class SqlExecuteQuery {
 				if (this.getAppendOutput().getValue().equalsIgnoreCase("y")) {
 					append = true;
 				}
-				
+
 				// Perform the action
 				SQLDataTransfer.transferData(crs, outputDatabaseConnection, datasetOperation.getDatasetName(), append);
-				sqlScriptResult  = new SqlScriptResult(0,"data.transfer.complete","");
-				
+				sqlScriptResult = new SqlScriptResult(0, "data.transfer.complete", "");
+
 			}
 
 			// Evaluate result

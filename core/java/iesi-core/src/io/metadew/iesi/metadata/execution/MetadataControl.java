@@ -1,6 +1,14 @@
 package io.metadew.iesi.metadata.execution;
 
-import io.metadew.iesi.metadata_repository.*;
+import io.metadew.iesi.metadata.repository.CatalogMetadataRepository;
+import io.metadew.iesi.metadata.repository.ConnectivityMetadataRepository;
+import io.metadew.iesi.metadata.repository.ControlMetadataRepository;
+import io.metadew.iesi.metadata.repository.DesignMetadataRepository;
+import io.metadew.iesi.metadata.repository.LedgerMetadataRepository;
+import io.metadew.iesi.metadata.repository.MetadataRepository;
+import io.metadew.iesi.metadata.repository.MonitorMetadataRepository;
+import io.metadew.iesi.metadata.repository.ResultMetadataRepository;
+import io.metadew.iesi.metadata.repository.TraceMetadataRepository;
 
 import java.text.MessageFormat;
 import java.util.List;
@@ -39,7 +47,7 @@ public class MetadataControl {
 	
 	private void checkValidity() {
 		boolean result = true;
-		// Mandatory repository settings
+		// Mandatory repositoryCoordinator settings
 		if (this.getConnectivityMetadataRepository() == null) result = false;
 		if (this.getControlMetadataRepository() == null) result = false;
 		if (this.getDesignMetadataRepository() == null) result = false;
@@ -61,7 +69,7 @@ public class MetadataControl {
 		} else if (metadataRepository.getCategory().equalsIgnoreCase("result")) {
 			this.setResultMetadataRepository((ResultMetadataRepository) metadataRepository);
 		} else {
-			throw new RuntimeException(MessageFormat.format("No Metadata repository of type {0} can be set", metadataRepository.getCategory()));
+			throw new RuntimeException(MessageFormat.format("No Metadata repositoryCoordinator of type {0} can be set", metadataRepository.getCategory()));
 		}
 	}
 

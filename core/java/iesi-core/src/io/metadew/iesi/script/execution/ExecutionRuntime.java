@@ -823,7 +823,7 @@ public class ExecutionRuntime {
 		return this.getStageOperationMap().get(stageName);
 	}
 
-	// Repository Management
+	// RepositoryCoordinator Management
 	public void setRepository(ExecutionControl executionControl, String repositoryReferenceName, String repositoryName, String repositoryInstanceName, String repositoryInstanceLabels) {
 		RepositoryOperation repositoryOperation = new RepositoryOperation(this.getFrameworkExecution(), executionControl, repositoryName,
 				repositoryInstanceName, repositoryInstanceLabels);

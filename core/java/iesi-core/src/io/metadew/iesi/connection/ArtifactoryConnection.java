@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 import static org.jfrog.artifactory.client.model.impl.RepositoryTypeImpl.LOCAL;
 
 /**
- * Connection object for an Artifactory repository
+ * Connection object for an Artifactory repositoryCoordinator
  * 
  * @author peter.billen
  *
@@ -131,7 +131,7 @@ public class ArtifactoryConnection {
             throw new RuntimeException("artifactory creation failed");
         }
 
-        //create repository
+        //create repositoryCoordinator
         String repositoryCreationResult = createNewRepository(artifactory, this.getRepositoryName());
 
         //create and upload a file
@@ -159,7 +159,7 @@ public class ArtifactoryConnection {
 	}
 
 	/**
-	 * This method checks whether repository with supplied name exists or not, and
+	 * This method checks whether repositoryCoordinator with supplied name exists or not, and
 	 * creates new if required.
 	 */
 	private static String createNewRepository(Artifactory artifactory, String repoName) {
@@ -174,7 +174,7 @@ public class ArtifactoryConnection {
 		if (repoNamesList != null && !(repoNamesList.contains(repoName))) {
 			GenericRepositorySettingsImpl settings = new GenericRepositorySettingsImpl();
 			Repository repository = artifactory.repositories().builders().localRepositoryBuilder().key(repoName)
-					.description("new example local repository").repositorySettings(settings).build();
+					.description("new example local repositoryCoordinator").repositorySettings(settings).build();
 			creationResult = artifactory.repositories().create(1, repository);
 		}
 
@@ -201,7 +201,7 @@ public class ArtifactoryConnection {
 	}
 
 	/**
-	 * Search for file by name in a specific repository, return the location of file
+	 * Search for file by name in a specific repositoryCoordinator, return the location of file
 	 */
 	private static List<RepoPath> searchFile(Artifactory artifactory, String repoName, String fileToSearch) {
 		if (artifactory == null || StringUtils.isEmpty(repoName) || StringUtils.isEmpty(fileToSearch)) {

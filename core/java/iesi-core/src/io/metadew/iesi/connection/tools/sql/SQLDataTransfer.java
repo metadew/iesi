@@ -5,8 +5,8 @@ import java.sql.ResultSetMetaData;
 
 import javax.sql.rowset.CachedRowSet;
 
+import io.metadew.iesi.connection.database.connection.DatabaseConnection;
 import io.metadew.iesi.connection.tools.SQLTools;
-import io.metadew.iesi.metadata_repository.repository.database.connection.DatabaseConnection;
 
 public final class SQLDataTransfer {
 

@@ -2,7 +2,9 @@ package io.metadew.iesi.metadata.configuration.exception;
 
 public class ImpersonationDoesNotExistException extends Exception {
 
-    public ImpersonationDoesNotExistException(String message) {
+	private static final long serialVersionUID = 1L;
+
+	public ImpersonationDoesNotExistException(String message) {
         super(message);
     }
 

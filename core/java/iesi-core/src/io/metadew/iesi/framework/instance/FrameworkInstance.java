@@ -1,15 +1,15 @@
 package io.metadew.iesi.framework.instance;
 
+import io.metadew.iesi.connection.database.Database;
+import io.metadew.iesi.connection.database.SqliteDatabase;
+import io.metadew.iesi.connection.database.connection.SqliteDatabaseConnection;
 import io.metadew.iesi.framework.configuration.FrameworkConfiguration;
 import io.metadew.iesi.framework.crypto.FrameworkCrypto;
 import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
 import io.metadew.iesi.framework.execution.FrameworkControl;
 import io.metadew.iesi.metadata.execution.MetadataControl;
-import io.metadew.iesi.metadata_repository.ExecutionServerMetadataRepository;
-import io.metadew.iesi.metadata_repository.repository.Repository;
-import io.metadew.iesi.metadata_repository.repository.database.Database;
-import io.metadew.iesi.metadata_repository.repository.database.SqliteDatabase;
-import io.metadew.iesi.metadata_repository.repository.database.connection.SqliteDatabaseConnection;
+import io.metadew.iesi.metadata.repository.ExecutionServerMetadataRepository;
+import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -61,7 +61,7 @@ public class FrameworkInstance {
 		this.setFrameworkControl(new FrameworkControl(this.getFrameworkConfiguration(), logonType, this.getFrameworkInitializationFile()));
 		this.setMetadataControl(new MetadataControl(this.getFrameworkControl().getMetadataRepositoryConfigurations().stream().map(configuration -> configuration.toMetadataRepositories(frameworkConfiguration)).collect(ArrayList::new, List::addAll, List::addAll)));
 
-		// Set up connection to the metadata repository
+		// Set up connection to the metadata repositoryCoordinator
 		SqliteDatabaseConnection executionServerDatabaseConnection = new SqliteDatabaseConnection(
 				this.getFrameworkConfiguration().getFolderConfiguration().getFolderAbsolutePath("run.exec") + File.separator + "ExecutionServerRepository.db3");
 		SqliteDatabase sqliteDatabase = new SqliteDatabase(executionServerDatabaseConnection);
@@ -69,8 +69,8 @@ public class FrameworkInstance {
 		databases.put("reader", sqliteDatabase);
 		databases.put("writer", sqliteDatabase);
 		databases.put("owner", sqliteDatabase);
-		Repository repository = new Repository(databases);
-		this.setExecutionServerRepositoryConfiguration(new ExecutionServerMetadataRepository(frameworkConfiguration.getFrameworkCode(), null, null, null, repository,
+		RepositoryCoordinator repositoryCoordinator = new RepositoryCoordinator(databases);
+		this.setExecutionServerRepositoryConfiguration(new ExecutionServerMetadataRepository(frameworkConfiguration.getFrameworkCode(), null, null, null, repositoryCoordinator,
 				frameworkConfiguration.getFolderConfiguration().getFolderAbsolutePath("metadata.def"),
 				frameworkConfiguration.getFolderConfiguration().getFolderAbsolutePath("metadata.def")));
 	}

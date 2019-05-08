@@ -5,8 +5,6 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.metadew.iesi.metadata_repository.MetadataRepository;
-import io.metadew.iesi.metadata_repository.configuration.MetadataRepositoryConfiguration;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -23,6 +21,8 @@ import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.backup.BackupExecution;
 import io.metadew.iesi.metadata.definition.Context;
 import io.metadew.iesi.metadata.operation.MetadataRepositoryOperation;
+import io.metadew.iesi.metadata.repository.MetadataRepository;
+import io.metadew.iesi.metadata.repository.configuration.MetadataRepositoryConfiguration;
 import io.metadew.iesi.metadata.restore.RestoreExecution;
 
 /**
@@ -40,17 +40,17 @@ public class MetadataLauncher {
 
         Option oHelp = new Option("help", "print this message");
 		Option oIni = new Option("ini", true, "define the initialization file");
-        Option oType = new Option("type", true, "define the type of metadata repository");
-        Option oConfig = new Option("config", true, "define the metadata repository config");
-        Option oBackup = new Option("backup", "create a backup of the entire metadata repository");
-        Option oRestore = new Option("restore", "restore a backup of the metadata repository");
+        Option oType = new Option("type", true, "define the type of metadata repositoryCoordinator");
+        Option oConfig = new Option("config", true, "define the metadata repositoryCoordinator config");
+        Option oBackup = new Option("backup", "create a backup of the entire metadata repositoryCoordinator");
+        Option oRestore = new Option("restore", "restore a backup of the metadata repositoryCoordinator");
         Option oPath = new Option("path", true, "path to be used to for backup or restore");
-        Option oDrop = new Option("drop", "drop all metadata tables in the metadata repository");
-        Option oCreate = new Option("create", "create all metadata tables in the metadata repository");
-        Option oClean = new Option("clean", "clean all tables in the metadata repository");
-        Option oLoad = new Option("load", "load metadata file from the input folder into the metadata repository");
+        Option oDrop = new Option("drop", "drop all metadata tables in the metadata repositoryCoordinator");
+        Option oCreate = new Option("create", "create all metadata tables in the metadata repositoryCoordinator");
+        Option oClean = new Option("clean", "clean all tables in the metadata repositoryCoordinator");
+        Option oLoad = new Option("load", "load metadata file from the input folder into the metadata repositoryCoordinator");
         Option oDdl = new Option("ddl",
-                "generate ddl output instead of execution in the metadata repository, to be combined with options: create, drop");
+                "generate ddl output instead of execution in the metadata repositoryCoordinator, to be combined with options: create, drop");
 
         String filesHelp = "";
         filesHelp += "Following options are possible:";
@@ -68,7 +68,7 @@ public class MetadataLauncher {
         filesHelp += "--Example: =regex(.+\\json) > this will load all files";
         filesHelp += "\n";
         Option oFiles = new Option("files", true,
-                "filename(s) to load from the input folder into the metadata repository" + "\n" + filesHelp);
+                "filename(s) to load from the input folder into the metadata repositoryCoordinator" + "\n" + filesHelp);
         Option oExit = new Option("exit", true, "define if an explicit exit is required");
 
         // create Options object
@@ -280,7 +280,7 @@ public class MetadataLauncher {
                     System.out.println("Option -create (create) selected");
                     actionMatch = true;
                     System.out.println();
-                    System.out.println(MessageFormat.format("Creating metadata repository {0}", metadataRepository.getCategory()));
+                    System.out.println(MessageFormat.format("Creating metadata repositoryCoordinator {0}", metadataRepository.getCategory()));
                     metadataRepository.createAllTables();
                     //metadataRepositoryOperation.create(ddl);
                     writeFooterMessage();

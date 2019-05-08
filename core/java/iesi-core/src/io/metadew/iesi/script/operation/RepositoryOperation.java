@@ -10,6 +10,8 @@ import javax.sql.rowset.CachedRowSet;
 
 import io.metadew.iesi.common.json.JsonParsed;
 import io.metadew.iesi.common.json.JsonParsedItem;
+import io.metadew.iesi.connection.database.connection.DatabaseConnection;
+import io.metadew.iesi.connection.database.connection.SqliteDatabaseConnection;
 import io.metadew.iesi.connection.operation.ConnectionOperation;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.configuration.ConnectionConfiguration;
@@ -19,8 +21,6 @@ import io.metadew.iesi.metadata.definition.Connection;
 import io.metadew.iesi.metadata.definition.Repository;
 import io.metadew.iesi.metadata.definition.RepositoryInstance;
 import io.metadew.iesi.metadata.definition.RepositoryInstanceParameter;
-import io.metadew.iesi.metadata_repository.repository.database.connection.DatabaseConnection;
-import io.metadew.iesi.metadata_repository.repository.database.connection.SqliteDatabaseConnection;
 import io.metadew.iesi.script.execution.ExecutionControl;
 
 /**

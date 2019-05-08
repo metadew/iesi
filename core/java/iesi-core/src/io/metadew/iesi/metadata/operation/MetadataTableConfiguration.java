@@ -29,7 +29,7 @@ public class MetadataTableConfiguration
 
 	private HashMap<String, String> tableMap;
 
-	// Set metadata repository type
+	// Set metadata repositoryCoordinator type
 	public MetadataTableConfiguration(FrameworkConfiguration frameworkConfiguration, Properties properties,
 				FrameworkSettingConfiguration settingsConfig, String metadataRepositoryType,
 				MetadataRepositoryCategoryConfiguration metadataRepositoryCategoryConfiguration)

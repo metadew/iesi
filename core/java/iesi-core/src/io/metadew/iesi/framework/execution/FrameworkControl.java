@@ -17,7 +17,7 @@ import io.metadew.iesi.common.config.WindowsConfigFile;
 import io.metadew.iesi.framework.configuration.FrameworkConfiguration;
 import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
 import io.metadew.iesi.metadata.configuration.FrameworkPluginConfiguration;
-import io.metadew.iesi.metadata_repository.configuration.MetadataRepositoryConfiguration;
+import io.metadew.iesi.metadata.repository.configuration.MetadataRepositoryConfiguration;
 
 public class FrameworkControl {
 
@@ -87,7 +87,7 @@ public class FrameworkControl {
 					configFile = objectMapper.convertValue(keyValueConfigFile, ConfigFile.class);
 				}
 
-				if (type.trim().equalsIgnoreCase("repository")) {
+				if (type.trim().equalsIgnoreCase("repositoryCoordinator")) {
 					MetadataRepositoryConfiguration metadataRepositoryConfiguration = new MetadataRepositoryConfiguration(configFile, frameworkConfiguration.getSettingConfiguration());
 					this.getMetadataRepositoryConfigurations().add(metadataRepositoryConfiguration);
 				} else if (type.trim().equalsIgnoreCase("plugin")) {

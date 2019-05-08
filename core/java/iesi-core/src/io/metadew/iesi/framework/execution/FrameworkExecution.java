@@ -5,7 +5,7 @@ import io.metadew.iesi.framework.crypto.FrameworkCrypto;
 import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.execution.MetadataControl;
-import io.metadew.iesi.metadata_repository.ExecutionServerMetadataRepository;
+import io.metadew.iesi.metadata.repository.ExecutionServerMetadataRepository;
 
 public class FrameworkExecution {
 

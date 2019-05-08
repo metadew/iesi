@@ -2,7 +2,9 @@ package io.metadew.iesi.metadata.configuration.exception;
 
 public class ConnectionDoesNotExistException extends Exception {
 
-    public ConnectionDoesNotExistException(String message) {
+	private static final long serialVersionUID = 1L;
+
+	public ConnectionDoesNotExistException(String message) {
         super(message);
     }
 

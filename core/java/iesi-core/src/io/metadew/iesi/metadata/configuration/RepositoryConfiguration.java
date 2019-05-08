@@ -160,7 +160,7 @@ public class RepositoryConfiguration {
 		return result;
 	}
 
-	// GEt Repository
+	// GEt RepositoryCoordinator
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public Repository getRepository(String repositoryName) {
 		Repository repository = new Repository();

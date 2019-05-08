@@ -5,6 +5,7 @@ import java.sql.ResultSetMetaData;
 
 import javax.sql.rowset.CachedRowSet;
 
+import io.metadew.iesi.connection.database.connection.DatabaseConnection;
 import io.metadew.iesi.connection.operation.ConnectionOperation;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
@@ -13,7 +14,6 @@ import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.Connection;
 import io.metadew.iesi.metadata.definition.Context;
-import io.metadew.iesi.metadata_repository.repository.database.connection.DatabaseConnection;
 
 public class DatabaseOffloadExecution
 {

@@ -162,7 +162,7 @@ public class ConnectionConfiguration {
 				"Deleting connection {0}-{1}.", connection.getName(), connection.getEnvironment()), Level.TRACE);
 		if (!exists(connection)) {
 			throw new ConnectionDoesNotExistException(
-					MessageFormat.format("Connection {0}-{1} is not present in the repository so cannot be updated",
+					MessageFormat.format("Connection {0}-{1} is not present in the repositoryCoordinator so cannot be updated",
 							connection.getName(), connection.getEnvironment()));
 
 		}
@@ -208,7 +208,7 @@ public class ConnectionConfiguration {
 				"Deleting connection {0}.", connectionName), Level.TRACE);
 		if (!exists(connectionName)) {
 			throw new ConnectionDoesNotExistException(
-					MessageFormat.format("Connection {0} is not present in the repository so cannot be updated",
+					MessageFormat.format("Connection {0} is not present in the repositoryCoordinator so cannot be updated",
 							connectionName, connection.getEnvironment()));
 
 		}
@@ -311,11 +311,11 @@ public class ConnectionConfiguration {
 			insertConnection(connection);
 		} catch (ConnectionDoesNotExistException e) {
 			frameworkExecution.getFrameworkLog().log(MessageFormat.format(
-					"Connection {0}-{1} is not present in the repository so cannot be updated",
+					"Connection {0}-{1} is not present in the repositoryCoordinator so cannot be updated",
 					connection.getName(), connection.getEnvironment()),
 					Level.TRACE);
 			throw new ConnectionDoesNotExistException(MessageFormat.format(
-					"Connection {0}-{1} is not present in the repository so cannot be updated", connection.getName()));
+					"Connection {0}-{1} is not present in the repositoryCoordinator so cannot be updated", connection.getName()));
 
 		} catch (ConnectionAlreadyExistsException e) {
 			frameworkExecution.getFrameworkLog().log(MessageFormat.format(

@@ -8,7 +8,7 @@ import io.metadew.iesi.framework.configuration.FrameworkObjectConfiguration;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.*;
 import io.metadew.iesi.metadata.operation.MetadataRepositoryOperation;
-import io.metadew.iesi.metadata_repository.MetadataRepository;
+import io.metadew.iesi.metadata.repository.MetadataRepository;
 
 import java.io.File;
 import java.util.List;

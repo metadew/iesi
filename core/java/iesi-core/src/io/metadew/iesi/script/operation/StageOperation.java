@@ -4,7 +4,7 @@ import java.io.File;
 
 import org.apache.commons.io.FilenameUtils;
 
-import io.metadew.iesi.metadata_repository.repository.database.connection.SqliteDatabaseConnection;
+import io.metadew.iesi.connection.database.connection.SqliteDatabaseConnection;
 import io.metadew.iesi.connection.tools.FolderTools;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 

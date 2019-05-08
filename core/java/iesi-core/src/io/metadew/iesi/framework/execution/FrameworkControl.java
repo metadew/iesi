@@ -87,7 +87,7 @@ public class FrameworkControl {
 					configFile = objectMapper.convertValue(keyValueConfigFile, ConfigFile.class);
 				}
 
-				if (type.trim().equalsIgnoreCase("repositoryCoordinator")) {
+				if (type.trim().equalsIgnoreCase("repository")) {
 					MetadataRepositoryConfiguration metadataRepositoryConfiguration = new MetadataRepositoryConfiguration(configFile, frameworkConfiguration.getSettingConfiguration());
 					this.getMetadataRepositoryConfigurations().add(metadataRepositoryConfiguration);
 				} else if (type.trim().equalsIgnoreCase("plugin")) {

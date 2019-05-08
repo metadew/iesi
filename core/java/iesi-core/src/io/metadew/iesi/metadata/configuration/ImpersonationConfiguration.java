@@ -103,7 +103,7 @@ public class ImpersonationConfiguration {
 				"Deleting impersonation {0}.", impersonation.getName()), Level.TRACE);
 		if (!exists(impersonation)) {
 			throw new ImpersonationDoesNotExistException(
-					MessageFormat.format("Impersonation {0} is not present in the repositoryCoordinator so cannot be updated",
+					MessageFormat.format("Impersonation {0} is not present in the repository so cannot be updated",
 							impersonation.getName()));
 
 		}
@@ -148,10 +148,10 @@ public class ImpersonationConfiguration {
 			insertImpersonation(impersonation);
 		} catch (ImpersonationDoesNotExistException e) {
 			frameworkExecution.getFrameworkLog().log(MessageFormat.format(
-					"Impersonation {0} is not present in the repositoryCoordinator so cannot be updated", impersonation.getName()),
+					"Impersonation {0} is not present in the repository so cannot be updated", impersonation.getName()),
 					Level.TRACE);
 			throw new ImpersonationDoesNotExistException(MessageFormat.format(
-					"Impersonation {0} is not present in the repositoryCoordinator so cannot be updated", impersonation.getName()));
+					"Impersonation {0} is not present in the repository so cannot be updated", impersonation.getName()));
 
 		} catch (ImpersonationAlreadyExistsException e) {
 			frameworkExecution.getFrameworkLog().log(MessageFormat.format(

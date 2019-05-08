@@ -72,7 +72,7 @@ public class MetadataRepositoryConfiguration {
 				configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.type").get()).isPresent()) {
 			type = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.type").get()).get();
 		} else {
-			throw new RuntimeException("No type configured for the metadata repositoryCoordinator");
+			throw new RuntimeException("No type configured for the metadata repository");
 		}
 		// category
 		if (frameworkSettingConfiguration.getSettingPath("metadata.repository.category").isPresent() &&
@@ -81,7 +81,7 @@ public class MetadataRepositoryConfiguration {
 					.map(String::trim)
 					.collect(Collectors.toList());
 		} else {
-			throw new RuntimeException("No category configured for the metadata repositoryCoordinator");
+			throw new RuntimeException("No category configured for the metadata repository");
 		}
 
 		if (frameworkSettingConfiguration.getSettingPath("metadata.repository.name").isPresent() &&
@@ -146,7 +146,7 @@ public class MetadataRepositoryConfiguration {
 						frameworkConfiguration.getFolderConfiguration().getFolderAbsolutePath("metadata.def"),
 						frameworkConfiguration.getFolderConfiguration().getFolderAbsolutePath("metadata.def")));
 			} else {
-				throw new RuntimeException(MessageFormat.format("No Metadata repositoryCoordinator can be created for {0}", category));
+				throw new RuntimeException(MessageFormat.format("No Metadata repository can be created for {0}", category));
 			}
 		}
 		return metadataRepositories;

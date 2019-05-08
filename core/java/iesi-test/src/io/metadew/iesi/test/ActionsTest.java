@@ -26,10 +26,10 @@ public class ActionsTest {
     public static void main(String[] args) {
 
         Options options = new Options()
-                .addOption(Option.builder("repositoryCoordinator")
+                .addOption(Option.builder("repository")
                         .hasArg()
                         .required()
-                        .desc("Absolute location of the iesi repositoryCoordinator")
+                        .desc("Absolute location of the iesi repository")
                         .build())
                 .addOption(Option.builder("sandbox")
                         .hasArg()
@@ -51,7 +51,7 @@ public class ActionsTest {
         try {
             CommandLine cmd = parser.parse(options, args);
 
-            String repository = cmd.getOptionValue("repositoryCoordinator");
+            String repository = cmd.getOptionValue("repository");
             String sandbox = cmd.getOptionValue("sandbox");
             String instance = cmd.getOptionValue("instance");
             String version = cmd.getOptionValue("version");
@@ -105,7 +105,7 @@ public class ActionsTest {
             FolderTools.copyFromFolderToFolder(testConfigurationHome, actionsTestConfDataFolder, false);
             FileTools.delete(actionsTestConfDataFolder + File.separator + ".gitkeep");
 
-            // Create repositoryCoordinator
+            // Create repository
             List<LaunchArgument> metadataCreateArgs = new ArrayList();
             LaunchArgument ini = new LaunchArgument(true, "-ini", "iesi-test.ini");
             metadataCreateArgs.add(ini);

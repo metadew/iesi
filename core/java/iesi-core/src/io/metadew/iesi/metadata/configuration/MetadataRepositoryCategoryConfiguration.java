@@ -6,7 +6,7 @@ import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
 
 /**
  * This class contains the logic to set the configuration for the metadata
- * repositoryCoordinator categories
+ * repository categories
  * 
  * @author peter.billen
  *

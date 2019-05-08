@@ -654,7 +654,7 @@ public class ConnectionOperation {
 					userPassword = connectionParameter.getValue();
 					userPassword = this.getFrameworkExecution().getFrameworkControl()
 							.resolveConfiguration(userPassword);
-				} else if (connectionParameter.getName().equalsIgnoreCase("repositoryCoordinator")) {
+				} else if (connectionParameter.getName().equalsIgnoreCase("repository")) {
 					repositoryName = connectionParameter.getValue();
 					repositoryName = this.getFrameworkExecution().getFrameworkControl()
 							.resolveConfiguration(repositoryName);
@@ -675,9 +675,9 @@ public class ConnectionOperation {
 					} else if (connectionTypeParameter.getName().equalsIgnoreCase("password")) {
 						if (userPassword.trim().equalsIgnoreCase(""))
 							this.addMissingField("password");
-					} else if (connectionTypeParameter.getName().equalsIgnoreCase("repositoryCoordinator")) {
+					} else if (connectionTypeParameter.getName().equalsIgnoreCase("repository")) {
 						if (repositoryName.trim().equalsIgnoreCase(""))
-							this.addMissingField("repositoryCoordinator");
+							this.addMissingField("repository");
 					}
 				}
 			}
@@ -696,7 +696,7 @@ public class ConnectionOperation {
 						userName = this.getFrameworkExecution().getFrameworkCrypto().decrypt(userName);
 					} else if (connectionTypeParameter.getName().equalsIgnoreCase("password")) {
 						userPassword = this.getFrameworkExecution().getFrameworkCrypto().decrypt(userPassword);
-					} else if (connectionTypeParameter.getName().equalsIgnoreCase("repositoryCoordinator")) {
+					} else if (connectionTypeParameter.getName().equalsIgnoreCase("repository")) {
 						repositoryName = this.getFrameworkExecution().getFrameworkCrypto().decrypt(repositoryName);
 					}
 				}

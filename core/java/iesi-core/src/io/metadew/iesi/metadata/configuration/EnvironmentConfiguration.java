@@ -102,7 +102,7 @@ public class EnvironmentConfiguration {
 				MessageFormat.format("Deleting environment {0}", environment.getName()), Level.TRACE);
 		if (!exists(environment)) {
 			throw new EnvironmentDoesNotExistException(
-					MessageFormat.format("Environment {0} is not present in the repositoryCoordinator so cannot be updated",
+					MessageFormat.format("Environment {0} is not present in the repository so cannot be updated",
 							environment.getName()));
 		}
 		String query = getDeleteStatement(environment);
@@ -186,10 +186,10 @@ public class EnvironmentConfiguration {
 			insertEnvironment(environment);
 		} catch (EnvironmentDoesNotExistException e) {
 			frameworkExecution.getFrameworkLog().log(MessageFormat.format(
-					"Environment {0} is not present in the repositoryCoordinator so cannot be updated", environment.getName()),
+					"Environment {0} is not present in the repository so cannot be updated", environment.getName()),
 					Level.TRACE);
 			throw new EnvironmentDoesNotExistException(MessageFormat.format(
-					"Environment {0} is not present in the repositoryCoordinator so cannot be updated", environment.getName()));
+					"Environment {0} is not present in the repository so cannot be updated", environment.getName()));
 
 		} catch (EnvironmentAlreadyExistsException e) {
 			frameworkExecution.getFrameworkLog().log(MessageFormat.format(

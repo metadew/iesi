@@ -31,16 +31,16 @@
 //	public static void main(String[] args) {
 //
 //		Option oHelp = new Option("help", "print this message");
-//		Option oRepository = new Option("repositoryCoordinator", true, "define the data repositoryCoordinator");
-//		Option oInstance = new Option("instance", true, "define the data repositoryCoordinator instance");
-//		Option oLabels = new Option("labels", true, "define the data repositoryCoordinator instance labels");
+//		Option oRepository = new Option("repository", true, "define the data repository");
+//		Option oInstance = new Option("instance", true, "define the data repository instance");
+//		Option oLabels = new Option("labels", true, "define the data repository instance labels");
 //		Option oEnvironment = new Option("env", true, "define the environment");
-//		Option oDrop = new Option("drop", "drop all metadata tables in the metadata repositoryCoordinator");
-//		Option oCreate = new Option("create", "create all metadata tables in the metadata repositoryCoordinator");
-//		Option oClean = new Option("clean", "clean all tables in the metadata repositoryCoordinator");
-//		Option oLoad = new Option("load", "load metadata file from the input folder into the metadata repositoryCoordinator");
+//		Option oDrop = new Option("drop", "drop all metadata tables in the metadata repository");
+//		Option oCreate = new Option("create", "create all metadata tables in the metadata repository");
+//		Option oClean = new Option("clean", "clean all tables in the metadata repository");
+//		Option oLoad = new Option("load", "load metadata file from the input folder into the metadata repository");
 //		Option oDdl = new Option("ddl",
-//				"generate ddl output instead of execution in the metadata repositoryCoordinator, to be combined with options: create, drop");
+//				"generate ddl output instead of execution in the metadata repository, to be combined with options: create, drop");
 //
 //		String filesHelp = "";
 //		filesHelp += "Following options are possible:";
@@ -58,7 +58,7 @@
 //		filesHelp += "--Example: =regex(.+\\json) > this will load all files";
 //		filesHelp += "\n";
 //		Option oFiles = new Option("files", true,
-//				"filename(s) to load from the input folder into the metadata repositoryCoordinator" + "\n" + filesHelp);
+//				"filename(s) to load from the input folder into the metadata repository" + "\n" + filesHelp);
 //
 //		// create Options object
 //		Options options = new Options();
@@ -88,12 +88,12 @@
 //				System.exit(0);
 //			}
 //
-//			String repositoryCoordinator = "";
-//			if (line.hasOption("repositoryCoordinator")) {
-//				repositoryCoordinator = line.getOptionValue("repositoryCoordinator");
-//				System.out.println("Option -repositoryCoordinator (repositoryCoordinator) value = " + repositoryCoordinator);
+//			String repository = "";
+//			if (line.hasOption("repository")) {
+//				repository = line.getOptionValue("repository");
+//				System.out.println("Option -repository (repository) value = " + repository);
 //			} else {
-//				System.out.println("Option -repositoryCoordinator (repositoryCoordinator) missing");
+//				System.out.println("Option -repository (repository) missing");
 //				System.exit(1);
 //			}
 //
@@ -128,7 +128,7 @@
 //					"owner",null);
 //
 //			DataRepositoryConfiguration dataRepositoryConfiguration = new DataRepositoryConfiguration(
-//					frameworkExecution, repositoryCoordinator, instanceName, instanceLabels, environment);
+//					frameworkExecution, repository, instanceName, instanceLabels, environment);
 //
 //			MetadataRepositoryConfiguration metadataRepositoryConfiguration = new MetadataRepositoryConfiguration(
 //					frameworkExecution.getFrameworkConfiguration(), frameworkExecution.getFrameworkControl(),

@@ -51,7 +51,7 @@ public class DataframeConfiguration {
 				+ this.getFrameworkExecution().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("Dataviews") + " where DATAFRAME_NM = '"
 				+ dataframeName + "'";
 		crsDataframe = this.getMetadataRepositoryOperation().getMetadataRepository().executeQuery(queryDataframe, "reader");
-		// Metadew repositoryCoordinator change - replicate across
+		// Metadew repository change - replicate across
 		
 		try {
 			while (crsDataframe.next()) {

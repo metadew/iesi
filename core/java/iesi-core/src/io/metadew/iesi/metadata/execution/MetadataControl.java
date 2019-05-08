@@ -47,7 +47,7 @@ public class MetadataControl {
 	
 	private void checkValidity() {
 		boolean result = true;
-		// Mandatory repositoryCoordinator settings
+		// Mandatory repository settings
 		if (this.getConnectivityMetadataRepository() == null) result = false;
 		if (this.getControlMetadataRepository() == null) result = false;
 		if (this.getDesignMetadataRepository() == null) result = false;
@@ -69,7 +69,7 @@ public class MetadataControl {
 		} else if (metadataRepository.getCategory().equalsIgnoreCase("result")) {
 			this.setResultMetadataRepository((ResultMetadataRepository) metadataRepository);
 		} else {
-			throw new RuntimeException(MessageFormat.format("No Metadata repositoryCoordinator of type {0} can be set", metadataRepository.getCategory()));
+			throw new RuntimeException(MessageFormat.format("No Metadata repository of type {0} can be set", metadataRepository.getCategory()));
 		}
 	}
 

@@ -92,7 +92,7 @@ public class SqlExecuteQuery {
 					.getConnection(this.getConnectionName().getValue(), this.getExecutionControl().getEnvName()).get();
 			ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
 			DatabaseConnection databaseConnection = connectionOperation.getDatabaseConnection(connection);
-			
+
 			if (databaseConnection == null) {
 				throw new RuntimeException("Error establishing DB connection");
 			}

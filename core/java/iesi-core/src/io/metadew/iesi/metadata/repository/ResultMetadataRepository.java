@@ -55,7 +55,7 @@ public class ResultMetadataRepository extends MetadataRepository {
         } else if (dataObject.getType().equalsIgnoreCase("subroutine")) {
             // TODO
         } else 	{
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("Result repositoryCoordinator is not responsible for loading saving {0}", dataObject.getType()), Level.TRACE);
+            frameworkExecution.getFrameworkLog().log(MessageFormat.format("Result repository is not responsible for loading saving {0}", dataObject.getType()), Level.TRACE);
         }
     }
 }

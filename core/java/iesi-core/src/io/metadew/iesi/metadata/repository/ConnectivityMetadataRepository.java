@@ -56,7 +56,7 @@ public class ConnectivityMetadataRepository extends MetadataRepository {
         } else if (dataObject.getType().equalsIgnoreCase("impersonation")) {
             Impersonation impersonation = objectMapper.convertValue(dataObject.getData(), Impersonation.class);
             save(impersonation, frameworkExecution);
-        } else if (dataObject.getType().equalsIgnoreCase("repositoryCoordinator")) {
+        } else if (dataObject.getType().equalsIgnoreCase("repository")) {
             // TODO
         } else 	{
             frameworkExecution.getFrameworkLog().log(MessageFormat.format("Connectivity repositoryCoordinator is not responsible for loading saving {0}", dataObject.getType()), Level.TRACE);

@@ -22,7 +22,7 @@ public class AssemblyLauncher {
 	public static void main(String[] args) {
 
 		Option oHelp = new Option("help", "print this message");
-		Option oRepository = new Option("repositoryCoordinator", true, "set repositoryCoordinator location");
+		Option oRepository = new Option("repository", true, "set repository location");
 		Option oDevelopment = new Option("development", true, "set development location");
 		Option oSandbox = new Option("sandbox", true, "set sandbox location");
 		Option oInstance = new Option("instance", true, "provide target instance");
@@ -67,14 +67,14 @@ public class AssemblyLauncher {
 				System.exit(0);
 			}
 
-			// RepositoryCoordinator
-			if (line.hasOption("repositoryCoordinator")) {
+			// repository
+			if (line.hasOption("repository")) {
 				actionMatch = true;
 				writeHeaderMessage();
-				repository = line.getOptionValue("repositoryCoordinator");
-				System.out.println("Option -repositoryCoordinator (repositoryCoordinator) value = " + repository);
+				repository = line.getOptionValue("repository");
+				System.out.println("Option -repository (repository) value = " + repository);
 			} else {
-				System.out.println("Option -repositoryCoordinator (repositoryCoordinator) missing");
+				System.out.println("Option -repository (repository) missing");
 				System.exit(1);
 			}
 

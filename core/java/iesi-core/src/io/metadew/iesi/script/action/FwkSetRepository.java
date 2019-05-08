@@ -48,7 +48,7 @@ public class FwkSetRepository {
 				new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
 						this.getActionExecution(), this.getActionExecution().getAction().getType(), "name"));
 		this.setRepositoryName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
-				this.getActionExecution(), this.getActionExecution().getAction().getType(), "repositoryCoordinator"));
+				this.getActionExecution(), this.getActionExecution().getAction().getType(), "repository"));
 		this.setRepositoryInstanceName(
 				new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
 						this.getActionExecution(), this.getActionExecution().getAction().getType(), "instance"));
@@ -57,7 +57,7 @@ public class FwkSetRepository {
 						this.getActionExecution(), this.getActionExecution().getAction().getType(), "labels"));
 		// Get Parameters
 		for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-			if (actionParameter.getName().equalsIgnoreCase("repositoryCoordinator")) {
+			if (actionParameter.getName().equalsIgnoreCase("repository")) {
 				this.getRepositoryName().setInputValue(actionParameter.getValue());
 			} else if (actionParameter.getName().equalsIgnoreCase("name")) {
 				this.getRepositoryReferenceName().setInputValue(actionParameter.getValue());
@@ -70,7 +70,7 @@ public class FwkSetRepository {
 
 		// Create parameter list
 		this.getActionParameterOperationMap().put("name", this.getRepositoryReferenceName());
-		this.getActionParameterOperationMap().put("repositoryCoordinator", this.getRepositoryName());
+		this.getActionParameterOperationMap().put("repository", this.getRepositoryName());
 		this.getActionParameterOperationMap().put("instance", this.getRepositoryInstanceName());
 		this.getActionParameterOperationMap().put("labels", this.getRepositoryInstanceLabels());
 	}

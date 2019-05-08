@@ -87,9 +87,9 @@ public class DatabaseHarvestExecution {
 		DatabaseConnection databaseConnection = connectionOperation.getDatabaseConnection(connection);
 		
 //		if (databaseConnection.getType().trim().equalsIgnoreCase("oracle")) {
-//			this.getFrameworkExecution().getFrameworkLog().log("repositoryCoordinator.type=" + databaseConnection.getType(), Level.DEBUG);
+//			this.getFrameworkExecution().getFrameworkLog().log("repository.type=" + databaseConnection.getType(), Level.DEBUG);
 //		} else {
-//			this.getFrameworkExecution().getFrameworkLog().log("repositoryCoordinator.type.notsupported", Level.INFO);
+//			this.getFrameworkExecution().getFrameworkLog().log("repository.type.notsupported", Level.INFO);
 //		}
 
 		// Execute

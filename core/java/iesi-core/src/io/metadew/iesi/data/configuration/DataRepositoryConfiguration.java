@@ -23,7 +23,7 @@
 //	private String repositoryName;
 //	private String repositoryInstanceName;
 //	private String repositoryInstanceLabels;
-//	private RepositoryCoordinator repositoryCoordinator;
+//	private Repository repository;
 //	private RepositoryInstance repositoryInstance;
 //	private String repositoryInstanceConnectionName;
 //	private String repositoryInstancePrefix;
@@ -171,12 +171,12 @@
 //		this.repositoryInstanceLabels = repositoryInstanceLabels;
 //	}
 //
-//	public RepositoryCoordinator getRepository() {
-//		return repositoryCoordinator;
+//	public Repository getRepository() {
+//		return repository;
 //	}
 //
-//	public void setRepository(RepositoryCoordinator repositoryCoordinator) {
-//		this.repository = repositoryCoordinator;
+//	public void setRepository(Repository repository) {
+//		this.repository = repository;
 //	}
 //
 //	public RepositoryInstance getRepositoryInstance() {

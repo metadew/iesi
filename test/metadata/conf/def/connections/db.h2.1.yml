@@ -11,7 +11,7 @@ data:
   - name: "port"
     value: ""
   - name: "path"
-    value: "#iesi.home#/data/iesi-test/actions/data/actions"
+    value: "#iesi.home#/data/iesi-test/actions/data/connections"
   - name: "file"
     value: "db.h2.1"
   - name: "user"

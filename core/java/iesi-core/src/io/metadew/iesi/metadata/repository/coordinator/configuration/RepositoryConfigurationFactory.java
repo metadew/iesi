@@ -12,7 +12,7 @@ public class RepositoryConfigurationFactory {
             throw new RuntimeException("Unable to find settings path for 'metadata.repository.type'");
         }
         if (!configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.type").get()).isPresent()) {
-            throw new RuntimeException("No repositoryCoordinator type defined in configuration file");
+            throw new RuntimeException("No repository type defined in configuration file");
         }
         if (configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.type").get()).get().equalsIgnoreCase("netezza")) {
             return new NetezzaRepositoryConfiguration(configFile, frameworkSettingConfiguration);

@@ -1,0 +1,9 @@
+version: '3.2'
+services:
+  iesi-test-mssqlserver-1:
+    build: './mssqlserver'
+    ports:
+      - '1433:1433'
+    container_name: iesi-test-mssqlserver-1
+    hostname: iesi-test-mssqlserver-1
+    restart: unless-stopped

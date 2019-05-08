@@ -59,18 +59,18 @@ public class ConnectivityMetadataRepository extends MetadataRepository {
         } else if (dataObject.getType().equalsIgnoreCase("repository")) {
             // TODO
         } else 	{
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("Connectivity repositoryCoordinator is not responsible for loading saving {0}", dataObject.getType()), Level.TRACE);
+            frameworkExecution.getFrameworkLog().log(MessageFormat.format("Connectivity repository is not responsible for loading saving {0}", dataObject.getType()), Level.TRACE);
         }
     }
 
     public void save(Connection connection, FrameworkExecution frameworkExecution) {
-        frameworkExecution.getFrameworkLog().log(MessageFormat.format("Inserting connection {0}-{1} into connectivity repositoryCoordinator",
+        frameworkExecution.getFrameworkLog().log(MessageFormat.format("Inserting connection {0}-{1} into connectivity repository",
                 connection.getName(), connection.getEnvironment()), Level.INFO);
         ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(frameworkExecution);
         try {
             connectionConfiguration.insertConnection(connection);
         } catch (ConnectionAlreadyExistsException e1) {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("Connection {0}-{1} already exists in connectivity repositoryCoordinator. Updating connection {0}-{1} instead.",
+            frameworkExecution.getFrameworkLog().log(MessageFormat.format("Connection {0}-{1} already exists in connectivity repository. Updating connection {0}-{1} instead.",
                     connection.getName(), connection.getEnvironment()), Level.DEBUG);
             try {
                 connectionConfiguration.updateConnection(connection);
@@ -81,13 +81,13 @@ public class ConnectivityMetadataRepository extends MetadataRepository {
     }
 
     public void save(Environment environment, FrameworkExecution frameworkExecution) {
-        frameworkExecution.getFrameworkLog().log(MessageFormat.format("Inserting environment {0} into connectivity repositoryCoordinator",
+        frameworkExecution.getFrameworkLog().log(MessageFormat.format("Inserting environment {0} into connectivity repository",
                 environment.getName()), Level.INFO);
         EnvironmentConfiguration environmentConfiguration = new EnvironmentConfiguration(frameworkExecution);
         try {
             environmentConfiguration.insertEnvironment(environment);
         } catch (EnvironmentAlreadyExistsException e) {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("Environment {0} already exists in connectivity repositoryCoordinator. Updating connection {0} instead.",
+            frameworkExecution.getFrameworkLog().log(MessageFormat.format("Environment {0} already exists in connectivity repository. Updating connection {0} instead.",
                     environment.getName()), Level.DEBUG);
             try {
                 environmentConfiguration.updateEnvironment(environment);
@@ -98,13 +98,13 @@ public class ConnectivityMetadataRepository extends MetadataRepository {
     }
 
     public void save(Impersonation impersonation, FrameworkExecution frameworkExecution) {
-        frameworkExecution.getFrameworkLog().log(MessageFormat.format("Inserting impersonation {0} into connectivity repositoryCoordinator",
+        frameworkExecution.getFrameworkLog().log(MessageFormat.format("Inserting impersonation {0} into connectivity repository",
                 impersonation.getName()), Level.INFO);
         ImpersonationConfiguration impersonationConfiguration = new ImpersonationConfiguration(frameworkExecution);
         try {
             impersonationConfiguration.insertImpersonation(impersonation);
         } catch (ImpersonationAlreadyExistsException e) {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("Impersonation {0} already exists in connectivity repositoryCoordinator. Updating impersonation {0} instead.",
+            frameworkExecution.getFrameworkLog().log(MessageFormat.format("Impersonation {0} already exists in connectivity repository. Updating impersonation {0} instead.",
                     impersonation.getName()), Level.DEBUG);
             try {
                 impersonationConfiguration.updateImpersonation(impersonation);

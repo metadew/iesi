@@ -114,27 +114,27 @@ public abstract class MetadataRepository {
         repositoryCoordinator.dropAllTables(getTableNamePrefix(), frameworkLog);
     }
 
-    // TODO: remove because security danger: query can target objects outside of repositoryCoordinator responsibilities
+    // TODO: remove because security danger: query can target objects outside of repository responsibilities
     public CachedRowSet executeQuery(String query, String logonType) {
         return repositoryCoordinator.executeQuery(query, logonType);
     }
 
-    // TODO: remove because security danger: query can target objects outside of repositoryCoordinator responsibilities
+    // TODO: remove because security danger: query can target objects outside of repository responsibilities
     public void executeUpdate(String query) {
         repositoryCoordinator.executeUpdate(query);
     }
 
-    // TODO: remove because security danger: query can target objects outside of repositoryCoordinator responsibilities
+    // TODO: remove because security danger: query can target objects outside of repository responsibilities
     public void executeScript(String fileName, String logonType) {
         repositoryCoordinator.executeScript(fileName, logonType);
     }
 
-    // TODO: remove because security danger: query can target objects outside of repositoryCoordinator responsibilities
+    // TODO: remove because security danger: query can target objects outside of repository responsibilities
     public void executeScript(InputStream inputStream, String logonType) {
         repositoryCoordinator.executeScript(inputStream, logonType);
     }
 
-    // TODO: remove because security danger: query can target objects outside of repositoryCoordinator responsibilities
+    // TODO: remove because security danger: query can target objects outside of repository responsibilities
     public void executeScript(InputStream inputStream) {
         repositoryCoordinator.executeScript(inputStream, "writer");
     }

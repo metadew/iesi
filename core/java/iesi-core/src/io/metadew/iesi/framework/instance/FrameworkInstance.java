@@ -61,7 +61,7 @@ public class FrameworkInstance {
 		this.setFrameworkControl(new FrameworkControl(this.getFrameworkConfiguration(), logonType, this.getFrameworkInitializationFile()));
 		this.setMetadataControl(new MetadataControl(this.getFrameworkControl().getMetadataRepositoryConfigurations().stream().map(configuration -> configuration.toMetadataRepositories(frameworkConfiguration)).collect(ArrayList::new, List::addAll, List::addAll)));
 
-		// Set up connection to the metadata repositoryCoordinator
+		// Set up connection to the metadata repository
 		SqliteDatabaseConnection executionServerDatabaseConnection = new SqliteDatabaseConnection(
 				this.getFrameworkConfiguration().getFolderConfiguration().getFolderAbsolutePath("run.exec") + File.separator + "ExecutionServerRepository.db3");
 		SqliteDatabase sqliteDatabase = new SqliteDatabase(executionServerDatabaseConnection);

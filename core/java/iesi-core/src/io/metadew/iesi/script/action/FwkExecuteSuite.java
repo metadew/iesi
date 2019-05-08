@@ -143,7 +143,7 @@ public class FwkExecuteSuite {
 
 				// Artifactory
 				// *********************************************************
-				// Get repositoryCoordinator
+				// Get repository
 				ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
 				ArtifactoryConnection artifactoryConnection = connectionOperation.getArtifactoryConnection(connection);
 				

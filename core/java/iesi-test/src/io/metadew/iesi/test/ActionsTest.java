@@ -69,31 +69,35 @@ public class ActionsTest {
                     + File.separator + "conf" + File.separator + "launch";
             String testDefConfigurationHome = repositoryHome + File.separator + "test" + File.separator + "metadata"
                     + File.separator + "conf" + File.separator + "def";
-            String testConfigurationHome = repositoryHome + File.separator + "test" + File.separator + "metadata"
+            String actionsTestConfigurationHome = repositoryHome + File.separator + "test" + File.separator + "metadata"
+                    + File.separator + "conf" + File.separator + "actions";
+            String connectionsTestConfigurationHome = repositoryHome + File.separator + "test" + File.separator + "metadata"
                     + File.separator + "conf" + File.separator + "actions";
 
 
             String versionHomeConfFolder = versionHome + File.separator + "conf";
             String testDataFolder = versionHome + File.separator + "data" + File.separator + "iesi-test";
-            String actionsTestDataFolder = testDataFolder + File.separator + "actions";
-            String actionsTestConfDataFolder = actionsTestDataFolder + File.separator + "conf";
-            String actionsTestDefDataFolder = actionsTestDataFolder + File.separator + "def";
-            String actionsTestDataDataFolder = actionsTestDataFolder + File.separator + "data";
+            String frameworkTestDataFolder = testDataFolder + File.separator + "fwk";
+            String actionsTestConfDataFolder = frameworkTestDataFolder + File.separator + "actions";
+            String connectionsTestConfDataFolder = frameworkTestDataFolder + File.separator + "connections";
+            String actionsTestDefDataFolder = frameworkTestDataFolder + File.separator + "def";
+            String fwkTestDataFolder = frameworkTestDataFolder + File.separator + "data";
 
             String metadataInNewFolder = versionHome + File.separator + "metadata" + File.separator + "in" + File.separator + "new";
 
             FolderTools.createFolder(testDataFolder);
-            FolderTools.deleteFolder(actionsTestDataFolder, true);
-            FolderTools.createFolder(actionsTestDataFolder);
+            FolderTools.deleteFolder(frameworkTestDataFolder, true);
+            FolderTools.createFolder(frameworkTestDataFolder);
             FolderTools.createFolder(actionsTestConfDataFolder);
+            FolderTools.createFolder(connectionsTestConfDataFolder);
             FolderTools.createFolder(actionsTestDefDataFolder);
-            FolderTools.createFolder(actionsTestDataDataFolder);
+            FolderTools.createFolder(fwkTestDataFolder);
 
             // Fwk configuration
             FolderTools.copyFromFolderToFolder(testFwkConfigurationHome, versionHomeConfFolder, false);
 
             // Data
-            FolderTools.copyFromFolderToFolder(testDataHome, actionsTestDataDataFolder, true);
+            FolderTools.copyFromFolderToFolder(testDataHome, fwkTestDataFolder, true);
 
             // Definitions
             FolderTools.copyFromFolderToFolder(testDefConfigurationHome + File.separator + "connections", actionsTestDefDataFolder, false);
@@ -102,8 +106,10 @@ public class ActionsTest {
             FileTools.delete(actionsTestConfDataFolder + File.separator + ".gitkeep");
 
             // Configurations
-            FolderTools.copyFromFolderToFolder(testConfigurationHome, actionsTestConfDataFolder, false);
+            FolderTools.copyFromFolderToFolder(actionsTestConfigurationHome, actionsTestConfDataFolder, false);
             FileTools.delete(actionsTestConfDataFolder + File.separator + ".gitkeep");
+            FolderTools.copyFromFolderToFolder(connectionsTestConfigurationHome, connectionsTestConfDataFolder, false);
+            FileTools.delete(connectionsTestConfDataFolder + File.separator + ".gitkeep");
 
             // Create repository
             List<LaunchArgument> metadataCreateArgs = new ArrayList();
@@ -136,7 +142,6 @@ public class ActionsTest {
                 Launcher.execute("metadata", inputArgs);
                 inputArgs.remove(files);
             }
-
 
             // Load action tests
             confs = FolderTools

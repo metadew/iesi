@@ -16,7 +16,7 @@ data:
     errorStop: "N"
     parameters:
     - name: "query"
-      value : "{{=file(#iesi.home#/data/iesi-test/actions/data/actions/sql.executeQuery.4.1.sql)}}"
+      value : "{{=file(#iesi.home#/data/iesi-test/fwk/data/actions/sql.executeQuery.4.1.sql)}}"
     - name: "connection"
       value : "sql.executeQuery.4"
   - number: 1
@@ -30,6 +30,6 @@ data:
     errorStop: "N"
     parameters:
     - name: "query"
-      value : "{{=file(#iesi.home#/data/iesi-test/actions/data/actions/sql.executeQuery.4.2.sql)}}"
+      value : "{{=file(#iesi.home#/data/iesi-test/fwk/data/actions/sql.executeQuery.4.2.sql)}}"
     - name: "connection"
       value : "sql.executeQuery.4"

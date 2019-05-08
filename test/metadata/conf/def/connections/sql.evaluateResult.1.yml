@@ -7,6 +7,6 @@ data:
   environment: "iesi-test"
   parameters:
   - name: "filePath"
-    value: "#iesi.home#/data/iesi-test/actions/data/actions"
+    value: "#iesi.home#/data/iesi-test/fwk/data/actions"
   - name: "fileName"
     value: "sql.evaluateResult.1.db3"

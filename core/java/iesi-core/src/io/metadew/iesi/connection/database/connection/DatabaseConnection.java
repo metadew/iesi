@@ -9,7 +9,8 @@ import java.io.*;
 import java.sql.*;
 
 /**
- * Connection object for databases. This is extended depending on the database type.
+ * Connection object for databases. This is extended depending on the database
+ * type.
  * 
  * @author peter.billen
  *
@@ -161,6 +162,115 @@ public abstract class DatabaseConnection {
 				}
 
 				statement.close();
+
+			} catch (SQLException e) {
+				StringWriter StackTrace = new StringWriter();
+				e.printStackTrace(new PrintWriter(StackTrace));
+				System.out.println("database actions Failed");
+				System.out.println(e.getMessage());
+			} finally {
+				// Close the connection
+				try {
+					connection.close();
+				} catch (SQLException e) {
+					StringWriter StackTrace = new StringWriter();
+					e.printStackTrace(new PrintWriter(StackTrace));
+					System.out.println("Connection Close Failed");
+					throw new RuntimeException(e.getMessage());
+				}
+			}
+
+		} else {
+			System.out.println("Connection lost");
+		}
+
+		return crs;
+	}
+
+	public CachedRowSet executeProcedure(String sqlProcedure, String sqlParameters) {
+
+		StringBuilder sqlProcedureStatement = new StringBuilder();
+		sqlProcedureStatement.append("EXEC ");
+		sqlProcedureStatement.append(sqlProcedure);
+
+		String sqlParameterValues = "";
+		if (!sqlParameters.isEmpty()) {
+			String[] parameters = sqlParameters.split(",");
+			for (int i = 0; i < parameters.length; i++) {
+				String parameter = parameters[i];
+				int delim = parameter.indexOf("=");
+				if (delim > 0) {
+					if (i == 0) {
+						sqlProcedureStatement.append(" ");
+					} else {
+						sqlProcedureStatement.append(",");
+					}
+
+					String key = parameter.substring(0, delim);
+					String value = parameter.substring(delim + 1);
+					if (sqlParameterValues.isEmpty()) {
+						sqlParameterValues = sqlParameterValues + value;
+					} else {
+						sqlParameterValues = sqlParameterValues + "," + value;
+					}
+
+					sqlProcedureStatement.append(key);
+					sqlProcedureStatement.append("=?");
+				} else {
+					throw new RuntimeException("sql.procedure.parameter.error");
+				}
+			}
+		}
+
+		CachedRowSet crs = null;
+
+		try {
+			Class.forName(this.getDriver());
+		} catch (ClassNotFoundException e) {
+			StringWriter StackTrace = new StringWriter();
+			e.printStackTrace(new PrintWriter(StackTrace));
+			System.out.println("JDBC Driver Not Available");
+			throw new RuntimeException(e.getMessage());
+		}
+
+		Connection connection;
+		try {
+			connection = getConnection();
+		} catch (SQLException e) {
+			StringWriter StackTrace = new StringWriter();
+			e.printStackTrace(new PrintWriter(StackTrace));
+			System.out.println("Connection Failed");
+			throw new RuntimeException(e.getMessage());
+		}
+
+		if (connection != null) {
+			try {
+				PreparedStatement preparedStatement = connection.prepareStatement(sqlProcedureStatement.toString());
+				preparedStatement.setEscapeProcessing(true);
+				preparedStatement.setQueryTimeout(600);
+
+				if (!sqlParameterValues.isEmpty()) {
+					String[] parameterValues = sqlParameterValues.split(",");
+					for (int i = 0; i < parameterValues.length; i++) {
+						preparedStatement.setString(i + 1, parameterValues[i]);
+					}
+				}
+
+				try {
+					ResultSet rs = preparedStatement.executeQuery();
+					crs = RowSetProvider.newFactory().createCachedRowSet();
+					crs.populate(rs);
+					rs.close();
+				} catch (Exception e) {
+					StringWriter StackTrace = new StringWriter();
+					e.printStackTrace(new PrintWriter(StackTrace));
+					System.out.println("Query Actions Failed");
+					System.out.println(e.getMessage());
+					System.out.println(sqlProcedure.toString());
+					throw new RuntimeException(e.getMessage());
+				}
+
+				preparedStatement.close();
 
 			} catch (SQLException e) {
 				StringWriter StackTrace = new StringWriter();

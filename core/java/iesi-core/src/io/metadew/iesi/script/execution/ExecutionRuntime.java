@@ -125,7 +125,7 @@ public class ExecutionRuntime {
 
 	public void terminate() {
 		// remove cache folder
-		//FolderTools.deleteFolder(this.getRunCacheFolderName(), true);
+		FolderTools.deleteFolder(this.getRunCacheFolderName(), true);
 
 	}
 

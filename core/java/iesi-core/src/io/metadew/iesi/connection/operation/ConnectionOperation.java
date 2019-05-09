@@ -458,6 +458,10 @@ public class ConnectionOperation {
 				DbH2ConnectionOperation dbH2ConnectionOperation = new DbH2ConnectionOperation(
 						this.getFrameworkExecution());
 				databaseConnection = dbH2ConnectionOperation.getConnectionOperation(connection);
+			} else if (connection.getType().equalsIgnoreCase("db.mssql")) {
+				DbMssqlConnectionOperation dbMssqlConnectionOperation = new DbMssqlConnectionOperation(
+						this.getFrameworkExecution());
+				databaseConnection = dbMssqlConnectionOperation.getConnectionOperation(connection);
 			} else if (connection.getType().equalsIgnoreCase("db.presto")) {
 				DbPrestoConnectionOperation dbPrestoConnectionOperation = new DbPrestoConnectionOperation(
 						this.getFrameworkExecution());

@@ -1,0 +1,18 @@
+---
+type: Connection
+data:
+  name: "db.mssql.1"
+  type: "db.mssql"
+  description: "db.mssql connection"
+  environment: "iesi-test"
+  parameters:
+  - name: "host"
+    value: "localhost"
+  - name: "port"
+    value: "1433"
+  - name: "database"
+    value: "iesi"
+  - name: "user"
+    value: "sa"
+  - name: "password"
+    value: "ENC(Sayhy3uBuDuXQdMY72NNgfdavP94U+Jk2HqEymnpYG9kjvCAvg==)"

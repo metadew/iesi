@@ -28,6 +28,7 @@ public class H2DatabaseConnection extends DatabaseConnection {
 		connectionUrl.append("jdbc:h2:");
 		if (!hostName.isEmpty()) {
 			connectionUrl.append("tcp://");
+			connectionUrl.append(hostName);
 			if (portNumber > 0) {
 				connectionUrl.append(":");
 				connectionUrl.append(portNumber);

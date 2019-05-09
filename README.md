@@ -1,6 +1,6 @@
 # Intelligent ETL Solution Industrialization
 
-![GitHub release](https://img.shields.io/github/release-pre/metadew/iesi.svg?label=release) 
+![GitHub release](https://img.shields.io/github/release-pre/metadew/iesi.svg)
 ![GitHub last commit](https://img.shields.io/github/last-commit/metadew/iesi.svg)
 
 Intelligent ETL Solution Industrialization or IESI is a MIT licensed automation framework to automate end-to-end delivery and testing processes for data driven initiatives (integration or migration). 

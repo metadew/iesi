@@ -5,7 +5,6 @@ import java.util.HashMap;
 import org.apache.logging.log4j.Level;
 
 import io.metadew.iesi.framework.execution.FrameworkExecution;
-import io.metadew.iesi.framework.operation.ClassOperation;
 import io.metadew.iesi.metadata.definition.Action;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 import io.metadew.iesi.script.operation.ComponentAttributeOperation;
@@ -69,9 +68,9 @@ public class ActionExecution {
 						this.getExecutionControl(), this, this.getAction().getComponent().trim()));
 			}
 
-			String className = ClassOperation.getActionClass(this.getAction().getType()).getName();
+			String className = this.getFrameworkExecution().getFrameworkConfiguration().getActionTypeConfiguration().getActionTypeClass(this.getAction().getType());
 			this.getExecutionControl().logMessage(this, "action.type=" + this.getAction().getType(), Level.DEBUG);
-
+			
 			Class classRef = Class.forName(className);
 			Object instance = classRef.newInstance();
 

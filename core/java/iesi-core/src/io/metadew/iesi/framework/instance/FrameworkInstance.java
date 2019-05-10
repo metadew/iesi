@@ -59,6 +59,7 @@ public class FrameworkInstance {
 				
 		// Prepare configuration and shared Metadata
 		this.setFrameworkControl(new FrameworkControl(this.getFrameworkConfiguration(), logonType, this.getFrameworkInitializationFile()));
+		this.getFrameworkConfiguration().setActionTypesFromPlugins(this.getFrameworkControl().getFrameworkPluginConfigurationList());
 		this.setMetadataControl(new MetadataControl(this.getFrameworkControl().getMetadataRepositoryConfigurations().stream().map(configuration -> configuration.toMetadataRepositories(frameworkConfiguration)).collect(ArrayList::new, List::addAll, List::addAll)));
 
 		// Set up connection to the metadata repository

@@ -1,0 +1,1 @@
+select count(*) from iesi_cxn_conn

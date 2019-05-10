@@ -14,12 +14,16 @@ import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.Level;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.metadew.iesi.connection.tools.FolderTools;
 import io.metadew.iesi.connection.tools.SQLTools;
@@ -123,10 +127,20 @@ public class ExecutionRuntime {
 		this.setVariableInstructions(VariableInstructionRepository.getReposistory(this.getExecutionControl()));
 	}
 
+	@SuppressWarnings("rawtypes")
 	public void terminate() {
 		// remove cache folder
 		FolderTools.deleteFolder(this.getRunCacheFolderName(), true);
 
+		// cleanup stage connections if needed
+		ObjectMapper objectMapper = new ObjectMapper();
+	    Iterator iterator = this.getStageOperationMap().entrySet().iterator();
+	    while (iterator.hasNext()) {
+	        Map.Entry pair = (Map.Entry)iterator.next();
+	        StageOperation stageOperation = objectMapper.convertValue(pair.getValue(), StageOperation.class);
+	        stageOperation.doCleanup();
+	        iterator.remove();
+	    }
 	}
 
 	// Methods
@@ -810,8 +824,8 @@ public class ExecutionRuntime {
 	}
 
 	// Stage Management
-	public void setStage(String stageName) {
-		StageOperation stageOperation = new StageOperation(this.getFrameworkExecution(), stageName);
+	public void setStage(String stageName, boolean stageCleanup) {
+		StageOperation stageOperation = new StageOperation(this.getFrameworkExecution(), stageName, stageCleanup);
 		this.getStageOperationMap().put(stageName, stageOperation);
 	}
 

@@ -18,6 +18,7 @@ import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
+import org.apache.commons.io.FileUtils;
 
 import io.metadew.iesi.framework.execution.FrameworkControl;
 
@@ -33,6 +34,16 @@ public final class FileTools {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
+		}
+	}
+	
+	public static void delete(String fileName, boolean force) {	
+		File f = new File(fileName);
+		try {
+			FileUtils.forceDelete(f);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException("Unable to delete file " + f.getAbsolutePath());
 		}
 	}
 

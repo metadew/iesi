@@ -486,10 +486,9 @@ public abstract class DatabaseConnection {
 		}
 	}
 
-	public PreparedStatement createLivePreparedStatement(String sqlStatement) {
+	public PreparedStatement createLivePreparedStatement(Connection connection, String sqlStatement) {
 		PreparedStatement preparedStatement = null;
 		try {
-			Connection connection = getConnection();
 			preparedStatement = connection.prepareStatement(sqlStatement);
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -497,44 +496,34 @@ public abstract class DatabaseConnection {
 		return preparedStatement;
 	}
 
-	public void createLiveConnection() {
-
-//		try {
-//			Class.forName(this.getDriver());
-//		} catch (ClassNotFoundException e) {
-//			StringWriter StackTrace = new StringWriter();
-//			e.printStackTrace(new PrintWriter(StackTrace));
-//			System.out.println("JDBC Driver Not Available");
-//			throw new RuntimeException(e.getMessage());
-//		}
-//
-//		try {
-//			this.setConnection(
-//					DriverManager.getConnection(this.getConnectionURL(), this.getUserName(), this.getUserPassword()));
-//		} catch (SQLException e) {
-//			StringWriter StackTrace = new StringWriter();
-//			e.printStackTrace(new PrintWriter(StackTrace));
-//			System.out.println("Connection Failed");
-//			throw new RuntimeException(e.getMessage());
-//		}
-
+	public Connection createLiveConnection() {
+		Connection connection;
+		try {
+			connection = getConnection();
+		} catch (SQLException e) {
+			StringWriter StackTrace = new StringWriter();
+			e.printStackTrace(new PrintWriter(StackTrace));
+			System.out.println("Connection Failed");
+			throw new RuntimeException(e.getMessage());
+		}
+		return connection;
 	}
 
-	public void closeLiveConnection() {
-//
-//		if (this.getConnection() != null) {
-//			try {
-//				connection.close();
-//			} catch (SQLException e) {
-//				StringWriter StackTrace = new StringWriter();
-//				e.printStackTrace(new PrintWriter(StackTrace));
-//				System.out.println("Connection Close Failed");
-//				throw new RuntimeException(e.getMessage());
-//			}
-//
-//		} else {
-//			System.out.println("Connection lost");
-//		}
+	public void closeLiveConnection(Connection connection) {
+		if (connection != null) {
+			try {
+				connection.close();
+			} catch (SQLException e) {
+				StringWriter StackTrace = new StringWriter();
+				e.printStackTrace(new PrintWriter(StackTrace));
+				System.out.println("Connection Close Failed");
+				throw new RuntimeException(e.getMessage());
+			}
+
+		} else {
+			System.out.println("Connection lost");
+		}
 	}
+	
 
 }

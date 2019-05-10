@@ -5,6 +5,7 @@ import java.io.File;
 import org.apache.commons.io.FilenameUtils;
 
 import io.metadew.iesi.connection.database.connection.SqliteDatabaseConnection;
+import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.connection.tools.FolderTools;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 
@@ -21,13 +22,13 @@ public class StageOperation {
 	private String stageName;
 	private String stageFileName;
 	private String stageFilePath;
-	
-
+	private boolean stageCleanup;
 
 	//Constructors
-	public StageOperation(FrameworkExecution frameworkExecution, String stageName) {
+	public StageOperation(FrameworkExecution frameworkExecution, String stageName, boolean StageCleanup) {
 		this.setFrameworkExecution(frameworkExecution);
 		this.setStageName(stageName);
+		this.setStageCleanup(StageCleanup);
 
 		String stageFolderName = this.getFrameworkExecution().getFrameworkConfiguration().getFolderConfiguration().getFolderAbsolutePath("run.tmp") + File.separator +  "stage";
 		FolderTools.createFolder(stageFolderName);
@@ -36,7 +37,12 @@ public class StageOperation {
 		this.setStageConnection(new SqliteDatabaseConnection(this.getStageFilePath()));
 	}
 
-
+	public void doCleanup() {
+		if (this.isStageCleanup()) {
+			FileTools.delete(this.getStageFilePath());
+		}
+	}
+	
 	//Getters and setters
 	public FrameworkExecution getFrameworkExecution() {
 		return frameworkExecution;
@@ -85,6 +91,16 @@ public class StageOperation {
 
 	public void setStageFilePath(String stageFilePath) {
 		this.stageFilePath = stageFilePath;
+	}
+
+
+	public boolean isStageCleanup() {
+		return stageCleanup;
+	}
+
+
+	public void setStageCleanup(boolean stageCleanup) {
+		this.stageCleanup = stageCleanup;
 	}
 
 }

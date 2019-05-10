@@ -15,6 +15,7 @@ public final class SQLDataTransfer {
 			String name, boolean cleanPrevious) {
 
 		String QueryString = "";
+		java.sql.Connection liveTargetDatabaseConnection = null;
 		try
 		{
 			// Get result set meta data
@@ -40,8 +41,8 @@ public final class SQLDataTransfer {
 
 			String temp = "";
 			String sql = SQLTools.getInsertPstmt(rsmd, name);
-			targetDatabaseConnection.createLiveConnection();
-			PreparedStatement preparedStatement = targetDatabaseConnection.createLivePreparedStatement(sql);
+			liveTargetDatabaseConnection = targetDatabaseConnection.createLiveConnection();
+			PreparedStatement preparedStatement = targetDatabaseConnection.createLivePreparedStatement(liveTargetDatabaseConnection, sql);
 
 			int crsType = crs.getType();
 			if (crsType != java.sql.ResultSet.TYPE_FORWARD_ONLY)
@@ -64,6 +65,8 @@ public final class SQLDataTransfer {
 		catch (Exception e)
 		{
 			throw new RuntimeException("sql.data.transfer.failed");
+		} finally {
+			targetDatabaseConnection.closeLiveConnection(liveTargetDatabaseConnection);
 		}
 
 	

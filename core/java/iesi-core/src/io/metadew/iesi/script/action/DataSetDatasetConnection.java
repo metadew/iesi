@@ -80,6 +80,9 @@ public class DataSetDatasetConnection {
 			String referenceName = convertDatasetReferenceName(getReferenceName().getValue());
 			String datasetName = convertDatasetName(getDatasetName().getValue());
 			List<String> labels = convertDatasetLabels(getDatasetLabels().getValue());
+
+			executionControl.getExecutionRuntime().setDataset(referenceName, getDatasetName().getValue(),
+					getDatasetLabels().getValue());
 			return setDatasetConnection(referenceName, datasetName, labels);
 		} catch (Exception e) {
 			StringWriter StackTrace = new StringWriter();
@@ -117,7 +120,7 @@ public class DataSetDatasetConnection {
 		List<String> labels = new ArrayList<>();
 		if (datasetLabels instanceof Text) {
 			Arrays.stream(datasetLabels.toString().split(","))
-					.forEach(datasetLabel -> labels.add(convertDatasetLabel(DataTypeResolver.resolveToDatatype(datasetLabel.trim()))));
+					.forEach(datasetLabel -> labels.add(convertDatasetLabel(DataTypeResolver.resolveToDataType(datasetLabel.trim(), frameworkExecution.getFrameworkConfiguration().getFolderConfiguration()))));
 			return labels;
 		} else if (datasetLabels instanceof Array) {
 			((Array) datasetLabels).getList()

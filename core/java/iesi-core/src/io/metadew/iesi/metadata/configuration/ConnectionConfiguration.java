@@ -45,11 +45,6 @@ public class ConnectionConfiguration {
 		try {
 			while (crs.next()) {
 				String connectionName = crs.getString("CONN_NM");
-				String queryConnectionParameters = "select CONN_NM, ENV_NM, CONN_PAR_NM, CONN_PAR_VAL from "
-						+ this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("ConnectionParameters")
-						+ " where CONN_NM = '" + connectionName + "'";
-				CachedRowSet crsConnectionParameters = this.getFrameworkExecution().getMetadataControl()
-						.getConnectivityMetadataRepository().executeQuery(queryConnectionParameters, "reader");
 
 				String queryEnvironment = "select distinct ENV_NM from "
 						+ this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("ConnectionParameters")
@@ -59,6 +54,13 @@ public class ConnectionConfiguration {
 				while (crsEnvironment.next()) {
 					List<ConnectionParameter> connectionParameters = new ArrayList<>();
 					String environmentName = crsEnvironment.getString("ENV_NM");
+
+					String queryConnectionParameters = "select CONN_NM, ENV_NM, CONN_PAR_NM, CONN_PAR_VAL from "
+							+ this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("ConnectionParameters")
+							+ " where CONN_NM = '" + connectionName + "' and ENV_NM = '" + environmentName + "';";
+					CachedRowSet crsConnectionParameters = this.getFrameworkExecution().getMetadataControl()
+							.getConnectivityMetadataRepository().executeQuery(queryConnectionParameters, "reader");
+
 					while (crsConnectionParameters.next()) {
 						connectionParameters.add(connectionParameterConfiguration.getConnectionParameter(
 								connectionName,
@@ -71,8 +73,8 @@ public class ConnectionConfiguration {
 							crs.getString("CONN_DSC"),
 							environmentName,
 							connectionParameters));
+					crsConnectionParameters.close();
 				}
-				crsConnectionParameters.close();
 				crsEnvironment.close();
 			}
 			crs.close();
@@ -83,7 +85,9 @@ public class ConnectionConfiguration {
 	}
 
 	public List<Connection> getConnectionByName(String connectionName) {
-		return getConnections().stream().filter(connection -> connection.getName().equals(connectionName)).collect(Collectors.toList());
+		return getConnections().stream()
+				.filter(connection -> connection.getName().equals(connectionName))
+				.collect(Collectors.toList());
 	}
 
 	public List<Connection> getConnectionsByEnvironment(String environmentName) {

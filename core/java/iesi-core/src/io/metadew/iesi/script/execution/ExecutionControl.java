@@ -2,6 +2,7 @@ package io.metadew.iesi.script.execution;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
@@ -71,21 +72,20 @@ public class ExecutionControl
 		if (frameworkExecution.getFrameworkConfiguration().getSettingConfiguration().getSettingPath("script.execution.runtime").isPresent() &&
 				!frameworkExecution.getFrameworkControl().getProperty(frameworkExecution.getFrameworkConfiguration().getSettingConfiguration().getSettingPath("script.execution.runtime").get()).isEmpty()) {
 			try {
-
-
 				Class classRef = Class.forName(frameworkExecution.getFrameworkControl().getProperty(frameworkExecution.getFrameworkConfiguration().getSettingConfiguration().getSettingPath("script.execution.runtime").get()));
-				Object instance = classRef.newInstance();
 
+				// Object instance = classRef.newInstance();
 //				classRef = ClassOperation.getExecutionRuntime(frameworkExecution.getFrameworkControl().getProperty(frameworkExecution.getFrameworkConfiguration().getSettingConfiguration().getSettingPath("script.execution.runtime").get()));
 //				instance = classRef.newInstance();
 
-				Class initParams[] = { FrameworkExecution.class, String.class };
-				Method init = classRef.getDeclaredMethod("init", initParams);
-				Object[] initArgs = { this.getFrameworkExecution(), runId };
-				init.invoke(instance, initArgs);
+				Class[] initParams = {FrameworkExecution.class, ExecutionControl.class, String.class};
+//				Method init = classRef.getDeclaredMethod("init", initParams);
+				Constructor<?> constructor = classRef.getConstructor(initParams);
+				Object[] initArgs = { frameworkExecution, this, runId };
+				ExecutionRuntime instance = (ExecutionRuntime) constructor.newInstance(initArgs);
+//				init.invoke(instance, initArgs);
 
-				ObjectMapper objectMapper = new ObjectMapper();
-				this.setExecutionRuntime(objectMapper.convertValue(instance, ExecutionRuntime.class));
+				this.setExecutionRuntime(instance);
 			}
 			catch (Exception e)
 			{

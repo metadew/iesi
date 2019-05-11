@@ -1,5 +1,7 @@
 package io.metadew.iesi.script.execution.instruction.lookup;
 
+import io.metadew.iesi.datatypes.DataType;
+import io.metadew.iesi.datatypes.Dataset;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.operation.DatasetOperation;
 
@@ -34,15 +36,17 @@ public class DatasetLookup implements LookupInstruction {
         if (!inputParameterMatcher.find()) {
             throw new IllegalArgumentException(MessageFormat.format("Illegal arguments provided to dataset lookup: {0}", parameters));
         }
-        String datasetName = inputParameterMatcher.group(DATASET_NAME_KEY);
+        String datasetReferenceName = inputParameterMatcher.group(DATASET_NAME_KEY);
         String datasetItemName = inputParameterMatcher.group(DATASET_ITEM_NAME_KEY);
 
-        DatasetOperation datasetOperation = executionControl.getExecutionRuntime().getDatasetOperation(datasetName);
-        Optional<String> datasetItemValue = datasetOperation.getDataItem(datasetItemName);
-        if (!datasetItemValue.isPresent()) {
-            throw new IllegalArgumentException(MessageFormat.format("No dataset item {0} is attached to dataset {1}", datasetItemName, datasetName));
+        Optional<Dataset> dataset = executionControl.getExecutionRuntime().getDataset(datasetReferenceName);
+        Optional<DataType> dataItem = dataset.map(dataset1 -> dataset1.getDataItem(datasetItemName))
+                .orElseThrow(() -> new IllegalArgumentException(MessageFormat.format("No dataset found for reference name {0}", datasetReferenceName)));
+
+        if (!dataItem.isPresent()) {
+            throw new IllegalArgumentException(MessageFormat.format("No dataset item {0} is attached to dataset {1}", datasetItemName, datasetReferenceName));
         } else {
-            return datasetItemValue.get();
+            return dataItem.get().toString();
         }
     }
 }

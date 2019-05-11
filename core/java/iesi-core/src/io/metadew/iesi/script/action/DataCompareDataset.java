@@ -103,41 +103,42 @@ public class DataCompareDataset {
 
 	private boolean compareDataset(String leftDatasetName, String rightDatasetName, String mappingName) {
 		// Run the action
-		Matcher leftDatasetNameMatcher = datasetNamePattern.matcher(leftDatasetName);
-		Matcher rightDatasetNameMatcher = datasetNamePattern.matcher(rightDatasetName);
-		if (!leftDatasetNameMatcher.find()) {
-			throw new RuntimeException(MessageFormat.format("data.comparedataset does not accept {0} as left dataset name", leftDatasetName));
-		}
-		if (!rightDatasetNameMatcher.find()) {
-			throw new RuntimeException(MessageFormat.format("data.comparedataset does not accept {0} as right dataset name", rightDatasetName));
-		}
-		String leftDatasetReferenceName = leftDatasetNameMatcher.group("name");
-		String leftDatasetTable = leftDatasetNameMatcher.group("table");
-		String rightDatasetReferenceName = rightDatasetNameMatcher.group("name");
-		String rightDatasetTable = rightDatasetNameMatcher.group("table");
+//		Matcher leftDatasetNameMatcher = datasetNamePattern.matcher(leftDatasetName);
+//		Matcher rightDatasetNameMatcher = datasetNamePattern.matcher(rightDatasetName);
+//		if (!leftDatasetNameMatcher.find()) {
+//			throw new RuntimeException(MessageFormat.format("data.comparedataset does not accept {0} as left dataset name", leftDatasetName));
+//		}
+//		if (!rightDatasetNameMatcher.find()) {
+//			throw new RuntimeException(MessageFormat.format("data.comparedataset does not accept {0} as right dataset name", rightDatasetName));
+//		}
+//		String leftDatasetReferenceName = leftDatasetNameMatcher.group("name");
+//		String leftDatasetTable = leftDatasetNameMatcher.group("table");
+//		String rightDatasetReferenceName = rightDatasetNameMatcher.group("name");
+//		String rightDatasetTable = rightDatasetNameMatcher.group("table");
+        Dataset leftDataset = executionControl.getExecutionRuntime().getDataset(leftDatasetName)
+                .orElseThrow(() -> new RuntimeException(MessageFormat.format("data.comparedataset could not find dataset {0} as left dataset", leftDatasetName)));
+        Dataset rightDataset = executionControl.getExecutionRuntime().getDataset(rightDatasetName)
+                .orElseThrow(() -> new RuntimeException(MessageFormat.format("data.comparedataset could not find dataset {0} as right dataset", rightDatasetName)));
 
-		DatasetOperation leftDatasetOperation = this.getExecutionControl().getExecutionRuntime()
-				.getDatasetOperation(leftDatasetReferenceName);
-		DatasetOperation rightDatasetOperation = this.getExecutionControl().getExecutionRuntime()
-				.getDatasetOperation(rightDatasetReferenceName);
 
 		long errorsDetected = 0;
 		MappingConfiguration mappingConfiguration = new MappingConfiguration(this.getFrameworkExecution());
 		Mapping mapping = mappingConfiguration.getMapping(mappingName);
 		for (Transformation transformation : mapping.getTransformations()) {
-			Optional<String> leftFieldValue = leftDatasetOperation.getDataItem(leftDatasetTable + "." + transformation.getLeftField());
-			Optional<String> rightFieldValue = rightDatasetOperation.getDataItem(rightDatasetTable + "." + transformation.getRightField());
+
+            Optional<DataType> leftFieldValue = leftDataset.getDataItem(transformation.getLeftField());
+            Optional<DataType> rightFieldValue = rightDataset.getDataItem(transformation.getRightField());
 			if (!leftFieldValue.isPresent()) {
 				this.getActionExecution().getActionControl().logWarning("field.left",
-						MessageFormat.format("cannot find value for {0} in dataset {1}.",leftDatasetTable + "." + transformation.getLeftField(), leftDatasetName));
+						MessageFormat.format("cannot find value for {0} in dataset {1}.", transformation.getLeftField(), leftDatasetName));
 			}
 			if (!rightFieldValue.isPresent()) {
 				this.getActionExecution().getActionControl().logWarning("field.right",
-						MessageFormat.format("cannot find value for {0} in dataset {1}.",rightDatasetTable + "." + transformation.getRightField(), rightDatasetName));
+						MessageFormat.format("cannot find value for {0} in dataset {1}.", transformation.getRightField(), rightDatasetName));
 			}
 			if (!leftFieldValue.equals(rightFieldValue)) {
 				this.getActionExecution().getActionControl().logError("field.mismatch", MessageFormat.format(
-						"{0}:{1}<>{2}:{3}", transformation.getLeftField(), leftFieldValue, transformation.getRightField(), rightFieldValue));
+						"{0}:{1}<>{2}:{3}", transformation.getLeftField(), leftFieldValue.map(DataType::toString).orElse("null"), transformation.getRightField(), rightFieldValue.map(DataType::toString).orElse("null")));
 				this.getActionExecution().getActionControl().increaseErrorCount();
 				errorsDetected++;
 			} else {

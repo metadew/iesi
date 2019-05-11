@@ -57,6 +57,14 @@
 {
 	"type": "LaunchItem",
 	"data": {
+		"script": "fwk.outputMessage.7",
+		"description": "test fwk.outputMessage with a variable concept lookup as message",
+		"parameterList": "param1=myParameter"
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
 		"script": "sql.executeQuery.1",
 		"description": "test sql.executeQuery with a select query",
 		"parameterList": ""
@@ -201,8 +209,41 @@
 {
 	"type": "LaunchItem",
 	"data": {
+		"script": "data.setDatasetConnection.1",
+		"description": "test data.setDatasetConnection with single label",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "data.setDatasetConnection.2",
+		"description": "test data.compareDataset with multiple labels. Only one dataset having all labels",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "data.setDatasetConnection.3",
+		"description": "test data.compareDataset with multiple labels. Multiple datasets having all labels but only one has full match",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
 		"script": "data.compareDataset.1",
 		"description": "test data.compareDataset",
 		"parameterList": ""
 	}
-}]
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "data.outputDataset.1",
+		"description": "test data.compareDataset",
+		"parameterList": ""
+	}
+}
+]

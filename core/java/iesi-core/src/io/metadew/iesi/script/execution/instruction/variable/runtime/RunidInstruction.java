@@ -17,7 +17,7 @@ public class RunidInstruction implements VariableInstruction
 	@Override
 	public String generateOutput()
 	{
-		return this.getExecutionControl().getRunId();
+		return executionControl.getRunId();
 	}
 
 	@Override

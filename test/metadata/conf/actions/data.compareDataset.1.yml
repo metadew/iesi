@@ -39,8 +39,8 @@ data:
     errorStop: "Y"
     parameters:
     - name: "leftDataset"
-      value : "expected.data"
+      value : "expected"
     - name: "rightDataset"
-      value : "actual.data"
+      value : "actual"
     - name: "mapping"
       value : "datasetCompare.1"

@@ -1,5 +1,7 @@
 package io.metadew.iesi.datatypes;
 
+import org.apache.commons.collections4.CollectionUtils;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,7 +23,7 @@ public class Array extends DataType{
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof Array) {
-            return this.list.equals(((Array) obj).getList());
+            return CollectionUtils.isEqualCollection(this.list, ((Array) obj).getList());
         } else {
             return false;
         }

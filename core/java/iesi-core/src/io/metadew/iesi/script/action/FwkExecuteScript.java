@@ -22,8 +22,6 @@ import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 import org.apache.logging.log4j.Level;
 
-import javax.swing.text.html.Option;
-
 public class FwkExecuteScript {
 
     private ActionExecution actionExecution;
@@ -256,7 +254,7 @@ public class FwkExecuteScript {
         Map<String, String> parameterMap = new HashMap<>();
         if (list instanceof Text) {
             Arrays.stream(list.toString().split(","))
-                    .forEach(parameterEntry -> parameterMap.putAll(convertParameterEntry(DataTypeResolver.resolveToDatatype(parameterEntry))));
+                    .forEach(parameterEntry -> parameterMap.putAll(convertParameterEntry(DataTypeResolver.resolveToDataType(parameterEntry, frameworkExecution.getFrameworkConfiguration().getFolderConfiguration()))));
             return Optional.of(parameterMap);
         } else if (list instanceof Array) {
             for  (DataType parameterEntry : ((Array) list).getList()){

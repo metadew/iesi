@@ -88,7 +88,7 @@ public class FwkSetParameterList {
 		Map<String, String> parameterMap = new HashMap<>();
 		if (list instanceof Text) {
 			Arrays.stream(list.toString().split(","))
-					.forEach(parameterEntry -> parameterMap.putAll(convertParameterEntry(DataTypeResolver.resolveToDatatype(parameterEntry))));
+					.forEach(parameterEntry -> parameterMap.putAll(convertParameterEntry(DataTypeResolver.resolveToDataType(parameterEntry, frameworkExecution.getFrameworkConfiguration().getFolderConfiguration()))));
 			return parameterMap;
 		} else if (list instanceof Array) {
 			for  (DataType parameterEntry : ((Array) list).getList()){

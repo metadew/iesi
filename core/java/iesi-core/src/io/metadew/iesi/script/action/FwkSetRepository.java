@@ -136,7 +136,7 @@ public class FwkSetRepository {
 		List<String> labels = new ArrayList<>();
 		if (repositoryLabels instanceof Text) {
 			Arrays.stream(repositoryLabels.toString().split(","))
-					.forEach(repositoryLabel -> labels.add(convertRepositoryInstanceLabel(DataTypeResolver.resolveToDatatype(repositoryLabel.trim()))));
+					.forEach(repositoryLabel -> labels.add(convertRepositoryInstanceLabel(DataTypeResolver.resolveToDataType(repositoryLabel.trim(), frameworkExecution.getFrameworkConfiguration().getFolderConfiguration()))));
 			return labels;
 		} else if (repositoryLabels instanceof Array) {
 			((Array) repositoryLabels).getList()

@@ -1,5 +1,9 @@
 package io.metadew.iesi.datatypes;
 
+import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
+
+import java.io.IOException;
+import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,42 +18,46 @@ public class DataTypeResolver {
     private static Pattern DatatypePattern = Pattern.compile("\\^(?<datatype>\\w+)\\((?<arguments>.+)\\)");
 
 
-    public static DataType resolveToDatatype(String input) {
+    public static DataType resolveToDataType(String input, FrameworkFolderConfiguration frameworkFolderConfiguration) {
         if (input.startsWith(DatatypeStartCharacters) && input.endsWith(DatatypeStopCharacters)) {
             Matcher matcher = DatatypePattern.matcher(input.substring(DatatypeStartCharacters.length(), input.length() - DatatypeStopCharacters.length()));
             if (matcher.find()) {
                 switch (matcher.group("datatype")) {
                     case "list":
-                        return resolveToList(matcher.group("arguments"));
+                        return resolveToList(matcher.group("arguments"), frameworkFolderConfiguration);
                     case "dataset":
-                        return resolveToDataset(matcher.group("arguments"));
+                        try {
+                            return resolveToDataset(matcher.group("arguments"), frameworkFolderConfiguration);
+                        } catch (IOException |SQLException e) {
+                            throw new RuntimeException(e);
+                        }
                     default:
-                        throw new RuntimeException(MessageFormat.format("Input '{0}' does not have a correct datatype", input));
+                        throw new RuntimeException(MessageFormat.format("Input ''{0}'' does not have a correct datatype", input));
                 }
             } else {
-                throw new RuntimeException(MessageFormat.format("Input '{0}' does not have a correct datatype", input));
+                return new Text(input);
             }
         } else {
             return new Text(input);
         }
     }
 
-    private static Dataset resolveToDataset(String arguments) {
+    private static Dataset resolveToDataset(String arguments, FrameworkFolderConfiguration frameworkFolderConfiguration) throws IOException, SQLException {
         List<String> splittedArguments = splitInstructionArguments(arguments);
         if (splittedArguments.size() == 2) {
             List<DataType> resolvedArguments = splittedArguments.stream()
-                    .map(DataTypeResolver::resolveToDatatype)
+                    .map(argument -> resolveToDataType(argument, frameworkFolderConfiguration))
                     .collect(Collectors.toList());
-            return new Dataset(resolvedArguments.get(0), resolvedArguments.get(1));
+            return new Dataset(resolvedArguments.get(0), resolvedArguments.get(1), frameworkFolderConfiguration);
         } else {
-            throw new RuntimeException(MessageFormat.format("Cannot create dataset with arguments '{0}'", splittedArguments.toString()));
+            throw new RuntimeException(MessageFormat.format("Cannot create dataset with arguments ''{0}''", splittedArguments.toString()));
         }
     }
 
-    private static Array resolveToList(String arguments) {
+    private static Array resolveToList(String arguments, FrameworkFolderConfiguration frameworkFolderConfiguration) {
         List<String> splittedArguments = splitInstructionArguments(arguments);
         List<DataType> resolvedArguments = splittedArguments.stream()
-                .map(DataTypeResolver::resolveToDatatype)
+                .map(argument -> resolveToDataType(argument, frameworkFolderConfiguration))
                 .collect(Collectors.toList());
         return new Array(resolvedArguments);
     }

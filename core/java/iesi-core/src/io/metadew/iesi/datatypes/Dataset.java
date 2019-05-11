@@ -1,65 +1,47 @@
 package io.metadew.iesi.datatypes;
 
+import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
 import io.metadew.iesi.metadata_repository.repository.database.Database;
 import io.metadew.iesi.metadata_repository.repository.database.SqliteDatabase;
 import io.metadew.iesi.metadata_repository.repository.database.connection.SqliteDatabaseConnection;
-import org.apache.logging.log4j.Level;
+import org.apache.commons.io.FileUtils;
 
 import javax.sql.rowset.CachedRowSet;
-import javax.xml.crypto.Data;
 import java.io.File;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class Dataset extends DataType {
 
-    private final DataType name;
-    private final DataType labels;
+    private String name;
+    private List<String> labels;
 
+    private final FrameworkFolderConfiguration frameworkFolderConfiguration;
     private Database dataset;
     private String tableName;
     private Database datasetMetadataConnection;
 
-    public Dataset(DataType name, DataType labels) {
-        this.name = name;
-        this.labels = labels;
-        dataset = getDataset();
+    public Dataset(DataType name, DataType labels, FrameworkFolderConfiguration frameworkFolderConfiguration) throws IOException, SQLException {
+        this.frameworkFolderConfiguration = frameworkFolderConfiguration;
+        this.dataset = initializeDatasetConnection(name, labels);
     }
 
-    public DataType getDatasetName() {
-        return name;
+    public Dataset(String name, List<String> labels, FrameworkFolderConfiguration frameworkFolderConfiguration) throws IOException, SQLException {
+        this.frameworkFolderConfiguration = frameworkFolderConfiguration;
+        this.dataset = initializeDatasetConnection(name, labels);
     }
 
-    public DataType getDatasetLabels() {
-        return labels;
+    public DataType getNameAsDataType() {
+        return new Text(name);
     }
 
-    public Optional<DataType> getDataItem(String dataItem) {
-        CachedRowSet crs;
-        String query;
-        query = "select value from " +
-                tableName +
-                " where key = '" + dataItem + "'";
-
-        DataType value = null;
-        crs = dataset.executeQuery(query);
-        try {
-            while (crs.next()) {
-                value = DataTypeResolver.resolveToDatatype(crs.getString("VALUE"));
-            }
-            crs.close();
-        } catch (Exception e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-            return Optional.empty();
-        }
-        return Optional.ofNullable(value);
+    public DataType getLabelsAsDataType() {
+        return new Array(labels.stream().map(Text::new).collect(Collectors.toList()));
     }
 
     public Map<String, DataType> getDataItems() {
@@ -72,7 +54,7 @@ public class Dataset extends DataType {
         crs = dataset.executeQuery(query);
         try {
             while (crs.next()) {
-                dataItems.put(crs.getString("key"), DataTypeResolver.resolveToDatatype(crs.getString("value")));
+                dataItems.put(crs.getString("key"), DataTypeResolver.resolveToDataType(crs.getString("value"), frameworkFolderConfiguration));
             }
             crs.close();
         } catch (Exception e) {
@@ -83,21 +65,43 @@ public class Dataset extends DataType {
         return dataItems;
     }
 
-    public Database getDataset() {
-        return getDataset(name, labels);
+    public Optional<DataType> getDataItem(String dataItem) {
+        CachedRowSet crs;
+        String query;
+        query = "select value from \"" +
+                tableName +
+                "\" where key = '" + dataItem + "'";
+
+        DataType value = null;
+        crs = dataset.executeQuery(query);
+        try {
+            while (crs.next()) {
+                value = DataTypeResolver.resolveToDataType(crs.getString("VALUE"), frameworkFolderConfiguration);
+            }
+            crs.close();
+        } catch (Exception e) {
+            StringWriter StackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(StackTrace));
+            return Optional.empty();
+        }
+        return Optional.ofNullable(value);
     }
 
-    private Database getDataset(DataType name, DataType labels) {
-        String datasetName = convertDatasetName(name);
-        List<String> datasetLabels = convertDatasetLabels(labels);
-        return getDataset(datasetName, datasetLabels);
+    public Database getDatasetDatabase() {
+        return dataset;
+    }
+
+    private Database initializeDatasetConnection(DataType name, DataType labels) throws IOException, SQLException {
+        this.name = convertDatasetName(name);
+        this.labels = convertDatasetLabels(labels);
+        return initializeDatasetConnection(this.name, this.labels);
     }
 
     private List<String> convertDatasetLabels(DataType datasetLabels) {
         List<String> labels = new ArrayList<>();
         if (datasetLabels instanceof Text) {
             Arrays.stream(datasetLabels.toString().split(","))
-                    .forEach(datasetLabel -> labels.add(convertDatasetLabel(DataTypeResolver.resolveToDatatype(datasetLabel.trim()))));
+                    .forEach(datasetLabel -> labels.add(convertDatasetLabel(DataTypeResolver.resolveToDataType(datasetLabel.trim(), frameworkFolderConfiguration))));
             return labels;
         } else if (datasetLabels instanceof Array) {
             ((Array) datasetLabels).getList()
@@ -133,69 +137,184 @@ public class Dataset extends DataType {
         }
     }
 
-
     private Database getDatasetMetadata(String datasetName) {
-        return new SqliteDatabase(new SqliteDatabaseConnection(datasetName + File.separator + "metadata" + File.separator + "metadata.db3"));
+        return new SqliteDatabase(new SqliteDatabaseConnection(frameworkFolderConfiguration.getFolderAbsolutePath("data") + File.separator + "datasets"
+                + File.separator + datasetName + File.separator + "metadata" + File.separator + "metadata.db3"));
     }
 
-    private Database getDataset(String datasetName, List<String> labels) {
-        // TODO: should labels be saved in the metadata.db3 as a iesiList or not?
+    private Database initializeDatasetConnection(String datasetName, List<String> labels) throws SQLException, IOException {
         datasetMetadataConnection = getDatasetMetadata(datasetName);
-        String query = "select a.DATASET_INV_ID, a.DATASET_FILE_NM, a.DATASET_TABLE_NM " +
-                "from CFG_DATASET_INV a inner join CFG_DATASET_LBL b on a.DATASET_INV_ID = b.DATASET_INV_ID " +
-                "where " +
-                labels.stream()
-                        .map(label -> "b.DATASET_LBL_VAL = '" + label + "'")
-                        .collect(Collectors.joining(" and "));
-        CachedRowSet cachedRowSet = datasetMetadataConnection.executeQuery(query);
+        if (labels.isEmpty()) {
+            return null;
+        }
 
-        if (cachedRowSet.size() == 0) {
-            tableName = "data";
-            return createNewDatasetConnection(datasetName, labels);
-        } else if (cachedRowSet.size() == 1) {
-            try {
-                cachedRowSet.next();
-                tableName = cachedRowSet.getString("DATASET_TABLE_NM");
-                return new SqliteDatabase(new SqliteDatabaseConnection(datasetName + File.separator + "data" + File.separator + cachedRowSet.getString("DATASET_FILE_NM")));
-            } catch (SQLException e) {
-                e.printStackTrace();
+        String fetchLabelQuery = "SELECT DATASET_INV_ID FROM CFG_DATASET_LBL WHERE DATASET_LBL_VAL = \"{0}\"";
+        StringBuilder labelMatchQuery = new StringBuilder();
+        int labelIndex = 0;
+        for (String label : labels) {
+            labelMatchQuery.append(MessageFormat.format(fetchLabelQuery, label));
+            if (labelIndex != labels.size() - 1) {
+                labelMatchQuery.append(" and DATASET_INV_ID in (");
             }
+            labelIndex++;
+        }
+        for (int i = 1; i < labels.size(); i++) {
+            labelMatchQuery.append(")");
+        }
+        String strictLabelMatchQuery = "SELECT DATASET_INV_ID from (SELECT b.DATASET_INV_ID, count(b.DATASET_LBL_VAL) as label_count from (" +
+                labelMatchQuery.toString() +
+                ") as a inner join CFG_DATASET_LBL as b on a.DATASET_INV_ID = b.DATASET_INV_ID group by b.DATASET_INV_ID) " +
+                "where label_count = " + labels.size() + ";";
+
+        int datasetInventoryId;
+        CachedRowSet cachedRowSetLabels = datasetMetadataConnection.executeQuery(strictLabelMatchQuery);
+        if (cachedRowSetLabels.size() == 0) {
+            return createNewDataset(datasetName, labels);
+        } else if (cachedRowSetLabels.size() == 1) {
+            cachedRowSetLabels.next();
+            datasetInventoryId = cachedRowSetLabels.getInt("DATASET_INV_ID");
+            System.out.println(MessageFormat.format("Found  dataset id {0}." , Integer.toString(datasetInventoryId)));
         } else {
-            System.out.println(MessageFormat.format("Found more than one dataset for name '{0}' and labels '{1}'. " +
-                            "Returning first occurrence.",
-                    name, String.join(", ", labels)));
-            try {
-                cachedRowSet.next();
-                tableName = cachedRowSet.getString("DATASET_TABLE_NM");
-                return new SqliteDatabase(new SqliteDatabaseConnection(datasetName + File.separator + "data" + File.separator + cachedRowSet.getString("DATASET_FILE_NM")));
-            } catch (SQLException e) {
-                e.printStackTrace();
+            List<Integer> datasetInventoryIds = new ArrayList<>();
+            while (cachedRowSetLabels.next()) {
+                datasetInventoryIds.add(cachedRowSetLabels.getInt("DATASET_INV_ID"));
             }
+            System.out.println(MessageFormat.format("Found more than one dataset id ({0}) for name ''{1}'' and labels ''{2}''. " +
+                            "Returning first occurrence.", datasetInventoryIds.stream().map(id -> Integer.toString(id)).collect(Collectors.joining(", ")),
+                    datasetName, String.join(", ", labels)));
+            datasetInventoryId = datasetInventoryIds.get(0);
+        }
+
+        String query = "select DATASET_FILE_NM, DATASET_TABLE_NM from CFG_DATASET_INV where DATASET_INV_ID = " + datasetInventoryId;
+        CachedRowSet cachedRowSetFileTable = datasetMetadataConnection.executeQuery(query);
+
+
+        if (cachedRowSetFileTable.size() == 0) {
+            String datasetFilename = UUID.randomUUID().toString() + ".db3";
+            return createNewDatasetDatabase(datasetName, datasetFilename, "data", datasetInventoryId);
+        } else if (cachedRowSetFileTable.size() == 1) {
+            cachedRowSetFileTable.next();
+            tableName = cachedRowSetFileTable.getString("DATASET_TABLE_NM");
+            return new SqliteDatabase(new SqliteDatabaseConnection(frameworkFolderConfiguration.getFolderAbsolutePath("data") + File.separator + "datasets"
+                    + File.separator + datasetName + File.separator + "data" + File.separator + cachedRowSetFileTable.getString("DATASET_FILE_NM")));
+        } else {
+            System.out.println(MessageFormat.format("Found more than one dataset for name ''{0}'' and labels ''{1}''. " +
+                            "Returning first occurrence.",
+                    datasetName, String.join(", ", labels)));
+            cachedRowSetFileTable.next();
+            tableName = cachedRowSetFileTable.getString("DATASET_TABLE_NM");
+            return new SqliteDatabase(new SqliteDatabaseConnection(datasetName + File.separator + "data" + File.separator + cachedRowSetFileTable.getString("DATASET_FILE_NM")));
         }
         // TODO: throw exception and let calling functions (actions) handle this?
-        return null;
     }
 
-    private Database createNewDatasetConnection(String datasetName, List<String> labels) {
+    private void insertDatasetDatabaseInformation(int datasetInventoryId, String datasetFileName, String datasetTableName) {
+        String inventoryQuery = "insert into CFG_DATASET_INV (DATASET_INV_ID, DATASET_FILE_NM, DATASET_TABLE_NM)" +
+                " Values (" + datasetInventoryId + ", \"" + datasetFileName + "\", \"" + datasetTableName + "\")";
+        datasetMetadataConnection.executeUpdate(inventoryQuery);
+    }
+
+    private void insertDatasetLabelInformation(int datasetInventoryId, List<String> labels) {
+        String labelQuery = "insert into CFG_DATASET_LBL (DATASET_INV_ID, DATASET_LBL_VAL) " +
+                "Values (" + datasetInventoryId + ", \"{0}\")";
+        labels.forEach(label -> datasetMetadataConnection.executeUpdate(MessageFormat.format(labelQuery, label)));
+    }
+
+    private Database createNewDatasetDatabase(String datasetName, String filename, String tableName, int inventoryId) throws IOException {
+        String filepath = frameworkFolderConfiguration.getFolderAbsolutePath("data") + File.separator + "datasets"
+                + File.separator + datasetName + File.separator + "data" + File.separator + filename;
+        FileUtils.touch(new File(filepath));
+        insertDatasetDatabaseInformation(inventoryId, filename, tableName);
+        Database database = new SqliteDatabase(new SqliteDatabaseConnection(filepath));
+        String create = "CREATE TABLE " + tableName + " (key TEXT, value TEXT)";
+        database.executeUpdate(create);
+        return database;
+    }
+
+    private Database createNewDataset(String datasetName, List<String> labels) throws IOException {
+        int nextInventoryId = getLatestInventoryId() + 1;
         String datasetFilename = UUID.randomUUID().toString() + ".db3";
-        // register in the metadata
-        String sql = "insert into CFG_DATASET_INV (DATASET_INV_ID, DATASET_FILE_NM, DATASET_TABLE_NM) Values (\"" +
-                datasetFilename + "\", \"" + String.join(",", labels) + "\", \"data\")";
-        datasetMetadataConnection.executeQuery(sql);
-        return new SqliteDatabase(new SqliteDatabaseConnection(datasetName + File.separator + "data" + File.separator + datasetFilename));
+        tableName = "data";
+        insertDatasetLabelInformation(nextInventoryId, labels);
+        return createNewDatasetDatabase(datasetName, datasetFilename, "data", nextInventoryId);
+    }
+
+    private int getLatestInventoryId() {
+        String latestInventoryIdQuery = "select max(DATASET_INV_ID) as LATEST_INVENTORY_ID from CFG_DATASET_INV";
+        CachedRowSet cachedRowSet = datasetMetadataConnection.executeQuery(latestInventoryIdQuery);
+        if (cachedRowSet.size() == 0) {
+            return 0;
+        } else {
+            try {
+                cachedRowSet.next();
+                return cachedRowSet.getInt("LATEST_INVENTORY_ID");
+            } catch (SQLException e) {
+                e.printStackTrace();
+                return 0;
+            }
+        }
+    }
+
+    public void clean() {
+        // Check if table exists
+        String queryTableExists = "select name from sqlite_master where name = '" + tableName + "'";
+        CachedRowSet crs = null;
+        crs = dataset.executeQuery(queryTableExists);
+        String value = "";
+        boolean tableExists = false;
+        try {
+            if (crs.size() >= 1) {
+                if (crs.getString("NAME").equalsIgnoreCase(tableName)) {
+                    String clean = "delete from " + tableName;
+                    dataset.executeUpdate(clean);
+                } else {
+                    String create = "CREATE TABLE " + tableName + " (key TEXT, value TEXT)";
+                    dataset.executeUpdate(create);
+                }
+            } else {
+                String create = "CREATE TABLE " + tableName + " (key TEXT, value TEXT)";
+                dataset.executeUpdate(create);
+            }
+            crs.close();
+        } catch (Exception e) {
+            StringWriter StackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(StackTrace));
+        }
+    }
+
+    public void setDataItem(String key, String value) {
+        // Store the data
+        try {
+            String query = "";
+            query = "insert into " + tableName + " (key, value) values ('" + key + "','" + value + "')";
+            dataset.executeUpdate(query);
+        } catch (Exception e) {
+            StringWriter StackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(StackTrace));
+        }
     }
 
     @Override
     public String toString() {
-        return "{{^dataset(" + name.toString() + ", " + labels.toString() + ")}}";
+        return "{{^dataset(" + getNameAsDataType().toString() + ", " + getLabelsAsDataType().toString() + ")}}";
     }
 
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof Dataset) {
-            return name.equals(((Dataset) obj).getDatasetName()) && labels.equals(((Dataset) obj).getDatasetLabels());
+            return getDataItems().equals(((Dataset) obj).getDataItems());
         } else {
             return false;
         }
     }
+
+    public List<String> getLabels() {
+        return labels;
+    }
+
+    public String getName() {
+        return name;
+    }
 }
+
+

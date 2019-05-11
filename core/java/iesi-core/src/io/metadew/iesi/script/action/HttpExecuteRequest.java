@@ -17,6 +17,7 @@ import io.metadew.iesi.connection.HttpConnection;
 import io.metadew.iesi.connection.http.HttpRequest;
 import io.metadew.iesi.connection.http.HttpResponse;
 import io.metadew.iesi.datatypes.DataType;
+import io.metadew.iesi.datatypes.Dataset;
 import io.metadew.iesi.datatypes.Text;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.ActionParameter;
@@ -288,11 +289,17 @@ public class HttpExecuteRequest {
 
 	private void writeTextPlainResponseToOutputDataset(HttpResponse httpResponse, String outputDatasetReferenceName) {
 		if (!outputDatasetReferenceName.isEmpty()) {
-			String[] parts = outputDatasetReferenceName.split("\\.");
-			String datasetName = parts[0];
-			String datasetTableName = parts[1];
-			this.getExecutionControl().getExecutionRuntime().getDatasetOperation(datasetName).resetDataset(datasetTableName);
-			this.getExecutionControl().getExecutionRuntime().getDatasetOperation(datasetName).setDatasetEntry(datasetTableName, "response", httpResponse.getEntityString());
+//			String[] parts = outputDatasetReferenceName.split("\\.");
+//			String datasetName = parts[0];
+//			String datasetTableName = parts[1];
+//			this.getExecutionControl().getExecutionRuntime().getDatasetOperation(datasetName).resetDataset(datasetTableName);
+//			this.getExecutionControl().getExecutionRuntime().getDatasetOperation(datasetName).setDatasetEntry(datasetTableName, "response", httpResponse.getEntityString());
+
+			Optional<Dataset> outputDataset = executionControl.getExecutionRuntime().getDataset(outputDatasetReferenceName);
+			outputDataset.ifPresent(dataset -> {
+				dataset.clean();
+				dataset.setDataItem("response", httpResponse.getEntityString());
+			});
 		}
 	}
 
@@ -303,11 +310,18 @@ public class HttpExecuteRequest {
 			this.setRuntimeVariable(jsonParsed, setRuntimeVariables);
 
 			if (!outputDatasetReferenceName.isEmpty()) {
-				String[] parts = outputDatasetReferenceName.split("\\.");
-				String datasetName = parts[0];
-				String datasetTableName = parts[1];
-				this.getExecutionControl().getExecutionRuntime().getDatasetOperation(datasetName)
-						.setDataset(datasetTableName, jsonParsed);
+//				String[] parts = outputDatasetReferenceName.split("\\.");
+//				String datasetName = parts[0];
+//				String datasetTableName = parts[1];
+//				this.getExecutionControl().getExecutionRuntime().getDatasetOperation(datasetName)
+//						.setDataset(datasetTableName, jsonParsed);
+
+				Optional<Dataset> outputDataset = executionControl.getExecutionRuntime().getDataset(outputDatasetReferenceName);
+				outputDataset.ifPresent(dataset -> {
+					dataset.clean();
+					jsonParsed.getJsonParsedItemList().forEach(jsonParsedItem -> dataset.setDataItem(jsonParsedItem.getPath(), jsonParsedItem.getValue()));
+				});
+
 			}
 		} catch (Exception e) {
 			this.getActionExecution().getActionControl().logError("json", e.getMessage());

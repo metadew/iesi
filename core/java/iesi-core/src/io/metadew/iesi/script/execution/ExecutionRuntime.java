@@ -3,6 +3,8 @@ package io.metadew.iesi.script.execution;
 import io.metadew.iesi.connection.tools.FolderTools;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.data.generation.execution.GenerationObjectExecution;
+import io.metadew.iesi.datatypes.DataType;
+import io.metadew.iesi.datatypes.Dataset;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.configuration.*;
 import io.metadew.iesi.metadata.definition.ComponentAttribute;
@@ -52,6 +54,7 @@ public class ExecutionRuntime {
     //private HashMap<String, StageOperation> stageOperationMap;
     private HashMap<String, RepositoryOperation> repositoryOperationMap;
     private HashMap<String, DatasetOperation> datasetOperationMap;
+    private HashMap<String, Dataset> datasetMap;
     private HashMap<String, IterationOperation> iterationOperationMap;
 
     private HashMap<String, ExecutionRuntimeExtension> executionRuntimeExtensionMap;
@@ -110,7 +113,8 @@ public class ExecutionRuntime {
         // Initialize data instructions
         dataInstructions = DataInstructionRepository.getRepository(new GenerationObjectExecution(this.getFrameworkExecution()));
         variableInstructions = VariableInstructionRepository.getRepository(this.getExecutionControl());
-        lookupInstructions = LookupInstructionRepository.getRepository(executionControl);
+        lookupInstructions = LookupInstructionRepository.getRepository(getExecutionControl());
+        datasetMap = new HashMap<>();
     }
 
     public void terminate() {
@@ -779,17 +783,24 @@ public class ExecutionRuntime {
 
         // Parse input
         String[] parts = input.split(",");
-        String datasetName = parts[0].trim();
+        String datasetReferenceName = parts[0].trim();
         String datasetItem = parts[1].trim();
 
-        DatasetOperation datasetOperation = executionControl.getExecutionRuntime().getDatasetOperation(datasetName);
 
-        if (!datasetItem.equalsIgnoreCase("")) {
-            Optional<String> dataitem = datasetOperation.getDataItem(datasetItem);
-            output = dataitem.orElse(input);
-        }
+        Optional<Dataset> dataset = getDataset(datasetReferenceName);
+        String dataItem = dataset
+                .map(dataset1 -> dataset1.getDataItem(datasetItem)
+                    .map(DataType::toString)
+                    .orElse(input))
+                .orElse(input);
+//        DatasetOperation datasetOperation = executionControl.getExecutionRuntime().getDatasetOperation(datasetReferenceName);
+//
+//        if (!datasetItem.equalsIgnoreCase("")) {
+//            Optional<String> dataitem = datasetOperation.getDataItem(datasetItem);
+//            output = dataitem.orElse(input);
+//        }
 
-        return output;
+        return dataItem;
     }
 
     private String lookupFileInstruction(ExecutionControl executionControl, String input) {
@@ -879,6 +890,14 @@ public class ExecutionRuntime {
         RepositoryOperation repositoryOperation = new RepositoryOperation(this.getFrameworkExecution(), executionControl, repositoryName,
                 repositoryInstanceName, repositoryInstanceLabels);
         this.getRepositoryOperationMap().put(repositoryReferenceName, repositoryOperation);
+    }
+
+    public void setDataset(String referenceName, DataType datasetName, DataType datasetLabels) throws IOException, SQLException {
+        datasetMap.put(referenceName, new Dataset(datasetName, datasetLabels, frameworkExecution.getFrameworkConfiguration().getFolderConfiguration()));
+    }
+
+    public Optional<Dataset> getDataset(String referenceName) {
+        return Optional.ofNullable(datasetMap.get(referenceName));
     }
 
     // Dataset Management

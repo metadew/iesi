@@ -82,10 +82,9 @@ public class DataOutputDataset {
 
 	public boolean execute() {
 		try {
-			Dataset dataset = new Dataset(getDatasetName().getValue(), getDatasetLabels().getValue());
+			Dataset dataset = new Dataset(getDatasetName().getValue(), getDatasetLabels().getValue(), frameworkExecution.getFrameworkConfiguration().getFolderConfiguration());
 			boolean onScreen = convertOnScreen(getOnScreen().getValue());
-			outputDataset(dataset, onScreen);
-			return true;
+			return outputDataset(dataset, onScreen);
 		} catch (Exception e) {
 			StringWriter StackTrace = new StringWriter();
 			e.printStackTrace(new PrintWriter(StackTrace));
@@ -100,9 +99,13 @@ public class DataOutputDataset {
 
 	}
 
-	private void outputDataset(Dataset dataset, boolean onScreen) {
+	private boolean outputDataset(Dataset dataset, boolean onScreen) {
 		// TODO: loop over all dataset item and print them
+		dataset.getDataItems()
+				.forEach((key, value) -> frameworkExecution.getFrameworkLog().log(MessageFormat.format("{0}:{1}", key, value), Level.INFO));
+
 		this.getActionExecution().getActionControl().increaseSuccessCount();
+		return true;
 	}
 
 

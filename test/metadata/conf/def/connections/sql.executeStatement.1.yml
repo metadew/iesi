@@ -1,12 +1,12 @@
 ---
 type: Connection
 data:
-  name: "sql.executeQuery.1"
+  name: "sql.executeStatement.1"
   type: "db.sqlite"
-  description: "sql.executeQuery.1 connection"
+  description: "sql.executeStatement.1 connection"
   environment: "iesi-test"
   parameters:
   - name: "filePath"
     value: "#iesi.home#/data/iesi-test/fwk/data/actions"
   - name: "fileName"
-    value: "sql.executeQuery.1.db3"
+    value: "sql.executeStatement.1.db3"

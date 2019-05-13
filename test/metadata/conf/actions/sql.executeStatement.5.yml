@@ -1,8 +1,8 @@
 ---
 type: "script"
 data:
-  name: "sql.executeQuery.5"
-  description: "test sql.executeQuery with output to a staging dataset"
+  name: "sql.executeStatement.5"
+  description: "test sql.executeStatement with output to a staging dataset"
   parameters: []
   actions:
   - number: 1
@@ -34,7 +34,7 @@ data:
     - name: "dataset"
       value : "stage1"
   - number: 3
-    type: "sql.executeQuery"
+    type: "sql.executeStatement"
     name: "Action3"
     description: "Select data from a database and store the output in a stage dataset"
     component: ""
@@ -43,9 +43,9 @@ data:
     errorExpected: "N"
     errorStop: "N"
     parameters:
-    - name: "query"
+    - name: "statement"
       value : "select * from Table1"
     - name: "connection"
-      value : "sql.executeQuery.5"
+      value : "sql.executeStatement.5"
     - name: "outputDataset"
       value : "dataset1"

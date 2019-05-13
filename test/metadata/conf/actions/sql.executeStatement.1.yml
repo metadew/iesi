@@ -1,21 +1,21 @@
 ---
 type: "script"
 data:
-  name: "sql.executeQuery.1"
-  description: "test sql.executeQuery with a select query"
+  name: "sql.executeStatement.1"
+  description: "test sql.executeStatement with a select statement"
   parameters: []
   actions:
   - number: 1
-    type: "sql.executeQuery"
+    type: "sql.executeStatement"
     name: "action1"
-    description: "run a sql select query"
+    description: "run a sql select statement"
     component: ""
     condition: ""
     iteration: ""
     errorExpected: "N"
     errorStop: "N"
     parameters:
-    - name: "query"
+    - name: "statement"
       value : "select * from Table1"
     - name: "connection"
-      value : "sql.executeQuery.1"
+      value : "sql.executeStatement.1"

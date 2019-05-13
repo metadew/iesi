@@ -41,32 +41,32 @@
 {
 	"type": "LaunchItem",
 	"data": {
-		"script": "sql.executeQuery.1",
-		"description": "test sql.executeQuery with a select query",
+		"script": "sql.executeStatement.1",
+		"description": "test sql.executeStatement with a select statement",
 		"parameterList": ""
 	}
 },
 {
 	"type": "LaunchItem",
 	"data": {
-		"script": "sql.executeQuery.2",
-		"description": "test sql.executeQuery with an insert query",
+		"script": "sql.executeStatement.2",
+		"description": "test sql.executeStatement with an insert statement",
 		"parameterList": ""
 	}
 },
 {
 	"type": "LaunchItem",
 	"data": {
-		"script": "sql.executeQuery.3",
-		"description": "test sql.executeQuery with a select query and an input parameter",
+		"script": "sql.executeStatement.3",
+		"description": "test sql.executeStatement with a select statement and an input parameter",
 		"parameterList": "param1=Table1"
 	}
 },
 {
 	"type": "LaunchItem",
 	"data": {
-		"script": "sql.executeQuery.4",
-		"description": "test sql.executeQuery with a select query and an input parameter",
+		"script": "sql.executeStatement.4",
+		"description": "test sql.executeStatement with a select statement and an input parameter",
 		"parameterList": ""
 	}
 },
@@ -187,14 +187,6 @@
 	"data": {
 		"script": "sql.setIterationVariables.2",
 		"description": "test sql.setIterationVariables taking input from a file",
-		"parameterList": ""
-	}
-},
-{
-	"type": "LaunchItem",
-	"data": {
-		"script": "sql.executeQuery.5",
-		"description": "test sql.executeQuery with output to a staging dataset",
 		"parameterList": ""
 	}
 }]

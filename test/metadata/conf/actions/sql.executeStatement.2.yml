@@ -1,12 +1,12 @@
 ---
 type: "script"
 data:
-  name: "sql.executeQuery.2"
-  description: "test sql.executeQuery with an insert query"
+  name: "sql.executeStatement.2"
+  description: "test sql.executeStatement with an insert statement"
   parameters: []
   actions:
   - number: 1
-    type: "sql.executeQuery"
+    type: "sql.executeStatement"
     name: "action1"
     description: "delete the value the will be inserted (if needed)"
     component: ""
@@ -15,28 +15,28 @@ data:
     errorExpected: "N"
     errorStop: "N"
     parameters:
-    - name: "query"
+    - name: "statement"
       value : "delete from Table1 where Field1 = 1000"
     - name: "connection"
-      value : "sql.executeQuery.2"
+      value : "sql.executeStatement.2"
   - number: 2
-    type: "sql.executeQuery"
+    type: "sql.executeStatement"
     name: "action2"
-    description: "run a sql insert query"
+    description: "run a sql insert statement"
     component: ""
     condition: ""
     iteration: ""
     errorExpected: "N"
     errorStop: "N"
     parameters:
-    - name: "query"
+    - name: "statement"
       value : "insert into Table1 (Field1) values (1000)"
     - name: "connection"
-      value : "sql.executeQuery.2"
+      value : "sql.executeStatement.2"
   - number: 2
     type: "sql.evaluateResult"
     name: "action3"
-    description: "verify that the insert query has added the record to the table"
+    description: "verify that the insert statement has added the record to the table"
     component: ""
     condition: ""
     iteration: ""
@@ -48,4 +48,4 @@ data:
     - name: "hasResult"
       value : "Y"
     - name: "connection"
-      value : "sql.executeQuery.2"
+      value : "sql.executeStatement.2"

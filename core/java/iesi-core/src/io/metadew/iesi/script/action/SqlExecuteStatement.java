@@ -1,14 +1,13 @@
 package io.metadew.iesi.script.action;
 
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.HashMap;
-
-import javax.sql.rowset.CachedRowSet;
-
 import io.metadew.iesi.connection.database.connection.DatabaseConnection;
+import io.metadew.iesi.connection.database.sql.SqlScriptResult;
 import io.metadew.iesi.connection.operation.ConnectionOperation;
-import io.metadew.iesi.connection.tools.SQLTools;
+import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.configuration.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.ActionParameter;
@@ -18,24 +17,23 @@ import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 
-public class SqlEvaluateResult {
+public class SqlExecuteStatement {
 
 	private ActionExecution actionExecution;
 	private FrameworkExecution frameworkExecution;
 	private ExecutionControl executionControl;
 
 	// Parameters
-	private ActionParameterOperation sqlQuery;
-	private ActionParameterOperation expectedResult;
+	private ActionParameterOperation sqlStatement;
 	private ActionParameterOperation connectionName;
 	private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
 
 	// Constructors
-	public SqlEvaluateResult() {
+	public SqlExecuteStatement() {
 
 	}
 
-	public SqlEvaluateResult(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+	public SqlExecuteStatement(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
 			ScriptExecution scriptExecution, ActionExecution actionExecution) {
 		this.init(frameworkExecution, executionControl, scriptExecution, actionExecution);
 	}
@@ -49,68 +47,60 @@ public class SqlEvaluateResult {
 	}
 
 	public void prepare() {
-		// Reset Parameters
-		this.setSqlQuery(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
-				this.getActionExecution(), this.getActionExecution().getAction().getType(), "query"));
-		this.setExpectedResult(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
-				this.getActionExecution(), this.getActionExecution().getAction().getType(), "hasResult"));
+		// Set Parameters
+		this.setSqlStatement(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+				this.getActionExecution(), this.getActionExecution().getAction().getType(), "statement"));
 		this.setConnectionName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
 				this.getActionExecution(), this.getActionExecution().getAction().getType(), "connection"));
 
 		// Get Parameters
 		for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-			if (actionParameter.getName().equalsIgnoreCase("query")) {
-				this.getSqlQuery().setInputValue(actionParameter.getValue());
-			} else if (actionParameter.getName().equalsIgnoreCase("hasresult")) {
-				this.getExpectedResult().setInputValue(actionParameter.getValue());
+			if (actionParameter.getName().equalsIgnoreCase("statement")) {
+				this.getSqlStatement().setInputValue(actionParameter.getValue());
 			} else if (actionParameter.getName().equalsIgnoreCase("connection")) {
 				this.getConnectionName().setInputValue(actionParameter.getValue());
 			}
 		}
 
 		// Create parameter list
-		this.getActionParameterOperationMap().put("query", this.getSqlQuery());
-		this.getActionParameterOperationMap().put("hasResult", this.getExpectedResult());
+		this.getActionParameterOperationMap().put("statement", this.getSqlStatement());
 		this.getActionParameterOperationMap().put("connection", this.getConnectionName());
 	}
 
 	public boolean execute() {
 		try {
-			System.out.println("ok");
-
 			// Get Connection
 			ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution());
-			Connection connection = connectionConfiguration.getConnection(this.getConnectionName().getValue(),
-					this.getExecutionControl().getEnvName()).get();
+			Connection connection = connectionConfiguration
+					.getConnection(this.getConnectionName().getValue(), this.getExecutionControl().getEnvName()).get();
 			ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
 			DatabaseConnection databaseConnection = connectionOperation.getDatabaseConnection(connection);
 
-			// Run the action
-			CachedRowSet crs = null;
-			// String query =
-			// this.getExecutionControl().getExecutionRuntime().resolveVariables(this.getFrameworkExecution().getSqlTools().getFirstSQLStmt(this.getFilePath().getValue(),
-			// this.getFileName().getValue()));
-			//crs = databaseConnection.executeQueryLimitRows(this.getSqlQuery().getValue(), 10);
-			crs = databaseConnection.executeQueryLimitRows(this.getSqlQuery().getValue(), 10);
-			int rowCount = SQLTools.getRowCount(crs);
-			this.getActionExecution().getActionControl().logOutput("count", Integer.toString(rowCount));
-			if (rowCount > 0) {
-				if (this.getExpectedResult().getValue().equalsIgnoreCase("y")) {
-					this.getActionExecution().getActionControl().increaseSuccessCount();
-					return true;
-				} else {
-					this.getActionExecution().getActionControl().increaseErrorCount();
-					return false;
-				}
-			} else {
-				if (this.getExpectedResult().getValue().equalsIgnoreCase("n")) {
-					this.getActionExecution().getActionControl().increaseSuccessCount();
-					return true;
-				} else {
-					this.getActionExecution().getActionControl().increaseErrorCount();
-					return false;
-				}
+			if (databaseConnection == null) {
+				throw new RuntimeException("Error establishing DB connection");
 			}
+
+			// Run the action
+			// Make sure the SQL statement is ended with a ;
+			if (!this.getSqlStatement().getValue().trim().endsWith(";")) {
+				this.getSqlStatement().setValue(this.getSqlStatement().getValue() + ";");
+			}
+
+			SqlScriptResult sqlScriptResult = null;
+			InputStream inputStream = FileTools.convertToInputStream(this.getSqlStatement().getValue(),
+					this.getFrameworkExecution().getFrameworkControl());
+			sqlScriptResult = databaseConnection.executeScript(inputStream);
+
+			// Evaluate result
+			this.getActionExecution().getActionControl().logOutput("sys.out", sqlScriptResult.getSystemOutput());
+
+			if (sqlScriptResult.getReturnCode() != 0) {
+				this.getActionExecution().getActionControl().logOutput("err.out", sqlScriptResult.getErrorOutput());
+				throw new RuntimeException("Error execting SQL query");
+			}
+
+			this.getActionExecution().getActionControl().increaseSuccessCount();
+			return true;
 		} catch (Exception e) {
 			StringWriter StackTrace = new StringWriter();
 			e.printStackTrace(new PrintWriter(StackTrace));
@@ -150,14 +140,6 @@ public class SqlEvaluateResult {
 		this.actionExecution = actionExecution;
 	}
 
-	public ActionParameterOperation getExpectedResult() {
-		return expectedResult;
-	}
-
-	public void setExpectedResult(ActionParameterOperation expectedResult) {
-		this.expectedResult = expectedResult;
-	}
-
 	public ActionParameterOperation getConnectionName() {
 		return connectionName;
 	}
@@ -174,12 +156,16 @@ public class SqlEvaluateResult {
 		this.actionParameterOperationMap = actionParameterOperationMap;
 	}
 
-	public ActionParameterOperation getSqlQuery() {
-		return sqlQuery;
+	public ActionParameterOperation getActionParameterOperation(String key) {
+		return this.getActionParameterOperationMap().get(key);
 	}
 
-	public void setSqlQuery(ActionParameterOperation sqlQuery) {
-		this.sqlQuery = sqlQuery;
+	public ActionParameterOperation getSqlStatement() {
+		return sqlStatement;
+	}
+
+	public void setSqlStatement(ActionParameterOperation sqlStatement) {
+		this.sqlStatement = sqlStatement;
 	}
 
 }

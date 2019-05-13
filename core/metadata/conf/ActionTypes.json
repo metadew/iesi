@@ -499,8 +499,8 @@
 		"className": "io.metadew.iesi.script.action.FhoFolderExists",
 		"description": "Verify if a folder exists",
 		"parameters": [
-			{"name": "path","description": "Path where the folder will be located","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"},
-			{"name": "folder","description": "Folder to create","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "path","description": "Path where the folder is located","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "folder","description": "Folder to verify","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
 			{"name": "connection","description": "Connection where the folder will be located","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "Y"}
 	]
 }},
@@ -512,7 +512,19 @@
 		"description": "Verify if a file exists",
 		"parameters": [
 			{"name": "path","description": "Path where the file is located","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"},
-			{"name": "file","description": "File(s) to delete","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "file","description": "File to verify","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "connection","description": "Connection where the file is located","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "Y"}
+	]
+}},
+{
+	"type": "ActionType",
+	"data": {
+		"name": "java.parseJar",
+		"className": "io.metadew.iesi.script.action.JavaParseJar",
+		"description": "Parses a Java archive file",
+		"parameters": [
+			{"name": "path","description": "Path where the file is located","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "file","description": "File(s) to parse","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
 			{"name": "connection","description": "Connection where the file is located","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "Y"}
 	]
 }}]

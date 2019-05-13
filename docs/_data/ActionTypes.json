@@ -491,4 +491,16 @@
 			{"name": "outputDataset","description": "Dataset to write the output to","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"},
 			{"name": "appendOutput","description": "Flag indicating if previous output needs to be removed","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"}
 	]
+}},
+{
+	"type": "ActionType",
+	"data": {
+		"name": "fho.folderExists",
+		"className": "io.metadew.iesi.script.action.FhoFolderExists",
+		"description": "Verify if a folde exists",
+		"parameters": [
+			{"name": "path","description": "Path where the folder will be located","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "folder","description": "Folder to create","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "connection","description": "Connection where the folder will be located","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "Y"}
+	]
 }}]

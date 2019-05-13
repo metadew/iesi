@@ -104,12 +104,12 @@ public class SqlExecuteQuery {
 			DatasetOperation datasetOperation = this.getExecutionControl().getExecutionRuntime()
 					.getDatasetOperation(this.getOutputDataset().getValue());
 			CachedRowSet crs = null;
-			DatabaseConnection outputDatabaseConnection = datasetOperation.getDatasetConnection();
 			crs = databaseConnection.executeQuery(this.getSqlQuery().getValue());
 			this.getActionExecution().getActionControl().logOutput("sql.execute.size", Integer.toString(crs.size()));
 			// TODO resolve for files and resolve inside
 
-			if (this.getOutputDataset().getValue().isEmpty()) {
+			if (!this.getOutputDataset().getValue().isEmpty()) {
+				DatabaseConnection outputDatabaseConnection = datasetOperation.getDatasetConnection();
 
 				// Append logic
 				boolean append = false;

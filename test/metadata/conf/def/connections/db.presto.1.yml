@@ -15,6 +15,6 @@ data:
   - name: "schema"
     value: "sf1"
   - name: "user"
-    value: ""
+    value: "iesi"
   - name: "password"
     value: ""

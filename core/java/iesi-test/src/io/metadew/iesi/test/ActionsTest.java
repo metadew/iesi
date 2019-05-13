@@ -72,7 +72,7 @@ public class ActionsTest {
             String actionsTestConfigurationHome = repositoryHome + File.separator + "test" + File.separator + "metadata"
                     + File.separator + "conf" + File.separator + "actions";
             String connectionsTestConfigurationHome = repositoryHome + File.separator + "test" + File.separator + "metadata"
-                    + File.separator + "conf" + File.separator + "actions";
+                    + File.separator + "conf" + File.separator + "connections";
 
 
             String versionHomeConfFolder = versionHome + File.separator + "conf";
@@ -126,8 +126,8 @@ public class ActionsTest {
             File[] confs = null;
             // Load definitions tests
             confs = FolderTools
-                    .getFilesInFolder(actionsTestDefDataFolder, "regex", ".+\\.yml");
-
+                    .getFilesInFolder(actionsTestDefDataFolder, "regex", ".+\\.yml");            
+            
             List<LaunchArgument> inputArgs = new ArrayList();
             inputArgs.add(ini);
             inputArgs.add(exit);
@@ -160,6 +160,26 @@ public class ActionsTest {
                 inputArgs.remove(files);
             }
 
+            
+            // Load connections tests
+            confs = FolderTools
+                    .getFilesInFolder(connectionsTestConfDataFolder, "regex", ".+\\.yml");
+
+            inputArgs.add(ini);
+            inputArgs.add(exit);
+            inputArgs.add(load);
+            inputArgs.add(type);
+
+            for (final File conf : confs) {
+                FileTools.copyFromFileToFile(conf.getAbsolutePath(), metadataInNewFolder + File.separator + conf.getName());
+                LaunchArgument files = new LaunchArgument(true, "-files", conf.getAbsolutePath());
+                inputArgs.add(files);
+                Launcher.execute("metadata", inputArgs);
+                inputArgs.remove(files);
+            }
+            
+            //------------
+            
             // Run action tests
             List<LaunchArgument> scriptInputArgs = new ArrayList();
             scriptInputArgs.add(ini);

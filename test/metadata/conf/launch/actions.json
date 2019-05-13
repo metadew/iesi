@@ -189,4 +189,12 @@
 		"description": "test sql.setIterationVariables taking input from a file",
 		"parameterList": ""
 	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "db.presto.1",
+		"description": "test db.presto connection with standard select query",
+		"parameterList": ""
+	}
 }]

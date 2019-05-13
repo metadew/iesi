@@ -1,0 +1,21 @@
+---
+type: "script"
+data:
+  name: "db.presto.1"
+  description: "test db.presto connection with standard select query"
+  parameters: []
+  actions:
+  - number: 1
+    type: "sql.executeQuery"
+    name: "Action1"
+    description: "Select data from the customer table in the tpch.sf1 data geneation schema"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "query"
+      value : "select * from customer;"
+    - name: "connection"
+      value : "db.presto.1"

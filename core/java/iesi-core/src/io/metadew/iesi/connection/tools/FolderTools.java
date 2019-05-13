@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.ArrayUtils;
 
 import io.metadew.iesi.common.text.ParsingTools;
 import io.metadew.iesi.connection.FileConnection;
@@ -29,6 +30,11 @@ public final class FolderTools {
 		}
 
 		return files;
+	}
+	
+	public static File[] mergeFileArrays(File[] array1, File[] array2) {
+		File[] result = ArrayUtils.addAll(array1, array2);
+		return result;
 	}
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })

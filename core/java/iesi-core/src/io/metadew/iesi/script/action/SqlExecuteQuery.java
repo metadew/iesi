@@ -1,6 +1,5 @@
 package io.metadew.iesi.script.action;
 
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.HashMap;
@@ -8,7 +7,6 @@ import javax.sql.rowset.CachedRowSet;
 import io.metadew.iesi.connection.database.connection.DatabaseConnection;
 import io.metadew.iesi.connection.database.sql.SqlScriptResult;
 import io.metadew.iesi.connection.operation.ConnectionOperation;
-import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.connection.tools.sql.SQLDataTransfer;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.configuration.ConnectionConfiguration;
@@ -102,25 +100,16 @@ public class SqlExecuteQuery {
 			}
 
 			SqlScriptResult sqlScriptResult = null;
-			if (this.getOutputDataset().getValue().isEmpty()) {
-				InputStream inputStream = FileTools.convertToInputStream(this.getSqlQuery().getValue(),
-						this.getFrameworkExecution().getFrameworkControl());
-				sqlScriptResult = databaseConnection.executeScript(inputStream);
-				// TODO instability for inputstream together with scriptrunner
-				// TODO compile script to input script (from scriptrunner) + resolve
 
-				 //CachedRowSet crs =
-				 //databaseConnection.executeQuery(this.getSqlQuery().getValue());
-				 //this.getActionExecution().getActionControl().logOutput("sql.execute.size",
-				 //Integer.toString(crs.size()));
-				 //sqlScriptResult = new SqlScriptResult(0, "sql.execute.complete", "");
-			} else {
-				DatasetOperation datasetOperation = this.getExecutionControl().getExecutionRuntime()
-						.getDatasetOperation(this.getOutputDataset().getValue());
-				CachedRowSet crs = null;
-				DatabaseConnection outputDatabaseConnection = datasetOperation.getDatasetConnection();
-				crs = databaseConnection.executeQuery(this.getSqlQuery().getValue());
-				// TODO resolve for files and resolve inside
+			DatasetOperation datasetOperation = this.getExecutionControl().getExecutionRuntime()
+					.getDatasetOperation(this.getOutputDataset().getValue());
+			CachedRowSet crs = null;
+			DatabaseConnection outputDatabaseConnection = datasetOperation.getDatasetConnection();
+			crs = databaseConnection.executeQuery(this.getSqlQuery().getValue());
+			this.getActionExecution().getActionControl().logOutput("sql.execute.size", Integer.toString(crs.size()));
+			// TODO resolve for files and resolve inside
+
+			if (this.getOutputDataset().getValue().isEmpty()) {
 
 				// Append logic
 				boolean append = false;
@@ -133,6 +122,8 @@ public class SqlExecuteQuery {
 				sqlScriptResult = new SqlScriptResult(0, "data.transfer.complete", "");
 
 			}
+
+			sqlScriptResult = new SqlScriptResult(0, "sql.execute.complete", "");
 
 			// Evaluate result
 			this.getActionExecution().getActionControl().logOutput("sys.out", sqlScriptResult.getSystemOutput());

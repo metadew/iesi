@@ -497,10 +497,22 @@
 	"data": {
 		"name": "fho.folderExists",
 		"className": "io.metadew.iesi.script.action.FhoFolderExists",
-		"description": "Verify if a folde exists",
+		"description": "Verify if a folder exists",
 		"parameters": [
 			{"name": "path","description": "Path where the folder will be located","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"},
 			{"name": "folder","description": "Folder to create","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
 			{"name": "connection","description": "Connection where the folder will be located","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "Y"}
+	]
+}},
+{
+	"type": "ActionType",
+	"data": {
+		"name": "fho.fileExists",
+		"className": "io.metadew.iesi.script.action.FhoFileExists",
+		"description": "Verify if a file exists",
+		"parameters": [
+			{"name": "path","description": "Path where the file is located","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "file","description": "File(s) to delete","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "connection","description": "Connection where the file is located","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "Y"}
 	]
 }}]

@@ -17,6 +17,7 @@ import io.metadew.iesi.common.json.JsonParsedItem;
 import io.metadew.iesi.connection.database.connection.DatabaseConnection;
 import io.metadew.iesi.connection.database.connection.SqliteDatabaseConnection;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.metadata.definition.Dataset;
 import io.metadew.iesi.script.execution.ExecutionControl;
 
 /**
@@ -41,6 +42,13 @@ public class DatasetOperation {
 	private String datasetLabels;
 
 	// Constructors
+	public DatasetOperation(FrameworkExecution frameworkExecution, ExecutionControl executionControl, Dataset dataset) {
+		this.setFrameworkExecution(frameworkExecution);
+		this.setExecutionControl(executionControl);
+		this.setDatasetType(dataset.getType());
+		this.setDatasetName(dataset.getName());
+	}
+	
 	@SuppressWarnings("unused")
 	public DatasetOperation(FrameworkExecution frameworkExecution, ExecutionControl executionControl, String datasetType, String datasetName,
 			String datasetLabels) {

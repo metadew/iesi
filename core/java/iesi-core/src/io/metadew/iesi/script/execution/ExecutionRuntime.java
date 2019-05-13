@@ -35,6 +35,7 @@ import io.metadew.iesi.metadata.configuration.IterationVariableConfiguration;
 import io.metadew.iesi.metadata.configuration.RuntimeVariableConfiguration;
 import io.metadew.iesi.metadata.configuration.ScriptResultOutputConfiguration;
 import io.metadew.iesi.metadata.definition.ComponentAttribute;
+import io.metadew.iesi.metadata.definition.Dataset;
 import io.metadew.iesi.metadata.definition.Iteration;
 import io.metadew.iesi.metadata.definition.RuntimeVariable;
 import io.metadew.iesi.runtime.definition.LookupResult;
@@ -850,6 +851,11 @@ public class ExecutionRuntime {
 		this.getDatasetOperationMap().put(referenceName, datasetOperation);
 	}
 
+	public void setDataset(String referenceName, Dataset dataset) {
+		DatasetOperation datasetOperation = new DatasetOperation(this.getFrameworkExecution(), this.getExecutionControl(), dataset);
+		this.getDatasetOperationMap().put(referenceName, datasetOperation);
+	}
+	
 	public void setDatasetOperation(String datasetName, DatasetOperation datasetOperation) {
 		this.getDatasetOperationMap().put(datasetName, datasetOperation);
 	}

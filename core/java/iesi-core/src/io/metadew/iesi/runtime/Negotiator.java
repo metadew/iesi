@@ -90,7 +90,6 @@ public class Negotiator {
 		// Execute the Script
 		scriptExecution.execute();
 		
-		System.out.println("ok");
 	}
 
 }

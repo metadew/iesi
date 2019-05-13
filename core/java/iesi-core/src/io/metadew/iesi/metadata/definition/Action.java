@@ -9,11 +9,12 @@ public class Action {
 	private String type;
 	private String name;
 	private String description;
-	private String component;
-	private String condition;
-	private String iteration;
-	private String errorExpected;
-	private String errorStop;
+	private String component = "";
+	private String condition = "";
+	private String iteration = "";
+	private String errorExpected = "N";
+	private String errorStop = "N";
+	private String retries = "";
 	private List<ActionParameter> parameters;
 	
 	//Constructors
@@ -108,6 +109,14 @@ public class Action {
 
 	public void setCondition(String condition) {
 		this.condition = condition;
+	}
+
+	public String getRetries() {
+		return retries;
+	}
+
+	public void setRetries(String retries) {
+		this.retries = retries;
 	}
 
 }

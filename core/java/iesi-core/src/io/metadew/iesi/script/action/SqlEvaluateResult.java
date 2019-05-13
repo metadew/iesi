@@ -76,8 +76,6 @@ public class SqlEvaluateResult {
 
 	public boolean execute() {
 		try {
-			System.out.println("ok");
-
 			// Get Connection
 			ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution());
 			Connection connection = connectionConfiguration.getConnection(this.getConnectionName().getValue(),

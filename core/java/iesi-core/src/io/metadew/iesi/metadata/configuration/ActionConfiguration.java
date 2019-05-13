@@ -34,7 +34,7 @@ public class ActionConfiguration {
 		sql += "INSERT INTO "
 				+ this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository()
 				.getTableNameByLabel("Actions");
-		sql += " (SCRIPT_ID, SCRIPT_VRS_NB, ACTION_ID, ACTION_NB, ACTION_TYP_NM, ACTION_NM, ACTION_DSC, COMP_NM, ITERATION_VAL, CONDITION_VAL, EXP_ERR_FL, STOP_ERR_FL) ";
+		sql += " (SCRIPT_ID, SCRIPT_VRS_NB, ACTION_ID, ACTION_NB, ACTION_TYP_NM, ACTION_NM, ACTION_DSC, COMP_NM, ITERATION_VAL, CONDITION_VAL, RETRIES_VAL, EXP_ERR_FL, STOP_ERR_FL) ";
 		sql += "VALUES ";
 		sql += "(";
 		sql += "(" + SQLTools.GetLookupIdStatement(
@@ -62,6 +62,8 @@ public class ActionConfiguration {
 		sql += SQLTools.GetStringForSQL(this.getAction().getIteration());
 		sql += ",";
 		sql += SQLTools.GetStringForSQL(this.getAction().getCondition());
+		sql += ",";
+		sql += SQLTools.GetStringForSQL(this.getAction().getRetries());
 		sql += ",";
 		sql += SQLTools.GetStringForSQL(this.getAction().getErrorExpected());
 		sql += ",";
@@ -96,7 +98,7 @@ public class ActionConfiguration {
 	public Action getAction(long actionId) {
 		Action action = new Action();
 		CachedRowSet crsAction = null;
-		String queryAction = "select SCRIPT_ID, SCRIPT_VRS_NB, ACTION_ID, ACTION_NB, ACTION_TYP_NM, ACTION_NM, ACTION_DSC, COMP_NM, ITERATION_VAL, CONDITION_VAL, EXP_ERR_FL, STOP_ERR_FL from "
+		String queryAction = "select SCRIPT_ID, SCRIPT_VRS_NB, ACTION_ID, ACTION_NB, ACTION_TYP_NM, ACTION_NM, ACTION_DSC, COMP_NM, ITERATION_VAL, CONDITION_VAL, RETRIES_VAL, EXP_ERR_FL, STOP_ERR_FL from "
 					+ this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository()
 				.getTableNameByLabel("Actions")
 					+ " where ACTION_ID = " + actionId;
@@ -112,6 +114,7 @@ public class ActionConfiguration {
 				action.setComponent(crsAction.getString("COMP_NM"));
 				action.setIteration(crsAction.getString("ITERATION_VAL"));
 				action.setCondition(crsAction.getString("CONDITION_VAL"));
+				action.setRetries(crsAction.getString("RETRIES_VAL"));
 				action.setErrorExpected(crsAction.getString("EXP_ERR_FL"));
 				action.setErrorStop(crsAction.getString("STOP_ERR_FL"));
 				

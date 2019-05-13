@@ -19,7 +19,6 @@ public class UserExecution {
 	// Methods
 	public void createUser() {
 
-		System.out.println("ok");
 		User user = new User();
 		user.setName(this.getInput("Enter username (name@domain.ext)"));
 		user.setFirstName(this.getInput("Enter first name"));

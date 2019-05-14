@@ -753,9 +753,23 @@ public class ExecutionRuntime {
 		return output;
 	}
 
+	@SuppressWarnings("resource")
 	private String lookupFileInstruction(ExecutionControl executionControl, String input) {
-		String output = input.trim();
-		output = SQLTools.getFirstSQLStmt(input);
+		String output = "";
+		File file = new File(input);
+		try {
+			BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
+			String readLine = "";
+			while ((readLine = bufferedReader.readLine()) != null) {
+				output += this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(readLine);
+				output += "\n";
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		//TODO harmonize for first line input
+		//String output = input.trim();
+		//output = SQLTools.getFirstSQLStmt(input);
 		return output;
 	}
 

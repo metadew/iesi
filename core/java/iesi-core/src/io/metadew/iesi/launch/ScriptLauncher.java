@@ -210,8 +210,10 @@ public class ScriptLauncher {
 			// Get the user password
 			if (line.hasOption("password")) {
 				userPassword = line.getOptionValue("password");
+				System.out.println("Option -password (password) value = " + "*****");
+			} else {
+				System.out.println("Option -password (password) value = " + "");
 			}
-			System.out.println("Option -password (password) value = " + "*****");
 
 		} catch (ParseException e) {
 			e.printStackTrace();
@@ -228,15 +230,15 @@ public class ScriptLauncher {
 		frameworkInitializationFile.setName(initializationFile);
 
 		FrameworkInstance frameworkInstance = new FrameworkInstance(frameworkInitializationFile);
-		
+
 		// Create framework execution
 		FrameworkExecutionSettings frameworkExecutionSettings = new FrameworkExecutionSettings(settings);
 		Context context = new Context();
 		context.setName("script");
 		context.setScope(scriptName);
 
-		FrameworkExecution frameworkExecution = new FrameworkExecution(frameworkInstance, new FrameworkExecutionContext(context),
-				frameworkExecutionSettings, frameworkInitializationFile);
+		FrameworkExecution frameworkExecution = new FrameworkExecution(frameworkInstance,
+				new FrameworkExecutionContext(context), frameworkExecutionSettings, frameworkInitializationFile);
 
 		// Logging
 		frameworkExecution.getFrameworkLog().log("option.script=" + scriptName, Level.INFO);
@@ -250,7 +252,11 @@ public class ScriptLauncher {
 		frameworkExecution.getFrameworkLog().log("option.impersonation=" + impersonationName, Level.INFO);
 		frameworkExecution.getFrameworkLog().log("option.impersonate=" + impersonationCustom, Level.INFO);
 		frameworkExecution.getFrameworkLog().log("option.user=" + userName, Level.INFO);
-		frameworkExecution.getFrameworkLog().log("option.password=" + "*****", Level.INFO);
+		if (userPassword.isEmpty()) {
+			frameworkExecution.getFrameworkLog().log("option.password=" + "", Level.INFO);
+		} else {
+			frameworkExecution.getFrameworkLog().log("option.password=" + "*****", Level.INFO);
+		}
 
 		// User authentication
 		if (frameworkExecution.getFrameworkControl().getProperty(frameworkExecution.getFrameworkConfiguration()
@@ -268,7 +274,8 @@ public class ScriptLauncher {
 			UserAccess userAccess = userAccessConfiguration.doUserLogin(userName, userPassword);
 
 			if (userAccess.isException()) {
-				frameworkExecution.getFrameworkLog().log("guard.user.exception=" + userAccess.getExceptionMessage(), Level.INFO);
+				frameworkExecution.getFrameworkLog().log("guard.user.exception=" + userAccess.getExceptionMessage(),
+						Level.INFO);
 				frameworkExecution.getFrameworkLog().log("guard.user.denied", Level.INFO);
 				throw new RuntimeException("guard.user.denied");
 			}

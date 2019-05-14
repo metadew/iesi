@@ -111,13 +111,13 @@ public class SqlExecuteProcedure {
 				DatabaseConnection outputDatabaseConnection = datasetOperation.getDatasetConnection();
 
 				// Append logic
-				boolean append = false;
+				boolean clean = true;
 				if (this.getAppendOutput().getValue().equalsIgnoreCase("y")) {
-					append = true;
+					clean = false;
 				}
 
 				// Perform the action
-				SQLDataTransfer.transferData(crs, outputDatabaseConnection, datasetOperation.getDatasetName(), append);
+				SQLDataTransfer.transferData(crs, outputDatabaseConnection, datasetOperation.getDatasetName(), clean);
 				sqlScriptResult = new SqlScriptResult(0, "data.transfer.complete", "");
 
 			} else {

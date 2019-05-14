@@ -1,7 +1,7 @@
 ---
 type: "script"
 data:
-  name: "demo2.4.1"
+  name: "demo2.4.3"
   description: "Execute a query and store the output as processing variable"
   parameters: []
   actions:

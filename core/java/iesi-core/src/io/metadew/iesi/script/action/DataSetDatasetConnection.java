@@ -120,7 +120,7 @@ public class DataSetDatasetConnection {
 		List<String> labels = new ArrayList<>();
 		if (datasetLabels instanceof Text) {
 			Arrays.stream(datasetLabels.toString().split(","))
-					.forEach(datasetLabel -> labels.add(convertDatasetLabel(DataTypeResolver.resolveToDataType(datasetLabel.trim(), frameworkExecution.getFrameworkConfiguration().getFolderConfiguration()))));
+					.forEach(datasetLabel -> labels.add(convertDatasetLabel(DataTypeResolver.resolveToDataType(datasetLabel.trim(), frameworkExecution.getFrameworkConfiguration().getFolderConfiguration(), executionControl.getExecutionRuntime()))));
 			return labels;
 		} else if (datasetLabels instanceof Array) {
 			((Array) datasetLabels).getList()

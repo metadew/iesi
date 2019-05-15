@@ -218,7 +218,7 @@
 	"type": "LaunchItem",
 	"data": {
 		"script": "data.setDatasetConnection.2",
-		"description": "test data.compareDataset with multiple labels. Only one dataset having all labels",
+		"description": "test data.setDatasetConnection with multiple labels. Only one dataset having all labels",
 		"parameterList": ""
 	}
 },
@@ -226,7 +226,31 @@
 	"type": "LaunchItem",
 	"data": {
 		"script": "data.setDatasetConnection.3",
-		"description": "test data.compareDataset with multiple labels. Multiple datasets having all labels but only one has full match",
+		"description": "test data.setDatasetConnection with multiple labels. Multiple datasets having all labels but only one has full match",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "data.setDatasetConnection.4",
+		"description": "test data.setDatasetConnection with variable as datasetName.",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "data.setDatasetConnection.5",
+		"description": "test data.setDatasetConnection with variable as label.",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "data.setDatasetConnection.6",
+		"description": "test data.setDatasetConnection with variable in label list.",
 		"parameterList": ""
 	}
 },

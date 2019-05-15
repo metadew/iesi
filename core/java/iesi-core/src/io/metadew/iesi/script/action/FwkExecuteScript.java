@@ -159,7 +159,7 @@ public class FwkExecuteScript {
         try {
             String scriptName = convertScriptName(getScriptName().getValue());
             Optional<Long> scriptVersion = convertScriptVersion(getScriptVersion().getValue());
-            String environmentName = convertEnvironmentName(getEnvironmentName().getValue());
+            Optional<String> environmentName = convertEnvironmentName(getEnvironmentName().getValue());
             // TODO: see setParameterList for nicer version
             Optional<String> parameterList = convertParameterList2(getParamList().getValue());
             Optional<String> parameterFileName = convertParameterFileName(getParamFile().getValue());
@@ -190,7 +190,7 @@ public class FwkExecuteScript {
         }
     }
 
-    private boolean executeScript(String scriptName, Optional<Long> scriptVersion, String environmentName, Optional<String> parameterList, Optional<String> parameterFileName) {
+    private boolean executeScript(String scriptName, Optional<Long> scriptVersion, Optional<String> environmentName, Optional<String> parameterList, Optional<String> parameterFileName) {
         // Check on Running a script in a loop
         if (this.getScriptExecution().getScript().getName().equalsIgnoreCase(scriptName)) {
             throw new RuntimeException("Not allowed to run the script recursively");
@@ -254,7 +254,7 @@ public class FwkExecuteScript {
         Map<String, String> parameterMap = new HashMap<>();
         if (list instanceof Text) {
             Arrays.stream(list.toString().split(","))
-                    .forEach(parameterEntry -> parameterMap.putAll(convertParameterEntry(DataTypeResolver.resolveToDataType(parameterEntry, frameworkExecution.getFrameworkConfiguration().getFolderConfiguration()))));
+                    .forEach(parameterEntry -> parameterMap.putAll(convertParameterEntry(DataTypeResolver.resolveToDataType(parameterEntry, frameworkExecution.getFrameworkConfiguration().getFolderConfiguration(), executionControl.getExecutionRuntime()))));
             return Optional.of(parameterMap);
         } else if (list instanceof Array) {
             for  (DataType parameterEntry : ((Array) list).getList()){
@@ -294,13 +294,17 @@ public class FwkExecuteScript {
         }
     }
 
-    private String convertEnvironmentName(DataType environmentName) {
+    private Optional<String> convertEnvironmentName(DataType environmentName) {
+        if (environmentName == null) {
+            return Optional.empty();
+        }
+        // TODO: if null get current Environment, here or in execute(...)
         if (environmentName instanceof Text) {
-            return environmentName.toString();
+            return Optional.of(environmentName.toString());
         } else {
             frameworkExecution.getFrameworkLog().log(MessageFormat.format("fwk.executeScript does not accept {0} as type for environment name",
                     environmentName.getClass()), Level.WARN);
-            return environmentName.toString();
+            return Optional.of(environmentName.toString());
         }
     }
 

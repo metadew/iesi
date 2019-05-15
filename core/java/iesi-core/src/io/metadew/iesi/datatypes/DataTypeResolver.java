@@ -1,6 +1,7 @@
 package io.metadew.iesi.datatypes;
 
 import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
+import io.metadew.iesi.script.execution.ExecutionRuntime;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -18,16 +19,16 @@ public class DataTypeResolver {
     private static Pattern DatatypePattern = Pattern.compile("\\^(?<datatype>\\w+)\\((?<arguments>.+)\\)");
 
 
-    public static DataType resolveToDataType(String input, FrameworkFolderConfiguration frameworkFolderConfiguration) {
+    public static DataType resolveToDataType(String input, FrameworkFolderConfiguration frameworkFolderConfiguration, ExecutionRuntime executionRuntime) {
         if (input.startsWith(DatatypeStartCharacters) && input.endsWith(DatatypeStopCharacters)) {
             Matcher matcher = DatatypePattern.matcher(input.substring(DatatypeStartCharacters.length(), input.length() - DatatypeStopCharacters.length()));
             if (matcher.find()) {
                 switch (matcher.group("datatype")) {
                     case "list":
-                        return resolveToList(matcher.group("arguments"), frameworkFolderConfiguration);
+                        return resolveToList(matcher.group("arguments"), frameworkFolderConfiguration, executionRuntime);
                     case "dataset":
                         try {
-                            return resolveToDataset(matcher.group("arguments"), frameworkFolderConfiguration);
+                            return resolveToDataset(matcher.group("arguments"), frameworkFolderConfiguration, executionRuntime);
                         } catch (IOException |SQLException e) {
                             throw new RuntimeException(e);
                         }
@@ -42,22 +43,22 @@ public class DataTypeResolver {
         }
     }
 
-    private static Dataset resolveToDataset(String arguments, FrameworkFolderConfiguration frameworkFolderConfiguration) throws IOException, SQLException {
+    private static Dataset resolveToDataset(String arguments, FrameworkFolderConfiguration frameworkFolderConfiguration, ExecutionRuntime executionRuntime) throws IOException, SQLException {
         List<String> splittedArguments = splitInstructionArguments(arguments);
         if (splittedArguments.size() == 2) {
             List<DataType> resolvedArguments = splittedArguments.stream()
-                    .map(argument -> resolveToDataType(argument, frameworkFolderConfiguration))
+                    .map(argument -> resolveToDataType(argument, frameworkFolderConfiguration, executionRuntime))
                     .collect(Collectors.toList());
-            return new Dataset(resolvedArguments.get(0), resolvedArguments.get(1), frameworkFolderConfiguration);
+            return new Dataset(resolvedArguments.get(0), resolvedArguments.get(1), frameworkFolderConfiguration, executionRuntime);
         } else {
             throw new RuntimeException(MessageFormat.format("Cannot create dataset with arguments ''{0}''", splittedArguments.toString()));
         }
     }
 
-    private static Array resolveToList(String arguments, FrameworkFolderConfiguration frameworkFolderConfiguration) {
+    private static Array resolveToList(String arguments, FrameworkFolderConfiguration frameworkFolderConfiguration, ExecutionRuntime executionRuntime) {
         List<String> splittedArguments = splitInstructionArguments(arguments);
         List<DataType> resolvedArguments = splittedArguments.stream()
-                .map(argument -> resolveToDataType(argument, frameworkFolderConfiguration))
+                .map(argument -> resolveToDataType(argument, frameworkFolderConfiguration, executionRuntime))
                 .collect(Collectors.toList());
         return new Array(resolvedArguments);
     }

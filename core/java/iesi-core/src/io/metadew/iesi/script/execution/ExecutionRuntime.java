@@ -893,7 +893,9 @@ public class ExecutionRuntime {
     }
 
     public void setDataset(String referenceName, DataType datasetName, DataType datasetLabels) throws IOException, SQLException {
-        datasetMap.put(referenceName, new Dataset(datasetName, datasetLabels, frameworkExecution.getFrameworkConfiguration().getFolderConfiguration()));
+        datasetMap.put(referenceName,
+                new Dataset(datasetName, datasetLabels, frameworkExecution.getFrameworkConfiguration().getFolderConfiguration(),
+                        this));
     }
 
     public Optional<Dataset> getDataset(String referenceName) {

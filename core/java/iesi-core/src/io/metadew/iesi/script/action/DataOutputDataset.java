@@ -49,6 +49,9 @@ public class DataOutputDataset {
 	public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
 			ScriptExecution scriptExecution, ActionExecution actionExecution) {
 		this.setFrameworkExecution(frameworkExecution);
+		if (executionControl.getExecutionRuntime() == null) {
+			System.out.println("Error no runtime: action data output");
+		}
 		this.setExecutionControl(executionControl);
 		this.setActionExecution(actionExecution);
 		this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
@@ -82,7 +85,7 @@ public class DataOutputDataset {
 
 	public boolean execute() {
 		try {
-			Dataset dataset = new Dataset(getDatasetName().getValue(), getDatasetLabels().getValue(), frameworkExecution.getFrameworkConfiguration().getFolderConfiguration());
+			Dataset dataset = new Dataset(getDatasetName().getValue(), getDatasetLabels().getValue(), frameworkExecution.getFrameworkConfiguration().getFolderConfiguration(), executionControl.getExecutionRuntime());
 			boolean onScreen = convertOnScreen(getOnScreen().getValue());
 			return outputDataset(dataset, onScreen);
 		} catch (Exception e) {

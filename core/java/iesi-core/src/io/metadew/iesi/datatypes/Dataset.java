@@ -4,6 +4,7 @@ import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
 import io.metadew.iesi.metadata_repository.repository.database.Database;
 import io.metadew.iesi.metadata_repository.repository.database.SqliteDatabase;
 import io.metadew.iesi.metadata_repository.repository.database.connection.SqliteDatabaseConnection;
+import io.metadew.iesi.script.execution.ExecutionRuntime;
 import org.apache.commons.io.FileUtils;
 
 import javax.sql.rowset.CachedRowSet;
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 
 public class Dataset extends DataType {
 
+    private ExecutionRuntime executionRuntime;
     private String name;
     private List<String> labels;
 
@@ -26,13 +28,16 @@ public class Dataset extends DataType {
     private String tableName;
     private Database datasetMetadataConnection;
 
-    public Dataset(DataType name, DataType labels, FrameworkFolderConfiguration frameworkFolderConfiguration) throws IOException, SQLException {
+    public Dataset(DataType name, DataType labels, FrameworkFolderConfiguration frameworkFolderConfiguration, ExecutionRuntime executionRuntime) throws IOException, SQLException {
+        // TODO: centralize resolvement to circumvent ExecutionRuntime needs
         this.frameworkFolderConfiguration = frameworkFolderConfiguration;
+        this.executionRuntime = executionRuntime;
         this.dataset = initializeDatasetConnection(name, labels);
     }
 
-    public Dataset(String name, List<String> labels, FrameworkFolderConfiguration frameworkFolderConfiguration) throws IOException, SQLException {
+    public Dataset(String name, List<String> labels, FrameworkFolderConfiguration frameworkFolderConfiguration, ExecutionRuntime executionRuntime) throws IOException, SQLException {
         this.frameworkFolderConfiguration = frameworkFolderConfiguration;
+        this.executionRuntime = executionRuntime;
         this.dataset = initializeDatasetConnection(name, labels);
     }
 
@@ -54,7 +59,7 @@ public class Dataset extends DataType {
         crs = dataset.executeQuery(query);
         try {
             while (crs.next()) {
-                dataItems.put(crs.getString("key"), DataTypeResolver.resolveToDataType(crs.getString("value"), frameworkFolderConfiguration));
+                dataItems.put(crs.getString("key"), DataTypeResolver.resolveToDataType(crs.getString("value"), frameworkFolderConfiguration, executionRuntime));
             }
             crs.close();
         } catch (Exception e) {
@@ -76,7 +81,7 @@ public class Dataset extends DataType {
         crs = dataset.executeQuery(query);
         try {
             while (crs.next()) {
-                value = DataTypeResolver.resolveToDataType(crs.getString("VALUE"), frameworkFolderConfiguration);
+                value = DataTypeResolver.resolveToDataType(crs.getString("VALUE"), frameworkFolderConfiguration, executionRuntime);
             }
             crs.close();
         } catch (Exception e) {
@@ -101,7 +106,7 @@ public class Dataset extends DataType {
         List<String> labels = new ArrayList<>();
         if (datasetLabels instanceof Text) {
             Arrays.stream(datasetLabels.toString().split(","))
-                    .forEach(datasetLabel -> labels.add(convertDatasetLabel(DataTypeResolver.resolveToDataType(datasetLabel.trim(), frameworkFolderConfiguration))));
+                    .forEach(datasetLabel -> labels.add(convertDatasetLabel(DataTypeResolver.resolveToDataType(datasetLabel.trim(), frameworkFolderConfiguration, executionRuntime))));
             return labels;
         } else if (datasetLabels instanceof Array) {
             ((Array) datasetLabels).getList()
@@ -117,7 +122,10 @@ public class Dataset extends DataType {
 
     private String convertDatasetName(DataType datasetName) {
         if (datasetName instanceof Text) {
-            return datasetName.toString();
+            // TODO: resolve labels for runtime vars. What if custom resolve Belfius?
+            System.out.println("Resolving: " + datasetName.toString());
+            String variablesResolved = executionRuntime.resolveVariables(datasetName.toString());
+            return executionRuntime.resolveConceptLookup(executionRuntime.getExecutionControl(), variablesResolved, true).getValue();
         } else {
             // TODO: log
             System.out.println(MessageFormat.format("Dataset does not accept {0} as type for dataset name",
@@ -128,7 +136,8 @@ public class Dataset extends DataType {
 
     private String convertDatasetLabel(DataType datasetLabel) {
         if (datasetLabel instanceof Text) {
-            return datasetLabel.toString();
+            String variablesResolved = executionRuntime.resolveVariables(datasetLabel.toString());
+            return executionRuntime.resolveConceptLookup(executionRuntime.getExecutionControl(), variablesResolved, true).getValue();
         } else {
             // TODO: log
             System.out.println(MessageFormat.format("Dataset does not accept {0} as type for a dataset label",

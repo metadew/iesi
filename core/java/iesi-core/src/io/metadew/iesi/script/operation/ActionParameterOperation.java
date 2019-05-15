@@ -158,7 +158,7 @@ public class ActionParameterOperation {
 		}
 
 		// Resolve to data type
-		value = DataTypeResolver.resolveToDataType(resolvedInputValue, frameworkExecution.getFrameworkConfiguration().getFolderConfiguration());
+		value = DataTypeResolver.resolveToDataType(resolvedInputValue, frameworkExecution.getFrameworkConfiguration().getFolderConfiguration(), executionControl.getExecutionRuntime());
 	}
 
 	public ExecutionControl getExecutionControl() {

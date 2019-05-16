@@ -5,10 +5,6 @@
 The table provides an overview of all connectivity tables. 
 
 <table>
-<colgroup>
-<col width="30%" />
-<col width="70%" />
-</colgroup>
 <thead>
 <tr class="header">
 <th>Label</th>

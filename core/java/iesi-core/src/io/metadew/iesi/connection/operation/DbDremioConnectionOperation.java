@@ -6,7 +6,7 @@ import java.util.List;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.metadew.iesi.connection.database.connection.DatabaseConnection;
-import io.metadew.iesi.connection.database.connection.PrestoDatabaseConnection;
+import io.metadew.iesi.connection.database.connection.DremioDatabaseConnection;
 import io.metadew.iesi.connection.tools.ConnectionTools;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.Connection;
@@ -14,13 +14,13 @@ import io.metadew.iesi.metadata.definition.ConnectionParameter;
 import io.metadew.iesi.metadata.definition.ConnectionType;
 import io.metadew.iesi.metadata.definition.ConnectionTypeParameter;
 
-public class DbPrestoConnectionOperation {
+public class DbDremioConnectionOperation {
 	
 	private FrameworkExecution frameworkExecution;
 	private boolean missingMandatoryFields;
 	private List<String> missingMandatoryFieldsList;
 	
-	public DbPrestoConnectionOperation(FrameworkExecution frameworkExecution) {
+	public DbDremioConnectionOperation(FrameworkExecution frameworkExecution) {
 		this.setFrameworkExecution(frameworkExecution);
 	}
 	
@@ -34,7 +34,8 @@ public class DbPrestoConnectionOperation {
 		String hostName = "";
 		String portNumberTemp = "";
 		int portNumber = 0;
-		String catalogName = "";
+		String connectionMode = "";
+		String clusterName = "";
 		String schemaName = "";
 		String userName = "";
 		String userPassword = "";
@@ -46,9 +47,12 @@ public class DbPrestoConnectionOperation {
 			} else if (connectionParameter.getName().equalsIgnoreCase("port")) {
 				portNumberTemp = connectionParameter.getValue();
 				portNumberTemp = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(portNumberTemp);
-			} else if (connectionParameter.getName().equalsIgnoreCase("catalog")) {
-				catalogName = connectionParameter.getValue();
-				catalogName = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(catalogName);
+			} else if (connectionParameter.getName().equalsIgnoreCase("mode")) {
+				connectionMode = connectionParameter.getValue();
+				connectionMode = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(connectionMode);
+			} else if (connectionParameter.getName().equalsIgnoreCase("cluster")) {
+				clusterName = connectionParameter.getValue();
+				clusterName = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(clusterName);
 			} else if (connectionParameter.getName().equalsIgnoreCase("schema")) {
 				schemaName = connectionParameter.getValue();
 				schemaName = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(schemaName);
@@ -72,12 +76,15 @@ public class DbPrestoConnectionOperation {
 				} else if (connectionTypeParameter.getName().equalsIgnoreCase("port")) {
 					if (portNumberTemp.trim().equalsIgnoreCase(""))
 						this.addMissingField("port");
-				} else if (connectionTypeParameter.getName().equalsIgnoreCase("catalog")) {
-					if (catalogName.trim().equalsIgnoreCase(""))
-						this.addMissingField("catalog");
+				} else if (connectionTypeParameter.getName().equalsIgnoreCase("mode")) {
+					if (connectionMode.trim().equalsIgnoreCase(""))
+						this.addMissingField("mode");
+				} else if (connectionTypeParameter.getName().equalsIgnoreCase("cluster")) {
+					if (clusterName.trim().equalsIgnoreCase(""))
+						this.addMissingField("cluster");
 				} else if (connectionTypeParameter.getName().equalsIgnoreCase("schema")) {
 					if (schemaName.trim().equalsIgnoreCase(""))
-						this.addMissingField("schema");
+						this.addMissingField("file");
 				} else if (connectionTypeParameter.getName().equalsIgnoreCase("user")) {
 					if (userName.trim().equalsIgnoreCase(""))
 						this.addMissingField("user");
@@ -100,8 +107,10 @@ public class DbPrestoConnectionOperation {
 					hostName = this.getFrameworkExecution().getFrameworkCrypto().decrypt(hostName);
 				} else if (connectionTypeParameter.getName().equalsIgnoreCase("port")) {
 					portNumberTemp = this.getFrameworkExecution().getFrameworkCrypto().decrypt(portNumberTemp);
-				} else if (connectionTypeParameter.getName().equalsIgnoreCase("catalog")) {
-					catalogName = this.getFrameworkExecution().getFrameworkCrypto().decrypt(catalogName);
+				} else if (connectionTypeParameter.getName().equalsIgnoreCase("mode")) {
+					connectionMode = this.getFrameworkExecution().getFrameworkCrypto().decrypt(connectionMode);
+				} else if (connectionTypeParameter.getName().equalsIgnoreCase("cluster")) {
+					clusterName = this.getFrameworkExecution().getFrameworkCrypto().decrypt(clusterName);
 				} else if (connectionTypeParameter.getName().equalsIgnoreCase("schema")) {
 					schemaName = this.getFrameworkExecution().getFrameworkCrypto().decrypt(schemaName);
 				} else if (connectionTypeParameter.getName().equalsIgnoreCase("user")) {
@@ -117,8 +126,8 @@ public class DbPrestoConnectionOperation {
 			portNumber = Integer.parseInt(portNumberTemp);
 		}
 
-		PrestoDatabaseConnection prestoDatabaseConnection = new PrestoDatabaseConnection(hostName, portNumber, catalogName, schemaName, userName, userPassword);
-		databaseConnection = objectMapper.convertValue(prestoDatabaseConnection, DatabaseConnection.class);
+		DremioDatabaseConnection dremioDatabaseConnection = new DremioDatabaseConnection(hostName, portNumber, connectionMode, clusterName, schemaName, userName, userPassword);
+		databaseConnection = objectMapper.convertValue(dremioDatabaseConnection, DatabaseConnection.class);
 
 		return databaseConnection;
 	}

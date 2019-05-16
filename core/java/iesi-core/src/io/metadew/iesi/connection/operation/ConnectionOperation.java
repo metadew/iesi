@@ -466,6 +466,10 @@ public class ConnectionOperation {
 				DbPrestoConnectionOperation dbPrestoConnectionOperation = new DbPrestoConnectionOperation(
 						this.getFrameworkExecution());
 				databaseConnection = dbPrestoConnectionOperation.getConnectionOperation(connection);
+			} else if (connection.getType().equalsIgnoreCase("db.dremio")) {
+				DbDremioConnectionOperation dbDremioConnectionOperation = new DbDremioConnectionOperation(
+						this.getFrameworkExecution());
+				databaseConnection = dbDremioConnectionOperation.getConnectionOperation(connection);
 			} else {
 				String message = "Database type is not (yet) supported: " + connection.getType();
 				throw new RuntimeException(message);

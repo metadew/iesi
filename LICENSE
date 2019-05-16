@@ -34,6 +34,7 @@ com.mockrunner:mockrunner-servlet
 
 Apache License 2.0
 ------------------
+com.dremio:dremio-jdbc-driver
 com.fasterxml.jackson:jackson-annotations
 com.fasterxml.jackson:jackson-core
 com.fasterxml.jackson:jackson-databind

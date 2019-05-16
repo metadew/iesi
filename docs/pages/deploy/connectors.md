@@ -14,6 +14,7 @@ The framework will load all necessary driver on startup.
 
 |Technology|Library|Comment|
 |----------|    :---:    |   :---:    |
+|Dremio|![green](/{{site.repository}}/images/icons/green-dot.png)||
 |File System|![grey](/{{site.repository}}/images/icons/green-dot.png)||
 |H2|![green](/{{site.repository}}/images/icons/green-dot.png)||
 |Microsoft SQL Server|![green](/{{site.repository}}/images/icons/green-dot.png)||

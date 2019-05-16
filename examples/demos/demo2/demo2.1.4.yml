@@ -18,7 +18,7 @@ data:
     - name: "script"
       value : "demo2.1.1"
     - name: "environment"
-      value : "{$fwk.environment}}"
+      value : "{{$fwk.environment}}"
   - number: 2
     type: "fwk.executeScript"
     name: "Action2"
@@ -32,4 +32,4 @@ data:
     - name: "script"
       value : "demo2.1.2"
     - name: "environment"
-      value : "{$fwk.environment}}"
+      value : "{{$fwk.environment}}"

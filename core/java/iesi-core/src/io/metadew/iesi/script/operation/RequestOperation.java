@@ -1,5 +1,6 @@
 package io.metadew.iesi.script.operation;
 
+import java.text.MessageFormat;
 import java.util.HashMap;
 
 import io.metadew.iesi.framework.execution.FrameworkExecution;
@@ -52,7 +53,9 @@ public class RequestOperation
 	private void getRequestConfiguration()
 	{
 		ComponentConfiguration componentConfiguration = new ComponentConfiguration(this.getFrameworkExecution());
-		this.setRequest(componentConfiguration.getComponent(this.getRequestName()));
+		Component request = componentConfiguration.getComponent(this.getRequestName())
+				.orElseThrow(() -> new RuntimeException(MessageFormat.format("component.notfound=no component exists with name {0}.", getRequestName())));
+		this.setRequest(request);
 
 		// Reset parameters
 		this.setUrl(new RequestParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(), this.getActionExecution(),

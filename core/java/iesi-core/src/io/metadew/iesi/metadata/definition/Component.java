@@ -14,8 +14,21 @@ public class Component {
 	
 	//Constructors
 	public Component() {
-		
+
 	}
+
+	public Component(long id, String type, String name, String description, ComponentVersion version,
+					 List<ComponentParameter> parameters, List<ComponentAttribute> attributes) {
+		this.id = id;
+		this.type = type;
+		this.name = name;
+		this.description = description;
+		this.version = version;
+		this.parameters = parameters;
+		this.attributes = attributes;
+	}
+
+
 	
 	//Getters and Setters
 	public String getDescription() {

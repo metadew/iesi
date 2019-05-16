@@ -1,5 +1,6 @@
 package io.metadew.iesi.metadata.definition;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ComponentVersion {
@@ -10,7 +11,13 @@ public class ComponentVersion {
 	
 	//Constructors
 	public ComponentVersion() {
-		
+
+	}
+
+	public ComponentVersion(long number, String description) {
+		this.number = number;
+		this.description = description;
+		this.builds = new ArrayList<>();
 	}
 
 	//Getters and Setters

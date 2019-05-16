@@ -38,7 +38,6 @@ public class ImpersonationConfiguration {
 	}
 
 	public Optional<Impersonation> getImpersonation(String impersonationName) {
-		// TODO: Make it return an Optional. value if impersonation can be found, else return an empty
 		Impersonation impersonation = null;
 		String queryImpersonation = "select IMP_NM, IMP_DSC from "
 				+ this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("Impersonations")

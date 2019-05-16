@@ -8,7 +8,12 @@ public class ComponentParameter {
 	
 	//Constructors
 	public ComponentParameter() {
-		
+
+	}
+
+	public ComponentParameter(String name, String value) {
+		this.name = name;
+		this.value = value;
 	}
 
 	//Getters and Setters

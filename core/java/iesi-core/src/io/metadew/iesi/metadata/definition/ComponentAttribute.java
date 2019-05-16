@@ -9,7 +9,13 @@ public class ComponentAttribute {
 	
 	//Constructors
 	public ComponentAttribute() {
-		
+
+	}
+
+	public ComponentAttribute(String environment, String name,  String value) {
+		this.name = name;
+		this.environment = environment;
+		this.value = value;
 	}
 
 	//Getters and Setters

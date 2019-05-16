@@ -2,12 +2,15 @@ package io.metadew.iesi.metadata.configuration;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.text.MessageFormat;
+import java.util.Optional;
 
 import javax.sql.rowset.CachedRowSet;
 
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.ComponentVersion;
+import org.apache.logging.log4j.Level;
 
 public class ComponentVersionConfiguration {
 
@@ -60,24 +63,32 @@ public class ComponentVersionConfiguration {
 
 		return sql;
 	}
-	
-	public ComponentVersion getComponentVersion(long componentId, long componentVersionNumber) {
-		ComponentVersion componentVersion = new ComponentVersion();
-		CachedRowSet crsComponentVersion = null;
+
+
+	public Optional<ComponentVersion> getComponentVersion(long componentId, long componentVersionNumber) {
+		ComponentVersion componentVersion = null;
 		String queryComponentVersion = "select COMP_ID, COMP_VRS_NB, COMP_VRS_DSC from " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ComponentVersions")
 				+ " where COMP_ID = " + componentId + " and COMP_VRS_NB = " + componentVersionNumber;
-		crsComponentVersion = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(queryComponentVersion, "reader");
+		CachedRowSet crsComponentVersion = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(queryComponentVersion, "reader");
 		try {
-			while (crsComponentVersion.next()) {
-				componentVersion.setNumber(componentVersionNumber);
-				componentVersion.setDescription(crsComponentVersion.getString("COMP_VRS_DSC"));
+			if (crsComponentVersion.size() == 0) {
+				return Optional.empty();
+			} else if (crsComponentVersion.size() == 1) {
+				crsComponentVersion.next();
+				componentVersion = new ComponentVersion(componentVersionNumber, crsComponentVersion.getString("COMP_VRS_DSC"));
+			} else {
+				frameworkExecution.getFrameworkLog().log(MessageFormat.format("component.version=found multiple descriptions for component id {0} version {1}. " +
+						"Returning first implementation.", componentId, componentVersion), Level.WARN);
+				crsComponentVersion.next();
+				componentVersion = new ComponentVersion(componentVersionNumber, crsComponentVersion.getString("COMP_VRS_DSC"));
 			}
 			crsComponentVersion.close();
 		} catch (Exception e) {
 			StringWriter StackTrace = new StringWriter();
 			e.printStackTrace(new PrintWriter(StackTrace));
+			return Optional.empty();
 		}
-		return componentVersion;
+		return Optional.of(componentVersion);
 	}
 
 	// Exists

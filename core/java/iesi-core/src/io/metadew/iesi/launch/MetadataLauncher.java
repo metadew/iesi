@@ -34,6 +34,7 @@ import io.metadew.iesi.metadata.restore.RestoreExecution;
 public class MetadataLauncher {
 
     private static boolean actionMatch = false;
+    private static FrameworkExecution frameworkExecution;
 
     @SuppressWarnings({"unchecked", "rawtypes", "unused"})
     public static void main(String[] args) {
@@ -132,7 +133,7 @@ public class MetadataLauncher {
 			Context context = new Context();
             context.setName("metadata");
             context.setScope("");
-            FrameworkExecution frameworkExecution = new FrameworkExecution(frameworkInstance, new FrameworkExecutionContext(context), "owner", frameworkInitializationFile);
+            setFrameworkExecution(new FrameworkExecution(frameworkInstance, new FrameworkExecutionContext(context), "owner", frameworkInitializationFile));
             MetadataRepositoryOperation metadataRepositoryOperation = null;
             List<MetadataRepository> metadataRepositories = new ArrayList();
 
@@ -142,7 +143,7 @@ public class MetadataLauncher {
                 System.out.println("Option -type (type) value = " + type);
             } else {
                 System.out.println("Option -type (type) missing");
-                System.exit(1);
+                endLauncher(1,true);
             }
 
 
@@ -154,7 +155,7 @@ public class MetadataLauncher {
                         frameworkExecution.getFrameworkConfiguration().getFolderConfiguration().getFolderAbsolutePath("conf")
                                 + File.separator + config);
 
-                metadataRepositories = new MetadataRepositoryConfiguration(configFile, frameworkExecution.getFrameworkConfiguration().getSettingConfiguration())
+                metadataRepositories = new MetadataRepositoryConfiguration(configFile, getFrameworkExecution().getFrameworkConfiguration().getSettingConfiguration())
                         .toMetadataRepositories(frameworkExecution.getFrameworkConfiguration());
 
                 // metadataRepositories.addAll(metadataRepositories);
@@ -162,30 +163,30 @@ public class MetadataLauncher {
             } else {
                 switch (type) {
                     case "connectivity":
-                        metadataRepositories.add(frameworkExecution.getMetadataControl().getConnectivityMetadataRepository());
+                        metadataRepositories.add(getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository());
                         break;
                     case "control":
-                        metadataRepositories.add(frameworkExecution.getMetadataControl().getControlMetadataRepository());
+                        metadataRepositories.add(getFrameworkExecution().getMetadataControl().getControlMetadataRepository());
                         break;
                     case "design":
-                        metadataRepositories.add(frameworkExecution.getMetadataControl().getDesignMetadataRepository());
+                        metadataRepositories.add(getFrameworkExecution().getMetadataControl().getDesignMetadataRepository());
                         break;
                     case "result":
-                        metadataRepositories.add(frameworkExecution.getMetadataControl().getResultMetadataRepository());
+                        metadataRepositories.add(getFrameworkExecution().getMetadataControl().getResultMetadataRepository());
                         break;
                     case "trace":
-                        metadataRepositories.add(frameworkExecution.getMetadataControl().getTraceMetadataRepository());
+                        metadataRepositories.add(getFrameworkExecution().getMetadataControl().getTraceMetadataRepository());
                         break;
                     case "general":
-                        metadataRepositories.add(frameworkExecution.getMetadataControl().getConnectivityMetadataRepository());
-                        metadataRepositories.add(frameworkExecution.getMetadataControl().getControlMetadataRepository());
-                        metadataRepositories.add(frameworkExecution.getMetadataControl().getDesignMetadataRepository());
-                        metadataRepositories.add(frameworkExecution.getMetadataControl().getResultMetadataRepository());
-                        metadataRepositories.add(frameworkExecution.getMetadataControl().getTraceMetadataRepository());
+                        metadataRepositories.add(getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository());
+                        metadataRepositories.add(getFrameworkExecution().getMetadataControl().getControlMetadataRepository());
+                        metadataRepositories.add(getFrameworkExecution().getMetadataControl().getDesignMetadataRepository());
+                        metadataRepositories.add(getFrameworkExecution().getMetadataControl().getResultMetadataRepository());
+                        metadataRepositories.add(getFrameworkExecution().getMetadataControl().getTraceMetadataRepository());
                         break;
                     default:
                         System.out.println("Unknown Option -type (type) = " + type);
-                        System.exit(1);
+                        endLauncher(1,true);
                 }
             }
             // Backup
@@ -211,7 +212,7 @@ public class MetadataLauncher {
                     BackupExecution backupExecution = new BackupExecution();
                     backupExecution.execute(path);
                     writeFooterMessage();
-                    System.exit(0);
+                    endLauncher(0,true);
                 }
             }
 
@@ -233,21 +234,21 @@ public class MetadataLauncher {
                         System.out.println("Option -path (path) value = " + path);
                     } else {
                         System.out.println("Option -path (path) missing");
-                        System.exit(1);
+                        endLauncher(1,true);
                     }
 
                     // Execute
                     RestoreExecution restoreExecution = new RestoreExecution();
                     restoreExecution.execute(path);
                     writeFooterMessage();
-                    System.exit(0);
+                    endLauncher(0,true);
                 }
             }
 
             // Drop
             if (line.hasOption("drop")) {
                 for (MetadataRepository metadataRepository : metadataRepositories) {
-                    metadataRepositoryOperation = new MetadataRepositoryOperation(frameworkExecution, metadataRepository);
+                    metadataRepositoryOperation = new MetadataRepositoryOperation(getFrameworkExecution(), metadataRepository);
 
                     if (actionMatch) {
                         System.out.println();
@@ -271,7 +272,7 @@ public class MetadataLauncher {
 
             // Create
             for (MetadataRepository metadataRepository : metadataRepositories) {
-                metadataRepositoryOperation = new MetadataRepositoryOperation(frameworkExecution, metadataRepository);
+                metadataRepositoryOperation = new MetadataRepositoryOperation(getFrameworkExecution(), metadataRepository);
                 if (line.hasOption("create")) {
                     if (actionMatch) {
                         System.out.println();
@@ -290,7 +291,7 @@ public class MetadataLauncher {
             // clean
             if (line.hasOption("clean")) {
                 for (MetadataRepository metadataRepository : metadataRepositories) {
-                    metadataRepositoryOperation = new MetadataRepositoryOperation(frameworkExecution, metadataRepository);
+                    metadataRepositoryOperation = new MetadataRepositoryOperation(getFrameworkExecution(), metadataRepository);
                     if (actionMatch) {
                         System.out.println();
                     }
@@ -336,12 +337,13 @@ public class MetadataLauncher {
 
                 ParseException e) {
             e.printStackTrace();
-            System.exit(1);
+            endLauncher(1,true);
         }
 
     }
 
 	private static void endLauncher(int status, boolean exit) {
+		getFrameworkExecution().getFrameworkRuntime().terminate();
 		if (exit) {
 			System.exit(status);
 		}
@@ -358,5 +360,13 @@ public class MetadataLauncher {
     private static void writeFooterMessage() {
         System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
     }
+
+	public static FrameworkExecution getFrameworkExecution() {
+		return frameworkExecution;
+	}
+
+	public static void setFrameworkExecution(FrameworkExecution frameworkExecution) {
+		MetadataLauncher.frameworkExecution = frameworkExecution;
+	}
 
 }

@@ -34,6 +34,10 @@ public class FrameworkRuntime {
 		this.setLocalHostChallengeFileName(FilenameUtils.normalize(this.getRunCacheFolderName() + File.separator + this.getLocalHostChallenge()  + ".fwk"));
 		FileTools.appendToFile(this.getLocalHostChallengeFileName(), "", "localhost.challenge=" + this.getLocalHostChallenge());
 	}
+	
+	public void terminate() {
+		FolderTools.deleteFolder(this.getRunCacheFolderName(), true);
+	}
 
 	// Getters and setters
 	public String getRunCacheFolderName() {

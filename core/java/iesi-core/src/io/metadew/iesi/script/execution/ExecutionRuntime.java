@@ -130,9 +130,6 @@ public class ExecutionRuntime {
 
 	@SuppressWarnings("rawtypes")
 	public void terminate() {
-		// remove cache folder
-		FolderTools.deleteFolder(this.getRunCacheFolderName(), true);
-
 		// cleanup stage connections if needed
 		ObjectMapper objectMapper = new ObjectMapper();
 	    Iterator iterator = this.getStageOperationMap().entrySet().iterator();
@@ -142,6 +139,9 @@ public class ExecutionRuntime {
 	        stageOperation.doCleanup();
 	        iterator.remove();
 	    }
+
+		// remove cache folder
+		this.getFrameworkExecution().getFrameworkRuntime().terminate();
 	}
 
 	// Methods

@@ -17,6 +17,7 @@ import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.configuration.FrameworkStatus;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.backup.BackupExecution;
+import io.metadew.iesi.metadata.configuration.ScriptTraceConfiguration;
 import io.metadew.iesi.metadata.definition.ScriptLog;
 import io.metadew.iesi.metadata.restore.RestoreExecution;
 
@@ -179,6 +180,12 @@ public class ExecutionControl
 		Timestamp startTimestamp = new Timestamp(System.currentTimeMillis());
 		this.getScriptLog().setStart(startTimestamp);
 		this.getExecutionLog().setLog(this.getScriptLog());
+		
+		// Trace the design of the script
+		ScriptTraceConfiguration scriptTraceConfiguration = new ScriptTraceConfiguration (scriptExecution.getScript(), this.getFrameworkExecution());
+		InputStream traceInputStream = new ByteArrayInputStream(scriptTraceConfiguration.getInsertStatement(scriptExecution).getBytes(StandardCharsets.UTF_8));
+		this.getFrameworkExecution().getMetadataControl().getResultMetadataRepository().executeScript(traceInputStream);
+
 	}
 
 	public void logStart(ActionExecution actionExecution)

@@ -108,6 +108,7 @@ During the design of the script configuration the use of one or more variables c
 
 * To define a variable, it is sufficient to identify it with the `#` symbol before and after its name: `#variable#`.
 * To make reference to another parameter in the same action, this can be identified with the `[]` symbols: [parameterName]`
+* To make reference to an iteration parameter inside an action's iteration, this can be identified with the `[##]` symbols: `[#iterationVariableName#]`
 
 More information on using variables can be found [here](/{{site.repository}}/pages/understand/understand.html).
 

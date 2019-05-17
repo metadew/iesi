@@ -111,7 +111,7 @@ public class IterationConfiguration {
 			setNumber++;
 			setName = "auto generated iteration set " + setNumber;
 			String innerpart = parts[i];
-			this.setIterationVariable(runId, -1, iterationList, -1, setName, setNumber, "key." + setNumber, innerpart);
+			this.setIterationVariable(runId, -1, iterationList, -1, setName, setNumber, "key", innerpart);
 		}
 	}
 
@@ -130,7 +130,7 @@ public class IterationConfiguration {
 			while (iFrom <= iTo) {
 				setNumber++;
 				setName = "auto generated iteration set " + setNumber;
-				this.setIterationVariable(runId, -1, iterationList, -1, setName, setNumber, "key." + setNumber,
+				this.setIterationVariable(runId, -1, iterationList, -1, setName, setNumber, "key",
 						String.valueOf(iFrom));
 
 				iFrom = iFrom + iStep;
@@ -139,7 +139,7 @@ public class IterationConfiguration {
 			while (iFrom >= iTo) {
 				setNumber++;
 				setName = "auto generated iteration set " + setNumber;
-				this.setIterationVariable(runId, -1, iterationList, -1, setName, setNumber, "key." + setNumber,
+				this.setIterationVariable(runId, -1, iterationList, -1, setName, setNumber, "key",
 						String.valueOf(iFrom));
 
 				iFrom = iFrom - iStep;
@@ -147,7 +147,7 @@ public class IterationConfiguration {
 		} else {
 			setNumber++;
 			setName = "auto generated iteration set " + setNumber;
-			this.setIterationVariable(runId, -1, iterationList, -1, setName, setNumber, "key." + setNumber,
+			this.setIterationVariable(runId, -1, iterationList, -1, setName, setNumber, "key",
 					String.valueOf(iFrom));
 		}
 	}

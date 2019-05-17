@@ -115,7 +115,13 @@ public class ActionParameterOperation {
 
 	public void setInputValue(String inputValue) {
 		this.inputValue = inputValue;
-		this.setValue(inputValue);
+		String tempValue = inputValue;
+		
+		// Lookup inside the action runtime
+		tempValue = this.getActionExecution().getActionControl().getActionRuntime().resolveRuntimeVariables(tempValue);
+		
+		// TODO centralize lookup logic here (get inside the execution controls)
+		this.setValue(tempValue);
 		this.lookupSubroutine();
 
 		this.getExecutionControl().logMessage(this.getActionExecution(),

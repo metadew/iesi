@@ -1,10 +1,12 @@
 package io.metadew.iesi.script.execution;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -56,15 +58,15 @@ public class ActionRuntime {
 		}
 
 	}
-	
+
 	@SuppressWarnings("rawtypes")
 	public void setRuntimeParameters(String type, HashMap<String, String> variableMap) {
 		Iterator iterator = variableMap.entrySet().iterator();
 		while (iterator.hasNext()) {
 			Map.Entry pair = (Map.Entry) iterator.next();
-		
-			this.getRuntimeActionCacheConfiguration().setRuntimeCache(this.getRunId(), type,
-					pair.getKey().toString(), pair.getValue().toString());
+
+			this.getRuntimeActionCacheConfiguration().setRuntimeCache(this.getRunId(), type, pair.getKey().toString(),
+					pair.getValue().toString());
 			iterator.remove(); // avoids a ConcurrentModificationException
 		}
 
@@ -72,6 +74,49 @@ public class ActionRuntime {
 
 	public void setRuntimeParameter(String type, String name, String value) {
 		this.getRuntimeActionCacheConfiguration().setRuntimeCache(this.getRunId(), type, name, value);
+	}
+
+	// Parameter resolution
+	public String resolveRuntimeVariables(String input) {
+		int openPos;
+		int closePos;
+		String variable_char = "[#";
+		String variable_char_close = "#]";
+		String midBit;
+		String replaceValue = null;
+		String temp = input;
+		while (temp.indexOf(variable_char) > 0 || temp.startsWith(variable_char)) {
+			List<String> items = new ArrayList<>();
+			String tempCacheItems = temp;
+			while (tempCacheItems.indexOf(variable_char) > 0 || tempCacheItems.startsWith(variable_char)) {
+				openPos = tempCacheItems.indexOf(variable_char);
+				closePos = tempCacheItems.indexOf(variable_char_close);
+				midBit = tempCacheItems.substring(openPos + 2, closePos).trim();
+				items.add(midBit);
+				tempCacheItems = midBit;
+			}
+
+			// get last value
+			String cacheItem = items.get(items.size() - 1);
+
+			// check split different types
+			String cacheItemOutput = cacheItem;
+
+			// Lookup
+			int cacheTypePos = cacheItem.indexOf(".");
+			String cacheType = cacheItem.substring(0, cacheTypePos).trim().toLowerCase();
+			String cacheName = cacheItem.substring(cacheTypePos + 1).trim();
+			replaceValue = this.getRuntimeActionCacheConfiguration().getRuntimeCacheValue(this.getRunId(), cacheType,
+					cacheName);
+
+			// this.decrypt(variable_char + midBit + variable_char_close);
+			if (replaceValue != null) {
+				input = input.replace(variable_char + cacheItemOutput + variable_char_close, replaceValue);
+			}
+			temp = input;
+		}
+
+		return input;
 	}
 
 	// Getters and Setters

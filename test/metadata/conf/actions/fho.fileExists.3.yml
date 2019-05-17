@@ -1,0 +1,39 @@
+---
+type: "script"
+data:
+  name: "fho.fileExists.3"
+  description: "Test fho.fileExists using a remote file that exists"
+  parameters: []
+  actions:
+  - number: 1
+    type: "fho.fileExists"
+    name: "Action1"
+    description: "Check if the file exists"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "path"
+      value : "/etc"
+    - name: "file"
+      value : "hostname"
+    - name: "connection"
+      value : "host.linux.1"
+  - number: 2
+    type: "fho.fileExists"
+    name: "Action2"
+    description: "The file path is set entirely inside the file parameter"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "path"
+      value : ""
+    - name: "file"
+      value : "/etc/hostname"
+    - name: "connection"
+      value : "host.linux.1"

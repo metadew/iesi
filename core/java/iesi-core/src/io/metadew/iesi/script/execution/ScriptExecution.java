@@ -164,7 +164,7 @@ public class ScriptExecution {
 			if (execute) {
 				// Route
 				if (action.getType().equalsIgnoreCase("fwk.route")) {
-					actionExecution.execute();
+					actionExecution.execute(null);
 
 					// Create future variables
 					int threads = actionExecution.getActionControl().getActionRuntime().getRouteOperations().size();
@@ -216,7 +216,7 @@ public class ScriptExecution {
 				// Iteration
 				IterationExecution iterationExecution = new IterationExecution();
 				if (action.getIteration() != null && !action.getIteration().trim().isEmpty()) {
-					iterationExecution.initialize(this.getFrameworkExecution(), this.getExecutionControl(),
+					iterationExecution.initialize(this.getFrameworkExecution(), this.getExecutionControl(), actionExecution,
 							action.getIteration());
 				}
 
@@ -252,7 +252,8 @@ public class ScriptExecution {
 						
 						if (iterationExecution.getIterationNumber() > 1 || retries > 0)
 							actionExecution.initialize();
-						actionExecution.execute();
+						
+						actionExecution.execute(iterationExecution.getIterationInstance());
 
 						if (!iterationExecution.isIterationOff()) {
 							if (iterationExecution.getIterationOperation().getIteration().getInterrupt()

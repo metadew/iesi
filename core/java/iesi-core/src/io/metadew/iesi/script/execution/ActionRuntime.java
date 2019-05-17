@@ -50,11 +50,28 @@ public class ActionRuntime {
 			if (actionParameterOperation == null)
 				continue;
 
-			this.getRuntimeActionCacheConfiguration().setRuntimeCache(this.getRunId(),"param",
+			this.getRuntimeActionCacheConfiguration().setRuntimeCache(this.getRunId(), "param",
 					actionParameterOperation.getName(), actionParameterOperation.getValue());
 			iterator.remove(); // avoids a ConcurrentModificationException
 		}
 
+	}
+	
+	@SuppressWarnings("rawtypes")
+	public void setRuntimeParameters(String type, HashMap<String, String> variableMap) {
+		Iterator iterator = variableMap.entrySet().iterator();
+		while (iterator.hasNext()) {
+			Map.Entry pair = (Map.Entry) iterator.next();
+		
+			this.getRuntimeActionCacheConfiguration().setRuntimeCache(this.getRunId(), type,
+					pair.getKey().toString(), pair.getValue().toString());
+			iterator.remove(); // avoids a ConcurrentModificationException
+		}
+
+	}
+
+	public void setRuntimeParameter(String type, String name, String value) {
+		this.getRuntimeActionCacheConfiguration().setRuntimeCache(this.getRunId(), type, name, value);
 	}
 
 	// Getters and Setters

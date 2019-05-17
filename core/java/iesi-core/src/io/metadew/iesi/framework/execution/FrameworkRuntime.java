@@ -36,7 +36,7 @@ public class FrameworkRuntime {
 	}
 	
 	public void terminate() {
-		FolderTools.deleteFolder(this.getRunCacheFolderName(), true);
+		//FolderTools.deleteFolder(this.getRunCacheFolderName(), true);
 	}
 
 	// Getters and setters

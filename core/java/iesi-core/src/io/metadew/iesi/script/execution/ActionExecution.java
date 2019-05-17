@@ -6,6 +6,7 @@ import org.apache.logging.log4j.Level;
 
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.Action;
+import io.metadew.iesi.script.configuration.IterationInstance;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 import io.metadew.iesi.script.operation.ComponentAttributeOperation;
 import io.metadew.iesi.script.operation.ConditionOperation;
@@ -45,7 +46,7 @@ public class ActionExecution {
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public void execute() {
+	public void execute(IterationInstance iterationInstance) {
 		this.setExecuted(true);
 
 		this.getExecutionControl().logMessage(this, "action.name=" + this.getAction().getName(), Level.INFO);
@@ -60,7 +61,13 @@ public class ActionExecution {
 		this.setActionControl(new ActionControl(this.getFrameworkExecution(), this.getExecutionControl(), this));
 		this.getActionControl().getActionRuntime().initActionCache(this.getAction().getName(),
 				this.getExecutionControl().getExecutionRuntime().getRunCacheFolderName());
-
+		
+		// Initialize iteration variables
+		if (iterationInstance != null) {
+			this.getActionControl().getActionRuntime().setRuntimeParameter("iteration", "number", String.valueOf(iterationInstance.getIterationNumber()));
+			this.getActionControl().getActionRuntime().setRuntimeParameters("iteration", iterationInstance.getVariableMap());;
+		}
+		
 		try {
 			// Set Attributes
 			if (this.getAction().getComponent() != null

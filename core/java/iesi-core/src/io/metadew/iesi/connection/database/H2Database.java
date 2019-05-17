@@ -40,7 +40,7 @@ public class H2Database extends Database {
     }
 
     public String createQueryExtras() {
-        return null;
+        return "";
     }
 
     public String toQueryString(MetadataField field) {

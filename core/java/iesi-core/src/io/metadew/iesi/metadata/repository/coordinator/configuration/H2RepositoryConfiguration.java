@@ -2,8 +2,8 @@ package io.metadew.iesi.metadata.repository.coordinator.configuration;
 
 import io.metadew.iesi.common.config.ConfigFile;
 import io.metadew.iesi.connection.database.Database;
-import io.metadew.iesi.connection.database.OracleDatabase;
-import io.metadew.iesi.connection.database.connection.OracleDatabaseConnection;
+import io.metadew.iesi.connection.database.H2Database;
+import io.metadew.iesi.connection.database.connection.H2DatabaseConnection;
 import io.metadew.iesi.framework.configuration.FrameworkSettingConfiguration;
 import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
 
@@ -12,19 +12,13 @@ import java.util.Map;
 import java.util.Optional;
 
 public class H2RepositoryConfiguration extends RepositoryConfiguration {
-	// TODO http://www.h2database.com/html/tutorial.html#using_server
-    private final String jdbcConnectionStringServiceFormat = "jdbc:netezza:thin::@//%s:%s/%s";
-    private final String jdbcConnectionStringTnsAliasFormat = "jdbc:oracle:thin:%s:%s:%s";
-
     private String jdbcConnectionString;
     private String host;
     private String port;
-    private String name;
-    private String service;
-    private String tnsAlias;
+    private String file;
     private String schema;
-    private String schemaUser;
-    private String schemaUserPassword;
+    private String ownerUser;
+    private String ownerUserPassword;
     private String writerUser;
     private String writerUserPassword;
     private String readerUser;
@@ -37,104 +31,109 @@ public class H2RepositoryConfiguration extends RepositoryConfiguration {
 
     @Override
     void fromConfigFile(ConfigFile configFile, FrameworkSettingConfiguration frameworkSettingConfiguration) {
-        // schema
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.schema").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.schema").get()).isPresent()) {
-            schema = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.schema").get()).get();
+        // host
+        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.host").isPresent() &&
+                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.host").get()).isPresent()) {
+        	host = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.host").get()).get();
         }
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.name").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.name").get()).isPresent()) {
-            name = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.name").get()).get();
+        // port
+        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.port").isPresent() &&
+                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.port").get()).isPresent()) {
+        	port = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.port").get()).get();
+        }
+        // schema
+        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.schema").isPresent() &&
+                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.schema").get()).isPresent()) {
+            schema = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.schema").get()).get();
+        }
+        // file
+        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.file").isPresent() &&
+                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.file").get()).isPresent()) {
+            file = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.file").get()).get();
         }
         // set users and passwords
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.schema").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.schema").get()).isPresent()) {
-            schemaUser = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.schema").get()).get();
+        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.owner").isPresent() &&
+                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.owner").get()).isPresent()) {
+            ownerUser = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.owner").get()).get();
         }
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.schema.password").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.schema.password").get()).isPresent()) {
-            schemaUserPassword = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.schema.password").get()).get();
+        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.owner.password").isPresent() &&
+                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.owner.password").get()).isPresent()) {
+            ownerUserPassword = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.owner.password").get()).get();
         }
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.writer").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.writer").get()).isPresent()) {
-            writerUser = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.writer").get()).get();
+        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.writer").isPresent() &&
+                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.writer").get()).isPresent()) {
+            writerUser = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.writer").get()).get();
         }
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.writer.password").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.writer.password").get()).isPresent()) {
-            writerUserPassword = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.writer.password").get()).get();
+        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.writer.password").isPresent() &&
+                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.writer.password").get()).isPresent()) {
+            writerUserPassword = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.writer.password").get()).get();
         }
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.reader").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.reader").get()).isPresent()) {
-            readerUser = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.reader").get()).get();
+        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.reader").isPresent() &&
+                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.reader").get()).isPresent()) {
+            readerUser = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.reader").get()).get();
         }
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.reader.password").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.reader.password").get()).isPresent()) {
-            readerUserPassword = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.reader.password").get()).get();
+        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.reader.password").isPresent() &&
+                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.reader.password").get()).isPresent()) {
+            readerUserPassword = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.reader.password").get()).get();
         }
 
-        // get jdbc connection url
+        // jdbc connection url
         if (frameworkSettingConfiguration.getSettingPath("metadata.repository.connection.string").isPresent() &&
                 configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.connection.string").get()).isPresent()) {
             jdbcConnectionString = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.connection.string").get()).get();
-        } else if ((frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.host").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.host").get()).isPresent()) &&
-                (frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.port").isPresent() &&
-                        configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.port").get()).isPresent()) &&
-                (frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.service").isPresent() &&
-                        configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.service").get()).isPresent())) {
-            host = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.host").get()).get();
-            port = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.port").get()).get();
-            service = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.service").get()).get();
-            jdbcConnectionString = String.format(jdbcConnectionStringServiceFormat, host, port, service);
-        } else if ((frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.host").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.host").get()).isPresent()) &&
-                (frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.port").isPresent() &&
-                        configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.port").get()).isPresent()) &&
-                (frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.tnsalias").isPresent() &&
-                        configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.tnsalias").get()).isPresent())){
-            host = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.host").get()).get();
-            port = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.port").get()).get();
-            tnsAlias = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.service").get()).get();
-            jdbcConnectionString = String.format(jdbcConnectionStringTnsAliasFormat, host, port, tnsAlias);}
-
-        else {
-            throw new RuntimeException("Could not initialize Oracle configuration. No connection string or host, port and name provided");
         }
     }
 
     @Override
     public RepositoryCoordinator toRepository() {
         Map<String, Database> databases = new HashMap<>();
+        String actualJdbcConnectionString = "";
+        if (getJdbcConnectionString().isPresent()) {
+        	actualJdbcConnectionString = getJdbcConnectionString().get();
+        } else {
+        	actualJdbcConnectionString = H2DatabaseConnection.getConnectionUrl(getHost().orElse(""), Integer.parseInt(getPort().orElse("0")), getFile().orElse(""));
+        }
+        final String finalJdbcConnectionString = actualJdbcConnectionString;
 
-        getUser().ifPresent(owner -> {
-            OracleDatabaseConnection oracleDatabaseConnection = new OracleDatabaseConnection(getJdbcConnectionString(), owner, getUserPassword().orElse(""));
-            getSchema().ifPresent(oracleDatabaseConnection::setSchema);
-            OracleDatabase oracleDatabase = new OracleDatabase(oracleDatabaseConnection, getSchema().orElse(""));
-            databases.put("owner", oracleDatabase);
-            databases.put("writer", oracleDatabase);
-            databases.put("reader", oracleDatabase);
-        });
+        if (getUser().isPresent()) {
+            getUser().ifPresent(owner -> {
+                H2DatabaseConnection h2DatabaseConnection = new H2DatabaseConnection(finalJdbcConnectionString, owner, getUserPassword().orElse(""));
+                getSchema().ifPresent(h2DatabaseConnection::setSchema);
+                H2Database h2Database = new H2Database(h2DatabaseConnection, getSchema().orElse(""));
+                databases.put("owner", h2Database);
+                databases.put("writer", h2Database);
+                databases.put("reader", h2Database);
+            });
 
-        getWriter().ifPresent(writer -> {
-            OracleDatabaseConnection oracleDatabaseConnection = new OracleDatabaseConnection(getJdbcConnectionString(), writer, getWriterPassword().orElse(""));
-            getSchema().ifPresent(oracleDatabaseConnection::setSchema);
-            OracleDatabase oracleDatabase = new OracleDatabase(oracleDatabaseConnection, getSchema().orElse(""));
-            databases.put("writer", oracleDatabase);
-            databases.put("reader", oracleDatabase);
-        });
+            getWriter().ifPresent(writer -> {
+            	H2DatabaseConnection h2DatabaseConnection = new H2DatabaseConnection(finalJdbcConnectionString, writer, getWriterPassword().orElse(""));
+                getSchema().ifPresent(h2DatabaseConnection::setSchema);
+                H2Database h2Database = new H2Database(h2DatabaseConnection, getSchema().orElse(""));
+                databases.put("writer", h2Database);
+                databases.put("reader", h2Database);
+            });
 
-        getReader().ifPresent(reader -> {
-            OracleDatabaseConnection oracleDatabaseConnection = new OracleDatabaseConnection(getJdbcConnectionString(), reader, getReaderPassword().orElse(""));
-            getSchema().ifPresent(oracleDatabaseConnection::setSchema);
-            OracleDatabase oracleDatabase = new OracleDatabase(oracleDatabaseConnection, getSchema().orElse(""));
-            databases.put("reader", oracleDatabase);
-        });
+            getReader().ifPresent(reader -> {
+            	H2DatabaseConnection h2DatabaseConnection = new H2DatabaseConnection(finalJdbcConnectionString, reader, getReaderPassword().orElse(""));
+                getSchema().ifPresent(h2DatabaseConnection::setSchema);
+                H2Database h2Database = new H2Database(h2DatabaseConnection, getSchema().orElse(""));
+                databases.put("reader", h2Database);
+            });
+        } else {
+            H2DatabaseConnection h2DatabaseConnection = new H2DatabaseConnection(finalJdbcConnectionString, "", "");
+            getSchema().ifPresent(h2DatabaseConnection::setSchema);
+            H2Database h2Database = new H2Database(h2DatabaseConnection, getSchema().orElse(""));
+            databases.put("owner", h2Database);
+            databases.put("writer", h2Database);
+            databases.put("reader", h2Database);
+        }
+        
 
         return new RepositoryCoordinator(databases);
     }
 
-    public String getJdbcConnectionString() {
-        return jdbcConnectionString;
+    public Optional<String> getJdbcConnectionString() {
+    	return Optional.ofNullable(jdbcConnectionString);
     }
 
     public Optional<String> getHost() {
@@ -145,28 +144,16 @@ public class H2RepositoryConfiguration extends RepositoryConfiguration {
         return Optional.ofNullable(port);
     }
 
-    public Optional<String> getName() {
-        return Optional.ofNullable(name);
-    }
-
-    public Optional<String> getService() {
-        return Optional.ofNullable(service);
-    }
-
-    public Optional<String> getTnsAlias() {
-        return Optional.ofNullable(tnsAlias);
-    }
-
     public Optional<String> getSchema() {
         return Optional.ofNullable(schema);
     }
 
     public Optional<String> getUser() {
-        return Optional.ofNullable(schemaUser);
+        return Optional.ofNullable(ownerUser);
     }
 
     public Optional<String> getUserPassword() {
-        return Optional.ofNullable(schemaUserPassword);
+        return Optional.ofNullable(ownerUserPassword);
     }
 
     public Optional<String> getWriter() {
@@ -184,4 +171,9 @@ public class H2RepositoryConfiguration extends RepositoryConfiguration {
     public Optional<String> getReaderPassword() {
         return Optional.ofNullable(readerUserPassword);
     }
+
+	public Optional<String> getFile() {
+		return Optional.ofNullable(file);
+	}
+
 }

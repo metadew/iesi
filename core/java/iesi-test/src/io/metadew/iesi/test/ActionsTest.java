@@ -211,5 +211,7 @@ public class ActionsTest {
             e.printStackTrace();
             return;
         }
+        
+        System.exit(0);
     }
 }

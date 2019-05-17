@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.Optional;
 
 public class OracleRepositoryConfiguration extends RepositoryConfiguration {
-    private final String jdbcConnectionStringServiceFormat = "jdbc:netezza:thin::@//%s:%s/%s";
+    private final String jdbcConnectionStringServiceFormat = "jdbc:oracle:thin::@//%s:%s/%s";
     private final String jdbcConnectionStringTnsAliasFormat = "jdbc:oracle:thin:%s:%s:%s";
 
     private String jdbcConnectionString;

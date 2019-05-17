@@ -20,10 +20,10 @@ public class H2DatabaseConnection extends DatabaseConnection {
 	}
 
 	public H2DatabaseConnection(String hostName, int portNumber, String pathName, String fileName, String userName, String userPassword) {
-		super(type, getConnectionUrl(hostName, portNumber, pathName, fileName, userName, userPassword), userName, userPassword);
+		super(type, getConnectionUrl(hostName, portNumber, pathName, fileName), userName, userPassword);
 	}
 	
-	private static String getConnectionUrl(String hostName, int portNumber, String pathName, String fileName, String userName, String userPassword) {
+	public static String getConnectionUrl(String hostName, int portNumber, String filePath) {
 		StringBuilder connectionUrl = new StringBuilder();
 		connectionUrl.append("jdbc:h2:");
 		if (!hostName.isEmpty()) {
@@ -35,13 +35,21 @@ public class H2DatabaseConnection extends DatabaseConnection {
 			}
 			connectionUrl.append("/");
 		}
+
+		connectionUrl.append(filePath);
+		return connectionUrl.toString();
+	}
+
+	public static String getConnectionUrl(String hostName, int portNumber, String pathName, String fileName) {
+		StringBuilder filePath = new StringBuilder();
 		
 		if (!pathName.isEmpty()) {
-			connectionUrl.append(pathName);
-			connectionUrl.append("/");
+			filePath.append(pathName);
+			filePath.append("/");
 		}
-		connectionUrl.append(fileName);
-		return connectionUrl.toString();
+		filePath.append(fileName);
+		
+		return getConnectionUrl(hostName, portNumber, filePath.toString());
 	}
 
 	@Override

@@ -177,9 +177,20 @@
 {
 	"type": "FrameworkSetting",
 	"data": {
-		"name": "metadata.repository.h2.schema.password",
-		"path": "iesi.metadata.repository.h2.schema.password",
-		"label": "MetadataRepositoryH2SchemaPassword",
+		"name": "metadata.repository.h2.owner",
+		"path": "iesi.metadata.repository.h2.owner",
+		"label": "MetadataRepositoryH2Owner",
+		"description": "",
+		"group": "MetadataRepository",
+		"category": "Database",
+		"type": "H2"
+}},
+{
+	"type": "FrameworkSetting",
+	"data": {
+		"name": "metadata.repository.h2.owner.password",
+		"path": "iesi.metadata.repository.h2.owner.password",
+		"label": "MetadataRepositoryH2OwnerPassword",
 		"description": "",
 		"group": "MetadataRepository",
 		"category": "Database",

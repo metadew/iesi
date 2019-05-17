@@ -16,6 +16,8 @@ public class RepositoryConfigurationFactory {
         }
         if (configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.type").get()).get().equalsIgnoreCase("netezza")) {
             return new NetezzaRepositoryConfiguration(configFile, frameworkSettingConfiguration);
+        } else if (configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.type").get()).get().equalsIgnoreCase("h2")) {
+            return new H2RepositoryConfiguration(configFile, frameworkSettingConfiguration);
         } else if (configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.type").get()).get().equalsIgnoreCase("sqlite")) {
             return new SqliteRepositoryConfiguration(configFile, frameworkSettingConfiguration);
         } else if (configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.type").get()).get().equalsIgnoreCase("oracle")) {

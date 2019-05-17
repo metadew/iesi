@@ -753,12 +753,12 @@ public class ExecutionRuntime {
 		return output;
 	}
 
-	@SuppressWarnings("resource")
 	private String lookupFileInstruction(ExecutionControl executionControl, String input) {
 		String output = "";
 		File file = new File(input);
+		BufferedReader bufferedReader = null;
 		try {
-			BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
+			bufferedReader = new BufferedReader(new FileReader(file));
 			String readLine = "";
 			while ((readLine = bufferedReader.readLine()) != null) {
 				output += this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(readLine);
@@ -766,6 +766,12 @@ public class ExecutionRuntime {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
+		} finally {
+			try {
+				bufferedReader.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 		//TODO harmonize for first line input
 		//String output = input.trim();

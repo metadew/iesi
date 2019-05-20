@@ -7,6 +7,7 @@ import javax.sql.rowset.CachedRowSet;
 
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.metadata.definition.Script;
 import io.metadew.iesi.metadata.definition.ScriptVersion;
 
 public class ScriptVersionConfiguration {
@@ -25,14 +26,14 @@ public class ScriptVersionConfiguration {
 	}
 
 	// Insert
-	public String getInsertStatement(String scriptName) {
+	public String getInsertStatement(Script script) {
 		String sql = "";
 
 		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ScriptVersions");
 		sql += " (SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_VRS_DSC) ";
 		sql += "VALUES ";
 		sql += "(";
-		sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Scripts"), "SCRIPT_ID", "where SCRIPT_NM = '"+ scriptName) + "')";
+		sql += SQLTools.GetStringForSQL(script.getId());
 		sql += ",";
 		sql += SQLTools.GetStringForSQL(this.getScriptVersion().getNumber());
 		sql += ",";

@@ -138,7 +138,7 @@ public class ScriptConfiguration {
 
 		ScriptVersionConfiguration scriptVersionConfiguration = new ScriptVersionConfiguration(
 				this.getScript().getVersion(), this.getFrameworkExecution());
-		result += scriptVersionConfiguration.getInsertStatement(this.getScript().getName());
+		result += scriptVersionConfiguration.getInsertStatement(this.getScript());
 
 		return result;
 	}
@@ -172,7 +172,7 @@ public class ScriptConfiguration {
 					this.getScript().getVersion(), scriptParameter, this.getFrameworkExecution());
 			if (!result.equalsIgnoreCase(""))
 				result += "\n";
-			result += scriptParameterConfiguration.getInsertStatement(this.getScript().getName());
+			result += scriptParameterConfiguration.getInsertStatement(this.getScript());
 		}
 
 		return result;

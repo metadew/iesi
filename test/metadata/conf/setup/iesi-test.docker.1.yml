@@ -50,6 +50,6 @@ data:
     - name: "path"
       value : "#iesi.home#/data/iesi-test/docker"
     - name: "command"
-      value : "docker-compose -f linux-ssh/docker-compose.yml down"
+      value : "docker-compose #docker-compose.files# down"
     - name: "connection"
       value : ""

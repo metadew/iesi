@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
 import io.metadew.iesi.server.rest.user.User;
 import io.metadew.iesi.server.rest.user.UserRepository;
 
@@ -38,9 +37,7 @@ public class UserController {
 
 	@GetMapping("/users")
 	public ResponseEntity<List<User>> getAllUsers() {
-
 		return ResponseEntity.status(HttpStatus.OK).body(userRepository.findAll());
-
 	}
 
 	@GetMapping("/users/{name}")

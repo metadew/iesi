@@ -30,6 +30,6 @@ public class SwaggerConfig {
 
 	private Predicate<String> paths() {
 		return Predicates.and(PathSelectors.regex("/.*"), Predicates.not(PathSelectors.regex("/error.*"))
-				,Predicates.not(PathSelectors.regex( "/oauth.*")));
+				,Predicates.not(PathSelectors.regex( "/oauth.*")),Predicates.not(PathSelectors.regex( "/actuator.*")));
 	}
 }

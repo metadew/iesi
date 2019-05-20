@@ -23,6 +23,8 @@ import io.metadew.iesi.metadata.configuration.exception.ComponentDoesNotExistExc
 import io.metadew.iesi.metadata.definition.Component;
 import io.metadew.iesi.server.rest.controller.JsonTransformation.ComponentGlobal;
 import io.metadew.iesi.server.rest.controller.JsonTransformation.ComponentGlobalByName;
+import io.metadew.iesi.server.rest.pagination.ComponentCriteria;
+import io.metadew.iesi.server.rest.pagination.ComponentRepository;
 import io.metadew.iesi.server.rest.ressource.component.ComponentGlobalResources;
 import io.metadew.iesi.server.rest.ressource.component.ComponentResource;
 import io.metadew.iesi.server.rest.ressource.component.ComponentResources;
@@ -33,12 +35,19 @@ public class ComponentsController {
 	private static ComponentConfiguration componentConfiguration = new ComponentConfiguration(
 			FrameworkConnection.getInstance().getFrameworkExecution());
 
+	private final ComponentRepository componentRepository;
+
+	ComponentsController(ComponentRepository componentRepository) {
+		this.componentRepository = componentRepository;
+	}
+
 	@GetMapping("/components")
-	public ResponseEntity<ComponentGlobalResources> getAllcomponents() {
+	public ResponseEntity<ComponentGlobalResources> getAllcomponents(@Valid ComponentCriteria componentCriteria) {
 		List<Component> components = componentConfiguration.getComponents();
 		List<ComponentGlobal> componentGlobal = components.stream().map(component -> new ComponentGlobal(component))
 				.distinct().collect(Collectors.toList());
-		final ComponentGlobalResources resource = new ComponentGlobalResources(componentGlobal);
+		List<ComponentGlobal> pagination = componentRepository.search(componentGlobal, componentCriteria);
+		final ComponentGlobalResources resource = new ComponentGlobalResources(pagination);
 		return ResponseEntity.status(HttpStatus.OK).body(resource);
 	}
 

@@ -2,7 +2,11 @@ server:
   port: 8081
 
 spring:
-  boot:    admin:      ui:        public-url: http://localhost:8081
+  boot:    admin:      ui:
+        favicon: /assets/img/iesi.png
+        favicon-danger: /assets/img/iesi.png
+        title: IESI
+        brand: <img src="assets/img/iesi.png"><span>IESI</span>        public-url: http://localhost:8081
   application:
     name: admin-server
   aop:

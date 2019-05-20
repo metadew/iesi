@@ -4,7 +4,7 @@ import java.util.List;
 
 public class Script {
 
-	private long id;
+	private String id;
 	private String type = "script";
 	private String name;
 	private String description;
@@ -33,14 +33,6 @@ public class Script {
 
 	public void setDescription(String description) {
 		this.description = description;
-	}
-
-	public long getId() {
-		return id;
-	}
-
-	public void setId(long id) {
-		this.id = id;
 	}
 
 	public List<Action> getActions() {
@@ -73,6 +65,14 @@ public class Script {
 
 	public void setVersion(ScriptVersion version) {
 		this.version = version;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
 	}
 
 

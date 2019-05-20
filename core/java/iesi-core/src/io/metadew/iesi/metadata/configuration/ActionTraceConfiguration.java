@@ -4,6 +4,7 @@ import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.Action;
 import io.metadew.iesi.metadata.definition.ActionParameter;
+import io.metadew.iesi.metadata.definition.Script;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
 
 public class ActionTraceConfiguration {
@@ -22,7 +23,7 @@ public class ActionTraceConfiguration {
 	}
 
 	// Insert
-	public String getInsertStatement(String runId, long processId, String scriptId, long scriptVersionNumber, int actionNumber) {
+	public String getInsertStatement(String runId, long processId, Script script, int actionNumber) {
 		String actionId = IdentifierTools.getActionIdentifier(this.getAction().getName());
 		String sql = "";
 
@@ -36,9 +37,9 @@ public class ActionTraceConfiguration {
 		sql += ",";
 		sql += SQLTools.GetStringForSQL(processId);
 		sql += ",";
-		sql += SQLTools.GetStringForSQL(scriptId);
+		sql += SQLTools.GetStringForSQL(script.getId());
 		sql += ",";
-		sql += SQLTools.GetStringForSQL(scriptVersionNumber);
+		sql += SQLTools.GetStringForSQL(script.getVersion().getNumber());
 		sql += ",";
 		sql += SQLTools.GetStringForSQL(actionId);
 		sql += ",";
@@ -65,7 +66,7 @@ public class ActionTraceConfiguration {
 		sql += ";";
 
 		// add Parameters
-		String sqlParameters = this.getParameterInsertStatements(runId, processId, actionId);
+		String sqlParameters = this.getParameterInsertStatements(runId, processId, script, actionId);
 		if (!sqlParameters.equalsIgnoreCase("")) {
 			sql += "\n";
 			sql += sqlParameters;
@@ -74,14 +75,14 @@ public class ActionTraceConfiguration {
 		return sql;
 	}
 	
-	private String getParameterInsertStatements(String runId, long processId, String actionId) {
+	private String getParameterInsertStatements(String runId, long processId, Script script, String actionId) {
 		String result = "";
 
 		for (ActionParameter actionParameter : this.getAction().getParameters()) {
 			ActionParameterTraceConfiguration actionParameterTraceConfiguration = new ActionParameterTraceConfiguration(actionParameter, this.getFrameworkExecution());
 			if (!result.equalsIgnoreCase(""))
 				result += "\n";
-			result += actionParameterTraceConfiguration.getInsertStatement(runId, processId, actionId);
+			result += actionParameterTraceConfiguration.getInsertStatement(runId, processId, script, actionId);
 		}
 
 		return result;

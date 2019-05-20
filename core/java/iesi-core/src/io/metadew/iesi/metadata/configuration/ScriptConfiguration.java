@@ -15,6 +15,7 @@ import io.metadew.iesi.metadata.definition.ListObject;
 import io.metadew.iesi.metadata.definition.Script;
 import io.metadew.iesi.metadata.definition.ScriptParameter;
 import io.metadew.iesi.metadata.definition.ScriptVersion;
+import io.metadew.iesi.metadata.tools.IdentifierTools;
 
 public class ScriptConfiguration {
 
@@ -48,7 +49,7 @@ public class ScriptConfiguration {
 		crsScript = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(queryScript, "reader");
 		try {
 			while (crsScript.next()) {
-				script.setId(crsScript.getLong("SCRIPT_ID"));
+				script.setId(crsScript.getString("SCRIPT_ID"));
 				script.setType(crsScript.getString("SCRIPT_TYP_NM"));
 				script.setName(scriptName);
 				script.setDescription(crsScript.getString("SCRIPT_DSC"));
@@ -69,47 +70,23 @@ public class ScriptConfiguration {
 	// Insert
 	public String getInsertStatement() {
 		String sql = "";
+		this.getScript().setId(IdentifierTools.getScriptIdentifier(this.getScript().getName()));
 
 		if (this.exists()) {
 			sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ActionParameters");
-			sql += " WHERE ACTION_ID in (";
-			sql += "select ACTION_ID FROM " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Actions");
-			sql += " WHERE SCRIPT_ID = (";
-			sql += "select SCRIPT_ID FROM " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Scripts");
-			sql += " WHERE SCRIPT_NM = "
-					+ SQLTools.GetStringForSQL(this.getScript().getName());
-			sql += ")";
+			sql += " WHERE SCRIPT_ID = '" + this.getScript().getId() + "'";
 			sql += " AND SCRIPT_VRS_NB = " + this.getScript().getVersion().getNumber();
-			sql += ")";
 			sql += ";";
 			sql += "\n";
 			sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Actions");
-			sql += " WHERE SCRIPT_ID = (";
-			sql += "select SCRIPT_ID FROM " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Scripts");
-			sql += " WHERE SCRIPT_NM = "
-					+ SQLTools.GetStringForSQL(this.getScript().getName());
-			sql += ")";
+			sql += " WHERE SCRIPT_ID = '" + this.getScript().getId() + "'";
 			sql += " AND SCRIPT_VRS_NB = " + this.getScript().getVersion().getNumber();
 			sql += ";";
 			sql += "\n";
 			sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ScriptVersions");
-			sql += " WHERE SCRIPT_ID = (";
-			sql += "select SCRIPT_ID FROM " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Scripts");
-			sql += " WHERE SCRIPT_NM = "
-					+ SQLTools.GetStringForSQL(this.getScript().getName());
-			sql += ")";
+			sql += " WHERE SCRIPT_ID = '" + this.getScript().getId() + "'";
 			sql += " AND SCRIPT_VRS_NB = " + this.getScript().getVersion().getNumber();
 			sql += ";";
-
-			/*
-			 * Remove delete option for any version of a script sql += "\n"; sql +=
-			 * "DELETE FROM " +
-			 * this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getMetadataTableConfiguration().getCFG_SCRIPT();
-			 * sql += " WHERE SCRIPT_NM = " +
-			 * this.getFrameworkExecution().getSqlTools().GetStringForSQL(this.getScript().
-			 * getName()); sql += ";";
-			 */
-
 			sql += "\n";
 		}
 
@@ -118,10 +95,7 @@ public class ScriptConfiguration {
 			sql += " (SCRIPT_ID, SCRIPT_TYP_NM, SCRIPT_NM, SCRIPT_DSC) ";
 			sql += "VALUES ";
 			sql += "(";
-			sql += "("
-					+ SQLTools.GetNextIdStatement(
-							this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Scripts"), "SCRIPT_ID")
-					+ ")";
+			sql += SQLTools.GetStringForSQL(this.getScript().getId());
 			sql += ",";
 			sql += SQLTools.GetStringForSQL(this.getScript().getType());
 			sql += ",";
@@ -181,8 +155,7 @@ public class ScriptConfiguration {
 			ActionConfiguration actionConfiguration = new ActionConfiguration(action, this.getFrameworkExecution());
 			if (!result.equalsIgnoreCase(""))
 				result += "\n";
-			result += actionConfiguration.getInsertStatement(this.getScript().getName(),
-					this.getScript().getVersion().getNumber(), counter);
+			result += actionConfiguration.getInsertStatement(this.getScript(), counter);
 		}
 
 		return result;
@@ -249,7 +222,7 @@ public class ScriptConfiguration {
 				this.getFrameworkExecution());
 		try {
 			while (crsScript.next()) {
-				script.setId(crsScript.getLong("SCRIPT_ID"));
+				script.setId(crsScript.getString("SCRIPT_ID"));
 				script.setType(crsScript.getString("SCRIPT_TYP_NM"));
 				script.setName(scriptName);
 				script.setDescription(crsScript.getString("SCRIPT_DSC"));
@@ -262,12 +235,12 @@ public class ScriptConfiguration {
 				List<Action> actionList = new ArrayList();
 				String queryActions = "select SCRIPT_ID, SCRIPT_VRS_NB, ACTION_ID, ACTION_NB from "
 						+ this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Actions")
-						+ " where SCRIPT_ID = " + script.getId() + " and SCRIPT_VRS_NB = " + scriptVersionNumber
+						+ " where SCRIPT_ID = '" + script.getId() + "' and SCRIPT_VRS_NB = " + scriptVersionNumber
 						+ " order by ACTION_NB asc ";
 				CachedRowSet crsActions = null;
 				crsActions = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(queryActions, "reader");
 				while (crsActions.next()) {
-					actionList.add(actionConfiguration.getAction(crsActions.getLong("ACTION_ID")));
+					actionList.add(actionConfiguration.getAction(script, crsActions.getString("ACTION_ID")));
 				}
 				script.setActions(actionList);
 				crsActions.close();
@@ -276,7 +249,7 @@ public class ScriptConfiguration {
 				CachedRowSet crsScriptParameters = null;
 				String queryScriptParameters = "select SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_PAR_NM from "
 						+ this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ScriptParameters")
-						+ " where SCRIPT_ID = " + script.getId() + " and SCRIPT_VRS_NB = " + scriptVersionNumber;
+						+ " where SCRIPT_ID = '" + script.getId() + "' and SCRIPT_VRS_NB = " + scriptVersionNumber;
 				crsScriptParameters = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository()
 						.executeQuery(queryScriptParameters, "reader");
 				List<ScriptParameter> scriptParameterList = new ArrayList();

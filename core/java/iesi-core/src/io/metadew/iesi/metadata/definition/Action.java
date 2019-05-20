@@ -4,7 +4,7 @@ import java.util.List;
 
 public class Action {
 	
-	private long id;
+	private String id;
 	private long number;
 	private String type;
 	private String name;
@@ -37,14 +37,6 @@ public class Action {
 
 	public void setDescription(String description) {
 		this.description = description;
-	}
-
-	public long getId() {
-		return id;
-	}
-
-	public void setId(long id) {
-		this.id = id;
 	}
 
 	public long getNumber() {
@@ -117,6 +109,14 @@ public class Action {
 
 	public void setRetries(String retries) {
 		this.retries = retries;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
 	}
 
 }

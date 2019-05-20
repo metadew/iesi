@@ -28,10 +28,10 @@ public class ScriptTraceConfiguration {
 		String runId = scriptExecution.getExecutionControl().getRunId();
 		long processId = scriptExecution.getExecutionControl().getProcessId();
 		long parentProcessId = scriptExecution.getParentScriptExecution().getProcessId();
-		String scriptId =IdentifierTools.getScriptIdentifier(this.getScript().getName());
-		
+		String scriptId = IdentifierTools.getScriptIdentifier(this.getScript().getName());
+
 		String sql = "";
-		
+
 		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getTraceMetadataRepository()
 				.getTableNameByLabel("ScriptDesignTraces");
 		sql += " (RUN_ID, PRC_ID, PARENT_PRC_ID, SCRIPT_ID, SCRIPT_TYP_NM, SCRIPT_NM, SCRIPT_DSC) ";
@@ -99,11 +99,11 @@ public class ScriptTraceConfiguration {
 
 		for (Action action : this.getScript().getActions()) {
 			counter++;
-			ActionTraceConfiguration actionTraceConfiguration = new ActionTraceConfiguration(action, this.getFrameworkExecution());
+			ActionTraceConfiguration actionTraceConfiguration = new ActionTraceConfiguration(action,
+					this.getFrameworkExecution());
 			if (!result.equalsIgnoreCase(""))
 				result += "\n";
-			result += actionTraceConfiguration.getInsertStatement(runId, processId, scriptId,
-					this.getScript().getVersion().getNumber(), counter);
+			result += actionTraceConfiguration.getInsertStatement(runId, processId, this.getScript(), counter);
 		}
 
 		return result;

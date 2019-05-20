@@ -143,7 +143,7 @@ public class ExecutionControl
 
 		String query = "INSERT INTO "
 				+ this.getFrameworkExecution().getMetadataControl().getResultMetadataRepository().getTableNameByLabel("ScriptResults")
-				+ " (RUN_ID, PRC_ID, PARENT_PRC_ID, SCRIPT_ID, SCRIPT_VRS_NB, ENV_NM, ST_NM, STRT_TMS, END_TMS)";
+				+ " (RUN_ID, PRC_ID, PARENT_PRC_ID, SCRIPT_ID, SCRIPT_NM, SCRIPT_VRS_NB, ENV_NM, ST_NM, STRT_TMS, END_TMS)";
 		query += " VALUES ";
 		query += "(";
 		query += SQLTools.GetStringForSQL(this.getRunId());
@@ -153,6 +153,8 @@ public class ExecutionControl
 		query += SQLTools.GetStringForSQL(parentProcessId);
 		query += ",";
 		query += SQLTools.GetStringForSQL(scriptExecution.getScript().getId());
+		query += ",";
+		query += SQLTools.GetStringForSQL(scriptExecution.getScript().getName());
 		query += ",";
 		query += SQLTools.GetStringForSQL(scriptExecution.getScript().getVersion().getNumber());
 		query += ",";
@@ -195,7 +197,7 @@ public class ExecutionControl
 
 		String query = "INSERT INTO "
 				+ this.getFrameworkExecution().getMetadataControl().getResultMetadataRepository().getTableNameByLabel("ActionResults")
-				+ " (RUN_ID, PRC_ID, ACTION_ID, ENV_NM, ST_NM, STRT_TMS, END_TMS)";
+				+ " (RUN_ID, PRC_ID, ACTION_ID, ACTION_NM, ENV_NM, ST_NM, STRT_TMS, END_TMS)";
 		query += " VALUES ";
 		query += "(";
 		query += SQLTools.GetStringForSQL(this.getRunId());
@@ -203,6 +205,8 @@ public class ExecutionControl
 		query += SQLTools.GetStringForSQL(actionExecution.getProcessId());
 		query += ",";
 		query += SQLTools.GetStringForSQL(actionExecution.getAction().getId());
+		query += ",";
+		query += SQLTools.GetStringForSQL(actionExecution.getAction().getName());
 		query += ",";
 		query += SQLTools.GetStringForSQL(this.getEnvName());
 		query += ",";
@@ -225,7 +229,7 @@ public class ExecutionControl
 
 		String query = "INSERT INTO "
 				+ this.getFrameworkExecution().getMetadataControl().getResultMetadataRepository().getTableNameByLabel("ActionResults")
-				+ " (RUN_ID, PRC_ID, ACTION_ID, ENV_NM, ST_NM, STRT_TMS, END_TMS)";
+				+ " (RUN_ID, PRC_ID, ACTION_ID, ACTION_NM, ENV_NM, ST_NM, STRT_TMS, END_TMS)";
 		query += " VALUES ";
 		query += "(";
 		query += SQLTools.GetStringForSQL(this.getRunId());
@@ -233,6 +237,8 @@ public class ExecutionControl
 		query += SQLTools.GetStringForSQL(this.getProcessId());
 		query += ",";
 		query += SQLTools.GetStringForSQL(actionExecution.getAction().getId());
+		query += ",";
+		query += SQLTools.GetStringForSQL(actionExecution.getAction().getName());
 		query += ",";
 		query += SQLTools.GetStringForSQL(this.getEnvName());
 		query += ",";

@@ -11,6 +11,8 @@ import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.Action;
 import io.metadew.iesi.metadata.definition.ActionParameter;
+import io.metadew.iesi.metadata.definition.Script;
+import io.metadew.iesi.metadata.tools.IdentifierTools;
 
 public class ActionConfiguration {
 
@@ -28,26 +30,20 @@ public class ActionConfiguration {
 	}
 
 	// Insert
-	public String getInsertStatement(String scriptName, long scriptVersionNumber, int actionNumber) {
+	public String getInsertStatement(Script script, int actionNumber) {
 		String sql = "";
+		long scriptVersionNumber = script.getVersion().getNumber();
+		this.getAction().setId(IdentifierTools.getActionIdentifier(this.getAction().getName()));
 
-		sql += "INSERT INTO "
-				+ this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository()
+		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository()
 				.getTableNameByLabel("Actions");
 		sql += " (SCRIPT_ID, SCRIPT_VRS_NB, ACTION_ID, ACTION_NB, ACTION_TYP_NM, ACTION_NM, ACTION_DSC, COMP_NM, ITERATION_VAL, CONDITION_VAL, RETRIES_VAL, EXP_ERR_FL, STOP_ERR_FL) ";
-		sql += "VALUES ";
-		sql += "(";
-		sql += "(" + SQLTools.GetLookupIdStatement(
-				this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository()
-						.getTableNameByLabel("Scripts"),
-				"SCRIPT_ID", "SCRIPT_NM", scriptName) + ")";
+		sql += "VALUES (";
+		sql += SQLTools.GetStringForSQL(script.getId());
 		sql += ",";
 		sql += SQLTools.GetStringForSQL(scriptVersionNumber);
 		sql += ",";
-		sql += "(" + SQLTools.GetNextIdStatement(
-				this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository()
-						.getTableNameByLabel("Actions"),
-				"ACTION_ID") + ")";
+		sql += SQLTools.GetStringForSQL(this.getAction().getId());
 		sql += ",";
 		sql += SQLTools.GetStringForSQL(actionNumber);
 		sql += ",";
@@ -72,7 +68,7 @@ public class ActionConfiguration {
 		sql += ";";
 
 		// add Parameters
-		String sqlParameters = this.getParameterInsertStatements(scriptName, scriptVersionNumber);
+		String sqlParameters = this.getParameterInsertStatements(script);
 		if (!sqlParameters.equalsIgnoreCase("")) {
 			sql += "\n";
 			sql += sqlParameters;
@@ -81,29 +77,33 @@ public class ActionConfiguration {
 		return sql;
 	}
 
-	private String getParameterInsertStatements(String scriptName, long scriptVersionNumber) {
+	private String getParameterInsertStatements(Script script) {
 		String result = "";
 
 		for (ActionParameter actionParameter : this.getAction().getParameters()) {
-			ActionParameterConfiguration actionParameterConfiguration = new ActionParameterConfiguration(actionParameter, this.getFrameworkExecution());
+			ActionParameterConfiguration actionParameterConfiguration = new ActionParameterConfiguration(
+					actionParameter, this.getFrameworkExecution());
 			if (!result.equalsIgnoreCase(""))
 				result += "\n";
-			result += actionParameterConfiguration.getInsertStatement(scriptName, scriptVersionNumber, this.getAction().getName());
+			result += actionParameterConfiguration.getInsertStatement(script, this.getAction());
 		}
 
 		return result;
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public Action getAction(long actionId) {
+	public Action getAction(Script script, String actionId) {
 		Action action = new Action();
 		CachedRowSet crsAction = null;
 		String queryAction = "select SCRIPT_ID, SCRIPT_VRS_NB, ACTION_ID, ACTION_NB, ACTION_TYP_NM, ACTION_NM, ACTION_DSC, COMP_NM, ITERATION_VAL, CONDITION_VAL, RETRIES_VAL, EXP_ERR_FL, STOP_ERR_FL from "
-					+ this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository()
-				.getTableNameByLabel("Actions")
-					+ " where ACTION_ID = " + actionId;
-		crsAction = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(queryAction, "reader");
-		ActionParameterConfiguration actionParameterConfiguration = new ActionParameterConfiguration(this.getFrameworkExecution());
+				+ this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository()
+						.getTableNameByLabel("Actions")
+				+ " where SCRIPT_ID = '" + script.getId() + "' and SCRIPT_VRS_NB = " + script.getVersion().getNumber()
+				+ " AND ACTION_ID = '" + actionId + "'";
+		crsAction = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository()
+				.executeQuery(queryAction, "reader");
+		ActionParameterConfiguration actionParameterConfiguration = new ActionParameterConfiguration(
+				this.getFrameworkExecution());
 		try {
 			while (crsAction.next()) {
 				action.setId(actionId);
@@ -117,18 +117,20 @@ public class ActionConfiguration {
 				action.setRetries(crsAction.getString("RETRIES_VAL"));
 				action.setErrorExpected(crsAction.getString("EXP_ERR_FL"));
 				action.setErrorStop(crsAction.getString("STOP_ERR_FL"));
-				
+
 				// Get parameters
 				CachedRowSet crsActionParameters = null;
-				String queryActionParameters = "select ACTION_ID, ACTION_PAR_NM from "
+				String queryActionParameters = "select SCRIPT_ID, SCRIPT_VRS_NB, ACTION_ID, ACTION_PAR_NM from "
 						+ this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository()
-						.getTableNameByLabel("ActionParameters")
-						+ " where ACTION_ID = " + actionId;
-				crsActionParameters = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(queryActionParameters, "reader");
+								.getTableNameByLabel("ActionParameters")
+						+ " where SCRIPT_ID = '" + script.getId() + "' and SCRIPT_VRS_NB = "
+						+ script.getVersion().getNumber() + " AND ACTION_ID = '" + actionId + "'";
+				crsActionParameters = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository()
+						.executeQuery(queryActionParameters, "reader");
 				List<ActionParameter> actionParameterList = new ArrayList();
 				while (crsActionParameters.next()) {
-					actionParameterList
-							.add(actionParameterConfiguration.getActionParameter(actionId, crsActionParameters.getString("ACTION_PAR_NM")));
+					actionParameterList.add(actionParameterConfiguration.getActionParameter(script, actionId,
+							crsActionParameters.getString("ACTION_PAR_NM")));
 				}
 				action.setParameters(actionParameterList);
 				crsActionParameters.close();
@@ -158,7 +160,5 @@ public class ActionConfiguration {
 	public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
 		this.frameworkExecution = frameworkExecution;
 	}
-	
 
-	
 }

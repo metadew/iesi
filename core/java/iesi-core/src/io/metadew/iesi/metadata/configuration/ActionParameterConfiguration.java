@@ -7,7 +7,9 @@ import javax.sql.rowset.CachedRowSet;
 
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.metadata.definition.Action;
 import io.metadew.iesi.metadata.definition.ActionParameter;
+import io.metadew.iesi.metadata.definition.Script;
 
 public class ActionParameterConfiguration {
 
@@ -25,14 +27,19 @@ public class ActionParameterConfiguration {
 	}
 
 	// Insert
-	public String getInsertStatement(String scriptName, long scriptVersionNumber, String actionName) {
+	public String getInsertStatement(Script script, Action action) {
 		String sql = "";
 
-		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ActionParameters");
-		sql += " (ACTION_ID, ACTION_PAR_NM, ACTION_PAR_VAL) ";
+		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository()
+				.getTableNameByLabel("ActionParameters");
+		sql += " (SCRIPT_ID, SCRIPT_VRS_NB, ACTION_ID, ACTION_PAR_NM, ACTION_PAR_VAL) ";
 		sql += "VALUES ";
 		sql += "(";
-		sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Actions"), "ACTION_ID", "where ACTION_NM = '"+ actionName + "' and SCRIPT_ID = (" + SQLTools.GetLookupIdStatement(this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Scripts"), "SCRIPT_ID", "SCRIPT_NM", scriptName)) + ") and SCRIPT_VRS_NB =" + scriptVersionNumber + ")";
+		sql += SQLTools.GetStringForSQL(script.getId());
+		sql += ",";
+		sql += SQLTools.GetStringForSQL(script.getVersion().getNumber());
+		sql += ",";
+		sql += SQLTools.GetStringForSQL(action.getId());
 		sql += ",";
 		sql += SQLTools.GetStringForSQL(this.getActionParameter().getName());
 		sql += ",";
@@ -43,12 +50,16 @@ public class ActionParameterConfiguration {
 		return sql;
 	}
 
-	public ActionParameter getActionParameter(long actionId, String actionParameterName) {
+	public ActionParameter getActionParameter(Script script, String actionId, String actionParameterName) {
 		ActionParameter actionParameter = new ActionParameter();
 		CachedRowSet crsActionParameter = null;
-		String queryActionParameter = "select ACTION_ID, ACTION_PAR_NM, ACTION_PAR_VAL from " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ActionParameters")
-				+ " where ACTION_ID = " + actionId + " and ACTION_PAR_NM = '" + actionParameterName + "'";
-		crsActionParameter = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(queryActionParameter, "reader");
+		String queryActionParameter = "select SCRIPT_ID, SCRIPT_VRS_NB, ACTION_ID, ACTION_PAR_NM, ACTION_PAR_VAL from "
+				+ this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository()
+						.getTableNameByLabel("ActionParameters")
+				+ " where SCRIPT_ID = '" + script.getId() + "' and SCRIPT_VRS_NB = " + script.getVersion().getNumber()
+				+ " AND ACTION_ID = '" + actionId + "' and ACTION_PAR_NM = '" + actionParameterName + "'";
+		crsActionParameter = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository()
+				.executeQuery(queryActionParameter, "reader");
 		try {
 			while (crsActionParameter.next()) {
 				actionParameter.setName(actionParameterName);
@@ -78,6 +89,5 @@ public class ActionParameterConfiguration {
 	public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
 		this.frameworkExecution = frameworkExecution;
 	}
-
 
 }

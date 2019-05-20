@@ -8,7 +8,7 @@ public class Main {
     public static void main(String[] args) throws IOException {  	
       	int port = -1;
     	try {
-    		port = Integer.parseInt("2223");
+    		port = Integer.parseInt("2222");
     	} catch (Exception e) {
     		System.err.println("Unable to read port configuration");
     		System.exit(1); 

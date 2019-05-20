@@ -1,44 +1,49 @@
 package io.metadew.iesi.server.execution;
 
-import io.metadew.iesi.framework.execution.FrameworkExecutionContext;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
-import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
 import io.metadew.iesi.metadata.definition.Context;
+import io.metadew.iesi.server.execution.configuration.ExecutionServerServices;
+import io.metadew.iesi.server.execution.requestor.RequestorRunnable;
 
 public class Services {
-	public Runnable requestServerRunnable;
-	public Thread requestServerThread;
-	public Runnable schedulerServerRunnable;
-	public Thread schedulerServerThread;
-	private FrameworkExecution frameworkExecution;
+	public Runnable requestorRunnable;
+	public Thread requestorThread;
+	public Runnable schedulerRunnable;
+	public Thread schedulerThread;
+	private FrameworkInstance frameworkInstance;
 
 	public Services() {
 		// Create the framework instance
-		FrameworkInstance frameworkInstance = new FrameworkInstance();
+		FrameworkInitializationFile frameworkInitializationFile = new FrameworkInitializationFile();
+		frameworkInitializationFile.setName("iesi-test.ini");
+		this.setFrameworkInstance(new FrameworkInstance(frameworkInitializationFile));
+		
+		// Create the framework settings
+		//FrameworkExecutionSettings frameworkExecutionSettings = new FrameworkExecutionSettings("");
 		
 		// Create the framework execution
 		Context context = new Context();
 		context.setName("server");
 		context.setScope("");
-		this.setFrameworkExecution(new FrameworkExecution(frameworkInstance, new FrameworkExecutionContext(context), null));
 		
-		//requestServerRunnable = new RequestRunnable(this.getFrameworkExecution());
-		requestServerThread = new Thread(requestServerRunnable);
-		requestServerThread.setName("RequestServer");
-		// schedulerServerRunnable = new SchedulerServerRunnable();
-		// schedulerServerThread = new Thread(schedulerServerRunnable);
+		requestorRunnable = new RequestorRunnable(this.getFrameworkInstance());
+		requestorThread = new Thread(requestorRunnable);
+		requestorThread.setName(ExecutionServerServices.REQUESTOR.value());
+		// schedulerRunnable = new SchedulerRunnable();
+		// schedulerThread = new Thread(schedulerRunnable);
 	}
 
 	public void startAll() {
-		if (requestServerThread.isAlive() == false) {
-			this.startRequestServer();
+		if (requestorThread.isAlive() == false) {
+			this.startRequestor();
 		}
 	}
 
 	@SuppressWarnings("deprecation")
 	public void stopAll() {
-		if (requestServerThread.isAlive() == true) {
-			requestServerThread.stop();
+		if (requestorThread.isAlive() == true) {
+			requestorThread.stop();
 		}
 	}
 
@@ -46,11 +51,11 @@ public class Services {
 		boolean temp_status = false;
 		boolean temp_service = false;
 
-		if (serviceName.equalsIgnoreCase("REQUESTSERVER")) {
-			temp_status = this.statusRequestServer();
+		if (serviceName.equalsIgnoreCase(ExecutionServerServices.REQUESTOR.value())) {
+			temp_status = this.statusRequestor();
 			temp_service = true;
-		} else if (serviceName.equalsIgnoreCase("SCHEDULERSERVER")) {
-			temp_status = this.statusSchedulerServer();
+		} else if (serviceName.equalsIgnoreCase(ExecutionServerServices.SCHEDULER.value())) {
+			temp_status = this.statusScheduler();
 			temp_service = true;
 		} else {
 			// ELSE
@@ -72,11 +77,11 @@ public class Services {
 	public String start(String serviceName) {
 		boolean temp_service = false;
 
-		if (serviceName.equalsIgnoreCase("REQUESTSERVER")) {
-			this.startRequestServer();
+		if (serviceName.equalsIgnoreCase(ExecutionServerServices.REQUESTOR.value())) {
+			this.startRequestor();
 			temp_service = true;
-		} else if (serviceName.equalsIgnoreCase("SCHEDULERSERVER")) {
-			this.startSchedulerServer();
+		} else if (serviceName.equalsIgnoreCase(ExecutionServerServices.SCHEDULER.value())) {
+			this.startScheduler();
 			temp_service = true;
 		} else {
 			// ELSE
@@ -92,11 +97,11 @@ public class Services {
 	public String stop(String serviceName) {
 		boolean temp_service = false;
 
-		if (serviceName.equalsIgnoreCase("REQUESTSERVER")) {
-			this.stopRequestServer();
+		if (serviceName.equalsIgnoreCase(ExecutionServerServices.REQUESTOR.value())) {
+			this.stopRequestor();
 			temp_service = true;
-		} else if (serviceName.equalsIgnoreCase("SCHEDULERSERVER")) {
-			this.stopSchedulerServer();
+		} else if (serviceName.equalsIgnoreCase(ExecutionServerServices.SCHEDULER.value())) {
+			this.stopScheduler();
 			temp_service = true;
 		} else {
 			// ELSE
@@ -115,28 +120,28 @@ public class Services {
 	 * -------------------------------------------------------------------------
 	 * ----------------------------
 	 */
-	public boolean startRequestServer() {
+	public boolean startRequestor() {
 		boolean temp_result = false;
-		if (requestServerThread.isAlive() == false) {
-			requestServerThread.start();
+		if (requestorThread.isAlive() == false) {
+			requestorThread.start();
 			temp_result = true;
 		}
 		return temp_result;
 	}
 
 	@SuppressWarnings("deprecation")
-	public boolean stopRequestServer() {
+	public boolean stopRequestor() {
 		boolean temp_result = false;
-		if (requestServerThread.isAlive() == true) {
-			requestServerThread.stop();
-			requestServerThread = new Thread(requestServerRunnable);
+		if (requestorThread.isAlive() == true) {
+			requestorThread.stop();
+			requestorThread = new Thread(requestorRunnable);
 			temp_result = true;
 		}
 		return temp_result;
 	}
 
-	public boolean statusRequestServer() {
-		return requestServerThread.isAlive();
+	public boolean statusRequestor() {
+		return requestorThread.isAlive();
 	}
 
 	/*
@@ -145,37 +150,38 @@ public class Services {
 	 * -------------------------------------------------------------------------
 	 * ----------------------------
 	 */
-	public boolean startSchedulerServer() {
+	public boolean startScheduler() {
 		boolean temp_result = false;
-		if (schedulerServerThread.isAlive() == false) {
-			schedulerServerThread.start();
+		if (schedulerThread.isAlive() == false) {
+			schedulerThread.start();
 			temp_result = true;
 		}
 		return temp_result;
 	}
 
 	@SuppressWarnings("deprecation")
-	public boolean stopSchedulerServer() {
+	public boolean stopScheduler() {
 		boolean temp_result = false;
-		if (schedulerServerThread.isAlive() == true) {
-			schedulerServerThread.stop();
-			schedulerServerThread = new Thread(schedulerServerThread);
+		if (schedulerThread.isAlive() == true) {
+			schedulerThread.stop();
+			schedulerThread = new Thread(schedulerThread);
 			temp_result = true;
 		}
 		return temp_result;
 	}
 
-	public boolean statusSchedulerServer() {
-		return schedulerServerThread.isAlive();
+	public boolean statusScheduler() {
+		return schedulerThread.isAlive();
 	}
 
 	// Getters and setters
-	public FrameworkExecution getFrameworkExecution() {
-		return frameworkExecution;
+	public FrameworkInstance getFrameworkInstance() {
+		return frameworkInstance;
 	}
 
-	public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-		this.frameworkExecution = frameworkExecution;
+	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
+		this.frameworkInstance = frameworkInstance;
 	}
+
 
 }

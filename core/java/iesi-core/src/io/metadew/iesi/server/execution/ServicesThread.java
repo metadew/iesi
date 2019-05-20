@@ -3,6 +3,8 @@ package io.metadew.iesi.server.execution;
 import java.net.*;
 import java.io.*;
 import java.util.*;
+
+import io.metadew.iesi.server.execution.configuration.ExecutionServerServices;
  
 public class ServicesThread extends Thread {
     private Socket socket = null;
@@ -15,8 +17,7 @@ public class ServicesThread extends Thread {
 	    this.socket = socket;
 	    this.services = srv;
 	    srvList = new ArrayList();
-	    srvList.add("REQUESTSERVER");
-	    srvList.add("SCHEDULERSERVER");
+	    srvList.add(ExecutionServerServices.REQUESTOR.value());
     }
  
     public void run() {

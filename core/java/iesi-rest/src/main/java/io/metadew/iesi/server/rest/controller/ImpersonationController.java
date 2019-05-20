@@ -6,7 +6,6 @@ import java.util.Optional;
 
 import javax.validation.Valid;
 
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.metadew.iesi.metadata.configuration.ImpersonationConfiguration;
@@ -27,9 +25,8 @@ import io.metadew.iesi.server.rest.pagination.ImpersonationCriteria;
 import io.metadew.iesi.server.rest.pagination.ImpersonationRepository;
 import io.metadew.iesi.server.rest.ressource.impersonation.ImpersonationResource;
 import io.metadew.iesi.server.rest.ressource.impersonation.ImpersonationResources;
-@ComponentScan
+
 @RestController
-@RequestMapping("/api")
 public class ImpersonationController {
 
 	private static ImpersonationConfiguration impersonationConfiguration = new ImpersonationConfiguration(
@@ -39,8 +36,10 @@ public class ImpersonationController {
 	ImpersonationController(ImpersonationRepository impersonationRepository) {
 		this.impersonationRepository = impersonationRepository;
 	}
+
 	@GetMapping("/impersonations")
-	public ResponseEntity<ImpersonationResources> getAllImpersonation(@Valid ImpersonationCriteria impersonationCriteria) {
+	public ResponseEntity<ImpersonationResources> getAllImpersonation(
+			@Valid ImpersonationCriteria impersonationCriteria) {
 		List<Impersonation> impersonation = impersonationConfiguration.getAllImpersonations();
 		List<Impersonation> pagination = impersonationRepository.search(impersonation, impersonationCriteria);
 		final ImpersonationResources resource = new ImpersonationResources(pagination);
@@ -61,8 +60,8 @@ public class ImpersonationController {
 	}
 
 	@PostMapping("/impersonations")
-	public ResponseEntity<ImpersonationResource> postImpersonation(
-			@Valid @RequestBody Impersonation impersonation) throws ImpersonationAlreadyExistsException {
+	public ResponseEntity<ImpersonationResource> postImpersonation(@Valid @RequestBody Impersonation impersonation)
+			throws ImpersonationAlreadyExistsException {
 		impersonationConfiguration.insertImpersonation(impersonation);
 		final ImpersonationResource resource = new ImpersonationResource(impersonation, null);
 		return ResponseEntity.status(HttpStatus.OK).body(resource);
@@ -98,14 +97,18 @@ public class ImpersonationController {
 
 	@DeleteMapping("/impersonations")
 	public ResponseEntity<?> deleteAllImpersonation() {
-	impersonationConfiguration.deleteAllImpersonations();
+		impersonationConfiguration.deleteAllImpersonations();
 		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
 	@DeleteMapping("/impersonations/{name}")
 	public ResponseEntity<?> deleteByNameImpersonation(@PathVariable String name) {
-		impersonationConfiguration.deleteImpersonation(name);
-		return ResponseEntity.status(HttpStatus.OK).build();
+		Optional<Impersonation> impersonation = impersonationConfiguration.getImpersonation(name);
+		if (impersonation.isPresent()) {
+			impersonationConfiguration.deleteImpersonation(name);
+			return ResponseEntity.status(HttpStatus.OK).build();
+		}
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 	}
 
 }

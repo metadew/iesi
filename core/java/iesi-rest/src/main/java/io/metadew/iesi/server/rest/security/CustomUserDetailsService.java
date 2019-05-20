@@ -1,63 +1,33 @@
 package io.metadew.iesi.server.rest.security;
 
-import javax.annotation.PostConstruct;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.web.context.WebApplicationContext;
 
-import io.metadew.iesi.server.rest.models.User;
-import io.metadew.iesi.server.rest.repository.UserRepository;
+import io.metadew.iesi.metadata.configuration.UserConfiguration;
+import io.metadew.iesi.metadata.definition.User;
+import io.metadew.iesi.server.rest.controller.FrameworkConnection;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
-//    @Autowired
-//    UserRepository userRepository;
-//
-//    @Override
-//    @Transactional
-//    public UserDetails loadUserByUsername(String usernameOrEmail)
-//            throws UsernameNotFoundException {
-//        User user = userRepository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail)
-//                .orElseThrow(() ->
-//                        new UsernameNotFoundException("User not found with username or email : " + usernameOrEmail)
-//        );
-//
-//        return UserPrincipal.create(user);
-//    }
-//
-//    @Transactional
-//    public UserDetails loadUserById(Long id) {
-//        User user = userRepository.findById(id).orElseThrow(
-//            () -> new ResourceNotFoundException("User", "id", id)
-//        );
-//
-//        return UserPrincipal.create(user);
-//    }
+	private static UserConfiguration userConfiguration = new UserConfiguration(
+			FrameworkConnection.getInstance().getFrameworkExecution());
 
-    @Autowired
-    private WebApplicationContext applicationContext;
-    private UserRepository userRepository;
+	public CustomUserDetailsService() {
+		super();
+	}
 
-    public CustomUserDetailsService() {
-        super();
-    }
-
-    @PostConstruct
-    public void completeSetup() {
-        userRepository = applicationContext.getBean(UserRepository.class);
-    }
-
-    @Override
-    public UserDetails loadUserByUsername(final String username) {
-        final User user = userRepository.findByUsername(username);
-        if (user == null) {
-            throw new UsernameNotFoundException(username);
-        }
-        return new UserPrincipal(user);
-    }
+	@Override
+	public UserDetails loadUserByUsername(final String username) {
+		User user = userConfiguration.getUser(username);
+		if (user == null) {
+			throw new UsernameNotFoundException(username);
+		}
+		return new UserPrincipal(user);
+	}
 }
+
+
+

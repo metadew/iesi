@@ -14,7 +14,6 @@ public class EnvironmentCriteria {
 
 	private int limit = 100;
 	
-
 	private EnvironmentCriteria() {
 	}
 

@@ -14,6 +14,10 @@ public class ImpersonationCriteria {
 
 	private int limit = 25;
 
+	private ImpersonationCriteria() {
+		
+	}
+	
 	public String getName() {
 		return name;
 	}

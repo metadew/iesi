@@ -1,0 +1,9 @@
+server:
+  port: 8081
+
+spring:
+  boot:    admin:      ui:        public-url: http://localhost:8081
+  application:
+    name: admin-server
+  aop:
+    proxy-target-class: true

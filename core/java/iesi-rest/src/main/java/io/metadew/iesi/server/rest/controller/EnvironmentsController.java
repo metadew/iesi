@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.metadew.iesi.metadata.configuration.ConnectionConfiguration;
@@ -33,7 +32,6 @@ import io.metadew.iesi.server.rest.ressource.environment.EnvironmentResource;
 import io.metadew.iesi.server.rest.ressource.environment.EnvironmentResources;
 
 @RestController
-@RequestMapping("/api")
 public class EnvironmentsController {
 
 	private static EnvironmentConfiguration environmentConfiguration = new EnvironmentConfiguration(
@@ -47,7 +45,9 @@ public class EnvironmentsController {
 		this.environmentRepository = environmentRepository;
 	}
 
-
+//
+//	@PreAuthorize("hasRole('')")
+//    @PreAuthorize("hasAuthority('AUTHORIZED_USER')")
 	@GetMapping("/environments")
 	public ResponseEntity<EnvironmentResources> getAll(@Valid EnvironmentCriteria environmentCriteria) {
 		List<Environment> environment = environmentConfiguration.getAllEnvironments();
@@ -57,6 +57,7 @@ public class EnvironmentsController {
 	}
 
 	@GetMapping("/environments/{name}")
+
 	public ResponseEntity<EnvironmentResource> getByName(@PathVariable String name) {
 		Optional<Environment> environment = environmentConfiguration.getEnvironment(name);
 		if (!environment.isPresent()) {
@@ -70,6 +71,7 @@ public class EnvironmentsController {
 	}
 
 	@PostMapping("/environments")
+
 	public ResponseEntity<EnvironmentResource> postAllEnvironments(@Valid @RequestBody Environment environment)
 			throws EnvironmentAlreadyExistsException {
 		environmentConfiguration.insertEnvironment(environment);
@@ -78,6 +80,7 @@ public class EnvironmentsController {
 	}
 
 	@PutMapping("/environments")
+
 	public ResponseEntity<EnvironmentResources> putAllEnvironment(@Valid @RequestBody List<Environment> environments)
 			throws EnvironmentDoesNotExistException {
 		List<Environment> updatedEnvironment = new ArrayList<Environment>();
@@ -90,6 +93,7 @@ public class EnvironmentsController {
 	}
 
 	@PutMapping("/environments/{name}")
+
 	public ResponseEntity<EnvironmentResource> putEnvironments(@PathVariable String name,
 			@RequestBody Environment environment) throws EnvironmentDoesNotExistException {
 		if (!environment.getName().equals(name)) {
@@ -103,6 +107,7 @@ public class EnvironmentsController {
 	}
 
 	@GetMapping("/environments/{name}/connections")
+
 	public ResponseEntity<EnvironmentNameResource> getEnvironmentsConnections(@PathVariable String name) {
 		List<Connection> connections = connectionConfiguration.getConnections();
 		List<Connection> result = connections.stream().filter(connection -> connection.getEnvironment().equals(name))
@@ -113,15 +118,20 @@ public class EnvironmentsController {
 	}
 
 	@DeleteMapping("/environments")
+
 	public ResponseEntity<?> deleteAllEnvironments() {
 		environmentConfiguration.deleteAllEnvironments();
 		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
-	@DeleteMapping("environments/{environmentName}")
-	public ResponseEntity<?> deleteEnvironments(@PathVariable String environmentName) {
-		environmentConfiguration.deleteEnvironment(environmentName);
-		return ResponseEntity.status(HttpStatus.OK).build();
+	@DeleteMapping("environments/{name}")
+	public ResponseEntity<?> deleteEnvironments(@PathVariable String name) {
+		Optional<Environment> environment = environmentConfiguration.getEnvironment(name);
+		if (environment.isPresent()) {
+			environmentConfiguration.deleteEnvironment(name);
+			return ResponseEntity.status(HttpStatus.OK).build();
+		}
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 	}
 
 }

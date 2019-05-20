@@ -1,0 +1,44 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+spring.security.user:
+  name: admin
+  password: admin
+
+security:
+  jwt:
+    key-store: classpath:francois.jks
+    key-store-password: francois
+    key-pair-alias: francois
+    key-pair-password: francois
+  oauth2:
+    client:
+      clientId: client-id
+      clientSecret: secret
+      scope:
+      - openid
+      authorized-grant-types:
+      - password
+      - authorization_code
+      - refresh_token     
+      auto-approve-scopes: .*
+    authorization:
+      check-token-access: permitAll()
+    resource:
+      user-info-uri: http://localhost:8080/api/myaccount
+
+spring:
+  application:
+      name: IESI-REST
+  boot:
+    admin:
+      client:
+          url: http://localhost:8081/
+          username: admin
+          password: admin
+          instance:
+            metadata:
+              user.namme: admin
+              user.password: admin

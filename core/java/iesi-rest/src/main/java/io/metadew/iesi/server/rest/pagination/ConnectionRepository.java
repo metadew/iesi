@@ -20,7 +20,7 @@ public class ConnectionRepository {
 		} else if (connectionCriteria.getDescription() != null) {
 			return connection.stream().filter(p -> p.getDescription().contains(connectionCriteria.getDescription()))
 					.skip(connectionCriteria.getSkip()).limit(connectionCriteria.getLimit()).collect(toList());
-			
+
 		} else if (connectionCriteria.getType() != null) {
 			return connection.stream().filter(p -> p.getType().contains(connectionCriteria.getType()))
 					.skip(connectionCriteria.getSkip()).limit(connectionCriteria.getLimit()).collect(toList());

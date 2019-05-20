@@ -22,13 +22,25 @@ public class ImpersonationRepository {
 					.filter(p -> p.getDescription().contains(impersonationCriteria.getDescription()))
 					.skip(impersonationCriteria.getSkip()).limit(impersonationCriteria.getLimit()).collect(toList());
 
+		} else if (impersonationCriteria.getParametersName() != null) {
+			return impersonation.stream()
+					.filter(p -> p.getParameters().get(0).getConnection()
+							.contains(impersonationCriteria.getParametersName()))
+					.skip(impersonationCriteria.getSkip()).limit(impersonationCriteria.getLimit()).collect(toList());
+		
+		} else if (impersonationCriteria.getParametersName() != null) {
+			return impersonation.stream()
+					.filter(p -> p.getParameters().get(0).getDescription()
+							.contains(impersonationCriteria.getParametersName()))
+					.skip(impersonationCriteria.getSkip()).limit(impersonationCriteria.getLimit()).collect(toList());
+		
+		} else if (impersonationCriteria.getParametersName() != null) {
+			return impersonation.stream()
+					.filter(p -> p.getParameters().get(0).getImpersonatedConnection()
+							.contains(impersonationCriteria.getParametersName()))
+					.skip(impersonationCriteria.getSkip()).limit(impersonationCriteria.getLimit()).collect(toList());
+		
 		}
-//			else if (impersonationCriteria.getParametersName() != null) {
-//			return impersonation.stream()
-//					.filter(p -> p.getParameters().get(0).contains(impersonationCriteria.getParametersName()))
-//					.skip(impersonationCriteria.getSkip()).limit(impersonationCriteria.getLimit()).collect(toList());
-//		}
-
 		return impersonation.stream().skip(impersonationCriteria.getSkip()).limit(impersonationCriteria.getLimit())
 				.collect(toList());
 

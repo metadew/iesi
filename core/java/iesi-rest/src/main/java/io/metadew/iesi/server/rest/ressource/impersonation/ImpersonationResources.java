@@ -24,4 +24,3 @@ public class ImpersonationResources extends ResourceSupport{
 		
 	}
 }
-

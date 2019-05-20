@@ -23,7 +23,6 @@ public class ConnectionName {
 		this.name = connections.get(0).getName();
 		this.type = connections.get(0).getType();
 		this.description = connections.get(0).getDescription();
-		System.out.println("Connections size: " + connections.size());
 		this.environments = connections.stream()
 				.map(connection -> connection.getEnvironment())
 				.collect(Collectors.toList());

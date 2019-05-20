@@ -20,7 +20,6 @@ import io.metadew.iesi.server.rest.pagination.ScriptRepository;
 import io.metadew.iesi.server.rest.ressource.script.ScriptResource;
 
 @RestController
-@RequestMapping(value = "/api", produces = "application/hal+json")
 public class ScriptController {
 
 	private static ScriptConfiguration scriptConfiguration = new ScriptConfiguration(
@@ -41,12 +40,12 @@ public class ScriptController {
 	}
 
 	@GetMapping("/scripts/{name}")
-	public ResponseEntity<ScriptResource> getByNameScript(String name) {
+	public ResponseEntity<ScriptResource> getByNameScript(@PathVariable String name) {
 		Script script = scriptConfiguration.getScript(name);
 		final ScriptResource resource = new ScriptResource(script, null);
 		return ResponseEntity.status(HttpStatus.OK).body(resource);
 	}
-
+	
 	@GetMapping("/scripts/{name}/{version}")
 	public Script getByNameScriptAndVersion(@PathVariable String name, Long version) {
 		Script scriptVersion = scriptConfiguration.getScript(name, version);

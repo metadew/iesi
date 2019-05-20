@@ -1,9 +1,11 @@
 package io.metadew.iesi.server.rest.configuration;
 
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
+
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -27,6 +29,7 @@ public class SwaggerConfig {
 	}
 
 	private Predicate<String> paths() {
-		return Predicates.and(PathSelectors.regex("/.*"), Predicates.not(PathSelectors.regex("/error.*")));
+		return Predicates.and(PathSelectors.regex("/.*"), Predicates.not(PathSelectors.regex("/error.*"))
+				,Predicates.not(PathSelectors.regex( "/oauth.*")));
 	}
 }

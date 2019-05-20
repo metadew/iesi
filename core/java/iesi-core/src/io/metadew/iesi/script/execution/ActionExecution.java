@@ -144,7 +144,7 @@ public class ActionExecution {
 					if (this.getAction().getErrorExpected().equalsIgnoreCase("y")) {
 						this.getActionControl().getExecutionMetrics().resetSuccessCount();
 						this.getActionControl().getExecutionMetrics().increaseErrorCount(1);
-						this.getExecutionControl().logMessage(this, "action.status=ERROR:expected", Level.INFO);
+						this.getExecutionControl().logMessage(this, "action.status=SUCCESS:unexpected", Level.INFO);
 					}
 				}
 

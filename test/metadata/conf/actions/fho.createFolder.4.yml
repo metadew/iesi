@@ -1,0 +1,55 @@
+---
+type: "script"
+data:
+  name: "fho.createFolder.4"
+  description: "Test fho.createFolder with a remote folder using an absolute folder path parameter"
+  parameters: []
+  actions:
+  - number: 1
+    type: "fho.folderExists"
+    name: "Action1"
+    description: "Verify that the folder does not exist"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "Y"
+    errorStop: "Y"
+    parameters:
+    - name: "path"
+      value : ""
+    - name: "folder"
+      value : "/tmp/fho.createFolder.4"
+    - name: "connection"
+      value : "host.linux.1"
+  - number: 2
+    type: "fho.createFolder"
+    name: "Action2"
+    description: "Create folder"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "path"
+      value : ""
+    - name: "folder"
+      value : "/tmp/fho.createFolder.4"
+    - name: "connection"
+      value : "host.linux.1"
+  - number: 3
+    type: "fho.folderExists"
+    name: "Action3"
+    description: "Verify that the folder now exists"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "path"
+      value : ""
+    - name: "folder"
+      value : "/tmp/fho.createFolder.4"
+    - name: "connection"
+      value : "host.linux.1"

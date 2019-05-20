@@ -1,6 +1,7 @@
 # Intelligent ETL Solution Industrialization
 
 ![GitHub release](https://img.shields.io/github/release-pre/metadew/iesi.svg)
+![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![GitHub last commit](https://img.shields.io/github/last-commit/metadew/iesi.svg)
 [![Slack Status](https://img.shields.io/badge/slack-join_chat-white.svg?logo=slack&style=social)](https://join.slack.com/t/metadew/shared_invite/enQtNjMzOTk0MjI0Mzg1LTI4OThjYmVlMWRkYjg1OTkwZjAyYmQzMjU5OWVlZTJlMGIzMWVhZTE3N2RjZGVmOTk2MDRiNjk0Y2ViMjgyYTU)
 

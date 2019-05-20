@@ -1,7 +1,7 @@
 package io.metadew.iesi.server.rest.pagination;
 
 public class ComponentCriteria {
-	
+
 	public String getType() {
 		return type;
 	}
@@ -21,6 +21,7 @@ public class ComponentCriteria {
 	public void setName(String name) {
 		this.name = name;
 	}
+
 	private int skip = 0;
 
 	private int limit = 25;
@@ -43,15 +44,15 @@ public class ComponentCriteria {
 
 	private ComponentCriteria() {
 	}
+
 	private String name;
-	
+
 	private String type;
-	
+
 	private String description;
 
 	public String getName() {
 		return name;
 	}
-
 
 }

@@ -38,7 +38,7 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
 
 ////	"/**/**" 
 	private static final String[] AUTH_WHITELIST = { "/v2/api-docs", "/swagger-resources", "/swagger-resources/**",
-			"/swagger-ui.html", "/webjars/**", "/h2-console/**" };
+			"/swagger-ui.html", "/webjars/**", "/h2-console/**","/**/**"  };
 
 	@Override
 	public void configure(HttpSecurity http) throws Exception {

@@ -32,16 +32,14 @@ public class UserSql implements CommandLineRunner {
 			conn = DriverManager.getConnection(DB_URL, USER, PASS);
 			for (User user : userConfiguration.getUsers()) {
 				stmt = conn.createStatement();
+				String enabled = "1";
 				String sql = "INSERT INTO users(username,password,enabled) values ('" + user.getName() + "','"
-						+ user.getPasswordHash() + "','1' )";
+						+ user.getPasswordHash() + "','" + enabled + "')";
 				stmt.executeUpdate(sql);
 				String group_id = "1";
-				String authority = "AUHTORIZED_ADMIN";
+				String authority = "AUTHORIZED_USER";
 				sql = "INSERT INTO authorities(group_id, authority, username) values ('" + group_id + "','" 
 					+ authority + "','" + user.getName() + "')";
-				stmt.executeUpdate(sql);
-				String enabled = "1";
-				sql = "INSERT INTO app_user(username,enabled,password,user_role) values ('" + user.getName() + "', '" + enabled + "','" + user.getPasswordHash() + "', '" + authority + "')";					
 				stmt.executeUpdate(sql);
 				stmt.close();
 			};

@@ -2,7 +2,6 @@ package io.metadew.iesi.server.rest.configuration;
 
 import javax.sql.DataSource;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,20 +18,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 
-import io.metadew.iesi.server.rest.user.DefaultAuthenticationProvider;
-import io.metadew.iesi.server.rest.user.UserRepository;
-
-//import io.metadew.iesi.server.rest.user.DefaultAuthenticationProvider;
-//import io.metadew.iesi.server.rest.user.UserRepository;
-
 @EnableWebSecurity
 @Configuration
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
 @Order(2)
 public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
-
-	@Autowired
-	private UserRepository userRepository;
 
 	private final DataSource dataSource;
 
@@ -41,7 +31,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	}
 
 	@Override
-	@Bean()
+	@Bean
 	public UserDetailsService userDetailsServiceBean() throws Exception {
 		return super.userDetailsServiceBean();
 	}
@@ -56,7 +46,6 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
-		auth.authenticationProvider(new DefaultAuthenticationProvider(userRepository));
 		JdbcUserDetailsManagerConfigurer<AuthenticationManagerBuilder> cfg = auth.jdbcAuthentication()
 				.passwordEncoder(passwordEncoder()).dataSource(dataSource);
 		cfg.getUserDetailsService().setEnableAuthorities(true);

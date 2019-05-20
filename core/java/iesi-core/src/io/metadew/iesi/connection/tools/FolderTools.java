@@ -7,6 +7,9 @@ import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -193,7 +196,8 @@ public final class FolderTools {
 	}
 
 	// Create Folder
-	public static void createFolder(String folderName, boolean errorIfExists) {
+	@Deprecated
+	public static void createFolderold(String folderName, boolean errorIfExists) {
 		File folder = new File(folderName);
 
 		// if the directory does not exist, create it
@@ -217,8 +221,8 @@ public final class FolderTools {
 		}
 	}
 
-	
-	public static void createFolder(String folderName) {
+	@Deprecated
+	public static void createFolderOld(String folderName) {
 		File folder = new File(folderName);
 
 		// if the directory does not exist, create it
@@ -238,6 +242,26 @@ public final class FolderTools {
 		} else {
 			// handle
 		}
+	}
+	
+	public static void createFolder(String folderPath) {
+		FolderTools.createFolder(folderPath, false);
+	}
+	
+	public static void createFolder(String folderPath, boolean errorIfExists) {
+        Path path = Paths.get(folderPath);
+
+        if (!Files.exists(path)) {
+            try {
+                Files.createDirectories(path);
+            } catch (Exception e) {
+				throw new RuntimeException("folder.create.error");
+            }
+        } else {
+			if (errorIfExists) {
+				throw new RuntimeException("folder.exists");
+			}
+        }
 	}
 
 	// Delete Folder

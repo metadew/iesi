@@ -205,11 +205,13 @@ public class MetadataLauncher {
                         path = line.getOptionValue("path");
                         System.out.println("Option -path (path) value = " + path);
                     } else {
-                        System.out.println("Option -path (path) not provided, using default location");
+                        System.out.println("Option -path (path) not provided");
+                        writeFooterMessage();
+                        endLauncher(1,true);
                     }
 
                     // Execute
-                    BackupExecution backupExecution = new BackupExecution();
+                    BackupExecution backupExecution = new BackupExecution(frameworkInstance);
                     backupExecution.execute(path);
                     writeFooterMessage();
                     endLauncher(0,true);

@@ -2,6 +2,8 @@ package io.metadew.iesi.metadata.definition;
 
 import java.util.List;
 
+import io.metadew.iesi.metadata.tools.IdentifierTools;
+
 public class Action {
 	
 	private String id;
@@ -112,6 +114,7 @@ public class Action {
 	}
 
 	public String getId() {
+		if (id == null) this.id = IdentifierTools.getActionIdentifier(this.getName());
 		return id;
 	}
 

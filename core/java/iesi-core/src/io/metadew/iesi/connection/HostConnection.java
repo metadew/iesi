@@ -94,7 +94,7 @@ public class HostConnection {
 
 		return output;
 	}
-	
+
 	private String formatCommand(String input) {
 		String output = "";
 
@@ -103,6 +103,18 @@ public class HostConnection {
 			output = "cmd /c " + "\"" + input + "\"";
 		} else {
 			output = input;
+		}
+
+		return output;
+	}
+
+	private String getMultiCommandAppender() {
+		String output = "";
+
+		if (this.getType().equalsIgnoreCase("windows")) {
+			output = "&";
+		} else {
+			output = "&&";
 		}
 
 		return output;
@@ -170,25 +182,16 @@ public class HostConnection {
 			ShellCommandSettings shellCommandSettings) {
 		String executionShellPath = "";
 		String executionShellCommand = "";
-
+		this.formatCommand("");
 		executionShellPath = shellPath.trim();
-		if (this.getType().equalsIgnoreCase("windows")) {
-			// For Windows Commands, "cmd /c" needs to be put in front of the
-			// command
-			if (executionShellPath.equalsIgnoreCase("")) {
-				executionShellCommand = "cmd /c " + "\"" + shellCommand + "\"";
-			} else {
-				executionShellCommand = "cmd /c " + "\"cd " + executionShellPath + " & " + shellCommand + "\"";
-			}
+		if (executionShellPath.equalsIgnoreCase("")) {
+			executionShellCommand = this.formatCommand(shellCommand);
 		} else {
-			if (executionShellPath.equalsIgnoreCase("")) {
-				executionShellCommand = shellCommand;
-			} else {
-				executionShellCommand = "cd " + executionShellPath + " && " + shellCommand;
-			}
+			executionShellCommand = this.formatCommand(
+					"cd " + executionShellPath + " " + this.getMultiCommandAppender() + " " + shellCommand);
 		}
 
-		//
+		// Command execution
 		int rc;
 		String systemOutput = "";
 		String errorOutput = "";
@@ -311,10 +314,10 @@ public class HostConnection {
 
 			((ChannelExec) channel).setCommand(executionShellCommand);
 			channel.setInputStream(null);
-			//TODO get error output
-			//((ChannelExec) channel).setErrStream(System.err);
+			// TODO get error output
+			// ((ChannelExec) channel).setErrStream(System.err);
 			InputStream in = channel.getInputStream();
-			
+
 			channel.connect();
 
 			systemOutput = "";

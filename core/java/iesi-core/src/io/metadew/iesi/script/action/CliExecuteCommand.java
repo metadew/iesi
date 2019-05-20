@@ -8,6 +8,7 @@ import io.metadew.iesi.connection.HostConnection;
 import io.metadew.iesi.connection.host.ShellCommandResult;
 import io.metadew.iesi.connection.host.ShellCommandSettings;
 import io.metadew.iesi.connection.operation.ConnectionOperation;
+import io.metadew.iesi.connection.tools.HostConnectionTools;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.configuration.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.ActionParameter;
@@ -101,15 +102,19 @@ public class CliExecuteCommand {
 	// Methods
 	public boolean execute() {
 		try {
-			// Get Connection
-			ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution());
-			Connection connection = connectionConfiguration.getConnection(this.getConnectionName().getValue(),
-					this.getExecutionControl().getEnvName()).get();
-			ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
-			HostConnection hostConnection = connectionOperation.getHostConnection(connection);
+			boolean isOnLocalhost = HostConnectionTools.isOnLocalhost(this.getFrameworkExecution(),
+					this.getConnectionName().getValue(), this.getExecutionControl().getEnvName());
 
-			// Check if running on localhost or not
-			boolean isOnLocalHost = connectionOperation.isOnLocalConnection(hostConnection);
+			HostConnection hostConnection = null;
+			if (this.getConnectionName().getValue().isEmpty() || this.getConnectionName().getValue().equalsIgnoreCase("localhost")) {
+				hostConnection = new HostConnection(HostConnectionTools.getLocalhostType());
+			} else {
+				ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution());
+				Connection connection = connectionConfiguration.getConnection(this.getConnectionName().getValue(),
+						this.getExecutionControl().getEnvName()).get();
+				ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
+				hostConnection = connectionOperation.getHostConnection(connection);
+			}
 
 			// Run the action
 			ShellCommandResult shellCommandResult = null;
@@ -119,7 +124,8 @@ public class CliExecuteCommand {
 			shellCommandSettings.setSetRunVarMode(this.getSetRunVarMode().getValue());
 			shellCommandSettings.setFrameworkExecution(this.getFrameworkExecution());
 			shellCommandSettings.setEnvironment(this.getExecutionControl().getEnvName());
-			if (isOnLocalHost) {
+			
+			if (isOnLocalhost) {
 				shellCommandResult = hostConnection.executeLocalCommand(this.getShellPath().getValue(),
 						this.getShellCommand().getValue(), shellCommandSettings);
 			} else {

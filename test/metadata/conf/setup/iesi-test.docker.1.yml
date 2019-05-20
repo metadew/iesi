@@ -1,0 +1,55 @@
+---
+type: "script"
+data:
+  name: "iesi-test.docker.1"
+  description: "Control the docker environment for iesi-test"
+  parameters: []
+  actions:
+  - number: 1
+    type: "fwk.setParameterValue"
+    name: "Action1"
+    description: "Define docker-compose file string"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "name"
+      value : "docker-compose.files"
+    - name: "value"
+      value : "-f linux-ssh/docker-compose.yml"
+  - number: 2
+    type: "cli.executeCommand"
+    name: "Action2"
+    description: "Define the stage connection"
+    component: ""
+    condition: "'#action#' == 'up'"
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    retries: "3"
+    parameters:
+    - name: "path"
+      value : "#iesi.home#/data/iesi-test/docker"
+    - name: "command"
+      value : "docker-compose #docker-compose.files# up -d"
+    - name: "connection"
+      value : ""
+  - number: 3
+    type: "cli.executeCommand"
+    name: "Action3"
+    description: "Define the stage connection"
+    component: ""
+    condition: "'#action#' == 'down'"
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    retries: "3"
+    parameters:
+    - name: "path"
+      value : "#iesi.home#/data/iesi-test/docker"
+    - name: "command"
+      value : "docker-compose -f linux-ssh/docker-compose.yml down"
+    - name: "connection"
+      value : ""

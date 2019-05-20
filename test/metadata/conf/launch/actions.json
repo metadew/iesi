@@ -253,4 +253,52 @@
 		"description": "test sql.setRuntimeVariables taking input from a file",
 		"parameterList": ""
 	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "fho.createFolder.1",
+		"description": "Test fho.createFolder with a local folder",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "fho.createFolder.2",
+		"description": "Test fho.createFolder with a local folder using an absolute folder path parameter",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "fho.createFolder.3",
+		"description": "Test fho.createFolder with a remote folder",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "fho.createFolder.4",
+		"description": "Test fho.createFolder with a remote folder using an absolute folder path parameter",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "fho.deleteFolder.1",
+		"description": "Test fho.deleteFolder with a local folder",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "fho.deleteFolder.2",
+		"description": "Test fho.deleteFolder with a local folder using an absolute folder path parameter",
+		"parameterList": ""
+	}
 }]

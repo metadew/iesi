@@ -2,6 +2,8 @@ package io.metadew.iesi.metadata.definition;
 
 import java.util.List;
 
+import io.metadew.iesi.metadata.tools.IdentifierTools;
+
 public class Script {
 
 	private String id;
@@ -68,6 +70,7 @@ public class Script {
 	}
 
 	public String getId() {
+		if (id == null) this.id = IdentifierTools.getScriptIdentifier(this.getName());
 		return id;
 	}
 

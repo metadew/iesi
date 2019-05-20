@@ -1,5 +1,6 @@
 package io.metadew.iesi.connection.tools;
 
+import cdjd.org.apache.commons.lang3.SystemUtils;
 import io.metadew.iesi.connection.HostConnection;
 import io.metadew.iesi.connection.operation.ConnectionOperation;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
@@ -30,6 +31,16 @@ public final class HostConnectionTools {
 		}
 		
 		return isOnLocalhost;
+	}
+	
+	public static String getLocalhostType() {
+		String result = "";
+		if (SystemUtils.IS_OS_WINDOWS) {
+			result = "windows";
+		} else {
+			result = "linux";
+		}
+		return result;
 	}
 
 }

@@ -63,10 +63,13 @@ public class ActionsTest {
             String versionHome = instanceHome + File.separator + version;
 
             String testDataHome = repositoryHome + File.separator + "test" + File.separator + "data";
+            String testDockerHome = repositoryHome + File.separator + "test" + File.separator + "docker";
             String testFwkConfigurationHome = repositoryHome + File.separator + "test" + File.separator + "metadata"
                     + File.separator + "conf" + File.separator + "fwk";
             String testLaunchConfigurationHome = repositoryHome + File.separator + "test" + File.separator + "metadata"
                     + File.separator + "conf" + File.separator + "launch";
+            String testSetupConfigurationHome = repositoryHome + File.separator + "test" + File.separator + "metadata"
+                    + File.separator + "conf" + File.separator + "setup";
             String testDefConfigurationHome = repositoryHome + File.separator + "test" + File.separator + "metadata"
                     + File.separator + "conf" + File.separator + "def";
             String actionsTestConfigurationHome = repositoryHome + File.separator + "test" + File.separator + "metadata"
@@ -78,20 +81,31 @@ public class ActionsTest {
             String versionHomeConfFolder = versionHome + File.separator + "conf";
             String testDataFolder = versionHome + File.separator + "data" + File.separator + "iesi-test";
             String frameworkTestDataFolder = testDataFolder + File.separator + "fwk";
+            String setupTestConfDataFolder = frameworkTestDataFolder + File.separator + "setup";
             String actionsTestConfDataFolder = frameworkTestDataFolder + File.separator + "actions";
             String connectionsTestConfDataFolder = frameworkTestDataFolder + File.separator + "connections";
             String actionsTestDefDataFolder = frameworkTestDataFolder + File.separator + "def";
             String fwkTestDataFolder = frameworkTestDataFolder + File.separator + "data";
 
+            String dockerTestDataFolder = testDataFolder + File.separator + "docker";
+            
             String metadataInNewFolder = versionHome + File.separator + "metadata" + File.separator + "in" + File.separator + "new";
 
             FolderTools.createFolder(testDataFolder);
             FolderTools.deleteFolder(frameworkTestDataFolder, true);
+            FolderTools.deleteFolder(dockerTestDataFolder, true);
             FolderTools.createFolder(frameworkTestDataFolder);
+            FolderTools.createFolder(setupTestConfDataFolder);
             FolderTools.createFolder(actionsTestConfDataFolder);
             FolderTools.createFolder(connectionsTestConfDataFolder);
             FolderTools.createFolder(actionsTestDefDataFolder);
             FolderTools.createFolder(fwkTestDataFolder);
+
+            FolderTools.createFolder(dockerTestDataFolder);
+
+            // Docker configuration
+            FolderTools.copyFromFolderToFolder(testDockerHome + File.separator + "linux-ssh", dockerTestDataFolder + File.separator + "linux-ssh", true);
+            FolderTools.copyFromFolderToFolder(testSetupConfigurationHome, setupTestConfDataFolder, false);
 
             // Fwk configuration
             FolderTools.copyFromFolderToFolder(testFwkConfigurationHome, versionHomeConfFolder, false);
@@ -143,6 +157,23 @@ public class ActionsTest {
                 inputArgs.remove(files);
             }
 
+            // Load setup scripts
+            confs = FolderTools
+                    .getFilesInFolder(setupTestConfDataFolder, "regex", ".+\\.yml");
+
+            inputArgs.add(ini);
+            inputArgs.add(exit);
+            inputArgs.add(load);
+            inputArgs.add(type);
+
+            for (final File conf : confs) {
+                FileTools.copyFromFileToFile(conf.getAbsolutePath(), metadataInNewFolder + File.separator + conf.getName());
+                LaunchArgument files = new LaunchArgument(true, "-files", conf.getAbsolutePath());
+                inputArgs.add(files);
+                Launcher.execute("metadata", inputArgs);
+                inputArgs.remove(files);
+            }
+            
             // Load action tests
             confs = FolderTools
                     .getFilesInFolder(actionsTestConfDataFolder, "regex", ".+\\.yml");
@@ -179,17 +210,38 @@ public class ActionsTest {
             }
             
             //------------
-            
-            // Run action tests
+
             List<LaunchArgument> scriptInputArgs = new ArrayList();
             scriptInputArgs.add(ini);
             scriptInputArgs.add(exit);
             LaunchArgument env = new LaunchArgument(true, "-env", "iesi-test");
             scriptInputArgs.add(env);
             LaunchArgument script = null;
-
-            LaunchItemOperation launchItemOperation = new LaunchItemOperation(testLaunchConfigurationHome + File.separator + "actions.json");
             ObjectMapper objectMapper = new ObjectMapper();
+            
+            // Run initializations
+            LaunchItemOperation launchInitializationOperation = new LaunchItemOperation(testLaunchConfigurationHome + File.separator + "initializations.json");
+            for (DataObject dataObject : launchInitializationOperation.getDataObjects()) {
+                LaunchItem launchItem = objectMapper.convertValue(dataObject.getData(), LaunchItem.class);
+                script = new LaunchArgument(true, "-script", launchItem.getScript());
+                scriptInputArgs.add(script);
+
+                // Parameter list
+                LaunchArgument paramList = null;
+                if (launchItem.getParameterList() != null && !launchItem.getParameterList().trim().isEmpty()) {
+                    paramList = new LaunchArgument(true, "-paramlist", launchItem.getParameterList());
+                    scriptInputArgs.add(paramList);
+                }
+
+                Launcher.execute("script", scriptInputArgs);
+
+                scriptInputArgs.remove(script);
+                scriptInputArgs.remove(paramList);
+            }
+ 
+            
+            // Run action tests
+            LaunchItemOperation launchItemOperation = new LaunchItemOperation(testLaunchConfigurationHome + File.separator + "actions.json");
             for (DataObject dataObject : launchItemOperation.getDataObjects()) {
                 LaunchItem launchItem = objectMapper.convertValue(dataObject.getData(), LaunchItem.class);
                 script = new LaunchArgument(true, "-script", launchItem.getScript());
@@ -207,6 +259,27 @@ public class ActionsTest {
                 scriptInputArgs.remove(script);
                 scriptInputArgs.remove(paramList);
             }
+            
+            // Run terminations
+            LaunchItemOperation launchTerminationOperation = new LaunchItemOperation(testLaunchConfigurationHome + File.separator + "terminations.json");
+            for (DataObject dataObject : launchTerminationOperation.getDataObjects()) {
+                LaunchItem launchItem = objectMapper.convertValue(dataObject.getData(), LaunchItem.class);
+                script = new LaunchArgument(true, "-script", launchItem.getScript());
+                scriptInputArgs.add(script);
+
+                // Parameter list
+                LaunchArgument paramList = null;
+                if (launchItem.getParameterList() != null && !launchItem.getParameterList().trim().isEmpty()) {
+                    paramList = new LaunchArgument(true, "-paramlist", launchItem.getParameterList());
+                    scriptInputArgs.add(paramList);
+                }
+
+                Launcher.execute("script", scriptInputArgs);
+
+                scriptInputArgs.remove(script);
+                scriptInputArgs.remove(paramList);
+            }
+            
         } catch (ParseException e) {
             e.printStackTrace();
             return;

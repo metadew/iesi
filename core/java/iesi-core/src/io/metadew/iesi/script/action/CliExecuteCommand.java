@@ -136,7 +136,7 @@ public class CliExecuteCommand {
 			// Set runtime variables
 			if (this.getSetRunVar().getValue().trim().equalsIgnoreCase("y")) {
 				this.getExecutionControl().getExecutionRuntime()
-						.setRuntimeVariables(shellCommandResult.getRuntimeVariablesOutput());
+						.setRuntimeVariables(this.getActionExecution(), shellCommandResult.getRuntimeVariablesOutput());
 			}
 
 			if (shellCommandResult.getReturnCode() == 0) {

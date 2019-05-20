@@ -57,7 +57,7 @@ public class FwkSetEnvironment {
 		try {
 			// Run the action
 			try {
-				this.getExecutionControl().setEnvironment(this.getEnvironmentName().getValue());
+				this.getExecutionControl().setEnvironment(this.getActionExecution(), this.getEnvironmentName().getValue());
 				this.getActionExecution().getActionControl().increaseSuccessCount();
 			} catch (Exception e) {
 				throw new RuntimeException("Issue setting environment: " + e, e);

@@ -59,20 +59,20 @@ public class RuntimeVariableConfiguration {
 		this.getSqliteDatabaseConnection().executeUpdate(query);
 	}
 
-	public void setRuntimeVariable(String runId, String name, String value) {
+	public void setRuntimeVariable(String runId, Long processId, String name, String value) {
 		// Verify if variable already exists
 		String query = "";
 
 		query = "select run_id, prc_id, var_nm, var_val from "
 				+ this.getPRC_RUN_VAR() + " where run_id = '"
-				+ runId + "' and var_nm = '" + name + "'";
+				+ runId + "' and prc_id = " + processId + " and var_nm = '" + name + "'";
 		CachedRowSet crs = null;
 		crs = this.getSqliteDatabaseConnection().executeQuery(query);
 
 		// if so, the previous values will be deleted
 		if (SQLTools.getRowCount(crs) > 0) {
 			query = "delete from " + this.getPRC_RUN_VAR()
-					+ " where run_id = '" + runId + "' and var_nm = '" + name + "'";
+					+ " where run_id = '" + runId + "' and prc_id = " + processId + " and var_nm = '" + name + "'";
 			this.getSqliteDatabaseConnection().executeUpdate(query);
 		}
 
@@ -83,14 +83,13 @@ public class RuntimeVariableConfiguration {
 		query = query + " VALUES (";
 		query += SQLTools.GetStringForSQL(runId);
 		query += ",";
-		query += SQLTools.GetStringForSQL(-1);
+		query += SQLTools.GetStringForSQL(processId);
 		query += ",";
 		query += SQLTools.GetStringForSQL(name);
 		query += ",";
 		query += SQLTools.GetStringForSQL(value);
 		query += ")";
 		this.getSqliteDatabaseConnection().executeUpdate(query);
-
 	}
 	
 	public String getRuntimeVariableValue(String runId, String name) {

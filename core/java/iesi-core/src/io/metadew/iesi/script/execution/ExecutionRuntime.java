@@ -141,7 +141,7 @@ public class ExecutionRuntime {
 	    }
 
 		// remove cache folder
-		this.getFrameworkExecution().getFrameworkRuntime().terminate();
+		//this.getFrameworkExecution().getFrameworkRuntime().terminate();
 	}
 
 	// Methods
@@ -153,7 +153,7 @@ public class ExecutionRuntime {
 		this.getRuntimeVariableConfiguration().cleanRuntimeVariables(this.getRunId(), processId);
 	}
 
-	public void setRuntimeVariables(ResultSet rs) {
+	public void setRuntimeVariables(ActionExecution actionExecution, ResultSet rs) {
 		if (SQLTools.getRowCount(rs) == 1) {
 			try {
 				ResultSetMetaData rsmd = rs.getMetaData();
@@ -161,7 +161,7 @@ public class ExecutionRuntime {
 				rs.beforeFirst();
 				while (rs.next()) {
 					for (int i = 1; i < numberOfColums + 1; i++) {
-						this.setRuntimeVariable(rsmd.getColumnName(i), rs.getString(i));
+						this.setRuntimeVariable(actionExecution, rsmd.getColumnName(i), rs.getString(i));
 					}
 				}
 				rs.close();
@@ -173,7 +173,7 @@ public class ExecutionRuntime {
 		}
 	}
 
-	public void setRuntimeVariables(String input) {
+	public void setRuntimeVariables(ActionExecution actionExecution, String input) {
 		String[] lines = input.split("\n");
 		for (int i = 0; i < lines.length; i++) {
 			String line = lines[i];
@@ -181,18 +181,30 @@ public class ExecutionRuntime {
 			if (delim > 0) {
 				String key = line.substring(0, delim);
 				String value = line.substring(delim + 1);
-				this.setRuntimeVariable(key, value);
+				this.setRuntimeVariable(actionExecution, key, value);
 			} else {
 				// Not a valid configuration
 			}
 		}
 	}
 
-	public void setRuntimeVariablesFromList(ResultSet rs) {
+	public void setRuntimeVariablesFromList(ActionExecution actionExecution, ResultSet rs) {
 		try {
 			rs.beforeFirst();
 			while (rs.next()) {
-				this.setRuntimeVariable(rs.getString(1), rs.getString(2));
+				this.setRuntimeVariable(actionExecution, rs.getString(1), rs.getString(2));
+			}
+			rs.close();
+		} catch (SQLException e) {
+			throw new RuntimeException("Error getting sql result " + e, e);
+		}
+	}
+	
+	public void setRuntimeVariablesFromList(ScriptExecution scriptExecution, ResultSet rs) {
+		try {
+			rs.beforeFirst();
+			while (rs.next()) {
+				this.setRuntimeVariable(scriptExecution, rs.getString(1), rs.getString(2));
 			}
 			rs.close();
 		} catch (SQLException e) {
@@ -200,9 +212,20 @@ public class ExecutionRuntime {
 		}
 	}
 
-	public void setRuntimeVariable(String name, String value) {
+	// Set runtime variables
+	public void setRuntimeVariable(Long processId, String name, String value) {
 		this.getFrameworkExecution().getFrameworkLog().log("exec.runvar.set=" + name + ":" + value, this.getLevel());
-		this.getRuntimeVariableConfiguration().setRuntimeVariable(this.getRunId(), name, value);
+		this.getRuntimeVariableConfiguration().setRuntimeVariable(this.getRunId(), processId, name, value);
+	}
+	
+	public void setRuntimeVariable(ActionExecution actionExecution, String name, String value) {
+		this.getFrameworkExecution().getFrameworkLog().log("exec.runvar.set=" + name + ":" + value, this.getLevel());
+		this.getRuntimeVariableConfiguration().setRuntimeVariable(this.getRunId(), actionExecution.getProcessId(), name, value);
+	}
+	
+	public void setRuntimeVariable(ScriptExecution scriptExecution, String name, String value) {
+		this.getFrameworkExecution().getFrameworkLog().log("exec.runvar.set=" + name + ":" + value, this.getLevel());
+		this.getRuntimeVariableConfiguration().setRuntimeVariable(this.getRunId(), scriptExecution.getProcessId(), name, value);
 	}
 
 	public RuntimeVariable getRuntimeVariable(String name) {
@@ -219,7 +242,7 @@ public class ExecutionRuntime {
 	}
 
 	// Load lists
-	public void loadParamList(String input) {
+	public void loadParamList(ScriptExecution scriptExecution, String input) {
 		String[] parts = input.split(",");
 		for (int i = 0; i < parts.length; i++) {
 			String innerpart = parts[i];
@@ -227,22 +250,37 @@ public class ExecutionRuntime {
 			if (delim > 0) {
 				String key = innerpart.substring(0, delim);
 				String value = innerpart.substring(delim + 1);
-				this.setRuntimeVariable(key, value);
+				this.setRuntimeVariable(scriptExecution, key, value);
+			} else {
+				// Not a valid configuration
+			}
+		}
+	}
+	
+	public void loadParamList(ActionExecution actionExecution, String input) {
+		String[] parts = input.split(",");
+		for (int i = 0; i < parts.length; i++) {
+			String innerpart = parts[i];
+			int delim = innerpart.indexOf("=");
+			if (delim > 0) {
+				String key = innerpart.substring(0, delim);
+				String value = innerpart.substring(delim + 1);
+				this.setRuntimeVariable(actionExecution, key, value);
 			} else {
 				// Not a valid configuration
 			}
 		}
 	}
 
-	public void loadParamFiles(String files) {
+	public void loadParamFiles(ScriptExecution scriptExecution, String files) {
 		String[] parts = files.split(",");
 		for (int i = 0; i < parts.length; i++) {
 			String innerpart = parts[i];
-			this.loadParamFile(innerpart);
+			this.loadParamFile(scriptExecution, innerpart);
 		}
 	}
 
-	public void loadParamFile(String file) {
+	public void loadParamFile(ScriptExecution scriptExecution, String file) {
 		BufferedReader br;
 		try {
 			br = new BufferedReader(new FileReader(file));
@@ -254,7 +292,7 @@ public class ExecutionRuntime {
 				if (delim > 0) {
 					String key = innerpart.substring(0, delim);
 					String value = innerpart.substring(delim + 1);
-					this.setRuntimeVariable(key, value);
+					this.setRuntimeVariable(scriptExecution, key, value);
 				} else {
 					// Not a valid configuration
 				}

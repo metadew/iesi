@@ -98,12 +98,12 @@ public class ExecutionControl
 		}
 	}
 
-	public void setEnvironment(String environmentName)
+	public void setEnvironment(ActionExecution actionExecution, String environmentName)
 	{
 		this.setEnvName(environmentName);
 
 		// Set environment variables
-		this.getExecutionRuntime().setRuntimeVariablesFromList(this.getFrameworkExecution().getMetadataControl()
+		this.getExecutionRuntime().setRuntimeVariablesFromList(actionExecution, this.getFrameworkExecution().getMetadataControl()
 				.getConnectivityMetadataRepository()
 				.executeQuery("select env_par_nm, env_par_val from "
 						+ this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("EnvironmentParameters")
@@ -126,7 +126,7 @@ public class ExecutionControl
 			// Set parent Process Id
 			parentProcessId = 0L;
 			// Initialize runtime variables
-			this.getExecutionRuntime().setRuntimeVariablesFromList(this.getFrameworkExecution().getMetadataControl()
+			this.getExecutionRuntime().setRuntimeVariablesFromList(scriptExecution, this.getFrameworkExecution().getMetadataControl()
 					.getConnectivityMetadataRepository()
 					.executeQuery("select env_par_nm, env_par_val from "
 							+ this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("EnvironmentParameters")
@@ -302,7 +302,8 @@ public class ExecutionControl
 		// In other scripts, the processing variables are still valid
 		if (scriptExecution.isRootScript())
 		{
-			this.getExecutionRuntime().cleanRuntimeVariables();
+			//this.getExecutionRuntime().cleanRuntimeVariables();
+			//Cleaning is no longer relevant since runtime is managed individually
 		}
 
 		Timestamp endTimestamp = new Timestamp(System.currentTimeMillis());

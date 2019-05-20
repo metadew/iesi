@@ -251,7 +251,7 @@ public class HttpExecuteRequest {
 		if (this.getSetRuntimeVariables().getValue().equalsIgnoreCase("y")) {
 			try {
 				for (JsonParsedItem jsonParsedItem : jsonParsed.getJsonParsedItemList()) {
-					this.getExecutionControl().getExecutionRuntime().setRuntimeVariable(jsonParsedItem.getPath(),
+					this.getExecutionControl().getExecutionRuntime().setRuntimeVariable(this.getActionExecution(), jsonParsedItem.getPath(),
 							jsonParsedItem.getValue());
 				}
 			} catch (Exception e) {

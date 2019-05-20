@@ -125,10 +125,10 @@ public class ScriptExecution {
 			 * Initialize parameters. A parameter file has priority over a parameter list
 			 */
 			if (!this.getParamFile().trim().equals("")) {
-				this.getExecutionControl().getExecutionRuntime().loadParamFiles(this.getParamFile());
+				this.getExecutionControl().getExecutionRuntime().loadParamFiles(this, this.getParamFile());
 			}
 			if (!this.getParamList().trim().equals("")) {
-				this.getExecutionControl().getExecutionRuntime().loadParamList(this.getParamList());
+				this.getExecutionControl().getExecutionRuntime().loadParamList(this, this.getParamList());
 			}
 
 			/*

@@ -77,7 +77,7 @@ public class SqlSetRuntimeVariables {
 			// Run the action
 			CachedRowSet sqlResultSet = databaseConnection.executeQuery(this.getSqlQuery().getValue());
 			try {
-				this.getExecutionControl().getExecutionRuntime().setRuntimeVariables(sqlResultSet);
+				this.getExecutionControl().getExecutionRuntime().setRuntimeVariables(this.getActionExecution(), sqlResultSet);
 				this.getActionExecution().getActionControl().increaseSuccessCount();
 			} catch (Exception e) {
 				throw new RuntimeException("Issue setting runtime variables: " + e, e);

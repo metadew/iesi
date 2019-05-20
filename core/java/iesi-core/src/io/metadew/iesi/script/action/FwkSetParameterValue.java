@@ -63,7 +63,7 @@ public class FwkSetParameterValue {
 		try {
 			// Run the action
 			try {
-				this.getExecutionControl().getExecutionRuntime().setRuntimeVariable(this.getOperationName().getValue(),
+				this.getExecutionControl().getExecutionRuntime().setRuntimeVariable(this.getActionExecution(), this.getOperationName().getValue(),
 						this.getOperationValue().getValue());
 				this.getActionExecution().getActionControl().increaseSuccessCount();
 			} catch (Exception e) {

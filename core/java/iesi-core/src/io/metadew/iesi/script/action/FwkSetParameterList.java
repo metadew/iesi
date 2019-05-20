@@ -57,7 +57,7 @@ public class FwkSetParameterList {
 		try {
 			// Run the action
 			try {			
-				this.getExecutionControl().getExecutionRuntime().loadParamList(this.getParameterList().getValue());
+				this.getExecutionControl().getExecutionRuntime().loadParamList(this.getActionExecution(), this.getParameterList().getValue());
 				this.getActionExecution().getActionControl().increaseSuccessCount();
 			} catch (Exception e) {
 				throw new RuntimeException("Issue setting runtime variables: " + e, e);

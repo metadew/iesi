@@ -189,7 +189,7 @@ public class WfaExecuteQueryPing {
 	private void setRuntimeVariable(CachedRowSet crs) {
 		if (this.getSetRuntimeVariables().getValue().equalsIgnoreCase("y")) {
 			try {
-				this.getExecutionControl().getExecutionRuntime().setRuntimeVariables(crs);
+				this.getExecutionControl().getExecutionRuntime().setRuntimeVariables(this.getActionExecution(), crs);
 			} catch (Exception e) {
 				this.getActionExecution().getActionControl().increaseWarningCount();
 				this.getExecutionControl().logExecutionOutput(this.getActionExecution(), "SET_RUN_VAR", e.getMessage());

@@ -380,7 +380,7 @@ public class WfaExecuteFilePing {
 	private void setRuntimeVariable(CachedRowSet crs) {
 		if (this.getSetRuntimeVariables().getValue().equalsIgnoreCase("y")) {
 			try {
-				this.getExecutionControl().getExecutionRuntime().setRuntimeVariables(crs);
+				this.getExecutionControl().getExecutionRuntime().setRuntimeVariables(this.getActionExecution(), crs);
 			} catch (Exception e) {
 				this.getActionExecution().getActionControl().increaseWarningCount();
 				this.getActionExecution().getActionControl().logWarning("set.runvar",e.getMessage());

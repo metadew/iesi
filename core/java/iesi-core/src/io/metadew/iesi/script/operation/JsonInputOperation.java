@@ -7,6 +7,8 @@ import io.metadew.iesi.metadata.definition.DataObject;
 import io.metadew.iesi.metadata.definition.Script;
 import io.metadew.iesi.metadata.operation.DataObjectOperation;
 
+import java.util.Optional;
+
 /**
  * Operation to manage script execution when a JSON file has been provided as input.
  * 
@@ -26,20 +28,15 @@ public class JsonInputOperation {
 		this.setDataObjectOperation(new DataObjectOperation(this.getFrameworkExecution(), this.getFileName()));
 	}
 	
-	public Script getScript() {
+	public Optional<Script> getScript() {
 		ObjectMapper objectMapper = new ObjectMapper();
-		Script script = null;
 		for (DataObject dataObject : this.getDataObjectOperation().getDataObjectConfiguration().getDataObjects()) {
-
 			// Scripts
 			if (dataObject.getType().equalsIgnoreCase("script")) {
-				script = objectMapper.convertValue(dataObject.getData(), Script.class);
-				break;
+				return Optional.of(objectMapper.convertValue(dataObject.getData(), Script.class));
 			}
-
 		}
-		
-		return script;
+		return Optional.empty();
 	}
 
 	// Getters and Setters

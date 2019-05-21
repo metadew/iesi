@@ -14,8 +14,22 @@ public class User {
 	private String locked;
 
 	//Constructors
+	public User(String name, String type, String firstName, String lastName, String active, String passwordHash,
+				String expired, Long cumulativeLoginFails, Long individualLoginFails, String locked) {
+		this.name = name;
+		this.type = type;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.active = active;
+		this.passwordHash = passwordHash;
+		this.expired = expired;
+		this.cumulativeLoginFails = cumulativeLoginFails;
+		this.individualLoginFails = individualLoginFails;
+		this.locked = locked;
+	}
+
 	public User() {
-		
+
 	}
 
 	//Getters and Setters

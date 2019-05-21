@@ -38,7 +38,7 @@ public class ScriptParameterConfiguration {
 		sql += "VALUES ";
 		sql += "(";
 		sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository()
-				.getTableNameByLabel("ScriptParameters"), "SCRIPT_ID", "where SCRIPT_NM = '"+ scriptName) + "')";
+				.getTableNameByLabel("Scripts"), "SCRIPT_ID", "where SCRIPT_NM = '"+ scriptName) + "')";
 		sql += ",";
 		sql += SQLTools.GetStringForSQL(this.getScriptVersion().getNumber());
 		sql += ",";

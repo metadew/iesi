@@ -1,11 +1,14 @@
 package io.metadew.iesi.datatypes;
 
+import com.sun.xml.internal.bind.v2.runtime.unmarshaller.LeafPropertyLoader;
 import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
 import io.metadew.iesi.metadata_repository.repository.database.Database;
 import io.metadew.iesi.metadata_repository.repository.database.SqliteDatabase;
 import io.metadew.iesi.metadata_repository.repository.database.connection.SqliteDatabaseConnection;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 import org.apache.commons.io.FileUtils;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.LogEventListener;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.File;
@@ -113,23 +116,19 @@ public class Dataset extends DataType {
                     .forEach(datasetLabel -> labels.add(convertDatasetLabel(datasetLabel)));
             return labels;
         } else {
-            // TODO: log with framework
-            System.out.println(MessageFormat.format("Dataset does not accept {0} as type for dataset labels",
-                    datasetLabels.getClass()));
+            executionRuntime.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format("Dataset does not accept {0} as type for dataset labels",
+                    datasetLabels.getClass()), Level.WARN);
             return labels;
         }
     }
 
     private String convertDatasetName(DataType datasetName) {
         if (datasetName instanceof Text) {
-            // TODO: resolve labels for runtime vars. What if custom resolve Belfius?
-            System.out.println("Resolving: " + datasetName.toString());
             String variablesResolved = executionRuntime.resolveVariables(datasetName.toString());
             return executionRuntime.resolveConceptLookup(executionRuntime.getExecutionControl(), variablesResolved, true).getValue();
         } else {
-            // TODO: log
-            System.out.println(MessageFormat.format("Dataset does not accept {0} as type for dataset name",
-                    datasetName.getClass()));
+            executionRuntime.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format("Dataset does not accept {0} as type for dataset name",
+                    datasetName.getClass()), Level.WARN);
             return datasetName.toString();
         }
     }
@@ -139,9 +138,8 @@ public class Dataset extends DataType {
             String variablesResolved = executionRuntime.resolveVariables(datasetLabel.toString());
             return executionRuntime.resolveConceptLookup(executionRuntime.getExecutionControl(), variablesResolved, true).getValue();
         } else {
-            // TODO: log
-            System.out.println(MessageFormat.format("Dataset does not accept {0} as type for a dataset label",
-                    datasetLabel.getClass()));
+            executionRuntime.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format("Dataset does not accept {0} as type for a dataset label",
+                    datasetLabel.getClass()), Level.WARN);
             return datasetLabel.toString();
         }
     }
@@ -182,15 +180,15 @@ public class Dataset extends DataType {
         } else if (cachedRowSetLabels.size() == 1) {
             cachedRowSetLabels.next();
             datasetInventoryId = cachedRowSetLabels.getInt("DATASET_INV_ID");
-            System.out.println(MessageFormat.format("Found  dataset id {0}." , Integer.toString(datasetInventoryId)));
+            executionRuntime.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format("Found dataset id {0} for labels {1}-{2}." , Integer.toString(datasetInventoryId), datasetName, String.join(", ", labels)), Level.TRACE);
         } else {
             List<Integer> datasetInventoryIds = new ArrayList<>();
             while (cachedRowSetLabels.next()) {
                 datasetInventoryIds.add(cachedRowSetLabels.getInt("DATASET_INV_ID"));
             }
-            System.out.println(MessageFormat.format("Found more than one dataset id ({0}) for name ''{1}'' and labels ''{2}''. " +
+            executionRuntime.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format("Found more than one dataset id ({0}) for name ''{1}'' and labels ''{2}''. " +
                             "Returning first occurrence.", datasetInventoryIds.stream().map(id -> Integer.toString(id)).collect(Collectors.joining(", ")),
-                    datasetName, String.join(", ", labels)));
+                    datasetName, String.join(", ", labels)), Level.WARN);
             datasetInventoryId = datasetInventoryIds.get(0);
         }
 
@@ -207,9 +205,9 @@ public class Dataset extends DataType {
             return new SqliteDatabase(new SqliteDatabaseConnection(frameworkFolderConfiguration.getFolderAbsolutePath("data") + File.separator + "datasets"
                     + File.separator + datasetName + File.separator + "data" + File.separator + cachedRowSetFileTable.getString("DATASET_FILE_NM")));
         } else {
-            System.out.println(MessageFormat.format("Found more than one dataset for name ''{0}'' and labels ''{1}''. " +
+            executionRuntime.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format("Found more than one dataset for name ''{0}'' and labels ''{1}''. " +
                             "Returning first occurrence.",
-                    datasetName, String.join(", ", labels)));
+                    datasetName, String.join(", ", labels)), Level.WARN);
             cachedRowSetFileTable.next();
             tableName = cachedRowSetFileTable.getString("DATASET_TABLE_NM");
             return new SqliteDatabase(new SqliteDatabaseConnection(datasetName + File.separator + "data" + File.separator + cachedRowSetFileTable.getString("DATASET_FILE_NM")));

@@ -1,6 +1,7 @@
 package io.metadew.iesi.launch;
 
 import java.io.File;
+import java.util.Optional;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -228,13 +229,17 @@ public class ScriptLauncher {
 
         // Get the Script
         ScriptConfiguration scriptConfiguration = null;
-        Script script = null;
+        Optional<Script> script = Optional.empty();
         if (executionMode.equalsIgnoreCase("script")) {
             scriptConfiguration = new ScriptConfiguration(frameworkExecution);
             if (scriptVersionNumber == -1) {
                 script = scriptConfiguration.getScript(scriptName);
             } else {
                 script = scriptConfiguration.getScript(scriptName, scriptVersionNumber);
+            }
+            if (!script.isPresent()) {
+                System.out.println("No script found for execution");
+                System.exit(1);
             }
 
         } else if (executionMode.equalsIgnoreCase("file")) {
@@ -246,18 +251,16 @@ public class ScriptLauncher {
                 YamlInputOperation yamlInputOperation = new YamlInputOperation(frameworkExecution, fileName);
                 script = yamlInputOperation.getScript();
             }
-
-            if (script == null) {
+            if (!script.isPresent()) {
                 System.out.println("No script found for execution");
                 System.exit(1);
             }
-
         } else {
             System.out.println("script.exec.mode.invalid");
             System.exit(1);
         }
 
-        ScriptExecution scriptExecution = new ScriptExecution(frameworkExecution, script);
+        ScriptExecution scriptExecution = new ScriptExecution(frameworkExecution, script.get());
         scriptExecution.initializeAsRootScript(environmentName);
         scriptExecution.setActionSelectOperation(new ActionSelectOperation(actionSelect));
         scriptExecution.setImpersonations(impersonationName, impersonationCustom);

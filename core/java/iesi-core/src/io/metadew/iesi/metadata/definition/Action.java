@@ -20,6 +20,21 @@ public class Action {
 	public Action() {
 		
 	}
+
+	public Action(long id, long number, String type, String name, String description, String component,
+				  String condition, String iteration, String errorExpected, String errorStop, List<ActionParameter> parameters) {
+		this.id = id;
+		this.number = number;
+		this.type = type;
+		this.name = name;
+		this.description = description;
+		this.component = component;
+		this.condition = condition;
+		this.iteration = iteration;
+		this.errorExpected = errorExpected;
+		this.errorStop = errorStop;
+		this.parameters = parameters;
+	}
 	
 	//Getters and Setters
 	public String getName() {

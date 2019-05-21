@@ -10,6 +10,11 @@ public class ActionParameter {
 
 	}
 
+	public ActionParameter(String name, String value) {
+		this.name = name;
+		this.value = value;
+	}
+
 	// Getters and Setters
 	public String getName() {
 		return name;

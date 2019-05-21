@@ -153,6 +153,22 @@
 {
 	"type": "LaunchItem",
 	"data": {
+		"script": "fwk.setParameterValue.2",
+		"description": "test fwk.setParameterValue with concept lookup",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "fwk.setParameterValue.3",
+		"description": "test fwk.setParameterValue with concept lookup and variable resolvement",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
 		"script": "fwk.setParameterList.1",
 		"description": "test fwk.setParameterList",
 		"parameterList": ""

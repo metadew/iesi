@@ -285,7 +285,7 @@ public class ExecutionRuntime {
         result = this.resolveRuntimeVariables(result);
         if (!input.equalsIgnoreCase(result))
             this.getFrameworkExecution().getFrameworkLog().log("exec.runvar.resolve=" + input + ":" + result,
-                    Level.TRACE);
+                    Level.DEBUG);
 
         return result;
     }

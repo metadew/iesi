@@ -120,10 +120,10 @@ public class FwkExecuteScript {
             // Script script = scriptConfiguration.getScript(this.getScriptName().getValue());
             Script script = null;
             if (version.toString().equalsIgnoreCase("")) {
-                script = scriptConfiguration.getScript(scriptName.toString());
+                script = scriptConfiguration.getScript(scriptName.toString()).get();
             } else {
                 script = scriptConfiguration.getScript(scriptName.toString(),
-                        Long.parseLong(version.toString()));
+                        Long.parseLong(version.toString())).get();
             }
             ScriptExecution scriptExecution = new ScriptExecution(this.getFrameworkExecution(), script);
             scriptExecution.initializeAsNonRootExecution(this.getExecutionControl(), this.getScriptExecution());
@@ -201,7 +201,7 @@ public class FwkExecuteScript {
             // Script script = scriptConfiguration.getScript(this.getScriptName().getValue());
             Script script = scriptVersion
                     .map(version -> scriptConfiguration.getScript(scriptName, version))
-                    .orElse(scriptConfiguration.getScript(scriptName));
+                    .orElse(scriptConfiguration.getScript(scriptName)).get();
 
             ScriptExecution scriptExecution = new ScriptExecution(this.getFrameworkExecution(), script);
             scriptExecution.initializeAsNonRootExecution(this.getExecutionControl(), this.getScriptExecution());

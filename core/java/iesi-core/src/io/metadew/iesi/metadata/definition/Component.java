@@ -17,6 +17,7 @@ public class Component {
 
 	}
 
+
 	public Component(long id, String type, String name, String description, ComponentVersion version,
 					 List<ComponentParameter> parameters, List<ComponentAttribute> attributes) {
 		this.id = id;
@@ -27,7 +28,6 @@ public class Component {
 		this.parameters = parameters;
 		this.attributes = attributes;
 	}
-
 
 	
 	//Getters and Setters

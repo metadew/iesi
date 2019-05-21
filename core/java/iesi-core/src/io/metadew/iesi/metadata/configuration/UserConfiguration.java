@@ -2,12 +2,17 @@ package io.metadew.iesi.metadata.configuration;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.nio.file.attribute.UserPrincipalLookupService;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.sql.rowset.CachedRowSet;
 
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.User;
+import org.apache.logging.log4j.Level;
 
 public class UserConfiguration
 {
@@ -26,6 +31,35 @@ public class UserConfiguration
 	{
 		this.setUser(user);
 		this.setFrameworkExecution(frameworkExecution);
+	}
+
+	public List<User> getUsers() {
+		List<User> users = new ArrayList<>();
+		String query = "select USER_NM, USER_TYP_NM, USER_FIRST_NM, USER_LAST_NM, USER_ACT_FL, USER_PWD_HASH, USER_PWD_EXP_FL, LOGIN_FAIL_CUM_NB, LOGIN_FAIL_IND_NB, USER_LOCK_FL from "
+				+ this.getFrameworkExecution().getMetadataControl().getControlMetadataRepository().getTableNameByLabel("Users");
+		CachedRowSet crs = this.getFrameworkExecution().getMetadataControl().getControlMetadataRepository().executeQuery(query, "reader");
+		try {
+			while (crs.next()) {
+				users.add(new User(crs.getString("USER_NM"),
+						crs.getString("USER_TYP_NM"),
+						crs.getString("USER_FIRST_NM"),
+						crs.getString("USER_LAST_NM"),
+						crs.getString("USER_ACT_FL"),
+						crs.getString("USER_PWD_HASH"),
+						crs.getString("USER_PWD_EXP_FL"),
+						crs.getLong("LOGIN_FAIL_CUM_NB"),
+						crs.getLong("LOGIN_FAIL_IND_NB"),
+						crs.getString("USER_LOCK_FL")));
+			}
+			crs.close();
+		} catch (SQLException e) {
+			StringWriter StackTrace = new StringWriter();
+			e.printStackTrace(new PrintWriter(StackTrace));
+
+			this.frameworkExecution.getFrameworkLog().log("users.error=" + e, Level.INFO);
+			this.frameworkExecution.getFrameworkLog().log("users.stacktrace=" + StackTrace, Level.INFO);
+		}
+		return users;
 	}
 
 	// Delete

@@ -2,6 +2,7 @@ package io.metadew.iesi.metadata.configuration;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Optional;
 
 import javax.sql.rowset.CachedRowSet;
 
@@ -62,23 +63,25 @@ public class ScriptVersionConfiguration {
 		return sql;
 	}
 
-	public ScriptVersion getScriptVersion(long scriptId, long scriptVersionNumber) {
-		ScriptVersion scriptVersion = new ScriptVersion();
-		CachedRowSet crsScriptVersion = null;
+	public Optional<ScriptVersion> getScriptVersion(long scriptId, long scriptVersionNumber) {
 		String queryScriptVersion = "select SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_VRS_DSC from " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ScriptVersions")
 				+ " where SCRIPT_ID = " + scriptId + " and SCRIPT_VRS_NB = " + scriptVersionNumber;
-		crsScriptVersion = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(queryScriptVersion, "reader");
+		CachedRowSet crsScriptVersion = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(queryScriptVersion, "reader");
 		try {
-			while (crsScriptVersion.next()) {
-				scriptVersion.setNumber(scriptVersionNumber);
-				scriptVersion.setDescription(crsScriptVersion.getString("SCRIPT_VRS_DSC"));
+			if (crsScriptVersion.size() == 0) {
+				return Optional.empty();
+			} else if (crsScriptVersion.size() > 1) {
+				//TODO: log
 			}
+			crsScriptVersion.next();
+			ScriptVersion scriptVersion = new ScriptVersion(scriptId, scriptVersionNumber, crsScriptVersion.getString("SCRIPT_VRS_DSC"));
 			crsScriptVersion.close();
+			return Optional.of(scriptVersion);
 		} catch (Exception e) {
 			StringWriter StackTrace = new StringWriter();
 			e.printStackTrace(new PrintWriter(StackTrace));
+			return Optional.empty();
 		}
-		return scriptVersion;
 	}
 
 	// Getters and Setters

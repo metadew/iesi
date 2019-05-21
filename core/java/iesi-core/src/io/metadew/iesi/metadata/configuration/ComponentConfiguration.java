@@ -81,6 +81,7 @@ public class ComponentConfiguration {
 
 		try {
 			while (crsComponent.next()) {
+				System.out.println("Getting component " + crsComponent.getString("COMP_NM"));
 				components.addAll(getComponentsByName(crsComponent.getString("COMP_NM")));
 			}
 		} catch (SQLException e) {
@@ -96,19 +97,22 @@ public class ComponentConfiguration {
 				+ componentName + "'";
 		CachedRowSet crsComponent = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(queryComponent, "reader");
 		try {
-			if (crsComponent.size() > 1) {
+			if (crsComponent.size() == 0) {
+				frameworkExecution.getFrameworkLog().log(MessageFormat.format("component.version=no implementations for component {0}.", componentName), Level.WARN);
+				return components;
+			} else if (crsComponent.size() > 1) {
 				frameworkExecution.getFrameworkLog().log(MessageFormat.format("component.version=found multiple implementations for component {0}." +
-						"Returning first implementation.", componentName), Level.WARN);
-
+						" Returning first implementation.", componentName), Level.WARN);
 			}
 			crsComponent.next();
 			long componentId = crsComponent.getLong("COMP_ID");
-
+			System.out.println("Component ID " + componentId);
 			String queryComponentVersions = "select COMP_VRS_NB from "
 					+ this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ComponentVersions") + " where COMP_ID = '"
 					+ componentId + "'";
 			CachedRowSet crsComponentVersions = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(queryComponentVersions, "reader");
 			while (crsComponentVersions.next()) {
+				System.out.println("Component Version " + crsComponentVersions.getLong("COMP_VRS_NB"));
 				getComponent(componentName, crsComponentVersions.getLong("COMP_VRS_NB")).ifPresent(components::add);
 			}
 			crsComponentVersions.close();
@@ -128,7 +132,7 @@ public class ComponentConfiguration {
 		try {
 			if (crsComponent.size() == 0) {
 				return Optional.empty();
-			} else if (crsComponent.size() >= 1) {
+			} else if (crsComponent.size() > 1) {
 				frameworkExecution.getFrameworkLog().log(MessageFormat.format("component.version=found multiple implementations for component {0}." +
 						"Returning first implementation.", componentName), Level.WARN);
 			}
@@ -140,6 +144,8 @@ public class ComponentConfiguration {
 					this.getFrameworkExecution());
 			Optional<ComponentVersion> componentVersion = componentVersionConfiguration.getComponentVersion(componentId, versionNumber);
 			if(!componentVersion.isPresent()) {
+				frameworkExecution.getFrameworkLog().log(MessageFormat.format("component.version=found multiple implementations for component {0}." +
+						"Returning first implementation.", componentName), Level.WARN);
 				return Optional.empty();
 			}
 
@@ -165,19 +171,26 @@ public class ComponentConfiguration {
 						crsComponentAttributes.getString("COMP_ATT_NM"),
 						crsComponentAttributes.getString("COMP_ATT_VAL")));
 			}
+			String componentType = crsComponent.getString("COMP_TYP_NM");
+			String componentDescription = crsComponent.getString("COMP_DSC");
 			crsComponent.close();
 			crsComponentParameters.close();
 			crsComponentAttributes.close();
 			return Optional.of(new Component(componentId,
-					crsComponent.getString("COMP_TYP_NM"),
+					componentType,
 					componentName,
-					crsComponent.getString("COMP_DSC"),
+					componentDescription,
 					componentVersion.get(),
 					componentParameters,
 					componentAttributes));
 		} catch (Exception e) {
 			StringWriter StackTrace = new StringWriter();
 			e.printStackTrace(new PrintWriter(StackTrace));
+
+			this.frameworkExecution.getFrameworkLog().log("action.error=" + e, Level.INFO);
+			this.frameworkExecution.getFrameworkLog().log("action.stacktrace=" + StackTrace, Level.INFO);
+
+			System.out.println("ERROR");
 			return Optional.empty();
 		}
 	}
@@ -217,13 +230,13 @@ public class ComponentConfiguration {
 	private String getDeleteStatement(Component component) {
 		// delete parameters
 		String deleteQuery = "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ComponentParameters");
-		deleteQuery += " WHERE COMP_ID = " +  SQLTools.GetStringForSQL(component.getId()) + "AND COMP_VRS_NB = " + SQLTools.GetStringForSQL(component.getVersion().getNumber()) + ";\n";
+		deleteQuery += " WHERE COMP_ID = " +  SQLTools.GetStringForSQL(component.getId()) + " AND COMP_VRS_NB = " + SQLTools.GetStringForSQL(component.getVersion().getNumber()) + ";\n";
 		// delete attributes
 		deleteQuery += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ComponentAttributes");
-		deleteQuery += " WHERE COMP_ID = " +  SQLTools.GetStringForSQL(component.getId()) + "AND COMP_VRS_NB = " + SQLTools.GetStringForSQL(component.getVersion().getNumber()) + ";\n";
+		deleteQuery += " WHERE COMP_ID = " +  SQLTools.GetStringForSQL(component.getId()) + " AND COMP_VRS_NB = " + SQLTools.GetStringForSQL(component.getVersion().getNumber()) + ";\n";
 		// delete version
 		deleteQuery += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ComponentVersions");
-		deleteQuery += " WHERE COMP_ID = " +  SQLTools.GetStringForSQL(component.getId()) + "AND COMP_VRS_NB = " + SQLTools.GetStringForSQL(component.getVersion().getNumber()) + ";\n";
+		deleteQuery += " WHERE COMP_ID = " +  SQLTools.GetStringForSQL(component.getId()) + " AND COMP_VRS_NB = " + SQLTools.GetStringForSQL(component.getVersion().getNumber()) + ";\n";
 
 		// delete component info if last version
 		String countQuery = "SELECT COUNT(DISTINCT COMP_VRS_NB ) AS total_versions FROM "
@@ -244,6 +257,7 @@ public class ComponentConfiguration {
 	}
 
 	public void insertComponent(Component component) throws ComponentAlreadyExistsException {
+		// TODO handle component ID
 		frameworkExecution.getFrameworkLog().log(MessageFormat.format(
 				"Inserting component {0}-{1}.", component.getName(), component.getVersion().getNumber()), Level.TRACE);
 		if (exists(component)) {
@@ -290,7 +304,7 @@ public class ComponentConfiguration {
 		// add attributes
 		for (ComponentAttribute attribute : component.getAttributes()) {
 			sql.append("INSERT INTO ").append(this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository()
-					.getTableNameByLabel("ComponentParameters"));
+					.getTableNameByLabel("ComponentAttributes"));
 			sql.append(" (COMP_ID, COMP_VRS_NB, ENV_NM, COMP_ATT_NM, COMP_ATT_VAL) VALUES (");
 			sql.append(SQLTools.GetStringForSQL(component.getId())).append(",");
 			sql.append(SQLTools.GetStringForSQL(component.getVersion().getNumber())).append(",");

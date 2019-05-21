@@ -14,8 +14,17 @@ public class Script {
 	private List<Action> actions;
 
 	// Constructors
-	public Script() {
-		
+	public Script() {}
+
+	public Script(long id, String type, String name, String description, ScriptVersion version,
+				  List<ScriptParameter> parameters, List<Action> actions) {
+		this.id = id;
+		this.type = type;
+		this.name = name;
+		this.description = description;
+		this.version = version;
+		this.parameters = parameters;
+		this.actions = actions;
 	}
 
 	// Getters and Setters

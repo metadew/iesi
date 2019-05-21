@@ -1,93 +1,93 @@
 package io.metadew.iesi.metadata.definition;
 
 public class Iteration {
-	
-	private String name;
-	private String type;
-	private String list;
-	private String values;
-	private String from;
-	private String to;
-	private String step;
-	private String condition;
-	private String interrupt;
-	
-	//Constructors
-	public Iteration() {
-		
-	}
 
-	//Getters and Setters
-	public String getName() {
-		return name;
-	}
+    private String name;
+    private String type;
+    private String list;
+    private String values;
+    private String from;
+    private String to;
+    private String step;
+    private String condition;
+    private String interrupt;
 
-	public String getType() {
-		return type;
-	}
+    //Constructors
+    public Iteration() {
 
-	public void setType(String type) {
-		this.type = type;
-	}
+    }
 
-	public String getList() {
-		return list;
-	}
+    //Getters and Setters
+    public String getName() {
+        return name;
+    }
 
-	public void setList(String list) {
-		this.list = list;
-	}
+    public String getType() {
+        return type;
+    }
 
-	public String getValues() {
-		return values;
-	}
+    public void setType(String type) {
+        this.type = type;
+    }
 
-	public void setValues(String values) {
-		this.values = values;
-	}
+    public String getList() {
+        return list;
+    }
 
-	public String getFrom() {
-		return from;
-	}
+    public void setList(String list) {
+        this.list = list;
+    }
 
-	public void setFrom(String from) {
-		this.from = from;
-	}
+    public String getValues() {
+        return values;
+    }
 
-	public String getTo() {
-		return to;
-	}
+    public void setValues(String values) {
+        this.values = values;
+    }
 
-	public void setTo(String to) {
-		this.to = to;
-	}
+    public String getFrom() {
+        return from;
+    }
 
-	public String getStep() {
-		return step;
-	}
+    public void setFrom(String from) {
+        this.from = from;
+    }
 
-	public void setStep(String step) {
-		this.step = step;
-	}
+    public String getTo() {
+        return to;
+    }
 
-	public String getInterrupt() {
-		return interrupt;
-	}
+    public void setTo(String to) {
+        this.to = to;
+    }
 
-	public void setInterrupt(String interrupt) {
-		this.interrupt = interrupt;
-	}
+    public String getStep() {
+        return step;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setStep(String step) {
+        this.step = step;
+    }
 
-	public String getCondition() {
-		return condition;
-	}
+    public String getInterrupt() {
+        return interrupt;
+    }
 
-	public void setCondition(String condition) {
-		this.condition = condition;
-	}
+    public void setInterrupt(String interrupt) {
+        this.interrupt = interrupt;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getCondition() {
+        return condition;
+    }
+
+    public void setCondition(String condition) {
+        this.condition = condition;
+    }
 
 }

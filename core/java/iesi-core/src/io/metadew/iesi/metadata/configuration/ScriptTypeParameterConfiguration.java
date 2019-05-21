@@ -6,48 +6,48 @@ import io.metadew.iesi.metadata.definition.ScriptTypeParameter;
 
 public class ScriptTypeParameterConfiguration {
 
-	private ScriptTypeParameter scriptTypeParameter;
-	private FrameworkExecution frameworkExecution;
+    private ScriptTypeParameter scriptTypeParameter;
+    private FrameworkExecution frameworkExecution;
 
-	// Constructors
-	public ScriptTypeParameterConfiguration(ScriptTypeParameter scriptTypeParameter, FrameworkExecution processiongTools) {
-		this.setScriptTypeParameter(scriptTypeParameter);
-		this.setFrameworkExecution(processiongTools);
-	}
+    // Constructors
+    public ScriptTypeParameterConfiguration(ScriptTypeParameter scriptTypeParameter, FrameworkExecution processiongTools) {
+        this.setScriptTypeParameter(scriptTypeParameter);
+        this.setFrameworkExecution(processiongTools);
+    }
 
-	public ScriptTypeParameterConfiguration(FrameworkExecution processiongTools) {
-		this.setFrameworkExecution(processiongTools);
-	}
+    public ScriptTypeParameterConfiguration(FrameworkExecution processiongTools) {
+        this.setFrameworkExecution(processiongTools);
+    }
 
-	// Get Script Type Parameter
-	public ScriptTypeParameter getScriptTypeParameter(String scriptTypeName, String scriptTypeParameterName) {
-		ScriptTypeParameter scriptTypeParameterResult = null;
-		ScriptTypeConfiguration scriptTypeConfiguration = new ScriptTypeConfiguration(this.getFrameworkExecution());
-		ScriptType scriptType = scriptTypeConfiguration.getScriptType(scriptTypeName);
-		for (ScriptTypeParameter scriptTypeParameter : scriptType.getParameters()) {
-			if (scriptTypeParameter.getName().equalsIgnoreCase(scriptTypeParameterName)) {
-				scriptTypeParameterResult = scriptTypeParameter;
-				break;
-			}
-		}
-		return scriptTypeParameterResult;
-	}
-	
-	// Getters and Setters
-	public ScriptTypeParameter getScriptTypeParameter() {
-		return scriptTypeParameter;
-	}
+    // Get Script Type Parameter
+    public ScriptTypeParameter getScriptTypeParameter(String scriptTypeName, String scriptTypeParameterName) {
+        ScriptTypeParameter scriptTypeParameterResult = null;
+        ScriptTypeConfiguration scriptTypeConfiguration = new ScriptTypeConfiguration(this.getFrameworkExecution());
+        ScriptType scriptType = scriptTypeConfiguration.getScriptType(scriptTypeName);
+        for (ScriptTypeParameter scriptTypeParameter : scriptType.getParameters()) {
+            if (scriptTypeParameter.getName().equalsIgnoreCase(scriptTypeParameterName)) {
+                scriptTypeParameterResult = scriptTypeParameter;
+                break;
+            }
+        }
+        return scriptTypeParameterResult;
+    }
 
-	public void setScriptTypeParameter(ScriptTypeParameter scriptTypeParameter) {
-		this.scriptTypeParameter = scriptTypeParameter;
-	}
-	
-	public FrameworkExecution getFrameworkExecution() {
-		return frameworkExecution;
-	}
+    // Getters and Setters
+    public ScriptTypeParameter getScriptTypeParameter() {
+        return scriptTypeParameter;
+    }
 
-	public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-		this.frameworkExecution = frameworkExecution;
-	}
+    public void setScriptTypeParameter(ScriptTypeParameter scriptTypeParameter) {
+        this.scriptTypeParameter = scriptTypeParameter;
+    }
+
+    public FrameworkExecution getFrameworkExecution() {
+        return frameworkExecution;
+    }
+
+    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
+        this.frameworkExecution = frameworkExecution;
+    }
 
 }

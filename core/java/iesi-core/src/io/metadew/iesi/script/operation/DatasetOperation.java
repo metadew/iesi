@@ -1,5 +1,15 @@
 package io.metadew.iesi.script.operation;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.metadew.iesi.common.json.JsonParsed;
+import io.metadew.iesi.common.json.JsonParsedItem;
+import io.metadew.iesi.connection.database.connection.DatabaseConnection;
+import io.metadew.iesi.connection.database.connection.SqliteDatabaseConnection;
+import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.metadata.definition.Dataset;
+import io.metadew.iesi.script.execution.ExecutionControl;
+
+import javax.sql.rowset.CachedRowSet;
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -8,17 +18,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import javax.sql.rowset.CachedRowSet;
-
-import io.metadew.iesi.common.json.JsonParsed;
-import io.metadew.iesi.common.json.JsonParsedItem;
-import io.metadew.iesi.framework.execution.FrameworkExecution;
-import io.metadew.iesi.metadata_repository.repository.database.connection.DatabaseConnection;
-import io.metadew.iesi.metadata_repository.repository.database.connection.SqliteDatabaseConnection;
-import io.metadew.iesi.script.execution.ExecutionControl;
 
 /**
  * Operation to manage the datasets that have been defined in the script
@@ -30,19 +29,25 @@ public class DatasetOperation {
     private final Pattern datasetItemPattern = Pattern.compile("(?<table>\\w+)\\.(?<tableField>(\\w+$|\\w+\\.)+)");
 
     private FrameworkExecution frameworkExecution;
-
     private ExecutionControl executionControl;
-    private String datasetType;
 
     private DatabaseConnection datasetConnection;
 
     private DatabaseConnection metadataConnection;
 
     private String datasetName;
+    private String datasetType;
 
     private String datasetLabels;
 
     // Constructors
+    public DatasetOperation(FrameworkExecution frameworkExecution, ExecutionControl executionControl, Dataset dataset) {
+        this.setFrameworkExecution(frameworkExecution);
+        this.setExecutionControl(executionControl);
+        this.setDatasetType(dataset.getType());
+        this.setDatasetName(dataset.getName());
+    }
+
     @SuppressWarnings("unused")
     public DatasetOperation(FrameworkExecution frameworkExecution, ExecutionControl executionControl, String datasetType, String datasetName,
                             String datasetLabels) {
@@ -53,7 +58,7 @@ public class DatasetOperation {
         this.setDatasetLabels(datasetLabels);
 
         if (this.getDatasetType().equalsIgnoreCase("stage")) {
-            SqliteDatabaseConnection dcSQLiteConnection = new SqliteDatabaseConnection(this.getExecutionControl().getExecutionRuntime().getStageOperation("myStage").getStageFilePath());
+            SqliteDatabaseConnection dcSQLiteConnection = new SqliteDatabaseConnection(this.getExecutionControl().getExecutionRuntime().getStageOperation(this.getDatasetName()).getStageFilePath());
             this.setDatasetConnection(dcSQLiteConnection);
         } else {
             ObjectMapper objectMapper = new ObjectMapper();
@@ -116,20 +121,22 @@ public class DatasetOperation {
     public Optional<String> getDataItem(String datasetItem) {
         Matcher matcher = datasetItemPattern.matcher(datasetItem);
         if (!matcher.find()) {
-            throw new RuntimeException(MessageFormat.format("Dataset item {0} does not follow the correct syntax of table.table_field", datasetItem));
+            throw new RuntimeException(MessageFormat
+                    .format("Dataset item {0} does not follow the correct syntax of table.table_field", datasetItem));
         }
-        CachedRowSet crs;
-        String query;
-        query = "select ";
-        query += "value";
-        query += " from ";
-        query += matcher.group("table");
-        query += " where key = '";
-        query += matcher.group("tableField");
-        query += "'";
+        String query = "";
+        if (!datasetItem.trim().equalsIgnoreCase("")) {
+            query = "select ";
+            query += "value";
+            query += " from ";
+            query += matcher.group("table");
+            query += " where key = '";
+            query += matcher.group("tableField");
+            query += "'";
+        }
 
         String value = null;
-        crs = this.getDatasetConnection().executeQuery(query);
+        CachedRowSet crs = this.getDatasetConnection().executeQuery(query);
         try {
             while (crs.next()) {
                 value = crs.getString("VALUE");
@@ -138,8 +145,8 @@ public class DatasetOperation {
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
-            return Optional.empty();
         }
+
         return Optional.ofNullable(value);
     }
 
@@ -276,7 +283,6 @@ public class DatasetOperation {
     public void setDatasetLabels(String datasetLabels) {
         this.datasetLabels = datasetLabels;
     }
-
 
     public String getDatasetType() {
         return datasetType;

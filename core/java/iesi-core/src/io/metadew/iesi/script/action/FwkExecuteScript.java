@@ -1,9 +1,5 @@
 package io.metadew.iesi.script.action;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.HashMap;
-
 import io.metadew.iesi.framework.configuration.FrameworkStatus;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.configuration.ScriptConfiguration;
@@ -14,278 +10,228 @@ import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 
-public class FwkExecuteScript
-{
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.HashMap;
 
-	private ActionExecution actionExecution;
+public class FwkExecuteScript {
 
-	private ScriptExecution scriptExecution;
+    private ActionExecution actionExecution;
 
-	private FrameworkExecution frameworkExecution;
+    private ScriptExecution scriptExecution;
 
-	private ExecutionControl executionControl;
+    private FrameworkExecution frameworkExecution;
 
-	// Parameters
-	private ActionParameterOperation scriptName;
+    private ExecutionControl executionControl;
 
-	private ActionParameterOperation scriptVersion;
+    // Parameters
+    private ActionParameterOperation scriptName;
 
-	private ActionParameterOperation environmentName;
+    private ActionParameterOperation scriptVersion;
 
-	private ActionParameterOperation paramList;
+    private ActionParameterOperation environmentName;
 
-	private ActionParameterOperation paramFile;
+    private ActionParameterOperation paramList;
 
-	private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
+    private ActionParameterOperation paramFile;
 
-	// Constructors
-	public FwkExecuteScript()
-	{
+    private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
 
-	}
+    // Constructors
+    public FwkExecuteScript() {
 
-	public FwkExecuteScript(FrameworkExecution frameworkExecution, ExecutionControl executionControl, ScriptExecution scriptExecution,
-				ActionExecution actionExecution)
-	{
-		this.init(frameworkExecution, executionControl, scriptExecution, actionExecution);
-	}
+    }
 
-	public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl, ScriptExecution scriptExecution,
-				ActionExecution actionExecution)
-	{
-		this.setFrameworkExecution(frameworkExecution);
-		this.setExecutionControl(executionControl);
-		this.setActionExecution(actionExecution);
-		this.setScriptExecution(scriptExecution);
-		this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
-	}
+    public FwkExecuteScript(FrameworkExecution frameworkExecution, ExecutionControl executionControl, ScriptExecution scriptExecution,
+                            ActionExecution actionExecution) {
+        this.init(frameworkExecution, executionControl, scriptExecution, actionExecution);
+    }
 
-	public void prepare() {
-		// Reset Parameters
-		this.setScriptName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
-					this.getActionExecution(), this.getActionExecution().getAction().getType(), "script"));
-		this.setScriptVersion(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
-					this.getActionExecution(), this.getActionExecution().getAction().getType(), "version"));
-		this.setEnvironmentName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
-					this.getActionExecution(), this.getActionExecution().getAction().getType(), "environment"));
-		this.setParamList(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
-					this.getActionExecution(), this.getActionExecution().getAction().getType(), "paramList"));
-		this.setParamFile(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
-					this.getActionExecution(), this.getActionExecution().getAction().getType(), "paramFile"));
+    public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl, ScriptExecution scriptExecution,
+                     ActionExecution actionExecution) {
+        this.setFrameworkExecution(frameworkExecution);
+        this.setExecutionControl(executionControl);
+        this.setActionExecution(actionExecution);
+        this.setScriptExecution(scriptExecution);
+        this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
+    }
 
-		// Get Parameters
-		for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters())
-		{
-			if (actionParameter.getName().equalsIgnoreCase("script"))
-			{
-				this.getScriptName().setInputValue(actionParameter.getValue());
-			}
-			else if (actionParameter.getName().equalsIgnoreCase("version"))
-			{
-				this.getScriptVersion().setInputValue(actionParameter.getValue());
-			}
-			else if (actionParameter.getName().equalsIgnoreCase("environment"))
-			{
-				this.getEnvironmentName().setInputValue(actionParameter.getValue());
-			}
-			else if (actionParameter.getName().equalsIgnoreCase("paramlist"))
-			{
-				this.getParamList().setInputValue(actionParameter.getValue());
-			}
-			else if (actionParameter.getName().equalsIgnoreCase("paramfile"))
-			{
-				this.getParamFile().setInputValue(actionParameter.getValue());
-			}
-		}
+    public void prepare() {
+        // Reset Parameters
+        this.setScriptName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+                this.getActionExecution(), this.getActionExecution().getAction().getType(), "script"));
+        this.setScriptVersion(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+                this.getActionExecution(), this.getActionExecution().getAction().getType(), "version"));
+        this.setEnvironmentName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+                this.getActionExecution(), this.getActionExecution().getAction().getType(), "environment"));
+        this.setParamList(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+                this.getActionExecution(), this.getActionExecution().getAction().getType(), "paramList"));
+        this.setParamFile(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+                this.getActionExecution(), this.getActionExecution().getAction().getType(), "paramFile"));
 
-		// Create parameter list
-		this.getActionParameterOperationMap().put("script", this.getScriptName());
-		this.getActionParameterOperationMap().put("version", this.getScriptVersion());
-		this.getActionParameterOperationMap().put("environment", this.getEnvironmentName());
-		this.getActionParameterOperationMap().put("paramList", this.getParamList());
-		this.getActionParameterOperationMap().put("paramFile", this.getParamFile());
-	}
-	
-	public boolean execute()
-	{
-		try
-		{
-			// Add parameter allow recursive
-			// Add reuse options in a script
+        // Get Parameters
+        for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
+            if (actionParameter.getName().equalsIgnoreCase("script")) {
+                this.getScriptName().setInputValue(actionParameter.getValue());
+            } else if (actionParameter.getName().equalsIgnoreCase("version")) {
+                this.getScriptVersion().setInputValue(actionParameter.getValue());
+            } else if (actionParameter.getName().equalsIgnoreCase("environment")) {
+                this.getEnvironmentName().setInputValue(actionParameter.getValue());
+            } else if (actionParameter.getName().equalsIgnoreCase("paramlist")) {
+                this.getParamList().setInputValue(actionParameter.getValue());
+            } else if (actionParameter.getName().equalsIgnoreCase("paramfile")) {
+                this.getParamFile().setInputValue(actionParameter.getValue());
+            }
+        }
 
-			// Check on Running a script in a loop
-			if (this.getScriptExecution().getScript().getName().equalsIgnoreCase(this.getScriptName().getValue()))
-			{
-				throw new RuntimeException("Not allowed to run the script recursively");
-			}
+        // Create parameter list
+        this.getActionParameterOperationMap().put("script", this.getScriptName());
+        this.getActionParameterOperationMap().put("version", this.getScriptVersion());
+        this.getActionParameterOperationMap().put("environment", this.getEnvironmentName());
+        this.getActionParameterOperationMap().put("paramList", this.getParamList());
+        this.getActionParameterOperationMap().put("paramFile", this.getParamFile());
+    }
 
-			try
-			{
-				ScriptConfiguration scriptConfiguration = new ScriptConfiguration(this.getFrameworkExecution());
-				// Script script = scriptConfiguration.getScript(this.getScriptName().getValue());
-				Script script = null;
-				if (this.getScriptVersion().getValue().equalsIgnoreCase(""))
-				{
-					script = scriptConfiguration.getScript(this.getScriptName().getValue());
-				}
-				else
-				{
-					script = scriptConfiguration.getScript(this.getScriptName().getValue(),
-								Long.parseLong(this.getScriptVersion().getValue()));
-				}
-				ScriptExecution scriptExecution = new ScriptExecution(this.getFrameworkExecution(), script);
-				scriptExecution.initializeAsNonRootExecution(this.getExecutionControl(), this.getScriptExecution());
+    public boolean execute() {
+        try {
+            // Add parameter allow recursive
+            // Add reuse options in a script
 
-				if (!this.getParamList().getValue().equalsIgnoreCase(""))
-				{
-					scriptExecution.setParamList(this.getParamList().getValue());
-				}
-				if (!this.getParamFile().getValue().equalsIgnoreCase(""))
-				{
-					scriptExecution.setParamFile(this.getParamFile().getValue());
-				}
+            // Check on Running a script in a loop
+            if (this.getScriptExecution().getScript().getName().equalsIgnoreCase(this.getScriptName().getValue())) {
+                throw new RuntimeException("Not allowed to run the script recursively");
+            }
 
-				scriptExecution.execute();
+            try {
+                ScriptConfiguration scriptConfiguration = new ScriptConfiguration(this.getFrameworkExecution());
+                // Script script = scriptConfiguration.getScript(this.getScriptName().getValue());
+                Script script = null;
+                if (this.getScriptVersion().getValue().equalsIgnoreCase("")) {
+                    script = scriptConfiguration.getScript(this.getScriptName().getValue());
+                } else {
+                    script = scriptConfiguration.getScript(this.getScriptName().getValue(),
+                            Long.parseLong(this.getScriptVersion().getValue()));
+                }
+                ScriptExecution scriptExecution = new ScriptExecution(this.getFrameworkExecution(), script);
+                scriptExecution.initializeAsNonRootExecution(this.getExecutionControl(), this.getScriptExecution());
 
-				if (scriptExecution.getResult().equalsIgnoreCase(FrameworkStatus.SUCCESS.value()))
-				{
-					this.getActionExecution().getActionControl().increaseSuccessCount();
-				}
-				else if (scriptExecution.getResult()
-							.equalsIgnoreCase(FrameworkStatus.WARNING.value()))
-				{
-					this.getActionExecution().getActionControl().increaseSuccessCount();
-				}
-				else if (scriptExecution.getResult()
-							.equalsIgnoreCase(FrameworkStatus.ERROR.value()))
-				{
-					this.getActionExecution().getActionControl().increaseErrorCount();
-				}
-				else
-				{
-					this.getActionExecution().getActionControl().increaseErrorCount();
-				}
+                if (!this.getParamList().getValue().equalsIgnoreCase("")) {
+                    scriptExecution.setParamList(this.getParamList().getValue());
+                }
+                if (!this.getParamFile().getValue().equalsIgnoreCase("")) {
+                    scriptExecution.setParamFile(this.getParamFile().getValue());
+                }
 
-			}
-			catch (Exception e)
-			{
-				throw new RuntimeException("Issue setting runtime variables: " + e, e);
-			}
-			return true;
-		}
-		catch (Exception e)
-		{
-			StringWriter StackTrace = new StringWriter();
-			e.printStackTrace(new PrintWriter(StackTrace));
+                scriptExecution.execute();
 
-			this.getActionExecution().getActionControl().increaseErrorCount();
+                if (scriptExecution.getResult().equalsIgnoreCase(FrameworkStatus.SUCCESS.value())) {
+                    this.getActionExecution().getActionControl().increaseSuccessCount();
+                } else if (scriptExecution.getResult()
+                        .equalsIgnoreCase(FrameworkStatus.WARNING.value())) {
+                    this.getActionExecution().getActionControl().increaseSuccessCount();
+                } else if (scriptExecution.getResult()
+                        .equalsIgnoreCase(FrameworkStatus.ERROR.value())) {
+                    this.getActionExecution().getActionControl().increaseErrorCount();
+                } else {
+                    this.getActionExecution().getActionControl().increaseErrorCount();
+                }
 
-			this.getActionExecution().getActionControl().logOutput("exception",e.getMessage());
-			this.getActionExecution().getActionControl().logOutput("stacktrace",StackTrace.toString());
+            } catch (Exception e) {
+                throw new RuntimeException("Issue setting runtime variables: " + e, e);
+            }
+            return true;
+        } catch (Exception e) {
+            StringWriter StackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(StackTrace));
 
-			return false;
-		}
+            this.getActionExecution().getActionControl().increaseErrorCount();
 
-	}
+            this.getActionExecution().getActionControl().logOutput("exception", e.getMessage());
+            this.getActionExecution().getActionControl().logOutput("stacktrace", StackTrace.toString());
 
-	// Getters and Setters
-	public FrameworkExecution getFrameworkExecution()
-	{
-		return frameworkExecution;
-	}
+            return false;
+        }
 
-	public void setFrameworkExecution(FrameworkExecution frameworkExecution)
-	{
-		this.frameworkExecution = frameworkExecution;
-	}
+    }
 
-	public ExecutionControl getExecutionControl()
-	{
-		return executionControl;
-	}
+    // Getters and Setters
+    public FrameworkExecution getFrameworkExecution() {
+        return frameworkExecution;
+    }
 
-	public void setExecutionControl(ExecutionControl executionControl)
-	{
-		this.executionControl = executionControl;
-	}
+    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
+        this.frameworkExecution = frameworkExecution;
+    }
 
-	public ActionExecution getActionExecution()
-	{
-		return actionExecution;
-	}
+    public ExecutionControl getExecutionControl() {
+        return executionControl;
+    }
 
-	public void setActionExecution(ActionExecution actionExecution)
-	{
-		this.actionExecution = actionExecution;
-	}
+    public void setExecutionControl(ExecutionControl executionControl) {
+        this.executionControl = executionControl;
+    }
 
-	public ScriptExecution getScriptExecution()
-	{
-		return scriptExecution;
-	}
+    public ActionExecution getActionExecution() {
+        return actionExecution;
+    }
 
-	public void setScriptExecution(ScriptExecution scriptExecution)
-	{
-		this.scriptExecution = scriptExecution;
-	}
+    public void setActionExecution(ActionExecution actionExecution) {
+        this.actionExecution = actionExecution;
+    }
 
-	public ActionParameterOperation getScriptName()
-	{
-		return scriptName;
-	}
+    public ScriptExecution getScriptExecution() {
+        return scriptExecution;
+    }
 
-	public void setScriptName(ActionParameterOperation scriptName)
-	{
-		this.scriptName = scriptName;
-	}
+    public void setScriptExecution(ScriptExecution scriptExecution) {
+        this.scriptExecution = scriptExecution;
+    }
 
-	public ActionParameterOperation getEnvironmentName()
-	{
-		return environmentName;
-	}
+    public ActionParameterOperation getScriptName() {
+        return scriptName;
+    }
 
-	public void setEnvironmentName(ActionParameterOperation environmentName)
-	{
-		this.environmentName = environmentName;
-	}
+    public void setScriptName(ActionParameterOperation scriptName) {
+        this.scriptName = scriptName;
+    }
 
-	public ActionParameterOperation getParamList()
-	{
-		return paramList;
-	}
+    public ActionParameterOperation getEnvironmentName() {
+        return environmentName;
+    }
 
-	public void setParamList(ActionParameterOperation paramList)
-	{
-		this.paramList = paramList;
-	}
+    public void setEnvironmentName(ActionParameterOperation environmentName) {
+        this.environmentName = environmentName;
+    }
 
-	public ActionParameterOperation getParamFile()
-	{
-		return paramFile;
-	}
+    public ActionParameterOperation getParamList() {
+        return paramList;
+    }
 
-	public void setParamFile(ActionParameterOperation paramFile)
-	{
-		this.paramFile = paramFile;
-	}
+    public void setParamList(ActionParameterOperation paramList) {
+        this.paramList = paramList;
+    }
 
-	public HashMap<String, ActionParameterOperation> getActionParameterOperationMap()
-	{
-		return actionParameterOperationMap;
-	}
+    public ActionParameterOperation getParamFile() {
+        return paramFile;
+    }
 
-	public void setActionParameterOperationMap(HashMap<String, ActionParameterOperation> actionParameterOperationMap)
-	{
-		this.actionParameterOperationMap = actionParameterOperationMap;
-	}
+    public void setParamFile(ActionParameterOperation paramFile) {
+        this.paramFile = paramFile;
+    }
 
-	public ActionParameterOperation getScriptVersion()
-	{
-		return scriptVersion;
-	}
+    public HashMap<String, ActionParameterOperation> getActionParameterOperationMap() {
+        return actionParameterOperationMap;
+    }
 
-	public void setScriptVersion(ActionParameterOperation scriptVersion)
-	{
-		this.scriptVersion = scriptVersion;
-	}
+    public void setActionParameterOperationMap(HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
+        this.actionParameterOperationMap = actionParameterOperationMap;
+    }
+
+    public ActionParameterOperation getScriptVersion() {
+        return scriptVersion;
+    }
+
+    public void setScriptVersion(ActionParameterOperation scriptVersion) {
+        this.scriptVersion = scriptVersion;
+    }
 }

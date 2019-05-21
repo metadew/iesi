@@ -16,7 +16,7 @@ data:
     errorStop: "N"
     parameters:
     - name: "query"
-      value : "{{=file(#iesi.home#/data/iesi-test/actions/data/actions/sql.evaluateResult.1.2.sql)}}"
+      value : "{{=file(#iesi.home#/data/iesi-test/fwk/data/actions/sql.evaluateResult.1.2.sql)}}"
     - name: "hasResult"
       value : "Y"
     - name: "connection"

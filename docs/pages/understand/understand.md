@@ -67,8 +67,9 @@ The configuration data can be divided in different categories.
 
 |Category|Description|
 |--------|-----------|
-|Design|Automation configuration as designed by the automation engineer. This can include parameters and other reusable constructs that are resolved during execution.|
 |Connectivity|Connectivity configuration to automate actions. This can include parameters that are resolved during execution.|
+|Control|Control configuration to organize access to automation objects.|
+|Design|Automation configuration as designed by the automation engineer. This can include parameters and other reusable constructs that are resolved during execution.|
 |Result|The technical outcome for the different actions as executed by the framework.|
 |Trace|The resolution of the automation configuration design as it has been executed by the framework. All parameters and reusable constructs are replaced by actual values.|
 |Reporting|The interpretation of the technical outcome using reporting views to give context to the execution.|
@@ -76,7 +77,7 @@ The configuration data can be divided in different categories.
 
 ### Users
 
-The framework is built around 3 users having access  to the configuration repository:
+The framework is built around 3 users having access to the configuration repository:
 
 |User type|Description|
 |---------|-----------|
@@ -103,6 +104,16 @@ Prefixes:
 |TRC|Trace tables|
 
 ### Data Model
+
+The data model for the solution is stored in the `metadata/def` folder. To support multi-database support the structure is stored in a data store agnostic `json` file. 
+For each category a file `[Category]Tables.json` can be found here. The file `[Category]Objects.json` contains the relevant object definitions for the category. 
+More information on the data models for the different categories can be found by clicking on the appropriate link below:
+
+* [Connectivity](/{{site.repository}}/pages/understand/datamodel/connectivity.html)
+* [Control](/{{site.repository}}/pages/understand/datamodel/control.html)
+* [design](/{{site.repository}}/pages/understand/datamodel/design.html)
+* [result](/{{site.repository}}/pages/understand/datamodel/result.html)
+* [trace](/{{site.repository}}/pages/understand/datamodel/trace.html)
 
 ## Processing engine
 

@@ -1,10 +1,10 @@
 package io.metadew.iesi.data.generation.configuration;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import io.metadew.iesi.data.generation.execution.GenerationComponentExecution;
 import io.metadew.iesi.data.generation.execution.GenerationDataExecution;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Lorem extends GenerationComponentExecution {
 
@@ -16,7 +16,7 @@ public class Lorem extends GenerationComponentExecution {
     private static final int DEFAULT_SENTENCE_COUNT = 3;
     private static final int DEFAULT_SENTENCES_TO_ADD = 3;
     private static final int DEFAULT_PARAGRAPH_COUNT = 3;
-    
+
     public Lorem(GenerationDataExecution execution) {
         super(execution);
     }
@@ -28,29 +28,29 @@ public class Lorem extends GenerationComponentExecution {
     public String supplemental() {
         return fetch("lorem.supplemental");
     }
-    
+
     public String words() {
-    	StringBuilder sb = new StringBuilder();
-    	int i = 0;
-    	for (String word : wordsList(DEFAULT_NUM)) {
-    		if (i > 0) sb.append(" ");
-    		sb.append(word);
-    		i++;
-    	}
-    	return sb.toString();
+        StringBuilder sb = new StringBuilder();
+        int i = 0;
+        for (String word : wordsList(DEFAULT_NUM)) {
+            if (i > 0) sb.append(" ");
+            sb.append(word);
+            i++;
+        }
+        return sb.toString();
     }
 
     public String words(int num) {
-    	StringBuilder sb = new StringBuilder();
-    	int i = 0;
-    	for (String word : wordsList(num)) {
-    		if (i > 0) sb.append(" ");
-    		sb.append(word);
-    		i++;
-    	}
-    	return sb.toString();
+        StringBuilder sb = new StringBuilder();
+        int i = 0;
+        for (String word : wordsList(num)) {
+            if (i > 0) sb.append(" ");
+            sb.append(word);
+            i++;
+        }
+        return sb.toString();
     }
-    
+
     public List<String> wordsList() {
         return wordsList(DEFAULT_NUM);
     }

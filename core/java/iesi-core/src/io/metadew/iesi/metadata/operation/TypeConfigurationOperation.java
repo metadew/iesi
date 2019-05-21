@@ -1,10 +1,10 @@
 package io.metadew.iesi.metadata.operation;
 
-import java.io.File;
-
 import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.framework.operation.FrameworkPluginOperation;
+
+import java.io.File;
 
 public class TypeConfigurationOperation {
 

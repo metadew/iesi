@@ -1,12 +1,12 @@
 package io.metadew.iesi.script.execution.instruction.data.belgium;
 
+import io.metadew.iesi.script.execution.instruction.data.DataInstruction;
+
 import java.math.BigInteger;
 import java.text.MessageFormat;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import io.metadew.iesi.script.execution.instruction.data.DataInstruction;
 
 /**
  * @author robbe.berrevoets

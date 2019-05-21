@@ -3,66 +3,66 @@ package io.metadew.iesi.metadata.definition;
 import java.util.List;
 
 public class GenerationControlRule {
-	
-	private long id;
-	private long number;
-	private String type;
-	private String name;
-	private String description;
-	private List<GenerationControlRuleParameter> parameters;
-	
-	//Constructors
-	public GenerationControlRule() {
-		
-	}
-	
-	//Getters and Setters
-	public String getDescription() {
-		return description;
-	}
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    private long id;
+    private long number;
+    private String type;
+    private String name;
+    private String description;
+    private List<GenerationControlRuleParameter> parameters;
 
-	public long getId() {
-		return id;
-	}
+    //Constructors
+    public GenerationControlRule() {
 
-	public void setId(long id) {
-		this.id = id;
-	}
+    }
 
-	public long getNumber() {
-		return number;
-	}
+    //Getters and Setters
+    public String getDescription() {
+        return description;
+    }
 
-	public void setNumber(long number) {
-		this.number = number;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	public String getType() {
-		return type;
-	}
+    public long getId() {
+        return id;
+    }
 
-	public void setType(String type) {
-		this.type = type;
-	}
+    public void setId(long id) {
+        this.id = id;
+    }
 
-	public List<GenerationControlRuleParameter> getParameters() {
-		return parameters;
-	}
+    public long getNumber() {
+        return number;
+    }
 
-	public void setParameters(List<GenerationControlRuleParameter> parameters) {
-		this.parameters = parameters;
-	}
+    public void setNumber(long number) {
+        this.number = number;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getType() {
+        return type;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public List<GenerationControlRuleParameter> getParameters() {
+        return parameters;
+    }
+
+    public void setParameters(List<GenerationControlRuleParameter> parameters) {
+        this.parameters = parameters;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
 }

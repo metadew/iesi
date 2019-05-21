@@ -1,113 +1,125 @@
 package io.metadew.iesi.metadata.definition;
 
+import io.metadew.iesi.metadata.tools.IdentifierTools;
+
 import java.util.List;
 
 public class Action {
-	
-	private long id;
-	private long number;
-	private String type;
-	private String name;
-	private String description;
-	private String component;
-	private String condition;
-	private String iteration;
-	private String errorExpected;
-	private String errorStop;
-	private List<ActionParameter> parameters;
-	
-	//Constructors
-	public Action() {
-		
-	}
-	
-	//Getters and Setters
-	public String getName() {
-		return name;
-	}
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    private String id;
+    private long number;
+    private String type;
+    private String name;
+    private String description;
+    private String component = "";
+    private String condition = "";
+    private String iteration = "";
+    private String errorExpected = "N";
+    private String errorStop = "N";
+    private String retries = "";
+    private List<ActionParameter> parameters;
 
-	public String getDescription() {
-		return description;
-	}
+    //Constructors
+    public Action() {
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    }
 
-	public long getId() {
-		return id;
-	}
+    //Getters and Setters
+    public String getName() {
+        return name;
+    }
 
-	public void setId(long id) {
-		this.id = id;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public long getNumber() {
-		return number;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public void setNumber(long number) {
-		this.number = number;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	public String getType() {
-		return type;
-	}
+    public long getNumber() {
+        return number;
+    }
 
-	public void setType(String type) {
-		this.type = type;
-	}
+    public void setNumber(long number) {
+        this.number = number;
+    }
 
-	public String getErrorExpected() {
-		return errorExpected;
-	}
+    public String getType() {
+        return type;
+    }
 
-	public void setErrorExpected(String errorExpected) {
-		this.errorExpected = errorExpected;
-	}
+    public void setType(String type) {
+        this.type = type;
+    }
 
-	public String getErrorStop() {
-		return errorStop;
-	}
+    public String getErrorExpected() {
+        return errorExpected;
+    }
 
-	public void setErrorStop(String errorStop) {
-		this.errorStop = errorStop;
-	}
+    public void setErrorExpected(String errorExpected) {
+        this.errorExpected = errorExpected;
+    }
 
-	public List<ActionParameter> getParameters() {
-		return parameters;
-	}
+    public String getErrorStop() {
+        return errorStop;
+    }
 
-	public void setParameters(List<ActionParameter> parameters) {
-		this.parameters = parameters;
-	}
+    public void setErrorStop(String errorStop) {
+        this.errorStop = errorStop;
+    }
 
-	public String getComponent() {
-		return component;
-	}
+    public List<ActionParameter> getParameters() {
+        return parameters;
+    }
 
-	public void setComponent(String component) {
-		this.component = component;
-	}
+    public void setParameters(List<ActionParameter> parameters) {
+        this.parameters = parameters;
+    }
 
-	public String getIteration() {
-		return iteration;
-	}
+    public String getComponent() {
+        return component;
+    }
 
-	public void setIteration(String iteration) {
-		this.iteration = iteration;
-	}
+    public void setComponent(String component) {
+        this.component = component;
+    }
 
-	public String getCondition() {
-		return condition;
-	}
+    public String getIteration() {
+        return iteration;
+    }
 
-	public void setCondition(String condition) {
-		this.condition = condition;
-	}
+    public void setIteration(String iteration) {
+        this.iteration = iteration;
+    }
+
+    public String getCondition() {
+        return condition;
+    }
+
+    public void setCondition(String condition) {
+        this.condition = condition;
+    }
+
+    public String getRetries() {
+        return retries;
+    }
+
+    public void setRetries(String retries) {
+        this.retries = retries;
+    }
+
+    public String getId() {
+        if (id == null) this.id = IdentifierTools.getActionIdentifier(this.getName());
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
 }

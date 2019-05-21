@@ -1,102 +1,102 @@
 package io.metadew.iesi.metadata.definition;
 
 public class User {
-	
-	private String name;
-	private String type;
-	private String firstName;
-	private String lastName;
-	private String active;
-	private String passwordHash;
-	private String expired;
-	private Long cumulativeLoginFails;
-	private Long individualLoginFails;
-	private String locked;
 
-	//Constructors
-	public User() {
-		
-	}
+    private String name;
+    private String type;
+    private String firstName;
+    private String lastName;
+    private String active;
+    private String passwordHash;
+    private String expired;
+    private Long cumulativeLoginFails;
+    private Long individualLoginFails;
+    private String locked;
 
-	//Getters and Setters
-	public String getFirstName() {
-		return firstName;
-	}
+    //Constructors
+    public User() {
 
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
+    }
 
-	public String getLastName() {
-		return lastName;
-	}
+    //Getters and Setters
+    public String getFirstName() {
+        return firstName;
+    }
 
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
 
-	public String getActive() {
-		return active;
-	}
+    public String getLastName() {
+        return lastName;
+    }
 
-	public void setActive(String active) {
-		this.active = active;
-	}
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
 
-	public String getPasswordHash() {
-		return passwordHash;
-	}
+    public String getActive() {
+        return active;
+    }
 
-	public void setPasswordHash(String passwordHash) {
-		this.passwordHash = passwordHash;
-	}
+    public void setActive(String active) {
+        this.active = active;
+    }
 
-	public String getExpired() {
-		return expired;
-	}
+    public String getPasswordHash() {
+        return passwordHash;
+    }
 
-	public void setExpired(String expired) {
-		this.expired = expired;
-	}
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
+    }
 
-	public Long getCumulativeLoginFails() {
-		return cumulativeLoginFails;
-	}
+    public String getExpired() {
+        return expired;
+    }
 
-	public void setCumulativeLoginFails(Long cumulativeLoginFails) {
-		this.cumulativeLoginFails = cumulativeLoginFails;
-	}
+    public void setExpired(String expired) {
+        this.expired = expired;
+    }
 
-	public Long getIndividualLoginFails() {
-		return individualLoginFails;
-	}
+    public Long getCumulativeLoginFails() {
+        return cumulativeLoginFails;
+    }
 
-	public void setIndividualLoginFails(Long individualLoginFails) {
-		this.individualLoginFails = individualLoginFails;
-	}
+    public void setCumulativeLoginFails(Long cumulativeLoginFails) {
+        this.cumulativeLoginFails = cumulativeLoginFails;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public Long getIndividualLoginFails() {
+        return individualLoginFails;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setIndividualLoginFails(Long individualLoginFails) {
+        this.individualLoginFails = individualLoginFails;
+    }
 
-	public String getType() {
-		return type;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setType(String type) {
-		this.type = type;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public String getLocked() {
-		return locked;
-	}
+    public String getType() {
+        return type;
+    }
 
-	public void setLocked(String locked) {
-		this.locked = locked;
-	}
-	
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getLocked() {
+        return locked;
+    }
+
+    public void setLocked(String locked) {
+        this.locked = locked;
+    }
+
 }

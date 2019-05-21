@@ -1,9 +1,9 @@
 package io.metadew.iesi.data.generation.configuration;
 
-import java.math.BigDecimal;
-
 import io.metadew.iesi.data.generation.execution.GenerationComponentExecution;
 import io.metadew.iesi.data.generation.execution.GenerationDataExecution;
+
+import java.math.BigDecimal;
 
 public class Number extends GenerationComponentExecution {
 
@@ -74,7 +74,7 @@ public class Number extends GenerationComponentExecution {
     }
 
     public long between(long from, long to) {
-      return this.getGenerationTools().getRandomTools().range(from, to);
+        return this.getGenerationTools().getRandomTools().range(from, to);
     }
 
     public double between(double from, double to) {
@@ -112,28 +112,28 @@ public class Number extends GenerationComponentExecution {
     public double negative(double from, double to) {
         return Math.abs(between(from, to)) * -1;
     }
-    
-	public int getNextInt(int lbound, int ubound) {
-		return lbound + (int) (Math.random() * (ubound - lbound));
-	}
 
-	public long getNextLong(long lbound, long ubound) {
-		return lbound + (long) (Math.random() * (ubound - lbound));
-	}
-	
-	public float getNextFloat(double lbound, double ubound, int decimalPlace) {
-		return this.round((float) (lbound + (Math.random() * (ubound - lbound))), decimalPlace);
-	}
+    public int getNextInt(int lbound, int ubound) {
+        return lbound + (int) (Math.random() * (ubound - lbound));
+    }
 
-	public float round(float d, int decimalPlace) {
-		BigDecimal bd = new BigDecimal(Float.toString(d));
-		bd = bd.setScale(decimalPlace, BigDecimal.ROUND_HALF_UP);
-		return bd.floatValue();
-	}
+    public long getNextLong(long lbound, long ubound) {
+        return lbound + (long) (Math.random() * (ubound - lbound));
+    }
 
-	public double round(double d, int decimalPlace) {
-		BigDecimal bd = new BigDecimal(Double.toString(d));
-		bd = bd.setScale(decimalPlace, BigDecimal.ROUND_HALF_UP);
-		return bd.doubleValue();
-	}
+    public float getNextFloat(double lbound, double ubound, int decimalPlace) {
+        return this.round((float) (lbound + (Math.random() * (ubound - lbound))), decimalPlace);
+    }
+
+    public float round(float d, int decimalPlace) {
+        BigDecimal bd = new BigDecimal(Float.toString(d));
+        bd = bd.setScale(decimalPlace, BigDecimal.ROUND_HALF_UP);
+        return bd.floatValue();
+    }
+
+    public double round(double d, int decimalPlace) {
+        BigDecimal bd = new BigDecimal(Double.toString(d));
+        bd = bd.setScale(decimalPlace, BigDecimal.ROUND_HALF_UP);
+        return bd.doubleValue();
+    }
 }

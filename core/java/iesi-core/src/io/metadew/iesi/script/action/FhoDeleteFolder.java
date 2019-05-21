@@ -1,13 +1,13 @@
 package io.metadew.iesi.script.action;
 
-import java.io.File;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.HashMap;
-
+import io.metadew.iesi.connection.FileConnection;
 import io.metadew.iesi.connection.HostConnection;
+import io.metadew.iesi.connection.host.ShellCommandResult;
+import io.metadew.iesi.connection.host.ShellCommandSettings;
 import io.metadew.iesi.connection.operation.ConnectionOperation;
 import io.metadew.iesi.connection.tools.FolderTools;
+import io.metadew.iesi.connection.tools.HostConnectionTools;
+import io.metadew.iesi.connection.tools.fho.FileConnectionTools;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.configuration.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.ActionParameter;
@@ -17,189 +17,226 @@ import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.HashMap;
+import java.util.List;
+
 /**
  * Action type to delete one or more folders and all of its contents.
- * 
- * @author peter.billen
  *
+ * @author peter.billen
  */
 public class FhoDeleteFolder {
 
-	private ActionExecution actionExecution;
-	private FrameworkExecution frameworkExecution;
-	private ExecutionControl executionControl;
+    private ActionExecution actionExecution;
+    private FrameworkExecution frameworkExecution;
+    private ExecutionControl executionControl;
 
-	// Parameters
-	private ActionParameterOperation folderPath;
-	private ActionParameterOperation folderName;
-	private ActionParameterOperation connectionName;
-	private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
+    // Parameters
+    private ActionParameterOperation folderPath;
+    private ActionParameterOperation folderName;
+    private ActionParameterOperation connectionName;
+    private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
 
-	// Constructors
-	public FhoDeleteFolder() {
+    // Constructors
+    public FhoDeleteFolder() {
 
-	}
+    }
 
-	public FhoDeleteFolder(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
-			ScriptExecution scriptExecution, ActionExecution actionExecution) {
-		this.init(frameworkExecution, executionControl, scriptExecution, actionExecution);
-	}
+    public FhoDeleteFolder(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+                           ScriptExecution scriptExecution, ActionExecution actionExecution) {
+        this.init(frameworkExecution, executionControl, scriptExecution, actionExecution);
+    }
 
-	public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
-			ScriptExecution scriptExecution, ActionExecution actionExecution) {
-		this.setFrameworkExecution(frameworkExecution);
-		this.setExecutionControl(executionControl);
-		this.setActionExecution(actionExecution);
-		this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
-	}
+    public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+                     ScriptExecution scriptExecution, ActionExecution actionExecution) {
+        this.setFrameworkExecution(frameworkExecution);
+        this.setExecutionControl(executionControl);
+        this.setActionExecution(actionExecution);
+        this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
+    }
 
-	public void prepare() {
-		// Reset Parameters
-		this.setFolderPath(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
-				this.getActionExecution(), this.getActionExecution().getAction().getType(), "path"));
-		this.setFolderName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
-				this.getActionExecution(), this.getActionExecution().getAction().getType(), "folder"));
-		this.setConnectionName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
-				this.getActionExecution(), this.getActionExecution().getAction().getType(), "connection"));
+    public void prepare() {
+        // Reset Parameters
+        this.setFolderPath(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+                this.getActionExecution(), this.getActionExecution().getAction().getType(), "path"));
+        this.setFolderName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+                this.getActionExecution(), this.getActionExecution().getAction().getType(), "folder"));
+        this.setConnectionName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+                this.getActionExecution(), this.getActionExecution().getAction().getType(), "connection"));
 
-		// Get Parameters
-		for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-			if (actionParameter.getName().equalsIgnoreCase("path")) {
-				this.getFolderPath().setInputValue(actionParameter.getValue());
-			} else if (actionParameter.getName().equalsIgnoreCase("folder")) {
-				this.getFolderName().setInputValue(actionParameter.getValue());
-			} else if (actionParameter.getName().equalsIgnoreCase("connection")) {
-				this.getConnectionName().setInputValue(actionParameter.getValue());
-			}
-		}
+        // Get Parameters
+        for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
+            if (actionParameter.getName().equalsIgnoreCase("path")) {
+                this.getFolderPath().setInputValue(actionParameter.getValue());
+            } else if (actionParameter.getName().equalsIgnoreCase("folder")) {
+                this.getFolderName().setInputValue(actionParameter.getValue());
+            } else if (actionParameter.getName().equalsIgnoreCase("connection")) {
+                this.getConnectionName().setInputValue(actionParameter.getValue());
+            }
+        }
 
-		// Create parameter list
-		this.getActionParameterOperationMap().put("path", this.getFolderPath());
-		this.getActionParameterOperationMap().put("folder", this.getFolderName());
-		this.getActionParameterOperationMap().put("connection", this.getConnectionName());
-	}
+        // Create parameter list
+        this.getActionParameterOperationMap().put("path", this.getFolderPath());
+        this.getActionParameterOperationMap().put("folder", this.getFolderName());
+        this.getActionParameterOperationMap().put("connection", this.getConnectionName());
+    }
 
-	// Methods
-	public boolean execute() {
-		try {
-			boolean isOnLocalHost = true;
+    // Methods
+    public boolean execute() {
+        try {
+            boolean isOnLocalhost = HostConnectionTools.isOnLocalhost(this.getFrameworkExecution(),
+                    this.getConnectionName().getValue(), this.getExecutionControl().getEnvName());
 
-			if (this.getConnectionName().getValue().isEmpty()) {
-				isOnLocalHost = true;
-			} else {
-				if (this.getConnectionName().getValue().equalsIgnoreCase("localhost")) {
-					isOnLocalHost = true;
-				} else {
-					ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution());
-					Connection connection = connectionConfiguration.getConnection(this.getConnectionName().getValue(),
-							this.getExecutionControl().getEnvName()).get();
-					ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
-					HostConnection hostConnection = connectionOperation.getHostConnection(connection);
+            if (isOnLocalhost) {
+                if (this.getFolderPath().getValue().isEmpty()) {
+                    this.setScope(this.getFolderName().getValue());
 
-					if(hostConnection.fileExists(this.getFrameworkExecution().getFrameworkRuntime().getLocalHostChallengeFileName())) {
-						isOnLocalHost = true;
-					} else {
-						isOnLocalHost = false;
-					}
-				}
-			}
+                    try {
+                        FolderTools.deleteFolder(this.getFolderName().getValue(), true);
+                        this.setSuccess();
+                    } catch (Exception e) {
+                        this.setError(e.getMessage());
+                    }
 
-			if (isOnLocalHost) {
-				if (this.getFolderPath().getValue().isEmpty()) {
-					FolderTools.deleteFolder(this.getFolderName().getValue(), true);
-				} else {
-					File[] subjectFiles = FolderTools.getFilesInFolder(this.getFolderPath().getValue(), this.getFolderName().getValue());
-					for (File file : subjectFiles) {
-						if (file.isDirectory()) {
-							this.getActionExecution().getActionControl().logOutput("folder.delete", file.getAbsolutePath());
-							try {
-								FolderTools.deleteFolder(file.getAbsolutePath(), true);				
-								this.getActionExecution().getActionControl().increaseSuccessCount();
-								this.getActionExecution().getActionControl().logOutput("folder.delete.success", "confirmed");
-							} catch (Exception e) {
-								this.getActionExecution().getActionControl().logOutput("folder.delete.error", e.getMessage());
-								this.getActionExecution().getActionControl().increaseErrorCount();
-							}
-						}
-					}
-				}
-			} else {
-				// placeholder
-				// check if allowed
-				// delete remote
-				// new file object - consolidate over file and lsentry
-			}
+                } else {
+                    List<FileConnection> fileConnections = FolderTools.getFilesInFolder(this.getFolderPath().getValue(),
+                            this.getFolderName().getValue());
+                    for (FileConnection fileConnection : fileConnections) {
+                        if (fileConnection.isDirectory()) {
+                            this.setScope(fileConnection.getFilePath());
+                            try {
+                                FolderTools.deleteFolder(fileConnection.getFilePath(), true);
+                                this.setSuccess();
+                            } catch (Exception e) {
+                                this.setError(e.getMessage());
+                            }
+                        }
+                    }
+                }
+            } else {
+                ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(
+                        this.getFrameworkExecution());
+                Connection connection = connectionConfiguration
+                        .getConnection(this.getConnectionName().getValue(), this.getExecutionControl().getEnvName())
+                        .get();
+                ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
+                HostConnection hostConnection = connectionOperation.getHostConnection(connection);
 
-			return true;
-		} catch (Exception e) {
-			StringWriter StackTrace = new StringWriter();
-			e.printStackTrace(new PrintWriter(StackTrace));
+                if (this.getFolderPath().getValue().isEmpty()) {
+                    this.setScope(this.getFolderName().getValue());
+                    this.deleteRemoteFolder(hostConnection, this.getFolderName().getValue());
+                } else {
+                    for (FileConnection fileConnection : FileConnectionTools.getFileConnections(hostConnection,
+                            this.getFolderPath().getValue(), this.getFolderName().getValue(), true)) {
+                        this.setScope(fileConnection.getFilePath());
+                        this.deleteRemoteFolder(hostConnection, fileConnection.getFilePath());
+                    }
+                }
+            }
 
-			this.getActionExecution().getActionControl().increaseErrorCount();
+            return true;
+        } catch (Exception e) {
+            StringWriter StackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(StackTrace));
 
-			this.getActionExecution().getActionControl().logOutput("exception", e.getMessage());
-			this.getActionExecution().getActionControl().logOutput("stacktrace", StackTrace.toString());
+            this.getActionExecution().getActionControl().increaseErrorCount();
 
-			return false;
-		}
+            this.getActionExecution().getActionControl().logOutput("exception", e.getMessage());
+            this.getActionExecution().getActionControl().logOutput("stacktrace", StackTrace.toString());
 
-	}
+            return false;
+        }
 
-	// Getters and Setters
-	public FrameworkExecution getFrameworkExecution() {
-		return frameworkExecution;
-	}
+    }
 
-	public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-		this.frameworkExecution = frameworkExecution;
-	}
+    private void deleteRemoteFolder(HostConnection hostConnection, String folderFilePath) {
+        ShellCommandSettings shellCommandSettings = new ShellCommandSettings();
+        ShellCommandResult shellCommandResult = null;
+        try {
+            shellCommandResult = hostConnection.executeRemoteCommand("", "rm -rf " + folderFilePath,
+                    shellCommandSettings);
 
-	public ExecutionControl getExecutionControl() {
-		return executionControl;
-	}
+            if (shellCommandResult.getReturnCode() == 0) {
+                this.setSuccess();
+            } else {
+                this.setError(shellCommandResult.getErrorOutput());
+            }
+        } catch (Exception e) {
+            this.setError(e.getMessage());
+        }
+    }
 
-	public void setExecutionControl(ExecutionControl executionControl) {
-		this.executionControl = executionControl;
-	}
+    private void setScope(String input) {
+        this.getActionExecution().getActionControl().logOutput("folder.delete", input);
+    }
 
-	public ActionExecution getActionExecution() {
-		return actionExecution;
-	}
+    private void setError(String input) {
+        this.getActionExecution().getActionControl().logOutput("folder.delete.error", input);
+        this.getActionExecution().getActionControl().increaseErrorCount();
+    }
 
-	public void setActionExecution(ActionExecution actionExecution) {
-		this.actionExecution = actionExecution;
-	}
+    private void setSuccess() {
+        this.getActionExecution().getActionControl().logOutput("folder.delete.success", "confirmed");
+        this.getActionExecution().getActionControl().increaseSuccessCount();
+    }
 
-	public ActionParameterOperation getConnectionName() {
-		return connectionName;
-	}
+    // Getters and Setters
+    public FrameworkExecution getFrameworkExecution() {
+        return frameworkExecution;
+    }
 
-	public void setConnectionName(ActionParameterOperation connectionName) {
-		this.connectionName = connectionName;
-	}
+    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
+        this.frameworkExecution = frameworkExecution;
+    }
 
-	public HashMap<String, ActionParameterOperation> getActionParameterOperationMap() {
-		return actionParameterOperationMap;
-	}
+    public ExecutionControl getExecutionControl() {
+        return executionControl;
+    }
 
-	public void setActionParameterOperationMap(HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
-		this.actionParameterOperationMap = actionParameterOperationMap;
-	}
+    public void setExecutionControl(ExecutionControl executionControl) {
+        this.executionControl = executionControl;
+    }
 
-	public ActionParameterOperation getFolderPath() {
-		return folderPath;
-	}
+    public ActionExecution getActionExecution() {
+        return actionExecution;
+    }
 
-	public void setFolderPath(ActionParameterOperation folderPath) {
-		this.folderPath = folderPath;
-	}
+    public void setActionExecution(ActionExecution actionExecution) {
+        this.actionExecution = actionExecution;
+    }
 
-	public ActionParameterOperation getFolderName() {
-		return folderName;
-	}
+    public ActionParameterOperation getConnectionName() {
+        return connectionName;
+    }
 
-	public void setFolderName(ActionParameterOperation folderName) {
-		this.folderName = folderName;
-	}
+    public void setConnectionName(ActionParameterOperation connectionName) {
+        this.connectionName = connectionName;
+    }
+
+    public HashMap<String, ActionParameterOperation> getActionParameterOperationMap() {
+        return actionParameterOperationMap;
+    }
+
+    public void setActionParameterOperationMap(HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
+        this.actionParameterOperationMap = actionParameterOperationMap;
+    }
+
+    public ActionParameterOperation getFolderPath() {
+        return folderPath;
+    }
+
+    public void setFolderPath(ActionParameterOperation folderPath) {
+        this.folderPath = folderPath;
+    }
+
+    public ActionParameterOperation getFolderName() {
+        return folderName;
+    }
+
+    public void setFolderName(ActionParameterOperation folderName) {
+        this.folderName = folderName;
+    }
 
 }

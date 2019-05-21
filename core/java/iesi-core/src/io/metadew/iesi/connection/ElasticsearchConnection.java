@@ -11,57 +11,56 @@ import org.apache.http.util.EntityUtils;
 
 /**
  * Connection object for Elasticsearch.
- * 
- * @author peter.billen
  *
+ * @author peter.billen
  */
 public class ElasticsearchConnection {
 
-	private String connectionURL;
+    private String connectionURL;
 
-	// Constructor
-	public ElasticsearchConnection() {
-		super();
-	}
+    // Constructor
+    public ElasticsearchConnection() {
+        super();
+    }
 
-	public ElasticsearchConnection(String connectionUrl) {
-		super();
-		this.setConnectionURL(connectionUrl);
-	}
+    public ElasticsearchConnection(String connectionUrl) {
+        super();
+        this.setConnectionURL(connectionUrl);
+    }
 
-	// Methods
-	public void putStringEntity(String input, String index, String identifier) {
-		CloseableHttpClient httpclient = HttpClients.createDefault();
-		HttpPut httpPut = new HttpPut(
-				"http://localhost:9200/" + index + "/_doc/" + identifier);
-		try {
-			httpPut.setEntity(new StringEntity(input));
+    // Methods
+    public void putStringEntity(String input, String index, String identifier) {
+        CloseableHttpClient httpclient = HttpClients.createDefault();
+        HttpPut httpPut = new HttpPut(
+                "http://localhost:9200/" + index + "/_doc/" + identifier);
+        try {
+            httpPut.setEntity(new StringEntity(input));
 
-			httpPut.setHeader("Content-Type", "application/json");
+            httpPut.setHeader("Content-Type", "application/json");
 
-			// Create a custom response handler
-			ResponseHandler<String> responseHandler = response -> {
-				int status = response.getStatusLine().getStatusCode();
-				if (status >= 200 && status < 300) {
-					HttpEntity entity = response.getEntity();
-					return entity != null ? EntityUtils.toString(entity) : null;
-				} else {
-					throw new ClientProtocolException("Unexpected response status: " + status);
-				}
-			};
-			httpclient.execute(httpPut, responseHandler);
+            // Create a custom response handler
+            ResponseHandler<String> responseHandler = response -> {
+                int status = response.getStatusLine().getStatusCode();
+                if (status >= 200 && status < 300) {
+                    HttpEntity entity = response.getEntity();
+                    return entity != null ? EntityUtils.toString(entity) : null;
+                } else {
+                    throw new ClientProtocolException("Unexpected response status: " + status);
+                }
+            };
+            httpclient.execute(httpPut, responseHandler);
 
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-	// Getters and setters
-	public String getConnectionURL() {
-		return connectionURL;
-	}
+    // Getters and setters
+    public String getConnectionURL() {
+        return connectionURL;
+    }
 
-	public void setConnectionURL(String connectionURL) {
-		this.connectionURL = connectionURL;
-	}
+    public void setConnectionURL(String connectionURL) {
+        this.connectionURL = connectionURL;
+    }
 }

@@ -1,6 +1,5 @@
 package io.metadew.iesi.script.execution.instruction.lookup;
 
-import io.metadew.iesi.metadata.configuration.ConnectionParameterConfiguration;
 import io.metadew.iesi.metadata.configuration.EnvironmentParameterConfiguration;
 import io.metadew.iesi.script.execution.ExecutionControl;
 

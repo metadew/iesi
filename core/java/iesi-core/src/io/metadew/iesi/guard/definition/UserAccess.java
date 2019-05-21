@@ -1,60 +1,59 @@
 package io.metadew.iesi.guard.definition;
 
 public class UserAccess {
-	
-	private String userName;
-	private String spaceName;
-	private boolean loggedIn;
-	private boolean exception = false;
-	private String exceptionMessage;
-	
-	// Constructors
-	public UserAccess() {
-		
-	}
 
-	// Getters and Setters
-	public boolean isLoggedIn() {
-		return loggedIn;
-	}
+    private String userName;
+    private String spaceName;
+    private boolean loggedIn;
+    private boolean exception = false;
+    private String exceptionMessage;
 
-	public void setLoggedIn(boolean loggedIn) {
-		this.loggedIn = loggedIn;
-	}
+    // Constructors
+    public UserAccess() {
 
-	public String getUserName() {
-		return userName;
-	}
+    }
 
-	public void setUserName(String userName) {
-		this.userName = userName;
-	}
+    // Getters and Setters
+    public boolean isLoggedIn() {
+        return loggedIn;
+    }
 
-	public String getSpaceName() {
-		return spaceName;
-	}
+    public void setLoggedIn(boolean loggedIn) {
+        this.loggedIn = loggedIn;
+    }
 
-	public void setSpaceName(String spaceName) {
-		this.spaceName = spaceName;
-	}
+    public String getUserName() {
+        return userName;
+    }
 
-	public String getExceptionMessage() {
-		return exceptionMessage;
-	}
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
 
-	public void setExceptionMessage(String exceptionMessage) {
-		this.exception = true;
-		this.exceptionMessage = exceptionMessage;
-	}
+    public String getSpaceName() {
+        return spaceName;
+    }
 
-	public boolean isException() {
-		return exception;
-	}
+    public void setSpaceName(String spaceName) {
+        this.spaceName = spaceName;
+    }
 
-	public void setException(boolean exception) {
-		this.exception = exception;
-	}
-	
+    public String getExceptionMessage() {
+        return exceptionMessage;
+    }
+
+    public void setExceptionMessage(String exceptionMessage) {
+        this.exception = true;
+        this.exceptionMessage = exceptionMessage;
+    }
+
+    public boolean isException() {
+        return exception;
+    }
+
+    public void setException(boolean exception) {
+        this.exception = exception;
+    }
 
 
 }

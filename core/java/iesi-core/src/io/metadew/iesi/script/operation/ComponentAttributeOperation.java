@@ -6,10 +6,10 @@ import io.metadew.iesi.script.execution.ExecutionControl;
 
 public class ComponentAttributeOperation extends AttributeOperation {
 
-	// Constructors
-	public ComponentAttributeOperation(FrameworkExecution frameworkExecution, ExecutionControl executionControl, ActionExecution actionExecution, String componentName) {
-		super(frameworkExecution,executionControl,actionExecution, "component", componentName);
-	}
+    // Constructors
+    public ComponentAttributeOperation(FrameworkExecution frameworkExecution, ExecutionControl executionControl, ActionExecution actionExecution, String componentName) {
+        super(frameworkExecution, executionControl, actionExecution, "component", componentName);
+    }
 
 
 }

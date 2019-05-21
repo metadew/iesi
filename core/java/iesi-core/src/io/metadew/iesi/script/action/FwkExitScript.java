@@ -1,9 +1,5 @@
 package io.metadew.iesi.script.action;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.HashMap;
-
 import io.metadew.iesi.framework.configuration.FrameworkStatus;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.ActionParameter;
@@ -12,119 +8,122 @@ import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.HashMap;
+
 /**
  * This action exits a script
- * 
- * @author peter.billen
  *
+ * @author peter.billen
  */
 public class FwkExitScript {
 
-	private ActionExecution actionExecution;
-	private FrameworkExecution frameworkExecution;
-	private ExecutionControl executionControl;
+    private ActionExecution actionExecution;
+    private FrameworkExecution frameworkExecution;
+    private ExecutionControl executionControl;
 
-	// Parameters
-	private ActionParameterOperation status;
-	private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
+    // Parameters
+    private ActionParameterOperation status;
+    private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
 
-	// Constructors
-	public FwkExitScript() {
+    // Constructors
+    public FwkExitScript() {
 
-	}
+    }
 
-	public FwkExitScript(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
-			ScriptExecution scriptExecution, ActionExecution actionExecution) {
-		this.init(frameworkExecution, executionControl, scriptExecution, actionExecution);
-	}
+    public FwkExitScript(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+                         ScriptExecution scriptExecution, ActionExecution actionExecution) {
+        this.init(frameworkExecution, executionControl, scriptExecution, actionExecution);
+    }
 
-	public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
-			ScriptExecution scriptExecution, ActionExecution actionExecution) {
-		this.setFrameworkExecution(frameworkExecution);
-		this.setExecutionControl(executionControl);
-		this.setActionExecution(actionExecution);
-		this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
-	}
+    public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+                     ScriptExecution scriptExecution, ActionExecution actionExecution) {
+        this.setFrameworkExecution(frameworkExecution);
+        this.setExecutionControl(executionControl);
+        this.setActionExecution(actionExecution);
+        this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
+    }
 
-	public void prepare() {
-		// Reset Parameters
-		this.setStatus(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
-				this.getActionExecution(), this.getActionExecution().getAction().getType(), "status"));
+    public void prepare() {
+        // Reset Parameters
+        this.setStatus(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+                this.getActionExecution(), this.getActionExecution().getAction().getType(), "status"));
 
-		// Get Parameters
-		for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-			if (actionParameter.getName().equalsIgnoreCase("status")) {
-				this.getStatus().setInputValue(actionParameter.getValue());
-			}
-		}
+        // Get Parameters
+        for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
+            if (actionParameter.getName().equalsIgnoreCase("status")) {
+                this.getStatus().setInputValue(actionParameter.getValue());
+            }
+        }
 
-		// Create parameter list
-		this.getActionParameterOperationMap().put("status", this.getStatus());
-	}
+        // Create parameter list
+        this.getActionParameterOperationMap().put("status", this.getStatus());
+    }
 
-	public boolean execute() {
-		try {
-			// Verify if the status is empty
-			if (this.getStatus().getValue().trim().isEmpty()) {
-				this.getStatus().setInputValue(FrameworkStatus.SUCCESS.value());
-			}
-			
-			// Verify if the message needs to appear on the screen
+    public boolean execute() {
+        try {
+            // Verify if the status is empty
+            if (this.getStatus().getValue().trim().isEmpty()) {
+                this.getStatus().setInputValue(FrameworkStatus.SUCCESS.value());
+            }
 
-			return true;
-		} catch (Exception e) {
-			StringWriter StackTrace = new StringWriter();
-			e.printStackTrace(new PrintWriter(StackTrace));
+            // Verify if the message needs to appear on the screen
 
-			this.getActionExecution().getActionControl().increaseErrorCount();
+            return true;
+        } catch (Exception e) {
+            StringWriter StackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(StackTrace));
 
-			this.getActionExecution().getActionControl().logOutput("exception", e.getMessage());
-			this.getActionExecution().getActionControl().logOutput("stacktrace", StackTrace.toString());
+            this.getActionExecution().getActionControl().increaseErrorCount();
 
-			return false;
-		}
+            this.getActionExecution().getActionControl().logOutput("exception", e.getMessage());
+            this.getActionExecution().getActionControl().logOutput("stacktrace", StackTrace.toString());
 
-	}
+            return false;
+        }
 
-	// Getters and Setters
-	public FrameworkExecution getFrameworkExecution() {
-		return frameworkExecution;
-	}
+    }
 
-	public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-		this.frameworkExecution = frameworkExecution;
-	}
+    // Getters and Setters
+    public FrameworkExecution getFrameworkExecution() {
+        return frameworkExecution;
+    }
 
-	public ExecutionControl getExecutionControl() {
-		return executionControl;
-	}
+    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
+        this.frameworkExecution = frameworkExecution;
+    }
 
-	public void setExecutionControl(ExecutionControl executionControl) {
-		this.executionControl = executionControl;
-	}
+    public ExecutionControl getExecutionControl() {
+        return executionControl;
+    }
 
-	public ActionExecution getActionExecution() {
-		return actionExecution;
-	}
+    public void setExecutionControl(ExecutionControl executionControl) {
+        this.executionControl = executionControl;
+    }
 
-	public void setActionExecution(ActionExecution actionExecution) {
-		this.actionExecution = actionExecution;
-	}
+    public ActionExecution getActionExecution() {
+        return actionExecution;
+    }
 
-	public HashMap<String, ActionParameterOperation> getActionParameterOperationMap() {
-		return actionParameterOperationMap;
-	}
+    public void setActionExecution(ActionExecution actionExecution) {
+        this.actionExecution = actionExecution;
+    }
 
-	public void setActionParameterOperationMap(HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
-		this.actionParameterOperationMap = actionParameterOperationMap;
-	}
+    public HashMap<String, ActionParameterOperation> getActionParameterOperationMap() {
+        return actionParameterOperationMap;
+    }
 
-	public ActionParameterOperation getStatus() {
-		return status;
-	}
+    public void setActionParameterOperationMap(HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
+        this.actionParameterOperationMap = actionParameterOperationMap;
+    }
 
-	public void setStatus(ActionParameterOperation status) {
-		this.status = status;
-	}
+    public ActionParameterOperation getStatus() {
+        return status;
+    }
+
+    public void setStatus(ActionParameterOperation status) {
+        this.status = status;
+    }
 
 }

@@ -80,6 +80,7 @@ In this way, your automation scripts can be organized across and inside several 
 	* When the component is specified, its attributes are be available to be used as parameters
   * Specify an iteration name to use if needed. This will result in making use of an iteration definition that is defined before and iterate over this action.
   * Specify a condition to use if needed. A condition is used in order to skip this action if the outcome is evaluated as false. The action is only executed if the condition is evaluated as true.
+  * Specify the number of times to retry a specific action if an error occurs. Stop on error will override the retry definition.
   * Set the expected error flag `Y/N`
     * This allows to define the behaviour of the framework for negative testing
 	* If the flag is set to `Y` then an error in the execution is considered as a successful execution
@@ -107,6 +108,7 @@ During the design of the script configuration the use of one or more variables c
 
 * To define a variable, it is sufficient to identify it with the `#` symbol before and after its name: `#variable#`.
 * To make reference to another parameter in the same action, this can be identified with the `[]` symbols: [parameterName]`
+* To make reference to an iteration parameter inside an action's iteration, this can be identified with the `[##]` symbols: `[#iterationVariableName#]`
 
 More information on using variables can be found [here](/{{site.repository}}/pages/understand/understand.html).
 

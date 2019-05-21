@@ -1,197 +1,174 @@
 package io.metadew.iesi.metadata.configuration;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.sql.rowset.CachedRowSet;
-
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.Artefact;
 import io.metadew.iesi.metadata.definition.Classification;
 
-public class ArtefactConfiguration
-{
+import javax.sql.rowset.CachedRowSet;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
 
-	private Artefact artefact;
+public class ArtefactConfiguration {
 
-	private FrameworkExecution frameworkExecution;
+    private Artefact artefact;
 
-	// Constructors
-	public ArtefactConfiguration(FrameworkExecution frameworkExecution)
-	{
-		this.setFrameworkExecution(frameworkExecution);
-	}
+    private FrameworkExecution frameworkExecution;
 
-	public ArtefactConfiguration(Artefact artefact, FrameworkExecution frameworkExecution)
-	{
-		this.setArtefact(artefact);
-		this.setFrameworkExecution(frameworkExecution);
-	}
+    // Constructors
+    public ArtefactConfiguration(FrameworkExecution frameworkExecution) {
+        this.setFrameworkExecution(frameworkExecution);
+    }
 
-	// Delete
-	public String getDeleteStatement()
-	{
-		String sql = "";
+    public ArtefactConfiguration(Artefact artefact, FrameworkExecution frameworkExecution) {
+        this.setArtefact(artefact);
+        this.setFrameworkExecution(frameworkExecution);
+    }
 
-		sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getCatalogMetadataRepository()
-					.getTableNameByLabel("Artefacts");
-		sql += " WHERE ARTEFACT_NM = " + SQLTools.GetStringForSQL(this.getArtefact().getName());
-		sql += " AND ARTEFACT_TYP_NM = ";
-		sql += SQLTools.GetStringForSQL(this.getArtefact().getName());
-		sql += ";";
-		sql += "\n";
-		sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getCatalogMetadataRepository()
-					.getTableNameByLabel("Classifications");
-		sql += " WHERE ARTEFACT_ID = (";
-		sql += "select ARTEFACT_ID FROM " + this.getFrameworkExecution().getMetadataControl().getCatalogMetadataRepository()
-					.getTableNameByLabel("Artefacts");
-		sql += " WHERE ARTEFACT_NM = " + SQLTools.GetStringForSQL(this.getArtefact().getName());
-		sql += " AND ARTEFACT_TYP_NM = ";
-		sql += SQLTools.GetStringForSQL(this.getArtefact().getName());
-		sql += ")";
-		sql += ";";
-		sql += "\n";
+    // Delete
+    public String getDeleteStatement() {
+        String sql = "";
 
-		return sql;
+        sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getCatalogMetadataRepository()
+                .getTableNameByLabel("Artefacts");
+        sql += " WHERE ARTEFACT_NM = " + SQLTools.GetStringForSQL(this.getArtefact().getName());
+        sql += " AND ARTEFACT_TYP_NM = ";
+        sql += SQLTools.GetStringForSQL(this.getArtefact().getName());
+        sql += ";";
+        sql += "\n";
+        sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getCatalogMetadataRepository()
+                .getTableNameByLabel("Classifications");
+        sql += " WHERE ARTEFACT_ID = (";
+        sql += "select ARTEFACT_ID FROM " + this.getFrameworkExecution().getMetadataControl().getCatalogMetadataRepository()
+                .getTableNameByLabel("Artefacts");
+        sql += " WHERE ARTEFACT_NM = " + SQLTools.GetStringForSQL(this.getArtefact().getName());
+        sql += " AND ARTEFACT_TYP_NM = ";
+        sql += SQLTools.GetStringForSQL(this.getArtefact().getName());
+        sql += ")";
+        sql += ";";
+        sql += "\n";
 
-	}
+        return sql;
 
-	// Insert
-	public String getInsertStatement()
-	{
-		String sql = "";
+    }
 
-		if (this.exists())
-		{
-			sql += this.getDeleteStatement();
-		}
+    // Insert
+    public String getInsertStatement() {
+        String sql = "";
 
-		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getCatalogMetadataRepository()
-					.getTableNameByLabel("Artefacts");
-		sql += " (ARTEFACT_ID, ARTEFACT_NM, ARTEFACT_TYP_NM) ";
-		sql += "VALUES ";
-		sql += "(";
-		sql += "(" + SQLTools.GetNextIdStatement(this.getFrameworkExecution().getMetadataControl().getCatalogMetadataRepository()
-					.getTableNameByLabel("Artefacts"), "ARTEFACT_ID") + ")";
-		sql += ",";
-		sql += SQLTools.GetStringForSQL(this.getArtefact().getName());
-		sql += ",";
-		sql += SQLTools.GetStringForSQL(this.getArtefact().getType());
-		sql += ")";
-		sql += ";";
+        if (this.exists()) {
+            sql += this.getDeleteStatement();
+        }
 
-		// add classifications
-		String sqlClassifications = this.getClassificationInsertStatements(this.getArtefact().getName(),
-					this.getArtefact().getType());
-		if (!sqlClassifications.equalsIgnoreCase(""))
-		{
-			sql += "\n";
-			sql += sqlClassifications;
-		}
+        sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getCatalogMetadataRepository()
+                .getTableNameByLabel("Artefacts");
+        sql += " (ARTEFACT_ID, ARTEFACT_NM, ARTEFACT_TYP_NM) ";
+        sql += "VALUES ";
+        sql += "(";
+        sql += "(" + SQLTools.GetNextIdStatement(this.getFrameworkExecution().getMetadataControl().getCatalogMetadataRepository()
+                .getTableNameByLabel("Artefacts"), "ARTEFACT_ID") + ")";
+        sql += ",";
+        sql += SQLTools.GetStringForSQL(this.getArtefact().getName());
+        sql += ",";
+        sql += SQLTools.GetStringForSQL(this.getArtefact().getType());
+        sql += ")";
+        sql += ";";
 
-		return sql;
-	}
+        // add classifications
+        String sqlClassifications = this.getClassificationInsertStatements(this.getArtefact().getName(),
+                this.getArtefact().getType());
+        if (!sqlClassifications.equalsIgnoreCase("")) {
+            sql += "\n";
+            sql += sqlClassifications;
+        }
 
-	private String getClassificationInsertStatements(String artefactName, String artefactType)
-	{
-		String result = "";
+        return sql;
+    }
 
-		// Catch null parameters
-		if (this.getArtefact().getClassifications() == null)
-		{
-			return result;
-		}
+    private String getClassificationInsertStatements(String artefactName, String artefactType) {
+        String result = "";
 
-		for (Classification classification : this.getArtefact().getClassifications())
-		{
-			ClassificationConfiguration classificationConfiguration = new ClassificationConfiguration(classification,
-						this.getFrameworkExecution());
-			if (!result.equalsIgnoreCase(""))
-			{
-				result += "\n";
-			}
-			result += classificationConfiguration.getInsertStatement(artefactName, artefactType);
-		}
+        // Catch null parameters
+        if (this.getArtefact().getClassifications() == null) {
+            return result;
+        }
 
-		return result;
-	}
+        for (Classification classification : this.getArtefact().getClassifications()) {
+            ClassificationConfiguration classificationConfiguration = new ClassificationConfiguration(classification,
+                    this.getFrameworkExecution());
+            if (!result.equalsIgnoreCase("")) {
+                result += "\n";
+            }
+            result += classificationConfiguration.getInsertStatement(artefactName, artefactType);
+        }
 
-	// GEt Artefact
-	@SuppressWarnings({"rawtypes", "unchecked"})
-	public Artefact getArtefact(String artefactName, String artefactType)
-	{
-		Artefact artefact = new Artefact();
-		CachedRowSet crsArtefact = null;
-		String queryArtefact = "select ARTEFACT_ID, ARTEFACT_NM, ARTEFACT_TYP_NM from "
-					+ this.getFrameworkExecution().getMetadataControl().getCatalogMetadataRepository()
-								.getTableNameByLabel("Artefacts")
-					+ " where ARTEFACT_NM = '" + artefactName + "' AND ARTEFACT_TYP_NM = '" + artefactType + "'";
-		crsArtefact = this.getFrameworkExecution().getMetadataControl().getCatalogMetadataRepository()
-					.executeQuery(queryArtefact, "reader");
-		ClassificationConfiguration classificationConfiguration = new ClassificationConfiguration(this.getFrameworkExecution());
-		try
-		{
-			while (crsArtefact.next())
-			{
-				artefact.setName(artefactName);
-				artefact.setType(artefactType);
-				artefact.setId(crsArtefact.getLong("ARTEFACT_ID"));
+        return result;
+    }
 
-				// Get classifications
-				CachedRowSet crsArtefactClassifications = null;
-				String queryArtefactClassifications = "select ARTIFACT_ID, CLASSIF_ID from "
-							+ this.getFrameworkExecution().getMetadataControl().getCatalogMetadataRepository()
-										.getTableNameByLabel("Classifications")
-							+ " where ARTEFACT_ID = " + artefact.getId();
-				crsArtefactClassifications = this.getFrameworkExecution().getMetadataControl().getCatalogMetadataRepository()
-							.executeQuery(queryArtefactClassifications, "reader");
-				List<Classification> artefactClassificationList = new ArrayList();
-				while (crsArtefactClassifications.next())
-				{
-					artefactClassificationList
-								.add(classificationConfiguration.getClassification(crsArtefactClassifications.getLong("CLASSIF_ID")));
-				}
-				artefact.setClassifications(artefactClassificationList);
-				crsArtefactClassifications.close();
-			}
-			crsArtefact.close();
-		}
-		catch (Exception e)
-		{
-			StringWriter StackTrace = new StringWriter();
-			e.printStackTrace(new PrintWriter(StackTrace));
-		}
-		return artefact;
-	}
+    // GEt Artefact
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    public Artefact getArtefact(String artefactName, String artefactType) {
+        Artefact artefact = new Artefact();
+        CachedRowSet crsArtefact = null;
+        String queryArtefact = "select ARTEFACT_ID, ARTEFACT_NM, ARTEFACT_TYP_NM from "
+                + this.getFrameworkExecution().getMetadataControl().getCatalogMetadataRepository()
+                .getTableNameByLabel("Artefacts")
+                + " where ARTEFACT_NM = '" + artefactName + "' AND ARTEFACT_TYP_NM = '" + artefactType + "'";
+        crsArtefact = this.getFrameworkExecution().getMetadataControl().getCatalogMetadataRepository()
+                .executeQuery(queryArtefact, "reader");
+        ClassificationConfiguration classificationConfiguration = new ClassificationConfiguration(this.getFrameworkExecution());
+        try {
+            while (crsArtefact.next()) {
+                artefact.setName(artefactName);
+                artefact.setType(artefactType);
+                artefact.setId(crsArtefact.getLong("ARTEFACT_ID"));
 
-	// Exists
-	public boolean exists()
-	{
-		return true;
-	}
+                // Get classifications
+                CachedRowSet crsArtefactClassifications = null;
+                String queryArtefactClassifications = "select ARTIFACT_ID, CLASSIF_ID from "
+                        + this.getFrameworkExecution().getMetadataControl().getCatalogMetadataRepository()
+                        .getTableNameByLabel("Classifications")
+                        + " where ARTEFACT_ID = " + artefact.getId();
+                crsArtefactClassifications = this.getFrameworkExecution().getMetadataControl().getCatalogMetadataRepository()
+                        .executeQuery(queryArtefactClassifications, "reader");
+                List<Classification> artefactClassificationList = new ArrayList();
+                while (crsArtefactClassifications.next()) {
+                    artefactClassificationList
+                            .add(classificationConfiguration.getClassification(crsArtefactClassifications.getLong("CLASSIF_ID")));
+                }
+                artefact.setClassifications(artefactClassificationList);
+                crsArtefactClassifications.close();
+            }
+            crsArtefact.close();
+        } catch (Exception e) {
+            StringWriter StackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(StackTrace));
+        }
+        return artefact;
+    }
 
-	// Getters and Setters
-	public Artefact getArtefact()
-	{
-		return artefact;
-	}
+    // Exists
+    public boolean exists() {
+        return true;
+    }
 
-	public void setArtefact(Artefact artefact)
-	{
-		this.artefact = artefact;
-	}
+    // Getters and Setters
+    public Artefact getArtefact() {
+        return artefact;
+    }
 
-	public FrameworkExecution getFrameworkExecution()
-	{
-		return frameworkExecution;
-	}
+    public void setArtefact(Artefact artefact) {
+        this.artefact = artefact;
+    }
 
-	public void setFrameworkExecution(FrameworkExecution frameworkExecution)
-	{
-		this.frameworkExecution = frameworkExecution;
-	}
+    public FrameworkExecution getFrameworkExecution() {
+        return frameworkExecution;
+    }
+
+    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
+        this.frameworkExecution = frameworkExecution;
+    }
 
 }

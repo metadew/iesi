@@ -1,0 +1,39 @@
+---
+type: "script"
+data:
+  name: "fho.folderExists.4"
+  description: "Test fho.folderExists with a remote folder that exists"
+  parameters: []
+  actions:
+  - number: 1
+    type: "fho.folderExists"
+    name: "Action1"
+    description: "The folder exists"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "Y"
+    errorStop: "N"
+    parameters:
+    - name: "path"
+      value : "/etc"
+    - name: "folder"
+      value : "initdoesnotexist"
+    - name: "connection"
+      value : "host.linux.1"
+  - number: 2
+    type: "fho.folderExists"
+    name: "Action2"
+    description: "The folder path is set entirely inside the folder parameter"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "Y"
+    errorStop: "N"
+    parameters:
+    - name: "path"
+      value : ""
+    - name: "folder"
+      value : "/etc/initdoesnotexist"
+    - name: "connection"
+      value : "host.linux.1"

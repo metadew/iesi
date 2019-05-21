@@ -1,5 +1,13 @@
 package io.metadew.iesi.metadata.operation;
 
+import io.metadew.iesi.common.list.ListTools;
+import io.metadew.iesi.common.text.ParsingTools;
+import io.metadew.iesi.connection.tools.FileTools;
+import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.metadata.repository.MetadataRepository;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.logging.log4j.Level;
+
 import java.io.File;
 import java.io.FilenameFilter;
 import java.text.SimpleDateFormat;
@@ -7,284 +15,274 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import io.metadew.iesi.metadata_repository.MetadataRepository;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.logging.log4j.Level;
-
-
-import io.metadew.iesi.common.list.ListTools;
-import io.metadew.iesi.common.text.ParsingTools;
-import io.metadew.iesi.connection.tools.FileTools;
-import io.metadew.iesi.framework.execution.FrameworkExecution;
-
 public class MetadataRepositoryOperation {
 
-	private FrameworkExecution frameworkExecution;
-	private MetadataRepository metadataRepository;
-	private String action;
-	private boolean generateDdl;
+    private FrameworkExecution frameworkExecution;
+    private MetadataRepository metadataRepository;
+    private String action;
+    private boolean generateDdl;
 
-	// Constructors
+    // Constructors
 
-	public MetadataRepositoryOperation(FrameworkExecution frameworkExecution,
-			MetadataRepository metadataRepository) {
-		this.setFrameworkExecution(frameworkExecution);
-		this.setMetadataRepository(metadataRepository);
-	}
+    public MetadataRepositoryOperation(FrameworkExecution frameworkExecution,
+                                       MetadataRepository metadataRepository) {
+        this.setFrameworkExecution(frameworkExecution);
+        this.setMetadataRepository(metadataRepository);
+    }
 
-	// Methods
-	public void cleanAllTables() {
-		this.getFrameworkExecution().getFrameworkLog().log("metadata.clean.start", Level.INFO);
-		this.getFrameworkExecution().getFrameworkLog().log("metadata.clean.query=" + "", Level.TRACE);
-		this.getMetadataRepository().cleanAllTables(frameworkExecution.getFrameworkLog());
-		this.getFrameworkExecution().getFrameworkLog().log("metadata.clean.end", Level.INFO);
+    // Methods
+    public void cleanAllTables() {
+        this.getFrameworkExecution().getFrameworkLog().log("metadata.clean.start", Level.INFO);
+        this.getFrameworkExecution().getFrameworkLog().log("metadata.clean.query=" + "", Level.TRACE);
+        this.getMetadataRepository().cleanAllTables(frameworkExecution.getFrameworkLog());
+        this.getFrameworkExecution().getFrameworkLog().log("metadata.clean.end", Level.INFO);
 
-	}
+    }
 
-	// Drop the metadata data store
-	public void drop() {
-		this.dropAllTables();
-	}
+    // Drop the metadata data store
+    public void drop() {
+        this.dropAllTables();
+    }
 
-	public void dropAllTables() {
-		this.getFrameworkExecution().getFrameworkLog().log("metadata.drop.start", Level.INFO);
-		this.getMetadataRepository().dropAllTables(frameworkExecution.getFrameworkLog());
-		this.getFrameworkExecution().getFrameworkLog().log("metadata.drop.end", Level.INFO);
+    public void dropAllTables() {
+        this.getFrameworkExecution().getFrameworkLog().log("metadata.drop.start", Level.INFO);
+        this.getMetadataRepository().dropAllTables(frameworkExecution.getFrameworkLog());
+        this.getFrameworkExecution().getFrameworkLog().log("metadata.drop.end", Level.INFO);
 
-	}
+    }
 
-	// Create the metadata data store
-	public void create(boolean generateDdl) {
-		this.setAction("create");
-		this.setGenerateDdl(generateDdl);
-		this.getMetadataRepository().createAllTables();
-	}
+    // Create the metadata data store
+    public void create(boolean generateDdl) {
+        this.setAction("create");
+        this.setGenerateDdl(generateDdl);
+        this.getMetadataRepository().createAllTables();
+    }
 
-	public void loadMetadataRepository(List<MetadataRepository> metadataRepositoryList) {
-		this.loadMetadataRepository(metadataRepositoryList, "");
-	}
+    public void loadMetadataRepository(List<MetadataRepository> metadataRepositoryList) {
+        this.loadMetadataRepository(metadataRepositoryList, "");
+    }
 
-	public void loadMetadataRepository(List<MetadataRepository> metadataRepositories, String input) {
-		this.getFrameworkExecution().getFrameworkLog().log("metadata.load.start", Level.INFO);
+    public void loadMetadataRepository(List<MetadataRepository> metadataRepositories, String input) {
+        this.getFrameworkExecution().getFrameworkLog().log("metadata.load.start", Level.INFO);
 
-		// Folder definition
-		String inputFolder = FilenameUtils.normalize(this.getFrameworkExecution().getFrameworkConfiguration()
-				.getFolderConfiguration().getFolderAbsolutePath("metadata.in.new"));
-		String workFolder = FilenameUtils.normalize(this.getFrameworkExecution().getFrameworkConfiguration()
-				.getFolderConfiguration().getFolderAbsolutePath("metadata.in.work"));
-		String errorFolder = FilenameUtils.normalize(this.getFrameworkExecution().getFrameworkConfiguration()
-				.getFolderConfiguration().getFolderAbsolutePath("metadata.in.error"));
-		String archiveFolder = FilenameUtils.normalize(this.getFrameworkExecution().getFrameworkConfiguration()
-				.getFolderConfiguration().getFolderAbsolutePath("metadata.in.done"));
+        // Folder definition
+        String inputFolder = FilenameUtils.normalize(this.getFrameworkExecution().getFrameworkConfiguration()
+                .getFolderConfiguration().getFolderAbsolutePath("metadata.in.new"));
+        String workFolder = FilenameUtils.normalize(this.getFrameworkExecution().getFrameworkConfiguration()
+                .getFolderConfiguration().getFolderAbsolutePath("metadata.in.work"));
+        String errorFolder = FilenameUtils.normalize(this.getFrameworkExecution().getFrameworkConfiguration()
+                .getFolderConfiguration().getFolderAbsolutePath("metadata.in.error"));
+        String archiveFolder = FilenameUtils.normalize(this.getFrameworkExecution().getFrameworkConfiguration()
+                .getFolderConfiguration().getFolderAbsolutePath("metadata.in.done"));
 
-		// Load files
-		if (input.trim().equalsIgnoreCase("")) {
-			this.loadConfigurationSelection(metadataRepositories, inputFolder, workFolder, archiveFolder, errorFolder, ".+\\.json");
-			this.loadConfigurationSelection(metadataRepositories, inputFolder, workFolder, archiveFolder, errorFolder, ".+\\.yml");
-		} else {
-			if (ParsingTools.isRegexFunction(input)) {
-				this.loadConfigurationSelection(metadataRepositories, inputFolder, workFolder, archiveFolder, errorFolder,
-						ParsingTools.getRegexFunctionValue(input));
-			} else {
-				List<String> fileList = ListTools.convertStringList(input, ",");
-				for (String file : fileList) {
-					this.loadConfigurationItem(metadataRepositories, inputFolder, workFolder, archiveFolder, errorFolder, file);
-				}
-			}
-		}
+        // Load files
+        if (input.trim().equalsIgnoreCase("")) {
+            this.loadConfigurationSelection(metadataRepositories, inputFolder, workFolder, archiveFolder, errorFolder, ".+\\.json");
+            this.loadConfigurationSelection(metadataRepositories, inputFolder, workFolder, archiveFolder, errorFolder, ".+\\.yml");
+        } else {
+            if (ParsingTools.isRegexFunction(input)) {
+                this.loadConfigurationSelection(metadataRepositories, inputFolder, workFolder, archiveFolder, errorFolder,
+                        ParsingTools.getRegexFunctionValue(input));
+            } else {
+                List<String> fileList = ListTools.convertStringList(input, ",");
+                for (String file : fileList) {
+                    this.loadConfigurationItem(metadataRepositories, inputFolder, workFolder, archiveFolder, errorFolder, file);
+                }
+            }
+        }
 
-		this.getFrameworkExecution().getFrameworkLog().log("metadata.load.end", Level.INFO);
+        this.getFrameworkExecution().getFrameworkLog().log("metadata.load.end", Level.INFO);
 
-	}
+    }
 
-	// Load a single file
-	private void loadConfigurationItem(List<MetadataRepository> metadataRepositoryList, String inputFolder, String workFolder, String archiveFolder, String errorFolder,
-									   String inputFileName) {
-		File file = new File(FilenameUtils.normalize(inputFolder + File.separator + inputFileName));
-		this.loadConfigurationFile(metadataRepositoryList, file, inputFolder, workFolder, archiveFolder, errorFolder);
-	}
+    // Load a single file
+    private void loadConfigurationItem(List<MetadataRepository> metadataRepositoryList, String inputFolder, String workFolder, String archiveFolder, String errorFolder,
+                                       String inputFileName) {
+        File file = new File(FilenameUtils.normalize(inputFolder + File.separator + inputFileName));
+        this.loadConfigurationFile(metadataRepositoryList, file, inputFolder, workFolder, archiveFolder, errorFolder);
+    }
 
-	// Load entire folder
-	@SuppressWarnings("unused")
-	private void loadConfigurationSelection(List<MetadataRepository> metadataRepositories, String inputFolder, String workFolder, String archiveFolder,
-											String errorFolder, String[] files) {
-		for (String file : files) {
-			System.out.println(file);
-			File activeFile = new File(FilenameUtils.normalize(inputFolder + File.separator + file));
-			this.loadConfigurationFile(metadataRepositories, activeFile, inputFolder, workFolder, archiveFolder, errorFolder);
-		}
-	}
+    // Load entire folder
+    @SuppressWarnings("unused")
+    private void loadConfigurationSelection(List<MetadataRepository> metadataRepositories, String inputFolder, String workFolder, String archiveFolder,
+                                            String errorFolder, String[] files) {
+        for (String file : files) {
+            System.out.println(file);
+            File activeFile = new File(FilenameUtils.normalize(inputFolder + File.separator + file));
+            this.loadConfigurationFile(metadataRepositories, activeFile, inputFolder, workFolder, archiveFolder, errorFolder);
+        }
+    }
 
-	// Load entire folder
-	private void loadConfigurationSelection(List<MetadataRepository> metadataRepositories, String inputFolder, String workFolder, String archiveFolder,
-											String errorFolder, String regex) {
-		final File folder = new File(FilenameUtils.normalize(inputFolder));
-		final String file_filter = regex;
-		final File[] files = folder.listFiles(new FilenameFilter() {
-			@Override
-			public boolean accept(final File dir, final String name) {
-				return name.matches(file_filter);
-			}
-		});
+    // Load entire folder
+    private void loadConfigurationSelection(List<MetadataRepository> metadataRepositories, String inputFolder, String workFolder, String archiveFolder,
+                                            String errorFolder, String regex) {
+        final File folder = new File(FilenameUtils.normalize(inputFolder));
+        final String file_filter = regex;
+        final File[] files = folder.listFiles(new FilenameFilter() {
+            @Override
+            public boolean accept(final File dir, final String name) {
+                return name.matches(file_filter);
+            }
+        });
 
-		for (final File file : files) {
-			this.loadConfigurationFile(metadataRepositories, file, inputFolder, workFolder, archiveFolder, errorFolder);
-		}
-	}
+        for (final File file : files) {
+            this.loadConfigurationFile(metadataRepositories, file, inputFolder, workFolder, archiveFolder, errorFolder);
+        }
+    }
 
-	private void loadConfigurationFile(List<MetadataRepository> metadataRepositories, File file, String inputFolder, String workFolder, String archiveFolder,
-									   String errorFolder) {
-		
-		UUID uuid = UUID.randomUUID();
+    private void loadConfigurationFile(List<MetadataRepository> metadataRepositories, File file, String inputFolder, String workFolder, String archiveFolder,
+                                       String errorFolder) {
 
-		boolean moveToWorkFolder = false;
-		boolean moveToArchiveFolder = false;
-		boolean moveToErrorFolder = false;
+        UUID uuid = UUID.randomUUID();
 
-		if (!workFolder.trim().equalsIgnoreCase(""))
-			moveToWorkFolder = true;
+        boolean moveToWorkFolder = false;
+        boolean moveToArchiveFolder = false;
+        boolean moveToErrorFolder = false;
 
-		if (moveToWorkFolder) {
-			FileTools.copyFromFileToFile(FilenameUtils.normalize(inputFolder + File.separator + file.getName()),
-					FilenameUtils.normalize(workFolder + File.separator + file.getName()));
-			FileTools.delete((FilenameUtils.normalize(inputFolder + File.separator + file.getName())));
-		} else {
-			workFolder = inputFolder;
-		}
+        if (!workFolder.trim().equalsIgnoreCase(""))
+            moveToWorkFolder = true;
 
-		if (!archiveFolder.trim().equalsIgnoreCase(""))
-			moveToArchiveFolder = true;
-		if (!errorFolder.trim().equalsIgnoreCase(""))
-			moveToErrorFolder = true;
+        if (moveToWorkFolder) {
+            FileTools.copyFromFileToFile(FilenameUtils.normalize(inputFolder + File.separator + file.getName()),
+                    FilenameUtils.normalize(workFolder + File.separator + file.getName()));
+            FileTools.delete((FilenameUtils.normalize(inputFolder + File.separator + file.getName())));
+        } else {
+            workFolder = inputFolder;
+        }
 
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
-		SimpleDateFormat timeFormat = new SimpleDateFormat("HHmmss");
+        if (!archiveFolder.trim().equalsIgnoreCase(""))
+            moveToArchiveFolder = true;
+        if (!errorFolder.trim().equalsIgnoreCase(""))
+            moveToErrorFolder = true;
 
-		File workFile = new File(FilenameUtils.normalize(workFolder + File.separator + file.getName()));
-		if (!workFile.isDirectory()) {
-			try {
-				this.getFrameworkExecution().getFrameworkLog().log("metadata.file=" + file.getName(), Level.INFO);
-				DataObjectOperation dataObjectOperation = new DataObjectOperation(this.getFrameworkExecution(),metadataRepositories, workFile.getAbsolutePath());
-				dataObjectOperation.saveToMetadataRepository();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+        SimpleDateFormat timeFormat = new SimpleDateFormat("HHmmss");
 
-				// Move file to archive folder
-				if (moveToArchiveFolder) {
-					String archiveFileName = dateFormat.format(new Date()) + "-" + timeFormat.format(new Date()) + "-"
-							+ uuid + "-" + workFile.getName();
-					FileTools.copyFromFileToFile(workFile.getAbsolutePath(),
-							FilenameUtils.normalize(archiveFolder + File.separator + archiveFileName));
-					FileTools.delete(workFile.getAbsolutePath());
-				}
+        File workFile = new File(FilenameUtils.normalize(workFolder + File.separator + file.getName()));
+        if (!workFile.isDirectory()) {
+            try {
+                this.getFrameworkExecution().getFrameworkLog().log("metadata.file=" + file.getName(), Level.INFO);
+                DataObjectOperation dataObjectOperation = new DataObjectOperation(this.getFrameworkExecution(), metadataRepositories, workFile.getAbsolutePath());
+                dataObjectOperation.saveToMetadataRepository();
 
-			} catch (Exception e) {
+                // Move file to archive folder
+                if (moveToArchiveFolder) {
+                    String archiveFileName = dateFormat.format(new Date()) + "-" + timeFormat.format(new Date()) + "-"
+                            + uuid + "-" + workFile.getName();
+                    FileTools.copyFromFileToFile(workFile.getAbsolutePath(),
+                            FilenameUtils.normalize(archiveFolder + File.separator + archiveFileName));
+                    FileTools.delete(workFile.getAbsolutePath());
+                }
 
-				// Move file to error folder
-				if (moveToErrorFolder) {
-					String errorFileName = dateFormat.format(new Date()) + "-" + timeFormat.format(new Date()) + "-"
-							+ uuid + "-" + file.getName();
-					FileTools.copyFromFileToFile(workFile.getAbsolutePath(),
-							FilenameUtils.normalize(errorFolder + File.separator + errorFileName));
-					FileTools.delete(workFile.getAbsolutePath());
-				}
+            } catch (Exception e) {
 
-			}
-		}
+                // Move file to error folder
+                if (moveToErrorFolder) {
+                    String errorFileName = dateFormat.format(new Date()) + "-" + timeFormat.format(new Date()) + "-"
+                            + uuid + "-" + file.getName();
+                    FileTools.copyFromFileToFile(workFile.getAbsolutePath(),
+                            FilenameUtils.normalize(errorFolder + File.separator + errorFileName));
+                    FileTools.delete(workFile.getAbsolutePath());
+                }
 
-	}
+            }
+        }
 
-	@SuppressWarnings("unused")
-	private void createMetadataRepository(File file, String archiveFolder, String errorFolder, UUID uuid) {
+    }
 
-		boolean moveToArchiveFolder = false;
-		boolean moveToErrorFolder = false;
+    @SuppressWarnings("unused")
+    private void createMetadataRepository(File file, String archiveFolder, String errorFolder, UUID uuid) {
 
-		if (!archiveFolder.trim().equalsIgnoreCase(""))
-			moveToArchiveFolder = true;
-		if (!errorFolder.trim().equalsIgnoreCase(""))
-			moveToErrorFolder = true;
+        boolean moveToArchiveFolder = false;
+        boolean moveToErrorFolder = false;
 
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
-		SimpleDateFormat timeFormat = new SimpleDateFormat("HHmmss");
+        if (!archiveFolder.trim().equalsIgnoreCase(""))
+            moveToArchiveFolder = true;
+        if (!errorFolder.trim().equalsIgnoreCase(""))
+            moveToErrorFolder = true;
 
-		if (file.isDirectory()) {
-			// Ignore
-		} else {
-			try {
-				this.getFrameworkExecution().getFrameworkLog().log("metadata.file=" + file.getName(), Level.INFO);
-				DataObjectOperation dataObjectOperation = new DataObjectOperation(this.getFrameworkExecution(),
-						this.getMetadataRepository(), file.getAbsolutePath());
-				dataObjectOperation.saveToMetadataRepository();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+        SimpleDateFormat timeFormat = new SimpleDateFormat("HHmmss");
 
-				// Move file to archive folder
-				if (moveToArchiveFolder) {
-					String archiveFileName = dateFormat.format(new Date()) + "-" + timeFormat.format(new Date()) + "-"
-							+ uuid + "-" + file.getName();
-					FileTools.copyFromFileToFile(file.getAbsolutePath(),
-							archiveFolder + File.separator + archiveFileName);
-					FileTools.delete(file.getAbsolutePath());
-				}
+        if (file.isDirectory()) {
+            // Ignore
+        } else {
+            try {
+                this.getFrameworkExecution().getFrameworkLog().log("metadata.file=" + file.getName(), Level.INFO);
+                DataObjectOperation dataObjectOperation = new DataObjectOperation(this.getFrameworkExecution(),
+                        this.getMetadataRepository(), file.getAbsolutePath());
+                dataObjectOperation.saveToMetadataRepository();
 
-			} catch (Exception e) {
+                // Move file to archive folder
+                if (moveToArchiveFolder) {
+                    String archiveFileName = dateFormat.format(new Date()) + "-" + timeFormat.format(new Date()) + "-"
+                            + uuid + "-" + file.getName();
+                    FileTools.copyFromFileToFile(file.getAbsolutePath(),
+                            archiveFolder + File.separator + archiveFileName);
+                    FileTools.delete(file.getAbsolutePath());
+                }
 
-				// Move file to archive folder
-				if (moveToErrorFolder) {
-					String errorFileName = dateFormat.format(new Date()) + "-" + timeFormat.format(new Date()) + "-"
-							+ uuid + "-" + file.getName();
-					FileTools.copyFromFileToFile(file.getAbsolutePath(), errorFolder + File.separator + errorFileName);
-					FileTools.delete(file.getAbsolutePath());
-				}
+            } catch (Exception e) {
 
-			}
-		}
+                // Move file to archive folder
+                if (moveToErrorFolder) {
+                    String errorFileName = dateFormat.format(new Date()) + "-" + timeFormat.format(new Date()) + "-"
+                            + uuid + "-" + file.getName();
+                    FileTools.copyFromFileToFile(file.getAbsolutePath(), errorFolder + File.separator + errorFileName);
+                    FileTools.delete(file.getAbsolutePath());
+                }
 
-	}
+            }
+        }
 
-	@SuppressWarnings("unused")
-	private void saveMetadataRepositoryDDL(String ddl) {
-		StringBuilder targetFilePath = new StringBuilder();
-		targetFilePath.append(this.getFrameworkExecution().getFrameworkConfiguration().getFolderConfiguration()
-				.getFolderAbsolutePath("metadata.out.ddl"));
-		targetFilePath.append(File.separator);
-		targetFilePath.append(this.getMetadataRepository().getName());
-		targetFilePath.append("_");
-		targetFilePath.append(this.getMetadataRepository().getCategory());
-		targetFilePath.append("_");
-		targetFilePath.append("create");
-		targetFilePath.append(".ddl");
-		FileTools.delete(targetFilePath.toString());
-		FileTools.appendToFile(targetFilePath.toString(), "", ddl);
-	}
+    }
 
-	// Getters and setters
-	public FrameworkExecution getFrameworkExecution() {
-		return frameworkExecution;
-	}
+    @SuppressWarnings("unused")
+    private void saveMetadataRepositoryDDL(String ddl) {
+        StringBuilder targetFilePath = new StringBuilder();
+        targetFilePath.append(this.getFrameworkExecution().getFrameworkConfiguration().getFolderConfiguration()
+                .getFolderAbsolutePath("metadata.out.ddl"));
+        targetFilePath.append(File.separator);
+        targetFilePath.append(this.getMetadataRepository().getName());
+        targetFilePath.append("_");
+        targetFilePath.append(this.getMetadataRepository().getCategory());
+        targetFilePath.append("_");
+        targetFilePath.append("create");
+        targetFilePath.append(".ddl");
+        FileTools.delete(targetFilePath.toString());
+        FileTools.appendToFile(targetFilePath.toString(), "", ddl);
+    }
 
-	public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-		this.frameworkExecution = frameworkExecution;
-	}
+    // Getters and setters
+    public FrameworkExecution getFrameworkExecution() {
+        return frameworkExecution;
+    }
 
-	public MetadataRepository getMetadataRepository() {
-		return metadataRepository;
-	}
+    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
+        this.frameworkExecution = frameworkExecution;
+    }
 
-	public void setMetadataRepository(MetadataRepository metadataRepository) {
-		this.metadataRepository = metadataRepository;
-	}
+    public MetadataRepository getMetadataRepository() {
+        return metadataRepository;
+    }
 
-	public String getAction() {
-		return action;
-	}
+    public void setMetadataRepository(MetadataRepository metadataRepository) {
+        this.metadataRepository = metadataRepository;
+    }
 
-	public void setAction(String action) {
-		this.action = action;
-	}
+    public String getAction() {
+        return action;
+    }
 
-	public boolean isGenerateDdl() {
-		return generateDdl;
-	}
+    public void setAction(String action) {
+        this.action = action;
+    }
 
-	public void setGenerateDdl(boolean generateDdl) {
-		this.generateDdl = generateDdl;
-	}
+    public boolean isGenerateDdl() {
+        return generateDdl;
+    }
+
+    public void setGenerateDdl(boolean generateDdl) {
+        this.generateDdl = generateDdl;
+    }
 }

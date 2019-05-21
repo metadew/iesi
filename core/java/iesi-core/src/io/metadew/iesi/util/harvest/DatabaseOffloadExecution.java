@@ -1,116 +1,106 @@
 package io.metadew.iesi.util.harvest;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSetMetaData;
-
-import javax.sql.rowset.CachedRowSet;
-
+import io.metadew.iesi.connection.database.connection.DatabaseConnection;
 import io.metadew.iesi.connection.operation.ConnectionOperation;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.framework.execution.FrameworkExecutionContext;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.Connection;
 import io.metadew.iesi.metadata.definition.Context;
-import io.metadew.iesi.metadata_repository.repository.database.connection.DatabaseConnection;
 
-public class DatabaseOffloadExecution
-{
+import javax.sql.rowset.CachedRowSet;
+import java.sql.PreparedStatement;
+import java.sql.ResultSetMetaData;
 
-	private FrameworkExecution frameworkExecution;
+public class DatabaseOffloadExecution {
 
-	// Constructors
-	public DatabaseOffloadExecution()
-	{
-		Context context = new Context();
-		context.setName("offload");
-		context.setScope("");
-		this.setFrameworkExecution(new FrameworkExecution(new FrameworkExecutionContext(context), null));
-	}
+    private FrameworkExecution frameworkExecution;
 
-	// Methods
-	public void offloadData(String sourceConnectionName, String sourceEnvironmentName, String targetConnectionName,
-				String targetEnvironmentName, String sqlStatement, String name, boolean cleanPrevious)
-	{
+    // Constructors
+    public DatabaseOffloadExecution() {
+        // Create the framework instance
+        FrameworkInstance frameworkInstance = new FrameworkInstance();
 
-		// Get Connection
-		ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
-		ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution());
+        // Create the framework execution
+        Context context = new Context();
+        context.setName("offload");
+        context.setScope("");
+        this.setFrameworkExecution(new FrameworkExecution(frameworkInstance, new FrameworkExecutionContext(context), null));
+    }
 
-		Connection sourceConnection = connectionConfiguration.getConnection(sourceConnectionName, sourceEnvironmentName).get();
-		DatabaseConnection sourceDatabaseConnection = connectionOperation.getDatabaseConnection(sourceConnection);
-		Connection targetConnection = connectionConfiguration.getConnection(targetConnectionName, targetEnvironmentName).get();
-		DatabaseConnection targetDatabaseConnection = connectionOperation.getDatabaseConnection(targetConnection);
+    // Methods
+    public void offloadData(String sourceConnectionName, String sourceEnvironmentName, String targetConnectionName,
+                            String targetEnvironmentName, String sqlStatement, String name, boolean cleanPrevious) {
 
-		CachedRowSet crs = null;
-		crs = sourceDatabaseConnection.executeQuery(sqlStatement);
+        // Get Connection
+        ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
+        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution());
 
-		String QueryString = "";
-		try
-		{
-			// Get result set meta data
-			ResultSetMetaData rsmd = crs.getMetaData();
-			int cols = rsmd.getColumnCount();
+        Connection sourceConnection = connectionConfiguration.getConnection(sourceConnectionName, sourceEnvironmentName).get();
+        DatabaseConnection sourceDatabaseConnection = connectionOperation.getDatabaseConnection(sourceConnection);
+        Connection targetConnection = connectionConfiguration.getConnection(targetConnectionName, targetEnvironmentName).get();
+        DatabaseConnection targetDatabaseConnection = connectionOperation.getDatabaseConnection(targetConnection);
 
-			// Determine name
-			if (name == null || name.isEmpty())
-			{
-				name = rsmd.getTableName(1);
-			}
+        CachedRowSet crs = null;
+        crs = sourceDatabaseConnection.executeQuery(sqlStatement);
 
-			// Cleaning
-			if (cleanPrevious)
-			{
-				QueryString = SQLTools.getDropStmt(name, true);
-				targetDatabaseConnection.executeUpdate(QueryString);
-			}
+        String QueryString = "";
+        java.sql.Connection liveTargetDatabaseConnection = null;
+        try {
+            // Get result set meta data
+            ResultSetMetaData rsmd = crs.getMetaData();
+            int cols = rsmd.getColumnCount();
 
-			// create the dataset table if needed
-			QueryString = SQLTools.getCreateStmt(rsmd, name, true);
-			targetDatabaseConnection.executeUpdate(QueryString);
+            // Determine name
+            if (name == null || name.isEmpty()) {
+                name = rsmd.getTableName(1);
+            }
 
-			String temp = "";
-			String sql = SQLTools.getInsertPstmt(rsmd, name);
-			targetDatabaseConnection.createLiveConnection();
-			PreparedStatement preparedStatement = targetDatabaseConnection.createLivePreparedStatement(sql);
+            // Cleaning
+            if (cleanPrevious) {
+                QueryString = SQLTools.getDropStmt(name, true);
+                targetDatabaseConnection.executeUpdate(QueryString);
+            }
 
-			int crsType = crs.getType();
-			if (crsType != java.sql.ResultSet.TYPE_FORWARD_ONLY)
-			{
-				crs.beforeFirst();
-			}
+            // create the dataset table if needed
+            QueryString = SQLTools.getCreateStmt(rsmd, name, true);
+            targetDatabaseConnection.executeUpdate(QueryString);
 
-			while (crs.next())
-			{
-				for (int i = 1; i < cols + 1; i++)
-				{
-					temp = crs.getString(i);
-					preparedStatement.setString(i, temp);
-				}
-				preparedStatement.executeUpdate();
-			}
-		}
-		catch (Exception e)
-		{
-			System.out.println(QueryString);
-			System.out.println("Query Actions Failed");
-			e.printStackTrace();
-		}
-		finally
-		{
-			targetDatabaseConnection.closeLiveConnection();
-		}
+            String temp = "";
+            String sql = SQLTools.getInsertPstmt(rsmd, name);
+            liveTargetDatabaseConnection = targetDatabaseConnection.createLiveConnection();
+            PreparedStatement preparedStatement = targetDatabaseConnection.createLivePreparedStatement(liveTargetDatabaseConnection, sql);
 
-	}
+            int crsType = crs.getType();
+            if (crsType != java.sql.ResultSet.TYPE_FORWARD_ONLY) {
+                crs.beforeFirst();
+            }
 
-	// Getters and setters
-	public FrameworkExecution getFrameworkExecution()
-	{
-		return frameworkExecution;
-	}
+            while (crs.next()) {
+                for (int i = 1; i < cols + 1; i++) {
+                    temp = crs.getString(i);
+                    preparedStatement.setString(i, temp);
+                }
+                preparedStatement.executeUpdate();
+            }
+        } catch (Exception e) {
+            System.out.println(QueryString);
+            System.out.println("Query Actions Failed");
+            e.printStackTrace();
+        } finally {
+            targetDatabaseConnection.closeLiveConnection(liveTargetDatabaseConnection);
+        }
 
-	public void setFrameworkExecution(FrameworkExecution frameworkExecution)
-	{
-		this.frameworkExecution = frameworkExecution;
-	}
+    }
+
+    // Getters and setters
+    public FrameworkExecution getFrameworkExecution() {
+        return frameworkExecution;
+    }
+
+    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
+        this.frameworkExecution = frameworkExecution;
+    }
 }

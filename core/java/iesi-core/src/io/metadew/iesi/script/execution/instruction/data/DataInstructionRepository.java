@@ -1,7 +1,5 @@
 package io.metadew.iesi.script.execution.instruction.data;
 
-import java.util.HashMap;
-
 import io.metadew.iesi.data.generation.execution.GenerationObjectExecution;
 import io.metadew.iesi.script.execution.instruction.data.belgium.BelgiumNationalRegisterNumber;
 import io.metadew.iesi.script.execution.instruction.data.date.DateBetween;
@@ -16,6 +14,8 @@ import io.metadew.iesi.script.execution.instruction.data.person.PersonPhoneNumbe
 import io.metadew.iesi.script.execution.instruction.data.time.TimeFormat;
 import io.metadew.iesi.script.execution.instruction.data.time.TimeNow;
 import io.metadew.iesi.script.execution.instruction.data.time.TimeTravel;
+
+import java.util.HashMap;
 
 public class DataInstructionRepository {
 

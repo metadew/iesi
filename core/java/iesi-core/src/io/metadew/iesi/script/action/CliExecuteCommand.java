@@ -1,13 +1,10 @@
 package io.metadew.iesi.script.action;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.HashMap;
-
 import io.metadew.iesi.connection.HostConnection;
 import io.metadew.iesi.connection.host.ShellCommandResult;
 import io.metadew.iesi.connection.host.ShellCommandSettings;
 import io.metadew.iesi.connection.operation.ConnectionOperation;
+import io.metadew.iesi.connection.tools.HostConnectionTools;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.configuration.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.ActionParameter;
@@ -17,227 +14,235 @@ import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.HashMap;
+
 /**
  * Action type to execute command line instructions.
- * 
- * @author peter.billen
  *
+ * @author peter.billen
  */
 public class CliExecuteCommand {
 
-	private ActionExecution actionExecution;
-	private FrameworkExecution frameworkExecution;
-	private ExecutionControl executionControl;
+    private ActionExecution actionExecution;
+    private FrameworkExecution frameworkExecution;
+    private ExecutionControl executionControl;
 
-	// Parameters
-	private ActionParameterOperation shellPath;
-	private ActionParameterOperation shellCommand;
-	private ActionParameterOperation setRunVar;
-	private ActionParameterOperation setRunVarPrefix;
-	private ActionParameterOperation setRunVarMode;
-	private ActionParameterOperation connectionName;
-	private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
+    // Parameters
+    private ActionParameterOperation shellPath;
+    private ActionParameterOperation shellCommand;
+    private ActionParameterOperation setRunVar;
+    private ActionParameterOperation setRunVarPrefix;
+    private ActionParameterOperation setRunVarMode;
+    private ActionParameterOperation connectionName;
+    private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
 
-	// Constructors
-	public CliExecuteCommand() {
+    // Constructors
+    public CliExecuteCommand() {
 
-	}
+    }
 
-	public CliExecuteCommand(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
-			ScriptExecution scriptExecution, ActionExecution actionExecution) {
-		this.init(frameworkExecution, executionControl, scriptExecution, actionExecution);
-	}
+    public CliExecuteCommand(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+                             ScriptExecution scriptExecution, ActionExecution actionExecution) {
+        this.init(frameworkExecution, executionControl, scriptExecution, actionExecution);
+    }
 
-	public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
-			ScriptExecution scriptExecution, ActionExecution actionExecution) {
-		this.setFrameworkExecution(frameworkExecution);
-		this.setExecutionControl(executionControl);
-		this.setActionExecution(actionExecution);
-		this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
-	}
+    public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+                     ScriptExecution scriptExecution, ActionExecution actionExecution) {
+        this.setFrameworkExecution(frameworkExecution);
+        this.setExecutionControl(executionControl);
+        this.setActionExecution(actionExecution);
+        this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
+    }
 
-	public void prepare() {
-		// Reset Parameters
-		this.setShellPath(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
-				this.getActionExecution(), this.getActionExecution().getAction().getType(), "path"));
-		this.setShellCommand(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
-				this.getActionExecution(), this.getActionExecution().getAction().getType(), "command"));
-		this.setSetRunVar(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
-				this.getActionExecution(), this.getActionExecution().getAction().getType(), "setRuntimeVariables"));
-		this.setSetRunVarPrefix(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
-				this.getActionExecution(), this.getActionExecution().getAction().getType(),
-				"setRuntimeVariablesPrefix"));
-		this.setSetRunVarMode(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
-				this.getActionExecution(), this.getActionExecution().getAction().getType(), "setRuntimeVariablesMode"));
-		this.setConnectionName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
-				this.getActionExecution(), this.getActionExecution().getAction().getType(), "connection"));
+    public void prepare() {
+        // Reset Parameters
+        this.setShellPath(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+                this.getActionExecution(), this.getActionExecution().getAction().getType(), "path"));
+        this.setShellCommand(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+                this.getActionExecution(), this.getActionExecution().getAction().getType(), "command"));
+        this.setSetRunVar(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+                this.getActionExecution(), this.getActionExecution().getAction().getType(), "setRuntimeVariables"));
+        this.setSetRunVarPrefix(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+                this.getActionExecution(), this.getActionExecution().getAction().getType(),
+                "setRuntimeVariablesPrefix"));
+        this.setSetRunVarMode(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+                this.getActionExecution(), this.getActionExecution().getAction().getType(), "setRuntimeVariablesMode"));
+        this.setConnectionName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+                this.getActionExecution(), this.getActionExecution().getAction().getType(), "connection"));
 
-		// Get Parameters
-		for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-			if (actionParameter.getName().equalsIgnoreCase("path")) {
-				this.getShellPath().setInputValue(actionParameter.getValue());
-			} else if (actionParameter.getName().equalsIgnoreCase("command")) {
-				this.getShellCommand().setInputValue(actionParameter.getValue());
-			} else if (actionParameter.getName().equalsIgnoreCase("setruntimevariables")) {
-				this.getSetRunVar().setInputValue(actionParameter.getValue());
-			} else if (actionParameter.getName().equalsIgnoreCase("setruntimevariablesprefix")) {
-				this.getSetRunVarPrefix().setInputValue(actionParameter.getValue());
-			} else if (actionParameter.getName().equalsIgnoreCase("setruntimevariablesmode")) {
-				this.getSetRunVarMode().setInputValue(actionParameter.getValue());
-			} else if (actionParameter.getName().equalsIgnoreCase("connection")) {
-				this.getConnectionName().setInputValue(actionParameter.getValue());
-			}
-		}
+        // Get Parameters
+        for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
+            if (actionParameter.getName().equalsIgnoreCase("path")) {
+                this.getShellPath().setInputValue(actionParameter.getValue());
+            } else if (actionParameter.getName().equalsIgnoreCase("command")) {
+                this.getShellCommand().setInputValue(actionParameter.getValue());
+            } else if (actionParameter.getName().equalsIgnoreCase("setruntimevariables")) {
+                this.getSetRunVar().setInputValue(actionParameter.getValue());
+            } else if (actionParameter.getName().equalsIgnoreCase("setruntimevariablesprefix")) {
+                this.getSetRunVarPrefix().setInputValue(actionParameter.getValue());
+            } else if (actionParameter.getName().equalsIgnoreCase("setruntimevariablesmode")) {
+                this.getSetRunVarMode().setInputValue(actionParameter.getValue());
+            } else if (actionParameter.getName().equalsIgnoreCase("connection")) {
+                this.getConnectionName().setInputValue(actionParameter.getValue());
+            }
+        }
 
-		// Create parameter list
-		this.getActionParameterOperationMap().put("path", this.getShellPath());
-		this.getActionParameterOperationMap().put("command", this.getShellCommand());
-		this.getActionParameterOperationMap().put("setRuntimeVariables", this.getSetRunVar());
-		this.getActionParameterOperationMap().put("setRuntimeVariablesPrefix", this.getSetRunVarPrefix());
-		this.getActionParameterOperationMap().put("setRuntimeVariablesMode", this.getSetRunVarMode());
-		this.getActionParameterOperationMap().put("connection", this.getConnectionName());
-	}
+        // Create parameter list
+        this.getActionParameterOperationMap().put("path", this.getShellPath());
+        this.getActionParameterOperationMap().put("command", this.getShellCommand());
+        this.getActionParameterOperationMap().put("setRuntimeVariables", this.getSetRunVar());
+        this.getActionParameterOperationMap().put("setRuntimeVariablesPrefix", this.getSetRunVarPrefix());
+        this.getActionParameterOperationMap().put("setRuntimeVariablesMode", this.getSetRunVarMode());
+        this.getActionParameterOperationMap().put("connection", this.getConnectionName());
+    }
 
-	// Methods
-	public boolean execute() {
-		try {
-			// Get Connection
-			ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution());
-			Connection connection = connectionConfiguration.getConnection(this.getConnectionName().getValue(),
-					this.getExecutionControl().getEnvName()).get();
-			ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
-			HostConnection hostConnection = connectionOperation.getHostConnection(connection);
+    // Methods
+    public boolean execute() {
+        try {
+            boolean isOnLocalhost = HostConnectionTools.isOnLocalhost(this.getFrameworkExecution(),
+                    this.getConnectionName().getValue(), this.getExecutionControl().getEnvName());
 
-			// Check if running on localhost or not
-			boolean isOnLocalHost = connectionOperation.isOnLocalConnection(hostConnection);
+            HostConnection hostConnection = null;
+            if (this.getConnectionName().getValue().isEmpty() || this.getConnectionName().getValue().equalsIgnoreCase("localhost")) {
+                hostConnection = new HostConnection(HostConnectionTools.getLocalhostType());
+            } else {
+                ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution());
+                Connection connection = connectionConfiguration.getConnection(this.getConnectionName().getValue(),
+                        this.getExecutionControl().getEnvName()).get();
+                ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
+                hostConnection = connectionOperation.getHostConnection(connection);
+            }
 
-			// Run the action
-			ShellCommandResult shellCommandResult = null;
-			ShellCommandSettings shellCommandSettings = new ShellCommandSettings();
-			shellCommandSettings.setSetRunVar(this.getSetRunVar().getValue());
-			shellCommandSettings.setSetRunVarPrefix(this.getSetRunVarPrefix().getValue());
-			shellCommandSettings.setSetRunVarMode(this.getSetRunVarMode().getValue());
-			shellCommandSettings.setFrameworkExecution(this.getFrameworkExecution());
-			shellCommandSettings.setEnvironment(this.getExecutionControl().getEnvName());
-			if (isOnLocalHost) {
-				shellCommandResult = hostConnection.executeLocalCommand(this.getShellPath().getValue(),
-						this.getShellCommand().getValue(), shellCommandSettings);
-			} else {
-				shellCommandResult = hostConnection.executeRemoteCommand(this.getShellPath().getValue(),
-						this.getShellCommand().getValue(), shellCommandSettings);
-			}
+            // Run the action
+            ShellCommandResult shellCommandResult = null;
+            ShellCommandSettings shellCommandSettings = new ShellCommandSettings();
+            shellCommandSettings.setSetRunVar(this.getSetRunVar().getValue());
+            shellCommandSettings.setSetRunVarPrefix(this.getSetRunVarPrefix().getValue());
+            shellCommandSettings.setSetRunVarMode(this.getSetRunVarMode().getValue());
+            shellCommandSettings.setFrameworkExecution(this.getFrameworkExecution());
+            shellCommandSettings.setEnvironment(this.getExecutionControl().getEnvName());
 
-			// Set runtime variables
-			if (this.getSetRunVar().getValue().trim().equalsIgnoreCase("y")) {
-				this.getExecutionControl().getExecutionRuntime()
-						.setRuntimeVariables(shellCommandResult.getRuntimeVariablesOutput());
-			}
+            if (isOnLocalhost) {
+                shellCommandResult = hostConnection.executeLocalCommand(this.getShellPath().getValue(),
+                        this.getShellCommand().getValue(), shellCommandSettings);
+            } else {
+                shellCommandResult = hostConnection.executeRemoteCommand(this.getShellPath().getValue(),
+                        this.getShellCommand().getValue(), shellCommandSettings);
+            }
 
-			if (shellCommandResult.getReturnCode() == 0) {
-				this.getActionExecution().getActionControl().increaseSuccessCount();
-			} else {
-				this.getActionExecution().getActionControl().increaseErrorCount();
-			}
+            // Set runtime variables
+            if (this.getSetRunVar().getValue().trim().equalsIgnoreCase("y")) {
+                this.getExecutionControl().getExecutionRuntime()
+                        .setRuntimeVariables(this.getActionExecution(), shellCommandResult.getRuntimeVariablesOutput());
+            }
 
-			this.getActionExecution().getActionControl().logOutput("rc",
-					Integer.toString(shellCommandResult.getReturnCode()));
-			this.getActionExecution().getActionControl().logOutput("sys.out", shellCommandResult.getSystemOutput());
-			this.getActionExecution().getActionControl().logOutput("err.out", shellCommandResult.getErrorOutput());
+            if (shellCommandResult.getReturnCode() == 0) {
+                this.getActionExecution().getActionControl().increaseSuccessCount();
+            } else {
+                this.getActionExecution().getActionControl().increaseErrorCount();
+            }
 
-			return true;
-		} catch (Exception e) {
-			StringWriter StackTrace = new StringWriter();
-			e.printStackTrace(new PrintWriter(StackTrace));
+            this.getActionExecution().getActionControl().logOutput("rc",
+                    Integer.toString(shellCommandResult.getReturnCode()));
+            this.getActionExecution().getActionControl().logOutput("sys.out", shellCommandResult.getSystemOutput());
+            this.getActionExecution().getActionControl().logOutput("err.out", shellCommandResult.getErrorOutput());
 
-			this.getActionExecution().getActionControl().increaseErrorCount();
+            return true;
+        } catch (Exception e) {
+            StringWriter StackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(StackTrace));
 
-			this.getActionExecution().getActionControl().logOutput("exception", e.getMessage());
-			this.getActionExecution().getActionControl().logOutput("stacktrace", StackTrace.toString());
+            this.getActionExecution().getActionControl().increaseErrorCount();
 
-			return false;
-		}
+            this.getActionExecution().getActionControl().logOutput("exception", e.getMessage());
+            this.getActionExecution().getActionControl().logOutput("stacktrace", StackTrace.toString());
 
-	}
+            return false;
+        }
 
-	// Getters and Setters
-	public FrameworkExecution getFrameworkExecution() {
-		return frameworkExecution;
-	}
+    }
 
-	public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-		this.frameworkExecution = frameworkExecution;
-	}
+    // Getters and Setters
+    public FrameworkExecution getFrameworkExecution() {
+        return frameworkExecution;
+    }
 
-	public ExecutionControl getExecutionControl() {
-		return executionControl;
-	}
+    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
+        this.frameworkExecution = frameworkExecution;
+    }
 
-	public void setExecutionControl(ExecutionControl executionControl) {
-		this.executionControl = executionControl;
-	}
+    public ExecutionControl getExecutionControl() {
+        return executionControl;
+    }
 
-	public ActionExecution getActionExecution() {
-		return actionExecution;
-	}
+    public void setExecutionControl(ExecutionControl executionControl) {
+        this.executionControl = executionControl;
+    }
 
-	public void setActionExecution(ActionExecution actionExecution) {
-		this.actionExecution = actionExecution;
-	}
+    public ActionExecution getActionExecution() {
+        return actionExecution;
+    }
 
-	public ActionParameterOperation getShellPath() {
-		return shellPath;
-	}
+    public void setActionExecution(ActionExecution actionExecution) {
+        this.actionExecution = actionExecution;
+    }
 
-	public void setShellPath(ActionParameterOperation shellPath) {
-		this.shellPath = shellPath;
-	}
+    public ActionParameterOperation getShellPath() {
+        return shellPath;
+    }
 
-	public ActionParameterOperation getShellCommand() {
-		return shellCommand;
-	}
+    public void setShellPath(ActionParameterOperation shellPath) {
+        this.shellPath = shellPath;
+    }
 
-	public void setShellCommand(ActionParameterOperation shellCommand) {
-		this.shellCommand = shellCommand;
-	}
+    public ActionParameterOperation getShellCommand() {
+        return shellCommand;
+    }
 
-	public ActionParameterOperation getSetRunVar() {
-		return setRunVar;
-	}
+    public void setShellCommand(ActionParameterOperation shellCommand) {
+        this.shellCommand = shellCommand;
+    }
 
-	public void setSetRunVar(ActionParameterOperation setRunVar) {
-		this.setRunVar = setRunVar;
-	}
+    public ActionParameterOperation getSetRunVar() {
+        return setRunVar;
+    }
 
-	public ActionParameterOperation getSetRunVarPrefix() {
-		return setRunVarPrefix;
-	}
+    public void setSetRunVar(ActionParameterOperation setRunVar) {
+        this.setRunVar = setRunVar;
+    }
 
-	public void setSetRunVarPrefix(ActionParameterOperation setRunVarPrefix) {
-		this.setRunVarPrefix = setRunVarPrefix;
-	}
+    public ActionParameterOperation getSetRunVarPrefix() {
+        return setRunVarPrefix;
+    }
 
-	public ActionParameterOperation getSetRunVarMode() {
-		return setRunVarMode;
-	}
+    public void setSetRunVarPrefix(ActionParameterOperation setRunVarPrefix) {
+        this.setRunVarPrefix = setRunVarPrefix;
+    }
 
-	public void setSetRunVarMode(ActionParameterOperation setRunVarMode) {
-		this.setRunVarMode = setRunVarMode;
-	}
+    public ActionParameterOperation getSetRunVarMode() {
+        return setRunVarMode;
+    }
 
-	public ActionParameterOperation getConnectionName() {
-		return connectionName;
-	}
+    public void setSetRunVarMode(ActionParameterOperation setRunVarMode) {
+        this.setRunVarMode = setRunVarMode;
+    }
 
-	public void setConnectionName(ActionParameterOperation connectionName) {
-		this.connectionName = connectionName;
-	}
+    public ActionParameterOperation getConnectionName() {
+        return connectionName;
+    }
 
-	public HashMap<String, ActionParameterOperation> getActionParameterOperationMap() {
-		return actionParameterOperationMap;
-	}
+    public void setConnectionName(ActionParameterOperation connectionName) {
+        this.connectionName = connectionName;
+    }
 
-	public void setActionParameterOperationMap(HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
-		this.actionParameterOperationMap = actionParameterOperationMap;
-	}
+    public HashMap<String, ActionParameterOperation> getActionParameterOperationMap() {
+        return actionParameterOperationMap;
+    }
+
+    public void setActionParameterOperationMap(HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
+        this.actionParameterOperationMap = actionParameterOperationMap;
+    }
 
 }

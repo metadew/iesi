@@ -1,85 +1,89 @@
 package io.metadew.iesi.metadata.restore;
 
+import io.metadew.iesi.connection.FileConnection;
+import io.metadew.iesi.connection.tools.FolderTools;
+import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.execution.FrameworkExecutionContext;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
+import io.metadew.iesi.metadata.definition.Context;
+import io.metadew.iesi.script.execution.ExecutionControl;
+import org.apache.logging.log4j.Level;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.logging.log4j.Level;
-
-import io.metadew.iesi.connection.FileConnection;
-import io.metadew.iesi.connection.tools.FolderTools;
-import io.metadew.iesi.framework.execution.FrameworkExecutionContext;
-import io.metadew.iesi.framework.execution.FrameworkExecution;
-import io.metadew.iesi.metadata.definition.Context;
-import io.metadew.iesi.script.execution.ExecutionControl;
-
 public class RestoreExecution {
 
-	private FrameworkExecution frameworkExecution;
-	private ExecutionControl executionControl;
-	private Long processId;
+    private FrameworkExecution frameworkExecution;
+    private ExecutionControl executionControl;
+    private Long processId;
 
-	// Constructors
-	public RestoreExecution() {
-		Context context = new Context();
-		context.setName("restore");
-		context.setScope("");
-		this.setFrameworkExecution(new FrameworkExecution(new FrameworkExecutionContext(context), null));
-		this.setExecutionControl(new ExecutionControl(this.getFrameworkExecution()));
-	}
+    // Constructors
+    public RestoreExecution() {
+        // Create the framework instance
+        FrameworkInstance frameworkInstance = new FrameworkInstance();
 
-	// Methods
-	@SuppressWarnings("rawtypes")
-	public void execute(String path) {
-		// Log Start
-		this.getExecutionControl().logStart(this);
-		this.setProcessId(this.getExecutionControl().getProcessId());
+        // Create the framework execution
+        Context context = new Context();
+        context.setName("restore");
+        context.setScope("");
+        this.setFrameworkExecution(new FrameworkExecution(frameworkInstance, new FrameworkExecutionContext(context), null));
+        this.setExecutionControl(new ExecutionControl(this.getFrameworkExecution()));
+    }
 
-		// Verify input parameters
-		if (FolderTools.isFolder(path) ) {
-			this.getFrameworkExecution().getFrameworkLog().log("restore.error.path.isFolder", Level.DEBUG);
-			// Get source configuration
-			@SuppressWarnings("unchecked")
-			List<FileConnection> fileConnectionList = FolderTools.getConnectionsInFolder(path, "all", "", new ArrayList());
-			for (FileConnection fileConnection : fileConnectionList) {
-				RestoreTargetOperation restoreTargetOperation = new RestoreTargetOperation(this.getFrameworkExecution(), this.getExecutionControl());
-				restoreTargetOperation.execute(fileConnection.getFilePath());			
-			}
-		} else {
-			this.getFrameworkExecution().getFrameworkLog().log("restore.error.path.isFile", Level.DEBUG);
-			RestoreTargetOperation restoreTargetOperation = new RestoreTargetOperation(this.getFrameworkExecution(), this.getExecutionControl());
-			restoreTargetOperation.execute(path);		
-		}
-		
-		// Log End
-		this.getExecutionControl().logEnd(this);
+    // Methods
+    @SuppressWarnings("rawtypes")
+    public void execute(String path) {
+        // Log Start
+        this.getExecutionControl().logStart(this);
+        this.setProcessId(this.getExecutionControl().getProcessId());
 
-		// Exit the execution
-		// this.getEoControl().endExecution();
-	}
+        // Verify input parameters
+        if (FolderTools.isFolder(path)) {
+            this.getFrameworkExecution().getFrameworkLog().log("restore.error.path.isFolder", Level.DEBUG);
+            // Get source configuration
+            @SuppressWarnings("unchecked")
+            List<FileConnection> fileConnectionList = FolderTools.getConnectionsInFolder(path, "all", "", new ArrayList());
+            for (FileConnection fileConnection : fileConnectionList) {
+                RestoreTargetOperation restoreTargetOperation = new RestoreTargetOperation(this.getFrameworkExecution(), this.getExecutionControl());
+                restoreTargetOperation.execute(fileConnection.getFilePath());
+            }
+        } else {
+            this.getFrameworkExecution().getFrameworkLog().log("restore.error.path.isFile", Level.DEBUG);
+            RestoreTargetOperation restoreTargetOperation = new RestoreTargetOperation(this.getFrameworkExecution(), this.getExecutionControl());
+            restoreTargetOperation.execute(path);
+        }
 
-	// Getters and Setters
-	public FrameworkExecution getFrameworkExecution() {
-		return frameworkExecution;
-	}
+        // Log End
+        this.getExecutionControl().logEnd(this);
 
-	public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-		this.frameworkExecution = frameworkExecution;
-	}
+        // Exit the execution
+        // this.getEoControl().endExecution();
+    }
 
-	public ExecutionControl getExecutionControl() {
-		return executionControl;
-	}
+    // Getters and Setters
+    public FrameworkExecution getFrameworkExecution() {
+        return frameworkExecution;
+    }
 
-	public void setExecutionControl(ExecutionControl executionControl) {
-		this.executionControl = executionControl;
-	}
+    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
+        this.frameworkExecution = frameworkExecution;
+    }
 
-	public Long getProcessId() {
-		return processId;
-	}
+    public ExecutionControl getExecutionControl() {
+        return executionControl;
+    }
 
-	public void setProcessId(Long processId) {
-		this.processId = processId;
-	}
+    public void setExecutionControl(ExecutionControl executionControl) {
+        this.executionControl = executionControl;
+    }
+
+    public Long getProcessId() {
+        return processId;
+    }
+
+    public void setProcessId(Long processId) {
+        this.processId = processId;
+    }
 
 }

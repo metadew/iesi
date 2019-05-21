@@ -3,44 +3,44 @@ package io.metadew.iesi.metadata.definition;
 import java.util.List;
 
 public class Impersonation {
-	
-	private String name;
-	private String description;
-	private List<ImpersonationParameter> parameters;
-	
-	//Constructors
-	public Impersonation() {
-	}
 
-	public Impersonation(String name, String description, List<ImpersonationParameter> parameters) {
-		this.name = name;
-		this.description = description;
-		this.parameters = parameters;
-	}
+    private String name;
+    private String description;
+    private List<ImpersonationParameter> parameters;
 
-	//Getters and Setters
-	public String getName() {
-		return name;
-	}
+    //Constructors
+    public Impersonation() {
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public Impersonation(String name, String description, List<ImpersonationParameter> parameters) {
+        this.name = name;
+        this.description = description;
+        this.parameters = parameters;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    //Getters and Setters
+    public String getName() {
+        return name;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public List<ImpersonationParameter> getParameters() {
-		return parameters;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public void setParameters(List<ImpersonationParameter> parameters) {
-		this.parameters = parameters;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public List<ImpersonationParameter> getParameters() {
+        return parameters;
+    }
+
+    public void setParameters(List<ImpersonationParameter> parameters) {
+        this.parameters = parameters;
+    }
 
 }

@@ -3,7 +3,7 @@ package io.metadew.iesi.framework.configuration;
 public enum FrameworkStatus {
     NEW("NEW"),
     RUNNING("RUNNING"),
-	SUCCESS("SUCCESS"),
+    SUCCESS("SUCCESS"),
     WARNING("WARNING"),
     ERROR("ERROR"),
     STOPPED("STOPPED"),

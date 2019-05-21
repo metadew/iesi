@@ -1,9 +1,9 @@
 package io.metadew.iesi.data.generation.configuration;
 
-import java.util.List;
-
 import io.metadew.iesi.data.generation.execution.GenerationComponentExecution;
 import io.metadew.iesi.data.generation.execution.GenerationDataExecution;
+
+import java.util.List;
 
 public class Name extends GenerationComponentExecution {
 
@@ -42,7 +42,7 @@ public class Name extends GenerationComponentExecution {
     }
 
     @SuppressWarnings("unchecked")
-	public List<String> jobTitles() {
+    public List<String> jobTitles() {
         return (List<String>) getMap("name", "title").get("job");
     }
 }

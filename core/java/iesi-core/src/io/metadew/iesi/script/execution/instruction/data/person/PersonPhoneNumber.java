@@ -6,25 +6,21 @@ import io.metadew.iesi.script.execution.instruction.data.DataInstruction;
 /**
  * @author robbe.berrevoets
  */
-public class PersonPhoneNumber implements DataInstruction
-{
+public class PersonPhoneNumber implements DataInstruction {
 
-	private final GenerationObjectExecution generationObjectExecution;
+    private final GenerationObjectExecution generationObjectExecution;
 
-	public PersonPhoneNumber(GenerationObjectExecution generationObjectExecution)
-	{
-		this.generationObjectExecution = generationObjectExecution;
-	}
+    public PersonPhoneNumber(GenerationObjectExecution generationObjectExecution) {
+        this.generationObjectExecution = generationObjectExecution;
+    }
 
-	@Override
-	public String generateOutput(String parameters)
-	{
-		return generationObjectExecution.getPhoneNumber().phoneNumber();
-	}
+    @Override
+    public String generateOutput(String parameters) {
+        return generationObjectExecution.getPhoneNumber().phoneNumber();
+    }
 
-	@Override
-	public String getKeyword()
-	{
-		return "person.phonenumber";
-	}
+    @Override
+    public String getKeyword() {
+        return "person.phonenumber";
+    }
 }

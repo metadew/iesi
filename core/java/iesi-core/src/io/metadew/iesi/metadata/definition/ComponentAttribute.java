@@ -2,39 +2,39 @@ package io.metadew.iesi.metadata.definition;
 
 
 public class ComponentAttribute {
-	
-	private String name;
-	private String environment;
-	private String value;
-	
-	//Constructors
-	public ComponentAttribute() {
-		
-	}
 
-	//Getters and Setters
-	public String getName() {
-		return name;
-	}
+    private String name;
+    private String environment;
+    private String value;
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    //Constructors
+    public ComponentAttribute() {
 
-	public String getValue() {
-		return value;
-	}
+    }
 
-	public void setValue(String value) {
-		this.value = value;
-	}
+    //Getters and Setters
+    public String getName() {
+        return name;
+    }
 
-	public String getEnvironment() {
-		return environment;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public void setEnvironment(String environment) {
-		this.environment = environment;
-	}
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    public String getEnvironment() {
+        return environment;
+    }
+
+    public void setEnvironment(String environment) {
+        this.environment = environment;
+    }
 
 }

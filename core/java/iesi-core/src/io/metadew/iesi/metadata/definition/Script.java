@@ -1,79 +1,82 @@
 package io.metadew.iesi.metadata.definition;
 
+import io.metadew.iesi.metadata.tools.IdentifierTools;
+
 import java.util.List;
 
 public class Script {
 
-	private long id;
-	private String type = "script";
-	private String name;
-	private String description;
-	// Set a default script version if not provided
-	private ScriptVersion version = new ScriptVersion();
-	private List<ScriptParameter> parameters;
-	private List<Action> actions;
+    private String id;
+    private String type = "script";
+    private String name;
+    private String description;
+    // Set a default script version if not provided
+    private ScriptVersion version = new ScriptVersion();
+    private List<ScriptParameter> parameters;
+    private List<Action> actions;
 
-	// Constructors
-	public Script() {
-		
-	}
+    // Constructors
+    public Script() {
 
-	// Getters and Setters
-	public String getName() {
-		return name;
-	}
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    // Getters and Setters
+    public String getName() {
+        return name;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public long getId() {
-		return id;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	public void setId(long id) {
-		this.id = id;
-	}
+    public List<Action> getActions() {
+        return actions;
+    }
 
-	public List<Action> getActions() {
-		return actions;
-	}
+    public void setActions(List<Action> actions) {
+        this.actions = actions;
+    }
 
-	public void setActions(List<Action> actions) {
-		this.actions = actions;
-	}
+    public List<ScriptParameter> getParameters() {
+        return parameters;
+    }
 
-	public List<ScriptParameter> getParameters() {
-		return parameters;
-	}
+    public void setParameters(List<ScriptParameter> parameters) {
+        this.parameters = parameters;
+    }
 
-	public void setParameters(List<ScriptParameter> parameters) {
-		this.parameters = parameters;
-	}
+    public String getType() {
+        return type;
+    }
 
-	public String getType() {
-		return type;
-	}
+    public void setType(String type) {
+        this.type = type;
+    }
 
-	public void setType(String type) {
-		this.type = type;
-	}
+    public ScriptVersion getVersion() {
+        return version;
+    }
 
-	public ScriptVersion getVersion() {
-		return version;
-	}
+    public void setVersion(ScriptVersion version) {
+        this.version = version;
+    }
 
-	public void setVersion(ScriptVersion version) {
-		this.version = version;
-	}
+    public String getId() {
+        if (id == null) this.id = IdentifierTools.getScriptIdentifier(this.getName());
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
 
 }

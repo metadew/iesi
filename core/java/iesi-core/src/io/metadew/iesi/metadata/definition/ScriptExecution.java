@@ -4,48 +4,48 @@ import java.util.List;
 
 public class ScriptExecution {
 
-	private String script;
-	private String version;
-	private String environment;
-	private List<ScriptExecutionParameter> parameters;
-	
-	// Constructors
-	public ScriptExecution() {
-		
-	}
+    private String script;
+    private String version;
+    private String environment;
+    private List<ScriptExecutionParameter> parameters;
 
-	// Getters and Setters
-	public String getScript() {
-		return script;
-	}
+    // Constructors
+    public ScriptExecution() {
 
-	public void setScript(String script) {
-		this.script = script;
-	}
+    }
 
-	public String getEnvironment() {
-		return environment;
-	}
+    // Getters and Setters
+    public String getScript() {
+        return script;
+    }
 
-	public void setEnvironment(String environment) {
-		this.environment = environment;
-	}
+    public void setScript(String script) {
+        this.script = script;
+    }
 
-	public String getVersion() {
-		return version;
-	}
+    public String getEnvironment() {
+        return environment;
+    }
 
-	public void setVersion(String version) {
-		this.version = version;
-	}
+    public void setEnvironment(String environment) {
+        this.environment = environment;
+    }
 
-	public List<ScriptExecutionParameter> getParameters() {
-		return parameters;
-	}
+    public String getVersion() {
+        return version;
+    }
 
-	public void setParameters(List<ScriptExecutionParameter> parameters) {
-		this.parameters = parameters;
-	}
+    public void setVersion(String version) {
+        this.version = version;
+    }
+
+    public List<ScriptExecutionParameter> getParameters() {
+        return parameters;
+    }
+
+    public void setParameters(List<ScriptExecutionParameter> parameters) {
+        this.parameters = parameters;
+    }
 
 
 }

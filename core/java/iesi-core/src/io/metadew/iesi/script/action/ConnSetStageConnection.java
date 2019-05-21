@@ -1,9 +1,5 @@
 package io.metadew.iesi.script.action;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.HashMap;
-
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.ActionParameter;
 import io.metadew.iesi.script.execution.ActionExecution;
@@ -11,108 +7,141 @@ import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.HashMap;
+
 public class ConnSetStageConnection {
 
-	private ActionExecution actionExecution;
-	private FrameworkExecution frameworkExecution;
-	private ExecutionControl executionControl;
+    private ActionExecution actionExecution;
+    private FrameworkExecution frameworkExecution;
+    private ExecutionControl executionControl;
 
-	// Parameters
-	private ActionParameterOperation stageName;
-	private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
+    // Parameters
+    private ActionParameterOperation stageName;
+    private ActionParameterOperation stageCleanup;
+    private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
 
-	// Constructors
-	public ConnSetStageConnection() {
-		
-	}
-	
-	public ConnSetStageConnection(FrameworkExecution frameworkExecution, ExecutionControl executionControl, ScriptExecution scriptExecution, ActionExecution actionExecution) {
-		this.init(frameworkExecution, executionControl, scriptExecution, actionExecution);
-	}
-	
-	public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl, ScriptExecution scriptExecution, ActionExecution actionExecution) {
-		this.setFrameworkExecution(frameworkExecution);
-		this.setExecutionControl(executionControl);
-		this.setActionExecution(actionExecution);
-		this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
-	}
-	
-	public void prepare() {
-		// Reset Parameters
-		this.setStageName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(), this.getActionExecution(),
-				this.getActionExecution().getAction().getType(), "stage"));
+    // Constructors
+    public ConnSetStageConnection() {
 
-		// Get Parameters
-		for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-			if (actionParameter.getName().equalsIgnoreCase("stage")) {
-				this.getStageName().setInputValue(actionParameter.getValue());
-			}
-		}
+    }
 
-		//Create parameter list
-		this.getActionParameterOperationMap().put("stage", this.getStageName());
-	}
+    public ConnSetStageConnection(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+                                  ScriptExecution scriptExecution, ActionExecution actionExecution) {
+        this.init(frameworkExecution, executionControl, scriptExecution, actionExecution);
+    }
 
-	//
-	public boolean execute() {
-		try {
-			this.getExecutionControl().getExecutionRuntime().setStage(this.getStageName().getValue());
-			this.getActionExecution().getActionControl().increaseSuccessCount();
-			
-			return true;
-		} catch (Exception e) {
-			StringWriter StackTrace = new StringWriter();
-			e.printStackTrace(new PrintWriter(StackTrace));
+    public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+                     ScriptExecution scriptExecution, ActionExecution actionExecution) {
+        this.setFrameworkExecution(frameworkExecution);
+        this.setExecutionControl(executionControl);
+        this.setActionExecution(actionExecution);
+        this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
+    }
 
-			this.getActionExecution().getActionControl().increaseErrorCount();
+    public void prepare() {
+        // Reset Parameters
+        this.setStageName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+                this.getActionExecution(), this.getActionExecution().getAction().getType(), "stage"));
+        this.setStageCleanup(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+                this.getActionExecution(), this.getActionExecution().getAction().getType(), "cleanUp"));
 
-			this.getActionExecution().getActionControl().logOutput("exception",e.getMessage());
-			this.getActionExecution().getActionControl().logOutput("stacktrace",StackTrace.toString());
+        // Get Parameters
+        for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
+            if (actionParameter.getName().equalsIgnoreCase("stage")) {
+                this.getStageName().setInputValue(actionParameter.getValue());
+            } else if (actionParameter.getName().equalsIgnoreCase("cleanup")) {
+                this.getStageCleanup().setInputValue(actionParameter.getValue());
+            }
+        }
 
-			return false;
-		}
+        // Create parameter list
+        this.getActionParameterOperationMap().put("stage", this.getStageName());
+        this.getActionParameterOperationMap().put("cleanup", this.getStageCleanup());
+    }
 
-	}
+    //
+    public boolean execute() {
+        try {
+            // Verify the cleanup flag
+            boolean cleanup = false;
+            if (this.getStageCleanup().getValue().equalsIgnoreCase("y")) {
+                cleanup = true;
+            }
 
-	// Getters and Setters
-	public FrameworkExecution getFrameworkExecution() {
-		return frameworkExecution;
-	}
+            // Set the stage connection
+            try {
+                this.getExecutionControl().getExecutionRuntime().setStage(this.getStageName().getValue(), cleanup);
+            } catch (Exception e) {
+                throw new RuntimeException("conn.stage.error");
+            }
 
-	public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-		this.frameworkExecution = frameworkExecution;
-	}
+            // Increase the success count
+            this.getActionExecution().getActionControl().increaseSuccessCount();
 
-	public ExecutionControl getExecutionControl() {
-		return executionControl;
-	}
+            return true;
+        } catch (Exception e) {
+            StringWriter StackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(StackTrace));
 
-	public void setExecutionControl(ExecutionControl executionControl) {
-		this.executionControl = executionControl;
-	}
+            this.getActionExecution().getActionControl().increaseErrorCount();
 
-	public ActionExecution getActionExecution() {
-		return actionExecution;
-	}
+            this.getActionExecution().getActionControl().logOutput("exception", e.getMessage());
+            this.getActionExecution().getActionControl().logOutput("stacktrace", StackTrace.toString());
 
-	public void setActionExecution(ActionExecution actionExecution) {
-		this.actionExecution = actionExecution;
-	}
+            return false;
+        }
 
-	public ActionParameterOperation getStageName() {
-		return stageName;
-	}
+    }
 
-	public void setStageName(ActionParameterOperation stageName) {
-		this.stageName = stageName;
-	}
+    // Getters and Setters
+    public FrameworkExecution getFrameworkExecution() {
+        return frameworkExecution;
+    }
 
-	public HashMap<String, ActionParameterOperation> getActionParameterOperationMap() {
-		return actionParameterOperationMap;
-	}
+    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
+        this.frameworkExecution = frameworkExecution;
+    }
 
-	public void setActionParameterOperationMap(HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
-		this.actionParameterOperationMap = actionParameterOperationMap;
-	}
+    public ExecutionControl getExecutionControl() {
+        return executionControl;
+    }
+
+    public void setExecutionControl(ExecutionControl executionControl) {
+        this.executionControl = executionControl;
+    }
+
+    public ActionExecution getActionExecution() {
+        return actionExecution;
+    }
+
+    public void setActionExecution(ActionExecution actionExecution) {
+        this.actionExecution = actionExecution;
+    }
+
+    public ActionParameterOperation getStageName() {
+        return stageName;
+    }
+
+    public void setStageName(ActionParameterOperation stageName) {
+        this.stageName = stageName;
+    }
+
+    public HashMap<String, ActionParameterOperation> getActionParameterOperationMap() {
+        return actionParameterOperationMap;
+    }
+
+    public void setActionParameterOperationMap(HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
+        this.actionParameterOperationMap = actionParameterOperationMap;
+    }
+
+    public ActionParameterOperation getStageCleanup() {
+        return stageCleanup;
+    }
+
+    public void setStageCleanup(ActionParameterOperation stageCleanup) {
+        this.stageCleanup = stageCleanup;
+    }
 
 }

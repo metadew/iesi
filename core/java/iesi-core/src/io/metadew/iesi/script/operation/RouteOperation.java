@@ -4,55 +4,52 @@ import io.metadew.iesi.metadata.definition.Script;
 
 /**
  * This class contains the condition and destination required for routing purposes.
- * 
- * 
- * @author peter.billen
  *
+ * @author peter.billen
  */
 public class RouteOperation {
-	
-	private int id;
-	private ActionParameterOperation condition;
-	private ActionParameterOperation destination;
-	private Script script;
-	
-	public RouteOperation() {
-		
-	}
 
-	// Getters and Setters
-	public ActionParameterOperation getCondition() {
-		return condition;
-	}
+    private int id;
+    private ActionParameterOperation condition;
+    private ActionParameterOperation destination;
+    private Script script;
 
-	public void setCondition(ActionParameterOperation condition) {
-		this.condition = condition;
-	}
+    public RouteOperation() {
 
-	public ActionParameterOperation getDestination() {
-		return destination;
-	}
+    }
 
-	public void setDestination(ActionParameterOperation destination) {
-		this.destination = destination;
-	}
+    // Getters and Setters
+    public ActionParameterOperation getCondition() {
+        return condition;
+    }
 
-	public int getId() {
-		return id;
-	}
+    public void setCondition(ActionParameterOperation condition) {
+        this.condition = condition;
+    }
 
-	public void setId(int id) {
-		this.id = id;
-	}
+    public ActionParameterOperation getDestination() {
+        return destination;
+    }
 
-	public Script getScript() {
-		return script;
-	}
+    public void setDestination(ActionParameterOperation destination) {
+        this.destination = destination;
+    }
 
-	public void setScript(Script script) {
-		this.script = script;
-	}
-	
+    public int getId() {
+        return id;
+    }
 
-	
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public Script getScript() {
+        return script;
+    }
+
+    public void setScript(Script script) {
+        this.script = script;
+    }
+
+
 }

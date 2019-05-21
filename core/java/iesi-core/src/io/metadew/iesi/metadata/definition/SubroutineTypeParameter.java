@@ -2,56 +2,56 @@ package io.metadew.iesi.metadata.definition;
 
 
 public class SubroutineTypeParameter {
-	
-	private String name;
-	private String description;
-	private String type;
-	private String mandatory = "N";
-	private String encrypted = "N";
-	
-	//Constructors
-	public SubroutineTypeParameter() {
-		
-	}
 
-	//Getters and Setters
-	public String getName() {
-		return name;
-	}
+    private String name;
+    private String description;
+    private String type;
+    private String mandatory = "N";
+    private String encrypted = "N";
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    //Constructors
+    public SubroutineTypeParameter() {
 
-	public String getDescription() {
-		return description;
-	}
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    //Getters and Setters
+    public String getName() {
+        return name;
+    }
 
-	public String getType() {
-		return type;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public void setType(String type) {
-		this.type = type;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public String getMandatory() {
-		return mandatory;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	public void setMandatory(String mandatory) {
-		this.mandatory = mandatory;
-	}
+    public String getType() {
+        return type;
+    }
 
-	public String getEncrypted() {
-		return encrypted;
-	}
+    public void setType(String type) {
+        this.type = type;
+    }
 
-	public void setEncrypted(String encrypted) {
-		this.encrypted = encrypted;
-	}	
+    public String getMandatory() {
+        return mandatory;
+    }
+
+    public void setMandatory(String mandatory) {
+        this.mandatory = mandatory;
+    }
+
+    public String getEncrypted() {
+        return encrypted;
+    }
+
+    public void setEncrypted(String encrypted) {
+        this.encrypted = encrypted;
+    }
 }

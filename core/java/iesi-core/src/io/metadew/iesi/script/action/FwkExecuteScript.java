@@ -101,60 +101,6 @@ public class FwkExecuteScript {
         this.getActionParameterOperationMap().put("paramFile", this.getParamFile());
     }
 
-    private boolean execute(DataType script, DataType version, DataType environment, DataType paramList, DataType paramFile) {
-        throw new RuntimeException(MessageFormat.format("Cannot execute cli.executeCommand for arguments '{0}-{1}-{2}-{3}-{4}'",
-                script.toString(), version.toString(), environment.toString(), paramList.toString(), paramFile.toString()));
-    }
-
-    private boolean execute(Text scriptName, Text version, Text environment, Text paramList, Text paramFile) {
-        // Add parameter allow recursive
-        // Add reuse options in a script
-
-        // Check on Running a script in a loop
-        if (this.getScriptExecution().getScript().getName().equalsIgnoreCase(scriptName.toString())) {
-            throw new RuntimeException("Not allowed to run the script recursively");
-        }
-
-        try {
-            ScriptConfiguration scriptConfiguration = new ScriptConfiguration(this.getFrameworkExecution());
-            // Script script = scriptConfiguration.getScript(this.getScriptName().getValue());
-            Script script = null;
-            if (version.toString().equalsIgnoreCase("")) {
-                script = scriptConfiguration.getScript(scriptName.toString()).get();
-            } else {
-                script = scriptConfiguration.getScript(scriptName.toString(),
-                        Long.parseLong(version.toString())).get();
-            }
-            ScriptExecution scriptExecution = new ScriptExecution(this.getFrameworkExecution(), script);
-            scriptExecution.initializeAsNonRootExecution(this.getExecutionControl(), this.getScriptExecution());
-
-            if (!paramList.toString().equalsIgnoreCase("")) {
-                scriptExecution.setParamList(paramList.toString());
-            }
-            if (!paramFile.toString().equalsIgnoreCase("")) {
-                scriptExecution.setParamFile(paramFile.toString());
-            }
-
-            scriptExecution.execute();
-
-            if (scriptExecution.getResult().equalsIgnoreCase(FrameworkStatus.SUCCESS.value())) {
-                this.getActionExecution().getActionControl().increaseSuccessCount();
-            } else if (scriptExecution.getResult()
-                    .equalsIgnoreCase(FrameworkStatus.WARNING.value())) {
-                this.getActionExecution().getActionControl().increaseSuccessCount();
-            } else if (scriptExecution.getResult()
-                    .equalsIgnoreCase(FrameworkStatus.ERROR.value())) {
-                this.getActionExecution().getActionControl().increaseErrorCount();
-            } else {
-                this.getActionExecution().getActionControl().increaseErrorCount();
-            }
-
-        } catch (Exception e) {
-            throw new RuntimeException("Issue setting runtime variables: " + e, e);
-        }
-        return true;
-    }
-
     public boolean execute() {
         try {
             String scriptName = convertScriptName(getScriptName().getValue());

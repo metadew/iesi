@@ -199,6 +199,7 @@ public class ExecutionRuntime {
 
     // Load lists
     public void loadParamList(String input) {
+        // No instructions allowed in parameter list
         String[] parts = input.split(",");
         for (int i = 0; i < parts.length; i++) {
             String innerpart = parts[i];

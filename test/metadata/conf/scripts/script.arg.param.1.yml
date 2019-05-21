@@ -1,0 +1,35 @@
+---
+type: "script"
+data:
+  name: "script.arg.param.1"
+  description: "test setting a parameter value as input parameter"
+  parameters: []
+  actions:
+  - number: 1
+    type: "fwk.outputMessage"
+    name: "action1"
+    description: "display parameter"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "message"
+      value : "param1 has value: #param1#"
+    - name: "onScreen"
+      value : "Y"
+  - number: 2
+    type: "eval.assertEquals"
+    name: "action2"
+    description: "verify parameter value"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "expected"
+      value : "value1"
+    - name: "actual"
+      value : "#param1#"

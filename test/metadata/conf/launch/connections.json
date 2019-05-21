@@ -1,0 +1,8 @@
+[{
+	"type": "LaunchItem",
+	"data": {
+		"script": "db.presto.1",
+		"description": "test db.presto connection with standard select query",
+		"parameterList": ""
+	}
+}]

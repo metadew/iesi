@@ -1,20 +1,5 @@
 package io.metadew.iesi.launch;
 
-import java.io.File;
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.List;
-
-import io.metadew.iesi.metadata_repository.MetadataRepository;
-import io.metadew.iesi.metadata_repository.configuration.MetadataRepositoryConfiguration;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-
 import io.metadew.iesi.common.config.ConfigFile;
 import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
@@ -23,6 +8,14 @@ import io.metadew.iesi.metadata.backup.BackupExecution;
 import io.metadew.iesi.metadata.definition.Context;
 import io.metadew.iesi.metadata.operation.MetadataRepositoryOperation;
 import io.metadew.iesi.metadata.restore.RestoreExecution;
+import io.metadew.iesi.metadata_repository.MetadataRepository;
+import io.metadew.iesi.metadata_repository.configuration.MetadataRepositoryConfiguration;
+import org.apache.commons.cli.*;
+
+import java.io.File;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The metadata launcher is entry point to launch all configuration management
@@ -38,7 +31,7 @@ public class MetadataLauncher {
     public static void main(String[] args) {
 
         Option oHelp = new Option("help", "print this message");
-		Option oIni = new Option("ini", true, "define the initialization file");
+        Option oIni = new Option("ini", true, "define the initialization file");
         Option oType = new Option("type", true, "define the type of metadata repository");
         Option oConfig = new Option("config", true, "define the metadata repository config");
         Option oBackup = new Option("backup", "create a backup of the entire metadata repository");
@@ -100,32 +93,32 @@ public class MetadataLauncher {
                 formatter.printHelp("[command]", options);
                 System.exit(0);
             }
-            
-			// Define the exit behaviour
-			boolean exit = true;
-			if (line.hasOption("exit")) {
-				switch (line.getOptionValue("exit").trim().toLowerCase()) {
-				case "y":
-				case "true":
-					exit = true;
-					break;
-				case "n":
-				case "false":
-					exit = false;
-					break;
-				default:
-					break;
-				}
-			}
 
-			// Define the ini file
-			FrameworkInitializationFile frameworkInitializationFile = new FrameworkInitializationFile();
-			if (line.hasOption("ini")) {
-				frameworkInitializationFile.setName(line.getOptionValue("ini"));
-				System.out.println("Option -ini (ini) value = " + frameworkInitializationFile.getName());
-			}
+            // Define the exit behaviour
+            boolean exit = true;
+            if (line.hasOption("exit")) {
+                switch (line.getOptionValue("exit").trim().toLowerCase()) {
+                    case "y":
+                    case "true":
+                        exit = true;
+                        break;
+                    case "n":
+                    case "false":
+                        exit = false;
+                        break;
+                    default:
+                        break;
+                }
+            }
 
-			Context context = new Context();
+            // Define the ini file
+            FrameworkInitializationFile frameworkInitializationFile = new FrameworkInitializationFile();
+            if (line.hasOption("ini")) {
+                frameworkInitializationFile.setName(line.getOptionValue("ini"));
+                System.out.println("Option -ini (ini) value = " + frameworkInitializationFile.getName());
+            }
+
+            Context context = new Context();
             context.setName("metadata");
             context.setScope("");
             FrameworkExecution frameworkExecution = new FrameworkExecution(new FrameworkExecutionContext(context), "owner", frameworkInitializationFile);
@@ -142,8 +135,7 @@ public class MetadataLauncher {
             }
 
 
-
-			if (line.hasOption("config")) {
+            if (line.hasOption("config")) {
                 String config = line.getOptionValue("config");
 
                 ConfigFile configFile = frameworkExecution.getFrameworkControl().getConfigFile("keyvalue",
@@ -323,8 +315,8 @@ public class MetadataLauncher {
             if (actionMatch) {
                 System.out.println();
                 System.out.println("metadata.launcher.end");
-            	endLauncher(0, exit);
-			} else {
+                endLauncher(0, exit);
+            } else {
                 System.out.println("No valid arguments have been provided, type -help for help.");
             }
 
@@ -337,12 +329,12 @@ public class MetadataLauncher {
 
     }
 
-	private static void endLauncher(int status, boolean exit) {
-		if (exit) {
-			System.exit(status);
-		}
-	}
-	
+    private static void endLauncher(int status, boolean exit) {
+        if (exit) {
+            System.exit(status);
+        }
+    }
+
     private static void writeHeaderMessage() {
         if (!actionMatch) {
             System.out.println("metadata.launcher.start");

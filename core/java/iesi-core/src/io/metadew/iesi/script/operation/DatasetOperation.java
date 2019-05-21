@@ -1,5 +1,13 @@
 package io.metadew.iesi.script.operation;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.metadew.iesi.common.json.JsonParsed;
+import io.metadew.iesi.common.json.JsonParsedItem;
+import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.metadata_repository.repository.database.connection.DatabaseConnection;
+import io.metadew.iesi.metadata_repository.repository.database.connection.SqliteDatabaseConnection;
+
+import javax.sql.rowset.CachedRowSet;
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -8,16 +16,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import javax.sql.rowset.CachedRowSet;
-
-import io.metadew.iesi.common.json.JsonParsed;
-import io.metadew.iesi.common.json.JsonParsedItem;
-import io.metadew.iesi.framework.execution.FrameworkExecution;
-import io.metadew.iesi.metadata_repository.repository.database.connection.DatabaseConnection;
-import io.metadew.iesi.metadata_repository.repository.database.connection.SqliteDatabaseConnection;
 
 /**
  * Operation to manage the datasets that have been defined in the script
@@ -30,7 +28,7 @@ public class DatasetOperation {
 
     private final String fieldKey = "field";
 
-    private final Pattern datasetItemPattern = Pattern.compile("(?<"+tableKey+">\\w+)\\.(?<"+fieldKey+">(\\w+$|\\w+\\.)+)");
+    private final Pattern datasetItemPattern = Pattern.compile("(?<" + tableKey + ">\\w+)\\.(?<" + fieldKey + ">(\\w+$|\\w+\\.)+)");
 
     private FrameworkExecution frameworkExecution;
 

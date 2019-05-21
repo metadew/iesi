@@ -1,11 +1,5 @@
 package io.metadew.iesi.script.action;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.text.MessageFormat;
-import java.util.HashMap;
-import java.util.Scanner;
-
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.Text;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
@@ -15,6 +9,12 @@ import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 import org.apache.logging.log4j.Level;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.text.MessageFormat;
+import java.util.HashMap;
+import java.util.Scanner;
 
 public class WfaGetConfirmation {
 
@@ -52,7 +52,7 @@ public class WfaGetConfirmation {
         this.setConfirmationType(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "type"));
         this.setConfirmationQuestion(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
-                        this.getActionExecution(), this.getActionExecution().getAction().getType(), "question"));
+                this.getActionExecution(), this.getActionExecution().getAction().getType(), "question"));
         this.setTimeoutInterval(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(), this.getActionExecution(),
                 this.getActionExecution().getAction().getType(), "timeout"));
 
@@ -80,25 +80,25 @@ public class WfaGetConfirmation {
             String type = convertType(getConfirmationType().getValue());
 
             // Run the action
-			boolean result = false;
-			switch (type.toLowerCase()) {
-			    case "y":
-				    result = this.getConfirmationYes(question);
-				    break;
-			    case "y/n":
-				    result = this.getConfirmationYesNo(question);
-				    break;
-			    case "auto":
-				    result = this.getConfirmationAuto(question);
-				    break;
-			}
+            boolean result = false;
+            switch (type.toLowerCase()) {
+                case "y":
+                    result = this.getConfirmationYes(question);
+                    break;
+                case "y/n":
+                    result = this.getConfirmationYesNo(question);
+                    break;
+                case "auto":
+                    result = this.getConfirmationAuto(question);
+                    break;
+            }
 
-			// Evaluate result
-			if (result) {
-				this.getActionExecution().getActionControl().increaseSuccessCount();
-			} else {
-				this.getActionExecution().getActionControl().increaseErrorCount();
-			}
+            // Evaluate result
+            if (result) {
+                this.getActionExecution().getActionControl().increaseSuccessCount();
+            } else {
+                this.getActionExecution().getActionControl().increaseErrorCount();
+            }
 
             return true;
         } catch (Exception e) {
@@ -150,104 +150,104 @@ public class WfaGetConfirmation {
     }
 
     private boolean getConfirmationYesNo(String question) {
-		// create a scanner so we can read the command-line input
-		@SuppressWarnings("resource")
-		Scanner scanner = new Scanner(System.in);
+        // create a scanner so we can read the command-line input
+        @SuppressWarnings("resource")
+        Scanner scanner = new Scanner(System.in);
 
-		// prompt
-		String prompt = null;
-		if (question != null && !question.isEmpty()) {
-			prompt = this.getConfirmationQuestion().getValue() + " Y/[N]/STOP ";
-		} else {
-			prompt = "Has the action been finished successfully? Y/[N]/STOP ";
-		}
-		System.out.print(prompt);
+        // prompt
+        String prompt = null;
+        if (question != null && !question.isEmpty()) {
+            prompt = this.getConfirmationQuestion().getValue() + " Y/[N]/STOP ";
+        } else {
+            prompt = "Has the action been finished successfully? Y/[N]/STOP ";
+        }
+        System.out.print(prompt);
 
-		// Get Input
-		boolean getInput = false;
-		String readInput = null;
-		while (!getInput) {
-			readInput = null;
-			if ((readInput = scanner.nextLine()).isEmpty()) {
-				readInput = "N";
-				getInput = true;
-			}
+        // Get Input
+        boolean getInput = false;
+        String readInput = null;
+        while (!getInput) {
+            readInput = null;
+            if ((readInput = scanner.nextLine()).isEmpty()) {
+                readInput = "N";
+                getInput = true;
+            }
 
-			if (!getInput) {
-				if (readInput.equalsIgnoreCase("Y") || readInput.equalsIgnoreCase("N")
-						|| readInput.toUpperCase().equalsIgnoreCase("STOP")) {
-					getInput = true;
-				} else {
-					System.out.print(prompt);
-				}
-			}
-		}
+            if (!getInput) {
+                if (readInput.equalsIgnoreCase("Y") || readInput.equalsIgnoreCase("N")
+                        || readInput.toUpperCase().equalsIgnoreCase("STOP")) {
+                    getInput = true;
+                } else {
+                    System.out.print(prompt);
+                }
+            }
+        }
 
-		// Log result
-		readInput = readInput.toUpperCase();
-		String userComment = "";
-		if (readInput.equalsIgnoreCase("N"))
-			userComment = this.getConfirmationComment();
-		this.getActionExecution().getActionControl().logOutput("confirmation", readInput);
+        // Log result
+        readInput = readInput.toUpperCase();
+        String userComment = "";
+        if (readInput.equalsIgnoreCase("N"))
+            userComment = this.getConfirmationComment();
+        this.getActionExecution().getActionControl().logOutput("confirmation", readInput);
 
-		if (readInput.equalsIgnoreCase("N"))
-			this.getActionExecution().getActionControl().logOutput("comment", userComment);
+        if (readInput.equalsIgnoreCase("N"))
+            this.getActionExecution().getActionControl().logOutput("comment", userComment);
 
-		// Stopping process on user request
-		if (readInput.equalsIgnoreCase("STOP")) {
-			this.getActionExecution().getAction().setErrorStop("Y");
-			return false;
-		} else if (readInput.equalsIgnoreCase("N")) {
-			return false;
-		} else {
-			return true;
-		}
+        // Stopping process on user request
+        if (readInput.equalsIgnoreCase("STOP")) {
+            this.getActionExecution().getAction().setErrorStop("Y");
+            return false;
+        } else if (readInput.equalsIgnoreCase("N")) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     private boolean getConfirmationYes(String question) {
-		// create a scanner so we can read the command-line input
-		@SuppressWarnings("resource")
-		Scanner scanner = new Scanner(System.in);
+        // create a scanner so we can read the command-line input
+        @SuppressWarnings("resource")
+        Scanner scanner = new Scanner(System.in);
 
-		// prompt
-		String prompt;
-		if (question != null && !question.isEmpty()) {
-			prompt = this.getConfirmationQuestion().getValue() + " [Y]/STOP ";
-		} else {
-			prompt = "Do you confirm to proceed? [Y]/STOP ";
-		}
-		System.out.print(prompt);
+        // prompt
+        String prompt;
+        if (question != null && !question.isEmpty()) {
+            prompt = this.getConfirmationQuestion().getValue() + " [Y]/STOP ";
+        } else {
+            prompt = "Do you confirm to proceed? [Y]/STOP ";
+        }
+        System.out.print(prompt);
 
-		// Get Input
-		boolean getInput = false;
-		String readInput = null;
-		while (!getInput) {
-			readInput = null;
-			if ((readInput = scanner.nextLine()).isEmpty()) {
-				readInput = "Y";
-				getInput = true;
-			}
+        // Get Input
+        boolean getInput = false;
+        String readInput = null;
+        while (!getInput) {
+            readInput = null;
+            if ((readInput = scanner.nextLine()).isEmpty()) {
+                readInput = "Y";
+                getInput = true;
+            }
 
-			if (!getInput) {
-				if (readInput.equalsIgnoreCase("y") || readInput.equalsIgnoreCase("stop")) {
-					getInput = true;
-				} else {
-					System.out.print(prompt);
-				}
-			}
-		}
+            if (!getInput) {
+                if (readInput.equalsIgnoreCase("y") || readInput.equalsIgnoreCase("stop")) {
+                    getInput = true;
+                } else {
+                    System.out.print(prompt);
+                }
+            }
+        }
 
-		// Log result
-		readInput = readInput.toUpperCase();
-		this.getActionExecution().getActionControl().logOutput("confirmation", readInput);
+        // Log result
+        readInput = readInput.toUpperCase();
+        this.getActionExecution().getActionControl().logOutput("confirmation", readInput);
 
-		// Stopping process on user request
-		if (readInput.equalsIgnoreCase("STOP")) {
-			this.getActionExecution().getAction().setErrorStop("Y");
-			return false;
-		} else {
-			return true;
-		}
+        // Stopping process on user request
+        if (readInput.equalsIgnoreCase("STOP")) {
+            this.getActionExecution().getAction().setErrorStop("Y");
+            return false;
+        } else {
+            return true;
+        }
     }
 
     public String getConfirmationComment() {
@@ -280,22 +280,22 @@ public class WfaGetConfirmation {
     }
 
     private boolean getConfirmationAuto(String question) {
-		// prompt
-		String prompt = null;
-		if (question != null && !question.isEmpty()) {
-			prompt = "AUTO-CONFIRMATION: " + this.getConfirmationQuestion().getValue();
-		} else {
-			prompt = "AUTO-CONFIRMATION: The action has been confirmed automatically!";
-		}
-		System.out.print(prompt);
-		System.out.println("");
+        // prompt
+        String prompt = null;
+        if (question != null && !question.isEmpty()) {
+            prompt = "AUTO-CONFIRMATION: " + this.getConfirmationQuestion().getValue();
+        } else {
+            prompt = "AUTO-CONFIRMATION: The action has been confirmed automatically!";
+        }
+        System.out.print(prompt);
+        System.out.println("");
 
-		String readInput = "Y";
+        String readInput = "Y";
 
-		// Log result
-		readInput = readInput.toUpperCase();
-		this.getActionExecution().getActionControl().logOutput("confirmation", readInput);
-		return true;
+        // Log result
+        readInput = readInput.toUpperCase();
+        this.getActionExecution().getActionControl().logOutput("confirmation", readInput);
+        return true;
     }
 
     // Getters and Setters

@@ -1,10 +1,5 @@
 package io.metadew.iesi.script.action;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.text.MessageFormat;
-import java.util.HashMap;
-
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.Text;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
@@ -17,140 +12,144 @@ import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 import org.apache.logging.log4j.Level;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.text.MessageFormat;
+import java.util.HashMap;
+
 /**
  * Action type to verify if a connection is alive or not.
- * 
- * @author peter.billen
  *
+ * @author peter.billen
  */
 public class ConIsAlive {
 
-	private ActionExecution actionExecution;
-	private FrameworkExecution frameworkExecution;
-	private ExecutionControl executionControl;
+    private ActionExecution actionExecution;
+    private FrameworkExecution frameworkExecution;
+    private ExecutionControl executionControl;
 
-	// Parameters
-	private ActionParameterOperation connectionName;
-	private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
+    // Parameters
+    private ActionParameterOperation connectionName;
+    private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
 
-	// Constructors
-	public ConIsAlive() {
+    // Constructors
+    public ConIsAlive() {
 
-	}
+    }
 
-	public ConIsAlive(FrameworkExecution frameworkExecution, ExecutionControl executionControl, ScriptExecution scriptExecution,
-			ActionExecution actionExecution) {
-		this.init(frameworkExecution, executionControl, scriptExecution, actionExecution);
-	}
+    public ConIsAlive(FrameworkExecution frameworkExecution, ExecutionControl executionControl, ScriptExecution scriptExecution,
+                      ActionExecution actionExecution) {
+        this.init(frameworkExecution, executionControl, scriptExecution, actionExecution);
+    }
 
-	public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl, ScriptExecution scriptExecution,
-			ActionExecution actionExecution) {
-		this.setFrameworkExecution(frameworkExecution);
-		this.setExecutionControl(executionControl);
-		this.setActionExecution(actionExecution);
-		this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
-	}
-	
-	public void prepare() {
-		// Reset Parameters
-		this.setConnectionName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
-				this.getActionExecution(), this.getActionExecution().getAction().getType(), "connection"));
+    public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl, ScriptExecution scriptExecution,
+                     ActionExecution actionExecution) {
+        this.setFrameworkExecution(frameworkExecution);
+        this.setExecutionControl(executionControl);
+        this.setActionExecution(actionExecution);
+        this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
+    }
 
-		// Get Parameters
-		for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-			if (actionParameter.getName().equalsIgnoreCase("connection")) {
-				this.getConnectionName().setInputValue(actionParameter.getValue());
-			}
-		}
+    public void prepare() {
+        // Reset Parameters
+        this.setConnectionName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+                this.getActionExecution(), this.getActionExecution().getAction().getType(), "connection"));
 
-		// Create parameter list
-		this.getActionParameterOperationMap().put("connection", this.getConnectionName());
-	}
+        // Get Parameters
+        for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
+            if (actionParameter.getName().equalsIgnoreCase("connection")) {
+                this.getConnectionName().setInputValue(actionParameter.getValue());
+            }
+        }
 
-	private boolean execute(String connectionName) {
-		// Get Connection
-		ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution());
-		Connection connection = connectionConfiguration.getConnection(connectionName,
-				this.getExecutionControl().getEnvName()).get();
+        // Create parameter list
+        this.getActionParameterOperationMap().put("connection", this.getConnectionName());
+    }
 
-		try {
-			if (connection.getType().equalsIgnoreCase("")) {
-			}
-			this.getActionExecution().getActionControl().increaseSuccessCount();
-		} catch (Exception e) {
-			throw new RuntimeException("tbd " + e, e);
-		}
-		return true;
-	}
+    private boolean execute(String connectionName) {
+        // Get Connection
+        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution());
+        Connection connection = connectionConfiguration.getConnection(connectionName,
+                this.getExecutionControl().getEnvName()).get();
 
-	//
-	public boolean execute() {
-		try {
-			String connectionName = convertConnectionName(getConnectionName().getValue());
-			return execute(connectionName);
-		} catch (Exception e) {
-			StringWriter StackTrace = new StringWriter();
-			e.printStackTrace(new PrintWriter(StackTrace));
+        try {
+            if (connection.getType().equalsIgnoreCase("")) {
+            }
+            this.getActionExecution().getActionControl().increaseSuccessCount();
+        } catch (Exception e) {
+            throw new RuntimeException("tbd " + e, e);
+        }
+        return true;
+    }
 
-			this.getActionExecution().getActionControl().increaseErrorCount();
+    //
+    public boolean execute() {
+        try {
+            String connectionName = convertConnectionName(getConnectionName().getValue());
+            return execute(connectionName);
+        } catch (Exception e) {
+            StringWriter StackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(StackTrace));
 
-			this.getActionExecution().getActionControl().logOutput("exception",e.getMessage());
-			this.getActionExecution().getActionControl().logOutput("stacktrace",StackTrace.toString());
+            this.getActionExecution().getActionControl().increaseErrorCount();
 
-			return false;
-		}
+            this.getActionExecution().getActionControl().logOutput("exception", e.getMessage());
+            this.getActionExecution().getActionControl().logOutput("stacktrace", StackTrace.toString());
 
-	}
+            return false;
+        }
 
-	private String convertConnectionName(DataType connectionName) {
-		if (connectionName instanceof Text) {
-			return connectionName.toString();
-		} else {
-			frameworkExecution.getFrameworkLog().log(MessageFormat.format("con.isAlive does not accept {0} as type for connection name",
-					connectionName.getClass()), Level.WARN);
-			return connectionName.toString();
-		}
-	}
+    }
 
-	// Getters and Setters
-	public FrameworkExecution getFrameworkExecution() {
-		return frameworkExecution;
-	}
+    private String convertConnectionName(DataType connectionName) {
+        if (connectionName instanceof Text) {
+            return connectionName.toString();
+        } else {
+            frameworkExecution.getFrameworkLog().log(MessageFormat.format("con.isAlive does not accept {0} as type for connection name",
+                    connectionName.getClass()), Level.WARN);
+            return connectionName.toString();
+        }
+    }
 
-	public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-		this.frameworkExecution = frameworkExecution;
-	}
+    // Getters and Setters
+    public FrameworkExecution getFrameworkExecution() {
+        return frameworkExecution;
+    }
 
-	public ExecutionControl getExecutionControl() {
-		return executionControl;
-	}
+    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
+        this.frameworkExecution = frameworkExecution;
+    }
 
-	public void setExecutionControl(ExecutionControl executionControl) {
-		this.executionControl = executionControl;
-	}
+    public ExecutionControl getExecutionControl() {
+        return executionControl;
+    }
 
-	public ActionExecution getActionExecution() {
-		return actionExecution;
-	}
+    public void setExecutionControl(ExecutionControl executionControl) {
+        this.executionControl = executionControl;
+    }
 
-	public void setActionExecution(ActionExecution actionExecution) {
-		this.actionExecution = actionExecution;
-	}
+    public ActionExecution getActionExecution() {
+        return actionExecution;
+    }
 
-	public ActionParameterOperation getConnectionName() {
-		return connectionName;
-	}
+    public void setActionExecution(ActionExecution actionExecution) {
+        this.actionExecution = actionExecution;
+    }
 
-	public void setConnectionName(ActionParameterOperation connectionName) {
-		this.connectionName = connectionName;
-	}
+    public ActionParameterOperation getConnectionName() {
+        return connectionName;
+    }
 
-	public HashMap<String, ActionParameterOperation> getActionParameterOperationMap() {
-		return actionParameterOperationMap;
-	}
+    public void setConnectionName(ActionParameterOperation connectionName) {
+        this.connectionName = connectionName;
+    }
 
-	public void setActionParameterOperationMap(HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
-		this.actionParameterOperationMap = actionParameterOperationMap;
-	}
+    public HashMap<String, ActionParameterOperation> getActionParameterOperationMap() {
+        return actionParameterOperationMap;
+    }
+
+    public void setActionParameterOperationMap(HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
+        this.actionParameterOperationMap = actionParameterOperationMap;
+    }
 
 }

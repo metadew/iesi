@@ -1,141 +1,139 @@
 package io.metadew.iesi.data.generation.execution;
 
-import org.apache.logging.log4j.Level;
-
-import io.metadew.iesi.data.generation.execution.GenerationRuntime;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.Generation;
 import io.metadew.iesi.metadata.definition.GenerationRule;
 import io.metadew.iesi.script.execution.ExecutionControl;
+import org.apache.logging.log4j.Level;
 
 public class GenerationExecution {
 
-	private Generation generation;
-	private GenerationOutputExecution generationOutputExecution;
-	private FrameworkExecution frameworkExecution;
-	private ExecutionControl executionControl;
-	private Long processId;
-	private GenerationRuntime generationRuntime;
-	private long numberOfRecords = 0;
-	private String paramList = "";
-	private String paramFile = "";
+    private Generation generation;
+    private GenerationOutputExecution generationOutputExecution;
+    private FrameworkExecution frameworkExecution;
+    private ExecutionControl executionControl;
+    private Long processId;
+    private GenerationRuntime generationRuntime;
+    private long numberOfRecords = 0;
+    private String paramList = "";
+    private String paramFile = "";
 
-	// Constructors
-	public GenerationExecution(FrameworkExecution frameworkExecution, Generation generation) {
-		this.setGeneration(generation);
-		this.setFrameworkExecution(frameworkExecution);
-		this.setExecutionControl(new ExecutionControl(this.getFrameworkExecution()));
-	}
-	
-	// Methods
-	public void execute(String generationOutputName) {
-		this.getFrameworkExecution().getFrameworkLog()
-				.log("generation.name=" + this.getGeneration().getName(), Level.INFO);
+    // Constructors
+    public GenerationExecution(FrameworkExecution frameworkExecution, Generation generation) {
+        this.setGeneration(generation);
+        this.setFrameworkExecution(frameworkExecution);
+        this.setExecutionControl(new ExecutionControl(this.getFrameworkExecution()));
+    }
 
-		// Log Start
-		//this.getExecutionControl().logStart(this);
-		this.setProcessId(this.getExecutionControl().getProcessId());
-		this.setGenerationRuntime(new GenerationRuntime(this.getFrameworkExecution(), this.getExecutionControl()));
-		this.getGenerationRuntime().addGeneration(this.getGeneration(), this.getNumberOfRecords());
-		this.setGenerationOutputExecution(new GenerationOutputExecution(this.getFrameworkExecution(), this.getExecutionControl(), this, generationOutputName));
+    // Methods
+    public void execute(String generationOutputName) {
+        this.getFrameworkExecution().getFrameworkLog()
+                .log("generation.name=" + this.getGeneration().getName(), Level.INFO);
 
-		// Parameters
-		// ParamList has priority of ParamFile
-		if (!this.getParamFile().trim().equalsIgnoreCase("")) {
-			this.getExecutionControl().getExecutionRuntime().loadParamFiles(this.getParamFile());
-		}
-		if (!this.getParamList().trim().equalsIgnoreCase("")) {
-			this.getExecutionControl().getExecutionRuntime().loadParamList(this.getParamList());
-		}
-		
-		// Loop through the generation rules
-		for (GenerationRule generationRule : this.getGeneration().getRules()) {
-			GenerationRuleExecution generationRuleExecution = new GenerationRuleExecution(this.getFrameworkExecution(), this.getExecutionControl(),
-					this, generationRule);
-			generationRuleExecution.execute();
-		}
-		
-		// Generate output
-		this.getGenerationOutputExecution().execute(); 
+        // Log Start
+        //this.getExecutionControl().logStart(this);
+        this.setProcessId(this.getExecutionControl().getProcessId());
+        this.setGenerationRuntime(new GenerationRuntime(this.getFrameworkExecution(), this.getExecutionControl()));
+        this.getGenerationRuntime().addGeneration(this.getGeneration(), this.getNumberOfRecords());
+        this.setGenerationOutputExecution(new GenerationOutputExecution(this.getFrameworkExecution(), this.getExecutionControl(), this, generationOutputName));
 
-		// Log End
-		//this.getExecutionControl().logEnd(this);
+        // Parameters
+        // ParamList has priority of ParamFile
+        if (!this.getParamFile().trim().equalsIgnoreCase("")) {
+            this.getExecutionControl().getExecutionRuntime().loadParamFiles(this.getParamFile());
+        }
+        if (!this.getParamList().trim().equalsIgnoreCase("")) {
+            this.getExecutionControl().getExecutionRuntime().loadParamList(this.getParamList());
+        }
 
-		// Exit the execution
-		// this.getEoControl().endExecution();
-	}
+        // Loop through the generation rules
+        for (GenerationRule generationRule : this.getGeneration().getRules()) {
+            GenerationRuleExecution generationRuleExecution = new GenerationRuleExecution(this.getFrameworkExecution(), this.getExecutionControl(),
+                    this, generationRule);
+            generationRuleExecution.execute();
+        }
 
-	// Getters and Setters
-	public Long getProcessId() {
-		return processId;
-	}
+        // Generate output
+        this.getGenerationOutputExecution().execute();
 
-	public void setProcessId(Long processId) {
-		this.processId = processId;
-	}
+        // Log End
+        //this.getExecutionControl().logEnd(this);
 
-	public long getNumberOfRecords() {
-		return numberOfRecords;
-	}
+        // Exit the execution
+        // this.getEoControl().endExecution();
+    }
 
-	public void setNumberOfRecords(long numberOfRecords) {
-		this.numberOfRecords = numberOfRecords;
-	}
+    // Getters and Setters
+    public Long getProcessId() {
+        return processId;
+    }
 
-	public String getParamList() {
-		return paramList;
-	}
+    public void setProcessId(Long processId) {
+        this.processId = processId;
+    }
 
-	public void setParamList(String paramList) {
-		this.paramList = paramList;
-	}
+    public long getNumberOfRecords() {
+        return numberOfRecords;
+    }
 
-	public String getParamFile() {
-		return paramFile;
-	}
+    public void setNumberOfRecords(long numberOfRecords) {
+        this.numberOfRecords = numberOfRecords;
+    }
 
-	public void setParamFile(String paramFile) {
-		this.paramFile = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(paramFile);
-	}
+    public String getParamList() {
+        return paramList;
+    }
 
-	public GenerationRuntime getGenerationRuntime() {
-		return generationRuntime;
-	}
+    public void setParamList(String paramList) {
+        this.paramList = paramList;
+    }
 
-	public void setGenerationRuntime(GenerationRuntime generationRuntime) {
-		this.generationRuntime = generationRuntime;
-	}
+    public String getParamFile() {
+        return paramFile;
+    }
 
-	public ExecutionControl getExecutionControl() {
-		return executionControl;
-	}
+    public void setParamFile(String paramFile) {
+        this.paramFile = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(paramFile);
+    }
 
-	public void setExecutionControl(ExecutionControl executionControl) {
-		this.executionControl = executionControl;
-	}
+    public GenerationRuntime getGenerationRuntime() {
+        return generationRuntime;
+    }
 
-	public GenerationOutputExecution getGenerationOutputExecution() {
-		return generationOutputExecution;
-	}
+    public void setGenerationRuntime(GenerationRuntime generationRuntime) {
+        this.generationRuntime = generationRuntime;
+    }
 
-	public void setGenerationOutputExecution(GenerationOutputExecution generationOutputExecution) {
-		this.generationOutputExecution = generationOutputExecution;
-	}
+    public ExecutionControl getExecutionControl() {
+        return executionControl;
+    }
 
-	public Generation getGeneration() {
-		return generation;
-	}
+    public void setExecutionControl(ExecutionControl executionControl) {
+        this.executionControl = executionControl;
+    }
 
-	public void setGeneration(Generation generation) {
-		this.generation = generation;
-	}
+    public GenerationOutputExecution getGenerationOutputExecution() {
+        return generationOutputExecution;
+    }
 
-	public FrameworkExecution getFrameworkExecution() {
-		return frameworkExecution;
-	}
+    public void setGenerationOutputExecution(GenerationOutputExecution generationOutputExecution) {
+        this.generationOutputExecution = generationOutputExecution;
+    }
 
-	public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-		this.frameworkExecution = frameworkExecution;
-	}
+    public Generation getGeneration() {
+        return generation;
+    }
+
+    public void setGeneration(Generation generation) {
+        this.generation = generation;
+    }
+
+    public FrameworkExecution getFrameworkExecution() {
+        return frameworkExecution;
+    }
+
+    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
+        this.frameworkExecution = frameworkExecution;
+    }
 
 }

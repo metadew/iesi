@@ -110,7 +110,7 @@ public class NetezzaRepositoryConfiguration extends RepositoryConfiguration {
             NetezzaDatabase netezzaDatabase = new NetezzaDatabase(netezzaDatabaseConnection, getSchema().orElse(""));
             databases.put("reader", netezzaDatabase);
         });
-        
+
         return new Repository(databases);
     }
 

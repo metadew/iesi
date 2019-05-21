@@ -6,25 +6,21 @@ import io.metadew.iesi.script.execution.instruction.data.DataInstruction;
 /**
  * @author robbe.berrevoets
  */
-public class PersonEmail implements DataInstruction
-{
+public class PersonEmail implements DataInstruction {
 
-	private final GenerationObjectExecution generationObjectExecution;
+    private final GenerationObjectExecution generationObjectExecution;
 
-	public PersonEmail(GenerationObjectExecution generationObjectExecution)
-	{
-		this.generationObjectExecution = generationObjectExecution;
-	}
+    public PersonEmail(GenerationObjectExecution generationObjectExecution) {
+        this.generationObjectExecution = generationObjectExecution;
+    }
 
-	@Override
-	public String generateOutput(String parameters)
-	{
-		return generationObjectExecution.getInternet().email();
-	}
+    @Override
+    public String generateOutput(String parameters) {
+        return generationObjectExecution.getInternet().email();
+    }
 
-	@Override
-	public String getKeyword()
-	{
-		return "person.email";
-	}
+    @Override
+    public String getKeyword() {
+        return "person.email";
+    }
 }

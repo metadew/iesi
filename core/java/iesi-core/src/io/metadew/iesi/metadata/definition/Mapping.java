@@ -4,66 +4,66 @@ import java.util.List;
 
 public class Mapping {
 
-	private long id;
-	private String type = "mapping";
-	private String name;
-	private String description;
-	private MappingVersion version;
-	private List<Transformation> transformations;
+    private long id;
+    private String type = "mapping";
+    private String name;
+    private String description;
+    private MappingVersion version;
+    private List<Transformation> transformations;
 
-	// Constructors
-	public Mapping() {
-		
-	}
+    // Constructors
+    public Mapping() {
 
-	// Getters and Setters
-	public String getName() {
-		return name;
-	}
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    // Getters and Setters
+    public String getName() {
+        return name;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public String getType() {
-		return type;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	public void setType(String type) {
-		this.type = type;
-	}
+    public String getType() {
+        return type;
+    }
 
-	public MappingVersion getVersion() {
-		return version;
-	}
+    public void setType(String type) {
+        this.type = type;
+    }
 
-	public void setVersion(MappingVersion version) {
-		this.version = version;
-	}
+    public MappingVersion getVersion() {
+        return version;
+    }
 
-	public long getId() {
-		return id;
-	}
+    public void setVersion(MappingVersion version) {
+        this.version = version;
+    }
 
-	public void setId(long id) {
-		this.id = id;
-	}
+    public long getId() {
+        return id;
+    }
 
-	public List<Transformation> getTransformations() {
-		return transformations;
-	}
+    public void setId(long id) {
+        this.id = id;
+    }
 
-	public void setTransformations(List<Transformation> transformations) {
-		this.transformations = transformations;
-	}
+    public List<Transformation> getTransformations() {
+        return transformations;
+    }
+
+    public void setTransformations(List<Transformation> transformations) {
+        this.transformations = transformations;
+    }
 
 
 }

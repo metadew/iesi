@@ -3,67 +3,67 @@ package io.metadew.iesi.metadata.definition;
 import java.util.List;
 
 public class Dataset {
-	
-	private long id;
-	private String name;
-	private String type;
-	private String description;
-	private List<DatasetParameter> parameters;
-	private List<DatasetInstance> instances;
-	
-	//Constructors
-	public Dataset() {
-		
-	}
 
-	//Getters and Setters
-	public String getName() {
-		return name;
-	}
+    private long id;
+    private String name;
+    private String type;
+    private String description;
+    private List<DatasetParameter> parameters;
+    private List<DatasetInstance> instances;
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    //Constructors
+    public Dataset() {
 
-	public String getDescription() {
-		return description;
-	}
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
-	
-	public String getType() {
-		return type;
-	}
+    //Getters and Setters
+    public String getName() {
+        return name;
+    }
 
-	public void setType(String type) {
-		this.type = type;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public long getId() {
-		return id;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public void setId(long id) {
-		this.id = id;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	public List<DatasetParameter> getParameters() {
-		return parameters;
-	}
+    public String getType() {
+        return type;
+    }
 
-	public void setParameters(List<DatasetParameter> parameters) {
-		this.parameters = parameters;
-	}
+    public void setType(String type) {
+        this.type = type;
+    }
 
-	public List<DatasetInstance> getInstances() {
-		return instances;
-	}
+    public long getId() {
+        return id;
+    }
 
-	public void setInstances(List<DatasetInstance> instances) {
-		this.instances = instances;
-	}
-		
-	
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public List<DatasetParameter> getParameters() {
+        return parameters;
+    }
+
+    public void setParameters(List<DatasetParameter> parameters) {
+        this.parameters = parameters;
+    }
+
+    public List<DatasetInstance> getInstances() {
+        return instances;
+    }
+
+    public void setInstances(List<DatasetInstance> instances) {
+        this.instances = instances;
+    }
+
+
 }

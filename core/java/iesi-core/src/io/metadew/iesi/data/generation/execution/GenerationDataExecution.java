@@ -1,31 +1,10 @@
 package io.metadew.iesi.data.generation.execution;
 
+import io.metadew.iesi.data.generation.configuration.*;
+import io.metadew.iesi.data.generation.tools.GenerationTools;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import io.metadew.iesi.data.generation.configuration.Address;
-import io.metadew.iesi.data.generation.configuration.App;
-import io.metadew.iesi.data.generation.configuration.Avatar;
-import io.metadew.iesi.data.generation.configuration.Book;
-import io.metadew.iesi.data.generation.configuration.Bool;
-import io.metadew.iesi.data.generation.configuration.Color;
-import io.metadew.iesi.data.generation.configuration.Company;
-import io.metadew.iesi.data.generation.configuration.CreditCard;
-import io.metadew.iesi.data.generation.configuration.Date;
-import io.metadew.iesi.data.generation.configuration.Internet;
-import io.metadew.iesi.data.generation.configuration.Lorem;
-import io.metadew.iesi.data.generation.configuration.Motd;
-import io.metadew.iesi.data.generation.configuration.Name;
-import io.metadew.iesi.data.generation.configuration.Pattern;
-import io.metadew.iesi.data.generation.configuration.PhoneNumber;
-import io.metadew.iesi.data.generation.configuration.Placeholdit;
-import io.metadew.iesi.data.generation.configuration.Retail;
-import io.metadew.iesi.data.generation.configuration.SlackEmoji;
-import io.metadew.iesi.data.generation.configuration.Team;
-import io.metadew.iesi.data.generation.configuration.Time;
-import io.metadew.iesi.data.generation.configuration.Timestamp;
-import io.metadew.iesi.data.generation.configuration.University;
-import io.metadew.iesi.data.generation.tools.GenerationTools;
 
 public class GenerationDataExecution {
 
@@ -45,23 +24,23 @@ public class GenerationDataExecution {
                 new Book(this),
                 new Bool(this),
                 new Color(this),
-        		new Company(this),
-        		new CreditCard(this),
-        		new Date(this),
-        		new Internet(this),
-        		new Lorem(this),
-        		new Motd(this),
-        		new Name(this),
-        		new io.metadew.iesi.data.generation.configuration.Number (this),
-        		new Pattern(this),
-        		new PhoneNumber(this),
-        		new Placeholdit(this),
-        		new Retail(this),
-        		new SlackEmoji(this),
-        		new Time(this),
-        		new Timestamp(this),
-        		new Team(this),
-        		new University(this),
+                new Company(this),
+                new CreditCard(this),
+                new Date(this),
+                new Internet(this),
+                new Lorem(this),
+                new Motd(this),
+                new Name(this),
+                new io.metadew.iesi.data.generation.configuration.Number(this),
+                new Pattern(this),
+                new PhoneNumber(this),
+                new Placeholdit(this),
+                new Retail(this),
+                new SlackEmoji(this),
+                new Time(this),
+                new Timestamp(this),
+                new Team(this),
+                new University(this),
         };
 
         this.executions = new HashMap<>(componentsList.length);
@@ -73,7 +52,7 @@ public class GenerationDataExecution {
     }
 
     @SuppressWarnings("unchecked")
-	public <K extends GenerationComponentExecution> K getComponent(Class<K> componentClass) {
+    public <K extends GenerationComponentExecution> K getComponent(Class<K> componentClass) {
         String componentKey = componentClass.getSimpleName();
         return (K) getExecutionByKey(componentKey);
     }
@@ -90,7 +69,7 @@ public class GenerationDataExecution {
     }
 
     @SuppressWarnings("unchecked")
-	public Map<String, Object> getComponentData(String componentKey) {
+    public Map<String, Object> getComponentData(String componentKey) {
         Map<String, Object> component = (Map<String, Object>) get(componentKey);
         if (component == null) {
             throw new IllegalArgumentException("Unsupported component '" + componentKey + "'");
@@ -104,10 +83,10 @@ public class GenerationDataExecution {
     }
 
     public GenerationTools getGenerationTools() {
-		return generationTools;
-	}
+        return generationTools;
+    }
 
-	public void setGenerationTools(GenerationTools generationTools) {
-		this.generationTools = generationTools;
-	}
+    public void setGenerationTools(GenerationTools generationTools) {
+        this.generationTools = generationTools;
+    }
 }

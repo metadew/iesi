@@ -1,19 +1,18 @@
 package io.metadew.iesi.metadata.configuration;
 
+import io.metadew.iesi.connection.tools.SQLTools;
+import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.metadata.definition.Action;
+import io.metadew.iesi.metadata.definition.ActionParameter;
+import org.apache.logging.log4j.Level;
+
+import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import javax.sql.rowset.CachedRowSet;
-
-import io.metadew.iesi.connection.tools.SQLTools;
-import io.metadew.iesi.framework.execution.FrameworkExecution;
-import io.metadew.iesi.metadata.definition.Action;
-import io.metadew.iesi.metadata.definition.ActionParameter;
-import org.apache.logging.log4j.Level;
 
 public class ActionConfiguration {
 
@@ -97,7 +96,7 @@ public class ActionConfiguration {
 
     public Optional<Action> getAction(long actionId) {
         frameworkExecution.getFrameworkLog().log(MessageFormat.format(
-            "Fetching action {0}.", actionId), Level.DEBUG);
+                "Fetching action {0}.", actionId), Level.DEBUG);
         String queryAction = "select SCRIPT_ID, SCRIPT_VRS_NB, ACTION_ID, ACTION_NB, ACTION_TYP_NM, ACTION_NM, ACTION_DSC, COMP_NM, ITERATION_VAL, CONDITION_VAL, EXP_ERR_FL, STOP_ERR_FL from "
                 + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository()
                 .getTableNameByLabel("Actions")

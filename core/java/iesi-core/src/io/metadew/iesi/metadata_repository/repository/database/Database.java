@@ -27,7 +27,7 @@ public abstract class Database {
     public abstract String getAllTablesQuery(String pattern);
 
     @SuppressWarnings("unused")
-	public List<String> getAllTables(String pattern) {
+    public List<String> getAllTables(String pattern) {
         List<String> tables = new LinkedList<>();
         CachedRowSet crsCleanInventory = executeQuery(getAllTablesQuery(pattern));
         try {
@@ -56,7 +56,7 @@ public abstract class Database {
     }
 
     public void dropAllTables(String pattern, FrameworkLog frameworkLog) {
-        for (String table : getAllTables(pattern)){
+        for (String table : getAllTables(pattern)) {
             dropTable(table, frameworkLog);
         }
     }

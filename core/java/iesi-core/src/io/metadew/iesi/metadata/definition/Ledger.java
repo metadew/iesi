@@ -4,65 +4,65 @@ import java.util.List;
 
 public class Ledger {
 
-	private long id;
-	private String type = "default";
-	private String name;
-	private String description;
-	private List<LedgerParameter> parameters;
-	private List<LedgerItem> items;
+    private long id;
+    private String type = "default";
+    private String name;
+    private String description;
+    private List<LedgerParameter> parameters;
+    private List<LedgerItem> items;
 
-	// Constructors
-	public Ledger() {
-		
-	}
+    // Constructors
+    public Ledger() {
 
-	// Getters and Setters
-	public String getName() {
-		return name;
-	}
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    // Getters and Setters
+    public String getName() {
+        return name;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public long getId() {
-		return id;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	public void setId(long id) {
-		this.id = id;
-	}
+    public long getId() {
+        return id;
+    }
 
-	public String getType() {
-		return type;
-	}
+    public void setId(long id) {
+        this.id = id;
+    }
 
-	public void setType(String type) {
-		this.type = type;
-	}
+    public String getType() {
+        return type;
+    }
 
-	public List<LedgerItem> getItems() {
-		return items;
-	}
+    public void setType(String type) {
+        this.type = type;
+    }
 
-	public void setItems(List<LedgerItem> items) {
-		this.items = items;
-	}
+    public List<LedgerItem> getItems() {
+        return items;
+    }
 
-	public List<LedgerParameter> getParameters() {
-		return parameters;
-	}
+    public void setItems(List<LedgerItem> items) {
+        this.items = items;
+    }
 
-	public void setParameters(List<LedgerParameter> parameters) {
-		this.parameters = parameters;
-	}
+    public List<LedgerParameter> getParameters() {
+        return parameters;
+    }
+
+    public void setParameters(List<LedgerParameter> parameters) {
+        this.parameters = parameters;
+    }
 
 }

@@ -6,13 +6,13 @@ import nl.flotsam.xeger.Xeger;
 
 public class Pattern extends GenerationComponentExecution {
 
-	public Pattern(GenerationDataExecution execution) {
-		super(execution);
-	}
+    public Pattern(GenerationDataExecution execution) {
+        super(execution);
+    }
 
-	public String nextValue(String pattern) {
-		Xeger generator = new Xeger(pattern);
-		return generator.generate();
-	}
+    public String nextValue(String pattern) {
+        Xeger generator = new Xeger(pattern);
+        return generator.generate();
+    }
 
 }

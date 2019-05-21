@@ -1,21 +1,19 @@
 package io.metadew.iesi.script.execution;
 
-import java.lang.reflect.Constructor;
-import java.util.HashMap;
-
-import org.apache.logging.log4j.Level;
-
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.framework.operation.ClassOperation;
 import io.metadew.iesi.metadata.definition.Action;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 import io.metadew.iesi.script.operation.ComponentAttributeOperation;
 import io.metadew.iesi.script.operation.ConditionOperation;
+import org.apache.logging.log4j.Level;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 
 public class ActionExecution {
 

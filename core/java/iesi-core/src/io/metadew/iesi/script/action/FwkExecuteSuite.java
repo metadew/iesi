@@ -1,138 +1,123 @@
 package io.metadew.iesi.script.action;
 
-import java.io.File;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-import org.apache.commons.io.FilenameUtils;
-
-import io.metadew.iesi.connection.ArtifactoryConnection;
-import io.metadew.iesi.connection.FileConnection;
-import io.metadew.iesi.connection.operation.ConnectionOperation;
-import io.metadew.iesi.connection.tools.CompressionTools;
-import io.metadew.iesi.connection.tools.FolderTools;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
-import io.metadew.iesi.metadata.configuration.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.ActionParameter;
-import io.metadew.iesi.metadata.definition.Connection;
-import io.metadew.iesi.metadata.definition.Script;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
-import io.metadew.iesi.script.operation.ActionSelectOperation;
-import io.metadew.iesi.script.operation.JsonInputOperation;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.HashMap;
 
 public class FwkExecuteSuite {
 
-	private ActionExecution actionExecution;
-	private ScriptExecution scriptExecution;
-	private FrameworkExecution frameworkExecution;
-	private ExecutionControl executionControl;
+    private ActionExecution actionExecution;
+    private ScriptExecution scriptExecution;
+    private FrameworkExecution frameworkExecution;
+    private ExecutionControl executionControl;
 
-	// Parameters
-	private ActionParameterOperation componentName;
-	private ActionParameterOperation suiteName;
-	private ActionParameterOperation suiteVersion;
-	private ActionParameterOperation suiteBuild;
-	private ActionParameterOperation repositoryConnectionName;
-	private ActionParameterOperation repositoryComponentPath;
-	private ActionParameterOperation repositorySuitePath;
-	private ActionParameterOperation repositoryVersionPath;
-	private ActionParameterOperation repositoryBuildPath;
-	private ActionParameterOperation repositoryBuildAsset;
-	private ActionParameterOperation environmentName;
-	private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
+    // Parameters
+    private ActionParameterOperation componentName;
+    private ActionParameterOperation suiteName;
+    private ActionParameterOperation suiteVersion;
+    private ActionParameterOperation suiteBuild;
+    private ActionParameterOperation repositoryConnectionName;
+    private ActionParameterOperation repositoryComponentPath;
+    private ActionParameterOperation repositorySuitePath;
+    private ActionParameterOperation repositoryVersionPath;
+    private ActionParameterOperation repositoryBuildPath;
+    private ActionParameterOperation repositoryBuildAsset;
+    private ActionParameterOperation environmentName;
+    private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
 
-	// Constructors
-	public FwkExecuteSuite() {
-		
-	}
-	
-	public FwkExecuteSuite(FrameworkExecution frameworkExecution, ExecutionControl executionControl, ScriptExecution scriptExecution, ActionExecution actionExecution) {
-		this.init(frameworkExecution, executionControl, scriptExecution, actionExecution);
-	}
-	
-	public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl, ScriptExecution scriptExecution, ActionExecution actionExecution) {
-		this.setFrameworkExecution(frameworkExecution);
-		this.setExecutionControl(executionControl);
-		this.setActionExecution(actionExecution);
-		this.setScriptExecution(scriptExecution);
-		this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
-	}
+    // Constructors
+    public FwkExecuteSuite() {
 
-	public void prepare() {
-		// Reset Parameters
-		this.setComponentName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(), this.getActionExecution(),
-				this.getActionExecution().getAction().getType(), "COMP_NM"));
-		this.setSuiteName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(), this.getActionExecution(),
-				this.getActionExecution().getAction().getType(), "SUITE_NM"));
-		this.setSuiteVersion(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(), this.getActionExecution(),
-				this.getActionExecution().getAction().getType(), "SUITE_VERSION"));
-		this.setSuiteBuild(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(), this.getActionExecution(),
-				this.getActionExecution().getAction().getType(), "SUITE_BUILD"));
-		this.setRepositoryConnectionName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
-				this.getActionExecution(), this.getActionExecution().getAction().getType(), "REPO_CONN_NM"));
-		this.setRepositoryComponentPath(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
-				this.getActionExecution(), this.getActionExecution().getAction().getType(), "REPO_COMP_PATH"));
-		this.setRepositorySuitePath(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
-				this.getActionExecution(), this.getActionExecution().getAction().getType(), "REPO_SUITE_PATH"));
-		this.setRepositoryVersionPath(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
-				this.getActionExecution(), this.getActionExecution().getAction().getType(), "REPO_VERSION_PATH"));
-		this.setRepositoryBuildPath(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
-				this.getActionExecution(), this.getActionExecution().getAction().getType(), "REPO_BUILD_PATH"));
-		this.setRepositoryBuildAsset(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
-				this.getActionExecution(), this.getActionExecution().getAction().getType(), "REPO_BUILD_ASSET"));
-		this.setEnvironmentName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
-				this.getActionExecution(), this.getActionExecution().getAction().getType(), "ENV_NM"));
+    }
 
-		// Get Parameters
-		for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-			if (actionParameter.getName().equalsIgnoreCase("comp_nm")) {
-				this.getComponentName().setInputValue(actionParameter.getValue());
-			} else if (actionParameter.getName().equalsIgnoreCase("suite_nm")) {
-				this.getSuiteName().setInputValue(actionParameter.getValue());
-			} else if (actionParameter.getName().equalsIgnoreCase("suite_version")) {
-				this.getSuiteVersion().setInputValue(actionParameter.getValue());
-			} else if (actionParameter.getName().equalsIgnoreCase("suite_build")) {
-				this.getSuiteBuild().setInputValue(actionParameter.getValue());
-			} else if (actionParameter.getName().equalsIgnoreCase("repo_con_nm")) {
-				this.getRepositoryConnectionName().setInputValue(actionParameter.getValue());
-			} else if (actionParameter.getName().equalsIgnoreCase("repo_comp_path")) {
-				this.getRepositoryComponentPath().setInputValue(actionParameter.getValue());
-			} else if (actionParameter.getName().equalsIgnoreCase("repo_suite_path")) {
-				this.getRepositorySuitePath().setInputValue(actionParameter.getValue());
-			} else if (actionParameter.getName().equalsIgnoreCase("repo_version_path")) {
-				this.getRepositoryVersionPath().setInputValue(actionParameter.getValue());
-			} else if (actionParameter.getName().equalsIgnoreCase("repo_build_path")) {
-				this.getRepositoryBuildPath().setInputValue(actionParameter.getValue());
-			} else if (actionParameter.getName().equalsIgnoreCase("repo_build_asset")) {
-				this.getRepositoryBuildAsset().setInputValue(actionParameter.getValue());
-			} else if (actionParameter.getName().equalsIgnoreCase("env_nm")) {
-				this.getEnvironmentName().setInputValue(actionParameter.getValue());
-			}
-		}
-		
-		//Create parameter list
-		this.getActionParameterOperationMap().put("COMP_NM", this.getComponentName());
-		this.getActionParameterOperationMap().put("SUITE_NM", this.getSuiteName());
-		this.getActionParameterOperationMap().put("SUITE_VERSION", this.getSuiteVersion());
-		this.getActionParameterOperationMap().put("SUITE_BUILD", this.getSuiteBuild());
-		this.getActionParameterOperationMap().put("REPO_CONN_NM", this.getRepositoryConnectionName());
-		this.getActionParameterOperationMap().put("REPO_COMP_PATH", this.getRepositoryComponentPath());
-		this.getActionParameterOperationMap().put("REPO_SUITE_PATH", this.getRepositorySuitePath());
-		this.getActionParameterOperationMap().put("REPO_VERSION_PATH", this.getRepositoryVersionPath());
-		this.getActionParameterOperationMap().put("REPO_BUILD_PATH", this.getRepositoryBuildPath());
-		this.getActionParameterOperationMap().put("REPO_BUILD_ASSET", this.getRepositoryBuildAsset());
-		this.getActionParameterOperationMap().put("ENV_NM", this.getEnvironmentName());
-	}
-	
-	public boolean execute() {
-		try {
-			// Check on Running a script in a loop
+    public FwkExecuteSuite(FrameworkExecution frameworkExecution, ExecutionControl executionControl, ScriptExecution scriptExecution, ActionExecution actionExecution) {
+        this.init(frameworkExecution, executionControl, scriptExecution, actionExecution);
+    }
+
+    public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl, ScriptExecution scriptExecution, ActionExecution actionExecution) {
+        this.setFrameworkExecution(frameworkExecution);
+        this.setExecutionControl(executionControl);
+        this.setActionExecution(actionExecution);
+        this.setScriptExecution(scriptExecution);
+        this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
+    }
+
+    public void prepare() {
+        // Reset Parameters
+        this.setComponentName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(), this.getActionExecution(),
+                this.getActionExecution().getAction().getType(), "COMP_NM"));
+        this.setSuiteName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(), this.getActionExecution(),
+                this.getActionExecution().getAction().getType(), "SUITE_NM"));
+        this.setSuiteVersion(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(), this.getActionExecution(),
+                this.getActionExecution().getAction().getType(), "SUITE_VERSION"));
+        this.setSuiteBuild(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(), this.getActionExecution(),
+                this.getActionExecution().getAction().getType(), "SUITE_BUILD"));
+        this.setRepositoryConnectionName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+                this.getActionExecution(), this.getActionExecution().getAction().getType(), "REPO_CONN_NM"));
+        this.setRepositoryComponentPath(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+                this.getActionExecution(), this.getActionExecution().getAction().getType(), "REPO_COMP_PATH"));
+        this.setRepositorySuitePath(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+                this.getActionExecution(), this.getActionExecution().getAction().getType(), "REPO_SUITE_PATH"));
+        this.setRepositoryVersionPath(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+                this.getActionExecution(), this.getActionExecution().getAction().getType(), "REPO_VERSION_PATH"));
+        this.setRepositoryBuildPath(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+                this.getActionExecution(), this.getActionExecution().getAction().getType(), "REPO_BUILD_PATH"));
+        this.setRepositoryBuildAsset(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+                this.getActionExecution(), this.getActionExecution().getAction().getType(), "REPO_BUILD_ASSET"));
+        this.setEnvironmentName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+                this.getActionExecution(), this.getActionExecution().getAction().getType(), "ENV_NM"));
+
+        // Get Parameters
+        for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
+            if (actionParameter.getName().equalsIgnoreCase("comp_nm")) {
+                this.getComponentName().setInputValue(actionParameter.getValue());
+            } else if (actionParameter.getName().equalsIgnoreCase("suite_nm")) {
+                this.getSuiteName().setInputValue(actionParameter.getValue());
+            } else if (actionParameter.getName().equalsIgnoreCase("suite_version")) {
+                this.getSuiteVersion().setInputValue(actionParameter.getValue());
+            } else if (actionParameter.getName().equalsIgnoreCase("suite_build")) {
+                this.getSuiteBuild().setInputValue(actionParameter.getValue());
+            } else if (actionParameter.getName().equalsIgnoreCase("repo_con_nm")) {
+                this.getRepositoryConnectionName().setInputValue(actionParameter.getValue());
+            } else if (actionParameter.getName().equalsIgnoreCase("repo_comp_path")) {
+                this.getRepositoryComponentPath().setInputValue(actionParameter.getValue());
+            } else if (actionParameter.getName().equalsIgnoreCase("repo_suite_path")) {
+                this.getRepositorySuitePath().setInputValue(actionParameter.getValue());
+            } else if (actionParameter.getName().equalsIgnoreCase("repo_version_path")) {
+                this.getRepositoryVersionPath().setInputValue(actionParameter.getValue());
+            } else if (actionParameter.getName().equalsIgnoreCase("repo_build_path")) {
+                this.getRepositoryBuildPath().setInputValue(actionParameter.getValue());
+            } else if (actionParameter.getName().equalsIgnoreCase("repo_build_asset")) {
+                this.getRepositoryBuildAsset().setInputValue(actionParameter.getValue());
+            } else if (actionParameter.getName().equalsIgnoreCase("env_nm")) {
+                this.getEnvironmentName().setInputValue(actionParameter.getValue());
+            }
+        }
+
+        //Create parameter list
+        this.getActionParameterOperationMap().put("COMP_NM", this.getComponentName());
+        this.getActionParameterOperationMap().put("SUITE_NM", this.getSuiteName());
+        this.getActionParameterOperationMap().put("SUITE_VERSION", this.getSuiteVersion());
+        this.getActionParameterOperationMap().put("SUITE_BUILD", this.getSuiteBuild());
+        this.getActionParameterOperationMap().put("REPO_CONN_NM", this.getRepositoryConnectionName());
+        this.getActionParameterOperationMap().put("REPO_COMP_PATH", this.getRepositoryComponentPath());
+        this.getActionParameterOperationMap().put("REPO_SUITE_PATH", this.getRepositorySuitePath());
+        this.getActionParameterOperationMap().put("REPO_VERSION_PATH", this.getRepositoryVersionPath());
+        this.getActionParameterOperationMap().put("REPO_BUILD_PATH", this.getRepositoryBuildPath());
+        this.getActionParameterOperationMap().put("REPO_BUILD_ASSET", this.getRepositoryBuildAsset());
+        this.getActionParameterOperationMap().put("ENV_NM", this.getEnvironmentName());
+    }
+
+    public boolean execute() {
+        try {
+            // Check on Running a script in a loop
 //			try {
 //
 //				// Get Connection
@@ -220,147 +205,147 @@ public class FwkExecuteSuite {
 //			} catch (Exception e) {
 //				throw new RuntimeException("Issue running the suite: " + e, e);
 //			}
-			return true;
-		} catch (Exception e) {
-			StringWriter StackTrace = new StringWriter();
-			e.printStackTrace(new PrintWriter(StackTrace));
+            return true;
+        } catch (Exception e) {
+            StringWriter StackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(StackTrace));
 
-			this.getActionExecution().getActionControl().increaseErrorCount();
+            this.getActionExecution().getActionControl().increaseErrorCount();
 
-			this.getActionExecution().getActionControl().logOutput("exception",e.getMessage());
-			this.getActionExecution().getActionControl().logOutput("stacktrace",StackTrace.toString());
+            this.getActionExecution().getActionControl().logOutput("exception", e.getMessage());
+            this.getActionExecution().getActionControl().logOutput("stacktrace", StackTrace.toString());
 
-			return false;
-		}
+            return false;
+        }
 
-	}
+    }
 
-	// Getters and Setters
-	public FrameworkExecution getFrameworkExecution() {
-		return frameworkExecution;
-	}
+    // Getters and Setters
+    public FrameworkExecution getFrameworkExecution() {
+        return frameworkExecution;
+    }
 
-	public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-		this.frameworkExecution = frameworkExecution;
-	}
+    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
+        this.frameworkExecution = frameworkExecution;
+    }
 
-	public ExecutionControl getExecutionControl() {
-		return executionControl;
-	}
+    public ExecutionControl getExecutionControl() {
+        return executionControl;
+    }
 
-	public void setExecutionControl(ExecutionControl executionControl) {
-		this.executionControl = executionControl;
-	}
+    public void setExecutionControl(ExecutionControl executionControl) {
+        this.executionControl = executionControl;
+    }
 
-	public ActionExecution getActionExecution() {
-		return actionExecution;
-	}
+    public ActionExecution getActionExecution() {
+        return actionExecution;
+    }
 
-	public void setActionExecution(ActionExecution actionExecution) {
-		this.actionExecution = actionExecution;
-	}
+    public void setActionExecution(ActionExecution actionExecution) {
+        this.actionExecution = actionExecution;
+    }
 
-	public ScriptExecution getScriptExecution() {
-		return scriptExecution;
-	}
+    public ScriptExecution getScriptExecution() {
+        return scriptExecution;
+    }
 
-	public void setScriptExecution(ScriptExecution scriptExecution) {
-		this.scriptExecution = scriptExecution;
-	}
+    public void setScriptExecution(ScriptExecution scriptExecution) {
+        this.scriptExecution = scriptExecution;
+    }
 
-	public ActionParameterOperation getEnvironmentName() {
-		return environmentName;
-	}
+    public ActionParameterOperation getEnvironmentName() {
+        return environmentName;
+    }
 
-	public void setEnvironmentName(ActionParameterOperation environmentName) {
-		this.environmentName = environmentName;
-	}
+    public void setEnvironmentName(ActionParameterOperation environmentName) {
+        this.environmentName = environmentName;
+    }
 
-	public HashMap<String, ActionParameterOperation> getActionParameterOperationMap() {
-		return actionParameterOperationMap;
-	}
+    public HashMap<String, ActionParameterOperation> getActionParameterOperationMap() {
+        return actionParameterOperationMap;
+    }
 
-	public void setActionParameterOperationMap(HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
-		this.actionParameterOperationMap = actionParameterOperationMap;
-	}
+    public void setActionParameterOperationMap(HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
+        this.actionParameterOperationMap = actionParameterOperationMap;
+    }
 
-	public ActionParameterOperation getComponentName() {
-		return componentName;
-	}
+    public ActionParameterOperation getComponentName() {
+        return componentName;
+    }
 
-	public void setComponentName(ActionParameterOperation componentName) {
-		this.componentName = componentName;
-	}
+    public void setComponentName(ActionParameterOperation componentName) {
+        this.componentName = componentName;
+    }
 
-	public ActionParameterOperation getSuiteName() {
-		return suiteName;
-	}
+    public ActionParameterOperation getSuiteName() {
+        return suiteName;
+    }
 
-	public void setSuiteName(ActionParameterOperation suiteName) {
-		this.suiteName = suiteName;
-	}
+    public void setSuiteName(ActionParameterOperation suiteName) {
+        this.suiteName = suiteName;
+    }
 
-	public ActionParameterOperation getSuiteVersion() {
-		return suiteVersion;
-	}
+    public ActionParameterOperation getSuiteVersion() {
+        return suiteVersion;
+    }
 
-	public void setSuiteVersion(ActionParameterOperation suiteVersion) {
-		this.suiteVersion = suiteVersion;
-	}
+    public void setSuiteVersion(ActionParameterOperation suiteVersion) {
+        this.suiteVersion = suiteVersion;
+    }
 
-	public ActionParameterOperation getRepositoryConnectionName() {
-		return repositoryConnectionName;
-	}
+    public ActionParameterOperation getRepositoryConnectionName() {
+        return repositoryConnectionName;
+    }
 
-	public void setRepositoryConnectionName(ActionParameterOperation repositoryConnectionName) {
-		this.repositoryConnectionName = repositoryConnectionName;
-	}
+    public void setRepositoryConnectionName(ActionParameterOperation repositoryConnectionName) {
+        this.repositoryConnectionName = repositoryConnectionName;
+    }
 
-	public ActionParameterOperation getSuiteBuild() {
-		return suiteBuild;
-	}
+    public ActionParameterOperation getSuiteBuild() {
+        return suiteBuild;
+    }
 
-	public void setSuiteBuild(ActionParameterOperation suiteBuild) {
-		this.suiteBuild = suiteBuild;
-	}
+    public void setSuiteBuild(ActionParameterOperation suiteBuild) {
+        this.suiteBuild = suiteBuild;
+    }
 
-	public ActionParameterOperation getRepositoryComponentPath() {
-		return repositoryComponentPath;
-	}
+    public ActionParameterOperation getRepositoryComponentPath() {
+        return repositoryComponentPath;
+    }
 
-	public void setRepositoryComponentPath(ActionParameterOperation repositoryComponentPath) {
-		this.repositoryComponentPath = repositoryComponentPath;
-	}
+    public void setRepositoryComponentPath(ActionParameterOperation repositoryComponentPath) {
+        this.repositoryComponentPath = repositoryComponentPath;
+    }
 
-	public ActionParameterOperation getRepositorySuitePath() {
-		return repositorySuitePath;
-	}
+    public ActionParameterOperation getRepositorySuitePath() {
+        return repositorySuitePath;
+    }
 
-	public void setRepositorySuitePath(ActionParameterOperation repositorySuitePath) {
-		this.repositorySuitePath = repositorySuitePath;
-	}
+    public void setRepositorySuitePath(ActionParameterOperation repositorySuitePath) {
+        this.repositorySuitePath = repositorySuitePath;
+    }
 
-	public ActionParameterOperation getRepositoryVersionPath() {
-		return repositoryVersionPath;
-	}
+    public ActionParameterOperation getRepositoryVersionPath() {
+        return repositoryVersionPath;
+    }
 
-	public void setRepositoryVersionPath(ActionParameterOperation repositoryVersionPath) {
-		this.repositoryVersionPath = repositoryVersionPath;
-	}
+    public void setRepositoryVersionPath(ActionParameterOperation repositoryVersionPath) {
+        this.repositoryVersionPath = repositoryVersionPath;
+    }
 
-	public ActionParameterOperation getRepositoryBuildAsset() {
-		return repositoryBuildAsset;
-	}
+    public ActionParameterOperation getRepositoryBuildAsset() {
+        return repositoryBuildAsset;
+    }
 
-	public void setRepositoryBuildAsset(ActionParameterOperation repositoryBuildAsset) {
-		this.repositoryBuildAsset = repositoryBuildAsset;
-	}
+    public void setRepositoryBuildAsset(ActionParameterOperation repositoryBuildAsset) {
+        this.repositoryBuildAsset = repositoryBuildAsset;
+    }
 
-	public ActionParameterOperation getRepositoryBuildPath() {
-		return repositoryBuildPath;
-	}
+    public ActionParameterOperation getRepositoryBuildPath() {
+        return repositoryBuildPath;
+    }
 
-	public void setRepositoryBuildPath(ActionParameterOperation repositoryBuildPath) {
-		this.repositoryBuildPath = repositoryBuildPath;
-	}
+    public void setRepositoryBuildPath(ActionParameterOperation repositoryBuildPath) {
+        this.repositoryBuildPath = repositoryBuildPath;
+    }
 }

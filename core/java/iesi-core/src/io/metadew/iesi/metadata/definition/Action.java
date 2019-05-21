@@ -3,126 +3,126 @@ package io.metadew.iesi.metadata.definition;
 import java.util.List;
 
 public class Action {
-	
-	private long id;
-	private long number;
-	private String type;
-	private String name;
-	private String description;
-	private String component;
-	private String condition;
-	private String iteration;
-	private String errorExpected;
-	private String errorStop;
-	private List<ActionParameter> parameters;
-	
-	//Constructors
-	public Action() {
-		
-	}
 
-	public Action(long id, long number, String type, String name, String description, String component,
-				  String condition, String iteration, String errorExpected, String errorStop, List<ActionParameter> parameters) {
-		this.id = id;
-		this.number = number;
-		this.type = type;
-		this.name = name;
-		this.description = description;
-		this.component = component;
-		this.condition = condition;
-		this.iteration = iteration;
-		this.errorExpected = errorExpected;
-		this.errorStop = errorStop;
-		this.parameters = parameters;
-	}
-	
-	//Getters and Setters
-	public String getName() {
-		return name;
-	}
+    private long id;
+    private long number;
+    private String type;
+    private String name;
+    private String description;
+    private String component;
+    private String condition;
+    private String iteration;
+    private String errorExpected;
+    private String errorStop;
+    private List<ActionParameter> parameters;
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    //Constructors
+    public Action() {
 
-	public String getDescription() {
-		return description;
-	}
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public Action(long id, long number, String type, String name, String description, String component,
+                  String condition, String iteration, String errorExpected, String errorStop, List<ActionParameter> parameters) {
+        this.id = id;
+        this.number = number;
+        this.type = type;
+        this.name = name;
+        this.description = description;
+        this.component = component;
+        this.condition = condition;
+        this.iteration = iteration;
+        this.errorExpected = errorExpected;
+        this.errorStop = errorStop;
+        this.parameters = parameters;
+    }
 
-	public long getId() {
-		return id;
-	}
+    //Getters and Setters
+    public String getName() {
+        return name;
+    }
 
-	public void setId(long id) {
-		this.id = id;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public long getNumber() {
-		return number;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public void setNumber(long number) {
-		this.number = number;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	public String getType() {
-		return type;
-	}
+    public long getId() {
+        return id;
+    }
 
-	public void setType(String type) {
-		this.type = type;
-	}
+    public void setId(long id) {
+        this.id = id;
+    }
 
-	public String getErrorExpected() {
-		return errorExpected;
-	}
+    public long getNumber() {
+        return number;
+    }
 
-	public void setErrorExpected(String errorExpected) {
-		this.errorExpected = errorExpected;
-	}
+    public void setNumber(long number) {
+        this.number = number;
+    }
 
-	public String getErrorStop() {
-		return errorStop;
-	}
+    public String getType() {
+        return type;
+    }
 
-	public void setErrorStop(String errorStop) {
-		this.errorStop = errorStop;
-	}
+    public void setType(String type) {
+        this.type = type;
+    }
 
-	public List<ActionParameter> getParameters() {
-		return parameters;
-	}
+    public String getErrorExpected() {
+        return errorExpected;
+    }
 
-	public void setParameters(List<ActionParameter> parameters) {
-		this.parameters = parameters;
-	}
+    public void setErrorExpected(String errorExpected) {
+        this.errorExpected = errorExpected;
+    }
 
-	public String getComponent() {
-		return component;
-	}
+    public String getErrorStop() {
+        return errorStop;
+    }
 
-	public void setComponent(String component) {
-		this.component = component;
-	}
+    public void setErrorStop(String errorStop) {
+        this.errorStop = errorStop;
+    }
 
-	public String getIteration() {
-		return iteration;
-	}
+    public List<ActionParameter> getParameters() {
+        return parameters;
+    }
 
-	public void setIteration(String iteration) {
-		this.iteration = iteration;
-	}
+    public void setParameters(List<ActionParameter> parameters) {
+        this.parameters = parameters;
+    }
 
-	public String getCondition() {
-		return condition;
-	}
+    public String getComponent() {
+        return component;
+    }
 
-	public void setCondition(String condition) {
-		this.condition = condition;
-	}
+    public void setComponent(String component) {
+        this.component = component;
+    }
+
+    public String getIteration() {
+        return iteration;
+    }
+
+    public void setIteration(String iteration) {
+        this.iteration = iteration;
+    }
+
+    public String getCondition() {
+        return condition;
+    }
+
+    public void setCondition(String condition) {
+        this.condition = condition;
+    }
 
 }

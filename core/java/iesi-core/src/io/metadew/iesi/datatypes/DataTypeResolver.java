@@ -29,7 +29,7 @@ public class DataTypeResolver {
                     case "dataset":
                         try {
                             return resolveToDataset(matcher.group("arguments"), frameworkFolderConfiguration, executionRuntime);
-                        } catch (IOException |SQLException e) {
+                        } catch (IOException | SQLException e) {
                             throw new RuntimeException(e);
                         }
                     default:

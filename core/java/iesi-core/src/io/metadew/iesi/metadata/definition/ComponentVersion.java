@@ -4,45 +4,45 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ComponentVersion {
-	
-	private long number;
-	private String description;
-	private List<ComponentBuild> builds;
-	
-	//Constructors
-	public ComponentVersion() {
 
-	}
+    private long number;
+    private String description;
+    private List<ComponentBuild> builds;
 
-	public ComponentVersion(long number, String description) {
-		this.number = number;
-		this.description = description;
-		this.builds = new ArrayList<>();
-	}
+    //Constructors
+    public ComponentVersion() {
 
-	//Getters and Setters
-	public String getDescription() {
-		return description;
-	}
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public ComponentVersion(long number, String description) {
+        this.number = number;
+        this.description = description;
+        this.builds = new ArrayList<>();
+    }
 
-	public List<ComponentBuild> getBuilds() {
-		return builds;
-	}
+    //Getters and Setters
+    public String getDescription() {
+        return description;
+    }
 
-	public void setBuilds(List<ComponentBuild> builds) {
-		this.builds = builds;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	public long getNumber() {
-		return number;
-	}
+    public List<ComponentBuild> getBuilds() {
+        return builds;
+    }
 
-	public void setNumber(long number) {
-		this.number = number;
-	}
+    public void setBuilds(List<ComponentBuild> builds) {
+        this.builds = builds;
+    }
+
+    public long getNumber() {
+        return number;
+    }
+
+    public void setNumber(long number) {
+        this.number = number;
+    }
 
 }

@@ -1,24 +1,16 @@
 package io.metadew.iesi.script.action;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import io.metadew.iesi.framework.execution.FrameworkExecution;
-import io.metadew.iesi.metadata.definition.Action;
 import io.metadew.iesi.metadata.definition.ActionParameter;
-import io.metadew.iesi.metadata.definition.Script;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 import io.metadew.iesi.script.operation.RouteOperation;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.HashMap;
 
 public class FwkRoute {
 

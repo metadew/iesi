@@ -12,38 +12,38 @@ public class ScriptRunnable implements Runnable {
     ScriptRunnable(FrameworkExecution frameworkExecution, ScriptExecution scriptExecution, Script script) {
         this.setFrameworkExecution(frameworkExecution);
         this.setScriptExecution(scriptExecution);
-    	this.setScript(script);
+        this.setScript(script);
     }
 
     @Override
     public void run() {
-		ScriptExecution scriptExecution = new ScriptExecution(this.getFrameworkExecution(), this.getScript());
-		scriptExecution.initializeAsRouteExecution(this.getScriptExecution());
-		scriptExecution.execute();
+        ScriptExecution scriptExecution = new ScriptExecution(this.getFrameworkExecution(), this.getScript());
+        scriptExecution.initializeAsRouteExecution(this.getScriptExecution());
+        scriptExecution.execute();
     }
 
     // Getters and setters
-	public Script getScript() {
-		return script;
-	}
+    public Script getScript() {
+        return script;
+    }
 
-	public void setScript(Script script) {
-		this.script = script;
-	}
+    public void setScript(Script script) {
+        this.script = script;
+    }
 
-	public FrameworkExecution getFrameworkExecution() {
-		return frameworkExecution;
-	}
+    public FrameworkExecution getFrameworkExecution() {
+        return frameworkExecution;
+    }
 
-	public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-		this.frameworkExecution = frameworkExecution;
-	}
+    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
+        this.frameworkExecution = frameworkExecution;
+    }
 
-	public ScriptExecution getScriptExecution() {
-		return scriptExecution;
-	}
+    public ScriptExecution getScriptExecution() {
+        return scriptExecution;
+    }
 
-	public void setScriptExecution(ScriptExecution scriptExecution) {
-		this.scriptExecution = scriptExecution;
-	}
+    public void setScriptExecution(ScriptExecution scriptExecution) {
+        this.scriptExecution = scriptExecution;
+    }
 }

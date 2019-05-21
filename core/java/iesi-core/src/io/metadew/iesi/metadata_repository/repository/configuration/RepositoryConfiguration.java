@@ -11,6 +11,7 @@ public abstract class RepositoryConfiguration {
     }
 
     abstract void fromConfigFile(ConfigFile configFile, FrameworkSettingConfiguration frameworkSettingConfiguration);
+
     public abstract Repository toRepository();
 
 }

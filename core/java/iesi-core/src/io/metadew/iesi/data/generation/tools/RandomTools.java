@@ -8,7 +8,7 @@ public class RandomTools {
     private SecureRandom secureRandom;
 
     public RandomTools() {
-    	secureRandom = new SecureRandom();
+        secureRandom = new SecureRandom();
     }
 
     public <T> T sample(List<T> options) {

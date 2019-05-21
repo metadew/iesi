@@ -17,7 +17,7 @@ import java.text.MessageFormat;
 
 public class ConnectivityMetadataRepository extends MetadataRepository {
 
-    public ConnectivityMetadataRepository(String frameworkCode, String name, String scope, String instanceName, Repository repository, String repositoryObjectsPath,  String repositoryTablesPath) {
+    public ConnectivityMetadataRepository(String frameworkCode, String name, String scope, String instanceName, Repository repository, String repositoryObjectsPath, String repositoryTablesPath) {
         super(frameworkCode, name, scope, instanceName, repository, repositoryObjectsPath, repositoryTablesPath);
     }
 
@@ -57,7 +57,7 @@ public class ConnectivityMetadataRepository extends MetadataRepository {
             save(impersonation, frameworkExecution);
         } else if (dataObject.getType().equalsIgnoreCase("repository")) {
             // TODO
-        } else 	{
+        } else {
             frameworkExecution.getFrameworkLog().log(MessageFormat.format("Connectivity repository is not responsible for loading saving {0}", dataObject.getType()), Level.TRACE);
         }
     }

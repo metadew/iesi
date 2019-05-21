@@ -4,57 +4,57 @@ import java.util.List;
 
 public class GenerationOutput {
 
-	private long id;
-	private String name;
-	private String type = "";
-	private String description;
-	private List<GenerationOutputParameter> parameters;
+    private long id;
+    private String name;
+    private String type = "";
+    private String description;
+    private List<GenerationOutputParameter> parameters;
 
-	// Constructors
-	public GenerationOutput() {
-		
-	}
+    // Constructors
+    public GenerationOutput() {
 
-	// Getters and Setters
-	public String getName() {
-		return name;
-	}
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    // Getters and Setters
+    public String getName() {
+        return name;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public String getType() {
-		return type;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	public void setType(String type) {
-		this.type = type;
-	}
+    public String getType() {
+        return type;
+    }
 
-	public List<GenerationOutputParameter> getParameters() {
-		return parameters;
-	}
+    public void setType(String type) {
+        this.type = type;
+    }
 
-	public void setParameters(List<GenerationOutputParameter> parameters) {
-		this.parameters = parameters;
-	}
+    public List<GenerationOutputParameter> getParameters() {
+        return parameters;
+    }
 
-	public long getId() {
-		return id;
-	}
+    public void setParameters(List<GenerationOutputParameter> parameters) {
+        this.parameters = parameters;
+    }
 
-	public void setId(long id) {
-		this.id = id;
-	}
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
 
 
 }

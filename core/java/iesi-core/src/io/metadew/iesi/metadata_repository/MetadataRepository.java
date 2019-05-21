@@ -75,7 +75,7 @@ public abstract class MetadataRepository {
         String frameworkCodeString = getFrameworkCode().map(frameworkCode -> frameworkCode + "_").orElse("");
         String instanceNameString = getInstanceName().map(instanceName -> instanceName + "_").orElse("");
         return frameworkCodeString + instanceNameString;
-        }
+    }
 
     public Optional<String> getFrameworkCode() {
         return Optional.ofNullable(frameworkCode);

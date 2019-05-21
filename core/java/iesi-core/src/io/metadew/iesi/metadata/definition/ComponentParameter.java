@@ -2,35 +2,35 @@ package io.metadew.iesi.metadata.definition;
 
 
 public class ComponentParameter {
-	
-	private String name;
-	private String value;
-	
-	//Constructors
-	public ComponentParameter() {
 
-	}
+    private String name;
+    private String value;
 
-	public ComponentParameter(String name, String value) {
-		this.name = name;
-		this.value = value;
-	}
+    //Constructors
+    public ComponentParameter() {
 
-	//Getters and Setters
-	public String getName() {
-		return name;
-	}
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public ComponentParameter(String name, String value) {
+        this.name = name;
+        this.value = value;
+    }
 
-	public String getValue() {
-		return value;
-	}
+    //Getters and Setters
+    public String getName() {
+        return name;
+    }
 
-	public void setValue(String value) {
-		this.value = value;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
 
 }

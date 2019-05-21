@@ -1,13 +1,5 @@
 package io.metadew.iesi.script.action;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-
 import io.metadew.iesi.datatypes.Array;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeResolver;
@@ -19,198 +11,206 @@ import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+
 public class DataSetDatasetConnection {
 
-	private ActionExecution actionExecution;
-	private FrameworkExecution frameworkExecution;
-	private ExecutionControl executionControl;
+    private ActionExecution actionExecution;
+    private FrameworkExecution frameworkExecution;
+    private ExecutionControl executionControl;
 
-	// Parameters
-	private ActionParameterOperation referenceName;
-	private ActionParameterOperation datasetName;
-	private ActionParameterOperation datasetLabels;
-	private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
+    // Parameters
+    private ActionParameterOperation referenceName;
+    private ActionParameterOperation datasetName;
+    private ActionParameterOperation datasetLabels;
+    private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
 
-	// Constructors
-	public DataSetDatasetConnection() {
+    // Constructors
+    public DataSetDatasetConnection() {
 
-	}
+    }
 
-	public DataSetDatasetConnection(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
-			ScriptExecution scriptExecution, ActionExecution actionExecution) {
-		this.init(frameworkExecution, executionControl, scriptExecution, actionExecution);
-	}
+    public DataSetDatasetConnection(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+                                    ScriptExecution scriptExecution, ActionExecution actionExecution) {
+        this.init(frameworkExecution, executionControl, scriptExecution, actionExecution);
+    }
 
-	public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl, ScriptExecution scriptExecution,
-			ActionExecution actionExecution) {
-		this.setFrameworkExecution(frameworkExecution);
-		this.setExecutionControl(executionControl);
-		this.setActionExecution(actionExecution);
-		this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
-	}
+    public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl, ScriptExecution scriptExecution,
+                     ActionExecution actionExecution) {
+        this.setFrameworkExecution(frameworkExecution);
+        this.setExecutionControl(executionControl);
+        this.setActionExecution(actionExecution);
+        this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
+    }
 
-	public void prepare() {
-		// Reset Parameters
-		this.setReferenceName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
-				this.getActionExecution(), this.getActionExecution().getAction().getType(), "name"));
-		this.setDatasetName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
-				this.getActionExecution(), this.getActionExecution().getAction().getType(), "dataset"));
-		this.setDatasetLabels(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
-				this.getActionExecution(), this.getActionExecution().getAction().getType(), "labels"));
-		// Get Parameters
-		for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-			if (actionParameter.getName().equalsIgnoreCase("name")) {
-				this.getReferenceName().setInputValue(actionParameter.getValue());
-			} else if (actionParameter.getName().equalsIgnoreCase("dataset")) {
-				this.getDatasetName().setInputValue(actionParameter.getValue());
-			} else if (actionParameter.getName().equalsIgnoreCase("labels")) {
-				this.getDatasetLabels().setInputValue(actionParameter.getValue());
-			}
-		}
+    public void prepare() {
+        // Reset Parameters
+        this.setReferenceName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+                this.getActionExecution(), this.getActionExecution().getAction().getType(), "name"));
+        this.setDatasetName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+                this.getActionExecution(), this.getActionExecution().getAction().getType(), "dataset"));
+        this.setDatasetLabels(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+                this.getActionExecution(), this.getActionExecution().getAction().getType(), "labels"));
+        // Get Parameters
+        for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
+            if (actionParameter.getName().equalsIgnoreCase("name")) {
+                this.getReferenceName().setInputValue(actionParameter.getValue());
+            } else if (actionParameter.getName().equalsIgnoreCase("dataset")) {
+                this.getDatasetName().setInputValue(actionParameter.getValue());
+            } else if (actionParameter.getName().equalsIgnoreCase("labels")) {
+                this.getDatasetLabels().setInputValue(actionParameter.getValue());
+            }
+        }
 
-		// Create parameter list
-		this.getActionParameterOperationMap().put("name", this.getReferenceName());
-		this.getActionParameterOperationMap().put("dataset", this.getDatasetName());
-		this.getActionParameterOperationMap().put("labels", this.getDatasetLabels());
-	}
+        // Create parameter list
+        this.getActionParameterOperationMap().put("name", this.getReferenceName());
+        this.getActionParameterOperationMap().put("dataset", this.getDatasetName());
+        this.getActionParameterOperationMap().put("labels", this.getDatasetLabels());
+    }
 
-	//
-	public boolean execute() {
-		try {
-			String referenceName = convertDatasetReferenceName(getReferenceName().getValue());
-			String datasetName = convertDatasetName(getDatasetName().getValue());
-			List<String> labels = convertDatasetLabels(getDatasetLabels().getValue());
+    //
+    public boolean execute() {
+        try {
+            String referenceName = convertDatasetReferenceName(getReferenceName().getValue());
+            String datasetName = convertDatasetName(getDatasetName().getValue());
+            List<String> labels = convertDatasetLabels(getDatasetLabels().getValue());
 
-			executionControl.getExecutionRuntime().setDataset(referenceName, getDatasetName().getValue(),
-					getDatasetLabels().getValue());
-			return setDatasetConnection(referenceName, datasetName, labels);
-		} catch (Exception e) {
-			StringWriter StackTrace = new StringWriter();
-			e.printStackTrace(new PrintWriter(StackTrace));
+            executionControl.getExecutionRuntime().setDataset(referenceName, getDatasetName().getValue(),
+                    getDatasetLabels().getValue());
+            return setDatasetConnection(referenceName, datasetName, labels);
+        } catch (Exception e) {
+            StringWriter StackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(StackTrace));
 
-			this.getActionExecution().getActionControl().increaseErrorCount();
+            this.getActionExecution().getActionControl().increaseErrorCount();
 
-			this.getActionExecution().getActionControl().logOutput("exception",e.getMessage());
-			this.getActionExecution().getActionControl().logOutput("stacktrace",StackTrace.toString());
+            this.getActionExecution().getActionControl().logOutput("exception", e.getMessage());
+            this.getActionExecution().getActionControl().logOutput("stacktrace", StackTrace.toString());
 
-			return false;
-		}
+            return false;
+        }
 
-	}
+    }
 
-	private boolean setDatasetConnection(String referenceName, String datasetName, List<String> labels) {
-		// TODO: use dataset data type
-		this.getExecutionControl().getExecutionRuntime().setDataset(referenceName, datasetName, String.join(",",labels));
-		return false;
-	}
+    private boolean setDatasetConnection(String referenceName, String datasetName, List<String> labels) {
+        // TODO: use dataset data type
+        this.getExecutionControl().getExecutionRuntime().setDataset(referenceName, datasetName, String.join(",", labels));
+        return false;
+    }
 
-	private String convertDatasetReferenceName(DataType referenceName) {
-		if (referenceName instanceof Text) {
-			return referenceName.toString();
-		} else {
-			// TODO: log
-			System.out.println(MessageFormat.format("data.setDatasetConnection does not accept {0} as type for reference name",
-					referenceName.getClass()));
-			return referenceName.toString();
-		}
-	}
+    private String convertDatasetReferenceName(DataType referenceName) {
+        if (referenceName instanceof Text) {
+            return referenceName.toString();
+        } else {
+            // TODO: log
+            System.out.println(MessageFormat.format("data.setDatasetConnection does not accept {0} as type for reference name",
+                    referenceName.getClass()));
+            return referenceName.toString();
+        }
+    }
 
 
-	private List<String> convertDatasetLabels(DataType datasetLabels) {
-		List<String> labels = new ArrayList<>();
-		if (datasetLabels instanceof Text) {
-			Arrays.stream(datasetLabels.toString().split(","))
-					.forEach(datasetLabel -> labels.add(convertDatasetLabel(DataTypeResolver.resolveToDataType(datasetLabel.trim(), frameworkExecution.getFrameworkConfiguration().getFolderConfiguration(), executionControl.getExecutionRuntime()))));
-			return labels;
-		} else if (datasetLabels instanceof Array) {
-			((Array) datasetLabels).getList()
-					.forEach(datasetLabel -> labels.add(convertDatasetLabel(datasetLabel)));
-			return labels;
-		} else {
-			// TODO: log with framework
-			System.out.println(MessageFormat.format("data.setDatasetConnection does not accept {0} as type for dataset labels",
-					datasetLabels.getClass()));
-			return labels;
-		}
-	}
+    private List<String> convertDatasetLabels(DataType datasetLabels) {
+        List<String> labels = new ArrayList<>();
+        if (datasetLabels instanceof Text) {
+            Arrays.stream(datasetLabels.toString().split(","))
+                    .forEach(datasetLabel -> labels.add(convertDatasetLabel(DataTypeResolver.resolveToDataType(datasetLabel.trim(), frameworkExecution.getFrameworkConfiguration().getFolderConfiguration(), executionControl.getExecutionRuntime()))));
+            return labels;
+        } else if (datasetLabels instanceof Array) {
+            ((Array) datasetLabels).getList()
+                    .forEach(datasetLabel -> labels.add(convertDatasetLabel(datasetLabel)));
+            return labels;
+        } else {
+            // TODO: log with framework
+            System.out.println(MessageFormat.format("data.setDatasetConnection does not accept {0} as type for dataset labels",
+                    datasetLabels.getClass()));
+            return labels;
+        }
+    }
 
-	private String convertDatasetName(DataType datasetName) {
-		if (datasetName instanceof Text) {
-			return datasetName.toString();
-		} else {
-			// TODO: log
-			System.out.println(MessageFormat.format("data.setDatasetConnection does not accept {0} as type for dataset name",
-					datasetName.getClass()));
-			return datasetName.toString();
-		}
-	}
+    private String convertDatasetName(DataType datasetName) {
+        if (datasetName instanceof Text) {
+            return datasetName.toString();
+        } else {
+            // TODO: log
+            System.out.println(MessageFormat.format("data.setDatasetConnection does not accept {0} as type for dataset name",
+                    datasetName.getClass()));
+            return datasetName.toString();
+        }
+    }
 
-	private String convertDatasetLabel(DataType datasetLabel) {
-		if (datasetLabel instanceof Text) {
-			return datasetLabel.toString();
-		} else {
-			// TODO: log
-			System.out.println(MessageFormat.format("Dataset does not accept {0} as type for a dataset label",
-					datasetLabel.getClass()));
-			return datasetLabel.toString();
-		}
-	}
+    private String convertDatasetLabel(DataType datasetLabel) {
+        if (datasetLabel instanceof Text) {
+            return datasetLabel.toString();
+        } else {
+            // TODO: log
+            System.out.println(MessageFormat.format("Dataset does not accept {0} as type for a dataset label",
+                    datasetLabel.getClass()));
+            return datasetLabel.toString();
+        }
+    }
 
-	// Getters and Setters
-	public FrameworkExecution getFrameworkExecution() {
-		return frameworkExecution;
-	}
+    // Getters and Setters
+    public FrameworkExecution getFrameworkExecution() {
+        return frameworkExecution;
+    }
 
-	public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-		this.frameworkExecution = frameworkExecution;
-	}
+    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
+        this.frameworkExecution = frameworkExecution;
+    }
 
-	public ExecutionControl getExecutionControl() {
-		return executionControl;
-	}
+    public ExecutionControl getExecutionControl() {
+        return executionControl;
+    }
 
-	public void setExecutionControl(ExecutionControl executionControl) {
-		this.executionControl = executionControl;
-	}
+    public void setExecutionControl(ExecutionControl executionControl) {
+        this.executionControl = executionControl;
+    }
 
-	public ActionExecution getActionExecution() {
-		return actionExecution;
-	}
+    public ActionExecution getActionExecution() {
+        return actionExecution;
+    }
 
-	public void setActionExecution(ActionExecution actionExecution) {
-		this.actionExecution = actionExecution;
-	}
+    public void setActionExecution(ActionExecution actionExecution) {
+        this.actionExecution = actionExecution;
+    }
 
-	public HashMap<String, ActionParameterOperation> getActionParameterOperationMap() {
-		return actionParameterOperationMap;
-	}
+    public HashMap<String, ActionParameterOperation> getActionParameterOperationMap() {
+        return actionParameterOperationMap;
+    }
 
-	public void setActionParameterOperationMap(HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
-		this.actionParameterOperationMap = actionParameterOperationMap;
-	}
+    public void setActionParameterOperationMap(HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
+        this.actionParameterOperationMap = actionParameterOperationMap;
+    }
 
-	public ActionParameterOperation getDatasetName() {
-		return datasetName;
-	}
+    public ActionParameterOperation getDatasetName() {
+        return datasetName;
+    }
 
-	public void setDatasetName(ActionParameterOperation datasetName) {
-		this.datasetName = datasetName;
-	}
+    public void setDatasetName(ActionParameterOperation datasetName) {
+        this.datasetName = datasetName;
+    }
 
-	public ActionParameterOperation getDatasetLabels() {
-		return datasetLabels;
-	}
+    public ActionParameterOperation getDatasetLabels() {
+        return datasetLabels;
+    }
 
-	public void setDatasetLabels(ActionParameterOperation datasetLabels) {
-		this.datasetLabels = datasetLabels;
-	}
+    public void setDatasetLabels(ActionParameterOperation datasetLabels) {
+        this.datasetLabels = datasetLabels;
+    }
 
-	public ActionParameterOperation getReferenceName() {
-		return referenceName;
-	}
+    public ActionParameterOperation getReferenceName() {
+        return referenceName;
+    }
 
-	public void setReferenceName(ActionParameterOperation referenceName) {
-		this.referenceName = referenceName;
-	}
+    public void setReferenceName(ActionParameterOperation referenceName) {
+        this.referenceName = referenceName;
+    }
 
 }

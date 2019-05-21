@@ -1,6 +1,5 @@
 package io.metadew.iesi.datatypes;
 
-import com.sun.xml.internal.bind.v2.runtime.unmarshaller.LeafPropertyLoader;
 import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
 import io.metadew.iesi.metadata_repository.repository.database.Database;
 import io.metadew.iesi.metadata_repository.repository.database.SqliteDatabase;
@@ -8,7 +7,6 @@ import io.metadew.iesi.metadata_repository.repository.database.connection.Sqlite
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.core.LogEventListener;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.File;
@@ -180,7 +178,7 @@ public class Dataset extends DataType {
         } else if (cachedRowSetLabels.size() == 1) {
             cachedRowSetLabels.next();
             datasetInventoryId = cachedRowSetLabels.getInt("DATASET_INV_ID");
-            executionRuntime.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format("Found dataset id {0} for labels {1}-{2}." , Integer.toString(datasetInventoryId), datasetName, String.join(", ", labels)), Level.TRACE);
+            executionRuntime.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format("Found dataset id {0} for labels {1}-{2}.", Integer.toString(datasetInventoryId), datasetName, String.join(", ", labels)), Level.TRACE);
         } else {
             List<Integer> datasetInventoryIds = new ArrayList<>();
             while (cachedRowSetLabels.next()) {

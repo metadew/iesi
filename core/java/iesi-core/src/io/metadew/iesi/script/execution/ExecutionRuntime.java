@@ -19,7 +19,10 @@ import io.metadew.iesi.script.execution.instruction.lookup.LookupInstructionRepo
 import io.metadew.iesi.script.execution.instruction.variable.VariableInstruction;
 import io.metadew.iesi.script.execution.instruction.variable.VariableInstructionRepository;
 import io.metadew.iesi.script.execution.instruction.variable.VariableInstructionTools;
-import io.metadew.iesi.script.operation.*;
+import io.metadew.iesi.script.operation.DatasetOperation;
+import io.metadew.iesi.script.operation.ImpersonationOperation;
+import io.metadew.iesi.script.operation.IterationOperation;
+import io.metadew.iesi.script.operation.RepositoryOperation;
 import org.apache.logging.log4j.Level;
 
 import java.io.*;
@@ -684,9 +687,9 @@ public class ExecutionRuntime {
                     instructionOutput = this.lookupDatasetInstruction(executionControl, lookupScope);
                 } else if (lookupContext.equalsIgnoreCase("file") || lookupContext.equalsIgnoreCase("f")) {
                     instructionOutput = this.lookupFileInstruction(executionControl, lookupScope);
-                }  else if (lookupContext.equalsIgnoreCase("coalesce") || lookupContext.equalsIgnoreCase("ifnull") || lookupContext.equalsIgnoreCase("nvl")) {
+                } else if (lookupContext.equalsIgnoreCase("coalesce") || lookupContext.equalsIgnoreCase("ifnull") || lookupContext.equalsIgnoreCase("nvl")) {
                     instructionOutput = this.lookupCoalesceResult(executionControl, lookupScope);
-                }  else if (lookupContext.equalsIgnoreCase("script.output") || lookupContext.equalsIgnoreCase("s.out")) {
+                } else if (lookupContext.equalsIgnoreCase("script.output") || lookupContext.equalsIgnoreCase("s.out")) {
                     instructionOutput = this.lookupScriptResultInstruction(executionControl, lookupScope);
                 }
                 // Variable lookup
@@ -791,8 +794,8 @@ public class ExecutionRuntime {
         Optional<Dataset> dataset = getDataset(datasetReferenceName);
         String dataItem = dataset
                 .map(dataset1 -> dataset1.getDataItem(datasetItem)
-                    .map(DataType::toString)
-                    .orElse(input))
+                        .map(DataType::toString)
+                        .orElse(input))
                 .orElse(input);
 //        DatasetOperation datasetOperation = executionControl.getExecutionRuntime().getDatasetOperation(datasetReferenceName);
 //

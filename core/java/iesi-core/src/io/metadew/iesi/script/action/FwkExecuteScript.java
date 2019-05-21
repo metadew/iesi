@@ -1,12 +1,5 @@
 package io.metadew.iesi.script.action;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.text.MessageFormat;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import io.metadew.iesi.datatypes.Array;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeResolver;
@@ -21,6 +14,16 @@ import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 import org.apache.logging.log4j.Level;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.text.MessageFormat;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class FwkExecuteScript {
 
@@ -203,7 +206,7 @@ public class FwkExecuteScript {
                     .forEach(parameterEntry -> parameterMap.putAll(convertParameterEntry(DataTypeResolver.resolveToDataType(parameterEntry, frameworkExecution.getFrameworkConfiguration().getFolderConfiguration(), executionControl.getExecutionRuntime()))));
             return Optional.of(parameterMap);
         } else if (list instanceof Array) {
-            for  (DataType parameterEntry : ((Array) list).getList()){
+            for (DataType parameterEntry : ((Array) list).getList()) {
                 parameterMap.putAll(convertParameterEntry(parameterEntry));
             }
             return Optional.of(parameterMap);

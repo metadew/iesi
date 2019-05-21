@@ -53,7 +53,7 @@ public class ResultMetadataRepository extends MetadataRepository {
             executeUpdate(componentConfiguration.getInsertStatement());
         } else if (dataObject.getType().equalsIgnoreCase("subroutine")) {
             // TODO
-        } else 	{
+        } else {
             frameworkExecution.getFrameworkLog().log(MessageFormat.format("Result repository is not responsible for loading saving {0}", dataObject.getType()), Level.TRACE);
         }
     }

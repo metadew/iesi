@@ -5,36 +5,36 @@ import io.metadew.iesi.framework.execution.FrameworkExecution;
 
 public class DataTableConfiguration {
 
-	private DataTable dataTable;
-	private FrameworkExecution frameworkExecution;
+    private DataTable dataTable;
+    private FrameworkExecution frameworkExecution;
 
-	// Constructors
-	public DataTableConfiguration(DataTable dataTable, FrameworkExecution frameworkExecution) {
-		this.setFrameworkExecution(frameworkExecution);
-		this.setDataTable(dataTable);
-	}
+    // Constructors
+    public DataTableConfiguration(DataTable dataTable, FrameworkExecution frameworkExecution) {
+        this.setFrameworkExecution(frameworkExecution);
+        this.setDataTable(dataTable);
+    }
 
-	public DataTableConfiguration(FrameworkExecution frameworkExecution) {
-		this.setFrameworkExecution(frameworkExecution);
-	}
+    public DataTableConfiguration(FrameworkExecution frameworkExecution) {
+        this.setFrameworkExecution(frameworkExecution);
+    }
 
-	// Create
+    // Create
 
-	// Getters and Setters
-	public DataTable getDataTable() {
-		return dataTable;
-	}
+    // Getters and Setters
+    public DataTable getDataTable() {
+        return dataTable;
+    }
 
-	public void setDataTable(DataTable dataTable) {
-		this.dataTable = dataTable;
-	}
+    public void setDataTable(DataTable dataTable) {
+        this.dataTable = dataTable;
+    }
 
-	public FrameworkExecution getFrameworkExecution() {
-		return frameworkExecution;
-	}
+    public FrameworkExecution getFrameworkExecution() {
+        return frameworkExecution;
+    }
 
-	public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-		this.frameworkExecution = frameworkExecution;
-	}
+    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
+        this.frameworkExecution = frameworkExecution;
+    }
 
 }

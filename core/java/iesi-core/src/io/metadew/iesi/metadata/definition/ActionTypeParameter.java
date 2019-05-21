@@ -2,74 +2,74 @@ package io.metadew.iesi.metadata.definition;
 
 
 public class ActionTypeParameter {
-	
-	private String name;
-	private String description;
-	private String type;
-	private String mandatory = "N";
-	private String encrypted = "N";
-	private String subroutine = "";
-	private String impersonate = "N";
-	
-	//Constructors
-	public ActionTypeParameter() {
 
-	}
+    private String name;
+    private String description;
+    private String type;
+    private String mandatory = "N";
+    private String encrypted = "N";
+    private String subroutine = "";
+    private String impersonate = "N";
 
-	//Getters and Setters
-	public String getName() {
-		return name;
-	}
+    //Constructors
+    public ActionTypeParameter() {
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    //Getters and Setters
+    public String getName() {
+        return name;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public String getType() {
-		return type;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public void setType(String type) {
-		this.type = type;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	public String getMandatory() {
-		return mandatory;
-	}
+    public String getType() {
+        return type;
+    }
 
-	public void setMandatory(String mandatory) {
-		this.mandatory = mandatory;
-	}
+    public void setType(String type) {
+        this.type = type;
+    }
 
-	public String getEncrypted() {
-		return encrypted;
-	}
+    public String getMandatory() {
+        return mandatory;
+    }
 
-	public void setEncrypted(String encrypted) {
-		this.encrypted = encrypted;
-	}
+    public void setMandatory(String mandatory) {
+        this.mandatory = mandatory;
+    }
 
-	public String getSubroutine() {
-		return subroutine;
-	}
+    public String getEncrypted() {
+        return encrypted;
+    }
 
-	public void setSubroutine(String subroutine) {
-		this.subroutine = subroutine;
-	}
+    public void setEncrypted(String encrypted) {
+        this.encrypted = encrypted;
+    }
 
-	public String getImpersonate() {
-		return impersonate;
-	}
+    public String getSubroutine() {
+        return subroutine;
+    }
 
-	public void setImpersonate(String impersonate) {
-		this.impersonate = impersonate;
-	}	
+    public void setSubroutine(String subroutine) {
+        this.subroutine = subroutine;
+    }
+
+    public String getImpersonate() {
+        return impersonate;
+    }
+
+    public void setImpersonate(String impersonate) {
+        this.impersonate = impersonate;
+    }
 }

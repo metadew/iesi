@@ -1,12 +1,5 @@
 package io.metadew.iesi.script.action;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.text.MessageFormat;
-import java.util.HashMap;
-
-import javax.sql.rowset.CachedRowSet;
-
 import io.metadew.iesi.connection.operation.ConnectionOperation;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.Text;
@@ -21,182 +14,188 @@ import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 import org.apache.logging.log4j.Level;
 
+import javax.sql.rowset.CachedRowSet;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.text.MessageFormat;
+import java.util.HashMap;
+
 public class SqlSetIterationVariables {
 
-	private ActionExecution actionExecution;
-	private FrameworkExecution frameworkExecution;
-	private ExecutionControl executionControl;
+    private ActionExecution actionExecution;
+    private FrameworkExecution frameworkExecution;
+    private ExecutionControl executionControl;
 
-	// Parameters
-	private ActionParameterOperation listName;
-	private ActionParameterOperation sqlQuery;
-	private ActionParameterOperation connectionName;
-	private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
+    // Parameters
+    private ActionParameterOperation listName;
+    private ActionParameterOperation sqlQuery;
+    private ActionParameterOperation connectionName;
+    private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
 
-	// Constructors
-	public SqlSetIterationVariables() {
-		
-	}
-	
-	public SqlSetIterationVariables(FrameworkExecution frameworkExecution, ExecutionControl executionControl, ScriptExecution scriptExecution, ActionExecution actionExecution) {
-		this.init(frameworkExecution, executionControl, scriptExecution, actionExecution);
-	}
-	
-	public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl, ScriptExecution scriptExecution, ActionExecution actionExecution) {
-		this.setFrameworkExecution(frameworkExecution);
-		this.setExecutionControl(executionControl);
-		this.setActionExecution(actionExecution);
-		this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
-	}
+    // Constructors
+    public SqlSetIterationVariables() {
 
-	public void prepare() {
-		// Reset Parameters
-		this.setListName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(), this.getActionExecution(),
-				this.getActionExecution().getAction().getType(), "list"));
-		this.setSqlQuery(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(), this.getActionExecution(),
-				this.getActionExecution().getAction().getType(), "query"));
-		this.setConnectionName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(), this.getActionExecution(),
-				this.getActionExecution().getAction().getType(), "connection"));
+    }
 
-		// Get Parameters
-		for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-			if (actionParameter.getName().equalsIgnoreCase("list")) {
-				this.getListName().setInputValue(actionParameter.getValue());
-			} else if (actionParameter.getName().equalsIgnoreCase("query")) {
-				this.getSqlQuery().setInputValue(actionParameter.getValue());
-			} else if (actionParameter.getName().equalsIgnoreCase("connection")) {
-				this.getConnectionName().setInputValue(actionParameter.getValue());
-			}
-		}
+    public SqlSetIterationVariables(FrameworkExecution frameworkExecution, ExecutionControl executionControl, ScriptExecution scriptExecution, ActionExecution actionExecution) {
+        this.init(frameworkExecution, executionControl, scriptExecution, actionExecution);
+    }
 
-		//Create parameter list
-		this.getActionParameterOperationMap().put("list", this.getListName());
-		this.getActionParameterOperationMap().put("query", this.getSqlQuery());
-		this.getActionParameterOperationMap().put("connection", this.getConnectionName());
-	}
-	
-	public boolean execute() {
-		try {
-			String query = convertQuery(getSqlQuery().getValue());
-			String connectionName = convertConnectionName(getConnectionName().getValue());
-			String listName = convertListName(getListName().getValue());
+    public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl, ScriptExecution scriptExecution, ActionExecution actionExecution) {
+        this.setFrameworkExecution(frameworkExecution);
+        this.setExecutionControl(executionControl);
+        this.setActionExecution(actionExecution);
+        this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
+    }
 
-			// Get Connection
-			ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution());
-			Connection connection = connectionConfiguration.getConnection(connectionName,
-					this.getExecutionControl().getEnvName()).get();
-			ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
-			DatabaseConnection databaseConnection = connectionOperation.getDatabaseConnection(connection);
+    public void prepare() {
+        // Reset Parameters
+        this.setListName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(), this.getActionExecution(),
+                this.getActionExecution().getAction().getType(), "list"));
+        this.setSqlQuery(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(), this.getActionExecution(),
+                this.getActionExecution().getAction().getType(), "query"));
+        this.setConnectionName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(), this.getActionExecution(),
+                this.getActionExecution().getAction().getType(), "connection"));
 
-			// Run the action
-			CachedRowSet sqlResultSet = databaseConnection.executeQuery(query);
-			try {
-				this.getExecutionControl().getExecutionRuntime().setIterationVariables(listName, sqlResultSet);
-				this.getActionExecution().getActionControl().increaseSuccessCount();
-			} catch (Exception e) {
-				throw new RuntimeException("Issue setting iteration variables: " + e, e);
-			}
-			
-			return true;
-		} catch (Exception e) {
-			StringWriter StackTrace = new StringWriter();
-			e.printStackTrace(new PrintWriter(StackTrace));
+        // Get Parameters
+        for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
+            if (actionParameter.getName().equalsIgnoreCase("list")) {
+                this.getListName().setInputValue(actionParameter.getValue());
+            } else if (actionParameter.getName().equalsIgnoreCase("query")) {
+                this.getSqlQuery().setInputValue(actionParameter.getValue());
+            } else if (actionParameter.getName().equalsIgnoreCase("connection")) {
+                this.getConnectionName().setInputValue(actionParameter.getValue());
+            }
+        }
 
-			this.getActionExecution().getActionControl().increaseErrorCount();
+        //Create parameter list
+        this.getActionParameterOperationMap().put("list", this.getListName());
+        this.getActionParameterOperationMap().put("query", this.getSqlQuery());
+        this.getActionParameterOperationMap().put("connection", this.getConnectionName());
+    }
 
-			this.getActionExecution().getActionControl().logOutput("exception",e.getMessage());
-			this.getActionExecution().getActionControl().logOutput("stacktrace",StackTrace.toString());
+    public boolean execute() {
+        try {
+            String query = convertQuery(getSqlQuery().getValue());
+            String connectionName = convertConnectionName(getConnectionName().getValue());
+            String listName = convertListName(getListName().getValue());
 
-			return false;
-		}
+            // Get Connection
+            ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution());
+            Connection connection = connectionConfiguration.getConnection(connectionName,
+                    this.getExecutionControl().getEnvName()).get();
+            ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
+            DatabaseConnection databaseConnection = connectionOperation.getDatabaseConnection(connection);
 
-	}
+            // Run the action
+            CachedRowSet sqlResultSet = databaseConnection.executeQuery(query);
+            try {
+                this.getExecutionControl().getExecutionRuntime().setIterationVariables(listName, sqlResultSet);
+                this.getActionExecution().getActionControl().increaseSuccessCount();
+            } catch (Exception e) {
+                throw new RuntimeException("Issue setting iteration variables: " + e, e);
+            }
 
-	private String convertListName(DataType listName) {
-		if (listName instanceof Text) {
-			return listName.toString();
-		} else {
-			frameworkExecution.getFrameworkLog().log(MessageFormat.format("sql.setIterationVariables does not accept {0} as type for listName",
-					listName.getClass()), Level.WARN);
-			return listName.toString();
-		}
-	}
+            return true;
+        } catch (Exception e) {
+            StringWriter StackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(StackTrace));
 
-	private String convertConnectionName(DataType connectionName) {
-		if (connectionName instanceof Text) {
-			return connectionName.toString();
-		} else {
-			frameworkExecution.getFrameworkLog().log(MessageFormat.format("sql.setIterationVariables does not accept {0} as type for connection name",
-					connectionName.getClass()), Level.WARN);
-			return connectionName.toString();
-		}
-	}
+            this.getActionExecution().getActionControl().increaseErrorCount();
 
-	private String convertQuery(DataType query) {
-		if (query instanceof Text) {
-			return query.toString();
-		} else {
-			frameworkExecution.getFrameworkLog().log(MessageFormat.format("sql.setIterationVariables does not accept {0} as type for query",
-					query.getClass()), Level.WARN);
-			return query.toString();
-		}
-	}
+            this.getActionExecution().getActionControl().logOutput("exception", e.getMessage());
+            this.getActionExecution().getActionControl().logOutput("stacktrace", StackTrace.toString());
 
-	// Getters and Setters
-	public FrameworkExecution getFrameworkExecution() {
-		return frameworkExecution;
-	}
+            return false;
+        }
 
-	public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-		this.frameworkExecution = frameworkExecution;
-	}
+    }
 
-	public ExecutionControl getExecutionControl() {
-		return executionControl;
-	}
+    private String convertListName(DataType listName) {
+        if (listName instanceof Text) {
+            return listName.toString();
+        } else {
+            frameworkExecution.getFrameworkLog().log(MessageFormat.format("sql.setIterationVariables does not accept {0} as type for listName",
+                    listName.getClass()), Level.WARN);
+            return listName.toString();
+        }
+    }
 
-	public void setExecutionControl(ExecutionControl executionControl) {
-		this.executionControl = executionControl;
-	}
+    private String convertConnectionName(DataType connectionName) {
+        if (connectionName instanceof Text) {
+            return connectionName.toString();
+        } else {
+            frameworkExecution.getFrameworkLog().log(MessageFormat.format("sql.setIterationVariables does not accept {0} as type for connection name",
+                    connectionName.getClass()), Level.WARN);
+            return connectionName.toString();
+        }
+    }
 
-	public ActionExecution getActionExecution() {
-		return actionExecution;
-	}
+    private String convertQuery(DataType query) {
+        if (query instanceof Text) {
+            return query.toString();
+        } else {
+            frameworkExecution.getFrameworkLog().log(MessageFormat.format("sql.setIterationVariables does not accept {0} as type for query",
+                    query.getClass()), Level.WARN);
+            return query.toString();
+        }
+    }
 
-	public void setActionExecution(ActionExecution actionExecution) {
-		this.actionExecution = actionExecution;
-	}
+    // Getters and Setters
+    public FrameworkExecution getFrameworkExecution() {
+        return frameworkExecution;
+    }
 
-	public ActionParameterOperation getConnectionName() {
-		return connectionName;
-	}
+    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
+        this.frameworkExecution = frameworkExecution;
+    }
 
-	public void setConnectionName(ActionParameterOperation connectionName) {
-		this.connectionName = connectionName;
-	}
+    public ExecutionControl getExecutionControl() {
+        return executionControl;
+    }
 
-	public HashMap<String, ActionParameterOperation> getActionParameterOperationMap() {
-		return actionParameterOperationMap;
-	}
+    public void setExecutionControl(ExecutionControl executionControl) {
+        this.executionControl = executionControl;
+    }
 
-	public void setActionParameterOperationMap(HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
-		this.actionParameterOperationMap = actionParameterOperationMap;
-	}
+    public ActionExecution getActionExecution() {
+        return actionExecution;
+    }
 
-	public ActionParameterOperation getSqlQuery() {
-		return sqlQuery;
-	}
+    public void setActionExecution(ActionExecution actionExecution) {
+        this.actionExecution = actionExecution;
+    }
 
-	public void setSqlQuery(ActionParameterOperation sqlQuery) {
-		this.sqlQuery = sqlQuery;
-	}
+    public ActionParameterOperation getConnectionName() {
+        return connectionName;
+    }
 
-	public ActionParameterOperation getListName() {
-		return listName;
-	}
+    public void setConnectionName(ActionParameterOperation connectionName) {
+        this.connectionName = connectionName;
+    }
 
-	public void setListName(ActionParameterOperation listName) {
-		this.listName = listName;
-	}
+    public HashMap<String, ActionParameterOperation> getActionParameterOperationMap() {
+        return actionParameterOperationMap;
+    }
+
+    public void setActionParameterOperationMap(HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
+        this.actionParameterOperationMap = actionParameterOperationMap;
+    }
+
+    public ActionParameterOperation getSqlQuery() {
+        return sqlQuery;
+    }
+
+    public void setSqlQuery(ActionParameterOperation sqlQuery) {
+        this.sqlQuery = sqlQuery;
+    }
+
+    public ActionParameterOperation getListName() {
+        return listName;
+    }
+
+    public void setListName(ActionParameterOperation listName) {
+        this.listName = listName;
+    }
 
 }

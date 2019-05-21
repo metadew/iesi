@@ -4,14 +4,13 @@ import io.metadew.iesi.connection.FileStoreConnection;
 
 /**
  * Connection object for a configuration file store. This class extends the file store connection.
- * 
- * @author peter.billen
  *
+ * @author peter.billen
  */
 public class MetadataFileStoreConnection extends FileStoreConnection {
 
-	public MetadataFileStoreConnection(String path) {
-		super(path);
-	}
+    public MetadataFileStoreConnection(String path) {
+        super(path);
+    }
 
 }

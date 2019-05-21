@@ -1,17 +1,5 @@
 package io.metadew.iesi.launch;
 
-import java.io.File;
-import java.util.Optional;
-
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-import org.apache.logging.log4j.Level;
-
 import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
@@ -24,6 +12,11 @@ import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionSelectOperation;
 import io.metadew.iesi.script.operation.JsonInputOperation;
 import io.metadew.iesi.script.operation.YamlInputOperation;
+import org.apache.commons.cli.*;
+import org.apache.logging.log4j.Level;
+
+import java.io.File;
+import java.util.Optional;
 
 /**
  * The execution launcher is entry point to launch all automation scripts.
@@ -35,89 +28,89 @@ public class ScriptLauncher {
     public static void main(String[] args) {
 
 
-		Option oHelp = new Option("help", "print this message");
-		Option oIni = new Option("ini", true, "define the initialization file");
-		Option oScript = new Option("script", true, "define the script name to execute");
-		Option oVersion = new Option("version", true, "define the version of the script to execute");
-		Option oFile = new Option("file", true, "define the configuration file to execute");
-		Option oEnv = new Option("env", true, "define the environment name where the execution needs to take place");
-		Option oParamList = new Option("paramlist", true, "define a list of parameters to use");
-		// Example: -paramlist var1=value1,var2=value
-		Option oParamFile = new Option("paramfile", true, "define a parameter file to use");
-		// Example: -paramfile C:/dir/file.conf
-		// multiple values are separated by commas: -paramfile
-		// C:/dir/file.conf,C:/dir/file.conf
-		Option oActionSelect = new Option("actions", true, "select actions to execute or not");
-		// Example -actions type=number,mode=include,scope=2-3,6
-		Option oSettings = new Option("settings", true, "set specific setting values");
-		Option oImpersonation = new Option("impersonation", true, "define impersonation name to use");
-		Option oImpersonate = new Option("impersonate", true, "define custom impersonations to use");
-		Option oExit = new Option("exit", true, "define if an explicit exit is required");
+        Option oHelp = new Option("help", "print this message");
+        Option oIni = new Option("ini", true, "define the initialization file");
+        Option oScript = new Option("script", true, "define the script name to execute");
+        Option oVersion = new Option("version", true, "define the version of the script to execute");
+        Option oFile = new Option("file", true, "define the configuration file to execute");
+        Option oEnv = new Option("env", true, "define the environment name where the execution needs to take place");
+        Option oParamList = new Option("paramlist", true, "define a list of parameters to use");
+        // Example: -paramlist var1=value1,var2=value
+        Option oParamFile = new Option("paramfile", true, "define a parameter file to use");
+        // Example: -paramfile C:/dir/file.conf
+        // multiple values are separated by commas: -paramfile
+        // C:/dir/file.conf,C:/dir/file.conf
+        Option oActionSelect = new Option("actions", true, "select actions to execute or not");
+        // Example -actions type=number,mode=include,scope=2-3,6
+        Option oSettings = new Option("settings", true, "set specific setting values");
+        Option oImpersonation = new Option("impersonation", true, "define impersonation name to use");
+        Option oImpersonate = new Option("impersonate", true, "define custom impersonations to use");
+        Option oExit = new Option("exit", true, "define if an explicit exit is required");
 
-		// create Options object
-		Options options = new Options();
-		// add options
-		options.addOption(oHelp);
-		options.addOption(oIni);
-		options.addOption(oScript);
-		options.addOption(oVersion);
-		options.addOption(oFile);
-		options.addOption(oEnv);
-		options.addOption(oParamList);
-		options.addOption(oParamFile);
-		options.addOption(oActionSelect);
-		options.addOption(oSettings);
-		options.addOption(oImpersonation);
-		options.addOption(oImpersonate);
-		options.addOption(oExit);
+        // create Options object
+        Options options = new Options();
+        // add options
+        options.addOption(oHelp);
+        options.addOption(oIni);
+        options.addOption(oScript);
+        options.addOption(oVersion);
+        options.addOption(oFile);
+        options.addOption(oEnv);
+        options.addOption(oParamList);
+        options.addOption(oParamFile);
+        options.addOption(oActionSelect);
+        options.addOption(oSettings);
+        options.addOption(oImpersonation);
+        options.addOption(oImpersonate);
+        options.addOption(oExit);
 
-		// create the parser
-		CommandLineParser parser = new DefaultParser();
-		boolean exit = true;
-		String initializationFile = "";
-		String environmentName = "";
-		String executionMode = "";
-		String scriptName = "";
-		long scriptVersionNumber = -1;
-		String fileName = "";
-		String paramList = "";
-		String paramFile = "";
-		String actionSelect = "";
-		String settings = "";
-		String impersonationName = "";
-		String impersonationCustom = "";
-		try {
-			// parse the command line arguments
-			CommandLine line = parser.parse(options, args);
+        // create the parser
+        CommandLineParser parser = new DefaultParser();
+        boolean exit = true;
+        String initializationFile = "";
+        String environmentName = "";
+        String executionMode = "";
+        String scriptName = "";
+        long scriptVersionNumber = -1;
+        String fileName = "";
+        String paramList = "";
+        String paramFile = "";
+        String actionSelect = "";
+        String settings = "";
+        String impersonationName = "";
+        String impersonationCustom = "";
+        try {
+            // parse the command line arguments
+            CommandLine line = parser.parse(options, args);
 
-			if (line.hasOption("help")) {
-				// automatically generate the help statement
-				HelpFormatter formatter = new HelpFormatter();
-				formatter.printHelp("[command]", options);
-				System.exit(0);
-			}
+            if (line.hasOption("help")) {
+                // automatically generate the help statement
+                HelpFormatter formatter = new HelpFormatter();
+                formatter.printHelp("[command]", options);
+                System.exit(0);
+            }
 
-			// Define the exit behaviour
-			if (line.hasOption("exit")) {
-				switch (line.getOptionValue("exit").trim().toLowerCase()) {
-					case "y":
-					case "true":
-						exit = true;
-						break;
-					case "n":
-					case "false":
-						exit = false;
-						break;
-					default:
-						break;
-				}
-			}
+            // Define the exit behaviour
+            if (line.hasOption("exit")) {
+                switch (line.getOptionValue("exit").trim().toLowerCase()) {
+                    case "y":
+                    case "true":
+                        exit = true;
+                        break;
+                    case "n":
+                    case "false":
+                        exit = false;
+                        break;
+                    default:
+                        break;
+                }
+            }
 
-			// Define the initialization file
-			if (line.hasOption("ini")) {
-				initializationFile = line.getOptionValue("ini");
-			}
-			System.out.println("Option -ini (ini) value = " + initializationFile);
+            // Define the initialization file
+            if (line.hasOption("ini")) {
+                initializationFile = line.getOptionValue("ini");
+            }
+            System.out.println("Option -ini (ini) value = " + initializationFile);
 
             // Get the script
             // Script is leading, Json option is trailing
@@ -210,8 +203,8 @@ public class ScriptLauncher {
         context.setName("script");
         context.setScope(scriptName);
 
-		FrameworkInitializationFile frameworkInitializationFile = new FrameworkInitializationFile();
-		frameworkInitializationFile.setName(initializationFile);
+        FrameworkInitializationFile frameworkInitializationFile = new FrameworkInitializationFile();
+        frameworkInitializationFile.setName(initializationFile);
         FrameworkExecution frameworkExecution = new FrameworkExecution(new FrameworkExecutionContext(context),
                 frameworkExecutionSettings, frameworkInitializationFile);
 

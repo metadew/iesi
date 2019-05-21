@@ -1,30 +1,30 @@
 package io.metadew.iesi.framework.definition;
 
 public class FrameworkPlugin {
-	
-	private String name;
-	private String path;
-	
-	//Constructors
-	public FrameworkPlugin() {
-		
-	}
-	
-	//Getters and Setters
-	public String getName() {
-		return name;
-	}
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    private String name;
+    private String path;
 
-	public String getPath() {
-		return path;
-	}
+    //Constructors
+    public FrameworkPlugin() {
 
-	public void setPath(String path) {
-		this.path = path;
-	}
+    }
+
+    //Getters and Setters
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
 
 }

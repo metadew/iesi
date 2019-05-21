@@ -1,18 +1,5 @@
 package io.metadew.iesi.script.execution;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.nio.charset.StandardCharsets;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.logging.log4j.Level;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import io.metadew.iesi.common.text.TextTools;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.configuration.FrameworkStatus;
@@ -20,6 +7,15 @@ import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.backup.BackupExecution;
 import io.metadew.iesi.metadata.definition.ScriptLog;
 import io.metadew.iesi.metadata.restore.RestoreExecution;
+import org.apache.logging.log4j.Level;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.lang.reflect.Constructor;
+import java.nio.charset.StandardCharsets;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ExecutionControl {
 

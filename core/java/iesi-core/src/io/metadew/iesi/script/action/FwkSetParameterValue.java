@@ -1,10 +1,5 @@
 package io.metadew.iesi.script.action;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.text.MessageFormat;
-import java.util.HashMap;
-
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.Text;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
@@ -15,146 +10,151 @@ import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 import org.apache.logging.log4j.Level;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.text.MessageFormat;
+import java.util.HashMap;
+
 public class FwkSetParameterValue {
 
-	private ActionExecution actionExecution;
-	private FrameworkExecution frameworkExecution;
-	private ExecutionControl executionControl;
+    private ActionExecution actionExecution;
+    private FrameworkExecution frameworkExecution;
+    private ExecutionControl executionControl;
 
-	// Parameters
-	private ActionParameterOperation operationName;
-	private ActionParameterOperation operationValue;
-	private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
+    // Parameters
+    private ActionParameterOperation operationName;
+    private ActionParameterOperation operationValue;
+    private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
 
-	// Constructors
-	public FwkSetParameterValue() {
-		
-	}
-	
-	public FwkSetParameterValue(FrameworkExecution frameworkExecution, ExecutionControl executionControl, ScriptExecution scriptExecution, ActionExecution actionExecution) {
-		this.init(frameworkExecution, executionControl, scriptExecution, actionExecution);
-	}
-	
-	public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl, ScriptExecution scriptExecution,  ActionExecution actionExecution) {
-		this.setFrameworkExecution(frameworkExecution);
-		this.setExecutionControl(executionControl);
-		this.setActionExecution(actionExecution);
-		this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
-	}
+    // Constructors
+    public FwkSetParameterValue() {
 
-	public void prepare() {
-		// Reset Parameters
-		this.setOperationName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(), this.getActionExecution(),
-				this.getActionExecution().getAction().getType(), "name"));
-		this.setOperationValue(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(), this.getActionExecution(),
-				this.getActionExecution().getAction().getType(), "value"));
+    }
 
-		// Get Parameters
-		for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-			if (actionParameter.getName().equalsIgnoreCase("name")) {
-				this.getOperationName().setInputValue(actionParameter.getValue());
-			} else if (actionParameter.getName().equalsIgnoreCase("value")) {
-				this.getOperationValue().setInputValue(actionParameter.getValue());
-			}
-		}
-		
-		//Create parameter list
-		this.getActionParameterOperationMap().put("name", this.getOperationName());
-		this.getActionParameterOperationMap().put("value", this.getOperationValue());
-	}
-	
-	public boolean execute() {
-		try {
-			String name = convertName(getOperationName().getValue());
-			String value = convertValue(getOperationValue().getValue());
-			return setParameter(name, value);
-		} catch (Exception e) {
-			StringWriter StackTrace = new StringWriter();
-			e.printStackTrace(new PrintWriter(StackTrace));
+    public FwkSetParameterValue(FrameworkExecution frameworkExecution, ExecutionControl executionControl, ScriptExecution scriptExecution, ActionExecution actionExecution) {
+        this.init(frameworkExecution, executionControl, scriptExecution, actionExecution);
+    }
 
-			this.getActionExecution().getActionControl().increaseErrorCount();
+    public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl, ScriptExecution scriptExecution, ActionExecution actionExecution) {
+        this.setFrameworkExecution(frameworkExecution);
+        this.setExecutionControl(executionControl);
+        this.setActionExecution(actionExecution);
+        this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
+    }
 
-			this.getActionExecution().getActionControl().logOutput("exception",e.getMessage());
-			this.getActionExecution().getActionControl().logOutput("stacktrace",StackTrace.toString());
+    public void prepare() {
+        // Reset Parameters
+        this.setOperationName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(), this.getActionExecution(),
+                this.getActionExecution().getAction().getType(), "name"));
+        this.setOperationValue(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(), this.getActionExecution(),
+                this.getActionExecution().getAction().getType(), "value"));
 
-			return false;
-		}
+        // Get Parameters
+        for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
+            if (actionParameter.getName().equalsIgnoreCase("name")) {
+                this.getOperationName().setInputValue(actionParameter.getValue());
+            } else if (actionParameter.getName().equalsIgnoreCase("value")) {
+                this.getOperationValue().setInputValue(actionParameter.getValue());
+            }
+        }
 
-	}
+        //Create parameter list
+        this.getActionParameterOperationMap().put("name", this.getOperationName());
+        this.getActionParameterOperationMap().put("value", this.getOperationValue());
+    }
 
-	private boolean setParameter(String name, String value) {
-		this.getExecutionControl().getExecutionRuntime().setRuntimeVariable(name, value);
-		this.getActionExecution().getActionControl().increaseSuccessCount();
-		return true;
-	}
+    public boolean execute() {
+        try {
+            String name = convertName(getOperationName().getValue());
+            String value = convertValue(getOperationValue().getValue());
+            return setParameter(name, value);
+        } catch (Exception e) {
+            StringWriter StackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(StackTrace));
 
-	private String convertValue(DataType value) {
-		if (value instanceof Text) {
-			return value.toString();
-		} else {
-			frameworkExecution.getFrameworkLog().log(MessageFormat.format("fwk.setParameterValue does not accept {0} as type for value",
-					value.getClass()), Level.WARN);
-			return value.toString();
-		}
-	}
+            this.getActionExecution().getActionControl().increaseErrorCount();
 
-	private String convertName(DataType name) {
-		if (name instanceof Text) {
-			return name.toString();
-		} else {
-			frameworkExecution.getFrameworkLog().log(MessageFormat.format("fwk.setParameterValue does not accept {0} as type for name",
-					name.getClass()), Level.WARN);
-			return name.toString();
-		}
-	}
+            this.getActionExecution().getActionControl().logOutput("exception", e.getMessage());
+            this.getActionExecution().getActionControl().logOutput("stacktrace", StackTrace.toString());
 
-	// Getters and Setters
-	public FrameworkExecution getFrameworkExecution() {
-		return frameworkExecution;
-	}
+            return false;
+        }
 
-	public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-		this.frameworkExecution = frameworkExecution;
-	}
+    }
 
-	public ExecutionControl getExecutionControl() {
-		return executionControl;
-	}
+    private boolean setParameter(String name, String value) {
+        this.getExecutionControl().getExecutionRuntime().setRuntimeVariable(name, value);
+        this.getActionExecution().getActionControl().increaseSuccessCount();
+        return true;
+    }
 
-	public void setExecutionControl(ExecutionControl executionControl) {
-		this.executionControl = executionControl;
-	}
+    private String convertValue(DataType value) {
+        if (value instanceof Text) {
+            return value.toString();
+        } else {
+            frameworkExecution.getFrameworkLog().log(MessageFormat.format("fwk.setParameterValue does not accept {0} as type for value",
+                    value.getClass()), Level.WARN);
+            return value.toString();
+        }
+    }
 
-	public ActionExecution getActionExecution() {
-		return actionExecution;
-	}
+    private String convertName(DataType name) {
+        if (name instanceof Text) {
+            return name.toString();
+        } else {
+            frameworkExecution.getFrameworkLog().log(MessageFormat.format("fwk.setParameterValue does not accept {0} as type for name",
+                    name.getClass()), Level.WARN);
+            return name.toString();
+        }
+    }
 
-	public void setActionExecution(ActionExecution actionExecution) {
-		this.actionExecution = actionExecution;
-	}
+    // Getters and Setters
+    public FrameworkExecution getFrameworkExecution() {
+        return frameworkExecution;
+    }
 
-	public ActionParameterOperation getOperationName() {
-		return operationName;
-	}
+    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
+        this.frameworkExecution = frameworkExecution;
+    }
 
-	public void setOperationName(ActionParameterOperation operationName) {
-		this.operationName = operationName;
-	}
+    public ExecutionControl getExecutionControl() {
+        return executionControl;
+    }
 
-	public ActionParameterOperation getOperationValue() {
-		return operationValue;
-	}
+    public void setExecutionControl(ExecutionControl executionControl) {
+        this.executionControl = executionControl;
+    }
 
-	public void setOperationValue(ActionParameterOperation operationValue) {
-		this.operationValue = operationValue;
-	}
+    public ActionExecution getActionExecution() {
+        return actionExecution;
+    }
 
-	public HashMap<String, ActionParameterOperation> getActionParameterOperationMap() {
-		return actionParameterOperationMap;
-	}
+    public void setActionExecution(ActionExecution actionExecution) {
+        this.actionExecution = actionExecution;
+    }
 
-	public void setActionParameterOperationMap(HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
-		this.actionParameterOperationMap = actionParameterOperationMap;
-	}
+    public ActionParameterOperation getOperationName() {
+        return operationName;
+    }
+
+    public void setOperationName(ActionParameterOperation operationName) {
+        this.operationName = operationName;
+    }
+
+    public ActionParameterOperation getOperationValue() {
+        return operationValue;
+    }
+
+    public void setOperationValue(ActionParameterOperation operationValue) {
+        this.operationValue = operationValue;
+    }
+
+    public HashMap<String, ActionParameterOperation> getActionParameterOperationMap() {
+        return actionParameterOperationMap;
+    }
+
+    public void setActionParameterOperationMap(HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
+        this.actionParameterOperationMap = actionParameterOperationMap;
+    }
 
 }

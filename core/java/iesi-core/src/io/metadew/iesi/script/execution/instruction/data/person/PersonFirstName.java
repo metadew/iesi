@@ -6,25 +6,21 @@ import io.metadew.iesi.script.execution.instruction.data.DataInstruction;
 /**
  * @author robbe.berrevoets
  */
-public class PersonFirstName implements DataInstruction
-{
+public class PersonFirstName implements DataInstruction {
 
-	private final GenerationObjectExecution generationObjectExecution;
+    private final GenerationObjectExecution generationObjectExecution;
 
-	public PersonFirstName(GenerationObjectExecution generationObjectExecution)
-	{
-		this.generationObjectExecution = generationObjectExecution;
-	}
+    public PersonFirstName(GenerationObjectExecution generationObjectExecution) {
+        this.generationObjectExecution = generationObjectExecution;
+    }
 
-	@Override
-	public String generateOutput(String parameters)
-	{
-		return generationObjectExecution.getName().firstName();
-	}
+    @Override
+    public String generateOutput(String parameters) {
+        return generationObjectExecution.getName().firstName();
+    }
 
-	@Override
-	public String getKeyword()
-	{
-		return "person.firstname";
-	}
+    @Override
+    public String getKeyword() {
+        return "person.firstname";
+    }
 }

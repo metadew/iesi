@@ -1,12 +1,5 @@
 package io.metadew.iesi.script.action;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.text.MessageFormat;
-import java.util.HashMap;
-
-import javax.sql.rowset.CachedRowSet;
-
 import io.metadew.iesi.connection.operation.ConnectionOperation;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.datatypes.DataType;
@@ -21,6 +14,12 @@ import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 import org.apache.logging.log4j.Level;
+
+import javax.sql.rowset.CachedRowSet;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.text.MessageFormat;
+import java.util.HashMap;
 
 public class WfaExecuteQueryPing {
 
@@ -251,22 +250,22 @@ public class WfaExecuteQueryPing {
 
     private boolean doneWaiting(DatabaseConnection databaseConnection, String query, boolean hasResult, boolean setRuntimeVariables) {
         try {
-			CachedRowSet crs;
-			crs = databaseConnection.executeQuery(query);
-			if (SQLTools.getRowCount(crs) > 0) {
-				if (hasResult) {
-					this.setRuntimeVariable(crs, setRuntimeVariables);
-					return true;
-				} else {
-					return false;
-				}
-			} else {
-				if (!hasResult) {
-					return true;
-				} else {
-					return false;
-				}
-			}
+            CachedRowSet crs;
+            crs = databaseConnection.executeQuery(query);
+            if (SQLTools.getRowCount(crs) > 0) {
+                if (hasResult) {
+                    this.setRuntimeVariable(crs, setRuntimeVariables);
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                if (!hasResult) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
@@ -281,14 +280,14 @@ public class WfaExecuteQueryPing {
     }
 
     private void setRuntimeVariable(CachedRowSet crs, boolean setRuntimeVariables) {
-		if (setRuntimeVariables) {
-			try {
-				this.getExecutionControl().getExecutionRuntime().setRuntimeVariables(crs);
-			} catch (Exception e) {
-				this.getActionExecution().getActionControl().increaseWarningCount();
-				this.getExecutionControl().logExecutionOutput(this.getActionExecution(), "SET_RUN_VAR", e.getMessage());
-			}
-		}
+        if (setRuntimeVariables) {
+            try {
+                this.getExecutionControl().getExecutionRuntime().setRuntimeVariables(crs);
+            } catch (Exception e) {
+                this.getActionExecution().getActionControl().increaseWarningCount();
+                this.getExecutionControl().logExecutionOutput(this.getActionExecution(), "SET_RUN_VAR", e.getMessage());
+            }
+        }
     }
 
     // Getters and Setters

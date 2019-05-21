@@ -1,102 +1,96 @@
 package io.metadew.iesi.script.action;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.HashMap;
-
-import io.metadew.iesi.connection.HostConnection;
-import io.metadew.iesi.connection.operation.ConnectionOperation;
-import io.metadew.iesi.connection.operation.FileTransferOperation;
-import io.metadew.iesi.connection.operation.filetransfer.FileTransferResult;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
-import io.metadew.iesi.metadata.configuration.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.ActionParameter;
-import io.metadew.iesi.metadata.definition.Connection;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.HashMap;
+
 public class FhoExecuteFileTransfer {
 
-	private ActionExecution actionExecution;
-	private FrameworkExecution frameworkExecution;
-	private ExecutionControl executionControl;
+    private ActionExecution actionExecution;
+    private FrameworkExecution frameworkExecution;
+    private ExecutionControl executionControl;
 
-	// Parameters
-	private ActionParameterOperation sourceFilePath;
-	private ActionParameterOperation sourceFileName;
-	private ActionParameterOperation sourceConnectionName;
-	private ActionParameterOperation targetFilePath;
-	private ActionParameterOperation targetFileName;
-	private ActionParameterOperation targetConnectionName;
-	private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
+    // Parameters
+    private ActionParameterOperation sourceFilePath;
+    private ActionParameterOperation sourceFileName;
+    private ActionParameterOperation sourceConnectionName;
+    private ActionParameterOperation targetFilePath;
+    private ActionParameterOperation targetFileName;
+    private ActionParameterOperation targetConnectionName;
+    private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
 
-	// Constructors
-	public FhoExecuteFileTransfer() {
+    // Constructors
+    public FhoExecuteFileTransfer() {
 
-	}
+    }
 
-	public FhoExecuteFileTransfer(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
-			ScriptExecution scriptExecution, ActionExecution actionExecution) {
-		this.init(frameworkExecution, executionControl, scriptExecution, actionExecution);
-	}
+    public FhoExecuteFileTransfer(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+                                  ScriptExecution scriptExecution, ActionExecution actionExecution) {
+        this.init(frameworkExecution, executionControl, scriptExecution, actionExecution);
+    }
 
-	public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
-			ScriptExecution scriptExecution, ActionExecution actionExecution) {
-		this.setFrameworkExecution(frameworkExecution);
-		this.setExecutionControl(executionControl);
-		this.setActionExecution(actionExecution);
-		this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
-	}
+    public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+                     ScriptExecution scriptExecution, ActionExecution actionExecution) {
+        this.setFrameworkExecution(frameworkExecution);
+        this.setExecutionControl(executionControl);
+        this.setActionExecution(actionExecution);
+        this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
+    }
 
-	public void prepare() {
-		// Set Parameters
-		this.setSourceFilePath(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
-				this.getActionExecution(), this.getActionExecution().getAction().getType(), "sourceFilePath"));
-		this.setSourceFileName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
-				this.getActionExecution(), this.getActionExecution().getAction().getType(), "sourceFileName"));
-		this.setSourceConnectionName(new ActionParameterOperation(this.getFrameworkExecution(),
-				this.getExecutionControl(), this.getActionExecution(), this.getActionExecution().getAction().getType(),
-				"sourceConnection"));
-		this.setTargetFilePath(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
-				this.getActionExecution(), this.getActionExecution().getAction().getType(), "targetFilePath"));
-		this.setTargetFileName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
-				this.getActionExecution(), this.getActionExecution().getAction().getType(), "targetFileName"));
-		this.setTargetConnectionName(new ActionParameterOperation(this.getFrameworkExecution(),
-				this.getExecutionControl(), this.getActionExecution(), this.getActionExecution().getAction().getType(),
-				"targetConnection"));
+    public void prepare() {
+        // Set Parameters
+        this.setSourceFilePath(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+                this.getActionExecution(), this.getActionExecution().getAction().getType(), "sourceFilePath"));
+        this.setSourceFileName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+                this.getActionExecution(), this.getActionExecution().getAction().getType(), "sourceFileName"));
+        this.setSourceConnectionName(new ActionParameterOperation(this.getFrameworkExecution(),
+                this.getExecutionControl(), this.getActionExecution(), this.getActionExecution().getAction().getType(),
+                "sourceConnection"));
+        this.setTargetFilePath(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+                this.getActionExecution(), this.getActionExecution().getAction().getType(), "targetFilePath"));
+        this.setTargetFileName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+                this.getActionExecution(), this.getActionExecution().getAction().getType(), "targetFileName"));
+        this.setTargetConnectionName(new ActionParameterOperation(this.getFrameworkExecution(),
+                this.getExecutionControl(), this.getActionExecution(), this.getActionExecution().getAction().getType(),
+                "targetConnection"));
 
-		// Get Parameters
-		for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-			if (actionParameter.getName().equalsIgnoreCase("sourcefilepath")) {
-				this.getSourceFilePath().setInputValue(actionParameter.getValue());
-			} else if (actionParameter.getName().equalsIgnoreCase("sourcefilename")) {
-				this.getSourceFileName().setInputValue(actionParameter.getValue());
-			} else if (actionParameter.getName().equalsIgnoreCase("sourceconnection")) {
-				this.getSourceConnectionName().setInputValue(actionParameter.getValue());
-			} else if (actionParameter.getName().equalsIgnoreCase("targetfilepath")) {
-				this.getTargetFilePath().setInputValue(actionParameter.getValue());
-			} else if (actionParameter.getName().equalsIgnoreCase("targetfilename")) {
-				this.getTargetFileName().setInputValue(actionParameter.getValue());
-			} else if (actionParameter.getName().equalsIgnoreCase("targetconnection")) {
-				this.getTargetConnectionName().setInputValue(actionParameter.getValue());
-			}
-		}
+        // Get Parameters
+        for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
+            if (actionParameter.getName().equalsIgnoreCase("sourcefilepath")) {
+                this.getSourceFilePath().setInputValue(actionParameter.getValue());
+            } else if (actionParameter.getName().equalsIgnoreCase("sourcefilename")) {
+                this.getSourceFileName().setInputValue(actionParameter.getValue());
+            } else if (actionParameter.getName().equalsIgnoreCase("sourceconnection")) {
+                this.getSourceConnectionName().setInputValue(actionParameter.getValue());
+            } else if (actionParameter.getName().equalsIgnoreCase("targetfilepath")) {
+                this.getTargetFilePath().setInputValue(actionParameter.getValue());
+            } else if (actionParameter.getName().equalsIgnoreCase("targetfilename")) {
+                this.getTargetFileName().setInputValue(actionParameter.getValue());
+            } else if (actionParameter.getName().equalsIgnoreCase("targetconnection")) {
+                this.getTargetConnectionName().setInputValue(actionParameter.getValue());
+            }
+        }
 
-		// Create parameter list
-		this.getActionParameterOperationMap().put("sourceFilePath", this.getSourceFilePath());
-		this.getActionParameterOperationMap().put("sourceFileName", this.getSourceFileName());
-		this.getActionParameterOperationMap().put("sourceConnection", this.getSourceConnectionName());
-		this.getActionParameterOperationMap().put("targetFilePath", this.getTargetFilePath());
-		this.getActionParameterOperationMap().put("targetFileName", this.getTargetFileName());
-		this.getActionParameterOperationMap().put("targetConnection", this.getTargetConnectionName());
-	}
+        // Create parameter list
+        this.getActionParameterOperationMap().put("sourceFilePath", this.getSourceFilePath());
+        this.getActionParameterOperationMap().put("sourceFileName", this.getSourceFileName());
+        this.getActionParameterOperationMap().put("sourceConnection", this.getSourceConnectionName());
+        this.getActionParameterOperationMap().put("targetFilePath", this.getTargetFilePath());
+        this.getActionParameterOperationMap().put("targetFileName", this.getTargetFileName());
+        this.getActionParameterOperationMap().put("targetConnection", this.getTargetConnectionName());
+    }
 
-	// Methods
-	public boolean execute() {
-		try {
-			// Get Connections
+    // Methods
+    public boolean execute() {
+        try {
+            // Get Connections
 //			ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution());
 //			Connection sourceConnection = connectionConfiguration
 //					.getConnection(this.getSourceConnectionName().getValue(), this.getExecutionControl().getEnvName()).get();
@@ -140,100 +134,100 @@ public class FhoExecuteFileTransfer {
 //			this.getActionExecution().getActionControl().logOutput("files",
 //					Integer.toString(fileTransferResult.getDcFileTransferedList().size()));
 
-			return true;
-		} catch (Exception e) {
-			StringWriter StackTrace = new StringWriter();
-			e.printStackTrace(new PrintWriter(StackTrace));
+            return true;
+        } catch (Exception e) {
+            StringWriter StackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(StackTrace));
 
-			this.getActionExecution().getActionControl().increaseErrorCount();
+            this.getActionExecution().getActionControl().increaseErrorCount();
 
-			this.getActionExecution().getActionControl().logOutput("exception", e.getMessage());
-			this.getActionExecution().getActionControl().logOutput("stacktrace", StackTrace.toString());
+            this.getActionExecution().getActionControl().logOutput("exception", e.getMessage());
+            this.getActionExecution().getActionControl().logOutput("stacktrace", StackTrace.toString());
 
-			return false;
-		}
+            return false;
+        }
 
-	}
+    }
 
-	// Getters and Setters
-	public FrameworkExecution getFrameworkExecution() {
-		return frameworkExecution;
-	}
+    // Getters and Setters
+    public FrameworkExecution getFrameworkExecution() {
+        return frameworkExecution;
+    }
 
-	public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-		this.frameworkExecution = frameworkExecution;
-	}
+    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
+        this.frameworkExecution = frameworkExecution;
+    }
 
-	public ExecutionControl getExecutionControl() {
-		return executionControl;
-	}
+    public ExecutionControl getExecutionControl() {
+        return executionControl;
+    }
 
-	public void setExecutionControl(ExecutionControl executionControl) {
-		this.executionControl = executionControl;
-	}
+    public void setExecutionControl(ExecutionControl executionControl) {
+        this.executionControl = executionControl;
+    }
 
-	public ActionExecution getActionExecution() {
-		return actionExecution;
-	}
+    public ActionExecution getActionExecution() {
+        return actionExecution;
+    }
 
-	public void setActionExecution(ActionExecution actionExecution) {
-		this.actionExecution = actionExecution;
-	}
+    public void setActionExecution(ActionExecution actionExecution) {
+        this.actionExecution = actionExecution;
+    }
 
-	public ActionParameterOperation getSourceFilePath() {
-		return sourceFilePath;
-	}
+    public ActionParameterOperation getSourceFilePath() {
+        return sourceFilePath;
+    }
 
-	public void setSourceFilePath(ActionParameterOperation sourceFilePath) {
-		this.sourceFilePath = sourceFilePath;
-	}
+    public void setSourceFilePath(ActionParameterOperation sourceFilePath) {
+        this.sourceFilePath = sourceFilePath;
+    }
 
-	public ActionParameterOperation getSourceFileName() {
-		return sourceFileName;
-	}
+    public ActionParameterOperation getSourceFileName() {
+        return sourceFileName;
+    }
 
-	public void setSourceFileName(ActionParameterOperation sourceFileName) {
-		this.sourceFileName = sourceFileName;
-	}
+    public void setSourceFileName(ActionParameterOperation sourceFileName) {
+        this.sourceFileName = sourceFileName;
+    }
 
-	public ActionParameterOperation getSourceConnectionName() {
-		return sourceConnectionName;
-	}
+    public ActionParameterOperation getSourceConnectionName() {
+        return sourceConnectionName;
+    }
 
-	public void setSourceConnectionName(ActionParameterOperation sourceConnectionName) {
-		this.sourceConnectionName = sourceConnectionName;
-	}
+    public void setSourceConnectionName(ActionParameterOperation sourceConnectionName) {
+        this.sourceConnectionName = sourceConnectionName;
+    }
 
-	public ActionParameterOperation getTargetFilePath() {
-		return targetFilePath;
-	}
+    public ActionParameterOperation getTargetFilePath() {
+        return targetFilePath;
+    }
 
-	public void setTargetFilePath(ActionParameterOperation targetFilePath) {
-		this.targetFilePath = targetFilePath;
-	}
+    public void setTargetFilePath(ActionParameterOperation targetFilePath) {
+        this.targetFilePath = targetFilePath;
+    }
 
-	public ActionParameterOperation getTargetFileName() {
-		return targetFileName;
-	}
+    public ActionParameterOperation getTargetFileName() {
+        return targetFileName;
+    }
 
-	public void setTargetFileName(ActionParameterOperation targetFileName) {
-		this.targetFileName = targetFileName;
-	}
+    public void setTargetFileName(ActionParameterOperation targetFileName) {
+        this.targetFileName = targetFileName;
+    }
 
-	public ActionParameterOperation getTargetConnectionName() {
-		return targetConnectionName;
-	}
+    public ActionParameterOperation getTargetConnectionName() {
+        return targetConnectionName;
+    }
 
-	public void setTargetConnectionName(ActionParameterOperation targetConnectionName) {
-		this.targetConnectionName = targetConnectionName;
-	}
+    public void setTargetConnectionName(ActionParameterOperation targetConnectionName) {
+        this.targetConnectionName = targetConnectionName;
+    }
 
-	public HashMap<String, ActionParameterOperation> getActionParameterOperationMap() {
-		return actionParameterOperationMap;
-	}
+    public HashMap<String, ActionParameterOperation> getActionParameterOperationMap() {
+        return actionParameterOperationMap;
+    }
 
-	public void setActionParameterOperationMap(HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
-		this.actionParameterOperationMap = actionParameterOperationMap;
-	}
+    public void setActionParameterOperationMap(HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
+        this.actionParameterOperationMap = actionParameterOperationMap;
+    }
 
 }

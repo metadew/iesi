@@ -110,7 +110,7 @@ public class PostgresqlRepositoryConfiguration extends RepositoryConfiguration {
             PostgresqlDatabase postgresqlDatabase = new PostgresqlDatabase(postgresqlDatabaseConnection, getSchema().orElse(""));
             databases.put("reader", postgresqlDatabase);
         });
-        
+
         return new Repository(databases);
     }
 

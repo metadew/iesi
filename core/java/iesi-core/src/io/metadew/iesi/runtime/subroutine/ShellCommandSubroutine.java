@@ -5,34 +5,34 @@ import io.metadew.iesi.metadata.definition.SubroutineParameter;
 
 public class ShellCommandSubroutine {
 
-	private Subroutine subroutine;
-	
-	// Constructors
-	public ShellCommandSubroutine(Subroutine subroutine) {
-		this.setSubroutine(subroutine);
-	}
+    private Subroutine subroutine;
 
-	// Methods
-	public String getValue() {
-		String shellCommand = "";
-		
-		// Get Parameters
-		for (SubroutineParameter subroutineParameter : this.getSubroutine().getParameters()) {
-			if (subroutineParameter.getName().equalsIgnoreCase("command")) {
-				shellCommand = subroutineParameter.getValue();
-			}
-		}
-		return shellCommand;
-	}
+    // Constructors
+    public ShellCommandSubroutine(Subroutine subroutine) {
+        this.setSubroutine(subroutine);
+    }
 
-	// Getters and Setters
-	public Subroutine getSubroutine() {
-		return subroutine;
-	}
+    // Methods
+    public String getValue() {
+        String shellCommand = "";
 
-	public void setSubroutine(Subroutine subroutine) {
-		this.subroutine = subroutine;
-	}
+        // Get Parameters
+        for (SubroutineParameter subroutineParameter : this.getSubroutine().getParameters()) {
+            if (subroutineParameter.getName().equalsIgnoreCase("command")) {
+                shellCommand = subroutineParameter.getValue();
+            }
+        }
+        return shellCommand;
+    }
+
+    // Getters and Setters
+    public Subroutine getSubroutine() {
+        return subroutine;
+    }
+
+    public void setSubroutine(Subroutine subroutine) {
+        this.subroutine = subroutine;
+    }
 
 
 }

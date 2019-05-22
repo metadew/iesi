@@ -47,6 +47,7 @@ Our framework can run on Linux/Unix and Windows systems.
 
 |Technology|Configuration|Connectivity|Data|
 |----------|    :---:    |   :---:    |   :---:    |
+|Apache Drill|![grey](/{{site.repository}}/images/icons/grey-dot.png)|![green](/{{site.repository}}/images/icons/green-dot.png)|![red](/{{site.repository}}/images/icons/red-dot.png)|
 |Dremio|![grey](/{{site.repository}}/images/icons/grey-dot.png)|![green](/{{site.repository}}/images/icons/green-dot.png)|![red](/{{site.repository}}/images/icons/red-dot.png)|
 |File System|![green](/{{site.repository}}/images/icons/green-dot.png)|![green](/{{site.repository}}/images/icons/green-dot.png)|![green](/{{site.repository}}/images/icons/green-dot.png)|
 |H2|![green](/{{site.repository}}/images/icons/green-dot.png)|![green](/{{site.repository}}/images/icons/green-dot.png)|![red](/{{site.repository}}/images/icons/red-dot.png)|

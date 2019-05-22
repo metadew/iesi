@@ -470,6 +470,10 @@ public class ConnectionOperation {
 				DbDremioConnectionOperation dbDremioConnectionOperation = new DbDremioConnectionOperation(
 						this.getFrameworkExecution());
 				databaseConnection = dbDremioConnectionOperation.getConnectionOperation(connection);
+			} else if (connection.getType().equalsIgnoreCase("db.drill")) {
+				DbDrillConnectionOperation dbDrillConnectionOperation = new DbDrillConnectionOperation(
+						this.getFrameworkExecution());
+				databaseConnection = dbDrillConnectionOperation.getConnectionOperation(connection);
 			} else {
 				String message = "Database type is not (yet) supported: " + connection.getType();
 				throw new RuntimeException(message);

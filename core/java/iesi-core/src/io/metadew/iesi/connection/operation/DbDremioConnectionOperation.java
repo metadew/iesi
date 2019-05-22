@@ -84,7 +84,7 @@ public class DbDremioConnectionOperation {
 						this.addMissingField("cluster");
 				} else if (connectionTypeParameter.getName().equalsIgnoreCase("schema")) {
 					if (schemaName.trim().equalsIgnoreCase(""))
-						this.addMissingField("file");
+						this.addMissingField("schema");
 				} else if (connectionTypeParameter.getName().equalsIgnoreCase("user")) {
 					if (userName.trim().equalsIgnoreCase(""))
 						this.addMissingField("user");

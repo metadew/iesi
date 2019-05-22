@@ -67,7 +67,7 @@ public class ScriptExecution {
 		this.setParentScriptExecution(this.getRootScriptExecution());
 		this.setRootScript(true);
 		this.setRouteScript(false);
-		this.setProcessId(this.getExecutionControl().getProcessId());
+		this.setProcessId(this.getExecutionControl().getNewProcessId());
 		return true;
 	}
 
@@ -83,13 +83,12 @@ public class ScriptExecution {
 		this.setParentScriptExecution(parentScriptExecution);
 		this.setRootScript(false);
 		this.setRouteScript(false);
-		this.setProcessId(this.getExecutionControl().getProcessId());
+		this.setProcessId(this.getExecutionControl().getNewProcessId());
 		return true;
 	}
 
 	public boolean initializeAsRouteExecution(ScriptExecution currentScriptExecution) {
 		this.setExecutionControl(currentScriptExecution.getExecutionControl());
-		// tbd
 		this.setParentScriptExecution(currentScriptExecution.getParentScriptExecution());
 		this.setRootScript(currentScriptExecution.isRootScript());
 		this.setActionSelectOperation(currentScriptExecution.getActionSelectOperation());

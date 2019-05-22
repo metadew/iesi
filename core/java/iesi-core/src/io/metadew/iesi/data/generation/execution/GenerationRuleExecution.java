@@ -45,7 +45,7 @@ public class GenerationRuleExecution {
 
 		// Log Start
 		//this.getExecutionControl().logStart(this);
-		this.setProcessId(this.getExecutionControl().getProcessId());
+		this.setProcessId(0L);
 		
 		try {
 			if (this.getGenerationRule().getType().trim().equalsIgnoreCase("blank")) {

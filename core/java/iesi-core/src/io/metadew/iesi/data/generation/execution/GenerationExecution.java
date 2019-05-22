@@ -34,7 +34,7 @@ public class GenerationExecution {
 
 		// Log Start
 		//this.getExecutionControl().logStart(this);
-		this.setProcessId(this.getExecutionControl().getProcessId());
+		this.setProcessId(0L);
 		this.setGenerationRuntime(new GenerationRuntime(this.getFrameworkExecution(), this.getExecutionControl()));
 		this.getGenerationRuntime().addGeneration(this.getGeneration(), this.getNumberOfRecords());
 		this.setGenerationOutputExecution(new GenerationOutputExecution(this.getFrameworkExecution(), this.getExecutionControl(), this, generationOutputName));

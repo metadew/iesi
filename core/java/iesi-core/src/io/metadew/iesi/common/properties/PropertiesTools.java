@@ -46,4 +46,14 @@ public final class PropertiesTools {
         }
 	}
 	
+	public static String getProperty(String filePath, String key) {
+        Properties properties = new Properties();
+		try (InputStream input = new FileInputStream(filePath)) {
+            properties.load(input);
+        } catch (Exception e) {
+            throw new RuntimeException("properties.load.error");
+        }
+		return (String) properties.get(key);
+	}
+	
 }

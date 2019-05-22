@@ -40,7 +40,7 @@ public class ActionExecution {
 
 	// Methods
 	public void initialize() {
-		this.setProcessId(this.getExecutionControl().getProcessId());
+		this.setProcessId(this.getExecutionControl().getNewProcessId());
 		this.setInitialized(true);
 		this.setExecuted(false);
 	}
@@ -51,8 +51,6 @@ public class ActionExecution {
 
 		this.getExecutionControl().logMessage(this, "action.name=" + this.getAction().getName(), Level.INFO);
 		this.getExecutionControl().logMessage(this, "action.id=" + this.getAction().getId(), Level.DEBUG);
-
-		// TODO process id as prefix ? logging in table
 
 		// Log Start
 		this.getExecutionControl().logStart(this);

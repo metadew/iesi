@@ -51,7 +51,7 @@ public class BackupExecution {
 
 		// Log Start
 		this.getExecutionControl().logStart(this);
-		this.setProcessId(this.getExecutionControl().getProcessId());
+		this.setProcessId(0L);
 
 		// Create Target Folder
 		if (FolderTools.exists(path)) {
@@ -113,7 +113,7 @@ public class BackupExecution {
 
 		// Log Start
 		this.getExecutionControl().logStart(this);
-		this.setProcessId(this.getExecutionControl().getProcessId());
+		this.setProcessId(0L);
 
 		// Get source configuration
 		DataObjectOperation dataObjectOperation = new DataObjectOperation(this.getFrameworkExecution(),

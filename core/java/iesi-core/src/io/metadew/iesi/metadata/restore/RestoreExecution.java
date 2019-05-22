@@ -37,7 +37,7 @@ public class RestoreExecution {
 	public void execute(String path) {
 		// Log Start
 		this.getExecutionControl().logStart(this);
-		this.setProcessId(this.getExecutionControl().getProcessId());
+		this.setProcessId(0L);
 
 		// Verify input parameters
 		if (FolderTools.isFolder(path) ) {

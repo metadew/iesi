@@ -34,7 +34,7 @@ public class GenerationControlRuleExecution {
 
 		// Log Start
 		//this.getExecutionControl().logStart(this);
-		this.setProcessId(this.getExecutionControl().getProcessId());
+		this.setProcessId(0L);
 
 		try {
 			if (this.getGenerationControlRule().getType().trim().equalsIgnoreCase("print")) {

@@ -26,7 +26,7 @@ public class ScriptTraceConfiguration {
 	// Create insert statement
 	public String getInsertStatement(ScriptExecution scriptExecution) {
 		String runId = scriptExecution.getExecutionControl().getRunId();
-		long processId = scriptExecution.getExecutionControl().getProcessId();
+		long processId = scriptExecution.getProcessId();
 		long parentProcessId = scriptExecution.getParentScriptExecution().getProcessId();
 		String scriptId = IdentifierTools.getScriptIdentifier(this.getScript().getName());
 

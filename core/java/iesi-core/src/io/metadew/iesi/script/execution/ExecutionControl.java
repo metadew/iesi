@@ -38,8 +38,6 @@ public class ExecutionControl
 
 	private String envName;
 
-	private long processId;
-
 	private List<Long> processIdList;
 
 	private boolean actionErrorStop = false;
@@ -121,8 +119,6 @@ public class ExecutionControl
 		Long parentProcessId = -1L;
 		if (scriptExecution.isRootScript())
 		{
-			// Reset Process Id
-			this.resetProcessId();
 			// Set parent Process Id
 			parentProcessId = 0L;
 			// Initialize runtime variables
@@ -138,9 +134,8 @@ public class ExecutionControl
 			// Set parent Process Id
 			parentProcessId = parentScriptExecution.getProcessId();
 		}
-		// Generate Process Id
-		this.getNewProcessId();
 
+		// Insert into result area
 		String query = "INSERT INTO "
 				+ this.getFrameworkExecution().getMetadataControl().getResultMetadataRepository().getTableNameByLabel("ScriptResults")
 				+ " (RUN_ID, PRC_ID, PARENT_PRC_ID, SCRIPT_ID, SCRIPT_NM, SCRIPT_VRS_NB, ENV_NM, ST_NM, STRT_TMS, END_TMS)";
@@ -173,7 +168,7 @@ public class ExecutionControl
 
 		this.setScriptLog(new ScriptLog());
 		this.getScriptLog().setRun(this.getRunId());
-		this.getScriptLog().setProcess(this.getProcessId());
+		this.getScriptLog().setProcess(scriptExecution.getProcessId());
 		this.getScriptLog().setParent(parentProcessId);
 		this.getScriptLog().setIdentifier(scriptExecution.getScript().getId());
 		this.getScriptLog().setVersion(scriptExecution.getScript().getVersion().getNumber());
@@ -192,9 +187,6 @@ public class ExecutionControl
 
 	public void logStart(ActionExecution actionExecution)
 	{
-		// Generate Process Id
-		this.getNewProcessId();
-
 		String query = "INSERT INTO "
 				+ this.getFrameworkExecution().getMetadataControl().getResultMetadataRepository().getTableNameByLabel("ActionResults")
 				+ " (RUN_ID, PRC_ID, ACTION_ID, ACTION_NM, ENV_NM, ST_NM, STRT_TMS, END_TMS)";
@@ -224,9 +216,6 @@ public class ExecutionControl
 
 	public void logSkip(ActionExecution actionExecution)
 	{
-		// Generate Process Id
-		this.getNewProcessId();
-
 		String query = "INSERT INTO "
 				+ this.getFrameworkExecution().getMetadataControl().getResultMetadataRepository().getTableNameByLabel("ActionResults")
 				+ " (RUN_ID, PRC_ID, ACTION_ID, ACTION_NM, ENV_NM, ST_NM, STRT_TMS, END_TMS)";
@@ -234,7 +223,7 @@ public class ExecutionControl
 		query += "(";
 		query += SQLTools.GetStringForSQL(this.getRunId());
 		query += ",";
-		query += SQLTools.GetStringForSQL(this.getProcessId());
+		query += SQLTools.GetStringForSQL(actionExecution.getProcessId());
 		query += ",";
 		query += SQLTools.GetStringForSQL(actionExecution.getAction().getId());
 		query += ",";
@@ -260,29 +249,17 @@ public class ExecutionControl
 
 	public void logStart(BackupExecution backupExecution) {
 		this.setRunId(this.getFrameworkExecution().getFrameworkRuntime().getRunId());
-
-		// Reset Process Id
-		this.resetProcessId();
-
 	}
 
 	public void logStart(RestoreExecution restoreExecution) {
 		this.setRunId(this.getFrameworkExecution().getFrameworkRuntime().getRunId());
-
-		// Reset Process Id
-		this.resetProcessId();
-
 	}
 
-	private void getNewProcessId()
+	public Long getNewProcessId()
 	{
-		this.processId++;
-		this.getFrameworkExecution().getFrameworkLog().log("exec.processid=" + this.getProcessId(), Level.DEBUG);
-	}
-
-	private void resetProcessId()
-	{
-		this.setProcessId(0);
+		Long processId = this.getFrameworkExecution().getFrameworkRuntime().getNextProcessId();
+		this.getFrameworkExecution().getFrameworkLog().log("exec.processid=" +processId, Level.INFO);
+		return processId;
 	}
 
 	public String logEnd(ScriptExecution scriptExecution)
@@ -529,16 +506,6 @@ public class ExecutionControl
 	public void setEnvName(String envName)
 	{
 		this.envName = envName;
-	}
-
-	public long getProcessId()
-	{
-		return processId;
-	}
-
-	public void setProcessId(long processId)
-	{
-		this.processId = processId;
 	}
 
 	public boolean isActionErrorStop()

@@ -32,7 +32,7 @@ Additional details on the parameters per connection type are provided below.
 <tbody>
 {% for type in site.data.ConnectionTypes %}
 <tr>
-<td markdown="span">{{ type.data.name }}</td>
+<td markdown="span">[{{ type.data.name }}](/{{site.repository}}/pages/define/connectiontypes/{{ type.data.name }}.html)</td>
 <td markdown="span">{{ type.data.description }}</td>
 </tr>
 {% endfor %}

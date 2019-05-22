@@ -1,0 +1,48 @@
+server:
+  port: 8082
+  
+spring.security.user:
+  name: admin
+  password: admin
+  
+security:
+  jwt:
+    public-key: classpath:public.txt
+    
+zuul:
+  sensitiveHeaders: Cookie,Set-Cookie
+  routes: 
+    environments:
+      service-id: environments
+      path: /api/environments/**
+      url: http://localhost:8080/api/environments
+
+    connections:
+      service-id: connections
+      path: /api/connections/**
+      url: http://localhost:8080/api/connections
+
+    components:
+      service-id: components
+      path: /api/components/**
+      url: http://localhost:8080/api/components
+      
+    impersonations:
+      service-id: impersonations
+      path: /api/impersonations/**
+      url: http://localhost:8080/api/impersonations
+
+    spring-oauth-resource:
+      service-id: oauth
+      path: /api/oauth/token
+      url: http://localhost:8080
+
+spring:
+  application:
+      name: IESI-REST-GATEWAY
+  boot:
+    admin:
+      client:
+          url: http://localhost:8081/
+          username: admin
+          password: admin

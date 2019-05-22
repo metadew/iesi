@@ -3,9 +3,11 @@ package io.metadew.iesi.metadata.repository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.configuration.ComponentConfiguration;
+import io.metadew.iesi.metadata.configuration.GenerationConfiguration;
 import io.metadew.iesi.metadata.configuration.ScriptConfiguration;
 import io.metadew.iesi.metadata.definition.Component;
 import io.metadew.iesi.metadata.definition.DataObject;
+import io.metadew.iesi.metadata.definition.Generation;
 import io.metadew.iesi.metadata.definition.Script;
 import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
 
@@ -51,6 +53,9 @@ public class DesignMetadataRepository extends MetadataRepository {
         } else if (dataObject.getType().equalsIgnoreCase("component")) {
             Component component = objectMapper.convertValue(dataObject.getData(), Component.class);
             save(component, frameworkExecution);
+        } else if (dataObject.getType().equalsIgnoreCase("generation")) {
+            Generation generation= objectMapper.convertValue(dataObject.getData(), Generation.class);
+            save(generation, frameworkExecution);
         } else if (dataObject.getType().equalsIgnoreCase("subroutine")) {
             // TODO
         } else {
@@ -68,6 +73,12 @@ public class DesignMetadataRepository extends MetadataRepository {
         ComponentConfiguration componentConfiguration = new ComponentConfiguration(component,
                 frameworkExecution);
         executeUpdate(componentConfiguration.getInsertStatement());
+    }
+    
+    public void save(Generation generation, FrameworkExecution frameworkExecution) {
+        GenerationConfiguration generationConfiguration = new GenerationConfiguration(generation,
+                frameworkExecution);
+        executeUpdate(generationConfiguration.getInsertStatement());
     }
 
 }

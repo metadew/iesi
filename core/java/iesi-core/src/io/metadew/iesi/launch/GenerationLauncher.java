@@ -12,6 +12,7 @@ import org.apache.logging.log4j.Level;
 import io.metadew.iesi.data.generation.execution.GenerationExecution;
 import io.metadew.iesi.framework.execution.FrameworkExecutionContext;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
+import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.configuration.GenerationConfiguration;
 import io.metadew.iesi.metadata.definition.Context;
@@ -28,6 +29,7 @@ public class GenerationLauncher {
 	public static void main(String[] args) {
 		
 		Option oHelp = new Option("help", "print this message");
+		Option oIni = new Option("ini", true, "define the initialization file");
 		Option oGeneration = new Option("generation", true, "define the generation name to execute");
 		Option oOutput = new Option("output", true, "define the output name to use for the generation");
 		Option oRecords = new Option("records", true, "define the number of records to generate");
@@ -42,6 +44,7 @@ public class GenerationLauncher {
 		Options options = new Options();
 		// add options
 		options.addOption(oHelp);
+		options.addOption(oIni);
 		options.addOption(oGeneration);
 		options.addOption(oOutput);
 		options.addOption(oRecords);
@@ -51,6 +54,7 @@ public class GenerationLauncher {
 
 		// create the parser
 		CommandLineParser parser = new DefaultParser();
+		String initializationFile = "";
 		String generationName = null;
 		String outputName = null;
 		String records = "";
@@ -68,6 +72,12 @@ public class GenerationLauncher {
 				System.exit(0);
 			}
 
+			// Define the initialization file
+			if (line.hasOption("ini")) {
+				initializationFile = line.getOptionValue("ini");
+			}
+			System.out.println("Option -ini (ini) value = " + initializationFile);
+			
 			// Get the Generation Name
 			if (line.hasOption("generation")) {
 				generationName = line.getOptionValue("generation");
@@ -114,8 +124,11 @@ public class GenerationLauncher {
 		System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 		System.out.println();
 
-		// Create the framework instance
-		FrameworkInstance frameworkInstance = new FrameworkInstance();
+		// Create framework instance
+		FrameworkInitializationFile frameworkInitializationFile = new FrameworkInitializationFile();
+		frameworkInitializationFile.setName(initializationFile);
+
+		FrameworkInstance frameworkInstance = new FrameworkInstance(frameworkInitializationFile);
 
 		// Create the framework execution
 		Context context = new Context();

@@ -2,11 +2,9 @@ package io.metadew.iesi.data.generation.execution;
 
 import java.io.File;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.metadew.iesi.client.execution.ProgressBar;
 import io.metadew.iesi.connection.database.connection.SqliteDatabaseConnection;
-import io.metadew.iesi.connection.database.connection.TemporaryDatabaseConnection;
 import io.metadew.iesi.connection.tools.FolderTools;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.Generation;
@@ -16,7 +14,7 @@ import io.metadew.iesi.script.execution.ExecutionControl;
 public class GenerationRuntime {
 
 	private FrameworkExecution frameworkExecution;
-	private TemporaryDatabaseConnection temporaryDatabaseConnection;
+	private SqliteDatabaseConnection temporaryDatabaseConnection;
 	private GenerationObjectExecution generationObjectExecution;
 	private ExecutionControl executionControl;
 	private String fieldListSelect;
@@ -35,18 +33,17 @@ public class GenerationRuntime {
 
 	private void createTemporaryDatabase() {
 		// Create work database
-		ObjectMapper objectMapper = new ObjectMapper();
 		String temporaryDatabaseFolder = this.getFrameworkExecution().getFrameworkConfiguration().getFolderConfiguration().getFolderAbsolutePath("run.tmp")
 				+ File.separator + this.getExecutionControl().getRunId();
 		FolderTools.createFolder(temporaryDatabaseFolder);
 		String temporaryDatabaseFile = "genTempDb" + ".db3";
 		SqliteDatabaseConnection sqliteDatabaseConnection = new SqliteDatabaseConnection(temporaryDatabaseFolder + File.separator + temporaryDatabaseFile);
-		this.setTemporaryDatabaseConnection(objectMapper.convertValue(sqliteDatabaseConnection, TemporaryDatabaseConnection.class));
+		this.setTemporaryDatabaseConnection(sqliteDatabaseConnection);
 		
 		// Optimize journalling
-		this.getTemporaryDatabaseConnection().executeUpdate("PRAGMA journal_mode=WAL;");
+		//this.getTemporaryDatabaseConnection().executeUpdate("PRAGMA journal_mode=WAL;");
 		// Put asynchronouus behaviour
-		this.getTemporaryDatabaseConnection().executeUpdate("PRAGMA synchronous=OFF;");
+		//this.getTemporaryDatabaseConnection().executeUpdate("PRAGMA synchronous=OFF;");
 
 	}
 
@@ -97,6 +94,7 @@ public class GenerationRuntime {
 		for (int currentRecord = 0; currentRecord < numberOfRecords; currentRecord++) {
 			this.getTemporaryDatabaseConnection().executeUpdate(query);
 		}
+		
 	}
 	
 	public void updateProgress() {
@@ -112,14 +110,6 @@ public class GenerationRuntime {
 	}
 
 	// Getters and Setters
-	public TemporaryDatabaseConnection getTemporaryDatabaseConnection() {
-		return temporaryDatabaseConnection;
-	}
-
-	public void setTemporaryDatabaseConnection(TemporaryDatabaseConnection temporaryDatabaseConnection) {
-		this.temporaryDatabaseConnection = temporaryDatabaseConnection;
-	}
-
 	public String getTableName() {
 		return tableName;
 	}
@@ -182,6 +172,14 @@ public class GenerationRuntime {
 
 	public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
 		this.frameworkExecution = frameworkExecution;
+	}
+
+	public SqliteDatabaseConnection getTemporaryDatabaseConnection() {
+		return temporaryDatabaseConnection;
+	}
+
+	public void setTemporaryDatabaseConnection(SqliteDatabaseConnection temporaryDatabaseConnection) {
+		this.temporaryDatabaseConnection = temporaryDatabaseConnection;
 	}
 
 }

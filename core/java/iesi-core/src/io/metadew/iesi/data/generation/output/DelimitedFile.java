@@ -26,7 +26,7 @@ public class DelimitedFile {
 	private GenerationOutputExecution generationOutputExecution;
 	private FrameworkExecution frameworkExecution;
 	private ExecutionControl executionControl;
-	private String generationOutputTypeName = "FILE_DELIMITED";
+	private String generationOutputTypeName = "file.delimited";
 
 	// Parameters
 	private GenerationOutputParameterExecution fileName;
@@ -64,7 +64,7 @@ public class DelimitedFile {
 					this.getGenerationOutputTypeName(), "encoding"));
 			this.setControls(new GenerationOutputParameterExecution(this.getFrameworkExecution(), this.getExecutionControl(),
 					this.getGenerationOutputTypeName(), "controls"));
-			
+
 			// Get Parameters
 			for (GenerationOutputParameter generationOutputParameter : this.getGenerationOutputExecution()
 					.getGenerationOutput().getParameters()) {

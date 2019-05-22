@@ -30,7 +30,7 @@ public class GenerationOutputExecution {
 	public void execute() {
 		
 		try {
-			if (this.getGenerationOutput().getType().trim().equalsIgnoreCase("file_delimited")) {
+			if (this.getGenerationOutput().getType().trim().equalsIgnoreCase("file.delimited")) {
 				DelimitedFile delimitedFile = new DelimitedFile(this.getFrameworkExecution(), this.getExecutionControl(), this);
 				delimitedFile.execute();
 			} else {

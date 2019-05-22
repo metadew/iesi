@@ -258,7 +258,7 @@ public class ExecutionControl
 	public Long getNewProcessId()
 	{
 		Long processId = this.getFrameworkExecution().getFrameworkRuntime().getNextProcessId();
-		this.getFrameworkExecution().getFrameworkLog().log("exec.processid=" +processId, Level.INFO);
+		this.getFrameworkExecution().getFrameworkLog().log("exec.processid=" +processId, Level.DEBUG);
 		return processId;
 	}
 

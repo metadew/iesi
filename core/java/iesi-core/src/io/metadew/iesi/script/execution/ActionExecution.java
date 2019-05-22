@@ -28,6 +28,7 @@ public class ActionExecution {
 	private Object actionTypeExecution;
 	private boolean initialized = false;
 	private boolean executed = false;
+	private boolean childExecution = false;
 
 	// Constructors
 	public ActionExecution(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
@@ -59,13 +60,16 @@ public class ActionExecution {
 		this.setActionControl(new ActionControl(this.getFrameworkExecution(), this.getExecutionControl(), this));
 		this.getActionControl().getActionRuntime().initActionCache(this.getAction().getName(),
 				this.getExecutionControl().getExecutionRuntime().getRunCacheFolderName());
-		
+
 		// Initialize iteration variables
 		if (iterationInstance != null) {
-			this.getActionControl().getActionRuntime().setRuntimeParameter("iteration", "number", String.valueOf(iterationInstance.getIterationNumber()));
-			this.getActionControl().getActionRuntime().setRuntimeParameters("iteration", iterationInstance.getVariableMap());;
+			this.getActionControl().getActionRuntime().setRuntimeParameter("iteration", "number",
+					String.valueOf(iterationInstance.getIterationNumber()));
+			this.getActionControl().getActionRuntime().setRuntimeParameters("iteration",
+					iterationInstance.getVariableMap());
+			;
 		}
-		
+
 		try {
 			// Set Attributes
 			if (this.getAction().getComponent() != null
@@ -261,6 +265,14 @@ public class ActionExecution {
 
 	public void setExecuted(boolean executed) {
 		this.executed = executed;
+	}
+
+	public boolean isChildExecution() {
+		return childExecution;
+	}
+
+	public void setChildExecution(boolean childExecution) {
+		this.childExecution = childExecution;
 	}
 
 }

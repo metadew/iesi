@@ -49,6 +49,7 @@ public class ScriptExecution {
 	private String paramFile = "";
 
 	private ActionSelectOperation actionSelectOperation;
+	private List<Action> actions;
 
 	// Constructors
 	public ScriptExecution() {
@@ -145,9 +146,9 @@ public class ScriptExecution {
 		 * Loop all actions inside the script
 		 */
 		boolean execute = true;
-		List<Action> actions = this.getScript().getActions();
-		for (int i = 0; i < actions.size(); i++) {
-			Action action = actions.get(i);
+		this.setActions(this.getScript().getActions());
+		for (int i = 0; i < this.getActions().size(); i++) {
+			Action action = this.getActions().get(i);
 			// Check if the action needs to be executed
 			if (this.isRootScript()) {
 				if (!this.getActionSelectOperation().getExecutionStatus(action)) {
@@ -291,16 +292,16 @@ public class ScriptExecution {
 
 					List<Action> includeActions = new ArrayList();
 					// Subselect the past actions including the include action itself
-					includeActions.addAll(actions.subList(0, i + 1));
+					includeActions.addAll(this.getActions().subList(0, i + 1));
 					// Add the include script
 					includeActions.addAll(fwkIncludeScript.getScript().getActions());
 					// If not at the end of the script, add the remainder of actions
-					if (i < actions.size() - 1) {
-						includeActions.addAll(actions.subList(i + 1, actions.size()));
+					if (i < this.getActions().size() - 1) {
+						includeActions.addAll(this.getActions().subList(i + 1, this.getActions().size()));
 					}
 
 					// Adjust the action list that is iterated over
-					actions = includeActions;
+					this.setActions(includeActions);
 				}
 
 				// Error handling
@@ -470,6 +471,14 @@ public class ScriptExecution {
 
 	public void setRouteScript(boolean routeScript) {
 		this.routeScript = routeScript;
+	}
+
+	public List<Action> getActions() {
+		return actions;
+	}
+
+	public void setActions(List<Action> actions) {
+		this.actions = actions;
 	}
 
 }

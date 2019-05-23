@@ -33,6 +33,10 @@ public class JarOperation {
 
 		return javaArchive;
 	}
+	
+	public void storeJavaArchiveDefinition(String connectionName) {
+
+	}
 
 	// Getters and Setters
 	public FrameworkExecution getFrameworkExecution() {

@@ -8,6 +8,7 @@ import io.metadew.iesi.connection.java.operation.JarOperation;
 import io.metadew.iesi.connection.tools.HostConnectionTools;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.ActionParameter;
+import io.metadew.iesi.metadata.definition.JavaArchive;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
@@ -83,7 +84,9 @@ public class JavaParseJar {
 
 			if (isOnLocalhost) {
 				JarOperation jarOperation = new JarOperation();
-				jarOperation.getJavaArchiveDefinition("target/iesi-core.jar");
+				@SuppressWarnings("unused")
+				JavaArchive javaArchive = jarOperation.getJavaArchiveDefinition("target/iesi-core.jar");
+				
 			} else {
 			
 			}

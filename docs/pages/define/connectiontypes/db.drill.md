@@ -4,7 +4,7 @@
 
 This connection is for Apache Drill schema free sql query engine.
 
-Get more information on Apache drill on [https://drill.apache.org/](https://drill.apache.org/).
+Get more information at [https://drill.apache.org/](https://drill.apache.org/).
 
 ## Use cases
 

@@ -1,0 +1,8 @@
+[{
+	"type": "LaunchItem",
+	"data": {
+		"script": "script.arg.param.1",
+		"description": "test setting a parameter value as input parameter",
+		"parameterList": "param1=value1"
+	}
+}]

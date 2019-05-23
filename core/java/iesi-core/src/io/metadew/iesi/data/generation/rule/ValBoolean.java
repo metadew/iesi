@@ -24,7 +24,17 @@ public class ValBoolean {
 	private GenerationRuleParameterExecution falseValue;
 
 	// Constructors
+	public ValBoolean() {
+		
+	}
+	
 	public ValBoolean(FrameworkExecution frameworkExecution, ExecutionControl executionControl, GenerationRuleExecution generationRuleExecution) {
+		this.setFrameworkExecution(frameworkExecution);
+		this.setExecutionControl(executionControl);
+		this.setGenerationRuleExecution(generationRuleExecution);
+	}
+
+	public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl, GenerationRuleExecution generationRuleExecution) {
 		this.setFrameworkExecution(frameworkExecution);
 		this.setExecutionControl(executionControl);
 		this.setGenerationRuleExecution(generationRuleExecution);

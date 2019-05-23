@@ -23,12 +23,22 @@ public class TxtSentences {
 	private GenerationRuleParameterExecution sentenceNumber;
 
 	// Constructors
+	public TxtSentences() {
+		
+	}
+	
 	public TxtSentences(FrameworkExecution frameworkExecution, ExecutionControl executionControl, GenerationRuleExecution generationRuleExecution) {
 		this.setFrameworkExecution(frameworkExecution);
 		this.setEoControl(executionControl);
 		this.setGenerationRuleExecution(generationRuleExecution);
 	}
 
+	public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl, GenerationRuleExecution generationRuleExecution) {
+		this.setFrameworkExecution(frameworkExecution);
+		this.setEoControl(executionControl);
+		this.setGenerationRuleExecution(generationRuleExecution);
+	}
+	
 	//
 	public boolean execute() {
 		try {

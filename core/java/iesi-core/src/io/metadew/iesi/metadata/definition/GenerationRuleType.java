@@ -5,6 +5,7 @@ import java.util.List;
 public class GenerationRuleType {
 	
 	private String name;
+	private String className;
 	private String description;
 	private List<GenerationRuleTypeParameter> parameters;
 	
@@ -36,6 +37,14 @@ public class GenerationRuleType {
 
 	public void setParameters(List<GenerationRuleTypeParameter> parameters) {
 		this.parameters = parameters;
+	}
+
+	public String getClassName() {
+		return className;
+	}
+
+	public void setClassName(String className) {
+		this.className = className;
 	}
 	
 

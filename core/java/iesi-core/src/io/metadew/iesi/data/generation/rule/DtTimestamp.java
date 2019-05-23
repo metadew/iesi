@@ -29,7 +29,17 @@ public class DtTimestamp {
 	private GenerationRuleParameterExecution format;
 
 	// Constructors
+	public DtTimestamp() {
+		
+	}
+	
 	public DtTimestamp(FrameworkExecution frameworkExecution, ExecutionControl executionControl, GenerationRuleExecution generationRuleExecution) {
+		this.setFrameworkExecution(frameworkExecution);
+		this.setEoControl(executionControl);
+		this.setGenerationRuleExecution(generationRuleExecution);
+	}
+
+	public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl, GenerationRuleExecution generationRuleExecution) {
 		this.setFrameworkExecution(frameworkExecution);
 		this.setEoControl(executionControl);
 		this.setGenerationRuleExecution(generationRuleExecution);

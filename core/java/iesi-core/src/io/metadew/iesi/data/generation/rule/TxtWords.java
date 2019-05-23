@@ -23,7 +23,17 @@ public class TxtWords {
 	private GenerationRuleParameterExecution wordNumber;
 
 	// Constructors
+	public TxtWords() {
+		
+	}
+	
 	public TxtWords(FrameworkExecution frameworkExecution, ExecutionControl executionControl, GenerationRuleExecution generationRuleExecution) {
+		this.setFrameworkExecution(frameworkExecution);
+		this.setEoControl(executionControl);
+		this.setGenerationRuleExecution(generationRuleExecution);
+	}
+
+	public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl, GenerationRuleExecution generationRuleExecution) {
 		this.setFrameworkExecution(frameworkExecution);
 		this.setEoControl(executionControl);
 		this.setGenerationRuleExecution(generationRuleExecution);

@@ -23,7 +23,17 @@ public class ValBlank {
 	private GenerationRuleParameterExecution blankValue;
 
 	// Constructors
+	public ValBlank() {
+		
+	}
+	
 	public ValBlank(FrameworkExecution frameworkExecution, ExecutionControl executionControl, GenerationRuleExecution generationRuleExecution) {
+		this.setFrameworkExecution(frameworkExecution);
+		this.setExecutionControl(executionControl);
+		this.setGenerationRuleExecution(generationRuleExecution);
+	}
+
+	public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl, GenerationRuleExecution generationRuleExecution) {
 		this.setFrameworkExecution(frameworkExecution);
 		this.setExecutionControl(executionControl);
 		this.setGenerationRuleExecution(generationRuleExecution);

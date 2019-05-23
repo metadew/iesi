@@ -9,30 +9,31 @@ import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.metadata.configuration.FrameworkPluginConfiguration;
 
 public class FrameworkConfiguration {
-	
+
 	private String frameworkCode;
 	private String frameworkHome;
 	private FrameworkFolderConfiguration folderConfiguration;
 	private FrameworkSettingConfiguration settingConfiguration;
 	private FrameworkActionTypeConfiguration actionTypeConfiguration;
-	
-		
+	private FrameworkGenerationRuleTypeConfiguration generationRuleTypeConfiguration;
+
 	public FrameworkConfiguration() {
 		this.setFrameworkCode(FrameworkSettings.IDENTIFIER.value());
 		this.initializeFrameworkHome();
 		this.setFolderConfiguration(new FrameworkFolderConfiguration(this.getFrameworkHome()));
 		this.setSettingConfiguration(new FrameworkSettingConfiguration(this.getFrameworkHome()));
 		this.setActionTypeConfiguration(new FrameworkActionTypeConfiguration(this.getFolderConfiguration()));
+		this.setGenerationRuleTypeConfiguration(
+				new FrameworkGenerationRuleTypeConfiguration(this.getFolderConfiguration()));
 	}
-	
-    public FrameworkConfiguration(String repositoryHome) {
-        this.setFrameworkCode(FrameworkSettings.IDENTIFIER.value());
-        this.setFrameworkHome(repositoryHome + File.separator + "core");
-        this.setFolderConfiguration(new FrameworkFolderConfiguration(this.getFrameworkHome()));
-        this.setSettingConfiguration(new FrameworkSettingConfiguration(this.getFrameworkHome()));
-}
 
-	
+	public FrameworkConfiguration(String repositoryHome) {
+		this.setFrameworkCode(FrameworkSettings.IDENTIFIER.value());
+		this.setFrameworkHome(repositoryHome + File.separator + "core");
+		this.setFolderConfiguration(new FrameworkFolderConfiguration(this.getFrameworkHome()));
+		this.setSettingConfiguration(new FrameworkSettingConfiguration(this.getFrameworkHome()));
+	}
+
 	private void initializeFrameworkHome() {
 		String configurationFile = FrameworkSettings.IDENTIFIER.value() + "-home.conf";
 		Properties properties = new Properties();
@@ -42,13 +43,19 @@ public class FrameworkConfiguration {
 		} else {
 			throw new RuntimeException(configurationFile + " not found");
 		}
-		this.setFrameworkHome(properties.getProperty(this.getFrameworkCode() +  ".home"));
+		this.setFrameworkHome(properties.getProperty(this.getFrameworkCode() + ".home"));
 	}
-	
+
 	public void setActionTypesFromPlugins(List<FrameworkPluginConfiguration> frameworkPluginConfigurationList) {
-		this.getActionTypeConfiguration().setActionTypesFromPlugins(this.getFolderConfiguration(), frameworkPluginConfigurationList);
+		this.getActionTypeConfiguration().setActionTypesFromPlugins(this.getFolderConfiguration(),
+				frameworkPluginConfigurationList);
 	}
-	
+
+	public void setGenerationRuleTypesFromPlugins(List<FrameworkPluginConfiguration> frameworkPluginConfigurationList) {
+		this.getGenerationRuleTypeConfiguration().setGenerationRuleTypesFromPlugins(this.getFolderConfiguration(),
+				frameworkPluginConfigurationList);
+	}
+
 	// Getters and Setters
 	public FrameworkFolderConfiguration getFolderConfiguration() {
 		return folderConfiguration;
@@ -89,6 +96,14 @@ public class FrameworkConfiguration {
 	public void setActionTypeConfiguration(FrameworkActionTypeConfiguration actionTypeConfiguration) {
 		this.actionTypeConfiguration = actionTypeConfiguration;
 	}
-	
+
+	public FrameworkGenerationRuleTypeConfiguration getGenerationRuleTypeConfiguration() {
+		return generationRuleTypeConfiguration;
+	}
+
+	public void setGenerationRuleTypeConfiguration(
+			FrameworkGenerationRuleTypeConfiguration generationRuleTypeConfiguration) {
+		this.generationRuleTypeConfiguration = generationRuleTypeConfiguration;
+	}
 
 }

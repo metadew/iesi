@@ -23,7 +23,17 @@ public class TxtCharacters {
 	private GenerationRuleParameterExecution characterNumber;
 
 	// Constructors
+	public TxtCharacters() {
+		
+	}
+	
 	public TxtCharacters(FrameworkExecution frameworkExecution, ExecutionControl executionControl, GenerationRuleExecution generationRuleExecution) {
+		this.setFrameworkExecution(frameworkExecution);
+		this.setEoControl(executionControl);
+		this.setGenerationRuleExecution(generationRuleExecution);
+	}
+
+	public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl, GenerationRuleExecution generationRuleExecution) {
 		this.setFrameworkExecution(frameworkExecution);
 		this.setEoControl(executionControl);
 		this.setGenerationRuleExecution(generationRuleExecution);

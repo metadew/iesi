@@ -60,20 +60,6 @@ public class ActionParameterOperation {
                 actionTypeParameterConfiguration.getActionTypeParameter(this.getActionTypeName(), this.getName()));
     }
 
-//	private void lookupSubroutine() {
-//		if (this.getActionTypeParameter().getSubroutine() == null
-//				|| this.getActionTypeParameter().getSubroutine().equalsIgnoreCase(""))
-//			return;
-//		this.setSubroutineOperation(new SubroutineOperation(this.getFrameworkExecution(), this.getValue()));
-//		if (this.getSubroutineOperation().isValid()) {
-//			if (this.getSubroutineOperation().getSubroutine().getType().equalsIgnoreCase("query")) {
-//				this.setValue(new Text(new SqlStatementSubroutine(this.getSubroutineOperation().getSubroutine()).getValue()));
-//			} else if (this.getSubroutineOperation().getSubroutine().getType().equalsIgnoreCase("command")) {
-//				this.setValue(new Text(new ShellCommandSubroutine(this.getSubroutineOperation().getSubroutine()).getValue()));
-//			}
-//
-//		}
-//	}
 
     private String lookupSubroutine(String input) {
         if (this.getActionTypeParameter().getSubroutine() == null

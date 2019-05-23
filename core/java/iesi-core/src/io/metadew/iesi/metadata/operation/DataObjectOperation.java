@@ -7,7 +7,7 @@ import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.configuration.DataObjectConfiguration;
 import io.metadew.iesi.metadata.definition.DataObject;
-import io.metadew.iesi.metadata_repository.MetadataRepository;
+import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.BufferedReader;

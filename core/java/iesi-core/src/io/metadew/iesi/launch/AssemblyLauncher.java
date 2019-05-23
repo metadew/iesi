@@ -59,7 +59,6 @@ public class AssemblyLauncher {
                 System.exit(0);
             }
 
-            // Repository
             if (line.hasOption("repository")) {
                 actionMatch = true;
                 writeHeaderMessage();

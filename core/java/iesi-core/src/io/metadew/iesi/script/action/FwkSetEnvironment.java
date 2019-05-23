@@ -15,6 +15,7 @@ import java.io.StringWriter;
 import java.text.MessageFormat;
 import java.util.HashMap;
 
+
 public class FwkSetEnvironment {
 
     private ActionExecution actionExecution;
@@ -60,7 +61,7 @@ public class FwkSetEnvironment {
     public boolean execute() {
         try {
             String environmentName = convertEnvironmentName(getEnvironmentName().getValue());
-            this.getExecutionControl().setEnvironment(environmentName);
+            this.getExecutionControl().setEnvironment(actionExecution, environmentName);
             this.getActionExecution().getActionControl().increaseSuccessCount();
             return true;
         } catch (Exception e) {

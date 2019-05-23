@@ -1,0 +1,20 @@
+---
+type: Connection
+data:
+  name: "host.linux.1"
+  type: "host.linux"
+  description: "host.linux.1 connection"
+  environment: "iesi-test"
+  parameters:
+  - name: "host"
+    value: "localhost"
+  - name: "port"
+    value: "2222"
+  - name: "user"
+    value: "root"
+  - name: "password"
+    value: "ENC(Waan0DOjDHNBnTXtldp5xnGwIP0=)"
+  - name: "tempPath"
+    value: "/tmp"
+  - name: "simulateTerminal"
+    value: "N"

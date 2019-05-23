@@ -9,12 +9,14 @@ public class IterationExecution {
 
     private FrameworkExecution frameworkExecution;
     private ExecutionControl executionControl;
+    private ActionExecution actionExecution;
     private long iterationNumber;
     private IterationOperation iterationOperation;
     private IterationConfiguration iterationConfiguration;
     private boolean iterationOff;
     private String iterationType;
     private String iterationName;
+    private IterationInstance iterationInstance;
 
     public IterationExecution() {
         this.setIterationOff(true);
@@ -23,9 +25,11 @@ public class IterationExecution {
 
     // Methods
     public void initialize(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
-                           String iterationName) {
+                           ActionExecution actionExecution, String iterationName) {
         this.setExecutionControl(executionControl);
+        this.setActionExecution(actionExecution);
         this.setIterationName(iterationName);
+        System.out.println("iteration name: " + iterationName);
         this.setIterationOperation(
                 this.getExecutionControl().getExecutionRuntime().getIterationOperation(this.getIterationName()));
         this.setIterationConfiguration(new IterationConfiguration(this.getFrameworkExecution(),
@@ -64,23 +68,25 @@ public class IterationExecution {
             } else {
                 return false;
             }
-        } else if (this.getIterationType().equalsIgnoreCase("values")
-                || this.getIterationType().equalsIgnoreCase("for")) {
-            IterationInstance iterationInstance = this.getIterationConfiguration()
-                    .hasNext(this.getExecutionControl().getRunId(), this.getIterationNumber());
-            return !iterationInstance.isEmpty();
-        } else if (this.getIterationType().equalsIgnoreCase("condition")) {
-            IterationInstance iterationInstance = this.getIterationConfiguration().hasNext(
-                    this.getExecutionControl().getRunId(), this.getIterationOperation().getIteration().getCondition());
-            return !iterationInstance.isEmpty();
-        } else if (this.getIterationType().equalsIgnoreCase("list")) {
-            IterationInstance iterationInstance = this.getIterationConfiguration().hasNextListItem(
-                    this.getExecutionControl().getRunId(), this.getIterationName(),
-                    this.getIterationNumber());
-            return !iterationInstance.isEmpty();
-
         } else {
+            if (this.getIterationType().equalsIgnoreCase("values") || this.getIterationType().equalsIgnoreCase("for")) {
+                this.setIterationInstance(this.getIterationConfiguration()
+                        .hasNext(this.getExecutionControl().getRunId(), this.getIterationNumber()));
+            } else if (this.getIterationType().equalsIgnoreCase("condition")) {
+                this.setIterationInstance(this.getIterationConfiguration().hasNext(
+                        this.getExecutionControl().getRunId(),
+                        this.getIterationOperation().getIteration().getCondition()));
+            } else if (this.getIterationType().equalsIgnoreCase("list")) {
+                this.setIterationInstance(this.getIterationConfiguration().hasNextListItem(
+                        this.getExecutionControl().getRunId(), this.getIterationName(), this.getIterationNumber()));
+            }
+        }
+
+        if (this.getIterationInstance() == null) {
             return false;
+        } else {
+            this.getIterationInstance().setIterationNumber(this.getIterationNumber());
+            return !this.getIterationInstance().isEmpty();
         }
     }
 
@@ -149,4 +155,19 @@ public class IterationExecution {
         this.iterationName = iterationName;
     }
 
+    public ActionExecution getActionExecution() {
+        return actionExecution;
+    }
+
+    public void setActionExecution(ActionExecution actionExecution) {
+        this.actionExecution = actionExecution;
+    }
+
+    public IterationInstance getIterationInstance() {
+        return iterationInstance;
+    }
+
+    public void setIterationInstance(IterationInstance iterationInstance) {
+        this.iterationInstance = iterationInstance;
+    }
 }

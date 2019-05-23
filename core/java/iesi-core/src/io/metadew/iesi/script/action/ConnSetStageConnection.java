@@ -23,6 +23,7 @@ public class ConnSetStageConnection {
 
     // Parameters
     private ActionParameterOperation stageName;
+    private ActionParameterOperation stageCleanup;
     private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
 
     // Constructors
@@ -30,11 +31,13 @@ public class ConnSetStageConnection {
 
     }
 
-    public ConnSetStageConnection(FrameworkExecution frameworkExecution, ExecutionControl executionControl, ScriptExecution scriptExecution, ActionExecution actionExecution) {
+    public ConnSetStageConnection(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+                                  ScriptExecution scriptExecution, ActionExecution actionExecution) {
         this.init(frameworkExecution, executionControl, scriptExecution, actionExecution);
     }
 
-    public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl, ScriptExecution scriptExecution, ActionExecution actionExecution) {
+    public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+                     ScriptExecution scriptExecution, ActionExecution actionExecution) {
         this.setFrameworkExecution(frameworkExecution);
         this.setExecutionControl(executionControl);
         this.setActionExecution(actionExecution);
@@ -45,31 +48,29 @@ public class ConnSetStageConnection {
         // Reset Parameters
         this.setStageName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(), this.getActionExecution(),
                 this.getActionExecution().getAction().getType(), "stage"));
+        this.setStageCleanup(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+                this.getActionExecution(), this.getActionExecution().getAction().getType(), "cleanUp"));
 
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
             if (actionParameter.getName().equalsIgnoreCase("stage")) {
                 this.getStageName().setInputValue(actionParameter.getValue());
+            } else if (actionParameter.getName().equalsIgnoreCase("cleanup")) {
+                this.getStageCleanup().setInputValue(actionParameter.getValue());
             }
         }
 
-        //Create parameter list
+        // Create parameter list
         this.getActionParameterOperationMap().put("stage", this.getStageName());
-    }
-
-    private boolean execute(DataType stageName) {
-        throw new RuntimeException(MessageFormat.format("Cannot execute conn.setStageConnection for arguments '{0}'",
-                stageName.toString()));
+        this.getActionParameterOperationMap().put("cleanup", this.getStageCleanup());
     }
 
     //
     public boolean execute() {
         try {
-            // Run the action
             String stageName = convertStageName(getStageName().getValue());
-            //this.getExecutionControl().getExecutionRuntime().setStage(this.getStageName().getValue());
-
-            return true;
+            boolean cleanup = convertCleanup(getStageCleanup().getValue());
+            return execute(stageName, cleanup);
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
@@ -84,6 +85,19 @@ public class ConnSetStageConnection {
 
     }
 
+    private boolean execute(String stageName, boolean cleanup) {
+        // Set the stage connection
+        try {
+            this.getExecutionControl().getExecutionRuntime().setStage(stageName, cleanup);
+        } catch (Exception e) {
+            throw new RuntimeException("conn.stage.error");
+        }
+
+        // Increase the success count
+        this.getActionExecution().getActionControl().increaseSuccessCount();
+        return true;
+    }
+
     private String convertStageName(DataType stageName) {
         if (stageName instanceof Text) {
             return stageName.toString();
@@ -91,6 +105,20 @@ public class ConnSetStageConnection {
             frameworkExecution.getFrameworkLog().log(MessageFormat.format("conn.setStageConnection does not accept {0} as type for stage name",
                     stageName.getClass()), Level.WARN);
             return stageName.toString();
+        }
+    }
+
+    private boolean convertCleanup(DataType cleanup) {
+        // TODO: make optional
+        if (cleanup == null) {
+            return false;
+        }
+        if (cleanup instanceof Text) {
+            return cleanup.toString().equalsIgnoreCase("y");
+        } else {
+            frameworkExecution.getFrameworkLog().log(MessageFormat.format("cli.executeCommand does not accept {0} as type for cleanup",
+                    cleanup.getClass()), Level.WARN);
+            return false;
         }
     }
 
@@ -133,6 +161,14 @@ public class ConnSetStageConnection {
 
     public void setActionParameterOperationMap(HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
         this.actionParameterOperationMap = actionParameterOperationMap;
+    }
+
+    public ActionParameterOperation getStageCleanup() {
+        return stageCleanup;
+    }
+
+    public void setStageCleanup(ActionParameterOperation stageCleanup) {
+        this.stageCleanup = stageCleanup;
     }
 
 }

@@ -40,10 +40,12 @@ public class GenerationExecution {
         // Parameters
         // ParamList has priority of ParamFile
         if (!this.getParamFile().trim().equalsIgnoreCase("")) {
-            this.getExecutionControl().getExecutionRuntime().loadParamFiles(this.getParamFile());
+            // TODO does not work anymore (process id added for scripts)
+            //this.getExecutionControl().getExecutionRuntime().loadParamFiles(this.getParamFile());
         }
         if (!this.getParamList().trim().equalsIgnoreCase("")) {
-            this.getExecutionControl().getExecutionRuntime().loadParamList(this.getParamList());
+            // TODO does not work anymore (process id added for scripts)
+            //this.getExecutionControl().getExecutionRuntime().loadParamList(this.getParamList());
         }
 
         // Loop through the generation rules

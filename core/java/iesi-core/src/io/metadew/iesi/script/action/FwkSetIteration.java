@@ -16,6 +16,7 @@ import java.io.StringWriter;
 import java.text.MessageFormat;
 import java.util.HashMap;
 
+
 public class FwkSetIteration {
 
     private ActionExecution actionExecution;
@@ -136,26 +137,7 @@ public class FwkSetIteration {
     }
 
     private boolean setIteration(String name, String type, String list, String values, String from, String to, String step, String condition, boolean interrupt) {
-        Iteration iteration = new Iteration();
-        iteration.setName(name);
-        iteration.setType(type);
-        iteration.setList(list);
-        iteration.setValues(values);
-        iteration.setFrom(from);
-        iteration.setTo(to);
-        // Set default step if not provided
-        if (step == null) {
-            iteration.setStep("1");
-        } else {
-            iteration.setStep(step);
-        }
-        iteration.setCondition(condition);
-        // Set default interrupt if not provided
-        if (interrupt) {
-            iteration.setInterrupt("y");
-        } else {
-            iteration.setInterrupt("n");
-        }
+        Iteration iteration = new Iteration(name, type, list, values, from, to, step==null?"1":step, condition, interrupt?"y":"n");
         this.getExecutionControl().getExecutionRuntime().setIteration(iteration);
         this.getActionExecution().getActionControl().increaseSuccessCount();
 

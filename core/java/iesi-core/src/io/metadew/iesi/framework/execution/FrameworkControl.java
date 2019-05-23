@@ -5,7 +5,7 @@ import io.metadew.iesi.common.config.*;
 import io.metadew.iesi.framework.configuration.FrameworkConfiguration;
 import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
 import io.metadew.iesi.metadata.configuration.FrameworkPluginConfiguration;
-import io.metadew.iesi.metadata_repository.configuration.MetadataRepositoryConfiguration;
+import io.metadew.iesi.metadata.repository.configuration.MetadataRepositoryConfiguration;
 
 import java.io.BufferedReader;
 import java.io.File;

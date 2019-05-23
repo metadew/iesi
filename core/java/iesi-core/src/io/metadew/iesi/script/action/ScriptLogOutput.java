@@ -15,6 +15,7 @@ import java.io.StringWriter;
 import java.text.MessageFormat;
 import java.util.HashMap;
 
+
 /**
  * This action stores an output value as part of the script results
  *

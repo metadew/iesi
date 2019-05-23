@@ -68,7 +68,7 @@ public class FwkSetParameterList {
     public boolean execute() {
         try {
             Map<String, String> list = convertList(getParameterList().getValue());
-            list.forEach((name, value) -> executionControl.getExecutionRuntime().setRuntimeVariable(name, value));
+            list.forEach((name, value) -> executionControl.getExecutionRuntime().setRuntimeVariable(actionExecution, name, value));
             return true;
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();

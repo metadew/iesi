@@ -5,6 +5,9 @@ import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.framework.execution.FrameworkExecutionContext;
 import io.metadew.iesi.framework.execution.FrameworkExecutionSettings;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
+import io.metadew.iesi.guard.configuration.UserAccessConfiguration;
+import io.metadew.iesi.guard.definition.UserAccess;
 import io.metadew.iesi.metadata.configuration.ScriptConfiguration;
 import io.metadew.iesi.metadata.definition.Context;
 import io.metadew.iesi.metadata.definition.Script;
@@ -27,7 +30,6 @@ public class ScriptLauncher {
 
     public static void main(String[] args) {
 
-
         Option oHelp = new Option("help", "print this message");
         Option oIni = new Option("ini", true, "define the initialization file");
         Option oScript = new Option("script", true, "define the script name to execute");
@@ -46,6 +48,8 @@ public class ScriptLauncher {
         Option oImpersonation = new Option("impersonation", true, "define impersonation name to use");
         Option oImpersonate = new Option("impersonate", true, "define custom impersonations to use");
         Option oExit = new Option("exit", true, "define if an explicit exit is required");
+        Option oUser = new Option("user", true, "define the user to log in with");
+        Option oPassword = new Option("password", true, "define the password to log in with");
 
         // create Options object
         Options options = new Options();
@@ -63,6 +67,8 @@ public class ScriptLauncher {
         options.addOption(oImpersonation);
         options.addOption(oImpersonate);
         options.addOption(oExit);
+        options.addOption(oUser);
+        options.addOption(oPassword);
 
         // create the parser
         CommandLineParser parser = new DefaultParser();
@@ -79,6 +85,8 @@ public class ScriptLauncher {
         String settings = "";
         String impersonationName = "";
         String impersonationCustom = "";
+        String userName = "";
+        String userPassword = "";
         try {
             // parse the command line arguments
             CommandLine line = parser.parse(options, args);
@@ -187,6 +195,20 @@ public class ScriptLauncher {
             }
             System.out.println("Option -impersonate (impersonate) value = " + impersonationCustom);
 
+            // Get the user name
+            if (line.hasOption("user")) {
+                userName = line.getOptionValue("user");
+            }
+            System.out.println("Option -user (user) value = " + userName);
+
+            // Get the user password
+            if (line.hasOption("password")) {
+                userPassword = line.getOptionValue("password");
+                System.out.println("Option -password (password) value = " + "*****");
+            } else {
+                System.out.println("Option -password (password) value = " + "");
+            }
+
         } catch (ParseException e) {
             e.printStackTrace();
             System.exit(1);
@@ -197,16 +219,20 @@ public class ScriptLauncher {
         System.out.println("script.launcher.start");
         System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 
-        // Set the shared context
+        // Create framework instance
+        FrameworkInitializationFile frameworkInitializationFile = new FrameworkInitializationFile();
+        frameworkInitializationFile.setName(initializationFile);
+
+        FrameworkInstance frameworkInstance = new FrameworkInstance(frameworkInitializationFile);
+
+        // Create framework execution
         FrameworkExecutionSettings frameworkExecutionSettings = new FrameworkExecutionSettings(settings);
         Context context = new Context();
         context.setName("script");
         context.setScope(scriptName);
 
-        FrameworkInitializationFile frameworkInitializationFile = new FrameworkInitializationFile();
-        frameworkInitializationFile.setName(initializationFile);
-        FrameworkExecution frameworkExecution = new FrameworkExecution(new FrameworkExecutionContext(context),
-                frameworkExecutionSettings, frameworkInitializationFile);
+        FrameworkExecution frameworkExecution = new FrameworkExecution(frameworkInstance,
+                new FrameworkExecutionContext(context), frameworkExecutionSettings, frameworkInitializationFile);
 
         // Logging
         frameworkExecution.getFrameworkLog().log("option.script=" + scriptName, Level.INFO);
@@ -219,6 +245,37 @@ public class ScriptLauncher {
         frameworkExecution.getFrameworkLog().log("option.settings=" + settings, Level.INFO);
         frameworkExecution.getFrameworkLog().log("option.impersonation=" + impersonationName, Level.INFO);
         frameworkExecution.getFrameworkLog().log("option.impersonate=" + impersonationCustom, Level.INFO);
+        frameworkExecution.getFrameworkLog().log("option.user=" + userName, Level.INFO);
+        if (userPassword.isEmpty()) {
+            frameworkExecution.getFrameworkLog().log("option.password=" + "", Level.INFO);
+        } else {
+            frameworkExecution.getFrameworkLog().log("option.password=" + "*****", Level.INFO);
+        }
+
+        // User authentication
+        if (frameworkExecution.getFrameworkControl().getProperty(frameworkExecution.getFrameworkConfiguration()
+                .getSettingConfiguration().getSettingPath("guard.authenticate").get()).equalsIgnoreCase("y")) {
+
+            if (userName.isEmpty()) {
+                throw new RuntimeException("guard.user.name.missing");
+            }
+
+            if (userPassword.isEmpty()) {
+                throw new RuntimeException("guard.user.password.missing");
+            }
+
+            UserAccessConfiguration userAccessConfiguration = new UserAccessConfiguration(frameworkExecution);
+            UserAccess userAccess = userAccessConfiguration.doUserLogin(userName, userPassword);
+
+            if (userAccess.isException()) {
+                frameworkExecution.getFrameworkLog().log("guard.user.exception=" + userAccess.getExceptionMessage(),
+                        Level.INFO);
+                frameworkExecution.getFrameworkLog().log("guard.user.denied", Level.INFO);
+                throw new RuntimeException("guard.user.denied");
+            }
+
+        }
+        // TODO link user access into framework
 
         // Get the Script
         ScriptConfiguration scriptConfiguration = null;

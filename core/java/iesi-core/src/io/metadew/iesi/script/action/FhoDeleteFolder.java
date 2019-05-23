@@ -1,15 +1,31 @@
 package io.metadew.iesi.script.action;
 
+import io.metadew.iesi.connection.FileConnection;
+import io.metadew.iesi.connection.HostConnection;
+import io.metadew.iesi.connection.host.ShellCommandResult;
+import io.metadew.iesi.connection.host.ShellCommandSettings;
+import io.metadew.iesi.connection.operation.ConnectionOperation;
+import io.metadew.iesi.connection.tools.FolderTools;
+import io.metadew.iesi.connection.tools.HostConnectionTools;
+import io.metadew.iesi.connection.tools.fho.FileConnectionTools;
+import io.metadew.iesi.datatypes.DataType;
+import io.metadew.iesi.datatypes.Text;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.metadata.configuration.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.ActionParameter;
+import io.metadew.iesi.metadata.definition.Connection;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
+import org.apache.logging.log4j.Level;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.text.MessageFormat;
 import java.util.HashMap;
+import java.util.List;
+
 
 /**
  * Action type to delete one or more folders and all of its contents.
@@ -75,44 +91,11 @@ public class FhoDeleteFolder {
     // Methods
     public boolean execute() {
         try {
-//			boolean isOnLocalHost = true;
-//
-//			if (this.getConnectionName().getValue().isEmpty()) {
-//				isOnLocalHost = true;
-//			} else {
-//				if (this.getConnectionName().getValue().equalsIgnoreCase("localhost")) {
-//					isOnLocalHost = true;
-//				} else {
-//					// placeholder
-//				}
-//			}
-//
-//			if (isOnLocalHost) {
-//
-//				if (this.getFolderPath().getValue().isEmpty()) {
-//					FolderTools.deleteFolder(this.getFolderName().getValue(), true);
-//				} else {
-//					File[] subjectFiles = FolderTools.getFilesInFolder(this.getFolderPath().getValue(), this.getFolderName().getValue());
-//					for (File file : subjectFiles) {
-//						if (file.isDirectory()) {
-//							this.getActionExecution().getActionControl().logOutput("folder.delete", file.getAbsolutePath());
-//							try {
-//								FolderTools.deleteFolder(file.getAbsolutePath(), true);
-//								this.getActionExecution().getActionControl().increaseSuccessCount();
-//								this.getActionExecution().getActionControl().logOutput("folder.delete.success", "confirmed");
-//							} catch (Exception e) {
-//								this.getActionExecution().getActionControl().logOutput("folder.delete.error", e.getMessage());
-//								this.getActionExecution().getActionControl().increaseErrorCount();
-//							}
-//						}
-//					}
-//				}
-//
-//			} else {
-//				// placeholder
-//			}
-//
-            return true;
+            String path = convertPath(getFolderPath().getValue());
+            String folder = convertFolder(getFolderName().getValue());
+            String connectionName = convertConnectionName(getConnectionName().getValue());
+            return execute(path, folder, connectionName);
+
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
@@ -125,6 +108,118 @@ public class FhoDeleteFolder {
             return false;
         }
 
+    }
+
+    private boolean execute(String path, String folder, String connectionName) {
+        boolean isOnLocalhost = HostConnectionTools.isOnLocalhost(this.getFrameworkExecution(),
+               connectionName, this.getExecutionControl().getEnvName());
+
+        if (isOnLocalhost) {
+            if (path.isEmpty()) {
+                this.setScope(folder);
+                try {
+                    FolderTools.deleteFolder(folder, true);
+                    this.setSuccess();
+                } catch (Exception e) {
+                    this.setError(e.getMessage());
+                }
+            } else {
+                List<FileConnection> fileConnections = FolderTools.getFilesInFolder(path, folder);
+                for (FileConnection fileConnection : fileConnections) {
+                    if (fileConnection.isDirectory()) {
+                        this.setScope(fileConnection.getFilePath());
+                        try {
+                            FolderTools.deleteFolder(fileConnection.getFilePath(), true);
+                            this.setSuccess();
+                        } catch (Exception e) {
+                            this.setError(e.getMessage());
+                        }
+                    }
+                }
+            }
+        } else {
+            ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(
+                    this.getFrameworkExecution());
+            Connection connection = connectionConfiguration
+                    .getConnection(connectionName, this.getExecutionControl().getEnvName())
+                    .get();
+            ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
+            HostConnection hostConnection = connectionOperation.getHostConnection(connection);
+
+            if (path.isEmpty()) {
+                this.setScope(folder);
+                this.deleteRemoteFolder(hostConnection, folder);
+            } else {
+                for (FileConnection fileConnection : FileConnectionTools.getFileConnections(hostConnection,
+                        path, folder, true)) {
+                    this.setScope(fileConnection.getFilePath());
+                    this.deleteRemoteFolder(hostConnection, fileConnection.getFilePath());
+                }
+            }
+        }
+
+        return true;
+    }
+
+    private String convertConnectionName(DataType connectionName) {
+        if (connectionName instanceof Text) {
+            return connectionName.toString();
+        } else {
+            frameworkExecution.getFrameworkLog().log(MessageFormat.format("fho.deleteFolder does not accept {0} as type for connectionName",
+                    connectionName.getClass()), Level.WARN);
+            return connectionName.toString();
+        }
+    }
+
+    private String convertFolder(DataType folderName) {
+        if (folderName instanceof Text) {
+            return folderName.toString();
+        } else {
+            frameworkExecution.getFrameworkLog().log(MessageFormat.format("fho.deleteFolder does not accept {0} as type for folderName",
+                    folderName.getClass()), Level.WARN);
+            return folderName.toString();
+        }
+    }
+
+    private String convertPath(DataType folderPath) {
+        if (folderPath instanceof Text) {
+            return folderPath.toString();
+        } else {
+            frameworkExecution.getFrameworkLog().log(MessageFormat.format("fho.deleteFolder does not accept {0} as type for folderPath",
+                    folderPath.getClass()), Level.WARN);
+            return folderPath.toString();
+        }
+    }
+
+    private void deleteRemoteFolder(HostConnection hostConnection, String folderFilePath) {
+        ShellCommandSettings shellCommandSettings = new ShellCommandSettings();
+        ShellCommandResult shellCommandResult = null;
+        try {
+            shellCommandResult = hostConnection.executeRemoteCommand("", "rm -rf " + folderFilePath,
+                    shellCommandSettings);
+
+            if (shellCommandResult.getReturnCode() == 0) {
+                this.setSuccess();
+            } else {
+                this.setError(shellCommandResult.getErrorOutput());
+            }
+        } catch (Exception e) {
+            this.setError(e.getMessage());
+        }
+    }
+
+    private void setScope(String input) {
+        this.getActionExecution().getActionControl().logOutput("folder.delete", input);
+    }
+
+    private void setError(String input) {
+        this.getActionExecution().getActionControl().logOutput("folder.delete.error", input);
+        this.getActionExecution().getActionControl().increaseErrorCount();
+    }
+
+    private void setSuccess() {
+        this.getActionExecution().getActionControl().logOutput("folder.delete.success", "confirmed");
+        this.getActionExecution().getActionControl().increaseSuccessCount();
     }
 
     // Getters and Setters
@@ -177,7 +272,7 @@ public class FhoDeleteFolder {
     }
 
     public ActionParameterOperation getFolderName() {
-        return folderName;
+        return this.folderName;
     }
 
     public void setFolderName(ActionParameterOperation folderName) {

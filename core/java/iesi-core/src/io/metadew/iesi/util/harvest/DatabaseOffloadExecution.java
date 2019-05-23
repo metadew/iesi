@@ -1,17 +1,19 @@
 package io.metadew.iesi.util.harvest;
 
+import io.metadew.iesi.connection.database.connection.DatabaseConnection;
 import io.metadew.iesi.connection.operation.ConnectionOperation;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.framework.execution.FrameworkExecutionContext;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.Connection;
 import io.metadew.iesi.metadata.definition.Context;
-import io.metadew.iesi.metadata_repository.repository.database.connection.DatabaseConnection;
 
 import javax.sql.rowset.CachedRowSet;
 import java.sql.PreparedStatement;
 import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 
 public class DatabaseOffloadExecution {
 
@@ -19,15 +21,19 @@ public class DatabaseOffloadExecution {
 
     // Constructors
     public DatabaseOffloadExecution() {
+        // Create the framework instance
+        FrameworkInstance frameworkInstance = new FrameworkInstance();
+
+        // Create the framework execution
         Context context = new Context();
         context.setName("offload");
         context.setScope("");
-        this.setFrameworkExecution(new FrameworkExecution(new FrameworkExecutionContext(context), null));
+        this.setFrameworkExecution(new FrameworkExecution(frameworkInstance, new FrameworkExecutionContext(context), null));
     }
 
     // Methods
     public void offloadData(String sourceConnectionName, String sourceEnvironmentName, String targetConnectionName,
-                            String targetEnvironmentName, String sqlStatement, String name, boolean cleanPrevious) {
+                            String targetEnvironmentName, String sqlStatement, String name, boolean cleanPrevious) throws SQLException {
 
         // Get Connection
         ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
@@ -42,6 +48,7 @@ public class DatabaseOffloadExecution {
         crs = sourceDatabaseConnection.executeQuery(sqlStatement);
 
         String QueryString = "";
+        java.sql.Connection liveTargetDatabaseConnection = null;
         try {
             // Get result set meta data
             ResultSetMetaData rsmd = crs.getMetaData();
@@ -64,8 +71,8 @@ public class DatabaseOffloadExecution {
 
             String temp = "";
             String sql = SQLTools.getInsertPstmt(rsmd, name);
-            targetDatabaseConnection.createLiveConnection();
-            PreparedStatement preparedStatement = targetDatabaseConnection.createLivePreparedStatement(sql);
+            liveTargetDatabaseConnection = targetDatabaseConnection.getConnection();
+            PreparedStatement preparedStatement = targetDatabaseConnection.createPreparedStatement(liveTargetDatabaseConnection, sql);
 
             int crsType = crs.getType();
             if (crsType != java.sql.ResultSet.TYPE_FORWARD_ONLY) {
@@ -84,7 +91,7 @@ public class DatabaseOffloadExecution {
             System.out.println("Query Actions Failed");
             e.printStackTrace();
         } finally {
-            targetDatabaseConnection.closeLiveConnection();
+            liveTargetDatabaseConnection.close();
         }
 
     }

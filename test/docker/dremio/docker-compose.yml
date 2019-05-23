@@ -1,0 +1,10 @@
+version: '3.2'
+services:
+  dremio:
+    image: dremio/dremio-oss
+    ports:
+      - '9047:9047'
+      - '31010:31010'
+      - '45678:45678'
+    restart: always
+

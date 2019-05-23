@@ -2,8 +2,10 @@ package io.metadew.iesi.framework.configuration;
 
 import io.metadew.iesi.common.config.KeyValueConfigFile;
 import io.metadew.iesi.connection.tools.FileTools;
+import io.metadew.iesi.metadata.configuration.FrameworkPluginConfiguration;
 
 import java.io.File;
+import java.util.List;
 import java.util.Properties;
 
 public class FrameworkConfiguration {
@@ -12,6 +14,7 @@ public class FrameworkConfiguration {
     private String frameworkHome;
     private FrameworkFolderConfiguration folderConfiguration;
     private FrameworkSettingConfiguration settingConfiguration;
+    private FrameworkActionTypeConfiguration actionTypeConfiguration;
 
 
     public FrameworkConfiguration() {
@@ -19,6 +22,7 @@ public class FrameworkConfiguration {
         this.initializeFrameworkHome();
         this.setFolderConfiguration(new FrameworkFolderConfiguration(this.getFrameworkHome()));
         this.setSettingConfiguration(new FrameworkSettingConfiguration(this.getFrameworkHome()));
+        this.setActionTypeConfiguration(new FrameworkActionTypeConfiguration(this.getFolderConfiguration()));
     }
 
     public FrameworkConfiguration(String repositoryHome) {
@@ -39,6 +43,10 @@ public class FrameworkConfiguration {
             throw new RuntimeException(configurationFile + " not found");
         }
         this.setFrameworkHome(properties.getProperty(this.getFrameworkCode() + ".home"));
+    }
+
+    public void setActionTypesFromPlugins(List<FrameworkPluginConfiguration> frameworkPluginConfigurationList) {
+        this.getActionTypeConfiguration().setActionTypesFromPlugins(this.getFolderConfiguration(), frameworkPluginConfigurationList);
     }
 
     // Getters and Setters
@@ -72,6 +80,14 @@ public class FrameworkConfiguration {
 
     public void setFrameworkCode(String frameworkCode) {
         this.frameworkCode = frameworkCode;
+    }
+
+    public FrameworkActionTypeConfiguration getActionTypeConfiguration() {
+        return actionTypeConfiguration;
+    }
+
+    public void setActionTypeConfiguration(FrameworkActionTypeConfiguration actionTypeConfiguration) {
+        this.actionTypeConfiguration = actionTypeConfiguration;
     }
 
 

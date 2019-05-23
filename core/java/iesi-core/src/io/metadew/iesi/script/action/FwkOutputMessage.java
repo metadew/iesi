@@ -79,7 +79,7 @@ public class FwkOutputMessage {
         try {
             List<String> messages = convertMessages(getMessage().getValue());
             boolean onScreen = convertOnScreen(getOnScreen().getValue());
-            outputMessage(messages, onScreen);
+            return outputMessage(messages, onScreen);
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
@@ -91,7 +91,6 @@ public class FwkOutputMessage {
 
             return false;
         }
-        return true;
     }
 
     private boolean convertOnScreen(DataType onScreen) {
@@ -120,7 +119,7 @@ public class FwkOutputMessage {
         return messageList;
     }
 
-    private void outputMessage(List<String> messages, boolean onScreen) {
+    private boolean outputMessage(List<String> messages, boolean onScreen) {
         final Level level = onScreen ? Level.INFO : Level.DEBUG;
 
         messages.forEach(message -> {
@@ -134,6 +133,7 @@ public class FwkOutputMessage {
             }
             this.getActionExecution().getActionControl().increaseSuccessCount();
         });
+        return true;
     }
 
     // Getters and Setters

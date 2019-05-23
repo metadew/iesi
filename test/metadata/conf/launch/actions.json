@@ -1,6 +1,70 @@
 [{
 	"type": "LaunchItem",
 	"data": {
+		"script": "fho.fileExists.1",
+		"description": "Test fho.fileExists using a local file that exists",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "fho.fileExists.2",
+		"description": "Test fho.fileExists using a local file that does not exist",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "fho.fileExists.3",
+		"description": "Test fho.fileExists using a remote file that exists",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "fho.fileExists.4",
+		"description": "Test fho.fileExists using a remote file that does not exist",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "fho.folderExists.1",
+		"description": "Test fho.folderExists with a local folder that exists",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "fho.folderExists.2",
+		"description": "Test fho.folderExists with a local folder that does not exist",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "fho.folderExists.3",
+		"description": "Test fho.folderExists with a remote folder that exists",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "fho.folderExists.4",
+		"description": "Test fho.folderExists with a remote folder that does not exist",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
 		"script": "fwk.dummy.1",
 		"description": "test fwk.dummy",
 		"parameterList": ""
@@ -38,6 +102,7 @@
 		"parameterList": "param1=myParameter"
 	}
 },
+
 {
 	"type": "LaunchItem",
 	"data": {
@@ -65,32 +130,32 @@
 {
 	"type": "LaunchItem",
 	"data": {
-		"script": "sql.executeQuery.1",
-		"description": "test sql.executeQuery with a select query",
+		"script": "fwk.setEnvironment.1",
+		"description": "test fwk.setEnvironment",
 		"parameterList": ""
 	}
 },
 {
 	"type": "LaunchItem",
 	"data": {
-		"script": "sql.executeQuery.2",
-		"description": "test sql.executeQuery with an insert query",
+		"script": "fwk.setParameterList.1",
+		"description": "test fwk.setParameterList",
 		"parameterList": ""
 	}
 },
 {
 	"type": "LaunchItem",
 	"data": {
-		"script": "sql.executeQuery.3",
-		"description": "test sql.executeQuery with a select query and an input parameter",
-		"parameterList": "param1=Table1"
+		"script": "fwk.setParameterValue.1",
+		"description": "test fwk.setParameterValue",
+		"parameterList": ""
 	}
 },
 {
 	"type": "LaunchItem",
 	"data": {
-		"script": "sql.executeQuery.4",
-		"description": "test sql.executeQuery with a select query and an input parameter",
+		"script": "script.logOutput.1",
+		"description": "test script.logOutput",
 		"parameterList": ""
 	}
 },
@@ -145,48 +210,48 @@
 {
 	"type": "LaunchItem",
 	"data": {
-		"script": "fwk.setParameterValue.1",
-		"description": "test fwk.setParameterValue",
+		"script": "sql.executeStatement.1",
+		"description": "test sql.executeStatement with a select statement",
 		"parameterList": ""
 	}
 },
 {
 	"type": "LaunchItem",
 	"data": {
-		"script": "fwk.setParameterValue.2",
-		"description": "test fwk.setParameterValue with concept lookup",
+		"script": "sql.executeStatement.2",
+		"description": "test sql.executeStatement with an insert statement",
 		"parameterList": ""
 	}
 },
 {
 	"type": "LaunchItem",
 	"data": {
-		"script": "fwk.setParameterValue.3",
-		"description": "test fwk.setParameterValue with concept lookup and variable resolvement",
+		"script": "sql.executeStatement.3",
+		"description": "test sql.executeStatement with a select statement and an input parameter",
+		"parameterList": "param1=Table1"
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "sql.executeStatement.4",
+		"description": "test sql.executeStatement with a select statement and an input parameter",
 		"parameterList": ""
 	}
 },
 {
 	"type": "LaunchItem",
 	"data": {
-		"script": "fwk.setParameterList.1",
-		"description": "test fwk.setParameterList",
+		"script": "sql.setIterationVariables.1",
+		"description": "test sql.setIterationVariables for filling an iteration list",
 		"parameterList": ""
 	}
 },
 {
 	"type": "LaunchItem",
 	"data": {
-		"script": "fwk.setEnvironment.1",
-		"description": "test fwk.setEnvironment",
-		"parameterList": ""
-	}
-},
-{
-	"type": "LaunchItem",
-	"data": {
-		"script": "script.logOutput.1",
-		"description": "test script.logOutput",
+		"script": "sql.setIterationVariables.2",
+		"description": "test sql.setIterationVariables taking input from a file",
 		"parameterList": ""
 	}
 },
@@ -217,8 +282,48 @@
 {
 	"type": "LaunchItem",
 	"data": {
-		"script": "sql.setIterationVariables.1",
-		"description": "test sql.setIterationVariables for filling an iteration list",
+		"script": "fho.createFolder.1",
+		"description": "Test fho.createFolder with a local folder",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "fho.createFolder.2",
+		"description": "Test fho.createFolder with a local folder using an absolute folder path parameter",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "fho.createFolder.3",
+		"description": "Test fho.createFolder with a remote folder",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "fho.createFolder.4",
+		"description": "Test fho.createFolder with a remote folder using an absolute folder path parameter",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "fho.deleteFolder.1",
+		"description": "Test fho.deleteFolder with a local folder",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "fho.deleteFolder.2",
+		"description": "Test fho.deleteFolder with a local folder using an absolute folder path parameter",
 		"parameterList": ""
 	}
 },
@@ -285,5 +390,4 @@
 		"description": "test data.compareDataset",
 		"parameterList": ""
 	}
-}
-]
+}]

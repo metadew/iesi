@@ -11,13 +11,16 @@ import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+
 
 public class DataSetDatasetConnection {
 
@@ -27,6 +30,7 @@ public class DataSetDatasetConnection {
 
     // Parameters
     private ActionParameterOperation referenceName;
+    private ActionParameterOperation datasetType;
     private ActionParameterOperation datasetName;
     private ActionParameterOperation datasetLabels;
     private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
@@ -41,8 +45,8 @@ public class DataSetDatasetConnection {
         this.init(frameworkExecution, executionControl, scriptExecution, actionExecution);
     }
 
-    public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl, ScriptExecution scriptExecution,
-                     ActionExecution actionExecution) {
+    public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+                     ScriptExecution scriptExecution, ActionExecution actionExecution) {
         this.setFrameworkExecution(frameworkExecution);
         this.setExecutionControl(executionControl);
         this.setActionExecution(actionExecution);
@@ -53,6 +57,8 @@ public class DataSetDatasetConnection {
         // Reset Parameters
         this.setReferenceName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "name"));
+        this.setDatasetType(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+                this.getActionExecution(), this.getActionExecution().getAction().getType(), "type"));
         this.setDatasetName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "dataset"));
         this.setDatasetLabels(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
@@ -61,6 +67,8 @@ public class DataSetDatasetConnection {
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
             if (actionParameter.getName().equalsIgnoreCase("name")) {
                 this.getReferenceName().setInputValue(actionParameter.getValue());
+            } else if (actionParameter.getName().equalsIgnoreCase("type")) {
+                this.getDatasetType().setInputValue(actionParameter.getValue());
             } else if (actionParameter.getName().equalsIgnoreCase("dataset")) {
                 this.getDatasetName().setInputValue(actionParameter.getValue());
             } else if (actionParameter.getName().equalsIgnoreCase("labels")) {
@@ -70,6 +78,7 @@ public class DataSetDatasetConnection {
 
         // Create parameter list
         this.getActionParameterOperationMap().put("name", this.getReferenceName());
+        this.getActionParameterOperationMap().put("type", this.getDatasetType());
         this.getActionParameterOperationMap().put("dataset", this.getDatasetName());
         this.getActionParameterOperationMap().put("labels", this.getDatasetLabels());
     }
@@ -79,11 +88,11 @@ public class DataSetDatasetConnection {
         try {
             String referenceName = convertDatasetReferenceName(getReferenceName().getValue());
             String datasetName = convertDatasetName(getDatasetName().getValue());
+            String datasetType = convertDatasetType(getDatasetType().getValue());
             List<String> labels = convertDatasetLabels(getDatasetLabels().getValue());
 
-            executionControl.getExecutionRuntime().setDataset(referenceName, getDatasetName().getValue(),
-                    getDatasetLabels().getValue());
             return setDatasetConnection(referenceName, datasetName, labels);
+
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
@@ -98,10 +107,10 @@ public class DataSetDatasetConnection {
 
     }
 
-    private boolean setDatasetConnection(String referenceName, String datasetName, List<String> labels) {
+    private boolean setDatasetConnection(String referenceName, String datasetName, List<String> labels) throws IOException, SQLException {
         // TODO: use dataset data type
-        this.getExecutionControl().getExecutionRuntime().setDataset(referenceName, datasetName, String.join(",", labels));
-        return false;
+        this.getExecutionControl().getExecutionRuntime().setKeyValueDataset(referenceName, datasetName, labels);
+        return true;
     }
 
     private String convertDatasetReferenceName(DataType referenceName) {
@@ -131,6 +140,20 @@ public class DataSetDatasetConnection {
             System.out.println(MessageFormat.format("data.setDatasetConnection does not accept {0} as type for dataset labels",
                     datasetLabels.getClass()));
             return labels;
+        }
+    }
+
+    private String convertDatasetType(DataType datasetType) {
+        if (datasetType == null) {
+            return "";
+        }
+        if (datasetType instanceof Text) {
+            return datasetType.toString();
+        } else {
+            // TODO: log
+            System.out.println(MessageFormat.format("data.setDatasetConnection does not accept {0} as type for dataset type",
+                    datasetType.getClass()));
+            return datasetType.toString();
         }
     }
 
@@ -211,6 +234,14 @@ public class DataSetDatasetConnection {
 
     public void setReferenceName(ActionParameterOperation referenceName) {
         this.referenceName = referenceName;
+    }
+
+    public ActionParameterOperation getDatasetType() {
+        return datasetType;
+    }
+
+    public void setDatasetType(ActionParameterOperation datasetType) {
+        this.datasetType = datasetType;
     }
 
 }

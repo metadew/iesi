@@ -25,6 +25,7 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+
 public class FwkExecuteScript {
 
     private ActionExecution actionExecution;
@@ -35,7 +36,6 @@ public class FwkExecuteScript {
 
     private ExecutionControl executionControl;
     private final Pattern keyValuePattern = Pattern.compile("\\s*(?<parameter>.+)\\s*=\\s*(?<value>.+)\\s*");
-
     // Parameters
     private ActionParameterOperation scriptName;
 

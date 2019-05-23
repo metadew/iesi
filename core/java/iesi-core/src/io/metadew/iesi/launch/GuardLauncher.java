@@ -3,6 +3,7 @@ package io.metadew.iesi.launch;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.framework.execution.FrameworkExecutionContext;
 import io.metadew.iesi.framework.execution.FrameworkExecutionSettings;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.guard.execution.GuardExecution;
 import io.metadew.iesi.metadata.definition.Context;
 import org.apache.commons.cli.*;
@@ -54,13 +55,16 @@ public class GuardLauncher {
             System.out.println("guard.launcher.start");
             System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 
-            // Set the shared context
+            // Create the framework instance
+            FrameworkInstance frameworkInstance = new FrameworkInstance();
+
+            // Create the framework execution
             FrameworkExecutionSettings frameworkExecutionSettings = new FrameworkExecutionSettings(settings);
             Context context = new Context();
             context.setName("guard");
             context.setScope("user");
-            FrameworkExecution frameworkExecution = new FrameworkExecution(new FrameworkExecutionContext(context),
-                    frameworkExecutionSettings, null);
+            FrameworkExecution frameworkExecution = new FrameworkExecution(frameworkInstance,
+                    new FrameworkExecutionContext(context), frameworkExecutionSettings, null, null);
 
             String userName = "";
             String active = "";

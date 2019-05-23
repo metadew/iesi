@@ -5,6 +5,7 @@ import java.util.List;
 public class ActionType {
 
     private String name;
+    private String className;
     private String description;
     private List<ActionTypeParameter> parameters;
 
@@ -38,5 +39,12 @@ public class ActionType {
         this.parameters = parameters;
     }
 
+    public String getClassName() {
+        return className;
+    }
+
+    public void setClassName(String className) {
+        this.className = className;
+    }
 
 }

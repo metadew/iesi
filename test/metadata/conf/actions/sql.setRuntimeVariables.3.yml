@@ -16,7 +16,7 @@ data:
     errorStop: "N"
     parameters:
     - name: "query"
-      value : "{{=file(#iesi.home#/data/iesi-test/actions/data/actions/sql.setRuntimeVariables.3.1.sql)}}"
+      value : "{{=file(#iesi.home#/data/iesi-test/fwk/data/actions/sql.setRuntimeVariables.3.1.sql)}}"
     - name: "connection"
       value : "sql.setRuntimeVariables.3"
   - number: 2

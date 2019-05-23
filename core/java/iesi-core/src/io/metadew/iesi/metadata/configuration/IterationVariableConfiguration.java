@@ -1,9 +1,9 @@
 package io.metadew.iesi.metadata.configuration;
 
+import io.metadew.iesi.connection.database.connection.SqliteDatabaseConnection;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.RuntimeVariable;
-import io.metadew.iesi.metadata_repository.repository.database.connection.SqliteDatabaseConnection;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.File;

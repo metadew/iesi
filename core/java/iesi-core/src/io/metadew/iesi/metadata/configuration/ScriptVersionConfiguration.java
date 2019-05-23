@@ -62,9 +62,9 @@ public class ScriptVersionConfiguration {
         return sql;
     }
 
-    public Optional<ScriptVersion> getScriptVersion(long scriptId, long scriptVersionNumber) {
+    public Optional<ScriptVersion> getScriptVersion(String scriptId, long scriptVersionNumber) {
         String queryScriptVersion = "select SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_VRS_DSC from " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ScriptVersions")
-                + " where SCRIPT_ID = " + scriptId + " and SCRIPT_VRS_NB = " + scriptVersionNumber;
+                + " where SCRIPT_ID = '" + scriptId + "' and SCRIPT_VRS_NB = " + scriptVersionNumber;
         CachedRowSet crsScriptVersion = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(queryScriptVersion, "reader");
         try {
             if (crsScriptVersion.size() == 0) {

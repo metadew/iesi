@@ -47,8 +47,7 @@ public class ScriptRunner {
     /**
      * Default constructor
      */
-    public ScriptRunner(Connection connection, boolean autoCommit,
-                        boolean stopOnError) {
+    public ScriptRunner(Connection connection, boolean autoCommit, boolean stopOnError) {
         this.connection = connection;
         this.autoCommit = autoCommit;
         this.stopOnError = stopOnError;
@@ -107,8 +106,8 @@ public class ScriptRunner {
     }
 
     /**
-     * Runs an SQL script (read in using the Reader parameter) using the
-     * connection passed in
+     * Runs an SQL script (read in using the Reader parameter) using the connection
+     * passed in
      *
      * @param conn   - the connection to use for the script
      * @param reader - the source of the script
@@ -116,8 +115,7 @@ public class ScriptRunner {
      * @throws IOException  if there is an error reading from the Reader
      */
     @SuppressWarnings({"unused", "finally"})
-    private SqlScriptResult runScript(Connection conn, Reader reader) throws IOException,
-            SQLException {
+    private SqlScriptResult runScript(Connection conn, Reader reader) throws IOException, SQLException {
         int returnCode = -1;
         StringBuilder systemOutput = new StringBuilder();
         StringBuilder errorOutput = new StringBuilder();
@@ -132,23 +130,18 @@ public class ScriptRunner {
                 String trimmedLine = line.trim();
                 if (trimmedLine.startsWith("--")) {
                     // Commented printing script
-                    //println(trimmedLine);
-                } else if (trimmedLine.length() < 1
-                        || trimmedLine.startsWith("//")) {
+                    // println(trimmedLine);
+                } else if (trimmedLine.length() < 1 || trimmedLine.startsWith("//")) {
                     // Do nothing
-                } else if (trimmedLine.length() < 1
-                        || trimmedLine.startsWith("--")) {
+                } else if (trimmedLine.length() < 1 || trimmedLine.startsWith("--")) {
                     // Do nothing
-                } else if (!fullLineDelimiter
-                        && trimmedLine.endsWith(getDelimiter())
-                        || fullLineDelimiter
-                        && trimmedLine.equalsIgnoreCase(getDelimiter())) {
-                    command.append(line.substring(0, line
-                            .lastIndexOf(getDelimiter())));
+                } else if (!fullLineDelimiter && trimmedLine.endsWith(getDelimiter())
+                        || fullLineDelimiter && trimmedLine.equalsIgnoreCase(getDelimiter())) {
+                    command.append(line.substring(0, line.lastIndexOf(getDelimiter())));
                     command.append(" ");
                     Statement statement = conn.createStatement();
                     // Commented printing script
-                    //println(command);
+                    // println(command);
                     systemOutput.append(command.toString());
                     systemOutput.append("\n");
 
@@ -179,18 +172,18 @@ public class ScriptRunner {
                         for (int i = 0; i < cols; i++) {
                             String name = md.getColumnLabel(i);
                             // Commented printing script
-                            //print(name + "\t");
+                            // print(name + "\t");
                         }
                         // Commented printing script
-                        //println("");
+                        // println("");
                         while (rs.next()) {
                             for (int i = 0; i < cols; i++) {
                                 String value = rs.getString(i);
                                 // Commented printing script
-                                //print(value + "\t");
+                                // print(value + "\t");
                             }
                             // Commented printing script
-                            //println("");
+                            // println("");
                         }
                     }
 
@@ -231,7 +224,8 @@ public class ScriptRunner {
         } finally {
             conn.rollback();
             flush();
-            SqlScriptResult dcSQLScriptResult = new SqlScriptResult(returnCode, systemOutput.toString(), errorOutput.toString());
+            SqlScriptResult dcSQLScriptResult = new SqlScriptResult(returnCode, systemOutput.toString(),
+                    errorOutput.toString());
             return dcSQLScriptResult;
         }
     }

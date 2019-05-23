@@ -1,10 +1,12 @@
 package io.metadew.iesi.script.execution;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.connection.tools.FolderTools;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.data.generation.execution.GenerationObjectExecution;
 import io.metadew.iesi.datatypes.DataType;
-import io.metadew.iesi.datatypes.Dataset;
+import io.metadew.iesi.datatypes.Dataset.Dataset;
+import io.metadew.iesi.datatypes.Dataset.KeyValueDataset;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.configuration.*;
 import io.metadew.iesi.metadata.definition.ComponentAttribute;
@@ -19,10 +21,7 @@ import io.metadew.iesi.script.execution.instruction.lookup.LookupInstructionRepo
 import io.metadew.iesi.script.execution.instruction.variable.VariableInstruction;
 import io.metadew.iesi.script.execution.instruction.variable.VariableInstructionRepository;
 import io.metadew.iesi.script.execution.instruction.variable.VariableInstructionTools;
-import io.metadew.iesi.script.operation.DatasetOperation;
-import io.metadew.iesi.script.operation.ImpersonationOperation;
-import io.metadew.iesi.script.operation.IterationOperation;
-import io.metadew.iesi.script.operation.RepositoryOperation;
+import io.metadew.iesi.script.operation.*;
 import org.apache.logging.log4j.Level;
 
 import java.io.*;
@@ -31,10 +30,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -43,7 +39,6 @@ import java.util.stream.Collectors;
 public class ExecutionRuntime {
 
     private FrameworkExecution frameworkExecution;
-
     private ExecutionControl executionControl;
 
     private RuntimeVariableConfiguration runtimeVariableConfiguration;
@@ -56,7 +51,7 @@ public class ExecutionRuntime {
 
     //private HashMap<String, StageOperation> stageOperationMap;
     private HashMap<String, RepositoryOperation> repositoryOperationMap;
-    private HashMap<String, DatasetOperation> datasetOperationMap;
+    private HashMap<String, StageOperation> stageOperationMap;
     private HashMap<String, Dataset> datasetMap;
     private HashMap<String, IterationOperation> iterationOperationMap;
 
@@ -75,7 +70,7 @@ public class ExecutionRuntime {
     private final String INSTRUCTION_ARGUMENTS_KEY = "instructionArguments";
 
     private final Pattern CONCEPT_LOOKUP_PATTERN = Pattern
-            .compile("\\s*\\{\\{(?<" + INSTRUCTION_TYPE_KEY + ">[^\\w])(?<" + INSTRUCTION_KEYWORD_KEY + ">[\\w\\.]+)(\\((?<" + INSTRUCTION_ARGUMENTS_KEY + ">.*)\\))?\\}\\}\\s*");
+            .compile("\\s*\\{\\{(?<" + INSTRUCTION_TYPE_KEY + ">[\\*=\\$!])(?<" + INSTRUCTION_KEYWORD_KEY + ">[\\w\\.]+)(?<" + INSTRUCTION_ARGUMENTS_KEY + ">\\(.*\\))?\\}\\}\\s*");
 
     public ExecutionRuntime() {
 
@@ -102,9 +97,8 @@ public class ExecutionRuntime {
         this.defineLoggingLevel();
 
         // Initialize maps
-//		this.setStageOperationMap(new HashMap<String, StageOperation>());
+        this.setStageOperationMap(new HashMap<String, StageOperation>());
         this.setRepositoryOperationMap(new HashMap<String, RepositoryOperation>());
-        this.setDatasetOperationMap(new HashMap<String, DatasetOperation>());
         this.setIterationOperationMap(new HashMap<String, IterationOperation>());
         this.setExecutionRuntimeExtensionMap(new HashMap<String, ExecutionRuntimeExtension>());
 
@@ -121,9 +115,18 @@ public class ExecutionRuntime {
     }
 
     public void terminate() {
-        // remove cache folder
-        //FolderTools.deleteFolder(this.getRunCacheFolderName(), true);
+        // cleanup stage connections if needed
+        ObjectMapper objectMapper = new ObjectMapper();
+        Iterator iterator = this.getStageOperationMap().entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry pair = (Map.Entry) iterator.next();
+            StageOperation stageOperation = objectMapper.convertValue(pair.getValue(), StageOperation.class);
+            stageOperation.doCleanup();
+            iterator.remove();
+        }
 
+        // remove cache folder
+        //this.getFrameworkExecution().getFrameworkRuntime().terminate();
     }
 
     // Methods
@@ -135,7 +138,7 @@ public class ExecutionRuntime {
         this.getRuntimeVariableConfiguration().cleanRuntimeVariables(this.getRunId(), processId);
     }
 
-    public void setRuntimeVariables(ResultSet rs) {
+    public void setRuntimeVariables(ActionExecution actionExecution, ResultSet rs) {
         if (SQLTools.getRowCount(rs) == 1) {
             try {
                 ResultSetMetaData rsmd = rs.getMetaData();
@@ -143,7 +146,7 @@ public class ExecutionRuntime {
                 rs.beforeFirst();
                 while (rs.next()) {
                     for (int i = 1; i < numberOfColums + 1; i++) {
-                        this.setRuntimeVariable(rsmd.getColumnName(i), rs.getString(i));
+                        this.setRuntimeVariable(actionExecution, rsmd.getColumnName(i), rs.getString(i));
                     }
                 }
                 rs.close();
@@ -155,7 +158,7 @@ public class ExecutionRuntime {
         }
     }
 
-    public void setRuntimeVariables(String input) {
+    public void setRuntimeVariables(ActionExecution actionExecution, String input) {
         String[] lines = input.split("\n");
         for (int i = 0; i < lines.length; i++) {
             String line = lines[i];
@@ -163,18 +166,18 @@ public class ExecutionRuntime {
             if (delim > 0) {
                 String key = line.substring(0, delim);
                 String value = line.substring(delim + 1);
-                this.setRuntimeVariable(key, value);
+                this.setRuntimeVariable(actionExecution, key, value);
             } else {
                 // Not a valid configuration
             }
         }
     }
 
-    public void setRuntimeVariablesFromList(ResultSet rs) {
+    public void setRuntimeVariablesFromList(ActionExecution actionExecution, ResultSet rs) {
         try {
             rs.beforeFirst();
             while (rs.next()) {
-                this.setRuntimeVariable(rs.getString(1), rs.getString(2));
+                this.setRuntimeVariable(actionExecution, rs.getString(1), rs.getString(2));
             }
             rs.close();
         } catch (SQLException e) {
@@ -182,9 +185,32 @@ public class ExecutionRuntime {
         }
     }
 
-    public void setRuntimeVariable(String name, String value) {
+    public void setRuntimeVariablesFromList(ScriptExecution scriptExecution, ResultSet rs) {
+        try {
+            rs.beforeFirst();
+            while (rs.next()) {
+                this.setRuntimeVariable(scriptExecution, rs.getString(1), rs.getString(2));
+            }
+            rs.close();
+        } catch (SQLException e) {
+            throw new RuntimeException("Error getting sql result " + e, e);
+        }
+    }
+
+    // Set runtime variables
+    public void setRuntimeVariable(Long processId, String name, String value) {
         this.getFrameworkExecution().getFrameworkLog().log("exec.runvar.set=" + name + ":" + value, this.getLevel());
-        this.getRuntimeVariableConfiguration().setRuntimeVariable(this.getRunId(), name, value);
+        this.getRuntimeVariableConfiguration().setRuntimeVariable(this.getRunId(), processId, name, value);
+    }
+
+    public void setRuntimeVariable(ActionExecution actionExecution, String name, String value) {
+        this.getFrameworkExecution().getFrameworkLog().log("exec.runvar.set=" + name + ":" + value, this.getLevel());
+        this.getRuntimeVariableConfiguration().setRuntimeVariable(this.getRunId(), actionExecution.getProcessId(), name, value);
+    }
+
+    public void setRuntimeVariable(ScriptExecution scriptExecution, String name, String value) {
+        this.getFrameworkExecution().getFrameworkLog().log("exec.runvar.set=" + name + ":" + value, this.getLevel());
+        this.getRuntimeVariableConfiguration().setRuntimeVariable(this.getRunId(), scriptExecution.getProcessId(), name, value);
     }
 
     public RuntimeVariable getRuntimeVariable(String name) {
@@ -201,8 +227,7 @@ public class ExecutionRuntime {
     }
 
     // Load lists
-    public void loadParamList(String input) {
-        // No instructions allowed in parameter list
+    public void loadParamList(ScriptExecution scriptExecution, String input) {
         String[] parts = input.split(",");
         for (int i = 0; i < parts.length; i++) {
             String innerpart = parts[i];
@@ -210,22 +235,37 @@ public class ExecutionRuntime {
             if (delim > 0) {
                 String key = innerpart.substring(0, delim);
                 String value = innerpart.substring(delim + 1);
-                this.setRuntimeVariable(key, value);
+                this.setRuntimeVariable(scriptExecution, key, value);
             } else {
                 // Not a valid configuration
             }
         }
     }
 
-    public void loadParamFiles(String files) {
-        String[] parts = files.split(",");
+    public void loadParamList(ActionExecution actionExecution, String input) {
+        String[] parts = input.split(",");
         for (int i = 0; i < parts.length; i++) {
             String innerpart = parts[i];
-            this.loadParamFile(innerpart);
+            int delim = innerpart.indexOf("=");
+            if (delim > 0) {
+                String key = innerpart.substring(0, delim);
+                String value = innerpart.substring(delim + 1);
+                this.setRuntimeVariable(actionExecution, key, value);
+            } else {
+                // Not a valid configuration
+            }
         }
     }
 
-    public void loadParamFile(String file) {
+    public void loadParamFiles(ScriptExecution scriptExecution, String files) {
+        String[] parts = files.split(",");
+        for (int i = 0; i < parts.length; i++) {
+            String innerpart = parts[i];
+            this.loadParamFile(scriptExecution, innerpart);
+        }
+    }
+
+    public void loadParamFile(ScriptExecution scriptExecution, String file) {
         BufferedReader br;
         try {
             br = new BufferedReader(new FileReader(file));
@@ -237,7 +277,7 @@ public class ExecutionRuntime {
                 if (delim > 0) {
                     String key = innerpart.substring(0, delim);
                     String value = innerpart.substring(delim + 1);
-                    this.setRuntimeVariable(key, value);
+                    this.setRuntimeVariable(scriptExecution, key, value);
                 } else {
                     // Not a valid configuration
                 }
@@ -343,30 +383,31 @@ public class ExecutionRuntime {
         return input;
     }
 
-//    public String resolveActionTypeVariables(String input,
-//                                             HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
-//        int openPos;
-//        int closePos;
-//        String variable_char_open = "[";
-//        String variable_char_close = "]";
-//        String midBit;
-//        String replaceValue;
-//        String temp = input;
-//        while (temp.indexOf(variable_char_open) > 0 || temp.startsWith(variable_char_open)) {
-//            openPos = temp.indexOf(variable_char_open);
-//            closePos = temp.indexOf(variable_char_close, openPos + 1);
-//            midBit = temp.substring(openPos + 1, closePos);
-//
-//            // Replace
-//            replaceValue = actionParameterOperationMap.get(midBit).getValue();
-//            if (replaceValue != null) {
-//                input = input.replace(variable_char_open + midBit + variable_char_close, replaceValue);
-//            }
-//            temp = temp.substring(closePos + 1, temp.length());
-//
-//        }
-//        return input;
-//    }
+
+    public String resolveActionTypeVariables(String input,
+                                             HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
+        int openPos;
+        int closePos;
+        String variable_char_open = "[";
+        String variable_char_close = "]";
+        String midBit;
+        String replaceValue;
+        String temp = input;
+        while (temp.indexOf(variable_char_open) > 0 || temp.startsWith(variable_char_open)) {
+            openPos = temp.indexOf(variable_char_open);
+            closePos = temp.indexOf(variable_char_close, openPos + 1);
+            midBit = temp.substring(openPos + 1, closePos);
+
+            // Replace
+            replaceValue = actionParameterOperationMap.get(midBit).getValue().toString();
+            if (replaceValue != null) {
+                input = input.replace(variable_char_open + midBit + variable_char_close, replaceValue);
+            }
+            temp = temp.substring(closePos + 1, temp.length());
+
+        }
+        return input;
+    }
 
     public String resolveMapVariables(String input, HashMap<String, String> variableMap) {
         int openPos;
@@ -543,6 +584,7 @@ public class ExecutionRuntime {
             String instructionArgumentsString = ConceptLookupMatcher.group(INSTRUCTION_ARGUMENTS_KEY);
             String instructionType = ConceptLookupMatcher.group(INSTRUCTION_TYPE_KEY);
             String instructionKeyword = ConceptLookupMatcher.group(INSTRUCTION_KEYWORD_KEY).toLowerCase();
+
             getFrameworkExecution().getFrameworkLog().log(
                     MessageFormat.format("concept.lookup.resolve.instruction=executing instruction of type {0} with keyword {1} and unresolved parameters {2}", instructionType, instructionKeyword, instructionArgumentsString),
                     Level.DEBUG);
@@ -599,7 +641,10 @@ public class ExecutionRuntime {
         String argumentSeparator = ",";
         if (instructionArgumentsString == null) {
             return instructionArguments;
+        } else if (instructionArgumentsString.startsWith("(") && instructionArgumentsString.endsWith(")")) {
+            instructionArgumentsString = instructionArgumentsString.substring(1, instructionArgumentsString.length()-1);
         }
+
         while (!instructionArgumentsString.isEmpty()) {
             int instructionStartIndex = instructionArgumentsString.indexOf(instructionStart);
             int argumentSeparatorIndex = instructionArgumentsString.indexOf(argumentSeparator);
@@ -614,7 +659,6 @@ public class ExecutionRuntime {
                 instructionArguments.add(splittedInstructionArguments[0].trim());
                 instructionArgumentsString = splittedInstructionArguments[1].trim();
             }
-
             // function argument before one or more other arguments
             else {
                 int nextInstructionStartIndex = instructionArgumentsString.indexOf(instructionStart, instructionStartIndex + 1);
@@ -748,8 +792,6 @@ public class ExecutionRuntime {
     }
 
     private String lookupEnvironmentInstruction(ExecutionControl executionControl, String input) {
-        String output = input;
-
         // Parse input
         String[] parts = input.split(",");
         String environmentName = parts[0].trim();
@@ -757,29 +799,19 @@ public class ExecutionRuntime {
 
         EnvironmentParameterConfiguration environmentParameterConfiguration = new EnvironmentParameterConfiguration(
                 this.getFrameworkExecution());
-        Optional<String> environmentParameterValue = environmentParameterConfiguration
-                .getEnvironmentParameterValue(environmentName, environmentParameterName);
 
-        if (environmentParameterValue.isPresent()) {
-            output = environmentParameterValue.get();
-        }
-
-        return output;
+        return environmentParameterConfiguration.getEnvironmentParameterValue(environmentName, environmentParameterName)
+                .orElse(input);
     }
 
 
     private String lookupScriptResultInstruction(ExecutionControl executionControl, String input) {
-        String output = input;
         ScriptResultOutputConfiguration scriptResultOutputConfiguration = new ScriptResultOutputConfiguration(
                 this.getFrameworkExecution());
         // TODO only for root scripts - extend to others
-        Optional<ScriptResultOutput> scriptResultOutputValue = scriptResultOutputConfiguration.getScriptOutput(executionControl.getRunId(), 0, input);
-
-        if (scriptResultOutputValue.isPresent()) {
-            return scriptResultOutputValue.get().getValue();
-        }
-
-        return output;
+        return scriptResultOutputConfiguration.getScriptOutput(executionControl.getRunId(), 0, input)
+                .map(ScriptResultOutput::getValue)
+                .orElse(input);
     }
 
     private String lookupDatasetInstruction(ExecutionControl executionControl, String input) {
@@ -808,8 +840,28 @@ public class ExecutionRuntime {
     }
 
     private String lookupFileInstruction(ExecutionControl executionControl, String input) {
-        String output = input.trim();
-        output = SQLTools.getFirstSQLStmt(input);
+        String output = "";
+        File file = new File(input);
+        BufferedReader bufferedReader = null;
+        try {
+            bufferedReader = new BufferedReader(new FileReader(file));
+            String readLine = "";
+            while ((readLine = bufferedReader.readLine()) != null) {
+                output += this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(readLine);
+                output += "\n";
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                bufferedReader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        //TODO harmonize for first line input
+        //String output = input.trim();
+        //output = SQLTools.getFirstSQLStmt(input);
         return output;
     }
 
@@ -875,49 +927,36 @@ public class ExecutionRuntime {
     }
 
     // Stage Management
-//	public void setStage(String stageName) {
-//		StageOperation stageOperation = new StageOperation(this.getFrameworkExecution(), stageName);
-//		this.getStageOperationMap().put(stageName, stageOperation);
-//	}
+    public void setStage(String stageName, boolean stageCleanup) {
+        StageOperation stageOperation = new StageOperation(this.getFrameworkExecution(), stageName, stageCleanup);
+        this.getStageOperationMap().put(stageName, stageOperation);
+    }
 
-//	public void setOperation(String stageName, StageOperation stageOperation) {
-//		this.getStageOperationMap().put(stageName, stageOperation);
-//	}
-//
-//	public StageOperation getOperation(String stageName) {
-//		return this.getStageOperationMap().get(stageName);
-//	}
+    public void setStageOperation(String stageName, StageOperation stageOperation) {
+        this.getStageOperationMap().put(stageName, stageOperation);
+    }
+
+    public StageOperation getStageOperation(String stageName) {
+        return this.getStageOperationMap().get(stageName);
+    }
 
     // Repository Management
-    public void setRepository(ExecutionControl executionControl, String repositoryReferenceName, String
-            repositoryName, String repositoryInstanceName, String repositoryInstanceLabels) {
+    public void setRepository(ExecutionControl executionControl, String repositoryReferenceName, String repositoryName, String repositoryInstanceName, String repositoryInstanceLabels) {
         RepositoryOperation repositoryOperation = new RepositoryOperation(this.getFrameworkExecution(), executionControl, repositoryName,
                 repositoryInstanceName, repositoryInstanceLabels);
         this.getRepositoryOperationMap().put(repositoryReferenceName, repositoryOperation);
     }
 
-    public void setDataset(String referenceName, DataType datasetName, DataType datasetLabels) throws IOException, SQLException {
+    public void setKeyValueDataset(String referenceName, String datasetName, List<String> datasetLabels) throws IOException, SQLException {
         datasetMap.put(referenceName,
-                new Dataset(datasetName, datasetLabels, frameworkExecution.getFrameworkConfiguration().getFolderConfiguration(),
+                new KeyValueDataset(datasetName, datasetLabels, frameworkExecution.getFrameworkConfiguration().getFolderConfiguration(),
                         this));
     }
 
+
+
     public Optional<Dataset> getDataset(String referenceName) {
         return Optional.ofNullable(datasetMap.get(referenceName));
-    }
-
-    // Dataset Management
-    public void setDataset(String referenceName, String datasetName, String datasetLabels) {
-        DatasetOperation datasetOperation = new DatasetOperation(this.getFrameworkExecution(), datasetName, datasetLabels);
-        this.getDatasetOperationMap().put(referenceName, datasetOperation);
-    }
-
-    public void setDatasetOperation(String datasetName, DatasetOperation datasetOperation) {
-        this.getDatasetOperationMap().put(datasetName, datasetOperation);
-    }
-
-    public DatasetOperation getDatasetOperation(String datasetName) {
-        return this.getDatasetOperationMap().get(datasetName);
     }
 
     // Iteration Management
@@ -1004,13 +1043,13 @@ public class ExecutionRuntime {
         this.level = level;
     }
 
-//	public HashMap<String, StageOperation> getStageOperationMap() {
-//		return stageOperationMap;
-//	}
-//
-//	public void setStageOperationMap(HashMap<String, StageOperation> stageOperationMap) {
-//		this.stageOperationMap = stageOperationMap;
-//	}
+    public HashMap<String, StageOperation> getStageOperationMap() {
+        return stageOperationMap;
+    }
+
+    public void setStageOperationMap(HashMap<String, StageOperation> stageOperationMap) {
+        this.stageOperationMap = stageOperationMap;
+    }
 
     public ImpersonationOperation getImpersonationOperation() {
         return impersonationOperation;
@@ -1018,14 +1057,6 @@ public class ExecutionRuntime {
 
     public void setImpersonationOperation(ImpersonationOperation impersonationOperation) {
         this.impersonationOperation = impersonationOperation;
-    }
-
-    public HashMap<String, DatasetOperation> getDatasetOperationMap() {
-        return datasetOperationMap;
-    }
-
-    public void setDatasetOperationMap(HashMap<String, DatasetOperation> datasetOperationMap) {
-        this.datasetOperationMap = datasetOperationMap;
     }
 
     public HashMap<String, ExecutionRuntimeExtension> getExecutionRuntimeExtensionMap() {

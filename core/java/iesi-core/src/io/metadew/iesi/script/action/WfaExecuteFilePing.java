@@ -365,7 +365,6 @@ public class WfaExecuteFilePing {
 
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
     private List<FileConnection> checkRemoteFolder(Connection connection, String filePath, String fileName) {
         List<FileConnection> connectionsFound = new ArrayList();
         ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
@@ -478,7 +477,7 @@ public class WfaExecuteFilePing {
     private void setRuntimeVariable(CachedRowSet crs, boolean setRuntimeVariables) {
         if (setRuntimeVariables) {
             try {
-                this.getExecutionControl().getExecutionRuntime().setRuntimeVariables(crs);
+                this.getExecutionControl().getExecutionRuntime().setRuntimeVariables(actionExecution, crs);
             } catch (Exception e) {
                 this.getActionExecution().getActionControl().increaseWarningCount();
                 this.getActionExecution().getActionControl().logWarning("set.runvar", e.getMessage());

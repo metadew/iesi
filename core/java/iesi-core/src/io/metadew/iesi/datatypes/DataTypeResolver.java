@@ -1,5 +1,7 @@
 package io.metadew.iesi.datatypes;
 
+import io.metadew.iesi.datatypes.Dataset.Dataset;
+import io.metadew.iesi.datatypes.Dataset.KeyValueDataset;
 import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 
@@ -18,7 +20,9 @@ public class DataTypeResolver {
     private static String DatatypeStopCharacters = "}}";
     private static Pattern DatatypePattern = Pattern.compile("\\^(?<datatype>\\w+)\\((?<arguments>.+)\\)");
 
-
+    /*
+    In case of multiple dataset types (keyvalue, resultset..) --> proposition dataset.kv and dataset.rs as keys
+     */
     public static DataType resolveToDataType(String input, FrameworkFolderConfiguration frameworkFolderConfiguration, ExecutionRuntime executionRuntime) {
         if (input.startsWith(DatatypeStartCharacters) && input.endsWith(DatatypeStopCharacters)) {
             Matcher matcher = DatatypePattern.matcher(input.substring(DatatypeStartCharacters.length(), input.length() - DatatypeStopCharacters.length()));
@@ -49,7 +53,7 @@ public class DataTypeResolver {
             List<DataType> resolvedArguments = splittedArguments.stream()
                     .map(argument -> resolveToDataType(argument, frameworkFolderConfiguration, executionRuntime))
                     .collect(Collectors.toList());
-            return new Dataset(resolvedArguments.get(0), resolvedArguments.get(1), frameworkFolderConfiguration, executionRuntime);
+            return new KeyValueDataset(resolvedArguments.get(0), resolvedArguments.get(1), frameworkFolderConfiguration, executionRuntime);
         } else {
             throw new RuntimeException(MessageFormat.format("Cannot create dataset with arguments ''{0}''", splittedArguments.toString()));
         }

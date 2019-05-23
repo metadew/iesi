@@ -6,6 +6,7 @@ import io.metadew.iesi.connection.host.ShellCommandSettings;
 import io.metadew.iesi.connection.operation.ConnectionOperation;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.Text;
+import io.metadew.iesi.connection.tools.HostConnectionTools;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.configuration.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.ActionParameter;
@@ -127,14 +128,20 @@ public class CliExecuteCommand {
 
     private boolean executeCommand(String shellPath, String shellCommand, boolean settingRuntimeVariables, String settingRuntimeVariablesPrefix, String settingRuntimeVariablesMode, String connectionName) {
         // Get Connection
-        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution());
-        Connection cliConnection = connectionConfiguration.getConnection(connectionName,
-                this.getExecutionControl().getEnvName()).get();
-        ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
-        HostConnection hostConnection = connectionOperation.getHostConnection(cliConnection);
+        boolean isOnLocalhost = HostConnectionTools.isOnLocalhost(this.getFrameworkExecution(),
+                connectionName, this.getExecutionControl().getEnvName());
 
-        // Check if running on localhost or not
-        boolean isOnLocalHost = connectionOperation.isOnLocalConnection(hostConnection);
+        HostConnection hostConnection;
+        if (connectionName.isEmpty() || connectionName.equalsIgnoreCase("localhost")) {
+            hostConnection = new HostConnection(HostConnectionTools.getLocalhostType());
+        } else {
+            ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution());
+            Connection connection = connectionConfiguration.getConnection(connectionName,
+                    this.getExecutionControl().getEnvName()).get();
+            ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
+            hostConnection = connectionOperation.getHostConnection(connection);
+        }
+
 
         // Run the action
         ShellCommandResult shellCommandResult;
@@ -144,16 +151,19 @@ public class CliExecuteCommand {
         shellCommandSettings.setSetRunVarMode(settingRuntimeVariablesMode);
         shellCommandSettings.setFrameworkExecution(this.getFrameworkExecution());
         shellCommandSettings.setEnvironment(this.getExecutionControl().getEnvName());
-        if (isOnLocalHost) {
-            shellCommandResult = hostConnection.executeLocalCommand(shellPath, shellCommand, shellCommandSettings);
+
+        if (isOnLocalhost) {
+            shellCommandResult = hostConnection.executeLocalCommand(shellPath,
+                    shellCommand, shellCommandSettings);
         } else {
-            shellCommandResult = hostConnection.executeRemoteCommand(shellPath, shellCommand, shellCommandSettings);
+            shellCommandResult = hostConnection.executeRemoteCommand(shellPath,
+                    shellCommand, shellCommandSettings);
         }
 
         // Set runtime variables
         if (settingRuntimeVariables) {
             this.getExecutionControl().getExecutionRuntime()
-                    .setRuntimeVariables(shellCommandResult.getRuntimeVariablesOutput());
+                    .setRuntimeVariables(this.getActionExecution(), shellCommandResult.getRuntimeVariablesOutput());
         }
 
         if (shellCommandResult.getReturnCode() == 0) {
@@ -171,6 +181,10 @@ public class CliExecuteCommand {
     }
 
     private String convertSetRuntimeVariablesMode(DataType setRuntimeVariablesMode) {
+        // TODO: make optional
+        if (setRuntimeVariablesMode == null) {
+            return "";
+        }
         if (setRuntimeVariablesMode instanceof Text) {
             return setRuntimeVariablesMode.toString();
         } else {
@@ -181,6 +195,9 @@ public class CliExecuteCommand {
     }
 
     private String convertConnectionName(DataType connectionName) {
+        if (connectionName == null) {
+            return "localhost";
+        }
         if (connectionName instanceof Text) {
             return connectionName.toString();
         } else {
@@ -191,6 +208,10 @@ public class CliExecuteCommand {
     }
 
     private String convertSetRuntimeVariablesPrefix(DataType setRuntimeVariablesPrefix) {
+        // TODO: make optional
+        if (setRuntimeVariablesPrefix == null) {
+            return "";
+        }
         if (setRuntimeVariablesPrefix instanceof Text) {
             return setRuntimeVariablesPrefix.toString();
         } else {
@@ -201,6 +222,9 @@ public class CliExecuteCommand {
     }
 
     private boolean convertSetRuntimeVariables(DataType setRuntimeVariables) {
+        if (setRuntimeVariables == null) {
+            return false;
+        }
         if (setRuntimeVariables instanceof Text) {
             return setRuntimeVariables.toString().equalsIgnoreCase("y");
         } else {

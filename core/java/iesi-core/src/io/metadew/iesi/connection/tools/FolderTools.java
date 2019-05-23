@@ -3,9 +3,13 @@ package io.metadew.iesi.connection.tools;
 import io.metadew.iesi.common.text.ParsingTools;
 import io.metadew.iesi.connection.FileConnection;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.ArrayUtils;
 
 import java.io.*;
 import java.nio.channels.FileChannel;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,8 +29,15 @@ public final class FolderTools {
         return files;
     }
 
-    public static File[] getFilesInFolder(String folderName, String filterExpression) {
-        File[] files = null;
+    public static File[] mergeFileArrays(File[] array1, File[] array2) {
+        File[] result = ArrayUtils.addAll(array1, array2);
+        return result;
+    }
+
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    public static List<FileConnection> getFilesInFolder(String folderName, String filterExpression) {
+        File[] files = new File[0];
+        List<FileConnection> connectionsFound = new ArrayList();
         String filterType = "";
 
         // Define filterType
@@ -47,7 +58,18 @@ public final class FolderTools {
             files = getFilesInFolderUsingRegex(folderName, filterExpression);
         }
 
-        return files;
+
+
+        for (File file : files) {
+            FileConnection connectionFound = new FileConnection();
+            connectionFound.setFileName(file.getName());
+            connectionFound.setFilePath(file.getAbsolutePath());
+            connectionFound.setExtension(FileTools.getFileExtension(file));
+            connectionFound.setDirectory(file.isDirectory());
+            connectionsFound.add(connectionFound);
+        }
+
+        return connectionsFound;
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -104,14 +126,8 @@ public final class FolderTools {
         final File folder = new File(folderName);
 
         final String fileFilter = filterExpression;
-        final File[] files = folder.listFiles(new FilenameFilter() {
-            @Override
-            public boolean accept(final File dir, final String name) {
-                return name.contentEquals(fileFilter);
-            }
-        });
-
-        return files;
+        final File[] files = folder.listFiles((dir, name) -> name.contentEquals(fileFilter));
+        return files == null ? new File[0] : files;
     }
 
     // Copy operations
@@ -170,7 +186,32 @@ public final class FolderTools {
     }
 
     // Create Folder
-    public static void createFolder(String folderName) {
+    @Deprecated
+    public static void createFolderold(String folderName, boolean errorIfExists) {
+        File folder = new File(folderName);
+
+        // if the directory does not exist, create it
+        if (!folder.exists()) {
+            boolean result = false;
+
+            try {
+                folder.mkdir();
+                result = true;
+            } catch (SecurityException se) {
+                // handle
+            }
+            if (result) {
+                // System.out.println("Directory created");
+            }
+        } else {
+            if (errorIfExists) {
+                throw new RuntimeException("folder.exists");
+            }
+        }
+    }
+
+    @Deprecated
+    public static void createFolderOld(String folderName) {
         File folder = new File(folderName);
 
         // if the directory does not exist, create it
@@ -192,6 +233,26 @@ public final class FolderTools {
         }
     }
 
+    public static void createFolder(String folderPath) {
+        FolderTools.createFolder(folderPath, false);
+    }
+
+    public static void createFolder(String folderPath, boolean errorIfExists) {
+        Path path = Paths.get(folderPath);
+
+        if (!Files.exists(path)) {
+            try {
+                Files.createDirectories(path);
+            } catch (Exception e) {
+                throw new RuntimeException("folder.create.error");
+            }
+        } else {
+            if (errorIfExists) {
+                throw new RuntimeException("folder.exists");
+            }
+        }
+    }
+
     // Delete Folder
     public static void deleteFolder(String folderName, boolean deleteFolder) {
         File folder = new File(folderName);
@@ -202,6 +263,7 @@ public final class FolderTools {
                 for (File c : folder.listFiles())
                     deleteRecursive(c.getAbsolutePath());
             }
+        } else {
         }
     }
 

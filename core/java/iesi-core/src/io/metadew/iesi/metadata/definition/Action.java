@@ -1,10 +1,12 @@
 package io.metadew.iesi.metadata.definition;
 
+import io.metadew.iesi.metadata.tools.IdentifierTools;
+
 import java.util.List;
 
 public class Action {
 
-    private long id;
+    private String id;
     private long number;
     private String type;
     private String name;
@@ -14,6 +16,7 @@ public class Action {
     private String iteration;
     private String errorExpected;
     private String errorStop;
+    private String retries;
     private List<ActionParameter> parameters;
 
     //Constructors
@@ -21,8 +24,10 @@ public class Action {
 
     }
 
-    public Action(long id, long number, String type, String name, String description, String component,
-                  String condition, String iteration, String errorExpected, String errorStop, List<ActionParameter> parameters) {
+    // TODO: make optional Paramaters of type Optional instead of ""
+
+    public Action(String id, long number, String type, String name, String description, String component,
+                  String condition, String iteration, String errorExpected, String errorStop, String retries, List<ActionParameter> parameters) {
         this.id = id;
         this.number = number;
         this.type = type;
@@ -33,6 +38,7 @@ public class Action {
         this.iteration = iteration;
         this.errorExpected = errorExpected;
         this.errorStop = errorStop;
+        this.retries = retries;
         this.parameters = parameters;
     }
 
@@ -53,14 +59,6 @@ public class Action {
         this.description = description;
     }
 
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
     public long getNumber() {
         return number;
     }
@@ -78,7 +76,7 @@ public class Action {
     }
 
     public String getErrorExpected() {
-        return errorExpected;
+        return errorExpected == null? "N" : errorExpected;
     }
 
     public void setErrorExpected(String errorExpected) {
@@ -86,7 +84,7 @@ public class Action {
     }
 
     public String getErrorStop() {
-        return errorStop;
+        return errorStop == null? "N" : errorStop;
     }
 
     public void setErrorStop(String errorStop) {
@@ -102,7 +100,7 @@ public class Action {
     }
 
     public String getComponent() {
-        return component;
+        return component == null? "" : component;
     }
 
     public void setComponent(String component) {
@@ -110,7 +108,7 @@ public class Action {
     }
 
     public String getIteration() {
-        return iteration;
+        return iteration == null? "" : iteration;
     }
 
     public void setIteration(String iteration) {
@@ -118,11 +116,28 @@ public class Action {
     }
 
     public String getCondition() {
-        return condition;
+        return condition == null? "" : condition;
     }
 
     public void setCondition(String condition) {
         this.condition = condition;
+    }
+
+    public String getRetries() {
+        return retries == null? "" : retries;
+    }
+
+    public void setRetries(String retries) {
+        this.retries = retries;
+    }
+
+    public String getId() {
+        if (id == null) this.id = IdentifierTools.getActionIdentifier(this.getName());
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
 }

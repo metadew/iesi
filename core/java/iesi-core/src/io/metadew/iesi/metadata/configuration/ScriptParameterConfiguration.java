@@ -2,6 +2,7 @@ package io.metadew.iesi.metadata.configuration;
 
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.metadata.definition.Script;
 import io.metadew.iesi.metadata.definition.ScriptParameter;
 import io.metadew.iesi.metadata.definition.ScriptVersion;
 
@@ -27,7 +28,7 @@ public class ScriptParameterConfiguration {
     }
 
     // Insert
-    public String getInsertStatement(String scriptName) {
+    public String getInsertStatement(Script script) {
         String sql = "";
 
         sql += "INSERT INTO "
@@ -37,7 +38,7 @@ public class ScriptParameterConfiguration {
         sql += "VALUES ";
         sql += "(";
         sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository()
-                .getTableNameByLabel("Scripts"), "SCRIPT_ID", "where SCRIPT_NM = '" + scriptName) + "')";
+                .getTableNameByLabel("Scripts"), "SCRIPT_ID", "where SCRIPT_NM = '" + script.getName()) + "')";
         sql += ",";
         sql += SQLTools.GetStringForSQL(this.getScriptVersion().getNumber());
         sql += ",";
@@ -50,11 +51,11 @@ public class ScriptParameterConfiguration {
         return sql;
     }
 
-    public ScriptParameter getScriptParameter(long scriptId, long scriptVersionNumber, String scriptParameterName) {
+    public ScriptParameter getScriptParameter(String scriptId, long scriptVersionNumber, String scriptParameterName) {
         ScriptParameter scriptParameter = new ScriptParameter();
         CachedRowSet crsScriptParameter = null;
         String queryScriptParameter = "select SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_PAR_NM, SCRIPT_PAR_VAL from " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ScriptParameters")
-                + " where SCRIPT_ID = " + scriptId + " and SCRIPT_VRS_NB = " + scriptVersionNumber + " and SCRIPT_PAR_NM = '" + scriptParameterName + "'";
+                + " where SCRIPT_ID = '" + scriptId + "' and SCRIPT_VRS_NB = " + scriptVersionNumber + " and SCRIPT_PAR_NM = '" + scriptParameterName + "'";
         crsScriptParameter = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(queryScriptParameter, "reader");
         try {
             while (crsScriptParameter.next()) {

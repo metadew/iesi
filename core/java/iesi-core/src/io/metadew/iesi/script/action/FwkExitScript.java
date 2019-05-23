@@ -2,6 +2,7 @@ package io.metadew.iesi.script.action;
 
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.Text;
+import io.metadew.iesi.framework.configuration.FrameworkStatus;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.ActionParameter;
 import io.metadew.iesi.script.execution.ActionExecution;
@@ -68,12 +69,10 @@ public class FwkExitScript {
     public boolean execute() {
         try {
             Optional<String> status = convertStatus(getStatus().getValue());
-            // TODO
-//			// Verify if the status is empty
-//			if (this.getStatus().getValue().trim().isEmpty()) {
-//				this.getStatus().setInputValue(FrameworkStatus.SUCCESS.value());
-//			}
-//
+            // Verify if the status is empty
+            if (status.map(status1 -> status1.trim().isEmpty()).orElse(false)) {
+                this.getStatus().setInputValue(FrameworkStatus.SUCCESS.value());
+            }
             return true;
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();

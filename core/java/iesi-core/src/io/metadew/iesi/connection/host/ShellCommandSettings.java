@@ -11,7 +11,7 @@ public class ShellCommandSettings {
 
     private FrameworkExecution frameworkExecution = null;
     private String environment = "";
-    private boolean setRunVar = false;
+    private boolean setRunVar;
     private String setRunVarPrefix = "";
     private String setRunVarMode = "";
 

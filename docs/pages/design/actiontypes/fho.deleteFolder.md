@@ -26,13 +26,16 @@ This action deletes a folder and all its contents. All subfolders and contents a
   * regular expression: this will delete all folders that match the regular expression as specified. 
 * if the value for the path is empty, then the full path name in the folder that is available will be used.
   * Typically, a single file name can be provided
-  * But, ig this is not the case, the default folder in the jvm is applicable.
+  * But, if this is not the case, the default folder in the jvm is applicable.
 
 ### 3: connection
 
 `connection: "connection where the folder to delete is located"`
-* currently only localhost is supported
-* working on it
+* define the connection name where the folder is located
+* currently on ssh type remote connections will work
+  * if the parameter is empty, or defined as `localhost` then the process will be executed locally by the framework's user
+  * if the connection is located remotely, then a ssh connection will be established
+  * if the connection parameter `allowLocalhostExecution` is set to `N` then ssh execution will be forced
 
 ## Examples
 

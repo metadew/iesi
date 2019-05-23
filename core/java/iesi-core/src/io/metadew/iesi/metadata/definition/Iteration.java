@@ -17,6 +17,21 @@ public class Iteration {
 
     }
 
+    // TODO: subclass based on type
+
+    //Constructors
+    public Iteration(String name, String type, String list, String values, String from, String to, String step, String condition, String interrupt) {
+        this.name = name;
+        this.type = type;
+        this.list = list;
+        this.values = values;
+        this.from = from;
+        this.to = to;
+        this.step = step;
+        this.condition = condition;
+        this.interrupt = interrupt;
+    }
+
     //Getters and Setters
     public String getName() {
         return name;
@@ -31,7 +46,7 @@ public class Iteration {
     }
 
     public String getList() {
-        return list;
+        return list == null ? "" : list;
     }
 
     public void setList(String list) {
@@ -39,7 +54,7 @@ public class Iteration {
     }
 
     public String getValues() {
-        return values;
+        return values == null ? "" : values;
     }
 
     public void setValues(String values) {
@@ -47,7 +62,7 @@ public class Iteration {
     }
 
     public String getFrom() {
-        return from;
+        return from == null ? "" : from;
     }
 
     public void setFrom(String from) {
@@ -55,7 +70,7 @@ public class Iteration {
     }
 
     public String getTo() {
-        return to;
+        return to == null ? "" : to;
     }
 
     public void setTo(String to) {
@@ -63,7 +78,7 @@ public class Iteration {
     }
 
     public String getStep() {
-        return step;
+        return step == null ? "" : step;
     }
 
     public void setStep(String step) {
@@ -71,7 +86,7 @@ public class Iteration {
     }
 
     public String getInterrupt() {
-        return interrupt;
+        return interrupt == null ? "n" : interrupt;
     }
 
     public void setInterrupt(String interrupt) {
@@ -83,7 +98,7 @@ public class Iteration {
     }
 
     public String getCondition() {
-        return condition;
+        return condition == null ? "" : condition;
     }
 
     public void setCondition(String condition) {

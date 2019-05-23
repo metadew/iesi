@@ -1,10 +1,10 @@
 package io.metadew.iesi.script.configuration;
 
+import io.metadew.iesi.connection.database.connection.SqliteDatabaseConnection;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.configuration.IterationVariableConfiguration;
 import io.metadew.iesi.metadata.definition.RuntimeVariable;
-import io.metadew.iesi.metadata_repository.repository.database.connection.SqliteDatabaseConnection;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.operation.ConditionOperation;
 
@@ -110,7 +110,7 @@ public class IterationConfiguration {
             setNumber++;
             setName = "auto generated iteration set " + setNumber;
             String innerpart = parts[i];
-            this.setIterationVariable(runId, -1, iterationList, -1, setName, setNumber, "key." + setNumber, innerpart);
+            this.setIterationVariable(runId, -1, iterationList, -1, setName, setNumber, "key", innerpart);
         }
     }
 
@@ -129,7 +129,7 @@ public class IterationConfiguration {
             while (iFrom <= iTo) {
                 setNumber++;
                 setName = "auto generated iteration set " + setNumber;
-                this.setIterationVariable(runId, -1, iterationList, -1, setName, setNumber, "key." + setNumber,
+                this.setIterationVariable(runId, -1, iterationList, -1, setName, setNumber, "key",
                         String.valueOf(iFrom));
 
                 iFrom = iFrom + iStep;
@@ -138,7 +138,7 @@ public class IterationConfiguration {
             while (iFrom >= iTo) {
                 setNumber++;
                 setName = "auto generated iteration set " + setNumber;
-                this.setIterationVariable(runId, -1, iterationList, -1, setName, setNumber, "key." + setNumber,
+                this.setIterationVariable(runId, -1, iterationList, -1, setName, setNumber, "key",
                         String.valueOf(iFrom));
 
                 iFrom = iFrom - iStep;
@@ -146,7 +146,7 @@ public class IterationConfiguration {
         } else {
             setNumber++;
             setName = "auto generated iteration set " + setNumber;
-            this.setIterationVariable(runId, -1, iterationList, -1, setName, setNumber, "key." + setNumber,
+            this.setIterationVariable(runId, -1, iterationList, -1, setName, setNumber, "key",
                     String.valueOf(iFrom));
         }
     }

@@ -2,12 +2,12 @@ package io.metadew.iesi.data.generation.execution;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.client.execution.ProgressBar;
+import io.metadew.iesi.connection.database.connection.SqliteDatabaseConnection;
+import io.metadew.iesi.connection.database.connection.TemporaryDatabaseConnection;
 import io.metadew.iesi.connection.tools.FolderTools;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.Generation;
 import io.metadew.iesi.metadata.definition.GenerationRule;
-import io.metadew.iesi.metadata_repository.repository.database.connection.SqliteDatabaseConnection;
-import io.metadew.iesi.metadata_repository.repository.database.connection.TemporaryDatabaseConnection;
 import io.metadew.iesi.script.execution.ExecutionControl;
 
 import java.io.File;

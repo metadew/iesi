@@ -2,6 +2,7 @@
 	"type": "ActionType",
 	"data": {
 		"name": "cli.executeCommand",
+		"className": "io.metadew.iesi.script.action.CliExecuteCommand",
 		"description": "Run a Shell Command",
 		"parameters": [
 			{"name": "path","description": "Path where to run the command from","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"},
@@ -16,6 +17,7 @@
 	"type": "ActionType",
 	"data": {
 		"name": "conn.isAlive",
+		"className": "io.metadew.iesi.script.action.ConnIsAlive",
 		"description": "Verify if the connection can be reached",
 		"parameters": [
 			{"name": "connection","description": "Connection to check","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "Y"}
@@ -25,15 +27,18 @@
 	"type": "ActionType",
 	"data": {
 		"name": "conn.setStageConnection",
+		"className": "io.metadew.iesi.script.action.ConnSetStageConnection",
 		"description": "Define a stage connection that can be used in any next step",
 		"parameters": [
-			{"name": "stage","description": "Name of the stage connection","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"}
+			{"name": "stage","description": "Name of the stage connection","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "cleanup","description": "Flag to indicate if the stage connection needs to be cleaned up after processing","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"}
 	]
 }},
 {
 	"type": "ActionType",
 	"data": {
 		"name": "data.compareDataset",
+		"className": "io.metadew.iesi.script.action.DataCompareDataset",
 		"description": "Compare two datasets",
 		"parameters": [
 			{"name": "leftDataset","description": "Dataset to compare","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"},
@@ -45,6 +50,7 @@
 	"type": "ActionType",
 	"data": {
 		"name": "data.outputDataset",
+		"className": "io.metadew.iesi.script.action.DataOutputDataset",
 		"description": "Prints a dataset for logging and debugging purposes",
 		"parameters": [
 			{"name": "name","description": "Name of the dataset to use","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
@@ -56,9 +62,11 @@
 	"type": "ActionType",
 	"data": {
 		"name": "data.setDatasetConnection",
+		"className": "io.metadew.iesi.script.action.DataSetDatasetConnection",
 		"description": "Define a dataset connection that can be used in any next action",
 		"parameters": [
 			{"name": "name","description": "Reference name for the dataset definition","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "type","description": "Type of dataset","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"},
 			{"name": "dataset","description": "Dataset to use","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
 			{"name": "labels","description": "Labels associated to the dataset instance","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"}
 	]
@@ -67,6 +75,7 @@
 	"type": "ActionType",
 	"data": {
 		"name": "eval.assertEquals",
+		"className": "io.metadew.iesi.script.action.EvalAssertEquals",
 		"description": "Evaluate if two values are equal",
 		"parameters": [
 			{"name": "expected","description": "Expected value to evaluate","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
@@ -77,6 +86,7 @@
 	"type": "ActionType",
 	"data": {
 		"name": "eval.executeExpression",
+		"className": "io.metadew.iesi.script.action.EvalExecuteExpression",
 		"description": "Evaluate an expression using scripted syntax",
 		"parameters": [
 			{"name": "expression","description": "Expression to evaluate","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"}
@@ -86,6 +96,7 @@
 	"type": "ActionType",
 	"data": {
 		"name": "eval.verifyMandatoryField",
+		"className": "io.metadew.iesi.script.action.EvalVerifyMandatoryField",
 		"description": "Check if mandatory fields are filled out",
 		"parameters": [
 			{"name": "database","description": "Name of the database containing the schema to check","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"},
@@ -102,6 +113,7 @@
 	"type": "ActionType",
 	"data": {
 		"name": "eval.verifySingleField",
+		"className": "io.metadew.iesi.script.action.EvalVerifySingleField",
 		"description": "Check a single field against a specific rule",
 		"parameters": [
 			{"name": "database","description": "Name of the database containing the schema to check","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"},
@@ -118,6 +130,7 @@
 	"type": "ActionType",
 	"data": {
 		"name": "fho.executeFileTransfer",
+		"className": "io.metadew.iesi.script.action.FhoExecuteFileTransfer",
 		"description": "Transfer one or more files between locations",
 		"parameters": [
 			{"name": "sourceFilePath","description": "Path where file(s) to transfer are located","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
@@ -132,6 +145,7 @@
 	"type": "ActionType",
 	"data": {
 		"name": "fwk.dummy",
+		"className": "io.metadew.iesi.script.action.FwkDummy",
 		"description": "Dummy for adding a placeholder step",
 		"parameters": [ ]
 }},
@@ -139,6 +153,7 @@
 	"type": "ActionType",
 	"data": {
 		"name": "fwk.executeScript",
+		"className": "io.metadew.iesi.script.action.FwkExecuteScript",
 		"description": "Execute another script",
 		"parameters": [
 			{"name": "script","description": "Script name to execute","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
@@ -152,6 +167,7 @@
 	"type": "ActionType",
 	"data": {
 		"name": "fwk.executeSuite",
+		"className": "io.metadew.iesi.script.action.FwkExecuteSuite",
 		"description": "Execute a test suite of multiple scripts",
 		"parameters": [
 			{"name": "component","description": "Component for which to run a suite","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
@@ -171,6 +187,7 @@
 	"type": "ActionType",
 	"data": {
 		"name": "fwk.exitScript",
+		"className": "io.metadew.iesi.script.action.FwkExitScript",
 		"description": "Exit the script execution",
 		"parameters": [
 			{"name": "status","description": "Exit status for the script","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"}
@@ -180,6 +197,7 @@
 	"type": "ActionType",
 	"data": {
 		"name": "fwk.includeScript",
+		"className": "io.metadew.iesi.script.action.FwkIncludeScript",
 		"description": "Include the actions of another script and execute as one script",
 		"parameters": [
 			{"name": "script","description": "Script name to execute","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
@@ -190,6 +208,7 @@
 	"type": "ActionType",
 	"data": {
 		"name": "fwk.outputMessage",
+		"className": "io.metadew.iesi.script.action.FwkOutputMessage",
 		"description": "Prints a message for logging and debugging purposes",
 		"parameters": [
 			{"name": "message","description": "Message to be printed","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"},
@@ -200,6 +219,7 @@
 	"type": "ActionType",
 	"data": {
 		"name": "fwk.route",
+		"className": "io.metadew.iesi.script.action.FwkRoute",
 		"description": "Route to one or more specific actions",
 		"parameters": [
 			{"name": "condition","description": "Condition to apply to follow a route","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"},
@@ -210,6 +230,7 @@
 	"type": "ActionType",
 	"data": {
 		"name": "fwk.setEnvironment",
+		"className": "io.metadew.iesi.script.action.FwkSetEnvironment",
 		"description": "Set the environment where the next steps will be executed on",
 		"parameters": [
 			{"name": "environment","description": "Environment name where the next action will be executed on","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"}
@@ -219,6 +240,7 @@
 	"type": "ActionType",
 	"data": {
 		"name": "fwk.setIteration",
+		"className": "io.metadew.iesi.script.action.FwkSetIteration",
 		"description": "Define an interation that can be used in any next action",
 		"parameters": [
 			{"name": "name","description": "Name of the iteration to define","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
@@ -236,6 +258,7 @@
 	"type": "ActionType",
 	"data": {
 		"name": "fwk.setParameterFile",
+		"className": "io.metadew.iesi.script.action.FwkSetParameterFile",
 		"description": "Load a parameter file as runtime variables",
 		"parameters": [
 			{"name": "filePath","description": "Path where the file(s) need to be located","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
@@ -247,6 +270,7 @@
 	"type": "ActionType",
 	"data": {
 		"name": "fwk.setParameterList",
+		"className": "io.metadew.iesi.script.action.FwkSetParameterList",
 		"description": "Load a list of parameters as runtime variables",
 		"parameters": [
 			{"name": "list","description": "List of parameters and values to set as runtime variables","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"}
@@ -256,6 +280,7 @@
 	"type": "ActionType",
 	"data": {
 		"name": "fwk.setParameterValue",
+		"className": "io.metadew.iesi.script.action.FwkSetParameterValue",
 		"description": "Set a parameter value as runtime variable",
 		"parameters": [
 			{"name": "name","description": "Name of the parameter to set as runtime variable","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
@@ -266,6 +291,7 @@
 	"type": "ActionType",
 	"data": {
 		"name": "fwk.setRepository",
+		"className": "io.metadew.iesi.script.action.FwkSetRepository",
 		"description": "Define a repository that can be used in any next action",
 		"parameters": [
 			{"name": "name","description": "Reference name for the repository definition","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
@@ -278,6 +304,7 @@
 	"type": "ActionType",
 	"data": {
 		"name": "fwk.startIteration",
+		"className": "io.metadew.iesi.script.action.FwkStartIteration",
 		"description": "Start an iteration block for the steps",
 		"parameters": [ ]
 }},
@@ -285,6 +312,7 @@
 	"type": "ActionType",
 	"data": {
 		"name": "fwk.stopIteration",
+		"className": "io.metadew.iesi.script.action.FwkStopIteration",
 		"description": "Stop the iteration block",
 		"parameters": [ ]
 }},
@@ -292,6 +320,7 @@
 	"type": "ActionType",
 	"data": {
 		"name": "http.executeRequest",
+		"className": "io.metadew.iesi.script.action.HttpExecuteRequest",
 		"description": "Execute a http request",
 		"parameters": [
 			{"name": "type","description": "Type of request","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
@@ -305,6 +334,7 @@
 	"type": "ActionType",
 	"data": {
 		"name": "script.logOutput",
+		"className": "io.metadew.iesi.script.action.ScriptLogOutput",
 		"description": "Store an output value as part of the script results",
 		"parameters": [
 			{"name": "name","description": "Name of the output","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
@@ -315,6 +345,7 @@
 	"type": "ActionType",
 	"data": {
 		"name": "sql.evaluateResult",
+		"className": "io.metadew.iesi.script.action.SqlEvaluateResult",
 		"description": "Checks if a SQL query returns a result or not",
 		"parameters": [
 			{"name": "query","description": "SQL query to run","type": "string","mandatory": "Y","encrypted": "N","subroutine": "query","impersonate": "N"},
@@ -326,16 +357,31 @@
 	"type": "ActionType",
 	"data": {
 		"name": "sql.executeQuery",
+		"className": "io.metadew.iesi.script.action.SqlExecuteQuery",
 		"description": "Run a SQL query",
 		"parameters": [
 			{"name": "query","description": "SQL query to run","type": "string","mandatory": "Y","encrypted": "N","subroutine": "query","impersonate": "N"},
-			{"name": "connection","description": "Connection where to run the SQL query","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "Y"}
+			{"name": "connection","description": "Connection where to run the SQL query","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "Y"},
+			{"name": "outputDataset","description": "Dataset to write the output to","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "appendOutput","description": "Flag indicating if previous output needs to be removed","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"}
+	]
+}},
+{
+	"type": "ActionType",
+	"data": {
+		"name": "sql.executeStatement",
+		"className": "io.metadew.iesi.script.action.SqlExecuteStatement",
+		"description": "Run a SQL statement (not returning any result)",
+		"parameters": [
+			{"name": "statement","description": "SQL statement to run","type": "string","mandatory": "Y","encrypted": "N","subroutine": "query","impersonate": "N"},
+			{"name": "connection","description": "Connection where to run the SQL statement","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "Y"}
 	]
 }},
 {
 	"type": "ActionType",
 	"data": {
 		"name": "sql.setIterationVariables",
+		"className": "io.metadew.iesi.script.action.SqlSetIterationVariables",
 		"description": "Retrieve iteration variables using a SQL Statement",
 		"parameters": [
 			{"name": "list","description": "Identifier for the list name that is used","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
@@ -347,6 +393,7 @@
 	"type": "ActionType",
 	"data": {
 		"name": "sql.setRuntimeVariables",
+		"className": "io.metadew.iesi.script.action.SqlSetRuntimeVariables",
 		"description": "Retrieve runtime variables using a SQL Statement",
 		"parameters": [
 			{"name": "query","description": "SQL query to run","type": "string","mandatory": "Y","encrypted": "N","subroutine": "query","impersonate": "N"},
@@ -357,6 +404,7 @@
 	"type": "ActionType",
 	"data": {
 		"name": "wfa.executeFilePing",
+		"className": "io.metadew.iesi.script.action.WfaExecuteFilePing",
 		"description": "Wait until a File Statement returns a result or not",
 		"parameters": [
 			{"name": "filePath","description": "Path where the file(s) need to be located","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
@@ -372,6 +420,7 @@
 	"type": "ActionType",
 	"data": {
 		"name": "wfa.executeQueryPing",
+		"className": "io.metadew.iesi.script.action.WfaExecuteQueryPing",
 		"description": "Wait until a SQL query returns a result or not",
 		"parameters": [
 			{"name": "query","description": "SQL query to run","type": "string","mandatory": "Y","encrypted": "N","subroutine": "query","impersonate": "N"},
@@ -386,6 +435,7 @@
 	"type": "ActionType",
 	"data": {
 		"name": "wfa.executeWait",
+		"className": "io.metadew.iesi.script.action.WfaExecuteWait",
 		"description": "Wait for a defined interval",
 		"parameters": [
 			{"name": "wait","description": "Number of seconds to wait","type": "number","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"}
@@ -395,6 +445,7 @@
 	"type": "ActionType",
 	"data": {
 		"name": "wfa.getConfirmation",
+		"className": "io.metadew.iesi.script.action.WfaGetConfirmation",
 		"description": "Wait for user confirmation",
 		"parameters": [
 			{"name": "type","description": "Type of confirmation","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"},
@@ -406,10 +457,97 @@
 	"type": "ActionType",
 	"data": {
 		"name": "fho.deleteFolder",
+		"className": "io.metadew.iesi.script.action.FhoDeleteFolder",
 		"description": "Delete one or more folders and all contents",
 		"parameters": [
 			{"name": "path","description": "Path where the folder is located","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"},
 			{"name": "folder","description": "Folder(s) to delete","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
 			{"name": "connection","description": "Connection where the folder is located","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "Y"}
+	]
+}},
+{
+	"type": "ActionType",
+	"data": {
+		"name": "fho.createFolder",
+		"className": "io.metadew.iesi.script.action.FhoCreateFolder",
+		"description": "Create a folder",
+		"parameters": [
+			{"name": "path","description": "Path where the folder will be located","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "folder","description": "Folder to create","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "connection","description": "Connection where the folder will be located","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "Y"}
+	]
+}},
+{
+	"type": "ActionType",
+	"data": {
+		"name": "fho.deleteFile",
+		"className": "io.metadew.iesi.script.action.FhoDeleteFile",
+		"description": "Delete one or more files in a folder",
+		"parameters": [
+			{"name": "path","description": "Path where the file is located","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "file","description": "File(s) to delete","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "connection","description": "Connection where the file is located","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "Y"}
+	]
+}},
+{
+	"type": "ActionType",
+	"data": {
+		"name": "sql.executeProcedure",
+		"className": "io.metadew.iesi.script.action.SqlExecuteProcedure",
+		"description": "Execute a SQL Stored Procedure",
+		"parameters": [
+			{"name": "procedure","description": "SQL Stored Procedure to run","type": "string","mandatory": "Y","encrypted": "N","subroutine": "query","impersonate": "N"},
+			{"name": "connection","description": "Connection where to run the SQL Stored Procedure","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "Y"},
+			{"name": "parameters","description": "Parameters to use for the execution","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "outputDataset","description": "Dataset to write the output to","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "appendOutput","description": "Flag indicating if previous output needs to be removed","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"}
+	]
+}},
+{
+	"type": "ActionType",
+	"data": {
+		"name": "fho.folderExists",
+		"className": "io.metadew.iesi.script.action.FhoFolderExists",
+		"description": "Verify if a folder exists",
+		"parameters": [
+			{"name": "path","description": "Path where the folder is located","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "folder","description": "Folder to verify","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "connection","description": "Connection where the folder will be located","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "Y"}
+	]
+}},
+{
+	"type": "ActionType",
+	"data": {
+		"name": "fho.fileExists",
+		"className": "io.metadew.iesi.script.action.FhoFileExists",
+		"description": "Verify if a file exists",
+		"parameters": [
+			{"name": "path","description": "Path where the file is located","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "file","description": "File to verify","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "connection","description": "Connection where the file is located","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "Y"}
+	]
+}},
+{
+	"type": "ActionType",
+	"data": {
+		"name": "java.parseJar",
+		"className": "io.metadew.iesi.script.action.JavaParseJar",
+		"description": "Parses a Java archive file",
+		"parameters": [
+			{"name": "path","description": "Path where the file is located","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "file","description": "File(s) to parse","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "connection","description": "Connection where the file is located","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "Y"}
+	]
+}},
+{
+	"type": "ActionType",
+	"data": {
+		"name": "sql.defineDataset",
+		"className": "io.metadew.iesi.script.action.SqlDefineDataset",
+		"description": "Define a SQL dataset",
+		"parameters": [
+			{"name": "name","description": "Reference name for the dataset definition","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "statement","description": "SQL statement that defines the dataset","type": "string","mandatory": "Y","encrypted": "N","subroutine": "query","impersonate": "N"},
+			{"name": "identifier","description": "Unique identifier for records in the dataset","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"}
 	]
 }}]

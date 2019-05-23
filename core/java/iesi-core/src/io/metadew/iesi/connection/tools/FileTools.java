@@ -1,6 +1,7 @@
 package io.metadew.iesi.connection.tools;
 
 import io.metadew.iesi.framework.execution.FrameworkControl;
+import org.apache.commons.io.FileUtils;
 
 import java.io.*;
 import java.nio.channels.FileChannel;
@@ -21,6 +22,16 @@ public final class FileTools {
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    public static void delete(String fileName, boolean force) {
+        File f = new File(fileName);
+        try {
+            FileUtils.forceDelete(f);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Unable to delete file " + f.getAbsolutePath());
         }
     }
 

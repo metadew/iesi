@@ -1,0 +1,35 @@
+---
+type: "script"
+data:
+  name: "sql.executeStatement.4"
+  description: "test sql.executeStatement with a select statement and an input parameter"
+  parameters: []
+  actions:
+  - number: 1
+    type: "sql.executeStatement"
+    name: "action1"
+    description: "run a sql select statement from a file with closing ;"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "statement"
+      value : "{{=file(#iesi.home#/data/iesi-test/fwk/data/actions/sql.executeStatement.4.1.sql)}}"
+    - name: "connection"
+      value : "sql.executeStatement.4"
+  - number: 1
+    type: "sql.executeStatement"
+    name: "action2"
+    description: "run a sql select statement from a file without closing ;"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "statement"
+      value : "{{=file(#iesi.home#/data/iesi-test/fwk/data/actions/sql.executeStatement.4.2.sql)}}"
+    - name: "connection"
+      value : "sql.executeStatement.4"

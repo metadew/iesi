@@ -1,6 +1,6 @@
 package io.metadew.iesi.metadata.execution;
 
-import io.metadew.iesi.metadata_repository.*;
+import io.metadew.iesi.metadata.repository.*;
 
 import java.text.MessageFormat;
 import java.util.List;

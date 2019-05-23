@@ -18,7 +18,7 @@ data:
     - name: "list"
       value : "List1"
     - name: "query"
-      value : "{{=file(#iesi.home#/data/iesi-test/actions/data/actions/sql.setIterationVariables.2.1.sql)}}"
+      value : "{{=file(#iesi.home#/data/iesi-test/fwk/data/actions/sql.setIterationVariables.2.1.sql)}}"
     - name: "connection"
       value : "sql.setIterationVariables.2"
   - number: 2

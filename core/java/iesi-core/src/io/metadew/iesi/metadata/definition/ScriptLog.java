@@ -9,7 +9,7 @@ public class ScriptLog {
     private String run;
     private long process;
     private long parent;
-    private long identifier;
+    private String identifier;
     private long version;
     private String environment;
     private String status;
@@ -70,14 +70,6 @@ public class ScriptLog {
         this.parent = parent;
     }
 
-    public long getIdentifier() {
-        return identifier;
-    }
-
-    public void setIdentifier(long identifier) {
-        this.identifier = identifier;
-    }
-
     public long getVersion() {
         return version;
     }
@@ -94,5 +86,12 @@ public class ScriptLog {
         this.run = run;
     }
 
+    public String getIdentifier() {
+        return identifier;
+    }
+
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
+    }
 
 }

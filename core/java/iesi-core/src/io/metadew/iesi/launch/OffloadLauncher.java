@@ -3,6 +3,8 @@ package io.metadew.iesi.launch;
 import io.metadew.iesi.util.harvest.DatabaseOffloadExecution;
 import org.apache.commons.cli.*;
 
+import java.sql.SQLException;
+
 /**
  * The offload launcher is entry point to launch the data offloading utility.
  *
@@ -169,7 +171,7 @@ public class OffloadLauncher {
                 System.out.println("No valid parameters have been provided, type -help for help.");
             }
 
-        } catch (ParseException e) {
+        } catch (ParseException | SQLException e) {
             e.printStackTrace();
             System.exit(1);
         }

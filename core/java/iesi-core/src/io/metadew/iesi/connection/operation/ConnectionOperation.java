@@ -3,6 +3,7 @@ package io.metadew.iesi.connection.operation;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.connection.ArtifactoryConnection;
 import io.metadew.iesi.connection.HostConnection;
+import io.metadew.iesi.connection.database.connection.*;
 import io.metadew.iesi.connection.host.LinuxHostConnection;
 import io.metadew.iesi.connection.host.WindowsHostConnection;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
@@ -11,7 +12,6 @@ import io.metadew.iesi.metadata.definition.Connection;
 import io.metadew.iesi.metadata.definition.ConnectionParameter;
 import io.metadew.iesi.metadata.definition.ConnectionType;
 import io.metadew.iesi.metadata.definition.ConnectionTypeParameter;
-import io.metadew.iesi.metadata_repository.repository.database.connection.*;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
@@ -55,7 +55,8 @@ public class ConnectionOperation {
                         hostName = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(hostName);
                     } else if (connectionParameter.getName().equalsIgnoreCase("port")) {
                         portNumberTemp = connectionParameter.getValue();
-                        portNumberTemp = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(portNumberTemp);
+                        portNumberTemp = this.getFrameworkExecution().getFrameworkControl()
+                                .resolveConfiguration(portNumberTemp);
                     } else if (connectionParameter.getName().equalsIgnoreCase("tnsalias")) {
                         tnsAlias = connectionParameter.getValue();
                         tnsAlias = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(tnsAlias);
@@ -64,10 +65,12 @@ public class ConnectionOperation {
                         userName = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(userName);
                     } else if (connectionParameter.getName().equalsIgnoreCase("password")) {
                         userPassword = connectionParameter.getValue();
-                        userPassword = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(userPassword);
+                        userPassword = this.getFrameworkExecution().getFrameworkControl()
+                                .resolveConfiguration(userPassword);
                     } else if (connectionParameter.getName().equalsIgnoreCase("service")) {
                         serviceName = connectionParameter.getValue();
-                        serviceName = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(serviceName);
+                        serviceName = this.getFrameworkExecution().getFrameworkControl()
+                                .resolveConfiguration(serviceName);
                     }
                 }
 
@@ -128,13 +131,18 @@ public class ConnectionOperation {
                     }
                 }
 
-                // Convert encrypted integers
-                portNumber = Integer.parseInt(portNumberTemp);
+                // Convert port number
+                if (!portNumberTemp.isEmpty()) {
+                    portNumber = Integer.parseInt(portNumberTemp);
+                }
+
                 OracleDatabaseConnection oracleDatabaseConnection;
                 if (tnsAlias != null && tnsAlias.isEmpty()) {
-                    oracleDatabaseConnection = new TnsAliasOracleDatabaseConnection(hostName, portNumber, tnsAlias, userName, userPassword);
+                    oracleDatabaseConnection = new TnsAliasOracleDatabaseConnection(hostName, portNumber, tnsAlias,
+                            userName, userPassword);
                 } else {
-                    oracleDatabaseConnection = new ServiceNameOracleDatabaseConnection(hostName, portNumber, serviceName, userName, userPassword);
+                    oracleDatabaseConnection = new ServiceNameOracleDatabaseConnection(hostName, portNumber,
+                            serviceName, userName, userPassword);
                 }
                 databaseConnection = objectMapper.convertValue(oracleDatabaseConnection, DatabaseConnection.class);
             } else if (connection.getType().equalsIgnoreCase("db.netezza")) {
@@ -151,16 +159,19 @@ public class ConnectionOperation {
                         hostName = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(hostName);
                     } else if (connectionParameter.getName().equalsIgnoreCase("port")) {
                         portNumberTemp = connectionParameter.getValue();
-                        portNumberTemp = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(portNumberTemp);
+                        portNumberTemp = this.getFrameworkExecution().getFrameworkControl()
+                                .resolveConfiguration(portNumberTemp);
                     } else if (connectionParameter.getName().equalsIgnoreCase("database")) {
                         databaseName = connectionParameter.getValue();
-                        databaseName = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(databaseName);
+                        databaseName = this.getFrameworkExecution().getFrameworkControl()
+                                .resolveConfiguration(databaseName);
                     } else if (connectionParameter.getName().equalsIgnoreCase("user")) {
                         userName = connectionParameter.getValue();
                         userName = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(userName);
                     } else if (connectionParameter.getName().equalsIgnoreCase("password")) {
                         userPassword = connectionParameter.getValue();
-                        userPassword = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(userPassword);
+                        userPassword = this.getFrameworkExecution().getFrameworkControl()
+                                .resolveConfiguration(userPassword);
                     }
                 }
 
@@ -210,10 +221,13 @@ public class ConnectionOperation {
                     }
                 }
 
-                // Convert encrypted integers
-                portNumber = Integer.parseInt(portNumberTemp);
+                // Convert port number
+                if (!portNumberTemp.isEmpty()) {
+                    portNumber = Integer.parseInt(portNumberTemp);
+                }
 
-                NetezzaDatabaseConnection netezzaDatabaseConnection = new NetezzaDatabaseConnection(hostName, portNumber, databaseName, userName, userPassword);
+                NetezzaDatabaseConnection netezzaDatabaseConnection = new NetezzaDatabaseConnection(hostName,
+                        portNumber, databaseName, userName, userPassword);
                 databaseConnection = objectMapper.convertValue(netezzaDatabaseConnection, DatabaseConnection.class);
             } else if (connection.getType().equalsIgnoreCase("db.postgresql")) {
                 String hostName = "";
@@ -229,16 +243,19 @@ public class ConnectionOperation {
                         hostName = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(hostName);
                     } else if (connectionParameter.getName().equalsIgnoreCase("port")) {
                         portNumberTemp = connectionParameter.getValue();
-                        portNumberTemp = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(portNumberTemp);
+                        portNumberTemp = this.getFrameworkExecution().getFrameworkControl()
+                                .resolveConfiguration(portNumberTemp);
                     } else if (connectionParameter.getName().equalsIgnoreCase("database")) {
                         databaseName = connectionParameter.getValue();
-                        databaseName = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(databaseName);
+                        databaseName = this.getFrameworkExecution().getFrameworkControl()
+                                .resolveConfiguration(databaseName);
                     } else if (connectionParameter.getName().equalsIgnoreCase("user")) {
                         userName = connectionParameter.getValue();
                         userName = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(userName);
                     } else if (connectionParameter.getName().equalsIgnoreCase("password")) {
                         userPassword = connectionParameter.getValue();
-                        userPassword = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(userPassword);
+                        userPassword = this.getFrameworkExecution().getFrameworkControl()
+                                .resolveConfiguration(userPassword);
                     }
                 }
 
@@ -288,10 +305,13 @@ public class ConnectionOperation {
                     }
                 }
 
-                // Convert encrypted integers
-                portNumber = Integer.parseInt(portNumberTemp);
+                // Convert port number
+                if (!portNumberTemp.isEmpty()) {
+                    portNumber = Integer.parseInt(portNumberTemp);
+                }
 
-                PostgresqlDatabaseConnection postgresqlDatabaseConnection = new PostgresqlDatabaseConnection(hostName, portNumber, databaseName, userName, userPassword);
+                PostgresqlDatabaseConnection postgresqlDatabaseConnection = new PostgresqlDatabaseConnection(hostName,
+                        portNumber, databaseName, userName, userPassword);
                 databaseConnection = objectMapper.convertValue(postgresqlDatabaseConnection, DatabaseConnection.class);
             } else if (connection.getType().equalsIgnoreCase("db.mysql")) {
                 String hostName = "";
@@ -307,16 +327,19 @@ public class ConnectionOperation {
                         hostName = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(hostName);
                     } else if (connectionParameter.getName().equalsIgnoreCase("port")) {
                         portNumberTemp = connectionParameter.getValue();
-                        portNumberTemp = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(portNumberTemp);
+                        portNumberTemp = this.getFrameworkExecution().getFrameworkControl()
+                                .resolveConfiguration(portNumberTemp);
                     } else if (connectionParameter.getName().equalsIgnoreCase("schema")) {
                         schemaName = connectionParameter.getValue();
-                        schemaName = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(schemaName);
+                        schemaName = this.getFrameworkExecution().getFrameworkControl()
+                                .resolveConfiguration(schemaName);
                     } else if (connectionParameter.getName().equalsIgnoreCase("user")) {
                         userName = connectionParameter.getValue();
                         userName = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(userName);
                     } else if (connectionParameter.getName().equalsIgnoreCase("password")) {
                         userPassword = connectionParameter.getValue();
-                        userPassword = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(userPassword);
+                        userPassword = this.getFrameworkExecution().getFrameworkControl()
+                                .resolveConfiguration(userPassword);
                     }
                 }
 
@@ -366,10 +389,13 @@ public class ConnectionOperation {
                     }
                 }
 
-                // Convert encrypted integers
-                portNumber = Integer.parseInt(portNumberTemp);
+                // Convert port number
+                if (!portNumberTemp.isEmpty()) {
+                    portNumber = Integer.parseInt(portNumberTemp);
+                }
 
-                MysqlDatabaseConnection mysqlDatabaseConnection = new MysqlDatabaseConnection(hostName, portNumber, schemaName, userName, userPassword);
+                MysqlDatabaseConnection mysqlDatabaseConnection = new MysqlDatabaseConnection(hostName, portNumber,
+                        schemaName, userName, userPassword);
                 databaseConnection = objectMapper.convertValue(mysqlDatabaseConnection, DatabaseConnection.class);
             } else if (connection.getType().equalsIgnoreCase("db.sqlite")) {
                 String filePath = "";
@@ -405,7 +431,6 @@ public class ConnectionOperation {
                     throw new RuntimeException(message);
                 }
 
-
                 // Decrypt Parameters
                 for (ConnectionTypeParameter connectionTypeParameter : connectionType.getParameters()) {
                     if (connectionTypeParameter.getEncrypted().equalsIgnoreCase("y")) {
@@ -417,9 +442,25 @@ public class ConnectionOperation {
                     }
                 }
 
-                // Convert encrypted integers
-                SqliteDatabaseConnection dcSQConnection = new SqliteDatabaseConnection(FilenameUtils.normalize(filePath + File.separator + fileName));
+                SqliteDatabaseConnection dcSQConnection = new SqliteDatabaseConnection(
+                        FilenameUtils.normalize(filePath + File.separator + fileName));
                 databaseConnection = objectMapper.convertValue(dcSQConnection, DatabaseConnection.class);
+            } else if (connection.getType().equalsIgnoreCase("db.h2")) {
+                DbH2ConnectionOperation dbH2ConnectionOperation = new DbH2ConnectionOperation(
+                        this.getFrameworkExecution());
+                databaseConnection = dbH2ConnectionOperation.getConnectionOperation(connection);
+            } else if (connection.getType().equalsIgnoreCase("db.mssql")) {
+                DbMssqlConnectionOperation dbMssqlConnectionOperation = new DbMssqlConnectionOperation(
+                        this.getFrameworkExecution());
+                databaseConnection = dbMssqlConnectionOperation.getConnectionOperation(connection);
+            } else if (connection.getType().equalsIgnoreCase("db.presto")) {
+                DbPrestoConnectionOperation dbPrestoConnectionOperation = new DbPrestoConnectionOperation(
+                        this.getFrameworkExecution());
+                databaseConnection = dbPrestoConnectionOperation.getConnectionOperation(connection);
+            } else if (connection.getType().equalsIgnoreCase("db.dremio")) {
+                DbDremioConnectionOperation dbDremioConnectionOperation = new DbDremioConnectionOperation(
+                        this.getFrameworkExecution());
+                databaseConnection = dbDremioConnectionOperation.getConnectionOperation(connection);
             } else {
                 String message = "Database type is not (yet) supported: " + connection.getType();
                 throw new RuntimeException(message);
@@ -483,7 +524,6 @@ public class ConnectionOperation {
 
             WindowsHostConnection windowsHostConnection = new WindowsHostConnection(hostName, tempPath);
             hostConnection = objectMapper.convertValue(windowsHostConnection, HostConnection.class);
-
         } else if (connection.getType().equalsIgnoreCase("host.linux")) {
             String hostName = "";
             int portNumber = 0;
@@ -492,6 +532,7 @@ public class ConnectionOperation {
             String tempPath = "";
             String terminalFlag = "";
             String jumpHostConnectionName = "";
+            String allowLocalhostExecution = "";
 
             for (ConnectionParameter connectionParameter : connection.getParameters()) {
                 if (connectionParameter.getName().equalsIgnoreCase("host")) {
@@ -504,16 +545,23 @@ public class ConnectionOperation {
                     userName = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(userName);
                 } else if (connectionParameter.getName().equalsIgnoreCase("password")) {
                     userPassword = connectionParameter.getValue();
-                    userPassword = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(userPassword);
+                    userPassword = this.getFrameworkExecution().getFrameworkControl()
+                            .resolveConfiguration(userPassword);
                 } else if (connectionParameter.getName().equalsIgnoreCase("temppath")) {
                     tempPath = connectionParameter.getValue();
                     tempPath = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(tempPath);
                 } else if (connectionParameter.getName().equalsIgnoreCase("simulateterminal")) {
                     terminalFlag = connectionParameter.getValue();
-                    terminalFlag = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(terminalFlag);
+                    terminalFlag = this.getFrameworkExecution().getFrameworkControl()
+                            .resolveConfiguration(terminalFlag);
                 } else if (connectionParameter.getName().equalsIgnoreCase("jumphostconnections")) {
                     jumpHostConnectionName = connectionParameter.getValue();
-                    jumpHostConnectionName = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(jumpHostConnectionName);
+                    jumpHostConnectionName = this.getFrameworkExecution().getFrameworkControl()
+                            .resolveConfiguration(jumpHostConnectionName);
+                } else if (connectionParameter.getName().equalsIgnoreCase("allowlocalhostexecution")) {
+                    allowLocalhostExecution = connectionParameter.getValue();
+                    allowLocalhostExecution = this.getFrameworkExecution().getFrameworkControl()
+                            .resolveConfiguration(allowLocalhostExecution);
                 }
             }
 
@@ -543,6 +591,9 @@ public class ConnectionOperation {
                     } else if (connectionTypeParameter.getName().equalsIgnoreCase("jumphostconnections")) {
                         if (jumpHostConnectionName.trim().equalsIgnoreCase(""))
                             this.addMissingField("jumphostConnections");
+                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("allowlocalhostexecution")) {
+                        if (allowLocalhostExecution.trim().equalsIgnoreCase(""))
+                            this.addMissingField("allowLocalhostExecution");
                     }
                 }
             }
@@ -566,12 +617,17 @@ public class ConnectionOperation {
                     } else if (connectionTypeParameter.getName().equalsIgnoreCase("simulateterminal")) {
                         terminalFlag = this.getFrameworkExecution().getFrameworkCrypto().decrypt(terminalFlag);
                     } else if (connectionTypeParameter.getName().equalsIgnoreCase("jumphostconnections")) {
-                        jumpHostConnectionName = this.getFrameworkExecution().getFrameworkCrypto().decrypt(jumpHostConnectionName);
+                        jumpHostConnectionName = this.getFrameworkExecution().getFrameworkCrypto()
+                                .decrypt(jumpHostConnectionName);
+                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("allowLocalhostexecution")) {
+                        allowLocalhostExecution = this.getFrameworkExecution().getFrameworkCrypto()
+                                .decrypt(allowLocalhostExecution);
                     }
                 }
             }
 
-            LinuxHostConnection linuxHostConnection = new LinuxHostConnection(hostName, portNumber, userName, userPassword, tempPath, terminalFlag, jumpHostConnectionName);
+            LinuxHostConnection linuxHostConnection = new LinuxHostConnection(hostName, portNumber, userName,
+                    userPassword, tempPath, terminalFlag, jumpHostConnectionName, allowLocalhostExecution);
             hostConnection = objectMapper.convertValue(linuxHostConnection, HostConnection.class);
         }
 
@@ -592,16 +648,19 @@ public class ConnectionOperation {
             for (ConnectionParameter connectionParameter : connection.getParameters()) {
                 if (connectionParameter.getName().equalsIgnoreCase("url")) {
                     connectionURL = (connectionParameter.getValue());
-                    connectionURL = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(connectionURL);
+                    connectionURL = this.getFrameworkExecution().getFrameworkControl()
+                            .resolveConfiguration(connectionURL);
                 } else if (connectionParameter.getName().equalsIgnoreCase("user")) {
                     userName = connectionParameter.getValue();
                     userName = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(userName);
                 } else if (connectionParameter.getName().equalsIgnoreCase("password")) {
                     userPassword = connectionParameter.getValue();
-                    userPassword = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(userPassword);
+                    userPassword = this.getFrameworkExecution().getFrameworkControl()
+                            .resolveConfiguration(userPassword);
                 } else if (connectionParameter.getName().equalsIgnoreCase("repository")) {
                     repositoryName = connectionParameter.getValue();
-                    repositoryName = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(repositoryName);
+                    repositoryName = this.getFrameworkExecution().getFrameworkControl()
+                            .resolveConfiguration(repositoryName);
                 }
             }
 
@@ -653,13 +712,13 @@ public class ConnectionOperation {
         return artifactoryConnection;
     }
 
-
     public boolean isOnLocalConnection(HostConnection hostConnection) {
         boolean result = false;
 
         try {
             String localHostName = InetAddress.getLocalHost().getHostName();
-            if (hostConnection.getHostName().equalsIgnoreCase(localHostName)) result = true;
+            if (hostConnection.getHostName().equalsIgnoreCase(localHostName))
+                result = true;
         } catch (UnknownHostException e) {
             result = false;
         }
@@ -668,7 +727,8 @@ public class ConnectionOperation {
     }
 
     public ConnectionType getConnectionType(String connectionTypeName) {
-        ConnectionTypeConfiguration connectionTypeConfiguration = new ConnectionTypeConfiguration(this.getFrameworkExecution());
+        ConnectionTypeConfiguration connectionTypeConfiguration = new ConnectionTypeConfiguration(
+                this.getFrameworkExecution());
         ConnectionType connectionType = null;
 
         try {

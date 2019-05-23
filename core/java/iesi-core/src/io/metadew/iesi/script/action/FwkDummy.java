@@ -44,7 +44,6 @@ public class FwkDummy {
         try {
             this.getExecutionControl().logMessage(this.getActionExecution(), "Not doing anything", Level.TRACE);
             this.getActionExecution().getActionControl().increaseSuccessCount();
-
             return true;
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();

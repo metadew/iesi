@@ -1,10 +1,12 @@
 package io.metadew.iesi.metadata.definition;
 
+import io.metadew.iesi.metadata.tools.IdentifierTools;
+
 import java.util.List;
 
 public class Script {
 
-    private long id;
+    private String id;
     private String type = "script";
     private String name;
     private String description;
@@ -17,7 +19,7 @@ public class Script {
     public Script() {
     }
 
-    public Script(long id, String type, String name, String description, ScriptVersion version,
+    public Script(String id, String type, String name, String description, ScriptVersion version,
                   List<ScriptParameter> parameters, List<Action> actions) {
         this.id = id;
         this.type = type;
@@ -43,14 +45,6 @@ public class Script {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
     }
 
     public List<Action> getActions() {
@@ -85,5 +79,13 @@ public class Script {
         this.version = version;
     }
 
+    public String getId() {
+        if (id == null) this.id = IdentifierTools.getScriptIdentifier(this.getName());
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
 }

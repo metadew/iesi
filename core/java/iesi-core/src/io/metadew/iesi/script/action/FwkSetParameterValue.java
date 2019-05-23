@@ -15,6 +15,7 @@ import java.io.StringWriter;
 import java.text.MessageFormat;
 import java.util.HashMap;
 
+
 public class FwkSetParameterValue {
 
     private ActionExecution actionExecution;
@@ -83,7 +84,7 @@ public class FwkSetParameterValue {
     }
 
     private boolean setParameter(String name, String value) {
-        this.getExecutionControl().getExecutionRuntime().setRuntimeVariable(name, value);
+        this.getExecutionControl().getExecutionRuntime().setRuntimeVariable(actionExecution, name, value);
         this.getActionExecution().getActionControl().increaseSuccessCount();
         return true;
     }

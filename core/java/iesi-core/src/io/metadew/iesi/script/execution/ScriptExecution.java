@@ -71,7 +71,8 @@ public class ScriptExecution {
         return scriptExecution;
     }
 
-    public boolean initializeAsNonRootExecution(ExecutionControl executionControl, ScriptExecution parentScriptExecution) {
+    public boolean initializeAsNonRootExecution(ExecutionControl executionControl,
+                                                ScriptExecution parentScriptExecution) {
         this.setExecutionControl(executionControl);
         this.setParentScriptExecution(parentScriptExecution);
         this.setRootScript(false);
@@ -110,17 +111,18 @@ public class ScriptExecution {
              * Start script execution Not applicable for routing executions
              */
             this.getExecutionControl().logMessage(this, "script.name=" + this.getScript().getName(), Level.INFO);
-            this.getExecutionControl().logMessage(this, "exec.env=" + this.getExecutionControl().getEnvName(), Level.INFO);
+            this.getExecutionControl().logMessage(this, "exec.env=" + this.getExecutionControl().getEnvName(),
+                    Level.INFO);
             this.getExecutionControl().logStart(this, this.getParentScriptExecution());
 
             /*
              * Initialize parameters. A parameter file has priority over a parameter list
              */
             if (!this.getParamFile().trim().equals("")) {
-                this.getExecutionControl().getExecutionRuntime().loadParamFiles(this.getParamFile());
+                this.getExecutionControl().getExecutionRuntime().loadParamFiles(this, this.getParamFile());
             }
             if (!this.getParamList().trim().equals("")) {
-                this.getExecutionControl().getExecutionRuntime().loadParamList(this.getParamList());
+                this.getExecutionControl().getExecutionRuntime().loadParamList(this, this.getParamList());
             }
 
             /*
@@ -156,7 +158,7 @@ public class ScriptExecution {
             if (execute) {
                 // Route
                 if (action.getType().equalsIgnoreCase("fwk.route")) {
-                    actionExecution.execute();
+                    actionExecution.execute(null);
 
                     // Create future variables
                     int threads = actionExecution.getActionControl().getActionRuntime().getRouteOperations().size();
@@ -208,20 +210,70 @@ public class ScriptExecution {
                 // Iteration
                 IterationExecution iterationExecution = new IterationExecution();
                 if (action.getIteration() != null && !action.getIteration().trim().isEmpty()) {
-                    iterationExecution.initialize(this.getFrameworkExecution(), this.getExecutionControl(), action.getIteration());
+                    iterationExecution.initialize(this.getFrameworkExecution(), this.getExecutionControl(), actionExecution,
+                            action.getIteration());
                 }
 
-                while (iterationExecution.hasNext()) {
-                    if (iterationExecution.getIterationNumber() > 1)
-                        actionExecution.initialize();
-                    actionExecution.execute();
+                // Get retry input
+                long retriesInput = 0;
+                long retriesLeft = 0;
+                try {
+                    if (action.getRetries().isEmpty()) {
+                        retriesInput = 0;
+                        retriesLeft = 0;
+                    } else {
+                        retriesInput = Long.parseLong(action.getRetries());
+                        retriesLeft = retriesInput + 1;
+                        this.getExecutionControl().logMessage(this, "action.retries.input=" + retriesInput, Level.DEBUG);
+                    }
+                } catch (Exception e) {
+                    retriesInput = 0;
+                    retriesLeft = 0;
+                    this.getExecutionControl().logMessage(this, "action.retries.error -> ignoring", Level.INFO);
+                }
 
-                    if (!iterationExecution.isIterationOff()) {
-                        if (iterationExecution.getIterationOperation().getIteration().getInterrupt()
-                                .equalsIgnoreCase("y")) {
-                            if (actionExecution.getActionControl().getExecutionMetrics().getErrorCount() > 0) {
+                // Execute with iterations and retries
+                while (iterationExecution.hasNext()) {
+
+                    // Retry on Error
+                    boolean retryOnError = true;
+                    long retries = 0;
+
+                    while (retryOnError) {
+                        if (retries > 0) {
+                            this.getExecutionControl().logMessage(this, "action.retry." + retries, Level.INFO);
+                        }
+
+                        if (iterationExecution.getIterationNumber() > 1 || retries > 0)
+                            actionExecution.initialize();
+
+                        actionExecution.execute(iterationExecution.getIterationInstance());
+
+                        if (!iterationExecution.isIterationOff()) {
+                            if (iterationExecution.getIterationOperation().getIteration().getInterrupt()
+                                    .equalsIgnoreCase("y")) {
+                                if (actionExecution.getActionControl().getExecutionMetrics().getErrorCount() > 0) {
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (actionExecution.getActionControl().getExecutionMetrics().getErrorCount() > 0 && retriesLeft > 0) {
+                            if (action.getErrorStop().equalsIgnoreCase("y")) {
+                                this.getExecutionControl().logMessage(this, "action.error -> retries.ignore", Level.INFO);
+                                this.getExecutionControl().setActionErrorStop(true);
                                 break;
                             }
+
+                            retriesLeft--;
+                            if (retriesLeft == 0) {
+                                retryOnError = false;
+                            } else {
+                                retryOnError = true;
+                                retries++;
+                            }
+                        } else {
+                            retryOnError = false;
                         }
                     }
                 }
@@ -297,7 +349,6 @@ public class ScriptExecution {
         }
 
     }
-
 
     public void traceDesignMetadata() {
         this.getExecutionControl().getExecutionTrace().setExecution(this, this.getParentScriptExecution());

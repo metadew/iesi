@@ -1,7 +1,7 @@
 package io.metadew.iesi.script.action;
 
 import io.metadew.iesi.datatypes.DataType;
-import io.metadew.iesi.datatypes.Dataset;
+import io.metadew.iesi.datatypes.Dataset.Dataset;
 import io.metadew.iesi.datatypes.Text;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.configuration.MappingConfiguration;
@@ -100,19 +100,6 @@ public class DataCompareDataset {
     }
 
     private boolean compareDataset(String leftDatasetName, String rightDatasetName, String mappingName) {
-        // Run the action
-//		Matcher leftDatasetNameMatcher = datasetNamePattern.matcher(leftDatasetName);
-//		Matcher rightDatasetNameMatcher = datasetNamePattern.matcher(rightDatasetName);
-//		if (!leftDatasetNameMatcher.find()) {
-//			throw new RuntimeException(MessageFormat.format("data.comparedataset does not accept {0} as left dataset name", leftDatasetName));
-//		}
-//		if (!rightDatasetNameMatcher.find()) {
-//			throw new RuntimeException(MessageFormat.format("data.comparedataset does not accept {0} as right dataset name", rightDatasetName));
-//		}
-//		String leftDatasetReferenceName = leftDatasetNameMatcher.group("name");
-//		String leftDatasetTable = leftDatasetNameMatcher.group("table");
-//		String rightDatasetReferenceName = rightDatasetNameMatcher.group("name");
-//		String rightDatasetTable = rightDatasetNameMatcher.group("table");
         Dataset leftDataset = executionControl.getExecutionRuntime().getDataset(leftDatasetName)
                 .orElseThrow(() -> new RuntimeException(MessageFormat.format("data.comparedataset could not find dataset {0} as left dataset", leftDatasetName)));
         Dataset rightDataset = executionControl.getExecutionRuntime().getDataset(rightDatasetName)
@@ -165,21 +152,6 @@ public class DataCompareDataset {
             return mappingName.toString();
         }
     }
-
-//	private Dataset convertDataset(DataType dataset) {
-//		if (dataset instanceof Text) {
-//			// TODO: clean up --> dataset only by reachable by reference? make ExecutionRuntime hold map with referenceName to dataset?
-//			return new Dataset(new Text(executionControl.getExecutionRuntime().getDatasetOperation(dataset.toString()).getDatasetName()),
-//					new Text(executionControl.getExecutionRuntime().getDatasetOperation(dataset.toString()).getDatasetLabels()));
-//		} else if (dataset instanceof Dataset) {
-//			return (Dataset) dataset;
-//		} else {
-//			frameworkExecution.getFrameworkLog().log(MessageFormat.format("data.compareDataset does not accept {0} as type for dataset",
-//					dataset.getClass()), Level.WARN);
-//			throw new RuntimeException(MessageFormat.format("data.compareDataset does not accept {0} as type for dataset",
-//					dataset.getClass()));
-//		}
-//	}
 
     // Getters and Setters
     public FrameworkExecution getFrameworkExecution() {

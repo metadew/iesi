@@ -1,7 +1,7 @@
 package io.metadew.iesi.connection.operation.database;
 
+import io.metadew.iesi.connection.database.connection.DatabaseConnection;
 import io.metadew.iesi.connection.tools.OutputTools;
-import io.metadew.iesi.metadata_repository.repository.database.connection.DatabaseConnection;
 
 import javax.sql.rowset.CachedRowSet;
 import java.sql.ResultSetMetaData;

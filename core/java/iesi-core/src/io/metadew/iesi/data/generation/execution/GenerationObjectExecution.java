@@ -196,12 +196,12 @@ public class GenerationObjectExecution {
         this.company = company;
     }
 
-    public Internet getInternet() {
-        return internet;
-    }
-
     public void setInternet(Internet internet) {
         this.internet = internet;
+    }
+
+    public Internet getInternet() {
+        return internet;
     }
 
     public Lorem getLorem() {

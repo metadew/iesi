@@ -1,26 +1,30 @@
 package io.metadew.iesi.script.action;
 
+import io.metadew.iesi.connection.database.connection.DatabaseConnection;
 import io.metadew.iesi.connection.database.sql.SqlScriptResult;
 import io.metadew.iesi.connection.operation.ConnectionOperation;
-import io.metadew.iesi.connection.tools.FileTools;
+import io.metadew.iesi.connection.tools.sql.SQLDataTransfer;
 import io.metadew.iesi.datatypes.DataType;
+import io.metadew.iesi.datatypes.Dataset.Dataset;
 import io.metadew.iesi.datatypes.Text;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.configuration.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.ActionParameter;
 import io.metadew.iesi.metadata.definition.Connection;
-import io.metadew.iesi.metadata_repository.repository.database.connection.DatabaseConnection;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 import org.apache.logging.log4j.Level;
 
-import java.io.InputStream;
+import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.HashMap;
+import java.util.Optional;
+
 
 public class SqlExecuteQuery {
 
@@ -31,6 +35,8 @@ public class SqlExecuteQuery {
     // Parameters
     private ActionParameterOperation sqlQuery;
     private ActionParameterOperation connectionName;
+    private ActionParameterOperation outputDataset;
+    private ActionParameterOperation appendOutput;
     private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
 
     // Constructors
@@ -57,6 +63,10 @@ public class SqlExecuteQuery {
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "query"));
         this.setConnectionName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "connection"));
+        this.setOutputDataset(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+                this.getActionExecution(), this.getActionExecution().getAction().getType(), "outputDataset"));
+        this.setAppendOutput(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+                this.getActionExecution(), this.getActionExecution().getAction().getType(), "appendOutput"));
 
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
@@ -64,12 +74,18 @@ public class SqlExecuteQuery {
                 this.getSqlQuery().setInputValue(actionParameter.getValue());
             } else if (actionParameter.getName().equalsIgnoreCase("connection")) {
                 this.getConnectionName().setInputValue(actionParameter.getValue());
+            } else if (actionParameter.getName().equalsIgnoreCase("outputdataset")) {
+                this.getOutputDataset().setInputValue(actionParameter.getValue());
+            } else if (actionParameter.getName().equalsIgnoreCase("appendoutput")) {
+                this.getAppendOutput().setInputValue(actionParameter.getValue());
             }
         }
 
         // Create parameter list
         this.getActionParameterOperationMap().put("query", this.getSqlQuery());
         this.getActionParameterOperationMap().put("connection", this.getConnectionName());
+        this.getActionParameterOperationMap().put("outputdataset", this.getOutputDataset());
+        this.getActionParameterOperationMap().put("appendoutput", this.getAppendOutput());
     }
 
 
@@ -77,9 +93,9 @@ public class SqlExecuteQuery {
         try {
             String query = convertQuery(getSqlQuery().getValue());
             String connection = convertConnectionName(getConnectionName().getValue());
-            return executeQuery(query, connection);
-
-            //return execute(getSqlQuery().getValue(), getConnectionName().getValue());
+            String outputDatasetReferenceName = convertDatasetReferenceName(getSqlQuery().getValue());
+            boolean appendOutput = convertAppendOutput(getConnectionName().getValue());
+            return executeQuery(query, connection, outputDatasetReferenceName, appendOutput);
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
@@ -94,10 +110,32 @@ public class SqlExecuteQuery {
 
     }
 
-    private boolean executeQuery(String query, String connectionName) {
+    private boolean convertAppendOutput(DataType appendOutput) {
+        if (appendOutput instanceof Text) {
+            return appendOutput.toString().equalsIgnoreCase("y");
+        } else {
+            frameworkExecution.getFrameworkLog().log(MessageFormat.format("sql.executeQuery does not accept {0} as type for appendOutput",
+                    appendOutput.getClass()), Level.WARN);
+            return false;
+        }
+    }
+
+    private String convertDatasetReferenceName(DataType datasetReferenceName) {
+        if (datasetReferenceName instanceof Text) {
+            return datasetReferenceName.toString();
+        } else {
+            frameworkExecution.getFrameworkLog().log(MessageFormat.format("sql.executeQuery does not accept {0} as type for dataset reference name",
+                    datasetReferenceName.getClass()), Level.WARN);
+            return datasetReferenceName.toString();
+        }
+    }
+
+    private boolean executeQuery(String query, String connectionName, String outputDatasetReferenceName, boolean appendOutput) throws SQLException {
+
+        // Get Connection
         ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution());
-        Connection connection = connectionConfiguration.getConnection(connectionName,
-                this.getExecutionControl().getEnvName()).get();
+        Connection connection = connectionConfiguration
+                .getConnection(connectionName, this.getExecutionControl().getEnvName()).get();
         ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
         DatabaseConnection databaseConnection = connectionOperation.getDatabaseConnection(connection);
 
@@ -107,18 +145,29 @@ public class SqlExecuteQuery {
 
         // Run the action
         // Make sure the SQL statement is ended with a ;
-        query = query.trim().endsWith(";") ? query : query + ";";
+        if (!query.trim().endsWith(";")) {
+            query = query + ";";
+        }
 
-        // Convert to inputstream
-        InputStream inputStream = FileTools.convertToInputStream(query,
-                this.getFrameworkExecution().getFrameworkControl());
-        SqlScriptResult dcSQLScriptResult = databaseConnection.executeScript(inputStream);
+        SqlScriptResult sqlScriptResult;
+
+        Optional<Dataset> dataset = this.getExecutionControl().getExecutionRuntime()
+                .getDataset(outputDatasetReferenceName);
+        CachedRowSet crs = databaseConnection.executeQuery(query);
+        this.getActionExecution().getActionControl().logOutput("sql.execute.size", Integer.toString(crs.size()));
+        // TODO resolve for files and resolve inside
+        if (dataset.isPresent()) {
+            SQLDataTransfer.transferData(crs, dataset.get().getDatasetDatabase(), dataset.get().getName(), appendOutput);
+            sqlScriptResult = new SqlScriptResult(0, "data.transfer.complete", "");
+        }
+
+        sqlScriptResult = new SqlScriptResult(0, "sql.execute.complete", "");
 
         // Evaluate result
-        this.getActionExecution().getActionControl().logOutput("sys.out", dcSQLScriptResult.getSystemOutput());
+        this.getActionExecution().getActionControl().logOutput("sys.out", sqlScriptResult.getSystemOutput());
 
-        if (dcSQLScriptResult.getReturnCode() != 0) {
-            this.getActionExecution().getActionControl().logOutput("err.out", dcSQLScriptResult.getErrorOutput());
+        if (sqlScriptResult.getReturnCode() != 0) {
+            this.getActionExecution().getActionControl().logOutput("err.out", sqlScriptResult.getErrorOutput());
             throw new RuntimeException("Error execting SQL query");
         }
 
@@ -197,6 +246,22 @@ public class SqlExecuteQuery {
 
     public void setSqlQuery(ActionParameterOperation sqlQuery) {
         this.sqlQuery = sqlQuery;
+    }
+
+    public ActionParameterOperation getOutputDataset() {
+        return outputDataset;
+    }
+
+    public void setOutputDataset(ActionParameterOperation outputDataset) {
+        this.outputDataset = outputDataset;
+    }
+
+    public ActionParameterOperation getAppendOutput() {
+        return appendOutput;
+    }
+
+    public void setAppendOutput(ActionParameterOperation appendOutput) {
+        this.appendOutput = appendOutput;
     }
 
 }

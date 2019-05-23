@@ -1,17 +1,19 @@
 package io.metadew.iesi.script.execution;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.common.text.TextTools;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.configuration.FrameworkStatus;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.backup.BackupExecution;
+import io.metadew.iesi.metadata.configuration.ScriptTraceConfiguration;
 import io.metadew.iesi.metadata.definition.ScriptLog;
 import io.metadew.iesi.metadata.restore.RestoreExecution;
 import org.apache.logging.log4j.Level;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -52,7 +54,7 @@ public class ExecutionControl {
     @SuppressWarnings({"unchecked", "rawtypes"})
     private void initializeRootScript() {
         // Generate unique run id
-        this.setRunId(this.getFrameworkExecution().getFrameworkLog().getUuid().toString());
+        this.setRunId(this.getFrameworkExecution().getFrameworkRuntime().getRunId());
         // Create execution runtime
         this.initializeExecutionRuntime(this.getFrameworkExecution(), this.getRunId());
 
@@ -66,19 +68,21 @@ public class ExecutionControl {
         if (frameworkExecution.getFrameworkConfiguration().getSettingConfiguration().getSettingPath("script.execution.runtime").isPresent() &&
                 !frameworkExecution.getFrameworkControl().getProperty(frameworkExecution.getFrameworkConfiguration().getSettingConfiguration().getSettingPath("script.execution.runtime").get()).isEmpty()) {
             try {
-                Class classRef = Class.forName(frameworkExecution.getFrameworkControl().getProperty(frameworkExecution.getFrameworkConfiguration().getSettingConfiguration().getSettingPath("script.execution.runtime").get()));
 
-                // Object instance = classRef.newInstance();
+
+                Class classRef = Class.forName(frameworkExecution.getFrameworkControl().getProperty(frameworkExecution.getFrameworkConfiguration().getSettingConfiguration().getSettingPath("script.execution.runtime").get()));
+                Object instance = classRef.newInstance();
+
 //				classRef = ClassOperation.getExecutionRuntime(frameworkExecution.getFrameworkControl().getProperty(frameworkExecution.getFrameworkConfiguration().getSettingConfiguration().getSettingPath("script.execution.runtime").get()));
 //				instance = classRef.newInstance();
 
-                Class[] initParams = {FrameworkExecution.class, ExecutionControl.class, String.class};
-//				Method init = classRef.getDeclaredMethod("init", initParams);
-                Constructor<?> constructor = classRef.getConstructor(initParams);
-                Object[] initArgs = {frameworkExecution, this, runId};
-                ExecutionRuntime instance = (ExecutionRuntime) constructor.newInstance(initArgs);
-//				init.invoke(instance, initArgs);
-                this.setExecutionRuntime(instance);
+                Class initParams[] = {FrameworkExecution.class, String.class};
+                Method init = classRef.getDeclaredMethod("init", initParams);
+                Object[] initArgs = {this.getFrameworkExecution(), runId};
+                init.invoke(instance, initArgs);
+
+                ObjectMapper objectMapper = new ObjectMapper();
+                this.setExecutionRuntime(objectMapper.convertValue(instance, ExecutionRuntime.class));
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -88,11 +92,11 @@ public class ExecutionControl {
         }
     }
 
-    public void setEnvironment(String environmentName) {
+    public void setEnvironment(ActionExecution actionExecution, String environmentName) {
         this.setEnvName(environmentName);
 
         // Set environment variables
-        this.getExecutionRuntime().setRuntimeVariablesFromList(this.getFrameworkExecution().getMetadataControl()
+        this.getExecutionRuntime().setRuntimeVariablesFromList(actionExecution, this.getFrameworkExecution().getMetadataControl()
                 .getConnectivityMetadataRepository()
                 .executeQuery("select env_par_nm, env_par_val from "
                         + this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("EnvironmentParameters")
@@ -112,7 +116,7 @@ public class ExecutionControl {
             // Set parent Process Id
             parentProcessId = 0L;
             // Initialize runtime variables
-            this.getExecutionRuntime().setRuntimeVariablesFromList(this.getFrameworkExecution().getMetadataControl()
+            this.getExecutionRuntime().setRuntimeVariablesFromList(scriptExecution, this.getFrameworkExecution().getMetadataControl()
                     .getConnectivityMetadataRepository()
                     .executeQuery("select env_par_nm, env_par_val from "
                             + this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("EnvironmentParameters")
@@ -129,7 +133,7 @@ public class ExecutionControl {
 
         String query = "INSERT INTO "
                 + this.getFrameworkExecution().getMetadataControl().getResultMetadataRepository().getTableNameByLabel("ScriptResults")
-                + " (RUN_ID, PRC_ID, PARENT_PRC_ID, SCRIPT_ID, SCRIPT_VRS_NB, ENV_NM, ST_NM, STRT_TMS, END_TMS)";
+                + " (RUN_ID, PRC_ID, PARENT_PRC_ID, SCRIPT_ID, SCRIPT_NM, SCRIPT_VRS_NB, ENV_NM, ST_NM, STRT_TMS, END_TMS)";
         query += " VALUES ";
         query += "(";
         query += SQLTools.GetStringForSQL(this.getRunId());
@@ -139,6 +143,8 @@ public class ExecutionControl {
         query += SQLTools.GetStringForSQL(parentProcessId);
         query += ",";
         query += SQLTools.GetStringForSQL(scriptExecution.getScript().getId());
+        query += ",";
+        query += SQLTools.GetStringForSQL(scriptExecution.getScript().getName());
         query += ",";
         query += SQLTools.GetStringForSQL(scriptExecution.getScript().getVersion().getNumber());
         query += ",";
@@ -166,6 +172,12 @@ public class ExecutionControl {
         Timestamp startTimestamp = new Timestamp(System.currentTimeMillis());
         this.getScriptLog().setStart(startTimestamp);
         this.getExecutionLog().setLog(this.getScriptLog());
+
+        // Trace the design of the script
+        ScriptTraceConfiguration scriptTraceConfiguration = new ScriptTraceConfiguration(scriptExecution.getScript(), this.getFrameworkExecution());
+        InputStream traceInputStream = new ByteArrayInputStream(scriptTraceConfiguration.getInsertStatement(scriptExecution).getBytes(StandardCharsets.UTF_8));
+        this.getFrameworkExecution().getMetadataControl().getResultMetadataRepository().executeScript(traceInputStream);
+
     }
 
     public void logStart(ActionExecution actionExecution) {
@@ -174,7 +186,7 @@ public class ExecutionControl {
 
         String query = "INSERT INTO "
                 + this.getFrameworkExecution().getMetadataControl().getResultMetadataRepository().getTableNameByLabel("ActionResults")
-                + " (RUN_ID, PRC_ID, ACTION_ID, ENV_NM, ST_NM, STRT_TMS, END_TMS)";
+                + " (RUN_ID, PRC_ID, ACTION_ID, ACTION_NM, ENV_NM, ST_NM, STRT_TMS, END_TMS)";
         query += " VALUES ";
         query += "(";
         query += SQLTools.GetStringForSQL(this.getRunId());
@@ -182,6 +194,8 @@ public class ExecutionControl {
         query += SQLTools.GetStringForSQL(actionExecution.getProcessId());
         query += ",";
         query += SQLTools.GetStringForSQL(actionExecution.getAction().getId());
+        query += ",";
+        query += SQLTools.GetStringForSQL(actionExecution.getAction().getName());
         query += ",";
         query += SQLTools.GetStringForSQL(this.getEnvName());
         query += ",";
@@ -203,7 +217,7 @@ public class ExecutionControl {
 
         String query = "INSERT INTO "
                 + this.getFrameworkExecution().getMetadataControl().getResultMetadataRepository().getTableNameByLabel("ActionResults")
-                + " (RUN_ID, PRC_ID, ACTION_ID, ENV_NM, ST_NM, STRT_TMS, END_TMS)";
+                + " (RUN_ID, PRC_ID, ACTION_ID, ACTION_NM, ENV_NM, ST_NM, STRT_TMS, END_TMS)";
         query += " VALUES ";
         query += "(";
         query += SQLTools.GetStringForSQL(this.getRunId());
@@ -211,6 +225,8 @@ public class ExecutionControl {
         query += SQLTools.GetStringForSQL(this.getProcessId());
         query += ",";
         query += SQLTools.GetStringForSQL(actionExecution.getAction().getId());
+        query += ",";
+        query += SQLTools.GetStringForSQL(actionExecution.getAction().getName());
         query += ",";
         query += SQLTools.GetStringForSQL(this.getEnvName());
         query += ",";
@@ -231,7 +247,7 @@ public class ExecutionControl {
     }
 
     public void logStart(BackupExecution backupExecution) {
-        this.setRunId(this.getFrameworkExecution().getFrameworkLog().getUuid().toString());
+        this.setRunId(this.getFrameworkExecution().getFrameworkRuntime().getRunId());
 
         // Reset Process Id
         this.resetProcessId();
@@ -239,7 +255,7 @@ public class ExecutionControl {
     }
 
     public void logStart(RestoreExecution restoreExecution) {
-        this.setRunId(this.getFrameworkExecution().getFrameworkLog().getUuid().toString());
+        this.setRunId(this.getFrameworkExecution().getFrameworkRuntime().getRunId());
 
         // Reset Process Id
         this.resetProcessId();
@@ -260,7 +276,7 @@ public class ExecutionControl {
         String query = "update "
                 + this.getFrameworkExecution().getMetadataControl().getResultMetadataRepository().getTableNameByLabel("ScriptResults")
                 + " set ST_NM = '" + status + "', END_TMS = " +
-                this.getFrameworkExecution().getMetadataControl().getResultMetadataRepository().getRepository().getDatabases().values().stream().findFirst().get().getSystemTimestampExpression();
+                this.getFrameworkExecution().getMetadataControl().getResultMetadataRepository().getRepository().getDatabases().get("writer").getSystemTimestampExpression();
         query += " where RUN_ID = '" + this.getRunId() + "' and PRC_ID = " + scriptExecution.getProcessId() + ";";
 
         InputStream inputStream = new ByteArrayInputStream(query.getBytes(StandardCharsets.UTF_8));
@@ -270,7 +286,8 @@ public class ExecutionControl {
         // Only is the script is a root script, this will be cleaned
         // In other scripts, the processing variables are still valid
         if (scriptExecution.isRootScript()) {
-            this.getExecutionRuntime().cleanRuntimeVariables();
+            //this.getExecutionRuntime().cleanRuntimeVariables();
+            //Cleaning is no longer relevant since runtime is managed individually
         }
 
         Timestamp endTimestamp = new Timestamp(System.currentTimeMillis());
@@ -287,7 +304,7 @@ public class ExecutionControl {
         String query = "update "
                 + this.getFrameworkExecution().getMetadataControl().getResultMetadataRepository().getTableNameByLabel("ActionResults")
                 + " set ST_NM = '" + status + "', END_TMS = " +
-                this.getFrameworkExecution().getMetadataControl().getResultMetadataRepository().getRepository().getDatabases().values().stream().findFirst().get().getSystemTimestampExpression();
+                this.getFrameworkExecution().getMetadataControl().getResultMetadataRepository().getRepository().getDatabases().get("writer").getSystemTimestampExpression();
         query += " where RUN_ID = '" + this.getRunId() + "' and PRC_ID = " + actionExecution.getProcessId() + ";";
 
         InputStream inputStream = new ByteArrayInputStream(query.getBytes(StandardCharsets.UTF_8));

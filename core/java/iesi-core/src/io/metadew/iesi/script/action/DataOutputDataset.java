@@ -1,7 +1,8 @@
 package io.metadew.iesi.script.action;
 
 import io.metadew.iesi.datatypes.DataType;
-import io.metadew.iesi.datatypes.Dataset;
+import io.metadew.iesi.datatypes.Dataset.Dataset;
+import io.metadew.iesi.datatypes.Dataset.KeyValueDataset;
 import io.metadew.iesi.datatypes.Text;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.ActionParameter;
@@ -46,9 +47,6 @@ public class DataOutputDataset {
     public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
                      ScriptExecution scriptExecution, ActionExecution actionExecution) {
         this.setFrameworkExecution(frameworkExecution);
-        if (executionControl.getExecutionRuntime() == null) {
-            System.out.println("Error no runtime: action data output");
-        }
         this.setExecutionControl(executionControl);
         this.setActionExecution(actionExecution);
         this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
@@ -82,7 +80,7 @@ public class DataOutputDataset {
 
     public boolean execute() {
         try {
-            Dataset dataset = new Dataset(getDatasetName().getValue(), getDatasetLabels().getValue(), frameworkExecution.getFrameworkConfiguration().getFolderConfiguration(), executionControl.getExecutionRuntime());
+            Dataset dataset = new KeyValueDataset(getDatasetName().getValue(), getDatasetLabels().getValue(), frameworkExecution.getFrameworkConfiguration().getFolderConfiguration(), executionControl.getExecutionRuntime());
             boolean onScreen = convertOnScreen(getOnScreen().getValue());
             return outputDataset(dataset, onScreen);
         } catch (Exception e) {
@@ -110,7 +108,9 @@ public class DataOutputDataset {
 
 
     private boolean convertOnScreen(DataType onScreen) {
-        if (onScreen instanceof Text) {
+        if (onScreen == null) {
+            return false;
+        } else if (onScreen instanceof Text) {
             return onScreen.toString().equalsIgnoreCase("y");
         } else {
             frameworkExecution.getFrameworkLog().log(MessageFormat.format("fwk.outputMessage does not accept {0} as type for onScreen",

@@ -6,6 +6,7 @@ import java.util.HashMap;
 public class IterationInstance {
 
     private boolean empty = true;
+    private long iterationNumber;
     private HashMap<String, String> variableMap;
 
     public IterationInstance() {
@@ -28,4 +29,11 @@ public class IterationInstance {
         this.variableMap = variableMap;
     }
 
+    public long getIterationNumber() {
+        return iterationNumber;
+    }
+
+    public void setIterationNumber(long iterationNumber) {
+        this.iterationNumber = iterationNumber;
+    }
 }

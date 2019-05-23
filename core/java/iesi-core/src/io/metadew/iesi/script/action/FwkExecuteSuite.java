@@ -1,15 +1,34 @@
 package io.metadew.iesi.script.action;
 
+import io.metadew.iesi.connection.ArtifactoryConnection;
+import io.metadew.iesi.connection.FileConnection;
+import io.metadew.iesi.connection.operation.ConnectionOperation;
+import io.metadew.iesi.connection.tools.CompressionTools;
+import io.metadew.iesi.connection.tools.FolderTools;
+import io.metadew.iesi.datatypes.DataType;
+import io.metadew.iesi.datatypes.Text;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.metadata.configuration.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.ActionParameter;
+import io.metadew.iesi.metadata.definition.Connection;
+import io.metadew.iesi.metadata.definition.Script;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
+import io.metadew.iesi.script.operation.ActionSelectOperation;
+import io.metadew.iesi.script.operation.JsonInputOperation;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.logging.log4j.Level;
 
+import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+
 
 public class FwkExecuteSuite {
 
@@ -117,95 +136,19 @@ public class FwkExecuteSuite {
 
     public boolean execute() {
         try {
-            // Check on Running a script in a loop
-//			try {
-//
-//				// Get Connection
-//				ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution());
-//				Connection connection = connectionConfiguration.getConnection(this.getRepositoryConnectionName().getValue(),
-//						this.getExecutionControl().getEnvName()).get();
-//
-//				// Artifactory
-//				// *********************************************************
-//				// Get repository
-//				ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
-//				ArtifactoryConnection artifactoryConnection = connectionOperation.getArtifactoryConnection(connection);
-//
-//				// Compile asset path
-//				String resolvedRepositoryAssetPath = "";
-//				resolvedRepositoryAssetPath += this.getExecutionControl().getExecutionRuntime().resolveActionTypeVariables(this.getRepositoryComponentPath().getValue(), this.getActionParameterOperationMap());
-//				resolvedRepositoryAssetPath += "/";
-//				resolvedRepositoryAssetPath += this.getExecutionControl().getExecutionRuntime().resolveActionTypeVariables(this.getRepositorySuitePath().getValue(), this.getActionParameterOperationMap());
-//				resolvedRepositoryAssetPath += "/";
-//				resolvedRepositoryAssetPath += this.getExecutionControl().getExecutionRuntime().resolveActionTypeVariables(this.getRepositoryVersionPath().getValue(), this.getActionParameterOperationMap());
-//
-//				String latestBuild = "";
-//				if (this.getSuiteBuild().getValue().trim().equalsIgnoreCase("[latest]")) {
-//					// Get latest package
-//					latestBuild = artifactoryConnection.getlatestBuild(resolvedRepositoryAssetPath, "P");
-//					resolvedRepositoryAssetPath += "/";
-//					resolvedRepositoryAssetPath += latestBuild;
-//				}
-//
-//				resolvedRepositoryAssetPath += "/";
-//				String buildAsset = this.getExecutionControl().getExecutionRuntime().resolveActionTypeVariables(this.getRepositoryBuildAsset().getValue(), this.getActionParameterOperationMap());
-//				resolvedRepositoryAssetPath += buildAsset;
-//
-//				// Check folder structure
-//				String rootSuiteFolder = this.getFrameworkExecution().getFrameworkConfiguration().getFolderConfiguration().getFolderAbsolutePath("run.cache") + File.separator + "suites";
-//				FolderTools.createFolder(rootSuiteFolder);
-//				String rootComponentFolder = rootSuiteFolder + File.separator + this.getComponentName().getValue();
-//				FolderTools.createFolder(rootComponentFolder);
-//				String suiteFolder = rootComponentFolder + File.separator + this.getSuiteName().getValue();
-//				FolderTools.createFolder(suiteFolder);
-//				String suiteVersionFolder = suiteFolder + File.separator + this.getSuiteVersion().getValue();
-//				FolderTools.createFolder(suiteVersionFolder);
-//				String suiteBuildFolder = suiteVersionFolder + File.separator + latestBuild;
-//				FolderTools.deleteFolder(suiteBuildFolder, true);
-//				FolderTools.createFolder(suiteBuildFolder);
-//
-//				// Download the build
-//				artifactoryConnection.downloadArtifact(resolvedRepositoryAssetPath, suiteBuildFolder + File.separator + buildAsset);
-//
-//				// Untar the build
-//				CompressionTools.unTarFile(this.getFrameworkExecution(), suiteBuildFolder, buildAsset);
-//				// Untar the payload
-//				String buildAssetFolder = suiteBuildFolder + File.separator + FilenameUtils.removeExtension(buildAsset) + File.separator + this.getSuiteName().getValue();
-//				FolderTools.deleteFolder(buildAssetFolder, true);
-//				CompressionTools.unTarFile(this.getFrameworkExecution(), suiteBuildFolder + File.separator + FilenameUtils.removeExtension(buildAsset), this.getSuiteName().getValue() + ".tar");
-//
-//				// Run the suite
-//				List<FileConnection> fileConnectionList = new ArrayList();
-//				fileConnectionList = FolderTools.getConnectionsInFolder(buildAssetFolder, "regex", ".+\\.json", fileConnectionList);
-//				for (FileConnection fileConnection : fileConnectionList) {
-//					try {
-//						Script script = null;
-//
-//						JsonInputOperation jsonInputOperation = new JsonInputOperation(this.getFrameworkExecution(), fileConnection.getFilePath());
-//						script = jsonInputOperation.getScript();
-//						if (script == null) {
-//							System.out.println("No script found for execution");
-//
-//							this.getActionExecution().getActionControl().increaseWarningCount();
-//						} else {
-//							ScriptExecution scriptExecution = new ScriptExecution(this.getFrameworkExecution(), script);
-//							scriptExecution.initializeAsRootScript(this.getEnvironmentName().getValue());
-//							scriptExecution.setActionSelectOperation(new ActionSelectOperation(""));
-//							scriptExecution.setExitOnCompletion(false);
-//
-//							scriptExecution.execute();
-//
-//							this.getActionExecution().getActionControl().increaseSuccessCount();
-//						}
-//
-//					} catch (Exception e) {
-//						this.getActionExecution().getActionControl().increaseErrorCount();
-//					}
-//				}
-//			} catch (Exception e) {
-//				throw new RuntimeException("Issue running the suite: " + e, e);
-//			}
-            return true;
+            String componentName = convertToString(getComponentName().getValue());
+            String suiteName = convertToString(getSuiteName().getValue());
+            String suiteVersion = convertToString(getSuiteVersion().getValue());
+            String suiteBuild = convertToString(getComponentName().getValue());
+            String repositoryConnectionName = convertToString(getRepositoryConnectionName().getValue());
+            String repositoryComponentPath = convertToString(getRepositoryComponentPath().getValue());
+            String repositorySuitePath = convertToString(getRepositorySuitePath().getValue());
+            String repositoryVersionPath = convertToString(getRepositoryVersionPath().getValue());
+            String repositoryBuildPath = convertToString(getRepositoryBuildPath().getValue());
+            String repositoryBuildAsset = convertToString(getRepositoryBuildAsset().getValue());
+            String environmentName = convertToString(getEnvironmentName().getValue());
+
+            return execute(componentName, suiteName, suiteVersion, suiteBuild, repositoryConnectionName, repositoryComponentPath, repositorySuitePath, repositoryVersionPath, repositoryBuildPath, repositoryBuildAsset, environmentName);
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
@@ -217,7 +160,104 @@ public class FwkExecuteSuite {
 
             return false;
         }
+    }
 
+    private boolean execute(String componentName, String suiteName, String suiteVersion, String suiteBuild, String repositoryConnectionName, String repositoryComponentPath, String repositorySuitePath, String repositoryVersionPath, String repositoryBuildPath, String repositoryBuildAsset, String environmentName) {
+        // Get Connection
+        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution());
+        Connection connection = connectionConfiguration.getConnection(repositoryConnectionName,
+                this.getExecutionControl().getEnvName()).get();
+
+        // Artifactory
+        // *********************************************************
+        // Get repository
+        ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
+        ArtifactoryConnection artifactoryConnection = connectionOperation.getArtifactoryConnection(connection);
+
+        // Compile asset path
+        String resolvedRepositoryAssetPath = "";
+        resolvedRepositoryAssetPath += this.getExecutionControl().getExecutionRuntime().resolveActionTypeVariables(repositoryComponentPath, this.getActionParameterOperationMap());
+        resolvedRepositoryAssetPath += "/";
+        resolvedRepositoryAssetPath += this.getExecutionControl().getExecutionRuntime().resolveActionTypeVariables(repositorySuitePath, this.getActionParameterOperationMap());
+        resolvedRepositoryAssetPath += "/";
+        resolvedRepositoryAssetPath += this.getExecutionControl().getExecutionRuntime().resolveActionTypeVariables(repositoryVersionPath, this.getActionParameterOperationMap());
+
+        String latestBuild = "";
+        if (suiteBuild.trim().equalsIgnoreCase("[latest]")) {
+            // Get latest package
+            latestBuild = artifactoryConnection.getlatestBuild(resolvedRepositoryAssetPath, "P");
+            resolvedRepositoryAssetPath += "/";
+            resolvedRepositoryAssetPath += latestBuild;
+        }
+
+        resolvedRepositoryAssetPath += "/";
+        String buildAsset = this.getExecutionControl().getExecutionRuntime().resolveActionTypeVariables(repositoryBuildAsset, this.getActionParameterOperationMap());
+        resolvedRepositoryAssetPath += buildAsset;
+
+        // Check folder structure
+        String rootSuiteFolder = this.getFrameworkExecution().getFrameworkConfiguration().getFolderConfiguration().getFolderAbsolutePath("run.cache") + File.separator + "suites";
+        FolderTools.createFolder(rootSuiteFolder);
+        String rootComponentFolder = rootSuiteFolder + File.separator + this.getComponentName().getValue();
+        FolderTools.createFolder(rootComponentFolder);
+        String suiteFolder = rootComponentFolder + File.separator + this.getSuiteName().getValue();
+        FolderTools.createFolder(suiteFolder);
+        String suiteVersionFolder = suiteFolder + File.separator + this.getSuiteVersion().getValue();
+        FolderTools.createFolder(suiteVersionFolder);
+        String suiteBuildFolder = suiteVersionFolder + File.separator + latestBuild;
+        FolderTools.deleteFolder(suiteBuildFolder, true);
+        FolderTools.createFolder(suiteBuildFolder);
+
+        // Download the build
+        artifactoryConnection.downloadArtifact(resolvedRepositoryAssetPath, suiteBuildFolder + File.separator + buildAsset);
+
+        // Untar the build
+        CompressionTools.unTarFile(this.getFrameworkExecution(), suiteBuildFolder, buildAsset);
+        // Untar the payload
+        String buildAssetFolder = suiteBuildFolder + File.separator + FilenameUtils.removeExtension(buildAsset) + File.separator + this.getSuiteName().getValue();
+        FolderTools.deleteFolder(buildAssetFolder, true);
+        CompressionTools.unTarFile(this.getFrameworkExecution(), suiteBuildFolder + File.separator + FilenameUtils.removeExtension(buildAsset), this.getSuiteName().getValue() + ".tar");
+
+        // Run the suite
+        List<FileConnection> fileConnectionList = new ArrayList();
+        fileConnectionList = FolderTools.getConnectionsInFolder(buildAssetFolder, "regex", ".+\\.json", fileConnectionList);
+        for (FileConnection fileConnection : fileConnectionList) {
+            try {
+                Script script = null;
+
+                JsonInputOperation jsonInputOperation = new JsonInputOperation(this.getFrameworkExecution(), fileConnection.getFilePath());
+                script = jsonInputOperation.getScript().get();
+                if (script == null) {
+                    System.out.println("No script found for execution");
+
+                    this.getActionExecution().getActionControl().increaseWarningCount();
+                } else {
+                    ScriptExecution scriptExecution = new ScriptExecution(this.getFrameworkExecution(), script);
+                    scriptExecution.initializeAsRootScript(environmentName);
+                    scriptExecution.setActionSelectOperation(new ActionSelectOperation(""));
+                    scriptExecution.setExitOnCompletion(false);
+
+                    scriptExecution.execute();
+
+                    this.getActionExecution().getActionControl().increaseSuccessCount();
+                }
+
+            } catch (Exception e) {
+                this.getActionExecution().getActionControl().increaseErrorCount();
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+    private String convertToString(DataType field) {
+        if (field instanceof Text) {
+            return field.toString();
+        } else {
+            frameworkExecution.getFrameworkLog().log(MessageFormat.format("fwk.executeScript does not accept {0} as type for field",
+                    field.getClass()), Level.WARN);
+            return field.toString();
+        }
     }
 
     // Getters and Setters

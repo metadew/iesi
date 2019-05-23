@@ -1,0 +1,1 @@
+select env_nm from iesi_cxn_env

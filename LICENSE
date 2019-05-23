@@ -34,6 +34,7 @@ com.mockrunner:mockrunner-servlet
 
 Apache License 2.0
 ------------------
+com.dremio:dremio-jdbc-driver
 com.fasterxml.jackson:jackson-annotations
 com.fasterxml.jackson:jackson-core
 com.fasterxml.jackson:jackson-databind
@@ -48,6 +49,7 @@ commons-compress:commons-compress
 commons-exec:commons-exec
 commons-lang:commons-lang
 commons-logging:commons-logging
+io.prestosql:presto-jdbc
 nl.flotsam:xeger
 org.apache.commons:commons-io
 org.apache.commons:commons-jexl
@@ -71,6 +73,14 @@ org.jfrog.artifactory.client:artifactory-java-client-services
 org.mybatis:mybatis
 org.xerial:sqlite-jdbc
 
+BSD-2-Clause License
+--------------------
+org.postgresql:postgresql
+
+Eclipse Public License 1.0
+--------------------------
+com.h2database:h2
+
 JSch License
 ------------
 com.jcraft:jsch
@@ -78,6 +88,10 @@ com.jcraft:jsch
 JSON License
 ------------
 org.json:json
+
+Microsoft Software License
+--------------------------
+com.microsoft.sqlserver:mssql-server
 
 WTFPL License
 -------------

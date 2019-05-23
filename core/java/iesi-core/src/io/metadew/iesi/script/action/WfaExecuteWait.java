@@ -179,5 +179,4 @@ public class WfaExecuteWait {
         this.waitInterval = waitInterval;
     }
 
-
 }

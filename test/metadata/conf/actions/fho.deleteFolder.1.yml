@@ -1,0 +1,55 @@
+---
+type: "script"
+data:
+  name: "fho.deleteFolder.1"
+  description: "Test fho.deleteFolder with a local folder"
+  parameters: []
+  actions:
+  - number: 1
+    type: "fho.folderExists"
+    name: "Action1"
+    description: "Verify that the folder exists"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "Y"
+    parameters:
+    - name: "path"
+      value : "#iesi.home#/data/iesi-test/fwk/data/actions/fho.deleteFolder.1"
+    - name: "folder"
+      value : "folder1"
+    - name: "connection"
+      value : ""
+  - number: 2
+    type: "fho.deleteFolder"
+    name: "Action2"
+    description: "Delete folder"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "path"
+      value : "#iesi.home#/data/iesi-test/fwk/data/actions/fho.deleteFolder.1"
+    - name: "folder"
+      value : "folder1"
+    - name: "connection"
+      value : ""
+  - number: 3
+    type: "fho.folderExists"
+    name: "Action3"
+    description: "Verify that the folder does not exist anymore"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "Y"
+    errorStop: "N"
+    parameters:
+    - name: "path"
+      value : "#iesi.home#/data/iesi-test/fwk/data/actions/fho.deleteFolder.1"
+    - name: "folder"
+      value : "folder1"
+    - name: "connection"
+      value : ""

@@ -1,10 +1,10 @@
 {% include navigation.html %}
 
-# db.mssql
+# db.mariadb
 
-This type connects to a Microsoft SQL Server database.
+This type connects to a Maria DB database.
 
-Get more information at [https://www.microsoft.com/nl-nl/sql-server/](https://www.microsoft.com/nl-nl/sql-server/).
+Get more information at [https://mariadb.org](https://mariadb.org).
 
 ## Use cases
 
@@ -43,19 +43,19 @@ Get more information at [https://www.microsoft.com/nl-nl/sql-server/](https://ww
 ---
 type: Connection
 data:
-  name: "db.mssql.1"
-  type: "db.mssql"
-  description: "db.mssql connection"
+  name: "db.mariadb.1"
+  type: "db.mariadb"
+  description: "db.mariadb connection"
   environment: "iesi-test"
   parameters:
   - name: "host"
     value: "localhost"
   - name: "port"
-    value: "1433"
+    value: "3306"
   - name: "database"
     value: "iesi"
   - name: "user"
-    value: "sa"
+    value: "root"
   - name: "password"
-    value: "ENC(Sayhy3uBuDuXQdMY72NNgfdavP94U+Jk2HqEymnpYG9kjvCAvg==)"
+    value: "ENC(Waan0DOjDHNBnTXtldp5xnGwIP0=)"
 ```

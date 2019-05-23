@@ -82,6 +82,10 @@ Eclipse Public License 1.0
 --------------------------
 com.h2database:h2
 
+GNU Lesser General Public License v2.1
+--------------------------------------
+org.mariadb.jdbc:mariadb-java-client
+
 JSch License
 ------------
 com.jcraft:jsch

@@ -51,6 +51,7 @@ Our framework can run on Linux/Unix and Windows systems.
 |Dremio|![grey](/{{site.repository}}/images/icons/grey-dot.png)|![green](/{{site.repository}}/images/icons/green-dot.png)|![red](/{{site.repository}}/images/icons/red-dot.png)|
 |File System|![green](/{{site.repository}}/images/icons/green-dot.png)|![green](/{{site.repository}}/images/icons/green-dot.png)|![green](/{{site.repository}}/images/icons/green-dot.png)|
 |H2|![green](/{{site.repository}}/images/icons/green-dot.png)|![green](/{{site.repository}}/images/icons/green-dot.png)|![red](/{{site.repository}}/images/icons/red-dot.png)|
+|Maria DB|![red](/{{site.repository}}/images/icons/red-dot.png)|![green](/{{site.repository}}/images/icons/green-dot.png)|![red](/{{site.repository}}/images/icons/red-dot.png)|
 |Microsoft SQL Server|![red](/{{site.repository}}/images/icons/red-dot.png)|![green](/{{site.repository}}/images/icons/green-dot.png)|![red](/{{site.repository}}/images/icons/red-dot.png)|
 |MySQL|![red](/{{site.repository}}/images/icons/red-dot.png)|![green](/{{site.repository}}/images/icons/green-dot.png)|![red](/{{site.repository}}/images/icons/red-dot.png)|
 |Netezza|![green](/{{site.repository}}/images/icons/green-dot.png)|![green](/{{site.repository}}/images/icons/green-dot.png)|![red](/{{site.repository}}/images/icons/red-dot.png)|

@@ -458,6 +458,10 @@ public class ConnectionOperation {
 				DbH2ConnectionOperation dbH2ConnectionOperation = new DbH2ConnectionOperation(
 						this.getFrameworkExecution());
 				databaseConnection = dbH2ConnectionOperation.getConnectionOperation(connection);
+			} else if (connection.getType().equalsIgnoreCase("db.mariadb")) {
+				DbMariadbConnectionOperation dbMariadbConnectionOperation = new DbMariadbConnectionOperation(
+						this.getFrameworkExecution());
+				databaseConnection = dbMariadbConnectionOperation.getConnectionOperation(connection);
 			} else if (connection.getType().equalsIgnoreCase("db.mssql")) {
 				DbMssqlConnectionOperation dbMssqlConnectionOperation = new DbMssqlConnectionOperation(
 						this.getFrameworkExecution());

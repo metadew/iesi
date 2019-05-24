@@ -10,13 +10,11 @@ import java.util.Optional;
  *
  * @author peter.billen
  */
-public class PrestoDatabase extends Database {
+public class PrestoDatabase extends SchemaDatabase {
 
-    String schema;
 
     public PrestoDatabase(PrestoDatabaseConnection databaseConnection, String schema) {
-        super(databaseConnection);
-        this.schema = schema;
+        super(databaseConnection, schema);
     }
 
     @Override
@@ -72,10 +70,6 @@ public class PrestoDatabase extends Database {
             fieldQuery.append(" NOT NULL");
         }
         return fieldQuery.toString();
-    }
-
-    public Optional<String> getSchema() {
-        return Optional.ofNullable(schema);
     }
 
 }

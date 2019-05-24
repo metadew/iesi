@@ -5,14 +5,11 @@ import io.metadew.iesi.metadata.definition.MetadataField;
 
 import java.util.Optional;
 
-public class NetezzaDatabase extends Database {
-
-    String schema;
+public class NetezzaDatabase extends SchemaDatabase {
 
 
     public NetezzaDatabase(NetezzaDatabaseConnection databaseConnection, String schema) {
-        super(databaseConnection);
-        this.schema = schema;
+        super(databaseConnection, schema);
     }
 
     @Override
@@ -68,10 +65,6 @@ public class NetezzaDatabase extends Database {
             fieldQuery.append(" NOT NULL");
         }
         return fieldQuery.toString();
-    }
-
-    public Optional<String> getSchema() {
-        return Optional.ofNullable(schema);
     }
 
 }

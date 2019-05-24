@@ -34,7 +34,7 @@ public class MetadataRepositoryOperation {
     public void cleanAllTables() {
         this.getFrameworkExecution().getFrameworkLog().log("metadata.clean.start", Level.INFO);
         this.getFrameworkExecution().getFrameworkLog().log("metadata.clean.query=" + "", Level.TRACE);
-        this.getMetadataRepository().cleanAllTables(frameworkExecution.getFrameworkLog());
+        this.getMetadataRepository().cleanAllTables();
         this.getFrameworkExecution().getFrameworkLog().log("metadata.clean.end", Level.INFO);
 
     }

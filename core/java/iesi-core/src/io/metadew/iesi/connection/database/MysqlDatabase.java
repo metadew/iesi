@@ -24,11 +24,6 @@ public class MysqlDatabase extends Database {
     }
 
     @Override
-    public String getCreateStatement(MetadataTable table, String tableNamePrefix) {
-        return null;
-    }
-
-    @Override
     public String createQueryExtras() {
         return null;
     }
@@ -40,11 +35,6 @@ public class MysqlDatabase extends Database {
 
     @Override
     public String toQueryString(MetadataField field) {
-        return null;
-    }
-
-    @Override
-    public List<String> getAllTables(String pattern) {
         return null;
     }
 

@@ -5,13 +5,10 @@ import io.metadew.iesi.metadata.definition.MetadataField;
 
 import java.util.Optional;
 
-public class PostgresqlDatabase extends Database {
-
-    String schema;
+public class PostgresqlDatabase extends SchemaDatabase {
 
     public PostgresqlDatabase(PostgresqlDatabaseConnection databaseConnection, String schema) {
-        super(databaseConnection);
-        this.schema = schema;
+        super(databaseConnection, schema);
     }
 
     @Override
@@ -68,10 +65,5 @@ public class PostgresqlDatabase extends Database {
         }
         return fieldQuery.toString();
     }
-
-    public Optional<String> getSchema() {
-        return Optional.ofNullable(schema);
-    }
-
 
 }

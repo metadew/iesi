@@ -22,11 +22,6 @@ public class TemporaryDatabase extends Database {
     }
 
     @Override
-    public String getCreateStatement(MetadataTable table, String tableNamePrefix) {
-        return null;
-    }
-
-    @Override
     public String createQueryExtras() {
         return "";
     }
@@ -39,16 +34,6 @@ public class TemporaryDatabase extends Database {
     @Override
     public String toQueryString(MetadataField field) {
         return "";
-    }
-
-    @Override
-    String getCleanStatement(MetadataTable metadataTable, String tableNamePrefix) {
-        return null;
-    }
-
-    @Override
-    public String getDropStatement(MetadataTable table, String tableNamePrefix) {
-        return null;
     }
 
 }

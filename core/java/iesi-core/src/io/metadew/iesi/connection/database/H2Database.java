@@ -10,13 +10,11 @@ import java.util.Optional;
  *
  * @author peter.billen
  */
-public class H2Database extends Database {
+public class H2Database extends SchemaDatabase {
 
-    String schema;
 
     public H2Database(H2DatabaseConnection databaseConnection, String schema) {
-        super(databaseConnection);
-        this.schema = schema;
+        super(databaseConnection, schema);
     }
 
     @Override
@@ -71,9 +69,4 @@ public class H2Database extends Database {
         }
         return fieldQuery.toString();
     }
-
-    public Optional<String> getSchema() {
-        return Optional.ofNullable(schema);
-    }
-
 }

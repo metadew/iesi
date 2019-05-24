@@ -8,7 +8,6 @@ import io.metadew.iesi.metadata.definition.MetadataObject;
 import io.metadew.iesi.metadata.definition.MetadataTable;
 import io.metadew.iesi.metadata.operation.DataObjectOperation;
 import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
-import org.apache.logging.log4j.Level;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.File;
@@ -57,6 +56,8 @@ public abstract class MetadataRepository {
         for (DataObject dataObject : dataObjectOperation.getDataObjects()) {
             if (dataObject.getType().equalsIgnoreCase("metadatatable")) {
                 MetadataTable metadataTable = objectMapper.convertValue(dataObject.getData(), MetadataTable.class);
+                // TODO: add prefix to MetadataTable definitions
+                metadataTable.setName(getTableNamePrefix() + metadataTable.getName());
                 metadataTables.add(metadataTable);
             }
         }
@@ -81,20 +82,8 @@ public abstract class MetadataRepository {
         return Optional.ofNullable(frameworkCode);
     }
 
-    public void cleanAllTables(FrameworkLog frameworkLog) {
-        frameworkLog.log("metadata.clean.start", Level.INFO);
-        frameworkLog.log("metadata.clean.query=" + "", Level.TRACE);
-        this.repositoryCoordinator.cleanAllTables(getTableNamePrefix(), frameworkLog);
-        frameworkLog.log("metadata.clean.end", Level.INFO);
-
-    }
-
-    public List<String> getAllTables(FrameworkLog frameworkLog) {
-        return repositoryCoordinator.getAllTables(getTableNamePrefix());
-    }
-
     private void dropTable(MetadataTable metadataTable) {
-        repositoryCoordinator.dropTable(metadataTable, getTableNamePrefix());
+        repositoryCoordinator.dropTable(metadataTable);
     }
 
     public void dropAllTables() {
@@ -102,7 +91,7 @@ public abstract class MetadataRepository {
     }
 
     private void cleanTable(MetadataTable metadataTable) {
-        repositoryCoordinator.cleanTable(metadataTable, getTableNamePrefix());
+        repositoryCoordinator.cleanTable(metadataTable);
     }
 
     public void cleanAllTables() {
@@ -110,7 +99,7 @@ public abstract class MetadataRepository {
     }
 
     public void dropAllTables(FrameworkLog frameworkLog) {
-        repositoryCoordinator.dropAllTables(getTableNamePrefix(), frameworkLog);
+        metadataTables.forEach(this::dropTable);
     }
 
     // TODO: remove because security danger: query can target objects outside of repository responsibilities
@@ -139,8 +128,7 @@ public abstract class MetadataRepository {
     }
 
     private void createTable(MetadataTable metadataTable) {
-        System.out.println(MessageFormat.format("Creating table {0}", metadataTable.getName()));
-        this.repositoryCoordinator.createTable(metadataTable, getTableNamePrefix());
+        this.repositoryCoordinator.createTable(metadataTable);
     }
 
     public void createAllTables() {
@@ -149,16 +137,16 @@ public abstract class MetadataRepository {
 
     public String generateDDL() {
         return metadataTables.stream()
-                .map(metadataTable -> repositoryCoordinator.generateDDL(metadataTable, getTableNamePrefix()))
+                .map(metadataTable -> repositoryCoordinator.getCreateStatement(metadataTable))
                 .collect(Collectors.joining("\n\n"));
     }
 
     public String getTableNameByLabel(String label) {
-        if (getMetadataTables().stream().anyMatch(metadataTable -> metadataTable.getLabel().equalsIgnoreCase(label))) {
-            return getTableNamePrefix() + getMetadataTables().stream().filter(metadataTable -> metadataTable.getLabel().equalsIgnoreCase(label)).findFirst().get().getName();
-        } else {
-            return "";
-        }
+        return metadataTables.stream()
+                .filter(metadataTable -> metadataTable.getLabel().equalsIgnoreCase(label))
+                .findFirst()
+                .map(MetadataTable::getName)
+                .orElseThrow(() -> new RuntimeException(MessageFormat.format("No label {0} found for metadata repository {1}", label, getCategory())));
     }
 
     public String getName() {

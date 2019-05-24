@@ -2,6 +2,7 @@ package io.metadew.iesi.metadata.repository.coordinator;
 
 import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.sql.SqlScriptResult;
+import io.metadew.iesi.framework.definition.Framework;
 import io.metadew.iesi.framework.execution.FrameworkLog;
 import io.metadew.iesi.metadata.definition.MetadataTable;
 
@@ -82,6 +83,22 @@ public class RepositoryCoordinator {
 
     public void cleanAllTables(String pattern, FrameworkLog frameworkLog) {
         this.databases.get("writer").cleanAllTables(pattern, frameworkLog);
+    }
+
+    public void cleanTable(MetadataTable table) {
+        this.databases.get("writer").cleanTable(table);
+    }
+
+    public void dropTable(MetadataTable table) {
+        this.databases.get("owner").dropTable(table);
+    }
+
+    public void createTable(MetadataTable table) {
+        this.databases.get("owner").createTable(table);
+    }
+
+    public String getCreateStatement(MetadataTable table) {
+        return this.databases.get("reader").getCreateStatement(table);
     }
 
     public String generateDDL(MetadataTable metadataTable, String tableNamePrefix) {

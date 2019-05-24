@@ -5,13 +5,10 @@ import io.metadew.iesi.metadata.definition.MetadataField;
 
 import java.util.Optional;
 
-public class OracleDatabase extends Database {
-
-    String schema;
+public class OracleDatabase extends SchemaDatabase {
 
     public OracleDatabase(OracleDatabaseConnection databaseConnection, String schema) {
-        super(databaseConnection);
-        this.schema = schema;
+        super(databaseConnection, schema);
     }
 
     @Override
@@ -65,10 +62,6 @@ public class OracleDatabase extends Database {
             fieldQuery.append(" NOT NULL");
         }
         return fieldQuery.toString();
-    }
-
-    public Optional<String> getSchema() {
-        return Optional.ofNullable(schema);
     }
 
 }

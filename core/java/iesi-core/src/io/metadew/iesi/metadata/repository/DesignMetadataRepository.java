@@ -63,7 +63,6 @@ public class DesignMetadataRepository extends MetadataRepository {
     }
 
     public void save(Script script, FrameworkExecution frameworkExecution) {
-        System.out.println("Error expected: " + script.getActions().get(0).getErrorExpected());
         ScriptConfiguration scriptConfiguration = new ScriptConfiguration(script,
                 frameworkExecution);
         executeUpdate(scriptConfiguration.getInsertStatement());

@@ -10,13 +10,10 @@ import java.util.Optional;
  *
  * @author peter.billen
  */
-public class DremioDatabase extends Database {
-
-    String schema;
+public class DremioDatabase extends SchemaDatabase {
 
     public DremioDatabase(PrestoDatabaseConnection databaseConnection, String schema) {
-        super(databaseConnection);
-        this.schema = schema;
+        super(databaseConnection, schema);
     }
 
     @Override
@@ -66,10 +63,6 @@ public class DremioDatabase extends Database {
             fieldQuery.append(" NOT NULL");
         }
         return fieldQuery.toString();
-    }
-
-    public Optional<String> getSchema() {
-        return Optional.ofNullable(schema);
     }
 
 }

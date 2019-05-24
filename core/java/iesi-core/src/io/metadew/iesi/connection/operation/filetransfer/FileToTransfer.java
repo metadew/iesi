@@ -3,40 +3,40 @@ package io.metadew.iesi.connection.operation.filetransfer;
 
 public class FileToTransfer {
 
-	private String longName;
-	private String fileName;
-	private String attributes;
-		
-	public FileToTransfer(String longName, String fileName, String attributes) {
-		this.setLongName(longName);
-		this.setFileName(fileName);
-		this.setAttributes(attributes);
-	}
+    private String longName;
+    private String fileName;
+    private String attributes;
 
-	// Getters and Setters
-	public String getLongName() {
-		return longName;
-	}
+    public FileToTransfer(String longName, String fileName, String attributes) {
+        this.setLongName(longName);
+        this.setFileName(fileName);
+        this.setAttributes(attributes);
+    }
 
-	public void setLongName(String longName) {
-		this.longName = longName;
-	}
+    // Getters and Setters
+    public String getLongName() {
+        return longName;
+    }
 
-	public String getAttributes() {
-		return attributes;
-	}
+    public void setLongName(String longName) {
+        this.longName = longName;
+    }
 
-	public void setAttributes(String attributes) {
-		this.attributes = attributes;
-	}
+    public String getAttributes() {
+        return attributes;
+    }
 
-	public String getFileName() {
-		return fileName;
-	}
+    public void setAttributes(String attributes) {
+        this.attributes = attributes;
+    }
 
-	public void setFileName(String fileName) {
-		this.fileName = fileName;
-	}
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
 
 
 }

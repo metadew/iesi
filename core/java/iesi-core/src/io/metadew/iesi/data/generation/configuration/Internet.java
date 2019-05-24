@@ -1,11 +1,11 @@
 package io.metadew.iesi.data.generation.configuration;
 
+import io.metadew.iesi.data.generation.execution.GenerationComponentExecution;
+import io.metadew.iesi.data.generation.execution.GenerationDataExecution;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import io.metadew.iesi.data.generation.execution.GenerationComponentExecution;
-import io.metadew.iesi.data.generation.execution.GenerationDataExecution;
 
 
 public class Internet extends GenerationComponentExecution {
@@ -19,7 +19,7 @@ public class Internet extends GenerationComponentExecution {
     private static final boolean PASSWORD_MIX_CASE = true;
     private static final boolean PASSWORD_SPECIAL_CHARS = false;
     private static final List<String> PASSWORD_SPECIAL_CHARS_LIST
-            = Arrays.asList("!","@","#","$","%","^","&","*");
+            = Arrays.asList("!", "@", "#", "$", "%", "^", "&", "*");
     private static final int DEVICE_TOKEN_LENGTH = 64;
 
     public Internet(GenerationDataExecution execution) {

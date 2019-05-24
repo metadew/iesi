@@ -1,5 +1,7 @@
 package io.metadew.iesi.connection.java.tools;
 
+import io.metadew.iesi.metadata.definition.*;
+
 import java.io.FileInputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -10,89 +12,83 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 
-import io.metadew.iesi.metadata.definition.JavaArchive;
-import io.metadew.iesi.metadata.definition.JavaClass;
-import io.metadew.iesi.metadata.definition.JavaField;
-import io.metadew.iesi.metadata.definition.JavaMethod;
-import io.metadew.iesi.metadata.definition.JavaParameter;
-
 public final class JarTools {
 
-	@SuppressWarnings({ "resource", "rawtypes", "unchecked" })
-	public static JavaArchive getJavaArchiveDefinition(String fileName, URLClassLoader urlClassLoader) {
-		JavaArchive javaArchive = new JavaArchive();
-		try {
-			JarInputStream jarFile = new JarInputStream(new FileInputStream(fileName));
-			JarEntry jarEntry;
+    @SuppressWarnings({"resource", "rawtypes", "unchecked"})
+    public static JavaArchive getJavaArchiveDefinition(String fileName, URLClassLoader urlClassLoader) {
+        JavaArchive javaArchive = new JavaArchive();
+        try {
+            JarInputStream jarFile = new JarInputStream(new FileInputStream(fileName));
+            JarEntry jarEntry;
 
-			List<JavaClass> javaClasses = new ArrayList();
-			while (true) {
-				jarEntry = jarFile.getNextJarEntry();
-				if (jarEntry == null) {
-					break;
-				}
-				
-				JavaClass javaClass = new JavaClass();
-				if ((jarEntry.getName().endsWith(".class"))) {
-					String classFileName = jarEntry.getName().replaceAll("/", "\\.");
-					String className = classFileName.substring(0, classFileName.lastIndexOf('.'));
+            List<JavaClass> javaClasses = new ArrayList();
+            while (true) {
+                jarEntry = jarFile.getNextJarEntry();
+                if (jarEntry == null) {
+                    break;
+                }
 
-					Class aClass = Class.forName(className, true, urlClassLoader);
-					javaClass.setName(className);
-					javaClass.setSimpleName(aClass.getSimpleName());
+                JavaClass javaClass = new JavaClass();
+                if ((jarEntry.getName().endsWith(".class"))) {
+                    String classFileName = jarEntry.getName().replaceAll("/", "\\.");
+                    String className = classFileName.substring(0, classFileName.lastIndexOf('.'));
 
-					// Fields
-					List<JavaField> javaFields = new ArrayList();
-					for (Field field : aClass.getDeclaredFields()) {
-						JavaField javaField = new JavaField();
-						javaField.setName(field.getName());
+                    Class aClass = Class.forName(className, true, urlClassLoader);
+                    javaClass.setName(className);
+                    javaClass.setSimpleName(aClass.getSimpleName());
 
-						// Type
-						Class fieldType = field.getType();
-						javaField.setType(fieldType.getSimpleName());
-						javaField.setTypeClass(fieldType.getCanonicalName());
+                    // Fields
+                    List<JavaField> javaFields = new ArrayList();
+                    for (Field field : aClass.getDeclaredFields()) {
+                        JavaField javaField = new JavaField();
+                        javaField.setName(field.getName());
 
-						javaFields.add(javaField);
-					}
-					javaClass.setFields(javaFields);
+                        // Type
+                        Class fieldType = field.getType();
+                        javaField.setType(fieldType.getSimpleName());
+                        javaField.setTypeClass(fieldType.getCanonicalName());
 
-					// Methods
-					List<JavaMethod> javaMethods = new ArrayList();
-					for (Method method : aClass.getDeclaredMethods()) {
-						JavaMethod javaMethod = new JavaMethod();
-						javaMethod.setName(method.getName());
+                        javaFields.add(javaField);
+                    }
+                    javaClass.setFields(javaFields);
 
-						// Return Type
-						Class returnType = method.getReturnType();
-						javaMethod.setReturnType(returnType.getSimpleName());
-						javaMethod.setReturnTypeClass(returnType.getCanonicalName());
+                    // Methods
+                    List<JavaMethod> javaMethods = new ArrayList();
+                    for (Method method : aClass.getDeclaredMethods()) {
+                        JavaMethod javaMethod = new JavaMethod();
+                        javaMethod.setName(method.getName());
 
-						// Parameters
-						// Make sure to compile using -parameters
-						List<JavaParameter> javaParameters = new ArrayList();
-						for (Parameter parameter : method.getParameters()) {
-							JavaParameter javaParameter = new JavaParameter();
-							javaParameter.setName(parameter.getName());
-							
-							// Type
-							Class parameterType = parameter.getType();
-							javaParameter.setType(parameterType.getSimpleName());
-							javaParameter.setTypeClass(parameterType.getCanonicalName());
-							
-							javaParameters.add(javaParameter);
-						}
-						javaMethod.setParameters(javaParameters);
-						javaMethods.add(javaMethod);
-					}
-					javaClass.setMethods(javaMethods);
-				}
-				javaClasses.add(javaClass);
-			}
-			javaArchive.setClasses(javaClasses);
-		} catch (Exception e) {
-			throw new RuntimeException("java.jar.parse.error=" + e.getMessage());
-		}
-		return javaArchive;
-	}
+                        // Return Type
+                        Class returnType = method.getReturnType();
+                        javaMethod.setReturnType(returnType.getSimpleName());
+                        javaMethod.setReturnTypeClass(returnType.getCanonicalName());
+
+                        // Parameters
+                        // Make sure to compile using -parameters
+                        List<JavaParameter> javaParameters = new ArrayList();
+                        for (Parameter parameter : method.getParameters()) {
+                            JavaParameter javaParameter = new JavaParameter();
+                            javaParameter.setName(parameter.getName());
+
+                            // Type
+                            Class parameterType = parameter.getType();
+                            javaParameter.setType(parameterType.getSimpleName());
+                            javaParameter.setTypeClass(parameterType.getCanonicalName());
+
+                            javaParameters.add(javaParameter);
+                        }
+                        javaMethod.setParameters(javaParameters);
+                        javaMethods.add(javaMethod);
+                    }
+                    javaClass.setMethods(javaMethods);
+                }
+                javaClasses.add(javaClass);
+            }
+            javaArchive.setClasses(javaClasses);
+        } catch (Exception e) {
+            throw new RuntimeException("java.jar.parse.error=" + e.getMessage());
+        }
+        return javaArchive;
+    }
 
 }

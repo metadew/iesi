@@ -2,61 +2,60 @@ package io.metadew.iesi.data.generation.tools;
 
 public class GenerationTools {
 
-	private MapTools mapTools;
-	private NumberTools numberTools;
-	private PeriodTools periodTools;
-	private RandomTools randomTools;
-	private StringTools stringTools;
-	
-	public GenerationTools() {
-		this.setMapTools(new MapTools());
-		this.setNumberTools(new NumberTools());
-		this.setRandomTools(new RandomTools());
-		this.setStringTools(new StringTools());
-		
-	}
+    private MapTools mapTools;
+    private NumberTools numberTools;
+    private PeriodTools periodTools;
+    private RandomTools randomTools;
+    private StringTools stringTools;
 
-	// Getters and Setters
-	public MapTools getMapTools() {
-		return mapTools;
-	}
+    public GenerationTools() {
+        this.setMapTools(new MapTools());
+        this.setNumberTools(new NumberTools());
+        this.setRandomTools(new RandomTools());
+        this.setStringTools(new StringTools());
 
-	public void setMapTools(MapTools mapTools) {
-		this.mapTools = mapTools;
-	}
+    }
 
-	public NumberTools getNumberTools() {
-		return numberTools;
-	}
+    // Getters and Setters
+    public MapTools getMapTools() {
+        return mapTools;
+    }
 
-	public void setNumberTools(NumberTools numberTools) {
-		this.numberTools = numberTools;
-	}
+    public void setMapTools(MapTools mapTools) {
+        this.mapTools = mapTools;
+    }
 
-	public PeriodTools getPeriodTools() {
-		return periodTools;
-	}
+    public NumberTools getNumberTools() {
+        return numberTools;
+    }
 
-	public void setPeriodTools(PeriodTools periodTools) {
-		this.periodTools = periodTools;
-	}
+    public void setNumberTools(NumberTools numberTools) {
+        this.numberTools = numberTools;
+    }
 
-	public RandomTools getRandomTools() {
-		return randomTools;
-	}
+    public PeriodTools getPeriodTools() {
+        return periodTools;
+    }
 
-	public void setRandomTools(RandomTools randomTools) {
-		this.randomTools = randomTools;
-	}
+    public void setPeriodTools(PeriodTools periodTools) {
+        this.periodTools = periodTools;
+    }
 
-	public StringTools getStringTools() {
-		return stringTools;
-	}
+    public RandomTools getRandomTools() {
+        return randomTools;
+    }
 
-	public void setStringTools(StringTools stringTools) {
-		this.stringTools = stringTools;
-	}
-	
-	
+    public void setRandomTools(RandomTools randomTools) {
+        this.randomTools = randomTools;
+    }
+
+    public StringTools getStringTools() {
+        return stringTools;
+    }
+
+    public void setStringTools(StringTools stringTools) {
+        this.stringTools = stringTools;
+    }
+
 
 }

@@ -5,41 +5,41 @@ import java.util.Properties;
 
 public class ConfigFile {
 
-	private Properties properties;
+    private Properties properties;
 
-	private String filePath;
+    private String filePath;
 
-	public ConfigFile() {
+    public ConfigFile() {
 
-		this.properties = new Properties();
-	}
+        this.properties = new Properties();
+    }
 
-	public Properties getProperties() {
-		return properties;
-	}
+    public Properties getProperties() {
+        return properties;
+    }
 
-	public void setProperties(Properties properties) {
-		this.properties = properties;
-	}
+    public void setProperties(Properties properties) {
+        this.properties = properties;
+    }
 
-	public Optional<String> getProperty(String key) {
-		if (properties.getProperty(key).isEmpty()) {
-			return Optional.empty();
-		} else {
-			return Optional.ofNullable(this.properties.getProperty(key));
-		}
-	}
+    public Optional<String> getProperty(String key) {
+        if (properties.getProperty(key).isEmpty()) {
+            return Optional.empty();
+        } else {
+            return Optional.ofNullable(this.properties.getProperty(key));
+        }
+    }
 
-	public void setProperty(String key, String value) {
-		this.properties.setProperty(key, value);
-	}
+    public void setProperty(String key, String value) {
+        this.properties.setProperty(key, value);
+    }
 
-	public String getFilePath() {
-		return filePath;
-	}
+    public String getFilePath() {
+        return filePath;
+    }
 
-	public void setFilePath(String filePath) {
-		this.filePath = filePath;
-	}
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
+    }
 
 }

@@ -1,0 +1,20 @@
+---
+type: Script
+data:
+  type: "script"
+  name: "data.outputDataset.1"
+  description: "test data.outputDataset"
+  actions:
+  - number: 1
+    type: "data.outputDataset"
+    name: "set actual dataset connection"
+    description: "default"
+    errorExpected: "N"
+    errorStop: "Y"
+    parameters:
+    - name: "name"
+      value : "outputDataset"
+    - name: "labels"
+      value : "output"
+    - name: "onScreen"
+      value : "Y"

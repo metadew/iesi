@@ -1,25 +1,9 @@
 package io.metadew.iesi.connection.operation;
 
-import java.io.File;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.io.FilenameUtils;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import io.metadew.iesi.connection.ArtifactoryConnection;
 import io.metadew.iesi.connection.HostConnection;
-import io.metadew.iesi.connection.database.connection.DatabaseConnection;
-import io.metadew.iesi.connection.database.connection.MysqlDatabaseConnection;
-import io.metadew.iesi.connection.database.connection.NetezzaDatabaseConnection;
-import io.metadew.iesi.connection.database.connection.OracleDatabaseConnection;
-import io.metadew.iesi.connection.database.connection.PostgresqlDatabaseConnection;
-import io.metadew.iesi.connection.database.connection.ServiceNameOracleDatabaseConnection;
-import io.metadew.iesi.connection.database.connection.SqliteDatabaseConnection;
-import io.metadew.iesi.connection.database.connection.TnsAliasOracleDatabaseConnection;
+import io.metadew.iesi.connection.database.connection.*;
 import io.metadew.iesi.connection.host.LinuxHostConnection;
 import io.metadew.iesi.connection.host.WindowsHostConnection;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
@@ -28,6 +12,13 @@ import io.metadew.iesi.metadata.definition.Connection;
 import io.metadew.iesi.metadata.definition.ConnectionParameter;
 import io.metadew.iesi.metadata.definition.ConnectionType;
 import io.metadew.iesi.metadata.definition.ConnectionTypeParameter;
+import org.apache.commons.io.FilenameUtils;
+
+import java.io.File;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ConnectionOperation {
 
@@ -786,5 +777,4 @@ public class ConnectionOperation {
 	public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
 		this.frameworkExecution = frameworkExecution;
 	}
-
 }

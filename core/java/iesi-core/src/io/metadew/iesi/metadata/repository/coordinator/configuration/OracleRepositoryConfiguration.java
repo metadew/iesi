@@ -91,13 +91,12 @@ public class OracleRepositoryConfiguration extends RepositoryConfiguration {
                 (frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.port").isPresent() &&
                         configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.port").get()).isPresent()) &&
                 (frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.tnsalias").isPresent() &&
-                        configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.tnsalias").get()).isPresent())){
+                        configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.tnsalias").get()).isPresent())) {
             host = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.host").get()).get();
             port = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.port").get()).get();
             tnsAlias = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.service").get()).get();
-            jdbcConnectionString = String.format(jdbcConnectionStringTnsAliasFormat, host, port, tnsAlias);}
-
-        else {
+            jdbcConnectionString = String.format(jdbcConnectionStringTnsAliasFormat, host, port, tnsAlias);
+        } else {
             throw new RuntimeException("Could not initialize Oracle configuration. No connection string or host, port and name provided");
         }
     }

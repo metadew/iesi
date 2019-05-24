@@ -1,14 +1,5 @@
 package io.metadew.iesi.data.generation.output;
 
-import java.io.File;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.ArrayList;
-
-import org.apache.logging.log4j.Level;
-
-import javax.sql.rowset.CachedRowSet;
-
 import io.metadew.iesi.common.list.ListTools;
 import io.metadew.iesi.common.text.ParsingTools;
 import io.metadew.iesi.connection.tools.FolderTools;
@@ -20,6 +11,13 @@ import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.GenerationControl;
 import io.metadew.iesi.metadata.definition.GenerationOutputParameter;
 import io.metadew.iesi.script.execution.ExecutionControl;
+import org.apache.logging.log4j.Level;
+
+import javax.sql.rowset.CachedRowSet;
+import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.ArrayList;
 
 public class DelimitedFile {
 
@@ -230,5 +228,4 @@ public class DelimitedFile {
 	public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
 		this.frameworkExecution = frameworkExecution;
 	}
-
 }

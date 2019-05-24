@@ -7,9 +7,8 @@ import java.util.Optional;
 
 /**
  * Database object for PrestoSQL
- * 
- * @author peter.billen
  *
+ * @author peter.billen
  */
 public class PrestoDatabase extends Database {
 
@@ -27,7 +26,7 @@ public class PrestoDatabase extends Database {
 
     @Override
     public String getAllTablesQuery(String pattern) {
-    	// TODO add catalog
+        // TODO add catalog
         // pattern = tableNamePrefix + categoryPrefix
         return "select TABLE_SCHEM, TABLE_NAME from system.jdbc.TABLES where"
                 + getSchema().map(schema -> " TABLE_SCHEM = '" + schema + "' and").orElse("")
@@ -45,7 +44,7 @@ public class PrestoDatabase extends Database {
     }
 
     public String toQueryString(MetadataField field) {
-    	//TODO to be reviewed
+        //TODO to be reviewed
         StringBuilder fieldQuery = new StringBuilder();
         // Data Types
         switch (field.getType()) {

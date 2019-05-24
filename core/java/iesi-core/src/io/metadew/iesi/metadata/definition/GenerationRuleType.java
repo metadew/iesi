@@ -47,5 +47,4 @@ public class GenerationRuleType {
 		this.className = className;
 	}
 	
-
 }

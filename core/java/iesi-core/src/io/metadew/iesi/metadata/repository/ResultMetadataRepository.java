@@ -8,7 +8,6 @@ import io.metadew.iesi.metadata.definition.Component;
 import io.metadew.iesi.metadata.definition.DataObject;
 import io.metadew.iesi.metadata.definition.Script;
 import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
-
 import org.apache.logging.log4j.Level;
 
 import java.text.MessageFormat;
@@ -54,7 +53,7 @@ public class ResultMetadataRepository extends MetadataRepository {
             executeUpdate(componentConfiguration.getInsertStatement());
         } else if (dataObject.getType().equalsIgnoreCase("subroutine")) {
             // TODO
-        } else 	{
+        } else {
             frameworkExecution.getFrameworkLog().log(MessageFormat.format("Result repository is not responsible for loading saving {0}", dataObject.getType()), Level.TRACE);
         }
     }

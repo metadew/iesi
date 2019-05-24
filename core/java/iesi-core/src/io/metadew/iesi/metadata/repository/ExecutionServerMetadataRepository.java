@@ -4,9 +4,9 @@ import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.DataObject;
 import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
 
-public class ExecutionServerMetadataRepository extends MetadataRepository{
+public class ExecutionServerMetadataRepository extends MetadataRepository {
 
-    public ExecutionServerMetadataRepository(String frameworkCode, String name, String scope, String instanceName, RepositoryCoordinator repositoryCoordinator, String repositoryObjectsPath,  String repositoryTablesPath) {
+    public ExecutionServerMetadataRepository(String frameworkCode, String name, String scope, String instanceName, RepositoryCoordinator repositoryCoordinator, String repositoryObjectsPath, String repositoryTablesPath) {
         super(frameworkCode, name, scope, instanceName, repositoryCoordinator, repositoryObjectsPath, repositoryTablesPath);
     }
 

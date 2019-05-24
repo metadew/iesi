@@ -1,25 +1,19 @@
 package io.metadew.iesi.script.execution;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CompletionService;
-import java.util.concurrent.ExecutorCompletionService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-
-import org.apache.logging.log4j.Level;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.Action;
 import io.metadew.iesi.metadata.definition.Script;
 import io.metadew.iesi.script.action.FwkIncludeScript;
 import io.metadew.iesi.script.operation.ActionSelectOperation;
 import io.metadew.iesi.script.operation.RouteOperation;
+import org.apache.logging.log4j.Level;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.*;
 
 public class ScriptExecution {
 
@@ -453,25 +447,25 @@ public class ScriptExecution {
 		return exitOnCompletion;
 	}
 
-	public void setExitOnCompletion(boolean exitOnCompletion) {
-		this.exitOnCompletion = exitOnCompletion;
-	}
+    public void setExitOnCompletion(boolean exitOnCompletion) {
+        this.exitOnCompletion = exitOnCompletion;
+    }
 
-	public Script getScript() {
-		return script;
-	}
+    public Script getScript() {
+        return script;
+    }
 
-	public void setScript(Script script) {
-		this.script = script;
-	}
+    public void setScript(Script script) {
+        this.script = script;
+    }
 
-	public boolean isRouteScript() {
-		return routeScript;
-	}
+    public boolean isRouteScript() {
+        return routeScript;
+    }
 
-	public void setRouteScript(boolean routeScript) {
-		this.routeScript = routeScript;
-	}
+    public void setRouteScript(boolean routeScript) {
+        this.routeScript = routeScript;
+    }
 
 	public List<Action> getActions() {
 		return actions;

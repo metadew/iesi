@@ -1,28 +1,20 @@
 package io.metadew.iesi.launch;
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-import org.apache.logging.log4j.Level;
-
 import io.metadew.iesi.data.generation.execution.GenerationExecution;
+import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.framework.execution.FrameworkExecutionContext;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
-import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.configuration.GenerationConfiguration;
 import io.metadew.iesi.metadata.definition.Context;
 import io.metadew.iesi.metadata.definition.Generation;
+import org.apache.commons.cli.*;
+import org.apache.logging.log4j.Level;
 
 /**
  * The generation launcher is entry point to launch all data generation scripts.
- * 
- * @author peter.billen
  *
+ * @author peter.billen
  */
 public class GenerationLauncher {
 
@@ -179,6 +171,4 @@ public class GenerationLauncher {
 		// Execute the generation
 		eoGeneration.execute(outputName);
 	}
-	
-
 }

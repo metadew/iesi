@@ -10,7 +10,6 @@ import io.metadew.iesi.metadata.definition.DataObject;
 import io.metadew.iesi.metadata.definition.Generation;
 import io.metadew.iesi.metadata.definition.Script;
 import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
-
 import org.apache.logging.log4j.Level;
 
 import java.text.MessageFormat;
@@ -64,6 +63,7 @@ public class DesignMetadataRepository extends MetadataRepository {
     }
 
     public void save(Script script, FrameworkExecution frameworkExecution) {
+        System.out.println("Error expected: " + script.getActions().get(0).getErrorExpected());
         ScriptConfiguration scriptConfiguration = new ScriptConfiguration(script,
                 frameworkExecution);
         executeUpdate(scriptConfiguration.getInsertStatement());

@@ -6,7 +6,6 @@ import io.metadew.iesi.metadata.configuration.LedgerConfiguration;
 import io.metadew.iesi.metadata.definition.DataObject;
 import io.metadew.iesi.metadata.definition.Ledger;
 import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
-
 import org.apache.logging.log4j.Level;
 
 import java.text.MessageFormat;

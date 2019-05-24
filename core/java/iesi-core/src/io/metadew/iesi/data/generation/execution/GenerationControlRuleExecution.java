@@ -1,12 +1,11 @@
 package io.metadew.iesi.data.generation.execution;
 
-import org.apache.logging.log4j.Level;
-
 import io.metadew.iesi.data.generation.output.control.rule.Print;
 import io.metadew.iesi.data.generation.output.control.rule.RecordCount;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.GenerationControlRule;
 import io.metadew.iesi.script.execution.ExecutionControl;
+import org.apache.logging.log4j.Level;
 
 public class GenerationControlRuleExecution {
 
@@ -110,5 +109,4 @@ public class GenerationControlRuleExecution {
 	public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
 		this.frameworkExecution = frameworkExecution;
 	}
-
 }

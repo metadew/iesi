@@ -1,14 +1,13 @@
 package io.metadew.iesi.connection.java.operation;
 
-import java.io.File;
-import java.net.URL;
-import java.net.URLClassLoader;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import io.metadew.iesi.connection.java.tools.JarTools;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.JavaArchive;
+
+import java.io.File;
+import java.net.URL;
+import java.net.URLClassLoader;
 
 public class JarOperation {
 
@@ -46,5 +45,4 @@ public class JarOperation {
 	public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
 		this.frameworkExecution = frameworkExecution;
 	}
-
 }

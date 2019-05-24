@@ -2,10 +2,13 @@ package io.metadew.iesi.script.action;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.text.MessageFormat;
 import java.util.HashMap;
 
 import org.apache.logging.log4j.Level;
 
+import io.metadew.iesi.datatypes.DataType;
+import io.metadew.iesi.datatypes.Text;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.Action;
 import io.metadew.iesi.metadata.definition.ActionParameter;
@@ -15,7 +18,7 @@ import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 
 /**
- * This action prints a message for logging of debugging purposes
+ * This action executes another action from within the script
  * 
  * @author Peter Billen
  *
@@ -65,8 +68,35 @@ public class ActionExecute {
 		// Create parameter list
 		this.getActionParameterOperationMap().put("name", this.getName());
 	}
+	
+    public boolean execute() {
+        try {
+            String actionName = convertActionName(getName().getValue());
+            return executeAction(actionName);
+        } catch (Exception e) {
+            StringWriter StackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(StackTrace));
 
-	public boolean execute() {
+            this.getActionExecution().getActionControl().increaseErrorCount();
+
+            this.getActionExecution().getActionControl().logOutput("exception", e.getMessage());
+            this.getActionExecution().getActionControl().logOutput("stacktrace", StackTrace.toString());
+
+            return false;
+        }
+    }
+
+    private String convertActionName(DataType actionName) {
+        if (actionName instanceof Text) {
+            return actionName.toString();
+        } else {
+            frameworkExecution.getFrameworkLog().log(MessageFormat.format("action.execute does not accept {0} as type for connection name",
+            		actionName.getClass()), Level.WARN);
+            return actionName.toString();
+        }
+    }
+
+	public boolean executeAction(String actionName) {
 		try {
 			this.getExecutionControl().logMessage(this.getActionExecution(), "action.execute.start", Level.INFO);
 
@@ -75,7 +105,7 @@ public class ActionExecute {
 			boolean result = false;
 			for (int i = 0; i < this.getScriptExecution().getActions().size(); i++) {
 				action = this.getScriptExecution().getActions().get(i);
-				if (action.getName().equalsIgnoreCase(this.getName().getValue())) {
+				if (action.getName().equalsIgnoreCase(actionName)) {
 					result = true;
 					break;
 				}

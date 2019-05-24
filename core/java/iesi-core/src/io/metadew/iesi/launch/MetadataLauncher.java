@@ -1,18 +1,5 @@
 package io.metadew.iesi.launch;
 
-import java.io.File;
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-
 import io.metadew.iesi.common.config.ConfigFile;
 import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
@@ -24,6 +11,12 @@ import io.metadew.iesi.metadata.operation.MetadataRepositoryOperation;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import io.metadew.iesi.metadata.repository.configuration.MetadataRepositoryConfiguration;
 import io.metadew.iesi.metadata.restore.RestoreExecution;
+import org.apache.commons.cli.*;
+
+import java.io.File;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The metadata launcher is entry point to launch all configuration management
@@ -40,7 +33,7 @@ public class MetadataLauncher {
     public static void main(String[] args) {
 
         Option oHelp = new Option("help", "print this message");
-		Option oIni = new Option("ini", true, "define the initialization file");
+        Option oIni = new Option("ini", true, "define the initialization file");
         Option oType = new Option("type", true, "define the type of metadata repository");
         Option oConfig = new Option("config", true, "define the metadata repository config");
         Option oBackup = new Option("backup", "create a backup of the entire metadata repository");
@@ -102,35 +95,35 @@ public class MetadataLauncher {
                 formatter.printHelp("[command]", options);
                 System.exit(0);
             }
-            
-			// Define the exit behaviour
-			boolean exit = true;
-			if (line.hasOption("exit")) {
-				switch (line.getOptionValue("exit").trim().toLowerCase()) {
-				case "y":
-				case "true":
-					exit = true;
-					break;
-				case "n":
-				case "false":
-					exit = false;
-					break;
-				default:
-					break;
-				}
-			}
 
-			// Create the framework instance
-			FrameworkInitializationFile frameworkInitializationFile = new FrameworkInitializationFile();
-			if (line.hasOption("ini")) {
-				frameworkInitializationFile.setName(line.getOptionValue("ini"));
-				System.out.println("Option -ini (ini) value = " + frameworkInitializationFile.getName());
-			}
+            // Define the exit behaviour
+            boolean exit = true;
+            if (line.hasOption("exit")) {
+                switch (line.getOptionValue("exit").trim().toLowerCase()) {
+                    case "y":
+                    case "true":
+                        exit = true;
+                        break;
+                    case "n":
+                    case "false":
+                        exit = false;
+                        break;
+                    default:
+                        break;
+                }
+            }
 
-			FrameworkInstance frameworkInstance = new FrameworkInstance(frameworkInitializationFile);
+            // Create the framework instance
+            FrameworkInitializationFile frameworkInitializationFile = new FrameworkInitializationFile();
+            if (line.hasOption("ini")) {
+                frameworkInitializationFile.setName(line.getOptionValue("ini"));
+                System.out.println("Option -ini (ini) value = " + frameworkInitializationFile.getName());
+            }
 
-			// Create the framework execution
-			Context context = new Context();
+            FrameworkInstance frameworkInstance = new FrameworkInstance(frameworkInitializationFile);
+
+            // Create the framework execution
+            Context context = new Context();
             context.setName("metadata");
             context.setScope("");
             setFrameworkExecution(new FrameworkExecution(frameworkInstance, new FrameworkExecutionContext(context), "owner", frameworkInitializationFile));
@@ -143,12 +136,11 @@ public class MetadataLauncher {
                 System.out.println("Option -type (type) value = " + type);
             } else {
                 System.out.println("Option -type (type) missing");
-                endLauncher(1,true);
+                endLauncher(1, true);
             }
 
 
-
-			if (line.hasOption("config")) {
+            if (line.hasOption("config")) {
                 String config = line.getOptionValue("config");
 
                 ConfigFile configFile = frameworkExecution.getFrameworkControl().getConfigFile("keyvalue",
@@ -186,7 +178,7 @@ public class MetadataLauncher {
                         break;
                     default:
                         System.out.println("Unknown Option -type (type) = " + type);
-                        endLauncher(1,true);
+                        endLauncher(1, true);
                 }
             }
             // Backup
@@ -207,14 +199,14 @@ public class MetadataLauncher {
                     } else {
                         System.out.println("Option -path (path) not provided");
                         writeFooterMessage();
-                        endLauncher(1,true);
+                        endLauncher(1, true);
                     }
 
                     // Execute
                     BackupExecution backupExecution = new BackupExecution(frameworkInstance);
                     backupExecution.execute(path);
                     writeFooterMessage();
-                    endLauncher(0,true);
+                    endLauncher(0, true);
                 }
             }
 
@@ -236,14 +228,14 @@ public class MetadataLauncher {
                         System.out.println("Option -path (path) value = " + path);
                     } else {
                         System.out.println("Option -path (path) missing");
-                        endLauncher(1,true);
+                        endLauncher(1, true);
                     }
 
                     // Execute
                     RestoreExecution restoreExecution = new RestoreExecution();
                     restoreExecution.execute(path);
                     writeFooterMessage();
-                    endLauncher(0,true);
+                    endLauncher(0, true);
                 }
             }
 
@@ -330,8 +322,8 @@ public class MetadataLauncher {
             if (actionMatch) {
                 System.out.println();
                 System.out.println("metadata.launcher.end");
-            	endLauncher(0, exit);
-			} else {
+                endLauncher(0, exit);
+            } else {
                 System.out.println("No valid arguments have been provided, type -help for help.");
             }
 
@@ -339,18 +331,18 @@ public class MetadataLauncher {
 
                 ParseException e) {
             e.printStackTrace();
-            endLauncher(1,true);
+            endLauncher(1, true);
         }
 
     }
 
-	private static void endLauncher(int status, boolean exit) {
-		getFrameworkExecution().getFrameworkRuntime().terminate();
-		if (exit) {
-			System.exit(status);
-		}
-	}
-	
+    private static void endLauncher(int status, boolean exit) {
+        getFrameworkExecution().getFrameworkRuntime().terminate();
+        if (exit) {
+            System.exit(status);
+        }
+    }
+
     private static void writeHeaderMessage() {
         if (!actionMatch) {
             System.out.println("metadata.launcher.start");
@@ -363,12 +355,12 @@ public class MetadataLauncher {
         System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
     }
 
-	public static FrameworkExecution getFrameworkExecution() {
-		return frameworkExecution;
-	}
+    public static FrameworkExecution getFrameworkExecution() {
+        return frameworkExecution;
+    }
 
-	public static void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-		MetadataLauncher.frameworkExecution = frameworkExecution;
-	}
+    public static void setFrameworkExecution(FrameworkExecution frameworkExecution) {
+        MetadataLauncher.frameworkExecution = frameworkExecution;
+    }
 
 }

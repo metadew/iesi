@@ -1,12 +1,12 @@
 package io.metadew.iesi.data.generation.execution;
 
+import io.metadew.iesi.data.generation.tools.GenerationTools;
+import io.metadew.iesi.data.generation.tools.StringTools;
+
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
-
-import io.metadew.iesi.data.generation.tools.GenerationTools;
-import io.metadew.iesi.data.generation.tools.StringTools;
 
 public abstract class GenerationComponentExecution {
 
@@ -26,7 +26,7 @@ public abstract class GenerationComponentExecution {
     }
 
     @SuppressWarnings("rawtypes")
-	protected String fetch(String key) {
+    protected String fetch(String key) {
         String[] keys = key.split("\\.");
 
         List list;
@@ -71,8 +71,8 @@ public abstract class GenerationComponentExecution {
         return (String) execution.get("separator");
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-	protected String sampleFromList(List options) {
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    protected String sampleFromList(List options) {
         Object option = this.getGenerationTools().getRandomTools().sample(options);
 
         if (option instanceof String) {
@@ -85,7 +85,7 @@ public abstract class GenerationComponentExecution {
     }
 
     @SuppressWarnings("rawtypes")
-	protected List getList(String componentKey, String listKey) {
+    protected List getList(String componentKey, String listKey) {
         List list = (List) getComponentData(componentKey).get(listKey);
         if (list == null) {
             throw new UnsupportedOperationException("Unsupported method '" + listKey + "'");
@@ -96,8 +96,8 @@ public abstract class GenerationComponentExecution {
     protected <K extends GenerationComponentExecution> K getComponent(Class<K> klass) {
         try {
             return klass.getConstructor(GenerationDataExecution.class).newInstance(execution);
-        } catch (InstantiationException|NoSuchMethodException|
-                IllegalAccessException|InvocationTargetException e) {
+        } catch (InstantiationException | NoSuchMethodException |
+                IllegalAccessException | InvocationTargetException e) {
             throw new IllegalArgumentException("Unsupported component '" + klass + "'", e);
         }
     }
@@ -107,7 +107,7 @@ public abstract class GenerationComponentExecution {
         String value;
         try {
             value = (String) getClass().getDeclaredMethod(methodKeyCamel).invoke(this);
-        } catch (NoSuchMethodException|IllegalAccessException|InvocationTargetException e) {
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             throw new IllegalArgumentException(
                     "Unsupported method '" + methodKey + "' " +
                             "for component '" + this.getKey() + "'", e);
@@ -116,7 +116,7 @@ public abstract class GenerationComponentExecution {
     }
 
     @SuppressWarnings("unchecked")
-	protected Map<String, Object> getMap(String componentKey, String listKey) {
+    protected Map<String, Object> getMap(String componentKey, String listKey) {
         Map<String, Object> map = (Map<String, Object>) getComponentData(componentKey).get(listKey);
         if (map == null) {
             throw new UnsupportedOperationException("Unsupported method '" + listKey + "'");
@@ -129,11 +129,11 @@ public abstract class GenerationComponentExecution {
     }
 
     // Getters and setters
-	public GenerationTools getGenerationTools() {
-		return generationTools;
-	}
+    public GenerationTools getGenerationTools() {
+        return generationTools;
+    }
 
-	public void setGenerationTools(GenerationTools generationTools) {
-		this.generationTools = generationTools;
-	}
+    public void setGenerationTools(GenerationTools generationTools) {
+        this.generationTools = generationTools;
+    }
 }

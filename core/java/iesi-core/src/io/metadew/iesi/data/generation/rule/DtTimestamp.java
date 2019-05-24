@@ -1,17 +1,16 @@
 package io.metadew.iesi.data.generation.rule;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.text.SimpleDateFormat;
-
-import org.apache.logging.log4j.Level;
-
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.data.generation.execution.GenerationRuleExecution;
 import io.metadew.iesi.data.generation.execution.GenerationRuleParameterExecution;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.GenerationRuleParameter;
 import io.metadew.iesi.script.execution.ExecutionControl;
+import org.apache.logging.log4j.Level;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.text.SimpleDateFormat;
 
 public class DtTimestamp {
 
@@ -178,5 +177,4 @@ public class DtTimestamp {
 	public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
 		this.frameworkExecution = frameworkExecution;
 	}
-
 }

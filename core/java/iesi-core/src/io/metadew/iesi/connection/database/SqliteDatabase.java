@@ -62,4 +62,6 @@ public class SqliteDatabase extends Database {
         return fieldQuery.toString();
     }
 
+
+
 }

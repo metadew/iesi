@@ -4,39 +4,39 @@ import java.util.List;
 
 public class JavaArchive {
 
-	private String name;
-	private String path;
-	private List<JavaClass> classes;
+    private String name;
+    private String path;
+    private List<JavaClass> classes;
 
-	// Constructors
-	public JavaArchive() {
-		
-	}
+    // Constructors
+    public JavaArchive() {
 
-	// Getters and Setters
-	public String getName() {
-		return name;
-	}
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    // Getters and Setters
+    public String getName() {
+        return name;
+    }
 
-	public String getPath() {
-		return path;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public void setPath(String path) {
-		this.path = path;
-	}
+    public String getPath() {
+        return path;
+    }
 
-	public List<JavaClass> getClasses() {
-		return classes;
-	}
+    public void setPath(String path) {
+        this.path = path;
+    }
 
-	public void setClasses(List<JavaClass> classes) {
-		this.classes = classes;
-	}
+    public List<JavaClass> getClasses() {
+        return classes;
+    }
+
+    public void setClasses(List<JavaClass> classes) {
+        this.classes = classes;
+    }
 
 
 }

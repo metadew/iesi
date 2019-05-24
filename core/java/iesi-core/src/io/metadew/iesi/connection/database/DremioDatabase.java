@@ -7,9 +7,8 @@ import java.util.Optional;
 
 /**
  * Database object for Dremio
- * 
- * @author peter.billen
  *
+ * @author peter.billen
  */
 public class DremioDatabase extends Database {
 
@@ -39,7 +38,7 @@ public class DremioDatabase extends Database {
     }
 
     public String toQueryString(MetadataField field) {
-    	//TODO to be reviewed
+        //TODO to be reviewed
         StringBuilder fieldQuery = new StringBuilder();
         // Data Types
         switch (field.getType()) {

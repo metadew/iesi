@@ -2,30 +2,30 @@ package io.metadew.iesi.metadata.definition;
 
 public class MappingVersion {
 
-	private long number;
-	private String description;
+    private long number;
+    private String description;
 
-	// Constructors
-	public MappingVersion() {
-		
-	}
+    // Constructors
+    public MappingVersion() {
 
-	// Getters and Setters
-	public String getDescription() {
-		return description;
-	}
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    // Getters and Setters
+    public String getDescription() {
+        return description;
+    }
 
-	public long getNumber() {
-		return number;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	public void setNumber(long number) {
-		this.number = number;
-	}
+    public long getNumber() {
+        return number;
+    }
+
+    public void setNumber(long number) {
+        this.number = number;
+    }
 
 
 }

@@ -13,7 +13,7 @@ public enum PeriodTools {
     midnight(new int[]{0, 1, 2, 3, 4});
 
     private final int[] values;
-    
+
     PeriodTools(int[] values) {
         this.values = values;
     }

@@ -102,6 +102,31 @@
 		"parameterList": "param1=myParameter"
 	}
 },
+
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "fwk.outputMessage.5",
+		"description": "test fwk.outputMessage with resolvement in the message",
+		"parameterList": "param1=myParameter"
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "fwk.outputMessage.6",
+		"description": "test fwk.outputMessage with a list as message",
+		"parameterList": "param1=myParameter"
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "fwk.outputMessage.7",
+		"description": "test fwk.outputMessage with a variable concept lookup as message",
+		"parameterList": "param1=myParameter"
+	}
+},
 {
 	"type": "LaunchItem",
 	"data": {
@@ -299,6 +324,70 @@
 	"data": {
 		"script": "fho.deleteFolder.2",
 		"description": "Test fho.deleteFolder with a local folder using an absolute folder path parameter",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "data.setDatasetConnection.1",
+		"description": "test data.setDatasetConnection with single label",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "data.setDatasetConnection.2",
+		"description": "test data.setDatasetConnection with multiple labels. Only one dataset having all labels",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "data.setDatasetConnection.3",
+		"description": "test data.setDatasetConnection with multiple labels. Multiple datasets having all labels but only one has full match",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "data.setDatasetConnection.4",
+		"description": "test data.setDatasetConnection with variable as datasetName.",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "data.setDatasetConnection.5",
+		"description": "test data.setDatasetConnection with variable as label.",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "data.setDatasetConnection.6",
+		"description": "test data.setDatasetConnection with variable in label list.",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "data.compareDataset.1",
+		"description": "test data.compareDataset",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "data.outputDataset.1",
+		"description": "test data.compareDataset",
 		"parameterList": ""
 	}
 }]

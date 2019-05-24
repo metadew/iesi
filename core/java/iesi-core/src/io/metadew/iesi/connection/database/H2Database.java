@@ -7,9 +7,8 @@ import java.util.Optional;
 
 /**
  * Database object for H2 databases
- * 
- * @author peter.billen
  *
+ * @author peter.billen
  */
 public class H2Database extends Database {
 

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.DataObject;
 import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
-
 import org.apache.logging.log4j.Level;
 
 import java.text.MessageFormat;
@@ -37,7 +36,7 @@ public class TraceMetadataRepository extends MetadataRepository {
     }
 
     @SuppressWarnings("unused")
-	@Override
+    @Override
     public void save(DataObject dataObject, FrameworkExecution frameworkExecution) {
         ObjectMapper objectMapper = new ObjectMapper();
         if (dataObject.getType().equalsIgnoreCase("trace")) {

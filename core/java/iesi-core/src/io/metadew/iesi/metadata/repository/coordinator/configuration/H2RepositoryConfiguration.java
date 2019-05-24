@@ -35,12 +35,12 @@ public class H2RepositoryConfiguration extends RepositoryConfiguration {
         // host
         if (frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.host").isPresent() &&
                 configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.host").get()).isPresent()) {
-        	host = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.host").get()).get();
+            host = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.host").get()).get();
         }
         // port
         if (frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.port").isPresent() &&
                 configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.port").get()).isPresent()) {
-        	port = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.port").get()).get();
+            port = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.port").get()).get();
         }
         // schema
         if (frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.schema").isPresent() &&
@@ -90,9 +90,9 @@ public class H2RepositoryConfiguration extends RepositoryConfiguration {
         Map<String, Database> databases = new HashMap<>();
         String actualJdbcConnectionString = "";
         if (getJdbcConnectionString().isPresent()) {
-        	actualJdbcConnectionString = getJdbcConnectionString().get();
+            actualJdbcConnectionString = getJdbcConnectionString().get();
         } else {
-        	actualJdbcConnectionString = H2DatabaseConnection.getConnectionUrl(getHost().orElse(""), Integer.parseInt(getPort().orElse("0")), getFile().orElse(""));
+            actualJdbcConnectionString = H2DatabaseConnection.getConnectionUrl(getHost().orElse(""), Integer.parseInt(getPort().orElse("0")), getFile().orElse(""));
         }
         final String finalJdbcConnectionString = actualJdbcConnectionString;
 
@@ -107,7 +107,7 @@ public class H2RepositoryConfiguration extends RepositoryConfiguration {
             });
 
             getWriter().ifPresent(writer -> {
-            	H2DatabaseConnection h2DatabaseConnection = new H2DatabaseConnection(finalJdbcConnectionString, writer, getWriterPassword().orElse(""));
+                H2DatabaseConnection h2DatabaseConnection = new H2DatabaseConnection(finalJdbcConnectionString, writer, getWriterPassword().orElse(""));
                 getSchema().ifPresent(h2DatabaseConnection::setSchema);
                 H2Database h2Database = new H2Database(h2DatabaseConnection, getSchema().orElse(""));
                 databases.put("writer", h2Database);
@@ -115,7 +115,7 @@ public class H2RepositoryConfiguration extends RepositoryConfiguration {
             });
 
             getReader().ifPresent(reader -> {
-            	H2DatabaseConnection h2DatabaseConnection = new H2DatabaseConnection(finalJdbcConnectionString, reader, getReaderPassword().orElse(""));
+                H2DatabaseConnection h2DatabaseConnection = new H2DatabaseConnection(finalJdbcConnectionString, reader, getReaderPassword().orElse(""));
                 getSchema().ifPresent(h2DatabaseConnection::setSchema);
                 H2Database h2Database = new H2Database(h2DatabaseConnection, getSchema().orElse(""));
                 databases.put("reader", h2Database);
@@ -128,13 +128,13 @@ public class H2RepositoryConfiguration extends RepositoryConfiguration {
             databases.put("writer", h2Database);
             databases.put("reader", h2Database);
         }
-        
+
 
         return new RepositoryCoordinator(databases);
     }
 
     public Optional<String> getJdbcConnectionString() {
-    	return Optional.ofNullable(jdbcConnectionString);
+        return Optional.ofNullable(jdbcConnectionString);
     }
 
     public Optional<String> getHost() {
@@ -173,8 +173,8 @@ public class H2RepositoryConfiguration extends RepositoryConfiguration {
         return Optional.ofNullable(readerUserPassword);
     }
 
-	public Optional<String> getFile() {
-		return Optional.ofNullable(file);
-	}
+    public Optional<String> getFile() {
+        return Optional.ofNullable(file);
+    }
 
 }

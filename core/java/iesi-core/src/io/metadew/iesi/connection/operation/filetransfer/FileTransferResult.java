@@ -4,32 +4,30 @@ import java.util.List;
 
 public class FileTransferResult {
 
-	private int returnCode;
-	private List<FileTransfered> dcFileTransferedList;
-		
-	public FileTransferResult(int returnCode, List<FileTransfered> DCFileTransferedList) {
-		this.setReturnCode(returnCode);
-		this.setDcFileTransferedList(DCFileTransferedList);
-	}
+    private int returnCode;
+    private List<FileTransfered> dcFileTransferedList;
 
-	// Getters and Setters
-	public int getReturnCode() {
-		return returnCode;
-	}
+    public FileTransferResult(int returnCode, List<FileTransfered> DCFileTransferedList) {
+        this.setReturnCode(returnCode);
+        this.setDcFileTransferedList(DCFileTransferedList);
+    }
 
-	public void setReturnCode(int returnCode) {
-		this.returnCode = returnCode;
-	}
+    // Getters and Setters
+    public int getReturnCode() {
+        return returnCode;
+    }
 
-	public List<FileTransfered> getDcFileTransferedList() {
-		return dcFileTransferedList;
-	}
+    public void setReturnCode(int returnCode) {
+        this.returnCode = returnCode;
+    }
 
-	public void setDcFileTransferedList(List<FileTransfered> dcFileTransferedList) {
-		this.dcFileTransferedList = dcFileTransferedList;
-	}
+    public List<FileTransfered> getDcFileTransferedList() {
+        return dcFileTransferedList;
+    }
 
+    public void setDcFileTransferedList(List<FileTransfered> dcFileTransferedList) {
+        this.dcFileTransferedList = dcFileTransferedList;
+    }
 
-	
 
 }

@@ -8,7 +8,6 @@ import io.metadew.iesi.metadata.definition.MetadataObject;
 import io.metadew.iesi.metadata.definition.MetadataTable;
 import io.metadew.iesi.metadata.operation.DataObjectOperation;
 import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
-
 import org.apache.logging.log4j.Level;
 
 import javax.sql.rowset.CachedRowSet;
@@ -76,7 +75,7 @@ public abstract class MetadataRepository {
         String frameworkCodeString = getFrameworkCode().map(frameworkCode -> frameworkCode + "_").orElse("");
         String instanceNameString = getInstanceName().map(instanceName -> instanceName + "_").orElse("");
         return frameworkCodeString + instanceNameString;
-        }
+    }
 
     public Optional<String> getFrameworkCode() {
         return Optional.ofNullable(frameworkCode);

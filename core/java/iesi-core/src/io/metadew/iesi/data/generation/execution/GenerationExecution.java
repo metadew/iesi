@@ -1,12 +1,10 @@
 package io.metadew.iesi.data.generation.execution;
 
-import org.apache.logging.log4j.Level;
-
-import io.metadew.iesi.data.generation.execution.GenerationRuntime;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.Generation;
 import io.metadew.iesi.metadata.definition.GenerationRule;
 import io.metadew.iesi.script.execution.ExecutionControl;
+import org.apache.logging.log4j.Level;
 
 public class GenerationExecution {
 

@@ -6,61 +6,60 @@ import java.util.Optional;
 
 /**
  * Connection object for Presto SQL . This class extends the default database connection object.
- * 
- * @author peter.billen
  *
+ * @author peter.billen
  */
 public class PrestoDatabaseConnection extends DatabaseConnection {
 
-	private static String type = "presto";
-	private String schema;
+    private static String type = "presto";
+    private String schema;
 
-	public PrestoDatabaseConnection(String connectionURL, String userName, String userPassword) {
-		super(type, connectionURL, userName, userPassword);
-	}
+    public PrestoDatabaseConnection(String connectionURL, String userName, String userPassword) {
+        super(type, connectionURL, userName, userPassword);
+    }
 
-	public PrestoDatabaseConnection(String hostName, int portNumber, String catalogName, String schemaName, String userName, String userPassword) {
-		super(type, getConnectionUrl(hostName, portNumber, catalogName, schemaName, userName, userPassword), userName, userPassword);
-	}
-	
-	private static String getConnectionUrl(String hostName, int portNumber, String catalogName, String schemaName, String userName, String userPassword) {
-		StringBuilder connectionUrl = new StringBuilder();
-		connectionUrl.append("jdbc:presto://");
-		connectionUrl.append(hostName);
-			if (portNumber > 0) {
-				connectionUrl.append(":");
-				connectionUrl.append(portNumber);
-			}
-		
-		if (!catalogName.isEmpty()) {
-			connectionUrl.append("/");
-			connectionUrl.append(catalogName);
-		}
-		
-		if (!schemaName.isEmpty()) {
-			connectionUrl.append("/");
-			connectionUrl.append(schemaName);
-		}
+    public PrestoDatabaseConnection(String hostName, int portNumber, String catalogName, String schemaName, String userName, String userPassword) {
+        super(type, getConnectionUrl(hostName, portNumber, catalogName, schemaName, userName, userPassword), userName, userPassword);
+    }
 
-		return connectionUrl.toString();
-	}
+    private static String getConnectionUrl(String hostName, int portNumber, String catalogName, String schemaName, String userName, String userPassword) {
+        StringBuilder connectionUrl = new StringBuilder();
+        connectionUrl.append("jdbc:presto://");
+        connectionUrl.append(hostName);
+        if (portNumber > 0) {
+            connectionUrl.append(":");
+            connectionUrl.append(portNumber);
+        }
 
-	@Override
-	public String getDriver() {
-		return "io.prestosql.jdbc.PrestoDriver";
-	}
+        if (!catalogName.isEmpty()) {
+            connectionUrl.append("/");
+            connectionUrl.append(catalogName);
+        }
 
-	public void setSchema(String schema) {
-		this.schema = schema;
-	}
+        if (!schemaName.isEmpty()) {
+            connectionUrl.append("/");
+            connectionUrl.append(schemaName);
+        }
 
-	@SuppressWarnings("unused")
-	private Optional<String> getSchema() {
-		return Optional.ofNullable(schema);
-	}
+        return connectionUrl.toString();
+    }
 
-	public Connection getConnection() throws SQLException {
-		Connection connection = super.getConnection();
-		return connection;
-	}
+    @Override
+    public String getDriver() {
+        return "io.prestosql.jdbc.PrestoDriver";
+    }
+
+    public void setSchema(String schema) {
+        this.schema = schema;
+    }
+
+    @SuppressWarnings("unused")
+    private Optional<String> getSchema() {
+        return Optional.ofNullable(schema);
+    }
+
+    public Connection getConnection() throws SQLException {
+        Connection connection = super.getConnection();
+        return connection;
+    }
 }

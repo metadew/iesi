@@ -1,9 +1,9 @@
 package io.metadew.iesi.data.generation.configuration;
 
-import java.util.List;
-
 import io.metadew.iesi.data.generation.execution.GenerationComponentExecution;
 import io.metadew.iesi.data.generation.execution.GenerationDataExecution;
+
+import java.util.List;
 
 
 public class Company extends GenerationComponentExecution {
@@ -25,7 +25,7 @@ public class Company extends GenerationComponentExecution {
     }
 
     @SuppressWarnings("rawtypes")
-	public String catchPhrase() {
+    public String catchPhrase() {
         List buzzwordsSections = getList("company", "buzzwords");
         String catchPhrase = "";
         for (Object buzzwordsSection : buzzwordsSections) {

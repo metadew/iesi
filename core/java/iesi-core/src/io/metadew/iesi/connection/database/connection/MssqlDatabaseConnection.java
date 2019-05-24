@@ -7,18 +7,17 @@ import java.util.Optional;
 /**
  * Connection object for Microsoft SQL databases. This class extends the default
  * database connection object.
- * 
- * @author peter.billen
  *
+ * @author peter.billen
  */
 public class MssqlDatabaseConnection extends DatabaseConnection {
 
-	private static String type = "mssql";
-	private String schema;
+    private static String type = "mssql";
+    private String schema;
 
-	public MssqlDatabaseConnection(String connectionURL, String userName, String userPassword) {
-		super(type, connectionURL, userName, userPassword);
-	}
+    public MssqlDatabaseConnection(String connectionURL, String userName, String userPassword) {
+        super(type, connectionURL, userName, userPassword);
+    }
 
 	public MssqlDatabaseConnection(String hostName, int portNumber, String databaseName, String userName,
 			String userPassword) {
@@ -55,28 +54,28 @@ public class MssqlDatabaseConnection extends DatabaseConnection {
 		return connectionUrl.toString();
 	}
 
-	@Override
-	public String getDriver() {
-		return "com.microsoft.sqlserver.jdbc.SQLServerDriver";
-	}
+    @Override
+    public String getDriver() {
+        return "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+    }
 
-	public void setSchema(String schema) {
-		this.schema = schema;
-	}
+    public void setSchema(String schema) {
+        this.schema = schema;
+    }
 
-	private Optional<String> getSchema() {
-		return Optional.ofNullable(schema);
-	}
+    private Optional<String> getSchema() {
+        return Optional.ofNullable(schema);
+    }
 
-	public Connection getConnection() throws SQLException {
-		Connection connection = super.getConnection();
+    public Connection getConnection() throws SQLException {
+        Connection connection = super.getConnection();
 
-		Optional<String> schema = getSchema();
-		if (schema.isPresent()) {
-			// TODO: The old JDBC API does not support the setSchema call
-			connection.createStatement().execute("alter session set current_schema=" + schema.get());
-			// connection.setSchema(schema.get());
-		}
-		return connection;
-	}
+        Optional<String> schema = getSchema();
+        if (schema.isPresent()) {
+            // TODO: The old JDBC API does not support the setSchema call
+            connection.createStatement().execute("alter session set current_schema=" + schema.get());
+            // connection.setSchema(schema.get());
+        }
+        return connection;
+    }
 }

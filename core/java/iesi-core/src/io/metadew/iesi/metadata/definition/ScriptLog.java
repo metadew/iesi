@@ -6,95 +6,92 @@ import java.sql.Timestamp;
 
 public class ScriptLog {
 
-	private String run;
-	private long process;
-	private long parent;
-	private String identifier;
-	private long version;
-	private String environment;
-	private String status;
-	private Timestamp start;
-	private Timestamp end;
-	
-	// Constructors
-	public ScriptLog() {
-		
-	}
+    private String run;
+    private long process;
+    private long parent;
+    private String identifier;
+    private long version;
+    private String environment;
+    private String status;
+    private Timestamp start;
+    private Timestamp end;
 
-	// Getters and Setters
-	public String getEnvironment() {
-		return environment;
-	}
+    // Constructors
+    public ScriptLog() {
 
-	public void setEnvironment(String environment) {
-		this.environment = environment;
-	}
+    }
 
-	public String getStatus() {
-		return status;
-	}
+    // Getters and Setters
+    public String getEnvironment() {
+        return environment;
+    }
 
-	public void setStatus(String status) {
-		this.status = status;
-	}
+    public void setEnvironment(String environment) {
+        this.environment = environment;
+    }
 
-	public Timestamp getStart() {
-		return start;
-	}
+    public String getStatus() {
+        return status;
+    }
 
-	public void setStart(Timestamp start) {
-		this.start = start;
-	}
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
-	public Timestamp getEnd() {
-		return end;
-	}
+    public Timestamp getStart() {
+        return start;
+    }
 
-	public void setEnd(Timestamp end) {
-		this.end = end;
-	}
+    public void setStart(Timestamp start) {
+        this.start = start;
+    }
 
-	public long getProcess() {
-		return process;
-	}
+    public Timestamp getEnd() {
+        return end;
+    }
 
-	public void setProcess(long process) {
-		this.process = process;
-	}
+    public void setEnd(Timestamp end) {
+        this.end = end;
+    }
 
-	public long getParent() {
-		return parent;
-	}
+    public long getProcess() {
+        return process;
+    }
 
-	public void setParent(long parent) {
-		this.parent = parent;
-	}
+    public void setProcess(long process) {
+        this.process = process;
+    }
 
-	public long getVersion() {
-		return version;
-	}
+    public long getParent() {
+        return parent;
+    }
 
-	public void setVersion(long version) {
-		this.version = version;
-	}
+    public void setParent(long parent) {
+        this.parent = parent;
+    }
 
-	public String getRun() {
-		return run;
-	}
+    public long getVersion() {
+        return version;
+    }
 
-	public void setRun(String run) {
-		this.run = run;
-	}
+    public void setVersion(long version) {
+        this.version = version;
+    }
 
-	public String getIdentifier() {
-		return identifier;
-	}
+    public String getRun() {
+        return run;
+    }
 
-	public void setIdentifier(String identifier) {
-		this.identifier = identifier;
-	}
+    public void setRun(String run) {
+        this.run = run;
+    }
 
+    public String getIdentifier() {
+        return identifier;
+    }
 
-
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
+    }
 
 }

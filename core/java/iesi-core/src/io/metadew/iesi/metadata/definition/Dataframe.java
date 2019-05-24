@@ -4,75 +4,75 @@ import java.util.List;
 
 public class Dataframe {
 
-	private long id;
-	private String type;
-	private String name;
-	private String description;
-	private DataframeVersion version;
-	private List<DataframeParameter> parameters;
-	private List<DataframeItem> items;
+    private long id;
+    private String type;
+    private String name;
+    private String description;
+    private DataframeVersion version;
+    private List<DataframeParameter> parameters;
+    private List<DataframeItem> items;
 
-	// Constructors
-	public Dataframe() {
-		
-	}
+    // Constructors
+    public Dataframe() {
 
-	// Getters and Setters
-	public String getName() {
-		return name;
-	}
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    // Getters and Setters
+    public String getName() {
+        return name;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public long getId() {
-		return id;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	public void setId(long id) {
-		this.id = id;
-	}
+    public long getId() {
+        return id;
+    }
 
-	public String getType() {
-		return type;
-	}
+    public void setId(long id) {
+        this.id = id;
+    }
 
-	public void setType(String type) {
-		this.type = type;
-	}
+    public String getType() {
+        return type;
+    }
 
-	public DataframeVersion getVersion() {
-		return version;
-	}
+    public void setType(String type) {
+        this.type = type;
+    }
 
-	public void setVersion(DataframeVersion version) {
-		this.version = version;
-	}
+    public DataframeVersion getVersion() {
+        return version;
+    }
 
-	public List<DataframeParameter> getParameters() {
-		return parameters;
-	}
+    public void setVersion(DataframeVersion version) {
+        this.version = version;
+    }
 
-	public void setParameters(List<DataframeParameter> parameters) {
-		this.parameters = parameters;
-	}
+    public List<DataframeParameter> getParameters() {
+        return parameters;
+    }
 
-	public List<DataframeItem> getItems() {
-		return items;
-	}
+    public void setParameters(List<DataframeParameter> parameters) {
+        this.parameters = parameters;
+    }
 
-	public void setItems(List<DataframeItem> items) {
-		this.items = items;
-	}
+    public List<DataframeItem> getItems() {
+        return items;
+    }
+
+    public void setItems(List<DataframeItem> items) {
+        this.items = items;
+    }
 
 
 }

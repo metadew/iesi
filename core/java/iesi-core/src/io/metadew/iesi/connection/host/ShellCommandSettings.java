@@ -4,69 +4,67 @@ import io.metadew.iesi.framework.execution.FrameworkExecution;
 
 /**
  * Object containing all settings for shell command executions.
- * 
- * @author peter.billen
  *
+ * @author peter.billen
  */
 public class ShellCommandSettings {
 
-	private FrameworkExecution frameworkExecution = null;
-	private String environment = "";
-	private String setRunVar = "N";
-	private String setRunVarPrefix = "";
-	private String setRunVarMode = "";
+    private FrameworkExecution frameworkExecution = null;
+    private String environment = "";
+    private boolean setRunVar;
+    private String setRunVarPrefix = "";
+    private String setRunVarMode = "";
 
-	public ShellCommandSettings() {
-		
-	}
-	
-	public ShellCommandSettings(String setRunVar, String setRunVarPrefix, String setRunVarMode) {
-		this.setSetRunVar(setRunVar);
-		this.setSetRunVarPrefix(setRunVarPrefix);
-		this.setSetRunVarMode(setRunVarMode);
-	}
+    public ShellCommandSettings() {
 
-	// Getters and Setters
-	public String getSetRunVar() {
-		return setRunVar;
-	}
+    }
 
-	public void setSetRunVar(String setRunVar) {
-		this.setRunVar = setRunVar;
-	}
+    public ShellCommandSettings(boolean setRunVar, String setRunVarPrefix, String setRunVarMode) {
+        this.setSetRunVar(setRunVar);
+        this.setSetRunVarPrefix(setRunVarPrefix);
+        this.setSetRunVarMode(setRunVarMode);
+    }
 
-	public String getSetRunVarPrefix() {
-		return setRunVarPrefix;
-	}
+    // Getters and Setters
+    public boolean getSetRunVar() {
+        return setRunVar;
+    }
 
-	public void setSetRunVarPrefix(String setRunVarPrefix) {
-		this.setRunVarPrefix = setRunVarPrefix;
-	}
+    public void setSetRunVar(boolean setRunVar) {
+        this.setRunVar = setRunVar;
+    }
 
-	public String getSetRunVarMode() {
-		return setRunVarMode;
-	}
+    public String getSetRunVarPrefix() {
+        return setRunVarPrefix;
+    }
 
-	public void setSetRunVarMode(String setRunVarMode) {
-		this.setRunVarMode = setRunVarMode;
-	}
+    public void setSetRunVarPrefix(String setRunVarPrefix) {
+        this.setRunVarPrefix = setRunVarPrefix;
+    }
 
-	public String getEnvironment() {
-		return environment;
-	}
+    public String getSetRunVarMode() {
+        return setRunVarMode;
+    }
 
-	public void setEnvironment(String environment) {
-		this.environment = environment;
-	}
+    public void setSetRunVarMode(String setRunVarMode) {
+        this.setRunVarMode = setRunVarMode;
+    }
 
-	public FrameworkExecution getFrameworkExecution() {
-		return frameworkExecution;
-	}
+    public String getEnvironment() {
+        return environment;
+    }
 
-	public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-		this.frameworkExecution = frameworkExecution;
-	}
+    public void setEnvironment(String environment) {
+        this.environment = environment;
+    }
 
-	
+    public FrameworkExecution getFrameworkExecution() {
+        return frameworkExecution;
+    }
+
+    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
+        this.frameworkExecution = frameworkExecution;
+    }
+
 
 }

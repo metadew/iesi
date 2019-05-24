@@ -1,10 +1,6 @@
 package io.metadew.iesi.connection.operation;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import io.metadew.iesi.connection.database.connection.DatabaseConnection;
 import io.metadew.iesi.connection.database.connection.DremioDatabaseConnection;
 import io.metadew.iesi.connection.tools.ConnectionTools;
@@ -14,8 +10,10 @@ import io.metadew.iesi.metadata.definition.ConnectionParameter;
 import io.metadew.iesi.metadata.definition.ConnectionType;
 import io.metadew.iesi.metadata.definition.ConnectionTypeParameter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class DbDremioConnectionOperation {
-	
 	private FrameworkExecution frameworkExecution;
 	private boolean missingMandatoryFields;
 	private List<String> missingMandatoryFieldsList;

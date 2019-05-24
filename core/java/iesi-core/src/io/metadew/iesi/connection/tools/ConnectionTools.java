@@ -6,16 +6,16 @@ import io.metadew.iesi.metadata.definition.ConnectionType;
 
 public final class ConnectionTools {
 
-	public static ConnectionType getConnectionType(FrameworkExecution frameworkExecution, String connectionTypeName) {
-		ConnectionTypeConfiguration connectionTypeConfiguration = new ConnectionTypeConfiguration(frameworkExecution);
-		ConnectionType connectionType = null;
-		
-		try {
-			connectionType = connectionTypeConfiguration.getConnectionType(connectionTypeName);
-		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage(),e);
-		}
-		
-		return connectionType;
-	}
+    public static ConnectionType getConnectionType(FrameworkExecution frameworkExecution, String connectionTypeName) {
+        ConnectionTypeConfiguration connectionTypeConfiguration = new ConnectionTypeConfiguration(frameworkExecution);
+        ConnectionType connectionType = null;
+
+        try {
+            connectionType = connectionTypeConfiguration.getConnectionType(connectionTypeName);
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+
+        return connectionType;
+    }
 }

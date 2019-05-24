@@ -1,12 +1,14 @@
 package io.metadew.iesi.sqlinsert.odbc;
 
-import java.io.*;
-import java.sql.*;
-
 import io.metadew.iesi.framework.configuration.FrameworkConfiguration;
 import io.metadew.iesi.sqlinsert.engine.ConfigFile;
 import io.metadew.iesi.sqlinsert.engine.Engine;
 import io.metadew.iesi.sqlinsert.engine.ScriptRunner;
+
+import java.io.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 public class RunScript {
 

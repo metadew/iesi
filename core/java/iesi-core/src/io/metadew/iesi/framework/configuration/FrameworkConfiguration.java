@@ -1,12 +1,12 @@
 package io.metadew.iesi.framework.configuration;
 
-import java.io.File;
-import java.util.List;
-import java.util.Properties;
-
 import io.metadew.iesi.common.config.KeyValueConfigFile;
 import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.metadata.configuration.FrameworkPluginConfiguration;
+
+import java.io.File;
+import java.util.List;
+import java.util.Properties;
 
 public class FrameworkConfiguration {
 
@@ -105,5 +105,4 @@ public class FrameworkConfiguration {
 			FrameworkGenerationRuleTypeConfiguration generationRuleTypeConfiguration) {
 		this.generationRuleTypeConfiguration = generationRuleTypeConfiguration;
 	}
-
 }

@@ -2,56 +2,56 @@ package io.metadew.iesi.metadata.definition;
 
 
 public class GenerationTypeParameter {
-	
-	private String name;
-	private String description;
-	private String type;
-	private String mandatory = "N";
-	private String encrypted = "N";
-	
-	//Constructors
-	public GenerationTypeParameter() {
 
-	}
+    private String name;
+    private String description;
+    private String type;
+    private String mandatory = "N";
+    private String encrypted = "N";
 
-	//Getters and Setters
-	public String getName() {
-		return name;
-	}
+    //Constructors
+    public GenerationTypeParameter() {
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    //Getters and Setters
+    public String getName() {
+        return name;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public String getType() {
-		return type;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public void setType(String type) {
-		this.type = type;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	public String getMandatory() {
-		return mandatory;
-	}
+    public String getType() {
+        return type;
+    }
 
-	public void setMandatory(String mandatory) {
-		this.mandatory = mandatory;
-	}
+    public void setType(String type) {
+        this.type = type;
+    }
 
-	public String getEncrypted() {
-		return encrypted;
-	}
+    public String getMandatory() {
+        return mandatory;
+    }
 
-	public void setEncrypted(String encrypted) {
-		this.encrypted = encrypted;
-	}
+    public void setMandatory(String mandatory) {
+        this.mandatory = mandatory;
+    }
+
+    public String getEncrypted() {
+        return encrypted;
+    }
+
+    public void setEncrypted(String encrypted) {
+        this.encrypted = encrypted;
+    }
 }

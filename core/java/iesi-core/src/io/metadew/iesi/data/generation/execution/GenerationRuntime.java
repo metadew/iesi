@@ -11,6 +11,7 @@ import io.metadew.iesi.metadata.definition.Generation;
 import io.metadew.iesi.metadata.definition.GenerationRule;
 import io.metadew.iesi.script.execution.ExecutionControl;
 
+
 public class GenerationRuntime {
 
 	private FrameworkExecution frameworkExecution;
@@ -105,74 +106,74 @@ public class GenerationRuntime {
         int progress = (int) ((num / denom) * 100);
 
         if (this.isPrintProgressBar()) {
-        	ProgressBar.printProgressBar(progress);
+            ProgressBar.printProgressBar(progress);
         }
-	}
+    }
 
 	// Getters and Setters
 	public String getTableName() {
 		return tableName;
 	}
 
-	public void setTableName(String tableName) {
-		this.tableName = tableName;
-	}
+    public void setTableName(String tableName) {
+        this.tableName = tableName;
+    }
 
-	public String getFieldListSelect() {
-		return fieldListSelect;
-	}
+    public String getFieldListSelect() {
+        return fieldListSelect;
+    }
 
-	public void setFieldListSelect(String fieldListSelect) {
-		this.fieldListSelect = fieldListSelect;
-	}
+    public void setFieldListSelect(String fieldListSelect) {
+        this.fieldListSelect = fieldListSelect;
+    }
 
-	public long getNumberOfGenerationItems() {
-		return numberOfGenerationItems;
-	}
+    public long getNumberOfGenerationItems() {
+        return numberOfGenerationItems;
+    }
 
-	public void setNumberOfGenerationItems(long numberOfGenerationItems) {
-		this.numberOfGenerationItems = numberOfGenerationItems;
-	}
+    public void setNumberOfGenerationItems(long numberOfGenerationItems) {
+        this.numberOfGenerationItems = numberOfGenerationItems;
+    }
 
-	public long getNumberOfGeneratedItems() {
-		return numberOfGeneratedItems;
-	}
+    public long getNumberOfGeneratedItems() {
+        return numberOfGeneratedItems;
+    }
 
-	public void setNumberOfGeneratedItems(long numberOfGeneratedItems) {
-		this.numberOfGeneratedItems = numberOfGeneratedItems;
-	}
+    public void setNumberOfGeneratedItems(long numberOfGeneratedItems) {
+        this.numberOfGeneratedItems = numberOfGeneratedItems;
+    }
 
-	public GenerationObjectExecution getGenerationObjectExecution() {
-		return generationObjectExecution;
-	}
+    public GenerationObjectExecution getGenerationObjectExecution() {
+        return generationObjectExecution;
+    }
 
-	public void setGenerationObjectExecution(GenerationObjectExecution generationObjectExecution) {
-		this.generationObjectExecution = generationObjectExecution;
-	}
+    public void setGenerationObjectExecution(GenerationObjectExecution generationObjectExecution) {
+        this.generationObjectExecution = generationObjectExecution;
+    }
 
-	public boolean isPrintProgressBar() {
-		return printProgressBar;
-	}
+    public boolean isPrintProgressBar() {
+        return printProgressBar;
+    }
 
-	public void setPrintProgressBar(boolean printProgressBar) {
-		this.printProgressBar = printProgressBar;
-	}
+    public void setPrintProgressBar(boolean printProgressBar) {
+        this.printProgressBar = printProgressBar;
+    }
 
-	public ExecutionControl getExecutionControl() {
-		return executionControl;
-	}
+    public ExecutionControl getExecutionControl() {
+        return executionControl;
+    }
 
-	public void setExecutionControl(ExecutionControl executionControl) {
-		this.executionControl = executionControl;
-	}
+    public void setExecutionControl(ExecutionControl executionControl) {
+        this.executionControl = executionControl;
+    }
 
-	public FrameworkExecution getFrameworkExecution() {
-		return frameworkExecution;
-	}
+    public FrameworkExecution getFrameworkExecution() {
+        return frameworkExecution;
+    }
 
-	public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-		this.frameworkExecution = frameworkExecution;
-	}
+    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
+        this.frameworkExecution = frameworkExecution;
+    }
 
 	public SqliteDatabaseConnection getTemporaryDatabaseConnection() {
 		return temporaryDatabaseConnection;

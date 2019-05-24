@@ -1,17 +1,6 @@
 package io.metadew.iesi.script.execution;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.lang.reflect.Method;
-import java.nio.charset.StandardCharsets;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.logging.log4j.Level;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import io.metadew.iesi.common.text.TextTools;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.configuration.FrameworkStatus;
@@ -20,60 +9,67 @@ import io.metadew.iesi.metadata.backup.BackupExecution;
 import io.metadew.iesi.metadata.configuration.ScriptTraceConfiguration;
 import io.metadew.iesi.metadata.definition.ScriptLog;
 import io.metadew.iesi.metadata.restore.RestoreExecution;
+import org.apache.logging.log4j.Level;
 
-public class ExecutionControl
-{
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
-	private FrameworkExecution frameworkExecution;
+public class ExecutionControl {
 
-	private ExecutionRuntime executionRuntime;
+    private FrameworkExecution frameworkExecution;
 
-	private ExecutionLog executionLog;
+    private ExecutionRuntime executionRuntime;
 
-	private ExecutionTrace executionTrace;
+    private ExecutionLog executionLog;
 
-	private ScriptLog scriptLog;
+    private ExecutionTrace executionTrace;
 
-	private String runId;
+    private ScriptLog scriptLog;
 
-	private String envName;
+    private String runId;
+
+    private String envName;
 
 	private List<Long> processIdList;
 
-	private boolean actionErrorStop = false;
-	private boolean scriptExit = false;
+    private boolean actionErrorStop = false;
+    private boolean scriptExit = false;
 
-	// Constructors
-	public ExecutionControl(FrameworkExecution frameworkExecution) {
-		this.setFrameworkExecution(frameworkExecution);
-		this.setExecutionLog(new ExecutionLog(this.getFrameworkExecution()));
-		this.setExecutionTrace(new ExecutionTrace(this.getFrameworkExecution()));
-		this.initializeRootScript();
-	}
+    // Constructors
+    public ExecutionControl(FrameworkExecution frameworkExecution) {
+        this.setFrameworkExecution(frameworkExecution);
+        this.setExecutionLog(new ExecutionLog(this.getFrameworkExecution()));
+        this.setExecutionTrace(new ExecutionTrace(this.getFrameworkExecution()));
+        this.initializeRootScript();
+    }
 
-	// Methods
-	@SuppressWarnings({"unchecked", "rawtypes"})
-	private void initializeRootScript()
-	{
-		// Generate unique run id
-		this.setRunId(this.getFrameworkExecution().getFrameworkRuntime().getRunId());
-		// Create execution runtime
-		this.initializeExecutionRuntime(this.getFrameworkExecution(), this.getRunId());
+    // Methods
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private void initializeRootScript() {
+        // Generate unique run id
+        this.setRunId(this.getFrameworkExecution().getFrameworkRuntime().getRunId());
+        // Create execution runtime
+        this.initializeExecutionRuntime(this.getFrameworkExecution(), this.getRunId());
 
-		// Prepare process identifier enablers
-		this.setProcessIdList(new ArrayList());
-		this.getProcessIdList().add(-1L);
-	}
+        // Prepare process identifier enablers
+        this.setProcessIdList(new ArrayList());
+        this.getProcessIdList().add(-1L);
+    }
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private void initializeExecutionRuntime(FrameworkExecution frameworkExecution, String runId) {
-		if (frameworkExecution.getFrameworkConfiguration().getSettingConfiguration().getSettingPath("script.execution.runtime").isPresent() &&
-				!frameworkExecution.getFrameworkControl().getProperty(frameworkExecution.getFrameworkConfiguration().getSettingConfiguration().getSettingPath("script.execution.runtime").get()).isEmpty()) {
-			try {
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private void initializeExecutionRuntime(FrameworkExecution frameworkExecution, String runId) {
+        if (frameworkExecution.getFrameworkConfiguration().getSettingConfiguration().getSettingPath("script.execution.runtime").isPresent() &&
+                !frameworkExecution.getFrameworkControl().getProperty(frameworkExecution.getFrameworkConfiguration().getSettingConfiguration().getSettingPath("script.execution.runtime").get()).isEmpty()) {
+            try {
 
 
-				Class classRef = Class.forName(frameworkExecution.getFrameworkControl().getProperty(frameworkExecution.getFrameworkConfiguration().getSettingConfiguration().getSettingPath("script.execution.runtime").get()));
-				Object instance = classRef.newInstance();
+                Class classRef = Class.forName(frameworkExecution.getFrameworkControl().getProperty(frameworkExecution.getFrameworkConfiguration().getSettingConfiguration().getSettingPath("script.execution.runtime").get()));
+                Object instance = classRef.newInstance();
 
 //				classRef = ClassOperation.getExecutionRuntime(frameworkExecution.getFrameworkControl().getProperty(frameworkExecution.getFrameworkConfiguration().getSettingConfiguration().getSettingPath("script.execution.runtime").get()));
 //				instance = classRef.newInstance();

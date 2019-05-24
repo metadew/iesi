@@ -4,29 +4,25 @@ import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.instruction.variable.VariableInstruction;
 
 
-public class RunidInstruction implements VariableInstruction
-{
+public class RunidInstruction implements VariableInstruction {
 
-	private final ExecutionControl executionControl; 
-	
-	public RunidInstruction(ExecutionControl executionControl)
-	{
-		this.executionControl = executionControl;
-	}
+    private final ExecutionControl executionControl;
 
-	@Override
-	public String generateOutput()
-	{
-		return this.getExecutionControl().getRunId();
-	}
+    public RunidInstruction(ExecutionControl executionControl) {
+        this.executionControl = executionControl;
+    }
 
-	@Override
-	public String getKeyword()
-	{
-		return "run.id";
-	}
+    @Override
+    public String generateOutput() {
+        return executionControl.getRunId();
+    }
 
-	public ExecutionControl getExecutionControl() {
-		return executionControl;
-	}
+    @Override
+    public String getKeyword() {
+        return "run.id";
+    }
+
+    public ExecutionControl getExecutionControl() {
+        return executionControl;
+    }
 }

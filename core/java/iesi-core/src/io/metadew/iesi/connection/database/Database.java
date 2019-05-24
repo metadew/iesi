@@ -10,6 +10,8 @@ import javax.sql.rowset.CachedRowSet;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -26,8 +28,12 @@ public abstract class Database {
 
     public abstract String getAllTablesQuery(String pattern);
 
+    public Connection getLiveConnection() throws SQLException {
+        return databaseConnection.getConnection();
+    }
+
     @SuppressWarnings("unused")
-	public List<String> getAllTables(String pattern) {
+    public List<String> getAllTables(String pattern) {
         List<String> tables = new LinkedList<>();
         CachedRowSet crsCleanInventory = executeQuery(getAllTablesQuery(pattern));
         try {
@@ -56,7 +62,7 @@ public abstract class Database {
     }
 
     public void dropAllTables(String pattern, FrameworkLog frameworkLog) {
-        for (String table : getAllTables(pattern)){
+        for (String table : getAllTables(pattern)) {
             dropTable(table, frameworkLog);
         }
     }
@@ -74,12 +80,24 @@ public abstract class Database {
         return this.databaseConnection.executeQuery(query);
     }
 
+    public CachedRowSet executeQuery(String query, Connection connection) {
+        return this.databaseConnection.executeQuery(query, connection);
+    }
+
     public SqlScriptResult executeScript(String filename) {
         return this.databaseConnection.executeScript(filename);
     }
 
+    public SqlScriptResult executeScript(String filename, Connection connection) {
+        return this.databaseConnection.executeScript(filename, connection);
+    }
+
     public SqlScriptResult executeScript(InputStream inputStream) {
         return this.databaseConnection.executeScript(inputStream);
+    }
+
+    public SqlScriptResult executeScript(InputStream inputStream, Connection connection) {
+        return this.databaseConnection.executeScript(inputStream, connection);
     }
 
 

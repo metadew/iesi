@@ -1,0 +1,46 @@
+---
+type: Script
+data:
+  type: "script"
+  name: "data.compareDataset.1"
+  description: "test data.compareDataset"
+  actions:
+  - number: 1
+    type: "data.setDatasetConnection"
+    name: "set expected dataset connection"
+    description: "default"
+    errorExpected: "N"
+    errorStop: "Y"
+    parameters:
+    - name: "name"
+      value : "expected"
+    - name: "dataset"
+      value : "compareDataset"
+    - name: "labels"
+      value : "expected"
+  - number: 1
+    type: "data.setDatasetConnection"
+    name: "set actual dataset connection"
+    description: "default"
+    errorExpected: "N"
+    errorStop: "Y"
+    parameters:
+    - name: "name"
+      value : "actual"
+    - name: "dataset"
+      value : "compareDataset"
+    - name: "labels"
+      value : "actual"
+  - number: 3
+    type: "data.compareDataset"
+    name: "compare expected with actual dataset"
+    description: "default"
+    errorExpected: "N"
+    errorStop: "Y"
+    parameters:
+    - name: "leftDataset"
+      value : "expected"
+    - name: "rightDataset"
+      value : "actual"
+    - name: "mapping"
+      value : "datasetCompare.1"

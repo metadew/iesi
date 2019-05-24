@@ -2,33 +2,32 @@ package io.metadew.iesi.connection;
 
 /**
  * Connection object for file stores.
- * 
- * @author peter.billen
  *
+ * @author peter.billen
  */
 public class FileStoreConnection {
 
-	private String path;
+    private String path;
 
-	public FileStoreConnection() {
-		
-	}
+    public FileStoreConnection() {
 
-	public FileStoreConnection(String path) {
-		super();
-		this.setPath(path);
-	}
+    }
 
-	// Methods
+    public FileStoreConnection(String path) {
+        super();
+        this.setPath(path);
+    }
 
-	
-	// Getters and Setters
-	public String getPath() {
-		return path;
-	}
+    // Methods
 
-	public void setPath(String path) {
-		this.path = path;
-	}
-	
+
+    // Getters and Setters
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
 }

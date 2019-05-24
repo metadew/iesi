@@ -5,28 +5,28 @@ import io.metadew.iesi.framework.execution.FrameworkExecution;
 
 public class DatabaseOperation {
 
-	private FrameworkExecution frameworkExecution;
-	private ScriptBuilder scriptBuilder;
+    private FrameworkExecution frameworkExecution;
+    private ScriptBuilder scriptBuilder;
 
-	public DatabaseOperation() {
-		this.setScriptBuilder(new ScriptBuilder());
-	}
+    public DatabaseOperation() {
+        this.setScriptBuilder(new ScriptBuilder());
+    }
 
-	// Getters and Setters
-	public ScriptBuilder getScriptBuilder() {
-		return scriptBuilder;
-	}
+    // Getters and Setters
+    public ScriptBuilder getScriptBuilder() {
+        return scriptBuilder;
+    }
 
-	public void setScriptBuilder(ScriptBuilder scriptBuilder) {
-		this.scriptBuilder = scriptBuilder;
-	}
+    public void setScriptBuilder(ScriptBuilder scriptBuilder) {
+        this.scriptBuilder = scriptBuilder;
+    }
 
-	public FrameworkExecution getFrameworkExecution() {
-		return frameworkExecution;
-	}
+    public FrameworkExecution getFrameworkExecution() {
+        return frameworkExecution;
+    }
 
-	public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-		this.frameworkExecution = frameworkExecution;
-	}
+    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
+        this.frameworkExecution = frameworkExecution;
+    }
 
 }

@@ -1,10 +1,10 @@
 package io.metadew.iesi.data.generation.configuration;
 
-import java.util.Arrays;
-import java.util.List;
-
 import io.metadew.iesi.data.generation.execution.GenerationComponentExecution;
 import io.metadew.iesi.data.generation.execution.GenerationDataExecution;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class Avatar extends GenerationComponentExecution {
 
@@ -52,6 +52,6 @@ public class Avatar extends GenerationComponentExecution {
 
         String bgset_query = (bgset != null ? "&bgset=" + bgset : "");
 
-        return AVATAR_URL + slug + "." + format + "?size=" + size+ "&set=" + set + bgset_query;
+        return AVATAR_URL + slug + "." + format + "?size=" + size + "&set=" + set + bgset_query;
     }
 }

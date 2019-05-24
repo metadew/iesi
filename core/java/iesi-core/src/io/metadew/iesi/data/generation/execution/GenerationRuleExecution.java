@@ -111,5 +111,4 @@ public class GenerationRuleExecution {
 	public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
 		this.frameworkExecution = frameworkExecution;
 	}
-
 }

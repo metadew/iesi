@@ -12,6 +12,7 @@ public abstract class RepositoryConfiguration {
     }
 
     abstract void fromConfigFile(ConfigFile configFile, FrameworkSettingConfiguration frameworkSettingConfiguration,FrameworkCrypto frameworkCrypto);
+
     public abstract RepositoryCoordinator toRepository();
 
 }

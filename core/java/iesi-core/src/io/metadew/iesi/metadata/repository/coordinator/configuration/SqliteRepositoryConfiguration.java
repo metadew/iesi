@@ -44,9 +44,9 @@ public class SqliteRepositoryConfiguration extends RepositoryConfiguration {
     public RepositoryCoordinator toRepository() {
         Map<String, Database> databases = new HashMap<>();
 
-            databases.put("owner", new SqliteDatabase(new SqliteDatabaseConnection(getJdbcConnectionString(), "", "")));
-            databases.put("writer",  new SqliteDatabase(new SqliteDatabaseConnection(getJdbcConnectionString(), "", "")));
-            databases.put("reader", new SqliteDatabase(new SqliteDatabaseConnection(getJdbcConnectionString(), "", "")));
+        databases.put("owner", new SqliteDatabase(new SqliteDatabaseConnection(getJdbcConnectionString(), "", "")));
+        databases.put("writer", new SqliteDatabase(new SqliteDatabaseConnection(getJdbcConnectionString(), "", "")));
+        databases.put("reader", new SqliteDatabase(new SqliteDatabaseConnection(getJdbcConnectionString(), "", "")));
 
         return new RepositoryCoordinator(databases);
     }

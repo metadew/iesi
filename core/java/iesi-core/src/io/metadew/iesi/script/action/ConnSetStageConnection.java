@@ -1,147 +1,174 @@
 package io.metadew.iesi.script.action;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.HashMap;
-
+import io.metadew.iesi.datatypes.DataType;
+import io.metadew.iesi.datatypes.Text;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.ActionParameter;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
+import org.apache.logging.log4j.Level;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.text.MessageFormat;
+import java.util.HashMap;
 
 public class ConnSetStageConnection {
 
-	private ActionExecution actionExecution;
-	private FrameworkExecution frameworkExecution;
-	private ExecutionControl executionControl;
+    private ActionExecution actionExecution;
+    private FrameworkExecution frameworkExecution;
+    private ExecutionControl executionControl;
 
-	// Parameters
-	private ActionParameterOperation stageName;
-	private ActionParameterOperation stageCleanup;
-	private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
+    // Parameters
+    private ActionParameterOperation stageName;
+    private ActionParameterOperation stageCleanup;
+    private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
 
-	// Constructors
-	public ConnSetStageConnection() {
+    // Constructors
+    public ConnSetStageConnection() {
 
-	}
+    }
 
-	public ConnSetStageConnection(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
-			ScriptExecution scriptExecution, ActionExecution actionExecution) {
-		this.init(frameworkExecution, executionControl, scriptExecution, actionExecution);
-	}
+    public ConnSetStageConnection(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+                                  ScriptExecution scriptExecution, ActionExecution actionExecution) {
+        this.init(frameworkExecution, executionControl, scriptExecution, actionExecution);
+    }
 
-	public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
-			ScriptExecution scriptExecution, ActionExecution actionExecution) {
-		this.setFrameworkExecution(frameworkExecution);
-		this.setExecutionControl(executionControl);
-		this.setActionExecution(actionExecution);
-		this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
-	}
+    public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+                     ScriptExecution scriptExecution, ActionExecution actionExecution) {
+        this.setFrameworkExecution(frameworkExecution);
+        this.setExecutionControl(executionControl);
+        this.setActionExecution(actionExecution);
+        this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
+    }
 
-	public void prepare() {
-		// Reset Parameters
-		this.setStageName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
-				this.getActionExecution(), this.getActionExecution().getAction().getType(), "stage"));
-		this.setStageCleanup(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
-				this.getActionExecution(), this.getActionExecution().getAction().getType(), "cleanUp"));
+    public void prepare() {
+        // Reset Parameters
+        this.setStageName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(), this.getActionExecution(),
+                this.getActionExecution().getAction().getType(), "stage"));
+        this.setStageCleanup(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+                this.getActionExecution(), this.getActionExecution().getAction().getType(), "cleanUp"));
 
-		// Get Parameters
-		for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-			if (actionParameter.getName().equalsIgnoreCase("stage")) {
-				this.getStageName().setInputValue(actionParameter.getValue());
-			} else if (actionParameter.getName().equalsIgnoreCase("cleanup")) {
-				this.getStageCleanup().setInputValue(actionParameter.getValue());
-			}
-		}
+        // Get Parameters
+        for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
+            if (actionParameter.getName().equalsIgnoreCase("stage")) {
+                this.getStageName().setInputValue(actionParameter.getValue());
+            } else if (actionParameter.getName().equalsIgnoreCase("cleanup")) {
+                this.getStageCleanup().setInputValue(actionParameter.getValue());
+            }
+        }
 
-		// Create parameter list
-		this.getActionParameterOperationMap().put("stage", this.getStageName());
-		this.getActionParameterOperationMap().put("cleanup", this.getStageCleanup());
-	}
+        // Create parameter list
+        this.getActionParameterOperationMap().put("stage", this.getStageName());
+        this.getActionParameterOperationMap().put("cleanup", this.getStageCleanup());
+    }
 
-	//
-	public boolean execute() {
-		try {
-			// Verify the cleanup flag
-			boolean cleanup = false;
-			if (this.getStageCleanup().getValue().equalsIgnoreCase("y")) {
-				cleanup = true;
-			}
+    //
+    public boolean execute() {
+        try {
+            String stageName = convertStageName(getStageName().getValue());
+            boolean cleanup = convertCleanup(getStageCleanup().getValue());
+            return execute(stageName, cleanup);
+        } catch (Exception e) {
+            StringWriter StackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(StackTrace));
 
-			// Set the stage connection
-			try {
-				this.getExecutionControl().getExecutionRuntime().setStage(this.getStageName().getValue(), cleanup);
-			} catch (Exception e) {
-				throw new RuntimeException("conn.stage.error");
-			}
+            this.getActionExecution().getActionControl().increaseErrorCount();
 
-			// Increase the success count
-			this.getActionExecution().getActionControl().increaseSuccessCount();
+            this.getActionExecution().getActionControl().logOutput("exception", e.getMessage());
+            this.getActionExecution().getActionControl().logOutput("stacktrace", StackTrace.toString());
 
-			return true;
-		} catch (Exception e) {
-			StringWriter StackTrace = new StringWriter();
-			e.printStackTrace(new PrintWriter(StackTrace));
+            return false;
+        }
 
-			this.getActionExecution().getActionControl().increaseErrorCount();
+    }
 
-			this.getActionExecution().getActionControl().logOutput("exception", e.getMessage());
-			this.getActionExecution().getActionControl().logOutput("stacktrace", StackTrace.toString());
+    private boolean execute(String stageName, boolean cleanup) {
+        // Set the stage connection
+        try {
+            this.getExecutionControl().getExecutionRuntime().setStage(stageName, cleanup);
+        } catch (Exception e) {
+            throw new RuntimeException("conn.stage.error");
+        }
 
-			return false;
-		}
+        // Increase the success count
+        this.getActionExecution().getActionControl().increaseSuccessCount();
+        return true;
+    }
 
-	}
+    private String convertStageName(DataType stageName) {
+        if (stageName instanceof Text) {
+            return stageName.toString();
+        } else {
+            frameworkExecution.getFrameworkLog().log(MessageFormat.format("conn.setStageConnection does not accept {0} as type for stage name",
+                    stageName.getClass()), Level.WARN);
+            return stageName.toString();
+        }
+    }
 
-	// Getters and Setters
-	public FrameworkExecution getFrameworkExecution() {
-		return frameworkExecution;
-	}
+    private boolean convertCleanup(DataType cleanup) {
+        // TODO: make optional
+        if (cleanup == null) {
+            return false;
+        }
+        if (cleanup instanceof Text) {
+            return cleanup.toString().equalsIgnoreCase("y");
+        } else {
+            frameworkExecution.getFrameworkLog().log(MessageFormat.format("cli.executeCommand does not accept {0} as type for cleanup",
+                    cleanup.getClass()), Level.WARN);
+            return false;
+        }
+    }
 
-	public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-		this.frameworkExecution = frameworkExecution;
-	}
+    // Getters and Setters
+    public FrameworkExecution getFrameworkExecution() {
+        return frameworkExecution;
+    }
 
-	public ExecutionControl getExecutionControl() {
-		return executionControl;
-	}
+    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
+        this.frameworkExecution = frameworkExecution;
+    }
 
-	public void setExecutionControl(ExecutionControl executionControl) {
-		this.executionControl = executionControl;
-	}
+    public ExecutionControl getExecutionControl() {
+        return executionControl;
+    }
 
-	public ActionExecution getActionExecution() {
-		return actionExecution;
-	}
+    public void setExecutionControl(ExecutionControl executionControl) {
+        this.executionControl = executionControl;
+    }
 
-	public void setActionExecution(ActionExecution actionExecution) {
-		this.actionExecution = actionExecution;
-	}
+    public ActionExecution getActionExecution() {
+        return actionExecution;
+    }
 
-	public ActionParameterOperation getStageName() {
-		return stageName;
-	}
+    public void setActionExecution(ActionExecution actionExecution) {
+        this.actionExecution = actionExecution;
+    }
 
-	public void setStageName(ActionParameterOperation stageName) {
-		this.stageName = stageName;
-	}
+    public ActionParameterOperation getStageName() {
+        return stageName;
+    }
 
-	public HashMap<String, ActionParameterOperation> getActionParameterOperationMap() {
-		return actionParameterOperationMap;
-	}
+    public void setStageName(ActionParameterOperation stageName) {
+        this.stageName = stageName;
+    }
 
-	public void setActionParameterOperationMap(HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
-		this.actionParameterOperationMap = actionParameterOperationMap;
-	}
+    public HashMap<String, ActionParameterOperation> getActionParameterOperationMap() {
+        return actionParameterOperationMap;
+    }
 
-	public ActionParameterOperation getStageCleanup() {
-		return stageCleanup;
-	}
+    public void setActionParameterOperationMap(HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
+        this.actionParameterOperationMap = actionParameterOperationMap;
+    }
 
-	public void setStageCleanup(ActionParameterOperation stageCleanup) {
-		this.stageCleanup = stageCleanup;
-	}
+    public ActionParameterOperation getStageCleanup() {
+        return stageCleanup;
+    }
+
+    public void setStageCleanup(ActionParameterOperation stageCleanup) {
+        this.stageCleanup = stageCleanup;
+    }
 
 }

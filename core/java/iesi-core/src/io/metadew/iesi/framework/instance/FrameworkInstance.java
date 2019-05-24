@@ -19,114 +19,114 @@ import java.util.Map;
 
 public class FrameworkInstance {
 
-    private FrameworkConfiguration frameworkConfiguration;
-    private FrameworkCrypto frameworkCrypto;
-    private FrameworkControl frameworkControl;
-    private MetadataControl metadataControl;
-    private ExecutionServerMetadataRepository executionServerRepositoryConfiguration;
-    private FrameworkInitializationFile frameworkInitializationFile;
+	private FrameworkConfiguration frameworkConfiguration;
+	private FrameworkCrypto frameworkCrypto;
+	private FrameworkControl frameworkControl;
+	private MetadataControl metadataControl;
+	private ExecutionServerMetadataRepository executionServerRepositoryConfiguration;
+	private FrameworkInitializationFile frameworkInitializationFile;
 
 
-    // Constructors
-    public FrameworkInstance() {
-        this.initializeFrameworkExecution("write", null);
-    }
+	// Constructors
+	public FrameworkInstance() {
+		this.initializeFrameworkExecution("write", null);
+	}
 
-    public FrameworkInstance(FrameworkInitializationFile frameworkInitializationFile) {
-        this.initializeFrameworkExecution("write", frameworkInitializationFile);
-    }
+	public FrameworkInstance(FrameworkInitializationFile frameworkInitializationFile) {
+		this.initializeFrameworkExecution("write", frameworkInitializationFile);
+	}
 
-    public FrameworkInstance(String logonType, FrameworkInitializationFile frameworkInitializationFile) {
-        this.initializeFrameworkExecution(logonType, frameworkInitializationFile);
-    }
+	public FrameworkInstance(String logonType, FrameworkInitializationFile frameworkInitializationFile) {
+		this.initializeFrameworkExecution(logonType, frameworkInitializationFile);
+	}
+	
+	// Methods
+	private void initializeFrameworkExecution(String logonType, FrameworkInitializationFile frameworkInitializationFile) {
+		// Get the framework configuration
+		this.setFrameworkConfiguration(new FrameworkConfiguration());
+		this.setFrameworkCrypto(new FrameworkCrypto());
 
-    // Methods
-    private void initializeFrameworkExecution(String logonType, FrameworkInitializationFile frameworkInitializationFile) {
-        // Get the framework configuration
-        this.setFrameworkConfiguration(new FrameworkConfiguration());
-        this.setFrameworkCrypto(new FrameworkCrypto());
+		// Set appropriate initialization file
+		if (frameworkInitializationFile == null) {
+			this.setFrameworkInitializationFile(new FrameworkInitializationFile());
+			this.getFrameworkInitializationFile().setName(this.getFrameworkConfiguration().getFrameworkCode() + "-conf.ini");
+		} else if (frameworkInitializationFile.getName().trim().isEmpty()) {
+			this.setFrameworkInitializationFile(new FrameworkInitializationFile());
+			this.getFrameworkInitializationFile().setName(this.getFrameworkConfiguration().getFrameworkCode() + "-conf.ini");			
+		} else {
+			this.setFrameworkInitializationFile(frameworkInitializationFile);
+		}
+				
+		// Prepare configuration and shared Metadata
+		this.setFrameworkControl(new FrameworkControl(this.getFrameworkConfiguration(), logonType, this.getFrameworkInitializationFile(), this.getFrameworkCrypto()));
+		this.getFrameworkConfiguration().setActionTypesFromPlugins(this.getFrameworkControl().getFrameworkPluginConfigurationList());
+		this.setMetadataControl(new MetadataControl(this.getFrameworkControl().getMetadataRepositoryConfigurations().stream().map(configuration -> configuration.toMetadataRepositories(frameworkConfiguration)).collect(ArrayList::new, List::addAll, List::addAll)));
 
-        // Set appropriate initialization file
-        if (frameworkInitializationFile == null) {
-            this.setFrameworkInitializationFile(new FrameworkInitializationFile());
-            this.getFrameworkInitializationFile().setName(this.getFrameworkConfiguration().getFrameworkCode() + "-conf.ini");
-        } else if (frameworkInitializationFile.getName().trim().isEmpty()) {
-            this.setFrameworkInitializationFile(new FrameworkInitializationFile());
-            this.getFrameworkInitializationFile().setName(this.getFrameworkConfiguration().getFrameworkCode() + "-conf.ini");
-        } else {
-            this.setFrameworkInitializationFile(frameworkInitializationFile);
-        }
+		// Set up connection to the metadata repository
+		SqliteDatabaseConnection executionServerDatabaseConnection = new SqliteDatabaseConnection(
+				this.getFrameworkConfiguration().getFolderConfiguration().getFolderAbsolutePath("run.exec") + File.separator + "ExecutionServerRepository.db3");
+		SqliteDatabase sqliteDatabase = new SqliteDatabase(executionServerDatabaseConnection);
+		Map<String, Database> databases = new HashMap<>();
+		databases.put("reader", sqliteDatabase);
+		databases.put("writer", sqliteDatabase);
+		databases.put("owner", sqliteDatabase);
+		RepositoryCoordinator repositoryCoordinator = new RepositoryCoordinator(databases);
+		this.setExecutionServerRepositoryConfiguration(new ExecutionServerMetadataRepository(frameworkConfiguration.getFrameworkCode(), null, null, null, repositoryCoordinator,
+				frameworkConfiguration.getFolderConfiguration().getFolderAbsolutePath("metadata.def"),
+				frameworkConfiguration.getFolderConfiguration().getFolderAbsolutePath("metadata.def")));
+	}
 
-        // Prepare configuration and shared Metadata
-        this.setFrameworkControl(new FrameworkControl(this.getFrameworkConfiguration(), logonType, this.getFrameworkInitializationFile()));
-        this.getFrameworkConfiguration().setActionTypesFromPlugins(this.getFrameworkControl().getFrameworkPluginConfigurationList());
-        this.setMetadataControl(new MetadataControl(this.getFrameworkControl().getMetadataRepositoryConfigurations().stream().map(configuration -> configuration.toMetadataRepositories(frameworkConfiguration)).collect(ArrayList::new, List::addAll, List::addAll)));
+	public void setSettingsList(String input) {
+		this.getFrameworkControl().setSettingsList(input);
+	}
 
-        // Set up connection to the metadata repository
-        SqliteDatabaseConnection executionServerDatabaseConnection = new SqliteDatabaseConnection(
-                this.getFrameworkConfiguration().getFolderConfiguration().getFolderAbsolutePath("run.exec") + File.separator + "ExecutionServerRepository.db3");
-        SqliteDatabase sqliteDatabase = new SqliteDatabase(executionServerDatabaseConnection);
-        Map<String, Database> databases = new HashMap<>();
-        databases.put("reader", sqliteDatabase);
-        databases.put("writer", sqliteDatabase);
-        databases.put("owner", sqliteDatabase);
-        RepositoryCoordinator repositoryCoordinator = new RepositoryCoordinator(databases);
-        this.setExecutionServerRepositoryConfiguration(new ExecutionServerMetadataRepository(frameworkConfiguration.getFrameworkCode(), null, null, null, repositoryCoordinator,
-                frameworkConfiguration.getFolderConfiguration().getFolderAbsolutePath("metadata.def"),
-                frameworkConfiguration.getFolderConfiguration().getFolderAbsolutePath("metadata.def")));
-    }
+	// Getters and Setters
+	public ExecutionServerMetadataRepository getExecutionServerRepositoryConfiguration() {
+		return executionServerRepositoryConfiguration;
+	}
 
-    public void setSettingsList(String input) {
-        this.getFrameworkControl().setSettingsList(input);
-    }
+	public void setExecutionServerRepositoryConfiguration(
+			ExecutionServerMetadataRepository executionServerRepositoryConfiguration) {
+		this.executionServerRepositoryConfiguration = executionServerRepositoryConfiguration;
+	}
 
-    // Getters and Setters
-    public ExecutionServerMetadataRepository getExecutionServerRepositoryConfiguration() {
-        return executionServerRepositoryConfiguration;
-    }
+	public FrameworkConfiguration getFrameworkConfiguration() {
+		return frameworkConfiguration;
+	}
 
-    public void setExecutionServerRepositoryConfiguration(
-            ExecutionServerMetadataRepository executionServerRepositoryConfiguration) {
-        this.executionServerRepositoryConfiguration = executionServerRepositoryConfiguration;
-    }
+	public void setFrameworkConfiguration(FrameworkConfiguration frameworkConfiguration) {
+		this.frameworkConfiguration = frameworkConfiguration;
+	}
 
-    public FrameworkConfiguration getFrameworkConfiguration() {
-        return frameworkConfiguration;
-    }
+	public FrameworkCrypto getFrameworkCrypto() {
+		return frameworkCrypto;
+	}
 
-    public void setFrameworkConfiguration(FrameworkConfiguration frameworkConfiguration) {
-        this.frameworkConfiguration = frameworkConfiguration;
-    }
+	public void setFrameworkCrypto(FrameworkCrypto frameworkCrypto) {
+		this.frameworkCrypto = frameworkCrypto;
+	}
 
-    public FrameworkCrypto getFrameworkCrypto() {
-        return frameworkCrypto;
-    }
+	public MetadataControl getMetadataControl() {
+		return metadataControl;
+	}
 
-    public void setFrameworkCrypto(FrameworkCrypto frameworkCrypto) {
-        this.frameworkCrypto = frameworkCrypto;
-    }
+	public void setMetadataControl(MetadataControl metadataControl) {
+		this.metadataControl = metadataControl;
+	}
 
-    public MetadataControl getMetadataControl() {
-        return metadataControl;
-    }
+	public FrameworkControl getFrameworkControl() {
+		return frameworkControl;
+	}
 
-    public void setMetadataControl(MetadataControl metadataControl) {
-        this.metadataControl = metadataControl;
-    }
+	public void setFrameworkControl(FrameworkControl frameworkControl) {
+		this.frameworkControl = frameworkControl;
+	}
 
-    public FrameworkControl getFrameworkControl() {
-        return frameworkControl;
-    }
+	public FrameworkInitializationFile getFrameworkInitializationFile() {
+		return frameworkInitializationFile;
+	}
 
-    public void setFrameworkControl(FrameworkControl frameworkControl) {
-        this.frameworkControl = frameworkControl;
-    }
-
-    public FrameworkInitializationFile getFrameworkInitializationFile() {
-        return frameworkInitializationFile;
-    }
-
-    public void setFrameworkInitializationFile(FrameworkInitializationFile frameworkInitializationFile) {
-        this.frameworkInitializationFile = frameworkInitializationFile;
-    }
+	public void setFrameworkInitializationFile(FrameworkInitializationFile frameworkInitializationFile) {
+		this.frameworkInitializationFile = frameworkInitializationFile;
+	}
 }

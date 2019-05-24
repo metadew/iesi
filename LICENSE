@@ -54,6 +54,7 @@ nl.flotsam:xeger
 org.apache.commons:commons-io
 org.apache.commons:commons-jexl
 org.apache.commons:commons-lang3
+org.apache.drill.exec:drill-jdbc
 org.apache.httpcomponents:httpasyncclient
 org.apache.httpcomponents:httpasyncclient-cache
 org.apache.httpcomponents:httpclient

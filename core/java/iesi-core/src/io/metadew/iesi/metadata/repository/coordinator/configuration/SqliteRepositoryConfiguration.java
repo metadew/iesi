@@ -5,6 +5,7 @@ import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.SqliteDatabase;
 import io.metadew.iesi.connection.database.connection.SqliteDatabaseConnection;
 import io.metadew.iesi.framework.configuration.FrameworkSettingConfiguration;
+import io.metadew.iesi.framework.crypto.FrameworkCrypto;
 import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
 
 import java.util.HashMap;
@@ -18,12 +19,12 @@ public class SqliteRepositoryConfiguration extends RepositoryConfiguration {
     private String file;
 
 
-    public SqliteRepositoryConfiguration(ConfigFile configFile, FrameworkSettingConfiguration frameworkSettingConfiguration) {
-        super(configFile, frameworkSettingConfiguration);
+    public SqliteRepositoryConfiguration(ConfigFile configFile, FrameworkSettingConfiguration frameworkSettingConfiguration, FrameworkCrypto frameworkCrypto) {
+        super(configFile, frameworkSettingConfiguration, frameworkCrypto);
     }
 
     @Override
-    void fromConfigFile(ConfigFile configFile, FrameworkSettingConfiguration frameworkSettingConfiguration) {
+    void fromConfigFile(ConfigFile configFile, FrameworkSettingConfiguration frameworkSettingConfiguration, FrameworkCrypto frameworkCrypto) {
 
         // get jdbc connection url
         if (frameworkSettingConfiguration.getSettingPath("metadata.repository.connection.string").isPresent() &&

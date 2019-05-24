@@ -21,179 +21,178 @@ import java.util.List;
 
 public class BackupExecution {
 
-    private FrameworkInstance frameworkInstance;
-    private FrameworkExecution frameworkExecution;
-    private ExecutionControl executionControl;
-    private Long processId;
+	private FrameworkInstance frameworkInstance;
+	private FrameworkExecution frameworkExecution;
+	private ExecutionControl executionControl;
+	private Long processId;
 
-    // Constructors
-    public BackupExecution(FrameworkInstance frameworkInstance) {
-        this.setFrameworkInstance(frameworkInstance);
+	// Constructors
+	public BackupExecution(FrameworkInstance frameworkInstance) {
+		this.setFrameworkInstance(frameworkInstance);
 
-        // Create the framework execution
-        Context context = new Context();
-        context.setName("backup");
-        context.setScope("");
-        this.setFrameworkExecution(
-                new FrameworkExecution(this.getFrameworkInstance(), new FrameworkExecutionContext(context), null));
-        this.setExecutionControl(new ExecutionControl(this.getFrameworkExecution()));
-    }
+		// Create the framework execution
+		Context context = new Context();
+		context.setName("backup");
+		context.setScope("");
+		this.setFrameworkExecution(
+				new FrameworkExecution(this.getFrameworkInstance(), new FrameworkExecutionContext(context), null));
+		this.setExecutionControl(new ExecutionControl(this.getFrameworkExecution()));
+	}
 
-    // Methods
-    public void execute(String path) {
-        this.getFrameworkExecution().getFrameworkLog().log("metadata.backup.start", Level.INFO);
+	// Methods
+	public void execute(String path) {
+		this.getFrameworkExecution().getFrameworkLog().log("metadata.backup.start", Level.INFO);
 
-        // Log Start
-        this.getExecutionControl().logStart(this);
-        this.setProcessId(this.getExecutionControl().getProcessId());
+		// Log Start
+		this.getExecutionControl().logStart(this);
+		this.setProcessId(0L);
 
-        // Create Target Folder
-        if (FolderTools.exists(path)) {
-            throw new RuntimeException("metadata.backup.folder.exists");
-        } else {
-            FolderTools.createFolder(path, true);
-        }
+		// Create Target Folder
+		if (FolderTools.exists(path)) {
+			throw new RuntimeException("metadata.backup.folder.exists");
+		} else {
+			FolderTools.createFolder(path, true);
+		}
 
-        String subjectAreaPath = "";
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            // TODO move to framework instance for configuration objects
+		String subjectAreaPath = "";
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			// TODO move to framework instance for configuration objects
 
-            // Environments
-            subjectAreaPath = path + File.separator + "environments";
-            FolderTools.createFolder(subjectAreaPath, true);
-            EnvironmentConfiguration environmentConfiguration = new EnvironmentConfiguration(
-                    this.getFrameworkExecution());
-            List<Environment> environments = environmentConfiguration.getAllEnvironments();
-            for (Environment environment : environments) {
-                String fileName = environment.getName() + ".json";
-                OutputTools.createOutputFile(fileName, subjectAreaPath, "",
-                        mapper.writerWithDefaultPrettyPrinter().writeValueAsString(environment), true);
-            }
+			// Environments
+			subjectAreaPath = path + File.separator + "environments";
+			FolderTools.createFolder(subjectAreaPath, true);
+			EnvironmentConfiguration environmentConfiguration = new EnvironmentConfiguration(
+					this.getFrameworkExecution());
+			List<Environment> environments = environmentConfiguration.getAllEnvironments();
+			for (Environment environment : environments) {
+				String fileName = environment.getName() + ".json";
+				OutputTools.createOutputFile(fileName, subjectAreaPath, "",
+						mapper.writerWithDefaultPrettyPrinter().writeValueAsString(environment), true);
+			}
 
-            // Connections
-            subjectAreaPath = path + File.separator + "connections";
-            FolderTools.createFolder(subjectAreaPath, true);
-            ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(
-                    this.getFrameworkExecution());
-            List<Connection> connections = connectionConfiguration.getConnections();
-            for (Connection connection : connections) {
-                String fileName = connection.getName() + ".json";
-                OutputTools.createOutputFile(fileName, subjectAreaPath, "",
-                        mapper.writerWithDefaultPrettyPrinter().writeValueAsString(connection), true);
-            }
+			// Connections
+			subjectAreaPath = path + File.separator + "connections";
+			FolderTools.createFolder(subjectAreaPath, true);
+			ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(
+					this.getFrameworkExecution());
+			List<Connection> connections = connectionConfiguration.getConnections();
+			for (Connection connection : connections) {
+				String fileName = connection.getName() + ".json";
+				OutputTools.createOutputFile(fileName, subjectAreaPath, "",
+						mapper.writerWithDefaultPrettyPrinter().writeValueAsString(connection), true);
+			}
+		
+			// Impersonations
+			
+			// Scripts
 
-            // Impersonations
+			// TBD
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
-            // Scripts
+		// Log End
+		this.getExecutionControl().logEnd(this);
+		this.getFrameworkExecution().getFrameworkLog().log("metadata.backup.end", Level.INFO);
 
-            // TBD
+		// Exit the execution
+		// this.getEoControl().endExecution();
+	}
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+	@Deprecated
+	public void executeOld(String path) {
+		this.getFrameworkExecution().getFrameworkLog().log("metadata.backup.start", Level.INFO);
 
-        // Log End
-        this.getExecutionControl().logEnd(this);
-        this.getFrameworkExecution().getFrameworkLog().log("metadata.backup.end", Level.INFO);
+		// Log Start
+		this.getExecutionControl().logStart(this);
+		this.setProcessId(0L);
 
-        // Exit the execution
-        // this.getEoControl().endExecution();
-    }
+		// Get source configuration
+		DataObjectOperation dataObjectOperation = new DataObjectOperation(this.getFrameworkExecution(),
+				this.getFrameworkExecution().getFrameworkConfiguration().getFolderConfiguration()
+						.getFolderAbsolutePath("metadata.def") + File.separator + "MetadataTables.json");
 
-    @Deprecated
-    public void executeOld(String path) {
-        this.getFrameworkExecution().getFrameworkLog().log("metadata.backup.start", Level.INFO);
+		// Create backup location
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssS");
+		Date date = new Date();
+		Timestamp timestamp = new Timestamp(date.getTime());
+		String folderName = "";
+		if (path.trim().equalsIgnoreCase("")) {
+			folderName = this.getFrameworkExecution().getFrameworkConfiguration().getFolderConfiguration()
+					.getFolderAbsolutePath("metadata.def") + File.separator + sdf.format(timestamp);
+			;
 
-        // Log Start
-        this.getExecutionControl().logStart(this);
-        this.setProcessId(this.getExecutionControl().getProcessId());
+			// Ensure the base folder structure exists
+			FolderTools.createFolder(this.getFrameworkExecution().getFrameworkConfiguration().getFolderConfiguration()
+					.getFolderAbsolutePath("data")); // Data
+			FolderTools.createFolder(this.getFrameworkExecution().getFrameworkConfiguration().getFolderConfiguration()
+					.getFolderAbsolutePath("data")); // Backups
+			FolderTools.createFolder(this.getFrameworkExecution().getFrameworkConfiguration().getFolderConfiguration()
+					.getFolderAbsolutePath("data")); // Backups Metadata
+		} else {
+			folderName = path;
+		}
 
-        // Get source configuration
-        DataObjectOperation dataObjectOperation = new DataObjectOperation(this.getFrameworkExecution(),
-                this.getFrameworkExecution().getFrameworkConfiguration().getFolderConfiguration()
-                        .getFolderAbsolutePath("metadata.def") + File.separator + "MetadataTables.json");
+		// Create the folder name for the backup
+		FolderTools.deleteFolder(folderName, true);
+		FolderTools.createFolder(folderName);
 
-        // Create backup location
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssS");
-        Date date = new Date();
-        Timestamp timestamp = new Timestamp(date.getTime());
-        String folderName = "";
-        if (path.trim().equalsIgnoreCase("")) {
-            folderName = this.getFrameworkExecution().getFrameworkConfiguration().getFolderConfiguration()
-                    .getFolderAbsolutePath("metadata.def") + File.separator + sdf.format(timestamp);
-            ;
+		ObjectMapper objectMapper = new ObjectMapper();
+		for (DataObject dataObject : dataObjectOperation.getDataObjects()) {
+			// Metadata Tables
+			if (dataObject.getType().equalsIgnoreCase("metadatatable")) {
+				MetadataTable metadataTable = objectMapper.convertValue(dataObject.getData(), MetadataTable.class);
 
-            // Ensure the base folder structure exists
-            FolderTools.createFolder(this.getFrameworkExecution().getFrameworkConfiguration().getFolderConfiguration()
-                    .getFolderAbsolutePath("data")); // Data
-            FolderTools.createFolder(this.getFrameworkExecution().getFrameworkConfiguration().getFolderConfiguration()
-                    .getFolderAbsolutePath("data")); // Backups
-            FolderTools.createFolder(this.getFrameworkExecution().getFrameworkConfiguration().getFolderConfiguration()
-                    .getFolderAbsolutePath("data")); // Backups Metadata
-        } else {
-            folderName = path;
-        }
+				// Get source data for migration
+				MetadataExtractOperation metadataExtractOperation = new MetadataExtractOperation(
+						this.getFrameworkExecution(), this.getExecutionControl());
+				metadataExtractOperation.execute(metadataTable, folderName);
 
-        // Create the folder name for the backup
-        FolderTools.deleteFolder(folderName, true);
-        FolderTools.createFolder(folderName);
+			} else {
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        for (DataObject dataObject : dataObjectOperation.getDataObjects()) {
-            // Metadata Tables
-            if (dataObject.getType().equalsIgnoreCase("metadatatable")) {
-                MetadataTable metadataTable = objectMapper.convertValue(dataObject.getData(), MetadataTable.class);
+			}
+		}
 
-                // Get source data for migration
-                MetadataExtractOperation metadataExtractOperation = new MetadataExtractOperation(
-                        this.getFrameworkExecution(), this.getExecutionControl());
-                metadataExtractOperation.execute(metadataTable, folderName);
+		// Log End
+		this.getExecutionControl().logEnd(this);
+		this.getFrameworkExecution().getFrameworkLog().log("metadata.backup.end", Level.INFO);
 
-            } else {
+		// Exit the execution
+		// this.getEoControl().endExecution();
+	}
 
-            }
-        }
+	// Getters and Setters
+	public ExecutionControl getExecutionControl() {
+		return executionControl;
+	}
 
-        // Log End
-        this.getExecutionControl().logEnd(this);
-        this.getFrameworkExecution().getFrameworkLog().log("metadata.backup.end", Level.INFO);
+	public void setExecutionControl(ExecutionControl executionControl) {
+		this.executionControl = executionControl;
+	}
 
-        // Exit the execution
-        // this.getEoControl().endExecution();
-    }
+	public Long getProcessId() {
+		return processId;
+	}
 
-    // Getters and Setters
-    public ExecutionControl getExecutionControl() {
-        return executionControl;
-    }
+	public void setProcessId(Long processId) {
+		this.processId = processId;
+	}
 
-    public void setExecutionControl(ExecutionControl executionControl) {
-        this.executionControl = executionControl;
-    }
+	public FrameworkExecution getFrameworkExecution() {
+		return frameworkExecution;
+	}
 
-    public Long getProcessId() {
-        return processId;
-    }
+	public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
+		this.frameworkExecution = frameworkExecution;
+	}
 
-    public void setProcessId(Long processId) {
-        this.processId = processId;
-    }
+	public FrameworkInstance getFrameworkInstance() {
+		return frameworkInstance;
+	}
 
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
-    }
-
-    public FrameworkInstance getFrameworkInstance() {
-        return frameworkInstance;
-    }
-
-    public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-        this.frameworkInstance = frameworkInstance;
-    }
-
+	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
+		this.frameworkInstance = frameworkInstance;
+	}
 }

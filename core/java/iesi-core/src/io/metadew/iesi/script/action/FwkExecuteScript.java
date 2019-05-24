@@ -196,7 +196,8 @@ public class FwkExecuteScript {
         }
     }
 
-    private Optional<Map<String, String>> convertParameterList(DataType list) {
+    @SuppressWarnings("unused")
+	private Optional<Map<String, String>> convertParameterList(DataType list) {
         if (list == null) {
             return Optional.empty();
         }

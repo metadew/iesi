@@ -15,131 +15,140 @@ import java.util.Date;
 
 public class DtNow {
 
-    private GenerationRuleExecution generationRuleExecution;
-    private FrameworkExecution frameworkExecution;
-    private ExecutionControl executionControl;
-    private String generationRuleTypeName = "dt.now";
+	private GenerationRuleExecution generationRuleExecution;
+	private FrameworkExecution frameworkExecution;
+	private ExecutionControl executionControl;
+	private String generationRuleTypeName = "dt.now";
+	
+	//Defaults
+	 private static final String DEFAULT_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
-    //Defaults
-    private static final String DEFAULT_FORMAT = "yyyy-MM-dd HH:mm:ss";
+	// Parameters
+	private GenerationRuleParameterExecution format;
 
-    // Parameters
-    private GenerationRuleParameterExecution format;
+	// Constructors
+	public DtNow() {
+		
+	}
+	
+	public DtNow(FrameworkExecution frameworkExecution, ExecutionControl executionControl, GenerationRuleExecution generationRuleExecution) {
+		this.setFrameworkExecution(frameworkExecution);
+		this.setEoControl(executionControl);
+		this.setGenerationRuleExecution(generationRuleExecution);
+	}
 
-    // Constructors
-    public DtNow(FrameworkExecution frameworkExecution, ExecutionControl executionControl, GenerationRuleExecution generationRuleExecution) {
-        this.setFrameworkExecution(frameworkExecution);
-        this.setEoControl(executionControl);
-        this.setGenerationRuleExecution(generationRuleExecution);
-    }
+	public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl, GenerationRuleExecution generationRuleExecution) {
+		this.setFrameworkExecution(frameworkExecution);
+		this.setEoControl(executionControl);
+		this.setGenerationRuleExecution(generationRuleExecution);
+	}
 
-    //
-    public boolean execute() {
-        try {
-            this.getFrameworkExecution().getFrameworkLog()
-                    .log("generation.rule.type=" + this.getGenerationRuleTypeName(), Level.INFO);
+	//
+	public boolean execute() {
+		try {
+			this.getFrameworkExecution().getFrameworkLog()
+					.log("generation.rule.type=" + this.getGenerationRuleTypeName(), Level.INFO);
 
-            // Reset Parameters
-            this.setFormat(new GenerationRuleParameterExecution(this.getFrameworkExecution(), this.getEoControl(),
-                    this.getGenerationRuleTypeName(), "FORMAT"));
+			// Reset Parameters
+			this.setFormat(new GenerationRuleParameterExecution(this.getFrameworkExecution(), this.getEoControl(),
+					this.getGenerationRuleTypeName(), "FORMAT"));
 
-            // Get Parameters
-            for (GenerationRuleParameter generationRuleParameter : this.getGenerationRuleExecution().getGenerationRule()
-                    .getParameters()) {
-                if (generationRuleParameter.getName().equalsIgnoreCase("format")) {
-                    this.getFormat().setInputValue(generationRuleParameter.getValue());
-                }
-            }
+			// Get Parameters
+			for (GenerationRuleParameter generationRuleParameter : this.getGenerationRuleExecution().getGenerationRule()
+					.getParameters()) {
+				if (generationRuleParameter.getName().equalsIgnoreCase("format")) {
+					this.getFormat().setInputValue(generationRuleParameter.getValue());
+				}
+			}
 
-            // Run the generationRule
-            try {
-                String generatedValue = "";
+			// Run the generationRule
+			try {
+				String generatedValue = "";
 
-                // Set format
-                SimpleDateFormat dateFormat = null;
-                if (this.getFormat().getValue().trim().equalsIgnoreCase("")) {
-                    dateFormat = new SimpleDateFormat(DEFAULT_FORMAT);
-                } else {
-                    dateFormat = new SimpleDateFormat(this.getFormat().getValue());
-                }
+				// Set format
+				SimpleDateFormat dateFormat = null;
+				if (this.getFormat().getValue().trim().equalsIgnoreCase("")) {
+					dateFormat = new SimpleDateFormat(DEFAULT_FORMAT);	
+				} else {
+					dateFormat = new SimpleDateFormat(this.getFormat().getValue());
+				}
 
-                // Generate value
-                generatedValue = dateFormat
-                        .format(new Date())
-                        .toString();
+				// Generate value
+				generatedValue = dateFormat
+						.format(new Date())
+						.toString();
 
-                for (int currentRecord = 0; currentRecord < this.getGenerationRuleExecution().getGenerationExecution()
-                        .getNumberOfRecords(); currentRecord++) {
+				for (int currentRecord = 0; currentRecord < this.getGenerationRuleExecution().getGenerationExecution()
+						.getNumberOfRecords(); currentRecord++) {
 
 
-                    String query = "update " + this.getGenerationRuleExecution().getGenerationExecution().getGeneration().getName();
-                    query += " set v" + this.getGenerationRuleExecution().getGenerationRule().getField() + "=";
-                    query += SQLTools.GetStringForSQL(generatedValue);
-                    query += " where id=" + (currentRecord + 1);
-                    this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().getTemporaryDatabaseConnection()
-                            .executeUpdate(query);
+					String query = "update " + this.getGenerationRuleExecution().getGenerationExecution().getGeneration().getName();
+					query += " set v" + this.getGenerationRuleExecution().getGenerationRule().getField() + "=";
+					query += SQLTools.GetStringForSQL(generatedValue);
+					query += " where id=" + (currentRecord + 1);
+					this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().getTemporaryDatabaseConnection()
+							.executeUpdate(query);
 
-                    this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().updateProgress();
-                }
+					this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().updateProgress();
+				}
 
-            } catch (Exception e) {
-                throw new RuntimeException("Issue setting test data: " + e, e);
-            }
-            return true;
-        } catch (Exception e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
+			} catch (Exception e) {
+				throw new RuntimeException("Issue setting test data: " + e, e);
+			}
+			return true;
+		} catch (Exception e) {
+			StringWriter StackTrace = new StringWriter();
+			e.printStackTrace(new PrintWriter(StackTrace));
 
-            // TODO logging
+			// TODO logging
 
-            return false;
-        }
+			return false;
+		}
 
-    }
+	}
 
-    // Getters and Setters
-    public ExecutionControl getEoControl() {
-        return executionControl;
-    }
+	// Getters and Setters
+	public ExecutionControl getEoControl() {
+		return executionControl;
+	}
 
-    public void setEoControl(ExecutionControl executionControl) {
-        this.executionControl = executionControl;
-    }
+	public void setEoControl(ExecutionControl executionControl) {
+		this.executionControl = executionControl;
+	}
 
-    public GenerationRuleExecution getGenerationRuleExecution() {
-        return generationRuleExecution;
-    }
+	public GenerationRuleExecution getGenerationRuleExecution() {
+		return generationRuleExecution;
+	}
 
-    public void setGenerationRuleExecution(GenerationRuleExecution generationRuleExecution) {
-        this.generationRuleExecution = generationRuleExecution;
-    }
+	public void setGenerationRuleExecution(GenerationRuleExecution generationRuleExecution) {
+		this.generationRuleExecution = generationRuleExecution;
+	}
 
-    public String getGenerationRuleTypeName() {
-        return generationRuleTypeName;
-    }
+	public String getGenerationRuleTypeName() {
+		return generationRuleTypeName;
+	}
 
-    public void setGenerationRuleTypeName(String generationRuleTypeName) {
-        this.generationRuleTypeName = generationRuleTypeName;
-    }
+	public void setGenerationRuleTypeName(String generationRuleTypeName) {
+		this.generationRuleTypeName = generationRuleTypeName;
+	}
 
-    public GenerationRuleParameterExecution getFormat() {
-        return format;
-    }
+	public GenerationRuleParameterExecution getFormat() {
+		return format;
+	}
 
-    public void setFormat(GenerationRuleParameterExecution format) {
-        this.format = format;
-    }
+	public void setFormat(GenerationRuleParameterExecution format) {
+		this.format = format;
+	}
 
-    public static String getDefaultFormat() {
-        return DEFAULT_FORMAT;
-    }
+	public static String getDefaultFormat() {
+		return DEFAULT_FORMAT;
+	}
 
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
+	public FrameworkExecution getFrameworkExecution() {
+		return frameworkExecution;
+	}
 
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
-    }
-
+	public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
+		this.frameworkExecution = frameworkExecution;
+	}
 }

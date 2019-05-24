@@ -365,7 +365,8 @@ public class WfaExecuteFilePing {
 
     }
 
-    private List<FileConnection> checkRemoteFolder(Connection connection, String filePath, String fileName) {
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+	private List<FileConnection> checkRemoteFolder(Connection connection, String filePath, String fileName) {
         List<FileConnection> connectionsFound = new ArrayList();
         ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
         HostConnection hostConnection = connectionOperation.getHostConnection(connection);

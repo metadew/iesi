@@ -14,151 +14,150 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DbDremioConnectionOperation {
+	private FrameworkExecution frameworkExecution;
+	private boolean missingMandatoryFields;
+	private List<String> missingMandatoryFieldsList;
+	
+	public DbDremioConnectionOperation(FrameworkExecution frameworkExecution) {
+		this.setFrameworkExecution(frameworkExecution);
+	}
+	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public DatabaseConnection getConnectionOperation(Connection connection) {
+		this.setMissingMandatoryFieldsList(new ArrayList());
 
-    private FrameworkExecution frameworkExecution;
-    private boolean missingMandatoryFields;
-    private List<String> missingMandatoryFieldsList;
+		ObjectMapper objectMapper = new ObjectMapper();
+		DatabaseConnection databaseConnection = null;
+		
+		String hostName = "";
+		String portNumberTemp = "";
+		int portNumber = 0;
+		String connectionMode = "";
+		String clusterName = "";
+		String schemaName = "";
+		String userName = "";
+		String userPassword = "";
 
-    public DbDremioConnectionOperation(FrameworkExecution frameworkExecution) {
-        this.setFrameworkExecution(frameworkExecution);
-    }
+		for (ConnectionParameter connectionParameter : connection.getParameters()) {
+			if (connectionParameter.getName().equalsIgnoreCase("host")) {
+				hostName = (connectionParameter.getValue());
+				hostName = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(hostName);
+			} else if (connectionParameter.getName().equalsIgnoreCase("port")) {
+				portNumberTemp = connectionParameter.getValue();
+				portNumberTemp = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(portNumberTemp);
+			} else if (connectionParameter.getName().equalsIgnoreCase("mode")) {
+				connectionMode = connectionParameter.getValue();
+				connectionMode = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(connectionMode);
+			} else if (connectionParameter.getName().equalsIgnoreCase("cluster")) {
+				clusterName = connectionParameter.getValue();
+				clusterName = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(clusterName);
+			} else if (connectionParameter.getName().equalsIgnoreCase("schema")) {
+				schemaName = connectionParameter.getValue();
+				schemaName = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(schemaName);
+			} else if (connectionParameter.getName().equalsIgnoreCase("user")) {
+				userName = connectionParameter.getValue();
+				userName = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(userName);
+			} else if (connectionParameter.getName().equalsIgnoreCase("password")) {
+				userPassword = connectionParameter.getValue();
+				userPassword = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(userPassword);
+			}
+		}
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    public DatabaseConnection getConnectionOperation(Connection connection) {
-        this.setMissingMandatoryFieldsList(new ArrayList());
+		// Check Mandatory Parameters
+		this.setMissingMandatoryFields(false);
+		ConnectionType connectionType = ConnectionTools.getConnectionType(this.getFrameworkExecution(), connection.getType());
+		for (ConnectionTypeParameter connectionTypeParameter : connectionType.getParameters()) {
+			if (connectionTypeParameter.getMandatory().equalsIgnoreCase("y")) {
+				if (connectionTypeParameter.getName().equalsIgnoreCase("host")) {
+					if (hostName.trim().equalsIgnoreCase(""))
+						this.addMissingField("host");
+				} else if (connectionTypeParameter.getName().equalsIgnoreCase("port")) {
+					if (portNumberTemp.trim().equalsIgnoreCase(""))
+						this.addMissingField("port");
+				} else if (connectionTypeParameter.getName().equalsIgnoreCase("mode")) {
+					if (connectionMode.trim().equalsIgnoreCase(""))
+						this.addMissingField("mode");
+				} else if (connectionTypeParameter.getName().equalsIgnoreCase("cluster")) {
+					if (clusterName.trim().equalsIgnoreCase(""))
+						this.addMissingField("cluster");
+				} else if (connectionTypeParameter.getName().equalsIgnoreCase("schema")) {
+					if (schemaName.trim().equalsIgnoreCase(""))
+						this.addMissingField("schema");
+				} else if (connectionTypeParameter.getName().equalsIgnoreCase("user")) {
+					if (userName.trim().equalsIgnoreCase(""))
+						this.addMissingField("user");
+				} else if (connectionTypeParameter.getName().equalsIgnoreCase("password")) {
+					if (userPassword.trim().equalsIgnoreCase(""))
+						this.addMissingField("password");
+				}
+			}
+		}
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        DatabaseConnection databaseConnection = null;
+		if (this.isMissingMandatoryFields()) {
+			String message = "Mandatory fields missing for connection " + connection.getName();
+			throw new RuntimeException(message);
+		}
 
-        String hostName = "";
-        String portNumberTemp = "";
-        int portNumber = 0;
-        String connectionMode = "";
-        String clusterName = "";
-        String schemaName = "";
-        String userName = "";
-        String userPassword = "";
+		// Decrypt Parameters
+		for (ConnectionTypeParameter connectionTypeParameter : connectionType.getParameters()) {
+			if (connectionTypeParameter.getEncrypted().equalsIgnoreCase("y")) {
+				if (connectionTypeParameter.getName().equalsIgnoreCase("host")) {
+					hostName = this.getFrameworkExecution().getFrameworkCrypto().decrypt(hostName);
+				} else if (connectionTypeParameter.getName().equalsIgnoreCase("port")) {
+					portNumberTemp = this.getFrameworkExecution().getFrameworkCrypto().decrypt(portNumberTemp);
+				} else if (connectionTypeParameter.getName().equalsIgnoreCase("mode")) {
+					connectionMode = this.getFrameworkExecution().getFrameworkCrypto().decrypt(connectionMode);
+				} else if (connectionTypeParameter.getName().equalsIgnoreCase("cluster")) {
+					clusterName = this.getFrameworkExecution().getFrameworkCrypto().decrypt(clusterName);
+				} else if (connectionTypeParameter.getName().equalsIgnoreCase("schema")) {
+					schemaName = this.getFrameworkExecution().getFrameworkCrypto().decrypt(schemaName);
+				} else if (connectionTypeParameter.getName().equalsIgnoreCase("user")) {
+					userName = this.getFrameworkExecution().getFrameworkCrypto().decrypt(userName);
+				} else if (connectionTypeParameter.getName().equalsIgnoreCase("password")) {
+					userPassword = this.getFrameworkExecution().getFrameworkCrypto().decrypt(userPassword);
+				}
+			}
+		}
 
-        for (ConnectionParameter connectionParameter : connection.getParameters()) {
-            if (connectionParameter.getName().equalsIgnoreCase("host")) {
-                hostName = (connectionParameter.getValue());
-                hostName = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(hostName);
-            } else if (connectionParameter.getName().equalsIgnoreCase("port")) {
-                portNumberTemp = connectionParameter.getValue();
-                portNumberTemp = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(portNumberTemp);
-            } else if (connectionParameter.getName().equalsIgnoreCase("mode")) {
-                connectionMode = connectionParameter.getValue();
-                connectionMode = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(connectionMode);
-            } else if (connectionParameter.getName().equalsIgnoreCase("cluster")) {
-                clusterName = connectionParameter.getValue();
-                clusterName = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(clusterName);
-            } else if (connectionParameter.getName().equalsIgnoreCase("schema")) {
-                schemaName = connectionParameter.getValue();
-                schemaName = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(schemaName);
-            } else if (connectionParameter.getName().equalsIgnoreCase("user")) {
-                userName = connectionParameter.getValue();
-                userName = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(userName);
-            } else if (connectionParameter.getName().equalsIgnoreCase("password")) {
-                userPassword = connectionParameter.getValue();
-                userPassword = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(userPassword);
-            }
-        }
+		// Convert port number
+		if (!portNumberTemp.isEmpty()) {
+			portNumber = Integer.parseInt(portNumberTemp);
+		}
 
-        // Check Mandatory Parameters
-        this.setMissingMandatoryFields(false);
-        ConnectionType connectionType = ConnectionTools.getConnectionType(this.getFrameworkExecution(), connection.getType());
-        for (ConnectionTypeParameter connectionTypeParameter : connectionType.getParameters()) {
-            if (connectionTypeParameter.getMandatory().equalsIgnoreCase("y")) {
-                if (connectionTypeParameter.getName().equalsIgnoreCase("host")) {
-                    if (hostName.trim().equalsIgnoreCase(""))
-                        this.addMissingField("host");
-                } else if (connectionTypeParameter.getName().equalsIgnoreCase("port")) {
-                    if (portNumberTemp.trim().equalsIgnoreCase(""))
-                        this.addMissingField("port");
-                } else if (connectionTypeParameter.getName().equalsIgnoreCase("mode")) {
-                    if (connectionMode.trim().equalsIgnoreCase(""))
-                        this.addMissingField("mode");
-                } else if (connectionTypeParameter.getName().equalsIgnoreCase("cluster")) {
-                    if (clusterName.trim().equalsIgnoreCase(""))
-                        this.addMissingField("cluster");
-                } else if (connectionTypeParameter.getName().equalsIgnoreCase("schema")) {
-                    if (schemaName.trim().equalsIgnoreCase(""))
-                        this.addMissingField("file");
-                } else if (connectionTypeParameter.getName().equalsIgnoreCase("user")) {
-                    if (userName.trim().equalsIgnoreCase(""))
-                        this.addMissingField("user");
-                } else if (connectionTypeParameter.getName().equalsIgnoreCase("password")) {
-                    if (userPassword.trim().equalsIgnoreCase(""))
-                        this.addMissingField("password");
-                }
-            }
-        }
+		DremioDatabaseConnection dremioDatabaseConnection = new DremioDatabaseConnection(hostName, portNumber, connectionMode, clusterName, schemaName, userName, userPassword);
+		databaseConnection = objectMapper.convertValue(dremioDatabaseConnection, DatabaseConnection.class);
 
-        if (this.isMissingMandatoryFields()) {
-            String message = "Mandatory fields missing for connection " + connection.getName();
-            throw new RuntimeException(message);
-        }
+		return databaseConnection;
+	}
+	
+	protected void addMissingField(String fieldName) {
+		this.setMissingMandatoryFields(true);
+		this.getMissingMandatoryFieldsList().add(fieldName);
+	}
 
-        // Decrypt Parameters
-        for (ConnectionTypeParameter connectionTypeParameter : connectionType.getParameters()) {
-            if (connectionTypeParameter.getEncrypted().equalsIgnoreCase("y")) {
-                if (connectionTypeParameter.getName().equalsIgnoreCase("host")) {
-                    hostName = this.getFrameworkExecution().getFrameworkCrypto().decrypt(hostName);
-                } else if (connectionTypeParameter.getName().equalsIgnoreCase("port")) {
-                    portNumberTemp = this.getFrameworkExecution().getFrameworkCrypto().decrypt(portNumberTemp);
-                } else if (connectionTypeParameter.getName().equalsIgnoreCase("mode")) {
-                    connectionMode = this.getFrameworkExecution().getFrameworkCrypto().decrypt(connectionMode);
-                } else if (connectionTypeParameter.getName().equalsIgnoreCase("cluster")) {
-                    clusterName = this.getFrameworkExecution().getFrameworkCrypto().decrypt(clusterName);
-                } else if (connectionTypeParameter.getName().equalsIgnoreCase("schema")) {
-                    schemaName = this.getFrameworkExecution().getFrameworkCrypto().decrypt(schemaName);
-                } else if (connectionTypeParameter.getName().equalsIgnoreCase("user")) {
-                    userName = this.getFrameworkExecution().getFrameworkCrypto().decrypt(userName);
-                } else if (connectionTypeParameter.getName().equalsIgnoreCase("password")) {
-                    userPassword = this.getFrameworkExecution().getFrameworkCrypto().decrypt(userPassword);
-                }
-            }
-        }
+	// Getters and setters
+	public FrameworkExecution getFrameworkExecution() {
+		return frameworkExecution;
+	}
 
-        // Convert port number
-        if (!portNumberTemp.isEmpty()) {
-            portNumber = Integer.parseInt(portNumberTemp);
-        }
+	public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
+		this.frameworkExecution = frameworkExecution;
+	}
 
-        DremioDatabaseConnection dremioDatabaseConnection = new DremioDatabaseConnection(hostName, portNumber, connectionMode, clusterName, schemaName, userName, userPassword);
-        databaseConnection = objectMapper.convertValue(dremioDatabaseConnection, DatabaseConnection.class);
+	public List<String> getMissingMandatoryFieldsList() {
+		return missingMandatoryFieldsList;
+	}
 
-        return databaseConnection;
-    }
+	public void setMissingMandatoryFieldsList(List<String> missingMandatoryFieldsList) {
+		this.missingMandatoryFieldsList = missingMandatoryFieldsList;
+	}
 
-    protected void addMissingField(String fieldName) {
-        this.setMissingMandatoryFields(true);
-        this.getMissingMandatoryFieldsList().add(fieldName);
-    }
+	public boolean isMissingMandatoryFields() {
+		return missingMandatoryFields;
+	}
 
-    // Getters and setters
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
-    }
-
-    public List<String> getMissingMandatoryFieldsList() {
-        return missingMandatoryFieldsList;
-    }
-
-    public void setMissingMandatoryFieldsList(List<String> missingMandatoryFieldsList) {
-        this.missingMandatoryFieldsList = missingMandatoryFieldsList;
-    }
-
-    public boolean isMissingMandatoryFields() {
-        return missingMandatoryFields;
-    }
-
-    public void setMissingMandatoryFields(boolean missingMandatoryFields) {
-        this.missingMandatoryFields = missingMandatoryFields;
-    }
-
+	public void setMissingMandatoryFields(boolean missingMandatoryFields) {
+		this.missingMandatoryFields = missingMandatoryFields;
+	}
+	
 }

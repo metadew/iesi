@@ -27,7 +27,8 @@ public class DataCompareDataset {
     private FrameworkExecution frameworkExecution;
     private ExecutionControl executionControl;
 
-    private final Pattern datasetNamePattern = Pattern.compile("\\s*(?<name>\\w+)\\.(?<table>[\\w\\.]+)\\s*");
+    @SuppressWarnings("unused")
+	private final Pattern datasetNamePattern = Pattern.compile("\\s*(?<name>\\w+)\\.(?<table>[\\w\\.]+)\\s*");
 
     // Parameters
     private ActionParameterOperation leftDatasetName;

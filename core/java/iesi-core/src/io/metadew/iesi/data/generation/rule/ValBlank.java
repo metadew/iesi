@@ -13,112 +13,121 @@ import java.io.StringWriter;
 
 public class ValBlank {
 
-    private GenerationRuleExecution generationRuleExecution;
-    private FrameworkExecution frameworkExecution;
-    private ExecutionControl executionControl;
-    private String generationRuleTypeName = "val.blank";
+	private GenerationRuleExecution generationRuleExecution;
+	private FrameworkExecution frameworkExecution;
+	private ExecutionControl executionControl;
+	private String generationRuleTypeName = "val.blank";
 
-    // Parameters
-    private GenerationRuleParameterExecution blankValue;
+	// Parameters
+	private GenerationRuleParameterExecution blankValue;
 
-    // Constructors
-    public ValBlank(FrameworkExecution frameworkExecution, ExecutionControl executionControl, GenerationRuleExecution generationRuleExecution) {
-        this.setFrameworkExecution(frameworkExecution);
-        this.setExecutionControl(executionControl);
-        this.setGenerationRuleExecution(generationRuleExecution);
-    }
+	// Constructors
+	public ValBlank() {
+		
+	}
+	
+	public ValBlank(FrameworkExecution frameworkExecution, ExecutionControl executionControl, GenerationRuleExecution generationRuleExecution) {
+		this.setFrameworkExecution(frameworkExecution);
+		this.setExecutionControl(executionControl);
+		this.setGenerationRuleExecution(generationRuleExecution);
+	}
 
-    //
-    public boolean execute() {
-        try {
-            this.getFrameworkExecution().getFrameworkLog()
-                    .log("generation.rule.type=" + this.getGenerationRuleTypeName(), Level.INFO);
+	public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl, GenerationRuleExecution generationRuleExecution) {
+		this.setFrameworkExecution(frameworkExecution);
+		this.setExecutionControl(executionControl);
+		this.setGenerationRuleExecution(generationRuleExecution);
+	}
 
-            // Reset Parameters
-            this.setBlankValue(new GenerationRuleParameterExecution(this.getFrameworkExecution(), this.getExecutionControl(),
-                    this.getGenerationRuleTypeName(), "BLANK_VALUE"));
+	//
+	public boolean execute() {
+		try {
+			this.getFrameworkExecution().getFrameworkLog()
+					.log("generation.rule.type=" + this.getGenerationRuleTypeName(), Level.INFO);
 
-            // Get Parameters
-            for (GenerationRuleParameter generationRuleParameter : this.getGenerationRuleExecution().getGenerationRule()
-                    .getParameters()) {
-                if (generationRuleParameter.getName().equalsIgnoreCase("blank_value")) {
-                    this.getBlankValue().setInputValue(generationRuleParameter.getValue());
-                }
-            }
+			// Reset Parameters
+			this.setBlankValue(new GenerationRuleParameterExecution(this.getFrameworkExecution(), this.getExecutionControl(),
+					this.getGenerationRuleTypeName(), "BLANK_VALUE"));
 
-            // Run the generationRule
-            try {
+			// Get Parameters
+			for (GenerationRuleParameter generationRuleParameter : this.getGenerationRuleExecution().getGenerationRule()
+					.getParameters()) {
+				if (generationRuleParameter.getName().equalsIgnoreCase("blank_value")) {
+					this.getBlankValue().setInputValue(generationRuleParameter.getValue());
+				}
+			}
 
-                for (int currentRecord = 0; currentRecord < this.getGenerationRuleExecution().getGenerationExecution()
-                        .getNumberOfRecords(); currentRecord++) {
+			// Run the generationRule
+			try {
+				
+				for (int currentRecord = 0; currentRecord < this.getGenerationRuleExecution().getGenerationExecution()
+						.getNumberOfRecords(); currentRecord++) {
 
-                    String generatedValue = this.getBlankValue().getValue();
+					String generatedValue = this.getBlankValue().getValue();
+					
+					String query = "update " + this.getGenerationRuleExecution().getGenerationExecution().getGeneration().getName();
+					query += " set v" + this.getGenerationRuleExecution().getGenerationRule().getField() + "=";
+					query += SQLTools.GetStringForSQL(generatedValue);
+					query += " where id=" + (currentRecord + 1);
+					this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().getTemporaryDatabaseConnection()
+							.executeUpdate(query);
+					
+					this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().updateProgress();
+				}
 
-                    String query = "update " + this.getGenerationRuleExecution().getGenerationExecution().getGeneration().getName();
-                    query += " set v" + this.getGenerationRuleExecution().getGenerationRule().getField() + "=";
-                    query += SQLTools.GetStringForSQL(generatedValue);
-                    query += " where id=" + (currentRecord + 1);
-                    this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().getTemporaryDatabaseConnection()
-                            .executeUpdate(query);
+			} catch (Exception e) {
+				throw new RuntimeException("Issue setting runtime variables: " + e, e);
+			}
 
-                    this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().updateProgress();
-                }
+			return true;
+		} catch (Exception e) {
+			StringWriter StackTrace = new StringWriter();
+			e.printStackTrace(new PrintWriter(StackTrace));
 
-            } catch (Exception e) {
-                throw new RuntimeException("Issue setting runtime variables: " + e, e);
-            }
+			// TODO logging
 
-            return true;
-        } catch (Exception e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
+			return false;
+		}
 
-            // TODO logging
+	}
 
-            return false;
-        }
+	// Getters and Setters
+	public ExecutionControl getExecutionControl() {
+		return executionControl;
+	}
 
-    }
+	public void setExecutionControl(ExecutionControl executionControl) {
+		this.executionControl = executionControl;
+	}
 
-    // Getters and Setters
-    public ExecutionControl getExecutionControl() {
-        return executionControl;
-    }
+	public GenerationRuleExecution getGenerationRuleExecution() {
+		return generationRuleExecution;
+	}
 
-    public void setExecutionControl(ExecutionControl executionControl) {
-        this.executionControl = executionControl;
-    }
+	public void setGenerationRuleExecution(GenerationRuleExecution generationRuleExecution) {
+		this.generationRuleExecution = generationRuleExecution;
+	}
 
-    public GenerationRuleExecution getGenerationRuleExecution() {
-        return generationRuleExecution;
-    }
+	public String getGenerationRuleTypeName() {
+		return generationRuleTypeName;
+	}
 
-    public void setGenerationRuleExecution(GenerationRuleExecution generationRuleExecution) {
-        this.generationRuleExecution = generationRuleExecution;
-    }
+	public void setGenerationRuleTypeName(String generationRuleTypeName) {
+		this.generationRuleTypeName = generationRuleTypeName;
+	}
 
-    public String getGenerationRuleTypeName() {
-        return generationRuleTypeName;
-    }
+	public GenerationRuleParameterExecution getBlankValue() {
+		return blankValue;
+	}
 
-    public void setGenerationRuleTypeName(String generationRuleTypeName) {
-        this.generationRuleTypeName = generationRuleTypeName;
-    }
+	public void setBlankValue(GenerationRuleParameterExecution blankValue) {
+		this.blankValue = blankValue;
+	}
 
-    public GenerationRuleParameterExecution getBlankValue() {
-        return blankValue;
-    }
+	public FrameworkExecution getFrameworkExecution() {
+		return frameworkExecution;
+	}
 
-    public void setBlankValue(GenerationRuleParameterExecution blankValue) {
-        this.blankValue = blankValue;
-    }
-
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
-    }
-
+	public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
+		this.frameworkExecution = frameworkExecution;
+	}
 }

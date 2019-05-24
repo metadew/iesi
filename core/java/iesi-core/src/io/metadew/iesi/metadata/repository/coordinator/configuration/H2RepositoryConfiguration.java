@@ -5,6 +5,7 @@ import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.H2Database;
 import io.metadew.iesi.connection.database.connection.H2DatabaseConnection;
 import io.metadew.iesi.framework.configuration.FrameworkSettingConfiguration;
+import io.metadew.iesi.framework.crypto.FrameworkCrypto;
 import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
 
 import java.util.HashMap;
@@ -25,12 +26,12 @@ public class H2RepositoryConfiguration extends RepositoryConfiguration {
     private String readerUserPassword;
 
 
-    public H2RepositoryConfiguration(ConfigFile configFile, FrameworkSettingConfiguration frameworkSettingConfiguration) {
-        super(configFile, frameworkSettingConfiguration);
+    public H2RepositoryConfiguration(ConfigFile configFile, FrameworkSettingConfiguration frameworkSettingConfiguration, FrameworkCrypto frameworkCrypto) {
+       super(configFile, frameworkSettingConfiguration, frameworkCrypto);
     }
 
     @Override
-    void fromConfigFile(ConfigFile configFile, FrameworkSettingConfiguration frameworkSettingConfiguration) {
+    void fromConfigFile(ConfigFile configFile, FrameworkSettingConfiguration frameworkSettingConfiguration, FrameworkCrypto frameworkCrypto) {
         // host
         if (frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.host").isPresent() &&
                 configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.host").get()).isPresent()) {

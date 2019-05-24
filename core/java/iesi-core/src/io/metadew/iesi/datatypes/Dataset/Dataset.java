@@ -1,8 +1,6 @@
 package io.metadew.iesi.datatypes.Dataset;
 
 import io.metadew.iesi.connection.database.Database;
-import io.metadew.iesi.connection.database.SqliteDatabase;
-import io.metadew.iesi.connection.database.connection.SqliteDatabaseConnection;
 import io.metadew.iesi.datatypes.Array;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeResolver;
@@ -11,8 +9,6 @@ import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 import org.apache.logging.log4j.Level;
 
-import javax.sql.rowset.CachedRowSet;
-import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.text.MessageFormat;

@@ -8,7 +8,8 @@ public class ListLookup implements LookupInstruction {
 
     private final String CONNECTION_PARAMETER_NAME_KEY = "parameterName";
 
-    private final Pattern INPUT_PARAMETER_PATTERN = Pattern
+    @SuppressWarnings("unused")
+	private final Pattern INPUT_PARAMETER_PATTERN = Pattern
             .compile("\\s*\"?(?<" + CONNECTION_NAME_KEY + ">(\\w|\\.)+)\"?\\s*,\\s*(?<" + CONNECTION_PARAMETER_NAME_KEY + ">(\\w|\\.)+)\\s*");
 
     @Override

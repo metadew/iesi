@@ -121,7 +121,6 @@ public class HttpExecuteRequest {
         this.getActionParameterOperationMap().put("setKeyValueDataset", this.getSetDataset());
     }
 
-    @SuppressWarnings("rawtypes")
     public boolean execute() {
         try {
             String requestName = convertHttpRequestName(getRequestName().getValue());
@@ -146,7 +145,8 @@ public class HttpExecuteRequest {
         }
     }
 
-    private boolean executeHttpRequest(String requestName, String requestType, Optional<String> requestBody, boolean setRuntimeVariables, String outputDatasetReferenceName) {
+    @SuppressWarnings("rawtypes")
+	private boolean executeHttpRequest(String requestName, String requestType, Optional<String> requestBody, boolean setRuntimeVariables, String outputDatasetReferenceName) {
         // Get request configuration
         RequestOperation requestOperation = new RequestOperation(this.getFrameworkExecution(),
                 this.getExecutionControl(), this.getActionExecution(), requestName);

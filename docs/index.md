@@ -4,6 +4,7 @@
 
 ![GitHub release](https://img.shields.io/github/release-pre/metadew/iesi.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
+![Docker Cloud Build Status](https://img.shields.io/docker/cloud/build/metadew/iesi.svg)
 [![Slack Status](https://img.shields.io/badge/slack-join_chat-white.svg?logo=slack&style=social)](https://join.slack.com/t/metadew/shared_invite/enQtNjMzOTk0MjI0Mzg1LTI4OThjYmVlMWRkYjg1OTkwZjAyYmQzMjU5OWVlZTJlMGIzMWVhZTE3N2RjZGVmOTk2MDRiNjk0Y2ViMjgyYTU)
 
 **Automation for everyone.** Our vision is that automation should be easy; our mission that it should be available to everyone. Whether you are working in a small company or a large one, working on a small project or automating end-to-end processes across an entire organization, working from your laptop or running your infrastructure in the cloud; you should be able to leverage our framework to be up and running very fast.
@@ -47,9 +48,11 @@ Our framework can run on Linux/Unix and Windows systems.
 
 |Technology|Configuration|Connectivity|Data|
 |----------|    :---:    |   :---:    |   :---:    |
+|Apache Drill|![grey](/{{site.repository}}/images/icons/grey-dot.png)|![green](/{{site.repository}}/images/icons/green-dot.png)|![red](/{{site.repository}}/images/icons/red-dot.png)|
 |Dremio|![grey](/{{site.repository}}/images/icons/grey-dot.png)|![green](/{{site.repository}}/images/icons/green-dot.png)|![red](/{{site.repository}}/images/icons/red-dot.png)|
 |File System|![green](/{{site.repository}}/images/icons/green-dot.png)|![green](/{{site.repository}}/images/icons/green-dot.png)|![green](/{{site.repository}}/images/icons/green-dot.png)|
 |H2|![green](/{{site.repository}}/images/icons/green-dot.png)|![green](/{{site.repository}}/images/icons/green-dot.png)|![red](/{{site.repository}}/images/icons/red-dot.png)|
+|Maria DB|![red](/{{site.repository}}/images/icons/red-dot.png)|![green](/{{site.repository}}/images/icons/green-dot.png)|![red](/{{site.repository}}/images/icons/red-dot.png)|
 |Microsoft SQL Server|![red](/{{site.repository}}/images/icons/red-dot.png)|![green](/{{site.repository}}/images/icons/green-dot.png)|![red](/{{site.repository}}/images/icons/red-dot.png)|
 |MySQL|![red](/{{site.repository}}/images/icons/red-dot.png)|![green](/{{site.repository}}/images/icons/green-dot.png)|![red](/{{site.repository}}/images/icons/red-dot.png)|
 |Netezza|![green](/{{site.repository}}/images/icons/green-dot.png)|![green](/{{site.repository}}/images/icons/green-dot.png)|![red](/{{site.repository}}/images/icons/red-dot.png)|

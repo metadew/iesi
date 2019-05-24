@@ -114,7 +114,8 @@ public class ExecutionRuntime {
         datasetMap = new HashMap<>();
     }
 
-    public void terminate() {
+    @SuppressWarnings("rawtypes")
+	public void terminate() {
         // cleanup stage connections if needed
         ObjectMapper objectMapper = new ObjectMapper();
         Iterator iterator = this.getStageOperationMap().entrySet().iterator();
@@ -814,7 +815,8 @@ public class ExecutionRuntime {
                 .orElse(input);
     }
 
-    private String lookupDatasetInstruction(ExecutionControl executionControl, String input) {
+    @SuppressWarnings("unused")
+	private String lookupDatasetInstruction(ExecutionControl executionControl, String input) {
         String output = input;
 
         // Parse input

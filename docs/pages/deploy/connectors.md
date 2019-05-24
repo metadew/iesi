@@ -14,11 +14,13 @@ The framework will load all necessary driver on startup.
 
 |Technology|Library|Comment|
 |----------|    :---:    |   :---:    |
+|Apache Drill|![green](/{{site.repository}}/images/icons/green-dot.png)||
 |Dremio|![green](/{{site.repository}}/images/icons/green-dot.png)||
 |File System|![grey](/{{site.repository}}/images/icons/green-dot.png)||
 |H2|![green](/{{site.repository}}/images/icons/green-dot.png)||
+|Maria DB|![red](/{{site.repository}}/images/icons/green-dot.png)||
 |Microsoft SQL Server|![green](/{{site.repository}}/images/icons/green-dot.png)||
-|MySQL|![yellow](/{{site.repository}}/images/icons/green-dot.png)||
+|MySQL|![red](/{{site.repository}}/images/icons/green-dot.png)||
 |Netezza|![red](/{{site.repository}}/images/icons/green-dot.png)||
 |Oracle|![red](/{{site.repository}}/images/icons/green-dot.png)||
 |Postgresql|![green](/{{site.repository}}/images/icons/green-dot.png)||

@@ -1,0 +1,9 @@
+version: '3.2'
+services:
+  iesi-test-drill-1:
+    build: './drill'
+    ports:
+      - '8047:8047'
+    container_name: iesi-test-drill-1
+    hostname: iesi-test-drill-1
+    restart: unless-stopped

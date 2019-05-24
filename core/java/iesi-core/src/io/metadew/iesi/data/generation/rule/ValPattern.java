@@ -13,111 +13,120 @@ import java.io.StringWriter;
 
 public class ValPattern {
 
-    private GenerationRuleExecution generationRuleExecution;
-    private FrameworkExecution frameworkExecution;
-    private ExecutionControl executionControl;
-    private String generationRuleTypeName = "val.pattern";
+	private GenerationRuleExecution generationRuleExecution;
+	private FrameworkExecution frameworkExecution;
+	private ExecutionControl executionControl;
+	private String generationRuleTypeName = "val.pattern";
 
-    // Parameters
-    private GenerationRuleParameterExecution expression;
+	// Parameters
+	private GenerationRuleParameterExecution expression;
 
-    // Constructors
-    public ValPattern(FrameworkExecution frameworkExecution, ExecutionControl executionControl, GenerationRuleExecution generationRuleExecution) {
-        this.setFrameworkExecution(frameworkExecution);
-        this.setEoControl(executionControl);
-        this.setGenerationRuleExecution(generationRuleExecution);
-    }
+	// Constructors
+	public ValPattern() {
+		
+	}
+	
+	public ValPattern(FrameworkExecution frameworkExecution, ExecutionControl executionControl, GenerationRuleExecution generationRuleExecution) {
+		this.setFrameworkExecution(frameworkExecution);
+		this.setEoControl(executionControl);
+		this.setGenerationRuleExecution(generationRuleExecution);
+	}
 
-    //
-    public boolean execute() {
-        try {
-            this.getFrameworkExecution().getFrameworkLog()
-                    .log("generation.rule.type=" + this.getGenerationRuleTypeName(), Level.INFO);
+	public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl, GenerationRuleExecution generationRuleExecution) {
+		this.setFrameworkExecution(frameworkExecution);
+		this.setEoControl(executionControl);
+		this.setGenerationRuleExecution(generationRuleExecution);
+	}
 
-            // Reset Parameters
-            this.setExpression(new GenerationRuleParameterExecution(this.getFrameworkExecution(), this.getEoControl(),
-                    this.getGenerationRuleTypeName(), "expression"));
+	//
+	public boolean execute() {
+		try {
+			this.getFrameworkExecution().getFrameworkLog()
+					.log("generation.rule.type=" + this.getGenerationRuleTypeName(), Level.INFO);
 
-            // Get Parameters
-            for (GenerationRuleParameter generationRuleParameter : this.getGenerationRuleExecution().getGenerationRule()
-                    .getParameters()) {
-                if (generationRuleParameter.getName().equalsIgnoreCase("expression")) {
-                    this.getExpression().setInputValue(generationRuleParameter.getValue());
-                }
-            }
+			// Reset Parameters
+			this.setExpression(new GenerationRuleParameterExecution(this.getFrameworkExecution(), this.getEoControl(),
+					this.getGenerationRuleTypeName(), "expression"));
 
-            // Run the generationRule
-            try {
-                for (int currentRecord = 0; currentRecord < this.getGenerationRuleExecution().getGenerationExecution()
-                        .getNumberOfRecords(); currentRecord++) {
+			// Get Parameters
+			for (GenerationRuleParameter generationRuleParameter : this.getGenerationRuleExecution().getGenerationRule()
+					.getParameters()) {
+				if (generationRuleParameter.getName().equalsIgnoreCase("expression")) {
+					this.getExpression().setInputValue(generationRuleParameter.getValue());
+				}
+			}
 
-                    String generatedValue = this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime()
-                            .getGenerationObjectExecution().getPattern().nextValue(this.getExpression().getValue());
+			// Run the generationRule
+			try {
+				for (int currentRecord = 0; currentRecord < this.getGenerationRuleExecution().getGenerationExecution()
+						.getNumberOfRecords(); currentRecord++) {
+					
+					String generatedValue = this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime()
+							.getGenerationObjectExecution().getPattern().nextValue(this.getExpression().getValue());
+					
+					String query = "update " + this.getGenerationRuleExecution().getGenerationExecution().getGeneration().getName();
+					query += " set v" + this.getGenerationRuleExecution().getGenerationRule().getField() + "=";
+					query += SQLTools.GetStringForSQL(generatedValue);
+					query += " where id=" + (currentRecord + 1);
+					this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().getTemporaryDatabaseConnection()
+							.executeUpdate(query);
 
-                    String query = "update " + this.getGenerationRuleExecution().getGenerationExecution().getGeneration().getName();
-                    query += " set v" + this.getGenerationRuleExecution().getGenerationRule().getField() + "=";
-                    query += SQLTools.GetStringForSQL(generatedValue);
-                    query += " where id=" + (currentRecord + 1);
-                    this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().getTemporaryDatabaseConnection()
-                            .executeUpdate(query);
+					this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().updateProgress();
+				}
 
-                    this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().updateProgress();
-                }
+			} catch (Exception e) {
+				throw new RuntimeException("Issue generating data: " + e, e);
+			}
+			return true;
+		} catch (Exception e) {
+			StringWriter StackTrace = new StringWriter();
+			e.printStackTrace(new PrintWriter(StackTrace));
 
-            } catch (Exception e) {
-                throw new RuntimeException("Issue generating data: " + e, e);
-            }
-            return true;
-        } catch (Exception e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
+			// TODO logging
 
-            // TODO logging
+			return false;
+		}
 
-            return false;
-        }
+	}
 
-    }
+	// Getters and Setters
+	public ExecutionControl getEoControl() {
+		return executionControl;
+	}
 
-    // Getters and Setters
-    public ExecutionControl getEoControl() {
-        return executionControl;
-    }
+	public void setEoControl(ExecutionControl executionControl) {
+		this.executionControl = executionControl;
+	}
 
-    public void setEoControl(ExecutionControl executionControl) {
-        this.executionControl = executionControl;
-    }
+	public GenerationRuleExecution getGenerationRuleExecution() {
+		return generationRuleExecution;
+	}
 
-    public GenerationRuleExecution getGenerationRuleExecution() {
-        return generationRuleExecution;
-    }
+	public void setGenerationRuleExecution(GenerationRuleExecution generationRuleExecution) {
+		this.generationRuleExecution = generationRuleExecution;
+	}
 
-    public void setGenerationRuleExecution(GenerationRuleExecution generationRuleExecution) {
-        this.generationRuleExecution = generationRuleExecution;
-    }
+	public String getGenerationRuleTypeName() {
+		return generationRuleTypeName;
+	}
 
-    public String getGenerationRuleTypeName() {
-        return generationRuleTypeName;
-    }
+	public void setGenerationRuleTypeName(String generationRuleTypeName) {
+		this.generationRuleTypeName = generationRuleTypeName;
+	}
 
-    public void setGenerationRuleTypeName(String generationRuleTypeName) {
-        this.generationRuleTypeName = generationRuleTypeName;
-    }
+	public GenerationRuleParameterExecution getExpression() {
+		return expression;
+	}
 
-    public GenerationRuleParameterExecution getExpression() {
-        return expression;
-    }
+	public void setExpression(GenerationRuleParameterExecution expression) {
+		this.expression = expression;
+	}
 
-    public void setExpression(GenerationRuleParameterExecution expression) {
-        this.expression = expression;
-    }
+	public FrameworkExecution getFrameworkExecution() {
+		return frameworkExecution;
+	}
 
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
-    }
-
+	public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
+		this.frameworkExecution = frameworkExecution;
+	}
 }

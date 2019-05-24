@@ -1,0 +1,12 @@
+---
+type: Connection
+data:
+  name: "db.drill.1"
+  type: "db.drill"
+  description: "db.drill connection"
+  environment: "iesi-test"
+  parameters:
+  - name: "mode"
+    value: "drillbit"
+  - name: "cluster"
+    value: "localhost"

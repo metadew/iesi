@@ -19,42 +19,40 @@ public class MssqlDatabaseConnection extends DatabaseConnection {
         super(type, connectionURL, userName, userPassword);
     }
 
-    public MssqlDatabaseConnection(String hostName, int portNumber, String databaseName, String userName,
-                                   String userPassword) {
-        super(type, getConnectionUrl(hostName, portNumber, databaseName, userName, userPassword), userName,
-                userPassword);
-    }
+	public MssqlDatabaseConnection(String hostName, int portNumber, String databaseName, String userName,
+			String userPassword) {
+		super(type, getConnectionUrl(hostName, portNumber, databaseName), userName, userPassword);
+	}
 
-    private static String getConnectionUrl(String hostName, int portNumber, String databaseName, String userName,
-                                           String userPassword) {
-        StringBuilder connectionUrl = new StringBuilder();
-        connectionUrl.append("jdbc:sqlserver://");
-        connectionUrl.append(hostName);
-        if (portNumber > 0) {
-            connectionUrl.append(":");
-            connectionUrl.append(portNumber);
-        }
+	public static String getConnectionUrl(String hostName, int portNumber, String databaseName) {
+		StringBuilder connectionUrl = new StringBuilder();
+		connectionUrl.append("jdbc:sqlserver://");
+		connectionUrl.append(hostName);
+		if (portNumber > 0) {
+			connectionUrl.append(":");
+			connectionUrl.append(portNumber);
+		}
 
-        if (!databaseName.isEmpty()) {
-            connectionUrl.append(";");
-            connectionUrl.append("database=");
-            connectionUrl.append(databaseName);
-            connectionUrl.append(";");
-        }
+		if (!databaseName.isEmpty()) {
+			connectionUrl.append(";");
+			connectionUrl.append("database=");
+			connectionUrl.append(databaseName);
+		}
 
-        /*
-         * connectionUrl.append("encrypt="); connectionUrl.append("true");
-         * connectionUrl.append(";");
-         *
-         * connectionUrl.append("trustServerCertificate=");
-         * connectionUrl.append("false"); connectionUrl.append(";");
-         *
-         * connectionUrl.append("loginTimeout="); connectionUrl.append("30");
-         * connectionUrl.append(";");
-         */
+		/*
+		 * connectionUrl.append(";"); connectionUrl.append("encrypt=");
+		 * connectionUrl.append("true"); connectionUrl.append(";");
+		 * 
+		 * connectionUrl.append("trustServerCertificate=");
+		 * connectionUrl.append("false"); connectionUrl.append(";");
+		 * 
+		 * connectionUrl.append("loginTimeout="); connectionUrl.append("30");
+		 * connectionUrl.append(";");
+		 */
 
-        return connectionUrl.toString();
-    }
+		System.out.println(connectionUrl.toString());
+		return connectionUrl.toString();
+	}
 
     @Override
     public String getDriver() {

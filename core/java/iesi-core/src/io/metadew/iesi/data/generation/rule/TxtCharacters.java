@@ -13,113 +13,122 @@ import java.io.StringWriter;
 
 public class TxtCharacters {
 
-    private GenerationRuleExecution generationRuleExecution;
-    private FrameworkExecution frameworkExecution;
-    private ExecutionControl executionControl;
-    private String generationRuleTypeName = "txt.characters";
+	private GenerationRuleExecution generationRuleExecution;
+	private FrameworkExecution frameworkExecution;
+	private ExecutionControl executionControl;
+	private String generationRuleTypeName = "txt.characters";
 
-    // Parameters
-    private GenerationRuleParameterExecution characterNumber;
+	// Parameters
+	private GenerationRuleParameterExecution characterNumber;
 
-    // Constructors
-    public TxtCharacters(FrameworkExecution frameworkExecution, ExecutionControl executionControl, GenerationRuleExecution generationRuleExecution) {
-        this.setFrameworkExecution(frameworkExecution);
-        this.setEoControl(executionControl);
-        this.setGenerationRuleExecution(generationRuleExecution);
-    }
+	// Constructors
+	public TxtCharacters() {
+		
+	}
+	
+	public TxtCharacters(FrameworkExecution frameworkExecution, ExecutionControl executionControl, GenerationRuleExecution generationRuleExecution) {
+		this.setFrameworkExecution(frameworkExecution);
+		this.setEoControl(executionControl);
+		this.setGenerationRuleExecution(generationRuleExecution);
+	}
 
-    //
-    public boolean execute() {
-        try {
-            this.getFrameworkExecution().getFrameworkLog()
-                    .log("generation.rule.type=" + this.getGenerationRuleTypeName(), Level.INFO);
+	public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl, GenerationRuleExecution generationRuleExecution) {
+		this.setFrameworkExecution(frameworkExecution);
+		this.setEoControl(executionControl);
+		this.setGenerationRuleExecution(generationRuleExecution);
+	}
 
-            // Reset Parameters
-            this.setCharacterNumber(new GenerationRuleParameterExecution(this.getFrameworkExecution(), this.getEoControl(),
-                    this.getGenerationRuleTypeName(), "CHAR_NB"));
+	//
+	public boolean execute() {
+		try {
+			this.getFrameworkExecution().getFrameworkLog()
+					.log("generation.rule.type=" + this.getGenerationRuleTypeName(), Level.INFO);
 
-            // Get Parameters
-            for (GenerationRuleParameter generationRuleParameter : this.getGenerationRuleExecution().getGenerationRule()
-                    .getParameters()) {
-                if (generationRuleParameter.getName().equalsIgnoreCase("char_nb")) {
-                    this.getCharacterNumber().setInputValue(generationRuleParameter.getValue());
-                }
-            }
+			// Reset Parameters
+			this.setCharacterNumber(new GenerationRuleParameterExecution(this.getFrameworkExecution(), this.getEoControl(),
+					this.getGenerationRuleTypeName(), "CHAR_NB"));
 
-            // Run the generationRule
-            try {
-                for (int currentRecord = 0; currentRecord < this.getGenerationRuleExecution().getGenerationExecution().getNumberOfRecords(); currentRecord++) {
-                    String generatedValue = "";
-                    if (this.getCharacterNumber().getValue().trim().equalsIgnoreCase("")) {
-                        generatedValue = this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().getGenerationObjectExecution().getLorem().characters();
-                    } else {
-                        generatedValue = this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().getGenerationObjectExecution().getLorem().characters(Integer.parseInt(this.getCharacterNumber().getValue()));
-                    }
+			// Get Parameters
+			for (GenerationRuleParameter generationRuleParameter : this.getGenerationRuleExecution().getGenerationRule()
+					.getParameters()) {
+				if (generationRuleParameter.getName().equalsIgnoreCase("char_nb")) {
+					this.getCharacterNumber().setInputValue(generationRuleParameter.getValue());
+				}
+			}
+			
+			// Run the generationRule
+			try {				
+				for (int currentRecord = 0; currentRecord < this.getGenerationRuleExecution().getGenerationExecution().getNumberOfRecords(); currentRecord++) {
+					String generatedValue = "";
+					if (this.getCharacterNumber().getValue().trim().equalsIgnoreCase("")) {
+						generatedValue = this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().getGenerationObjectExecution().getLorem().characters();
+					} else {
+						generatedValue = this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().getGenerationObjectExecution().getLorem().characters(Integer.parseInt(this.getCharacterNumber().getValue()));
+					}
+					
+					String query = "update " + this.getGenerationRuleExecution().getGenerationExecution().getGeneration().getName();
+					query += " set v" + this.getGenerationRuleExecution().getGenerationRule().getField() + "=";
+					query += SQLTools.GetStringForSQL(generatedValue);
+					query += " where id=" + (currentRecord + 1);
+					this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().getTemporaryDatabaseConnection().executeUpdate(query);
+					
+					this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().updateProgress();
+				}
 
-                    String query = "update " + this.getGenerationRuleExecution().getGenerationExecution().getGeneration().getName();
-                    query += " set v" + this.getGenerationRuleExecution().getGenerationRule().getField() + "=";
-                    query += SQLTools.GetStringForSQL(generatedValue);
-                    query += " where id=" + (currentRecord + 1);
-                    this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().getTemporaryDatabaseConnection().executeUpdate(query);
 
-                    this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().updateProgress();
-                }
+			} catch (Exception e) {
+				throw new RuntimeException("Issue generating data: " + e, e);
+			}
+			return true;
+		} catch (Exception e) {
+			StringWriter StackTrace = new StringWriter();
+			e.printStackTrace(new PrintWriter(StackTrace));
 
+			// TODO logging
 
-            } catch (Exception e) {
-                throw new RuntimeException("Issue generating data: " + e, e);
-            }
-            return true;
-        } catch (Exception e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
+			return false;
+		}
 
-            // TODO logging
+	}
 
-            return false;
-        }
+	// Getters and Setters
+	public ExecutionControl getEoControl() {
+		return executionControl;
+	}
 
-    }
+	public void setEoControl(ExecutionControl executionControl) {
+		this.executionControl = executionControl;
+	}
 
-    // Getters and Setters
-    public ExecutionControl getEoControl() {
-        return executionControl;
-    }
+	public GenerationRuleExecution getGenerationRuleExecution() {
+		return generationRuleExecution;
+	}
 
-    public void setEoControl(ExecutionControl executionControl) {
-        this.executionControl = executionControl;
-    }
+	public void setGenerationRuleExecution(GenerationRuleExecution generationRuleExecution) {
+		this.generationRuleExecution = generationRuleExecution;
+	}
 
-    public GenerationRuleExecution getGenerationRuleExecution() {
-        return generationRuleExecution;
-    }
+	public String getGenerationRuleTypeName() {
+		return generationRuleTypeName;
+	}
 
-    public void setGenerationRuleExecution(GenerationRuleExecution generationRuleExecution) {
-        this.generationRuleExecution = generationRuleExecution;
-    }
+	public void setGenerationRuleTypeName(String generationRuleTypeName) {
+		this.generationRuleTypeName = generationRuleTypeName;
+	}
 
-    public String getGenerationRuleTypeName() {
-        return generationRuleTypeName;
-    }
+	public GenerationRuleParameterExecution getCharacterNumber() {
+		return characterNumber;
+	}
 
-    public void setGenerationRuleTypeName(String generationRuleTypeName) {
-        this.generationRuleTypeName = generationRuleTypeName;
-    }
+	public void setCharacterNumber(GenerationRuleParameterExecution characterNumber) {
+		this.characterNumber = characterNumber;
+	}
 
-    public GenerationRuleParameterExecution getCharacterNumber() {
-        return characterNumber;
-    }
+	public FrameworkExecution getFrameworkExecution() {
+		return frameworkExecution;
+	}
 
-    public void setCharacterNumber(GenerationRuleParameterExecution characterNumber) {
-        this.characterNumber = characterNumber;
-    }
-
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
-    }
-
+	public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
+		this.frameworkExecution = frameworkExecution;
+	}
 }

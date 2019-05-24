@@ -75,7 +75,6 @@ public class SqlDefineDataset {
         this.getActionParameterOperationMap().put("identifier", this.getSqlIdentifier());
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
     public boolean execute() {
         try {
             String referenceName = convertReferenceName(getReferenceName().getValue());

@@ -94,7 +94,8 @@ public class KeyValueDataset extends Dataset {
         return database;
     }
 
-    public void clean() {
+    @SuppressWarnings("unused")
+	public void clean() {
         // Check if table exists
         String queryTableExists = "select name from sqlite_master where name = '" + getTableName() + "'";
         CachedRowSet crs = null;

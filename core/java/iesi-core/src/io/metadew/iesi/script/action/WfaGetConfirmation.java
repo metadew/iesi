@@ -73,7 +73,8 @@ public class WfaGetConfirmation {
         this.getActionParameterOperationMap().put("timeout", this.getTimeoutInterval());
     }
 
-    public boolean execute() {
+    @SuppressWarnings("unused")
+	public boolean execute() {
         try {
             int timeoutInterval = convertTimeoutInterval(getTimeoutInterval().getValue());
             String question = convertQuestion(getConfirmationQuestion().getValue());

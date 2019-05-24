@@ -11,35 +11,38 @@ import java.net.URLClassLoader;
 
 public class JarOperation {
 
-    private FrameworkExecution frameworkExecution;
+	private FrameworkExecution frameworkExecution;
 
-    public JarOperation() {
-    }
+	public JarOperation() {
+	}
 
-    public JavaArchive getJavaArchiveDefinition(String fileName) {
-        JavaArchive javaArchive = null;
-        try {
-            File file = new File(fileName);
-            URLClassLoader urlClassLoader = new URLClassLoader(new URL[]{file.toURI().toURL()},
-                    JarTools.class.getClassLoader());
+	public JavaArchive getJavaArchiveDefinition(String fileName) {
+		JavaArchive javaArchive = null;
+		try {
+			File file = new File(fileName);
+			URLClassLoader urlClassLoader = new URLClassLoader(new URL[] { file.toURI().toURL() },
+					JarTools.class.getClassLoader());
+			
+			javaArchive = JarTools.getJavaArchiveDefinition(fileName, urlClassLoader);
+			ObjectMapper mapper = new ObjectMapper();
+			System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(javaArchive));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
-            javaArchive = JarTools.getJavaArchiveDefinition(fileName, urlClassLoader);
-            ObjectMapper mapper = new ObjectMapper();
-            System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(javaArchive));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+		return javaArchive;
+	}
+	
+	public void storeJavaArchiveDefinition(String connectionName) {
 
-        return javaArchive;
-    }
+	}
 
-    // Getters and Setters
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
+	// Getters and Setters
+	public FrameworkExecution getFrameworkExecution() {
+		return frameworkExecution;
+	}
 
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
-    }
-
+	public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
+		this.frameworkExecution = frameworkExecution;
+	}
 }

@@ -162,7 +162,8 @@ public class FwkExecuteSuite {
         }
     }
 
-    private boolean execute(String componentName, String suiteName, String suiteVersion, String suiteBuild, String repositoryConnectionName, String repositoryComponentPath, String repositorySuitePath, String repositoryVersionPath, String repositoryBuildPath, String repositoryBuildAsset, String environmentName) {
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+	private boolean execute(String componentName, String suiteName, String suiteVersion, String suiteBuild, String repositoryConnectionName, String repositoryComponentPath, String repositorySuitePath, String repositoryVersionPath, String repositoryBuildPath, String repositoryBuildAsset, String environmentName) {
         // Get Connection
         ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution());
         Connection connection = connectionConfiguration.getConnection(repositoryConnectionName,

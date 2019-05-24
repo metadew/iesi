@@ -84,7 +84,8 @@ public class DataSetDatasetConnection {
     }
 
     //
-    public boolean execute() {
+    @SuppressWarnings("unused")
+	public boolean execute() {
         try {
             String referenceName = convertDatasetReferenceName(getReferenceName().getValue());
             String datasetName = convertDatasetName(getDatasetName().getValue());

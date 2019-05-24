@@ -3,7 +3,13 @@ package io.metadew.iesi.metadata.repository.configuration;
 import io.metadew.iesi.common.config.ConfigFile;
 import io.metadew.iesi.framework.configuration.FrameworkConfiguration;
 import io.metadew.iesi.framework.configuration.FrameworkSettingConfiguration;
-import io.metadew.iesi.metadata.repository.*;
+import io.metadew.iesi.framework.crypto.FrameworkCrypto;
+import io.metadew.iesi.metadata.repository.ConnectivityMetadataRepository;
+import io.metadew.iesi.metadata.repository.ControlMetadataRepository;
+import io.metadew.iesi.metadata.repository.DesignMetadataRepository;
+import io.metadew.iesi.metadata.repository.MetadataRepository;
+import io.metadew.iesi.metadata.repository.ResultMetadataRepository;
+import io.metadew.iesi.metadata.repository.TraceMetadataRepository;
 import io.metadew.iesi.metadata.repository.coordinator.configuration.RepositoryConfiguration;
 import io.metadew.iesi.metadata.repository.coordinator.configuration.RepositoryConfigurationFactory;
 
@@ -23,9 +29,9 @@ public class MetadataRepositoryConfiguration {
     private String instanceName;
     private RepositoryConfiguration repositoryConfiguration;
 
-    public MetadataRepositoryConfiguration(ConfigFile configFile, FrameworkSettingConfiguration frameworkSettingConfiguration) {
-        fromConfigFile(configFile, frameworkSettingConfiguration);
-    }
+	public MetadataRepositoryConfiguration(ConfigFile configFile, FrameworkSettingConfiguration frameworkSettingConfiguration, FrameworkCrypto frameworkCrypto) {
+		fromConfigFile(configFile, frameworkSettingConfiguration, frameworkCrypto);
+	}
 
     public MetadataRepositoryConfiguration(String name, String type, List<String> categories, String scope,
                                            String instanceName, RepositoryConfiguration repositoryConfiguration) {
@@ -61,43 +67,42 @@ public class MetadataRepositoryConfiguration {
         return repositoryConfiguration;
     }
 
-    private void fromConfigFile(ConfigFile configFile, FrameworkSettingConfiguration frameworkSettingConfiguration) {
-        // type
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.type").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.type").get()).isPresent()) {
-            type = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.type").get()).get();
-        } else {
-            throw new RuntimeException("No type configured for the metadata repository");
-        }
-        // category
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.category").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.category").get()).isPresent()) {
-            categories = Arrays.stream(configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.category").get()).get().split(","))
-                    .map(String::trim)
-                    .collect(Collectors.toList());
-        } else {
-            throw new RuntimeException("No category configured for the metadata repository");
-        }
+	private void fromConfigFile(ConfigFile configFile, FrameworkSettingConfiguration frameworkSettingConfiguration, FrameworkCrypto frameworkCrypto) {
+		// type
+		if (frameworkSettingConfiguration.getSettingPath("metadata.repository.type").isPresent() &&
+				configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.type").get()).isPresent()) {
+			type = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.type").get()).get();
+		} else {
+			throw new RuntimeException("No type configured for the metadata repository");
+		}
+		// category
+		if (frameworkSettingConfiguration.getSettingPath("metadata.repository.category").isPresent() &&
+				configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.category").get()).isPresent()) {
+			categories = Arrays.stream(configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.category").get()).get().split(","))
+					.map(String::trim)
+					.collect(Collectors.toList());
+		} else {
+			throw new RuntimeException("No category configured for the metadata repository");
+		}
 
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.name").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.name").get()).isPresent()) {
-            name = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.name").get()).get();
-        }
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.scope").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.scope").get()).isPresent()) {
-            scope = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.scope").get()).get();
-        }
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.instance.name").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.instance.name").get()).isPresent()) {
-            instanceName = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.instance.name").get()).get();
-        }
-        try {
-            repositoryConfiguration = new RepositoryConfigurationFactory().createRepositoryConfiguration(configFile, frameworkSettingConfiguration);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
+		if (frameworkSettingConfiguration.getSettingPath("metadata.repository.name").isPresent() &&
+				configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.name").get()).isPresent()) {
+			name = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.name").get()).get();
+		}
+		if (frameworkSettingConfiguration.getSettingPath("metadata.repository.scope").isPresent() &&
+				configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.scope").get()).isPresent()) {
+			scope = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.scope").get()).get();
+		}
+		if (frameworkSettingConfiguration.getSettingPath("metadata.repository.instance.name").isPresent() &&
+				configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.instance.name").get()).isPresent()) {
+			instanceName = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.instance.name").get()).get();
+		}
+		try {
+		repositoryConfiguration = new RepositoryConfigurationFactory().createRepositoryConfiguration(configFile, frameworkSettingConfiguration, frameworkCrypto);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
     public List<MetadataRepository> toMetadataRepositories(FrameworkConfiguration frameworkConfiguration) {
         // TODO: generate mist of MetadataRepositories, parse categories as list
         List<MetadataRepository> metadataRepositories = new ArrayList<>();

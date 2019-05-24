@@ -2,7 +2,6 @@ package io.metadew.iesi.metadata.repository.coordinator;
 
 import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.sql.SqlScriptResult;
-import io.metadew.iesi.framework.definition.Framework;
 import io.metadew.iesi.framework.execution.FrameworkLog;
 import io.metadew.iesi.metadata.definition.MetadataTable;
 

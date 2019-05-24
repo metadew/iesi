@@ -32,57 +32,17 @@ public class MssqlRepositoryConfiguration extends RepositoryConfiguration {
 
     @Override
     void fromConfigFile(ConfigFile configFile, FrameworkSettingConfiguration frameworkSettingConfiguration, FrameworkCrypto frameworkCrypto) {
-        // host
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.mssql.host").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.mssql.host").get()).isPresent()) {
-        	host = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.mssql.host").get()).get();
-        }
-        // port
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.mssql.port").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.mssql.port").get()).isPresent()) {
-        	port = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.mssql.port").get()).get();
-        }
-        // database
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.mssql.database").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.mssql.database").get()).isPresent()) {
-            database = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.mssql.database").get()).get();
-        }
-        // schema
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.mssql.schema").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.mssql.schema").get()).isPresent()) {
-            schema = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.mssql.schema").get()).get();
-        }
-        // set users and passwords
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.mssql.owner").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.mssql.owner").get()).isPresent()) {
-            ownerUser = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.mssql.owner").get()).get();
-        }
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.mssql.owner.password").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.mssql.owner.password").get()).isPresent()) {
-            ownerUserPassword = frameworkCrypto.decryptIfNeeded(configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.mssql.owner.password").get()).get());
-        }
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.mssql.writer").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.mssql.writer").get()).isPresent()) {
-            writerUser = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.mssql.writer").get()).get();
-        }
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.mssql.writer.password").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.mssql.writer.password").get()).isPresent()) {
-            writerUserPassword = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.mssql.writer.password").get()).get();
-        }
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.mssql.reader").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.mssql.reader").get()).isPresent()) {
-            readerUser = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.mssql.reader").get()).get();
-        }
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.mssql.reader.password").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.mssql.reader.password").get()).isPresent()) {
-            readerUserPassword = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.mssql.reader.password").get()).get();
-        }
-
-        // jdbc connection url
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.connection.string").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.connection.string").get()).isPresent()) {
-            jdbcConnectionString = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.connection.string").get()).get();
-        }
+    	host = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.mssql.host");
+    	port = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.mssql.port");
+    	database = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.mssql.database");
+    	schema = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.mssql.schema");
+    	ownerUser = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.mssql.owner");
+    	ownerUserPassword = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.mssql.owner.password");
+    	writerUser = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.mssql.writer");
+    	writerUserPassword = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.mssql.writer.password");
+    	readerUser = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.mssql.reader");
+    	readerUserPassword = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.mssql.reader.password");
+    	jdbcConnectionString = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.connection.string");
     }
 
     @Override

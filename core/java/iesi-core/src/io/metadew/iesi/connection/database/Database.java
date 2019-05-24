@@ -32,7 +32,8 @@ public abstract class Database {
         return databaseConnection.getConnection();
     }
 
-    public List<String> getAllTables(String pattern) {
+    @SuppressWarnings("unused")
+	public List<String> getAllTables(String pattern) {
         List<String> tables = new LinkedList<>();
         CachedRowSet crsCleanInventory = executeQuery(getAllTablesQuery(pattern));
         try {

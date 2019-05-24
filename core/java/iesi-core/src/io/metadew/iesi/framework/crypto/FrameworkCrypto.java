@@ -56,7 +56,7 @@ public class FrameworkCrypto {
 		if (input.trim().equalsIgnoreCase(""))
 			return output;
 
-		if (input.substring(0, 4).equalsIgnoreCase("ENC(")) {
+		if (input.length() > 5 && input.substring(0, 4).equalsIgnoreCase("ENC(")) {
 			if (!input.substring(input.length() - 1).equalsIgnoreCase(")")) {
 				throw new RuntimeException("Encrypted password not set correctly");
 			}

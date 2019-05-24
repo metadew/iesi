@@ -50,7 +50,6 @@ public class MssqlDatabaseConnection extends DatabaseConnection {
 		 * connectionUrl.append(";");
 		 */
 
-		System.out.println(connectionUrl.toString());
 		return connectionUrl.toString();
 	}
 

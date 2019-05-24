@@ -22,12 +22,10 @@ public class MssqlDatabaseConnection extends DatabaseConnection {
 
 	public MssqlDatabaseConnection(String hostName, int portNumber, String databaseName, String userName,
 			String userPassword) {
-		super(type, getConnectionUrl(hostName, portNumber, databaseName, userName, userPassword), userName,
-				userPassword);
+		super(type, getConnectionUrl(hostName, portNumber, databaseName), userName, userPassword);
 	}
 
-	private static String getConnectionUrl(String hostName, int portNumber, String databaseName, String userName,
-			String userPassword) {
+	public static String getConnectionUrl(String hostName, int portNumber, String databaseName) {
 		StringBuilder connectionUrl = new StringBuilder();
 		connectionUrl.append("jdbc:sqlserver://");
 		connectionUrl.append(hostName);
@@ -40,12 +38,11 @@ public class MssqlDatabaseConnection extends DatabaseConnection {
 			connectionUrl.append(";");
 			connectionUrl.append("database=");
 			connectionUrl.append(databaseName);
-			connectionUrl.append(";");
 		}
 
 		/*
-		 * connectionUrl.append("encrypt="); connectionUrl.append("true");
-		 * connectionUrl.append(";");
+		 * connectionUrl.append(";"); connectionUrl.append("encrypt=");
+		 * connectionUrl.append("true"); connectionUrl.append(";");
 		 * 
 		 * connectionUrl.append("trustServerCertificate=");
 		 * connectionUrl.append("false"); connectionUrl.append(";");
@@ -53,7 +50,8 @@ public class MssqlDatabaseConnection extends DatabaseConnection {
 		 * connectionUrl.append("loginTimeout="); connectionUrl.append("30");
 		 * connectionUrl.append(";");
 		 */
-		
+
+		System.out.println(connectionUrl.toString());
 		return connectionUrl.toString();
 	}
 

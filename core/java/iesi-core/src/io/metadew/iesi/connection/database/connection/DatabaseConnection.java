@@ -33,7 +33,7 @@ public abstract class DatabaseConnection {
 	public abstract String getDriver();
 
 	public Connection getConnection() throws SQLException {
-//		System.out.println("Creating connection " + connectionURL + " " + userName + " " + userPassword);
+		System.out.println("Creating connection " + connectionURL + " " + userName + " " + userPassword);
 		return DriverManager.getConnection(connectionURL, userName, userPassword);
 	}
 

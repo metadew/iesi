@@ -5,6 +5,7 @@ import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.PostgresqlDatabase;
 import io.metadew.iesi.connection.database.connection.PostgresqlDatabaseConnection;
 import io.metadew.iesi.framework.configuration.FrameworkSettingConfiguration;
+import io.metadew.iesi.framework.crypto.FrameworkCrypto;
 import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
 
 import java.util.HashMap;
@@ -27,12 +28,12 @@ public class PostgresqlRepositoryConfiguration extends RepositoryConfiguration {
     private String readerUserPassword;
 
 
-    public PostgresqlRepositoryConfiguration(ConfigFile configFile, FrameworkSettingConfiguration frameworkSettingConfiguration) {
-        super(configFile, frameworkSettingConfiguration);
+    public PostgresqlRepositoryConfiguration(ConfigFile configFile, FrameworkSettingConfiguration frameworkSettingConfiguration, FrameworkCrypto frameworkCrypto) {
+        super(configFile, frameworkSettingConfiguration, frameworkCrypto);
     }
 
     @Override
-    void fromConfigFile(ConfigFile configFile, FrameworkSettingConfiguration frameworkSettingConfiguration) {
+    void fromConfigFile(ConfigFile configFile, FrameworkSettingConfiguration frameworkSettingConfiguration, FrameworkCrypto frameworkCrypto) {
         // schema
         if (frameworkSettingConfiguration.getSettingPath("metadata.repository.postgresql.schema").isPresent() &&
                 configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.postgresql.schema").get()).isPresent()) {

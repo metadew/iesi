@@ -1,6 +1,6 @@
 package io.metadew.iesi.connection.database;
 
-import io.metadew.iesi.connection.database.connection.PostgresqlDatabaseConnection;
+import io.metadew.iesi.connection.database.connection.MssqlDatabaseConnection;
 import io.metadew.iesi.metadata.definition.MetadataField;
 
 import java.util.Optional;
@@ -9,7 +9,7 @@ public class MssqlDatabase extends Database{
 
     String schema;
 
-    public MssqlDatabase(PostgresqlDatabaseConnection databaseConnection, String schema) {
+    public MssqlDatabase(MssqlDatabaseConnection databaseConnection, String schema) {
         super(databaseConnection);
         this.schema = schema;
     }

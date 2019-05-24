@@ -15,6 +15,7 @@ import io.metadew.iesi.common.config.KeyValueConfigList;
 import io.metadew.iesi.common.config.LinuxConfigFile;
 import io.metadew.iesi.common.config.WindowsConfigFile;
 import io.metadew.iesi.framework.configuration.FrameworkConfiguration;
+import io.metadew.iesi.framework.crypto.FrameworkCrypto;
 import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
 import io.metadew.iesi.metadata.configuration.FrameworkPluginConfiguration;
 import io.metadew.iesi.metadata.repository.configuration.MetadataRepositoryConfiguration;
@@ -27,7 +28,7 @@ public class FrameworkControl {
 	private String logonType;
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public FrameworkControl(FrameworkConfiguration frameworkConfiguration, String logonType, FrameworkInitializationFile frameworkInitializationFile) {
+	public FrameworkControl(FrameworkConfiguration frameworkConfiguration, String logonType, FrameworkInitializationFile frameworkInitializationFile, FrameworkCrypto frameworkCrypto) {
 		try {
 			this.setLogonType(logonType);
 			this.setProperties(new Properties());
@@ -35,7 +36,7 @@ public class FrameworkControl {
 			this.setFrameworkPluginConfigurationList(new ArrayList());
 			this.getProperties().put(frameworkConfiguration.getFrameworkCode() + ".home",
 					frameworkConfiguration.getFrameworkHome());
-			this.readSettingFiles(frameworkConfiguration, frameworkInitializationFile.getName());
+			this.readSettingFiles(frameworkConfiguration, frameworkInitializationFile.getName(), frameworkCrypto);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -57,7 +58,7 @@ public class FrameworkControl {
 	}
 
 	// Methods
-	private void readSettingFiles(FrameworkConfiguration frameworkConfiguration, String initializationFile) {
+	private void readSettingFiles(FrameworkConfiguration frameworkConfiguration, String initializationFile, FrameworkCrypto frameworkCrypto) {
 		try {
 			File file = new File(this.resolveConfiguration("#" + frameworkConfiguration.getFrameworkCode()
 					+ ".home#/conf/" + initializationFile));
@@ -88,7 +89,7 @@ public class FrameworkControl {
 				}
 
 				if (type.trim().equalsIgnoreCase("repository")) {
-					MetadataRepositoryConfiguration metadataRepositoryConfiguration = new MetadataRepositoryConfiguration(configFile, frameworkConfiguration.getSettingConfiguration());
+					MetadataRepositoryConfiguration metadataRepositoryConfiguration = new MetadataRepositoryConfiguration(configFile, frameworkConfiguration.getSettingConfiguration(), frameworkCrypto);
 					this.getMetadataRepositoryConfigurations().add(metadataRepositoryConfiguration);
 				} else if (type.trim().equalsIgnoreCase("plugin")) {
 					FrameworkPluginConfiguration frameworkPluginConfiguration = new FrameworkPluginConfiguration(frameworkConfiguration, configFile);

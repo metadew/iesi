@@ -5,6 +5,7 @@ import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.OracleDatabase;
 import io.metadew.iesi.connection.database.connection.OracleDatabaseConnection;
 import io.metadew.iesi.framework.configuration.FrameworkSettingConfiguration;
+import io.metadew.iesi.framework.crypto.FrameworkCrypto;
 import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
 
 import java.util.HashMap;
@@ -30,12 +31,12 @@ public class OracleRepositoryConfiguration extends RepositoryConfiguration {
     private String readerUserPassword;
 
 
-    public OracleRepositoryConfiguration(ConfigFile configFile, FrameworkSettingConfiguration frameworkSettingConfiguration) {
-       super(configFile, frameworkSettingConfiguration);
+    public OracleRepositoryConfiguration(ConfigFile configFile, FrameworkSettingConfiguration frameworkSettingConfiguration, FrameworkCrypto frameworkCrypto) {
+       super(configFile, frameworkSettingConfiguration, frameworkCrypto);
     }
 
     @Override
-    void fromConfigFile(ConfigFile configFile, FrameworkSettingConfiguration frameworkSettingConfiguration) {
+    void fromConfigFile(ConfigFile configFile, FrameworkSettingConfiguration frameworkSettingConfiguration, FrameworkCrypto frameworkCrypto) {
         // schema
         if (frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.schema").isPresent() &&
                 configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.schema").get()).isPresent()) {

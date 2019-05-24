@@ -155,7 +155,7 @@ public class MetadataLauncher {
                         frameworkExecution.getFrameworkConfiguration().getFolderConfiguration().getFolderAbsolutePath("conf")
                                 + File.separator + config);
 
-                metadataRepositories = new MetadataRepositoryConfiguration(configFile, getFrameworkExecution().getFrameworkConfiguration().getSettingConfiguration())
+                metadataRepositories = new MetadataRepositoryConfiguration(configFile, getFrameworkExecution().getFrameworkConfiguration().getSettingConfiguration(), getFrameworkExecution().getFrameworkCrypto())
                         .toMetadataRepositories(frameworkExecution.getFrameworkConfiguration());
 
                 // metadataRepositories.addAll(metadataRepositories);

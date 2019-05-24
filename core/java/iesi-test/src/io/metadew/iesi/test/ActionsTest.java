@@ -127,7 +127,7 @@ public class ActionsTest {
 
             // Create repository
             List<LaunchArgument> metadataCreateArgs = new ArrayList();
-            LaunchArgument ini = new LaunchArgument(true, "-ini", "iesi-test.ini");
+            LaunchArgument ini = new LaunchArgument(true, "-ini", "iesi-test.mssql.ini");
             metadataCreateArgs.add(ini);
             LaunchArgument exit = new LaunchArgument(true, "-exit", "false");
             metadataCreateArgs.add(exit);

@@ -3,6 +3,7 @@ package io.metadew.iesi.metadata.repository.configuration;
 import io.metadew.iesi.common.config.ConfigFile;
 import io.metadew.iesi.framework.configuration.FrameworkConfiguration;
 import io.metadew.iesi.framework.configuration.FrameworkSettingConfiguration;
+import io.metadew.iesi.framework.crypto.FrameworkCrypto;
 import io.metadew.iesi.metadata.repository.ConnectivityMetadataRepository;
 import io.metadew.iesi.metadata.repository.ControlMetadataRepository;
 import io.metadew.iesi.metadata.repository.DesignMetadataRepository;
@@ -28,8 +29,8 @@ public class MetadataRepositoryConfiguration {
 	private String instanceName;
 	private RepositoryConfiguration repositoryConfiguration;
 
-	public MetadataRepositoryConfiguration(ConfigFile configFile, FrameworkSettingConfiguration frameworkSettingConfiguration) {
-		fromConfigFile(configFile, frameworkSettingConfiguration);
+	public MetadataRepositoryConfiguration(ConfigFile configFile, FrameworkSettingConfiguration frameworkSettingConfiguration, FrameworkCrypto frameworkCrypto) {
+		fromConfigFile(configFile, frameworkSettingConfiguration, frameworkCrypto);
 	}
 
 	public MetadataRepositoryConfiguration(String name, String type, List<String> categories, String scope,
@@ -66,7 +67,7 @@ public class MetadataRepositoryConfiguration {
 		return repositoryConfiguration;
 	}
 
-	private void fromConfigFile(ConfigFile configFile, FrameworkSettingConfiguration frameworkSettingConfiguration) {
+	private void fromConfigFile(ConfigFile configFile, FrameworkSettingConfiguration frameworkSettingConfiguration, FrameworkCrypto frameworkCrypto) {
 		// type
 		if (frameworkSettingConfiguration.getSettingPath("metadata.repository.type").isPresent() &&
 				configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.type").get()).isPresent()) {
@@ -97,7 +98,7 @@ public class MetadataRepositoryConfiguration {
 			instanceName = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.instance.name").get()).get();
 		}
 		try {
-		repositoryConfiguration = new RepositoryConfigurationFactory().createRepositoryConfiguration(configFile, frameworkSettingConfiguration);
+		repositoryConfiguration = new RepositoryConfigurationFactory().createRepositoryConfiguration(configFile, frameworkSettingConfiguration, frameworkCrypto);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

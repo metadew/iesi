@@ -19,6 +19,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.logging.log4j.Level;
+
 
 public class FwkSetRepository {
 
@@ -116,8 +118,8 @@ public class FwkSetRepository {
         if (repositoryInstanceName instanceof Text) {
             return repositoryInstanceName.toString();
         } else {
-            System.out.println(MessageFormat.format("fwk.setRepository does not accept {0} as type for repository instance name",
-                    repositoryInstanceName.getClass()));
+        	this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for repository instance name",
+                    repositoryInstanceName.getClass()),Level.WARN);
             return repositoryInstanceName.toString();
         }
     }
@@ -126,8 +128,8 @@ public class FwkSetRepository {
         if (referenceName instanceof Text) {
             return referenceName.toString();
         } else {
-            System.out.println(MessageFormat.format("fwk.setRepository does not accept {0} as type for reference name",
-                    referenceName.getClass()));
+        	this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for reference name",
+                    referenceName.getClass()), Level.WARN);
             return referenceName.toString();
         }
     }

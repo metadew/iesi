@@ -165,7 +165,7 @@ public class SqlExecuteProcedure {
         if (sqlProcedure instanceof Text) {
             return sqlProcedure.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("sql.executeProcedure does not accept {0} as type for sqlProcedure",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for sqlProcedure",
                     sqlProcedure.getClass()), Level.WARN);
             return sqlProcedure.toString();
         }
@@ -175,7 +175,7 @@ public class SqlExecuteProcedure {
         if (sqlParameters instanceof Text) {
             return sqlParameters.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("sql.executeProcedure does not accept {0} as type for sqlParameters",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for sqlParameters",
                     sqlParameters.getClass()), Level.WARN);
             return sqlParameters.toString();
         }
@@ -186,7 +186,7 @@ public class SqlExecuteProcedure {
         if (connectionName instanceof Text) {
             return connectionName.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("sql.executeProcedure does not accept {0} as type for connection name",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for connection name",
                     connectionName.getClass()), Level.WARN);
             return connectionName.toString();
         }
@@ -197,7 +197,7 @@ public class SqlExecuteProcedure {
         if (appendOutput instanceof Text) {
             return appendOutput.toString().equalsIgnoreCase("y");
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("sql.executeProcedure does not accept {0} as type for appendOutput",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for appendOutput",
                     appendOutput.getClass()), Level.WARN);
             return false;
         }
@@ -207,7 +207,7 @@ public class SqlExecuteProcedure {
         if (datasetReferenceName instanceof Text) {
             return datasetReferenceName.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("sql.executeProcedure does not accept {0} as type for dataset reference name",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for dataset reference name",
                     datasetReferenceName.getClass()), Level.WARN);
             return datasetReferenceName.toString();
         }

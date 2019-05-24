@@ -173,7 +173,7 @@ public class FhoExecuteFileTransfer {
         if (targetConnection instanceof Text) {
             return targetConnection.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("fho.executeFileTransfer does not accept {0} as type for targetConnection",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for targetConnection",
                     targetConnection.getClass()), Level.WARN);
             return targetConnection.toString();
         }
@@ -183,7 +183,7 @@ public class FhoExecuteFileTransfer {
         if (targetFileName instanceof Text) {
             return targetFileName.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("fho.executeFileTransfer does not accept {0} as type for targetFileName",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for targetFileName",
                     targetFileName.getClass()), Level.WARN);
             return targetFileName.toString();
         }
@@ -193,7 +193,7 @@ public class FhoExecuteFileTransfer {
         if (targetFilePath instanceof Text) {
             return targetFilePath.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("fho.executeFileTransfer does not accept {0} as type for targetFilePath",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for targetFilePath",
                     targetFilePath.getClass()), Level.WARN);
             return targetFilePath.toString();
         }
@@ -203,7 +203,7 @@ public class FhoExecuteFileTransfer {
         if (sourceConnectionName instanceof Text) {
             return sourceConnectionName.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("fho.executeFileTransfer does not accept {0} as type for sourceConnectionName",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for sourceConnectionName",
                     sourceConnectionName.getClass()), Level.WARN);
             return sourceConnectionName.toString();
         }
@@ -213,7 +213,7 @@ public class FhoExecuteFileTransfer {
         if (sourceFileName instanceof Text) {
             return sourceFileName.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("fho.executeFileTransfer does not accept {0} as type for sourceFileName",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for sourceFileName",
                     sourceFileName.getClass()), Level.WARN);
             return sourceFileName.toString();
         }
@@ -223,7 +223,7 @@ public class FhoExecuteFileTransfer {
         if (sourceFilePath instanceof Text) {
             return sourceFilePath.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("fho.executeFileTransfer does not accept {0} as type for sourceFilePath",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for sourceFilePath",
                     sourceFilePath.getClass()), Level.WARN);
             return sourceFilePath.toString();
         }

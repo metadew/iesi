@@ -108,7 +108,7 @@ public class SqlSetRuntimeVariables {
         if (connectionName instanceof Text) {
             return connectionName.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("sql.setRuntimeVariables does not accept {0} as type for connection name",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for connection name",
                     connectionName.getClass()), Level.WARN);
             return connectionName.toString();
         }
@@ -118,7 +118,7 @@ public class SqlSetRuntimeVariables {
         if (query instanceof Text) {
             return query.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("sql.setRuntimeVariables does not accept {0} as type for query",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for query",
                     query.getClass()), Level.WARN);
             return query.toString();
         }

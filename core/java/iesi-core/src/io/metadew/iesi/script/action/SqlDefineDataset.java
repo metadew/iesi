@@ -125,7 +125,7 @@ public class SqlDefineDataset {
         if (identifierName instanceof Text) {
             return identifierName.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("fho.deleteFolder does not accept {0} as type for identifierName",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for identifierName",
                     identifierName.getClass()), Level.WARN);
             return identifierName.toString();
         }
@@ -135,7 +135,7 @@ public class SqlDefineDataset {
         if (statementName instanceof Text) {
             return statementName.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("fho.deleteFolder does not accept {0} as type for statementName",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for statementName",
                     statementName.getClass()), Level.WARN);
             return statementName.toString();
         }
@@ -145,7 +145,7 @@ public class SqlDefineDataset {
         if (referenceName instanceof Text) {
             return referenceName.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("fho.deleteFolder does not accept {0} as type for referenceName",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for referenceName",
                     referenceName.getClass()), Level.WARN);
             return referenceName.toString();
         }

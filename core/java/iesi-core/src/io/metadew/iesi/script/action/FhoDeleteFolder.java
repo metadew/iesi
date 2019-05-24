@@ -165,7 +165,7 @@ public class FhoDeleteFolder {
         if (connectionName instanceof Text) {
             return connectionName.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("fho.deleteFolder does not accept {0} as type for connectionName",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for connectionName",
                     connectionName.getClass()), Level.WARN);
             return connectionName.toString();
         }
@@ -175,7 +175,7 @@ public class FhoDeleteFolder {
         if (folderName instanceof Text) {
             return folderName.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("fho.deleteFolder does not accept {0} as type for folderName",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for folderName",
                     folderName.getClass()), Level.WARN);
             return folderName.toString();
         }
@@ -185,7 +185,7 @@ public class FhoDeleteFolder {
         if (folderPath instanceof Text) {
             return folderPath.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("fho.deleteFolder does not accept {0} as type for folderPath",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for folderPath",
                     folderPath.getClass()), Level.WARN);
             return folderPath.toString();
         }

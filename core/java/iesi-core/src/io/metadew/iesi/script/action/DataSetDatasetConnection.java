@@ -21,6 +21,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.logging.log4j.Level;
+
 
 public class DataSetDatasetConnection {
 
@@ -118,9 +120,8 @@ public class DataSetDatasetConnection {
         if (referenceName instanceof Text) {
             return referenceName.toString();
         } else {
-            // TODO: log
-            System.out.println(MessageFormat.format("data.setDatasetConnection does not accept {0} as type for reference name",
-                    referenceName.getClass()));
+        	this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() +   " does not accept {0} as type for reference name",
+                    referenceName.getClass()),Level.WARN);
             return referenceName.toString();
         }
     }
@@ -137,9 +138,8 @@ public class DataSetDatasetConnection {
                     .forEach(datasetLabel -> labels.add(convertDatasetLabel(datasetLabel)));
             return labels;
         } else {
-            // TODO: log with framework
-            System.out.println(MessageFormat.format("data.setDatasetConnection does not accept {0} as type for dataset labels",
-                    datasetLabels.getClass()));
+        	this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() +  " does not accept {0} as type for dataset labels",
+                    datasetLabels.getClass()),Level.WARN);
             return labels;
         }
     }
@@ -151,9 +151,8 @@ public class DataSetDatasetConnection {
         if (datasetType instanceof Text) {
             return datasetType.toString();
         } else {
-            // TODO: log
-            System.out.println(MessageFormat.format("data.setDatasetConnection does not accept {0} as type for dataset type",
-                    datasetType.getClass()));
+        	this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() +  " does not accept {0} as type for dataset type",
+                    datasetType.getClass()),Level.WARN);
             return datasetType.toString();
         }
     }
@@ -162,9 +161,8 @@ public class DataSetDatasetConnection {
         if (datasetName instanceof Text) {
             return datasetName.toString();
         } else {
-            // TODO: log
-            System.out.println(MessageFormat.format("data.setDatasetConnection does not accept {0} as type for dataset name",
-                    datasetName.getClass()));
+        	this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() +  " does not accept {0} as type for dataset name",
+                    datasetName.getClass()),Level.WARN);
             return datasetName.toString();
         }
     }
@@ -173,9 +171,8 @@ public class DataSetDatasetConnection {
         if (datasetLabel instanceof Text) {
             return datasetLabel.toString();
         } else {
-            // TODO: log
-            System.out.println(MessageFormat.format("Dataset does not accept {0} as type for a dataset label",
-                    datasetLabel.getClass()));
+        	this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() +  " does not accept {0} as type for a dataset label",
+                    datasetLabel.getClass()), Level.WARN);
             return datasetLabel.toString();
         }
     }

@@ -133,7 +133,7 @@ public class FwkExecuteScript {
         if (parameterList instanceof Text) {
             return Optional.of(parameterList.toString());
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("fwk.setParameterList does not accept {0} as type for parameterList",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for parameterList",
                     parameterList.getClass()), Level.WARN);
             return Optional.empty();
         }
@@ -185,12 +185,12 @@ public class FwkExecuteScript {
             if (matcher.find()) {
                 parameterMap.put(matcher.group("parameter"), matcher.group("value"));
             } else {
-                frameworkExecution.getFrameworkLog().log(MessageFormat.format("fwk.setParameterList: parameter entry ''{0}'' does not follow correct syntax",
+                this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " parameter entry ''{0}'' does not follow correct syntax",
                         parameterEntry), Level.WARN);
             }
             return parameterMap;
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("fwk.setParameterList does not accept {0} as type for parameter entry",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for parameter entry",
                     parameterEntry.getClass()), Level.WARN);
             return parameterMap;
         }

@@ -102,31 +102,6 @@
 		"parameterList": "param1=myParameter"
 	}
 },
-
-{
-	"type": "LaunchItem",
-	"data": {
-		"script": "fwk.outputMessage.5",
-		"description": "test fwk.outputMessage with resolvement in the message",
-		"parameterList": "param1=myParameter"
-	}
-},
-{
-	"type": "LaunchItem",
-	"data": {
-		"script": "fwk.outputMessage.6",
-		"description": "test fwk.outputMessage with a list as message",
-		"parameterList": "param1=myParameter"
-	}
-},
-{
-	"type": "LaunchItem",
-	"data": {
-		"script": "fwk.outputMessage.7",
-		"description": "test fwk.outputMessage with a variable concept lookup as message",
-		"parameterList": "param1=myParameter"
-	}
-},
 {
 	"type": "LaunchItem",
 	"data": {
@@ -388,6 +363,30 @@
 	"data": {
 		"script": "data.outputDataset.1",
 		"description": "test data.compareDataset",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "fwk.outputMessage.5",
+		"description": "test fwk.outputMessage with resolvement in the message",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "fwk.outputMessage.6",
+		"description": "test fwk.outputMessage with a list as message",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "fwk.outputMessage.7",
+		"description": "test fwk.outputMessage with a variable concept lookup as message",
 		"parameterList": ""
 	}
 }]

@@ -205,7 +205,7 @@ public class HttpExecuteRequest {
         if (outputDatasetReferenceName instanceof Text) {
             return outputDatasetReferenceName.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("http.executeRequest does not accept {0} as type for OutputDatasetReferenceName",
+            frameworkExecution.getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for OutputDatasetReferenceName",
                     outputDatasetReferenceName.getClass()), Level.WARN);
             return outputDatasetReferenceName.toString();
         }
@@ -218,7 +218,7 @@ public class HttpExecuteRequest {
         if (setRuntimeVariables instanceof Text) {
             return setRuntimeVariables.toString().equalsIgnoreCase("y");
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("http.executeRequest does not accept {0} as type for setRuntimeVariables",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for setRuntimeVariables",
                     setRuntimeVariables.getClass()), Level.WARN);
             return false;
         }
@@ -231,7 +231,7 @@ public class HttpExecuteRequest {
         if (httpRequestBody instanceof Text) {
             return Optional.of(httpRequestBody.toString());
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("http.executeRequest does not accept {0} as type for request body",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for request body",
                     httpRequestBody.getClass()), Level.WARN);
             return Optional.of(httpRequestBody.toString());
         }
@@ -241,7 +241,7 @@ public class HttpExecuteRequest {
         if (httpRequestType instanceof Text) {
             return httpRequestType.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("http.executeRequest does not accept {0} as type for request type",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for request type",
                     httpRequestType.getClass()), Level.WARN);
             return httpRequestType.toString();
         }
@@ -251,7 +251,7 @@ public class HttpExecuteRequest {
         if (httpRequestName instanceof Text) {
             return httpRequestName.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("http.executeRequest does not accept {0} as type for request name",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for request name",
                     httpRequestName.getClass()), Level.WARN);
             return httpRequestName.toString();
         }

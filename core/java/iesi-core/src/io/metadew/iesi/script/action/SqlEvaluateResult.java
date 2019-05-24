@@ -136,7 +136,7 @@ public class SqlEvaluateResult {
         if (hasResult instanceof Text) {
             return hasResult.toString().equalsIgnoreCase("y");
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("sql.evaluateResult does not accept {0} as type for expect result",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for expect result",
                     hasResult.getClass()), Level.WARN);
             return false;
         }
@@ -146,7 +146,7 @@ public class SqlEvaluateResult {
         if (connectionName instanceof Text) {
             return connectionName.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("sql.evaluateResult does not accept {0} as type for connection name",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for connection name",
                     connectionName.getClass()), Level.WARN);
             return connectionName.toString();
         }
@@ -156,7 +156,7 @@ public class SqlEvaluateResult {
         if (query instanceof Text) {
             return query.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("sql.evaluateResult does not accept {0} as type for query",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for query",
                     query.getClass()), Level.WARN);
             return query.toString();
         }

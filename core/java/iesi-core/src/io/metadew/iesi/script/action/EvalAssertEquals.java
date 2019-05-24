@@ -98,7 +98,7 @@ public class EvalAssertEquals {
         if (actualValue instanceof Text) {
             return actualValue.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("eval.assertEquals does not accept {0} as type for actualValue",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for actualValue",
                     actualValue.getClass()), Level.WARN);
             return actualValue.toString();
         }
@@ -108,7 +108,7 @@ public class EvalAssertEquals {
         if (expectedValue instanceof Text) {
             return expectedValue.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("eval.assertEquals does not accept {0} as type for expectedValue",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for expectedValue",
                     expectedValue.getClass()), Level.WARN);
             return expectedValue.toString();
         }

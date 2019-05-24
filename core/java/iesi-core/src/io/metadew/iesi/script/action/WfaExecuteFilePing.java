@@ -200,7 +200,7 @@ public class WfaExecuteFilePing {
         if (waitInterval instanceof Text) {
             return Integer.parseInt(waitInterval.toString());
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("wfa.executeQueryPing does not accept {0} as type for wait interval",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for wait interval",
                     waitInterval.getClass()), Level.WARN);
             return defaultWaitInterval;
         }
@@ -213,7 +213,7 @@ public class WfaExecuteFilePing {
         if (timeoutInterval instanceof Text) {
             return Integer.parseInt(timeoutInterval.toString());
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("wfa.executeQueryPing does not accept {0} as type for timeout interval",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for timeout interval",
                     timeoutInterval.getClass()), Level.WARN);
             return defaultTimeoutInterval;
         }
@@ -223,7 +223,7 @@ public class WfaExecuteFilePing {
         if (connectionName instanceof Text) {
             return connectionName.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("wfa.executeFilePing does not accept {0} as type for connection name",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for connection name",
                     connectionName.getClass()), Level.WARN);
             return connectionName.toString();
         }
@@ -236,7 +236,7 @@ public class WfaExecuteFilePing {
         if (setRuntimeVariables instanceof Text) {
             return setRuntimeVariables.toString().equalsIgnoreCase("y");
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("wfa.executeFilePing does not accept {0} as type for setRuntimeVariables",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for setRuntimeVariables",
                     setRuntimeVariables.getClass()), Level.WARN);
             return false;
         }
@@ -249,7 +249,7 @@ public class WfaExecuteFilePing {
         if (hasResult instanceof Text) {
             return hasResult.toString().equalsIgnoreCase("y");
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("wfa.executeFilePing does not accept {0} as type for hasResult",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for hasResult",
                     hasResult.getClass()), Level.WARN);
             return false;
         }
@@ -259,7 +259,7 @@ public class WfaExecuteFilePing {
         if (fileName instanceof Text) {
             return fileName.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("wfa.executeFilePing does not accept {0} as type for file name",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for file name",
                     fileName.getClass()), Level.WARN);
             return fileName.toString();
         }
@@ -269,7 +269,7 @@ public class WfaExecuteFilePing {
         if (filePath instanceof Text) {
             return filePath.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("wfa.executeFilePing does not accept {0} as type for file path",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for file path",
                     filePath.getClass()), Level.WARN);
             return filePath.toString();
         }

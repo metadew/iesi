@@ -116,7 +116,7 @@ public class SqlSetIterationVariables {
         if (listName instanceof Text) {
             return listName.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("sql.setIterationVariables does not accept {0} as type for listName",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for listName",
                     listName.getClass()), Level.WARN);
             return listName.toString();
         }
@@ -126,7 +126,7 @@ public class SqlSetIterationVariables {
         if (connectionName instanceof Text) {
             return connectionName.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("sql.setIterationVariables does not accept {0} as type for connection name",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for connection name",
                     connectionName.getClass()), Level.WARN);
             return connectionName.toString();
         }
@@ -136,7 +136,7 @@ public class SqlSetIterationVariables {
         if (query instanceof Text) {
             return query.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("sql.setIterationVariables does not accept {0} as type for query",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for query",
                     query.getClass()), Level.WARN);
             return query.toString();
         }

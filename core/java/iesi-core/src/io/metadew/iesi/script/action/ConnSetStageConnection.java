@@ -102,7 +102,7 @@ public class ConnSetStageConnection {
         if (stageName instanceof Text) {
             return stageName.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("conn.setStageConnection does not accept {0} as type for stage name",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() +  " does not accept {0} as type for stage name",
                     stageName.getClass()), Level.WARN);
             return stageName.toString();
         }
@@ -116,7 +116,7 @@ public class ConnSetStageConnection {
         if (cleanup instanceof Text) {
             return cleanup.toString().equalsIgnoreCase("y");
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("cli.executeCommand does not accept {0} as type for cleanup",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() +  " does not accept {0} as type for cleanup",
                     cleanup.getClass()), Level.WARN);
             return false;
         }

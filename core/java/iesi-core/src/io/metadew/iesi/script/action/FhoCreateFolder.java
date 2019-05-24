@@ -171,7 +171,7 @@ public class FhoCreateFolder {
         if (connectionName instanceof Text) {
             return connectionName.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("cli.executeCommand does not accept {0} as type for connectionName",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for connectionName",
                     connectionName.getClass()), Level.WARN);
             return connectionName.toString();
         }
@@ -181,7 +181,7 @@ public class FhoCreateFolder {
         if (folderName instanceof Text) {
             return folderName.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("cli.executeCommand does not accept {0} as type for folderName",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for folderName",
                     folderName.getClass()), Level.WARN);
             return folderName.toString();
         }
@@ -191,7 +191,7 @@ public class FhoCreateFolder {
         if (folderName instanceof Text) {
             return folderName.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("cli.executeCommand does not accept {0} as type for folderName",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for folderName",
                     folderName.getClass()), Level.WARN);
             return folderName.toString();
         }

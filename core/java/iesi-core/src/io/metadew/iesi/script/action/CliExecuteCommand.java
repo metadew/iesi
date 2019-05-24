@@ -188,7 +188,7 @@ public class CliExecuteCommand {
         if (setRuntimeVariablesMode instanceof Text) {
             return setRuntimeVariablesMode.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("cli.executeCommand does not accept {0} as type for setRuntimeVariablesMode",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() +  " does not accept {0} as type for setRuntimeVariablesMode",
                     setRuntimeVariablesMode.getClass()), Level.WARN);
             return setRuntimeVariablesMode.toString();
         }
@@ -201,7 +201,7 @@ public class CliExecuteCommand {
         if (connectionName instanceof Text) {
             return connectionName.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("cli.executeCommand does not accept {0} as type for connection name",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() +  " does not accept {0} as type for connection name",
                     connectionName.getClass()), Level.WARN);
             return connectionName.toString();
         }
@@ -215,7 +215,7 @@ public class CliExecuteCommand {
         if (setRuntimeVariablesPrefix instanceof Text) {
             return setRuntimeVariablesPrefix.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("cli.executeCommand does not accept {0} as type for setRuntimeVariablesPrefix",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() +  " does not accept {0} as type for setRuntimeVariablesPrefix",
                     setRuntimeVariablesPrefix.getClass()), Level.WARN);
             return setRuntimeVariablesPrefix.toString();
         }
@@ -228,7 +228,7 @@ public class CliExecuteCommand {
         if (setRuntimeVariables instanceof Text) {
             return setRuntimeVariables.toString().equalsIgnoreCase("y");
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("cli.executeCommand does not accept {0} as type for setRuntimeVariables",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() +  " does not accept {0} as type for setRuntimeVariables",
                     setRuntimeVariables.getClass()), Level.WARN);
             return false;
         }
@@ -238,7 +238,7 @@ public class CliExecuteCommand {
         if (shellCommand instanceof Text) {
             return shellCommand.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("cli.executeCommand does not accept {0} as type for shellCommand",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() +  " does not accept {0} as type for shellCommand",
                     shellCommand.getClass()), Level.WARN);
             return shellCommand.toString();
         }
@@ -248,7 +248,7 @@ public class CliExecuteCommand {
         if (ShellPath instanceof Text) {
             return ShellPath.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("cli.executeCommand does not accept {0} as type for ShellPath",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() +   " does not accept {0} as type for ShellPath",
                     ShellPath.getClass()), Level.WARN);
             return ShellPath.toString();
         }

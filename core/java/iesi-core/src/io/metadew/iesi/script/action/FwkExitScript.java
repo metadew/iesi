@@ -95,7 +95,7 @@ public class FwkExitScript {
         if (status instanceof Text) {
             return Optional.of(status.toString());
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("fwk.exitScript does not accept {0} as type for status",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for status",
                     status.getClass()), Level.WARN);
             return Optional.of(status.toString());
         }

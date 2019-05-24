@@ -193,7 +193,7 @@ public class EvalVerifyMandatoryField {
         if (isMandatory instanceof Text) {
             return isMandatory.toString().equalsIgnoreCase("y");
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("eval.verifyMandatoryFlag does not accept {0} as type for mandatory flag",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for mandatory flag",
                     isMandatory.getClass()), Level.WARN);
             return false;
         }
@@ -203,7 +203,7 @@ public class EvalVerifyMandatoryField {
         if (evaluationFieldValue instanceof Text) {
             return evaluationFieldValue.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("eval.verifyMandatoryFlag does not accept {0} as type for evaluation field value",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for evaluation field value",
                     evaluationFieldValue.getClass()), Level.WARN);
             return evaluationFieldValue.toString();
         }
@@ -213,7 +213,7 @@ public class EvalVerifyMandatoryField {
         if (evaluatonFieldName instanceof Text) {
             return evaluatonFieldName.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("eval.verifyMandatoryFlag does not accept {0} as type for evaluation field name",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for evaluation field name",
                     evaluatonFieldName.getClass()), Level.WARN);
             return evaluatonFieldName.toString();
         }
@@ -224,7 +224,7 @@ public class EvalVerifyMandatoryField {
         if (tableName instanceof Text) {
             return tableName.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("eval.verifyMandatoryFlag does not accept {0} as type for table name",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for table name",
                     tableName.getClass()), Level.WARN);
             return tableName.toString();
         }
@@ -234,7 +234,7 @@ public class EvalVerifyMandatoryField {
         if (fieldName instanceof Text) {
             return fieldName.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("eval.verifyMandatoryFlag does not accept {0} as type for field name",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for field name",
                     fieldName.getClass()), Level.WARN);
             return fieldName.toString();
         }
@@ -244,7 +244,7 @@ public class EvalVerifyMandatoryField {
         if (schemaName instanceof Text) {
             return schemaName.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("eval.verifyMandatoryFlag does not accept {0} as type for schema name",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for schema name",
                     schemaName.getClass()), Level.WARN);
             return schemaName.toString();
         }
@@ -254,7 +254,7 @@ public class EvalVerifyMandatoryField {
         if (databaseName instanceof Text) {
             return databaseName.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("eval.verifyMandatoryFlag does not accept {0} as type for database name",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for database name",
                     databaseName.getClass()), Level.WARN);
             return databaseName.toString();
         }
@@ -264,7 +264,7 @@ public class EvalVerifyMandatoryField {
         if (connectionName instanceof Text) {
             return connectionName.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("eval.verifyMandatoryFlag does not accept {0} as type for connection name",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for connection name",
                     connectionName.getClass()), Level.WARN);
             return connectionName.toString();
         }

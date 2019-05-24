@@ -152,7 +152,7 @@ public class FwkSetIteration {
         } else if (iterationInterrupt instanceof Text) {
             return iterationInterrupt.toString().equalsIgnoreCase("y");
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("fwk.setIteration does not accept {0} as type for iterationInterrupt",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for iterationInterrupt",
                     iterationInterrupt.getClass()), Level.WARN);
             return false;
         }
@@ -165,7 +165,7 @@ public class FwkSetIteration {
         } else if (iterationCondition instanceof Text) {
             return iterationCondition.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("fwk.setIteration does not accept {0} as type for iterationCondition",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for iterationCondition",
                     iterationCondition.getClass()), Level.WARN);
             return iterationCondition.toString();
         }
@@ -178,7 +178,7 @@ public class FwkSetIteration {
         } else if (iterationStep instanceof Text) {
             return iterationStep.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("fwk.setIteration does not accept {0} as type for iterationStep",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for iterationStep",
                     iterationStep.getClass()), Level.WARN);
             return iterationStep.toString();
         }
@@ -191,7 +191,7 @@ public class FwkSetIteration {
         } else if (iterationTo instanceof Text) {
             return iterationTo.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("fwk.setIteration does not accept {0} as type for iterationTo",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for iterationTo",
                     iterationTo.getClass()), Level.WARN);
             return iterationTo.toString();
         }
@@ -204,7 +204,7 @@ public class FwkSetIteration {
         } else if (iterationFrom instanceof Text) {
             return iterationFrom.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("fwk.setIteration does not accept {0} as type for iterationFrom",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for iterationFrom",
                     iterationFrom.getClass()), Level.WARN);
             return iterationFrom.toString();
         }
@@ -217,7 +217,7 @@ public class FwkSetIteration {
         } else if (iterationValues instanceof Text) {
             return iterationValues.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("fwk.setIteration does not accept {0} as type for iterationValues",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for iterationValues",
                     iterationValues.getClass()), Level.WARN);
             return iterationValues.toString();
         }
@@ -230,7 +230,7 @@ public class FwkSetIteration {
         } else if (iterationList instanceof Text) {
             return iterationList.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("fwk.setIteration does not accept {0} as type for iterationList",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for iterationList",
                     iterationList.getClass()), Level.WARN);
             return iterationList.toString();
         }
@@ -240,7 +240,7 @@ public class FwkSetIteration {
         if (iterationType instanceof Text) {
             return iterationType.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("fwk.setIteration does not accept {0} as type for iterationType",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for iterationType",
                     iterationType.getClass()), Level.WARN);
             return iterationType.toString();
         }
@@ -250,7 +250,7 @@ public class FwkSetIteration {
         if (iterationName instanceof Text) {
             return iterationName.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("fwk.setIteration does not accept {0} as type for iterationName",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for iterationName",
                     iterationName.getClass()), Level.WARN);
             return iterationName.toString();
         }

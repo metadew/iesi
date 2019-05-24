@@ -82,7 +82,7 @@ public class FwkSetEnvironment {
         if (environmentName instanceof Text) {
             return environmentName.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("fwk.setEnvironment does not accept {0} as type for expect environmentName",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for expect environmentName",
                     environmentName.getClass()), Level.WARN);
             return environmentName.toString();
         }

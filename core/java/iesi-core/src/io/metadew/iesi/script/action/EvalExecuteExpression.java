@@ -86,7 +86,7 @@ public class EvalExecuteExpression {
         if (expression instanceof Text) {
             return expression.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("eval.executeExpression does not accept {0} as type for expression",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for expression",
                     expression.getClass()), Level.WARN);
             return expression.toString();
         }

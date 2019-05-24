@@ -90,7 +90,7 @@ public class ActionExecute {
         if (actionName instanceof Text) {
             return actionName.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("action.execute does not accept {0} as type for connection name",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for connection name",
             		actionName.getClass()), Level.WARN);
             return actionName.toString();
         }

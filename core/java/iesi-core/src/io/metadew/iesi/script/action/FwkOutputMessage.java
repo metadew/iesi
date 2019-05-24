@@ -97,7 +97,7 @@ public class FwkOutputMessage {
         if (onScreen instanceof Text) {
             return onScreen.toString().equalsIgnoreCase("y");
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("fwk.outputMessage does not accept {0} as type for onScreen",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for onScreen",
                     onScreen.getClass()), Level.WARN);
             return false;
         }
@@ -112,7 +112,7 @@ public class FwkOutputMessage {
                 messageList.addAll(convertMessages(listElement));
             }
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("fwk.outputMessage does not accept {0} as type for message",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for message",
                     messages.getClass()), Level.WARN);
             messageList.add(messages.toString());
         }

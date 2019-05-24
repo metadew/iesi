@@ -138,7 +138,7 @@ public class DataCompareDataset {
         if (datasetName instanceof Text) {
             return datasetName.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("data.compareDataset does not accept {0} as type for dataset name",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() +  " does not accept {0} as type for dataset name",
                     datasetName.getClass()), Level.WARN);
             return datasetName.toString();
         }
@@ -148,7 +148,7 @@ public class DataCompareDataset {
         if (mappingName instanceof Text) {
             return mappingName.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("data.compareDataset does not accept {0} as type for mapping name",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() +  " does not accept {0} as type for mapping name",
                     mappingName.getClass()), Level.WARN);
             return mappingName.toString();
         }

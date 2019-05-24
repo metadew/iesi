@@ -255,7 +255,7 @@ public class FwkExecuteSuite {
         if (field instanceof Text) {
             return field.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("fwk.executeScript does not accept {0} as type for field",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for field",
                     field.getClass()), Level.WARN);
             return field.toString();
         }

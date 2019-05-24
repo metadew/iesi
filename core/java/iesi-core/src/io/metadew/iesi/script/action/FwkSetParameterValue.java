@@ -93,7 +93,7 @@ public class FwkSetParameterValue {
         if (value instanceof Text) {
             return value.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("fwk.setParameterValue does not accept {0} as type for value",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for value",
                     value.getClass()), Level.WARN);
             return value.toString();
         }
@@ -103,7 +103,7 @@ public class FwkSetParameterValue {
         if (name instanceof Text) {
             return name.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("fwk.setParameterValue does not accept {0} as type for name",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for name",
                     name.getClass()), Level.WARN);
             return name.toString();
         }

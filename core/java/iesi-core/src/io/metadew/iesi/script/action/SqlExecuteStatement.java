@@ -132,7 +132,7 @@ public class SqlExecuteStatement {
         if (sqlStatement instanceof Text) {
             return sqlStatement.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("sql.executeStatement does not accept {0} as type for sql statement",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for sql statement",
                     sqlStatement.getClass()), Level.WARN);
             return sqlStatement.toString();
         }
@@ -143,7 +143,7 @@ public class SqlExecuteStatement {
         if (connectionName instanceof Text) {
             return connectionName.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("sql.executeStatement does not accept {0} as type for connection name",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for connection name",
                     connectionName.getClass()), Level.WARN);
             return connectionName.toString();
         }

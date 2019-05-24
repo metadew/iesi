@@ -113,7 +113,7 @@ public class DataOutputDataset {
         } else if (onScreen instanceof Text) {
             return onScreen.toString().equalsIgnoreCase("y");
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("fwk.outputMessage does not accept {0} as type for onScreen",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() +  " does not accept {0} as type for onScreen",
                     onScreen.getClass()), Level.WARN);
             return false;
         }

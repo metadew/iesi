@@ -110,11 +110,31 @@ public class SqlExecuteQuery {
 
     }
 
+    private String convertConnectionName(DataType connectionName) {
+        if (connectionName instanceof Text) {
+            return connectionName.toString();
+        } else {
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for connection name",
+                    connectionName.getClass()), Level.WARN);
+            return connectionName.toString();
+        }
+    }
+
+    private String convertQuery(DataType query) {
+        if (query instanceof Text) {
+            return query.toString();
+        } else {
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() +  " does not accept {0} as type for query",
+                    query.getClass()), Level.WARN);
+            return query.toString();
+        }
+    }
+
     private boolean convertAppendOutput(DataType appendOutput) {
         if (appendOutput instanceof Text) {
             return appendOutput.toString().equalsIgnoreCase("y");
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("sql.executeQuery does not accept {0} as type for appendOutput",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for appendOutput",
                     appendOutput.getClass()), Level.WARN);
             return false;
         }
@@ -124,7 +144,7 @@ public class SqlExecuteQuery {
         if (datasetReferenceName instanceof Text) {
             return datasetReferenceName.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("sql.executeQuery does not accept {0} as type for dataset reference name",
+            frameworkExecution.getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for dataset reference name",
                     datasetReferenceName.getClass()), Level.WARN);
             return datasetReferenceName.toString();
         }
@@ -173,26 +193,6 @@ public class SqlExecuteQuery {
 
         this.getActionExecution().getActionControl().increaseSuccessCount();
         return true;
-    }
-
-    private String convertConnectionName(DataType connectionName) {
-        if (connectionName instanceof Text) {
-            return connectionName.toString();
-        } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("sql.executeQuery does not accept {0} as type for connection name",
-                    connectionName.getClass()), Level.WARN);
-            return connectionName.toString();
-        }
-    }
-
-    private String convertQuery(DataType query) {
-        if (query instanceof Text) {
-            return query.toString();
-        } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("sql.executeQuery does not accept {0} as type for query",
-                    query.getClass()), Level.WARN);
-            return query.toString();
-        }
     }
 
     // Getters and Setters

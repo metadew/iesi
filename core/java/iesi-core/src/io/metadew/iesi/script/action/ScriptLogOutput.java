@@ -109,7 +109,7 @@ public class ScriptLogOutput {
         if (outputName instanceof Text) {
             return outputName.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("script.logOutput does not accept {0} as type for expect outputName",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for expect outputName",
                     outputName.getClass()), Level.WARN);
             return outputName.toString();
         }

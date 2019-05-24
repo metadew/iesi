@@ -112,7 +112,7 @@ public class FwkIncludeScript {
         if (scriptVersion instanceof Text) {
             return Optional.of(Long.parseLong(scriptVersion.toString()));
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("fwk.includeScript does not accept {0} as type for script name",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for script name",
                     scriptVersion.getClass()), Level.WARN);
             return Optional.empty();
         }
@@ -123,7 +123,7 @@ public class FwkIncludeScript {
         if (scriptName instanceof Text) {
             return scriptName.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("fwk.includeScript does not accept {0} as type for script name",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for script name",
                     scriptName.getClass()), Level.WARN);
             return scriptName.toString();
         }

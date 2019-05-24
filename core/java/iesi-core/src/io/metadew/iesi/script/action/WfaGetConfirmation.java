@@ -120,7 +120,7 @@ public class WfaGetConfirmation {
         if (type instanceof Text) {
             return type.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("wfa.getConfirmation does not accept {0} as type for type",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for type",
                     type.getClass()), Level.WARN);
             return type.toString();
         }
@@ -130,7 +130,7 @@ public class WfaGetConfirmation {
         if (question instanceof Text) {
             return question.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("wfa.getConfirmation does not accept {0} as type for question",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for question",
                     question.getClass()), Level.WARN);
             return question.toString();
         }
@@ -144,7 +144,7 @@ public class WfaGetConfirmation {
         if (timeoutInterval instanceof Text) {
             return Integer.parseInt(timeoutInterval.toString());
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("wfa.getConfirmation does not accept {0} as type for timeout interval",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for timeout interval",
                     timeoutInterval.getClass()), Level.WARN);
             return defaultTimeoutInterval;
         }

@@ -25,6 +25,17 @@ public class ActionParameterConfiguration {
         this.setFrameworkExecution(frameworkExecution);
     }
 
+    public String getInsertStatement(String scriptId, long scriptVersionNumber, String actionId, ActionParameter actionParameter) {
+        return "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository()
+                .getTableNameByLabel("ActionParameters") +
+                " (SCRIPT_ID, SCRIPT_VRS_NB, ACTION_ID, ACTION_PAR_NM, ACTION_PAR_VAL) VALUES (" +
+                SQLTools.GetStringForSQL(scriptId) + "," +
+                scriptVersionNumber + "," +
+                SQLTools.GetStringForSQL(actionId) + "," +
+                SQLTools.GetStringForSQL(actionParameter.getName()) + "," +
+                SQLTools.GetStringForSQL(actionParameter.getValue()) + ");";
+    }
+
     // Insert
     public String getInsertStatement(Script script, Action action) {
         String sql = "";

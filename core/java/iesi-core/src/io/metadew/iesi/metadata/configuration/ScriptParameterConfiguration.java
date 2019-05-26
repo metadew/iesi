@@ -28,6 +28,17 @@ public class ScriptParameterConfiguration {
     }
 
     // Insert
+    public String getInsertStatement(String scriptId, long scriptVersionNumber, ScriptParameter scriptParameter) {
+        return "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository()
+                .getTableNameByLabel("ScriptParameters") +
+                " (SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_PAR_NM, SCRIPT_PAR_VAL) VALUES (" +
+                SQLTools.GetStringForSQL(scriptId) + "," +
+                scriptVersionNumber + "," +
+                SQLTools.GetStringForSQL(this.getScriptParameter().getName()) + "," +
+                SQLTools.GetStringForSQL(this.getScriptParameter().getValue()) + ");";
+    }
+
+
     public String getInsertStatement(Script script) {
         String sql = "";
 

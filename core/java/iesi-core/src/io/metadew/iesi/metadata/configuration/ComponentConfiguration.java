@@ -53,7 +53,7 @@ public class ComponentConfiguration {
         crsComponent = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(queryComponent, "reader");
         try {
             while (crsComponent.next()) {
-                component.setId(crsComponent.getLong("COMP_ID"));
+                component.setId(crsComponent.getString("COMP_ID"));
                 component.setType(crsComponent.getString("COMP_TYP_NM"));
                 component.setName(componentName);
                 component.setDescription(crsComponent.getString("COMP_DSC"));
@@ -136,7 +136,7 @@ public class ComponentConfiguration {
                         "Returning first implementation.", componentName), Level.WARN);
             }
             crsComponent.next();
-            long componentId = crsComponent.getLong("COMP_ID");
+            String componentId = crsComponent.getString("COMP_ID");
 
             // get version
             ComponentVersionConfiguration componentVersionConfiguration = new ComponentVersionConfiguration(
@@ -269,7 +269,10 @@ public class ComponentConfiguration {
     }
 
     private String getInsertStatement(Component component) {
+        // TODO: check id generation
         StringBuilder sql = new StringBuilder();
+
+
         if (getComponentsByName(component.getName()).size() == 0) {
             sql.append("INSERT INTO ").append(this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository()
                     .getTableNameByLabel("Components"));
@@ -326,8 +329,9 @@ public class ComponentConfiguration {
                     "Component {0}-{1} is not present in the repository so cannot be updated",
                     component.getName(), component.getVersion().getNumber()),
                     Level.TRACE);
-            throw new ComponentDoesNotExistException(MessageFormat.format(
-                    "Component {0}-{1} is not present in the repository so cannot be updated", component.getName()));
+            throw e;
+            // throw new ComponentDoesNotExistException(MessageFormat.format(
+            //        "Component {0}-{1} is not present in the repository so cannot be updated", component.getName(),  component.getVersion().getNumber()));
 
         } catch (ComponentAlreadyExistsException e) {
             frameworkExecution.getFrameworkLog().log(MessageFormat.format(

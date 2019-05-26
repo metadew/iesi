@@ -29,6 +29,16 @@ public class Script {
         this.parameters = parameters;
         this.actions = actions;
     }
+    public Script(String type, String name, String description, ScriptVersion version,
+                   List<ScriptParameter> parameters, List<Action> actions) {
+        this.id = IdentifierTools.getScriptIdentifier(name);
+        this.type = type;
+        this.name = name;
+        this.description = description;
+        this.version = version;
+        this.parameters = parameters;
+        this.actions = actions;
+    }
 
     // Getters and Setters
     public String getName() {

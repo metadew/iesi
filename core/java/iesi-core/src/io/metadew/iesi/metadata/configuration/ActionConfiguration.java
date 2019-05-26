@@ -80,16 +80,16 @@ public class ActionConfiguration {
     }
 
     private String getParameterInsertStatements(Script script) {
-        String result = "";
+        StringBuilder result = new StringBuilder();
 
         for (ActionParameter actionParameter : this.getAction().getParameters()) {
             ActionParameterConfiguration actionParameterConfiguration = new ActionParameterConfiguration(actionParameter, this.getFrameworkExecution());
-            if (!result.equalsIgnoreCase(""))
-                result += "\n";
-            result += actionParameterConfiguration.getInsertStatement(script, this.getAction());
+            if (!result.toString().equalsIgnoreCase(""))
+                result.append("\n");
+            result.append(actionParameterConfiguration.getInsertStatement(script, this.getAction()));
         }
 
-        return result;
+        return result.toString();
     }
 
 
@@ -147,6 +147,34 @@ public class ActionConfiguration {
 
             return Optional.empty();
         }
+    }
+
+    public String getInsertStatement(String scriptId, long scriptVersionNumber, Action action) {
+        ActionParameterConfiguration actionParameterConfiguration = new ActionParameterConfiguration(frameworkExecution);
+        StringBuilder sql = new StringBuilder();
+
+        sql.append("INSERT INTO ").append(this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository()
+                .getTableNameByLabel("Actions"));
+        sql.append(" (SCRIPT_ID, SCRIPT_VRS_NB, ACTION_ID, ACTION_NB, ACTION_TYP_NM, ACTION_NM, ACTION_DSC, COMP_NM, ITERATION_VAL, CONDITION_VAL, RETRIES_VAL, EXP_ERR_FL, STOP_ERR_FL) VALUES (");
+        sql.append(SQLTools.GetStringForSQL(scriptId)).append(",");
+        sql.append(SQLTools.GetStringForSQL(scriptVersionNumber)).append(",");
+        sql.append(SQLTools.GetStringForSQL(action.getId())).append(",");
+        sql.append(SQLTools.GetStringForSQL(action.getNumber())).append(",");
+        sql.append(SQLTools.GetStringForSQL(action.getType())).append(",");
+        sql.append(SQLTools.GetStringForSQL(action.getName())).append(",");
+        sql.append(SQLTools.GetStringForSQL(action.getDescription())).append(",");
+        sql.append(SQLTools.GetStringForSQL(action.getComponent())).append(",");
+        sql.append(SQLTools.GetStringForSQL(action.getIteration())).append(",");
+        sql.append(SQLTools.GetStringForSQL(action.getCondition())).append(",");
+        sql.append(SQLTools.GetStringForSQL(action.getRetries())).append(",");
+        sql.append(SQLTools.GetStringForSQL(action.getErrorExpected())).append(",");
+        sql.append(SQLTools.GetStringForSQL(action.getErrorStop())).append(");");
+
+        for (ActionParameter actionParameter : action.getParameters()) {
+            sql.append(actionParameterConfiguration.getInsertStatement(scriptId, scriptVersionNumber, action.getId(), actionParameter));
+            sql.append("\n");
+        }
+        return sql.toString();
     }
 
     // Getters and Setters

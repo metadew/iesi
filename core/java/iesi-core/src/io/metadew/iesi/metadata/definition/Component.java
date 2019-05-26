@@ -1,10 +1,12 @@
 package io.metadew.iesi.metadata.definition;
 
+import io.metadew.iesi.metadata.tools.IdentifierTools;
+
 import java.util.List;
 
 public class Component {
 
-    private long id;
+    private String id;
     private String type;
     private String name;
     private String description;
@@ -17,8 +19,7 @@ public class Component {
 
     }
 
-
-    public Component(long id, String type, String name, String description, ComponentVersion version,
+    public Component(String id, String type, String name, String description, ComponentVersion version,
                      List<ComponentParameter> parameters, List<ComponentAttribute> attributes) {
         this.id = id;
         this.type = type;
@@ -29,6 +30,16 @@ public class Component {
         this.attributes = attributes;
     }
 
+    public Component(String type, String name, String description, ComponentVersion version,
+                     List<ComponentParameter> parameters, List<ComponentAttribute> attributes) {
+        this.id = IdentifierTools.getComponentIdentifier(name);
+        this.type = type;
+        this.name = name;
+        this.description = description;
+        this.version = version;
+        this.parameters = parameters;
+        this.attributes = attributes;
+    }
 
     //Getters and Setters
     public String getDescription() {
@@ -39,11 +50,11 @@ public class Component {
         this.description = description;
     }
 
-    public long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(String id) {
         this.id = id;
     }
 

@@ -2,6 +2,7 @@ package io.metadew.iesi.metadata.configuration;
 
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.metadata.definition.Script;
 import io.metadew.iesi.metadata.definition.ScriptVersion;
 
 import javax.sql.rowset.CachedRowSet;
@@ -24,14 +25,20 @@ public class ScriptVersionConfiguration {
         this.setFrameworkExecution(frameworkExecution);
     }
 
+    public String getInsertStatement(String scriptId, ScriptVersion scriptVersion) {
+        return "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ScriptVersions") +
+                " (SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_VRS_DSC) VALUES (" +
+                scriptId + ", " +
+                scriptVersion.getNumber() + ", " +
+                scriptVersion.getDescription() + ");";
+    }
+
     // Insert
     public String getInsertStatement(String scriptName) {
         String sql = "";
 
         sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ScriptVersions");
-        sql += " (SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_VRS_DSC) ";
-        sql += "VALUES ";
-        sql += "(";
+        sql += " (SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_VRS_DSC) VALUES (";
         sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Scripts"), "SCRIPT_ID", "where SCRIPT_NM = '" + scriptName) + "')";
         sql += ",";
         sql += SQLTools.GetStringForSQL(this.getScriptVersion().getNumber());

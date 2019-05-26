@@ -42,6 +42,22 @@ public class Action {
         this.parameters = parameters;
     }
 
+    public Action(long number, String type, String name, String description, String component,
+                  String condition, String iteration, String errorExpected, String errorStop, String retries, List<ActionParameter> parameters) {
+        this.id = IdentifierTools.getActionIdentifier(name);
+        this.number = number;
+        this.type = type;
+        this.name = name;
+        this.description = description;
+        this.component = component;
+        this.condition = condition;
+        this.iteration = iteration;
+        this.errorExpected = errorExpected;
+        this.errorStop = errorStop;
+        this.retries = retries;
+        this.parameters = parameters;
+    }
+
     //Getters and Setters
     public String getName() {
         return name;

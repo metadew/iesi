@@ -45,7 +45,11 @@ public class ActionsTest {
                         .hasArg()
                         .required()
                         .desc("Version of the iesi instance")
-                        .build());
+                        .build())
+                .addOption(Option.builder("ini")
+                .hasArg()
+                .desc("ini file of the iesi instance")
+                .build());
 
         CommandLineParser parser = new DefaultParser();
         try {
@@ -127,7 +131,7 @@ public class ActionsTest {
 
             // Create repository
             List<LaunchArgument> metadataCreateArgs = new ArrayList();
-            LaunchArgument ini = new LaunchArgument(true, "-ini", "iesi-test.mssql.ini");
+            LaunchArgument ini = new LaunchArgument(true, "-ini", cmd.getOptionValue("ini", "iesi-test.ini"));
             metadataCreateArgs.add(ini);
             LaunchArgument exit = new LaunchArgument(true, "-exit", "false");
             metadataCreateArgs.add(exit);

@@ -7,7 +7,6 @@ public class Environment {
     private String name;
     private String description;
     private List<EnvironmentParameter> parameters;
-    private boolean empty = true;
     
     //Constructors
     public Environment() {
@@ -46,10 +45,7 @@ public class Environment {
     }
 
 	public boolean isEmpty() {
-		return empty;
+		return (this.name == null || this.name.isEmpty()) ;
 	}
 
-	public void setEmpty(boolean empty) {
-		this.empty = empty;
-	}
 }

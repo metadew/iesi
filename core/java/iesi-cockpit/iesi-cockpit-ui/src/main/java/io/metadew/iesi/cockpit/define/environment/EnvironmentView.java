@@ -58,7 +58,7 @@ public class EnvironmentView extends HorizontalLayout
 
     public HorizontalLayout createTopBar() {
         filter = new TextField();
-        filter.setPlaceholder("Filter name, availability or category");
+        filter.setPlaceholder("Filter name or description");
         // Apply the filter to grid's data provider. TextField value is never null
         filter.addValueChangeListener(event -> dataProvider.setFilter(event.getValue()));
         filter.addFocusShortcut(Key.KEY_F, KeyModifier.CONTROL);

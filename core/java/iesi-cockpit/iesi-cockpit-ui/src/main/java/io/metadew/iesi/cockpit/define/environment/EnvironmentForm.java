@@ -53,6 +53,7 @@ public class EnvironmentForm extends Div {
 
         binder = new BeanValidationBinder<>(Environment.class);
         binder.forField(environmentName).bind("name");
+        binder.forField(environmentDescription).bind("description");
         binder.bindInstanceFields(this);
 
         // enable/disable save button while editing

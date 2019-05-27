@@ -1,19 +1,18 @@
 package io.metadew.iesi.data.generation.rule;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.util.Locale;
-
-import org.apache.logging.log4j.Level;
-
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.data.generation.execution.GenerationRuleExecution;
 import io.metadew.iesi.data.generation.execution.GenerationRuleParameterExecution;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.GenerationRuleParameter;
 import io.metadew.iesi.script.execution.ExecutionControl;
+import org.apache.logging.log4j.Level;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
 
 public class NumNumber {
 
@@ -34,7 +33,17 @@ public class NumNumber {
 	private GenerationRuleParameterExecution decimalChar;
 
 	// Constructors
+	public NumNumber() {
+		
+	}
+	
 	public NumNumber(FrameworkExecution frameworkExecution, ExecutionControl executionControl, GenerationRuleExecution generationRuleExecution) {
+		this.setFrameworkExecution(frameworkExecution);
+		this.setEoControl(executionControl);
+		this.setGenerationRuleExecution(generationRuleExecution);
+	}
+
+	public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl, GenerationRuleExecution generationRuleExecution) {
 		this.setFrameworkExecution(frameworkExecution);
 		this.setEoControl(executionControl);
 		this.setGenerationRuleExecution(generationRuleExecution);
@@ -87,12 +96,12 @@ public class NumNumber {
 										Long.parseLong(this.getMaximumValue().getValue())));
 					} else {
 						int numberOfDecimals = DEFAULT_DECIMAL_NUMBER;
-						if (!this.getDecimalNumber().getValue().trim().equals("")) {
+						if (!this.getDecimalNumber().getValue().trim().equalsIgnoreCase("")) {
 							numberOfDecimals = Integer.valueOf(this.getDecimalNumber().getValue());
 						}
 						
 						DecimalFormatSymbols otherSymbols = new DecimalFormatSymbols(Locale.ROOT);
-						if (this.getDecimalChar().getValue().trim().equals("")) {
+						if (this.getDecimalChar().getValue().trim().equalsIgnoreCase("")) {
 							String temp = DEFAULT_DECIMAL_CHAR;
 							char charTemp = temp.charAt(0);
 							otherSymbols.setDecimalSeparator(charTemp);
@@ -229,5 +238,4 @@ public class NumNumber {
 	public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
 		this.frameworkExecution = frameworkExecution;
 	}
-
 }

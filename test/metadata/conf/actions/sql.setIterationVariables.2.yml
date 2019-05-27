@@ -1,0 +1,53 @@
+---
+type: "script"
+data:
+  name: "sql.setIterationVariables.2"
+  description: "test sql.setIterationVariables taking input from a file"
+  parameters: []
+  actions:
+  - number: 1
+    type: "sql.setIterationVariables"
+    name: "action1"
+    description: "run a sql select query from a file and store results as iteration variables"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "list"
+      value : "List1"
+    - name: "query"
+      value : "{{=file(#iesi.home#/data/iesi-test/fwk/data/actions/sql.setIterationVariables.2.1.sql)}}"
+    - name: "connection"
+      value : "sql.setIterationVariables.2"
+  - number: 2
+    type: "fwk.setIteration"
+    name: "Action2"
+    description: "Define the iteration using the iteration variables just retrieved"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "name"
+      value: "Iteration1"
+    - name: "type"
+      value: "list"
+    - name: "list"
+      value: "List1"
+  - number: 3
+    type: "fwk.outputMessage"
+    name: "Action3"
+    description: "Apply the iteration on an action"
+    component: ""
+    condition: ""
+    iteration: "Iteration1"
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "message"
+      value : ""
+    - name: "onScreen"
+      value : "Y"

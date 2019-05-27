@@ -1,0 +1,77 @@
+---
+type: "script"
+data:
+  name: "fwk.setParameterValue.3"
+  description: "test fwk.setParameterValue"
+  parameters: []
+  actions:
+  - number: 1
+    type: "fwk.setParameterValue"
+    name: "action1"
+    description: "set parameter"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "name"
+      value : "channel"
+    - name: "value"
+      value : "AG"
+  - number: 1
+    type: "fwk.setParameterValue"
+    name: "action2"
+    description: "set parameter"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "name"
+      value : "profile"
+    - name: "value"
+      value : "0002"
+  - number: 1
+    type: "fwk.setParameterValue"
+    name: "action3"
+    description: "set parameter"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "name"
+      value : "param1"
+    - name: "value"
+      value : "channel={{=coalesce(#channel#,BO)}},profile={{=coalesce(#profile#,1020)}},referenceName=FirstSession"
+  - number: 2
+    type: "fwk.outputMessage"
+    name: "action4"
+    description: "display parameter"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "message"
+      value : "param1 has value: #param1#"
+    - name: "onScreen"
+      value : "Y"
+  - number: 3
+    type: "eval.assertEquals"
+    name: "action5"
+    description: "verify parameter value"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "expected"
+      value : "channel=AG,profile=0002,referenceName=FirstSession"
+    - name: "actual"
+      value : "#param1#"

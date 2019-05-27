@@ -1,0 +1,8 @@
+/target/
+.classpath
+*.conf
+*.cmd
+.settings/
+.project
+.idea/
+iesi-core.iml

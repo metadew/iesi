@@ -1,0 +1,55 @@
+---
+type: "script"
+data:
+  name: "fho.createFolder.1"
+  description: "Test fho.createFolder with a local folder"
+  parameters: []
+  actions:
+  - number: 1
+    type: "fho.folderExists"
+    name: "Action1"
+    description: "Verify that the folder does not exist"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "Y"
+    errorStop: "Y"
+    parameters:
+    - name: "path"
+      value : "#iesi.home#/data/iesi-test/fwk/data/actions"
+    - name: "folder"
+      value : "fho.createFolder.1"
+    - name: "connection"
+      value : ""
+  - number: 2
+    type: "fho.createFolder"
+    name: "Action2"
+    description: "Create folder"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "path"
+      value : "#iesi.home#/data/iesi-test/fwk/data/actions"
+    - name: "folder"
+      value : "fho.createFolder.1"
+    - name: "connection"
+      value : ""
+  - number: 3
+    type: "fho.folderExists"
+    name: "Action3"
+    description: "Verify that the folder now exists"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "path"
+      value : "#iesi.home#/data/iesi-test/fwk/data/actions"
+    - name: "folder"
+      value : "fho.createFolder.1"
+    - name: "connection"
+      value : ""

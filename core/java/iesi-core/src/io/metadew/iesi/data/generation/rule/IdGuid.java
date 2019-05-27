@@ -4,8 +4,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.UUID;
 
-import org.apache.logging.log4j.Level;
-
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.data.generation.execution.GenerationRuleExecution;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
@@ -16,12 +14,21 @@ public class IdGuid {
 	private GenerationRuleExecution generationRuleExecution;
 	private FrameworkExecution frameworkExecution;
 	private ExecutionControl executionControl;
-	private String generationRuleTypeName = "id.guid";
 
 	// Parameters
 
 	// Constructors
+	public IdGuid() {
+		
+	}
+	
 	public IdGuid(FrameworkExecution frameworkExecution, ExecutionControl executionControl, GenerationRuleExecution generationRuleExecution) {
+		this.setFrameworkExecution(frameworkExecution);
+		this.setEoControl(executionControl);
+		this.setGenerationRuleExecution(generationRuleExecution);
+	}
+
+	public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl, GenerationRuleExecution generationRuleExecution) {
 		this.setFrameworkExecution(frameworkExecution);
 		this.setEoControl(executionControl);
 		this.setGenerationRuleExecution(generationRuleExecution);
@@ -30,9 +37,6 @@ public class IdGuid {
 	//
 	public boolean execute() {
 		try {
-			this.getFrameworkExecution().getFrameworkLog()
-					.log("generation.rule.type=" + this.getGenerationRuleTypeName(), Level.INFO);
-
 			// Reset Parameters
 
 			// Get Parameters
@@ -88,14 +92,6 @@ public class IdGuid {
 		this.generationRuleExecution = generationRuleExecution;
 	}
 
-	public String getGenerationRuleTypeName() {
-		return generationRuleTypeName;
-	}
-
-	public void setGenerationRuleTypeName(String generationRuleTypeName) {
-		this.generationRuleTypeName = generationRuleTypeName;
-	}
-
 	public FrameworkExecution getFrameworkExecution() {
 		return frameworkExecution;
 	}
@@ -103,5 +99,4 @@ public class IdGuid {
 	public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
 		this.frameworkExecution = frameworkExecution;
 	}
-
 }

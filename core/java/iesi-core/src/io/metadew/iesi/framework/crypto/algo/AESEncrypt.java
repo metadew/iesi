@@ -1,8 +1,8 @@
 package io.metadew.iesi.framework.crypto.algo;
 
-import java.security.Key;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
+import java.security.Key;
 import java.util.Base64;
 
 public class AESEncrypt {
@@ -11,13 +11,13 @@ public class AESEncrypt {
     private String keyString = null;
 
     public AESEncrypt() {
-    	
+
     }
-    
-    public AESEncrypt (String keyString) {
-    	this.setKeyString(keyString);
+
+    public AESEncrypt(String keyString) {
+        this.setKeyString(keyString);
     }
-    
+
     public String encrypt(String Data) throws Exception {
         Key key = AESEncrypt.generateKey();
         Cipher cipher = Cipher.getInstance(ALGO);
@@ -52,7 +52,7 @@ public class AESEncrypt {
         keyValue = this.keyString.getBytes();
     }
 
-	public static String getAlgo() {
-		return ALGO;
-	}
+    public static String getAlgo() {
+        return ALGO;
+    }
 }

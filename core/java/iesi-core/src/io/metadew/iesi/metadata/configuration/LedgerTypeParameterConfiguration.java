@@ -6,48 +6,48 @@ import io.metadew.iesi.metadata.definition.LedgerTypeParameter;
 
 public class LedgerTypeParameterConfiguration {
 
-	private LedgerTypeParameter ledgerTypeParameter;
-	private FrameworkExecution frameworkExecution;
+    private LedgerTypeParameter ledgerTypeParameter;
+    private FrameworkExecution frameworkExecution;
 
-	// Constructors
-	public LedgerTypeParameterConfiguration(LedgerTypeParameter ledgerTypeParameter, FrameworkExecution processiongTools) {
-		this.setLedgerTypeParameter(ledgerTypeParameter);
-		this.setFrameworkExecution(processiongTools);
-	}
+    // Constructors
+    public LedgerTypeParameterConfiguration(LedgerTypeParameter ledgerTypeParameter, FrameworkExecution processiongTools) {
+        this.setLedgerTypeParameter(ledgerTypeParameter);
+        this.setFrameworkExecution(processiongTools);
+    }
 
-	public LedgerTypeParameterConfiguration(FrameworkExecution processiongTools) {
-		this.setFrameworkExecution(processiongTools);
-	}
+    public LedgerTypeParameterConfiguration(FrameworkExecution processiongTools) {
+        this.setFrameworkExecution(processiongTools);
+    }
 
-	// Get Ledger Type Parameter
-	public LedgerTypeParameter getLedgerTypeParameter(String ledgerTypeName, String ledgerTypeParameterName) {
-		LedgerTypeParameter ledgerTypeParameterResult = null;
-		LedgerTypeConfiguration ledgerTypeConfiguration = new LedgerTypeConfiguration(this.getFrameworkExecution());
-		LedgerType ledgerType = ledgerTypeConfiguration.getLedgerType(ledgerTypeName);
-		for (LedgerTypeParameter ledgerTypeParameter : ledgerType.getParameters()) {
-			if (ledgerTypeParameter.getName().equalsIgnoreCase(ledgerTypeParameterName)) {
-				ledgerTypeParameterResult = ledgerTypeParameter;
-				break;
-			}
-		}
-		return ledgerTypeParameterResult;
-	}
-	
-	// Getters and Setters
-	public LedgerTypeParameter getLedgerTypeParameter() {
-		return ledgerTypeParameter;
-	}
+    // Get Ledger Type Parameter
+    public LedgerTypeParameter getLedgerTypeParameter(String ledgerTypeName, String ledgerTypeParameterName) {
+        LedgerTypeParameter ledgerTypeParameterResult = null;
+        LedgerTypeConfiguration ledgerTypeConfiguration = new LedgerTypeConfiguration(this.getFrameworkExecution());
+        LedgerType ledgerType = ledgerTypeConfiguration.getLedgerType(ledgerTypeName);
+        for (LedgerTypeParameter ledgerTypeParameter : ledgerType.getParameters()) {
+            if (ledgerTypeParameter.getName().equalsIgnoreCase(ledgerTypeParameterName)) {
+                ledgerTypeParameterResult = ledgerTypeParameter;
+                break;
+            }
+        }
+        return ledgerTypeParameterResult;
+    }
 
-	public void setLedgerTypeParameter(LedgerTypeParameter ledgerTypeParameter) {
-		this.ledgerTypeParameter = ledgerTypeParameter;
-	}
-	
-	public FrameworkExecution getFrameworkExecution() {
-		return frameworkExecution;
-	}
+    // Getters and Setters
+    public LedgerTypeParameter getLedgerTypeParameter() {
+        return ledgerTypeParameter;
+    }
 
-	public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-		this.frameworkExecution = frameworkExecution;
-	}
+    public void setLedgerTypeParameter(LedgerTypeParameter ledgerTypeParameter) {
+        this.ledgerTypeParameter = ledgerTypeParameter;
+    }
+
+    public FrameworkExecution getFrameworkExecution() {
+        return frameworkExecution;
+    }
+
+    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
+        this.frameworkExecution = frameworkExecution;
+    }
 
 }

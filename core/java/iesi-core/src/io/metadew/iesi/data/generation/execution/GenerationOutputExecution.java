@@ -1,11 +1,10 @@
 package io.metadew.iesi.data.generation.execution;
 
-import org.apache.logging.log4j.Level;
-
 import io.metadew.iesi.data.generation.output.DelimitedFile;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.GenerationOutput;
 import io.metadew.iesi.script.execution.ExecutionControl;
+import org.apache.logging.log4j.Level;
 
 public class GenerationOutputExecution {
 
@@ -20,7 +19,7 @@ public class GenerationOutputExecution {
 		this.setExecutionControl(executionControl);
 		this.setGenerationExecution(generationExecution);
 		for (GenerationOutput generationOutput : this.getGenerationExecution().getGeneration().getOutputs()) {
-			if (generationOutput.getName().trim().equals(generationOutputName.trim())) {
+			if (generationOutput.getName().trim().equalsIgnoreCase(generationOutputName.trim())) {
 				this.setGenerationOutput(generationOutput);
 			}
 		}
@@ -30,7 +29,7 @@ public class GenerationOutputExecution {
 	public void execute() {
 		
 		try {
-			if (this.getGenerationOutput().getType().trim().equalsIgnoreCase("file_delimited")) {
+			if (this.getGenerationOutput().getType().trim().equalsIgnoreCase("file.delimited")) {
 				DelimitedFile delimitedFile = new DelimitedFile(this.getFrameworkExecution(), this.getExecutionControl(), this);
 				delimitedFile.execute();
 			} else {
@@ -78,6 +77,4 @@ public class GenerationOutputExecution {
 	public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
 		this.frameworkExecution = frameworkExecution;
 	}
-
-	
 }

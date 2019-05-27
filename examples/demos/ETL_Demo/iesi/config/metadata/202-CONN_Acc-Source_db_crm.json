@@ -1,0 +1,17 @@
+[{
+	"type": "connection",
+	"data": {
+		"name": "crm_postgres",
+		"description": "Connection to the CRM database on Postgres server",
+		"type": "db.pgsql",
+		"environment": "acc",
+		"parameters": [
+			{"name": "host","value": "postgres-crm"},
+			{"name": "port","value": "5432"},
+			{"name": "database","value": "crm"},
+			{"name": "user","value": "crm"},
+			{"name": "password","value": "ENC(U7G5yUmGueukaWkhpGo85U4TxkNDAvs=)"}
+			
+		]
+	}
+}]

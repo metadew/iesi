@@ -1,16 +1,15 @@
 package io.metadew.iesi.data.generation.rule;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-
-import org.apache.logging.log4j.Level;
-
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.data.generation.execution.GenerationRuleExecution;
 import io.metadew.iesi.data.generation.execution.GenerationRuleParameterExecution;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.GenerationRuleParameter;
 import io.metadew.iesi.script.execution.ExecutionControl;
+import org.apache.logging.log4j.Level;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 public class TxtSentences {
 
@@ -23,12 +22,22 @@ public class TxtSentences {
 	private GenerationRuleParameterExecution sentenceNumber;
 
 	// Constructors
+	public TxtSentences() {
+		
+	}
+	
 	public TxtSentences(FrameworkExecution frameworkExecution, ExecutionControl executionControl, GenerationRuleExecution generationRuleExecution) {
 		this.setFrameworkExecution(frameworkExecution);
 		this.setEoControl(executionControl);
 		this.setGenerationRuleExecution(generationRuleExecution);
 	}
 
+	public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl, GenerationRuleExecution generationRuleExecution) {
+		this.setFrameworkExecution(frameworkExecution);
+		this.setEoControl(executionControl);
+		this.setGenerationRuleExecution(generationRuleExecution);
+	}
+	
 	//
 	public boolean execute() {
 		try {
@@ -51,7 +60,7 @@ public class TxtSentences {
 			try {				
 				for (int currentRecord = 0; currentRecord < this.getGenerationRuleExecution().getGenerationExecution().getNumberOfRecords(); currentRecord++) {
 					String generatedValue = "";
-					if (this.getSentenceNumber().getValue().trim().equals("")) {
+					if (this.getSentenceNumber().getValue().trim().equalsIgnoreCase("")) {
 						generatedValue = this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().getGenerationObjectExecution().getLorem().paragraph();
 					} else {
 						generatedValue = this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().getGenerationObjectExecution().getLorem().paragraph(Integer.parseInt(this.getSentenceNumber().getValue()));

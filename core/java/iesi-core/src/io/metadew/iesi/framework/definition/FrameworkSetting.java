@@ -1,77 +1,76 @@
 package io.metadew.iesi.framework.definition;
 
 public class FrameworkSetting {
-	
-	private String name;
-	private String path;
-	private String label;
-	private String description;
-	private String group;
-	private String category;
-	private String type;
-	
-	//Constructors
-	public FrameworkSetting() {
-		
-	}
-	
-	//Getters and Setters
-	public String getName() {
-		return name;
-	}
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    private String name;
+    private String path;
+    private String label;
+    private String description;
+    private String group;
+    private String category;
+    private String type;
 
-	public String getDescription() {
-		return description;
-	}
+    //Constructors
+    public FrameworkSetting() {
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    }
 
-	public String getLabel() {
-		return label;
-	}
+    //Getters and Setters
+    public String getName() {
+        return name;
+    }
 
-	public void setLabel(String label) {
-		this.label = label;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public String getGroup() {
-		return group;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public void setGroup(String group) {
-		this.group = group;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	public String getCategory() {
-		return category;
-	}
+    public String getLabel() {
+        return label;
+    }
 
-	public void setCategory(String category) {
-		this.category = category;
-	}
+    public void setLabel(String label) {
+        this.label = label;
+    }
 
-	public String getType() {
-		return type;
-	}
+    public String getGroup() {
+        return group;
+    }
 
-	public void setType(String type) {
-		this.type = type;
-	}
+    public void setGroup(String group) {
+        this.group = group;
+    }
 
-	public String getPath() {
-		return path;
-	}
+    public String getCategory() {
+        return category;
+    }
 
-	public void setPath(String path) {
-		this.path = path;
-	}
+    public void setCategory(String category) {
+        this.category = category;
+    }
 
-	
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
 
 }

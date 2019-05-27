@@ -1,0 +1,23 @@
+---
+type: "script"
+data:
+  name: "sql.evaluateResult.1.2"
+  description: "test sql.evaluateResult when data is expected taking input from a file"
+  parameters: []
+  actions:
+  - number: 1
+    type: "sql.evaluateResult"
+    name: "action1"
+    description: "run an evaluation query expecting results taking input from a file"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "query"
+      value : "{{=file(#iesi.home#/data/iesi-test/fwk/data/actions/sql.evaluateResult.1.2.sql)}}"
+    - name: "hasResult"
+      value : "Y"
+    - name: "connection"
+      value : "sql.evaluateResult.1"

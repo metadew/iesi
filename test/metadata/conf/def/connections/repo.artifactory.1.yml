@@ -1,0 +1,16 @@
+---
+type: Connection
+data:
+  name: "repo.artifactory.1"
+  type: "repo.artifactory"
+  description: "repo.artifactory.1 connection"
+  environment: "iesi-test"
+  parameters:
+  - name: "url"
+    value: "https://localhost/artifactory"
+  - name: "repository"
+    value: "iesi"
+  - name: "user"
+    value: "iesi"
+  - name: "password"
+    value: "ENC(Waan0DOjDHNBnTXtldp5xnGwIP0=)"

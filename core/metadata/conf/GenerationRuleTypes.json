@@ -2,6 +2,7 @@
 	"type": "GenerationRuleType",
 	"data": {
 		"name": "dt.date",
+		"className": "io.metadew.iesi.data.generation.rule.DtDate",
 		"description": "Random date values",
 		"parameters": [
 			{"name": "MIN_VALUE","description": "Lower bound for the generation","type": "date","mandatory": "Y","encrypted": "N"},
@@ -13,6 +14,7 @@
 	"type": "GenerationRuleType",
 	"data": {
 		"name": "dt.now",
+		"className": "io.metadew.iesi.data.generation.rule.DtNow",
 		"description": "Generate current date, time or timestamp",
 		"parameters": [
 			{"name": "FORMAT","description": "Format to use for the generation","type": "string","mandatory": "N","encrypted": "N"}
@@ -22,6 +24,7 @@
 	"type": "GenerationRuleType",
 	"data": {
 		"name": "dt.time",
+		"className": "io.metadew.iesi.data.generation.rule.DtTime",
 		"description": "Random time values",
 		"parameters": [
 			{"name": "MIN_VALUE","description": "Lower bound for the generation","type": "time","mandatory": "Y","encrypted": "N"},
@@ -33,6 +36,7 @@
 	"type": "GenerationRuleType",
 	"data": {
 		"name": "dt.timstamp",
+		"className": "io.metadew.iesi.data.generation.rule.DtTimstamp",
 		"description": "Random timestamp values (date and time)",
 		"parameters": [ ]
 }},
@@ -40,6 +44,7 @@
 	"type": "GenerationRuleType",
 	"data": {
 		"name": "id.guid",
+		"className": "io.metadew.iesi.data.generation.rule.IdGuid",
 		"description": "Generates 36 char hex guid values",
 		"parameters": [ ]
 }},
@@ -47,6 +52,7 @@
 	"type": "GenerationRuleType",
 	"data": {
 		"name": "list.common",
+		"className": "io.metadew.iesi.data.generation.rule.ListCommon",
 		"description": "Select items from a common list of values",
 		"parameters": [
 			{"name": "LIST_NM","description": "","type": "string","mandatory": "Y","encrypted": "N"},
@@ -57,6 +63,7 @@
 	"type": "GenerationRuleType",
 	"data": {
 		"name": "list.custom",
+		"className": "io.metadew.iesi.data.generation.rule.ListCustom",
 		"description": "Select items from a custom list of values",
 		"parameters": [
 			{"name": "ITEMS","description": "List of items to select from (comma separated)","type": "string","mandatory": "Y","encrypted": "N"},
@@ -67,6 +74,7 @@
 	"type": "GenerationRuleType",
 	"data": {
 		"name": "num.number",
+		"className": "io.metadew.iesi.data.generation.rule.NumNumber",
 		"description": "Random numerical values",
 		"parameters": [
 			{"name": "MIN_VALUE","description": "Lower bound for the generation","type": "number","mandatory": "Y","encrypted": "N"},
@@ -80,6 +88,7 @@
 	"type": "GenerationRuleType",
 	"data": {
 		"name": "num.rowNumber",
+		"className": "io.metadew.iesi.data.generation.rule.NumRownumber",
 		"description": "Generate a sequential row number",
 		"parameters": [
 			{"name": "START_NB","description": "Initial number to use","type": "number","mandatory": "N","encrypted": "N"}
@@ -88,14 +97,18 @@
 {
 	"type": "GenerationRuleType",
 	"data": {
-		"name": "text.characters",
+		"name": "txt.characters",
+		"className": "io.metadew.iesi.data.generation.rule.TxtCharacters",
 		"description": "Random sequence of characters",
-		"parameters": [ ]
+		"parameters": [
+			{"name": "CHAR_NB","description": "Number of characters to generate","type": "number","mandatory": "Y","encrypted": "N"}
+	]
 }},
 {
 	"type": "GenerationRuleType",
 	"data": {
 		"name": "txt.paragraphs",
+		"className": "io.metadew.iesi.data.generation.rule.TxtParagraphs",
 		"description": "Random number of paragraphs",
 		"parameters": [
 			{"name": "PARAGRAPH_NB","description": "Number of paragrpahs to generate","type": "number","mandatory": "N","encrypted": "N"}
@@ -105,6 +118,7 @@
 	"type": "GenerationRuleType",
 	"data": {
 		"name": "txt.sentences",
+		"className": "io.metadew.iesi.data.generation.rule.TxtSentences",
 		"description": "Random sequence of sentences",
 		"parameters": [
 			{"name": "SENTENCE_NB","description": "Number of sentences to generate","type": "number","mandatory": "N","encrypted": "N"}
@@ -114,6 +128,7 @@
 	"type": "GenerationRuleType",
 	"data": {
 		"name": "txt.words",
+		"className": "io.metadew.iesi.data.generation.rule.TxtWords",
 		"description": "Random sequence of words",
 		"parameters": [
 			{"name": "WORD_NB","description": "Number of words to generate","type": "number","mandatory": "N","encrypted": "N"}
@@ -123,6 +138,7 @@
 	"type": "GenerationRuleType",
 	"data": {
 		"name": "val.blank",
+		"className": "io.metadew.iesi.data.generation.rule.ValBlank",
 		"description": "Generate a blank or null value",
 		"parameters": [
 			{"name": "BLANK_VALUE","description": "Value to use as blank value","type": "string","mandatory": "Y","encrypted": "N"}
@@ -132,6 +148,7 @@
 	"type": "GenerationRuleType",
 	"data": {
 		"name": "val.boolean",
+		"className": "io.metadew.iesi.data.generation.rule.ValBoolean",
 		"description": "Generate random boolean values (0 vs 1, true vs false, etc.)",
 		"parameters": [
 			{"name": "TRUE_VALUE","description": "Value to use as true value","type": "string","mandatory": "Y","encrypted": "N"},
@@ -142,6 +159,7 @@
 	"type": "GenerationRuleType",
 	"data": {
 		"name": "val.pattern",
+		"className": "io.metadew.iesi.data.generation.rule.ValPattern",
 		"description": "Generate a value based on a regular expression pattern",
 		"parameters": [ ]
 }}]

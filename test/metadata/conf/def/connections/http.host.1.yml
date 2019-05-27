@@ -1,0 +1,10 @@
+---
+type: Connection
+data:
+  name: "http.host.1"
+  type: "http.host"
+  description: "http.host.1 connection"
+  environment: "iesi-test"
+  parameters:
+  - name: "url"
+    value: "https://localhost:3000/api"

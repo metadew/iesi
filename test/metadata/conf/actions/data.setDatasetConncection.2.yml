@@ -1,0 +1,20 @@
+---
+type: Script
+data:
+  type: "script"
+  name: "data.setDatasetConnection.2"
+  description: "test data.setDatasetConnection with multiple labels. There is no other dataset containing all labels present"
+  actions:
+  - number: 1
+    type: "data.setDatasetConnection"
+    name: "set dataset connection"
+    description: "default"
+    errorExpected: "N"
+    errorStop: "Y"
+    parameters:
+    - name: "name"
+      value : "multiplelabels"
+    - name: "dataset"
+      value : "setDatasetConnection"
+    - name: "labels"
+      value : "multiple,label,additional"

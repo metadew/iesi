@@ -1,0 +1,12 @@
+---
+type: Connection
+data:
+  name: "sql.setIterationVariables.2"
+  type: "db.sqlite"
+  description: "sql.setIterationVariables.2 connection"
+  environment: "iesi-test"
+  parameters:
+  - name: "filePath"
+    value: "#iesi.home#/data/iesi-test/fwk/data/actions"
+  - name: "fileName"
+    value: "sql.setIterationVariables.2.db3"

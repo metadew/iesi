@@ -1,16 +1,15 @@
 package io.metadew.iesi.data.generation.rule;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-
-import org.apache.logging.log4j.Level;
-
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.data.generation.execution.GenerationRuleExecution;
 import io.metadew.iesi.data.generation.execution.GenerationRuleParameterExecution;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.GenerationRuleParameter;
 import io.metadew.iesi.script.execution.ExecutionControl;
+import org.apache.logging.log4j.Level;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 public class NumRowNumber {
 
@@ -23,7 +22,17 @@ public class NumRowNumber {
 	private GenerationRuleParameterExecution startNumber;
 
 	// Constructors
+	public NumRowNumber() {
+		
+	}
+	
 	public NumRowNumber(FrameworkExecution frameworkExecution, ExecutionControl executionControl, GenerationRuleExecution generationRuleExecution) {
+		this.setFrameworkExecution(frameworkExecution);
+		this.setEoControl(executionControl);
+		this.setGenerationRuleExecution(generationRuleExecution);
+	}
+
+	public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl, GenerationRuleExecution generationRuleExecution) {
 		this.setFrameworkExecution(frameworkExecution);
 		this.setEoControl(executionControl);
 		this.setGenerationRuleExecution(generationRuleExecution);
@@ -50,7 +59,7 @@ public class NumRowNumber {
 			// Run the generationRule
 			try {			
 				long counter = 1;
-				if (!this.getStartNumber().getValue().trim().equals("")) {
+				if (!this.getStartNumber().getValue().trim().equalsIgnoreCase("")) {
 					counter = Long.parseLong(this.getStartNumber().getValue());
 				}
 
@@ -124,5 +133,4 @@ public class NumRowNumber {
 	public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
 		this.frameworkExecution = frameworkExecution;
 	}
-
 }

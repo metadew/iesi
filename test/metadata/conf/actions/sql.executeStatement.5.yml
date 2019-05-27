@@ -1,0 +1,51 @@
+---
+type: "script"
+data:
+  name: "sql.executeStatement.5"
+  description: "test sql.executeStatement with output to a staging dataset"
+  parameters: []
+  actions:
+  - number: 1
+    type: "conn.setStageConnection"
+    name: "Action1"
+    description: "Define the stage connection"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "stage"
+      value : "stage1"
+  - number: 2
+    type: "data.setDatasetConnection"
+    name: "Action2"
+    description: "Define a dataset using the defined stage connection"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "name"
+      value : "dataset1"
+    - name: "type"
+      value : "stage"
+    - name: "dataset"
+      value : "stage1"
+  - number: 3
+    type: "sql.executeStatement"
+    name: "Action3"
+    description: "Select data from a database and store the output in a stage dataset"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "statement"
+      value : "select * from Table1"
+    - name: "connection"
+      value : "sql.executeStatement.5"
+    - name: "outputDataset"
+      value : "dataset1"

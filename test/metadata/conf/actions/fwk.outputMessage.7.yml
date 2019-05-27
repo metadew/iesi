@@ -1,0 +1,21 @@
+---
+type: "script"
+data:
+  name: "fwk.outputMessage.7"
+  description: "test fwk.outputMessage with parameter in the message"
+  parameters: []
+  actions:
+  - number: 1
+    type: "fwk.outputMessage"
+    name: "action1"
+    description: "output message with a list as message"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "message"
+      value : "{{$run.id}}"
+    - name: "onScreen"
+      value : "Y"

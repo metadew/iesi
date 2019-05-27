@@ -3,74 +3,73 @@ package io.metadew.iesi.common.json;
 
 public class JsonParsedItem {
 
-	private int item;
-	private int identifier;
-	private int parent;
-	private int iteration;
-	private String key;
-	private String value;
-	private String path;
-			
-	public JsonParsedItem() {
-	}
+    private int item;
+    private int identifier;
+    private int parent;
+    private int iteration;
+    private String key;
+    private String value;
+    private String path;
 
-	// Getters and Setters
-	public int getIdentifier() {
-		return identifier;
-	}
+    public JsonParsedItem() {
+    }
 
-	public void setIdentifier(int identifier) {
-		this.identifier = identifier;
-	}
+    // Getters and Setters
+    public int getIdentifier() {
+        return identifier;
+    }
 
-	public int getParent() {
-		return parent;
-	}
+    public void setIdentifier(int identifier) {
+        this.identifier = identifier;
+    }
 
-	public void setParent(int parent) {
-		this.parent = parent;
-	}
+    public int getParent() {
+        return parent;
+    }
 
-	public int getIteration() {
-		return iteration;
-	}
+    public void setParent(int parent) {
+        this.parent = parent;
+    }
 
-	public void setIteration(int iteration) {
-		this.iteration = iteration;
-	}
+    public int getIteration() {
+        return iteration;
+    }
 
-	public String getKey() {
-		return key;
-	}
+    public void setIteration(int iteration) {
+        this.iteration = iteration;
+    }
 
-	public void setKey(String key) {
-		this.key = key;
-	}
+    public String getKey() {
+        return key;
+    }
 
-	public String getValue() {
-		return value;
-	}
+    public void setKey(String key) {
+        this.key = key;
+    }
 
-	public void setValue(String value) {
-		this.value = value;
-	}
+    public String getValue() {
+        return value;
+    }
 
-	public String getPath() {
-		return path;
-	}
+    public void setValue(String value) {
+        this.value = value;
+    }
 
-	public void setPath(String path) {
-		this.path = path;
-	}
+    public String getPath() {
+        return path;
+    }
 
-	public int getItem() {
-		return item;
-	}
+    public void setPath(String path) {
+        this.path = path;
+    }
 
-	public void setItem(int item) {
-		this.item = item;
-	}
+    public int getItem() {
+        return item;
+    }
 
+    public void setItem(int item) {
+        this.item = item;
+    }
 
 
 }

@@ -1,101 +1,109 @@
 package io.metadew.iesi.metadata.configuration;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-
-import javax.sql.rowset.CachedRowSet;
-
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.ScriptVersion;
 
+import javax.sql.rowset.CachedRowSet;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.Optional;
+
 public class ScriptVersionConfiguration {
 
-	private ScriptVersion scriptVersion;
-	private FrameworkExecution frameworkExecution;
+    private ScriptVersion scriptVersion;
+    private FrameworkExecution frameworkExecution;
 
-	// Constructors	
-	public ScriptVersionConfiguration(ScriptVersion scriptVersion, FrameworkExecution frameworkExecution) {
-		this.setScriptVersion(scriptVersion);
-		this.setFrameworkExecution(frameworkExecution);
-	}
+    // Constructors
+    public ScriptVersionConfiguration(ScriptVersion scriptVersion, FrameworkExecution frameworkExecution) {
+        this.setScriptVersion(scriptVersion);
+        this.setFrameworkExecution(frameworkExecution);
+    }
 
-	public ScriptVersionConfiguration(FrameworkExecution frameworkExecution) {
-		this.setFrameworkExecution(frameworkExecution);
-	}
+    public ScriptVersionConfiguration(FrameworkExecution frameworkExecution) {
+        this.setFrameworkExecution(frameworkExecution);
+    }
 
-	// Insert
-	public String getInsertStatement(String scriptName) {
-		String sql = "";
+    public String getInsertStatement(String scriptId, ScriptVersion scriptVersion) {
+        return "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ScriptVersions") +
+                " (SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_VRS_DSC) VALUES (" +
+                scriptId + ", " +
+                scriptVersion.getNumber() + ", " +
+                scriptVersion.getDescription() + ");";
+    }
 
-		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("ScriptVersions");
-		sql += " (SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_VRS_DSC) ";
-		sql += "VALUES ";
-		sql += "(";
-		sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Scripts"), "SCRIPT_ID", "where SCRIPT_NM = '"+ scriptName) + "')";
-		sql += ",";
-		sql += SQLTools.GetStringForSQL(this.getScriptVersion().getNumber());
-		sql += ",";
-		sql += SQLTools.GetStringForSQL(this.getScriptVersion().getDescription());
-		sql += ")";
-		sql += ";";
+    // Insert
+    public String getInsertStatement(String scriptName) {
+        String sql = "";
 
-		return sql;
-	}
+        sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ScriptVersions");
+        sql += " (SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_VRS_DSC) VALUES (";
+        sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Scripts"), "SCRIPT_ID", "where SCRIPT_NM = '" + scriptName) + "')";
+        sql += ",";
+        sql += SQLTools.GetStringForSQL(this.getScriptVersion().getNumber());
+        sql += ",";
+        sql += SQLTools.GetStringForSQL(this.getScriptVersion().getDescription());
+        sql += ")";
+        sql += ";";
 
-	
-	public String getDefaultInsertStatement(String scriptName) {
-		String sql = "";
+        return sql;
+    }
 
-		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("ScriptVersions");
-		sql += " (SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_VRS_DSC) ";
-		sql += "VALUES ";
-		sql += "(";
-		sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("Scripts"), "SCRIPT_ID", "where SCRIPT_NM = '"+ scriptName) + "')";
-		sql += ",";
-		sql += SQLTools.GetStringForSQL("0");
-		sql += ",";
-		sql += SQLTools.GetStringForSQL("Default scriptVersion");
-		sql += ")";
-		sql += ";";
 
-		return sql;
-	}
+    public String getDefaultInsertStatement(String scriptName) {
+        String sql = "";
 
-	public ScriptVersion getScriptVersion(long scriptId, long scriptVersionNumber) {
-		ScriptVersion scriptVersion = new ScriptVersion();
-		CachedRowSet crsScriptVersion = null;
-		String queryScriptVersion = "select SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_VRS_DSC from " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration().getTableName("ScriptVersions")
-				+ " where SCRIPT_ID = " + scriptId + " and SCRIPT_VRS_NB = " + scriptVersionNumber;
-		crsScriptVersion = this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().executeQuery(queryScriptVersion);
-		try {
-			while (crsScriptVersion.next()) {
-				scriptVersion.setNumber(scriptVersionNumber);
-				scriptVersion.setDescription(crsScriptVersion.getString("SCRIPT_VRS_DSC"));
-			}
-			crsScriptVersion.close();
-		} catch (Exception e) {
-			StringWriter StackTrace = new StringWriter();
-			e.printStackTrace(new PrintWriter(StackTrace));
-		}
-		return scriptVersion;
-	}
+        sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ScriptVersions");
+        sql += " (SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_VRS_DSC) ";
+        sql += "VALUES ";
+        sql += "(";
+        sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Scripts"), "SCRIPT_ID", "where SCRIPT_NM = '" + scriptName) + "')";
+        sql += ",";
+        sql += SQLTools.GetStringForSQL("0");
+        sql += ",";
+        sql += SQLTools.GetStringForSQL("Default scriptVersion");
+        sql += ")";
+        sql += ";";
 
-	// Getters and Setters
-	public ScriptVersion getScriptVersion() {
-		return scriptVersion;
-	}
+        return sql;
+    }
 
-	public void setScriptVersion(ScriptVersion scriptVersion) {
-		this.scriptVersion = scriptVersion;
-	}
-	
-	public FrameworkExecution getFrameworkExecution() {
-		return frameworkExecution;
-	}
+    public Optional<ScriptVersion> getScriptVersion(String scriptId, long scriptVersionNumber) {
+        String queryScriptVersion = "select SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_VRS_DSC from " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ScriptVersions")
+                + " where SCRIPT_ID = '" + scriptId + "' and SCRIPT_VRS_NB = " + scriptVersionNumber;
+        CachedRowSet crsScriptVersion = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(queryScriptVersion, "reader");
+        try {
+            if (crsScriptVersion.size() == 0) {
+                return Optional.empty();
+            } else if (crsScriptVersion.size() > 1) {
+                //TODO: log
+            }
+            crsScriptVersion.next();
+            ScriptVersion scriptVersion = new ScriptVersion(scriptId, scriptVersionNumber, crsScriptVersion.getString("SCRIPT_VRS_DSC"));
+            crsScriptVersion.close();
+            return Optional.of(scriptVersion);
+        } catch (Exception e) {
+            StringWriter StackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(StackTrace));
+            return Optional.empty();
+        }
+    }
 
-	public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-		this.frameworkExecution = frameworkExecution;
-	}
+    // Getters and Setters
+    public ScriptVersion getScriptVersion() {
+        return scriptVersion;
+    }
+
+    public void setScriptVersion(ScriptVersion scriptVersion) {
+        this.scriptVersion = scriptVersion;
+    }
+
+    public FrameworkExecution getFrameworkExecution() {
+        return frameworkExecution;
+    }
+
+    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
+        this.frameworkExecution = frameworkExecution;
+    }
 
 }

@@ -1,0 +1,12 @@
+---
+type: Connection
+data:
+  name: "sql.setRuntimeVariables.3"
+  type: "db.sqlite"
+  description: "sql.setRuntimeVariables.3 connection"
+  environment: "iesi-test"
+  parameters:
+  - name: "filePath"
+    value: "#iesi.home#/data/iesi-test/fwk/data/actions"
+  - name: "fileName"
+    value: "sql.setRuntimeVariables.3.db3"

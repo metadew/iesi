@@ -1,0 +1,8 @@
+[{
+	"type": "LaunchItem",
+	"data": {
+		"script": "iesi-test.docker.1",
+		"description": "Test fho.fileExists using a local file that exists",
+		"parameterList": "action=down"
+	}
+}]

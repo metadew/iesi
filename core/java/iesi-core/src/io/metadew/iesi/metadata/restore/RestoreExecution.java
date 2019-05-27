@@ -1,16 +1,16 @@
 package io.metadew.iesi.metadata.restore;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.logging.log4j.Level;
-
 import io.metadew.iesi.connection.FileConnection;
 import io.metadew.iesi.connection.tools.FolderTools;
-import io.metadew.iesi.framework.execution.FrameworkExecutionContext;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.execution.FrameworkExecutionContext;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.Context;
 import io.metadew.iesi.script.execution.ExecutionControl;
+import org.apache.logging.log4j.Level;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class RestoreExecution {
 
@@ -20,10 +20,14 @@ public class RestoreExecution {
 
 	// Constructors
 	public RestoreExecution() {
+		// Create the framework instance
+		FrameworkInstance frameworkInstance = new FrameworkInstance();
+
+		// Create the framework execution
 		Context context = new Context();
 		context.setName("restore");
 		context.setScope("");
-		this.setFrameworkExecution(new FrameworkExecution(new FrameworkExecutionContext(context)));
+		this.setFrameworkExecution(new FrameworkExecution(frameworkInstance, new FrameworkExecutionContext(context), null));
 		this.setExecutionControl(new ExecutionControl(this.getFrameworkExecution()));
 	}
 
@@ -32,7 +36,7 @@ public class RestoreExecution {
 	public void execute(String path) {
 		// Log Start
 		this.getExecutionControl().logStart(this);
-		this.setProcessId(this.getExecutionControl().getProcessId());
+		this.setProcessId(0L);
 
 		// Verify input parameters
 		if (FolderTools.isFolder(path) ) {

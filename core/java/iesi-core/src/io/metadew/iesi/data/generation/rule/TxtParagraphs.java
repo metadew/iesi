@@ -1,16 +1,15 @@
 package io.metadew.iesi.data.generation.rule;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-
-import org.apache.logging.log4j.Level;
-
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.data.generation.execution.GenerationRuleExecution;
 import io.metadew.iesi.data.generation.execution.GenerationRuleParameterExecution;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.GenerationRuleParameter;
 import io.metadew.iesi.script.execution.ExecutionControl;
+import org.apache.logging.log4j.Level;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 public class TxtParagraphs {
 
@@ -23,7 +22,17 @@ public class TxtParagraphs {
 	private GenerationRuleParameterExecution paragraphNumber;
 
 	// Constructors
+	public TxtParagraphs() {
+		
+	}
+	
 	public TxtParagraphs(FrameworkExecution frameworkExecution, ExecutionControl executionControl, GenerationRuleExecution generationRuleExecution) {
+		this.setFrameworkExecution(frameworkExecution);
+		this.setEoControl(executionControl);
+		this.setGenerationRuleExecution(generationRuleExecution);
+	}
+
+	public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl, GenerationRuleExecution generationRuleExecution) {
 		this.setFrameworkExecution(frameworkExecution);
 		this.setEoControl(executionControl);
 		this.setGenerationRuleExecution(generationRuleExecution);
@@ -52,7 +61,7 @@ public class TxtParagraphs {
 				for (int currentRecord = 0; currentRecord < this.getGenerationRuleExecution().getGenerationExecution().getNumberOfRecords(); currentRecord++) {
 					String generatedValue = "";
 					int numberOfParagraphs = 0; 
-					if (this.getParagraphNumber().getValue().trim().equals("")) {
+					if (this.getParagraphNumber().getValue().trim().equalsIgnoreCase("")) {
 						numberOfParagraphs = this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().getGenerationObjectExecution().getGenerationTools().getRandomTools().range(1,10);
 					} else {
 						numberOfParagraphs = Integer.parseInt(this.getParagraphNumber().getValue());
@@ -128,5 +137,4 @@ public class TxtParagraphs {
 	public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
 		this.frameworkExecution = frameworkExecution;
 	}
-
 }

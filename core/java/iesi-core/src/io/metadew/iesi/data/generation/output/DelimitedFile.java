@@ -1,14 +1,5 @@
 package io.metadew.iesi.data.generation.output;
 
-import java.io.File;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.ArrayList;
-
-import org.apache.logging.log4j.Level;
-
-import javax.sql.rowset.CachedRowSet;
-
 import io.metadew.iesi.common.list.ListTools;
 import io.metadew.iesi.common.text.ParsingTools;
 import io.metadew.iesi.connection.tools.FolderTools;
@@ -20,13 +11,20 @@ import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.GenerationControl;
 import io.metadew.iesi.metadata.definition.GenerationOutputParameter;
 import io.metadew.iesi.script.execution.ExecutionControl;
+import org.apache.logging.log4j.Level;
+
+import javax.sql.rowset.CachedRowSet;
+import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.ArrayList;
 
 public class DelimitedFile {
 
 	private GenerationOutputExecution generationOutputExecution;
 	private FrameworkExecution frameworkExecution;
 	private ExecutionControl executionControl;
-	private String generationOutputTypeName = "FILE_DELIMITED";
+	private String generationOutputTypeName = "file.delimited";
 
 	// Parameters
 	private GenerationOutputParameterExecution fileName;
@@ -64,7 +62,7 @@ public class DelimitedFile {
 					this.getGenerationOutputTypeName(), "encoding"));
 			this.setControls(new GenerationOutputParameterExecution(this.getFrameworkExecution(), this.getExecutionControl(),
 					this.getGenerationOutputTypeName(), "controls"));
-			
+
 			// Get Parameters
 			for (GenerationOutputParameter generationOutputParameter : this.getGenerationOutputExecution()
 					.getGenerationOutput().getParameters()) {
@@ -135,7 +133,7 @@ public class DelimitedFile {
 
 	private String composeFileName() {
 		String tempFileName = "";
-		if (this.getFileName().getValue().trim().equals("")) {
+		if (this.getFileName().getValue().trim().equalsIgnoreCase("")) {
 			// Set default file name
 			tempFileName = this.getGenerationOutputExecution().getGenerationExecution().getGeneration().getName() + ".txt";
 		} else {
@@ -230,5 +228,4 @@ public class DelimitedFile {
 	public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
 		this.frameworkExecution = frameworkExecution;
 	}
-
 }

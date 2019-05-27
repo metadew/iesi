@@ -1,0 +1,49 @@
+---
+type: "script"
+data:
+  name: "sql.setRuntimeVariables.3"
+  description: "test sql.setRuntimeVariables taking input from a file"
+  parameters: []
+  actions:
+  - number: 1
+    type: "sql.setRuntimeVariables"
+    name: "action1"
+    description: "run a sql select query taking input from a file"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "query"
+      value : "{{=file(#iesi.home#/data/iesi-test/fwk/data/actions/sql.setRuntimeVariables.3.1.sql)}}"
+    - name: "connection"
+      value : "sql.setRuntimeVariables.3"
+  - number: 2
+    type: "fwk.outputMessage"
+    name: "action2"
+    description: "output Field2 value"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "message"
+      value : "Field2 runtime variable value: #Field2#"
+    - name: "onScreen"
+      value : "Y"
+  - number: 3
+    type: "eval.assertEquals"
+    name: "action3"
+    description: "verify Field2 value value"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "expected"
+      value : "mattis"
+    - name: "actual"
+      value : "#Field2#"

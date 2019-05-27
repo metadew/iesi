@@ -1,10 +1,12 @@
 package io.metadew.iesi.framework.crypto;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import io.metadew.iesi.framework.crypto.tools.CryptoTools;
 import io.metadew.iesi.framework.crypto.algo.AESGCMEncrypt;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
+
 
 public class FrameworkCrypto {
 
@@ -29,11 +31,11 @@ public class FrameworkCrypto {
 
 	public String decrypt(String input) {
 		String output = "";
-		if (input.trim().equals(""))
+		if (input.trim().equalsIgnoreCase(""))
 			return output;
 
-		if (input.substring(0, 4).equals("ENC(")) {
-			if (!input.substring(input.length() - 1).equals(")")) {
+		if (input.substring(0, 4).equalsIgnoreCase("ENC(")) {
+			if (!input.substring(input.length() - 1).equalsIgnoreCase(")")) {
 				throw new RuntimeException("Encrypted password not set correctly");
 			}
 
@@ -45,6 +47,77 @@ public class FrameworkCrypto {
 		} else {
 			throw new RuntimeException("Encrypted password not set correctly");
 		}
+
+		return output;
+	}
+
+	public String decryptIfNeeded(String input) {
+		String output = "";
+		if (input.trim().equalsIgnoreCase(""))
+			return output;
+
+		if (input.length() > 5 && input.substring(0, 4).equalsIgnoreCase("ENC(")) {
+			if (!input.substring(input.length() - 1).equalsIgnoreCase(")")) {
+				throw new RuntimeException("Encrypted password not set correctly");
+			}
+
+			try {
+				output = this.getAesGcmEncrypt().decrypt(input.substring(4, input.length() - 1));
+			} catch (Exception e) {
+				throw new RuntimeException("Encrypted password cannot be decrypted on this host", e);
+			}
+		} else {
+			// not doing anything
+			output = input;
+		}
+
+		return output;
+	}
+
+	
+	public String decryptAll(String input) {
+		// TODO not working yet
+		String output = "";
+		if (input.trim().equalsIgnoreCase(""))
+			return output;
+		
+		int openPos;
+		int closePos;
+		String variable_char = "ENC(";
+		String variable_char_close = ")";
+		String midBit;
+		String replaceValue;
+		String temp = input;
+		while (temp.indexOf(variable_char) > 0 || temp.startsWith(variable_char)) {
+			List<String> items = new ArrayList<>();
+			String tempInstructions = temp;
+			while (tempInstructions.indexOf(variable_char) > 0 || tempInstructions.startsWith(variable_char)) {
+				openPos = tempInstructions.indexOf(variable_char);
+				closePos = tempInstructions.indexOf(variable_char_close);
+				midBit = tempInstructions.substring(openPos + 4, closePos).trim();
+				items.add(midBit);
+				tempInstructions = midBit;
+			}
+
+			// get last value
+			String instruction = items.get(items.size() - 1);
+			String instructionOutput = instruction;
+
+			// Lookup
+			try {
+				instructionOutput = this.getAesGcmEncrypt().decrypt(instructionOutput.substring(4, instructionOutput.length() - 1));
+			} catch (Exception e) {
+				throw new RuntimeException("Encrypted password cannot be decrypted on this host", e);
+			}
+
+			replaceValue = instructionOutput;
+
+			if (replaceValue != null) {
+				input = input.replace(variable_char + instruction + variable_char_close, replaceValue);
+			}
+			temp = input;
+		}
+
 
 		return output;
 	}

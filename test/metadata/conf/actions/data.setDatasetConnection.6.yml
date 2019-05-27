@@ -1,0 +1,74 @@
+---
+type: Script
+data:
+  type: "script"
+  name: "data.setDatasetConnection.6"
+  description: "test data.setDatasetConnection with variable in label list"
+  actions:
+  - number: 1
+    type: "fwk.setParameterValue"
+    name: "set dataset name value"
+    description: "set parameter"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "name"
+      value : "datasetLabel"
+    - name: "value"
+      value : "variable_label_1"
+  - number: 2
+    type: "fwk.outputMessage"
+    name: "output dataset name value"
+    description: "display parameter"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "message"
+      value : "dataset label is #datasetLabel#"
+    - name: "onScreen"
+      value : "Y"
+  - number: 2
+    type: "data.setDatasetConnection"
+    name: "set expected dataset connection"
+    description: "default"
+    errorExpected: "N"
+    errorStop: "Y"
+    parameters:
+    - name: "name"
+      value : "actual"
+    - name: "dataset"
+      value : "setDatasetConnection"
+    - name: "labels"
+      value : "{{^list(actual, #datasetLabel#, fixed_label)}}"
+  - number: 3
+    type: "data.setDatasetConnection"
+    name: "set actual dataset connection"
+    description: "default"
+    errorExpected: "N"
+    errorStop: "Y"
+    parameters:
+    - name: "name"
+      value : "expected"
+    - name: "dataset"
+      value : "setDatasetConnection"
+    - name: "labels"
+      value : "baseline"
+  - number: 4
+    type: "data.compareDataset"
+    name: "compare expected with actual dataset"
+    description: "default"
+    errorExpected: "N"
+    errorStop: "Y"
+    parameters:
+    - name: "leftDataset"
+      value : "expected"
+    - name: "rightDataset"
+      value : "actual"
+    - name: "mapping"
+      value : "setDatasetConnection.1"

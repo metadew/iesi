@@ -1,0 +1,10 @@
+[{
+	"type": "Environment",
+	"data": {
+		"name": "dev",
+		"description": "Development environment",
+		"parameters": [
+			{"name": "env.code", "value": "dev"}
+		]
+	}
+}]

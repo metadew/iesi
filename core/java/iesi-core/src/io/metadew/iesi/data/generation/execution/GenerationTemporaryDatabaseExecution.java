@@ -4,22 +4,22 @@ import io.metadew.iesi.framework.execution.FrameworkExecution;
 
 public class GenerationTemporaryDatabaseExecution {
 
-	private FrameworkExecution frameworkExecution;
+    private FrameworkExecution frameworkExecution;
 
 
-	// Constructors
-	public GenerationTemporaryDatabaseExecution(FrameworkExecution frameworkExecution) {
-		this.setFrameworkExecution(frameworkExecution);
-	}
+    // Constructors
+    public GenerationTemporaryDatabaseExecution(FrameworkExecution frameworkExecution) {
+        this.setFrameworkExecution(frameworkExecution);
+    }
 
-	// Getters and Setters
-	public FrameworkExecution getFrameworkExecution() {
-		return frameworkExecution;
-	}
+    // Getters and Setters
+    public FrameworkExecution getFrameworkExecution() {
+        return frameworkExecution;
+    }
 
 
-	public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-		this.frameworkExecution = frameworkExecution;
-	}
+    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
+        this.frameworkExecution = frameworkExecution;
+    }
 
 }

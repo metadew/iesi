@@ -1,0 +1,73 @@
+version: '3.2'
+services:
+  iesi:
+    build: './iesi'
+    entrypoint: /bin/bash
+    stdin_open: true
+    tty: true
+    container_name: iesi
+    hostname: iesi #needed as workaround #11
+    restart: unless-stopped
+    
+  postgres-crm:
+    restart: 'always'
+    ports:
+      - '5432:5432'
+    environment:
+      - "CRM_DB_USER=crm"
+      - "CRM_DB_PASSWORD=crmpass"
+      - "CRM_DB_DATABASE=crm"
+      - "POSTGRES_PASSWORD=password"
+    build: './crmdb'
+    container_name: postgres-crm
+    restart: unless-stopped
+  
+  postgres-target:
+    restart: 'always'
+    ports:
+      - '5433:5432'
+    environment:
+      - "TRG_DB_USER=target"
+      - "TRG_DB_PASSWORD=targetpass"
+      - "TRG_DB_DATABASE=target"
+      - "POSTGRES_PASSWORD=password"
+    build: './targetdb'
+    container_name: postgres-target
+    restart: unless-stopped
+  
+  postgres-target-acc:
+    restart: 'always'
+    ports:
+      - '5434:5432'
+    environment:
+      - "TRG_DB_USER=target"
+      - "TRG_DB_PASSWORD=targetpass"
+      - "TRG_DB_DATABASE=target"
+      - "POSTGRES_PASSWORD=password"
+    build: './targetdb'
+    container_name: postgres-target-acc
+    restart: unless-stopped
+
+  pgadmin:
+    image: 'dpage/pgadmin4'
+    ports:
+      - '3006:80'
+    volumes:
+     - ./pgadmin/config/servers.json:/pgadmin4/servers.json
+    environment:
+      - "PGADMIN_DEFAULT_EMAIL=user@enterprise.com"
+      - "PGADMIN_DEFAULT_PASSWORD=pgadminpass"
+    container_name: pgadmin
+    restart: unless-stopped
+  
+  sftpserver:
+    image: 'atmoz/sftp'
+    ports:
+     - '2222:22'
+    volumes:
+     - ./sourcedata:/home/linuxuser/shared/source
+     - ./targetdata:/home/linuxuser/shared/target
+    command: linuxuser:linuxpass:::shared
+    container_name: sftpserver
+    restart: unless-stopped
+  

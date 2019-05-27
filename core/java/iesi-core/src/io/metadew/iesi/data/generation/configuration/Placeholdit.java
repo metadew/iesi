@@ -1,10 +1,10 @@
 package io.metadew.iesi.data.generation.configuration;
 
-import java.util.Arrays;
-import java.util.List;
-
 import io.metadew.iesi.data.generation.execution.GenerationComponentExecution;
 import io.metadew.iesi.data.generation.execution.GenerationDataExecution;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class Placeholdit extends GenerationComponentExecution {
 

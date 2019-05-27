@@ -1,0 +1,20 @@
+---
+type: Connection
+data:
+  name: "db.dremio.1"
+  type: "db.dremio"
+  description: "db.dremio connection"
+  environment: "iesi-test"
+  parameters:
+  - name: "host"
+    value: "localhost"
+  - name: "port"
+    value: "31010"
+  - name: "mode"
+    value: "direct"
+  - name: "schema"
+    value: ""
+  - name: "user"
+    value: "iesi"
+  - name: "password"
+    value: "ENC(Waan0BqcryeQxFbWRhFtT0564xgrxWFOTA==)"

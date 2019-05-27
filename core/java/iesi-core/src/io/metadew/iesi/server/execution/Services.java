@@ -1,178 +1,187 @@
 package io.metadew.iesi.server.execution;
 
-import io.metadew.iesi.framework.execution.FrameworkExecutionContext;
-import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.Context;
-import io.metadew.iesi.server.execution.request.RequestRunnable;
+import io.metadew.iesi.server.execution.configuration.ExecutionServerServices;
+import io.metadew.iesi.server.execution.requestor.RequestorRunnable;
 
 public class Services {
-	public Runnable requestServerRunnable;
-	public Thread requestServerThread;
-	public Runnable schedulerServerRunnable;
-	public Thread schedulerServerThread;
-	private FrameworkExecution frameworkExecution;
+    public Runnable requestorRunnable;
+    public Thread requestorThread;
+    public Runnable schedulerRunnable;
+    public Thread schedulerThread;
+    private FrameworkInstance frameworkInstance;
 
-	public Services() {
-		// Set the shared context
-		Context context = new Context();
-		context.setName("server");
-		context.setScope("");
-		this.setFrameworkExecution(new FrameworkExecution(new FrameworkExecutionContext(context)));
-		
-		requestServerRunnable = new RequestRunnable(this.getFrameworkExecution());
-		requestServerThread = new Thread(requestServerRunnable);
-		requestServerThread.setName("RequestServer");
-		// schedulerServerRunnable = new SchedulerServerRunnable();
-		// schedulerServerThread = new Thread(schedulerServerRunnable);
-	}
+    public Services() {
+        // Create the framework instance
+        FrameworkInitializationFile frameworkInitializationFile = new FrameworkInitializationFile();
+        frameworkInitializationFile.setName("iesi-test.ini");
+        this.setFrameworkInstance(new FrameworkInstance(frameworkInitializationFile));
 
-	public void startAll() {
-		if (requestServerThread.isAlive() == false) {
-			this.startRequestServer();
-		}
-	}
+        // Create the framework settings
+        //FrameworkExecutionSettings frameworkExecutionSettings = new FrameworkExecutionSettings("");
 
-	@SuppressWarnings("deprecation")
-	public void stopAll() {
-		if (requestServerThread.isAlive() == true) {
-			requestServerThread.stop();
-		}
-	}
+        // Create the framework execution
+        Context context = new Context();
+        context.setName("server");
+        context.setScope("");
 
-	public String status(String serviceName) {
-		boolean temp_status = false;
-		boolean temp_service = false;
+        requestorRunnable = new RequestorRunnable(this.getFrameworkInstance());
+        requestorThread = new Thread(requestorRunnable);
+        requestorThread.setName(ExecutionServerServices.REQUESTOR.value());
+        // schedulerRunnable = new SchedulerRunnable();
+        // schedulerThread = new Thread(schedulerRunnable);
+    }
 
-		if (serviceName.equals("REQUESTSERVER")) {
-			temp_status = this.statusRequestServer();
-			temp_service = true;
-		} else if (serviceName.equals("SCHEDULERSERVER")) {
-			temp_status = this.statusSchedulerServer();
-			temp_service = true;
-		} else {
-			// ELSE
-			temp_status = false;
-		}
+    public void startAll() {
+        if (requestorThread.isAlive() == false) {
+            this.startRequestor();
+        }
+    }
 
-		if (temp_service == false) {
-			return "Invalid Service";
-		} else {
-			if (temp_status == true) {
-				return "Active";
-			} else {
-				return "Inactive";
-			}
-		}
+    @SuppressWarnings("deprecation")
+    public void stopAll() {
+        if (requestorThread.isAlive() == true) {
+            requestorThread.stop();
+        }
+    }
 
-	}
+    public String status(String serviceName) {
+        boolean temp_status = false;
+        boolean temp_service = false;
 
-	public String start(String serviceName) {
-		boolean temp_service = false;
+        if (serviceName.equalsIgnoreCase(ExecutionServerServices.REQUESTOR.value())) {
+            temp_status = this.statusRequestor();
+            temp_service = true;
+        } else if (serviceName.equalsIgnoreCase(ExecutionServerServices.SCHEDULER.value())) {
+            temp_status = this.statusScheduler();
+            temp_service = true;
+        } else {
+            // ELSE
+            temp_status = false;
+        }
 
-		if (serviceName.equals("REQUESTSERVER")) {
-			this.startRequestServer();
-			temp_service = true;
-		} else if (serviceName.equals("SCHEDULERSERVER")) {
-			this.startSchedulerServer();
-			temp_service = true;
-		} else {
-			// ELSE
-		}
+        if (temp_service == false) {
+            return "Invalid Service";
+        } else {
+            if (temp_status == true) {
+                return "Active";
+            } else {
+                return "Inactive";
+            }
+        }
 
-		if (temp_service == false) {
-			return "Invalid Service";
-		} else {
-			return this.status(serviceName);
-		}
-	}
+    }
 
-	public String stop(String serviceName) {
-		boolean temp_service = false;
+    public String start(String serviceName) {
+        boolean temp_service = false;
 
-		if (serviceName.equals("REQUESTSERVER")) {
-			this.stopRequestServer();
-			temp_service = true;
-		} else if (serviceName.equals("SCHEDULERSERVER")) {
-			this.stopSchedulerServer();
-			temp_service = true;
-		} else {
-			// ELSE
-		}
+        if (serviceName.equalsIgnoreCase(ExecutionServerServices.REQUESTOR.value())) {
+            this.startRequestor();
+            temp_service = true;
+        } else if (serviceName.equalsIgnoreCase(ExecutionServerServices.SCHEDULER.value())) {
+            this.startScheduler();
+            temp_service = true;
+        } else {
+            // ELSE
+        }
 
-		if (temp_service == false) {
-			return "Invalid Service";
-		} else {
-			return this.status(serviceName);
-		}
-	}
+        if (temp_service == false) {
+            return "Invalid Service";
+        } else {
+            return this.status(serviceName);
+        }
+    }
 
-	/*
-	 * -------------------------------------------------------------------------
-	 * ---------------------------- Request Server
-	 * -------------------------------------------------------------------------
-	 * ----------------------------
-	 */
-	public boolean startRequestServer() {
-		boolean temp_result = false;
-		if (requestServerThread.isAlive() == false) {
-			requestServerThread.start();
-			temp_result = true;
-		}
-		return temp_result;
-	}
+    public String stop(String serviceName) {
+        boolean temp_service = false;
 
-	@SuppressWarnings("deprecation")
-	public boolean stopRequestServer() {
-		boolean temp_result = false;
-		if (requestServerThread.isAlive() == true) {
-			requestServerThread.stop();
-			requestServerThread = new Thread(requestServerRunnable);
-			temp_result = true;
-		}
-		return temp_result;
-	}
+        if (serviceName.equalsIgnoreCase(ExecutionServerServices.REQUESTOR.value())) {
+            this.stopRequestor();
+            temp_service = true;
+        } else if (serviceName.equalsIgnoreCase(ExecutionServerServices.SCHEDULER.value())) {
+            this.stopScheduler();
+            temp_service = true;
+        } else {
+            // ELSE
+        }
 
-	public boolean statusRequestServer() {
-		return requestServerThread.isAlive();
-	}
+        if (temp_service == false) {
+            return "Invalid Service";
+        } else {
+            return this.status(serviceName);
+        }
+    }
 
-	/*
-	 * -------------------------------------------------------------------------
-	 * ---------------------------- Scheduler Server
-	 * -------------------------------------------------------------------------
-	 * ----------------------------
-	 */
-	public boolean startSchedulerServer() {
-		boolean temp_result = false;
-		if (schedulerServerThread.isAlive() == false) {
-			schedulerServerThread.start();
-			temp_result = true;
-		}
-		return temp_result;
-	}
+    /*
+     * -------------------------------------------------------------------------
+     * ---------------------------- Request Server
+     * -------------------------------------------------------------------------
+     * ----------------------------
+     */
+    public boolean startRequestor() {
+        boolean temp_result = false;
+        if (requestorThread.isAlive() == false) {
+            requestorThread.start();
+            temp_result = true;
+        }
+        return temp_result;
+    }
 
-	@SuppressWarnings("deprecation")
-	public boolean stopSchedulerServer() {
-		boolean temp_result = false;
-		if (schedulerServerThread.isAlive() == true) {
-			schedulerServerThread.stop();
-			schedulerServerThread = new Thread(schedulerServerThread);
-			temp_result = true;
-		}
-		return temp_result;
-	}
+    @SuppressWarnings("deprecation")
+    public boolean stopRequestor() {
+        boolean temp_result = false;
+        if (requestorThread.isAlive() == true) {
+            requestorThread.stop();
+            requestorThread = new Thread(requestorRunnable);
+            temp_result = true;
+        }
+        return temp_result;
+    }
 
-	public boolean statusSchedulerServer() {
-		return schedulerServerThread.isAlive();
-	}
+    public boolean statusRequestor() {
+        return requestorThread.isAlive();
+    }
 
-	// Getters and setters
-	public FrameworkExecution getFrameworkExecution() {
-		return frameworkExecution;
-	}
+    /*
+     * -------------------------------------------------------------------------
+     * ---------------------------- Scheduler Server
+     * -------------------------------------------------------------------------
+     * ----------------------------
+     */
+    public boolean startScheduler() {
+        boolean temp_result = false;
+        if (schedulerThread.isAlive() == false) {
+            schedulerThread.start();
+            temp_result = true;
+        }
+        return temp_result;
+    }
 
-	public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-		this.frameworkExecution = frameworkExecution;
-	}
+    @SuppressWarnings("deprecation")
+    public boolean stopScheduler() {
+        boolean temp_result = false;
+        if (schedulerThread.isAlive() == true) {
+            schedulerThread.stop();
+            schedulerThread = new Thread(schedulerThread);
+            temp_result = true;
+        }
+        return temp_result;
+    }
+
+    public boolean statusScheduler() {
+        return schedulerThread.isAlive();
+    }
+
+    // Getters and setters
+    public FrameworkInstance getFrameworkInstance() {
+        return frameworkInstance;
+    }
+
+    public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
+        this.frameworkInstance = frameworkInstance;
+    }
+
 
 }

@@ -1,105 +1,91 @@
 package io.metadew.iesi.metadata.configuration;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-
-import javax.sql.rowset.CachedRowSet;
-
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.LedgerParameter;
 
-public class LedgerParameterConfiguration
-{
+import javax.sql.rowset.CachedRowSet;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
-	private LedgerParameter ledgerParameter;
+public class LedgerParameterConfiguration {
 
-	private FrameworkExecution frameworkExecution;
+    private LedgerParameter ledgerParameter;
 
-	// Constructors
-	public LedgerParameterConfiguration(LedgerParameter ledgerParameter, FrameworkExecution frameworkExecution)
-	{
-		this.setLedgerParameter(ledgerParameter);
-		this.setFrameworkExecution(frameworkExecution);
-	}
+    private FrameworkExecution frameworkExecution;
 
-	public LedgerParameterConfiguration(FrameworkExecution frameworkExecution)
-	{
-		this.setFrameworkExecution(frameworkExecution);
-	}
+    // Constructors
+    public LedgerParameterConfiguration(LedgerParameter ledgerParameter, FrameworkExecution frameworkExecution) {
+        this.setLedgerParameter(ledgerParameter);
+        this.setFrameworkExecution(frameworkExecution);
+    }
 
-	// Insert
-	public String getInsertStatement(String ledgerName)
-	{
-		String sql = "";
+    public LedgerParameterConfiguration(FrameworkExecution frameworkExecution) {
+        this.setFrameworkExecution(frameworkExecution);
+    }
 
-		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getLedgerRepositoryConfiguration()
-					.getMetadataTableConfiguration().getTableName("LedgerParameters");
-		sql += " (LEDGER_ID, LEDGER_PAR_NM, LEDGER_PAR_VAL) ";
-		sql += "VALUES ";
-		sql += "(";
-		sql += "("
-					+ SQLTools.GetLookupIdStatement(
-								this.getFrameworkExecution().getMetadataControl().getLedgerRepositoryConfiguration()
-											.getMetadataTableConfiguration().getTableName("Ledgers"),
-								"LEDGER_ID", "where LEDGER_NM = '" + ledgerName)
-					+ "')";
-		sql += ",";
-		sql += SQLTools.GetStringForSQL(this.getLedgerParameter().getName());
-		sql += ",";
-		sql += SQLTools.GetStringForSQL(this.getLedgerParameter().getValue());
-		sql += ")";
-		sql += ";";
+    // Insert
+    public String getInsertStatement(String ledgerName) {
+        String sql = "";
 
-		return sql;
-	}
+        sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getLedgerMetadataRepository()
+                .getTableNameByLabel("LedgerParameters");
+        sql += " (LEDGER_ID, LEDGER_PAR_NM, LEDGER_PAR_VAL) ";
+        sql += "VALUES ";
+        sql += "(";
+        sql += "("
+                + SQLTools.GetLookupIdStatement(
+                this.getFrameworkExecution().getMetadataControl().getLedgerMetadataRepository()
+                        .getTableNameByLabel("Ledgers"),
+                "LEDGER_ID", "where LEDGER_NM = '" + ledgerName)
+                + "')";
+        sql += ",";
+        sql += SQLTools.GetStringForSQL(this.getLedgerParameter().getName());
+        sql += ",";
+        sql += SQLTools.GetStringForSQL(this.getLedgerParameter().getValue());
+        sql += ")";
+        sql += ";";
 
-	public LedgerParameter getLedgerParameter(long ledgerId, String ledgerParameterName)
-	{
-		LedgerParameter ledgerParameter = new LedgerParameter();
-		CachedRowSet crsLedgerParameter = null;
-		String queryLedgerParameter = "select LEDGER_ID, LEDGER_PAR_NM, LEDGER_PAR_VAL from "
-					+ this.getFrameworkExecution().getMetadataControl().getLedgerRepositoryConfiguration()
-								.getMetadataTableConfiguration().getTableName("LedgerParameters")
-					+ " where LEDGER_ID = " + ledgerId + " and LEDGER_PAR_NM = '" + ledgerParameterName + "'";
-		crsLedgerParameter = this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration()
-					.executeQuery(queryLedgerParameter);
-		try
-		{
-			while (crsLedgerParameter.next())
-			{
-				ledgerParameter.setName(ledgerParameterName);
-				ledgerParameter.setValue(crsLedgerParameter.getString("LEDGER_PAR_VAL"));
-			}
-			crsLedgerParameter.close();
-		}
-		catch (Exception e)
-		{
-			StringWriter StackTrace = new StringWriter();
-			e.printStackTrace(new PrintWriter(StackTrace));
-		}
-		return ledgerParameter;
-	}
+        return sql;
+    }
 
-	// Getters and Setters
-	public LedgerParameter getLedgerParameter()
-	{
-		return ledgerParameter;
-	}
+    public LedgerParameter getLedgerParameter(long ledgerId, String ledgerParameterName) {
+        LedgerParameter ledgerParameter = new LedgerParameter();
+        CachedRowSet crsLedgerParameter = null;
+        String queryLedgerParameter = "select LEDGER_ID, LEDGER_PAR_NM, LEDGER_PAR_VAL from "
+                + this.getFrameworkExecution().getMetadataControl().getLedgerMetadataRepository()
+                .getTableNameByLabel("LedgerParameters")
+                + " where LEDGER_ID = " + ledgerId + " and LEDGER_PAR_NM = '" + ledgerParameterName + "'";
+        crsLedgerParameter = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository()
+                .executeQuery(queryLedgerParameter, "reader");
+        try {
+            while (crsLedgerParameter.next()) {
+                ledgerParameter.setName(ledgerParameterName);
+                ledgerParameter.setValue(crsLedgerParameter.getString("LEDGER_PAR_VAL"));
+            }
+            crsLedgerParameter.close();
+        } catch (Exception e) {
+            StringWriter StackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(StackTrace));
+        }
+        return ledgerParameter;
+    }
 
-	public void setLedgerParameter(LedgerParameter ledgerParameter)
-	{
-		this.ledgerParameter = ledgerParameter;
-	}
+    // Getters and Setters
+    public LedgerParameter getLedgerParameter() {
+        return ledgerParameter;
+    }
 
-	public FrameworkExecution getFrameworkExecution()
-	{
-		return frameworkExecution;
-	}
+    public void setLedgerParameter(LedgerParameter ledgerParameter) {
+        this.ledgerParameter = ledgerParameter;
+    }
 
-	public void setFrameworkExecution(FrameworkExecution frameworkExecution)
-	{
-		this.frameworkExecution = frameworkExecution;
-	}
+    public FrameworkExecution getFrameworkExecution() {
+        return frameworkExecution;
+    }
+
+    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
+        this.frameworkExecution = frameworkExecution;
+    }
 
 }

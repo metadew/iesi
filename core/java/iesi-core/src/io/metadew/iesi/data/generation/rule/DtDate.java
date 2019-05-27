@@ -1,17 +1,16 @@
 package io.metadew.iesi.data.generation.rule;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.text.SimpleDateFormat;
-
-import org.apache.logging.log4j.Level;
-
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.data.generation.execution.GenerationRuleExecution;
 import io.metadew.iesi.data.generation.execution.GenerationRuleParameterExecution;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.GenerationRuleParameter;
 import io.metadew.iesi.script.execution.ExecutionControl;
+import org.apache.logging.log4j.Level;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.text.SimpleDateFormat;
 
 public class DtDate {
 
@@ -29,7 +28,17 @@ public class DtDate {
 	private GenerationRuleParameterExecution format;
 
 	// Constructors
+	public DtDate() {
+		
+	}
+	
 	public DtDate(FrameworkExecution frameworkExecution, ExecutionControl executionControl, GenerationRuleExecution generationRuleExecution) {
+		this.setFrameworkExecution(frameworkExecution);
+		this.setEoControl(executionControl);
+		this.setGenerationRuleExecution(generationRuleExecution);
+	}
+
+	public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl, GenerationRuleExecution generationRuleExecution) {
 		this.setFrameworkExecution(frameworkExecution);
 		this.setEoControl(executionControl);
 		this.setGenerationRuleExecution(generationRuleExecution);
@@ -70,7 +79,7 @@ public class DtDate {
 
 					// Set format
 					SimpleDateFormat dateFormat = null;
-					if (this.getFormat().getValue().trim().equals("")) {
+					if (this.getFormat().getValue().trim().equalsIgnoreCase("")) {
 						dateFormat = new SimpleDateFormat(DEFAULT_FORMAT);	
 					} else {
 						dateFormat = new SimpleDateFormat(this.getFormat().getValue());
@@ -168,5 +177,4 @@ public class DtDate {
 	public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
 		this.frameworkExecution = frameworkExecution;
 	}
-
 }

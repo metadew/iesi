@@ -2,39 +2,39 @@ package io.metadew.iesi.metadata.definition;
 
 
 public class ImpersonationParameter {
-	
-	private String connection;
-	private String impersonatedConnection;
-	private String description;
-	
-	//Constructors
-	public ImpersonationParameter() {
-		
-	}
 
-	//Getters and Setters
-	public String getConnection() {
-		return connection;
-	}
+    private String connection;
+    private String impersonatedConnection;
+    private String description;
 
-	public void setConnection(String connection) {
-		this.connection = connection;
-	}
+    //Constructors
+    public ImpersonationParameter() {
 
-	public String getImpersonatedConnection() {
-		return impersonatedConnection;
-	}
+    }
 
-	public void setImpersonatedConnection(String impersonatedConnection) {
-		this.impersonatedConnection = impersonatedConnection;
-	}
+    //Getters and Setters
+    public String getConnection() {
+        return connection;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public void setConnection(String connection) {
+        this.connection = connection;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public String getImpersonatedConnection() {
+        return impersonatedConnection;
+    }
+
+    public void setImpersonatedConnection(String impersonatedConnection) {
+        this.impersonatedConnection = impersonatedConnection;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
 }

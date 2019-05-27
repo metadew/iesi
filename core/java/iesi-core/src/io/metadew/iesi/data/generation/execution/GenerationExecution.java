@@ -1,12 +1,10 @@
 package io.metadew.iesi.data.generation.execution;
 
-import org.apache.logging.log4j.Level;
-
-import io.metadew.iesi.data.generation.execution.GenerationRuntime;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.Generation;
 import io.metadew.iesi.metadata.definition.GenerationRule;
 import io.metadew.iesi.script.execution.ExecutionControl;
+import org.apache.logging.log4j.Level;
 
 public class GenerationExecution {
 
@@ -34,18 +32,20 @@ public class GenerationExecution {
 
 		// Log Start
 		//this.getExecutionControl().logStart(this);
-		this.setProcessId(this.getExecutionControl().getProcessId());
+		this.setProcessId(0L);
 		this.setGenerationRuntime(new GenerationRuntime(this.getFrameworkExecution(), this.getExecutionControl()));
 		this.getGenerationRuntime().addGeneration(this.getGeneration(), this.getNumberOfRecords());
 		this.setGenerationOutputExecution(new GenerationOutputExecution(this.getFrameworkExecution(), this.getExecutionControl(), this, generationOutputName));
 
 		// Parameters
 		// ParamList has priority of ParamFile
-		if (!this.getParamFile().trim().equals("")) {
-			this.getExecutionControl().getExecutionRuntime().loadParamFiles(this.getParamFile());
+		if (!this.getParamFile().trim().equalsIgnoreCase("")) {
+			// TODO does not work anymore (process id added for scripts)
+			//this.getExecutionControl().getExecutionRuntime().loadParamFiles(this.getParamFile());
 		}
-		if (!this.getParamList().trim().equals("")) {
-			this.getExecutionControl().getExecutionRuntime().loadParamList(this.getParamList());
+		if (!this.getParamList().trim().equalsIgnoreCase("")) {
+			// TODO does not work anymore (process id added for scripts)
+			//this.getExecutionControl().getExecutionRuntime().loadParamList(this.getParamList());
 		}
 		
 		// Loop through the generation rules

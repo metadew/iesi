@@ -1,0 +1,18 @@
+---
+type: Connection
+data:
+  name: "db.mariadb.1"
+  type: "db.mariadb"
+  description: "db.mariadb connection"
+  environment: "iesi-test"
+  parameters:
+  - name: "host"
+    value: "localhost"
+  - name: "port"
+    value: "3306"
+  - name: "database"
+    value: "iesi"
+  - name: "user"
+    value: "root"
+  - name: "password"
+    value: "ENC(Waan0DOjDHNBnTXtldp5xnGwIP0=)"

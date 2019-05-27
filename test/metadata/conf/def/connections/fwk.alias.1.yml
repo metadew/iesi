@@ -1,0 +1,10 @@
+---
+type: Connection
+data:
+  name: "fwk.alias.1"
+  type: "fwk.alias"
+  description: "fwk.alias connection for host.linux"
+  environment: "iesi-test"
+  parameters:
+  - name: "type"
+    value: "host.linux"

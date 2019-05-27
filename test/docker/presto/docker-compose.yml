@@ -1,0 +1,9 @@
+version: '3.2'
+services:
+  iesi-test-presto-1:
+    build: './presto'
+    ports:
+      - '8080:8080'
+    container_name: iesi-test-presto-1
+    hostname: iesi-test-presto-1
+    restart: unless-stopped

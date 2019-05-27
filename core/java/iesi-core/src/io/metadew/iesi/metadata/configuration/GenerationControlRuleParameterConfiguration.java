@@ -1,117 +1,102 @@
 package io.metadew.iesi.metadata.configuration;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-
-import javax.sql.rowset.CachedRowSet;
-
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.GenerationControlRuleParameter;
 
-public class GenerationControlRuleParameterConfiguration
-{
+import javax.sql.rowset.CachedRowSet;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
-	private GenerationControlRuleParameter generationControlRuleParameter;
+public class GenerationControlRuleParameterConfiguration {
 
-	private FrameworkExecution frameworkExecution;
+    private GenerationControlRuleParameter generationControlRuleParameter;
 
-	// Constructors
-	public GenerationControlRuleParameterConfiguration(GenerationControlRuleParameter generationControlRuleParameter,
-				FrameworkExecution frameworkExecution)
-	{
-		this.setgenerationControlRuleParameter(generationControlRuleParameter);
-		this.setFrameworkExecution(frameworkExecution);
-	}
+    private FrameworkExecution frameworkExecution;
 
-	public GenerationControlRuleParameterConfiguration(FrameworkExecution frameworkExecution)
-	{
-		this.setFrameworkExecution(frameworkExecution);
-	}
+    // Constructors
+    public GenerationControlRuleParameterConfiguration(GenerationControlRuleParameter generationControlRuleParameter,
+                                                       FrameworkExecution frameworkExecution) {
+        this.setgenerationControlRuleParameter(generationControlRuleParameter);
+        this.setFrameworkExecution(frameworkExecution);
+    }
 
-	// Insert
-	public String getInsertStatement(String generationName, String generationControlName, String generationControlRuleName)
-	{
-		String sql = "";
+    public GenerationControlRuleParameterConfiguration(FrameworkExecution frameworkExecution) {
+        this.setFrameworkExecution(frameworkExecution);
+    }
 
-		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration()
-					.getMetadataTableConfiguration().getTableName("GenerationControlRuleParameters");
-		sql += " (GEN_CTL_RULE_ID, GEN_CTL_RULE_PAR_NM, GEN_CTL_RULE_PAR_VAL) ";
-		sql += "VALUES ";
-		sql += "(";
-		sql += "(" + SQLTools.GetLookupIdStatement(
-					this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration().getMetadataTableConfiguration()
-								.getTableName("GenerationControlRules"),
-					"GEN_CTL_RULE_ID",
-					"where GEN_CTL_RULE_NM = '" + generationControlRuleName + "' and GEN_CTL_ID = (" + SQLTools.GetLookupIdStatement(
-								this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration()
-											.getMetadataTableConfiguration().getTableName("GenerationControls"),
-								"GEN_CTL_ID",
-								"where GEN_CTL_NM = '" + generationControlName + "' and GEN_ID = ("
-											+ SQLTools.GetLookupIdStatement(
-														this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration()
-																	.getMetadataTableConfiguration().getTableName("Generations"),
-														"GEN_ID", "GEN_NM", generationName)
-											+ ")"))
-					+ "))";
-		sql += ",";
-		sql += SQLTools.GetStringForSQL(this.getgenerationControlRuleParameter().getName());
-		sql += ",";
-		sql += SQLTools.GetStringForSQL(this.getgenerationControlRuleParameter().getValue());
-		sql += ")";
-		sql += ";";
+    // Insert
+    public String getInsertStatement(String generationName, String generationControlName, String generationControlRuleName) {
+        String sql = "";
 
-		return sql;
-	}
+        sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository()
+                .getTableNameByLabel("GenerationControlRuleParameters");
+        sql += " (GEN_CTL_RULE_ID, GEN_CTL_RULE_PAR_NM, GEN_CTL_RULE_PAR_VAL) ";
+        sql += "VALUES ";
+        sql += "(";
+        sql += "(" + SQLTools.GetLookupIdStatement(
+                this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("GenerationControlRules"),
+                "GEN_CTL_RULE_ID",
+                "where GEN_CTL_RULE_NM = '" + generationControlRuleName + "' and GEN_CTL_ID = (" + SQLTools.GetLookupIdStatement(
+                        this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository()
+                                .getTableNameByLabel("GenerationControls"),
+                        "GEN_CTL_ID",
+                        "where GEN_CTL_NM = '" + generationControlName + "' and GEN_ID = ("
+                                + SQLTools.GetLookupIdStatement(
+                                this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository()
+                                        .getTableNameByLabel("Generations"),
+                                "GEN_ID", "GEN_NM", generationName)
+                                + ")"))
+                + "))";
+        sql += ",";
+        sql += SQLTools.GetStringForSQL(this.getgenerationControlRuleParameter().getName());
+        sql += ",";
+        sql += SQLTools.GetStringForSQL(this.getgenerationControlRuleParameter().getValue());
+        sql += ")";
+        sql += ";";
 
-	public GenerationControlRuleParameter getGenerationControlRuleParameter(long generationControlRuleId,
-				String generationControlRuleParameterName)
-	{
-		GenerationControlRuleParameter generationControlRuleParameter = new GenerationControlRuleParameter();
-		CachedRowSet crsGenerationControlRuleParameter = null;
-		String queryGenerationControlRuleParameter = "select GEN_CTL_RULE_ID, GEN_CTL_RULE_PAR_NM, GEN_CTL_RULE_PAR_VAL from "
-					+ this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration()
-								.getMetadataTableConfiguration().getTableName("GenerationControlRuleParameters")
-					+ " where GEN_CTL_RULE_ID = " + generationControlRuleId + " and GEN_CTL_RULE_PAR_NM = '"
-					+ generationControlRuleParameterName + "'";
-		crsGenerationControlRuleParameter = this.getFrameworkExecution().getMetadataControl().getDesignRepositoryConfiguration()
-					.executeQuery(queryGenerationControlRuleParameter);
-		try
-		{
-			while (crsGenerationControlRuleParameter.next())
-			{
-				generationControlRuleParameter.setName(generationControlRuleParameterName);
-				generationControlRuleParameter.setValue(crsGenerationControlRuleParameter.getString("GEN_CTL_RULE_PAR_VAL"));
-			}
-			crsGenerationControlRuleParameter.close();
-		}
-		catch (Exception e)
-		{
-			StringWriter StackTrace = new StringWriter();
-			e.printStackTrace(new PrintWriter(StackTrace));
-		}
-		return generationControlRuleParameter;
-	}
+        return sql;
+    }
 
-	// Getters and Setters
-	public GenerationControlRuleParameter getgenerationControlRuleParameter()
-	{
-		return generationControlRuleParameter;
-	}
+    public GenerationControlRuleParameter getGenerationControlRuleParameter(long generationControlRuleId,
+                                                                            String generationControlRuleParameterName) {
+        GenerationControlRuleParameter generationControlRuleParameter = new GenerationControlRuleParameter();
+        CachedRowSet crsGenerationControlRuleParameter = null;
+        String queryGenerationControlRuleParameter = "select GEN_CTL_RULE_ID, GEN_CTL_RULE_PAR_NM, GEN_CTL_RULE_PAR_VAL from "
+                + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository()
+                .getTableNameByLabel("GenerationControlRuleParameters")
+                + " where GEN_CTL_RULE_ID = " + generationControlRuleId + " and GEN_CTL_RULE_PAR_NM = '"
+                + generationControlRuleParameterName + "'";
+        crsGenerationControlRuleParameter = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository()
+                .executeQuery(queryGenerationControlRuleParameter, "reader");
+        try {
+            while (crsGenerationControlRuleParameter.next()) {
+                generationControlRuleParameter.setName(generationControlRuleParameterName);
+                generationControlRuleParameter.setValue(crsGenerationControlRuleParameter.getString("GEN_CTL_RULE_PAR_VAL"));
+            }
+            crsGenerationControlRuleParameter.close();
+        } catch (Exception e) {
+            StringWriter StackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(StackTrace));
+        }
+        return generationControlRuleParameter;
+    }
 
-	public void setgenerationControlRuleParameter(GenerationControlRuleParameter generationControlRuleParameter)
-	{
-		this.generationControlRuleParameter = generationControlRuleParameter;
-	}
+    // Getters and Setters
+    public GenerationControlRuleParameter getgenerationControlRuleParameter() {
+        return generationControlRuleParameter;
+    }
 
-	public FrameworkExecution getFrameworkExecution()
-	{
-		return frameworkExecution;
-	}
+    public void setgenerationControlRuleParameter(GenerationControlRuleParameter generationControlRuleParameter) {
+        this.generationControlRuleParameter = generationControlRuleParameter;
+    }
 
-	public void setFrameworkExecution(FrameworkExecution frameworkExecution)
-	{
-		this.frameworkExecution = frameworkExecution;
-	}
+    public FrameworkExecution getFrameworkExecution() {
+        return frameworkExecution;
+    }
+
+    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
+        this.frameworkExecution = frameworkExecution;
+    }
 
 }

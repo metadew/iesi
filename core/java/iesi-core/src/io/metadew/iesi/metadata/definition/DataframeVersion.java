@@ -2,30 +2,30 @@ package io.metadew.iesi.metadata.definition;
 
 public class DataframeVersion {
 
-	private long number;
-	private String description;
+    private long number;
+    private String description;
 
-	// Constructors
-	public DataframeVersion() {
-		
-	}
+    // Constructors
+    public DataframeVersion() {
 
-	// Getters and Setters
-	public String getDescription() {
-		return description;
-	}
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    // Getters and Setters
+    public String getDescription() {
+        return description;
+    }
 
-	public long getNumber() {
-		return number;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	public void setNumber(long number) {
-		this.number = number;
-	}
+    public long getNumber() {
+        return number;
+    }
+
+    public void setNumber(long number) {
+        this.number = number;
+    }
 
 
 }

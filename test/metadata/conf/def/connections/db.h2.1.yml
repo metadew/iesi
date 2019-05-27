@@ -1,0 +1,20 @@
+---
+type: Connection
+data:
+  name: "db.h2.1"
+  type: "db.h2"
+  description: "db.h2 connection"
+  environment: "iesi-test"
+  parameters:
+  - name: "host"
+    value: ""
+  - name: "port"
+    value: ""
+  - name: "path"
+    value: "#iesi.home#/data/iesi-test/fwk/data/connections"
+  - name: "file"
+    value: "db.h2.1"
+  - name: "user"
+    value: ""
+  - name: "password"
+    value: ""

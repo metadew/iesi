@@ -1,13 +1,13 @@
 package io.metadew.iesi.data.generation.configuration;
 
+import io.metadew.iesi.data.generation.execution.GenerationComponentExecution;
+import io.metadew.iesi.data.generation.execution.GenerationDataExecution;
+
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
-
-import io.metadew.iesi.data.generation.execution.GenerationComponentExecution;
-import io.metadew.iesi.data.generation.execution.GenerationDataExecution;
 
 public class Retail extends GenerationComponentExecution {
 

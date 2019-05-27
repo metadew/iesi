@@ -1,5 +1,11 @@
 package io.metadew.iesi.framework.execution;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.metadew.iesi.framework.configuration.FrameworkConfiguration;
+import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
+import io.metadew.iesi.metadata.configuration.FrameworkPluginConfiguration;
+import io.metadew.iesi.metadata.repository.configuration.MetadataRepositoryConfiguration;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -7,38 +13,31 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.metadew.iesi.common.config.ConfigFile;
 import io.metadew.iesi.common.config.KeyValueConfigFile;
 import io.metadew.iesi.common.config.KeyValueConfigList;
 import io.metadew.iesi.common.config.LinuxConfigFile;
 import io.metadew.iesi.common.config.WindowsConfigFile;
-import io.metadew.iesi.framework.configuration.FrameworkConfiguration;
-import io.metadew.iesi.metadata.configuration.FrameworkPluginConfiguration;
-import io.metadew.iesi.metadata.configuration.MetadataRepositoryConfiguration;
-import io.metadew.iesi.metadata.operation.MetadataRepositoryCategoryOperation;
+import io.metadew.iesi.framework.crypto.FrameworkCrypto;
 
 public class FrameworkControl {
 
 	private Properties properties;
-	private MetadataRepositoryCategoryOperation metadataRepositoryCategoryOperation;
-	private List<MetadataRepositoryConfiguration> metadataRepositoryConfigurationList;
+	private List<MetadataRepositoryConfiguration> metadataRepositoryConfigurations;
 	private List<FrameworkPluginConfiguration> frameworkPluginConfigurationList;
 	private String logonType;
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public FrameworkControl(FrameworkConfiguration frameworkConfiguration, String logonType) {
+	public FrameworkControl(FrameworkConfiguration frameworkConfiguration, String logonType, FrameworkInitializationFile frameworkInitializationFile, FrameworkCrypto frameworkCrypto) {
 		try {
 			this.setLogonType(logonType);
 			this.setProperties(new Properties());
-			this.setMetadataRepositoryConfigurationList(new ArrayList());
+			this.setMetadataRepositoryConfigurations(new ArrayList());
 			this.setFrameworkPluginConfigurationList(new ArrayList());
 			this.getProperties().put(frameworkConfiguration.getFrameworkCode() + ".home",
 					frameworkConfiguration.getFrameworkHome());
-			this.readSettingFiles(frameworkConfiguration);
-			this.setMetadataRepositoryConfig(
-					new MetadataRepositoryCategoryOperation(frameworkConfiguration.getFolderConfiguration()));
+			this.readSettingFiles(frameworkConfiguration, frameworkInitializationFile.getName(), frameworkCrypto);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -60,14 +59,14 @@ public class FrameworkControl {
 	}
 
 	// Methods
-	private void readSettingFiles(FrameworkConfiguration frameworkConfiguration) {
+	private void readSettingFiles(FrameworkConfiguration frameworkConfiguration, String initializationFile, FrameworkCrypto frameworkCrypto) {
 		try {
 			File file = new File(this.resolveConfiguration("#" + frameworkConfiguration.getFrameworkCode()
-					+ ".home#/conf/" + frameworkConfiguration.getFrameworkCode() + "-conf.ini"));
+					+ ".home#/conf/" + initializationFile));
 			@SuppressWarnings("resource")
 			BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
 			String readLine = "";
-
+			
 			while ((readLine = bufferedReader.readLine()) != null) {
 				String innerpart = readLine.trim();
 				String[] parts = innerpart.split(",");
@@ -76,7 +75,7 @@ public class FrameworkControl {
 				String type = parts[1];
 				String value = parts[2];
 				value = this.resolveConfiguration(value);
-
+				
 				ObjectMapper objectMapper = new ObjectMapper();
 				ConfigFile configFile = null;
 				if (key.equalsIgnoreCase("linux")) {
@@ -91,9 +90,8 @@ public class FrameworkControl {
 				}
 
 				if (type.trim().equalsIgnoreCase("repository")) {
-					MetadataRepositoryConfiguration metadataRepositoryConfiguration = new MetadataRepositoryConfiguration(
-							frameworkConfiguration, this, configFile, this.getLogonType());
-					this.getMetadataRepositoryConfigurationList().add(metadataRepositoryConfiguration);
+					MetadataRepositoryConfiguration metadataRepositoryConfiguration = new MetadataRepositoryConfiguration(configFile, frameworkConfiguration.getSettingConfiguration(), frameworkCrypto);
+					this.getMetadataRepositoryConfigurations().add(metadataRepositoryConfiguration);
 				} else if (type.trim().equalsIgnoreCase("plugin")) {
 					FrameworkPluginConfiguration frameworkPluginConfiguration = new FrameworkPluginConfiguration(frameworkConfiguration, configFile);
 					this.getFrameworkPluginConfigurationList().add(frameworkPluginConfiguration);
@@ -192,13 +190,13 @@ public class FrameworkControl {
 		this.properties = properties;
 	}
 
-	public List<MetadataRepositoryConfiguration> getMetadataRepositoryConfigurationList() {
-		return metadataRepositoryConfigurationList;
+	public List<MetadataRepositoryConfiguration> getMetadataRepositoryConfigurations() {
+		return metadataRepositoryConfigurations;
 	}
 
-	public void setMetadataRepositoryConfigurationList(
-			List<MetadataRepositoryConfiguration> metadataRepositoryConfigurationList) {
-		this.metadataRepositoryConfigurationList = metadataRepositoryConfigurationList;
+	public void setMetadataRepositoryConfigurations(
+			List<MetadataRepositoryConfiguration> metadataRepositoryConfigurations) {
+		this.metadataRepositoryConfigurations = metadataRepositoryConfigurations;
 	}
 
 	public String getLogonType() {
@@ -209,13 +207,6 @@ public class FrameworkControl {
 		this.logonType = logonType;
 	}
 
-	public MetadataRepositoryCategoryOperation getMetadataRepositoryConfig() {
-		return metadataRepositoryCategoryOperation;
-	}
-
-	public void setMetadataRepositoryConfig(MetadataRepositoryCategoryOperation metadataRepositoryCategoryOperation) {
-		this.metadataRepositoryCategoryOperation = metadataRepositoryCategoryOperation;
-	}
 
 	public List<FrameworkPluginConfiguration> getFrameworkPluginConfigurationList() {
 		return frameworkPluginConfigurationList;

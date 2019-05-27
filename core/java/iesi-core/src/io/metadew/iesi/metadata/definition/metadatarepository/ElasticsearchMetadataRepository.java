@@ -4,20 +4,20 @@ import io.metadew.iesi.metadata.definition.MetadataRepository;
 
 public class ElasticsearchMetadataRepository extends MetadataRepository {
 
-	private String url;
+    private String url;
 
-	// Constructors
-	public ElasticsearchMetadataRepository() {
-		super();
-	}
+    // Constructors
+    public ElasticsearchMetadataRepository() {
+        super();
+    }
 
-	// Getters and Setters
-	public String getUrl() {
-		return url;
-	}
+    // Getters and Setters
+    public String getUrl() {
+        return url;
+    }
 
-	public void setUrl(String url) {
-		this.url = url;
-	}
+    public void setUrl(String url) {
+        this.url = url;
+    }
 
 }

@@ -1,69 +1,104 @@
 package io.metadew.iesi.script.operation;
 
-import java.io.File;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import io.metadew.iesi.connection.database.SqliteDatabaseConnection;
-import io.metadew.iesi.connection.database.TemporaryDatabaseConnection;
+import io.metadew.iesi.connection.database.connection.SqliteDatabaseConnection;
+import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.connection.tools.FolderTools;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
+import org.apache.commons.io.FilenameUtils;
+
+import java.io.File;
 
 /**
  * Operation to manage stage items that have been defined in the script.
- * 
- * @author peter.billen
  *
+ * @author peter.billen
  */
 public class StageOperation {
 
-	private FrameworkExecution frameworkExecution;
-	private TemporaryDatabaseConnection stageConnection;
-	private String stageName;
-	
-	
-	// Constructors
-	public StageOperation(FrameworkExecution frameworkExecution, String stageName) {
-		this.setFrameworkExecution(frameworkExecution);
-		this.setStageName(stageName);
-		
-		ObjectMapper objectMapper = new ObjectMapper();
-		String stageFolderName = this.getFrameworkExecution().getFrameworkConfiguration().getFolderConfiguration().getFolderAbsolutePath("run.tmp") + File.separator +  "stage";
-		FolderTools.createFolder(stageFolderName);
-		String stageFileName = this.getStageName() + ".db3";
-		SqliteDatabaseConnection dcSQConnection = new SqliteDatabaseConnection(stageFolderName + File.separator + stageFileName);
-		this.setStageConnection(objectMapper.convertValue(dcSQConnection, TemporaryDatabaseConnection.class));
-	}
+    private FrameworkExecution frameworkExecution;
+    private SqliteDatabaseConnection stageConnection;
+    private String stageName;
+    private String stageFileName;
+    private String stageFilePath;
+    private boolean stageCleanup;
+
+    //Constructors
+    public StageOperation(FrameworkExecution frameworkExecution, String stageName, boolean StageCleanup) {
+        this.setFrameworkExecution(frameworkExecution);
+        this.setStageName(stageName);
+        this.setStageCleanup(StageCleanup);
+
+        String stageFolderName = this.getFrameworkExecution().getFrameworkConfiguration().getFolderConfiguration().getFolderAbsolutePath("run.tmp") + File.separator + "stage";
+        FolderTools.createFolder(stageFolderName);
+        this.setStageFileName(this.getStageName() + ".db3");
+        this.setStageFilePath(FilenameUtils.normalize(stageFolderName + File.separator + this.getStageFileName()));
+        this.setStageConnection(new SqliteDatabaseConnection(this.getStageFilePath()));
+    }
+
+    public void doCleanup() {
+        if (this.isStageCleanup()) {
+            FileTools.delete(this.getStageFilePath());
+        }
+    }
+
+    //Getters and setters
+    public FrameworkExecution getFrameworkExecution() {
+        return frameworkExecution;
+    }
 
 
-	// Getters and setters
-	public FrameworkExecution getFrameworkExecution() {
-		return frameworkExecution;
-	}
+    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
+        this.frameworkExecution = frameworkExecution;
+    }
 
 
-	public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-		this.frameworkExecution = frameworkExecution;
-	}
+    public String getStageName() {
+        return stageName;
+    }
 
 
-	public TemporaryDatabaseConnection getStageConnection() {
-		return stageConnection;
-	}
+    public void setStageName(String stageName) {
+        this.stageName = stageName;
+    }
 
 
-	public void setStageConnection(TemporaryDatabaseConnection stageConnection) {
-		this.stageConnection = stageConnection;
-	}
+    public SqliteDatabaseConnection getStageConnection() {
+        return stageConnection;
+    }
 
 
-	public String getStageName() {
-		return stageName;
-	}
+    public void setStageConnection(SqliteDatabaseConnection stageConnection) {
+        this.stageConnection = stageConnection;
+    }
 
 
-	public void setStageName(String stageName) {
-		this.stageName = stageName;
-	}
+    public String getStageFileName() {
+        return stageFileName;
+    }
+
+
+    public void setStageFileName(String stageFileName) {
+        this.stageFileName = stageFileName;
+    }
+
+
+    public String getStageFilePath() {
+        return stageFilePath;
+    }
+
+
+    public void setStageFilePath(String stageFilePath) {
+        this.stageFilePath = stageFilePath;
+    }
+
+
+    public boolean isStageCleanup() {
+        return stageCleanup;
+    }
+
+
+    public void setStageCleanup(boolean stageCleanup) {
+        this.stageCleanup = stageCleanup;
+    }
 
 }

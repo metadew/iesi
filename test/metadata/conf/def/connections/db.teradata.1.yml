@@ -1,0 +1,18 @@
+---
+type: Connection
+data:
+  name: "db.teradata.1"
+  type: "db.teradata"
+  description: "db.teradata connection"
+  environment: "iesi-test"
+  parameters:
+  - name: "host"
+    value: "localhost"
+  - name: "port"
+    value: "1025"
+  - name: "database"
+    value: "iesi"
+  - name: "user"
+    value: "iesi"
+  - name: "password"
+    value: "ENC(Waan0DOjDHNBnTXtldp5xnGwIP0=)"

@@ -1,0 +1,18 @@
+---
+type: Connection
+data:
+  name: "db.postgresql.1"
+  type: "db.postgresql"
+  description: "db.postgresql connection"
+  environment: "iesi-test"
+  parameters:
+  - name: "host"
+    value: "localhost"
+  - name: "port"
+    value: "5432"
+  - name: "database"
+    value: "iesi"
+  - name: "user"
+    value: "admin"
+  - name: "password"
+    value: "ENC(Waan0DOjDHNBnTXtldp5xnGwIP0=)"

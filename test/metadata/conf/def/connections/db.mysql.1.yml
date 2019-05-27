@@ -1,0 +1,18 @@
+---
+type: Connection
+data:
+  name: "db.mysql.1"
+  type: "db.mysql"
+  description: "db.mysql connection"
+  environment: "iesi-test"
+  parameters:
+  - name: "host"
+    value: "localhost"
+  - name: "port"
+    value: "3306"
+  - name: "schema"
+    value: "iesi"
+  - name: "user"
+    value: "root"
+  - name: "password"
+    value: "ENC(Waan0DOjDHNBnTXtldp5xnGwIP0=)"

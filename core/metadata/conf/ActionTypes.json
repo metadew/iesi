@@ -51,9 +51,9 @@
 		"className": "io.metadew.iesi.script.action.DataCompareDataset",
 		"description": "Compare two datasets",
 		"parameters": [
-			{"name": "leftDataset","description": "Dataset to compare","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
-			{"name": "rightDataset","description": "Dataset to compare against","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
-			{"name": "mapping","description": "Mapping to use for comparing the dataset","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"}
+			{"name": "leftDataset","description": "Dataset to compare","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "rightDataset","description": "Dataset to compare against","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "mapping","description": "Mapping to use for comparing the dataset","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"}
 	]
 }},
 {
@@ -64,7 +64,7 @@
 		"description": "Prints a dataset for logging and debugging purposes",
 		"parameters": [
 			{"name": "name","description": "Name of the dataset to use","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
-			{"name": "labels","description": "Labels associated to the dataset instance","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
+			{"name": "labels","description": "Labels associated to the dataset instance","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"},
 			{"name": "onScreen","description": "Flag indicating if the output needs to be printed on the screen","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"}
 	]
 }},
@@ -78,7 +78,7 @@
 			{"name": "name","description": "Reference name for the dataset definition","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
 			{"name": "type","description": "Type of dataset","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"},
 			{"name": "dataset","description": "Dataset to use","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"},
-			{"name": "labels","description": "Labels associated to the dataset instance","type": "string","mandatory": "Y","encrypted": "N","subroutine": "","impersonate": "N"}
+			{"name": "labels","description": "Labels associated to the dataset instance","type": "string","mandatory": "N","encrypted": "N","subroutine": "","impersonate": "N"}
 	]
 }},
 {

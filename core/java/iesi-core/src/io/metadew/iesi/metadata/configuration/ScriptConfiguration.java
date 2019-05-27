@@ -3,8 +3,6 @@ package io.metadew.iesi.metadata.configuration;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.configuration.FrameworkObjectConfiguration;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
-import io.metadew.iesi.metadata.configuration.exception.ComponentAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.exception.ComponentDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.exception.ScriptAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.ScriptDoesNotExistException;
 import io.metadew.iesi.metadata.definition.*;
@@ -87,7 +85,7 @@ public class ScriptConfiguration {
             crsScript.next();
             String queryScriptVersions = "select SCRIPT_VRS_NB from "
                     + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ScriptVersions") + " where SCRIPT_ID = '"
-                    + crsScript.getLong("SCRIPT_ID") + "'";
+                    + crsScript.getString("SCRIPT_ID") + "'";
             CachedRowSet crsScriptVersions = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(queryScriptVersions, "reader");
             while (crsScriptVersions.next()) {
                 Optional<Script> script = getScript(scriptName, crsScriptVersions.getLong("SCRIPT_VRS_NB"));
@@ -444,7 +442,7 @@ public class ScriptConfiguration {
                     actions.add(action.get());
                 } else {
                     frameworkExecution.getFrameworkLog().log(MessageFormat.format(
-                            "Cannot retreive action {0} for script {1}-{2}.", crsActions.getLong("ACTION_ID"), scriptName, versionNumber), Level.DEBUG);
+                            "Cannot retreive action {0} for script {1}-{2}.", crsActions.getString("ACTION_ID"), scriptName, versionNumber), Level.DEBUG);
                 }
             }
             crsActions.close();

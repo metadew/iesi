@@ -3,8 +3,6 @@ package io.metadew.iesi.connection.database;
 import io.metadew.iesi.connection.database.connection.PrestoDatabaseConnection;
 import io.metadew.iesi.metadata.definition.MetadataField;
 
-import java.util.Optional;
-
 /**
  * Database object for Dremio
  *

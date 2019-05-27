@@ -2,9 +2,6 @@ package io.metadew.iesi.connection.database;
 
 import io.metadew.iesi.connection.database.connection.MysqlDatabaseConnection;
 import io.metadew.iesi.metadata.definition.MetadataField;
-import io.metadew.iesi.metadata.definition.MetadataTable;
-
-import java.util.List;
 
 public class MysqlDatabase extends Database {
 

@@ -44,13 +44,13 @@ public class MssqlDatabase extends SchemaDatabase {
                 fieldQuery.append("NUMERIC");
                 break;
             case "timestamp":
-                fieldQuery.append("TIMESTAMP");
+                fieldQuery.append("DATETIME");
                 break;
         }
 
         // Default DtTimestamp
         if (field.getDefaultTimestamp().trim().equalsIgnoreCase("y")) {
-            fieldQuery.append(" DEFAULT CURRENT_TIMESTAMP");
+            fieldQuery.append(" DEFAULT GETDATE()");
         }
 
         // Nullable

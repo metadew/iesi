@@ -29,7 +29,6 @@ public class IterationExecution {
         this.setExecutionControl(executionControl);
         this.setActionExecution(actionExecution);
         this.setIterationName(iterationName);
-        System.out.println("iteration name: " + iterationName);
         this.setIterationOperation(
                 this.getExecutionControl().getExecutionRuntime().getIterationOperation(this.getIterationName()));
         this.setIterationConfiguration(new IterationConfiguration(this.getFrameworkExecution(),

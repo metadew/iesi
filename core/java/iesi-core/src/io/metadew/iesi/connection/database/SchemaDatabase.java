@@ -18,10 +18,15 @@ public abstract class SchemaDatabase extends Database {
     // TODO:
     public String getCreateStatement(MetadataTable table) {
         StringBuilder createQuery = new StringBuilder();
-        StringBuilder fieldComments = new StringBuilder();
+        //StringBuilder fieldComments = new StringBuilder();
 
         // add schema to table name
-        String tableName = getSchema().map(schema -> schema + ".").orElse("") + table.getName();
+        String tableName = null;
+        if (getSchema().get().isEmpty()) {
+        	tableName = table.getName();
+        } else {
+        	tableName = getSchema().map(schema -> schema + ".").orElse("") + table.getName();
+        }
 
         createQuery.append("CREATE TABLE ").append(tableName).append("\n(\n");
         int counter = 1;
@@ -43,16 +48,21 @@ public abstract class SchemaDatabase extends Database {
             }
 
             createQuery.append(toQueryString(field));
-            if (addComments() && field.getDescription().isPresent()) {
-                fieldComments.append("\nCOMMENT ON COLUMN ").append(tableName).append(".").append(field.getName())
-                        .append(" IS '").append(field.getDescription().get()).append("';");
-            }
+			/*
+			 * TODO create comment syntax inside subclasses returning stringbuilder rather
+			 * than just a boolean
+			 * 
+			 * if (addComments() && field.getDescription().isPresent()) {
+			 * fieldComments.append("\nCOMMENT ON COLUMN ").append(tableName).append(".").
+			 * append(field.getName())
+			 * .append(" IS '").append(field.getDescription().get()).append("';"); }
+			 */
             counter++;
         }
 
         createQuery.append("\n);\n");
         createQuery.append(createQueryExtras());
-        createQuery.append(fieldComments).append("\n\n");
+        //createQuery.append(fieldComments).append("\n\n");
 
         return createQuery.toString();
     }

@@ -3,8 +3,6 @@ package io.metadew.iesi.connection.database;
 import io.metadew.iesi.connection.database.connection.PostgresqlDatabaseConnection;
 import io.metadew.iesi.metadata.definition.MetadataField;
 
-import java.util.Optional;
-
 public class PostgresqlDatabase extends SchemaDatabase {
 
     public PostgresqlDatabase(PostgresqlDatabaseConnection databaseConnection, String schema) {
@@ -67,3 +65,4 @@ public class PostgresqlDatabase extends SchemaDatabase {
     }
 
 }
+

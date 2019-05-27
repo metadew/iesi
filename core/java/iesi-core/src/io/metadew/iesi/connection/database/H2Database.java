@@ -3,8 +3,6 @@ package io.metadew.iesi.connection.database;
 import io.metadew.iesi.connection.database.connection.H2DatabaseConnection;
 import io.metadew.iesi.metadata.definition.MetadataField;
 
-import java.util.Optional;
-
 /**
  * Database object for H2 databases
  *
@@ -69,4 +67,5 @@ public class H2Database extends SchemaDatabase {
         }
         return fieldQuery.toString();
     }
+
 }

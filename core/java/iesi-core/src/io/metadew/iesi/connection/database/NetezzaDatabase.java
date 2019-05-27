@@ -3,8 +3,6 @@ package io.metadew.iesi.connection.database;
 import io.metadew.iesi.connection.database.connection.NetezzaDatabaseConnection;
 import io.metadew.iesi.metadata.definition.MetadataField;
 
-import java.util.Optional;
-
 public class NetezzaDatabase extends SchemaDatabase {
 
 

@@ -3,6 +3,8 @@ package io.metadew.iesi.metadata.configuration;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.configuration.FrameworkObjectConfiguration;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.metadata.configuration.exception.ComponentAlreadyExistsException;
+import io.metadew.iesi.metadata.configuration.exception.ComponentDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.exception.ScriptAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.ScriptDoesNotExistException;
 import io.metadew.iesi.metadata.definition.*;
@@ -124,7 +126,6 @@ public class ScriptConfiguration {
     }
 
     public void insertScript(Script script) throws ScriptAlreadyExistsException {
-        // TODO handle script ID
         frameworkExecution.getFrameworkLog().log(MessageFormat.format(
                 "Inserting script {0}-{1}.", script.getName(), script.getVersion().getNumber()), Level.TRACE);
         if (exists(script)) {
@@ -133,11 +134,61 @@ public class ScriptConfiguration {
         }
         String insertStatement = getInsertStatement(script);
         this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeUpdate(insertStatement);
+    }
 
+    public void updateScript(Script script) throws ScriptDoesNotExistException {
+        frameworkExecution.getFrameworkLog().log(MessageFormat.format(
+                "Updating script {0}-{1}.", script.getName(), script.getVersion().getNumber()), Level.TRACE);
+        try {
+            deleteScript(script);
+            insertScript(script);
+        } catch (ScriptDoesNotExistException e) {
+            frameworkExecution.getFrameworkLog().log(MessageFormat.format(
+                    "Script {0}-{1} is not present in the repository so cannot be updated",
+                    script.getName(), script.getVersion().getNumber()),
+                    Level.TRACE);
+            throw e;
+            // throw new ComponentDoesNotExistException(MessageFormat.format(
+            //        "Component {0}-{1} is not present in the repository so cannot be updated", component.getName(),  component.getVersion().getNumber()));
+
+        } catch (ScriptAlreadyExistsException e) {
+            frameworkExecution.getFrameworkLog().log(MessageFormat.format(
+                    "Script {0}-{1} is not deleted correctly during update. {2}",
+                    script.getName(), script.getVersion().getNumber(), e.toString()),
+                    Level.WARN);
+        }
     }
 
     private String getInsertStatement(Script script) {
-        return null;
+        ScriptVersionConfiguration scriptVersionConfiguration = new ScriptVersionConfiguration(frameworkExecution);
+        ScriptParameterConfiguration scriptParameterConfiguration = new ScriptParameterConfiguration(frameworkExecution);
+        ActionConfiguration actionConfiguration = new ActionConfiguration(frameworkExecution);
+        StringBuilder sql = new StringBuilder();
+
+        if (getScriptByName(script.getName()).size() == 0) {
+            sql.append("INSERT INTO ").append(this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Scripts"));
+            sql.append(" (SCRIPT_ID, SCRIPT_TYP_NM, SCRIPT_NM, SCRIPT_DSC) VALUES (");
+            sql.append(SQLTools.GetStringForSQL(this.getScript().getId())).append(",");
+            sql.append(SQLTools.GetStringForSQL(this.getScript().getType())).append(",");
+            sql.append(SQLTools.GetStringForSQL(this.getScript().getName())).append(",");
+            sql.append(SQLTools.GetStringForSQL(this.getScript().getDescription())).append(");");
+        }
+        // add version
+        sql.append(scriptVersionConfiguration.getInsertStatement(script.getId(), script.getVersion()));
+
+        // add Parameters
+        for (ScriptParameter scriptParameter :script.getParameters()) {
+            sql.append(scriptParameterConfiguration.getInsertStatement(script.getId(), script.getVersion().getNumber(), scriptParameter));
+            sql.append("\n");
+        }
+
+        // add actions
+        for (Action action : script.getActions()) {
+            sql.append(actionConfiguration.getInsertStatement(script.getId(), script.getVersion().getNumber(), action));
+            sql.append("\n");
+        }
+
+        return sql.toString();
     }
 
     private String getDeleteStatement(Script script) {

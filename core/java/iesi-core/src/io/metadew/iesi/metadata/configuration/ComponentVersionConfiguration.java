@@ -64,7 +64,7 @@ public class ComponentVersionConfiguration {
     }
 
 
-    public Optional<ComponentVersion> getComponentVersion(long componentId, long componentVersionNumber) {
+    public Optional<ComponentVersion> getComponentVersion(String componentId, long componentVersionNumber) {
         ComponentVersion componentVersion = null;
         String queryComponentVersion = "select COMP_ID, COMP_VRS_NB, COMP_VRS_DSC from " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ComponentVersions")
                 + " where COMP_ID = " + componentId + " and COMP_VRS_NB = " + componentVersionNumber;

@@ -2,8 +2,8 @@ package io.metadew.iesi.cockpit.authentication;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.dependency.HtmlImport;
+import com.vaadin.flow.component.html.Emphasis;
 import com.vaadin.flow.component.html.H1;
-import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.login.LoginForm;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
@@ -22,7 +22,8 @@ import io.metadew.iesi.cockpit.MainLayout;
 @HtmlImport("css/shared-styles.html")
 public class LoginScreen extends FlexLayout {
 
-    private AccessControl accessControl;
+	private static final long serialVersionUID = 1L;
+	private AccessControl accessControl;
 
     public LoginScreen() {
         accessControl = AccessControlFactory.getInstance().createAccessControl();
@@ -37,7 +38,7 @@ public class LoginScreen extends FlexLayout {
         LoginForm loginForm = new LoginForm();
         loginForm.addLoginListener(this::login);
         loginForm.addForgotPasswordListener(
-                event -> Notification.show("Hint: same as username"));
+                event -> Notification.show("Contact your framework administrator"));
 
         // layout to center login form when there is sufficient screen space
         FlexLayout centeringLayout = new FlexLayout();
@@ -57,13 +58,11 @@ public class LoginScreen extends FlexLayout {
         VerticalLayout loginInformation = new VerticalLayout();
         loginInformation.setClassName("login-information");
 
-        H1 loginInfoHeader = new H1("Login Information");
-        Span loginInfoText = new Span(
-                "Log in as \"admin\" to have full access. Log in with any " +
-                        "other username to have read-only access. For all " +
-                        "users, the password is same as the username.");
+        H1 loginInfoHeader = new H1("IESI");
+        Emphasis visionText = new Emphasis(
+                "Automation for everyone: easy, driven by configuration and augmented with metadata");
         loginInformation.add(loginInfoHeader);
-        loginInformation.add(loginInfoText);
+        loginInformation.add(visionText);
 
         return loginInformation;
     }
@@ -77,7 +76,8 @@ public class LoginScreen extends FlexLayout {
         }
     }
 
-    private void registerAdminViewIfApplicable() {
+    @SuppressWarnings("unchecked")
+	private void registerAdminViewIfApplicable() {
         // register the admin view dynamically only for any admin user logged in
         if (accessControl.isUserInRole(AccessControl.ADMIN_ROLE_NAME)) {
             RouteConfiguration.forSessionScope().setRoute(AdminView.VIEW_NAME,

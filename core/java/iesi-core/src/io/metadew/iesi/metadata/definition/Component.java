@@ -98,4 +98,8 @@ public class Component {
         this.version = version;
     }
 
+	public boolean isEmpty() {
+		return (this.name == null || this.name.isEmpty()) ;
+	}
+
 }

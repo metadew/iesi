@@ -24,7 +24,7 @@ public class EnvironmentGrid extends Grid<Environment> {
         return asSingleSelect().getValue();
     }
 
-    public void refresh(Environment Environment) {
-        getDataCommunicator().refresh(Environment);
+    public void refresh(Environment environment) {
+        getDataCommunicator().refresh(environment);
     }
 }

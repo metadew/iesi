@@ -1,4 +1,4 @@
-package io.metadew.iesi.cockpit.backend.environment;
+package io.metadew.iesi.cockpit.backend.configuration;
 
 import java.util.ArrayList;
 import java.util.Collections;

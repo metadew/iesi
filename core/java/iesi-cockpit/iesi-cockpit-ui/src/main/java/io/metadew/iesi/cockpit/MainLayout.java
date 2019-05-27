@@ -15,6 +15,8 @@ import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.theme.lumo.Lumo;
 import io.metadew.iesi.cockpit.about.AboutView;
 import io.metadew.iesi.cockpit.authentication.AccessControlFactory;
+import io.metadew.iesi.cockpit.component.ComponentView;
+import io.metadew.iesi.cockpit.connection.ConnectionView;
 import io.metadew.iesi.cockpit.crud.SampleCrudView;
 import io.metadew.iesi.cockpit.define.environment.EnvironmentView;
 
@@ -25,6 +27,8 @@ import io.metadew.iesi.cockpit.define.environment.EnvironmentView;
 @Theme(value = Lumo.class)
 @PWA(name = "IESI Cockpit", shortName = "IESI")
 public class MainLayout extends FlexLayout implements RouterLayout {
+
+	private static final long serialVersionUID = 1L;
 	private Menu menu;
 
 	public MainLayout() {
@@ -35,12 +39,15 @@ public class MainLayout extends FlexLayout implements RouterLayout {
         menu.addView(SampleCrudView.class, SampleCrudView.VIEW_NAME,
                 VaadinIcon.EDIT.create());
         menu.addView(EnvironmentView.class, EnvironmentView.VIEW_NAME,VaadinIcon.MAP_MARKER.create());
+        menu.addView(ConnectionView.class, ConnectionView.VIEW_NAME,VaadinIcon.CONNECT.create());
+        menu.addView(ComponentView.class, ComponentView.VIEW_NAME,VaadinIcon.CUBES.create());
         menu.addView(AboutView.class, AboutView.VIEW_NAME,
                 VaadinIcon.INFO_CIRCLE.create());
 
         add(menu);
     }
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	protected void onAttach(AttachEvent attachEvent) {
 		super.onAttach(attachEvent);

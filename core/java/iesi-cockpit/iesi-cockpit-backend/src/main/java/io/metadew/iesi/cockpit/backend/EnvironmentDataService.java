@@ -3,7 +3,7 @@ package io.metadew.iesi.cockpit.backend;
 import java.io.Serializable;
 import java.util.Collection;
 
-import io.metadew.iesi.cockpit.backend.environment.EnvironmentDataServiceConfiguration;
+import io.metadew.iesi.cockpit.backend.configuration.EnvironmentDataServiceConfiguration;
 import io.metadew.iesi.metadata.definition.Environment;
 
 public abstract class EnvironmentDataService implements Serializable {

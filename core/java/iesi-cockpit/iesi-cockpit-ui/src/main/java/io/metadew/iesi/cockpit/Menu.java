@@ -1,10 +1,8 @@
 package io.metadew.iesi.cockpit;
 
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
@@ -14,13 +12,12 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.router.RouterLink;
-import com.vaadin.flow.server.VaadinServletService;
-import com.vaadin.flow.server.VaadinSession;
 import io.metadew.iesi.cockpit.authentication.AccessControlFactory;
 
 public class Menu extends FlexLayout {
 
-    private static final String SHOW_TABS = "show-tabs";
+	private static final long serialVersionUID = 1L;
+	private static final String SHOW_TABS = "show-tabs";
     private Tabs tabs;
 
     public Menu() {
@@ -45,15 +42,8 @@ public class Menu extends FlexLayout {
         top.setClassName("menu-header");
 
         Label title = new Label("IESI");
-
-        // Note! Image resource url is resolved here as it is dependent on the
-        // execution mode (development or production) and browser ES level support
-        String resolvedImage = VaadinServletService.getCurrent()
-                .resolveResource("frontend://img/table-logo.png",
-                        VaadinSession.getCurrent().getBrowser());
-
-        Image image = new Image(resolvedImage, "");
-        top.add(image);
+        Icon icon = VaadinIcon.COG.create();
+        top.add(icon);
         top.add(title);
         add(top);
 

@@ -64,5 +64,8 @@ public class Connection {
         this.parameters = parameters;
     }
 
+	public boolean isEmpty() {
+		return (this.name == null || this.name.isEmpty()) ;
+	}
 
 }

@@ -83,6 +83,7 @@ public class ActionsTest {
 
 
             String versionHomeConfFolder = versionHome + File.separator + "conf";
+            String dataFolder = versionHome + File.separator + "data";
             String testDataFolder = versionHome + File.separator + "data" + File.separator + "iesi-test";
             String frameworkTestDataFolder = testDataFolder + File.separator + "fwk";
             String setupTestConfDataFolder = frameworkTestDataFolder + File.separator + "setup";
@@ -116,6 +117,12 @@ public class ActionsTest {
 
             // Data
             FolderTools.copyFromFolderToFolder(testDataHome, fwkTestDataFolder, true);
+            // Temp solution for datasets and mappings
+            // TODO: create relative path for datasets and mappings
+            FolderTools.createFolder(dataFolder + File.separator + "datasets");
+            FolderTools.copyFromFolderToFolder(testDataHome +  File.separator+  "datasets", dataFolder + File.separator+  "datasets", true);
+            FolderTools.createFolder(dataFolder + File.separator + "mapping");
+            FolderTools.copyFromFolderToFolder(testDataHome +  File.separator+  "mapping", dataFolder + File.separator+  "mapping", true);
 
             // Definitions
             FolderTools.copyFromFolderToFolder(testDefConfigurationHome + File.separator + "connections", actionsTestDefDataFolder, false);

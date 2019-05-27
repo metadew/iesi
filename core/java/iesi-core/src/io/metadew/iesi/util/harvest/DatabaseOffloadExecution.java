@@ -1,6 +1,6 @@
 package io.metadew.iesi.util.harvest;
 
-import io.metadew.iesi.connection.database.connection.DatabaseConnection;
+import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.operation.ConnectionOperation;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
@@ -40,12 +40,12 @@ public class DatabaseOffloadExecution {
         ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution());
 
         Connection sourceConnection = connectionConfiguration.getConnection(sourceConnectionName, sourceEnvironmentName).get();
-        DatabaseConnection sourceDatabaseConnection = connectionOperation.getDatabaseConnection(sourceConnection);
+        Database sourceDatabase = connectionOperation.getDatabase(sourceConnection);
         Connection targetConnection = connectionConfiguration.getConnection(targetConnectionName, targetEnvironmentName).get();
-        DatabaseConnection targetDatabaseConnection = connectionOperation.getDatabaseConnection(targetConnection);
+        Database targetDatabase = connectionOperation.getDatabase(targetConnection);
 
         CachedRowSet crs = null;
-        crs = sourceDatabaseConnection.executeQuery(sqlStatement);
+        crs = sourceDatabase.executeQuery(sqlStatement);
 
         String QueryString = "";
         java.sql.Connection liveTargetDatabaseConnection = null;
@@ -62,17 +62,17 @@ public class DatabaseOffloadExecution {
             // Cleaning
             if (cleanPrevious) {
                 QueryString = SQLTools.getDropStmt(name, true);
-                targetDatabaseConnection.executeUpdate(QueryString);
+                targetDatabase.executeUpdate(QueryString);
             }
 
             // create the dataset table if needed
             QueryString = SQLTools.getCreateStmt(rsmd, name, true);
-            targetDatabaseConnection.executeUpdate(QueryString);
+            targetDatabase.executeUpdate(QueryString);
 
             String temp = "";
             String sql = SQLTools.getInsertPstmt(rsmd, name);
-            liveTargetDatabaseConnection = targetDatabaseConnection.getConnection();
-            PreparedStatement preparedStatement = targetDatabaseConnection.createPreparedStatement(liveTargetDatabaseConnection, sql);
+            liveTargetDatabaseConnection = targetDatabase.getLiveConnection();
+            PreparedStatement preparedStatement = liveTargetDatabaseConnection.prepareStatement(sql);
 
             int crsType = crs.getType();
             if (crsType != java.sql.ResultSet.TYPE_FORWARD_ONLY) {

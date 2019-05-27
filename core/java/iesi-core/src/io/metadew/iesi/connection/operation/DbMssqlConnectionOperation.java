@@ -1,7 +1,7 @@
 package io.metadew.iesi.connection.operation;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.metadew.iesi.connection.database.connection.DatabaseConnection;
+import io.metadew.iesi.connection.database.Database;
+import io.metadew.iesi.connection.database.MssqlDatabase;
 import io.metadew.iesi.connection.database.connection.MssqlDatabaseConnection;
 import io.metadew.iesi.connection.tools.ConnectionTools;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
@@ -24,11 +24,10 @@ public class DbMssqlConnectionOperation {
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public DatabaseConnection getConnectionOperation(Connection connection) {
+    public Database getDatabase(Connection connection) {
         this.setMissingMandatoryFieldsList(new ArrayList());
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        DatabaseConnection databaseConnection = null;
+        Database database = null;
 
         String hostName = "";
         String portNumberTemp = "";
@@ -108,9 +107,9 @@ public class DbMssqlConnectionOperation {
         }
 
         MssqlDatabaseConnection mssqlDatabaseConnection = new MssqlDatabaseConnection(hostName, portNumber, databaseName, userName, userPassword);
-        databaseConnection = objectMapper.convertValue(mssqlDatabaseConnection, DatabaseConnection.class);
+        database = new MssqlDatabase(mssqlDatabaseConnection, "");
 
-        return databaseConnection;
+        return database;
     }
 
     protected void addMissingField(String fieldName) {

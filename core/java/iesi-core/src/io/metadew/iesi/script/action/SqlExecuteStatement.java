@@ -1,6 +1,6 @@
 package io.metadew.iesi.script.action;
 
-import io.metadew.iesi.connection.database.connection.DatabaseConnection;
+import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.sql.SqlScriptResult;
 import io.metadew.iesi.connection.operation.ConnectionOperation;
 import io.metadew.iesi.connection.tools.FileTools;
@@ -99,9 +99,9 @@ public class SqlExecuteStatement {
         Connection connection = connectionConfiguration
                 .getConnection(connectionName, this.getExecutionControl().getEnvName()).get();
         ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
-        DatabaseConnection databaseConnection = connectionOperation.getDatabaseConnection(connection);
+        Database database = connectionOperation.getDatabase(connection);
 
-        if (databaseConnection == null) {
+        if (database == null) {
             throw new RuntimeException("Error establishing DB connection");
         }
 
@@ -114,7 +114,7 @@ public class SqlExecuteStatement {
         SqlScriptResult sqlScriptResult;
         InputStream inputStream = FileTools.convertToInputStream(sqlStatement,
                 this.getFrameworkExecution().getFrameworkControl());
-        sqlScriptResult = databaseConnection.executeScript(inputStream);
+        sqlScriptResult = database.executeScript(inputStream);
 
         // Evaluate result
         this.getActionExecution().getActionControl().logOutput("sys.out", sqlScriptResult.getSystemOutput());

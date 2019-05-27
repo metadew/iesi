@@ -1,6 +1,6 @@
 package io.metadew.iesi.connection.database;
 
-import io.metadew.iesi.connection.database.connection.PrestoDatabaseConnection;
+import io.metadew.iesi.connection.database.connection.DremioDatabaseConnection;
 import io.metadew.iesi.metadata.definition.MetadataField;
 
 /**
@@ -10,7 +10,7 @@ import io.metadew.iesi.metadata.definition.MetadataField;
  */
 public class DremioDatabase extends SchemaDatabase {
 
-    public DremioDatabase(PrestoDatabaseConnection databaseConnection, String schema) {
+    public DremioDatabase(DremioDatabaseConnection databaseConnection, String schema) {
         super(databaseConnection, schema);
     }
 

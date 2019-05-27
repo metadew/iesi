@@ -1,7 +1,7 @@
 package io.metadew.iesi.connection.operation;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.metadew.iesi.connection.database.connection.DatabaseConnection;
+import io.metadew.iesi.connection.database.Database;
+import io.metadew.iesi.connection.database.PrestoDatabase;
 import io.metadew.iesi.connection.database.connection.PrestoDatabaseConnection;
 import io.metadew.iesi.connection.tools.ConnectionTools;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
@@ -24,11 +24,10 @@ public class DbPrestoConnectionOperation {
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public DatabaseConnection getConnectionOperation(Connection connection) {
+    public Database getDatabase(Connection connection) {
         this.setMissingMandatoryFieldsList(new ArrayList());
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        DatabaseConnection databaseConnection = null;
+        Database database = null;
 
         String hostName = "";
         String portNumberTemp = "";
@@ -117,9 +116,9 @@ public class DbPrestoConnectionOperation {
         }
 
         PrestoDatabaseConnection prestoDatabaseConnection = new PrestoDatabaseConnection(hostName, portNumber, catalogName, schemaName, userName, userPassword);
-        databaseConnection = objectMapper.convertValue(prestoDatabaseConnection, DatabaseConnection.class);
+        database = new PrestoDatabase(prestoDatabaseConnection, "");
 
-        return databaseConnection;
+        return database;
     }
 
     protected void addMissingField(String fieldName) {

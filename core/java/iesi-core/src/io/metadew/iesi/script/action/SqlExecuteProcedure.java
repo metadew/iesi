@@ -1,6 +1,6 @@
 package io.metadew.iesi.script.action;
 
-import io.metadew.iesi.connection.database.connection.DatabaseConnection;
+import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.sql.SqlScriptResult;
 import io.metadew.iesi.connection.operation.ConnectionOperation;
 import io.metadew.iesi.connection.tools.sql.SQLDataTransfer;
@@ -125,15 +125,15 @@ public class SqlExecuteProcedure {
         Connection connection = connectionConfiguration
                 .getConnection(connectionName, this.getExecutionControl().getEnvName()).get();
         ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
-        DatabaseConnection databaseConnection = connectionOperation.getDatabaseConnection(connection);
+        Database database = connectionOperation.getDatabase(connection);
 
-        if (databaseConnection == null) {
+        if (database == null) {
             throw new RuntimeException("Error establishing DB connection");
         }
 
         SqlScriptResult sqlScriptResult = null;
         CachedRowSet crs = null;
-        crs = databaseConnection.executeProcedure(sqlProcedure, sqlParameters);
+        crs = database.executeProcedure(sqlProcedure, sqlParameters);
         // TODO resolve for files and resolve inside
         // TODO Retrieve config from a file
 

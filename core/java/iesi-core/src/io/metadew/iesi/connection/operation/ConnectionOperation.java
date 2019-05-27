@@ -3,6 +3,12 @@ package io.metadew.iesi.connection.operation;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.connection.ArtifactoryConnection;
 import io.metadew.iesi.connection.HostConnection;
+import io.metadew.iesi.connection.database.Database;
+import io.metadew.iesi.connection.database.MysqlDatabase;
+import io.metadew.iesi.connection.database.NetezzaDatabase;
+import io.metadew.iesi.connection.database.OracleDatabase;
+import io.metadew.iesi.connection.database.PostgresqlDatabase;
+import io.metadew.iesi.connection.database.SqliteDatabase;
 import io.metadew.iesi.connection.database.connection.*;
 import io.metadew.iesi.connection.host.LinuxHostConnection;
 import io.metadew.iesi.connection.host.WindowsHostConnection;
@@ -32,14 +38,11 @@ public class ConnectionOperation {
 
 	// Methods
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public DatabaseConnection getDatabaseConnection(Connection connection) {
+	public Database getDatabase(Connection connection) {
 		this.setMissingMandatoryFieldsList(new ArrayList());
 
-		ObjectMapper objectMapper = new ObjectMapper();
-		DatabaseConnection databaseConnection = null;
-
+		Database database = null;
 		try {
-
 			if (connection.getType().equalsIgnoreCase("db.oracle")) {
 				String hostName = "";
 				String portNumberTemp = "";
@@ -144,7 +147,8 @@ public class ConnectionOperation {
 					oracleDatabaseConnection = new ServiceNameOracleDatabaseConnection(hostName, portNumber,
 							serviceName, userName, userPassword);
 				}
-				databaseConnection = objectMapper.convertValue(oracleDatabaseConnection, DatabaseConnection.class);
+				// TODO: schema as parameter to add to Oracle database
+				database = new OracleDatabase(oracleDatabaseConnection, "");
 			} else if (connection.getType().equalsIgnoreCase("db.netezza")) {
 				String hostName = "";
 				String portNumberTemp = "";
@@ -228,7 +232,7 @@ public class ConnectionOperation {
 
 				NetezzaDatabaseConnection netezzaDatabaseConnection = new NetezzaDatabaseConnection(hostName,
 						portNumber, databaseName, userName, userPassword);
-				databaseConnection = objectMapper.convertValue(netezzaDatabaseConnection, DatabaseConnection.class);
+				database = new NetezzaDatabase(netezzaDatabaseConnection, "");
 			} else if (connection.getType().equalsIgnoreCase("db.postgresql")) {
 				String hostName = "";
 				String portNumberTemp = "";
@@ -312,7 +316,7 @@ public class ConnectionOperation {
 
 				PostgresqlDatabaseConnection postgresqlDatabaseConnection = new PostgresqlDatabaseConnection(hostName,
 						portNumber, databaseName, userName, userPassword);
-				databaseConnection = objectMapper.convertValue(postgresqlDatabaseConnection, DatabaseConnection.class);
+				database = new PostgresqlDatabase(postgresqlDatabaseConnection, "");
 			} else if (connection.getType().equalsIgnoreCase("db.mysql")) {
 				String hostName = "";
 				String portNumberTemp = "";
@@ -396,7 +400,7 @@ public class ConnectionOperation {
 				
 				MysqlDatabaseConnection mysqlDatabaseConnection = new MysqlDatabaseConnection(hostName, portNumber,
 						schemaName, userName, userPassword);
-				databaseConnection = objectMapper.convertValue(mysqlDatabaseConnection, DatabaseConnection.class);
+				database = new MysqlDatabase(mysqlDatabaseConnection);
 			} else if (connection.getType().equalsIgnoreCase("db.sqlite")) {
 				String filePath = "";
 				String fileName = "";
@@ -442,33 +446,33 @@ public class ConnectionOperation {
 					}
 				}
 
-				SqliteDatabaseConnection dcSQConnection = new SqliteDatabaseConnection(
+				SqliteDatabaseConnection sqliteDatabaseConnection = new SqliteDatabaseConnection(
 						FilenameUtils.normalize(filePath + File.separator + fileName));
-				databaseConnection = objectMapper.convertValue(dcSQConnection, DatabaseConnection.class);
+				database = new SqliteDatabase(sqliteDatabaseConnection);
 			} else if (connection.getType().equalsIgnoreCase("db.h2")) {
 				DbH2ConnectionOperation dbH2ConnectionOperation = new DbH2ConnectionOperation(
 						this.getFrameworkExecution());
-				databaseConnection = dbH2ConnectionOperation.getConnectionOperation(connection);
+				database = dbH2ConnectionOperation.getDatabase(connection);
 			} else if (connection.getType().equalsIgnoreCase("db.mariadb")) {
 				DbMariadbConnectionOperation dbMariadbConnectionOperation = new DbMariadbConnectionOperation(
 						this.getFrameworkExecution());
-				databaseConnection = dbMariadbConnectionOperation.getConnectionOperation(connection);
+				database = dbMariadbConnectionOperation.getDatabase(connection);
 			} else if (connection.getType().equalsIgnoreCase("db.mssql")) {
 				DbMssqlConnectionOperation dbMssqlConnectionOperation = new DbMssqlConnectionOperation(
 						this.getFrameworkExecution());
-				databaseConnection = dbMssqlConnectionOperation.getConnectionOperation(connection);
+				database = dbMssqlConnectionOperation.getDatabase(connection);
 			} else if (connection.getType().equalsIgnoreCase("db.presto")) {
 				DbPrestoConnectionOperation dbPrestoConnectionOperation = new DbPrestoConnectionOperation(
 						this.getFrameworkExecution());
-				databaseConnection = dbPrestoConnectionOperation.getConnectionOperation(connection);
+				database = dbPrestoConnectionOperation.getDatabase(connection);
 			} else if (connection.getType().equalsIgnoreCase("db.dremio")) {
 				DbDremioConnectionOperation dbDremioConnectionOperation = new DbDremioConnectionOperation(
 						this.getFrameworkExecution());
-				databaseConnection = dbDremioConnectionOperation.getConnectionOperation(connection);
+				database = dbDremioConnectionOperation.getDatabase(connection);
 			} else if (connection.getType().equalsIgnoreCase("db.drill")) {
 				DbDrillConnectionOperation dbDrillConnectionOperation = new DbDrillConnectionOperation(
 						this.getFrameworkExecution());
-				databaseConnection = dbDrillConnectionOperation.getConnectionOperation(connection);
+				database = dbDrillConnectionOperation.getDatabase(connection);
 			} else {
 				String message = "Database type is not (yet) supported: " + connection.getType();
 				throw new RuntimeException(message);
@@ -476,7 +480,7 @@ public class ConnectionOperation {
 		} catch (Exception e) {
 			throw new RuntimeException(e.getMessage(), e);
 		}
-		return databaseConnection;
+		return database;
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })

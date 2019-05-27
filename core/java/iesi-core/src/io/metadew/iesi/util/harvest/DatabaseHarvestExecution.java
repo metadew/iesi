@@ -1,6 +1,6 @@
 package io.metadew.iesi.util.harvest;
 
-import io.metadew.iesi.connection.database.connection.DatabaseConnection;
+import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.operation.ConnectionOperation;
 import io.metadew.iesi.connection.operation.DatabaseOperation;
 import io.metadew.iesi.connection.tools.FileTools;
@@ -84,7 +84,7 @@ public class DatabaseHarvestExecution {
         ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution());
         Connection connection = connectionConfiguration.getConnection(sourceConnectionName, environmentName).get();
         ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
-        DatabaseConnection databaseConnection = connectionOperation.getDatabaseConnection(connection);
+        Database database = connectionOperation.getDatabase(connection);
 
 //		if (databaseConnection.getType().trim().equalsIgnoreCase("oracle")) {
 //			this.getFrameworkExecution().getFrameworkLog().log("repository.type=" + databaseConnection.getType(), Level.DEBUG);
@@ -94,7 +94,7 @@ public class DatabaseHarvestExecution {
 
         // Execute
         try {
-            new DatabaseOperation().getScriptBuilder().generateInsertStmts(databaseConnection, schemaName,
+            new DatabaseOperation().getScriptBuilder().generateInsertStmts(database, schemaName,
                     tableName, sqlStatement, "file", outputFilePath, outputFileName);
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();

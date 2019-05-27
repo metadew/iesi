@@ -3,9 +3,8 @@ package io.metadew.iesi.connection.operation;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import io.metadew.iesi.connection.database.connection.DatabaseConnection;
+import io.metadew.iesi.connection.database.Database;
+import io.metadew.iesi.connection.database.MariadbDatabase;
 import io.metadew.iesi.connection.database.connection.MariadbDatabaseConnection;
 import io.metadew.iesi.connection.tools.ConnectionTools;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
@@ -25,11 +24,10 @@ public class DbMariadbConnectionOperation {
 	}
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public DatabaseConnection getConnectionOperation(Connection connection) {
+	public Database getDatabase(Connection connection) {
 		this.setMissingMandatoryFieldsList(new ArrayList());
 
-		ObjectMapper objectMapper = new ObjectMapper();
-		DatabaseConnection databaseConnection = null;
+		Database database = null;
 		
 		String hostName = "";
 		String portNumberTemp = "";
@@ -109,9 +107,9 @@ public class DbMariadbConnectionOperation {
 		}
 
 		MariadbDatabaseConnection mariadbDatabaseConnection = new MariadbDatabaseConnection(hostName, portNumber, databaseName, userName, userPassword);
-		databaseConnection = objectMapper.convertValue(mariadbDatabaseConnection, DatabaseConnection.class);
+		database = new MariadbDatabase(mariadbDatabaseConnection);
 
-		return databaseConnection;
+		return database;
 	}
 	
 	protected void addMissingField(String fieldName) {

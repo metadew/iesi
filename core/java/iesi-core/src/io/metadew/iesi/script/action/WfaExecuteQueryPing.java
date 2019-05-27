@@ -1,6 +1,6 @@
 package io.metadew.iesi.script.action;
 
-import io.metadew.iesi.connection.database.connection.DatabaseConnection;
+import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.operation.ConnectionOperation;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.datatypes.DataType;
@@ -153,7 +153,7 @@ public class WfaExecuteQueryPing {
         Connection connection = connectionConfiguration.getConnection(connectionName,
                 this.getExecutionControl().getEnvName()).get();
         ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
-        DatabaseConnection databaseConnection = connectionOperation.getDatabaseConnection(connection);
+        Database database = connectionOperation.getDatabase(connection);
 
         // Run the action
         int i = 1;
@@ -169,7 +169,7 @@ public class WfaExecuteQueryPing {
         boolean done = false;
         this.setStartTime(System.currentTimeMillis());
         while (i == 1) {
-            if (this.doneWaiting(databaseConnection, query, hasResult, setRuntimeVariables)) {
+            if (this.doneWaiting(database, query, hasResult, setRuntimeVariables)) {
                 done = true;
                 break;
             }
@@ -248,10 +248,10 @@ public class WfaExecuteQueryPing {
         }
     }
 
-    private boolean doneWaiting(DatabaseConnection databaseConnection, String query, boolean hasResult, boolean setRuntimeVariables) {
+    private boolean doneWaiting(Database database, String query, boolean hasResult, boolean setRuntimeVariables) {
         try {
             CachedRowSet crs;
-            crs = databaseConnection.executeQuery(query);
+            crs = database.executeQuery(query);
             if (SQLTools.getRowCount(crs) > 0) {
                 if (hasResult) {
                     this.setRuntimeVariable(crs, setRuntimeVariables);

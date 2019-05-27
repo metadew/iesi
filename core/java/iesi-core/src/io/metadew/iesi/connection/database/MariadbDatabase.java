@@ -1,6 +1,6 @@
 package io.metadew.iesi.connection.database;
 
-import io.metadew.iesi.connection.database.connection.MysqlDatabaseConnection;
+import io.metadew.iesi.connection.database.connection.MariadbDatabaseConnection;
 import io.metadew.iesi.metadata.definition.MetadataField;
 import io.metadew.iesi.metadata.definition.MetadataTable;
 
@@ -9,7 +9,7 @@ import java.util.List;
 public class MariadbDatabase extends Database {
 
 
-    public MariadbDatabase(MysqlDatabaseConnection databaseConnection) {
+    public MariadbDatabase(MariadbDatabaseConnection databaseConnection) {
         super(databaseConnection);
     }
 

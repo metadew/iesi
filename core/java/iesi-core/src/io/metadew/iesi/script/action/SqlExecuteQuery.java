@@ -1,6 +1,6 @@
 package io.metadew.iesi.script.action;
 
-import io.metadew.iesi.connection.database.connection.DatabaseConnection;
+import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.sql.SqlScriptResult;
 import io.metadew.iesi.connection.operation.ConnectionOperation;
 import io.metadew.iesi.connection.tools.sql.SQLDataTransfer;
@@ -157,9 +157,9 @@ public class SqlExecuteQuery {
         Connection connection = connectionConfiguration
                 .getConnection(connectionName, this.getExecutionControl().getEnvName()).get();
         ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
-        DatabaseConnection databaseConnection = connectionOperation.getDatabaseConnection(connection);
+        Database database = connectionOperation.getDatabase(connection);
 
-        if (databaseConnection == null) {
+        if (database == null) {
             throw new RuntimeException("Error establishing DB connection");
         }
 
@@ -173,7 +173,7 @@ public class SqlExecuteQuery {
 
         Optional<Dataset> dataset = this.getExecutionControl().getExecutionRuntime()
                 .getDataset(outputDatasetReferenceName);
-        CachedRowSet crs = databaseConnection.executeQuery(query);
+        CachedRowSet crs = database.executeQuery(query);
         this.getActionExecution().getActionControl().logOutput("sql.execute.size", Integer.toString(crs.size()));
         // TODO resolve for files and resolve inside
         if (dataset.isPresent()) {

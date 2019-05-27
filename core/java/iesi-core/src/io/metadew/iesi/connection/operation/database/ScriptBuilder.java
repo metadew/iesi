@@ -1,6 +1,6 @@
 package io.metadew.iesi.connection.operation.database;
 
-import io.metadew.iesi.connection.database.connection.DatabaseConnection;
+import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.tools.OutputTools;
 
 import javax.sql.rowset.CachedRowSet;
@@ -16,12 +16,12 @@ public class ScriptBuilder {
     }
 
     // Insert Statements
-    public String generateInsertStmts(DatabaseConnection databaseConnection, String schemaName, String tableName, String stmt,
+    public String generateInsertStmts(Database database, String schemaName, String tableName, String stmt,
                                       String output_loc) {
-        return this.generateInsertStmts(databaseConnection, schemaName, tableName, stmt, "return", "", "");
+        return this.generateInsertStmts(database, schemaName, tableName, stmt, "return", "", "");
     }
 
-    public String generateInsertStmts(DatabaseConnection databaseConnection, String schemaName, String tableName,
+    public String generateInsertStmts(Database database, String schemaName, String tableName,
                                       String sqlStatement, String outputLocation, String filePath, String fileName) {
         String textToWrite = "";
 
@@ -43,7 +43,7 @@ public class ScriptBuilder {
         try {
             // Get data to buffer
             CachedRowSet crs = null;
-            crs = databaseConnection.executeQuery(sqlStatement);
+            crs = database.executeQuery(sqlStatement);
 
             // Get result set meta data
             ResultSetMetaData rsmd = crs.getMetaData();

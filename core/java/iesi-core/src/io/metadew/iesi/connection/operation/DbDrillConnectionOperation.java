@@ -3,9 +3,8 @@ package io.metadew.iesi.connection.operation;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import io.metadew.iesi.connection.database.connection.DatabaseConnection;
+import io.metadew.iesi.connection.database.Database;
+import io.metadew.iesi.connection.database.DrillDatabase;
 import io.metadew.iesi.connection.database.connection.DrillDatabaseConnection;
 import io.metadew.iesi.connection.tools.ConnectionTools;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
@@ -25,11 +24,10 @@ public class DbDrillConnectionOperation {
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public DatabaseConnection getConnectionOperation(Connection connection) {
+	public Database getDatabase(Connection connection) {
 		this.setMissingMandatoryFieldsList(new ArrayList());
 
-		ObjectMapper objectMapper = new ObjectMapper();
-		DatabaseConnection databaseConnection = null;
+		Database database = null;
 
 		String connectionMode = "";
 		String clusterNames = "";
@@ -118,9 +116,9 @@ public class DbDrillConnectionOperation {
 
 		DrillDatabaseConnection drillDatabaseConnection = new DrillDatabaseConnection(connectionMode, clusterNames,
 				directoryName, clusterId, schemaName, triesParameter, userName, userPassword);
-		databaseConnection = objectMapper.convertValue(drillDatabaseConnection, DatabaseConnection.class);
+		database = new DrillDatabase(drillDatabaseConnection, "");
 
-		return databaseConnection;
+		return database;
 	}
 
 	protected void addMissingField(String fieldName) {

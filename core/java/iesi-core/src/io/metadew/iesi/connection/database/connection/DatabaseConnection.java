@@ -16,14 +16,14 @@ import java.sql.*;
  */
 public abstract class DatabaseConnection {
 
-    @SuppressWarnings("unused")
     private String type;
+    private String databaseClassName;
     private String connectionURL;
     private String userName;
     private String userPassword;
 
     public DatabaseConnection(String type, String connectionURL, String userName, String userPassword) {
-        this.type = type;
+        this.setType(type);
         this.connectionURL = connectionURL;
         this.userName = userName;
         this.userPassword = userPassword;
@@ -392,6 +392,8 @@ public abstract class DatabaseConnection {
         return dcSQLScriptResult;
     }
 
+    //TODO remove
+    @Deprecated
     public PreparedStatement createPreparedStatement(Connection connection, String sqlStatement) {
         PreparedStatement preparedStatement = null;
         try {
@@ -401,4 +403,20 @@ public abstract class DatabaseConnection {
         }
         return preparedStatement;
     }
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public String getDatabaseClassName() {
+		return databaseClassName;
+	}
+
+	public void setDatabaseClassName(String databaseClassName) {
+		this.databaseClassName = databaseClassName;
+	}
 }

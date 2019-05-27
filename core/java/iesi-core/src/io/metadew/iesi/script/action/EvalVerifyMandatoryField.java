@@ -1,6 +1,6 @@
 package io.metadew.iesi.script.action;
 
-import io.metadew.iesi.connection.database.connection.DatabaseConnection;
+import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.operation.ConnectionOperation;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.Text;
@@ -155,7 +155,7 @@ public class EvalVerifyMandatoryField {
         ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution());
         Connection connection = connectionConfiguration.getConnection(connectionName, this.getExecutionControl().getEnvName()).get();
         ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
-        DatabaseConnection databaseConnection = connectionOperation.getDatabaseConnection(connection);
+        Database database = connectionOperation.getDatabase(connection);
 
         // Run the action
         this.getTestQueries(schemaName, tableName, fieldName, evaluationFieldName, evaluationFieldValue, isMandatory);
@@ -164,7 +164,7 @@ public class EvalVerifyMandatoryField {
         CachedRowSet cachedRowSet;
 
         // Success
-        cachedRowSet = databaseConnection.executeQuery(this.getSqlSuccess());
+        cachedRowSet = database.executeQuery(this.getSqlSuccess());
         while (cachedRowSet.next()) {
             successTotal = cachedRowSet.getLong("RES_SUC");
         }
@@ -172,7 +172,7 @@ public class EvalVerifyMandatoryField {
         this.getActionExecution().getActionControl().logOutput("pass", Long.toString(successTotal));
 
         // Error
-        cachedRowSet = databaseConnection.executeQuery(this.getSqlError());
+        cachedRowSet = database.executeQuery(this.getSqlError());
         while (cachedRowSet.next()) {
             errorTotal = cachedRowSet.getLong("RES_ERR");
         }

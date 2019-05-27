@@ -87,6 +87,14 @@ public abstract class Database {
 		return this.databaseConnection.executeQuery(query, connection);
 	}
 
+	public CachedRowSet executeQueryLimitRows(String query, int limit) {
+		return this.databaseConnection.executeQueryLimitRows(query, limit);
+	}
+
+	public CachedRowSet executeQueryLimitRows(String query, int limit, Connection connection) {
+		return this.databaseConnection.executeQueryLimitRows(query, limit, connection);
+	}
+
 	public SqlScriptResult executeScript(String filename) {
 		return this.databaseConnection.executeScript(filename);
 	}
@@ -103,6 +111,10 @@ public abstract class Database {
 		return this.databaseConnection.executeScript(inputStream, connection);
 	}
 
+    public CachedRowSet executeProcedure(String sqlProcedure, String sqlParameters) {
+    	return this.databaseConnection.executeProcedure(sqlProcedure, sqlParameters);
+    }
+	
 	// TODO: remove
 	public void createTable(MetadataTable metadataTable, String tableNamePrefix) {
 		executeUpdate(getCreateStatement(metadataTable, tableNamePrefix));
@@ -131,7 +143,7 @@ public abstract class Database {
 	// TODO: remove
 	public String getCreateStatement(MetadataTable table, String tableNamePrefix) {
 		StringBuilder createQuery = new StringBuilder();
-		//StringBuilder fieldComments = new StringBuilder();
+		// StringBuilder fieldComments = new StringBuilder();
 
 		String tableName = tableNamePrefix + table.getName();
 
@@ -169,7 +181,7 @@ public abstract class Database {
 
 		createQuery.append("\n);\n");
 		createQuery.append(createQueryExtras());
-		//createQuery.append(fieldComments).append("\n\n");
+		// createQuery.append(fieldComments).append("\n\n");
 
 		return createQuery.toString();
 	}
@@ -184,7 +196,7 @@ public abstract class Database {
 
 	public String getCreateStatement(MetadataTable table) {
 		StringBuilder createQuery = new StringBuilder();
-		//StringBuilder fieldComments = new StringBuilder();
+		// StringBuilder fieldComments = new StringBuilder();
 
 		String tableName = table.getName();
 
@@ -222,7 +234,7 @@ public abstract class Database {
 
 		createQuery.append("\n);\n");
 		createQuery.append(createQueryExtras());
-		//createQuery.append(fieldComments).append("\n\n");
+		// createQuery.append(fieldComments).append("\n\n");
 
 		return createQuery.toString();
 	}

@@ -3,6 +3,7 @@ package io.metadew.iesi.script.operation;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.common.json.JsonParsed;
 import io.metadew.iesi.common.json.JsonParsedItem;
+import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.connection.DatabaseConnection;
 import io.metadew.iesi.connection.database.connection.SqliteDatabaseConnection;
 import io.metadew.iesi.connection.operation.ConnectionOperation;
@@ -41,7 +42,7 @@ public class RepositoryOperation {
     private Repository repository;
     private RepositoryInstance repositoryInstance;
     private RepositoryParameterOperation repositoryInstanceConnectionName;
-    private DatabaseConnection repositoryInstanceConnection;
+    private Database repositoryDatabaseInstance;
 
     // Constructors
     @SuppressWarnings("unused")
@@ -70,8 +71,8 @@ public class RepositoryOperation {
         Connection connection = connectionConfiguration.getConnection(this.getRepositoryInstanceConnectionName().getValue(),
                 this.getExecutionControl().getEnvName()).get();
         ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
-        this.setRepositoryInstanceConnection(connectionOperation
-                .getDatabaseConnection(connection));
+        this.setRepositoryDatabaseInstance(connectionOperation
+                .getDatabase(connection));
 
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -331,12 +332,12 @@ public class RepositoryOperation {
         this.executionControl = executionControl;
     }
 
-    public DatabaseConnection getRepositoryInstanceConnection() {
-        return repositoryInstanceConnection;
-    }
+	public Database getRepositoryDatabaseInstance() {
+		return repositoryDatabaseInstance;
+	}
 
-    public void setRepositoryInstanceConnection(DatabaseConnection repositoryInstanceConnection) {
-        this.repositoryInstanceConnection = repositoryInstanceConnection;
-    }
+	public void setRepositoryDatabaseInstance(Database repositoryDatabaseInstance) {
+		this.repositoryDatabaseInstance = repositoryDatabaseInstance;
+	}
 
 }

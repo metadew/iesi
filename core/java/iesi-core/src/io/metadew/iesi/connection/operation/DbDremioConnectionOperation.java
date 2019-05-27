@@ -1,7 +1,7 @@
 package io.metadew.iesi.connection.operation;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.metadew.iesi.connection.database.connection.DatabaseConnection;
+import io.metadew.iesi.connection.database.Database;
+import io.metadew.iesi.connection.database.DremioDatabase;
 import io.metadew.iesi.connection.database.connection.DremioDatabaseConnection;
 import io.metadew.iesi.connection.tools.ConnectionTools;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
@@ -23,11 +23,10 @@ public class DbDremioConnectionOperation {
 	}
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public DatabaseConnection getConnectionOperation(Connection connection) {
+	public Database getDatabase(Connection connection) {
 		this.setMissingMandatoryFieldsList(new ArrayList());
 
-		ObjectMapper objectMapper = new ObjectMapper();
-		DatabaseConnection databaseConnection = null;
+		Database database = null;
 		
 		String hostName = "";
 		String portNumberTemp = "";
@@ -125,9 +124,9 @@ public class DbDremioConnectionOperation {
 		}
 
 		DremioDatabaseConnection dremioDatabaseConnection = new DremioDatabaseConnection(hostName, portNumber, connectionMode, clusterName, schemaName, userName, userPassword);
-		databaseConnection = objectMapper.convertValue(dremioDatabaseConnection, DatabaseConnection.class);
+		database = new DremioDatabase(dremioDatabaseConnection, "");
 
-		return databaseConnection;
+		return database;
 	}
 	
 	protected void addMissingField(String fieldName) {

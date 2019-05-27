@@ -16,14 +16,7 @@ public class ElasticSearchRepositoryConfiguration extends RepositoryConfiguratio
 
     @Override
     void fromConfigFile(ConfigFile configFile, FrameworkSettingConfiguration frameworkSettingConfiguration, FrameworkCrypto frameworkCrypto) {
-
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.elasticsearch.url").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.elasticsearch.url").get()).isPresent()) {
-
-            url = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.elasticsearch.url").get()).get();
-        } else {
-            throw new RuntimeException("Could not initialize elasticsearch configuration");
-        }
+    	url = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.elasticsearch.url");
     }
 
     @Override

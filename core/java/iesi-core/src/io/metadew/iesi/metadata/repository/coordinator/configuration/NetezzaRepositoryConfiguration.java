@@ -13,9 +13,6 @@ import java.util.Map;
 import java.util.Optional;
 
 public class NetezzaRepositoryConfiguration extends RepositoryConfiguration {
-
-    private final String jdbcConnectionStringFormat = "jdbc:netezza://%s:%s/%s";
-
     private String jdbcConnectionString;
     private String host;
     private String port;
@@ -34,62 +31,32 @@ public class NetezzaRepositoryConfiguration extends RepositoryConfiguration {
 
     @Override
     void fromConfigFile(ConfigFile configFile, FrameworkSettingConfiguration frameworkSettingConfiguration, FrameworkCrypto frameworkCrypto) {
-        // schema
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.netezza.schema").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.netezza.schema").get()).isPresent()) {
-            schema = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.netezza.schema").get()).get();
-        }
-        // set users and passwords
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.netezza.schema.user").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.netezza.schema.user").get()).isPresent()) {
-            schemaUser = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.netezza.schema.user").get()).get();
-        }
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.netezza.schema.user.password").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.netezza.schema.user.password").get()).isPresent()) {
-            schemaUserPassword = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.netezza.schema.user.password").get()).get();
-        }
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.netezza.writer").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.netezza.writer").get()).isPresent()) {
-            writerUser = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.netezza.writer").get()).get();
-        }
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.netezza.writer.password").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.netezza.writer.password").get()).isPresent()) {
-            writerUserPassword = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.netezza.writer.password").get()).get();
-        }
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.netezza.reader").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.netezza.reader").get()).isPresent()) {
-            readerUser = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.netezza.reader").get()).get();
-        }
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.netezza.reader.password").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.netezza.reader.password").get()).isPresent()) {
-            readerUserPassword = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.netezza.reader.password").get()).get();
-        }
-
-        // get jdbc connection url
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.connection.string").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.connection.string").get()).isPresent()) {
-            jdbcConnectionString = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.connection.string").get()).get();
-        } else if ((frameworkSettingConfiguration.getSettingPath("metadata.repository.netezza.host").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.netezza.host").get()).isPresent()) &&
-                (frameworkSettingConfiguration.getSettingPath("metadata.repository.netezza.port").isPresent() &&
-                        configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.netezza.port").get()).isPresent()) &&
-                (frameworkSettingConfiguration.getSettingPath("metadata.repository.netezza.name").isPresent() &&
-                        configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.netezza.name").get()).isPresent())) {
-            host = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.netezza.host").get()).get();
-            port = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.netezza.port").get()).get();
-            name = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.netezza.name").get()).get();
-            jdbcConnectionString = String.format(jdbcConnectionStringFormat, host, port, name);
-        } else {
-            throw new RuntimeException("Could not initialize Netezza configuration. No connection string or host, port and name provided");
-        }
+    	host= getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.netezza.host");
+    	port= getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.netezza.port");
+    	name= getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.netezza.name");
+    	schema = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.netezza.schema");
+    	schemaUser = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.netezza.schema.user");
+    	schemaUserPassword = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.netezza.schema.password");
+    	writerUser = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.netezza.writer");
+    	writerUserPassword = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.netezza.writer.password");
+    	readerUser = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.netezza.reader");
+    	readerUserPassword = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.netezza.reader.password");
+    	jdbcConnectionString = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.connection.string");
     }
 
     @Override
     public RepositoryCoordinator toRepository() {
         Map<String, Database> databases = new HashMap<>();
+        String actualJdbcConnectionString = "";
+        if (getJdbcConnectionString().isPresent()) {
+        	actualJdbcConnectionString = getJdbcConnectionString().get();
+        } else {
+        	actualJdbcConnectionString = NetezzaDatabaseConnection.getConnectionUrl(getHost().orElse(""), Integer.parseInt(getPort().orElse("0")), getName().orElse(""));
+        }
 
+        final String finalJdbcConnectionString = actualJdbcConnectionString;
         getUser().ifPresent(owner -> {
-            NetezzaDatabaseConnection netezzaDatabaseConnection = new NetezzaDatabaseConnection(getJdbcConnectionString(), owner, getUserPassword().orElse(""));
+            NetezzaDatabaseConnection netezzaDatabaseConnection = new NetezzaDatabaseConnection(finalJdbcConnectionString, owner, getUserPassword().orElse(""));
             getSchema().ifPresent(netezzaDatabaseConnection::setSchema);
             NetezzaDatabase netezzaDatabase = new NetezzaDatabase(netezzaDatabaseConnection, getSchema().orElse(""));
             databases.put("owner", netezzaDatabase);
@@ -98,7 +65,7 @@ public class NetezzaRepositoryConfiguration extends RepositoryConfiguration {
         });
 
         getWriter().ifPresent(writer -> {
-            NetezzaDatabaseConnection netezzaDatabaseConnection = new NetezzaDatabaseConnection(getJdbcConnectionString(), writer, getWriterPassword().orElse(""));
+            NetezzaDatabaseConnection netezzaDatabaseConnection = new NetezzaDatabaseConnection(finalJdbcConnectionString, writer, getWriterPassword().orElse(""));
             getSchema().ifPresent(netezzaDatabaseConnection::setSchema);
             NetezzaDatabase netezzaDatabase = new NetezzaDatabase(netezzaDatabaseConnection, getSchema().orElse(""));
             databases.put("writer", netezzaDatabase);
@@ -106,7 +73,7 @@ public class NetezzaRepositoryConfiguration extends RepositoryConfiguration {
         });
 
         getReader().ifPresent(reader -> {
-            NetezzaDatabaseConnection netezzaDatabaseConnection = new NetezzaDatabaseConnection(getJdbcConnectionString(), reader, getReaderPassword().orElse(""));
+            NetezzaDatabaseConnection netezzaDatabaseConnection = new NetezzaDatabaseConnection(finalJdbcConnectionString, reader, getReaderPassword().orElse(""));
             getSchema().ifPresent(netezzaDatabaseConnection::setSchema);
             NetezzaDatabase netezzaDatabase = new NetezzaDatabase(netezzaDatabaseConnection, getSchema().orElse(""));
             databases.put("reader", netezzaDatabase);
@@ -115,8 +82,8 @@ public class NetezzaRepositoryConfiguration extends RepositoryConfiguration {
         return new RepositoryCoordinator(databases);
     }
 
-    public String getJdbcConnectionString() {
-        return jdbcConnectionString;
+    public Optional<String> getJdbcConnectionString() {
+        return Optional.ofNullable(jdbcConnectionString);
     }
 
     public Optional<String> getHost() {

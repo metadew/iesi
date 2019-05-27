@@ -20,9 +20,25 @@ public class PostgresqlDatabaseConnection extends DatabaseConnection {
 
     public PostgresqlDatabaseConnection(String hostName, int portNumber, String databaseName, String userName,
                                         String userPassword) {
-        super(type, "jdbc:postgresql://" + hostName + ":" + portNumber + "/" + databaseName, userName, userPassword);
+        super(type, getConnectionUrl(hostName, portNumber, databaseName), userName, userPassword);
     }
 
+	public static String getConnectionUrl(String hostName, int portNumber, String databaseName) {
+		StringBuilder connectionUrl = new StringBuilder();
+		connectionUrl.append("jdbc:postgresql://");
+		connectionUrl.append(hostName);
+		if (portNumber > 0) {
+			connectionUrl.append(":");
+			connectionUrl.append(portNumber);
+		}
+
+		if (!databaseName.isEmpty()) {
+			connectionUrl.append("/");
+			connectionUrl.append(databaseName);
+		}
+
+		return connectionUrl.toString();
+	}
 
     @Override
     public String getDriver() {

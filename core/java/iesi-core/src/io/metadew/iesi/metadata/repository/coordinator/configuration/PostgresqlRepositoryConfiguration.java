@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.Optional;
 
 public class PostgresqlRepositoryConfiguration extends RepositoryConfiguration {
-    private final String jdbcConnectionStringFormat = "jdbc:postgresql://%s:%s/%s";
 
     private String jdbcConnectionString;
     private String host;
@@ -34,62 +33,32 @@ public class PostgresqlRepositoryConfiguration extends RepositoryConfiguration {
 
     @Override
     void fromConfigFile(ConfigFile configFile, FrameworkSettingConfiguration frameworkSettingConfiguration, FrameworkCrypto frameworkCrypto) {
-        // schema
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.postgresql.schema").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.postgresql.schema").get()).isPresent()) {
-            schema = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.postgresql.schema").get()).get();
-        }
-        // set users and passwords
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.postgresql.schema.user").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.postgresql.schema.user").get()).isPresent()) {
-            schemaUser = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.postgresql.schema.user").get()).get();
-        }
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.postgresql.schema.user.password").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.postgresql.schema.user.password").get()).isPresent()) {
-            schemaUserPassword = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.postgresql.schema.user.password").get()).get();
-        }
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.postgresql.writer").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.postgresql.writer").get()).isPresent()) {
-            writerUser = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.postgresql.writer").get()).get();
-        }
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.postgresql.writer.password").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.postgresql.writer.password").get()).isPresent()) {
-            writerUserPassword = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.postgresql.writer.password").get()).get();
-        }
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.postgresql.reader").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.postgresql.reader").get()).isPresent()) {
-            readerUser = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.postgresql.reader").get()).get();
-        }
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.postgresql.reader.password").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.postgresql.reader.password").get()).isPresent()) {
-            readerUserPassword = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.postgresql.reader.password").get()).get();
-        }
-
-        // get jdbc connection url
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.connection.string").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.connection.string").get()).isPresent()) {
-            jdbcConnectionString = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.connection.string").get()).get();
-        } else if ((frameworkSettingConfiguration.getSettingPath("metadata.repository.postgresql.host").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.postgresql.host").get()).isPresent()) &&
-                (frameworkSettingConfiguration.getSettingPath("metadata.repository.postgresql.port").isPresent() &&
-                        configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.postgresql.port").get()).isPresent()) &&
-                (frameworkSettingConfiguration.getSettingPath("metadata.repository.postgresql.name").isPresent() &&
-                        configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.postgresql.name").get()).isPresent())) {
-            host = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.postgresql.host").get()).get();
-            port = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.postgresql.port").get()).get();
-            name = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.postgresql.name").get()).get();
-            jdbcConnectionString = String.format(jdbcConnectionStringFormat, host, port, name);
-        } else {
-            throw new RuntimeException("Could not initialize Postgresql configuration. No connection string or host, port and name provided");
-        }
+    	host = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.postgresql.host");
+    	port = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.postgresql.port");
+    	name = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.postgresql.name");
+    	schema = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.postgresql.schema");
+    	schemaUser = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.postgresql.schema.user");
+    	schemaUserPassword = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.postgresql.schema.user.password");
+    	writerUser = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.postgresql.writer");
+    	writerUserPassword = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.postgresql.writer.password");
+    	readerUser = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.postgresql.reader");
+    	readerUserPassword = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.postgresql.reader.password");
+    	jdbcConnectionString = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.connection.string");
     }
 
     @Override
     public RepositoryCoordinator toRepository() {
         Map<String, Database> databases = new HashMap<>();
+        String actualJdbcConnectionString = "";
+        if (getJdbcConnectionString().isPresent()) {
+        	actualJdbcConnectionString = getJdbcConnectionString().get();
+        } else {
+        	actualJdbcConnectionString = PostgresqlDatabaseConnection.getConnectionUrl(getHost().orElse(""), Integer.parseInt(getPort().orElse("0")), getName().orElse(""));
+        }
 
+        final String finalJdbcConnectionString = actualJdbcConnectionString;
         getUser().ifPresent(owner -> {
-            PostgresqlDatabaseConnection postgresqlDatabaseConnection = new PostgresqlDatabaseConnection(getJdbcConnectionString(), owner, getWriterPassword().orElse(""));
+            PostgresqlDatabaseConnection postgresqlDatabaseConnection = new PostgresqlDatabaseConnection(finalJdbcConnectionString, owner, getWriterPassword().orElse(""));
             getSchema().ifPresent(postgresqlDatabaseConnection::setSchema);
             PostgresqlDatabase postgresqlDatabase = new PostgresqlDatabase(postgresqlDatabaseConnection, getSchema().orElse(""));
             databases.put("owner", postgresqlDatabase);
@@ -98,7 +67,7 @@ public class PostgresqlRepositoryConfiguration extends RepositoryConfiguration {
         });
 
         getWriter().ifPresent(writer -> {
-            PostgresqlDatabaseConnection postgresqlDatabaseConnection = new PostgresqlDatabaseConnection(getJdbcConnectionString(), writer, getWriterPassword().orElse(""));
+            PostgresqlDatabaseConnection postgresqlDatabaseConnection = new PostgresqlDatabaseConnection(finalJdbcConnectionString, writer, getWriterPassword().orElse(""));
             getSchema().ifPresent(postgresqlDatabaseConnection::setSchema);
             PostgresqlDatabase postgresqlDatabase = new PostgresqlDatabase(postgresqlDatabaseConnection, getSchema().orElse(""));
             databases.put("writer", postgresqlDatabase);
@@ -106,7 +75,7 @@ public class PostgresqlRepositoryConfiguration extends RepositoryConfiguration {
         });
 
         getReader().ifPresent(reader -> {
-            PostgresqlDatabaseConnection postgresqlDatabaseConnection = new PostgresqlDatabaseConnection(getJdbcConnectionString(), reader, getReaderPassword().orElse(""));
+            PostgresqlDatabaseConnection postgresqlDatabaseConnection = new PostgresqlDatabaseConnection(finalJdbcConnectionString, reader, getReaderPassword().orElse(""));
             getSchema().ifPresent(postgresqlDatabaseConnection::setSchema);
             PostgresqlDatabase postgresqlDatabase = new PostgresqlDatabase(postgresqlDatabaseConnection, getSchema().orElse(""));
             databases.put("reader", postgresqlDatabase);
@@ -115,8 +84,8 @@ public class PostgresqlRepositoryConfiguration extends RepositoryConfiguration {
         return new RepositoryCoordinator(databases);
     }
 
-    public String getJdbcConnectionString() {
-        return jdbcConnectionString;
+    public Optional<String> getJdbcConnectionString() {
+        return Optional.ofNullable(jdbcConnectionString);
     }
 
     public Optional<String> getHost() {

@@ -32,57 +32,16 @@ public class H2RepositoryConfiguration extends RepositoryConfiguration {
 
     @Override
     void fromConfigFile(ConfigFile configFile, FrameworkSettingConfiguration frameworkSettingConfiguration, FrameworkCrypto frameworkCrypto) {
-        // host
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.host").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.host").get()).isPresent()) {
-            host = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.host").get()).get();
-        }
-        // port
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.port").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.port").get()).isPresent()) {
-            port = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.port").get()).get();
-        }
-        // schema
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.schema").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.schema").get()).isPresent()) {
-            schema = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.schema").get()).get();
-        }
-        // file
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.file").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.file").get()).isPresent()) {
-            file = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.file").get()).get();
-        }
-        // set users and passwords
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.owner").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.owner").get()).isPresent()) {
-            ownerUser = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.owner").get()).get();
-        }
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.owner.password").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.owner.password").get()).isPresent()) {
-            ownerUserPassword = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.owner.password").get()).get();
-        }
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.writer").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.writer").get()).isPresent()) {
-            writerUser = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.writer").get()).get();
-        }
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.writer.password").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.writer.password").get()).isPresent()) {
-            writerUserPassword = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.writer.password").get()).get();
-        }
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.reader").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.reader").get()).isPresent()) {
-            readerUser = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.reader").get()).get();
-        }
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.reader.password").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.reader.password").get()).isPresent()) {
-            readerUserPassword = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.h2.reader.password").get()).get();
-        }
-
-        // jdbc connection url
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.connection.string").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.connection.string").get()).isPresent()) {
-            jdbcConnectionString = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.connection.string").get()).get();
-        }
+    	host = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.h2.host");
+    	port = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.h2.port");
+    	schema = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.h2.schema");
+    	ownerUser = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.h2.owner");
+    	ownerUserPassword = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.h2.owner.password");
+    	writerUser = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.h2.writer");
+    	writerUserPassword = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.h2.writer.password");
+    	readerUser = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.h2.reader");
+    	readerUserPassword = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.h2.reader.password");
+    	jdbcConnectionString = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.connection.string");    	
     }
 
     @Override

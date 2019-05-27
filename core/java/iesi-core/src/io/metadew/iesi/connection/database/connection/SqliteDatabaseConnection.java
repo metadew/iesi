@@ -14,9 +14,16 @@ public class SqliteDatabaseConnection extends DatabaseConnection {
     }
 
     public SqliteDatabaseConnection(String fileName) {
-        super(type, "jdbc:sqlite:" + fileName, "", "");
+        super(type, getConnectionUrl(fileName), "", "");
     }
 
+	public static String getConnectionUrl(String fileName) {
+		StringBuilder connectionUrl = new StringBuilder();
+		connectionUrl.append("jdbc:sqlite:");
+		connectionUrl.append(fileName);
+
+		return connectionUrl.toString();
+	}
 
     @Override
     public String getDriver() {

@@ -13,9 +13,6 @@ import java.util.Map;
 import java.util.Optional;
 
 public class OracleRepositoryConfiguration extends RepositoryConfiguration {
-    private final String jdbcConnectionStringServiceFormat = "jdbc:oracle:thin::@//%s:%s/%s";
-    private final String jdbcConnectionStringTnsAliasFormat = "jdbc:oracle:thin:%s:%s:%s";
-
     private String jdbcConnectionString;
     private String host;
     private String port;
@@ -37,76 +34,34 @@ public class OracleRepositoryConfiguration extends RepositoryConfiguration {
 
     @Override
     void fromConfigFile(ConfigFile configFile, FrameworkSettingConfiguration frameworkSettingConfiguration, FrameworkCrypto frameworkCrypto) {
-        // schema
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.schema").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.schema").get()).isPresent()) {
-            schema = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.schema").get()).get();
-        }
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.name").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.name").get()).isPresent()) {
-            name = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.name").get()).get();
-        }
-        // set users and passwords
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.schema").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.schema").get()).isPresent()) {
-            schemaUser = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.schema").get()).get();
-        }
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.schema.password").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.schema.password").get()).isPresent()) {
-            schemaUserPassword = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.schema.password").get()).get();
-        }
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.writer").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.writer").get()).isPresent()) {
-            writerUser = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.writer").get()).get();
-        }
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.writer.password").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.writer.password").get()).isPresent()) {
-            writerUserPassword = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.writer.password").get()).get();
-        }
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.reader").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.reader").get()).isPresent()) {
-            readerUser = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.reader").get()).get();
-        }
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.reader.password").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.reader.password").get()).isPresent()) {
-            readerUserPassword = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.reader.password").get()).get();
-        }
-
-        // get jdbc connection url
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.connection.string").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.connection.string").get()).isPresent()) {
-            jdbcConnectionString = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.connection.string").get()).get();
-        } else if ((frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.host").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.host").get()).isPresent()) &&
-                (frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.port").isPresent() &&
-                        configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.port").get()).isPresent()) &&
-                (frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.service").isPresent() &&
-                        configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.service").get()).isPresent())) {
-            host = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.host").get()).get();
-            port = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.port").get()).get();
-            service = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.service").get()).get();
-            jdbcConnectionString = String.format(jdbcConnectionStringServiceFormat, host, port, service);
-        } else if ((frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.host").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.host").get()).isPresent()) &&
-                (frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.port").isPresent() &&
-                        configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.port").get()).isPresent()) &&
-                (frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.tnsalias").isPresent() &&
-                        configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.tnsalias").get()).isPresent())) {
-            host = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.host").get()).get();
-            port = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.port").get()).get();
-            tnsAlias = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.oracle.service").get()).get();
-            jdbcConnectionString = String.format(jdbcConnectionStringTnsAliasFormat, host, port, tnsAlias);
-        } else {
-            throw new RuntimeException("Could not initialize Oracle configuration. No connection string or host, port and name provided");
-        }
+    	host = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.oracle.host");
+    	port = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.oracle.port");
+    	service = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.oracle.service");
+    	tnsAlias = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.oracle.tnsalias");
+    	schema = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.oracle.schema");
+    	name = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.oracle.name");
+    	schemaUser = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.oracle.schema");
+    	schemaUserPassword = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.oracle.schema.password");
+    	writerUser = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.oracle.writer");
+    	writerUserPassword = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.oracle.writer.password");
+    	readerUser = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.oracle.reader");
+    	readerUserPassword = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.oracle.reader.password");
+    	jdbcConnectionString = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.connection.string");
     }
 
     @Override
     public RepositoryCoordinator toRepository() {
         Map<String, Database> databases = new HashMap<>();
+        String actualJdbcConnectionString = "";
+        if (getJdbcConnectionString().isPresent()) {
+        	actualJdbcConnectionString = getJdbcConnectionString().get();
+        } else {
+        	actualJdbcConnectionString = OracleDatabaseConnection.getConnectionUrl(getHost().orElse(""), Integer.parseInt(getPort().orElse("0")), getService().orElse(""), getTnsAlias().orElse(""));
+        }
 
+        final String finalJdbcConnectionString = actualJdbcConnectionString;
         getUser().ifPresent(owner -> {
-            OracleDatabaseConnection oracleDatabaseConnection = new OracleDatabaseConnection(getJdbcConnectionString(), owner, getUserPassword().orElse(""));
+            OracleDatabaseConnection oracleDatabaseConnection = new OracleDatabaseConnection(finalJdbcConnectionString, owner, getUserPassword().orElse(""));
             getSchema().ifPresent(oracleDatabaseConnection::setSchema);
             OracleDatabase oracleDatabase = new OracleDatabase(oracleDatabaseConnection, getSchema().orElse(""));
             databases.put("owner", oracleDatabase);
@@ -115,7 +70,7 @@ public class OracleRepositoryConfiguration extends RepositoryConfiguration {
         });
 
         getWriter().ifPresent(writer -> {
-            OracleDatabaseConnection oracleDatabaseConnection = new OracleDatabaseConnection(getJdbcConnectionString(), writer, getWriterPassword().orElse(""));
+            OracleDatabaseConnection oracleDatabaseConnection = new OracleDatabaseConnection(finalJdbcConnectionString, writer, getWriterPassword().orElse(""));
             getSchema().ifPresent(oracleDatabaseConnection::setSchema);
             OracleDatabase oracleDatabase = new OracleDatabase(oracleDatabaseConnection, getSchema().orElse(""));
             databases.put("writer", oracleDatabase);
@@ -123,7 +78,7 @@ public class OracleRepositoryConfiguration extends RepositoryConfiguration {
         });
 
         getReader().ifPresent(reader -> {
-            OracleDatabaseConnection oracleDatabaseConnection = new OracleDatabaseConnection(getJdbcConnectionString(), reader, getReaderPassword().orElse(""));
+            OracleDatabaseConnection oracleDatabaseConnection = new OracleDatabaseConnection(finalJdbcConnectionString, reader, getReaderPassword().orElse(""));
             getSchema().ifPresent(oracleDatabaseConnection::setSchema);
             OracleDatabase oracleDatabase = new OracleDatabase(oracleDatabaseConnection, getSchema().orElse(""));
             databases.put("reader", oracleDatabase);
@@ -132,8 +87,8 @@ public class OracleRepositoryConfiguration extends RepositoryConfiguration {
         return new RepositoryCoordinator(databases);
     }
 
-    public String getJdbcConnectionString() {
-        return jdbcConnectionString;
+    public Optional<String> getJdbcConnectionString() {
+        return Optional.ofNullable(jdbcConnectionString);
     }
 
     public Optional<String> getHost() {

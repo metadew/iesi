@@ -18,6 +18,38 @@ public class OracleDatabaseConnection extends DatabaseConnection {
         super(type, connectionURL, userName, userPassword);
         System.getProperties().setProperty("oracle.jdbc.J2EE13Compliant", "true");
     }
+    
+	public static String getConnectionUrl(String hostName, int portNumber, String serviceName, String tnsAlias) {
+		StringBuilder connectionUrl = new StringBuilder();
+		connectionUrl.append("jdbc:oracle:thin:");
+		if (!serviceName.isEmpty()) {
+			connectionUrl.append(":@//");
+			connectionUrl.append(hostName);
+			
+			if (portNumber > 0) {
+				connectionUrl.append(":");
+				connectionUrl.append(portNumber);
+			}
+			
+			connectionUrl.append("/");
+			connectionUrl.append(serviceName);
+		} else if (!tnsAlias.isEmpty()) {
+			connectionUrl.append(hostName);
+			
+			if (portNumber > 0) {
+				connectionUrl.append(":");
+				connectionUrl.append(portNumber);
+			}
+			
+			connectionUrl.append(":");
+			connectionUrl.append(tnsAlias);
+		} else {
+			throw new RuntimeException("Unable to build connection url");
+		}
+		
+		return connectionUrl.toString();
+	}
+
 
     @Override
     public String getDriver() {

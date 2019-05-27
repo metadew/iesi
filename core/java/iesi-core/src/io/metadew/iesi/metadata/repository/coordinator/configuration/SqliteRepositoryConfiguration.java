@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.Optional;
 
 public class SqliteRepositoryConfiguration extends RepositoryConfiguration {
-    private final String jdbcConnectionStringFormat = "jdbc:sqlite:%s";
 
     private String jdbcConnectionString;
     private String file;
@@ -25,37 +24,38 @@ public class SqliteRepositoryConfiguration extends RepositoryConfiguration {
 
     @Override
     void fromConfigFile(ConfigFile configFile, FrameworkSettingConfiguration frameworkSettingConfiguration, FrameworkCrypto frameworkCrypto) {
-
-        // get jdbc connection url
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.connection.string").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.connection.string").get()).isPresent()) {
-            jdbcConnectionString = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.connection.string").get()).get();
-        } else if (frameworkSettingConfiguration.getSettingPath("metadata.repository.sqlite.file").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.sqlite.file").get()).isPresent()) {
-
-            file = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.sqlite.file").get()).get();
-            jdbcConnectionString = String.format(jdbcConnectionStringFormat, file);
-        } else {
-            throw new RuntimeException("Could not initialize Sqlite configuration. No connection string or host, port and name provided");
-        }
+        file = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.sqlite.file");
+        jdbcConnectionString = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.connection.string");
     }
 
     @Override
     public RepositoryCoordinator toRepository() {
         Map<String, Database> databases = new HashMap<>();
+        String actualJdbcConnectionString = "";
+        if (getJdbcConnectionString().isPresent()) {
+        	actualJdbcConnectionString = getJdbcConnectionString().get();
+        } else {
+        	actualJdbcConnectionString = SqliteDatabaseConnection.getConnectionUrl(getFile().orElse(""));
+        }
 
-        databases.put("owner", new SqliteDatabase(new SqliteDatabaseConnection(getJdbcConnectionString(), "", "")));
-        databases.put("writer", new SqliteDatabase(new SqliteDatabaseConnection(getJdbcConnectionString(), "", "")));
-        databases.put("reader", new SqliteDatabase(new SqliteDatabaseConnection(getJdbcConnectionString(), "", "")));
+        final String finalJdbcConnectionString = actualJdbcConnectionString;
+        
+        SqliteDatabaseConnection sqliteDatabaseConnection = new SqliteDatabaseConnection(finalJdbcConnectionString, "","");
+        SqliteDatabase sqliteDatabase = new SqliteDatabase(sqliteDatabaseConnection);
+        databases.put("owner", sqliteDatabase);
+        databases.put("writer", sqliteDatabase);
+        databases.put("reader", sqliteDatabase);
 
         return new RepositoryCoordinator(databases);
     }
 
-    public String getJdbcConnectionString() {
-        return jdbcConnectionString;
+    public Optional<String> getJdbcConnectionString() {
+        return Optional.ofNullable(jdbcConnectionString);
     }
 
     public Optional<String> getFile() {
         return Optional.ofNullable(file);
     }
+    
+    
 }

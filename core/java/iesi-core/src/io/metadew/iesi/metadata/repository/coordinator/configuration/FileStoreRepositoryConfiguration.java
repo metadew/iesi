@@ -18,13 +18,7 @@ public class FileStoreRepositoryConfiguration extends RepositoryConfiguration {
 
     @Override
     void fromConfigFile(ConfigFile configFile, FrameworkSettingConfiguration frameworkSettingConfiguration, FrameworkCrypto frameworkCrypto) {
-        if (frameworkSettingConfiguration.getSettingPath("metadata.repository.filestore.path").isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.filestore.path").get()).isPresent()) {
-
-            path = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.filestore.path").get()).get();
-        } else {
-            throw new RuntimeException("Could not initialize file store configuration");
-        }
+    	path = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.filestore.path");
     }
 
     @Override

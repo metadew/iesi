@@ -30,6 +30,7 @@ Additional details on the parameters per action type are provided below.
 <thead>
 <tr class="header">
 <th>Action Type</th>
+<th>Status</th>
 <th>Description</th>
 </tr>
 </thead>
@@ -37,11 +38,14 @@ Additional details on the parameters per action type are provided below.
 {% for type in site.data.ActionTypes %}
 <tr>
 <td markdown="span">[{{ type.data.name }}](/{{site.repository}}/pages/design/actiontypes/{{ type.data.name }}.html)</td>
+<td markdown="span">{{ type.data.status }}</td>
 <td markdown="span">{{ type.data.description }}</td>
 </tr>
 {% endfor %}
 </tbody>
 </table>
+
+For more information on the status definition, please refer to the [legend](/{{site.repository}}/pages/understand/legend.html) page.
 
 {% for detail in site.data.ActionTypes %}
 ## [{{ detail.data.name }}](/{{site.repository}}/pages/design/actiontypes/{{ detail.data.name }}.html)

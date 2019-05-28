@@ -64,14 +64,7 @@ Our framework can run on Linux/Unix and Windows systems.
 
 Looking for other options? Get in touch via our [GitHub issue page](https://github.com/metadew/iesi/issues).
 
-*Legend*
-
-|Color|Description|
-|:---:|:---:|
-|![green](/{{site.repository}}/images/icons/green-dot.png)|Supported|
-|![yellow](/{{site.repository}}/images/icons/yellow-dot.png)|In progress|
-|![red](/{{site.repository}}/images/icons/red-dot.png)|Not supported|
-|![grey](/{{site.repository}}/images/icons/grey-dot.png)|Not applicable|
+For more information on the technology support definition, please refer to the [legend](/{{site.repository}}/pages/understand/legend.html) page.
 
 # Getting Started
 

@@ -37,6 +37,7 @@
 * [Deploy the framework](/{{site.repository}}/pages/deploy/deploy.html)
   * Configuration files
 * [Understand the framework](/{{site.repository}}/pages/understand/understand.html)
+  * [Legend tables](/{{site.repository}}/pages/understand/legend.html)
   * [Important highlights](/{{site.repository}}/pages/understand/highlights.html)
   * Data Model
     * [Connectivity data model](/{{site.repository}}/pages/understand/datamodel/connectivity.html)

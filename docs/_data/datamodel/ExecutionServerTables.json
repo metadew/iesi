@@ -7,14 +7,39 @@
 		"type": "operational",
 		"category": "execution",
 		"migrate": "Y",
-		"migrationKey": "A001",
+		"migrationKey": "NA",
 		"fields": [
-			{"name": "REQUEST_ID","description": "Unique identifier for the request item","order": "1","type": "number","length": "0","nullable": "N","defaultTimestamp": ""},
-			{"name": "REQUEST_TYPE","description": "Keyword for the request type","order": "2","type": "string","length": "100","nullable": "N","defaultTimestamp": ""},
-			{"name": "SCRIPT_NM","description": "Unique short name for the script","order": "3","type": "string","length": "100","nullable": "N","defaultTimestamp": ""},
-			{"name": "ENV_NM","description": "Short name for the environment","order": "4","type": "string","length": "100","nullable": "N","defaultTimestamp": ""},
-			{"name": "PRC_ID","description": "Unique identifier for the request process","order": "5","type": "number","length": "0","nullable": "Y","defaultTimestamp": ""},
-			{"name": "LOAD_TMS","description": "Load timestamp indicating when the record was inserted in the table","order": "6","type": "timestamp","length": "0","nullable": "N","defaultTimestamp": "Y"}
+			{"name": "REQUEST_ID","description": "Unique identifier for the request item","order": "1","type": "string","length": "255","nullable": "N","defaultTimestamp": ""},
+			{"name": "PARENT_REQUEST_ID","description": "Unique identifier for the parent request item","order": "2","type": "string","length": "255","nullable": "N","defaultTimestamp": ""},
+			{"name": "REQUEST_TYP_NM","description": "Keyword for the request type","order": "3","type": "string","length": "100","nullable": "N","defaultTimestamp": ""},
+			{"name": "REQUEST_TMS","description": "Request timestamp","order": "4","type": "timestamp","length": "0","nullable": "N","defaultTimestamp": ""},
+			{"name": "REQUEST_DSC","description": "Request description","order": "5","type": "string","length": "2000","nullable": "Y","defaultTimestamp": ""},
+			{"name": "AMOUNT_NB","description": "Number of times to execute the request","order": "6","type": "number","length": "0","nullable": "N","defaultTimestamp": ""},
+			{"name": "NOTIF_EMAIL","description": "Email addresses to send a notification to","order": "7","type": "string","length": "2000","nullable": "Y","defaultTimestamp": ""},
+			{"name": "SCOPE_NM","description": "Scope of the request","order": "8","type": "string","length": "100","nullable": "N","defaultTimestamp": ""},
+			{"name": "CONTEXT_NM","description": "Context of the request","order": "9","type": "string","length": "100","nullable": "N","defaultTimestamp": ""},
+			{"name": "USER_NM","description": "Unique identifier for the user","order": "10","type": "string","length": "100","nullable": "N","defaultTimestamp": ""},
+			{"name": "USER_PASSWORD","description": "User password","order": "11","type": "string","length": "2000","nullable": "Y","defaultTimestamp": ""},
+			{"name": "PRC_ID","description": "Unique identifier for the request process","order": "12","type": "number","length": "0","nullable": "Y","defaultTimestamp": ""},
+			{"name": "LOAD_TMS","description": "Load timestamp indicating when the record was inserted in the table","order": "13","type": "timestamp","length": "0","nullable": "N","defaultTimestamp": "Y"}
+	]
+}},
+{
+	"type": "MetadataTable",
+	"data": {
+		"name": "PRC_REQ_PAR",
+		"label": "RequestParameters",
+		"description": "In-process runtime request parameters for execution",
+		"type": "operational",
+		"category": "execution",
+		"migrate": "Y",
+		"migrationKey": "NA",
+		"fields": [
+			{"name": "REQUEST_ID","description": "Unique identifier for the request item","order": "1","type": "string","length": "255","nullable": "N","defaultTimestamp": ""},
+			{"name": "REQUEST_PAR_TYP_NM","description": "Keyword for the request parameter type","order": "2","type": "string","length": "100","nullable": "N","defaultTimestamp": ""},
+			{"name": "REQUEST_PAR_NM","description": "Parameter name","order": "3","type": "string","length": "100","nullable": "N","defaultTimestamp": ""},
+			{"name": "REQUEST_PAR_VAL","description": "Parameter value","order": "4","type": "string","length": "2000","nullable": "Y","defaultTimestamp": ""},
+			{"name": "LOAD_TMS","description": "Load timestamp indicating when the record was inserted in the table","order": "5","type": "timestamp","length": "0","nullable": "N","defaultTimestamp": "Y"}
 	]
 }},
 {
@@ -26,9 +51,9 @@
 		"type": "operational",
 		"category": "execution",
 		"migrate": "Y",
-		"migrationKey": "A002",
+		"migrationKey": "NA",
 		"fields": [
 			{"name": "PRC_ID","description": "Unique identifier for the execution process","order": "1","type": "number","length": "0","nullable": "N","defaultTimestamp": ""},
-			{"name": "REQUEST_ID","description": "Unique identifier for the request item","order": "2","type": "number","length": "0","nullable": "N","defaultTimestamp": ""}
+			{"name": "REQUEST_ID","description": "Unique identifier for the request item","order": "2","type": "string","length": "255","nullable": "N","defaultTimestamp": ""}
 	]
 }}]

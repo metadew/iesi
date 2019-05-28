@@ -44,7 +44,7 @@ Curious to know more about our upcoming release? Read more on our [preview](http
 
 # Supported Technologies
 
-Our framework can run on Linux/Unix and Windows systems.
+Our framework can run on Linux/Unix, Mac and Windows systems.
 
 |Technology|Configuration|Connectivity|Data|
 |----------|    :---:    |   :---:    |   :---:    |

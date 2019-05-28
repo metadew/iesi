@@ -18,10 +18,11 @@
 			{"name": "NOTIF_EMAIL","description": "Email addresses to send a notification to","order": "7","type": "string","length": "2000","nullable": "Y","defaultTimestamp": ""},
 			{"name": "SCOPE_NM","description": "Scope of the request","order": "8","type": "string","length": "100","nullable": "N","defaultTimestamp": ""},
 			{"name": "CONTEXT_NM","description": "Context of the request","order": "9","type": "string","length": "100","nullable": "N","defaultTimestamp": ""},
-			{"name": "USER_NM","description": "Unique identifier for the user","order": "10","type": "string","length": "100","nullable": "N","defaultTimestamp": ""},
-			{"name": "USER_PASSWORD","description": "User password","order": "11","type": "string","length": "2000","nullable": "Y","defaultTimestamp": ""},
-			{"name": "PRC_ID","description": "Unique identifier for the request process","order": "12","type": "number","length": "0","nullable": "Y","defaultTimestamp": ""},
-			{"name": "LOAD_TMS","description": "Load timestamp indicating when the record was inserted in the table","order": "13","type": "timestamp","length": "0","nullable": "N","defaultTimestamp": "Y"}
+			{"name": "SPACE_NM","description": "Unique identifier for the space","order": "10","type": "string","length": "100","nullable": "N","defaultTimestamp": ""},
+			{"name": "USER_NM","description": "Unique identifier for the user","order": "11","type": "string","length": "100","nullable": "N","defaultTimestamp": ""},
+			{"name": "USER_PASSWORD","description": "User password","order": "12","type": "string","length": "2000","nullable": "Y","defaultTimestamp": ""},
+			{"name": "PRC_ID","description": "Unique identifier for the request process","order": "13","type": "number","length": "0","nullable": "Y","defaultTimestamp": ""},
+			{"name": "LOAD_TMS","description": "Load timestamp indicating when the record was inserted in the table","order": "14","type": "timestamp","length": "0","nullable": "N","defaultTimestamp": "Y"}
 	]
 }},
 {

@@ -176,7 +176,7 @@ public class DdlGenerateFromFile {
     	
     	for (DataObject dataObject : dataObjectOperation.getDataObjects()) {
     		MetadataTable metadataTable = objectMapper.convertValue(dataObject.getData(), MetadataTable.class);
-    		FileTools.appendToFile(outputFile, "", database.getCreateStatement(metadataTable));
+    		FileTools.appendToFile(outputFile, "", database.getCreateStatement(metadataTable, "IESI_"));
     	}
     	
     	this.getActionExecution().getActionControl().increaseSuccessCount();

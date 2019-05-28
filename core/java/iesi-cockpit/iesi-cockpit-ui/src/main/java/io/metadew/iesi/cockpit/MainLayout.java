@@ -13,12 +13,12 @@ import com.vaadin.flow.server.Command;
 import com.vaadin.flow.server.PWA;
 import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.theme.lumo.Lumo;
-import io.metadew.iesi.cockpit.about.AboutView;
 import io.metadew.iesi.cockpit.authentication.AccessControlFactory;
 import io.metadew.iesi.cockpit.component.ComponentView;
 import io.metadew.iesi.cockpit.connection.ConnectionView;
-import io.metadew.iesi.cockpit.crud.SampleCrudView;
 import io.metadew.iesi.cockpit.define.environment.EnvironmentView;
+import io.metadew.iesi.cockpit.script.ScriptView;
+import io.metadew.iesi.cockpit.template.RequestTemplateView;
 
 /**
  * The main layout. Contains the navigation menu.
@@ -36,13 +36,11 @@ public class MainLayout extends FlexLayout implements RouterLayout {
         setClassName("main-layout");
 
         menu = new Menu();
-        menu.addView(SampleCrudView.class, SampleCrudView.VIEW_NAME,
-                VaadinIcon.EDIT.create());
-        menu.addView(EnvironmentView.class, EnvironmentView.VIEW_NAME,VaadinIcon.MAP_MARKER.create());
-        menu.addView(ConnectionView.class, ConnectionView.VIEW_NAME,VaadinIcon.CONNECT.create());
+        menu.addView(RequestTemplateView.class, RequestTemplateView.VIEW_NAME,VaadinIcon.LOCATION_ARROW.create());
+        menu.addView(ScriptView.class, ScriptView.VIEW_NAME,VaadinIcon.CODE.create());
         menu.addView(ComponentView.class, ComponentView.VIEW_NAME,VaadinIcon.CUBES.create());
-        menu.addView(AboutView.class, AboutView.VIEW_NAME,
-                VaadinIcon.INFO_CIRCLE.create());
+        menu.addView(ConnectionView.class, ConnectionView.VIEW_NAME,VaadinIcon.CONNECT.create());
+        menu.addView(EnvironmentView.class, EnvironmentView.VIEW_NAME,VaadinIcon.MAP_MARKER.create());
 
         add(menu);
     }

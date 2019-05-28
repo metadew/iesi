@@ -16,12 +16,12 @@ import com.vaadin.flow.router.Route;
 import io.metadew.iesi.cockpit.MainLayout;
 import io.metadew.iesi.metadata.definition.Connection;
 
-@Route(value = "Connections", layout = MainLayout.class)
+@Route(value = "connections", layout = MainLayout.class)
 public class ConnectionView extends HorizontalLayout
         implements HasUrlParameter<String> {
 
 	private static final long serialVersionUID = 1L;
-	public static final String VIEW_NAME = "Connections";
+	public static final String VIEW_NAME = "connections";
     private ConnectionGrid grid;
     private ConnectionForm form;
     private TextField filter;

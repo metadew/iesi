@@ -13,7 +13,6 @@ import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.OptionalParameter;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.router.RouteAlias;
 import io.metadew.iesi.cockpit.MainLayout;
 import io.metadew.iesi.cockpit.backend.DataService;
 import io.metadew.iesi.cockpit.backend.data.Product;
@@ -24,13 +23,12 @@ import io.metadew.iesi.cockpit.backend.data.Product;
  * See also {@link SampleCrudLogic} for fetching the data, the actual CRUD
  * operations and controlling the view based on events from outside.
  */
-@Route(value = "Inventory", layout = MainLayout.class)
-@RouteAlias(value = "", layout = MainLayout.class)
+@Route(value = "inventory", layout = MainLayout.class)
 public class SampleCrudView extends HorizontalLayout
         implements HasUrlParameter<String> {
 
 	private static final long serialVersionUID = 1L;
-	public static final String VIEW_NAME = "Inventory";
+	public static final String VIEW_NAME = "inventory";
     private ProductGrid grid;
     private ProductForm form;
     private TextField filter;

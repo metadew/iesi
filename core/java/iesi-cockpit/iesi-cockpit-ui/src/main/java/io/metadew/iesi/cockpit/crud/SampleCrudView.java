@@ -29,7 +29,8 @@ import io.metadew.iesi.cockpit.backend.data.Product;
 public class SampleCrudView extends HorizontalLayout
         implements HasUrlParameter<String> {
 
-    public static final String VIEW_NAME = "Inventory";
+	private static final long serialVersionUID = 1L;
+	public static final String VIEW_NAME = "Inventory";
     private ProductGrid grid;
     private ProductForm form;
     private TextField filter;

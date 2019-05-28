@@ -9,7 +9,8 @@ import io.metadew.iesi.cockpit.backend.data.Product;
 
 public class ProductDataProvider extends ListDataProvider<Product> {
 
-    /** Text filter that can be changed separately. */
+	private static final long serialVersionUID = 1L;
+	/** Text filter that can be changed separately. */
     private String filterText = "";
 
     public ProductDataProvider() {

@@ -12,7 +12,8 @@ import io.metadew.iesi.cockpit.MainLayout;
 @PageTitle("About")
 public class AboutView extends HorizontalLayout {
 
-    public static final String VIEW_NAME = "About";
+	private static final long serialVersionUID = 1L;
+	public static final String VIEW_NAME = "About";
 
     public AboutView() {
         add(VaadinIcon.INFO_CIRCLE.create());

@@ -26,7 +26,9 @@ import io.metadew.iesi.cockpit.backend.data.Category;
  */
 public class AdminView extends VerticalLayout {
 
-    public static final String VIEW_NAME = "admin";
+	private static final long serialVersionUID = 1L;
+
+	public static final String VIEW_NAME = "admin";
 
     private final IronList<Category> categoriesListing;
     private final ListDataProvider<Category> dataProvider;
@@ -36,7 +38,9 @@ public class AdminView extends VerticalLayout {
         categoriesListing = new IronList<>();
 
         dataProvider = new ListDataProvider<Category>(new ArrayList<>(DataService.get().getAllCategories())) {
-            @Override
+			private static final long serialVersionUID = 1L;
+
+			@Override
             public Object getId(Category item) {
                 return item.getId();
             }

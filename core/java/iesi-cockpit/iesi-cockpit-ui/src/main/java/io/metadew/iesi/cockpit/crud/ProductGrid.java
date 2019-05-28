@@ -16,7 +16,9 @@ import java.util.stream.Collectors;
  */
 public class ProductGrid extends Grid<Product> {
 
-    public ProductGrid() {
+	private static final long serialVersionUID = 1L;
+
+	public ProductGrid() {
         setSizeFull();
 
         addColumn(Product::getProductName)

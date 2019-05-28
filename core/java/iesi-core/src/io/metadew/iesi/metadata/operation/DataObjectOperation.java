@@ -27,6 +27,10 @@ public class DataObjectOperation {
     private List<MetadataRepository> metadataRepositories;
 
     // Constructors
+    public DataObjectOperation() {
+    	
+    }
+    
     public DataObjectOperation(String inputFile) {
 		this.setInputFile(inputFile);
 		File file = new File(inputFile);

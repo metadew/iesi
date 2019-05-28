@@ -1,0 +1,21 @@
+---
+type: "script"
+data:
+  name: "iesi-test.repo.mssql.1"
+  description: "Prepare database for metadata configuration on MS Sql Server"
+  parameters: []
+  actions:
+  - number: 1
+    type: "sql.executeStatement"
+    name: "Action1"
+    description: "Create database"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "statement"
+      value : "CREATE DATABASE IESI"
+    - name: "connection"
+      value : "db.mssql.1"

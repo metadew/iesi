@@ -26,6 +26,10 @@ public class ConnectionConfiguration {
     private Connection connection;
 
     // Constructors
+    public ConnectionConfiguration() {
+    	
+    }
+    
     public ConnectionConfiguration(FrameworkExecution frameworkExecution) {
         this.setFrameworkExecution(frameworkExecution);
     }

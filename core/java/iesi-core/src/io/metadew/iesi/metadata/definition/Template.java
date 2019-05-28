@@ -1,15 +1,15 @@
 package io.metadew.iesi.metadata.definition;
 
-public class RequestTemplate {
+public class Template {
 
     private String name;
     private String description;
 
     // Constructors
-    public RequestTemplate() {
+    public Template() {
     }
 
-    public RequestTemplate(String name, String description) {
+    public Template(String name, String description) {
         this.name = name;
         this.description = description;
     }

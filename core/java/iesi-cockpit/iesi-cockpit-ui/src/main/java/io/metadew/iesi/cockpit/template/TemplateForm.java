@@ -11,9 +11,9 @@ import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.value.ValueChangeMode;
 
-import io.metadew.iesi.metadata.definition.RequestTemplate;
+import io.metadew.iesi.metadata.definition.Template;
 
-public class RequestTemplateForm extends Div {
+public class TemplateForm extends Div {
 
 	private static final long serialVersionUID = 1L;
 
@@ -26,18 +26,18 @@ public class RequestTemplateForm extends Div {
     private Button cancel;
     private Button delete;
 
-    private RequestTemplateLogic viewLogic;
-    private Binder<RequestTemplate> binder;
-    private RequestTemplate currentRequestTemplate;
+    private TemplateLogic viewLogic;
+    private Binder<Template> binder;
+    private Template currentRequestTemplate;
 
-    public RequestTemplateForm(RequestTemplateLogic RequestTemplateLogic) {
-        setClassName("RequestTemplate-form");
+    public TemplateForm(TemplateLogic TemplateLogic) {
+        setClassName("Template-form");
 
         content = new VerticalLayout();
         content.setSizeUndefined();
         add(content);
 
-        viewLogic = RequestTemplateLogic;
+        viewLogic = TemplateLogic;
 
         requestTemplateName = new TextField("Name");
         requestTemplateName.setWidth("100%");
@@ -51,7 +51,7 @@ public class RequestTemplateForm extends Div {
         requestTemplateDescription.setValueChangeMode(ValueChangeMode.EAGER);
         content.add(requestTemplateDescription);
 
-        binder = new BeanValidationBinder<>(RequestTemplate.class);
+        binder = new BeanValidationBinder<>(Template.class);
         binder.forField(requestTemplateName).bind("name");
         binder.forField(requestTemplateDescription).bind("description");
         binder.bindInstanceFields(this);
@@ -100,13 +100,13 @@ public class RequestTemplateForm extends Div {
         content.add(save, discard, delete, cancel);
     }
 
-    public void editRequestTemplate(RequestTemplate requestTemplate) {
-        if (requestTemplate == null) {
-        	requestTemplate = new RequestTemplate();
+    public void editRequestTemplate(Template template) {
+        if (template == null) {
+        	template = new Template();
         }
-        delete.setVisible(!requestTemplate.isEmpty());
-        currentRequestTemplate = requestTemplate;
-        binder.readBean(requestTemplate);
+        delete.setVisible(!template.isEmpty());
+        currentRequestTemplate = template;
+        binder.readBean(template);
     }
 
 }

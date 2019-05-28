@@ -18,7 +18,7 @@ import io.metadew.iesi.cockpit.component.ComponentView;
 import io.metadew.iesi.cockpit.connection.ConnectionView;
 import io.metadew.iesi.cockpit.define.environment.EnvironmentView;
 import io.metadew.iesi.cockpit.script.ScriptView;
-import io.metadew.iesi.cockpit.template.RequestTemplateView;
+import io.metadew.iesi.cockpit.template.TemplateView;
 
 /**
  * The main layout. Contains the navigation menu.
@@ -36,7 +36,7 @@ public class MainLayout extends FlexLayout implements RouterLayout {
         setClassName("main-layout");
 
         menu = new Menu();
-        menu.addView(RequestTemplateView.class, RequestTemplateView.VIEW_NAME,VaadinIcon.LOCATION_ARROW.create());
+        menu.addView(TemplateView.class, TemplateView.VIEW_NAME,VaadinIcon.LOCATION_ARROW.create());
         menu.addView(ScriptView.class, ScriptView.VIEW_NAME,VaadinIcon.CODE.create());
         menu.addView(ComponentView.class, ComponentView.VIEW_NAME,VaadinIcon.CUBES.create());
         menu.addView(ConnectionView.class, ConnectionView.VIEW_NAME,VaadinIcon.CONNECT.create());

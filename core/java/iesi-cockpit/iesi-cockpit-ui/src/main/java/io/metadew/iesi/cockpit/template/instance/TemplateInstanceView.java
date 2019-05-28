@@ -16,23 +16,23 @@ import com.vaadin.flow.router.Route;
 import io.metadew.iesi.cockpit.MainLayout;
 
 @Route(value = "templateinstance", layout = MainLayout.class)
-public class RequestTemplateInstanceView extends HorizontalLayout
+public class TemplateInstanceView extends HorizontalLayout
         implements HasUrlParameter<String> {
 
 	private static final long serialVersionUID = 1L;
 	public static final String VIEW_NAME = "templateinstance";
-    private RequestTemplateInstanceForm form;
+    private TemplateInstanceForm form;
     private TextField filter;
 
-    private RequestTemplateInstanceLogic viewLogic = new RequestTemplateInstanceLogic(this);
+    private TemplateInstanceLogic viewLogic = new TemplateInstanceLogic(this);
     private Button newRequestTemplateInstance;
 
 
-    public RequestTemplateInstanceView() {
+    public TemplateInstanceView() {
         setSizeFull();
         HorizontalLayout topLayout = createTopBar();
 
-        form = new RequestTemplateInstanceForm(viewLogic);
+        form = new TemplateInstanceForm(viewLogic);
 
         VerticalLayout verticalLayout = new VerticalLayout();
         //HorizontalLayout barAndGridLayout = new HorizontalLayout();
@@ -54,7 +54,7 @@ public class RequestTemplateInstanceView extends HorizontalLayout
         //filter.addValueChangeListener(event -> dataProvider.setFilter(event.getValue()));
         filter.addFocusShortcut(Key.KEY_F, KeyModifier.CONTROL);
 
-        newRequestTemplateInstance = new Button("New RequestTemplateInstance");
+        newRequestTemplateInstance = new Button("New TemplateInstance");
         newRequestTemplateInstance.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         newRequestTemplateInstance.setIcon(VaadinIcon.PLUS_CIRCLE.create());
         newRequestTemplateInstance.addClickListener(click -> Notification.show("ok"));

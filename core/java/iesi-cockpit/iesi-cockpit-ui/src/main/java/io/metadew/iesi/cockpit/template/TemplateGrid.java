@@ -2,37 +2,37 @@ package io.metadew.iesi.cockpit.template;
 
 import com.vaadin.flow.component.grid.Grid;
 
-import io.metadew.iesi.metadata.definition.RequestTemplate;
+import io.metadew.iesi.metadata.definition.Template;
 
-public class RequestTemplateGrid extends Grid<RequestTemplate> {
+public class TemplateGrid extends Grid<Template> {
 
 	private static final long serialVersionUID = 1L;
 
-	public RequestTemplateGrid() {
+	public TemplateGrid() {
         setSizeFull();
 
         
         
         //addComponentColumn(i -> VaadinIcon.PLAY_CIRCLE_O.create()).setHeader("Use");
-        //addComponentColumn(i -> new RequestTemplateUseComponent()).setHeader("Use");
+        //addComponentColumn(i -> new TemplateUseComponent()).setHeader("Use");
         
-        addColumn(RequestTemplate::getName)
+        addColumn(Template::getName)
                 .setHeader("Template name")
                 .setFlexGrow(20)
                 .setSortable(true);
 
-        addColumn(RequestTemplate::getDescription)
+        addColumn(Template::getDescription)
                 .setHeader("Description")
                 .setFlexGrow(12);
                
 
     }
 	
-    public RequestTemplate getSelectedRow() {
+    public Template getSelectedRow() {
         return asSingleSelect().getValue();
     }
 
-    public void refresh(RequestTemplate requestTemplate) {
-        getDataCommunicator().refresh(requestTemplate);
+    public void refresh(Template template) {
+        getDataCommunicator().refresh(template);
     }
 }

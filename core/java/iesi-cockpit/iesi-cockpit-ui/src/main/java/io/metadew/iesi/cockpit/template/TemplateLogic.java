@@ -3,18 +3,18 @@ package io.metadew.iesi.cockpit.template;
 import com.vaadin.flow.component.UI;
 import io.metadew.iesi.cockpit.authentication.AccessControl;
 import io.metadew.iesi.cockpit.authentication.AccessControlFactory;
-import io.metadew.iesi.cockpit.backend.RequestTemplateDataService;
-import io.metadew.iesi.metadata.definition.RequestTemplate;
+import io.metadew.iesi.cockpit.backend.TemplateDataService;
+import io.metadew.iesi.metadata.definition.Template;
 
 import java.io.Serializable;
 
-public class RequestTemplateLogic implements Serializable {
+public class TemplateLogic implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	private RequestTemplateView view;
+	private TemplateView view;
 
-    public RequestTemplateLogic(RequestTemplateView requestTemplateView) {
-        view = requestTemplateView;
+    public TemplateLogic(TemplateView templateView) {
+        view = templateView;
     }
 
     public void init() {
@@ -39,7 +39,7 @@ public class RequestTemplateLogic implements Serializable {
             fragmentParameter = requestTemplateName;
         }
 
-        UI.getCurrent().navigate(RequestTemplateView.class, fragmentParameter);
+        UI.getCurrent().navigate(TemplateView.class, fragmentParameter);
     }
 
     public void enter(String requestTemplateName) {
@@ -50,8 +50,8 @@ public class RequestTemplateLogic implements Serializable {
                 // Ensure this is selected even if coming directly here from
                 // login
                 try {
-                    RequestTemplate requestTemplate = findRequestTemplate(requestTemplateName);
-                    view.selectRow(requestTemplate);
+                    Template template = findRequestTemplate(requestTemplateName);
+                    view.selectRow(template);
                 } catch (NumberFormatException e) {
                 }
             }
@@ -60,45 +60,45 @@ public class RequestTemplateLogic implements Serializable {
         }
     }
 
-    private RequestTemplate findRequestTemplate(String requestTemplateName) {
-        return RequestTemplateDataService.get().getRequestTemplateByName(requestTemplateName);
+    private Template findRequestTemplate(String requestTemplateName) {
+        return TemplateDataService.get().getRequestTemplateByName(requestTemplateName);
     }
 
-    public void saveRequestTemplate(RequestTemplate requestTemplate) {
-        boolean newRequestTemplate = requestTemplate.isEmpty();
+    public void saveRequestTemplate(Template template) {
+        boolean newRequestTemplate = template.isEmpty();
         view.clearSelection();
-        view.updateRequestTemplate(requestTemplate);
+        view.updateRequestTemplate(template);
         setFragmentParameter("");
-        view.showSaveNotification(requestTemplate.getName()
+        view.showSaveNotification(template.getName()
                 + (newRequestTemplate ? " created" : " updated"));
     }
 
-    public void deleteRequestTemplate(RequestTemplate requestTemplate) {
+    public void deleteRequestTemplate(Template template) {
         view.clearSelection();
-        view.removeRequestTemplate(requestTemplate);
+        view.removeRequestTemplate(template);
         setFragmentParameter("");
-        view.showSaveNotification(requestTemplate.getName() + " deleted");
+        view.showSaveNotification(template.getName() + " deleted");
     }
 
-    public void editRequestTemplate(RequestTemplate requestTemplate) {
-        if (requestTemplate == null) {
+    public void editRequestTemplate(Template template) {
+        if (template == null) {
             setFragmentParameter("");
         } else {
-            setFragmentParameter(requestTemplate.getName() + "");
+            setFragmentParameter(template.getName() + "");
         }
-        view.editRequestTemplate(requestTemplate);
+        view.editRequestTemplate(template);
     }
 
     public void newRequestTemplate() {
         view.clearSelection();
         setFragmentParameter("new");
-        view.editRequestTemplate(new RequestTemplate());
+        view.editRequestTemplate(new Template());
     }
 
-    public void rowSelected(RequestTemplate requestTemplate) {
+    public void rowSelected(Template template) {
         if (AccessControlFactory.getInstance().createAccessControl()
                 .isUserInRole(AccessControl.ADMIN_ROLE_NAME)) {
-            editRequestTemplate(requestTemplate);
+            editRequestTemplate(template);
         	
         }
     }

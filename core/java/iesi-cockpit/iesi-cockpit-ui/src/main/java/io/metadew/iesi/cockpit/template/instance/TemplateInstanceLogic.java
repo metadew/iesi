@@ -6,13 +6,13 @@ import io.metadew.iesi.cockpit.authentication.AccessControlFactory;
 
 import java.io.Serializable;
 
-public class RequestTemplateInstanceLogic implements Serializable {
+public class TemplateInstanceLogic implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	private RequestTemplateInstanceView view;
+	private TemplateInstanceView view;
 
-    public RequestTemplateInstanceLogic(RequestTemplateInstanceView requestTemplateInstanceView) {
-        view = requestTemplateInstanceView;
+    public TemplateInstanceLogic(TemplateInstanceView templateInstanceView) {
+        view = templateInstanceView;
     }
 
     public void init() {
@@ -35,7 +35,7 @@ public class RequestTemplateInstanceLogic implements Serializable {
             fragmentParameter = requestTemplateInstanceName;
         }
 
-        UI.getCurrent().navigate(RequestTemplateInstanceView.class, fragmentParameter);
+        UI.getCurrent().navigate(TemplateInstanceView.class, fragmentParameter);
     }
 
 }

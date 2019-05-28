@@ -16,32 +16,32 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 
 import io.metadew.iesi.cockpit.MainLayout;
-import io.metadew.iesi.metadata.definition.RequestTemplate;
+import io.metadew.iesi.metadata.definition.Template;
 
 @Route(value = "Templates", layout = MainLayout.class)
 @RouteAlias(value = "", layout = MainLayout.class)
-public class RequestTemplateView extends HorizontalLayout implements HasUrlParameter<String> {
+public class TemplateView extends HorizontalLayout implements HasUrlParameter<String> {
 
 	private static final long serialVersionUID = 1L;
 	public static final String VIEW_NAME = "templates";
-	private RequestTemplateGrid grid;
-	private RequestTemplateForm form;
+	private TemplateGrid grid;
+	private TemplateForm form;
 	private TextField filter;
 
-	private RequestTemplateLogic viewLogic = new RequestTemplateLogic(this);
+	private TemplateLogic viewLogic = new TemplateLogic(this);
 	private Button newRequestTemplate;
 
-	private RequestTemplateDataProvider dataProvider = new RequestTemplateDataProvider();
+	private TemplateDataProvider dataProvider = new TemplateDataProvider();
 
-	public RequestTemplateView() {
+	public TemplateView() {
 		setSizeFull();
 		HorizontalLayout topLayout = createTopBar();
 
-		grid = new RequestTemplateGrid();
+		grid = new TemplateGrid();
 		grid.setDataProvider(dataProvider);
 		grid.asSingleSelect().addValueChangeListener(event -> viewLogic.rowSelected(event.getValue()));
 
-		form = new RequestTemplateForm(viewLogic);
+		form = new TemplateForm(viewLogic);
 
 		VerticalLayout barAndGridLayout = new VerticalLayout();
 		barAndGridLayout.add(topLayout);
@@ -96,25 +96,25 @@ public class RequestTemplateView extends HorizontalLayout implements HasUrlParam
 		grid.getSelectionModel().deselectAll();
 	}
 
-	public void selectRow(RequestTemplate row) {
+	public void selectRow(Template row) {
 		grid.getSelectionModel().select(row);
 	}
 
-	public RequestTemplate getSelectedRow() {
+	public Template getSelectedRow() {
 		return grid.getSelectedRow();
 	}
 
-	public void updateRequestTemplate(RequestTemplate RequestTemplate) {
-		dataProvider.save(RequestTemplate);
+	public void updateRequestTemplate(Template Template) {
+		dataProvider.save(Template);
 	}
 
-	public void removeRequestTemplate(RequestTemplate RequestTemplate) {
-		dataProvider.delete(RequestTemplate);
+	public void removeRequestTemplate(Template Template) {
+		dataProvider.delete(Template);
 	}
 
-	public void editRequestTemplate(RequestTemplate requestTemplate) {
-		showForm(requestTemplate != null);
-		form.editRequestTemplate(requestTemplate);
+	public void editRequestTemplate(Template template) {
+		showForm(template != null);
+		form.editRequestTemplate(template);
 	}
 
 	public void showForm(boolean show) {

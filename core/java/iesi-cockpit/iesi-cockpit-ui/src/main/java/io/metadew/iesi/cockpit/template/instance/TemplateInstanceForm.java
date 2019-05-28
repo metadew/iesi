@@ -11,7 +11,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
 
-public class RequestTemplateInstanceForm extends Div {
+public class TemplateInstanceForm extends Div {
 
 	private static final long serialVersionUID = 1L;
 
@@ -24,16 +24,16 @@ public class RequestTemplateInstanceForm extends Div {
     private Button cancel;
     private Button delete;
 
-    private RequestTemplateInstanceLogic viewLogic;
+    private TemplateInstanceLogic viewLogic;
 
-    public RequestTemplateInstanceForm(RequestTemplateInstanceLogic RequestTemplateInstanceLogic) {
-        setClassName("RequestTemplateInstance-form");
+    public TemplateInstanceForm(TemplateInstanceLogic TemplateInstanceLogic) {
+        setClassName("TemplateInstance-form");
 
         content = new HorizontalLayout();
         content.setSizeUndefined();
         add(content);
 
-        viewLogic = RequestTemplateInstanceLogic;
+        viewLogic = TemplateInstanceLogic;
 
         requestTemplateInstanceName = new TextField("Name");
         requestTemplateInstanceName.setWidth("100%");

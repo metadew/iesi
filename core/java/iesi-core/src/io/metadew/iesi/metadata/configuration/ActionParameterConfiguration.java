@@ -66,8 +66,8 @@ public class ActionParameterConfiguration {
         String queryActionParameter = "select SCRIPT_ID, SCRIPT_VRS_NB, ACTION_ID, ACTION_PAR_NM, ACTION_PAR_VAL from "
                 + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository()
                 .getTableNameByLabel("ActionParameters")
-                + " where SCRIPT_ID = '" + script.getId() + "' and SCRIPT_VRS_NB = " + script.getVersion().getNumber()
-                + " AND ACTION_ID = '" + actionId + "' and ACTION_PAR_NM = '" + actionParameterName + "'";
+                + " where SCRIPT_ID = " + SQLTools.GetStringForSQL(script.getId()) + " and SCRIPT_VRS_NB = " + script.getVersion().getNumber()
+                + " AND ACTION_ID = " + SQLTools.GetStringForSQL(actionId) + "' and ACTION_PAR_NM = '" + actionParameterName + "'";
         crsActionParameter = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository()
                 .executeQuery(queryActionParameter, "reader");
         try {

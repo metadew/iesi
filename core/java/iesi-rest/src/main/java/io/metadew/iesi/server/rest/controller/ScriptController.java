@@ -41,14 +41,14 @@ public class ScriptController {
 
 	@GetMapping("/scripts/{name}")
 	public ResponseEntity<ScriptResource> getByNameScript(@PathVariable String name) {
-		Script script = scriptConfiguration.getScript(name);
+		Script script = scriptConfiguration.getScript(name).get();
 		final ScriptResource resource = new ScriptResource(script, null);
 		return ResponseEntity.status(HttpStatus.OK).body(resource);
 	}
 	
 	@GetMapping("/scripts/{name}/{version}")
 	public Script getByNameScriptAndVersion(@PathVariable String name, Long version) {
-		Script scriptVersion = scriptConfiguration.getScript(name, version);
+		Script scriptVersion = scriptConfiguration.getScript(name, version).get();
 		return scriptVersion;
 	}
 
@@ -80,14 +80,14 @@ public class ScriptController {
 	@DeleteMapping("scripts/{name}")
 	public Script deleteScript(@PathVariable String name) {
 
-		Script scriptVersion = scriptConfiguration.getScript(name);
+		Script scriptVersion = scriptConfiguration.getScript(name).get();
 		return scriptVersion;
 	}
 
 	@DeleteMapping("/scripts/{name}/{version}")
 	public Script deleteByNameScriptAndVersion(@PathVariable String name, Long version) {
 
-		Script scriptVersion = scriptConfiguration.getScript(name, version);
+		Script scriptVersion = scriptConfiguration.getScript(name, version).get();
 		return scriptVersion;
 	}
 }

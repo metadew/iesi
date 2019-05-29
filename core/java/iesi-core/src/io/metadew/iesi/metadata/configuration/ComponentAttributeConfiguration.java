@@ -53,7 +53,7 @@ public class ComponentAttributeConfiguration {
         ComponentAttribute componentAttribute = new ComponentAttribute();
         CachedRowSet crsComponentAttribute = null;
         String queryComponentAttribute = "select COMP_ID, COMP_ATT_NM, ENV_NM, COMP_ATT_VAL from " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ComponentAttributes")
-                + " where COMP_ID = " + componentId + " and COMP_ATT_NM = '" + componentAttributeName + "'" + " and COMP_VRS_NB = " + componentVersionNumber;
+                + " where COMP_ID = " + SQLTools.GetStringForSQL(componentId) + " and COMP_ATT_NM = '" + componentAttributeName + "'" + " and COMP_VRS_NB = " + componentVersionNumber;
         crsComponentAttribute = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(queryComponentAttribute, "reader");
         try {
             while (crsComponentAttribute.next()) {

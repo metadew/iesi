@@ -48,7 +48,7 @@ public class ComponentBuildConfiguration {
         ComponentBuild componentBuild = new ComponentBuild();
         CachedRowSet crsComponentBuild = null;
         String queryComponentBuild = "select COMP_ID, COMP_VRS_NM, COMP_BLD_NM, COMP_BLD_DSC from " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ComponentVersionBuilds")
-                + " where COMP_ID = " + componentId + " and COMP_VRS_NM = '" + componentVersionName + "'" + " and COMP_BLD_NM = '" + componentBuildName + "'";
+                + " where COMP_ID = " + SQLTools.GetStringForSQL(componentId) + " and COMP_VRS_NM = '" + componentVersionName + "'" + " and COMP_BLD_NM = '" + componentBuildName + "'";
         crsComponentBuild = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(queryComponentBuild, "reader");
         try {
             while (crsComponentBuild.next()) {

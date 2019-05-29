@@ -103,7 +103,7 @@ public class ActionConfiguration {
         String queryAction = "select SCRIPT_ID, SCRIPT_VRS_NB, ACTION_ID, ACTION_NB, ACTION_TYP_NM, ACTION_NM, ACTION_DSC, COMP_NM, ITERATION_VAL, CONDITION_VAL, EXP_ERR_FL, STOP_ERR_FL, RETRIES_VAL from "
                 + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository()
                 .getTableNameByLabel("Actions")
-                + " where ACTION_ID = '" + actionId + "' AND SCRIPT_ID = '" + scriptId + "' AND SCRIPT_VRS_NB = '" + scriptVersionNumber + "'";
+                + " where ACTION_ID = " + SQLTools.GetStringForSQL(actionId) + " AND SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptId) + " AND SCRIPT_VRS_NB = '" + scriptVersionNumber + "'";
         CachedRowSet crsAction = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(queryAction, "reader");
         try {
             if (crsAction.size() == 0) {
@@ -116,7 +116,7 @@ public class ActionConfiguration {
             // Get parameters
             String queryActionParameters = "select ACTION_ID, ACTION_PAR_NM, ACTION_PAR_VAL from "
                     + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ActionParameters")
-                    + " where ACTION_ID = '" + actionId + "' AND SCRIPT_ID = '" + scriptId + "' AND SCRIPT_VRS_NB = '" + scriptVersionNumber + "'";
+                    + " where ACTION_ID = " + SQLTools.GetStringForSQL(actionId) + " AND SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptId) + " AND SCRIPT_VRS_NB = '" + scriptVersionNumber + "'";
             CachedRowSet crsActionParameters = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(queryActionParameters, "reader");
             List<ActionParameter> actionParameters = new ArrayList<>();
             while (crsActionParameters.next()) {

@@ -84,8 +84,8 @@ public class ScriptConfiguration {
             }
             crsScript.next();
             String queryScriptVersions = "select SCRIPT_VRS_NB from "
-                    + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ScriptVersions") + " where SCRIPT_ID = '"
-                    + crsScript.getString("SCRIPT_ID") + "'";
+                    + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ScriptVersions") + " where SCRIPT_ID = "
+                    + SQLTools.GetStringForSQL(crsScript.getString("SCRIPT_ID"));
             CachedRowSet crsScriptVersions = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(queryScriptVersions, "reader");
             while (crsScriptVersions.next()) {
                 Optional<Script> script = getScript(scriptName, crsScriptVersions.getLong("SCRIPT_VRS_NB"));
@@ -166,10 +166,10 @@ public class ScriptConfiguration {
         if (getScriptByName(script.getName()).size() == 0) {
             sql.append("INSERT INTO ").append(this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Scripts"));
             sql.append(" (SCRIPT_ID, SCRIPT_TYP_NM, SCRIPT_NM, SCRIPT_DSC) VALUES (");
-            sql.append(SQLTools.GetStringForSQL(this.getScript().getId())).append(",");
-            sql.append(SQLTools.GetStringForSQL(this.getScript().getType())).append(",");
-            sql.append(SQLTools.GetStringForSQL(this.getScript().getName())).append(",");
-            sql.append(SQLTools.GetStringForSQL(this.getScript().getDescription())).append(");");
+            sql.append(SQLTools.GetStringForSQL(script.getId())).append(",");
+            sql.append(SQLTools.GetStringForSQL(script.getType())).append(",");
+            sql.append(SQLTools.GetStringForSQL(script.getName())).append(",");
+            sql.append(SQLTools.GetStringForSQL(script.getDescription())).append(");");
         }
         // add version
         sql.append(scriptVersionConfiguration.getInsertStatement(script.getId(), script.getVersion()));
@@ -216,7 +216,7 @@ public class ScriptConfiguration {
         try {
             if (crs.next() && Integer.parseInt(crs.getString("total_versions")) == 0) {
                 deleteQuery.append("DELETE FROM ").append(this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Scripts"));
-                deleteQuery.append(" WHERE SCRIPT_ID = ").append(SQLTools.GetStringForSQL(script.getName())).append(";\n");
+                deleteQuery.append(" WHERE SCRIPT_ID = ").append(SQLTools.GetStringForSQL(script.getId())).append(";\n");
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -432,7 +432,7 @@ public class ScriptConfiguration {
             List<Action> actions = new ArrayList<>();
             String queryActions = "select SCRIPT_ID, SCRIPT_VRS_NB, ACTION_ID, ACTION_NB from "
                     + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Actions")
-                    + " where SCRIPT_ID = '" + scriptId + "' and SCRIPT_VRS_NB = " + versionNumber
+                    + " where SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptId) + " and SCRIPT_VRS_NB = " + versionNumber
                     + " order by ACTION_NB asc ";
             CachedRowSet crsActions = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(queryActions, "reader");
 
@@ -450,7 +450,7 @@ public class ScriptConfiguration {
             // Get parameters
             String queryScriptParameters = "select SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_PAR_NM, SCRIPT_PAR_VAL from "
                     + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ScriptParameters")
-                    + " where SCRIPT_ID = '" + scriptId + "' and SCRIPT_VRS_NB = " + versionNumber;
+                    + " where SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptId) + " and SCRIPT_VRS_NB = " + versionNumber;
             CachedRowSet crsScriptParameters = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository()
                     .executeQuery(queryScriptParameters, "reader");
             List<ScriptParameter> scriptParameters = new ArrayList<>();

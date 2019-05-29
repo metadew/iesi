@@ -27,7 +27,7 @@ public class ScriptVersionConfiguration {
     public String getInsertStatement(String scriptId, ScriptVersion scriptVersion) {
         return "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ScriptVersions") +
                 " (SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_VRS_DSC) VALUES (" +
-                scriptId + ", " +
+                SQLTools.GetStringForSQL(scriptId) + ", " +
                 scriptVersion.getNumber() + ", " +
                 scriptVersion.getDescription() + ");";
     }
@@ -70,7 +70,7 @@ public class ScriptVersionConfiguration {
 
     public Optional<ScriptVersion> getScriptVersion(String scriptId, long scriptVersionNumber) {
         String queryScriptVersion = "select SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_VRS_DSC from " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ScriptVersions")
-                + " where SCRIPT_ID = '" + scriptId + "' and SCRIPT_VRS_NB = " + scriptVersionNumber;
+                + " where SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptId) + " and SCRIPT_VRS_NB = " + scriptVersionNumber;
         CachedRowSet crsScriptVersion = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(queryScriptVersion, "reader");
         try {
             if (crsScriptVersion.size() == 0) {

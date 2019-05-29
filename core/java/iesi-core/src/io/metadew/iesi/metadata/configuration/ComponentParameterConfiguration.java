@@ -51,7 +51,7 @@ public class ComponentParameterConfiguration {
         ComponentParameter componentParameter = new ComponentParameter();
         CachedRowSet crsComponentParameter = null;
         String queryComponentParameter = "select COMP_ID, COMP_PAR_NM, COMP_PAR_VAL from " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ComponentParameters")
-                + " where COMP_ID = " + componentId + " and COMP_PAR_NM = '" + componentParameterName + "'" + " and COMP_VRS_NB = " + componentVersionNumber;
+                + " where COMP_ID = " + SQLTools.GetStringForSQL(componentId) + " and COMP_PAR_NM = '" + componentParameterName + "'" + " and COMP_VRS_NB = " + componentVersionNumber;
         crsComponentParameter = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(queryComponentParameter, "reader");
         try {
             while (crsComponentParameter.next()) {

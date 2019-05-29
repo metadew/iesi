@@ -1,0 +1,10 @@
+encrypt:
+  key-store:
+    location: classpath:francois.jks
+    password: francois
+    alias: francois
+    secret: francois
+
+spring:
+  profiles:    active:    - native  cloud:    config:      server:        native:          search-locations:
+          - classpath:config/#          - file:///C:/appConfig

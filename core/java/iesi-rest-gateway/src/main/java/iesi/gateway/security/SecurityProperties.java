@@ -1,4 +1,4 @@
-package com.zuul.security;
+package iesi.gateway.security;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.io.Resource;

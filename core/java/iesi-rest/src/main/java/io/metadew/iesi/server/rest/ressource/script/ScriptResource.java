@@ -3,6 +3,8 @@ package io.metadew.iesi.server.rest.ressource.script;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 
+import java.util.Optional;
+
 import org.springframework.hateoas.ResourceSupport;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -25,4 +27,5 @@ public class ScriptResource extends ResourceSupport{
         add(linkTo(ScriptController.class).withRel("environment"));
 		
 	}
+
 }

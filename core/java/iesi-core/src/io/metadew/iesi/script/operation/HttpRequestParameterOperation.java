@@ -16,7 +16,7 @@ import java.util.List;
  *
  * @author peter.billen
  */
-public class RequestParameterOperation {
+public class HttpRequestParameterOperation {
 
     private FrameworkExecution frameworkExecution;
     private ExecutionControl executionControl;
@@ -30,7 +30,7 @@ public class RequestParameterOperation {
     private SubroutineOperation subroutineOperation;
 
     // Constructors
-    public RequestParameterOperation(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+    public HttpRequestParameterOperation(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
                                      ActionExecution actionExecution, List<ComponentAttribute> attributes, String name) {
         this.setFrameworkExecution(frameworkExecution);
         this.setExecutionControl(executionControl);
@@ -40,7 +40,7 @@ public class RequestParameterOperation {
         this.lookupComponentTypeParameter();
     }
 
-    public RequestParameterOperation(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+    public HttpRequestParameterOperation(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
                                      ActionExecution actionExecution, List<ComponentAttribute> attributes, String name, String value) {
         this.setFrameworkExecution(frameworkExecution);
         this.setExecutionControl(executionControl);

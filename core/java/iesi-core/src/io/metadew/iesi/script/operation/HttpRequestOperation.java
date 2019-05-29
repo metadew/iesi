@@ -15,7 +15,7 @@ import java.util.HashMap;
  *
  * @author peter.billen
  */
-public class RequestOperation {
+public class HttpRequestOperation {
 
     private FrameworkExecution frameworkExecution;
 
@@ -28,21 +28,21 @@ public class RequestOperation {
     private Component request;
 
     // parameters
-    private RequestParameterOperation url;
+    private HttpRequestParameterOperation url;
 
-    private HashMap<String, RequestParameterOperation> headerMap;
+    private HashMap<String, HttpRequestParameterOperation> headerMap;
 
-    private HashMap<String, RequestParameterOperation> queryParamMap;
+    private HashMap<String, HttpRequestParameterOperation> queryParamMap;
 
-    private HashMap<String, RequestParameterOperation> requestParameterOperationMap;
+    private HashMap<String, HttpRequestParameterOperation> requestParameterOperationMap;
 
     // Constructors
-    public RequestOperation(FrameworkExecution frameworkExecution, ExecutionControl executionControl, ActionExecution actionExecution,
+    public HttpRequestOperation(FrameworkExecution frameworkExecution, ExecutionControl executionControl, ActionExecution actionExecution,
                             String requestName) {
         this.setFrameworkExecution(frameworkExecution);
         this.setExecutionControl(executionControl);
         this.setActionExecution(actionExecution);
-        this.setRequestParameterOperationMap(new HashMap<String, RequestParameterOperation>());
+        this.setRequestParameterOperationMap(new HashMap<String, HttpRequestParameterOperation>());
         this.setRequestName(requestName);
         this.getRequestConfiguration();
     }
@@ -54,27 +54,27 @@ public class RequestOperation {
         this.setRequest(request);
 
         // Reset parameters
-        this.setUrl(new RequestParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(), this.getActionExecution(),
+        this.setUrl(new HttpRequestParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(), this.getActionExecution(),
                 this.getRequest().getAttributes(), "url"));
-        this.setHeaderMap(new HashMap<String, RequestParameterOperation>());
-        this.setQueryParamMap(new HashMap<String, RequestParameterOperation>());
+        this.setHeaderMap(new HashMap<String, HttpRequestParameterOperation>());
+        this.setQueryParamMap(new HashMap<String, HttpRequestParameterOperation>());
 
         // Get Parameters
         for (ComponentParameter componentParameter : this.getRequest().getParameters()) {
             if (componentParameter.getName().equalsIgnoreCase("url")) {
                 this.getUrl().setInputValue(componentParameter.getValue());
             } else if (componentParameter.getName().toLowerCase().startsWith("header")) {
-                RequestParameterOperation requestParameterOperation = new RequestParameterOperation(this.getFrameworkExecution(),
+                HttpRequestParameterOperation httpRequestParameterOperation = new HttpRequestParameterOperation(this.getFrameworkExecution(),
                         this.getExecutionControl(), this.getActionExecution(), this.getRequest().getAttributes(),
                         componentParameter.getName());
-                requestParameterOperation.setInputValue(componentParameter.getValue());
-                this.getHeaderMap().put(componentParameter.getName(), requestParameterOperation);
+                httpRequestParameterOperation.setInputValue(componentParameter.getValue());
+                this.getHeaderMap().put(componentParameter.getName(), httpRequestParameterOperation);
             } else if (componentParameter.getName().toLowerCase().startsWith("queryparam")) {
-                RequestParameterOperation requestParameterOperation = new RequestParameterOperation(this.getFrameworkExecution(),
+                HttpRequestParameterOperation httpRequestParameterOperation = new HttpRequestParameterOperation(this.getFrameworkExecution(),
                         this.getExecutionControl(), this.getActionExecution(), this.getRequest().getAttributes(),
                         componentParameter.getName());
-                requestParameterOperation.setInputValue(componentParameter.getValue());
-                this.getQueryParamMap().put(componentParameter.getName(), requestParameterOperation);
+                httpRequestParameterOperation.setInputValue(componentParameter.getValue());
+                this.getQueryParamMap().put(componentParameter.getName(), httpRequestParameterOperation);
             }
         }
 
@@ -108,11 +108,11 @@ public class RequestOperation {
         this.request = request;
     }
 
-    public RequestParameterOperation getUrl() {
+    public HttpRequestParameterOperation getUrl() {
         return url;
     }
 
-    public void setUrl(RequestParameterOperation url) {
+    public void setUrl(HttpRequestParameterOperation url) {
         this.url = url;
     }
 
@@ -132,27 +132,27 @@ public class RequestOperation {
         this.actionExecution = actionExecution;
     }
 
-    public HashMap<String, RequestParameterOperation> getRequestParameterOperationMap() {
+    public HashMap<String, HttpRequestParameterOperation> getRequestParameterOperationMap() {
         return requestParameterOperationMap;
     }
 
-    public void setRequestParameterOperationMap(HashMap<String, RequestParameterOperation> requestParameterOperationMap) {
+    public void setRequestParameterOperationMap(HashMap<String, HttpRequestParameterOperation> requestParameterOperationMap) {
         this.requestParameterOperationMap = requestParameterOperationMap;
     }
 
-    public HashMap<String, RequestParameterOperation> getHeaderMap() {
+    public HashMap<String, HttpRequestParameterOperation> getHeaderMap() {
         return headerMap;
     }
 
-    public void setHeaderMap(HashMap<String, RequestParameterOperation> headerMap) {
+    public void setHeaderMap(HashMap<String, HttpRequestParameterOperation> headerMap) {
         this.headerMap = headerMap;
     }
 
-    public HashMap<String, RequestParameterOperation> getQueryParamMap() {
+    public HashMap<String, HttpRequestParameterOperation> getQueryParamMap() {
         return queryParamMap;
     }
 
-    public void setQueryParamMap(HashMap<String, RequestParameterOperation> queryParamMap) {
+    public void setQueryParamMap(HashMap<String, HttpRequestParameterOperation> queryParamMap) {
         this.queryParamMap = queryParamMap;
     }
 

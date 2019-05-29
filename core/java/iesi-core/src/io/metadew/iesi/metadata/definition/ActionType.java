@@ -8,7 +8,8 @@ public class ActionType {
     private String className;
     private String description;
     private List<ActionTypeParameter> parameters;
-
+    private String status = "none";
+    
     //Constructors
     public ActionType() {
 
@@ -46,5 +47,13 @@ public class ActionType {
     public void setClassName(String className) {
         this.className = className;
     }
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
 
 }

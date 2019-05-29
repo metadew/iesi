@@ -32,6 +32,7 @@ public class Services {
         requestorThread.setName(ExecutionServerServices.REQUESTOR.value());
         // schedulerRunnable = new SchedulerRunnable();
         // schedulerThread = new Thread(schedulerRunnable);
+        this.startRequestor();
     }
 
     public void startAll() {

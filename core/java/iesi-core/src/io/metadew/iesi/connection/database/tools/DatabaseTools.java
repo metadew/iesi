@@ -16,4 +16,21 @@ public final class DatabaseTools {
 		}
     	return (Database) instance;
     }
+    
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+	public static Database getDatabase(String className) {
+    	Object instance = null;
+		try {
+			Class classRef = Class.forName(className);
+			instance = classRef.getDeclaredConstructor().newInstance();
+		} catch (Exception e) {
+			throw new RuntimeException("Unable to get database object");
+		}
+    	return (Database) instance;
+    }
+    
+    // TODO add lookup for all database types
+    public static void getDatabaseClassName() {
+    	
+    }
 }

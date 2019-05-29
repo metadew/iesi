@@ -28,7 +28,17 @@ public class DataObjectOperation {
 
     // Constructors
     public DataObjectOperation() {
-
+    	
+    }
+    
+    public DataObjectOperation(String inputFile) {
+		this.setInputFile(inputFile);
+		File file = new File(inputFile);
+		if (FileTools.getFileExtension(file).equalsIgnoreCase("json")) {
+			this.parseFile();
+		} else {
+			this.parseYamlFile();
+		}
     }
 
     public DataObjectOperation(FrameworkExecution frameworkExecution, String inputFile) {
@@ -159,6 +169,7 @@ public class DataObjectOperation {
         }
     }
 
+    // TODO remove from this operation - create new one
     public void saveToMetadataRepository() {
         for (MetadataRepository metadataRepository : this.getMetadataRepositories()) {
             this.setDataObjectConfiguration(new DataObjectConfiguration(this.getFrameworkExecution(), metadataRepository, this.getDataObjects()));

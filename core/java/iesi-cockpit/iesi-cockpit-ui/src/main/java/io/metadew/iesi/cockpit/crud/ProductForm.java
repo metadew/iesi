@@ -33,7 +33,9 @@ import io.metadew.iesi.cockpit.backend.data.Product;
  */
 public class ProductForm extends Div {
 
-    private VerticalLayout content;
+	private static final long serialVersionUID = 1L;
+
+	private VerticalLayout content;
 
     private TextField productName;
     private TextField price;
@@ -51,7 +53,9 @@ public class ProductForm extends Div {
 
     private static class PriceConverter extends StringToBigDecimalConverter {
 
-        public PriceConverter() {
+		private static final long serialVersionUID = 1L;
+
+		public PriceConverter() {
             super(BigDecimal.ZERO, "Cannot convert value to a number.");
         }
 
@@ -69,7 +73,9 @@ public class ProductForm extends Div {
 
     private static class StockCountConverter extends StringToIntegerConverter {
 
-        public StockCountConverter() {
+		private static final long serialVersionUID = 1L;
+
+		public StockCountConverter() {
             super(0, "Could not convert value to " + Integer.class.getName()
                     + ".");
         }

@@ -16,12 +16,12 @@ import com.vaadin.flow.router.Route;
 import io.metadew.iesi.cockpit.MainLayout;
 import io.metadew.iesi.metadata.definition.Environment;
 
-@Route(value = "Environments", layout = MainLayout.class)
+@Route(value = "environments", layout = MainLayout.class)
 public class EnvironmentView extends HorizontalLayout
         implements HasUrlParameter<String> {
 
 	private static final long serialVersionUID = 1L;
-	public static final String VIEW_NAME = "Environments";
+	public static final String VIEW_NAME = "environments";
     private EnvironmentGrid grid;
     private EnvironmentForm form;
     private TextField filter;

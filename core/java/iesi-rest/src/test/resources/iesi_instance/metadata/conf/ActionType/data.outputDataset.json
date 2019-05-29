@@ -1,0 +1,33 @@
+{
+  "data" : {
+    "name" : "data.outputDataset",
+    "className" : "io.metadew.iesi.script.action.DataOutputDataset",
+    "description" : "Prints a dataset for logging and debugging purposes",
+    "parameters" : [ {
+      "name" : "name",
+      "description" : "Name of the dataset to use",
+      "type" : "string",
+      "mandatory" : "Y",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
+    }, {
+      "name" : "labels",
+      "description" : "Labels associated to the dataset instance",
+      "type" : "string",
+      "mandatory" : "N",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
+    }, {
+      "name" : "onScreen",
+      "description" : "Flag indicating if the output needs to be printed on the screen",
+      "type" : "string",
+      "mandatory" : "N",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
+    } ]
+  },
+  "type" : "ActionType"
+}

@@ -70,6 +70,7 @@ The configuration data can be divided in different categories.
 |Connectivity|Connectivity configuration to automate actions. This can include parameters that are resolved during execution.|
 |Control|Control configuration to organize access to automation objects.|
 |Design|Automation configuration as designed by the automation engineer. This can include parameters and other reusable constructs that are resolved during execution.|
+|Execution|In-process information to drive executions.|
 |Result|The technical outcome for the different actions as executed by the framework.|
 |Trace|The resolution of the automation configuration design as it has been executed by the framework. All parameters and reusable constructs are replaced by actual values.|
 |Reporting|The interpretation of the technical outcome using reporting views to give context to the execution.|
@@ -100,6 +101,7 @@ Prefixes:
 |CTL|Control tables|
 |CXN|Connectivity tables|
 |DES|Design tables|
+|EXE|Execution tables|
 |RES|Result tables|
 |TRC|Trace tables|
 
@@ -112,6 +114,7 @@ More information on the data models for the different categories can be found by
 * [Connectivity](/{{site.repository}}/pages/understand/datamodel/connectivity.html)
 * [Control](/{{site.repository}}/pages/understand/datamodel/control.html)
 * [design](/{{site.repository}}/pages/understand/datamodel/design.html)
+* [execution](/{{site.repository}}/pages/understand/datamodel/execution.html)
 * [result](/{{site.repository}}/pages/understand/datamodel/result.html)
 * [trace](/{{site.repository}}/pages/understand/datamodel/trace.html)
 

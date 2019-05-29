@@ -1,0 +1,14 @@
+{
+  "data" : {
+    "name" : "txt.paragraphs",
+    "description" : "Random number of paragraphs",
+    "parameters" : [ {
+      "name" : "PARAGRAPH_NB",
+      "description" : "Number of paragrpahs to generate",
+      "type" : "number",
+      "mandatory" : "N",
+      "encrypted" : "N"
+    } ]
+  },
+  "type" : "GenerationRuleType"
+}

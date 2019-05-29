@@ -19,7 +19,8 @@ import java.io.Serializable;
  */
 public class SampleCrudLogic implements Serializable {
 
-    private SampleCrudView view;
+	private static final long serialVersionUID = 1L;
+	private SampleCrudView view;
 
     public SampleCrudLogic(SampleCrudView simpleCrudView) {
         view = simpleCrudView;

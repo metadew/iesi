@@ -1,0 +1,14 @@
+{
+  "data" : {
+    "name" : "num.rowNumber",
+    "description" : "Generate a sequential row number",
+    "parameters" : [ {
+      "name" : "START_NB",
+      "description" : "Initial number to use",
+      "type" : "number",
+      "mandatory" : "N",
+      "encrypted" : "N"
+    } ]
+  },
+  "type" : "GenerationRuleType"
+}

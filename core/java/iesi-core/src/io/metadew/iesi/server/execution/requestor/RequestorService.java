@@ -9,128 +9,159 @@ import java.sql.SQLException;
 
 public class RequestorService {
 
-    private FrameworkInstance frameworkInstance;
-    public CachedRowSet crs;
+	private FrameworkInstance frameworkInstance;
+	public CachedRowSet crs;
 
-    // fields
-    public int request_id;
+	// fields
+	public String requestId;
 
-    public RequestorService(FrameworkInstance frameworkInstance) {
-        this.setFrameworkInstance(frameworkInstance);
-        this.clearProcessors();
-        this.createProcessors();
-    }
+	public RequestorService(FrameworkInstance frameworkInstance) {
+		this.setFrameworkInstance(frameworkInstance);
+		this.clearProcessors();
+		this.createProcessors();
+	}
 
-    // Initialize
-    public void clearProcessors() {
-        String QueryString = "delete from " + this.getFrameworkInstance().getExecutionServerRepositoryConfiguration().getTableNameByLabel("RequestExecutions");
-        this.getFrameworkInstance().getExecutionServerRepositoryConfiguration().executeUpdate(QueryString);
-    }
+	// Initialize
+	public void clearProcessors() {
+		String QueryString = "delete from " + this.getFrameworkInstance().getExecutionServerRepositoryConfiguration()
+				.getTableNameByLabel("RequestExecutions");
+		this.getFrameworkInstance().getExecutionServerRepositoryConfiguration().executeUpdate(QueryString);
+	}
 
-    public void createProcessors() {
-        String QueryString = "insert into " + this.getFrameworkInstance().getExecutionServerRepositoryConfiguration().getTableNameByLabel("RequestExecutions")
-                + " (prc_id,request_id) values (1,-1)";
-        this.getFrameworkInstance().getExecutionServerRepositoryConfiguration().executeUpdate(QueryString);
-    }
+	public void createProcessors() {
+		String QueryString = "insert into " + this.getFrameworkInstance().getExecutionServerRepositoryConfiguration()
+				.getTableNameByLabel("RequestExecutions") + " (exe_id,request_id) values (1,-1)";
+		this.getFrameworkInstance().getExecutionServerRepositoryConfiguration().executeUpdate(QueryString);
+	}
 
-    public int getAvailableProcessor() {
-        int prc_id = -1;
+	public int getAvailableProcessor() {
+		int executionId = -1;
 
-        String QueryString = "select min(prc_id) prc_id from "
-                + this.getFrameworkInstance().getExecutionServerRepositoryConfiguration().getTableNameByLabel("RequestExecutions") + " where request_id = -1";
-        this.crs = this.getFrameworkInstance().getExecutionServerRepositoryConfiguration().executeQuery(QueryString, "reader");
+		String QueryString = "select min(exe_id) exe_id from " + this.getFrameworkInstance()
+				.getExecutionServerRepositoryConfiguration().getTableNameByLabel("RequestExecutions")
+				+ " where request_id = -1";
+		this.crs = this.getFrameworkInstance().getExecutionServerRepositoryConfiguration().executeQuery(QueryString,
+				"reader");
 
-        try {
-            while (crs.next()) {
-                prc_id = crs.getInt("PRC_ID");
-            }
+		try {
+			while (crs.next()) {
+				executionId = crs.getInt("EXE_ID");
+			}
 
-            crs.close();
-        } catch (Exception e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-        }
+			crs.close();
+		} catch (Exception e) {
+			StringWriter StackTrace = new StringWriter();
+			e.printStackTrace(new PrintWriter(StackTrace));
+		}
 
-        return prc_id;
-    }
+		return executionId;
+	}
 
-    public void getNextQueID() {
-        String QueryString = "";
-        CachedRowSet crs = null;
-        QueryString = "select min(request_id) REQUEST_ID from "
-                + this.getFrameworkInstance().getExecutionServerRepositoryConfiguration().getTableNameByLabel("Requests") + " where prc_id = -1";
-        crs = this.getFrameworkInstance().getExecutionServerRepositoryConfiguration().executeQuery(QueryString, "reader");
-        try {
-            while (crs.next()) {
-                this.request_id = crs.getInt("REQUEST_ID");
-            }
+	public void getNextQueID() {
+		String QueryString = "";
+		CachedRowSet crs = null;
+		QueryString = "select min(load_tms) LOAD_TMS from " + this.getFrameworkInstance()
+				.getExecutionServerRepositoryConfiguration().getTableNameByLabel("Requests") + " where exe_id = -1";
+		crs = this.getFrameworkInstance().getExecutionServerRepositoryConfiguration().executeQuery(QueryString,
+				"reader");
+		String loadTimestamp = "";
+		try {
+			while (crs.next()) {
+				loadTimestamp = crs.getString("LOAD_TMS");
+				System.out.println(loadTimestamp);
+			}
+			crs.close();
 
-            crs.close();
-        } catch (SQLException e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-        }
-    }
+			// Get the request identifier
+			QueryString = "select request_id from " + this.getFrameworkInstance()
+					.getExecutionServerRepositoryConfiguration().getTableNameByLabel("Requests") + " where load_tms = '"
+					+ loadTimestamp + "'";
+			crs = this.getFrameworkInstance().getExecutionServerRepositoryConfiguration().executeQuery(QueryString,
+					"reader");
+			while (crs.next()) {
+				this.requestId = crs.getString("REQUEST_ID");
+			}
+			crs.close();
 
-    public void execute() {
-        // Move to the runnable
+		} catch (SQLException e) {
+			StringWriter StackTrace = new StringWriter();
+			e.printStackTrace(new PrintWriter(StackTrace));
+		}
+	}
 
-        // Get next que_id
-        this.getNextQueID();
+	public void execute() {
+		// Move to the runnable
 
-        // check for processor
-        int i = 1;
-        int avaiable_prc_id = -1;
-        boolean prcFound = false;
-        while (i == 1 && prcFound == false) {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException ex) {
-                Thread.currentThread().interrupt();
-            }
+		// Get next que_id
+		this.getNextQueID();
 
-            avaiable_prc_id = this.getAvailableProcessor();
-            if (avaiable_prc_id > 0)
-                prcFound = true;
-        }
+		// check for processor
+		int i = 1;
+		int availableExecutionId = -1;
+		boolean prcFound = false;
+		while (i == 1 && prcFound == false) {
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException ex) {
+				Thread.currentThread().interrupt();
+			}
 
-        // set processor
-        RequestorProcessor prc = new RequestorProcessor(this.getFrameworkInstance(), avaiable_prc_id, this.request_id);
-        prc.execute();
+			availableExecutionId = this.getAvailableProcessor();
+			if (availableExecutionId > 0)
+				prcFound = true;
+		}
 
-    }
+		// set processor
+		RequestorProcessor prc = new RequestorProcessor(this.getFrameworkInstance(), availableExecutionId, this.requestId);
+		prc.execute();
+		System.out.println(this.requestId);
 
-    public boolean execListen() {
-        int request_nb = -1;
+	}
 
-        String QueryString = "select count(request_id) 'REQUEST_NB' from " + this.getFrameworkInstance().getExecutionServerRepositoryConfiguration().getTableNameByLabel("Requests");
-        this.crs = this.getFrameworkInstance().getExecutionServerRepositoryConfiguration().executeQuery(QueryString, "reader");
-        System.out.println(QueryString);
-        try {
-            while (crs.next()) {
-                request_nb = crs.getInt("REQUEST_NB");
-            }
-            crs.close();
-        } catch (Exception e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-        }
+	public boolean execListen() {
+		int avaiableRequests = -1;
+		int availableProcesses = -1;
 
-        if (request_nb > 0) {
-            return true;
-        } else {
-            return false;
-        }
-    }
+		String QueryString = "select count(request_id) 'REQUEST_NB' from " + this.getFrameworkInstance()
+				.getExecutionServerRepositoryConfiguration().getTableNameByLabel("Requests") + " where exe_id = -1";
+		this.crs = this.getFrameworkInstance().getExecutionServerRepositoryConfiguration().executeQuery(QueryString,
+				"reader");
 
-    // Getters and setters
-    public FrameworkInstance getFrameworkInstance() {
-        return frameworkInstance;
-    }
+		try {
+			while (crs.next()) {
+				avaiableRequests = crs.getInt("REQUEST_NB");
+			}
 
-    public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-        this.frameworkInstance = frameworkInstance;
-    }
+			// Get available processes
+			QueryString = "select count(exe_id) 'PRC_NB' from " + this.getFrameworkInstance()
+					.getExecutionServerRepositoryConfiguration().getTableNameByLabel("RequestExecutions")
+					+ " where request_id = -1";
+			this.crs = this.getFrameworkInstance().getExecutionServerRepositoryConfiguration().executeQuery(QueryString,
+					"reader");
+			while (crs.next()) {
+				availableProcesses = crs.getInt("PRC_NB");
+			}
 
+			this.crs.close();
+		} catch (Exception e) {
+			StringWriter StackTrace = new StringWriter();
+			e.printStackTrace(new PrintWriter(StackTrace));
+		}
+
+		if (avaiableRequests > 0 && availableProcesses > 0) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	// Getters and setters
+	public FrameworkInstance getFrameworkInstance() {
+		return frameworkInstance;
+	}
+
+	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
+		this.frameworkInstance = frameworkInstance;
+	}
 
 }

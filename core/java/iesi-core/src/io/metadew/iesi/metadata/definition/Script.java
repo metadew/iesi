@@ -98,4 +98,8 @@ public class Script {
         this.id = id;
     }
 
+	public boolean isEmpty() {
+		return (this.name == null || this.name.isEmpty()) ;
+	}
+
 }

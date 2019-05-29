@@ -1,0 +1,16 @@
+[{
+	"type": "GenerationControlRuleType",
+	"data": {
+		"name": "out.print",
+		"description": "Write value",
+		"parameters": [
+			{"name": "VALUE","description": "Value to print","type": "string","mandatory": "Y","encrypted": "N"}
+	]
+}},
+{
+	"type": "GenerationControlRuleType",
+	"data": {
+		"name": "calc.recordCount",
+		"description": "Count the number of records in the generated set",
+		"parameters": [ ]
+}}]

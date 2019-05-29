@@ -6,7 +6,8 @@ import java.io.Serializable;
 
 public class Category implements Serializable {
 
-    @NotNull
+	private static final long serialVersionUID = 1L;
+	@NotNull
     private int id = -1;
     @Size(min = 2, message = "Category name must be at least two characters")
     private String name;

@@ -8,6 +8,10 @@ public class SqliteDatabase extends Database {
     public SqliteDatabase(SqliteDatabaseConnection databaseConnection) {
         super(databaseConnection);
     }
+    
+    public SqliteDatabase() {
+    	super();
+    }
 
     @Override
     public String getSystemTimestampExpression() {

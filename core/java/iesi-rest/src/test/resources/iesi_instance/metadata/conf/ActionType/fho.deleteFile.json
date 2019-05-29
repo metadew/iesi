@@ -1,0 +1,33 @@
+{
+  "data" : {
+    "name" : "fho.deleteFile",
+    "className" : "io.metadew.iesi.script.action.FhoDeleteFile",
+    "description" : "Delete one or more files in a folder",
+    "parameters" : [ {
+      "name" : "path",
+      "description" : "Path where the file is located",
+      "type" : "string",
+      "mandatory" : "N",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
+    }, {
+      "name" : "file",
+      "description" : "File(s) to delete",
+      "type" : "string",
+      "mandatory" : "Y",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
+    }, {
+      "name" : "connection",
+      "description" : "Connection where the file is located",
+      "type" : "string",
+      "mandatory" : "N",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "Y"
+    } ]
+  },
+  "type" : "ActionType"
+}

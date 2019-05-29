@@ -1,0 +1,49 @@
+{
+  "data" : {
+    "name" : "sql.executeProcedure",
+    "className" : "io.metadew.iesi.script.action.SqlExecuteProcedure",
+    "description" : "Execute a SQL Stored Procedure",
+    "parameters" : [ {
+      "name" : "procedure",
+      "description" : "SQL Stored Procedure to run",
+      "type" : "string",
+      "mandatory" : "Y",
+      "encrypted" : "N",
+      "subroutine" : "query",
+      "impersonate" : "N"
+    }, {
+      "name" : "connection",
+      "description" : "Connection where to run the SQL Stored Procedure",
+      "type" : "string",
+      "mandatory" : "Y",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "Y"
+    }, {
+      "name" : "parameters",
+      "description" : "Parameters to use for the execution",
+      "type" : "string",
+      "mandatory" : "N",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
+    }, {
+      "name" : "outputDataset",
+      "description" : "Dataset to write the output to",
+      "type" : "string",
+      "mandatory" : "N",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
+    }, {
+      "name" : "appendOutput",
+      "description" : "Flag indicating if previous output needs to be removed",
+      "type" : "string",
+      "mandatory" : "N",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
+    } ]
+  },
+  "type" : "ActionType"
+}

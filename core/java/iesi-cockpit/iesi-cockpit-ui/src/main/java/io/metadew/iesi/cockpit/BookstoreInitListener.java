@@ -13,7 +13,10 @@ import io.metadew.iesi.cockpit.authentication.LoginScreen;
  * com.vaadin.flow.server.VaadinServiceInitListener in META-INF/services.
  */
 public class BookstoreInitListener implements VaadinServiceInitListener {
-    @Override
+
+	private static final long serialVersionUID = 1L;
+
+	@Override
     public void serviceInit(ServiceInitEvent initEvent) {
         final AccessControl accessControl = AccessControlFactory.getInstance()
                 .createAccessControl();

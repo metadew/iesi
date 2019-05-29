@@ -10,7 +10,8 @@ import javax.validation.constraints.Size;
 
 public class Product implements Serializable {
 
-    @NotNull
+	private static final long serialVersionUID = 1L;
+	@NotNull
     private int id = -1;
     @NotNull
     @Size(min = 2, message = "Product name must have at least two characters")

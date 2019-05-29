@@ -17,8 +17,8 @@ import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
-import io.metadew.iesi.script.operation.RequestOperation;
-import io.metadew.iesi.script.operation.RequestParameterOperation;
+import io.metadew.iesi.script.operation.HttpRequestOperation;
+import io.metadew.iesi.script.operation.HttpRequestParameterOperation;
 import org.apache.http.Header;
 import org.apache.http.HttpHeaders;
 import org.apache.http.entity.ContentType;
@@ -148,33 +148,33 @@ public class HttpExecuteRequest {
     @SuppressWarnings("rawtypes")
 	private boolean executeHttpRequest(String requestName, String requestType, Optional<String> requestBody, boolean setRuntimeVariables, String outputDatasetReferenceName) {
         // Get request configuration
-        RequestOperation requestOperation = new RequestOperation(this.getFrameworkExecution(),
+        HttpRequestOperation httpRequestOperation = new HttpRequestOperation(this.getFrameworkExecution(),
                 this.getExecutionControl(), this.getActionExecution(), requestName);
 
         // Run the action
-        HttpRequest httpRequest = new HttpRequest(requestOperation.getUrl().getValue());
+        HttpRequest httpRequest = new HttpRequest(httpRequestOperation.getUrl().getValue());
         Iterator iterator;
         ObjectMapper objectMapper = new ObjectMapper();
         // Headers
-        iterator = requestOperation.getHeaderMap().entrySet().iterator();
+        iterator = httpRequestOperation.getHeaderMap().entrySet().iterator();
         while (iterator.hasNext()) {
             Map.Entry pair = (Map.Entry) iterator.next();
-            RequestParameterOperation requestParameterOperation = objectMapper.convertValue(pair.getValue(),
-                    RequestParameterOperation.class);
+            HttpRequestParameterOperation httpRequestParameterOperation = objectMapper.convertValue(pair.getValue(),
+                    HttpRequestParameterOperation.class);
             String[] headerPair = ParsingTools.getValuesForDelimitedList(true,
-                    requestParameterOperation.getValue());
+                    httpRequestParameterOperation.getValue());
             httpRequest.addHeader(headerPair[0], headerPair[1]);
             iterator.remove();
         }
 
         // QueryParams
-        iterator = requestOperation.getQueryParamMap().entrySet().iterator();
+        iterator = httpRequestOperation.getQueryParamMap().entrySet().iterator();
         while (iterator.hasNext()) {
             Map.Entry pair = (Map.Entry) iterator.next();
-            RequestParameterOperation requestParameterOperation = objectMapper.convertValue(pair.getValue(),
-                    RequestParameterOperation.class);
+            HttpRequestParameterOperation httpRequestParameterOperation = objectMapper.convertValue(pair.getValue(),
+                    HttpRequestParameterOperation.class);
             String[] headerPair = ParsingTools.getValuesForDelimitedList(true,
-                    requestParameterOperation.getValue());
+                    httpRequestParameterOperation.getValue());
             httpRequest.addQueryParam(headerPair[0], headerPair[1]);
             iterator.remove();
         }

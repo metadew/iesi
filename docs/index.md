@@ -11,11 +11,11 @@
 
 > Our objective is to be up and running in less than 1 hour
 
-Intelligent ETL Solution Industrialization or **IESI** is an automation framework orgininally created at Accenture to automate end-to-end delivery and testing processes for data driven initiatives (integration or migration). It allows the configuration, execution and reporting on automated executions driving development, testing and deployment automation. Although our name includes the term *ETL*, the framework is so much more. Read this term from its conceptual essence: extract, transform, load or rather input, process, output. So, this applies to all types of systems and processes, from backend to data platforms and connectivity.
+Intelligent ETL Solution Industrialization or **IESI** is an automation framework orginally created at Accenture to automate end-to-end delivery and testing processes for data driven initiatives (integration or migration). It allows the configuration, execution and reporting on automated executions driving development, testing and deployment automation. Although our name includes the term *ETL*, the framework is so much more. Read this term from its conceptual essence: extract, transform, load or rather input, process, output. So, this applies to all types of systems and processes, from backend to data platforms and connectivity.
 
 > It becomes easier to automate than to do it manually
 
-Our framework aims to differientiate itself by making automation services accessible and affordable for any project or organization.
+Our framework aims to differentiate itself by making automation services accessible and affordable for any project or organization.
 
 |Fast install|Zero-touch on-premise (Cloud containers coming soon)|
 |Broad access|Get ROI for small and large projects or organizations|
@@ -44,7 +44,7 @@ Curious to know more about our upcoming release? Read more on our [preview](http
 
 # Supported Technologies
 
-Our framework can run on Linux/Unix and Windows systems.
+Our framework can run on Linux/Unix, Mac and Windows systems.
 
 |Technology|Configuration|Connectivity|Data|
 |----------|    :---:    |   :---:    |   :---:    |
@@ -64,14 +64,7 @@ Our framework can run on Linux/Unix and Windows systems.
 
 Looking for other options? Get in touch via our [GitHub issue page](https://github.com/metadew/iesi/issues).
 
-*Legend*
-
-|Color|Description|
-|:---:|:---:|
-|![green](/{{site.repository}}/images/icons/green-dot.png)|Supported|
-|![yellow](/{{site.repository}}/images/icons/yellow-dot.png)|In progress|
-|![red](/{{site.repository}}/images/icons/red-dot.png)|Not supported|
-|![grey](/{{site.repository}}/images/icons/grey-dot.png)|Not applicable|
+For more information on the technology support definition, please refer to the [legend](/{{site.repository}}/pages/understand/legend.html) page.
 
 # Getting Started
 

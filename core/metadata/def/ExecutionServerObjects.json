@@ -1,8 +1,8 @@
 [{
 	"type": "MetadataObject",
 	"data": {
-		"name": "ExecutionRequest",
-		"label": "ExecutionRequests",
+		"name": "Request",
+		"label": "Requests",
 		"description": "In-process runtime requests for execution",
 		"type": "operational",
 		"category": "execution",
@@ -13,8 +13,8 @@
 {
 	"type": "MetadataObject",
 	"data": {
-		"name": "ExecutionControl",
-		"label": "ExecutionControls",
+		"name": "RequestExecution",
+		"label": "RequestExecutions",
 		"description": "In-process runtime execution control",
 		"type": "operational",
 		"category": "execution",

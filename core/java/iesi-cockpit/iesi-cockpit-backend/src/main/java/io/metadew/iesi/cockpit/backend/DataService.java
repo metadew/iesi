@@ -12,7 +12,9 @@ import io.metadew.iesi.cockpit.backend.mock.MockDataService;
  */
 public abstract class DataService implements Serializable {
 
-    public abstract Collection<Product> getAllProducts();
+	private static final long serialVersionUID = 1L;
+
+	public abstract Collection<Product> getAllProducts();
 
     public abstract Collection<Category> getAllCategories();
 

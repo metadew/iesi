@@ -1,0 +1,98 @@
+MIT License
+
+Copyright (c) 2015 Accenture
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+------------------------------------------------------------------------------------
+This product bundles various third-party components under other open source licenses.
+This section summarizes those components and their licenses. See licenses/
+for text of these licenses.
+
+Apache License 1.1
+------------------
+com.mockrunner:mockrunner
+com.mockrunner:mockrunner-core
+com.mockrunner:mockrunner-jdbc
+com.mockrunner:mockrunner-servlet
+
+Apache License 2.0
+------------------
+com.dremio:dremio-jdbc-driver
+com.fasterxml.jackson:jackson-annotations
+com.fasterxml.jackson:jackson-core
+com.fasterxml.jackson:jackson-databind
+com.fasterxml.jackson:jackson-dataformat-yaml
+com.github.bmoliveira:snake-yaml
+com.github.javafaker:javafaker
+com.google.guava:guava
+commons-cli:commons-cli
+commons-collections:commons-collections
+commons-compress:commons-codec
+commons-compress:commons-compress
+commons-exec:commons-exec
+commons-lang:commons-lang
+commons-logging:commons-logging
+io.prestosql:presto-jdbc
+nl.flotsam:xeger
+org.apache.commons:commons-io
+org.apache.commons:commons-jexl
+org.apache.commons:commons-lang3
+org.apache.httpcomponents:httpasyncclient
+org.apache.httpcomponents:httpasyncclient-cache
+org.apache.httpcomponents:httpclient
+org.apache.httpcomponents:httpclient-cache
+org.apache.httpcomponents:httpclient-win
+org.apache.httpcomponents:httpcore
+org.apache.httpcomponents:httpcore-nio
+org.apache.httpcomponents:httpmime
+org.apache.logging.log4j:log4j-api
+org.apache.logging.log4j:log4j-core
+org.codehaus.groovy.modules.http-builder:http-builder
+org.javassist:javassist
+org.jfrog.artifactory.client:artifactory-java-client-api
+org.jfrog.artifactory.client:artifactory-java-client-httpClient
+org.jfrog.artifactory.client:artifactory-java-client-ning-services
+org.jfrog.artifactory.client:artifactory-java-client-services
+org.mybatis:mybatis
+org.xerial:sqlite-jdbc
+
+BSD-2-Clause License
+--------------------
+org.postgresql:postgresql
+
+Eclipse Public License 1.0
+--------------------------
+com.h2database:h2
+
+JSch License
+------------
+com.jcraft:jsch
+
+JSON License
+------------
+org.json:json
+
+Microsoft Software License
+--------------------------
+com.microsoft.sqlserver:mssql-server
+
+WTFPL License
+-------------
+org.reflections:reflections

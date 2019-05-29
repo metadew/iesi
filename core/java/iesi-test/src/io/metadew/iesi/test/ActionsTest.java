@@ -19,6 +19,7 @@ import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.lang3.ArrayUtils;
 
 public class ActionsTest {
 
@@ -78,6 +79,8 @@ public class ActionsTest {
                     + File.separator + "conf" + File.separator + "def";
             String actionsTestConfigurationHome = repositoryHome + File.separator + "test" + File.separator + "metadata"
                     + File.separator + "conf" + File.separator + "actions";
+            String instructionsTestConfigurationHome = repositoryHome + File.separator + "test" + File.separator + "metadata"
+                    + File.separator + "conf" + File.separator + "instructions";
             String connectionsTestConfigurationHome = repositoryHome + File.separator + "test" + File.separator + "metadata"
                     + File.separator + "conf" + File.separator + "connections";
 
@@ -88,6 +91,7 @@ public class ActionsTest {
             String frameworkTestDataFolder = testDataFolder + File.separator + "fwk";
             String setupTestConfDataFolder = frameworkTestDataFolder + File.separator + "setup";
             String actionsTestConfDataFolder = frameworkTestDataFolder + File.separator + "actions";
+            String instructionsTestConfDataFolder = frameworkTestDataFolder + File.separator + "instructions";
             String connectionsTestConfDataFolder = frameworkTestDataFolder + File.separator + "connections";
             String actionsTestDefDataFolder = frameworkTestDataFolder + File.separator + "def";
             String fwkTestDataFolder = frameworkTestDataFolder + File.separator + "data";
@@ -102,6 +106,7 @@ public class ActionsTest {
             FolderTools.createFolder(frameworkTestDataFolder);
             FolderTools.createFolder(setupTestConfDataFolder);
             FolderTools.createFolder(actionsTestConfDataFolder);
+            FolderTools.createFolder(instructionsTestConfDataFolder);
             FolderTools.createFolder(connectionsTestConfDataFolder);
             FolderTools.createFolder(actionsTestDefDataFolder);
             FolderTools.createFolder(fwkTestDataFolder);
@@ -133,6 +138,8 @@ public class ActionsTest {
             // Configurations
             FolderTools.copyFromFolderToFolder(actionsTestConfigurationHome, actionsTestConfDataFolder, false);
             FileTools.delete(actionsTestConfDataFolder + File.separator + ".gitkeep");
+            FolderTools.copyFromFolderToFolder(instructionsTestConfigurationHome, instructionsTestConfDataFolder, false);
+            FileTools.delete(actionsTestConfDataFolder + File.separator + ".gitkeep");
             FolderTools.copyFromFolderToFolder(connectionsTestConfigurationHome, connectionsTestConfDataFolder, false);
             FileTools.delete(connectionsTestConfDataFolder + File.separator + ".gitkeep");
 
@@ -148,11 +155,10 @@ public class ActionsTest {
             metadataCreateArgs.add(type);
             Launcher.execute("metadata", metadataCreateArgs);
 
-            File[] confs = null;
-            // Load definitions tests
-            confs = FolderTools
-                    .getFilesInFolder(actionsTestDefDataFolder, "regex", ".+\\.yml");            
-            
+            File[] confs = ArrayUtils
+                    .addAll(FolderTools.getFilesInFolder(actionsTestDefDataFolder, "regex", ".+\\.yml"),
+                            FolderTools.getFilesInFolder(instructionsTestConfDataFolder, "regex", ".+\\.yml"));
+
             List<LaunchArgument> inputArgs = new ArrayList();
             inputArgs.add(ini);
             inputArgs.add(exit);
@@ -252,8 +258,8 @@ public class ActionsTest {
  
             
             // Run action tests
-            LaunchItemOperation launchItemOperation = new LaunchItemOperation(testLaunchConfigurationHome + File.separator + "actions.json");
-            for (DataObject dataObject : launchItemOperation.getDataObjects()) {
+            LaunchItemOperation actionLaunchItemOperation = new LaunchItemOperation(testLaunchConfigurationHome + File.separator + "actions.json");
+            for (DataObject dataObject : actionLaunchItemOperation.getDataObjects()) {
                 LaunchItem launchItem = objectMapper.convertValue(dataObject.getData(), LaunchItem.class);
                 script = new LaunchArgument(true, "-script", launchItem.getScript());
                 scriptInputArgs.add(script);
@@ -270,6 +276,28 @@ public class ActionsTest {
                 scriptInputArgs.remove(script);
                 scriptInputArgs.remove(paramList);
             }
+
+            // Run action tests
+            LaunchItemOperation instructionLaunchItemOperation = new LaunchItemOperation(testLaunchConfigurationHome + File.separator + "instructions.json");
+            for (DataObject dataObject : instructionLaunchItemOperation.getDataObjects()) {
+                LaunchItem launchItem = objectMapper.convertValue(dataObject.getData(), LaunchItem.class);
+                script = new LaunchArgument(true, "-script", launchItem.getScript());
+                scriptInputArgs.add(script);
+
+                // Parameter list
+                LaunchArgument paramList = null;
+                if (launchItem.getParameterList() != null && !launchItem.getParameterList().trim().isEmpty()) {
+                    paramList = new LaunchArgument(true, "-paramlist", launchItem.getParameterList());
+                    scriptInputArgs.add(paramList);
+                }
+
+                Launcher.execute("script", scriptInputArgs);
+
+                scriptInputArgs.remove(script);
+                scriptInputArgs.remove(paramList);
+            }
+
+
             
             // Run terminations
             LaunchItemOperation launchTerminationOperation = new LaunchItemOperation(testLaunchConfigurationHome + File.separator + "terminations.json");

@@ -1,0 +1,33 @@
+{
+  "data" : {
+    "name" : "sql.defineDataset",
+    "className" : "io.metadew.iesi.script.action.SqlDefineDataset",
+    "description" : "Define a SQL dataset",
+    "parameters" : [ {
+      "name" : "name",
+      "description" : "Reference name for the dataset definition",
+      "type" : "string",
+      "mandatory" : "Y",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
+    }, {
+      "name" : "statement",
+      "description" : "SQL statement that defines the dataset",
+      "type" : "string",
+      "mandatory" : "Y",
+      "encrypted" : "N",
+      "subroutine" : "query",
+      "impersonate" : "N"
+    }, {
+      "name" : "identifier",
+      "description" : "Unique identifier for records in the dataset",
+      "type" : "string",
+      "mandatory" : "Y",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
+    } ]
+  },
+  "type" : "ActionType"
+}

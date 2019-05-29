@@ -1,0 +1,14 @@
+{
+  "data" : {
+    "name" : "txt.words",
+    "description" : "Random sequence of words",
+    "parameters" : [ {
+      "name" : "WORD_NB",
+      "description" : "Number of words to generate",
+      "type" : "number",
+      "mandatory" : "N",
+      "encrypted" : "N"
+    } ]
+  },
+  "type" : "GenerationRuleType"
+}

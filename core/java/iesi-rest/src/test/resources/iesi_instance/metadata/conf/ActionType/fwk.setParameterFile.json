@@ -1,0 +1,33 @@
+{
+  "data" : {
+    "name" : "fwk.setParameterFile",
+    "className" : "io.metadew.iesi.script.action.FwkSetParameterFile",
+    "description" : "Load a parameter file as runtime variables",
+    "parameters" : [ {
+      "name" : "filePath",
+      "description" : "Path where the file(s) need to be located",
+      "type" : "string",
+      "mandatory" : "Y",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
+    }, {
+      "name" : "fileName",
+      "description" : "File name or expression to check for availability",
+      "type" : "string",
+      "mandatory" : "Y",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
+    }, {
+      "name" : "connection",
+      "description" : "Connection where the file is located",
+      "type" : "string",
+      "mandatory" : "Y",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
+    } ]
+  },
+  "type" : "ActionType"
+}

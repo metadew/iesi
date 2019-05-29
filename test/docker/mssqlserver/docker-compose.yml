@@ -7,8 +7,7 @@ services:
     environment:
       - "ACCEPT_EULA=Y"
       - "SA_PASSWORD=yourStrong(!)Password"
-      - "CRM_DB_DATABASE=crm"
-      - "POSTGRES_PASSWORD=password"
+      - "MSSQL_PID=Express"
     container_name: iesi-test-mssqlserver-1
     hostname: iesi-test-mssqlserver-1
     restart: unless-stopped

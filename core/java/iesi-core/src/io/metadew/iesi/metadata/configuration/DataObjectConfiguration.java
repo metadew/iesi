@@ -21,6 +21,10 @@ public class DataObjectConfiguration {
     private MetadataRepositoryOperation metadataRepositoryOperation;
 
     // Constructors
+    public DataObjectConfiguration() {
+    	
+    }
+    
     public DataObjectConfiguration(FrameworkExecution frameworkExecution) {
         this.setFrameworkExecution(frameworkExecution);
     }

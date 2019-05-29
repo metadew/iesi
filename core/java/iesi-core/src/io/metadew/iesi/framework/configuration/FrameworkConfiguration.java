@@ -2,9 +2,11 @@ package io.metadew.iesi.framework.configuration;
 
 import io.metadew.iesi.common.config.KeyValueConfigFile;
 import io.metadew.iesi.connection.tools.FileTools;
+import io.metadew.iesi.framework.definition.Framework;
 import io.metadew.iesi.metadata.configuration.FrameworkPluginConfiguration;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Properties;
 
@@ -29,9 +31,21 @@ public class FrameworkConfiguration {
 
 	public FrameworkConfiguration(String repositoryHome) {
 		this.setFrameworkCode(FrameworkSettings.IDENTIFIER.value());
+		// TODO: add core substring in assembly context in order to start the framework with custom iesi home
+		//  for testing purposes
 		this.setFrameworkHome(repositoryHome + File.separator + "core");
 		this.setFolderConfiguration(new FrameworkFolderConfiguration(this.getFrameworkHome()));
 		this.setSettingConfiguration(new FrameworkSettingConfiguration(this.getFrameworkHome()));
+	}
+
+	public FrameworkConfiguration(String frameworkHome, FrameworkFolderConfiguration frameworkFolderConfiguration, FrameworkSettingConfiguration frameworkSettingConfiguration,
+								  FrameworkActionTypeConfiguration frameworkActionTypeConfiguration, FrameworkGenerationRuleTypeConfiguration frameworkGenerationRuleTypeConfiguration) {
+		this.frameworkCode = FrameworkSettings.IDENTIFIER.value();
+		this.frameworkHome = frameworkHome;
+		this.folderConfiguration = frameworkFolderConfiguration;
+		this.settingConfiguration = frameworkSettingConfiguration;
+		this.actionTypeConfiguration = frameworkActionTypeConfiguration;
+		this.generationRuleTypeConfiguration = frameworkGenerationRuleTypeConfiguration;
 	}
 
 	private void initializeFrameworkHome() {

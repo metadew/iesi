@@ -1,0 +1,73 @@
+{
+  "data" : {
+    "name" : "eval.verifyMandatoryField",
+    "className" : "io.metadew.iesi.script.action.EvalVerifyMandatoryField",
+    "description" : "Check if mandatory fields are filled out",
+    "parameters" : [ {
+      "name" : "database",
+      "description" : "Name of the database containing the schema to check",
+      "type" : "string",
+      "mandatory" : "N",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
+    }, {
+      "name" : "schema",
+      "description" : "Name of the schema containing the table to check",
+      "type" : "string",
+      "mandatory" : "N",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
+    }, {
+      "name" : "table",
+      "description" : "Name of the table containing the field to check",
+      "type" : "string",
+      "mandatory" : "Y",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
+    }, {
+      "name" : "field",
+      "description" : "Name of the field to check",
+      "type" : "string",
+      "mandatory" : "Y",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
+    }, {
+      "name" : "evaluationField",
+      "description" : "Optional evaluation field to include in the check",
+      "type" : "string",
+      "mandatory" : "N",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
+    }, {
+      "name" : "evaluationValue",
+      "description" : "Optional evaluation value to include in the check",
+      "type" : "string",
+      "mandatory" : "N",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
+    }, {
+      "name" : "isMandatory",
+      "description" : "Flag to indicate if the field must be filled out or not",
+      "type" : "string",
+      "mandatory" : "Y",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
+    }, {
+      "name" : "connection",
+      "description" : "Connection where the check is executed",
+      "type" : "string",
+      "mandatory" : "Y",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "Y"
+    } ]
+  },
+  "type" : "ActionType"
+}

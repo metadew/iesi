@@ -12,10 +12,8 @@ import io.metadew.iesi.metadata.repository.ExecutionServerMetadataRepository;
 import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class FrameworkInstance {
 
@@ -39,7 +37,31 @@ public class FrameworkInstance {
 	public FrameworkInstance(String logonType, FrameworkInitializationFile frameworkInitializationFile) {
 		this.initializeFrameworkExecution(logonType, frameworkInitializationFile);
 	}
-	
+
+	public FrameworkInstance(String logonType, FrameworkInitializationFile frameworkInitializationFile, FrameworkConfiguration frameworkConfiguration) {
+		this.frameworkConfiguration = frameworkConfiguration;
+		this.frameworkInitializationFile = frameworkInitializationFile;
+		this.frameworkCrypto = new FrameworkCrypto();
+		this.frameworkControl = new FrameworkControl(this.frameworkConfiguration, logonType, this.frameworkInitializationFile, frameworkCrypto);
+		this.frameworkConfiguration.setActionTypesFromPlugins(frameworkControl.getFrameworkPluginConfigurationList());
+		this.metadataControl = new MetadataControl(this.frameworkControl.getMetadataRepositoryConfigurations().stream()
+				.map(configuration -> configuration.toMetadataRepositories(frameworkConfiguration))
+				.flatMap(Collection::stream)
+				.collect(Collectors.toList()));
+		// Set up connection to the metadata repository
+		SqliteDatabaseConnection executionServerDatabaseConnection = new SqliteDatabaseConnection(
+				this.getFrameworkConfiguration().getFolderConfiguration().getFolderAbsolutePath("run.exec") + File.separator + "ExecutionServerRepository.db3");
+		SqliteDatabase sqliteDatabase = new SqliteDatabase(executionServerDatabaseConnection);
+		Map<String, Database> databases = new HashMap<>();
+		databases.put("reader", sqliteDatabase);
+		databases.put("writer", sqliteDatabase);
+		databases.put("owner", sqliteDatabase);
+		RepositoryCoordinator repositoryCoordinator = new RepositoryCoordinator(databases);
+		this.executionServerRepositoryConfiguration = (new ExecutionServerMetadataRepository(frameworkConfiguration.getFrameworkCode(), null, null, null, repositoryCoordinator,
+				frameworkConfiguration.getFolderConfiguration().getFolderAbsolutePath("metadata.def"),
+				frameworkConfiguration.getFolderConfiguration().getFolderAbsolutePath("metadata.def")));
+	}
+
 	// Methods
 	private void initializeFrameworkExecution(String logonType, FrameworkInitializationFile frameworkInitializationFile) {
 		// Get the framework configuration

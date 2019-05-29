@@ -1,0 +1,65 @@
+{
+  "data" : {
+    "name" : "wfa.executeFilePing",
+    "className" : "io.metadew.iesi.script.action.WfaExecuteFilePing",
+    "description" : "Wait until a File Statement returns a result or not",
+    "parameters" : [ {
+      "name" : "filePath",
+      "description" : "Path where the file(s) need to be located",
+      "type" : "string",
+      "mandatory" : "Y",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
+    }, {
+      "name" : "fileName",
+      "description" : "File name or expression to check for availability",
+      "type" : "string",
+      "mandatory" : "Y",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
+    }, {
+      "name" : "hasResult",
+      "description" : "Flag indicating if the file should be available or not",
+      "type" : "string",
+      "mandatory" : "Y",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
+    }, {
+      "name" : "setRuntimeVariables",
+      "description" : "Flag indicating if an expected result will be set as a runtime variable",
+      "type" : "string",
+      "mandatory" : "N",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
+    }, {
+      "name" : "connection",
+      "description" : "Connection where the file(s) will be located",
+      "type" : "string",
+      "mandatory" : "Y",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "Y"
+    }, {
+      "name" : "wait",
+      "description" : "Number of seconds to wait between checks",
+      "type" : "number",
+      "mandatory" : "N",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
+    }, {
+      "name" : "timeout",
+      "description" : "Number of seconds to wait for a result",
+      "type" : "number",
+      "mandatory" : "N",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
+    } ]
+  },
+  "type" : "ActionType"
+}

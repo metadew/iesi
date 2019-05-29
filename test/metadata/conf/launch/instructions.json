@@ -1,0 +1,114 @@
+[{
+	"type": "LaunchItem",
+	"data": {
+		"script": "instruction.coalesce.1",
+		"description": "test coalesce lookup instruction - fixed values",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "instruction.coalesce.2",
+		"description": "test coalesce lookup instruction - variable first hit",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "instruction.coalesce.3",
+		"description": "test coalesce lookup instruction - second hit",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "instruction.coalesce.4",
+		"description": "test coalesce lookup instruction - variable second hit",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "instruction.coalesce.5",
+		"description": "test coalesce lookup instruction - no hit",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "instruction.date.format.1",
+		"description": "test date format - simple format",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "instruction.date.format.2",
+		"description": "test date format - simple format 2",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "instruction.date.travel.1",
+		"description": "test date travel - one year in the future",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "instruction.date.travel.2",
+		"description": "test date travel - one year in the past",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "instruction.date.travel.3",
+		"description": "test date travel - one month in the future",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "instruction.date.travel.4",
+		"description": "test date travel - one month in the past",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "instruction.date.travel.5",
+		"description": "test date travel - one day in the future",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "instruction.date.travel.6",
+		"description": "test date travel - one day in the past",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "instruction.date.travel.1",
+		"description": "test date travel - one year in the future",
+		"parameterList": ""
+	}
+}
+
+]

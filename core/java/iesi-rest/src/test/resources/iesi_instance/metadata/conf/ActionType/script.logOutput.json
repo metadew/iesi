@@ -1,0 +1,25 @@
+{
+  "data" : {
+    "name" : "script.logOutput",
+    "className" : "io.metadew.iesi.script.action.ScriptLogOutput",
+    "description" : "Store an output value as part of the script results",
+    "parameters" : [ {
+      "name" : "name",
+      "description" : "Name of the output",
+      "type" : "string",
+      "mandatory" : "Y",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
+    }, {
+      "name" : "value",
+      "description" : "Value for the output",
+      "type" : "string",
+      "mandatory" : "N",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
+    } ]
+  },
+  "type" : "ActionType"
+}

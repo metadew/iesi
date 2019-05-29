@@ -1,0 +1,49 @@
+{
+  "data" : {
+    "name" : "fwk.executeScript",
+    "className" : "io.metadew.iesi.script.action.FwkExecuteScript",
+    "description" : "Execute another script",
+    "parameters" : [ {
+      "name" : "script",
+      "description" : "Script name to execute",
+      "type" : "string",
+      "mandatory" : "Y",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
+    }, {
+      "name" : "environment",
+      "description" : "Environment name where the execution needs to take place",
+      "type" : "string",
+      "mandatory" : "N",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
+    }, {
+      "name" : "paramList",
+      "description" : "List of parameters to use",
+      "type" : "string",
+      "mandatory" : "N",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
+    }, {
+      "name" : "paramFile",
+      "description" : "Parameter file to use",
+      "type" : "string",
+      "mandatory" : "N",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
+    }, {
+      "name" : "version",
+      "description" : "Version of the script to run",
+      "type" : "string",
+      "mandatory" : "N",
+      "encrypted" : "",
+      "subroutine" : "",
+      "impersonate" : "N"
+    } ]
+  },
+  "type" : "ActionType"
+}

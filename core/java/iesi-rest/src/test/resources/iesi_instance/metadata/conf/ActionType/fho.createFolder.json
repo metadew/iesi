@@ -1,0 +1,33 @@
+{
+  "data" : {
+    "name" : "fho.createFolder",
+    "className" : "io.metadew.iesi.script.action.FhoCreateFolder",
+    "description" : "Create a folder",
+    "parameters" : [ {
+      "name" : "path",
+      "description" : "Path where the folder will be located",
+      "type" : "string",
+      "mandatory" : "N",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
+    }, {
+      "name" : "folder",
+      "description" : "Folder to create",
+      "type" : "string",
+      "mandatory" : "Y",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
+    }, {
+      "name" : "connection",
+      "description" : "Connection where the folder will be located",
+      "type" : "string",
+      "mandatory" : "N",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "Y"
+    } ]
+  },
+  "type" : "ActionType"
+}

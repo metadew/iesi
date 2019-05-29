@@ -1,0 +1,40 @@
+---
+type: Script
+data:
+  type: "script"
+  name: "instruction.coalesce.2"
+  description: "test coalesce lookup instruction - variable first hit"
+  actions:
+  - number: 1
+    type: "fwk.setParameterValue"
+    name: "set parameter according to value"
+    description: "default"
+    errorExpected: "N"
+    errorStop: "Y"
+    parameters:
+    - name: "name"
+      value : "value1"
+    - name: "value"
+      value : "value1"
+  - number: 2
+    type: "fwk.setParameterValue"
+    name: "set parameter according to coalesce"
+    description: "default"
+    errorExpected: "N"
+    errorStop: "Y"
+    parameters:
+    - name: "name"
+      value : "parameter"
+    - name: "value"
+      value : "{{=coalesce(#value1#,value2)}}"
+  - number: 3
+    type: "eval.assertEquals"
+    name: "check parameter value"
+    description: "default"
+    errorExpected: "N"
+    errorStop: "Y"
+    parameters:
+    - name: "expected"
+      value : "value1"
+    - name: "actual"
+      value : "#parameter#"

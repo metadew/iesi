@@ -3,9 +3,8 @@ package io.metadew.iesi.script.execution.instruction.data.date;
 import io.metadew.iesi.script.execution.instruction.data.DataInstruction;
 
 import java.text.MessageFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,7 +19,7 @@ public class DateFormat implements DataInstruction {
     private final Pattern INPUT_PARAMETER_PATTERN = Pattern.compile("\\s*\"?(?<" + ORIGINAL_DATE_REPRESENTATION_KEY
             + ">\\d{8})\"?\\s*,\\s*\"?(?<" + DESIRED_DATE_REPRESENTATION_KEY + ">[^\"]+)\"?\\s*");
 
-    private final SimpleDateFormat ORIGINAL_DATE_FORMAT = new SimpleDateFormat("ddMMyyyy");
+    private final DateTimeFormatter ORIGINAL_DATE_FORMAT = DateTimeFormatter.ofPattern("ddMMyyyy");
 
     /**
      * @param parameters
@@ -32,15 +31,8 @@ public class DateFormat implements DataInstruction {
         if (!inputParameterMatcher.find()) {
             throw new IllegalArgumentException(MessageFormat.format("Illegal arguments provided to " + this.getKeyword() + ": {0}", parameters));
         } else {
-            try {
-                Date originalDate = ORIGINAL_DATE_FORMAT.parse(inputParameterMatcher.group(ORIGINAL_DATE_REPRESENTATION_KEY));
-                SimpleDateFormat desiredDateRepresentation = new SimpleDateFormat(
-                        inputParameterMatcher.group(DESIRED_DATE_REPRESENTATION_KEY));
-                return desiredDateRepresentation.format(originalDate);
-            } catch (ParseException e) {
-                throw new IllegalArgumentException(MessageFormat.format("Cannot generate Date from {0}",
-                        inputParameterMatcher.group(ORIGINAL_DATE_REPRESENTATION_KEY)));
-            }
+            LocalDate date = LocalDate.parse(inputParameterMatcher.group(ORIGINAL_DATE_REPRESENTATION_KEY), ORIGINAL_DATE_FORMAT);
+            return date.format(DateTimeFormatter.ofPattern(inputParameterMatcher.group(DESIRED_DATE_REPRESENTATION_KEY)));
         }
     }
 

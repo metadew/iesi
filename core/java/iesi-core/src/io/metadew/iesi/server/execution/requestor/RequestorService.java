@@ -30,14 +30,14 @@ public class RequestorService {
 
 	public void createProcessors() {
 		String QueryString = "insert into " + this.getFrameworkInstance().getExecutionServerRepositoryConfiguration()
-				.getTableNameByLabel("RequestExecutions") + " (prc_id,request_id) values (1,-1)";
+				.getTableNameByLabel("RequestExecutions") + " (exe_id,request_id) values (1,-1)";
 		this.getFrameworkInstance().getExecutionServerRepositoryConfiguration().executeUpdate(QueryString);
 	}
 
 	public int getAvailableProcessor() {
-		int prc_id = -1;
+		int executionId = -1;
 
-		String QueryString = "select min(prc_id) prc_id from " + this.getFrameworkInstance()
+		String QueryString = "select min(exe_id) exe_id from " + this.getFrameworkInstance()
 				.getExecutionServerRepositoryConfiguration().getTableNameByLabel("RequestExecutions")
 				+ " where request_id = -1";
 		this.crs = this.getFrameworkInstance().getExecutionServerRepositoryConfiguration().executeQuery(QueryString,
@@ -45,7 +45,7 @@ public class RequestorService {
 
 		try {
 			while (crs.next()) {
-				prc_id = crs.getInt("PRC_ID");
+				executionId = crs.getInt("EXE_ID");
 			}
 
 			crs.close();
@@ -54,14 +54,14 @@ public class RequestorService {
 			e.printStackTrace(new PrintWriter(StackTrace));
 		}
 
-		return prc_id;
+		return executionId;
 	}
 
 	public void getNextQueID() {
 		String QueryString = "";
 		CachedRowSet crs = null;
 		QueryString = "select min(load_tms) LOAD_TMS from " + this.getFrameworkInstance()
-				.getExecutionServerRepositoryConfiguration().getTableNameByLabel("Requests") + " where prc_id = -1";
+				.getExecutionServerRepositoryConfiguration().getTableNameByLabel("Requests") + " where exe_id = -1";
 		crs = this.getFrameworkInstance().getExecutionServerRepositoryConfiguration().executeQuery(QueryString,
 				"reader");
 		String loadTimestamp = "";
@@ -97,7 +97,7 @@ public class RequestorService {
 
 		// check for processor
 		int i = 1;
-		int avaiable_prc_id = -1;
+		int availableExecutionId = -1;
 		boolean prcFound = false;
 		while (i == 1 && prcFound == false) {
 			try {
@@ -106,13 +106,13 @@ public class RequestorService {
 				Thread.currentThread().interrupt();
 			}
 
-			avaiable_prc_id = this.getAvailableProcessor();
-			if (avaiable_prc_id > 0)
+			availableExecutionId = this.getAvailableProcessor();
+			if (availableExecutionId > 0)
 				prcFound = true;
 		}
 
 		// set processor
-		RequestorProcessor prc = new RequestorProcessor(this.getFrameworkInstance(), avaiable_prc_id, this.requestId);
+		RequestorProcessor prc = new RequestorProcessor(this.getFrameworkInstance(), availableExecutionId, this.requestId);
 		prc.execute();
 		System.out.println(this.requestId);
 
@@ -123,7 +123,7 @@ public class RequestorService {
 		int availableProcesses = -1;
 
 		String QueryString = "select count(request_id) 'REQUEST_NB' from " + this.getFrameworkInstance()
-				.getExecutionServerRepositoryConfiguration().getTableNameByLabel("Requests") + " where prc_id = -1";
+				.getExecutionServerRepositoryConfiguration().getTableNameByLabel("Requests") + " where exe_id = -1";
 		this.crs = this.getFrameworkInstance().getExecutionServerRepositoryConfiguration().executeQuery(QueryString,
 				"reader");
 
@@ -133,7 +133,7 @@ public class RequestorService {
 			}
 
 			// Get available processes
-			QueryString = "select count(prc_id) 'PRC_NB' from " + this.getFrameworkInstance()
+			QueryString = "select count(exe_id) 'PRC_NB' from " + this.getFrameworkInstance()
 					.getExecutionServerRepositoryConfiguration().getTableNameByLabel("RequestExecutions")
 					+ " where request_id = -1";
 			this.crs = this.getFrameworkInstance().getExecutionServerRepositoryConfiguration().executeQuery(QueryString,

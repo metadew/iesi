@@ -197,6 +197,29 @@ public final class FileTools {
         }
     }
 
+    public static String getFileName(File file) {
+    	return getFileName(file, true);
+    }
+    
+    public static String getFileName(File file, boolean extension) {
+        String name = "";
+
+        try {
+            if (file != null && file.exists()) {
+                name = file.getName();
+            }
+        } catch (Exception e) {
+            name = "";
+        }
+
+        if (!extension) {
+        	name = name.substring(0, name.lastIndexOf("."));
+        }
+        return name;
+
+    }
+
+
     public static String getFileExtension(File file) {
         String extension = "";
 

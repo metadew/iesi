@@ -12,7 +12,7 @@ public class RequestProcessor {
     private FrameworkExecution frameworkExecution;
     public CachedRowSet crs;
     // fields
-    public int prc_id;
+    public int executionId;
     public int que_id;
     public String request_type;
     public String eng_cfg;
@@ -21,9 +21,9 @@ public class RequestProcessor {
     public int context_id;
     public int scope_id;
 
-    public RequestProcessor(FrameworkExecution frameworkExecution, int prc_id, int que_id) {
+    public RequestProcessor(FrameworkExecution frameworkExecution, int executionId, int que_id) {
         this.setFrameworkExecution(frameworkExecution);
-        this.prc_id = prc_id;
+        this.executionId = executionId;
         this.que_id = que_id;
         this.setProcessor();
         this.getFields();
@@ -31,17 +31,17 @@ public class RequestProcessor {
 
     public void setProcessor() {
         String QueryString = "update " + "PRC_CTL"
-                + " set request_id = " + this.que_id + " where prc_id = " + this.prc_id;
+                + " set request_id = " + this.que_id + " where exe_id = " + this.executionId;
         this.getFrameworkExecution().getExecutionServerRepositoryConfiguration().executeUpdate(QueryString);
 
         QueryString = "update " + "PRC_REQ"
-                + " set prc_id = " + this.prc_id + " where request_id = " + this.que_id;
+                + " set exe_id = " + this.executionId + " where request_id = " + this.que_id;
         this.getFrameworkExecution().getExecutionServerRepositoryConfiguration().executeUpdate(QueryString);
     }
 
     public void clearProcessor() {
         String QueryString = "update " + "PRC_CTL"
-                + " set request_id = -1 where prc_id = " + this.prc_id;
+                + " set request_id = -1 where exe_id = " + this.executionId;
         this.getFrameworkExecution().getExecutionServerRepositoryConfiguration().executeUpdate(QueryString);
     }
 

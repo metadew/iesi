@@ -199,6 +199,7 @@ public class HostConnection {
 
             rc = p.waitFor();
             systemOutput = lines;
+            
             errorOutput = IOUtils.toString(p.getErrorStream());
 
         } catch (InterruptedException | IOException e) {

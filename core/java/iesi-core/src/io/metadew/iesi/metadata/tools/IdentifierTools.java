@@ -1,5 +1,7 @@
 package io.metadew.iesi.metadata.tools;
 
+import java.util.UUID;
+
 import org.apache.commons.codec.digest.DigestUtils;
 
 public final class IdentifierTools {
@@ -16,5 +18,8 @@ public final class IdentifierTools {
         return DigestUtils.sha256Hex(input);
     }
 
+    public static String getRequestIdentifier() {
+        return UUID.randomUUID().toString();
+    }
 
 }

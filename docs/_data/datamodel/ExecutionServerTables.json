@@ -1,7 +1,7 @@
 [{
 	"type": "MetadataTable",
 	"data": {
-		"name": "PRC_REQ",
+		"name": "EXE_REQ",
 		"label": "Requests",
 		"description": "In-process runtime requests for execution",
 		"type": "operational",
@@ -13,22 +13,23 @@
 			{"name": "PARENT_REQUEST_ID","description": "Unique identifier for the parent request item","order": "2","type": "string","length": "255","nullable": "N","defaultTimestamp": ""},
 			{"name": "REQUEST_TYP_NM","description": "Keyword for the request type","order": "3","type": "string","length": "100","nullable": "N","defaultTimestamp": ""},
 			{"name": "REQUEST_TMS","description": "Request timestamp","order": "4","type": "timestamp","length": "0","nullable": "N","defaultTimestamp": ""},
-			{"name": "REQUEST_DSC","description": "Request description","order": "5","type": "string","length": "2000","nullable": "Y","defaultTimestamp": ""},
-			{"name": "AMOUNT_NB","description": "Number of times to execute the request","order": "6","type": "number","length": "0","nullable": "N","defaultTimestamp": ""},
-			{"name": "NOTIF_EMAIL","description": "Email addresses to send a notification to","order": "7","type": "string","length": "2000","nullable": "Y","defaultTimestamp": ""},
-			{"name": "SCOPE_NM","description": "Scope of the request","order": "8","type": "string","length": "100","nullable": "N","defaultTimestamp": ""},
-			{"name": "CONTEXT_NM","description": "Context of the request","order": "9","type": "string","length": "100","nullable": "N","defaultTimestamp": ""},
-			{"name": "SPACE_NM","description": "Unique identifier for the space","order": "10","type": "string","length": "100","nullable": "N","defaultTimestamp": ""},
-			{"name": "USER_NM","description": "Unique identifier for the user","order": "11","type": "string","length": "100","nullable": "N","defaultTimestamp": ""},
-			{"name": "USER_PASSWORD","description": "User password","order": "12","type": "string","length": "2000","nullable": "Y","defaultTimestamp": ""},
-			{"name": "PRC_ID","description": "Unique identifier for the request process","order": "13","type": "number","length": "0","nullable": "Y","defaultTimestamp": ""},
-			{"name": "LOAD_TMS","description": "Load timestamp indicating when the record was inserted in the table","order": "14","type": "timestamp","length": "0","nullable": "N","defaultTimestamp": "Y"}
+			{"name": "REQUEST_NM","description": "Request name","order": "5","type": "string","length": "200","nullable": "N","defaultTimestamp": ""},
+			{"name": "REQUEST_DSC","description": "Request description","order": "6","type": "string","length": "2000","nullable": "Y","defaultTimestamp": ""},
+			{"name": "AMOUNT_NB","description": "Number of times to execute the request","order": "7","type": "number","length": "0","nullable": "N","defaultTimestamp": ""},
+			{"name": "NOTIF_EMAIL","description": "Email addresses to send a notification to","order": "8","type": "string","length": "2000","nullable": "Y","defaultTimestamp": ""},
+			{"name": "SCOPE_NM","description": "Scope of the request","order": "9","type": "string","length": "100","nullable": "N","defaultTimestamp": ""},
+			{"name": "CONTEXT_NM","description": "Context of the request","order": "10","type": "string","length": "100","nullable": "N","defaultTimestamp": ""},
+			{"name": "SPACE_NM","description": "Unique identifier for the space","order": "11","type": "string","length": "100","nullable": "N","defaultTimestamp": ""},
+			{"name": "USER_NM","description": "Unique identifier for the user","order": "12","type": "string","length": "100","nullable": "N","defaultTimestamp": ""},
+			{"name": "USER_PASSWORD","description": "User password","order": "13","type": "string","length": "2000","nullable": "Y","defaultTimestamp": ""},
+			{"name": "EXE_ID","description": "Unique identifier for the execution process","order": "14","type": "number","length": "0","nullable": "Y","defaultTimestamp": ""},
+			{"name": "LOAD_TMS","description": "Load timestamp indicating when the record was inserted in the table","order": "15","type": "timestamp","length": "0","nullable": "N","defaultTimestamp": "Y"}
 	]
 }},
 {
 	"type": "MetadataTable",
 	"data": {
-		"name": "PRC_REQ_PAR",
+		"name": "EXE_REQ_PAR",
 		"label": "RequestParameters",
 		"description": "In-process runtime request parameters for execution",
 		"type": "operational",
@@ -46,7 +47,7 @@
 {
 	"type": "MetadataTable",
 	"data": {
-		"name": "PRC_CTL",
+		"name": "EXE_CTL",
 		"label": "RequestExecutions",
 		"description": "In-process runtime execution control",
 		"type": "operational",
@@ -54,7 +55,7 @@
 		"migrate": "Y",
 		"migrationKey": "NA",
 		"fields": [
-			{"name": "PRC_ID","description": "Unique identifier for the execution process","order": "1","type": "number","length": "0","nullable": "N","defaultTimestamp": ""},
+			{"name": "EXE_ID","description": "Unique identifier for the execution process","order": "1","type": "number","length": "0","nullable": "N","defaultTimestamp": ""},
 			{"name": "REQUEST_ID","description": "Unique identifier for the request item","order": "2","type": "string","length": "255","nullable": "N","defaultTimestamp": ""}
 	]
 }}]

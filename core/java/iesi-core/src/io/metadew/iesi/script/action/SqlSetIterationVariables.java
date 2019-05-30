@@ -82,7 +82,7 @@ public class SqlSetIterationVariables {
             String listName = convertListName(getListName().getValue());
 
             // Get Connection
-            ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution());
+            ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution().getFrameworkInstance());
             Connection connection = connectionConfiguration.getConnection(connectionName,
                     this.getExecutionControl().getEnvName()).get();
             ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());

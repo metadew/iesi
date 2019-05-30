@@ -1,17 +1,15 @@
 package io.metadew.iesi.metadata.configuration;
 
 import io.metadew.iesi.connection.tools.SQLTools;
-import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.Action;
 import io.metadew.iesi.metadata.definition.ActionParameter;
-import org.apache.logging.log4j.Level;
 import io.metadew.iesi.metadata.definition.Script;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -19,16 +17,16 @@ import java.util.Optional;
 public class ActionConfiguration {
 
     private Action action;
-    private FrameworkExecution frameworkExecution;
+    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public ActionConfiguration(Action action, FrameworkExecution frameworkExecution) {
+    public ActionConfiguration(Action action, FrameworkInstance frameworkInstance) {
         this.setAction(action);
-        this.setFrameworkExecution(frameworkExecution);
+        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public ActionConfiguration(FrameworkExecution frameworkExecution) {
-        this.setFrameworkExecution(frameworkExecution);
+    public ActionConfiguration(FrameworkInstance frameworkInstance) {
+    	this.setFrameworkInstance(frameworkInstance);
     }
 
     // Insert
@@ -37,7 +35,7 @@ public class ActionConfiguration {
         long scriptVersionNumber = script.getVersion().getNumber();
         this.getAction().setId(IdentifierTools.getActionIdentifier(this.getAction().getName()));
 
-        sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository()
+        sql += "INSERT INTO " + this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository()
                 .getTableNameByLabel("Actions");
         sql += " (SCRIPT_ID, SCRIPT_VRS_NB, ACTION_ID, ACTION_NB, ACTION_TYP_NM, ACTION_NM, ACTION_DSC, COMP_NM, ITERATION_VAL, CONDITION_VAL, RETRIES_VAL, EXP_ERR_FL, STOP_ERR_FL) ";
         sql += "VALUES (";
@@ -83,7 +81,7 @@ public class ActionConfiguration {
         StringBuilder result = new StringBuilder();
 
         for (ActionParameter actionParameter : this.getAction().getParameters()) {
-            ActionParameterConfiguration actionParameterConfiguration = new ActionParameterConfiguration(actionParameter, this.getFrameworkExecution());
+            ActionParameterConfiguration actionParameterConfiguration = new ActionParameterConfiguration(actionParameter, this.getFrameworkInstance());
             if (!result.toString().equalsIgnoreCase(""))
                 result.append("\n");
             result.append(actionParameterConfiguration.getInsertStatement(script, this.getAction()));
@@ -98,26 +96,26 @@ public class ActionConfiguration {
     }
 
     public Optional<Action> getAction(String scriptId, long scriptVersionNumber, String actionId) {
-        frameworkExecution.getFrameworkLog().log(MessageFormat.format(
-                "Fetching action {0}.", actionId), Level.DEBUG);
+    	// TODO fix logging
+    	//frameworkExecution.getFrameworkLog().log(MessageFormat.format("Fetching action {0}.", actionId), Level.DEBUG);
         String queryAction = "select SCRIPT_ID, SCRIPT_VRS_NB, ACTION_ID, ACTION_NB, ACTION_TYP_NM, ACTION_NM, ACTION_DSC, COMP_NM, ITERATION_VAL, CONDITION_VAL, EXP_ERR_FL, STOP_ERR_FL, RETRIES_VAL from "
-                + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository()
+                + this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository()
                 .getTableNameByLabel("Actions")
                 + " where ACTION_ID = " + SQLTools.GetStringForSQL(actionId) + " AND SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptId) + " AND SCRIPT_VRS_NB = '" + scriptVersionNumber + "'";
-        CachedRowSet crsAction = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(queryAction, "reader");
+        CachedRowSet crsAction = this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().executeQuery(queryAction, "reader");
         try {
             if (crsAction.size() == 0) {
                 return Optional.empty();
             } else if (crsAction.size() > 1) {
-                frameworkExecution.getFrameworkLog().log(MessageFormat.format(
-                        "Found multiple implementations for action {0}. Returning first implementation", actionId), Level.DEBUG);
+                // TODO fix logging
+            	//frameworkExecution.getFrameworkLog().log(MessageFormat.format("Found multiple implementations for action {0}. Returning first implementation", actionId), Level.DEBUG);
             }
             crsAction.next();
             // Get parameters
             String queryActionParameters = "select ACTION_ID, ACTION_PAR_NM, ACTION_PAR_VAL from "
-                    + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ActionParameters")
+                    + this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ActionParameters")
                     + " where ACTION_ID = " + SQLTools.GetStringForSQL(actionId) + " AND SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptId) + " AND SCRIPT_VRS_NB = '" + scriptVersionNumber + "'";
-            CachedRowSet crsActionParameters = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(queryActionParameters, "reader");
+            CachedRowSet crsActionParameters = this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().executeQuery(queryActionParameters, "reader");
             List<ActionParameter> actionParameters = new ArrayList<>();
             while (crsActionParameters.next()) {
                 actionParameters.add(new ActionParameter(crsActionParameters.getString("ACTION_PAR_NM"),
@@ -142,18 +140,19 @@ public class ActionConfiguration {
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
-            this.frameworkExecution.getFrameworkLog().log("exception=" + e, Level.INFO);
-            this.frameworkExecution.getFrameworkLog().log("exception.stacktrace=" + StackTrace, Level.DEBUG);
+            //TODO fix logging
+            //this.frameworkExecution.getFrameworkLog().log("exception=" + e, Level.INFO);
+            //this.frameworkExecution.getFrameworkLog().log("exception.stacktrace=" + StackTrace, Level.DEBUG);
 
             return Optional.empty();
         }
     }
 
     public String getInsertStatement(String scriptId, long scriptVersionNumber, Action action) {
-        ActionParameterConfiguration actionParameterConfiguration = new ActionParameterConfiguration(frameworkExecution);
+        ActionParameterConfiguration actionParameterConfiguration = new ActionParameterConfiguration(this.getFrameworkInstance());
         StringBuilder sql = new StringBuilder();
 
-        sql.append("INSERT INTO ").append(this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository()
+        sql.append("INSERT INTO ").append(this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository()
                 .getTableNameByLabel("Actions"));
         sql.append(" (SCRIPT_ID, SCRIPT_VRS_NB, ACTION_ID, ACTION_NB, ACTION_TYP_NM, ACTION_NM, ACTION_DSC, COMP_NM, ITERATION_VAL, CONDITION_VAL, RETRIES_VAL, EXP_ERR_FL, STOP_ERR_FL) VALUES (");
         sql.append(SQLTools.GetStringForSQL(scriptId)).append(",");
@@ -186,11 +185,11 @@ public class ActionConfiguration {
         this.action = action;
     }
 
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
+	public FrameworkInstance getFrameworkInstance() {
+		return frameworkInstance;
+	}
 
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
-    }
+	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
+		this.frameworkInstance = frameworkInstance;
+	}
 }

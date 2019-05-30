@@ -55,7 +55,7 @@ public class HttpRequestParameterOperation {
     // Methods
     private void lookupComponentTypeParameter() {
         ComponentTypeParameterConfiguration componentTypeParameterConfiguration = new ComponentTypeParameterConfiguration(
-                this.getFrameworkExecution());
+                this.getFrameworkExecution().getFrameworkInstance());
         this.setComponentTypeParameter(
                 componentTypeParameterConfiguration.getComponentTypeParameter("http.request", this.getName()));
     }

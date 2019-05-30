@@ -1,8 +1,7 @@
 package io.metadew.iesi.metadata.configuration;
 
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.ActionType;
 import io.metadew.iesi.metadata.operation.DataObjectOperation;
 import io.metadew.iesi.metadata.operation.TypeConfigurationOperation;
@@ -10,22 +9,22 @@ import io.metadew.iesi.metadata.operation.TypeConfigurationOperation;
 public class ActionTypeConfiguration {
 
     private ActionType actionType;
-    private FrameworkExecution frameworkExecution;
+    private FrameworkInstance frameworkInstance;
     private String dataObjectType = "ActionType";
 
     // Constructors
-    public ActionTypeConfiguration(ActionType actionType, FrameworkExecution frameworkExecution) {
+    public ActionTypeConfiguration(ActionType actionType, FrameworkInstance frameworkInstance) {
         this.setActionType(actionType);
-        this.setFrameworkExecution(frameworkExecution);
+        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public ActionTypeConfiguration(FrameworkExecution frameworkExecution) {
-        this.setFrameworkExecution(frameworkExecution);
+    public ActionTypeConfiguration(FrameworkInstance frameworkInstance) {
+    	this.setFrameworkInstance(frameworkInstance);
     }
 
     public ActionType getActionType(String actionTypeName) {
-        String conf = TypeConfigurationOperation.getTypeConfigurationFile(this.getFrameworkExecution(), this.getDataObjectType(), actionTypeName);
-        DataObjectOperation dataObjectOperation = new DataObjectOperation(this.getFrameworkExecution(), conf);
+        String conf = TypeConfigurationOperation.getTypeConfigurationFile(this.getFrameworkInstance(), this.getDataObjectType(), actionTypeName);
+        DataObjectOperation dataObjectOperation = new DataObjectOperation(conf);
         ObjectMapper objectMapper = new ObjectMapper();
         ActionType actionType = objectMapper.convertValue(dataObjectOperation.getDataObject().getData(),
                 ActionType.class);
@@ -49,12 +48,12 @@ public class ActionTypeConfiguration {
         this.dataObjectType = dataObjectType;
     }
 
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
+	public FrameworkInstance getFrameworkInstance() {
+		return frameworkInstance;
+	}
 
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
-    }
+	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
+		this.frameworkInstance = frameworkInstance;
+	}
 
 }

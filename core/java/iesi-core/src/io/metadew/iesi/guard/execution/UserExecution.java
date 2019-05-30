@@ -41,7 +41,7 @@ public class UserExecution {
             user.setPasswordHash(Password.getSaltedHash("ok"));
             // user.setPasswordHash(Password.getSaltedHash(this.getPassword()));
 
-            UserConfiguration userConfiguration = new UserConfiguration(user, this.getFrameworkExecution());
+            UserConfiguration userConfiguration = new UserConfiguration(user, this.getFrameworkExecution().getFrameworkInstance());
             this.getFrameworkExecution().getMetadataControl().getControlMetadataRepository()
                     .executeUpdate(userConfiguration.getInsertStatement());
 
@@ -61,7 +61,7 @@ public class UserExecution {
             user.setPasswordHash(Password.getSaltedHash("ok"));
             // user.setPasswordHash(Password.getSaltedHash(this.getPassword()));
 
-            UserConfiguration userConfiguration = new UserConfiguration(user, this.getFrameworkExecution());
+            UserConfiguration userConfiguration = new UserConfiguration(user, this.getFrameworkExecution().getFrameworkInstance());
             this.getFrameworkExecution().getMetadataControl().getControlMetadataRepository()
                     .executeUpdate(userConfiguration.getPasswordStatement());
         } catch (Exception exception) {
@@ -70,19 +70,19 @@ public class UserExecution {
     }
 
     public void updateActive(String userName, String status) {
-        UserConfiguration userConfiguration = new UserConfiguration(this.getFrameworkExecution());
+        UserConfiguration userConfiguration = new UserConfiguration(this.getFrameworkExecution().getFrameworkInstance());
         this.getFrameworkExecution().getMetadataControl().getControlMetadataRepository()
                 .executeUpdate(userConfiguration.getActiveUpdateStatement(userName, status));
     }
 
     public void updateLocked(String userName, String status) {
-        UserConfiguration userConfiguration = new UserConfiguration(this.getFrameworkExecution());
+        UserConfiguration userConfiguration = new UserConfiguration(this.getFrameworkExecution().getFrameworkInstance());
         this.getFrameworkExecution().getMetadataControl().getControlMetadataRepository()
                 .executeUpdate(userConfiguration.getBlockedUpdateStatement(userName, status));
     }
 
     public void resetIndividualLoginFails(String userName) {
-        UserConfiguration userConfiguration = new UserConfiguration(this.getFrameworkExecution());
+        UserConfiguration userConfiguration = new UserConfiguration(this.getFrameworkExecution().getFrameworkInstance());
         this.getFrameworkExecution().getMetadataControl().getControlMetadataRepository()
                 .executeUpdate(userConfiguration.resetIndividualLoginFails(userName));
     }

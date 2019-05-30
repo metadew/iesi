@@ -2,25 +2,25 @@ package io.metadew.iesi.metadata.operation;
 
 import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.framework.operation.FrameworkPluginOperation;
 
 import java.io.File;
 import java.text.MessageFormat;
-
 public class TypeConfigurationOperation {
 
     public TypeConfigurationOperation() {
 
     }
 
-    public static String getTypeConfigurationFile(FrameworkExecution frameworkExecution, String dataObjectType,
+    public static String getTypeConfigurationFile(FrameworkInstance frameworkInstance, String dataObjectType,
                                                   String typeName) {
         String configurationObject = dataObjectType + File.separator + typeName + ".json";
-        String conf = frameworkExecution.getFrameworkConfiguration().getFolderConfiguration()
+        String conf = frameworkInstance.getFrameworkConfiguration().getFolderConfiguration()
                 .getFolderAbsolutePath("metadata.conf") + File.separator + configurationObject;
 
         if (!FileTools.exists(conf)) {
-            FrameworkPluginOperation frameworkPluginOperation = new FrameworkPluginOperation(frameworkExecution);
+            FrameworkPluginOperation frameworkPluginOperation = new FrameworkPluginOperation(frameworkInstance);
             if (frameworkPluginOperation.verifyPlugins(configurationObject)) {
                 conf = frameworkPluginOperation.getPluginConfigurationFile();
             } else {

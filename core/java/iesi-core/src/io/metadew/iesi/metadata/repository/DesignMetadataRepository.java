@@ -64,13 +64,13 @@ public class DesignMetadataRepository extends MetadataRepository {
 
     public void save(Script script, FrameworkExecution frameworkExecution) {
         ScriptConfiguration scriptConfiguration = new ScriptConfiguration(script,
-                frameworkExecution);
+                frameworkExecution.getFrameworkInstance());
         executeUpdate(scriptConfiguration.getInsertStatement());
     }
 
     public void save(Component component, FrameworkExecution frameworkExecution) {
         ComponentConfiguration componentConfiguration = new ComponentConfiguration(component,
-                frameworkExecution);
+                frameworkExecution.getFrameworkInstance());
         executeUpdate(componentConfiguration.getInsertStatement());
     }
     

@@ -1,40 +1,38 @@
 package io.metadew.iesi.metadata.configuration;
 
 import io.metadew.iesi.connection.tools.SQLTools;
-import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.ComponentVersion;
-import org.apache.logging.log4j.Level;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.text.MessageFormat;
 import java.util.Optional;
 
 public class ComponentVersionConfiguration {
 
     private ComponentVersion componentVersion;
-    private FrameworkExecution frameworkExecution;
+    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public ComponentVersionConfiguration(ComponentVersion componentVersion, FrameworkExecution frameworkExecution) {
+    public ComponentVersionConfiguration(ComponentVersion componentVersion, FrameworkInstance frameworkInstance) {
         this.setComponentVersion(componentVersion);
-        this.setFrameworkExecution(frameworkExecution);
+        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public ComponentVersionConfiguration(FrameworkExecution frameworkExecution) {
-        this.setFrameworkExecution(frameworkExecution);
+    public ComponentVersionConfiguration(FrameworkInstance frameworkInstance) {
+    	this.setFrameworkInstance(frameworkInstance);
     }
 
     // Insert
     public String getInsertStatement(String componentName) {
         String sql = "";
 
-        sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ComponentVersions");
+        sql += "INSERT INTO " + this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ComponentVersions");
         sql += " (COMP_ID, COMP_VRS_NB, COMP_VRS_DSC) ";
         sql += "VALUES ";
         sql += "(";
-        sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Components"), "COMP_ID", "where COMP_NM = '" + componentName) + "')";
+        sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Components"), "COMP_ID", "where COMP_NM = '" + componentName) + "')";
         sql += ",";
         sql += SQLTools.GetStringForSQL(this.getComponentVersion().getNumber());
         sql += ",";
@@ -48,11 +46,11 @@ public class ComponentVersionConfiguration {
     public String getDefaultInsertStatement(String componentName) {
         String sql = "";
 
-        sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ComponentVersions");
+        sql += "INSERT INTO " + this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ComponentVersions");
         sql += " (COMP_ID, COMP_VRS_NB, COMP_VRS_DSC) ";
         sql += "VALUES ";
         sql += "(";
-        sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Components"), "COMP_ID", "where COMP_NM = '" + componentName) + "')";
+        sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Components"), "COMP_ID", "where COMP_NM = '" + componentName) + "')";
         sql += ",";
         sql += SQLTools.GetStringForSQL("0");
         sql += ",";
@@ -66,9 +64,9 @@ public class ComponentVersionConfiguration {
 
     public Optional<ComponentVersion> getComponentVersion(String componentId, long componentVersionNumber) {
         ComponentVersion componentVersion = null;
-        String queryComponentVersion = "select COMP_ID, COMP_VRS_NB, COMP_VRS_DSC from " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ComponentVersions")
+        String queryComponentVersion = "select COMP_ID, COMP_VRS_NB, COMP_VRS_DSC from " + this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ComponentVersions")
                 + " where COMP_ID = " + SQLTools.GetStringForSQL(componentId) + " and COMP_VRS_NB = " + componentVersionNumber;
-        CachedRowSet crsComponentVersion = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(queryComponentVersion, "reader");
+        CachedRowSet crsComponentVersion = this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().executeQuery(queryComponentVersion, "reader");
         try {
             if (crsComponentVersion.size() == 0) {
                 return Optional.empty();
@@ -76,8 +74,8 @@ public class ComponentVersionConfiguration {
                 crsComponentVersion.next();
                 componentVersion = new ComponentVersion(componentVersionNumber, crsComponentVersion.getString("COMP_VRS_DSC"));
             } else {
-                frameworkExecution.getFrameworkLog().log(MessageFormat.format("component.version=found multiple descriptions for component id {0} version {1}. " +
-                        "Returning first implementation.", componentId, componentVersion), Level.WARN);
+            	//TODO fix logging
+                //frameworkExecution.getFrameworkLog().log(MessageFormat.format("component.version=found multiple descriptions for component id {0} version {1}. " + "Returning first implementation.", componentId, componentVersion), Level.WARN);
                 crsComponentVersion.next();
                 componentVersion = new ComponentVersion(componentVersionNumber, crsComponentVersion.getString("COMP_VRS_DSC"));
             }
@@ -104,12 +102,12 @@ public class ComponentVersionConfiguration {
         this.componentVersion = componentVersion;
     }
 
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
+	public FrameworkInstance getFrameworkInstance() {
+		return frameworkInstance;
+	}
 
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
-    }
+	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
+		this.frameworkInstance = frameworkInstance;
+	}
 
 }

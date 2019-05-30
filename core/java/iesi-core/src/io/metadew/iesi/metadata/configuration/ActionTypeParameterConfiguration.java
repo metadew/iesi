@@ -1,28 +1,28 @@
 package io.metadew.iesi.metadata.configuration;
 
-import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.ActionType;
 import io.metadew.iesi.metadata.definition.ActionTypeParameter;
 
 public class ActionTypeParameterConfiguration {
 
     private ActionTypeParameter actionTypeParameter;
-    private FrameworkExecution frameworkExecution;
+    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public ActionTypeParameterConfiguration(ActionTypeParameter actionTypeParameter, FrameworkExecution processiongTools) {
+    public ActionTypeParameterConfiguration(ActionTypeParameter actionTypeParameter, FrameworkInstance frameworkInstance) {
         this.setActionTypeParameter(actionTypeParameter);
-        this.setFrameworkExecution(processiongTools);
+        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public ActionTypeParameterConfiguration(FrameworkExecution processiongTools) {
-        this.setFrameworkExecution(processiongTools);
+    public ActionTypeParameterConfiguration(FrameworkInstance frameworkInstance) {
+    	this.setFrameworkInstance(frameworkInstance);
     }
 
     // Get Action Type Parameter
     public ActionTypeParameter getActionTypeParameter(String actionTypeName, String actionTypeParameterName) {
         ActionTypeParameter actionTypeParameterResult = null;
-        ActionTypeConfiguration actionTypeConfiguration = new ActionTypeConfiguration(this.getFrameworkExecution());
+        ActionTypeConfiguration actionTypeConfiguration = new ActionTypeConfiguration(this.getFrameworkInstance());
         ActionType actionType = actionTypeConfiguration.getActionType(actionTypeName);
         for (ActionTypeParameter actionTypeParameter : actionType.getParameters()) {
             if (actionTypeParameter.getName().equalsIgnoreCase(actionTypeParameterName.toLowerCase())) {
@@ -42,13 +42,13 @@ public class ActionTypeParameterConfiguration {
         this.actionTypeParameter = actionTypeParameter;
     }
 
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
+	public FrameworkInstance getFrameworkInstance() {
+		return frameworkInstance;
+	}
 
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
-    }
+	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
+		this.frameworkInstance = frameworkInstance;
+	}
 
 
 }

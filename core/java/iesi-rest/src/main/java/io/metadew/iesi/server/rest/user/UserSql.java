@@ -16,7 +16,7 @@ import io.metadew.iesi.server.rest.controller.FrameworkConnection;
 public class UserSql implements CommandLineRunner {
 
 	private static UserConfiguration userConfiguration = new UserConfiguration(
-			FrameworkConnection.getInstance().getFrameworkExecution());
+			FrameworkConnection.getInstance().getFrameworkInstance());
 
 	static final String JDBC_DRIVER = "org.h2.Driver";
 	static final String DB_URL = "jdbc:h2:~/token";

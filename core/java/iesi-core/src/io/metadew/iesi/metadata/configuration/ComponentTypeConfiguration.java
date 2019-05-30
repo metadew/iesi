@@ -1,7 +1,7 @@
 package io.metadew.iesi.metadata.configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.ComponentType;
 import io.metadew.iesi.metadata.operation.DataObjectOperation;
 import io.metadew.iesi.metadata.operation.TypeConfigurationOperation;
@@ -9,22 +9,22 @@ import io.metadew.iesi.metadata.operation.TypeConfigurationOperation;
 public class ComponentTypeConfiguration {
 
     private ComponentType componentType;
-    private FrameworkExecution frameworkExecution;
+    private FrameworkInstance frameworkInstance;
     private String dataObjectType = "ComponentType";
 
     // Constructors
-    public ComponentTypeConfiguration(ComponentType componentType, FrameworkExecution frameworkExecution) {
+    public ComponentTypeConfiguration(ComponentType componentType, FrameworkInstance frameworkInstance) {
         this.setComponentType(componentType);
-        this.setFrameworkExecution(frameworkExecution);
+        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public ComponentTypeConfiguration(FrameworkExecution frameworkExecution) {
-        this.setFrameworkExecution(frameworkExecution);
+    public ComponentTypeConfiguration(FrameworkInstance frameworkInstance) {
+    	this.setFrameworkInstance(frameworkInstance);
     }
 
     public ComponentType getComponentType(String componentTypeName) {
-        String conf = TypeConfigurationOperation.getTypeConfigurationFile(this.getFrameworkExecution(), this.getDataObjectType(), componentTypeName);
-        DataObjectOperation dataObjectOperation = new DataObjectOperation(this.getFrameworkExecution(), conf);
+        String conf = TypeConfigurationOperation.getTypeConfigurationFile(this.getFrameworkInstance(), this.getDataObjectType(), componentTypeName);
+        DataObjectOperation dataObjectOperation = new DataObjectOperation(conf);
         ObjectMapper objectMapper = new ObjectMapper();
         ComponentType componentType = objectMapper.convertValue(dataObjectOperation.getDataObject().getData(),
                 ComponentType.class);
@@ -40,14 +40,6 @@ public class ComponentTypeConfiguration {
         this.componentType = componentType;
     }
 
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
-    }
-
     public String getDataObjectType() {
         return dataObjectType;
     }
@@ -55,5 +47,13 @@ public class ComponentTypeConfiguration {
     public void setDataObjectType(String dataObjectType) {
         this.dataObjectType = dataObjectType;
     }
+
+	public FrameworkInstance getFrameworkInstance() {
+		return frameworkInstance;
+	}
+
+	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
+		this.frameworkInstance = frameworkInstance;
+	}
 
 }

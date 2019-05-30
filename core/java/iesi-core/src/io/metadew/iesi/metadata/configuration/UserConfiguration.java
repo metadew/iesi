@@ -1,9 +1,8 @@
 package io.metadew.iesi.metadata.configuration;
 
 import io.metadew.iesi.connection.tools.SQLTools;
-import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.User;
-import org.apache.logging.log4j.Level;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
@@ -16,23 +15,23 @@ public class UserConfiguration {
 
     private User user;
 
-    private FrameworkExecution frameworkExecution;
+    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public UserConfiguration(FrameworkExecution frameworkExecution) {
-        this.setFrameworkExecution(frameworkExecution);
+    public UserConfiguration(FrameworkInstance frameworkInstance) {
+    	this.setFrameworkInstance(frameworkInstance);
     }
 
-    public UserConfiguration(User user, FrameworkExecution frameworkExecution) {
+    public UserConfiguration(User user, FrameworkInstance frameworkInstance) {
         this.setUser(user);
-        this.setFrameworkExecution(frameworkExecution);
+        this.setFrameworkInstance(frameworkInstance);
     }
 
     public List<User> getUsers() {
         List<User> users = new ArrayList<>();
         String query = "select USER_NM, USER_TYP_NM, USER_FIRST_NM, USER_LAST_NM, USER_ACT_FL, USER_PWD_HASH, USER_PWD_EXP_FL, LOGIN_FAIL_CUM_NB, LOGIN_FAIL_IND_NB, USER_LOCK_FL from "
-                + this.getFrameworkExecution().getMetadataControl().getControlMetadataRepository().getTableNameByLabel("Users");
-        CachedRowSet crs = this.getFrameworkExecution().getMetadataControl().getControlMetadataRepository().executeQuery(query, "reader");
+                + this.getFrameworkInstance().getMetadataControl().getControlMetadataRepository().getTableNameByLabel("Users");
+        CachedRowSet crs = this.getFrameworkInstance().getMetadataControl().getControlMetadataRepository().executeQuery(query, "reader");
         try {
             while (crs.next()) {
                 users.add(new User(crs.getString("USER_NM"),
@@ -50,9 +49,9 @@ public class UserConfiguration {
         } catch (SQLException e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
-
-            this.frameworkExecution.getFrameworkLog().log("users.error=" + e, Level.INFO);
-            this.frameworkExecution.getFrameworkLog().log("users.stacktrace=" + StackTrace, Level.INFO);
+            //TODO fix logging
+            //this.frameworkExecution.getFrameworkLog().log("users.error=" + e, Level.INFO);
+            //this.frameworkExecution.getFrameworkLog().log("users.stacktrace=" + StackTrace, Level.INFO);
         }
         return users;
     }
@@ -61,7 +60,7 @@ public class UserConfiguration {
     public String getDeleteStatement() {
         String sql = "";
 
-        sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getControlMetadataRepository().getTableNameByLabel("Users");
+        sql += "DELETE FROM " + this.getFrameworkInstance().getMetadataControl().getControlMetadataRepository().getTableNameByLabel("Users");
         sql += " WHERE USER_NM = " + SQLTools.GetStringForSQL(this.getUser().getName());
         sql += ";";
         sql += "\n";
@@ -78,7 +77,7 @@ public class UserConfiguration {
             sql += this.getDeleteStatement();
         }
 
-        sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getControlMetadataRepository().getTableNameByLabel("Users");
+        sql += "INSERT INTO " + this.getFrameworkInstance().getMetadataControl().getControlMetadataRepository().getTableNameByLabel("Users");
         sql += " (USER_NM, USER_TYP_NM, USER_FIRST_NM, USER_LAST_NM, USER_ACT_FL, USER_PWD_HASH, USER_PWD_EXP_FL, LOGIN_FAIL_CUM_NB, LOGIN_FAIL_IND_NB, USER_LOCK_FL) ";
         sql += "VALUES ";
         sql += "(";
@@ -110,7 +109,7 @@ public class UserConfiguration {
     public String getPasswordStatement() {
         String sql = "";
 
-        sql += "UPDATE " + this.getFrameworkExecution().getMetadataControl().getControlMetadataRepository().getTableNameByLabel("Users");
+        sql += "UPDATE " + this.getFrameworkInstance().getMetadataControl().getControlMetadataRepository().getTableNameByLabel("Users");
         sql += " SET ";
         sql += "USER_PWD_HASH=";
         sql += SQLTools.GetStringForSQL(this.getUser().getPasswordHash());
@@ -134,7 +133,7 @@ public class UserConfiguration {
     public String getActiveUpdateStatement(String userName, String status) {
         String sql = "";
 
-        sql += "UPDATE " + this.getFrameworkExecution().getMetadataControl().getControlMetadataRepository().getTableNameByLabel("Users");
+        sql += "UPDATE " + this.getFrameworkInstance().getMetadataControl().getControlMetadataRepository().getTableNameByLabel("Users");
         sql += " SET ";
         sql += "USER_ACT_FL=";
         sql += SQLTools.GetStringForSQL(status.toUpperCase());
@@ -149,7 +148,7 @@ public class UserConfiguration {
     public String getBlockedUpdateStatement(String userName, String status) {
         String sql = "";
 
-        sql += "UPDATE " + this.getFrameworkExecution().getMetadataControl().getControlMetadataRepository().getTableNameByLabel("Users");
+        sql += "UPDATE " + this.getFrameworkInstance().getMetadataControl().getControlMetadataRepository().getTableNameByLabel("Users");
         sql += " SET ";
         sql += "USER_BLOCK_FL=";
         sql += SQLTools.GetStringForSQL(status.toUpperCase());
@@ -164,7 +163,7 @@ public class UserConfiguration {
     public String resetIndividualLoginFails(String userName) {
         String sql = "";
 
-        sql += "UPDATE " + this.getFrameworkExecution().getMetadataControl().getControlMetadataRepository().getTableNameByLabel("Users");
+        sql += "UPDATE " + this.getFrameworkInstance().getMetadataControl().getControlMetadataRepository().getTableNameByLabel("Users");
         sql += " SET ";
         sql += "LOGIN_FAIL_IND_NB=";
         sql += SQLTools.GetStringForSQL(0);
@@ -181,9 +180,9 @@ public class UserConfiguration {
         User user = new User();
         CachedRowSet crs = null;
         String query = "select USER_NM, USER_TYP_NM, USER_FIRST_NM, USER_LAST_NM, USER_ACT_FL, USER_PWD_HASH, USER_PWD_EXP_FL, LOGIN_FAIL_CUM_NB, LOGIN_FAIL_IND_NB, USER_LOCK_FL from "
-                + this.getFrameworkExecution().getMetadataControl().getControlMetadataRepository().getTableNameByLabel("Users")
+                + this.getFrameworkInstance().getMetadataControl().getControlMetadataRepository().getTableNameByLabel("Users")
                 + " where USER_NM = '" + userName + "'";
-        crs = this.getFrameworkExecution().getMetadataControl().getControlMetadataRepository().executeQuery(query, "reader");
+        crs = this.getFrameworkInstance().getMetadataControl().getControlMetadataRepository().executeQuery(query, "reader");
         try {
             while (crs.next()) {
                 user.setName(userName);
@@ -211,14 +210,6 @@ public class UserConfiguration {
     }
 
     // Getters and Setters
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
-    }
-
     public User getUser() {
         return user;
     }
@@ -226,5 +217,13 @@ public class UserConfiguration {
     public void setUser(User user) {
         this.user = user;
     }
+
+	public FrameworkInstance getFrameworkInstance() {
+		return frameworkInstance;
+	}
+
+	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
+		this.frameworkInstance = frameworkInstance;
+	}
 
 }

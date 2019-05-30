@@ -81,7 +81,7 @@ public class DatabaseHarvestExecution {
         }
 
         // Get Connection
-        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution());
+        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution().getFrameworkInstance());
         Connection connection = connectionConfiguration.getConnection(sourceConnectionName, environmentName).get();
         ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
         Database database = connectionOperation.getDatabase(connection);

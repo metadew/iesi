@@ -19,7 +19,7 @@ public class UserAccessConfiguration {
         UserAccess userAccess = new UserAccess();
         userAccess.setUserName(userName);
 
-        UserConfiguration userConfiguration = new UserConfiguration(this.getFrameworkExecution());
+        UserConfiguration userConfiguration = new UserConfiguration(this.getFrameworkExecution().getFrameworkInstance());
         User user = userConfiguration.getUser(userName);
 
         try {

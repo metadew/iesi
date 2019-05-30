@@ -55,7 +55,7 @@ public class ActionParameterOperation {
     // Methods
     private void lookupActionTypeParameter() {
         ActionTypeParameterConfiguration actionTypeParameterConfiguration = new ActionTypeParameterConfiguration(
-                this.getFrameworkExecution());
+                this.getFrameworkExecution().getFrameworkInstance());
         this.setActionTypeParameter(
                 actionTypeParameterConfiguration.getActionTypeParameter(this.getActionTypeName(), this.getName()));
     }

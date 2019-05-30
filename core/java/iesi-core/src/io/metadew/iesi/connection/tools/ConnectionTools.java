@@ -7,7 +7,7 @@ import io.metadew.iesi.metadata.definition.ConnectionType;
 public final class ConnectionTools {
 
     public static ConnectionType getConnectionType(FrameworkExecution frameworkExecution, String connectionTypeName) {
-        ConnectionTypeConfiguration connectionTypeConfiguration = new ConnectionTypeConfiguration(frameworkExecution);
+        ConnectionTypeConfiguration connectionTypeConfiguration = new ConnectionTypeConfiguration(frameworkExecution.getFrameworkInstance());
         ConnectionType connectionType = null;
 
         try {

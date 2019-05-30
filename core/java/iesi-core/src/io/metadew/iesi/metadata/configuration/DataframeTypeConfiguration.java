@@ -1,7 +1,7 @@
 package io.metadew.iesi.metadata.configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.DataframeType;
 import io.metadew.iesi.metadata.operation.DataObjectOperation;
 import io.metadew.iesi.metadata.operation.TypeConfigurationOperation;
@@ -9,23 +9,23 @@ import io.metadew.iesi.metadata.operation.TypeConfigurationOperation;
 public class DataframeTypeConfiguration {
 
     private DataframeType dataframeType;
-    private FrameworkExecution frameworkExecution;
+    private FrameworkInstance frameworkInstance;
     private String dataObjectType = "DataframeType";
 
     // Constructors
-    public DataframeTypeConfiguration(DataframeType dataframeType, FrameworkExecution frameworkExecution) {
+    public DataframeTypeConfiguration(DataframeType dataframeType, FrameworkInstance frameworkInstance) {
         this.setDataframeType(dataframeType);
-        this.setFrameworkExecution(frameworkExecution);
+        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public DataframeTypeConfiguration(FrameworkExecution frameworkExecution) {
-        this.setFrameworkExecution(frameworkExecution);
+    public DataframeTypeConfiguration(FrameworkInstance frameworkInstance) {
+    	this.setFrameworkInstance(frameworkInstance);
     }
 
     public DataframeType getDataframeType(String dataframeTypeName) {
-        String conf = TypeConfigurationOperation.getTypeConfigurationFile(this.getFrameworkExecution(),
+        String conf = TypeConfigurationOperation.getTypeConfigurationFile(this.getFrameworkInstance(),
                 this.getDataObjectType(), dataframeTypeName);
-        DataObjectOperation dataObjectOperation = new DataObjectOperation(this.getFrameworkExecution(), conf);
+        DataObjectOperation dataObjectOperation = new DataObjectOperation(conf);
         ObjectMapper objectMapper = new ObjectMapper();
         DataframeType dataframeType = objectMapper.convertValue(dataObjectOperation.getDataObject().getData(),
                 DataframeType.class);
@@ -41,14 +41,6 @@ public class DataframeTypeConfiguration {
         this.dataframeType = dataframeType;
     }
 
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
-    }
-
     public String getDataObjectType() {
         return dataObjectType;
     }
@@ -56,5 +48,13 @@ public class DataframeTypeConfiguration {
     public void setDataObjectType(String dataObjectType) {
         this.dataObjectType = dataObjectType;
     }
+
+	public FrameworkInstance getFrameworkInstance() {
+		return frameworkInstance;
+	}
+
+	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
+		this.frameworkInstance = frameworkInstance;
+	}
 
 }

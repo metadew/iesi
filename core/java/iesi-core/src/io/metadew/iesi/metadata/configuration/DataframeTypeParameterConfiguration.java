@@ -1,28 +1,28 @@
 package io.metadew.iesi.metadata.configuration;
 
-import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.DataframeType;
 import io.metadew.iesi.metadata.definition.DataframeTypeParameter;
 
 public class DataframeTypeParameterConfiguration {
 
     private DataframeTypeParameter dataframeTypeParameter;
-    private FrameworkExecution frameworkExecution;
+    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public DataframeTypeParameterConfiguration(DataframeTypeParameter dataframeTypeParameter, FrameworkExecution processiongTools) {
+    public DataframeTypeParameterConfiguration(DataframeTypeParameter dataframeTypeParameter, FrameworkInstance frameworkInstance) {
         this.setDataframeTypeParameter(dataframeTypeParameter);
-        this.setFrameworkExecution(processiongTools);
+        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public DataframeTypeParameterConfiguration(FrameworkExecution processiongTools) {
-        this.setFrameworkExecution(processiongTools);
+    public DataframeTypeParameterConfiguration(FrameworkInstance frameworkInstance) {
+    	this.setFrameworkInstance(frameworkInstance);
     }
 
     // Get Dataframe Type Parameter
     public DataframeTypeParameter getDataframeTypeParameter(String dataframeTypeName, String dataframeTypeParameterName) {
         DataframeTypeParameter dataframeTypeParameterResult = null;
-        DataframeTypeConfiguration dataframeTypeConfiguration = new DataframeTypeConfiguration(this.getFrameworkExecution());
+        DataframeTypeConfiguration dataframeTypeConfiguration = new DataframeTypeConfiguration(this.getFrameworkInstance());
         DataframeType dataframeType = dataframeTypeConfiguration.getDataframeType(dataframeTypeName);
         for (DataframeTypeParameter dataframeTypeParameter : dataframeType.getParameters()) {
             if (dataframeTypeParameter.getName().equalsIgnoreCase(dataframeTypeParameterName)) {
@@ -42,12 +42,12 @@ public class DataframeTypeParameterConfiguration {
         this.dataframeTypeParameter = dataframeTypeParameter;
     }
 
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
+	public FrameworkInstance getFrameworkInstance() {
+		return frameworkInstance;
+	}
 
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
-    }
+	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
+		this.frameworkInstance = frameworkInstance;
+	}
 
 }

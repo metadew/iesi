@@ -144,7 +144,7 @@ public final class ScriptLaunchOperation {
 		ScriptConfiguration scriptConfiguration = null;
 		Optional<Script> script = Optional.empty();
 		if (executionMode.equalsIgnoreCase("script")) {
-			scriptConfiguration = new ScriptConfiguration(frameworkExecution);
+			scriptConfiguration = new ScriptConfiguration(frameworkExecution.getFrameworkInstance());
 			if (scriptVersionNumber == -1) {
 				script = scriptConfiguration.getScript(scriptName);
 			} else {

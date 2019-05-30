@@ -149,7 +149,7 @@ public class WfaExecuteQueryPing {
 
     private boolean executeQueryPing(String query, String connectionName, boolean hasResult, boolean setRuntimeVariables, int waitInterval, int timeoutInterval) {
         // Get Connection
-        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution());
+        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution().getFrameworkInstance());
         Connection connection = connectionConfiguration.getConnection(connectionName,
                 this.getExecutionControl().getEnvName()).get();
         ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());

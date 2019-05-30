@@ -1,28 +1,28 @@
 package io.metadew.iesi.metadata.configuration;
 
-import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.GenerationControlType;
 import io.metadew.iesi.metadata.definition.GenerationControlTypeParameter;
 
 public class GenerationControlTypeParameterConfiguration {
 
     private GenerationControlTypeParameter generationControlTypeParameter;
-    private FrameworkExecution frameworkExecution;
+    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public GenerationControlTypeParameterConfiguration(GenerationControlTypeParameter generationControlTypeParameter, FrameworkExecution processiongTools) {
+    public GenerationControlTypeParameterConfiguration(GenerationControlTypeParameter generationControlTypeParameter, FrameworkInstance frameworkInstance) {
         this.setgenerationControlTypeParameter(generationControlTypeParameter);
-        this.setFrameworkExecution(processiongTools);
+        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public GenerationControlTypeParameterConfiguration(FrameworkExecution processiongTools) {
-        this.setFrameworkExecution(processiongTools);
+    public GenerationControlTypeParameterConfiguration(FrameworkInstance frameworkInstance) {
+    	this.setFrameworkInstance(frameworkInstance);
     }
 
     // Get GenerationControl Type Parameter
     public GenerationControlTypeParameter getGenerationControlTypeParameter(String GenerationControlTypeName, String GenerationControlTypeParameterName) {
         GenerationControlTypeParameter GenerationControlTypeParameterResult = null;
-        GenerationControlTypeConfiguration GenerationControlTypeConfiguration = new GenerationControlTypeConfiguration(this.getFrameworkExecution());
+        GenerationControlTypeConfiguration GenerationControlTypeConfiguration = new GenerationControlTypeConfiguration(this.getFrameworkInstance());
         GenerationControlType GenerationControlType = GenerationControlTypeConfiguration.getGenerationControlType(GenerationControlTypeName);
         for (GenerationControlTypeParameter GenerationControlTypeParameter : GenerationControlType.getParameters()) {
             if (GenerationControlTypeParameter.getName().equalsIgnoreCase(GenerationControlTypeParameterName)) {
@@ -42,12 +42,12 @@ public class GenerationControlTypeParameterConfiguration {
         this.generationControlTypeParameter = generationControlTypeParameter;
     }
 
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
+	public FrameworkInstance getFrameworkInstance() {
+		return frameworkInstance;
+	}
 
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
-    }
+	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
+		this.frameworkInstance = frameworkInstance;
+	}
 
 }

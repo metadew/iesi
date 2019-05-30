@@ -172,13 +172,6 @@
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>io.metadew.iesi</groupId>
-			<artifactId>iesi-core</artifactId>
-			<version>0.0.4</version>
-			<scope>system</scope>
-			<systemPath>C:/Data/metadew/iesi/core/java/iesi-core/target/iesi-core.jar</systemPath>
-		</dependency>
 	</dependencies>
 
 	<build>

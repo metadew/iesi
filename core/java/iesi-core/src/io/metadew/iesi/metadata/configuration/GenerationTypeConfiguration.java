@@ -1,7 +1,7 @@
 package io.metadew.iesi.metadata.configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.GenerationType;
 import io.metadew.iesi.metadata.operation.DataObjectOperation;
 import io.metadew.iesi.metadata.operation.TypeConfigurationOperation;
@@ -9,23 +9,23 @@ import io.metadew.iesi.metadata.operation.TypeConfigurationOperation;
 public class GenerationTypeConfiguration {
 
     private GenerationType generationType;
-    private FrameworkExecution frameworkExecution;
+    private FrameworkInstance frameworkInstance;
     private String dataObjectType = "GenerationType";
 
     // Constructors
-    public GenerationTypeConfiguration(GenerationType generationType, FrameworkExecution frameworkExecution) {
+    public GenerationTypeConfiguration(GenerationType generationType, FrameworkInstance frameworkInstance) {
         this.setgenerationType(generationType);
-        this.setFrameworkExecution(frameworkExecution);
+        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public GenerationTypeConfiguration(FrameworkExecution frameworkExecution) {
-        this.setFrameworkExecution(frameworkExecution);
+    public GenerationTypeConfiguration(FrameworkInstance frameworkInstance) {
+    	this.setFrameworkInstance(frameworkInstance);
     }
 
     public GenerationType getGenerationType(String GenerationTypeName) {
-        String conf = TypeConfigurationOperation.getTypeConfigurationFile(this.getFrameworkExecution(),
+        String conf = TypeConfigurationOperation.getTypeConfigurationFile(this.getFrameworkInstance(),
                 this.getDataObjectType(), GenerationTypeName);
-        DataObjectOperation dataObjectOperation = new DataObjectOperation(this.getFrameworkExecution(), conf);
+        DataObjectOperation dataObjectOperation = new DataObjectOperation(conf);
         ObjectMapper objectMapper = new ObjectMapper();
         GenerationType GenerationType = objectMapper.convertValue(dataObjectOperation.getDataObject().getData(),
                 GenerationType.class);
@@ -42,14 +42,6 @@ public class GenerationTypeConfiguration {
         this.generationType = generationType;
     }
 
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
-    }
-
     public String getDataObjectType() {
         return dataObjectType;
     }
@@ -57,5 +49,13 @@ public class GenerationTypeConfiguration {
     public void setDataObjectType(String dataObjectType) {
         this.dataObjectType = dataObjectType;
     }
+
+	public FrameworkInstance getFrameworkInstance() {
+		return frameworkInstance;
+	}
+
+	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
+		this.frameworkInstance = frameworkInstance;
+	}
 
 }

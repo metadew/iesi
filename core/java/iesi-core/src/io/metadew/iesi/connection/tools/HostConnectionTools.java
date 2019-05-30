@@ -17,7 +17,7 @@ public final class HostConnectionTools {
         } else if (connectionName.equalsIgnoreCase("localhost")) {
             isOnLocalhost = true;
         } else {
-            ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(frameworkExecution);
+            ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(frameworkExecution.getFrameworkInstance());
             Connection connection = connectionConfiguration
                     .getConnection(connectionName, environmentName).get();
             ConnectionOperation connectionOperation = new ConnectionOperation(frameworkExecution);

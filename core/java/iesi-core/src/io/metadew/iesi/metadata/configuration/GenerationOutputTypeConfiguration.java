@@ -1,7 +1,7 @@
 package io.metadew.iesi.metadata.configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.GenerationOutputType;
 import io.metadew.iesi.metadata.operation.DataObjectOperation;
 import io.metadew.iesi.metadata.operation.TypeConfigurationOperation;
@@ -9,25 +9,25 @@ import io.metadew.iesi.metadata.operation.TypeConfigurationOperation;
 public class GenerationOutputTypeConfiguration {
 
     private GenerationOutputType generationOutputType;
-    private FrameworkExecution frameworkExecution;
+    private FrameworkInstance frameworkInstance;
     private String dataObjectType = "GenerationOutputType";
 
     // Constructors
     public GenerationOutputTypeConfiguration(GenerationOutputType generationOutputType,
-                                             FrameworkExecution frameworkExecution) {
+    		FrameworkInstance frameworkInstance) {
         this.setgenerationOutputType(generationOutputType);
-        this.setFrameworkExecution(frameworkExecution);
+        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public GenerationOutputTypeConfiguration(FrameworkExecution frameworkExecution) {
-        this.setFrameworkExecution(frameworkExecution);
+    public GenerationOutputTypeConfiguration(FrameworkInstance frameworkInstance) {
+    	this.setFrameworkInstance(frameworkInstance);
     }
 
     // Methods
     public GenerationOutputType getGenerationOutputType(String GenerationOutputTypeName) {
-        String conf = TypeConfigurationOperation.getTypeConfigurationFile(this.getFrameworkExecution(),
+        String conf = TypeConfigurationOperation.getTypeConfigurationFile(this.getFrameworkInstance(),
                 this.getDataObjectType(), GenerationOutputTypeName);
-        DataObjectOperation dataObjectOperation = new DataObjectOperation(this.getFrameworkExecution(), conf);
+        DataObjectOperation dataObjectOperation = new DataObjectOperation(conf);
         ObjectMapper objectMapper = new ObjectMapper();
         GenerationOutputType GenerationOutputType = objectMapper
                 .convertValue(dataObjectOperation.getDataObject().getData(), GenerationOutputType.class);
@@ -43,14 +43,6 @@ public class GenerationOutputTypeConfiguration {
         this.generationOutputType = generationOutputType;
     }
 
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
-    }
-
     public String getDataObjectType() {
         return dataObjectType;
     }
@@ -58,5 +50,13 @@ public class GenerationOutputTypeConfiguration {
     public void setDataObjectType(String dataObjectType) {
         this.dataObjectType = dataObjectType;
     }
+
+	public FrameworkInstance getFrameworkInstance() {
+		return frameworkInstance;
+	}
+
+	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
+		this.frameworkInstance = frameworkInstance;
+	}
 
 }

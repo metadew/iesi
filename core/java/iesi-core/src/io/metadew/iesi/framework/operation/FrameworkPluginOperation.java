@@ -1,7 +1,7 @@
 package io.metadew.iesi.framework.operation;
 
 import io.metadew.iesi.connection.tools.FileTools;
-import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.FrameworkPluginConfiguration;
 import org.apache.commons.io.FilenameUtils;
 
@@ -9,19 +9,19 @@ import java.io.File;
 
 public class FrameworkPluginOperation {
 
-    private FrameworkExecution frameworkExecution;
+    private FrameworkInstance frameworkInstance;
     private String pluginConfigurationFile;
 
-    public FrameworkPluginOperation(FrameworkExecution frameworkExecution) {
-        this.setFrameworkExecution(frameworkExecution);
+    public FrameworkPluginOperation(FrameworkInstance frameworkInstance) {
+    	this.setFrameworkInstance(frameworkInstance);
     }
 
     public boolean verifyPlugins(String configurationToVerify) {
         boolean result = false;
-        for (FrameworkPluginConfiguration frameworkPluginConfiguration : this.getFrameworkExecution().getFrameworkControl().getFrameworkPluginConfigurationList()) {
+        for (FrameworkPluginConfiguration frameworkPluginConfiguration : this.getFrameworkInstance().getFrameworkControl().getFrameworkPluginConfigurationList()) {
             StringBuilder configurationFile = new StringBuilder();
             configurationFile.append(frameworkPluginConfiguration.getFrameworkPlugin().getPath());
-            configurationFile.append(this.getFrameworkExecution().getFrameworkConfiguration().getFolderConfiguration().getFolderPath("metadata.conf"));
+            configurationFile.append(this.getFrameworkInstance().getFrameworkConfiguration().getFolderConfiguration().getFolderPath("metadata.conf"));
             configurationFile.append(File.separator);
             configurationFile.append(configurationToVerify);
             String filePath = FilenameUtils.normalize(configurationFile.toString());
@@ -35,14 +35,6 @@ public class FrameworkPluginOperation {
     }
 
     // Getters and setters
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
-    }
-
     public String getPluginConfigurationFile() {
         return pluginConfigurationFile;
     }
@@ -50,6 +42,14 @@ public class FrameworkPluginOperation {
     public void setPluginConfigurationFile(String pluginConfigurationFile) {
         this.pluginConfigurationFile = pluginConfigurationFile;
     }
+
+	public FrameworkInstance getFrameworkInstance() {
+		return frameworkInstance;
+	}
+
+	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
+		this.frameworkInstance = frameworkInstance;
+	}
 
 
 }

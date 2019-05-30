@@ -65,7 +65,7 @@ public class ConnectivityMetadataRepository extends MetadataRepository {
     public void save(Connection connection, FrameworkExecution frameworkExecution) {
         frameworkExecution.getFrameworkLog().log(MessageFormat.format("Inserting connection {0}-{1} into connectivity repository",
                 connection.getName(), connection.getEnvironment()), Level.INFO);
-        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(frameworkExecution);
+        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(frameworkExecution.getFrameworkInstance());
         try {
             connectionConfiguration.insertConnection(connection);
         } catch (ConnectionAlreadyExistsException e1) {
@@ -82,7 +82,7 @@ public class ConnectivityMetadataRepository extends MetadataRepository {
     public void save(Environment environment, FrameworkExecution frameworkExecution) {
         frameworkExecution.getFrameworkLog().log(MessageFormat.format("Inserting environment {0} into connectivity repository",
                 environment.getName()), Level.INFO);
-        EnvironmentConfiguration environmentConfiguration = new EnvironmentConfiguration(frameworkExecution);
+        EnvironmentConfiguration environmentConfiguration = new EnvironmentConfiguration(frameworkExecution.getFrameworkInstance());
         try {
             environmentConfiguration.insertEnvironment(environment);
         } catch (EnvironmentAlreadyExistsException e) {
@@ -99,7 +99,7 @@ public class ConnectivityMetadataRepository extends MetadataRepository {
     public void save(Impersonation impersonation, FrameworkExecution frameworkExecution) {
         frameworkExecution.getFrameworkLog().log(MessageFormat.format("Inserting impersonation {0} into connectivity repository",
                 impersonation.getName()), Level.INFO);
-        ImpersonationConfiguration impersonationConfiguration = new ImpersonationConfiguration(frameworkExecution);
+        ImpersonationConfiguration impersonationConfiguration = new ImpersonationConfiguration(frameworkExecution.getFrameworkInstance());
         try {
             impersonationConfiguration.insertImpersonation(impersonation);
         } catch (ImpersonationAlreadyExistsException e) {

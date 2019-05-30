@@ -1,28 +1,28 @@
 package io.metadew.iesi.metadata.configuration;
 
-import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.ScriptType;
 import io.metadew.iesi.metadata.definition.ScriptTypeParameter;
 
 public class ScriptTypeParameterConfiguration {
 
     private ScriptTypeParameter scriptTypeParameter;
-    private FrameworkExecution frameworkExecution;
+    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public ScriptTypeParameterConfiguration(ScriptTypeParameter scriptTypeParameter, FrameworkExecution processiongTools) {
+    public ScriptTypeParameterConfiguration(ScriptTypeParameter scriptTypeParameter, FrameworkInstance frameworkInstance) {
         this.setScriptTypeParameter(scriptTypeParameter);
-        this.setFrameworkExecution(processiongTools);
+        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public ScriptTypeParameterConfiguration(FrameworkExecution processiongTools) {
-        this.setFrameworkExecution(processiongTools);
+    public ScriptTypeParameterConfiguration(FrameworkInstance frameworkInstance) {
+    	this.setFrameworkInstance(frameworkInstance);
     }
 
     // Get Script Type Parameter
     public ScriptTypeParameter getScriptTypeParameter(String scriptTypeName, String scriptTypeParameterName) {
         ScriptTypeParameter scriptTypeParameterResult = null;
-        ScriptTypeConfiguration scriptTypeConfiguration = new ScriptTypeConfiguration(this.getFrameworkExecution());
+        ScriptTypeConfiguration scriptTypeConfiguration = new ScriptTypeConfiguration(this.getFrameworkInstance());
         ScriptType scriptType = scriptTypeConfiguration.getScriptType(scriptTypeName);
         for (ScriptTypeParameter scriptTypeParameter : scriptType.getParameters()) {
             if (scriptTypeParameter.getName().equalsIgnoreCase(scriptTypeParameterName)) {
@@ -42,12 +42,12 @@ public class ScriptTypeParameterConfiguration {
         this.scriptTypeParameter = scriptTypeParameter;
     }
 
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
+	public FrameworkInstance getFrameworkInstance() {
+		return frameworkInstance;
+	}
 
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
-    }
+	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
+		this.frameworkInstance = frameworkInstance;
+	}
 
 }

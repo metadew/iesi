@@ -33,7 +33,7 @@ import io.metadew.iesi.server.rest.ressource.connection.ConnectionsResources;
 @RestController
 public class ConnectionsController {
 
-	private static ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(FrameworkConnection.getInstance().getFrameworkExecution());
+	private static ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(FrameworkConnection.getInstance().getFrameworkInstance());
 
 	private final ConnectionRepository connectionRepository;
 

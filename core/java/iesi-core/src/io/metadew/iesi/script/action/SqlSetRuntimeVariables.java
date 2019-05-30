@@ -75,7 +75,7 @@ public class SqlSetRuntimeVariables {
             String query = convertQuery(getSqlQuery().getValue());
             String connectionName = convertConnectionName(getConnectionName().getValue());
             // Get Connection
-            ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution());
+            ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution().getFrameworkInstance());
             Connection connection = connectionConfiguration.getConnection(connectionName,
                     this.getExecutionControl().getEnvName()).get();
             ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());

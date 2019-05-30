@@ -782,7 +782,7 @@ public class ExecutionRuntime {
         String connectionParameterName = parts[1].trim();
 
         ConnectionParameterConfiguration connectionParameterConfiguration = new ConnectionParameterConfiguration(
-                this.getFrameworkExecution());
+                this.getFrameworkExecution().getFrameworkInstance());
         Optional<String> connectionParameterValue = connectionParameterConfiguration.getConnectionParameterValue(connectionName,
                 executionControl.getEnvName(), connectionParameterName);
 
@@ -799,7 +799,7 @@ public class ExecutionRuntime {
         String environmentParameterName = parts[1].trim();
 
         EnvironmentParameterConfiguration environmentParameterConfiguration = new EnvironmentParameterConfiguration(
-                this.getFrameworkExecution());
+                this.getFrameworkExecution().getFrameworkInstance());
 
         return environmentParameterConfiguration.getEnvironmentParameterValue(environmentName, environmentParameterName)
                 .orElse(input);

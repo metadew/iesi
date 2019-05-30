@@ -44,12 +44,12 @@ public class ResultMetadataRepository extends MetadataRepository {
         if (dataObject.getType().equalsIgnoreCase("log")) {
             Script script = objectMapper.convertValue(dataObject.getData(), Script.class);
             ScriptConfiguration scriptConfiguration = new ScriptConfiguration(script,
-                    frameworkExecution);
+                    frameworkExecution.getFrameworkInstance());
             executeUpdate(scriptConfiguration.getInsertStatement());
         } else if (dataObject.getType().equalsIgnoreCase("component")) {
             Component component = objectMapper.convertValue(dataObject.getData(), Component.class);
             ComponentConfiguration componentConfiguration = new ComponentConfiguration(component,
-                    frameworkExecution);
+                    frameworkExecution.getFrameworkInstance());
             executeUpdate(componentConfiguration.getInsertStatement());
         } else if (dataObject.getType().equalsIgnoreCase("subroutine")) {
             // TODO

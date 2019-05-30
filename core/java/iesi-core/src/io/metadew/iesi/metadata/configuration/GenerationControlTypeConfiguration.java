@@ -1,7 +1,7 @@
 package io.metadew.iesi.metadata.configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.GenerationControlType;
 import io.metadew.iesi.metadata.operation.DataObjectOperation;
 import io.metadew.iesi.metadata.operation.TypeConfigurationOperation;
@@ -9,24 +9,24 @@ import io.metadew.iesi.metadata.operation.TypeConfigurationOperation;
 public class GenerationControlTypeConfiguration {
 
     private GenerationControlType generationControlType;
-    private FrameworkExecution frameworkExecution;
+    private FrameworkInstance frameworkInstance;
     private String dataObjectType = "GenerationControlType";
 
     // Constructors
-    public GenerationControlTypeConfiguration(GenerationControlType generationControlType, FrameworkExecution frameworkExecution) {
+    public GenerationControlTypeConfiguration(GenerationControlType generationControlType, FrameworkInstance frameworkInstance) {
         this.setgenerationControlType(generationControlType);
-        this.setFrameworkExecution(frameworkExecution);
+        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public GenerationControlTypeConfiguration(FrameworkExecution frameworkExecution) {
-        this.setFrameworkExecution(frameworkExecution);
+    public GenerationControlTypeConfiguration(FrameworkInstance frameworkInstance) {
+    	this.setFrameworkInstance(frameworkInstance);
     }
 
     // Methods
     public GenerationControlType getGenerationControlType(String GenerationControlTypeName) {
-        String conf = TypeConfigurationOperation.getTypeConfigurationFile(this.getFrameworkExecution(),
+        String conf = TypeConfigurationOperation.getTypeConfigurationFile(this.getFrameworkInstance(),
                 this.getDataObjectType(), GenerationControlTypeName);
-        DataObjectOperation dataObjectOperation = new DataObjectOperation(this.getFrameworkExecution(), conf);
+        DataObjectOperation dataObjectOperation = new DataObjectOperation(conf);
         ObjectMapper objectMapper = new ObjectMapper();
         GenerationControlType GenerationControlType = objectMapper.convertValue(dataObjectOperation.getDataObject().getData(),
                 GenerationControlType.class);
@@ -42,14 +42,6 @@ public class GenerationControlTypeConfiguration {
         this.generationControlType = generationControlType;
     }
 
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
-    }
-
     public String getDataObjectType() {
         return dataObjectType;
     }
@@ -57,5 +49,13 @@ public class GenerationControlTypeConfiguration {
     public void setDataObjectType(String dataObjectType) {
         this.dataObjectType = dataObjectType;
     }
+
+	public FrameworkInstance getFrameworkInstance() {
+		return frameworkInstance;
+	}
+
+	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
+		this.frameworkInstance = frameworkInstance;
+	}
 
 }

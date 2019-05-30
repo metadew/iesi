@@ -37,7 +37,7 @@ public class DatabaseOffloadExecution {
 
         // Get Connection
         ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
-        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution());
+        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution().getFrameworkInstance());
 
         Connection sourceConnection = connectionConfiguration.getConnection(sourceConnectionName, sourceEnvironmentName).get();
         Database sourceDatabase = connectionOperation.getDatabase(sourceConnection);

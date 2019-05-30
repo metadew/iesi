@@ -136,7 +136,7 @@ public class WfaExecuteFilePing {
 
     private boolean executeFilePing(String filePath, String fileName, boolean hasResult, boolean setRuntimeVariables, String connectionName, int waitInterval, int timeoutInterval) {
         // Get Connection
-        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution());
+        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution().getFrameworkInstance());
         Connection connection = connectionConfiguration.getConnection(connectionName, this.getExecutionControl().getEnvName()).get();
         ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
         HostConnection dcConnection = connectionOperation.getHostConnection(connection);

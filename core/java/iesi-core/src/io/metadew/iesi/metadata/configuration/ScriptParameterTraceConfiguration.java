@@ -1,7 +1,7 @@
 package io.metadew.iesi.metadata.configuration;
 
 import io.metadew.iesi.connection.tools.SQLTools;
-import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.ScriptParameter;
 import io.metadew.iesi.metadata.definition.ScriptVersion;
 
@@ -9,17 +9,17 @@ public class ScriptParameterTraceConfiguration {
 
     private ScriptVersion scriptVersion;
     private ScriptParameter scriptParameter;
-    private FrameworkExecution frameworkExecution;
+    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public ScriptParameterTraceConfiguration(ScriptVersion scriptVersion, ScriptParameter scriptParameter, FrameworkExecution frameworkExecution) {
+    public ScriptParameterTraceConfiguration(ScriptVersion scriptVersion, ScriptParameter scriptParameter, FrameworkInstance frameworkInstance) {
         this.setScriptVersion(scriptVersion);
         this.setScriptParameter(scriptParameter);
-        this.setFrameworkExecution(frameworkExecution);
+        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public ScriptParameterTraceConfiguration(FrameworkExecution frameworkExecution) {
-        this.setFrameworkExecution(frameworkExecution);
+    public ScriptParameterTraceConfiguration(FrameworkInstance frameworkInstance) {
+    	this.setFrameworkInstance(frameworkInstance);
     }
 
     // Insert
@@ -27,7 +27,7 @@ public class ScriptParameterTraceConfiguration {
         String sql = "";
 
         sql += "INSERT INTO "
-                + this.getFrameworkExecution().getMetadataControl().getTraceMetadataRepository()
+                + this.getFrameworkInstance().getMetadataControl().getTraceMetadataRepository()
                 .getTableNameByLabel("ScriptDesignParameterTraces");
         sql += " (RUN_ID, PRC_ID, SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_PAR_NM, SCRIPT_PAR_VAL) ";
         sql += "VALUES ";
@@ -58,14 +58,6 @@ public class ScriptParameterTraceConfiguration {
         this.scriptParameter = scriptParameter;
     }
 
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
-    }
-
     public ScriptVersion getScriptVersion() {
         return scriptVersion;
     }
@@ -73,5 +65,13 @@ public class ScriptParameterTraceConfiguration {
     public void setScriptVersion(ScriptVersion scriptVersion) {
         this.scriptVersion = scriptVersion;
     }
+
+	public FrameworkInstance getFrameworkInstance() {
+		return frameworkInstance;
+	}
+
+	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
+		this.frameworkInstance = frameworkInstance;
+	}
 
 }

@@ -48,7 +48,7 @@ public class HttpRequestOperation {
     }
 
     private void getRequestConfiguration() {
-        ComponentConfiguration componentConfiguration = new ComponentConfiguration(this.getFrameworkExecution());
+        ComponentConfiguration componentConfiguration = new ComponentConfiguration(this.getFrameworkExecution().getFrameworkInstance());
         Component request = componentConfiguration.getComponent(this.getRequestName())
                 .orElseThrow(() -> new RuntimeException(MessageFormat.format("component.notfound=no component exists with name {0}.", getRequestName())));
         this.setRequest(request);

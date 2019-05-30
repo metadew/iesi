@@ -175,7 +175,7 @@ public class ExecutionControl {
 		this.getExecutionLog().setLog(this.getScriptLog());
 		
 		// Trace the design of the script
-		ScriptTraceConfiguration scriptTraceConfiguration = new ScriptTraceConfiguration (scriptExecution.getScript(), this.getFrameworkExecution());
+		ScriptTraceConfiguration scriptTraceConfiguration = new ScriptTraceConfiguration (scriptExecution.getScript(), this.getFrameworkExecution().getFrameworkInstance());
 		InputStream traceInputStream = new ByteArrayInputStream(scriptTraceConfiguration.getInsertStatement(scriptExecution).getBytes(StandardCharsets.UTF_8));
 		this.getFrameworkExecution().getMetadataControl().getResultMetadataRepository().executeScript(traceInputStream);
 

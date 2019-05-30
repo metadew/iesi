@@ -1,28 +1,28 @@
 package io.metadew.iesi.metadata.configuration;
 
-import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.DataframeItemType;
 import io.metadew.iesi.metadata.definition.DataframeItemTypeParameter;
 
 public class DataframeItemTypeParameterConfiguration {
 
     private DataframeItemTypeParameter dataframeItemTypeParameter;
-    private FrameworkExecution frameworkExecution;
+    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public DataframeItemTypeParameterConfiguration(DataframeItemTypeParameter dataframeItemTypeParameter, FrameworkExecution processiongTools) {
+    public DataframeItemTypeParameterConfiguration(DataframeItemTypeParameter dataframeItemTypeParameter, FrameworkInstance frameworkInstance) {
         this.setDataframeItemTypeParameter(dataframeItemTypeParameter);
-        this.setFrameworkExecution(processiongTools);
+        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public DataframeItemTypeParameterConfiguration(FrameworkExecution processiongTools) {
-        this.setFrameworkExecution(processiongTools);
+    public DataframeItemTypeParameterConfiguration(FrameworkInstance frameworkInstance) {
+    	this.setFrameworkInstance(frameworkInstance);
     }
 
     // Get DataframeItem Type Parameter
     public DataframeItemTypeParameter getDataframeItemTypeParameter(String dataframeItemTypeName, String dataframeItemTypeParameterName) {
         DataframeItemTypeParameter dataframeItemTypeParameterResult = null;
-        DataframeItemTypeConfiguration dataframeItemTypeConfiguration = new DataframeItemTypeConfiguration(this.getFrameworkExecution());
+        DataframeItemTypeConfiguration dataframeItemTypeConfiguration = new DataframeItemTypeConfiguration(this.getFrameworkInstance());
         DataframeItemType dataframeItemType = dataframeItemTypeConfiguration.getDataframeItemType(dataframeItemTypeName);
         for (DataframeItemTypeParameter dataframeItemTypeParameter : dataframeItemType.getParameters()) {
             if (dataframeItemTypeParameter.getName().equalsIgnoreCase(dataframeItemTypeParameterName)) {
@@ -42,12 +42,12 @@ public class DataframeItemTypeParameterConfiguration {
         this.dataframeItemTypeParameter = dataframeItemTypeParameter;
     }
 
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
+	public FrameworkInstance getFrameworkInstance() {
+		return frameworkInstance;
+	}
 
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
-    }
+	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
+		this.frameworkInstance = frameworkInstance;
+	}
 
 }

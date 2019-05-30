@@ -135,7 +135,7 @@ public class CliExecuteCommand {
         if (connectionName.isEmpty() || connectionName.equalsIgnoreCase("localhost")) {
             hostConnection = new HostConnection(HostConnectionTools.getLocalhostType());
         } else {
-            ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution());
+            ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution().getFrameworkInstance());
             Connection connection = connectionConfiguration.getConnection(connectionName,
                     this.getExecutionControl().getEnvName()).get();
             ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());

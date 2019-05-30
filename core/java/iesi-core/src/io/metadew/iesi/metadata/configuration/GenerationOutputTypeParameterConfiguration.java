@@ -1,28 +1,28 @@
 package io.metadew.iesi.metadata.configuration;
 
-import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.GenerationOutputType;
 import io.metadew.iesi.metadata.definition.GenerationOutputTypeParameter;
 
 public class GenerationOutputTypeParameterConfiguration {
 
     private GenerationOutputTypeParameter generationOutputTypeParameter;
-    private FrameworkExecution frameworkExecution;
+    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public GenerationOutputTypeParameterConfiguration(GenerationOutputTypeParameter generationOutputTypeParameter, FrameworkExecution processiongTools) {
+    public GenerationOutputTypeParameterConfiguration(GenerationOutputTypeParameter generationOutputTypeParameter, FrameworkInstance frameworkInstance) {
         this.setgenerationOutputTypeParameter(generationOutputTypeParameter);
-        this.setFrameworkExecution(processiongTools);
+        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public GenerationOutputTypeParameterConfiguration(FrameworkExecution processiongTools) {
-        this.setFrameworkExecution(processiongTools);
+    public GenerationOutputTypeParameterConfiguration(FrameworkInstance frameworkInstance) {
+    	this.setFrameworkInstance(frameworkInstance);
     }
 
     // Get GenerationOutput Type Parameter
     public GenerationOutputTypeParameter getGenerationOutputTypeParameter(String GenerationOutputTypeName, String GenerationOutputTypeParameterName) {
         GenerationOutputTypeParameter GenerationOutputTypeParameterResult = null;
-        GenerationOutputTypeConfiguration GenerationOutputTypeConfiguration = new GenerationOutputTypeConfiguration(this.getFrameworkExecution());
+        GenerationOutputTypeConfiguration GenerationOutputTypeConfiguration = new GenerationOutputTypeConfiguration(this.getFrameworkInstance());
         GenerationOutputType GenerationOutputType = GenerationOutputTypeConfiguration.getGenerationOutputType(GenerationOutputTypeName);
         for (GenerationOutputTypeParameter GenerationOutputTypeParameter : GenerationOutputType.getParameters()) {
             if (GenerationOutputTypeParameter.getName().equalsIgnoreCase(GenerationOutputTypeParameterName)) {
@@ -42,12 +42,12 @@ public class GenerationOutputTypeParameterConfiguration {
         this.generationOutputTypeParameter = generationOutputTypeParameter;
     }
 
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
+	public FrameworkInstance getFrameworkInstance() {
+		return frameworkInstance;
+	}
 
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
-    }
+	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
+		this.frameworkInstance = frameworkInstance;
+	}
 
 }

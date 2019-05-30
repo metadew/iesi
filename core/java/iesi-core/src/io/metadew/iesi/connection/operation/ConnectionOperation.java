@@ -740,7 +740,7 @@ public class ConnectionOperation {
 
 	public ConnectionType getConnectionType(String connectionTypeName) {
 		ConnectionTypeConfiguration connectionTypeConfiguration = new ConnectionTypeConfiguration(
-				this.getFrameworkExecution());
+				this.getFrameworkExecution().getFrameworkInstance());
 		ConnectionType connectionType = null;
 
 		try {

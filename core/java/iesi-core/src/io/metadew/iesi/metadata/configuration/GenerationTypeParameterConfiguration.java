@@ -1,28 +1,28 @@
 package io.metadew.iesi.metadata.configuration;
 
-import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.GenerationType;
 import io.metadew.iesi.metadata.definition.GenerationTypeParameter;
 
 public class GenerationTypeParameterConfiguration {
 
     private GenerationTypeParameter generationTypeParameter;
-    private FrameworkExecution frameworkExecution;
+    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public GenerationTypeParameterConfiguration(GenerationTypeParameter generationTypeParameter, FrameworkExecution processiongTools) {
+    public GenerationTypeParameterConfiguration(GenerationTypeParameter generationTypeParameter, FrameworkInstance frameworkInstance) {
         this.setgenerationTypeParameter(generationTypeParameter);
-        this.setFrameworkExecution(processiongTools);
+        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public GenerationTypeParameterConfiguration(FrameworkExecution processiongTools) {
-        this.setFrameworkExecution(processiongTools);
+    public GenerationTypeParameterConfiguration(FrameworkInstance frameworkInstance) {
+        this.setFrameworkInstance(frameworkInstance);
     }
 
     // Get Generation Type Parameter
     public GenerationTypeParameter getGenerationTypeParameter(String GenerationTypeName, String GenerationTypeParameterName) {
         GenerationTypeParameter GenerationTypeParameterResult = null;
-        GenerationTypeConfiguration GenerationTypeConfiguration = new GenerationTypeConfiguration(this.getFrameworkExecution());
+        GenerationTypeConfiguration GenerationTypeConfiguration = new GenerationTypeConfiguration(this.getFrameworkInstance());
         GenerationType GenerationType = GenerationTypeConfiguration.getGenerationType(GenerationTypeName);
         for (GenerationTypeParameter GenerationTypeParameter : GenerationType.getParameters()) {
             if (GenerationTypeParameter.getName().equalsIgnoreCase(GenerationTypeParameterName)) {
@@ -43,12 +43,12 @@ public class GenerationTypeParameterConfiguration {
         this.generationTypeParameter = generationTypeParameter;
     }
 
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
+	public FrameworkInstance getFrameworkInstance() {
+		return frameworkInstance;
+	}
 
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
-    }
+	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
+		this.frameworkInstance = frameworkInstance;
+	}
 
 }

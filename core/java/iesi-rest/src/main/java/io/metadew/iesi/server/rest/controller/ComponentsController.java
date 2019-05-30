@@ -33,7 +33,7 @@ import io.metadew.iesi.server.rest.ressource.component.ComponentResources;
 public class ComponentsController {
 
 	private static ComponentConfiguration componentConfiguration = new ComponentConfiguration(
-			FrameworkConnection.getInstance().getFrameworkExecution());
+			FrameworkConnection.getInstance().getFrameworkInstance());
 
 	private final ComponentRepository componentRepository;
 

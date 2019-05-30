@@ -1,7 +1,7 @@
 package io.metadew.iesi.metadata.configuration;
 
 import io.metadew.iesi.connection.tools.SQLTools;
-import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.ImpersonationParameter;
 
 import javax.sql.rowset.CachedRowSet;
@@ -11,22 +11,22 @@ import java.io.StringWriter;
 public class ImpersonationParameterConfiguration {
 
     private ImpersonationParameter impersonationParameter;
-    private FrameworkExecution frameworkExecution;
+    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public ImpersonationParameterConfiguration(ImpersonationParameter impersonationParameter, FrameworkExecution frameworkExecution) {
+    public ImpersonationParameterConfiguration(ImpersonationParameter impersonationParameter, FrameworkInstance frameworkInstance) {
         this.setImpersonationParameter(impersonationParameter);
-        this.setFrameworkExecution(frameworkExecution);
+        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public ImpersonationParameterConfiguration(FrameworkExecution frameworkExecution) {
-        this.setFrameworkExecution(frameworkExecution);
+    public ImpersonationParameterConfiguration(FrameworkInstance frameworkInstance) {
+    	this.setFrameworkInstance(frameworkInstance);
     }
 
     public String getInsertStatement(String impersonationName, ImpersonationParameter impersonationParameter) {
         String sql = "";
 
-        sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("ImpersonationParameters");
+        sql += "INSERT INTO " + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("ImpersonationParameters");
         sql += " (IMP_NM, CONN_NM, CONN_IMP_NM, CONN_IMP_DSC) ";
         sql += "VALUES ";
         sql += "(";
@@ -47,7 +47,7 @@ public class ImpersonationParameterConfiguration {
     public String getInsertStatement(String impersonationName) {
         String sql = "";
 
-        sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("ImpersonationParameters");
+        sql += "INSERT INTO " + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("ImpersonationParameters");
         sql += " (IMP_NM, CONN_NM, CONN_IMP_NM, CONN_IMP_DSC) ";
         sql += "VALUES ";
         sql += "(";
@@ -67,9 +67,9 @@ public class ImpersonationParameterConfiguration {
     public ImpersonationParameter getImpersonationParameter(String impersonationName, String impersonationParameterName) {
         ImpersonationParameter impersonationParameter = new ImpersonationParameter();
         CachedRowSet crsImpersonationParameter = null;
-        String queryImpersonationParameter = "select IMP_NM, CONN_NM, CONN_IMP_NM, CONN_IMP_DSC from " + this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("ImpersonationParameters")
+        String queryImpersonationParameter = "select IMP_NM, CONN_NM, CONN_IMP_NM, CONN_IMP_DSC from " + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("ImpersonationParameters")
                 + " where IMP_NM = '" + impersonationName + "' and CONN_NM = '" + impersonationParameterName + "'";
-        crsImpersonationParameter = this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().executeQuery(queryImpersonationParameter, "reader");
+        crsImpersonationParameter = this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().executeQuery(queryImpersonationParameter, "reader");
         try {
             while (crsImpersonationParameter.next()) {
                 impersonationParameter.setConnection(impersonationParameterName);
@@ -86,14 +86,6 @@ public class ImpersonationParameterConfiguration {
 
 
     // Getters and Setters
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
-    }
-
     public ImpersonationParameter getImpersonationParameter() {
         return impersonationParameter;
     }
@@ -101,5 +93,13 @@ public class ImpersonationParameterConfiguration {
     public void setImpersonationParameter(ImpersonationParameter impersonationParameter) {
         this.impersonationParameter = impersonationParameter;
     }
+
+	public FrameworkInstance getFrameworkInstance() {
+		return frameworkInstance;
+	}
+
+	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
+		this.frameworkInstance = frameworkInstance;
+	}
 
 }

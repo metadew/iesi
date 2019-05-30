@@ -1,7 +1,7 @@
 package io.metadew.iesi.metadata.configuration;
 
 import io.metadew.iesi.connection.tools.SQLTools;
-import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.Action;
 import io.metadew.iesi.metadata.definition.ActionParameter;
 import io.metadew.iesi.metadata.definition.Script;
@@ -13,20 +13,20 @@ import java.io.StringWriter;
 public class ActionParameterConfiguration {
 
     private ActionParameter actionParameter;
-    private FrameworkExecution frameworkExecution;
+    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public ActionParameterConfiguration(ActionParameter actionParameter, FrameworkExecution frameworkExecution) {
+    public ActionParameterConfiguration(ActionParameter actionParameter, FrameworkInstance frameworkInstance) {
         this.setActionParameter(actionParameter);
-        this.setFrameworkExecution(frameworkExecution);
+        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public ActionParameterConfiguration(FrameworkExecution frameworkExecution) {
-        this.setFrameworkExecution(frameworkExecution);
+    public ActionParameterConfiguration(FrameworkInstance frameworkInstance) {
+    	this.setFrameworkInstance(frameworkInstance);
     }
 
     public String getInsertStatement(String scriptId, long scriptVersionNumber, String actionId, ActionParameter actionParameter) {
-        return "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository()
+        return "INSERT INTO " + this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository()
                 .getTableNameByLabel("ActionParameters") +
                 " (SCRIPT_ID, SCRIPT_VRS_NB, ACTION_ID, ACTION_PAR_NM, ACTION_PAR_VAL) VALUES (" +
                 SQLTools.GetStringForSQL(scriptId) + "," +
@@ -40,7 +40,7 @@ public class ActionParameterConfiguration {
     public String getInsertStatement(Script script, Action action) {
         String sql = "";
 
-        sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository()
+        sql += "INSERT INTO " + this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository()
                 .getTableNameByLabel("ActionParameters");
         sql += " (SCRIPT_ID, SCRIPT_VRS_NB, ACTION_ID, ACTION_PAR_NM, ACTION_PAR_VAL) ";
         sql += "VALUES ";
@@ -64,11 +64,11 @@ public class ActionParameterConfiguration {
         ActionParameter actionParameter = new ActionParameter();
         CachedRowSet crsActionParameter = null;
         String queryActionParameter = "select SCRIPT_ID, SCRIPT_VRS_NB, ACTION_ID, ACTION_PAR_NM, ACTION_PAR_VAL from "
-                + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository()
+                + this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository()
                 .getTableNameByLabel("ActionParameters")
                 + " where SCRIPT_ID = " + SQLTools.GetStringForSQL(script.getId()) + " and SCRIPT_VRS_NB = " + script.getVersion().getNumber()
                 + " AND ACTION_ID = " + SQLTools.GetStringForSQL(actionId) + "' and ACTION_PAR_NM = '" + actionParameterName + "'";
-        crsActionParameter = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository()
+        crsActionParameter = this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository()
                 .executeQuery(queryActionParameter, "reader");
         try {
             while (crsActionParameter.next()) {
@@ -92,13 +92,13 @@ public class ActionParameterConfiguration {
         this.actionParameter = actionParameter;
     }
 
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
+	public FrameworkInstance getFrameworkInstance() {
+		return frameworkInstance;
+	}
 
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
-    }
+	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
+		this.frameworkInstance = frameworkInstance;
+	}
 
 
 }

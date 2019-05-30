@@ -146,7 +146,7 @@ public class FwkExecuteScript {
         }
 
         try {
-            ScriptConfiguration scriptConfiguration = new ScriptConfiguration(this.getFrameworkExecution());
+            ScriptConfiguration scriptConfiguration = new ScriptConfiguration(this.getFrameworkExecution().getFrameworkInstance());
             // Script script = scriptConfiguration.getScript(this.getScriptName().getValue());
             Script script = scriptVersion
                     .map(version -> scriptConfiguration.getScript(scriptName, version))

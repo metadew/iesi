@@ -35,9 +35,9 @@ import io.metadew.iesi.server.rest.ressource.environment.EnvironmentResources;
 public class EnvironmentsController {
 
 	private static EnvironmentConfiguration environmentConfiguration = new EnvironmentConfiguration(
-			FrameworkConnection.getInstance().getFrameworkExecution());
+			FrameworkConnection.getInstance().getFrameworkInstance());
 	private static ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(
-			FrameworkConnection.getInstance().getFrameworkExecution());
+			FrameworkConnection.getInstance().getFrameworkInstance());
 
 	private final EnvironmentRepository environmentRepository;
 

@@ -1,7 +1,7 @@
 package io.metadew.iesi.metadata.configuration;
 
 import io.metadew.iesi.connection.tools.SQLTools;
-import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.Action;
 import io.metadew.iesi.metadata.definition.Script;
 import io.metadew.iesi.metadata.definition.ScriptParameter;
@@ -11,16 +11,16 @@ import io.metadew.iesi.script.execution.ScriptExecution;
 public class ScriptTraceConfiguration {
 
 	private Script script;
-	private FrameworkExecution frameworkExecution;
+	private FrameworkInstance frameworkInstance;
 
 	// Constructors
-	public ScriptTraceConfiguration(FrameworkExecution frameworkExecution) {
-		this.setFrameworkExecution(frameworkExecution);
+	public ScriptTraceConfiguration(FrameworkInstance frameworkInstance) {
+		this.setFrameworkInstance(frameworkInstance);
 	}
 
-	public ScriptTraceConfiguration(Script script, FrameworkExecution frameworkExecution) {
+	public ScriptTraceConfiguration(Script script, FrameworkInstance frameworkInstance) {
 		this.setScript(script);
-		this.setFrameworkExecution(frameworkExecution);
+		this.setFrameworkInstance(frameworkInstance);
 	}
 
 	// Create insert statement
@@ -32,7 +32,7 @@ public class ScriptTraceConfiguration {
 
 		String sql = "";
 
-		sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getTraceMetadataRepository()
+		sql += "INSERT INTO " + this.getFrameworkInstance().getMetadataControl().getTraceMetadataRepository()
 				.getTableNameByLabel("ScriptDesignTraces");
 		sql += " (RUN_ID, PRC_ID, PARENT_PRC_ID, SCRIPT_ID, SCRIPT_TYP_NM, SCRIPT_NM, SCRIPT_DSC) ";
 		sql += "VALUES ";
@@ -84,7 +84,7 @@ public class ScriptTraceConfiguration {
 			return result;
 
 		ScriptVersionTraceConfiguration scriptVersionTraceConfiguration = new ScriptVersionTraceConfiguration(
-				this.getScript().getVersion(), this.getFrameworkExecution());
+				this.getScript().getVersion(), this.getFrameworkInstance());
 		result += scriptVersionTraceConfiguration.getInsertStatement(runId, processId, scriptId);
 
 		return result;
@@ -100,7 +100,7 @@ public class ScriptTraceConfiguration {
 		for (Action action : this.getScript().getActions()) {
 			counter++;
 			ActionTraceConfiguration actionTraceConfiguration = new ActionTraceConfiguration(action,
-					this.getFrameworkExecution());
+					this.getFrameworkInstance());
 			if (!result.equalsIgnoreCase(""))
 				result += "\n";
 			result += actionTraceConfiguration.getInsertStatement(runId, processId, this.getScript(), counter);
@@ -117,7 +117,7 @@ public class ScriptTraceConfiguration {
 
 		for (ScriptParameter scriptParameter : this.getScript().getParameters()) {
 			ScriptParameterTraceConfiguration scriptParameterTraceConfiguration = new ScriptParameterTraceConfiguration(
-					this.getScript().getVersion(), scriptParameter, this.getFrameworkExecution());
+					this.getScript().getVersion(), scriptParameter, this.getFrameworkInstance());
 			if (!result.equalsIgnoreCase(""))
 				result += "\n";
 			result += scriptParameterTraceConfiguration.getInsertStatement(runId, processId, scriptId);
@@ -135,12 +135,12 @@ public class ScriptTraceConfiguration {
 		this.script = script;
 	}
 
-	public FrameworkExecution getFrameworkExecution() {
-		return frameworkExecution;
+	public FrameworkInstance getFrameworkInstance() {
+		return frameworkInstance;
 	}
 
-	public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-		this.frameworkExecution = frameworkExecution;
+	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
+		this.frameworkInstance = frameworkInstance;
 	}
 
 }

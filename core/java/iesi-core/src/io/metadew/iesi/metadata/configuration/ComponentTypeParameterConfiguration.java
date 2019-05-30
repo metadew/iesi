@@ -1,28 +1,28 @@
 package io.metadew.iesi.metadata.configuration;
 
-import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.ComponentType;
 import io.metadew.iesi.metadata.definition.ComponentTypeParameter;
 
 public class ComponentTypeParameterConfiguration {
 
     private ComponentTypeParameter componentTypeParameter;
-    private FrameworkExecution frameworkExecution;
+    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public ComponentTypeParameterConfiguration(ComponentTypeParameter componentTypeParameter, FrameworkExecution processiongTools) {
+    public ComponentTypeParameterConfiguration(ComponentTypeParameter componentTypeParameter, FrameworkInstance frameworkInstance) {
         this.setComponentTypeParameter(componentTypeParameter);
-        this.setFrameworkExecution(processiongTools);
+        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public ComponentTypeParameterConfiguration(FrameworkExecution processiongTools) {
-        this.setFrameworkExecution(processiongTools);
+    public ComponentTypeParameterConfiguration(FrameworkInstance frameworkInstance) {
+    	this.setFrameworkInstance(frameworkInstance);
     }
 
     // Get Component Type Parameter
     public ComponentTypeParameter getComponentTypeParameter(String componentTypeName, String componentTypeParameterName) {
         ComponentTypeParameter componentTypeParameterResult = null;
-        ComponentTypeConfiguration componentTypeConfiguration = new ComponentTypeConfiguration(this.getFrameworkExecution());
+        ComponentTypeConfiguration componentTypeConfiguration = new ComponentTypeConfiguration(this.getFrameworkInstance());
         ComponentType componentType = componentTypeConfiguration.getComponentType(componentTypeName);
         for (ComponentTypeParameter componentTypeParameter : componentType.getParameters()) {
             if (componentTypeParameter.getName().equalsIgnoreCase(componentTypeParameterName)) {
@@ -42,12 +42,12 @@ public class ComponentTypeParameterConfiguration {
         this.componentTypeParameter = componentTypeParameter;
     }
 
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
+	public FrameworkInstance getFrameworkInstance() {
+		return frameworkInstance;
+	}
 
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
-    }
+	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
+		this.frameworkInstance = frameworkInstance;
+	}
 
 }

@@ -1,30 +1,30 @@
 package io.metadew.iesi.metadata.configuration;
 
 import io.metadew.iesi.connection.tools.SQLTools;
-import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.ActionParameter;
 import io.metadew.iesi.metadata.definition.Script;
 
 public class ActionParameterTraceConfiguration {
 
     private ActionParameter actionParameter;
-    private FrameworkExecution frameworkExecution;
+    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public ActionParameterTraceConfiguration(ActionParameter actionParameter, FrameworkExecution frameworkExecution) {
+    public ActionParameterTraceConfiguration(ActionParameter actionParameter, FrameworkInstance frameworkInstance) {
         this.setActionParameter(actionParameter);
-        this.setFrameworkExecution(frameworkExecution);
+        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public ActionParameterTraceConfiguration(FrameworkExecution frameworkExecution) {
-        this.setFrameworkExecution(frameworkExecution);
+    public ActionParameterTraceConfiguration(FrameworkInstance frameworkInstance) {
+    	this.setFrameworkInstance(frameworkInstance);
     }
 
     // Insert
     public String getInsertStatement(String runId, long processId, Script script, String actionId) {
         String sql = "";
 
-        sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getTraceMetadataRepository().getTableNameByLabel("ActionDesignParameterTraces");
+        sql += "INSERT INTO " + this.getFrameworkInstance().getMetadataControl().getTraceMetadataRepository().getTableNameByLabel("ActionDesignParameterTraces");
         sql += " (RUN_ID, PRC_ID, SCRIPT_ID, SCRIPT_VRS_NB, ACTION_ID, ACTION_PAR_NM, ACTION_PAR_VAL) ";
         sql += "VALUES ";
         sql += "(";
@@ -56,13 +56,13 @@ public class ActionParameterTraceConfiguration {
         this.actionParameter = actionParameter;
     }
 
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
+	public FrameworkInstance getFrameworkInstance() {
+		return frameworkInstance;
+	}
 
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
-    }
+	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
+		this.frameworkInstance = frameworkInstance;
+	}
 
 
 }

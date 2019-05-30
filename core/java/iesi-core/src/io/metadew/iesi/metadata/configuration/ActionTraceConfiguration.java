@@ -1,7 +1,7 @@
 package io.metadew.iesi.metadata.configuration;
 
 import io.metadew.iesi.connection.tools.SQLTools;
-import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.Action;
 import io.metadew.iesi.metadata.definition.ActionParameter;
 import io.metadew.iesi.metadata.definition.Script;
@@ -10,16 +10,16 @@ import io.metadew.iesi.metadata.tools.IdentifierTools;
 public class ActionTraceConfiguration {
 
     private Action action;
-    private FrameworkExecution frameworkExecution;
+    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public ActionTraceConfiguration(Action action, FrameworkExecution frameworkExecution) {
+    public ActionTraceConfiguration(Action action, FrameworkInstance frameworkInstance) {
         this.setAction(action);
-        this.setFrameworkExecution(frameworkExecution);
+        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public ActionTraceConfiguration(FrameworkExecution frameworkExecution) {
-        this.setFrameworkExecution(frameworkExecution);
+    public ActionTraceConfiguration(FrameworkInstance frameworkInstance) {
+    	this.setFrameworkInstance(frameworkInstance);
     }
 
     // Insert
@@ -28,7 +28,7 @@ public class ActionTraceConfiguration {
         String sql = "";
 
         sql += "INSERT INTO "
-                + this.getFrameworkExecution().getMetadataControl().getTraceMetadataRepository()
+                + this.getFrameworkInstance().getMetadataControl().getTraceMetadataRepository()
                 .getTableNameByLabel("ActionDesignTraces");
         sql += " (RUN_ID, PRC_ID, SCRIPT_ID, SCRIPT_VRS_NB, ACTION_ID, ACTION_NB, ACTION_TYP_NM, ACTION_NM, ACTION_DSC, COMP_NM, ITERATION_VAL, CONDITION_VAL, RETRIES_VAL, EXP_ERR_FL, STOP_ERR_FL) ";
         sql += "VALUES ";
@@ -79,7 +79,7 @@ public class ActionTraceConfiguration {
         String result = "";
 
         for (ActionParameter actionParameter : this.getAction().getParameters()) {
-            ActionParameterTraceConfiguration actionParameterTraceConfiguration = new ActionParameterTraceConfiguration(actionParameter, this.getFrameworkExecution());
+            ActionParameterTraceConfiguration actionParameterTraceConfiguration = new ActionParameterTraceConfiguration(actionParameter, this.getFrameworkInstance());
             if (!result.equalsIgnoreCase(""))
                 result += "\n";
             result += actionParameterTraceConfiguration.getInsertStatement(runId, processId, script, actionId);
@@ -97,13 +97,13 @@ public class ActionTraceConfiguration {
         this.action = action;
     }
 
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
+    public FrameworkInstance getFrameworkInstance() {
+		return frameworkInstance;
+	}
 
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
-    }
+	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
+		this.frameworkInstance = frameworkInstance;
+	}
 
 
 }

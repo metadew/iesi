@@ -144,7 +144,7 @@ public class FhoFileExists {
             }
         } else {
             ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(
-                    this.getFrameworkExecution());
+                    this.getFrameworkExecution().getFrameworkInstance());
             Connection connection = connectionConfiguration
                     .getConnection(connectionName, this.getExecutionControl().getEnvName())
                     .get();

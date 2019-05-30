@@ -30,7 +30,7 @@ import io.metadew.iesi.server.rest.ressource.impersonation.ImpersonationResource
 public class ImpersonationController {
 
 	private static ImpersonationConfiguration impersonationConfiguration = new ImpersonationConfiguration(
-			FrameworkConnection.getInstance().getFrameworkExecution());
+			FrameworkConnection.getInstance().getFrameworkInstance());
 	private final ImpersonationRepository impersonationRepository;
 
 	ImpersonationController(ImpersonationRepository impersonationRepository) {

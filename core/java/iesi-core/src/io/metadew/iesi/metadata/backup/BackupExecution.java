@@ -63,7 +63,7 @@ public class BackupExecution {
 			subjectAreaPath = path + File.separator + "environments";
 			FolderTools.createFolder(subjectAreaPath, true);
 			EnvironmentConfiguration environmentConfiguration = new EnvironmentConfiguration(
-					this.getFrameworkExecution());
+					this.getFrameworkExecution().getFrameworkInstance());
 			List<Environment> environments = environmentConfiguration.getAllEnvironments();
 			for (Environment environment : environments) {
 				String fileName = environment.getName() + ".json";
@@ -75,7 +75,7 @@ public class BackupExecution {
 			subjectAreaPath = path + File.separator + "connections";
 			FolderTools.createFolder(subjectAreaPath, true);
 			ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(
-					this.getFrameworkExecution());
+					this.getFrameworkExecution().getFrameworkInstance());
 			List<Connection> connections = connectionConfiguration.getConnections();
 			for (Connection connection : connections) {
 				String fileName = connection.getName() + ".json";

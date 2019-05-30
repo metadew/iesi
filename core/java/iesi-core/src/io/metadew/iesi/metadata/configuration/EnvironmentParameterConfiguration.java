@@ -1,7 +1,7 @@
 package io.metadew.iesi.metadata.configuration;
 
 import io.metadew.iesi.connection.tools.SQLTools;
-import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.EnvironmentParameter;
 
 import javax.sql.rowset.CachedRowSet;
@@ -13,22 +13,22 @@ public class EnvironmentParameterConfiguration {
 
     private EnvironmentParameter environmentParameter;
 
-    private FrameworkExecution frameworkExecution;
+    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public EnvironmentParameterConfiguration(EnvironmentParameter environmentParameter, FrameworkExecution frameworkExecution) {
+    public EnvironmentParameterConfiguration(EnvironmentParameter environmentParameter, FrameworkInstance frameworkInstance) {
         this.setEnvironmentParameter(environmentParameter);
-        this.setFrameworkExecution(frameworkExecution);
+        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public EnvironmentParameterConfiguration(FrameworkExecution frameworkExecution) {
-        this.setFrameworkExecution(frameworkExecution);
+    public EnvironmentParameterConfiguration(FrameworkInstance frameworkInstance) {
+    	this.setFrameworkInstance(frameworkInstance);
     }
 
     public String getInsertStatement(String environmentName, EnvironmentParameter environmentParameter) {
         String sql = "";
 
-        sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository()
+        sql += "INSERT INTO " + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository()
                 .getTableNameByLabel("EnvironmentParameters");
         sql += " (ENV_NM, ENV_PAR_NM, ENV_PAR_VAL) ";
         sql += "VALUES ";
@@ -49,7 +49,7 @@ public class EnvironmentParameterConfiguration {
     public String getInsertStatement(String environmentName) {
         String sql = "";
 
-        sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository()
+        sql += "INSERT INTO " + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository()
                 .getTableNameByLabel("EnvironmentParameters");
         sql += " (ENV_NM, ENV_PAR_NM, ENV_PAR_VAL) ";
         sql += "VALUES ";
@@ -69,10 +69,10 @@ public class EnvironmentParameterConfiguration {
         EnvironmentParameter environmentParameter = new EnvironmentParameter();
         CachedRowSet crsEnvironmentParameter = null;
         String queryEnvironmentParameter = "select ENV_NM, ENV_PAR_NM, ENV_PAR_VAL from "
-                + this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository()
+                + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository()
                 .getTableNameByLabel("EnvironmentParameters")
                 + " where ENV_NM = '" + environmentName + "' and ENV_PAR_NM = '" + environmentParameterName + "'";
-        crsEnvironmentParameter = this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository()
+        crsEnvironmentParameter = this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository()
                 .executeQuery(queryEnvironmentParameter, "reader");
         try {
             while (crsEnvironmentParameter.next()) {
@@ -91,10 +91,10 @@ public class EnvironmentParameterConfiguration {
         String output = null;
         CachedRowSet crsEnvironmentParameter;
         String queryEnvironmentParameter = "select ENV_NM, ENV_PAR_NM, ENV_PAR_VAL from "
-                + this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository()
+                + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository()
                 .getTableNameByLabel("EnvironmentParameters")
                 + " where ENV_NM = '" + environmentName + "' and ENV_PAR_NM = '" + environmentParameterName + "'";
-        crsEnvironmentParameter = this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository()
+        crsEnvironmentParameter = this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository()
                 .executeQuery(queryEnvironmentParameter, "reader");
         try {
             while (crsEnvironmentParameter.next()) {
@@ -111,14 +111,6 @@ public class EnvironmentParameterConfiguration {
     }
 
     // Getters and Setters
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
-    }
-
     public EnvironmentParameter getEnvironmentParameter() {
         return environmentParameter;
     }
@@ -126,5 +118,13 @@ public class EnvironmentParameterConfiguration {
     public void setEnvironmentParameter(EnvironmentParameter environmentParameter) {
         this.environmentParameter = environmentParameter;
     }
+
+	public FrameworkInstance getFrameworkInstance() {
+		return frameworkInstance;
+	}
+
+	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
+		this.frameworkInstance = frameworkInstance;
+	}
 
 }

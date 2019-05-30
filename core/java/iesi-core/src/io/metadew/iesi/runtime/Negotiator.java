@@ -79,7 +79,7 @@ public class Negotiator {
         // Get the Script
         ScriptConfiguration scriptConfiguration = null;
         Script script = null;
-        scriptConfiguration = new ScriptConfiguration(frameworkExecution);
+        scriptConfiguration = new ScriptConfiguration(frameworkExecution.getFrameworkInstance());
         script = scriptConfiguration.getScript("S2").get();
 
         ScriptExecution scriptExecution = new ScriptExecution(frameworkExecution, script);

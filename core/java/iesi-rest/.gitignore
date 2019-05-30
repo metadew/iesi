@@ -1,5 +1,6 @@
 HELP.md
 /target/
+/classes/
 !.mvn/wrapper/maven-wrapper.jar
 
 ### STS ###
@@ -27,10 +28,3 @@ HELP.md
 
 ### VS Code ###
 .vscode/
-
-
-### Build ###
-/classes/
-
-### IESI ###
-iesi-home.conf

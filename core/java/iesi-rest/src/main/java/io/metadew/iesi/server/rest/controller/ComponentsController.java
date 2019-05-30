@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import io.metadew.iesi.metadata.configuration.ComponentConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.ComponentAlreadyExistsException;
@@ -24,6 +25,7 @@ import io.metadew.iesi.metadata.configuration.exception.ComponentDoesNotExistExc
 import io.metadew.iesi.metadata.definition.Component;
 import io.metadew.iesi.server.rest.controller.JsonTransformation.ComponentGlobal;
 import io.metadew.iesi.server.rest.controller.JsonTransformation.ComponentGlobalByName;
+import io.metadew.iesi.server.rest.controller.JsonTransformation.ComponentPost;
 import io.metadew.iesi.server.rest.pagination.ComponentCriteria;
 import io.metadew.iesi.server.rest.pagination.ComponentRepository;
 import io.metadew.iesi.server.rest.ressource.component.ComponentGlobalResources;
@@ -56,64 +58,84 @@ public class ComponentsController {
 	@GetMapping("/components/{name}")
 	public ResponseEntity<ComponentGlobalByName> getByName(@PathVariable String name) {
 		List<Component> component = componentConfiguration.getComponentsByName(name);
-		ComponentGlobalByName componentGlobalByNames = new ComponentGlobalByName(component);
-		return ResponseEntity.status(HttpStatus.OK).body(componentGlobalByNames);
+		if (!component.isEmpty()) {
+			ComponentGlobalByName componentGlobalByNames = new ComponentGlobalByName(component);
+			return ResponseEntity.status(HttpStatus.OK).body(componentGlobalByNames);
+		}
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 
 	}
 
 	@GetMapping("/components/{name}/{version}")
-	public ResponseEntity<ComponentResources> getComponentsAndVersion(@PathVariable String name,
-			@PathVariable String version) {
-		List<Component> components = componentConfiguration.getComponentsByName(name);
-		List<Component> result = components.stream()
-				.filter(component -> component.getVersion().getDescription().equals(version))
-				.collect(Collectors.toList());
-		if (!result.isEmpty()) {
-			final ComponentResources resource = new ComponentResources(result);
-			return ResponseEntity.status(HttpStatus.OK).body(resource);
+	public ResponseEntity<ComponentPost> getComponentsAndVersion(@PathVariable String name,
+			@PathVariable Long version) {
+		Optional<Component> components = componentConfiguration.getComponent(name, version);
+		if (components.isPresent()) {
+			Component component = components.orElse(null);
+			List<Component> componentlist = java.util.Arrays.asList(component);
+			ComponentPost componentPost = new ComponentPost(componentlist);
+			return ResponseEntity.status(HttpStatus.OK).body(componentPost);
 		}
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 	}
 
 	@PostMapping("/components")
-	public ResponseEntity<ComponentResource> postComponents(@Valid @RequestBody Component component)
-			throws ComponentAlreadyExistsException {
-		componentConfiguration.insertComponent(component);
-		final ComponentResource resource = new ComponentResource(component, null);
-		return ResponseEntity.status(HttpStatus.OK).body(resource);
+	public ResponseEntity<ComponentPost> postComponents(@Valid @RequestBody Component component) {
+		try {
+			componentConfiguration.insertComponent(component);
+			List<Component> componentlist = java.util.Arrays.asList(component);
+			ComponentPost componentPost = new ComponentPost(componentlist);
+			return ResponseEntity.status(HttpStatus.OK).body(componentPost);
+		} catch (ComponentAlreadyExistsException e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+		}
+
 	}
 
 	@PutMapping("/components")
-	public ResponseEntity<ComponentResources> putComponentsConnection(@Valid @RequestBody List<Component> components)
+	public ResponseEntity<ComponentPost> putComponentsConnection(@Valid @RequestBody List<Component> components)
 			throws ComponentDoesNotExistException {
 		List<Component> updatedcomponents = new ArrayList<Component>();
 		for (Component component : components) {
 			componentConfiguration.updateComponent(component);
 			Optional.ofNullable(component).ifPresent(updatedcomponents::add);
+			ComponentPost componentPost = new ComponentPost(updatedcomponents);
+			final ComponentResources resource = new ComponentResources(updatedcomponents);
+			return ResponseEntity.status(HttpStatus.OK).body(componentPost);
 		}
-		final ComponentResources resource = new ComponentResources(updatedcomponents);
-		return ResponseEntity.status(HttpStatus.OK).body(resource);
+
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+
 	}
 
 	@PutMapping("/components/{name}/{version}")
-	public ResponseEntity<ComponentResource> putComponentsAndVersion(@Valid @RequestBody Component result,
-			@PathVariable String name, @PathVariable String version) throws ComponentDoesNotExistException {
-		List<Component> components = componentConfiguration.getComponentsByName(name);
-		if (!components.isEmpty()) {
-			result = components.stream().filter(component -> component.getVersion().getDescription().equals(version))
-					.findAny().orElse(null);
-
-			componentConfiguration.updateComponent(result);
-			final ComponentResource resource = new ComponentResource(result, null);
-			return ResponseEntity.status(HttpStatus.OK).body(resource);
+	public ResponseEntity<ComponentResource> putComponentsAndVersion(@Valid @RequestBody Component componentUpdate,
+			@PathVariable String name, @PathVariable Long version) {
+		
+		
+		Optional<Component> components = componentConfiguration.getComponent(name, version);
+		if (components.isPresent()) {
+			Component component = components.orElse(null);
+			try {
+				componentConfiguration.updateComponent(component);
+				final ComponentResource resource = new ComponentResource(componentUpdate, null);
+				return ResponseEntity.status(HttpStatus.OK).body(resource);
+			} catch (ComponentDoesNotExistException e) {
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+			}
 		}
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 	}
 
 	@DeleteMapping("/components")
 	public ResponseEntity<?> deleteAllComponents() {
-		componentConfiguration.deleteComponents();
-		return ResponseEntity.status(HttpStatus.OK).build();
+		List<Component> components = componentConfiguration.getComponents();
+		if (!components.isEmpty()) {
+			componentConfiguration.deleteComponents();
+			return ResponseEntity.status(HttpStatus.OK).build();
+		}
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 
 	@DeleteMapping("/components/{name}")
@@ -127,14 +149,12 @@ public class ComponentsController {
 	}
 
 	@DeleteMapping("/components/{name}/{version}")
-	public ResponseEntity<?> deleteComponentsAndVersion(@PathVariable String name, @PathVariable String version)
+	public ResponseEntity<?> deleteComponentsAndVersion(@PathVariable String name, @PathVariable Long version)
 			throws ComponentDoesNotExistException {
-		List<Component> components = componentConfiguration.getComponentsByName(name);
-		if (!components.isEmpty()) {
-			Component result = components.stream()
-					.filter(component -> component.getVersion().getDescription().equals(version)).findAny()
-					.orElse(null);
-			componentConfiguration.deleteComponent(result);
+		Optional<Component> components = componentConfiguration.getComponent(name, version);
+		if (components.isPresent()) {
+			Component component = components.orElse(null);
+			componentConfiguration.deleteComponent(component);
 			return ResponseEntity.status(HttpStatus.OK).build();
 		}
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();

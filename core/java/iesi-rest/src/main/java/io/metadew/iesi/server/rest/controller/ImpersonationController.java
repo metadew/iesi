@@ -62,12 +62,15 @@ public class ImpersonationController {
 	}
 
 	@PostMapping("/impersonations")
-	public ResponseEntity<ImpersonationResource> postImpersonation(@Valid @RequestBody Impersonation impersonation)
-			throws ImpersonationAlreadyExistsException {
-		impersonationConfiguration.insertImpersonation(impersonation);
-		final ImpersonationResource resource = new ImpersonationResource(impersonation, null);
-		return ResponseEntity.status(HttpStatus.OK).body(resource);
-
+	public ResponseEntity<ImpersonationResource> postImpersonation(@Valid @RequestBody Impersonation impersonation) {
+		try {
+			impersonationConfiguration.insertImpersonation(impersonation);
+			final ImpersonationResource resource = new ImpersonationResource(impersonation, null);
+			return ResponseEntity.status(HttpStatus.OK).body(resource);
+		} catch (ImpersonationAlreadyExistsException e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+		}
 	}
 
 	@PutMapping("/impersonations/{name}")
@@ -99,8 +102,12 @@ public class ImpersonationController {
 
 	@DeleteMapping("/impersonations")
 	public ResponseEntity<?> deleteAllImpersonation() {
-		impersonationConfiguration.deleteAllImpersonations();
-		return ResponseEntity.status(HttpStatus.OK).build();
+		List<Impersonation> impersonation = impersonationConfiguration.getAllImpersonations();
+		if (!impersonation.isEmpty()) {
+			impersonationConfiguration.deleteAllImpersonations();
+			return ResponseEntity.status(HttpStatus.OK).build();
+		}
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 
 	@DeleteMapping("/impersonations/{name}")

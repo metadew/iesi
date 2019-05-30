@@ -1,4 +1,4 @@
-package com.zuul.filters;
+package iesi.gateway.filters;
 
 import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.PRE_TYPE;
 

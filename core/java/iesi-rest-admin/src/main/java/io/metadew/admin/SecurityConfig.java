@@ -25,10 +25,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		http.authorizeRequests().antMatchers(adminContextPath + "/assets/**").permitAll()
 				.antMatchers(adminContextPath + "/login").permitAll().anyRequest().authenticated().and().formLogin()
 				.loginPage(adminContextPath + "/login").successHandler(successHandler).and().authorizeRequests()
-				.antMatchers("/actuator/**").permitAll()
-				.and().logout()
-				.logoutUrl(adminContextPath + "/logout").and().httpBasic().and().csrf()
-				.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+				.antMatchers("/actuator/**").permitAll().and().logout().logoutUrl(adminContextPath + "/logout").and()
+				.httpBasic().and().csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
 				.ignoringAntMatchers(adminContextPath + "/instances", adminContextPath + "/actuator/**");
 	}
+
 }

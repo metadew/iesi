@@ -17,6 +17,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 @EnableWebSecurity
 @Configuration
@@ -62,13 +63,24 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 		return new BCryptPasswordEncoder();
 	}
 
+	private static final String[] HTTPS = { "/api/environments/**", "/api/impersonations/**", "/api/connections/**",
+			"/api/components/**", "api/scripts/**", "api/users/**", "api/myaccount/**" };
+
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
+		http.csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
+		http.headers().httpStrictTransportSecurity().disable().and().httpBasic().and().formLogin().and()
+				.authorizeRequests().anyRequest().authenticated();
+		http.requiresChannel().antMatchers(HTTPS).requiresSecure();
 		http.requestMatcher(EndpointRequest.toAnyEndpoint())
 				.authorizeRequests()
 				.anyRequest().hasAuthority("AUTHORIZED_ADMIN")
 				.and()
 				.httpBasic();
+
+//		http.headers().httpStrictTransportSecurity().disable().and().httpBasic().and().formLogin().and()
+//				.authorizeRequests().anyRequest().authenticated();
+
 	}
 
 }

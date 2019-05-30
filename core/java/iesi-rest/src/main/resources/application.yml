@@ -2,24 +2,33 @@ server:
   port: 8080
   servlet:
     context-path: /api
-
 spring.security.user:
   name: admin
-  password: admin
+  password: ${iesi-admin}
 
 security:
   jwt:
-    key-store: classpath:francois.jks
-    key-store-password: francois
-    key-pair-alias: francois
-    key-pair-password: francois
-    
+    key-store: classpath:${iesi-security-keystore}
+    key-store-password: ${iesi-security-keystore-password}
+    key-pair-alias: ${iesi-security-keypair-alias}
+    key-pair-password: ${iesi-security-keypair-password}
+    #password est francois
+#security:
+#  jwt:
+#    public-key: classpath:public.txt    
+
 spring:
   application:
-      name: IESI-REST
+      name: iesi-rest, ssl-rest
   boot:
     admin:
       client:
           url: http://localhost:8081/
           username: admin
-          password: admin
+          password: ${iesi-admin}
+  cloud:
+    config:
+      password: ${iesi-admin-user}
+      username: ${iesi-admin}
+      uri:
+      - http://localhost:8888

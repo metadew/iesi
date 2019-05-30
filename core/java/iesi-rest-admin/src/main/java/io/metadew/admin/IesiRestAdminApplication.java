@@ -7,9 +7,11 @@ import de.codecentric.boot.admin.server.config.EnableAdminServer;
 
 @SpringBootApplication
 @EnableAdminServer
+
 public class IesiRestAdminApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(IesiRestAdminApplication.class, args);
 	}
+
 }

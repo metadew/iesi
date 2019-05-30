@@ -1,22 +1,21 @@
 package io.metadew.iesi.server.rest.user;
 
+import io.metadew.iesi.metadata.configuration.UserConfiguration;
+import io.metadew.iesi.metadata.definition.User;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.stereotype.Component;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.stereotype.Component;
-
-import io.metadew.iesi.metadata.configuration.UserConfiguration;
-import io.metadew.iesi.metadata.definition.User;
-import io.metadew.iesi.server.rest.controller.FrameworkConnection;
-
 @Component
 public class UserSql implements CommandLineRunner {
 
-	private static UserConfiguration userConfiguration = new UserConfiguration(
-			FrameworkConnection.getInstance().getFrameworkExecution());
+	@Autowired
+	private UserConfiguration userConfiguration;
 
 	static final String JDBC_DRIVER = "org.h2.Driver";
 	static final String DB_URL = "jdbc:h2:~/token";

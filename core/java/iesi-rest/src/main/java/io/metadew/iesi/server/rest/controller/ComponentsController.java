@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -32,12 +33,13 @@ import io.metadew.iesi.server.rest.ressource.component.ComponentResources;
 @RestController
 public class ComponentsController {
 
-	private static ComponentConfiguration componentConfiguration = new ComponentConfiguration(
-			FrameworkConnection.getInstance().getFrameworkExecution());
+	private ComponentConfiguration componentConfiguration;
 
 	private final ComponentRepository componentRepository;
 
-	ComponentsController(ComponentRepository componentRepository) {
+	@Autowired
+	ComponentsController(ComponentConfiguration componentConfiguration, ComponentRepository componentRepository) {
+		this.componentConfiguration = componentConfiguration;
 		this.componentRepository = componentRepository;
 	}
 

@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import javax.validation.Valid;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,12 +30,13 @@ import io.metadew.iesi.server.rest.ressource.impersonation.ImpersonationResource
 @RestController
 public class ImpersonationController {
 
-	private static ImpersonationConfiguration impersonationConfiguration = new ImpersonationConfiguration(
-			FrameworkConnection.getInstance().getFrameworkExecution());
+	private ImpersonationConfiguration impersonationConfiguration;
 	private final ImpersonationRepository impersonationRepository;
 
-	ImpersonationController(ImpersonationRepository impersonationRepository) {
+	@Autowired
+	ImpersonationController(ImpersonationConfiguration impersonationConfiguration, ImpersonationRepository impersonationRepository) {
 		this.impersonationRepository = impersonationRepository;
+		this.impersonationConfiguration = impersonationConfiguration;
 	}
 
 	@GetMapping("/impersonations")

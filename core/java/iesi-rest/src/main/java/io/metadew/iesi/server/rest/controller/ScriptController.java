@@ -2,6 +2,7 @@ package io.metadew.iesi.server.rest.controller;
 
 import javax.validation.Valid;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -22,13 +23,14 @@ import io.metadew.iesi.server.rest.ressource.script.ScriptResource;
 @RestController
 public class ScriptController {
 
-	private static ScriptConfiguration scriptConfiguration = new ScriptConfiguration(
-			FrameworkConnection.getInstance().getFrameworkExecution());
+	private ScriptConfiguration scriptConfiguration ;
 
 	private final ScriptRepository scriptRepository;
 
-	ScriptController(ScriptRepository scriptRepository) {
+	@Autowired
+	ScriptController(ScriptConfiguration scriptConfiguration, ScriptRepository scriptRepository) {
 		this.scriptRepository = scriptRepository;
+		this.scriptConfiguration = scriptConfiguration;
 	}
 
 	@GetMapping("/scripts")

@@ -1,141 +1,157 @@
 package io.metadew.iesi.server.rest.controller;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import javax.validation.Valid;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-
 import io.metadew.iesi.metadata.configuration.ConnectionConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.ConnectionAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.ConnectionDoesNotExistException;
 import io.metadew.iesi.metadata.definition.Connection;
-import io.metadew.iesi.server.rest.controller.JsonTransformation.ConnectionGlobal;
-import io.metadew.iesi.server.rest.controller.JsonTransformation.ConnectionName;
 import io.metadew.iesi.server.rest.pagination.ConnectionCriteria;
-import io.metadew.iesi.server.rest.pagination.ConnectionRepository;
-import io.metadew.iesi.server.rest.ressource.connection.ConnectionResource;
-import io.metadew.iesi.server.rest.ressource.connection.ConnectionResourceName;
-import io.metadew.iesi.server.rest.ressource.connection.ConnectionsGlobal;
-import io.metadew.iesi.server.rest.ressource.connection.ConnectionsResources;
+import io.metadew.iesi.server.rest.ressource.HalMultipleEmbeddedResource;
+import io.metadew.iesi.server.rest.ressource.HalSingleEmbeddedResource;
+import io.metadew.iesi.server.rest.ressource.connection.dto.ConnectionByNameDto;
+import io.metadew.iesi.server.rest.ressource.connection.dto.ConnectionDto;
+import io.metadew.iesi.server.rest.ressource.connection.dto.ConnectionGlobalDto;
+import io.metadew.iesi.server.rest.ressource.connection.resource.ConnectionByNameDtoResourceAssembler;
+import io.metadew.iesi.server.rest.ressource.connection.resource.ConnectionDtoResourceAssembler;
+import io.metadew.iesi.server.rest.ressource.connection.resource.ConnectionGlobalDtoResourceAssembler;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+
+import javax.validation.Valid;
+import java.text.MessageFormat;
+import java.util.List;
+import java.util.Optional;
+
+import static io.metadew.iesi.server.rest.ressource.connection.dto.ConnectionDto.convertToDto;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 @RestController
+@RequestMapping("/connections")
 public class ConnectionsController {
 
-	private static ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(FrameworkConnection.getInstance().getFrameworkExecution());
+	private ConnectionConfiguration connectionConfiguration;
 
-	private final ConnectionRepository connectionRepository;
-
-	ConnectionsController(ConnectionRepository connectionRepository) {
-		this.connectionRepository = connectionRepository;
+	@Autowired
+	ConnectionsController(ConnectionConfiguration connectionConfiguration) {
+		this.connectionConfiguration = connectionConfiguration;
 	}
 
-	@GetMapping("/connections")
-	public ResponseEntity<ConnectionsGlobal> getAllConnections(@Valid ConnectionCriteria connectionCriteria) {
+	@Autowired
+	private ConnectionDtoResourceAssembler connectionDtoResourceAssembler;
+
+	@Autowired
+	private ConnectionByNameDtoResourceAssembler connectionByNameDtoResourceAssembler;
+
+	@Autowired
+	private ConnectionGlobalDtoResourceAssembler connectionGlobalDtoResourceAssembler;
+
+	@GetMapping("")
+	public HalMultipleEmbeddedResource<ConnectionGlobalDto> getAllConnections(@Valid ConnectionCriteria connectionCriteria) {
 		List<Connection> connections = connectionConfiguration.getConnections();
-		List<ConnectionGlobal> connectionsGlobal = connections.stream()
-				.map(connection -> new ConnectionGlobal(connection)).distinct().collect(Collectors.toList());
-		List<ConnectionGlobal> connectionGlobalsFiltered = connectionRepository.search(connectionsGlobal,
-				connectionCriteria);
-		final ConnectionsGlobal resource = new ConnectionsGlobal(connectionGlobalsFiltered);
-		return ResponseEntity.status(HttpStatus.OK).body(resource);
+		return connectionGlobalDtoResourceAssembler.toResource(connections);
 	}
 
-	@GetMapping("/connections/{name}")
-	public ResponseEntity<ConnectionResourceName> getByName(@PathVariable String name) {
+	@GetMapping("/{name}")
+	public HalSingleEmbeddedResource<ConnectionByNameDto> getByName(@PathVariable String name) {
 		List<Connection> connections = connectionConfiguration.getConnectionByName(name);
 		if (connections.isEmpty()) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 		}
-		ConnectionName connectionName = new ConnectionName(connections);
-
-		final ConnectionResourceName resource = new ConnectionResourceName(connectionName);
-		return ResponseEntity.status(HttpStatus.OK).body(resource);
+		return connectionByNameDtoResourceAssembler.toResource(connections);
 	}
 
-	@GetMapping("/connections/{name}/{environment}")
-	public ResponseEntity<ConnectionResource> getByNameandEnvironment(@PathVariable String name,
-			@PathVariable String environment) {
+	@GetMapping("/{name}/{environment}")
+	public HalSingleEmbeddedResource<ConnectionDto> getByNameandEnvironment(@PathVariable String name,
+																			@PathVariable String environment) {
 		Optional<Connection> connection = connectionConfiguration.getConnection(name, environment);
-		if (connection.isPresent()) {
-			return ResponseEntity.status(HttpStatus.OK)
-					.body(new ConnectionResource(connection.get(), name, environment));
-		} else {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+
+		return connection
+				.map(connectionDtoResourceAssembler::toResource)
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+	}
+
+	@PostMapping("")
+	public HalSingleEmbeddedResource<ConnectionDto> postAllConnections(@Valid @RequestBody ConnectionDto connectionDto) {
+		try {
+			connectionConfiguration.insertConnection(connectionDto.convertToEntity());
+		} catch (ConnectionAlreadyExistsException e) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+					MessageFormat.format("Connection {0}-{1} already exists", connectionDto.getName(), connectionDto.getEnvironment()));
+		}
+		return connectionConfiguration.getConnection(connectionDto.getName(), connectionDto.getEnvironment())
+				.map(connectionDtoResourceAssembler::toResource)
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR));
+	}
+
+	@PutMapping("")
+	public HalMultipleEmbeddedResource<ConnectionDto> putAllConnections(@Valid @RequestBody List<ConnectionDto> connectionDtos) {
+		HalMultipleEmbeddedResource<ConnectionDto> halMultipleEmbeddedResource = new HalMultipleEmbeddedResource<>();
+		for (ConnectionDto connectionDto : connectionDtos) {
+			try {
+				ConnectionDto updatedConnectionDto = convertToDto(connectionConfiguration.updateConnection(connectionDto.convertToEntity()));
+				halMultipleEmbeddedResource.embedResource(updatedConnectionDto);
+				halMultipleEmbeddedResource.add(linkTo(methodOn(ConnectionsController.class)
+						.getByNameandEnvironment(updatedConnectionDto.getName(), updatedConnectionDto.getEnvironment()))
+						.withRel(updatedConnectionDto.getName() + ":" + updatedConnectionDto.getEnvironment()));
+
+			} catch (ConnectionDoesNotExistException e) {
+				throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+						MessageFormat.format("Connection {0}-{1} does not exists", connectionDto.getName(), connectionDto.getEnvironment()));
+			} catch (ConnectionAlreadyExistsException e) {
+				throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+		}
+		return halMultipleEmbeddedResource;
+	}
+
+	@PutMapping("/{name}/{environment}")
+	public HalSingleEmbeddedResource<ConnectionDto> putConnections(@PathVariable String name,
+																   @PathVariable String environment, @RequestBody ConnectionDto connectionDto) {
+		if (!connectionDto.getName().equals(name) || !connectionDto.getEnvironment().equals(environment)) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+					MessageFormat.format("Name ''{0}'' and environment ''{1}'' in url do not match name and environment in body",
+							name, environment));
+		}
+		try {
+			return connectionDtoResourceAssembler.toResource(connectionConfiguration.updateConnection(connectionDto.convertToEntity()));
+		} catch (ConnectionDoesNotExistException e) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+					MessageFormat.format("Connection {0}-{1} does not exist", name, environment));
+		} catch (ConnectionAlreadyExistsException e) {
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
-	@PostMapping("/connections")
-	public ResponseEntity<ConnectionResource> postAllConnections(@Valid @RequestBody Connection connection)
-			throws ConnectionAlreadyExistsException {
-		connectionConfiguration.insertConnection(connection);
-		final ConnectionResource resource = new ConnectionResource(connection, null, null);
-		return ResponseEntity.status(HttpStatus.OK).body(resource);
-	}
-
-	@PutMapping("/connections")
-	public ResponseEntity<ConnectionsResources> putAllConnections(@Valid @RequestBody List<Connection> connections)
-			throws ConnectionDoesNotExistException {
-		List<Connection> updatedConnections = new ArrayList<Connection>();
-		for (Connection connection : connections) {
-			connectionConfiguration.updateConnection(connection);
-			Optional.ofNullable(connection).ifPresent(updatedConnections::add);
-		}
-		final ConnectionsResources resource = new ConnectionsResources(updatedConnections);
-		return ResponseEntity.status(HttpStatus.OK).body(resource);
-	}
-
-	@PutMapping("/connections/{name}/{environment}")
-	public ResponseEntity<ConnectionResource> putConnections(@PathVariable String name,
-			@PathVariable String environment, @RequestBody Connection connection)
-			throws ConnectionDoesNotExistException {
-		if (!connection.getName().equals(name) || !connection.getEnvironment().equals(environment)) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-		}
-		connectionConfiguration.updateConnection(connection);
-		Optional<Connection> updatedConnection = connectionConfiguration.getConnection(name, environment);
-		Connection newConnection = updatedConnection.orElse(null);
-		final ConnectionResource resource = new ConnectionResource(newConnection, name, environment);
-		return ResponseEntity.status(HttpStatus.OK).body(resource);
-
-	}
-
-	@DeleteMapping("/connections")
+	@DeleteMapping("")
 	public ResponseEntity<?> deleteAllConnections() {
 		connectionConfiguration.deleteAllConnections();
 		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
-	@DeleteMapping("connections/{name}")
-	public ResponseEntity<?> deleteConnections(@PathVariable String name) throws ConnectionDoesNotExistException {
-		List<Connection> connections = connectionConfiguration.getConnectionByName(name);
-		Connection result = connections.stream().filter(x -> x.getName().equals(name)).findAny().orElse(null);
-		connectionConfiguration.deleteConnection(result);
+	@DeleteMapping("/{name}")
+	public ResponseEntity<?> deleteConnections(@PathVariable String name) {
+		try {
+			connectionConfiguration.deleteConnectionByName(name);
+		} catch (ConnectionDoesNotExistException e) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+					MessageFormat.format("Connection {0} does not exist", name));
+		}
 		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
-	@DeleteMapping("/connections/{name}/{environment}")
+	@DeleteMapping("/{name}/{environment}")
 	public ResponseEntity<?> deleteConnectionsandEnvironment(@PathVariable String name,
-			@PathVariable String environment) throws ConnectionDoesNotExistException {
-		Optional<Connection> connection = connectionConfiguration.getConnection(name, environment);
-		Connection connect = connection.orElse(null);
-		if (connection.isPresent()) {
-			connectionConfiguration.deleteConnection(connect);
-			return ResponseEntity.status(HttpStatus.OK).build();
-		} else {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+			@PathVariable String environment) {
+		try {
+			connectionConfiguration.deleteConnection(name, environment);
+		} catch (ConnectionDoesNotExistException e) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+					MessageFormat.format("Connection {0}-{1} does not exists", name, environment));
 		}
+		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
 }

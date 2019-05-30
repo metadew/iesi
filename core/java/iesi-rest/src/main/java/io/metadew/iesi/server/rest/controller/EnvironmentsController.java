@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,14 +35,17 @@ import io.metadew.iesi.server.rest.ressource.environment.EnvironmentResources;
 @RestController
 public class EnvironmentsController {
 
-	private static EnvironmentConfiguration environmentConfiguration = new EnvironmentConfiguration(
-			FrameworkConnection.getInstance().getFrameworkExecution());
-	private static ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(
-			FrameworkConnection.getInstance().getFrameworkExecution());
+	private EnvironmentConfiguration environmentConfiguration;
+
+	private ConnectionConfiguration connectionConfiguration;
 
 	private final EnvironmentRepository environmentRepository;
 
-	EnvironmentsController(EnvironmentRepository environmentRepository) {
+	@Autowired
+	EnvironmentsController(EnvironmentConfiguration environmentConfiguration, ConnectionConfiguration connectionConfiguration,
+						   EnvironmentRepository environmentRepository) {
+		this.environmentConfiguration = environmentConfiguration;
+		this.connectionConfiguration = connectionConfiguration;
 		this.environmentRepository = environmentRepository;
 	}
 

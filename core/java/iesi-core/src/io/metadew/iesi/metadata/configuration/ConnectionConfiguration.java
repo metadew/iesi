@@ -164,6 +164,13 @@ public class ConnectionConfiguration {
         return !getConnectionByName(connectionName).isEmpty();
     }
 
+    public void deleteConnection(String name, String environment) throws ConnectionDoesNotExistException {
+        deleteConnection(getConnection(name, environment)
+                .orElseThrow(() -> new ConnectionDoesNotExistException(
+                        MessageFormat.format("Connection {0}-{1} is not present in the repository so cannot be updated",
+                                name, environment))));
+    }
+
     public void deleteConnection(Connection connection) throws ConnectionDoesNotExistException {
         frameworkExecution.getFrameworkLog().log(MessageFormat.format(
                 "Deleting connection {0}-{1}.", connection.getName(), connection.getEnvironment()), Level.TRACE);
@@ -216,7 +223,7 @@ public class ConnectionConfiguration {
         if (!exists(connectionName)) {
             throw new ConnectionDoesNotExistException(
                     MessageFormat.format("Connection {0} is not present in the repository so cannot be updated",
-                            connectionName, connection.getEnvironment()));
+                            connectionName));
 
         }
         String deleteQuery = getDeleteConnectionByNameQuery(connectionName);
@@ -258,7 +265,7 @@ public class ConnectionConfiguration {
         return sql;
     }
 
-    public void insertConnection(Connection connection) throws ConnectionAlreadyExistsException {
+    public Connection insertConnection(Connection connection) throws ConnectionAlreadyExistsException {
         frameworkExecution.getFrameworkLog().log(MessageFormat.format(
                 "Inserting connection {0}-{1}.", connection.getName(), connection.getEnvironment()), Level.TRACE);
         if (exists(connection)) {
@@ -267,6 +274,7 @@ public class ConnectionConfiguration {
         }
         String insertQuery = getInsertQuery(connection);
         this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().executeUpdate(insertQuery);
+        return connection;
     }
 
     private String getInsertQuery(Connection connection) {
@@ -310,12 +318,12 @@ public class ConnectionConfiguration {
         return result.toString();
     }
 
-    public void updateConnection(Connection connection) throws ConnectionDoesNotExistException {
+    public Connection updateConnection(Connection connection) throws ConnectionDoesNotExistException, ConnectionAlreadyExistsException {
         frameworkExecution.getFrameworkLog().log(MessageFormat.format(
                 "Updating connection {0}-{1}.", connection.getName(), connection.getEnvironment()), Level.TRACE);
         try {
             deleteConnection(connection);
-            insertConnection(connection);
+            return insertConnection(connection);
         } catch (ConnectionDoesNotExistException e) {
             frameworkExecution.getFrameworkLog().log(MessageFormat.format(
                     "Connection {0}-{1} is not present in the repository so cannot be updated",
@@ -329,6 +337,7 @@ public class ConnectionConfiguration {
                     "Connection {0}-{1} is not deleted correctly during update. {2}",
                     connection.getName(), connection.getEnvironment(), e.toString()),
                     Level.WARN);
+            throw e;
         }
     }
 

@@ -73,7 +73,7 @@ public class ConnectivityMetadataRepository extends MetadataRepository {
                     connection.getName(), connection.getEnvironment()), Level.DEBUG);
             try {
                 connectionConfiguration.updateConnection(connection);
-            } catch (ConnectionDoesNotExistException e2) {
+            } catch (ConnectionDoesNotExistException | ConnectionAlreadyExistsException e2) {
                 e2.printStackTrace();
             }
         }

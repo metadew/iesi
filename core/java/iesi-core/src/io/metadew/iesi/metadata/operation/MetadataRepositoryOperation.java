@@ -107,7 +107,6 @@ public class MetadataRepositoryOperation {
     private void loadConfigurationSelection(List<MetadataRepository> metadataRepositories, String inputFolder, String workFolder, String archiveFolder,
                                             String errorFolder, String[] files) {
         for (String file : files) {
-            System.out.println(file);
             File activeFile = new File(FilenameUtils.normalize(inputFolder + File.separator + file));
             this.loadConfigurationFile(metadataRepositories, activeFile, inputFolder, workFolder, archiveFolder, errorFolder);
         }

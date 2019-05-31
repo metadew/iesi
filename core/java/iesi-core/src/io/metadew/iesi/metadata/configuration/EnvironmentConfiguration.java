@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.configuration.FrameworkObjectConfiguration;
-import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.exception.EnvironmentAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.EnvironmentDoesNotExistException;
@@ -12,7 +11,6 @@ import io.metadew.iesi.metadata.definition.DataObject;
 import io.metadew.iesi.metadata.definition.Environment;
 import io.metadew.iesi.metadata.definition.EnvironmentParameter;
 import io.metadew.iesi.metadata.definition.ListObject;
-import org.apache.logging.log4j.Level;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.InputStream;
@@ -26,7 +24,6 @@ import java.util.Optional;
 public class EnvironmentConfiguration {
 
     private Environment environment;
-    private FrameworkExecution frameworkExecution;
     private FrameworkInstance frameworkInstance;
 
     // Constructors
@@ -99,8 +96,8 @@ public class EnvironmentConfiguration {
     }
 
     public void deleteEnvironment(Environment environment) throws EnvironmentDoesNotExistException {
-        frameworkExecution.getFrameworkLog().log(
-                MessageFormat.format("Deleting environment {0}", environment.getName()), Level.TRACE);
+        //TODO fix logging
+    	//frameworkExecution.getFrameworkLog().log(MessageFormat.format("Deleting environment {0}", environment.getName()), Level.TRACE);
         if (!exists(environment)) {
             throw new EnvironmentDoesNotExistException(
                     MessageFormat.format("Environment {0} is not present in the repository so cannot be updated",
@@ -129,7 +126,8 @@ public class EnvironmentConfiguration {
     }
 
     public void deleteAllEnvironments() {
-        frameworkExecution.getFrameworkLog().log("Deleting all environments", Level.TRACE);
+        //TODO fix logging
+    	//frameworkExecution.getFrameworkLog().log("Deleting all environments", Level.TRACE);
         String query = getDeleteAllStatement();
         this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().executeUpdate(query);
     }
@@ -148,8 +146,8 @@ public class EnvironmentConfiguration {
     }
 
     public void insertEnvironment(Environment environment) throws EnvironmentAlreadyExistsException {
-        frameworkExecution.getFrameworkLog().log(
-                MessageFormat.format("Inserting environment {0}", environment.getName()), Level.TRACE);
+        //TODO fix logging
+    	//frameworkExecution.getFrameworkLog().log(MessageFormat.format("Inserting environment {0}", environment.getName()), Level.TRACE);
         if (exists(environment)) {
             throw new EnvironmentAlreadyExistsException(MessageFormat.format("Environment {0} already exists", environment.getName()));
         }
@@ -180,22 +178,20 @@ public class EnvironmentConfiguration {
     }
 
     public void updateEnvironment(Environment environment) throws EnvironmentDoesNotExistException {
-        frameworkExecution.getFrameworkLog().log(MessageFormat.format(
-                "Updating environment {0}.", environment.getName()), Level.TRACE);
+        //TODO fix logging
+    	//frameworkExecution.getFrameworkLog().log(MessageFormat.format("Updating environment {0}.", environment.getName()), Level.TRACE);
         try {
             deleteEnvironment(environment);
             insertEnvironment(environment);
         } catch (EnvironmentDoesNotExistException e) {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format(
-                    "Environment {0} is not present in the repository so cannot be updated", environment.getName()),
-                    Level.TRACE);
+            //TODO fix logging
+        	//frameworkExecution.getFrameworkLog().log(MessageFormat.format("Environment {0} is not present in the repository so cannot be updated", environment.getName()),Level.TRACE);
             throw new EnvironmentDoesNotExistException(MessageFormat.format(
                     "Environment {0} is not present in the repository so cannot be updated", environment.getName()));
 
         } catch (EnvironmentAlreadyExistsException e) {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format(
-                    "Environment {0} is not deleted correctly during update. {1}", environment.getName(), e.toString()),
-                    Level.WARN);
+            //TODO fix logging
+        	//frameworkExecution.getFrameworkLog().log(MessageFormat.format("Environment {0} is not deleted correctly during update. {1}", environment.getName(), e.toString()),Level.WARN);
         }
     }
 

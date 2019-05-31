@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.List;
 
 import io.metadew.iesi.cockpit.backend.EnvironmentDataService;
+import io.metadew.iesi.cockpit.backend.controller.FrameworkConnection;
+import io.metadew.iesi.metadata.configuration.EnvironmentConfiguration;
 import io.metadew.iesi.metadata.definition.Environment;
 
 public class EnvironmentDataServiceConfiguration extends EnvironmentDataService {
@@ -12,6 +14,8 @@ public class EnvironmentDataServiceConfiguration extends EnvironmentDataService 
 	private static final long serialVersionUID = 1L;
 
 	private static EnvironmentDataServiceConfiguration INSTANCE;
+	private static EnvironmentConfiguration environmentConfiguration = new EnvironmentConfiguration(
+			FrameworkConnection.getInstance().getFrameworkInstance());
 
     private List<Environment> environments;
 
@@ -35,7 +39,9 @@ public class EnvironmentDataServiceConfiguration extends EnvironmentDataService 
 
     @Override
     public synchronized List<Environment> getAllEnvironments() {
-        return Collections.unmodifiableList(environments);
+    	return Collections.unmodifiableList(EnvironmentDataServiceConfiguration.getEnvironmentConfiguration().getAllEnvironments());
+    	//return Collections.unmodifiableList(environments);
+        
     }
 
     @Override
@@ -53,4 +59,12 @@ public class EnvironmentDataServiceConfiguration extends EnvironmentDataService 
     public synchronized void deleteEnvironment(String environmentName) {
     	// add logic
     }
+
+	public static EnvironmentConfiguration getEnvironmentConfiguration() {
+		return environmentConfiguration;
+	}
+
+	public static void setEnvironmentConfiguration(EnvironmentConfiguration environmentConfiguration) {
+		EnvironmentDataServiceConfiguration.environmentConfiguration = environmentConfiguration;
+	}
 }

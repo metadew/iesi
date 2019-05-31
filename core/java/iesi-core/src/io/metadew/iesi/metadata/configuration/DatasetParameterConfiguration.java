@@ -1,7 +1,7 @@
 package io.metadew.iesi.metadata.configuration;
 
 import io.metadew.iesi.connection.tools.SQLTools;
-import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.DatasetParameter;
 
 import javax.sql.rowset.CachedRowSet;
@@ -11,27 +11,27 @@ import java.io.StringWriter;
 public class DatasetParameterConfiguration {
 
     private DatasetParameter datasetParameter;
-    private FrameworkExecution frameworkExecution;
+    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public DatasetParameterConfiguration(DatasetParameter datasetParameter, FrameworkExecution frameworkExecution) {
+    public DatasetParameterConfiguration(DatasetParameter datasetParameter, FrameworkInstance frameworkInstance) {
         this.setDatasetParameter(datasetParameter);
-        this.setFrameworkExecution(frameworkExecution);
+        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public DatasetParameterConfiguration(FrameworkExecution frameworkExecution) {
-        this.setFrameworkExecution(frameworkExecution);
+    public DatasetParameterConfiguration(FrameworkInstance frameworkInstance) {
+    	this.setFrameworkInstance(frameworkInstance);
     }
 
     // Insert
     public String getInsertStatement(String datasetName) {
         String sql = "";
 
-        sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("DatasetParameters");
+        sql += "INSERT INTO " + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("DatasetParameters");
         sql += " (DST_ID, DST_PAR_NM, DST_PAR_VAL) ";
         sql += "VALUES ";
         sql += "(";
-        sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Repositories"), "DST_ID", "where DST_NM = '" + datasetName) + "')";
+        sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Repositories"), "DST_ID", "where DST_NM = '" + datasetName) + "')";
         sql += ",";
         sql += SQLTools.GetStringForSQL(this.getDatasetParameter().getName());
         sql += ",";
@@ -45,9 +45,9 @@ public class DatasetParameterConfiguration {
     public DatasetParameter getDatasetParameter(long datasetId, String datasetParameterName) {
         DatasetParameter datasetParameter = new DatasetParameter();
         CachedRowSet crsDatasetParameter = null;
-        String queryDatasetParameter = "select DST_ID, DST_PAR_NM, DST_PAR_VAL from " + this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("DatasetParameters")
+        String queryDatasetParameter = "select DST_ID, DST_PAR_NM, DST_PAR_VAL from " + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("DatasetParameters")
                 + " where DST_ID = " + datasetId + " and DST_PAR_NM = '" + datasetParameterName + "'";
-        crsDatasetParameter = this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().executeQuery(queryDatasetParameter, "reader");
+        crsDatasetParameter = this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().executeQuery(queryDatasetParameter, "reader");
         try {
             while (crsDatasetParameter.next()) {
                 datasetParameter.setName(datasetParameterName);
@@ -70,12 +70,12 @@ public class DatasetParameterConfiguration {
         this.datasetParameter = datasetParameter;
     }
 
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
+	public FrameworkInstance getFrameworkInstance() {
+		return frameworkInstance;
+	}
 
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
-    }
+	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
+		this.frameworkInstance = frameworkInstance;
+	}
 
 }

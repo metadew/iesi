@@ -1,7 +1,7 @@
 package io.metadew.iesi.metadata.configuration;
 
 import io.metadew.iesi.connection.tools.SQLTools;
-import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.DataframeParameter;
 import io.metadew.iesi.metadata.definition.DataframeVersion;
 
@@ -13,28 +13,28 @@ public class DataframeParameterConfiguration {
 
     private DataframeVersion dataframeVersion;
     private DataframeParameter dataframeParameter;
-    private FrameworkExecution frameworkExecution;
+    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public DataframeParameterConfiguration(DataframeVersion dataframeVersion, DataframeParameter dataframeParameter, FrameworkExecution frameworkExecution) {
+    public DataframeParameterConfiguration(DataframeVersion dataframeVersion, DataframeParameter dataframeParameter, FrameworkInstance frameworkInstance) {
         this.setDataframeVersion(dataframeVersion);
         this.setDataframeParameter(dataframeParameter);
-        this.setFrameworkExecution(frameworkExecution);
+        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public DataframeParameterConfiguration(FrameworkExecution frameworkExecution) {
-        this.setFrameworkExecution(frameworkExecution);
+    public DataframeParameterConfiguration(FrameworkInstance frameworkInstance) {
+    	this.setFrameworkInstance(frameworkInstance);
     }
 
     // Insert
     public String getInsertStatement(String dataframeName) {
         String sql = "";
 
-        sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("DataframeParameters");
+        sql += "INSERT INTO " + this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("DataframeParameters");
         sql += " (DATAFRAME_ID, DATAFRAME_VRS_NB, DATAFRAME_PAR_NM, DATAFRAME_PAR_VAL) ";
         sql += "VALUES ";
         sql += "(";
-        sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkExecution().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("Dataviews"), "DATAFRAME_ID", "where DATAFRAME_NM = '" + dataframeName) + "')";
+        sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("Dataviews"), "DATAFRAME_ID", "where DATAFRAME_NM = '" + dataframeName) + "')";
         sql += ",";
         sql += SQLTools.GetStringForSQL(this.getDataframeVersion().getNumber());
         sql += ",";
@@ -50,9 +50,9 @@ public class DataframeParameterConfiguration {
     public DataframeParameter getDataframeParameter(long dataframeId, long dataframeVersionNumber, String dataframeParameterName) {
         DataframeParameter dataframeParameter = new DataframeParameter();
         CachedRowSet crsDataframeParameter = null;
-        String queryDataframeParameter = "select DATAFRAME_ID, DATAFRAME_VRS_NB, DATAFRAME_PAR_NM, DATAFRAME_PAR_VAL from " + this.getFrameworkExecution().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("DataframeParameters")
+        String queryDataframeParameter = "select DATAFRAME_ID, DATAFRAME_VRS_NB, DATAFRAME_PAR_NM, DATAFRAME_PAR_VAL from " + this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("DataframeParameters")
                 + " where DATAFRAME_ID = " + dataframeId + " and DATAFRAME_VRS_NB = " + dataframeVersionNumber + " and DATAFRAME_PAR_NM = '" + dataframeParameterName + "'";
-        crsDataframeParameter = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(queryDataframeParameter, "reader");
+        crsDataframeParameter = this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().executeQuery(queryDataframeParameter, "reader");
         try {
             while (crsDataframeParameter.next()) {
                 dataframeParameter.setName(dataframeParameterName);
@@ -75,14 +75,6 @@ public class DataframeParameterConfiguration {
         this.dataframeParameter = dataframeParameter;
     }
 
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
-    }
-
     public DataframeVersion getDataframeVersion() {
         return dataframeVersion;
     }
@@ -90,5 +82,13 @@ public class DataframeParameterConfiguration {
     public void setDataframeVersion(DataframeVersion dataframeVersion) {
         this.dataframeVersion = dataframeVersion;
     }
+
+	public FrameworkInstance getFrameworkInstance() {
+		return frameworkInstance;
+	}
+
+	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
+		this.frameworkInstance = frameworkInstance;
+	}
 
 }

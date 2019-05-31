@@ -1,7 +1,7 @@
 package io.metadew.iesi.metadata.configuration;
 
 import io.metadew.iesi.connection.tools.SQLTools;
-import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.DatasetInstanceLabel;
 
 import javax.sql.rowset.CachedRowSet;
@@ -11,17 +11,17 @@ import java.io.StringWriter;
 public class DatasetInstanceLabelConfiguration {
 
     private DatasetInstanceLabel datasetLabel;
-    private FrameworkExecution frameworkExecution;
+    private FrameworkInstance frameworkInstance;
 
     // Constructors
     public DatasetInstanceLabelConfiguration(DatasetInstanceLabel datasetLabel,
-                                             FrameworkExecution frameworkExecution) {
+    		FrameworkInstance frameworkInstance) {
         this.setDatasetInstanceLabel(datasetLabel);
-        this.setFrameworkExecution(frameworkExecution);
+        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public DatasetInstanceLabelConfiguration(FrameworkExecution frameworkExecution) {
-        this.setFrameworkExecution(frameworkExecution);
+    public DatasetInstanceLabelConfiguration(FrameworkInstance frameworkInstance) {
+    	this.setFrameworkInstance(frameworkInstance);
     }
 
     // Insert
@@ -29,22 +29,22 @@ public class DatasetInstanceLabelConfiguration {
         String sql = "";
 
         sql += "INSERT INTO "
-                + this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository()
+                + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository()
                 .getTableNameByLabel("DatasetInstanceLabels");
         sql += " (DST_ID, DST_INST_ID, DST_INST_LBL_VAL) ";
         sql += "VALUES ";
         sql += "(";
         sql += "(" + SQLTools.GetLookupIdStatement(
-                this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository()
+                this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository()
                         .getTableNameByLabel("Datasets"),
                 "DST_ID", "where DST_NM = '" + datasetName) + "')";
         sql += ",";
         sql += "(" + SQLTools.GetLookupIdStatement(
-                this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository()
+                this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository()
                         .getTableNameByLabel("DatasetInstances"),
                 "DST_INST_ID",
                 "where DST_ID = (" + SQLTools.GetLookupIdStatement(
-                        this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository()
+                        this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository()
                                 .getTableNameByLabel("Repositories"),
                         "DST_ID", "where DST_NM = '" + datasetName) + "') and DST_INST_NM = '"
                         + datasetInstanceName)
@@ -62,10 +62,10 @@ public class DatasetInstanceLabelConfiguration {
         DatasetInstanceLabel datasetInstanceLabel = new DatasetInstanceLabel();
         CachedRowSet crsDatasetInstanceLabel = null;
         String queryDatasetInstanceLabel = "select DST_ID, DST_INST_ID, DST_INST_LBL_VAL from "
-                + this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository()
+                + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository()
                 .getTableNameByLabel("DatasetInstanceLabels")
                 + " where DST_ID = " + datasetId + " and DST_INST_ID = " + datasetInstanceId + " and DST_INST_LBL_VAL = '" + datasetInstanceLabelName + "'";
-        crsDatasetInstanceLabel = this.getFrameworkExecution().getMetadataControl()
+        crsDatasetInstanceLabel = this.getFrameworkInstance().getMetadataControl()
                 .getConnectivityMetadataRepository().executeQuery(queryDatasetInstanceLabel, "reader");
         try {
             while (crsDatasetInstanceLabel.next()) {
@@ -88,12 +88,12 @@ public class DatasetInstanceLabelConfiguration {
         this.datasetLabel = datasetLabel;
     }
 
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
+	public FrameworkInstance getFrameworkInstance() {
+		return frameworkInstance;
+	}
 
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
-    }
+	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
+		this.frameworkInstance = frameworkInstance;
+	}
 
 }

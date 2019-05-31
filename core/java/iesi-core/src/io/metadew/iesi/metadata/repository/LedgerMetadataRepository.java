@@ -43,7 +43,7 @@ public class LedgerMetadataRepository extends MetadataRepository {
         ObjectMapper objectMapper = new ObjectMapper();
         if (dataObject.getType().equalsIgnoreCase("ledger")) {
             Ledger ledger = objectMapper.convertValue(dataObject.getData(), Ledger.class);
-            LedgerConfiguration ledgerConfiguration = new LedgerConfiguration(ledger, frameworkExecution);
+            LedgerConfiguration ledgerConfiguration = new LedgerConfiguration(ledger, frameworkExecution.getFrameworkInstance());
             executeUpdate(ledgerConfiguration.getInsertStatement());
         } else {
             frameworkExecution.getFrameworkLog().log(MessageFormat.format("Ledger repository is not responsible for loading saving {0}", dataObject.getType()), Level.TRACE);

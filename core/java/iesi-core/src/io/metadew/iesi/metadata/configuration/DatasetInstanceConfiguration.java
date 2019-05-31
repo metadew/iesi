@@ -1,7 +1,7 @@
 package io.metadew.iesi.metadata.configuration;
 
 import io.metadew.iesi.connection.tools.SQLTools;
-import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.Dataset;
 import io.metadew.iesi.metadata.definition.DatasetInstance;
 import io.metadew.iesi.metadata.definition.DatasetInstanceLabel;
@@ -16,16 +16,16 @@ import java.util.List;
 public class DatasetInstanceConfiguration {
 
     private DatasetInstance datasetInstance;
-    private FrameworkExecution frameworkExecution;
+    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public DatasetInstanceConfiguration(DatasetInstance datasetInstance, FrameworkExecution frameworkExecution) {
+    public DatasetInstanceConfiguration(DatasetInstance datasetInstance, FrameworkInstance frameworkInstance) {
         this.setDatasetInstance(datasetInstance);
-        this.setFrameworkExecution(frameworkExecution);
+        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public DatasetInstanceConfiguration(FrameworkExecution frameworkExecution) {
-        this.setFrameworkExecution(frameworkExecution);
+    public DatasetInstanceConfiguration(FrameworkInstance frameworkInstance) {
+    	this.setFrameworkInstance(frameworkInstance);
     }
 
     // Insert
@@ -33,18 +33,18 @@ public class DatasetInstanceConfiguration {
         String sql = "";
 
         sql += "INSERT INTO "
-                + this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository()
+                + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository()
                 .getTableNameByLabel("DatasetInstances");
         sql += " (DST_ID, DST_INST_ID, DST_INST_NM, DST_INST_DSC) ";
         sql += "VALUES ";
         sql += "(";
         sql += "(" + SQLTools.GetLookupIdStatement(
-                this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository()
+                this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository()
                         .getTableNameByLabel("Datasets"),
                 "DST_ID", "where DST_NM = '" + datasetName) + "')";
         sql += ",";
         sql += "(" + SQLTools.GetNextIdStatement(
-                this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository()
+                this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository()
                         .getTableNameByLabel("DatasetInstances"),
                 "DST_INST_ID") + ")";
         sql += ",";
@@ -80,7 +80,7 @@ public class DatasetInstanceConfiguration {
 
         for (DatasetInstanceParameter datasetInstanceParameter : this.getDatasetInstance().getParameters()) {
             DatasetInstanceParameterConfiguration datasetInstanceParameterConfiguration = new DatasetInstanceParameterConfiguration(
-                    datasetInstanceParameter, this.getFrameworkExecution());
+                    datasetInstanceParameter, this.getFrameworkInstance());
             if (!result.equalsIgnoreCase(""))
                 result += "\n";
             result += datasetInstanceParameterConfiguration.getInsertStatement(datasetName,
@@ -99,7 +99,7 @@ public class DatasetInstanceConfiguration {
 
         for (DatasetInstanceLabel datasetInstanceLabel : this.getDatasetInstance().getLabels()) {
             DatasetInstanceLabelConfiguration datasetInstanceLabelConfiguration = new DatasetInstanceLabelConfiguration(
-                    datasetInstanceLabel, this.getFrameworkExecution());
+                    datasetInstanceLabel, this.getFrameworkInstance());
             if (!result.equalsIgnoreCase(""))
                 result += "\n";
             result += datasetInstanceLabelConfiguration.getInsertStatement(datasetName,
@@ -114,15 +114,15 @@ public class DatasetInstanceConfiguration {
         DatasetInstance datasetInstance = new DatasetInstance();
         CachedRowSet crsDatasetInstance = null;
         String queryDatasetInstance = "select DST_ID, DST_INST_ID, DST_INST_NM, DST_INST_DSC from "
-                + this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository()
+                + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository()
                 .getTableNameByLabel("DatasetInstances")
                 + " where DST_ID = " + datasetId + " and DST_INST_NM = '" + datasetInstanceName + "'";
-        crsDatasetInstance = this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository()
+        crsDatasetInstance = this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository()
                 .executeQuery(queryDatasetInstance, "reader");
         DatasetInstanceParameterConfiguration datasetInstanceParameterConfiguration = new DatasetInstanceParameterConfiguration(
-                this.getFrameworkExecution());
+                this.getFrameworkInstance());
         DatasetInstanceLabelConfiguration datasetInstanceLabelConfiguration = new DatasetInstanceLabelConfiguration(
-                this.getFrameworkExecution());
+                this.getFrameworkInstance());
         try {
             while (crsDatasetInstance.next()) {
                 datasetInstance.setName(datasetInstanceName);
@@ -132,10 +132,10 @@ public class DatasetInstanceConfiguration {
                 // Get parameters
                 CachedRowSet crsDatasetInstanceParameters = null;
                 String queryDatasetInstanceParameters = "select DST_ID, DST_INST_ID, DST_INST_PAR_NM, DST_INST_PAR_VAL from "
-                        + this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository()
+                        + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository()
                         .getTableNameByLabel("DatasetInstanceParameters")
                         + " where DST_ID = " + datasetId + " and DST_INST_ID = " + datasetInstance.getId();
-                crsDatasetInstanceParameters = this.getFrameworkExecution().getMetadataControl()
+                crsDatasetInstanceParameters = this.getFrameworkInstance().getMetadataControl()
                         .getConnectivityMetadataRepository().executeQuery(queryDatasetInstanceParameters, "reader");
                 List<DatasetInstanceParameter> datasetInstanceParameterList = new ArrayList();
                 while (crsDatasetInstanceParameters.next()) {
@@ -149,10 +149,10 @@ public class DatasetInstanceConfiguration {
                 // Get labels
                 CachedRowSet crsDatasetInstanceLabels = null;
                 String queryDatasetInstanceLabels = "select DST_ID, DST_INST_ID, DST_INST_LBL_VAL from "
-                        + this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository()
+                        + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository()
                         .getTableNameByLabel("DatasetInstanceLabels")
                         + " where DST_ID = " + datasetId + " and DST_INST_ID = " + datasetInstance.getId();
-                crsDatasetInstanceLabels = this.getFrameworkExecution().getMetadataControl()
+                crsDatasetInstanceLabels = this.getFrameworkInstance().getMetadataControl()
                         .getConnectivityMetadataRepository().executeQuery(queryDatasetInstanceLabels, "reader");
                 List<DatasetInstanceLabel> datasetInstanceLabelList = new ArrayList();
                 while (crsDatasetInstanceLabels.next()) {
@@ -171,7 +171,7 @@ public class DatasetInstanceConfiguration {
     }
 
     public DatasetInstance getDatasetInstance(String datasetName, String datasetInstanceName) {
-        DatasetConfiguration datasetConfiguration = new DatasetConfiguration(this.getFrameworkExecution());
+        DatasetConfiguration datasetConfiguration = new DatasetConfiguration(this.getFrameworkInstance());
         return this.getDatasetInstance(datasetConfiguration.getDatasetId(datasetName), datasetInstanceName);
     }
 
@@ -196,12 +196,12 @@ public class DatasetInstanceConfiguration {
         this.datasetInstance = datasetInstance;
     }
 
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
+	public FrameworkInstance getFrameworkInstance() {
+		return frameworkInstance;
+	}
 
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
-    }
+	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
+		this.frameworkInstance = frameworkInstance;
+	}
 
 }

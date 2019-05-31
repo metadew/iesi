@@ -1,6 +1,6 @@
 package io.metadew.iesi.metadata.configuration;
 
-import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.ScriptResultOutput;
 
 import javax.sql.rowset.CachedRowSet;
@@ -12,26 +12,26 @@ public class ScriptResultOutputConfiguration {
 
     private String runId;
     private ScriptResultOutput scriptResultOutput;
-    private FrameworkExecution frameworkExecution;
+    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public ScriptResultOutputConfiguration(String runId, ScriptResultOutput scriptResultOutput, FrameworkExecution frameworkExecution) {
+    public ScriptResultOutputConfiguration(String runId, ScriptResultOutput scriptResultOutput, FrameworkInstance frameworkInstance) {
         this.setRunId(runId);
         this.setScriptResultOutput(scriptResultOutput);
-        this.setFrameworkExecution(frameworkExecution);
+        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public ScriptResultOutputConfiguration(FrameworkExecution frameworkExecution) {
-        this.setFrameworkExecution(frameworkExecution);
+    public ScriptResultOutputConfiguration(FrameworkInstance frameworkInstance) {
+    	this.setFrameworkInstance(frameworkInstance);
     }
 
     // Insert
     public Optional<ScriptResultOutput> getScriptOutput(String runId, long processId, String scriptResultOutputName) {
         ScriptResultOutput scriptResultOutput = null;
         CachedRowSet crsScriptResultOutput;
-        String queryScriptResultOutput = "select RUN_ID, PRC_ID, SCRIPT_ID, OUT_NM, OUT_VAL from " + this.getFrameworkExecution().getMetadataControl().getResultMetadataRepository().getTableNameByLabel("ScriptOutputs")
+        String queryScriptResultOutput = "select RUN_ID, PRC_ID, SCRIPT_ID, OUT_NM, OUT_VAL from " + this.getFrameworkInstance().getMetadataControl().getResultMetadataRepository().getTableNameByLabel("ScriptOutputs")
                 + " where RUN_ID = '" + runId + "' and PRC_ID = " + processId + " and OUT_NM = '" + scriptResultOutputName + "'";
-        crsScriptResultOutput = this.getFrameworkExecution().getMetadataControl().getResultMetadataRepository().executeQuery(queryScriptResultOutput, "reader");
+        crsScriptResultOutput = this.getFrameworkInstance().getMetadataControl().getResultMetadataRepository().executeQuery(queryScriptResultOutput, "reader");
         try {
             while (crsScriptResultOutput.next()) {
                 scriptResultOutput = new ScriptResultOutput(scriptResultOutputName,
@@ -47,14 +47,6 @@ public class ScriptResultOutputConfiguration {
     }
 
     // Getters and Setters
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
-    }
-
     public String getRunId() {
         return runId;
     }
@@ -70,5 +62,13 @@ public class ScriptResultOutputConfiguration {
     public void setScriptResultOutput(ScriptResultOutput scriptResultOutput) {
         this.scriptResultOutput = scriptResultOutput;
     }
+
+	public FrameworkInstance getFrameworkInstance() {
+		return frameworkInstance;
+	}
+
+	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
+		this.frameworkInstance = frameworkInstance;
+	}
 
 }

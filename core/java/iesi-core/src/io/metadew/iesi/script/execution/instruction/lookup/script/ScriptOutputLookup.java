@@ -23,7 +23,7 @@ public class ScriptOutputLookup implements LookupInstruction {
     @Override
     public String generateOutput(String parameters) {
         ScriptResultOutputConfiguration scriptResultOutputConfiguration = new ScriptResultOutputConfiguration(
-                executionControl.getFrameworkExecution());
+                executionControl.getFrameworkExecution().getFrameworkInstance());
         // TODO only for root scripts - extend to others
         Optional<ScriptResultOutput> scriptResultOutput = scriptResultOutputConfiguration.getScriptOutput(executionControl.getRunId(), 0, parameters.trim());
         if (!scriptResultOutput.isPresent()) {

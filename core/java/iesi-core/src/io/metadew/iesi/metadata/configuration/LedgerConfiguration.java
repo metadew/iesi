@@ -2,7 +2,7 @@ package io.metadew.iesi.metadata.configuration;
 
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.configuration.FrameworkObjectConfiguration;
-import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.Ledger;
 import io.metadew.iesi.metadata.definition.LedgerItem;
 import io.metadew.iesi.metadata.definition.LedgerParameter;
@@ -17,16 +17,16 @@ import java.util.List;
 public class LedgerConfiguration {
 
     private Ledger ledger;
-    private FrameworkExecution frameworkExecution;
+    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public LedgerConfiguration(FrameworkExecution frameworkExecution) {
-        this.setFrameworkExecution(frameworkExecution);
+    public LedgerConfiguration(FrameworkInstance frameworkInstance) {
+    	this.setFrameworkInstance(frameworkInstance);
     }
 
-    public LedgerConfiguration(Ledger ledger, FrameworkExecution frameworkExecution) {
+    public LedgerConfiguration(Ledger ledger, FrameworkInstance frameworkInstance) {
         this.setLedger(ledger);
-        this.setFrameworkExecution(frameworkExecution);
+        this.setFrameworkInstance(frameworkInstance);
     }
 
     // Insert
@@ -34,35 +34,35 @@ public class LedgerConfiguration {
         String sql = "";
 
         if (this.exists()) {
-            sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getLedgerMetadataRepository().getTableNameByLabel("LedgerItems");
+            sql += "DELETE FROM " + this.getFrameworkInstance().getMetadataControl().getLedgerMetadataRepository().getTableNameByLabel("LedgerItems");
             sql += " WHERE LEDGER_ID = (";
-            sql += "select LEDGER_ID FROM " + this.getFrameworkExecution().getMetadataControl().getLedgerMetadataRepository().getTableNameByLabel("Ledgers");
+            sql += "select LEDGER_ID FROM " + this.getFrameworkInstance().getMetadataControl().getLedgerMetadataRepository().getTableNameByLabel("Ledgers");
             sql += " WHERE LEDGER_NM = "
                     + SQLTools.GetStringForSQL(this.getLedger().getName());
             sql += ")";
             sql += ";";
             sql += "\n";
-            sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getLedgerMetadataRepository().getTableNameByLabel("LedgerParameters");
+            sql += "DELETE FROM " + this.getFrameworkInstance().getMetadataControl().getLedgerMetadataRepository().getTableNameByLabel("LedgerParameters");
             sql += " WHERE LEDGER_ID = (";
-            sql += "select LEDGER_ID FROM " + this.getFrameworkExecution().getMetadataControl().getLedgerMetadataRepository().getTableNameByLabel("Ledgers");
+            sql += "select LEDGER_ID FROM " + this.getFrameworkInstance().getMetadataControl().getLedgerMetadataRepository().getTableNameByLabel("Ledgers");
             sql += " WHERE LEDGER_NM = "
                     + SQLTools.GetStringForSQL(this.getLedger().getName());
             sql += ")";
             sql += ";";
             sql += "\n";
-            sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl().getLedgerMetadataRepository().getTableNameByLabel("Ledgers");
+            sql += "DELETE FROM " + this.getFrameworkInstance().getMetadataControl().getLedgerMetadataRepository().getTableNameByLabel("Ledgers");
             sql += " WHERE LEDGER_NM = "
                     + SQLTools.GetStringForSQL(this.getLedger().getName());
             sql += ";";
             sql += "\n";
         }
 
-        sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getLedgerMetadataRepository().getTableNameByLabel("Ledgers");
+        sql += "INSERT INTO " + this.getFrameworkInstance().getMetadataControl().getLedgerMetadataRepository().getTableNameByLabel("Ledgers");
         sql += " (LEDGER_ID, LEDGER_TYP_NM, LEDGER_NM, LEDGER_DSC) ";
         sql += "VALUES ";
         sql += "(";
         sql += "(" + SQLTools.GetNextIdStatement(
-                this.getFrameworkExecution().getMetadataControl().getLedgerMetadataRepository().getTableNameByLabel("Ledgers"), "LEDGER_ID") + ")";
+                this.getFrameworkInstance().getMetadataControl().getLedgerMetadataRepository().getTableNameByLabel("Ledgers"), "LEDGER_ID") + ")";
         sql += ",";
         sql += SQLTools.GetStringForSQL(this.getLedger().getType());
         sql += ",";
@@ -96,7 +96,7 @@ public class LedgerConfiguration {
             return result;
 
         for (LedgerItem ledgerItem : this.getLedger().getItems()) {
-            LedgerItemConfiguration ledgerItemConfiguration = new LedgerItemConfiguration(ledgerItem, this.getFrameworkExecution());
+            LedgerItemConfiguration ledgerItemConfiguration = new LedgerItemConfiguration(ledgerItem, this.getFrameworkInstance());
             if (!result.equalsIgnoreCase(""))
                 result += "\n";
             result += ledgerItemConfiguration.getInsertStatement(this.getLedger().getName());
@@ -113,7 +113,7 @@ public class LedgerConfiguration {
 
         for (LedgerParameter ledgerParameter : this.getLedger().getParameters()) {
             LedgerParameterConfiguration ledgerParameterConfiguration = new LedgerParameterConfiguration(
-                    ledgerParameter, this.getFrameworkExecution());
+                    ledgerParameter, this.getFrameworkInstance());
             if (!result.equalsIgnoreCase(""))
                 result += "\n";
             result += ledgerParameterConfiguration.getInsertStatement(this.getLedger().getName());
@@ -127,12 +127,12 @@ public class LedgerConfiguration {
         Ledger ledger = new Ledger();
         CachedRowSet crsLedger = null;
         String queryLedger = "select LEDGER_ID, LEDGER_TYP_NM, LEDGER_NM, LEDGER_DSC from "
-                + this.getFrameworkExecution().getMetadataControl().getLedgerMetadataRepository().getTableNameByLabel("Ledgers") + " where LEDGER_NM = '"
+                + this.getFrameworkInstance().getMetadataControl().getLedgerMetadataRepository().getTableNameByLabel("Ledgers") + " where LEDGER_NM = '"
                 + ledgerName + "'";
-        crsLedger = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(queryLedger, "reader");
-        LedgerItemConfiguration ledgerItemConfiguration = new LedgerItemConfiguration(this.getFrameworkExecution());
+        crsLedger = this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().executeQuery(queryLedger, "reader");
+        LedgerItemConfiguration ledgerItemConfiguration = new LedgerItemConfiguration(this.getFrameworkInstance());
         LedgerParameterConfiguration ledgerParameterConfiguration = new LedgerParameterConfiguration(
-                this.getFrameworkExecution());
+                this.getFrameworkInstance());
         try {
             while (crsLedger.next()) {
                 ledger.setId(crsLedger.getLong("LEDGER_ID"));
@@ -143,11 +143,11 @@ public class LedgerConfiguration {
                 // Get the actions
                 List<LedgerItem> ledgerItemList = new ArrayList();
                 String queryItems = "select LEDGER_ID, ITEM_NM from "
-                        + this.getFrameworkExecution().getMetadataControl().getLedgerMetadataRepository().getTableNameByLabel("LedgerItems")
+                        + this.getFrameworkInstance().getMetadataControl().getLedgerMetadataRepository().getTableNameByLabel("LedgerItems")
                         + " where LEDGER_ID = " + ledger.getId()
                         + " order by ITEM_NM asc ";
                 CachedRowSet crsItems = null;
-                crsItems = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(queryItems, "reader");
+                crsItems = this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().executeQuery(queryItems, "reader");
                 while (crsItems.next()) {
                     ledgerItemList.add(ledgerItemConfiguration.getLedgerItem(ledger.getId(), crsItems.getString("ITEM_NM")));
                 }
@@ -157,9 +157,9 @@ public class LedgerConfiguration {
                 // Get parameters
                 CachedRowSet crsLedgerParameters = null;
                 String queryLedgerParameters = "select LEDGER_ID, LEDGER_PAR_NM from "
-                        + this.getFrameworkExecution().getMetadataControl().getLedgerMetadataRepository().getTableNameByLabel("LedgerParameters")
+                        + this.getFrameworkInstance().getMetadataControl().getLedgerMetadataRepository().getTableNameByLabel("LedgerParameters")
                         + " where LEDGER_ID = " + ledger.getId();
-                crsLedgerParameters = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository()
+                crsLedgerParameters = this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository()
                         .executeQuery(queryLedgerParameters, "reader");
                 List<LedgerParameter> ledgerParameterList = new ArrayList();
                 while (crsLedgerParameters.next()) {
@@ -188,10 +188,10 @@ public class LedgerConfiguration {
         List<Ledger> ledgerList = new ArrayList<>();
         CachedRowSet crs = null;
         String query = "select LEDGER_NM, LEDGER_DSC from "
-                + this.getFrameworkExecution().getMetadataControl().getLedgerMetadataRepository().getTableNameByLabel("Ledgers") + " order by LEDGER_NM ASC";
+                + this.getFrameworkInstance().getMetadataControl().getLedgerMetadataRepository().getTableNameByLabel("Ledgers") + " order by LEDGER_NM ASC";
         System.out.println(query);
-        crs = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(query, "reader");
-        LedgerConfiguration ledgerConfiguration = new LedgerConfiguration(this.getFrameworkExecution());
+        crs = this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().executeQuery(query, "reader");
+        LedgerConfiguration ledgerConfiguration = new LedgerConfiguration(this.getFrameworkInstance());
         try {
             String ledgerName = "";
             while (crs.next()) {
@@ -223,12 +223,12 @@ public class LedgerConfiguration {
         this.ledger = ledger;
     }
 
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
+	public FrameworkInstance getFrameworkInstance() {
+		return frameworkInstance;
+	}
 
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
-    }
+	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
+		this.frameworkInstance = frameworkInstance;
+	}
 
 }

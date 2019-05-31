@@ -1,7 +1,7 @@
 package io.metadew.iesi.metadata.configuration;
 
 import io.metadew.iesi.connection.tools.SQLTools;
-import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.Classification;
 
 import javax.sql.rowset.CachedRowSet;
@@ -11,31 +11,31 @@ import java.io.StringWriter;
 public class ClassificationConfiguration {
 
     private Classification classification;
-    private FrameworkExecution frameworkExecution;
+    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public ClassificationConfiguration(Classification classification, FrameworkExecution frameworkExecution) {
+    public ClassificationConfiguration(Classification classification, FrameworkInstance frameworkInstance) {
         this.setClassification(classification);
-        this.setFrameworkExecution(frameworkExecution);
+        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public ClassificationConfiguration(FrameworkExecution frameworkExecution) {
-        this.setFrameworkExecution(frameworkExecution);
+    public ClassificationConfiguration(FrameworkInstance frameworkInstance) {
+    	this.setFrameworkInstance(frameworkInstance);
     }
 
     // Insert
     public String getInsertStatement(String artefactName, String artefactType) {
         String sql = "";
 
-        sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("Classifications");
+        sql += "INSERT INTO " + this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("Classifications");
         sql += " (ARTIFACT_ID, CLASSIF_ID, CLASSIF_TYP_NM, CLASSIF_NM, CLASSIF_VAL) ";
         sql += "VALUES ";
         sql += "(";
-        sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkExecution().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("Artefacts"), "ARTEFACT_ID", "where ARTEFACT_NM = '" + artefactName + "' and ARTEFACT_TYP_NM = '" + artefactType + "')");
+        sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("Artefacts"), "ARTEFACT_ID", "where ARTEFACT_NM = '" + artefactName + "' and ARTEFACT_TYP_NM = '" + artefactType + "')");
         sql += ",";
         sql += "("
                 + SQLTools.GetNextIdStatement(
-                this.getFrameworkExecution().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("Classifications"), "CLASSIF_ID")
+                this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("Classifications"), "CLASSIF_ID")
                 + ")";
         sql += ",";
         sql += SQLTools.GetStringForSQL(this.getClassification().getType());
@@ -52,9 +52,9 @@ public class ClassificationConfiguration {
     public Classification getClassification(long classificationId) {
         Classification classification = new Classification();
         CachedRowSet crsClassification = null;
-        String queryClassification = "select ARTIFACT_ID, CLASSIF_ID, CLASSIF_TYP_NM, CLASSIF_NM, CLASSIF_VAL from " + this.getFrameworkExecution().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("Classifications")
+        String queryClassification = "select ARTIFACT_ID, CLASSIF_ID, CLASSIF_TYP_NM, CLASSIF_NM, CLASSIF_VAL from " + this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("Classifications")
                 + " where CLASSIF_ID = " + classificationId;
-        crsClassification = this.getFrameworkExecution().getMetadataControl().getCatalogMetadataRepository().executeQuery(queryClassification, "reader");
+        crsClassification = this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().executeQuery(queryClassification, "reader");
         try {
             while (crsClassification.next()) {
                 classification.setId(classificationId);
@@ -79,13 +79,13 @@ public class ClassificationConfiguration {
         this.classification = classification;
     }
 
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
+	public FrameworkInstance getFrameworkInstance() {
+		return frameworkInstance;
+	}
 
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
-    }
+	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
+		this.frameworkInstance = frameworkInstance;
+	}
 
 
 }

@@ -1,7 +1,7 @@
 package io.metadew.iesi.metadata.configuration;
 
 import io.metadew.iesi.connection.tools.SQLTools;
-import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.RepositoryInstanceLabel;
 
 import javax.sql.rowset.CachedRowSet;
@@ -11,17 +11,17 @@ import java.io.StringWriter;
 public class RepositoryInstanceLabelConfiguration {
 
     private RepositoryInstanceLabel repositoryLabel;
-    private FrameworkExecution frameworkExecution;
+    private FrameworkInstance frameworkInstance;
 
     // Constructors
     public RepositoryInstanceLabelConfiguration(RepositoryInstanceLabel repositoryLabel,
-                                                FrameworkExecution frameworkExecution) {
+    		FrameworkInstance frameworkInstance) {
         this.setRepositoryInstanceLabel(repositoryLabel);
-        this.setFrameworkExecution(frameworkExecution);
+        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public RepositoryInstanceLabelConfiguration(FrameworkExecution frameworkExecution) {
-        this.setFrameworkExecution(frameworkExecution);
+    public RepositoryInstanceLabelConfiguration(FrameworkInstance frameworkInstance) {
+    	this.setFrameworkInstance(frameworkInstance);
     }
 
     // Insert
@@ -29,22 +29,22 @@ public class RepositoryInstanceLabelConfiguration {
         String sql = "";
 
         sql += "INSERT INTO "
-                + this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository()
+                + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository()
                 .getTableNameByLabel("RepositoryInstanceLabels");
         sql += " (REPO_ID, REPO_INST_ID, REPO_INST_LBL_VAL) ";
         sql += "VALUES ";
         sql += "(";
         sql += "(" + SQLTools.GetLookupIdStatement(
-                this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository()
+                this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository()
                         .getTableNameByLabel("Repositories"),
                 "REPO_ID", "where REPO_NM = '" + repositoryName) + "')";
         sql += ",";
         sql += "(" + SQLTools.GetLookupIdStatement(
-                this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository()
+                this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository()
                         .getTableNameByLabel("RepositoryInstances"),
                 "REPO_INST_ID",
                 "where REPO_ID = (" + SQLTools.GetLookupIdStatement(
-                        this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository()
+                        this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository()
                                 .getTableNameByLabel("Repositories"),
                         "REPO_ID", "where REPO_NM = '" + repositoryName) + "') and REPO_INST_NM = '"
                         + repositoryInstanceName)
@@ -62,10 +62,10 @@ public class RepositoryInstanceLabelConfiguration {
         RepositoryInstanceLabel repositoryInstanceLabel = new RepositoryInstanceLabel();
         CachedRowSet crsRepositoryInstanceLabel = null;
         String queryRepositoryInstanceLabel = "select REPO_ID, REPO_INST_ID, REPO_INST_LBL_VAL from "
-                + this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository()
+                + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository()
                 .getTableNameByLabel("RepositoryInstanceLabels")
                 + " where REPO_ID = " + repositoryId + " and REPO_INST_ID = " + repositoryInstanceId + " and REPO_INST_LBL_VAL = '" + repositoryInstanceLabelName + "'";
-        crsRepositoryInstanceLabel = this.getFrameworkExecution().getMetadataControl()
+        crsRepositoryInstanceLabel = this.getFrameworkInstance().getMetadataControl()
                 .getConnectivityMetadataRepository().executeQuery(queryRepositoryInstanceLabel, "reader");
         try {
             while (crsRepositoryInstanceLabel.next()) {
@@ -88,12 +88,12 @@ public class RepositoryInstanceLabelConfiguration {
         this.repositoryLabel = repositoryLabel;
     }
 
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
+	public FrameworkInstance getFrameworkInstance() {
+		return frameworkInstance;
+	}
 
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
-    }
+	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
+		this.frameworkInstance = frameworkInstance;
+	}
 
 }

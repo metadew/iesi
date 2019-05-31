@@ -12,7 +12,6 @@ import java.util.Optional;
 public class RequestParameterConfiguration {
 
     private RequestParameter requestParameter;
-
     private FrameworkInstance frameworkInstance;
 
     // Constructors

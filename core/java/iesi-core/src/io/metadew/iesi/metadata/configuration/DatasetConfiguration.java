@@ -1,7 +1,7 @@
 package io.metadew.iesi.metadata.configuration;
 
 import io.metadew.iesi.connection.tools.SQLTools;
-import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.Dataset;
 import io.metadew.iesi.metadata.definition.DatasetInstance;
 import io.metadew.iesi.metadata.definition.DatasetParameter;
@@ -15,16 +15,16 @@ import java.util.List;
 public class DatasetConfiguration {
 
     private Dataset dataset;
-    private FrameworkExecution frameworkExecution;
+    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public DatasetConfiguration(FrameworkExecution frameworkExecution) {
-        this.setFrameworkExecution(frameworkExecution);
+    public DatasetConfiguration(FrameworkInstance frameworkInstance) {
+    	this.setFrameworkInstance(frameworkInstance);
     }
 
-    public DatasetConfiguration(Dataset dataset, FrameworkExecution frameworkExecution) {
+    public DatasetConfiguration(Dataset dataset, FrameworkInstance frameworkInstance) {
         this.setDataset(dataset);
-        this.setFrameworkExecution(frameworkExecution);
+        this.setFrameworkInstance(frameworkInstance);
     }
 
     // Delete
@@ -32,46 +32,46 @@ public class DatasetConfiguration {
         String sql = "";
 
         sql += "DELETE FROM "
-                + this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository()
+                + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository()
                 .getTableNameByLabel("DatasetInstanceLabels");
         sql += " WHERE DST_ID = (";
-        sql += "select DST_ID FROM " + this.getFrameworkExecution().getMetadataControl()
+        sql += "select DST_ID FROM " + this.getFrameworkInstance().getMetadataControl()
                 .getConnectivityMetadataRepository().getTableNameByLabel("Datasets");
         sql += " WHERE DST_NM = " + SQLTools.GetStringForSQL(this.getDataset().getName());
         sql += ")";
         sql += ";";
         sql += "\n";
         sql += "DELETE FROM "
-                + this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository()
+                + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository()
                 .getTableNameByLabel("DatasetInstanceParameters");
         sql += " WHERE DST_ID = (";
-        sql += "select DST_ID FROM " + this.getFrameworkExecution().getMetadataControl()
+        sql += "select DST_ID FROM " + this.getFrameworkInstance().getMetadataControl()
                 .getConnectivityMetadataRepository().getTableNameByLabel("Datasets");
         sql += " WHERE DST_NM = " + SQLTools.GetStringForSQL(this.getDataset().getName());
         sql += ")";
         sql += ";";
         sql += "\n";
         sql += "DELETE FROM "
-                + this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository()
+                + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository()
                 .getTableNameByLabel("DatasetInstances");
         sql += " WHERE DST_ID = (";
-        sql += "select DST_ID FROM " + this.getFrameworkExecution().getMetadataControl()
+        sql += "select DST_ID FROM " + this.getFrameworkInstance().getMetadataControl()
                 .getConnectivityMetadataRepository().getTableNameByLabel("Datasets");
         sql += " WHERE DST_NM = " + SQLTools.GetStringForSQL(this.getDataset().getName());
         sql += ")";
         sql += ";";
         sql += "\n";
         sql += "DELETE FROM "
-                + this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository()
+                + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository()
                 .getTableNameByLabel("DatasetParameters");
         sql += " WHERE DST_ID = (";
-        sql += "select DST_ID FROM " + this.getFrameworkExecution().getMetadataControl()
+        sql += "select DST_ID FROM " + this.getFrameworkInstance().getMetadataControl()
                 .getConnectivityMetadataRepository().getTableNameByLabel("Datasets");
         sql += " WHERE DST_NM = " + SQLTools.GetStringForSQL(this.getDataset().getName());
         sql += ")";
         sql += ";";
         sql += "\n";
-        sql += "DELETE FROM " + this.getFrameworkExecution().getMetadataControl()
+        sql += "DELETE FROM " + this.getFrameworkInstance().getMetadataControl()
                 .getConnectivityMetadataRepository().getTableNameByLabel("Datasets");
         sql += " WHERE DST_NM = " + SQLTools.GetStringForSQL(this.getDataset().getName());
         sql += ";";
@@ -89,12 +89,12 @@ public class DatasetConfiguration {
             sql += this.getDeleteStatement();
         }
 
-        sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl()
+        sql += "INSERT INTO " + this.getFrameworkInstance().getMetadataControl()
                 .getConnectivityMetadataRepository().getTableNameByLabel("Datasets");
         sql += " (DST_ID, DST_NM, DST_TYP_NM, DST_DSC) ";
         sql += "VALUES ";
         sql += "(";
-        sql += "(" + SQLTools.GetNextIdStatement(this.getFrameworkExecution().getMetadataControl()
+        sql += "(" + SQLTools.GetNextIdStatement(this.getFrameworkInstance().getMetadataControl()
                         .getConnectivityMetadataRepository().getTableNameByLabel("Datasets"),
                 "DST_ID") + ")";
         sql += ",";
@@ -132,7 +132,7 @@ public class DatasetConfiguration {
 
         for (DatasetParameter datasetParameter : this.getDataset().getParameters()) {
             DatasetParameterConfiguration datasetParameterConfiguration = new DatasetParameterConfiguration(
-                    datasetParameter, this.getFrameworkExecution());
+                    datasetParameter, this.getFrameworkInstance());
             if (!result.equalsIgnoreCase(""))
                 result += "\n";
             result += datasetParameterConfiguration.getInsertStatement(this.getDataset().getName());
@@ -150,7 +150,7 @@ public class DatasetConfiguration {
 
         for (DatasetInstance datasetInstance : this.getDataset().getInstances()) {
             DatasetInstanceConfiguration datasetInstanceConfiguration = new DatasetInstanceConfiguration(
-                    datasetInstance, this.getFrameworkExecution());
+                    datasetInstance, this.getFrameworkInstance());
             if (!result.equalsIgnoreCase(""))
                 result += "\n";
             result += datasetInstanceConfiguration.getInsertStatement(this.getDataset().getName());
@@ -165,15 +165,15 @@ public class DatasetConfiguration {
         Dataset dataset = new Dataset();
         CachedRowSet crsDataset = null;
         String queryDataset = "select DST_ID, DST_NM, DST_TYP_NM, DST_DSC from "
-                + this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository()
+                + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository()
                 .getTableNameByLabel("Datasets")
                 + " where DST_NM = '" + datasetName + "'";
-        crsDataset = this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository()
+        crsDataset = this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository()
                 .executeQuery(queryDataset, "reader");
         DatasetParameterConfiguration datasetParameterConfiguration = new DatasetParameterConfiguration(
-                this.getFrameworkExecution());
+                this.getFrameworkInstance());
         DatasetInstanceConfiguration datasetInstanceConfiguration = new DatasetInstanceConfiguration(
-                this.getFrameworkExecution());
+                this.getFrameworkInstance());
         try {
             while (crsDataset.next()) {
                 dataset.setName(datasetName);
@@ -184,10 +184,10 @@ public class DatasetConfiguration {
                 // Get parameters
                 CachedRowSet crsDatasetParameters = null;
                 String queryDatasetParameters = "select DST_ID, DST_PAR_NM, DST_PAR_VAL from "
-                        + this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository()
+                        + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository()
                         .getTableNameByLabel("DatasetParameters")
                         + " where DST_ID = " + dataset.getId();
-                crsDatasetParameters = this.getFrameworkExecution().getMetadataControl()
+                crsDatasetParameters = this.getFrameworkInstance().getMetadataControl()
                         .getConnectivityMetadataRepository().executeQuery(queryDatasetParameters, "reader");
                 List<DatasetParameter> datasetParameterList = new ArrayList();
                 while (crsDatasetParameters.next()) {
@@ -200,10 +200,10 @@ public class DatasetConfiguration {
                 // Get Instances
                 CachedRowSet crsDatasetInstances = null;
                 String queryDatasetInstances = "select DST_ID, DST_INST_ID, DST_INST_NM from "
-                        + this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository()
+                        + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository()
                         .getTableNameByLabel("DatasetInstances")
                         + " where DST_ID = " + dataset.getId();
-                crsDatasetInstances = this.getFrameworkExecution().getMetadataControl()
+                crsDatasetInstances = this.getFrameworkInstance().getMetadataControl()
                         .getConnectivityMetadataRepository().executeQuery(queryDatasetInstances, "reader");
                 List<DatasetInstance> datasetInstanceList = new ArrayList();
                 while (crsDatasetInstances.next()) {
@@ -226,10 +226,10 @@ public class DatasetConfiguration {
         Dataset dataset = new Dataset();
         CachedRowSet crsDataset = null;
         String queryDataset = "select DST_ID, DST_NM, DST_TYP_NM, DST_DSC from "
-                + this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository()
+                + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository()
                 .getTableNameByLabel("Datasets")
                 + " where DST_NM = '" + datasetName + "'";
-        crsDataset = this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository()
+        crsDataset = this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository()
                 .executeQuery(queryDataset, "reader");
         try {
             while (crsDataset.next()) {
@@ -261,12 +261,12 @@ public class DatasetConfiguration {
         this.dataset = dataset;
     }
 
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
+	public FrameworkInstance getFrameworkInstance() {
+		return frameworkInstance;
+	}
 
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
-    }
+	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
+		this.frameworkInstance = frameworkInstance;
+	}
 
 }

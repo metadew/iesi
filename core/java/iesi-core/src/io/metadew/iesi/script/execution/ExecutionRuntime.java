@@ -14,6 +14,8 @@ import io.metadew.iesi.metadata.definition.Iteration;
 import io.metadew.iesi.metadata.definition.RuntimeVariable;
 import io.metadew.iesi.metadata.definition.ScriptResultOutput;
 import io.metadew.iesi.runtime.definition.LookupResult;
+import io.metadew.iesi.script.configuration.IterationVariableConfiguration;
+import io.metadew.iesi.script.configuration.RuntimeVariableConfiguration;
 import io.metadew.iesi.script.execution.instruction.data.DataInstruction;
 import io.metadew.iesi.script.execution.instruction.data.DataInstructionRepository;
 import io.metadew.iesi.script.execution.instruction.lookup.LookupInstruction;
@@ -808,7 +810,7 @@ public class ExecutionRuntime {
 
     private String lookupScriptResultInstruction(ExecutionControl executionControl, String input) {
         ScriptResultOutputConfiguration scriptResultOutputConfiguration = new ScriptResultOutputConfiguration(
-                this.getFrameworkExecution());
+                this.getFrameworkExecution().getFrameworkInstance());
         // TODO only for root scripts - extend to others
         return scriptResultOutputConfiguration.getScriptOutput(executionControl.getRunId(), 0, input)
                 .map(ScriptResultOutput::getValue)

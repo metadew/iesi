@@ -1,7 +1,7 @@
 package io.metadew.iesi.metadata.configuration;
 
 import io.metadew.iesi.connection.tools.SQLTools;
-import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.GenerationOutput;
 import io.metadew.iesi.metadata.definition.GenerationOutputParameter;
 
@@ -14,29 +14,29 @@ import java.util.List;
 public class GenerationOutputConfiguration {
 
     private GenerationOutput generationOutput;
-    private FrameworkExecution frameworkExecution;
+    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public GenerationOutputConfiguration(GenerationOutput generationOutput, FrameworkExecution frameworkExecution) {
+    public GenerationOutputConfiguration(GenerationOutput generationOutput, FrameworkInstance frameworkInstance) {
         this.setgenerationOutput(generationOutput);
-        this.setFrameworkExecution(frameworkExecution);
+        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public GenerationOutputConfiguration(FrameworkExecution frameworkExecution) {
-        this.setFrameworkExecution(frameworkExecution);
+    public GenerationOutputConfiguration(FrameworkInstance frameworkInstance) {
+    	this.setFrameworkInstance(frameworkInstance);
     }
 
     // Insert
     public String getInsertStatement(String generationName) {
         String sql = "";
 
-        sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("GenerationOutputs");
+        sql += "INSERT INTO " + this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("GenerationOutputs");
         sql += " (GEN_ID, GEN_OUT_ID, GEN_OUT_NM, GEN_OUT_TYP_NM, GEN_OUT_DSC) ";
         sql += "VALUES ";
         sql += "(";
-        sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Generations"), "GEN_ID", "GEN_NM", generationName) + ")";
+        sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Generations"), "GEN_ID", "GEN_NM", generationName) + ")";
         sql += ",";
-        sql += "(" + SQLTools.GetNextIdStatement(this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("GenerationOutputs"), "GEN_OUT_ID") + ")";
+        sql += "(" + SQLTools.GetNextIdStatement(this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("GenerationOutputs"), "GEN_OUT_ID") + ")";
         sql += ",";
         sql += SQLTools.GetStringForSQL(this.getgenerationOutput().getName());
         sql += ",";
@@ -62,7 +62,7 @@ public class GenerationOutputConfiguration {
         if (this.getgenerationOutput().getParameters() == null) return result;
 
         for (GenerationOutputParameter generationOutputParameter : this.getgenerationOutput().getParameters()) {
-            GenerationOutputParameterConfiguration generationOutputParameterConfiguration = new GenerationOutputParameterConfiguration(generationOutputParameter, this.getFrameworkExecution());
+            GenerationOutputParameterConfiguration generationOutputParameterConfiguration = new GenerationOutputParameterConfiguration(generationOutputParameter, this.getFrameworkInstance());
             if (!result.equalsIgnoreCase(""))
                 result += "\n";
             result += generationOutputParameterConfiguration.getInsertStatement(generationName, this.getgenerationOutput().getName());
@@ -76,9 +76,9 @@ public class GenerationOutputConfiguration {
         GenerationOutput generationOutput = new GenerationOutput();
         CachedRowSet crsGenerationOutput = null;
         String queryGenerationOutput = "select GEN_ID, GEN_OUT_ID, GEN_OUT_NM, GEN_OUT_TYP_NM, GEN_OUT_DSC from "
-                + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("GenerationOutputs") + " where GEN_OUT_ID = " + generationOutputId;
-        crsGenerationOutput = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(queryGenerationOutput, "reader");
-        GenerationOutputParameterConfiguration generationOutputParameterConfiguration = new GenerationOutputParameterConfiguration(this.getFrameworkExecution());
+                + this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("GenerationOutputs") + " where GEN_OUT_ID = " + generationOutputId;
+        crsGenerationOutput = this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().executeQuery(queryGenerationOutput, "reader");
+        GenerationOutputParameterConfiguration generationOutputParameterConfiguration = new GenerationOutputParameterConfiguration(this.getFrameworkInstance());
         try {
             while (crsGenerationOutput.next()) {
                 generationOutput.setId(generationOutputId);
@@ -88,9 +88,9 @@ public class GenerationOutputConfiguration {
 
                 // Get parameters
                 CachedRowSet crsGenerationOutputParameters = null;
-                String queryGenerationOutputParameters = "select GEN_OUT_ID, GEN_OUT_PAR_NM from " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("GenerationOutputParameters")
+                String queryGenerationOutputParameters = "select GEN_OUT_ID, GEN_OUT_PAR_NM from " + this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("GenerationOutputParameters")
                         + " where GEN_OUT_ID = " + generationOutputId;
-                crsGenerationOutputParameters = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(queryGenerationOutputParameters, "reader");
+                crsGenerationOutputParameters = this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().executeQuery(queryGenerationOutputParameters, "reader");
                 List<GenerationOutputParameter> generationOutputParameterList = new ArrayList();
                 while (crsGenerationOutputParameters.next()) {
                     generationOutputParameterList
@@ -117,12 +117,12 @@ public class GenerationOutputConfiguration {
         this.generationOutput = generationOutput;
     }
 
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
+	public FrameworkInstance getFrameworkInstance() {
+		return frameworkInstance;
+	}
 
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
-    }
+	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
+		this.frameworkInstance = frameworkInstance;
+	}
 
 }

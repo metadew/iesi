@@ -54,9 +54,9 @@ public class RepositoryOperation {
         this.setRepositoryInstanceName(repositoryInstanceName);
         this.setRepositoryInstanceLabels(repositoryInstanceLabels);
 
-        RepositoryConfiguration repositoryConfiguration = new RepositoryConfiguration(this.getFrameworkExecution());
+        RepositoryConfiguration repositoryConfiguration = new RepositoryConfiguration(this.getFrameworkExecution().getFrameworkInstance());
         this.setRepository(repositoryConfiguration.getRepository(this.getRepositoryName()));
-        RepositoryInstanceConfiguration repositoryInstanceConfiguration = new RepositoryInstanceConfiguration(this.getFrameworkExecution());
+        RepositoryInstanceConfiguration repositoryInstanceConfiguration = new RepositoryInstanceConfiguration(this.getFrameworkExecution().getFrameworkInstance());
         this.setRepositoryInstance(repositoryInstanceConfiguration.getRepositoryInstance(this.getRepository(), this.getRepositoryInstanceName()));
 
         this.setRepositoryInstanceConnectionName(new RepositoryParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(), "connection"));

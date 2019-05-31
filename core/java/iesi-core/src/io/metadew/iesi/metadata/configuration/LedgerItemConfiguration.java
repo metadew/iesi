@@ -1,7 +1,7 @@
 package io.metadew.iesi.metadata.configuration;
 
 import io.metadew.iesi.connection.tools.SQLTools;
-import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.LedgerItem;
 
 import javax.sql.rowset.CachedRowSet;
@@ -11,31 +11,30 @@ import java.io.StringWriter;
 public class LedgerItemConfiguration {
 
     private LedgerItem ledgerItem;
-
-    private FrameworkExecution frameworkExecution;
+    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public LedgerItemConfiguration(LedgerItem ledgerItem, FrameworkExecution frameworkExecution) {
+    public LedgerItemConfiguration(LedgerItem ledgerItem, FrameworkInstance frameworkInstance) {
         this.setLedgerItem(ledgerItem);
-        this.setFrameworkExecution(frameworkExecution);
+        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public LedgerItemConfiguration(FrameworkExecution frameworkExecution) {
-        this.setFrameworkExecution(frameworkExecution);
+    public LedgerItemConfiguration(FrameworkInstance frameworkInstance) {
+    	this.setFrameworkInstance(frameworkInstance);
     }
 
     // Insert
     public String getInsertStatement(String ledgerName) {
         String sql = "";
 
-        sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getLedgerMetadataRepository()
+        sql += "INSERT INTO " + this.getFrameworkInstance().getMetadataControl().getLedgerMetadataRepository()
                 .getTableNameByLabel("LedgerItems");
         sql += " (LEDGER_ID, ITEM_NM, ITEM_VAL) ";
         sql += "VALUES ";
         sql += "(";
         sql += "("
                 + SQLTools.GetLookupIdStatement(
-                this.getFrameworkExecution().getMetadataControl().getLedgerMetadataRepository()
+                this.getFrameworkInstance().getMetadataControl().getLedgerMetadataRepository()
                         .getTableNameByLabel("Ledgers"),
                 "LEDGER_ID", "where LEDGER_NM = '" + ledgerName)
                 + "')";
@@ -53,10 +52,10 @@ public class LedgerItemConfiguration {
         LedgerItem ledgerItem = new LedgerItem();
         CachedRowSet crsLedgerItem = null;
         String queryLedgerItem = "select LEDGER_ID, ITEM_NM, ITEM_VAL from "
-                + this.getFrameworkExecution().getMetadataControl().getLedgerMetadataRepository()
+                + this.getFrameworkInstance().getMetadataControl().getLedgerMetadataRepository()
                 .getTableNameByLabel("LedgerItems")
                 + " where LEDGER_ID = " + ledgerId + " and ITEM_NM = '" + ledgerItemName + "'";
-        crsLedgerItem = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository()
+        crsLedgerItem = this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository()
                 .executeQuery(queryLedgerItem, "reader");
         try {
             while (crsLedgerItem.next()) {
@@ -80,12 +79,12 @@ public class LedgerItemConfiguration {
         this.ledgerItem = ledgerItem;
     }
 
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
+	public FrameworkInstance getFrameworkInstance() {
+		return frameworkInstance;
+	}
 
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
-    }
+	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
+		this.frameworkInstance = frameworkInstance;
+	}
 
 }

@@ -1,7 +1,6 @@
 package io.metadew.iesi.metadata.operation;
 
 import io.metadew.iesi.connection.tools.FileTools;
-import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.framework.operation.FrameworkPluginOperation;
 
@@ -30,9 +29,9 @@ public class TypeConfigurationOperation {
         return conf;
     }
 
-    public static String getMappingConfigurationFile(FrameworkExecution frameworkExecution, String dataObjectType, String mappingName) {
+    public static String getMappingConfigurationFile(FrameworkInstance frameworkInstance, String dataObjectType, String mappingName) {
         String configurationObject = mappingName + ".json";
-        String conf = frameworkExecution.getFrameworkConfiguration().getFolderConfiguration().getFolderAbsolutePath("data.mapping")
+        String conf = frameworkInstance.getFrameworkConfiguration().getFolderConfiguration().getFolderAbsolutePath("data.mapping")
                 + File.separator + configurationObject;
         if (!FileTools.exists(conf)) {
             throw new RuntimeException(MessageFormat.format("mapping.notfound=cannot find {0}", conf));

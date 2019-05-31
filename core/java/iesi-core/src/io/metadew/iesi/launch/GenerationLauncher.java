@@ -142,7 +142,7 @@ public class GenerationLauncher {
 		}
 		
 		// Get the Generation
-		GenerationConfiguration generationConfiguration = new GenerationConfiguration(frameworkExecution);
+		GenerationConfiguration generationConfiguration = new GenerationConfiguration(frameworkExecution.getFrameworkInstance());
 		Generation generation = generationConfiguration.getGeneration(generationName);
 		GenerationExecution eoGeneration = new GenerationExecution(frameworkExecution, generation);
 		

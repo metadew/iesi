@@ -76,7 +76,7 @@ public class DesignMetadataRepository extends MetadataRepository {
     
     public void save(Generation generation, FrameworkExecution frameworkExecution) {
         GenerationConfiguration generationConfiguration = new GenerationConfiguration(generation,
-                frameworkExecution);
+                frameworkExecution.getFrameworkInstance());
         executeUpdate(generationConfiguration.getInsertStatement());
     }
 

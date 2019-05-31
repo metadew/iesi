@@ -1,7 +1,7 @@
 package io.metadew.iesi.metadata.configuration;
 
 import io.metadew.iesi.connection.tools.SQLTools;
-import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.GenerationControlParameter;
 
 import javax.sql.rowset.CachedRowSet;
@@ -10,28 +10,28 @@ import java.io.StringWriter;
 
 public class GenerationControlParameterConfiguration {
 
-    private FrameworkExecution frameworkExecution;
+    private FrameworkInstance frameworkInstance;
     private GenerationControlParameter generationControlParameter;
 
     // Constructors
-    public GenerationControlParameterConfiguration(GenerationControlParameter generationControlParameter, FrameworkExecution frameworkExecution) {
-        this.setFrameworkExecution(frameworkExecution);
+    public GenerationControlParameterConfiguration(GenerationControlParameter generationControlParameter, FrameworkInstance frameworkInstance) {
         this.setgenerationControlParameter(generationControlParameter);
+        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public GenerationControlParameterConfiguration(FrameworkExecution frameworkExecution) {
-        this.setFrameworkExecution(frameworkExecution);
+    public GenerationControlParameterConfiguration(FrameworkInstance frameworkInstance) {
+    	this.setFrameworkInstance(frameworkInstance);
     }
 
     // Insert
     public String getInsertStatement(String generationName, String generationControlName) {
         String sql = "";
 
-        sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("GenerationControlParameters");
+        sql += "INSERT INTO " + this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("GenerationControlParameters");
         sql += " (GEN_CTL_ID, GEN_CTL_PAR_NM, GEN_CTL_PAR_VAL) ";
         sql += "VALUES ";
         sql += "(";
-        sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("GenerationControls"), "GEN_CTL_ID", "where GEN_CTL_NM = '" + generationControlName + "' and GEN_ID = (" + SQLTools.GetLookupIdStatement(this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Generations"), "GEN_ID", "GEN_NM", generationName)) + "))";
+        sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("GenerationControls"), "GEN_CTL_ID", "where GEN_CTL_NM = '" + generationControlName + "' and GEN_ID = (" + SQLTools.GetLookupIdStatement(this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Generations"), "GEN_ID", "GEN_NM", generationName)) + "))";
         sql += ",";
         sql += SQLTools.GetStringForSQL(this.getgenerationControlParameter().getName());
         sql += ",";
@@ -45,9 +45,9 @@ public class GenerationControlParameterConfiguration {
     public GenerationControlParameter getGenerationControlParameter(long generationControlId, String generationControlParameterName) {
         GenerationControlParameter generationControlParameter = new GenerationControlParameter();
         CachedRowSet crsGenerationControlParameter = null;
-        String queryGenerationControlParameter = "select GEN_CTL_ID, GEN_CTL_PAR_NM, GEN_CTL_PAR_VAL from " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("GenerationControlParameters")
+        String queryGenerationControlParameter = "select GEN_CTL_ID, GEN_CTL_PAR_NM, GEN_CTL_PAR_VAL from " + this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("GenerationControlParameters")
                 + " where GEN_CTL_ID = " + generationControlId + " and GEN_CTL_PAR_NM = '" + generationControlParameterName + "'";
-        crsGenerationControlParameter = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(queryGenerationControlParameter, "reader");
+        crsGenerationControlParameter = this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().executeQuery(queryGenerationControlParameter, "reader");
         try {
             while (crsGenerationControlParameter.next()) {
                 generationControlParameter.setName(generationControlParameterName);
@@ -70,12 +70,12 @@ public class GenerationControlParameterConfiguration {
         this.generationControlParameter = generationControlParameter;
     }
 
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
+	public FrameworkInstance getFrameworkInstance() {
+		return frameworkInstance;
+	}
 
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
-    }
+	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
+		this.frameworkInstance = frameworkInstance;
+	}
 
 }

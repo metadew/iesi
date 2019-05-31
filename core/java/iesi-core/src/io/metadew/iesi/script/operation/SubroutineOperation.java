@@ -113,7 +113,7 @@ public class SubroutineOperation {
 
     public void setValid(boolean valid) {
         if (valid) {
-            SubroutineConfiguration subroutineConfiguration = new SubroutineConfiguration(this.getFrameworkExecution());
+            SubroutineConfiguration subroutineConfiguration = new SubroutineConfiguration(this.getFrameworkExecution().getFrameworkInstance());
             this.setSubroutine(subroutineConfiguration.getSubroutine(this.getName()));
 
             if (this.getSubroutine().getName() == null) {

@@ -1,7 +1,7 @@
 package io.metadew.iesi.metadata.configuration;
 
 import io.metadew.iesi.connection.tools.SQLTools;
-import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.SubroutineParameter;
 
 import javax.sql.rowset.CachedRowSet;
@@ -10,24 +10,24 @@ import java.io.StringWriter;
 
 public class SubroutineParameterConfiguration {
 
-    private FrameworkExecution frameworkExecution;
+    private FrameworkInstance frameworkInstance;
     private SubroutineParameter subroutineParameter;
 
     // Constructors
-    public SubroutineParameterConfiguration(SubroutineParameter subroutineParameter, FrameworkExecution frameworkExecution) {
-        this.setFrameworkExecution(frameworkExecution);
+    public SubroutineParameterConfiguration(SubroutineParameter subroutineParameter, FrameworkInstance frameworkInstance) {
         this.setSubroutineParameter(subroutineParameter);
+        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public SubroutineParameterConfiguration(FrameworkExecution frameworkExecution) {
-        this.setFrameworkExecution(frameworkExecution);
+    public SubroutineParameterConfiguration(FrameworkInstance frameworkInstance) {
+    	this.setFrameworkInstance(frameworkInstance);
     }
 
     // Insert
     public String getInsertStatement(String subroutineName) {
         String sql = "";
 
-        sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("SubroutineParameters");
+        sql += "INSERT INTO " + this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("SubroutineParameters");
         sql += " (SRT_NM, SRT_PAR_NM, SRT_PAR_VAL) ";
         sql += "VALUES ";
         sql += "(";
@@ -45,9 +45,9 @@ public class SubroutineParameterConfiguration {
     public SubroutineParameter getSubroutineParameter(String subroutineName, String subroutineParameterName) {
         SubroutineParameter subroutineParameter = new SubroutineParameter();
         CachedRowSet crsSubroutineParameter = null;
-        String querySubroutineParameter = "select SRT_NM, SRT_PAR_NM, SRT_PAR_VAL from " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("SubroutineParameters")
+        String querySubroutineParameter = "select SRT_NM, SRT_PAR_NM, SRT_PAR_VAL from " + this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("SubroutineParameters")
                 + " where SRT_NM = '" + subroutineName + "' and SRT_PAR_NM = '" + subroutineParameterName + "'";
-        crsSubroutineParameter = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(querySubroutineParameter, "reader");
+        crsSubroutineParameter = this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().executeQuery(querySubroutineParameter, "reader");
         try {
             while (crsSubroutineParameter.next()) {
                 subroutineParameter.setName(subroutineParameterName);
@@ -62,14 +62,6 @@ public class SubroutineParameterConfiguration {
     }
 
     // Getters and Setters
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
-    }
-
     public SubroutineParameter getSubroutineParameter() {
         return subroutineParameter;
     }
@@ -77,5 +69,13 @@ public class SubroutineParameterConfiguration {
     public void setSubroutineParameter(SubroutineParameter subroutineParameter) {
         this.subroutineParameter = subroutineParameter;
     }
+
+	public FrameworkInstance getFrameworkInstance() {
+		return frameworkInstance;
+	}
+
+	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
+		this.frameworkInstance = frameworkInstance;
+	}
 
 }

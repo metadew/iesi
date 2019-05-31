@@ -1,7 +1,7 @@
 package io.metadew.iesi.metadata.configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.Mapping;
 import io.metadew.iesi.metadata.operation.DataObjectOperation;
 import io.metadew.iesi.metadata.operation.TypeConfigurationOperation;
@@ -9,37 +9,29 @@ import io.metadew.iesi.metadata.operation.TypeConfigurationOperation;
 public class MappingConfiguration {
 
     private Mapping mapping;
-    private FrameworkExecution frameworkExecution;
+    private FrameworkInstance frameworkInstance;
     private String dataObjectType = "Mapping";
 
     // Constructors
-    public MappingConfiguration(Mapping mapping, FrameworkExecution frameworkExecution) {
+    public MappingConfiguration(Mapping mapping, FrameworkInstance frameworkInstance) {
         this.setMapping(mapping);
-        this.setFrameworkExecution(frameworkExecution);
+        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public MappingConfiguration(FrameworkExecution frameworkExecution) {
-        this.setFrameworkExecution(frameworkExecution);
+    public MappingConfiguration(FrameworkInstance frameworkInstance) {
+    	this.setFrameworkInstance(frameworkInstance);
     }
 
     public Mapping getMapping(String mappingName) {
-        String conf = TypeConfigurationOperation.getMappingConfigurationFile(this.getFrameworkExecution(),
+        String conf = TypeConfigurationOperation.getMappingConfigurationFile(this.getFrameworkInstance(),
                 this.getDataObjectType(), mappingName);
-        DataObjectOperation dataObjectOperation = new DataObjectOperation(this.getFrameworkExecution(), conf);
+        DataObjectOperation dataObjectOperation = new DataObjectOperation(conf);
         ObjectMapper objectMapper = new ObjectMapper();
         return objectMapper.convertValue(dataObjectOperation.getDataObject().getData(),
                 Mapping.class);
     }
 
     // Getters and Setters
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
-    }
-
     public String getDataObjectType() {
         return dataObjectType;
     }
@@ -55,5 +47,13 @@ public class MappingConfiguration {
     public void setMapping(Mapping mapping) {
         this.mapping = mapping;
     }
+
+	public FrameworkInstance getFrameworkInstance() {
+		return frameworkInstance;
+	}
+
+	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
+		this.frameworkInstance = frameworkInstance;
+	}
 
 }

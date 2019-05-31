@@ -108,7 +108,7 @@ public class DataCompareDataset {
 
 
         long errorsDetected = 0;
-        MappingConfiguration mappingConfiguration = new MappingConfiguration(this.getFrameworkExecution());
+        MappingConfiguration mappingConfiguration = new MappingConfiguration(this.getFrameworkExecution().getFrameworkInstance());
         Mapping mapping = mappingConfiguration.getMapping(mappingName);
         for (Transformation transformation : mapping.getTransformations()) {
 

@@ -1,7 +1,7 @@
 package io.metadew.iesi.metadata.configuration;
 
 import io.metadew.iesi.connection.tools.SQLTools;
-import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.GenerationOutputParameter;
 
 import javax.sql.rowset.CachedRowSet;
@@ -10,17 +10,17 @@ import java.io.StringWriter;
 
 public class GenerationOutputParameterConfiguration {
 
-    private FrameworkExecution frameworkExecution;
+    private FrameworkInstance frameworkInstance;
     private GenerationOutputParameter generationOutputParameter;
 
     // Constructors
-    public GenerationOutputParameterConfiguration(GenerationOutputParameter generationOutputParameter, FrameworkExecution frameworkExecution) {
-        this.setFrameworkExecution(frameworkExecution);
+    public GenerationOutputParameterConfiguration(GenerationOutputParameter generationOutputParameter, FrameworkInstance frameworkInstance) {
         this.setgenerationOutputParameter(generationOutputParameter);
+        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public GenerationOutputParameterConfiguration(FrameworkExecution frameworkExecution) {
-        this.setFrameworkExecution(frameworkExecution);
+    public GenerationOutputParameterConfiguration(FrameworkInstance frameworkInstance) {
+    	this.setFrameworkInstance(frameworkInstance);
     }
 
     // Insert
@@ -28,14 +28,14 @@ public class GenerationOutputParameterConfiguration {
         String sql = "";
 
         sql += "INSERT INTO "
-                + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("GenerationOutputParameters");
+                + this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("GenerationOutputParameters");
         sql += " (GEN_OUT_ID, GEN_OUT_PAR_NM, GEN_OUT_PAR_VAL) ";
         sql += "VALUES ";
         sql += "(";
-        sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("GenerationOutputs"),
+        sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("GenerationOutputs"),
                 "GEN_OUT_ID",
                 "where GEN_OUT_NM = '" + generationOutputName + "' and GEN_ID = ("
-                        + SQLTools.GetLookupIdStatement(this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Generations"),
+                        + SQLTools.GetLookupIdStatement(this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Generations"),
                         "GEN_ID",
                         "GEN_NM",
                         generationName))
@@ -53,9 +53,9 @@ public class GenerationOutputParameterConfiguration {
     public GenerationOutputParameter getGenerationOutputParameter(long generationOutputId, String generationOutputParameterName) {
         GenerationOutputParameter generationOutputParameter = new GenerationOutputParameter();
         CachedRowSet crsGenerationOutputParameter = null;
-        String queryGenerationOutputParameter = "select GEN_OUT_ID, GEN_OUT_PAR_NM, GEN_OUT_PAR_VAL from " + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("GenerationOutputParameters")
+        String queryGenerationOutputParameter = "select GEN_OUT_ID, GEN_OUT_PAR_NM, GEN_OUT_PAR_VAL from " + this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("GenerationOutputParameters")
                 + " where GEN_OUT_ID = " + generationOutputId + " and GEN_OUT_PAR_NM = '" + generationOutputParameterName + "'";
-        crsGenerationOutputParameter = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(queryGenerationOutputParameter, "reader");
+        crsGenerationOutputParameter = this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().executeQuery(queryGenerationOutputParameter, "reader");
         try {
             while (crsGenerationOutputParameter.next()) {
                 generationOutputParameter.setName(generationOutputParameterName);
@@ -78,12 +78,12 @@ public class GenerationOutputParameterConfiguration {
         this.generationOutputParameter = generationOutputParameter;
     }
 
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
+	public FrameworkInstance getFrameworkInstance() {
+		return frameworkInstance;
+	}
 
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
-    }
+	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
+		this.frameworkInstance = frameworkInstance;
+	}
 
 }

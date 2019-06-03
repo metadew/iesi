@@ -1,6 +1,7 @@
 package io.metadew.iesi.cockpit.define.environment;
 
 import com.vaadin.flow.component.grid.Grid;
+
 import io.metadew.iesi.metadata.definition.Environment;
 
 public class EnvironmentGrid extends Grid<Environment> {
@@ -18,6 +19,7 @@ public class EnvironmentGrid extends Grid<Environment> {
         addColumn(Environment::getDescription)
                 .setHeader("Description")
                 .setFlexGrow(12);
+        
     }
 
     public Environment getSelectedRow() {

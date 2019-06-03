@@ -1,12 +1,12 @@
 package io.metadew.iesi.cockpit.backend.configuration;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import io.metadew.iesi.cockpit.backend.EnvironmentDataService;
 import io.metadew.iesi.cockpit.backend.controller.FrameworkConnection;
 import io.metadew.iesi.metadata.configuration.EnvironmentConfiguration;
+import io.metadew.iesi.metadata.configuration.exception.EnvironmentDoesNotExistException;
 import io.metadew.iesi.metadata.definition.Environment;
 
 public class EnvironmentDataServiceConfiguration extends EnvironmentDataService {
@@ -17,16 +17,8 @@ public class EnvironmentDataServiceConfiguration extends EnvironmentDataService 
 	private static EnvironmentConfiguration environmentConfiguration = new EnvironmentConfiguration(
 			FrameworkConnection.getInstance().getFrameworkInstance());
 
-    private List<Environment> environments;
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
 	private EnvironmentDataServiceConfiguration() {
-    	Environment e = new Environment();
-    	environments = new ArrayList();
-    	e.setName("test");
-    	e.setDescription("ok");
-    	environments.add(e);
-    	
     	
     }
 
@@ -40,24 +32,25 @@ public class EnvironmentDataServiceConfiguration extends EnvironmentDataService 
     @Override
     public synchronized List<Environment> getAllEnvironments() {
     	return Collections.unmodifiableList(EnvironmentDataServiceConfiguration.getEnvironmentConfiguration().getAllEnvironments());
-    	//return Collections.unmodifiableList(environments);
-        
     }
 
     @Override
-    public synchronized void updateEnvironment(Environment environmentName) {
-    	// add logic
+    public synchronized void updateEnvironment(Environment environment) {
+    	try {
+			EnvironmentDataServiceConfiguration.getEnvironmentConfiguration().updateEnvironment(environment);
+		} catch (EnvironmentDoesNotExistException e) {
+			e.printStackTrace();
+		}
     }
 
     @Override
     public synchronized Environment getEnvironmentByName(String environmentName) {
-    	// add logic
-    	return null;
+    	return EnvironmentDataServiceConfiguration.getEnvironmentConfiguration().getEnvironment(environmentName).get();
     }
 
     @Override
     public synchronized void deleteEnvironment(String environmentName) {
-    	// add logic
+    	EnvironmentDataServiceConfiguration.getEnvironmentConfiguration().deleteEnvironment(environmentName);
     }
 
 	public static EnvironmentConfiguration getEnvironmentConfiguration() {

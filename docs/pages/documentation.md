@@ -21,21 +21,25 @@
     * [Conditional action execution](/{{site.repository}}/pages/tutorial/conditions/conditionalactionexecution.html)  
   * Working with iterations
     * [Create a first iteration](/{{site.repository}}/pages/tutorial/iterations/createfirstiteration.html)  
-  * Do more with scripts
+  * Do more with...
+    * [Shell commands](/{{site.repository}}/pages/domore/shellcommands.html)
 * [Define the system landscape](/{{site.repository}}/pages/define/define.html)
   * [Connection types](/{{site.repository}}/pages/define/connectiontypes.html)
 * [Design automation scripts](/{{site.repository}}/pages/design/design.html)
   * [Action types](/{{site.repository}}/pages/design/actiontypes.html)
   * [Expected errors](/{{site.repository}}/pages/design/expectederrors.html)
+  * [Stop on error](/{{site.repository}}/pages/design/stoponerror.html)
   * [Subroutines](/{{site.repository}}/pages/design/subroutines.html)
     * [Subroutine types](/{{site.repository}}/pages/design/subroutinetypes.html)
 * Automation approaches
+  * [ETL flow testing](/{{site.repository}}/pages/approach/etlflowtesting.html)
   * [Query based testing](/{{site.repository}}/pages/approach/querybasedtesting.html)
 * [Operate the framework](/{{site.repository}}/pages/operate/operate.html)
 * [Manage the framework](/{{site.repository}}/pages/manage/manage.html)
 * [Secure the framework](/{{site.repository}}/pages/secure/secure.html)
 * [Deploy the framework](/{{site.repository}}/pages/deploy/deploy.html)
   * Configuration files
+  * [Environment strategy](/{{site.repository}}/pages/deploy/environmentstrategy.html)
 * [Understand the framework](/{{site.repository}}/pages/understand/understand.html)
   * [Legend tables](/{{site.repository}}/pages/understand/legend.html)
   * [Important highlights](/{{site.repository}}/pages/understand/highlights.html)

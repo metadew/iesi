@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class ConnectionConfiguration {
+public class ConnectionConfiguration extends MetadataConfiguration {
 
     private FrameworkInstance frameworkInstance;
     private Connection connection;
@@ -37,7 +37,15 @@ public class ConnectionConfiguration {
         this.setConnection(connection);
         this.setFrameworkInstance(frameworkInstance);
     }
+    
+    // Abstract method implementations
+	@Override
+	public List<Connection> getAllObjects() {
+		return this.getConnections();
+	}
 
+
+	// Methods
     public List<Connection> getConnections() {
         List<Connection> connections = new ArrayList<>();
         String query = "select * from " + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("Connections")
@@ -452,4 +460,5 @@ public class ConnectionConfiguration {
 	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
 		this.frameworkInstance = frameworkInstance;
 	}
+
 }

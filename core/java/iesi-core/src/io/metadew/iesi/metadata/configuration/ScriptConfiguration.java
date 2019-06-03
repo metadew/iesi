@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class ScriptConfiguration {
+public class ScriptConfiguration extends MetadataConfiguration {
 
     private Script script;
     private FrameworkInstance frameworkInstance;
@@ -32,6 +32,12 @@ public class ScriptConfiguration {
         this.verifyVersionExists();
         this.setFrameworkInstance(frameworkInstance);
     }
+
+    // Abstract method implementations
+	@Override
+	public List<Script> getAllObjects() {
+		return this.getAllScripts();
+	}
 
     // Checks
     private void verifyVersionExists() {

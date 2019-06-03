@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class EnvironmentConfiguration {
+public class EnvironmentConfiguration extends MetadataConfiguration{
 
     private Environment environment;
     private FrameworkInstance frameworkInstance;
@@ -35,7 +35,14 @@ public class EnvironmentConfiguration {
         this.setEnvironment(environment);
         this.setFrameworkInstance(frameworkInstance);
     }
-
+    
+    // Abstract method implementations
+	@Override
+    public List<Environment> getAllObjects() {
+    	return this.getAllEnvironments();
+    }
+    
+    // Methods
     public Optional<Environment> getEnvironment(String environmentName) {
         Environment environment = null;
         String queryEnvironment = "select ENV_NM, ENV_DSC from "
@@ -75,7 +82,7 @@ public class EnvironmentConfiguration {
         CachedRowSet crsEnvironment = this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().executeQuery(queryEnvironment, "reader");
         return crsEnvironment.size() == 1;
     }
-
+    
     public List<Environment> getAllEnvironments() {
         List<Environment> environments = new ArrayList<>();
         String query = "select ENV_NM from " + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("Environments")

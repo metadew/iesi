@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class ComponentConfiguration {
+public class ComponentConfiguration extends MetadataConfiguration {
 
     private Component component;
     private FrameworkInstance frameworkInstance;
@@ -33,6 +33,12 @@ public class ComponentConfiguration {
         this.verifyVersionExists();
         this.setFrameworkInstance(frameworkInstance);
     }
+    
+    // Abstract method implementations
+	@Override
+	public List<Component> getAllObjects() {
+		return this.getComponents();
+	}
 
     // Checks
     private void verifyVersionExists() {

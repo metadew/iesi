@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class ImpersonationConfiguration {
+public class ImpersonationConfiguration extends MetadataConfiguration{
 
     private Impersonation impersonation;
     private FrameworkInstance frameworkInstance;
@@ -35,6 +35,13 @@ public class ImpersonationConfiguration {
         this.setFrameworkInstance(frameworkInstance);
     }
 
+    // Abstract method implementations
+	@Override
+	public List<Impersonation> getAllObjects() {
+		return this.getAllImpersonations();
+	}
+    
+    // Methods
     public Optional<Impersonation> getImpersonation(String impersonationName) {
         Impersonation impersonation = null;
         String queryImpersonation = "select IMP_NM, IMP_DSC from "

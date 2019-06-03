@@ -1,44 +1,45 @@
-package io.metadew.iesi.metadata.configuration;
+package io.metadew.iesi.metadata.type;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
-import io.metadew.iesi.metadata.definition.DataframeItemType;
+import io.metadew.iesi.metadata.definition.GenerationType;
 import io.metadew.iesi.metadata.operation.DataObjectOperation;
 import io.metadew.iesi.metadata.operation.TypeConfigurationOperation;
 
-public class DataframeItemTypeConfiguration {
+public class GenerationTypeConfiguration {
 
-    private DataframeItemType dataframeItemType;
+    private GenerationType generationType;
     private FrameworkInstance frameworkInstance;
-    private String dataObjectType = "DataframeItemType";
+    private String dataObjectType = "GenerationType";
 
     // Constructors
-    public DataframeItemTypeConfiguration(DataframeItemType dataframeItemType, FrameworkInstance frameworkInstance) {
-        this.setDataframeItemType(dataframeItemType);
+    public GenerationTypeConfiguration(GenerationType generationType, FrameworkInstance frameworkInstance) {
+        this.setgenerationType(generationType);
         this.setFrameworkInstance(frameworkInstance);
     }
 
-    public DataframeItemTypeConfiguration(FrameworkInstance frameworkInstance) {
+    public GenerationTypeConfiguration(FrameworkInstance frameworkInstance) {
     	this.setFrameworkInstance(frameworkInstance);
     }
 
-    public DataframeItemType getDataframeItemType(String dataframeItemTypeName) {
+    public GenerationType getGenerationType(String GenerationTypeName) {
         String conf = TypeConfigurationOperation.getTypeConfigurationFile(this.getFrameworkInstance(),
-                this.getDataObjectType(), dataframeItemTypeName);
+                this.getDataObjectType(), GenerationTypeName);
         DataObjectOperation dataObjectOperation = new DataObjectOperation(conf);
         ObjectMapper objectMapper = new ObjectMapper();
-        DataframeItemType dataframeItemType = objectMapper.convertValue(dataObjectOperation.getDataObject().getData(),
-                DataframeItemType.class);
-        return dataframeItemType;
+        GenerationType GenerationType = objectMapper.convertValue(dataObjectOperation.getDataObject().getData(),
+                GenerationType.class);
+        return GenerationType;
     }
+
 
     // Getters and Setters
-    public DataframeItemType getDataframeItemType() {
-        return dataframeItemType;
+    public GenerationType getgenerationType() {
+        return generationType;
     }
 
-    public void setDataframeItemType(DataframeItemType dataframeItemType) {
-        this.dataframeItemType = dataframeItemType;
+    public void setgenerationType(GenerationType generationType) {
+        this.generationType = generationType;
     }
 
     public String getDataObjectType() {

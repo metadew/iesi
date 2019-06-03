@@ -1,44 +1,44 @@
-package io.metadew.iesi.metadata.configuration;
+package io.metadew.iesi.metadata.type;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
-import io.metadew.iesi.metadata.definition.ConnectionType;
+import io.metadew.iesi.metadata.definition.DataframeItemType;
 import io.metadew.iesi.metadata.operation.DataObjectOperation;
 import io.metadew.iesi.metadata.operation.TypeConfigurationOperation;
 
-public class ConnectionTypeConfiguration {
+public class DataframeItemTypeConfiguration {
 
-    private ConnectionType connectionType;
+    private DataframeItemType dataframeItemType;
     private FrameworkInstance frameworkInstance;
-    private String dataObjectType = "ConnectionType";
+    private String dataObjectType = "DataframeItemType";
 
     // Constructors
-    public ConnectionTypeConfiguration(ConnectionType connectionType, FrameworkInstance frameworkInstance) {
-        this.setConnectionType(connectionType);
+    public DataframeItemTypeConfiguration(DataframeItemType dataframeItemType, FrameworkInstance frameworkInstance) {
+        this.setDataframeItemType(dataframeItemType);
         this.setFrameworkInstance(frameworkInstance);
     }
 
-    public ConnectionTypeConfiguration(FrameworkInstance frameworkInstance) {
+    public DataframeItemTypeConfiguration(FrameworkInstance frameworkInstance) {
     	this.setFrameworkInstance(frameworkInstance);
     }
 
-    public ConnectionType getConnectionType(String connectionTypeName) {
+    public DataframeItemType getDataframeItemType(String dataframeItemTypeName) {
         String conf = TypeConfigurationOperation.getTypeConfigurationFile(this.getFrameworkInstance(),
-                this.getDataObjectType(), connectionTypeName);
+                this.getDataObjectType(), dataframeItemTypeName);
         DataObjectOperation dataObjectOperation = new DataObjectOperation(conf);
         ObjectMapper objectMapper = new ObjectMapper();
-        ConnectionType connectionType = objectMapper.convertValue(dataObjectOperation.getDataObject().getData(),
-                ConnectionType.class);
-        return connectionType;
+        DataframeItemType dataframeItemType = objectMapper.convertValue(dataObjectOperation.getDataObject().getData(),
+                DataframeItemType.class);
+        return dataframeItemType;
     }
 
     // Getters and Setters
-    public ConnectionType getConnectionType() {
-        return connectionType;
+    public DataframeItemType getDataframeItemType() {
+        return dataframeItemType;
     }
 
-    public void setConnectionType(ConnectionType connectionType) {
-        this.connectionType = connectionType;
+    public void setDataframeItemType(DataframeItemType dataframeItemType) {
+        this.dataframeItemType = dataframeItemType;
     }
 
     public String getDataObjectType() {
@@ -56,4 +56,5 @@ public class ConnectionTypeConfiguration {
 	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
 		this.frameworkInstance = frameworkInstance;
 	}
+
 }

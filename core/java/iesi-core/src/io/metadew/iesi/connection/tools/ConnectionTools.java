@@ -1,8 +1,8 @@
 package io.metadew.iesi.connection.tools;
 
 import io.metadew.iesi.framework.execution.FrameworkExecution;
-import io.metadew.iesi.metadata.configuration.ConnectionTypeConfiguration;
 import io.metadew.iesi.metadata.definition.ConnectionType;
+import io.metadew.iesi.metadata.type.ConnectionTypeConfiguration;
 
 public final class ConnectionTools {
 

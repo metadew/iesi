@@ -1,45 +1,44 @@
-package io.metadew.iesi.metadata.configuration;
+package io.metadew.iesi.metadata.type;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
-import io.metadew.iesi.metadata.definition.UserType;
+import io.metadew.iesi.metadata.definition.SubroutineType;
 import io.metadew.iesi.metadata.operation.DataObjectOperation;
 import io.metadew.iesi.metadata.operation.TypeConfigurationOperation;
 
-public class UserTypeConfiguration {
+public class SubroutineTypeConfiguration {
 
-    private UserType userType;
+    private SubroutineType subroutineType;
     private FrameworkInstance frameworkInstance;
-    private String dataObjectType = "UserType";
+    private String dataObjectType = "SubroutineType";
 
     // Constructors
-    public UserTypeConfiguration(UserType userType, FrameworkInstance frameworkInstance) {
-        this.setUserType(userType);
+    public SubroutineTypeConfiguration(SubroutineType subroutineType, FrameworkInstance frameworkInstance) {
+        this.setSubroutineType(subroutineType);
         this.setFrameworkInstance(frameworkInstance);
     }
 
-    public UserTypeConfiguration(FrameworkInstance frameworkInstance) {
+    public SubroutineTypeConfiguration(FrameworkInstance frameworkInstance) {
     	this.setFrameworkInstance(frameworkInstance);
     }
 
-    // Methods
-    public UserType getUserType(String userTypeName) {
+    public SubroutineType getSubroutineType(String subroutineTypeName) {
         String conf = TypeConfigurationOperation.getTypeConfigurationFile(this.getFrameworkInstance(),
-                this.getDataObjectType(), userTypeName);
+                this.getDataObjectType(), subroutineTypeName);
         DataObjectOperation dataObjectOperation = new DataObjectOperation(conf);
         ObjectMapper objectMapper = new ObjectMapper();
-        UserType userType = objectMapper.convertValue(dataObjectOperation.getDataObject().getData(),
-                UserType.class);
-        return userType;
+        SubroutineType subroutineType = objectMapper.convertValue(dataObjectOperation.getDataObject().getData(),
+                SubroutineType.class);
+        return subroutineType;
     }
 
     // Getters and Setters
-    public UserType getUserType() {
-        return userType;
+    public SubroutineType getSubroutineType() {
+        return subroutineType;
     }
 
-    public void setUserType(UserType userType) {
-        this.userType = userType;
+    public void setSubroutineType(SubroutineType subroutineType) {
+        this.subroutineType = subroutineType;
     }
 
     public String getDataObjectType() {
@@ -57,5 +56,4 @@ public class UserTypeConfiguration {
 	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
 		this.frameworkInstance = frameworkInstance;
 	}
-
 }

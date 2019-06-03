@@ -1,45 +1,45 @@
-package io.metadew.iesi.metadata.configuration;
+package io.metadew.iesi.metadata.type;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
-import io.metadew.iesi.metadata.definition.GenerationType;
+import io.metadew.iesi.metadata.definition.UserType;
 import io.metadew.iesi.metadata.operation.DataObjectOperation;
 import io.metadew.iesi.metadata.operation.TypeConfigurationOperation;
 
-public class GenerationTypeConfiguration {
+public class UserTypeConfiguration {
 
-    private GenerationType generationType;
+    private UserType userType;
     private FrameworkInstance frameworkInstance;
-    private String dataObjectType = "GenerationType";
+    private String dataObjectType = "UserType";
 
     // Constructors
-    public GenerationTypeConfiguration(GenerationType generationType, FrameworkInstance frameworkInstance) {
-        this.setgenerationType(generationType);
+    public UserTypeConfiguration(UserType userType, FrameworkInstance frameworkInstance) {
+        this.setUserType(userType);
         this.setFrameworkInstance(frameworkInstance);
     }
 
-    public GenerationTypeConfiguration(FrameworkInstance frameworkInstance) {
+    public UserTypeConfiguration(FrameworkInstance frameworkInstance) {
     	this.setFrameworkInstance(frameworkInstance);
     }
 
-    public GenerationType getGenerationType(String GenerationTypeName) {
+    // Methods
+    public UserType getUserType(String userTypeName) {
         String conf = TypeConfigurationOperation.getTypeConfigurationFile(this.getFrameworkInstance(),
-                this.getDataObjectType(), GenerationTypeName);
+                this.getDataObjectType(), userTypeName);
         DataObjectOperation dataObjectOperation = new DataObjectOperation(conf);
         ObjectMapper objectMapper = new ObjectMapper();
-        GenerationType GenerationType = objectMapper.convertValue(dataObjectOperation.getDataObject().getData(),
-                GenerationType.class);
-        return GenerationType;
+        UserType userType = objectMapper.convertValue(dataObjectOperation.getDataObject().getData(),
+                UserType.class);
+        return userType;
     }
-
 
     // Getters and Setters
-    public GenerationType getgenerationType() {
-        return generationType;
+    public UserType getUserType() {
+        return userType;
     }
 
-    public void setgenerationType(GenerationType generationType) {
-        this.generationType = generationType;
+    public void setUserType(UserType userType) {
+        this.userType = userType;
     }
 
     public String getDataObjectType() {

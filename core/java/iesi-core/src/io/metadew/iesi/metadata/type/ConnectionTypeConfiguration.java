@@ -1,45 +1,44 @@
-package io.metadew.iesi.metadata.configuration;
+package io.metadew.iesi.metadata.type;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
-import io.metadew.iesi.metadata.definition.ScriptType;
+import io.metadew.iesi.metadata.definition.ConnectionType;
 import io.metadew.iesi.metadata.operation.DataObjectOperation;
 import io.metadew.iesi.metadata.operation.TypeConfigurationOperation;
 
-public class ScriptTypeConfiguration {
+public class ConnectionTypeConfiguration {
 
-    private ScriptType scriptType;
+    private ConnectionType connectionType;
     private FrameworkInstance frameworkInstance;
-    private String dataObjectType = "ScriptType";
+    private String dataObjectType = "ConnectionType";
 
     // Constructors
-    public ScriptTypeConfiguration(ScriptType scriptType, FrameworkInstance frameworkInstance) {
-        this.setScriptType(scriptType);
+    public ConnectionTypeConfiguration(ConnectionType connectionType, FrameworkInstance frameworkInstance) {
+        this.setConnectionType(connectionType);
         this.setFrameworkInstance(frameworkInstance);
     }
 
-    public ScriptTypeConfiguration(FrameworkInstance frameworkInstance) {
+    public ConnectionTypeConfiguration(FrameworkInstance frameworkInstance) {
     	this.setFrameworkInstance(frameworkInstance);
     }
 
-    // Methods
-    public ScriptType getScriptType(String scriptTypeName) {
+    public ConnectionType getConnectionType(String connectionTypeName) {
         String conf = TypeConfigurationOperation.getTypeConfigurationFile(this.getFrameworkInstance(),
-                this.getDataObjectType(), scriptTypeName);
+                this.getDataObjectType(), connectionTypeName);
         DataObjectOperation dataObjectOperation = new DataObjectOperation(conf);
         ObjectMapper objectMapper = new ObjectMapper();
-        ScriptType scriptType = objectMapper.convertValue(dataObjectOperation.getDataObject().getData(),
-                ScriptType.class);
-        return scriptType;
+        ConnectionType connectionType = objectMapper.convertValue(dataObjectOperation.getDataObject().getData(),
+                ConnectionType.class);
+        return connectionType;
     }
 
     // Getters and Setters
-    public ScriptType getScriptType() {
-        return scriptType;
+    public ConnectionType getConnectionType() {
+        return connectionType;
     }
 
-    public void setScriptType(ScriptType scriptType) {
-        this.scriptType = scriptType;
+    public void setConnectionType(ConnectionType connectionType) {
+        this.connectionType = connectionType;
     }
 
     public String getDataObjectType() {
@@ -57,5 +56,4 @@ public class ScriptTypeConfiguration {
 	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
 		this.frameworkInstance = frameworkInstance;
 	}
-
 }

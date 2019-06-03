@@ -1,44 +1,47 @@
-package io.metadew.iesi.metadata.configuration;
+package io.metadew.iesi.metadata.type;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
-import io.metadew.iesi.metadata.definition.SubroutineType;
+import io.metadew.iesi.metadata.definition.GenerationRuleType;
 import io.metadew.iesi.metadata.operation.DataObjectOperation;
 import io.metadew.iesi.metadata.operation.TypeConfigurationOperation;
 
-public class SubroutineTypeConfiguration {
+public class GenerationRuleTypeConfiguration {
 
-    private SubroutineType subroutineType;
+    private GenerationRuleType generationRuleType;
     private FrameworkInstance frameworkInstance;
-    private String dataObjectType = "SubroutineType";
+    private String dataObjectType = "GenerationRuleType";
+
 
     // Constructors
-    public SubroutineTypeConfiguration(SubroutineType subroutineType, FrameworkInstance frameworkInstance) {
-        this.setSubroutineType(subroutineType);
+    public GenerationRuleTypeConfiguration(GenerationRuleType generationRuleType, FrameworkInstance frameworkInstance) {
+        this.setgenerationRuleType(generationRuleType);
         this.setFrameworkInstance(frameworkInstance);
     }
 
-    public SubroutineTypeConfiguration(FrameworkInstance frameworkInstance) {
+    public GenerationRuleTypeConfiguration(FrameworkInstance frameworkInstance) {
     	this.setFrameworkInstance(frameworkInstance);
     }
 
-    public SubroutineType getSubroutineType(String subroutineTypeName) {
+    // Methods
+    public GenerationRuleType getGenerationRuleType(String GenerationRuleTypeName) {
         String conf = TypeConfigurationOperation.getTypeConfigurationFile(this.getFrameworkInstance(),
-                this.getDataObjectType(), subroutineTypeName);
+                this.getDataObjectType(), GenerationRuleTypeName);
         DataObjectOperation dataObjectOperation = new DataObjectOperation(conf);
         ObjectMapper objectMapper = new ObjectMapper();
-        SubroutineType subroutineType = objectMapper.convertValue(dataObjectOperation.getDataObject().getData(),
-                SubroutineType.class);
-        return subroutineType;
+        GenerationRuleType GenerationRuleType = objectMapper.convertValue(dataObjectOperation.getDataObject().getData(),
+                GenerationRuleType.class);
+        return GenerationRuleType;
     }
+
 
     // Getters and Setters
-    public SubroutineType getSubroutineType() {
-        return subroutineType;
+    public GenerationRuleType getgenerationRuleType() {
+        return generationRuleType;
     }
 
-    public void setSubroutineType(SubroutineType subroutineType) {
-        this.subroutineType = subroutineType;
+    public void setgenerationRuleType(GenerationRuleType generationRuleType) {
+        this.generationRuleType = generationRuleType;
     }
 
     public String getDataObjectType() {
@@ -56,4 +59,5 @@ public class SubroutineTypeConfiguration {
 	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
 		this.frameworkInstance = frameworkInstance;
 	}
+
 }

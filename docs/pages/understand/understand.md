@@ -41,12 +41,25 @@ The automation framework consists of:
 
 ## Configuration templates
 
-The framework contains a set of Excel templates to create several configuration assets so that they can be loaded into the configuration repository. 
-Automation engineers can create new configuration Excel files via a well-known user interface and use any version control tool that they are used to. 
+The framework uses configuration to drive automation. Automation engineers can create or update configuration files that will be loaded and stored in a configuration repository. 
+There are multiple ways to create these files: waiting for a more advance graphical user (web)interface, the framework contains a set of standard Excel templates. 
+These provide a well-known user interface and facilitate creating a required technical `json` format. Engineers can directly create this technical format, 
+or alternatively make use of a easier to use `yaml` format.
+
+### Creating configuration files
+
+**Json format**
+
+Underneath, the framework uses the `json` object format run and communicate its services.
+
+**Yaml format**
+
+To facilitate creating and updating configuration files for technical enigeers, support for the `yaml` object format has been included.
+
+**Excel templates**
+
 The templates allow to transfer the configuration Excel files into a `json` configuration file via a `vba` macro. 
 The configuration templates can be found in folder `modules/templates`.
-
-> The Excel template files are only temporary waiting for a more advanced graphical user (web)interface. 
 
 |Template|Description|
 |--------|-----------|
@@ -54,6 +67,10 @@ The configuration templates can be found in folder `modules/templates`.
 |Connectivity|Define connections and environments|
 |Script|Design automation scripts|
 |Subroutine|Design subroutines|
+
+### Versioning configuration files
+
+Versioning can be done via any version tool that is being used.
 
 ## Configuration repository
 
@@ -74,7 +91,6 @@ The configuration data can be divided in different categories.
 |Result|The technical outcome for the different actions as executed by the framework.|
 |Trace|The resolution of the automation configuration design as it has been executed by the framework. All parameters and reusable constructs are replaced by actual values.|
 |Reporting|The interpretation of the technical outcome using reporting views to give context to the execution.|
-
 
 ### Users
 
@@ -120,11 +136,28 @@ More information on the data models for the different categories can be found by
 
 ## Processing engine
 
-We are working providing more details on this.
+The installation of the automation framework deploys a set of artefacts that allow the processing engine to initialize itself and perform its operations.
 
 ### Folder structure
 
-We are working providing more details on this.
+The automation framework has the following folder structure:
+
+<table>
+<thead>
+<tr class="header">
+<th>Path</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+{% for type in site.data.framework.FrameworkFolders %}
+<tr>
+<td markdown="span">{{ type.data.path }}</td>
+<td markdown="span">{{ type.data.description }}</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
 
 ### File extensions
 

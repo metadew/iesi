@@ -39,6 +39,14 @@
 * [Understand the framework](/{{site.repository}}/pages/understand/understand.html)
   * [Legend tables](/{{site.repository}}/pages/understand/legend.html)
   * [Important highlights](/{{site.repository}}/pages/understand/highlights.html)
+  * [Data Objects](/{{site.repository}}/pages/understand/dataobjects.html)
+    * Components
+    * Connections
+    * Environments
+    * Impersonations
+    * [Scripts](/{{site.repository}}/pages/understand/scripts.html)
+    * Subroutines
+	* Users
   * Data Model
     * [Connectivity data model](/{{site.repository}}/pages/understand/datamodel/connectivity.html)
     * [Control data model](/{{site.repository}}/pages/understand/datamodel/control.html)

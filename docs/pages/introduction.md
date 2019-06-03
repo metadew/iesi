@@ -4,7 +4,7 @@
 
 Intelligent ETL Solution Industrialization or IESI is bringing augmented automation to life. 
 It primarily acts as a DevOps orchestrator focusing on activities related to test, release, operate and monitor. 
-Yet, it augments user configuration with intelligent use of data. 
+Yet, it augments user configuration with intelligent use of data which it caches internally so that it can be used during execution.
 
 > The data science approach for automation
 

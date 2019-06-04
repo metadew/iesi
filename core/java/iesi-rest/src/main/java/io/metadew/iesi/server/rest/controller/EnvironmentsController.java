@@ -55,8 +55,7 @@ public class EnvironmentsController {
 	}
 
 	@GetMapping("/environments/{name}")
-
-	public ResponseEntity<EnvironmentResource> getByName(@PathVariable String name, Error error) {
+	public ResponseEntity<EnvironmentResource> getByName(@PathVariable String name) {
 		Optional<Environment> environment = environmentConfiguration.getEnvironment(name);
 		if (!environment.isPresent()) {
 			throw new DataNotFoundException(name);

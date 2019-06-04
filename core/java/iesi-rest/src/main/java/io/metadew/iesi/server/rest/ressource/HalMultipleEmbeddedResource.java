@@ -11,7 +11,15 @@ import java.util.List;
 @JsonPropertyOrder({"_embedded", "_links"})
 public class HalMultipleEmbeddedResource<T extends ResourceSupport> extends ResourceSupport {
 
-    private List<T> embeddedResources = new ArrayList<>();
+    private List<T> embeddedResources;
+
+    public HalMultipleEmbeddedResource (List<T> embeddedResources) {
+        this.embeddedResources = embeddedResources;
+    }
+
+    public HalMultipleEmbeddedResource () {
+        this.embeddedResources = new ArrayList<>();
+    }
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     @JsonProperty("_embedded")

@@ -28,3 +28,6 @@ HELP.md
 
 ### VS Code ###
 .vscode/
+
+/src/test/resources/iesi_instance/
+/src/test/resources/iesi_instance.zip

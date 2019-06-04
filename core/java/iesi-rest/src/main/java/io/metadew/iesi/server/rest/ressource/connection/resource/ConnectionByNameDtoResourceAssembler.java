@@ -16,24 +16,23 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 @Component
-public class ConnectionByNameDtoResourceAssembler extends ResourceAssemblerSupport<List<Connection>, HalSingleEmbeddedResource> {
+public class ConnectionByNameDtoResourceAssembler extends ResourceAssemblerSupport<List<Connection>, ConnectionByNameDto> {
 
     private final ModelMapper modelMapper;
 
     public ConnectionByNameDtoResourceAssembler() {
-        super(ConnectionsController.class, HalSingleEmbeddedResource.class);
+        super(ConnectionsController.class, ConnectionByNameDto.class);
         this.modelMapper = new ModelMapper();
     }
 
     @Override
-    public HalSingleEmbeddedResource<ConnectionByNameDto> toResource(List<Connection> connections) {
+    public ConnectionByNameDto toResource(List<Connection> connections) {
         ConnectionByNameDto connectionByNameDto = convertToDto(connections);
-        HalSingleEmbeddedResource<ConnectionByNameDto> halSingleEmbeddedResource = new HalSingleEmbeddedResource<>();
-        halSingleEmbeddedResource.setEmbeddedResource(connectionByNameDto);
         for (String environment : connectionByNameDto.getEnvironments()) {
-            halSingleEmbeddedResource.add(linkTo(methodOn(ConnectionsController.class).getByNameandEnvironment(connectionByNameDto.getName(), environment)).withRel("ea:"+environment));
+            connectionByNameDto.add(linkTo(methodOn(ConnectionsController.class).getByNameandEnvironment(connectionByNameDto.getName(), environment))
+                    .withRel("connection:"+connectionByNameDto.getName()+"-"+environment));
         }
-        return halSingleEmbeddedResource;
+        return connectionByNameDto;
     }
 
     private ConnectionByNameDto convertToDto(List<Connection> connections) {

@@ -9,9 +9,7 @@ import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
-
 public class IesiRestApplication {
-
 	@Value("${http.port}")
 	private int httpPort;
 //	

@@ -23,7 +23,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	}
 
 	@Autowired
-
 	private DataSource dataSource;
 
 	@Autowired

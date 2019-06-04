@@ -1,8 +1,0 @@
-{
-  "data" : {
-    "name" : "dt.timstamp",
-    "description" : "Random timestamp values (date and time)",
-    "parameters" : [ ]
-  },
-  "type" : "GenerationRuleType"
-}

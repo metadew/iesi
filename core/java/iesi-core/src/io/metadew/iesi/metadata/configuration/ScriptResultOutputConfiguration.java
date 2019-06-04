@@ -6,6 +6,8 @@ import io.metadew.iesi.metadata.definition.ScriptResultOutput;
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class ScriptResultOutputConfiguration {
@@ -25,11 +27,35 @@ public class ScriptResultOutputConfiguration {
     	this.setFrameworkInstance(frameworkInstance);
     }
 
-    // Insert
+    // Methods
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+	public List<ScriptResultOutput> getScriptResultOutputs(String runId, long processId) {
+        List<ScriptResultOutput> scriptResultOutputs = new ArrayList();
+        CachedRowSet crsScriptResultOutputs;
+        String queryScriptResultOutputs = "select RUN_ID, PRC_ID, SCRIPT_ID, OUT_NM, OUT_VAL from " + this.getFrameworkInstance().getMetadataControl().getResultMetadataRepository().getTableNameByLabel("ScriptResultOutputs")
+                + " where RUN_ID = '" + runId + "' and PRC_ID = " + processId + " order by LOAD_TMS asc";
+        crsScriptResultOutputs = this.getFrameworkInstance().getMetadataControl().getResultMetadataRepository().executeQuery(queryScriptResultOutputs, "reader");
+        try {
+            while (crsScriptResultOutputs.next()) {
+            	ScriptResultOutput scriptResultOutput= new ScriptResultOutput();
+                scriptResultOutput = new ScriptResultOutput(crsScriptResultOutputs.getString("OUT_NM"),
+                        crsScriptResultOutputs.getString("OUT_VAL"));
+                scriptResultOutputs.add(scriptResultOutput);
+            }
+            crsScriptResultOutputs.close();
+        } catch (Exception e) {
+            StringWriter StackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(StackTrace));
+        }
+        
+        return scriptResultOutputs;
+    }
+    
+    
     public Optional<ScriptResultOutput> getScriptOutput(String runId, long processId, String scriptResultOutputName) {
         ScriptResultOutput scriptResultOutput = null;
         CachedRowSet crsScriptResultOutput;
-        String queryScriptResultOutput = "select RUN_ID, PRC_ID, SCRIPT_ID, OUT_NM, OUT_VAL from " + this.getFrameworkInstance().getMetadataControl().getResultMetadataRepository().getTableNameByLabel("ScriptOutputs")
+        String queryScriptResultOutput = "select RUN_ID, PRC_ID, SCRIPT_ID, OUT_NM, OUT_VAL from " + this.getFrameworkInstance().getMetadataControl().getResultMetadataRepository().getTableNameByLabel("ScriptResultOutputs")
                 + " where RUN_ID = '" + runId + "' and PRC_ID = " + processId + " and OUT_NM = '" + scriptResultOutputName + "'";
         crsScriptResultOutput = this.getFrameworkInstance().getMetadataControl().getResultMetadataRepository().executeQuery(queryScriptResultOutput, "reader");
         try {

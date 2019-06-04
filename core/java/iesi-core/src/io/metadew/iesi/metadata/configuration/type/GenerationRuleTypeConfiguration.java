@@ -1,44 +1,47 @@
-package io.metadew.iesi.metadata.type;
+package io.metadew.iesi.metadata.configuration.type;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
-import io.metadew.iesi.metadata.definition.DataframeType;
+import io.metadew.iesi.metadata.definition.GenerationRuleType;
 import io.metadew.iesi.metadata.operation.DataObjectOperation;
 import io.metadew.iesi.metadata.operation.TypeConfigurationOperation;
 
-public class DataframeTypeConfiguration {
+public class GenerationRuleTypeConfiguration {
 
-    private DataframeType dataframeType;
+    private GenerationRuleType generationRuleType;
     private FrameworkInstance frameworkInstance;
-    private String dataObjectType = "DataframeType";
+    private String dataObjectType = "GenerationRuleType";
+
 
     // Constructors
-    public DataframeTypeConfiguration(DataframeType dataframeType, FrameworkInstance frameworkInstance) {
-        this.setDataframeType(dataframeType);
+    public GenerationRuleTypeConfiguration(GenerationRuleType generationRuleType, FrameworkInstance frameworkInstance) {
+        this.setgenerationRuleType(generationRuleType);
         this.setFrameworkInstance(frameworkInstance);
     }
 
-    public DataframeTypeConfiguration(FrameworkInstance frameworkInstance) {
+    public GenerationRuleTypeConfiguration(FrameworkInstance frameworkInstance) {
     	this.setFrameworkInstance(frameworkInstance);
     }
 
-    public DataframeType getDataframeType(String dataframeTypeName) {
+    // Methods
+    public GenerationRuleType getGenerationRuleType(String GenerationRuleTypeName) {
         String conf = TypeConfigurationOperation.getTypeConfigurationFile(this.getFrameworkInstance(),
-                this.getDataObjectType(), dataframeTypeName);
+                this.getDataObjectType(), GenerationRuleTypeName);
         DataObjectOperation dataObjectOperation = new DataObjectOperation(conf);
         ObjectMapper objectMapper = new ObjectMapper();
-        DataframeType dataframeType = objectMapper.convertValue(dataObjectOperation.getDataObject().getData(),
-                DataframeType.class);
-        return dataframeType;
+        GenerationRuleType GenerationRuleType = objectMapper.convertValue(dataObjectOperation.getDataObject().getData(),
+                GenerationRuleType.class);
+        return GenerationRuleType;
     }
+
 
     // Getters and Setters
-    public DataframeType getDataframeType() {
-        return dataframeType;
+    public GenerationRuleType getgenerationRuleType() {
+        return generationRuleType;
     }
 
-    public void setDataframeType(DataframeType dataframeType) {
-        this.dataframeType = dataframeType;
+    public void setgenerationRuleType(GenerationRuleType generationRuleType) {
+        this.generationRuleType = generationRuleType;
     }
 
     public String getDataObjectType() {

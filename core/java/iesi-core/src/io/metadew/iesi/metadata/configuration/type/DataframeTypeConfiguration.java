@@ -1,44 +1,44 @@
-package io.metadew.iesi.metadata.type;
+package io.metadew.iesi.metadata.configuration.type;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
-import io.metadew.iesi.metadata.definition.SubroutineType;
+import io.metadew.iesi.metadata.definition.DataframeType;
 import io.metadew.iesi.metadata.operation.DataObjectOperation;
 import io.metadew.iesi.metadata.operation.TypeConfigurationOperation;
 
-public class SubroutineTypeConfiguration {
+public class DataframeTypeConfiguration {
 
-    private SubroutineType subroutineType;
+    private DataframeType dataframeType;
     private FrameworkInstance frameworkInstance;
-    private String dataObjectType = "SubroutineType";
+    private String dataObjectType = "DataframeType";
 
     // Constructors
-    public SubroutineTypeConfiguration(SubroutineType subroutineType, FrameworkInstance frameworkInstance) {
-        this.setSubroutineType(subroutineType);
+    public DataframeTypeConfiguration(DataframeType dataframeType, FrameworkInstance frameworkInstance) {
+        this.setDataframeType(dataframeType);
         this.setFrameworkInstance(frameworkInstance);
     }
 
-    public SubroutineTypeConfiguration(FrameworkInstance frameworkInstance) {
+    public DataframeTypeConfiguration(FrameworkInstance frameworkInstance) {
     	this.setFrameworkInstance(frameworkInstance);
     }
 
-    public SubroutineType getSubroutineType(String subroutineTypeName) {
+    public DataframeType getDataframeType(String dataframeTypeName) {
         String conf = TypeConfigurationOperation.getTypeConfigurationFile(this.getFrameworkInstance(),
-                this.getDataObjectType(), subroutineTypeName);
+                this.getDataObjectType(), dataframeTypeName);
         DataObjectOperation dataObjectOperation = new DataObjectOperation(conf);
         ObjectMapper objectMapper = new ObjectMapper();
-        SubroutineType subroutineType = objectMapper.convertValue(dataObjectOperation.getDataObject().getData(),
-                SubroutineType.class);
-        return subroutineType;
+        DataframeType dataframeType = objectMapper.convertValue(dataObjectOperation.getDataObject().getData(),
+                DataframeType.class);
+        return dataframeType;
     }
 
     // Getters and Setters
-    public SubroutineType getSubroutineType() {
-        return subroutineType;
+    public DataframeType getDataframeType() {
+        return dataframeType;
     }
 
-    public void setSubroutineType(SubroutineType subroutineType) {
-        this.subroutineType = subroutineType;
+    public void setDataframeType(DataframeType dataframeType) {
+        this.dataframeType = dataframeType;
     }
 
     public String getDataObjectType() {
@@ -56,4 +56,5 @@ public class SubroutineTypeConfiguration {
 	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
 		this.frameworkInstance = frameworkInstance;
 	}
+
 }

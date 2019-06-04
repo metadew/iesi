@@ -185,12 +185,14 @@ public class ExecutionControl {
 	{
 		String query = "INSERT INTO "
 				+ this.getFrameworkExecution().getMetadataControl().getResultMetadataRepository().getTableNameByLabel("ActionResults")
-				+ " (RUN_ID, PRC_ID, ACTION_ID, ACTION_NM, ENV_NM, ST_NM, STRT_TMS, END_TMS)";
+				+ " (RUN_ID, PRC_ID, SCRIPT_PRC_ID, ACTION_ID, ACTION_NM, ENV_NM, ST_NM, STRT_TMS, END_TMS)";
 		query += " VALUES ";
 		query += "(";
 		query += SQLTools.GetStringForSQL(this.getRunId());
 		query += ",";
 		query += SQLTools.GetStringForSQL(actionExecution.getProcessId());
+		query += ",";
+		query += SQLTools.GetStringForSQL(actionExecution.getScriptExecution().getProcessId());
 		query += ",";
 		query += SQLTools.GetStringForSQL(actionExecution.getAction().getId());
 		query += ",";
@@ -380,7 +382,7 @@ public class ExecutionControl {
 		outputValue = TextTools.shortenTextForDatabase(outputValue, 2000);
 
 		String query = "INSERT INTO "
-				+ this.getFrameworkExecution().getMetadataControl().getResultMetadataRepository().getTableNameByLabel("ScriptOutputs")
+				+ this.getFrameworkExecution().getMetadataControl().getResultMetadataRepository().getTableNameByLabel("ScriptResultOutputs")
 				+ " (RUN_ID, PRC_ID, SCRIPT_ID, OUT_NM, OUT_VAL)";
 		query += " VALUES ";
 		query += "(";
@@ -417,7 +419,7 @@ public class ExecutionControl {
 		outputValue = TextTools.shortenTextForDatabase(outputValue, 2000);
 
 		String query = "INSERT INTO "
-				+ this.getFrameworkExecution().getMetadataControl().getResultMetadataRepository().getTableNameByLabel("ActionOutputs")
+				+ this.getFrameworkExecution().getMetadataControl().getResultMetadataRepository().getTableNameByLabel("ActionResultOutputs")
 				+ " (RUN_ID, PRC_ID, ACTION_ID, OUT_NM, OUT_VAL)";
 		query += " VALUES ";
 		query += "(";

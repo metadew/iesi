@@ -1,44 +1,44 @@
-package io.metadew.iesi.metadata.type;
+package io.metadew.iesi.metadata.configuration.type;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
-import io.metadew.iesi.metadata.definition.ConnectionType;
+import io.metadew.iesi.metadata.definition.SubroutineType;
 import io.metadew.iesi.metadata.operation.DataObjectOperation;
 import io.metadew.iesi.metadata.operation.TypeConfigurationOperation;
 
-public class ConnectionTypeConfiguration {
+public class SubroutineTypeConfiguration {
 
-    private ConnectionType connectionType;
+    private SubroutineType subroutineType;
     private FrameworkInstance frameworkInstance;
-    private String dataObjectType = "ConnectionType";
+    private String dataObjectType = "SubroutineType";
 
     // Constructors
-    public ConnectionTypeConfiguration(ConnectionType connectionType, FrameworkInstance frameworkInstance) {
-        this.setConnectionType(connectionType);
+    public SubroutineTypeConfiguration(SubroutineType subroutineType, FrameworkInstance frameworkInstance) {
+        this.setSubroutineType(subroutineType);
         this.setFrameworkInstance(frameworkInstance);
     }
 
-    public ConnectionTypeConfiguration(FrameworkInstance frameworkInstance) {
+    public SubroutineTypeConfiguration(FrameworkInstance frameworkInstance) {
     	this.setFrameworkInstance(frameworkInstance);
     }
 
-    public ConnectionType getConnectionType(String connectionTypeName) {
+    public SubroutineType getSubroutineType(String subroutineTypeName) {
         String conf = TypeConfigurationOperation.getTypeConfigurationFile(this.getFrameworkInstance(),
-                this.getDataObjectType(), connectionTypeName);
+                this.getDataObjectType(), subroutineTypeName);
         DataObjectOperation dataObjectOperation = new DataObjectOperation(conf);
         ObjectMapper objectMapper = new ObjectMapper();
-        ConnectionType connectionType = objectMapper.convertValue(dataObjectOperation.getDataObject().getData(),
-                ConnectionType.class);
-        return connectionType;
+        SubroutineType subroutineType = objectMapper.convertValue(dataObjectOperation.getDataObject().getData(),
+                SubroutineType.class);
+        return subroutineType;
     }
 
     // Getters and Setters
-    public ConnectionType getConnectionType() {
-        return connectionType;
+    public SubroutineType getSubroutineType() {
+        return subroutineType;
     }
 
-    public void setConnectionType(ConnectionType connectionType) {
-        this.connectionType = connectionType;
+    public void setSubroutineType(SubroutineType subroutineType) {
+        this.subroutineType = subroutineType;
     }
 
     public String getDataObjectType() {

@@ -1,9 +1,9 @@
 package io.metadew.iesi.script.operation;
 
 import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.metadata.configuration.type.ComponentTypeParameterConfiguration;
 import io.metadew.iesi.metadata.definition.ComponentAttribute;
 import io.metadew.iesi.metadata.definition.ComponentTypeParameter;
-import io.metadew.iesi.metadata.type.ComponentTypeParameterConfiguration;
 import io.metadew.iesi.runtime.definition.LookupResult;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;

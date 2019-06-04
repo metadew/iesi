@@ -1,4 +1,4 @@
-package io.metadew.iesi.metadata.type;
+package io.metadew.iesi.metadata.configuration.type;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.framework.instance.FrameworkInstance;

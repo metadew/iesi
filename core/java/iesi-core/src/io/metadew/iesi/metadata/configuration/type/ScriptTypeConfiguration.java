@@ -1,45 +1,45 @@
-package io.metadew.iesi.metadata.type;
+package io.metadew.iesi.metadata.configuration.type;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
-import io.metadew.iesi.metadata.definition.GenerationType;
+import io.metadew.iesi.metadata.definition.ScriptType;
 import io.metadew.iesi.metadata.operation.DataObjectOperation;
 import io.metadew.iesi.metadata.operation.TypeConfigurationOperation;
 
-public class GenerationTypeConfiguration {
+public class ScriptTypeConfiguration {
 
-    private GenerationType generationType;
+    private ScriptType scriptType;
     private FrameworkInstance frameworkInstance;
-    private String dataObjectType = "GenerationType";
+    private String dataObjectType = "ScriptType";
 
     // Constructors
-    public GenerationTypeConfiguration(GenerationType generationType, FrameworkInstance frameworkInstance) {
-        this.setgenerationType(generationType);
+    public ScriptTypeConfiguration(ScriptType scriptType, FrameworkInstance frameworkInstance) {
+        this.setScriptType(scriptType);
         this.setFrameworkInstance(frameworkInstance);
     }
 
-    public GenerationTypeConfiguration(FrameworkInstance frameworkInstance) {
+    public ScriptTypeConfiguration(FrameworkInstance frameworkInstance) {
     	this.setFrameworkInstance(frameworkInstance);
     }
 
-    public GenerationType getGenerationType(String GenerationTypeName) {
+    // Methods
+    public ScriptType getScriptType(String scriptTypeName) {
         String conf = TypeConfigurationOperation.getTypeConfigurationFile(this.getFrameworkInstance(),
-                this.getDataObjectType(), GenerationTypeName);
+                this.getDataObjectType(), scriptTypeName);
         DataObjectOperation dataObjectOperation = new DataObjectOperation(conf);
         ObjectMapper objectMapper = new ObjectMapper();
-        GenerationType GenerationType = objectMapper.convertValue(dataObjectOperation.getDataObject().getData(),
-                GenerationType.class);
-        return GenerationType;
+        ScriptType scriptType = objectMapper.convertValue(dataObjectOperation.getDataObject().getData(),
+                ScriptType.class);
+        return scriptType;
     }
-
 
     // Getters and Setters
-    public GenerationType getgenerationType() {
-        return generationType;
+    public ScriptType getScriptType() {
+        return scriptType;
     }
 
-    public void setgenerationType(GenerationType generationType) {
-        this.generationType = generationType;
+    public void setScriptType(ScriptType scriptType) {
+        this.scriptType = scriptType;
     }
 
     public String getDataObjectType() {

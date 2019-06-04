@@ -2,24 +2,20 @@ package io.metadew.iesi.metadata.definition;
 
 import java.util.List;
 
-public class ScriptResult {
+public class ActionResult {
 
-	private String runId;
 	private Long processId;
-	private Long parentProcessId;
+	private Long scriptProcessId;
 	private String id;
 	private String name;
-	private Long version;
 	private String environment;
 	private String status;
 	private String start;
 	private String end;
-	private List<ScriptResult> scripts;
-	private List<ActionResult> actions;
-	private List<ScriptResultOutput> outputs;
+	private List<ActionResultOutput> outputs;
 
 	// Constructors
-	public ScriptResult() {
+	public ActionResult() {
 		
 	}
 
@@ -40,28 +36,12 @@ public class ScriptResult {
 		this.id = id;
 	}
 
-	public String getRunId() {
-		return runId;
-	}
-
-	public void setRunId(String runId) {
-		this.runId = runId;
-	}
-
 	public Long getProcessId() {
 		return processId;
 	}
 
 	public void setProcessId(Long processId) {
 		this.processId = processId;
-	}
-
-	public Long getParentProcessId() {
-		return parentProcessId;
-	}
-
-	public void setParentProcessId(Long parentProcessId) {
-		this.parentProcessId = parentProcessId;
 	}
 
 	public String getEnvironment() {
@@ -96,37 +76,20 @@ public class ScriptResult {
 		this.end = end;
 	}
 
-	public Long getVersion() {
-		return version;
+	public Long getScriptProcessId() {
+		return scriptProcessId;
 	}
 
-	public void setVersion(Long version) {
-		this.version = version;
+	public void setScriptProcessId(Long scriptProcessId) {
+		this.scriptProcessId = scriptProcessId;
 	}
 
-	public List<ActionResult> getActions() {
-		return actions;
-	}
-
-	public void setActions(List<ActionResult> actions) {
-		this.actions = actions;
-	}
-
-	public List<ScriptResult> getScripts() {
-		return scripts;
-	}
-
-	public void setScripts(List<ScriptResult> scripts) {
-		this.scripts = scripts;
-	}
-
-	public List<ScriptResultOutput> getOutputs() {
+	public List<ActionResultOutput> getOutputs() {
 		return outputs;
 	}
 
-	public void setOutputs(List<ScriptResultOutput> outputs) {
+	public void setOutputs(List<ActionResultOutput> outputs) {
 		this.outputs = outputs;
 	}
-
 
 }

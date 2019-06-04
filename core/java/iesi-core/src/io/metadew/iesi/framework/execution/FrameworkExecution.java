@@ -16,6 +16,7 @@ public class FrameworkExecution {
     private FrameworkCrypto frameworkCrypto;
     private FrameworkControl frameworkControl;
     private FrameworkLog frameworkLog;
+    private FrameworkResultProvider frameworkResultProvider;
     private FrameworkRuntime frameworkRuntime;
     private MetadataControl metadataControl;
     private ExecutionServerMetadataRepository executionServerRepositoryConfiguration;
@@ -80,7 +81,7 @@ public class FrameworkExecution {
         this.setFrameworkRuntime(new FrameworkRuntime(this.getFrameworkConfiguration()));
         this.setFrameworkLog(new FrameworkLog(this.getFrameworkConfiguration(), this.getFrameworkExecutionContext(),
                 this.getFrameworkControl(), this.getFrameworkCrypto(), this.getFrameworkRuntime()));
-
+        this.setFrameworkResultProvider(new FrameworkResultProvider());
     }
 
     public void setSettingsList(String input) {
@@ -176,4 +177,12 @@ public class FrameworkExecution {
     public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
         this.frameworkInstance = frameworkInstance;
     }
+
+	public FrameworkResultProvider getFrameworkResultProvider() {
+		return frameworkResultProvider;
+	}
+
+	public void setFrameworkResultProvider(FrameworkResultProvider frameworkResultProvider) {
+		this.frameworkResultProvider = frameworkResultProvider;
+	}
 }

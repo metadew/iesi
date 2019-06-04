@@ -1,45 +1,43 @@
-package io.metadew.iesi.metadata.type;
+package io.metadew.iesi.metadata.configuration.type;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
-import io.metadew.iesi.metadata.definition.ScriptType;
+import io.metadew.iesi.metadata.definition.ActionType;
 import io.metadew.iesi.metadata.operation.DataObjectOperation;
 import io.metadew.iesi.metadata.operation.TypeConfigurationOperation;
 
-public class ScriptTypeConfiguration {
+public class ActionTypeConfiguration {
 
-    private ScriptType scriptType;
+    private ActionType actionType;
     private FrameworkInstance frameworkInstance;
-    private String dataObjectType = "ScriptType";
+    private String dataObjectType = "ActionType";
 
     // Constructors
-    public ScriptTypeConfiguration(ScriptType scriptType, FrameworkInstance frameworkInstance) {
-        this.setScriptType(scriptType);
+    public ActionTypeConfiguration(ActionType actionType, FrameworkInstance frameworkInstance) {
+        this.setActionType(actionType);
         this.setFrameworkInstance(frameworkInstance);
     }
 
-    public ScriptTypeConfiguration(FrameworkInstance frameworkInstance) {
+    public ActionTypeConfiguration(FrameworkInstance frameworkInstance) {
     	this.setFrameworkInstance(frameworkInstance);
     }
 
-    // Methods
-    public ScriptType getScriptType(String scriptTypeName) {
-        String conf = TypeConfigurationOperation.getTypeConfigurationFile(this.getFrameworkInstance(),
-                this.getDataObjectType(), scriptTypeName);
+    public ActionType getActionType(String actionTypeName) {
+        String conf = TypeConfigurationOperation.getTypeConfigurationFile(this.getFrameworkInstance(), this.getDataObjectType(), actionTypeName);
         DataObjectOperation dataObjectOperation = new DataObjectOperation(conf);
         ObjectMapper objectMapper = new ObjectMapper();
-        ScriptType scriptType = objectMapper.convertValue(dataObjectOperation.getDataObject().getData(),
-                ScriptType.class);
-        return scriptType;
+        ActionType actionType = objectMapper.convertValue(dataObjectOperation.getDataObject().getData(),
+                ActionType.class);
+        return actionType;
     }
 
     // Getters and Setters
-    public ScriptType getScriptType() {
-        return scriptType;
+    public ActionType getActionType() {
+        return actionType;
     }
 
-    public void setScriptType(ScriptType scriptType) {
-        this.scriptType = scriptType;
+    public void setActionType(ActionType actionType) {
+        this.actionType = actionType;
     }
 
     public String getDataObjectType() {

@@ -2,11 +2,9 @@ package io.metadew.iesi.framework.configuration;
 
 import io.metadew.iesi.common.config.KeyValueConfigFile;
 import io.metadew.iesi.connection.tools.FileTools;
-import io.metadew.iesi.framework.definition.Framework;
 import io.metadew.iesi.metadata.configuration.FrameworkPluginConfiguration;
 
 import java.io.File;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Properties;
 

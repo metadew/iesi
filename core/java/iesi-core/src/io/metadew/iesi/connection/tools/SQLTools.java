@@ -4,6 +4,7 @@ import java.io.*;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 
 public final class SQLTools {
 
@@ -13,6 +14,14 @@ public final class SQLTools {
             return "null";
         } else {
             return "'" + GetCleanString(input) + "'";
+        }
+    }
+
+    public static String GetStringForSQL(Timestamp input) {
+        if (input == null) {
+            return "null";
+        } else {
+            return "'" + GetCleanString(input.toString()) + "'";
         }
     }
 

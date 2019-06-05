@@ -1,6 +1,7 @@
 package io.metadew.iesi.script.execution;
 
 import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.metadata.configuration.ActionPerformanceConfiguration;
 import io.metadew.iesi.metadata.definition.Action;
 import io.metadew.iesi.script.configuration.IterationInstance;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
@@ -12,10 +13,12 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 
 public class ActionExecution {
 
+	private final ActionPerformanceLogger actionPerformanceLogger;
 	private FrameworkExecution frameworkExecution;
 	private ExecutionControl executionControl;
 	private ActionControl actionControl;
@@ -35,6 +38,7 @@ public class ActionExecution {
 		this.setExecutionControl(executionControl);
 		this.setScriptExecution(scriptExecution);
 		this.setAction(action);
+		this.actionPerformanceLogger = new ActionPerformanceLogger(new ActionPerformanceConfiguration(frameworkExecution.getFrameworkInstance().getMetadataControl()));
 	}
 
 	// Methods
@@ -112,7 +116,9 @@ public class ActionExecution {
 			// Execution
 			if (conditionResult) {
 				Method method = classRef.getDeclaredMethod("execute");
+				LocalDateTime start = LocalDateTime.now();
 				method.invoke(instance);
+				actionPerformanceLogger.log(this, "action", start, LocalDateTime.now());
 
 				HashMap<String, ActionParameterOperation> actionParameterOperationMap = null;
 				for (Field field : classRef.getDeclaredFields()) {
@@ -273,4 +279,7 @@ public class ActionExecution {
 		this.childExecution = childExecution;
 	}
 
+	public ActionPerformanceLogger getActionPerformanceLogger() {
+		return actionPerformanceLogger;
+	}
 }

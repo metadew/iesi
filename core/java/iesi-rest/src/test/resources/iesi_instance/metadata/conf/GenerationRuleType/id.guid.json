@@ -1,8 +1,0 @@
-{
-  "data" : {
-    "name" : "id.guid",
-    "description" : "Generates 36 char hex guid values",
-    "parameters" : [ ]
-  },
-  "type" : "GenerationRuleType"
-}

@@ -64,7 +64,6 @@ public class ConnectionsController {
 		if (connections.isEmpty()) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 		}
-
 		return connectionByNameDtoResourceAssembler.toResource(connections);
 	}
 

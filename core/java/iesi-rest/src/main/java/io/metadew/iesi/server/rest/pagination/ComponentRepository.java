@@ -1,11 +1,12 @@
 package io.metadew.iesi.server.rest.pagination;
 
-import io.metadew.iesi.server.rest.controller.JsonTransformation.ComponentGlobal;
-import org.springframework.stereotype.Repository;
+import static java.util.stream.Collectors.toList;
 
 import java.util.List;
 
-import static java.util.stream.Collectors.toList;
+import org.springframework.stereotype.Repository;
+
+import io.metadew.iesi.server.rest.controller.JsonTransformation.ComponentGlobal;
 
 @Repository
 public class ComponentRepository {

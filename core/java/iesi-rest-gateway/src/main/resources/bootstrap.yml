@@ -1,0 +1,7 @@
+spring:
+  cloud:
+    config:
+      password: admin
+      username: admin
+      uri:
+      - http://localhost:8888

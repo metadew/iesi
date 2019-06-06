@@ -5,7 +5,10 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.security.oauth2.client.EnableOAuth2Sso;
 import org.springframework.cloud.netflix.zuul.EnableZuulProxy;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Controller;
+
+import iesi.gateway.filters.CustomFilter;
 
 @SpringBootApplication
 @EnableZuulProxy
@@ -18,9 +21,9 @@ public class ZuulApplication {
 		SpringApplication.run(ZuulApplication.class, args);
 	}
 
-//	@Bean
-//	public AuthHeaderFilter authHeaderFilter() {
-//	    return new AuthHeaderFilter();
-//	}
+	@Bean
+	public CustomFilter customFilter() {
+	    return new CustomFilter();
+	}
 
 }

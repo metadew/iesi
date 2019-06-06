@@ -6,6 +6,7 @@ import io.metadew.iesi.framework.definition.Framework;
 import io.metadew.iesi.metadata.configuration.FrameworkPluginConfiguration;
 
 import java.io.File;
+import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Properties;
@@ -55,7 +56,9 @@ public class FrameworkConfiguration {
 			KeyValueConfigFile home = new KeyValueConfigFile(configurationFile);
 			properties.putAll(home.getProperties());
 		} else {
-			throw new RuntimeException(configurationFile + " not found");
+			Path path = FileSystems.getDefault().getPath(".").toAbsolutePath();
+			System.out.println("Working dir" + path.toString());
+			throw new RuntimeException(configurationFile + " not found at " + path.getRoot());
 		}
 		this.setFrameworkHome(properties.getProperty(this.getFrameworkCode() + ".home"));
 	}

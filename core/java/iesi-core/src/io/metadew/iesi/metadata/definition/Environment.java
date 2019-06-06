@@ -7,11 +7,6 @@ public class Environment {
     private String name;
     private String description;
     private List<EnvironmentParameter> parameters;
-    
-    //Constructors
-    public Environment() {
-
-    }
 
     public Environment(String name, String description, List<EnvironmentParameter> parameters) {
         this.name = name;
@@ -19,7 +14,11 @@ public class Environment {
         this.parameters = parameters;
     }
 
-    //Getters and Setters
+    public Environment() {
+		// TODO Auto-generated constructor stub
+	}
+
+	//Getters and Setters
     public String getName() {
         return name;
     }

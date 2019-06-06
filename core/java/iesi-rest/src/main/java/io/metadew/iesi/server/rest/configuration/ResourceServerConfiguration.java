@@ -37,18 +37,22 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
 
 ////	"/**/**" 
 	private static final String[] AUTH_WHITELIST = { "/v2/api-docs", "/swagger-resources", "/swagger-resources/**",
-			"/swagger-ui.html", "/webjars/**", "/h2-console/**" };
+			"/swagger-ui.html", "/webjars/**", "/h2-console/**","/**/**"  };
 
 	@Override
 	public void configure(HttpSecurity http) throws Exception {
+		// Allow H2 console traffic
 		http.headers().addHeaderWriter(new XFrameOptionsHeaderWriter(XFrameOptionsMode.SAMEORIGIN));
+		// set HTTPS
 		http.requiresChannel().anyRequest().requiresSecure();
-		http.cors().and().csrf().disable().exceptionHandling().and().sessionManagement()
-				.sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().authorizeRequests()
+		http.cors().and().csrf().disable().exceptionHandling().and()
+				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+				.authorizeRequests()
 				.antMatchers(AUTH_WHITELIST).permitAll()
 				.antMatchers("/", "/favicon.ico", "/**/*.png", "/**/*.gif", "/**/*.svg", "/**/*.jpg", "/**/*.html",
-						"/**/*.css", "/**/*.js")
-				.permitAll().antMatchers("/**").authenticated().anyRequest().authenticated();
+						"/**/*.css", "/**/*.js").permitAll()
+				.antMatchers("/**").authenticated()
+				.anyRequest().authenticated();
 	}
 
 	public JwtAccessTokenConverter jwtAccessTokenConverter() {

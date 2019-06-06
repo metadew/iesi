@@ -1,162 +1,165 @@
-package io.metadew.iesi.server.rest.controller;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import javax.validation.Valid;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
-
-import io.metadew.iesi.metadata.configuration.ComponentConfiguration;
-import io.metadew.iesi.metadata.configuration.exception.ComponentAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.exception.ComponentDoesNotExistException;
-import io.metadew.iesi.metadata.definition.Component;
-import io.metadew.iesi.server.rest.controller.JsonTransformation.ComponentGlobal;
-import io.metadew.iesi.server.rest.controller.JsonTransformation.ComponentGlobalByName;
-import io.metadew.iesi.server.rest.controller.JsonTransformation.ComponentPost;
-import io.metadew.iesi.server.rest.pagination.ComponentCriteria;
-import io.metadew.iesi.server.rest.pagination.ComponentRepository;
-import io.metadew.iesi.server.rest.ressource.component.ComponentGlobalResources;
-import io.metadew.iesi.server.rest.ressource.component.ComponentResource;
-import io.metadew.iesi.server.rest.ressource.component.ComponentResources;
-
-@RestController
-public class ComponentsController {
-
-	private ComponentConfiguration componentConfiguration;
-
-	private final ComponentRepository componentRepository;
-
-	@Autowired
-	ComponentsController(ComponentConfiguration componentConfiguration, ComponentRepository componentRepository) {
-		this.componentConfiguration = componentConfiguration;
-		this.componentRepository = componentRepository;
-	}
-
-	@GetMapping("/components")
-	public ResponseEntity<ComponentGlobalResources> getAllcomponents(@Valid ComponentCriteria componentCriteria) {
-		List<Component> components = componentConfiguration.getComponents();
-		List<ComponentGlobal> componentGlobal = components.stream().map(component -> new ComponentGlobal(component))
-				.distinct().collect(Collectors.toList());
-		List<ComponentGlobal> pagination = componentRepository.search(componentGlobal, componentCriteria);
-		final ComponentGlobalResources resource = new ComponentGlobalResources(pagination);
-		return ResponseEntity.status(HttpStatus.OK).body(resource);
-	}
-
-	@GetMapping("/components/{name}")
-	public ResponseEntity<ComponentGlobalByName> getByName(@PathVariable String name) {
-		List<Component> component = componentConfiguration.getComponentsByName(name);
-		if (!component.isEmpty()) {
-			ComponentGlobalByName componentGlobalByNames = new ComponentGlobalByName(component);
-			return ResponseEntity.status(HttpStatus.OK).body(componentGlobalByNames);
-		}
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-
-	}
-
-	@GetMapping("/components/{name}/{version}")
-	public ResponseEntity<ComponentPost> getComponentsAndVersion(@PathVariable String name,
-			@PathVariable Long version) {
-		Optional<Component> components = componentConfiguration.getComponent(name, version);
-		if (components.isPresent()) {
-			Component component = components.orElse(null);
-			List<Component> componentlist = java.util.Arrays.asList(component);
-			ComponentPost componentPost = new ComponentPost(componentlist);
-			return ResponseEntity.status(HttpStatus.OK).body(componentPost);
-		}
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-	}
-
-	@PostMapping("/components")
-	public ResponseEntity<ComponentPost> postComponents(@Valid @RequestBody Component component) {
-		try {
-			componentConfiguration.insertComponent(component);
-			List<Component> componentlist = java.util.Arrays.asList(component);
-			ComponentPost componentPost = new ComponentPost(componentlist);
-			return ResponseEntity.status(HttpStatus.OK).body(componentPost);
-		} catch (ComponentAlreadyExistsException e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-		}
-
-	}
-
-	@PutMapping("/components")
-	public ResponseEntity<ComponentPost> putComponentsConnection(@Valid @RequestBody List<Component> components)
-			throws ComponentDoesNotExistException {
-		List<Component> updatedcomponents = new ArrayList<Component>();
-		for (Component component : components) {
-			componentConfiguration.updateComponent(component);
-			Optional.ofNullable(component).ifPresent(updatedcomponents::add);
-			ComponentPost componentPost = new ComponentPost(updatedcomponents);
-			final ComponentResources resource = new ComponentResources(updatedcomponents);
-			return ResponseEntity.status(HttpStatus.OK).body(componentPost);
-		}
-
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-
-	}
-
-	@PutMapping("/components/{name}/{version}")
-	public ResponseEntity<ComponentResource> putComponentsAndVersion(@Valid @RequestBody Component componentUpdate,
-			@PathVariable String name, @PathVariable Long version) {
-		
-		
-		Optional<Component> components = componentConfiguration.getComponent(name, version);
-		if (components.isPresent()) {
-			Component component = components.orElse(null);
-			try {
-				componentConfiguration.updateComponent(component);
-				final ComponentResource resource = new ComponentResource(componentUpdate, null);
-				return ResponseEntity.status(HttpStatus.OK).body(resource);
-			} catch (ComponentDoesNotExistException e) {
-				return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-			}
-		}
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-	}
-
-	@DeleteMapping("/components")
-	public ResponseEntity<?> deleteAllComponents() {
-		List<Component> components = componentConfiguration.getComponents();
-		if (!components.isEmpty()) {
-			componentConfiguration.deleteComponents();
-			return ResponseEntity.status(HttpStatus.OK).build();
-		}
-		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-	}
-
-	@DeleteMapping("/components/{name}")
-	public ResponseEntity<?> deleteComponentByName(@PathVariable String name) throws ComponentDoesNotExistException {
-		List<Component> components = componentConfiguration.getComponentsByName(name);
-		if (!components.isEmpty()) {
-			componentConfiguration.deleteComponentByName(name);
-			return ResponseEntity.status(HttpStatus.OK).build();
-		}
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-	}
-
-	@DeleteMapping("/components/{name}/{version}")
-	public ResponseEntity<?> deleteComponentsAndVersion(@PathVariable String name, @PathVariable Long version)
-			throws ComponentDoesNotExistException {
-		Optional<Component> components = componentConfiguration.getComponent(name, version);
-		if (components.isPresent()) {
-			Component component = components.orElse(null);
-			componentConfiguration.deleteComponent(component);
-			return ResponseEntity.status(HttpStatus.OK).build();
-		}
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-	}
-}
+//package io.metadew.iesi.server.rest.controller;
+//
+//
+//import io.metadew.iesi.metadata.configuration.ComponentConfiguration;
+//import io.metadew.iesi.metadata.configuration.exception.ComponentAlreadyExistsException;
+//import io.metadew.iesi.metadata.configuration.exception.ComponentDoesNotExistException;
+//import io.metadew.iesi.metadata.definition.Component;
+//import io.metadew.iesi.server.rest.pagination.ComponentCriteria;
+//import io.metadew.iesi.server.rest.ressource.HalMultipleEmbeddedResource;
+//import io.metadew.iesi.server.rest.ressource.component.dto.ComponentByNameDto;
+//import io.metadew.iesi.server.rest.ressource.component.dto.ComponentDto;
+//import io.metadew.iesi.server.rest.ressource.component.dto.ComponentGlobalDto;
+//import io.metadew.iesi.server.rest.ressource.component.resource.ComponentByNameDtoResourceAssembler;
+//import io.metadew.iesi.server.rest.ressource.component.resource.ComponentDtoResourceAssembler;
+//import io.metadew.iesi.server.rest.ressource.component.resource.ComponentGlobalDtoResourceAssembler;
+//import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.http.HttpStatus;
+//import org.springframework.http.ResponseEntity;
+//import org.springframework.web.bind.annotation.*;
+//import org.springframework.web.server.ResponseStatusException;
+//
+//import javax.validation.Valid;
+//import java.text.MessageFormat;
+//import java.util.Collections;
+//import java.util.List;
+//import java.util.Optional;
+//import java.util.stream.Collectors;
+//
+//import static io.metadew.iesi.server.rest.helper.Filter.distinctByKey;
+//import static io.metadew.iesi.server.rest.ressource.component.dto.ComponentDto.convertToDto;
+//import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+//import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+//
+//@RestController
+//@RequestMapping("/components")
+//public class ComponentsController {
+//
+//	private ComponentConfiguration componentConfiguration;
+//
+//	@Autowired
+//	ComponentsController(ComponentConfiguration componentConfiguration) {
+//		this.componentConfiguration = componentConfiguration;
+//	}
+//
+//	@Autowired
+//	private ComponentDtoResourceAssembler componentDtoResourceAssembler;
+//
+//	@Autowired
+//	private ComponentByNameDtoResourceAssembler componentByNameDtoResourceAssembler;
+//
+//	@Autowired
+//	private ComponentGlobalDtoResourceAssembler componentGlobalDtoResourceAssembler;
+//
+//	@GetMapping("")
+//	public HalMultipleEmbeddedResource<ComponentGlobalDto> getAllComponents(@Valid ComponentCriteria componentCriteria) {
+//		return new HalMultipleEmbeddedResource<>(componentConfiguration.getComponents().stream()
+//				.filter(distinctByKey(Component::getName))
+//				.map(component -> componentGlobalDtoResourceAssembler.toResource(Collections.singletonList(component)))
+//				.collect(Collectors.toList()));
+//	}
+//
+//	@GetMapping("/{name}")
+//	public ComponentByNameDto getByName(@PathVariable String name) {
+//		List<Component> components = componentConfiguration.getComponentByName(name);
+//		if (components.isEmpty()) {
+//			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+//		}
+//
+//		return componentByNameDtoResourceAssembler.toResource(components);
+//	}
+//
+//	@GetMapping("/{name}/{version}")
+//	public ComponentDto getByNameandEnvironment(@PathVariable String name,
+//												@PathVariable Long version) {
+//		Optional<Component> component = componentConfiguration.getComponent(name, version);
+//		return component
+//				.map(componentDtoResourceAssembler::toResource)
+//				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+//	}
+//
+//	@PostMapping("")
+//	public ComponentDto postAllComponents(@Valid @RequestBody ComponentDto componentDto) {
+//		try {
+//			componentConfiguration.insertComponent(componentDto.convertToEntity());
+//		} catch (ComponentAlreadyExistsException e) {
+//			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+//					MessageFormat.format("Component {0}-{1} already exists", componentDto.getName(), componentDto.getEnvironment()));
+//		}
+//		return componentConfiguration.getComponent(componentDto.getName(), componentDto.getEnvironment())
+//				.map(componentDtoResourceAssembler::toResource)
+//				.orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR));
+//	}
+//
+//	@PutMapping("")
+//	public HalMultipleEmbeddedResource<ComponentDto> putAllComponents(@Valid @RequestBody List<ComponentDto> componentDtos) {
+//		HalMultipleEmbeddedResource<ComponentDto> halMultipleEmbeddedResource = new HalMultipleEmbeddedResource<>();
+//		for (ComponentDto componentDto : componentDtos) {
+//			try {
+//				ComponentDto updatedComponentDto = convertToDto(componentConfiguration.updateComponent(componentDto.convertToEntity()));
+//				halMultipleEmbeddedResource.embedResource(updatedComponentDto);
+//				halMultipleEmbeddedResource.add(linkTo(methodOn(ComponentsController.class)
+//						.getByNameandEnvironment(updatedComponentDto.getName(), updatedComponentDto.getEnvironment()))
+//						.withRel(updatedComponentDto.getName() + ":" + updatedComponentDto.getEnvironment()));
+//
+//			} catch (ComponentDoesNotExistException e) {
+//				throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+//						MessageFormat.format("Component {0}-{1} does not exists", componentDto.getName(), componentDto.getEnvironment()));
+//			} catch (ComponentAlreadyExistsException e) {
+//				throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+//			}
+//		}
+//		return halMultipleEmbeddedResource;
+//	}
+//
+//	@PutMapping("/{name}/{version}")
+//	public ComponentDto putComponents(@PathVariable String name,
+//									  @PathVariable Long version, @RequestBody ComponentDto componentDto) {
+//		if (!componentDto.getName().equals(name) || !componentDto.getEnvironment().equals(version)) {
+//			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+//					MessageFormat.format("Name ''{0}'' and version ''{1}'' in url do not match name and version in body",
+//							name, version));
+//		}
+//		try {
+//			return componentDtoResourceAssembler.toResource(componentConfiguration.updateComponent(componentDto.convertToEntity()));
+//		} catch (ComponentDoesNotExistException e) {
+//			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+//					MessageFormat.format("Component {0}-{1} does not exist", name, version));
+//		} catch (ComponentAlreadyExistsException e) {
+//			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+//		}
+//	}
+//
+//
+//	@DeleteMapping("/components")
+//	public ResponseEntity<?> deleteAllComponents() {
+//		List<Component> components = componentConfiguration.getComponents();
+//		if (!components.isEmpty()) {
+//			componentConfiguration.deleteComponents();
+//			return ResponseEntity.status(HttpStatus.OK).build();
+//		}
+//		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+//	}
+//
+//	@DeleteMapping("/components/{name}")
+//	public ResponseEntity<?> deleteComponentByName(@PathVariable String name) throws ComponentDoesNotExistException {
+//		List<Component> components = componentConfiguration.getComponentsByName(name);
+//		if (!components.isEmpty()) {
+//			componentConfiguration.deleteComponentByName(name);
+//			return ResponseEntity.status(HttpStatus.OK).build();
+//		}
+//		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+//	}
+//
+//	@DeleteMapping("/components/{name}/{version}")
+//	public ResponseEntity<?> deleteComponentsAndVersion(@PathVariable String name, @PathVariable Long version)
+//			throws ComponentDoesNotExistException {
+//		Optional<Component> components = componentConfiguration.getComponent(name, version);
+//		if (components.isPresent()) {
+//			Component component = components.orElse(null);
+//			componentConfiguration.deleteComponent(component);
+//			return ResponseEntity.status(HttpStatus.OK).build();
+//		}
+//		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+//	}
+//}

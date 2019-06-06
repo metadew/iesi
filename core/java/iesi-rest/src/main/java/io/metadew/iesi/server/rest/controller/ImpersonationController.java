@@ -1,106 +1,124 @@
 package io.metadew.iesi.server.rest.controller;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import javax.validation.Valid;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
 
 import io.metadew.iesi.metadata.configuration.ImpersonationConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.ImpersonationAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.exception.ImpersonationDoesNotExistException;
 import io.metadew.iesi.metadata.definition.Impersonation;
+import io.metadew.iesi.server.rest.error.GetListNullProperties;
+import io.metadew.iesi.server.rest.error.GetNullProperties;
 import io.metadew.iesi.server.rest.pagination.ImpersonationCriteria;
-import io.metadew.iesi.server.rest.pagination.ImpersonationRepository;
-import io.metadew.iesi.server.rest.ressource.impersonation.ImpersonationResource;
-import io.metadew.iesi.server.rest.ressource.impersonation.ImpersonationResources;
+import io.metadew.iesi.server.rest.ressource.HalMultipleEmbeddedResource;
+import io.metadew.iesi.server.rest.ressource.impersonation.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+
+import javax.validation.Valid;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static io.metadew.iesi.server.rest.helper.Filter.distinctByKey;
 
 @RestController
+@RequestMapping("/impersonations")
 public class ImpersonationController {
 
 	private ImpersonationConfiguration impersonationConfiguration;
-	private final ImpersonationRepository impersonationRepository;
+	private final GetListNullProperties getListNullProperties;
+	private final GetNullProperties getNullProperties;
+	@Autowired
+	ImpersonationController(ImpersonationConfiguration impersonationConfiguration,GetNullProperties getNullProperties,
+							GetListNullProperties getListNullProperties			) {
+		this.impersonationConfiguration = impersonationConfiguration;
+		this.getListNullProperties = getListNullProperties;
+		this.getNullProperties = getNullProperties;
+	}
 
 	@Autowired
-	ImpersonationController(ImpersonationConfiguration impersonationConfiguration, ImpersonationRepository impersonationRepository) {
-		this.impersonationRepository = impersonationRepository;
-		this.impersonationConfiguration = impersonationConfiguration;
+	private ImpersonationGlobalDtoResourceAssembler impersonationDtoResourceAssembler;
+
+	@Autowired
+	private ImpersonationByNameDtoResourceAssembler impersonationByNameDtoResourceAssembler;
+
+	@Autowired
+	private ImpersonationGlobalDtoResourceAssembler impersonationGlobalDtoResourceAssembler;
+
+	@GetMapping("")
+	public HalMultipleEmbeddedResource<ImpersonationGlobalDto> getAllImpersonations(@Valid ImpersonationCriteria impersonationCriteria) {
+		return new HalMultipleEmbeddedResource<>(impersonationConfiguration.getAllImpersonations().stream()
+				.filter(distinctByKey(Impersonation::getName))
+				.map(impersonation -> impersonationGlobalDtoResourceAssembler.toResource(Collections.singletonList(impersonation)))
+				.collect(Collectors.toList()));
 	}
 
-	@GetMapping("/impersonations")
-	public ResponseEntity<ImpersonationResources> getAllImpersonation(
-			@Valid ImpersonationCriteria impersonationCriteria) {
-		List<Impersonation> impersonation = impersonationConfiguration.getAllImpersonations();
-		List<Impersonation> pagination = impersonationRepository.search(impersonation, impersonationCriteria);
-		final ImpersonationResources resource = new ImpersonationResources(pagination);
-		return ResponseEntity.status(HttpStatus.OK).body(resource);
-	}
-
-	@GetMapping("/impersonations/{name}")
-	public ResponseEntity<ImpersonationResource> getByName(@PathVariable String name) {
-		Optional<Impersonation> impersonation = impersonationConfiguration.getImpersonation(name);
-		if (!impersonation.isPresent()) {
-			HttpHeaders headers = new HttpHeaders();
-			headers.add("error", "Impersonation not found");
-			return new ResponseEntity<ImpersonationResource>(headers, HttpStatus.NOT_FOUND);
+	@GetMapping("/{name}")
+	public ImpersonationByNameDto getByName(@PathVariable String name) {
+		Optional<Impersonation> impersonations = impersonationConfiguration.getImpersonation(name);
+		if (!impersonations.isPresent()) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 		}
-		Impersonation newImpersonation = impersonation.orElse(null);
-		final ImpersonationResource resource = new ImpersonationResource(newImpersonation, name);
-		return ResponseEntity.status(HttpStatus.OK).body(resource);
+		Impersonation impersonationOptional = impersonations.orElse(null);
+		return impersonationByNameDtoResourceAssembler.toResource(Collections.singletonList(impersonationOptional));
 	}
 
-	@PostMapping("/impersonations")
-	public ResponseEntity<ImpersonationResource> postImpersonation(@Valid @RequestBody Impersonation impersonation) {
+	@PostMapping("")
+	public ResponseEntity<ImpersonationByNameDto> postAllImpersonations(@Valid @RequestBody ImpersonationDto impersonation) {
+		getNullProperties.getNullProperties(impersonation);
 		try {
-			impersonationConfiguration.insertImpersonation(impersonation);
-			final ImpersonationResource resource = new ImpersonationResource(impersonation, null);
-			return ResponseEntity.status(HttpStatus.OK).body(resource);
+			impersonationConfiguration.insertImpersonation(impersonation.convertToEntity());
+			List<Impersonation> impersonationList = java.util.Arrays.asList(impersonation.convertToEntity());
+			return ResponseEntity.ok(impersonationByNameDtoResourceAssembler.toResource(impersonationList));
 		} catch (ImpersonationAlreadyExistsException e) {
 			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+					"Impersonation " + impersonation.getName() + " already exists");
 		}
 	}
+//	@PutMapping("")
+//	public HalMultipleEmbeddedResource<ImpersonationDto> putAllImpersonations(@Valid @RequestBody List<ImpersonationDto> impersonationDtos) {
+//		getListNullProperties.getNullImpersonation(impersonationDtos);
+//		HalMultipleEmbeddedResource<ImpersonationDto> halMultipleEmbeddedResource = new HalMultipleEmbeddedResource<>();
+//		for (ImpersonationDto impersonationDto : impersonationDtos) {
+//			try {
+//				ImpersonationDto updatedImpersonationDto = convertToDto(impersonationConfiguration.updateImpersonation(impersonationDto.convertToEntity()));
+//				halMultipleEmbeddedResource.embedResource(updatedImpersonationDto);
+//				halMultipleEmbeddedResource.add(linkTo(methodOn(ImpersonationController.class)
+//						.getByName(updatedImpersonationDto.getName())
+//						.withRel(updatedImpersonationDto.getName());
+//
+//			} catch (ImpersonationDoesNotExistException e) {
+//				throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+//						MessageFormat.format("Impersonation {0}-{1} does not exists", impersonationDto.getName(), impersonationDto.getEnvironment()));
+//			} catch (ImpersonationAlreadyExistsException e) {
+//				throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+//			}
+//		}
+//		return halMultipleEmbeddedResource;
+//	}
 
-	@PutMapping("/impersonations/{name}")
-	public ResponseEntity<ImpersonationResource> putImpersonation(@PathVariable String name,
-			@RequestBody Impersonation impersonation) throws ImpersonationDoesNotExistException {
-		if (!impersonation.getName().equals(name)) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-		}
-		impersonationConfiguration.updateImpersonation(impersonation);
-		Optional<Impersonation> updatedEnvironment = impersonationConfiguration.getImpersonation(name);
-		Impersonation newupdatedEnvironment = updatedEnvironment.orElse(null);
-		final ImpersonationResource resource = new ImpersonationResource(newupdatedEnvironment, name);
+//	@PutMapping("/{name}")
+//	public ImpersonationDto putImpersonations(@PathVariable String name,
+//											  @PathVariable String environment, @RequestBody ImpersonationDto impersonationDto) {
+//		if (!impersonationDto.getName().equals(name) || !impersonationDto.getEnvironment().equals(environment)) {
+//			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+//					MessageFormat.format("Name ''{0}'' and environment ''{1}'' in url do not match name and environment in body",
+//							name, environment));
+//		}
+//		try {
+//			return impersonationDtoResourceAssembler.toResource(impersonationConfiguration.updateImpersonation(impersonationDto.convertToEntity()));
+//		} catch (ImpersonationDoesNotExistException e) {
+//			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+//					MessageFormat.format("Impersonation {0}-{1} does not exist", name, environment));
+//		} catch (ImpersonationAlreadyExistsException e) {
+//			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+//		}
+//	}
 
-		return ResponseEntity.status(HttpStatus.OK).body(resource);
-	}
-
-	@PutMapping("/impersonations")
-	public ResponseEntity<ImpersonationResources> putAllImpersonation(
-			@Valid @RequestBody List<Impersonation> impersonations) throws ImpersonationDoesNotExistException {
-		List<Impersonation> updatedImpersonation = new ArrayList<Impersonation>();
-		for (Impersonation impersonation : impersonations) {
-			impersonationConfiguration.updateImpersonation(impersonation);
-			Optional.ofNullable(impersonation).ifPresent(updatedImpersonation::add);
-		}
-		final ImpersonationResources resource = new ImpersonationResources(updatedImpersonation);
-
-		return ResponseEntity.status(HttpStatus.OK).body(resource);
-	}
-
-	@DeleteMapping("/impersonations")
+	@DeleteMapping("")
 	public ResponseEntity<?> deleteAllImpersonation() {
 		List<Impersonation> impersonation = impersonationConfiguration.getAllImpersonations();
 		if (!impersonation.isEmpty()) {
@@ -110,7 +128,7 @@ public class ImpersonationController {
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 
-	@DeleteMapping("/impersonations/{name}")
+	@DeleteMapping("/{name}")
 	public ResponseEntity<?> deleteByNameImpersonation(@PathVariable String name) {
 		Optional<Impersonation> impersonation = impersonationConfiguration.getImpersonation(name);
 		if (impersonation.isPresent()) {

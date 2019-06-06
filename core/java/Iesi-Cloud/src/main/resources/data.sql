@@ -1,27 +1,6 @@
-INSERT INTO
-  oauth_client_details (
-    client_id,
-    client_secret,
-    scope,
-    authorized_grant_types,
-    authorities,
-    access_token_validity,
-    refresh_token_validity
-  )
-VALUES
-  (
-    'client-id',
-    '$2a$10$vCXMWCn7fDZWOcLnIEhmK.74dvK1Eh8ae2WrWlhr2ETPLoxQctN4.',
-    'openid',
-    'authorization_code,check_token,refresh_token,password',
-    'ROLE_CLIENT',
-    2500,
-    250000
-  );
-
-
-   INSERT INTO users (username,password,enabled) 
-    VALUES ('admin','$2a$10$dJYXnn2ztBU72ooXSyl9.u/xF29ADNp3mbQYy/6cvkiGLskNG1UQi', TRUE);
+INSERT INTO users (username,password,enabled) 
+    VALUES ('admin','$2a$10$5Abn80LM.au6d7PWmy5KpuWgeTE7qhnWPbnsKLsfJxjEidmN4YfzO', TRUE);
+--    e9:wVS;f*[]QFp42/3yA&'Q+73)/Gn4?
 
 INSERT INTO groups (id, group_name) VALUES (1, 'USER_GROUP');
 INSERT INTO groups (id, group_name) VALUES (2, 'ADMIN_GROUP');

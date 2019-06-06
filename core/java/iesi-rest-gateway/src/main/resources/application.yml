@@ -1,10 +1,18 @@
 server:
   port: 8082
-  
+spring:
+  application:
+      name: iesi-gateway
+#  cloud:
+#    config:
+#      password: ${iesi-admin-user}
+#      username: ${iesi-admin}
+#      uri:
+#      - http://localhost:8888
 spring.security.user:
   name: admin
   password: admin
-
+  
 security:
   jwt:
     public-key: classpath:public.txt
@@ -36,13 +44,3 @@ zuul:
       service-id: oauth
       path: /api/oauth/token
       url: https://localhost:8080
-
-#spring:
-#  application:
-#      name: IESI-REST-GATEWAY
-#  boot:
-#    admin:
-#      client:
-#          url: http://localhost:8081/
-#          username: admin
-#          password: admin

@@ -37,6 +37,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 		return super.userDetailsServiceBean();
 	}
 
+	// User for oauth
 	@Bean
 	public JdbcUserDetailsManager userDetailsManager(DataSource dataSource) {
 		JdbcUserDetailsManager manager = new JdbcUserDetailsManager();

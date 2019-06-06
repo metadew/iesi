@@ -1,153 +1,166 @@
-package io.metadew.iesi.server.rest.controller;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import javax.validation.Valid;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-
-import io.metadew.iesi.metadata.configuration.ScriptConfiguration;
-import io.metadew.iesi.metadata.configuration.exception.ScriptAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.exception.ScriptDoesNotExistException;
-import io.metadew.iesi.metadata.definition.Component;
-import io.metadew.iesi.metadata.definition.Script;
-import io.metadew.iesi.server.rest.controller.JsonTransformation.ComponentPost;
-import io.metadew.iesi.server.rest.pagination.ScriptCriteria;
-import io.metadew.iesi.server.rest.pagination.ScriptRepository;
-import io.metadew.iesi.server.rest.ressource.component.ComponentResources;
-import io.metadew.iesi.server.rest.ressource.script.ScriptResource;
-import io.metadew.iesi.server.rest.ressource.script.ScriptResources;
-
-//PAS DE DELETE ALL
-@RestController
-public class ScriptController {
-
-	private ScriptConfiguration scriptConfiguration ;
-
-	private final ScriptRepository scriptRepository;
-
-	@Autowired
-	ScriptController(ScriptConfiguration scriptConfiguration, ScriptRepository scriptRepository) {
-		this.scriptRepository = scriptRepository;
-		this.scriptConfiguration = scriptConfiguration;
-	}
-
-	@GetMapping("/scripts")
-	public ResponseEntity<ScriptResources> getAll(@Valid ScriptCriteria scriptCriteria) {
-		List<Script> scripts = scriptConfiguration.getAllScripts();
-		List<Script> pagination = scriptRepository.search(scripts, scriptCriteria);
-		final ScriptResources resource = new ScriptResources(pagination);
-		return ResponseEntity.status(HttpStatus.OK).body(resource);
-	}
-
-	@GetMapping("/scripts/{name}")
-	public ResponseEntity<ScriptResources> getByNameScript(@PathVariable String name) {
-		List<Script> script = scriptConfiguration.getScriptByName(name);
-		if (!script.isEmpty()) {
-			final ScriptResources resource = new ScriptResources(script);
-			return ResponseEntity.status(HttpStatus.OK).body(resource);
-		}
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-	}
-
-	@GetMapping("/scripts/{name}/{version}")
-	public ResponseEntity<ScriptResource> getScriptsAndVersion(@PathVariable String name, @PathVariable Long version) {
-		Optional<Script> scripts = scriptConfiguration.getScript(name, version);
-		if (scripts.isPresent()) {
-			Script script = scripts.orElse(null);
-			final ScriptResource resource = new ScriptResource(script, null);
-			return ResponseEntity.status(HttpStatus.OK).body(resource);
-		}
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-	}
-
-	@PostMapping("/scripts")
-	public ResponseEntity<ScriptResource> postScript(@Valid @RequestBody Script script) {
-		try {
-			scriptConfiguration.insertScript(script);
-			final ScriptResource resource = new ScriptResource(script, null);
-			return ResponseEntity.status(HttpStatus.OK).body(resource);
-		} catch (ScriptAlreadyExistsException e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-		}
-	}
-
-	@PutMapping("/scripts")
-	public ResponseEntity<ScriptResources> putAllScript(@Valid @RequestBody List<Script> scripts)
-			throws ScriptDoesNotExistException {
-		List<Script> updatedScript = new ArrayList<Script>();
-		for (Script script : scripts) {
-			scriptConfiguration.updateScript(script);
-			Optional.ofNullable(script).ifPresent(updatedScript::add);
-			final ScriptResources resource = new ScriptResources(updatedScript);
-			return ResponseEntity.status(HttpStatus.OK).body(resource);
-		}
-
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-	}
-
-	@PutMapping("/scripts/{name}/{version}")
-	public ResponseEntity<ScriptResource> putByNameScriptAndVersion(@PathVariable String name,
-			@PathVariable Long version, @Valid @RequestBody Script script) {
-		Optional<Script> scripts = scriptConfiguration.getScript(name, version);
-		if (scripts.isPresent()) {
-			script = scripts.orElse(null);
-			try {
-				scriptConfiguration.updateScript(script);
-				final ScriptResource resource = new ScriptResource(script, null);
-				return ResponseEntity.status(HttpStatus.OK).body(resource);
-			} catch (ScriptDoesNotExistException e) {
-				e.printStackTrace();
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-			}
-		}
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-	}
-
-//	@DeleteMapping("scripts")
-//	public ResponseEntity<?> deleteAllScripts()
-//		
-//		scriptConfiguration.deleteScript(script);
+//package io.metadew.iesi.server.rest.controller;
+//
+//
+//
+//import io.metadew.iesi.metadata.configuration.ScriptConfiguration;
+//import io.metadew.iesi.metadata.configuration.exception.ScriptAlreadyExistsException;
+//import io.metadew.iesi.metadata.configuration.exception.ScriptDoesNotExistException;
+//import io.metadew.iesi.metadata.definition.Script;
+//import io.metadew.iesi.server.rest.pagination.ScriptCriteria;
+//import io.metadew.iesi.server.rest.ressource.HalMultipleEmbeddedResource;
+//import io.metadew.iesi.server.rest.ressource.script.dto.ScriptByNameDto;
+//import io.metadew.iesi.server.rest.ressource.script.dto.ScriptDto;
+//import io.metadew.iesi.server.rest.ressource.script.dto.ScriptGlobalDto;
+//import io.metadew.iesi.server.rest.ressource.script.resource.ScriptByNameDtoResourceAssembler;
+//import io.metadew.iesi.server.rest.ressource.script.resource.ScriptDtoResourceAssembler;
+//import io.metadew.iesi.server.rest.ressource.script.resource.ScriptGlobalDtoResourceAssembler;
+//import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.http.HttpStatus;
+//import org.springframework.http.ResponseEntity;
+//import org.springframework.web.bind.annotation.*;
+//import org.springframework.web.server.ResponseStatusException;
+//
+//import javax.validation.Valid;
+//import java.text.MessageFormat;
+//import java.util.Collections;
+//import java.util.List;
+//import java.util.Optional;
+//import java.util.stream.Collectors;
+//
+//import static io.metadew.iesi.server.rest.helper.Filter.distinctByKey;
+//import static io.metadew.iesi.server.rest.ressource.script.dto.ScriptDto.convertToDto;
+//import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+//import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+//
+//@RestController
+//@RequestMapping("/scripts")
+//public class ScriptController {
+//
+//	private ScriptConfiguration scriptConfiguration;
+//
+//	@Autowired
+//	ScriptController(ScriptConfiguration scriptConfiguration) {
+//		this.scriptConfiguration = scriptConfiguration;
 //	}
-
-	@DeleteMapping("scripts/{name}")
-	public ResponseEntity<?> deleteScript(@PathVariable String name) {
-		try {
-			scriptConfiguration.deleteScriptByName(name);
-			return ResponseEntity.status(HttpStatus.OK).build();
-		} catch (ScriptDoesNotExistException e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-		}
-	}
-
-	@DeleteMapping("/scripts/{name}/{version}")
-	public ResponseEntity<?> deleteByNameScriptAndVersion(@PathVariable String name, Long version) {
-		Optional<Script> scripts = scriptConfiguration.getScript(name, version);
-		if (scripts.isPresent()) {
-			Script script = scripts.orElse(null);
-			try {
-				scriptConfiguration.deleteScript(script);
-				return ResponseEntity.status(HttpStatus.OK).build();
-			} catch (ScriptDoesNotExistException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-			}
-		}
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-	}
-}
+//
+//	@Autowired
+//	private ScriptDtoResourceAssembler scriptDtoResourceAssembler;
+//
+//	@Autowired
+//	private ScriptByNameDtoResourceAssembler scriptByNameDtoResourceAssembler;
+//
+//	@Autowired
+//	private ScriptGlobalDtoResourceAssembler scriptGlobalDtoResourceAssembler;
+//
+//	@GetMapping("")
+//	public HalMultipleEmbeddedResource<ScriptGlobalDto> getAllScripts(@Valid ScriptCriteria scriptCriteria) {
+//		return new HalMultipleEmbeddedResource<>(scriptConfiguration.getScripts().stream()
+//				.filter(distinctByKey(Script::getName))
+//				.map(script -> scriptGlobalDtoResourceAssembler.toResource(Collections.singletonList(script)))
+//				.collect(Collectors.toList()));
+//	}
+//
+//	@GetMapping("/{name}")
+//	public ScriptByNameDto getByName(@PathVariable String name) {
+//		List<Script> scripts = scriptConfiguration.getScriptByName(name);
+//		if (scripts.isEmpty()) {
+//			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+//		}
+//
+//		return scriptByNameDtoResourceAssembler.toResource(scripts);
+//	}
+//
+//	@GetMapping("/{name}/{version}")
+//	public ScriptDto getByNameandEnvironment(@PathVariable String name,
+//											 @PathVariable Long version) {
+//		Optional<Script> script = scriptConfiguration.getScript(name, version);
+//		return script
+//				.map(scriptDtoResourceAssembler::toResource)
+//				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+//	}
+//
+//	@PostMapping("")
+//	public ScriptDto postAllScripts(@Valid @RequestBody ScriptDto scriptDto) {
+//		try {
+//			scriptConfiguration.insertScript(scriptDto.convertToEntity());
+//		} catch (ScriptAlreadyExistsException e) {
+//			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+//					MessageFormat.format("Script {0}-{1} already exists", scriptDto.getName(), scriptDto.getEnvironment()));
+//		}
+//		return scriptConfiguration.getScript(scriptDto.getName(), scriptDto.getEnvironment())
+//				.map(scriptDtoResourceAssembler::toResource)
+//				.orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR));
+//	}
+//
+//	@PutMapping("")
+//	public HalMultipleEmbeddedResource<ScriptDto> putAllScripts(@Valid @RequestBody List<ScriptDto> scriptDtos) {
+//		HalMultipleEmbeddedResource<ScriptDto> halMultipleEmbeddedResource = new HalMultipleEmbeddedResource<>();
+//		for (ScriptDto scriptDto : scriptDtos) {
+//			try {
+//				ScriptDto updatedScriptDto = convertToDto(scriptConfiguration.updateScript(scriptDto.convertToEntity()));
+//				halMultipleEmbeddedResource.embedResource(updatedScriptDto);
+//				halMultipleEmbeddedResource.add(linkTo(methodOn(ScriptController.class)
+//						.getByNameandEnvironment(updatedScriptDto.getName(), updatedScriptDto.getEnvironment()))
+//						.withRel(updatedScriptDto.getName() + ":" + updatedScriptDto.getEnvironment()));
+//
+//			} catch (ScriptDoesNotExistException e) {
+//				throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+//						MessageFormat.format("Script {0}-{1} does not exists", scriptDto.getName(), scriptDto.getEnvironment()));
+//			} catch (ScriptAlreadyExistsException e) {
+//				throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+//			}
+//		}
+//		return halMultipleEmbeddedResource;
+//	}
+//
+//	@PutMapping("/{name}/{version}")
+//	public ScriptDto putScripts(@PathVariable String name,
+//								@PathVariable Long version, @RequestBody ScriptDto scriptDto) {
+//		if (!scriptDto.getName().equals(name) || !scriptDto.getEnvironment().equals(version)) {
+//			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+//					MessageFormat.format("Name ''{0}'' and version ''{1}'' in url do not match name and version in body",
+//							name, version));
+//		}
+//		try {
+//			return scriptDtoResourceAssembler.toResource(scriptConfiguration.updateScript(scriptDto.convertToEntity()));
+//		} catch (ScriptDoesNotExistException e) {
+//			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+//					MessageFormat.format("Script {0}-{1} does not exist", name, version));
+//		} catch (ScriptAlreadyExistsException e) {
+//			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+//		}
+//	}
+//
+//
+//	@DeleteMapping("/scripts")
+//	public ResponseEntity<?> deleteAllScripts() {
+//		List<Script> scripts = scriptConfiguration.getScripts();
+//		if (!scripts.isEmpty()) {
+//			scriptConfiguration.deleteScripts();
+//			return ResponseEntity.status(HttpStatus.OK).build();
+//		}
+//		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+//	}
+//
+//	@DeleteMapping("/scripts/{name}")
+//	public ResponseEntity<?> deleteScriptByName(@PathVariable String name) throws ScriptDoesNotExistException {
+//		List<Script> scripts = scriptConfiguration.getScriptsByName(name);
+//		if (!scripts.isEmpty()) {
+//			scriptConfiguration.deleteScriptByName(name);
+//			return ResponseEntity.status(HttpStatus.OK).build();
+//		}
+//		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+//	}
+//
+//	@DeleteMapping("/scripts/{name}/{version}")
+//	public ResponseEntity<?> deleteScriptsAndVersion(@PathVariable String name, @PathVariable Long version)
+//			throws ScriptDoesNotExistException {
+//		Optional<Script> scripts = scriptConfiguration.getScript(name, version);
+//		if (scripts.isPresent()) {
+//			Script script = scripts.orElse(null);
+//			scriptConfiguration.deleteScript(script);
+//			return ResponseEntity.status(HttpStatus.OK).build();
+//		}
+//		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+//	}
+//}

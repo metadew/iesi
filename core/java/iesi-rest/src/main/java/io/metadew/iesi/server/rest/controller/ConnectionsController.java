@@ -6,7 +6,6 @@ import io.metadew.iesi.metadata.configuration.exception.ConnectionDoesNotExistEx
 import io.metadew.iesi.metadata.definition.Connection;
 import io.metadew.iesi.server.rest.pagination.ConnectionCriteria;
 import io.metadew.iesi.server.rest.ressource.HalMultipleEmbeddedResource;
-import io.metadew.iesi.server.rest.ressource.HalSingleEmbeddedResource;
 import io.metadew.iesi.server.rest.ressource.connection.dto.ConnectionByNameDto;
 import io.metadew.iesi.server.rest.ressource.connection.dto.ConnectionDto;
 import io.metadew.iesi.server.rest.ressource.connection.dto.ConnectionGlobalDto;
@@ -21,9 +20,12 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import java.text.MessageFormat;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import static io.metadew.iesi.server.rest.helper.Filter.distinctByKey;
 import static io.metadew.iesi.server.rest.ressource.connection.dto.ConnectionDto.convertToDto;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
@@ -50,31 +52,33 @@ public class ConnectionsController {
 
 	@GetMapping("")
 	public HalMultipleEmbeddedResource<ConnectionGlobalDto> getAllConnections(@Valid ConnectionCriteria connectionCriteria) {
-		List<Connection> connections = connectionConfiguration.getConnections();
-		return connectionGlobalDtoResourceAssembler.toResource(connections);
+		return new HalMultipleEmbeddedResource<>(connectionConfiguration.getConnections().stream()
+				.filter(distinctByKey(Connection::getName))
+				.map(connection -> connectionGlobalDtoResourceAssembler.toResource(Collections.singletonList(connection)))
+				.collect(Collectors.toList()));
 	}
 
 	@GetMapping("/{name}")
-	public HalSingleEmbeddedResource<ConnectionByNameDto> getByName(@PathVariable String name) {
+	public ConnectionByNameDto getByName(@PathVariable String name) {
 		List<Connection> connections = connectionConfiguration.getConnectionByName(name);
 		if (connections.isEmpty()) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 		}
+
 		return connectionByNameDtoResourceAssembler.toResource(connections);
 	}
 
 	@GetMapping("/{name}/{environment}")
-	public HalSingleEmbeddedResource<ConnectionDto> getByNameandEnvironment(@PathVariable String name,
+	public ConnectionDto getByNameandEnvironment(@PathVariable String name,
 																			@PathVariable String environment) {
 		Optional<Connection> connection = connectionConfiguration.getConnection(name, environment);
-
 		return connection
 				.map(connectionDtoResourceAssembler::toResource)
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 	}
 
 	@PostMapping("")
-	public HalSingleEmbeddedResource<ConnectionDto> postAllConnections(@Valid @RequestBody ConnectionDto connectionDto) {
+	public ConnectionDto postAllConnections(@Valid @RequestBody ConnectionDto connectionDto) {
 		try {
 			connectionConfiguration.insertConnection(connectionDto.convertToEntity());
 		} catch (ConnectionAlreadyExistsException e) {
@@ -108,7 +112,7 @@ public class ConnectionsController {
 	}
 
 	@PutMapping("/{name}/{environment}")
-	public HalSingleEmbeddedResource<ConnectionDto> putConnections(@PathVariable String name,
+	public ConnectionDto putConnections(@PathVariable String name,
 																   @PathVariable String environment, @RequestBody ConnectionDto connectionDto) {
 		if (!connectionDto.getName().equals(name) || !connectionDto.getEnvironment().equals(environment)) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,

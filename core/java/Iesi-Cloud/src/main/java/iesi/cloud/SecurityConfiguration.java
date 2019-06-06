@@ -12,16 +12,17 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter;
+import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter.XFrameOptionsMode;
 
 @Configuration
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
-
-	@Bean
+	
+    @Bean
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
-	}
-
+}
 	@Autowired
 
 	private DataSource dataSource;
@@ -33,11 +34,16 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		auth.jdbcAuthentication().dataSource(dataSource);
 
 	}
-	private static final String[] AUTH_WHITELIST = {"/encrypt/**", "/iesi/**","/ssl/**","/decrypt/**"};
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-//		http.csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
-		http.csrf().disable().httpBasic().and().authorizeRequests().antMatchers(AUTH_WHITELIST).authenticated();
+		http.csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
+		http.headers().addHeaderWriter(new XFrameOptionsHeaderWriter(XFrameOptionsMode.SAMEORIGIN));
+//		http.csrf().disable().httpBasic().and()
+		http.authorizeRequests()
+				.antMatchers("/encrypt/**").authenticated().antMatchers("/iesi/**").authenticated()
+				.antMatchers("/decrypt/**").authenticated()
+				.antMatchers("/actuator/**" ).authenticated()
+				.antMatchers("/h2-console/**").permitAll();
 
 	}
 

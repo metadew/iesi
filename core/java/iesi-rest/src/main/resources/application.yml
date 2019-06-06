@@ -3,8 +3,8 @@ server:
   servlet:
     context-path: /api
 spring.security.user:
-  name: admin
-  password: ${iesi-admin}
+  name: ${iesi-adminUser}
+  password: ${iesi-adminPassword}
 
 security:
   jwt:
@@ -13,22 +13,12 @@ security:
     key-pair-alias: ${iesi-security-keypair-alias}
     key-pair-password: ${iesi-security-keypair-password}
     #password est francois
-#security:
-#  jwt:
-#    public-key: classpath:public.txt    
-
 spring:
   application:
-      name: iesi-rest, ssl-rest
+    name: iesi-rest, iesi-admin, iesi-cloud
   boot:
     admin:
       client:
-          url: http://localhost:8081/
-          username: admin
-          password: ${iesi-admin}
-  cloud:
-    config:
-      password: ${iesi-admin-user}
-      username: ${iesi-admin}
-      uri:
-      - http://localhost:8888
+        url: http://localhost:8081/
+        username: ${iesi-adminUser}
+        password: ${iesi-adminPassword}

@@ -76,7 +76,11 @@ public HalMultipleEmbeddedResource<EnvironmentGlobalDto> getAllEnvironments(@Val
 			.collect(Collectors.toList()));
 }
 	@GetMapping("/environments/{name}")
+<<<<<<< HEAD
 	public ResponseEntity<EnvironmentByNameDto> getByName(@PathVariable String name) {
+=======
+	public ResponseEntity<EnvironmentResource> getByName(@PathVariable String name) {
+>>>>>>> 29754585d98460b81c9416160445298171446463
 		Optional<Environment> environment = environmentConfiguration.getEnvironment(name);
 		if (!environment.isPresent()) {
 			throw new DataNotFoundException(name);

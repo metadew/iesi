@@ -24,7 +24,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		return new BCryptPasswordEncoder();
 }
 	@Autowired
-
 	private DataSource dataSource;
 
 	@Autowired

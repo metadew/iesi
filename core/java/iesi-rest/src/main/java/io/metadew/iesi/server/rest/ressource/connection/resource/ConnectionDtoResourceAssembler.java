@@ -3,6 +3,10 @@ package io.metadew.iesi.server.rest.ressource.connection.resource;
 import io.metadew.iesi.metadata.definition.Connection;
 import io.metadew.iesi.server.rest.controller.ConnectionsController;
 import io.metadew.iesi.server.rest.controller.EnvironmentsController;
+<<<<<<< HEAD
+=======
+import io.metadew.iesi.server.rest.ressource.HalSingleEmbeddedResource;
+>>>>>>> 29754585d98460b81c9416160445298171446463
 import io.metadew.iesi.server.rest.ressource.connection.dto.ConnectionDto;
 import org.modelmapper.ModelMapper;
 import org.springframework.hateoas.Link;

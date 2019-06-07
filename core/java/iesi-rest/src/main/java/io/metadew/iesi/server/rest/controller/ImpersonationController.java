@@ -3,7 +3,9 @@ package io.metadew.iesi.server.rest.controller;
 
 import io.metadew.iesi.metadata.configuration.ImpersonationConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.ImpersonationAlreadyExistsException;
+import io.metadew.iesi.metadata.configuration.exception.ImpersonationDoesNotExistException;
 import io.metadew.iesi.metadata.definition.Impersonation;
+import io.metadew.iesi.server.rest.error.DataNotFoundException;
 import io.metadew.iesi.server.rest.error.GetListNullProperties;
 import io.metadew.iesi.server.rest.error.GetNullProperties;
 import io.metadew.iesi.server.rest.pagination.ImpersonationCriteria;
@@ -20,7 +22,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 import static io.metadew.iesi.server.rest.helper.Filter.distinctByKey;
 
 @RestController
@@ -78,45 +81,43 @@ public class ImpersonationController {
 					"Impersonation " + impersonation.getName() + " already exists");
 		}
 	}
-//	@PutMapping("")
-//	public HalMultipleEmbeddedResource<ImpersonationDto> putAllImpersonations(@Valid @RequestBody List<ImpersonationDto> impersonationDtos) {
-//		getListNullProperties.getNullImpersonation(impersonationDtos);
-//		HalMultipleEmbeddedResource<ImpersonationDto> halMultipleEmbeddedResource = new HalMultipleEmbeddedResource<>();
-//		for (ImpersonationDto impersonationDto : impersonationDtos) {
-//			try {
-//				ImpersonationDto updatedImpersonationDto = convertToDto(impersonationConfiguration.updateImpersonation(impersonationDto.convertToEntity()));
-//				halMultipleEmbeddedResource.embedResource(updatedImpersonationDto);
-//				halMultipleEmbeddedResource.add(linkTo(methodOn(ImpersonationController.class)
-//						.getByName(updatedImpersonationDto.getName())
-//						.withRel(updatedImpersonationDto.getName());
-//
-//			} catch (ImpersonationDoesNotExistException e) {
-//				throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-//						MessageFormat.format("Impersonation {0}-{1} does not exists", impersonationDto.getName(), impersonationDto.getEnvironment()));
-//			} catch (ImpersonationAlreadyExistsException e) {
-//				throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
-//			}
-//		}
-//		return halMultipleEmbeddedResource;
-//	}
+	@PutMapping("")
+	public HalMultipleEmbeddedResource<ImpersonationDto> putAllConnections(@Valid @RequestBody List<ImpersonationDto> impersonationDtos) {
+		HalMultipleEmbeddedResource<ImpersonationDto> halMultipleEmbeddedResource = new HalMultipleEmbeddedResource<>();
+		getListNullProperties.getNullImpersonation(impersonationDtos);
+		for (ImpersonationDto impersonationDto : impersonationDtos) {
+			try {
+				impersonationConfiguration.updateImpersonation(impersonationDto.convertToEntity());
+				halMultipleEmbeddedResource.embedResource(impersonationDto);
+				halMultipleEmbeddedResource.add(linkTo(methodOn(ImpersonationController.class)
+						.getByName(impersonationDto.getName()))
+						.withRel(impersonationDto.getName()));
+			} catch (ImpersonationDoesNotExistException e) {
+				e.printStackTrace();
+				throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+			}
+		}
 
-//	@PutMapping("/{name}")
-//	public ImpersonationDto putImpersonations(@PathVariable String name,
-//											  @PathVariable String environment, @RequestBody ImpersonationDto impersonationDto) {
-//		if (!impersonationDto.getName().equals(name) || !impersonationDto.getEnvironment().equals(environment)) {
-//			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-//					MessageFormat.format("Name ''{0}'' and environment ''{1}'' in url do not match name and environment in body",
-//							name, environment));
-//		}
-//		try {
-//			return impersonationDtoResourceAssembler.toResource(impersonationConfiguration.updateImpersonation(impersonationDto.convertToEntity()));
-//		} catch (ImpersonationDoesNotExistException e) {
-//			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-//					MessageFormat.format("Impersonation {0}-{1} does not exist", name, environment));
-//		} catch (ImpersonationAlreadyExistsException e) {
-//			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
-//		}
-//	}
+		return halMultipleEmbeddedResource;
+	}
+
+	@PutMapping("/{name}")
+	public ImpersonationByNameDto putImpersonations(@PathVariable String name,
+													@RequestBody ImpersonationDto impersonation) {
+//			getNullProperties.getNullProperties(impersonation);
+		if (!impersonation.getName().equals(name)) {
+			throw new DataNotFoundException(name);
+		}
+		try {
+			impersonationConfiguration.updateImpersonation(impersonation.convertToEntity());
+			List<Impersonation> impersonationList = java.util.Arrays.asList(impersonation.convertToEntity());
+			return impersonationByNameDtoResourceAssembler.toResource(impersonationList);
+		} catch (ImpersonationDoesNotExistException e) {
+			e.printStackTrace();
+			return null;
+		}
+
+	}
 
 	@DeleteMapping("")
 	public ResponseEntity<?> deleteAllImpersonation() {

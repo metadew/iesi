@@ -24,12 +24,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import static io.metadew.iesi.server.rest.helper.Filter.distinctByKey;
-
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 @RestController
 public class ScriptController {
 
-	private ScriptConfiguration scriptConfiguration ;
+	private ScriptConfiguration scriptConfiguration;
 
 	private final GetNullProperties getNullProperties;
 
@@ -39,96 +40,105 @@ public class ScriptController {
 
 	@Autowired
 	ScriptController(ScriptConfiguration scriptConfiguration,
-					 GetNullProperties getNullProperties, GetListNullProperties getListNullProperties,ScriptRepository scriptRepository) {
+					 GetNullProperties getNullProperties, ScriptPostByNameDtoResourceAssembler scriptPostByNameDtoResourceAssembler,GetListNullProperties getListNullProperties, ScriptRepository scriptRepository) {
 		this.scriptRepository = scriptRepository;
 		this.scriptConfiguration = scriptConfiguration;
 		this.getListNullProperties = getListNullProperties;
 		this.getNullProperties = getNullProperties;
+		this.scriptPostByNameDtoResourceAssembler = scriptPostByNameDtoResourceAssembler;
 	}
 //	@Autowired
 //	private ScriptDtoResourceAssembler scriptDtoResourceAssembler;
 
 	@Autowired
 	private ScriptByNameDtoResourceAssembler scriptByNameDtoResourceAssembler;
-
+	@Autowired
+	private ScriptGetByNameGetDtoAssembler scriptGetByNameGetDtoAssembler;
+	@Autowired
+	private ScriptPostByNameDtoResourceAssembler scriptPostByNameDtoResourceAssembler;
 	@Autowired
 	private ScriptGlobalDtoResourceAssembler scriptGlobalDtoResourceAssembler;
 
 	@GetMapping("/scripts")
 	public HalMultipleEmbeddedResource<ScriptGlobalDto> getAllScripts(@Valid ScriptCriteria scriptCriteria) {
 		return new HalMultipleEmbeddedResource<>(scriptConfiguration.getAllScripts().stream()
-				.filter(distinctByKey(Script::getName))
+				.filter(distinctByKey(Script :: getName))
 				.map(script -> scriptGlobalDtoResourceAssembler.toResource(Collections.singletonList(script)))
 				.collect(Collectors.toList()));
 	}
 
 	@GetMapping("/scripts/{name}")
-	public ResponseEntity<ScriptByNameDto> getByNameScript(@PathVariable String name) {
+	public ResponseEntity<ScriptGetByNameDto> getByNameScript(@PathVariable String name) {
 		List<Script> script = scriptConfiguration.getScriptByName(name);
 		if (script.isEmpty()) {
 			throw new DataNotFoundException(name);
 		}
-		return ResponseEntity.ok(scriptByNameDtoResourceAssembler
+		return ResponseEntity.ok(scriptGetByNameGetDtoAssembler
 				.toResource(script));
 	}
 
 
 	@GetMapping("/scripts/{name}/{version}")
-	public ResponseEntity<ScriptResource> getScriptsAndVersion(@PathVariable String name, @PathVariable Long version) {
+	public ResponseEntity<ScriptDto> getScriptsAndVersion(@PathVariable String name, @PathVariable Long version) {
 		Optional<Script> scripts = scriptConfiguration.getScript(name, version);
-		if (scripts.isPresent()) {
-			Script script = scripts.orElse(null);
-			final ScriptResource resource = new ScriptResource(script, null);
-			return ResponseEntity.status(HttpStatus.OK).body(resource);
+		if (!scripts.isPresent()) {
+			throw new DataNotFoundException(name, version);
 		}
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+		Script script = scripts.orElse(null);
+		return ResponseEntity.ok(scriptPostByNameDtoResourceAssembler.toResource(Collections.singletonList(script)));
 	}
 
 	@PostMapping("/scripts")
-	public ResponseEntity<ScriptByNameDto> postScript(@Valid @RequestBody ScriptDto script) {
+	public ResponseEntity<ScriptDto> postScript(@Valid @RequestBody ScriptDto script) {
+//		getNullProperties.getNullProperties(script);
 		try {
 			scriptConfiguration.insertScript(script.convertToEntity());
-
 			List<Script> scriptList = java.util.Arrays.asList(script.convertToEntity());
-			return ResponseEntity.ok(scriptByNameDtoResourceAssembler.toResource(scriptList));
+			return ResponseEntity.ok(scriptPostByNameDtoResourceAssembler.toResource(scriptList));
 		} catch (ScriptAlreadyExistsException e) {
 			e.printStackTrace();
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND,
 					"Script " + script.getName() + " already exists");
 		}
 	}
+
 	@PutMapping("/scripts")
-	public ResponseEntity<ScriptResources> putAllScript(@Valid @RequestBody List<Script> scripts)
-			throws ScriptDoesNotExistException {
-		List<Script> updatedScript = new ArrayList<Script>();
-		for (Script script : scripts) {
-			scriptConfiguration.updateScript(script);
-			Optional.ofNullable(script).ifPresent(updatedScript::add);
-			final ScriptResources resource = new ScriptResources(updatedScript);
-			return ResponseEntity.status(HttpStatus.OK).body(resource);
+	public HalMultipleEmbeddedResource<ScriptDto> putAllConnections(@Valid @RequestBody List<ScriptDto> scriptDtos) {
+		HalMultipleEmbeddedResource<ScriptDto> halMultipleEmbeddedResource = new HalMultipleEmbeddedResource<>();
+		getListNullProperties.getNullScript(scriptDtos);
+		for (ScriptDto scriptDto : scriptDtos) {
+			try {
+				scriptConfiguration.updateScript(scriptDto.convertToEntity());
+				halMultipleEmbeddedResource.embedResource(scriptDto);
+				halMultipleEmbeddedResource.add(linkTo(methodOn(ScriptController.class)
+						.getByNameScript(scriptDto.getName()))
+						.withRel(scriptDto.getName()));
+			} catch (ScriptDoesNotExistException e) {
+				e.printStackTrace();
+				throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+			}
 		}
 
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+		return halMultipleEmbeddedResource;
 	}
 
 	@PutMapping("/scripts/{name}/{version}")
-	public ResponseEntity<ScriptResource> putByNameScriptAndVersion(@PathVariable String name,
-			@PathVariable Long version, @Valid @RequestBody Script script) {
-		Optional<Script> scripts = scriptConfiguration.getScript(name, version);
-		if (scripts.isPresent()) {
-			script = scripts.orElse(null);
-			try {
-				scriptConfiguration.updateScript(script);
-				final ScriptResource resource = new ScriptResource(script, null);
-				return ResponseEntity.status(HttpStatus.OK).body(resource);
-			} catch (ScriptDoesNotExistException e) {
-				e.printStackTrace();
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-			}
+	public ScriptByNameDto putScripts(@PathVariable String name,@PathVariable Long version,
+									  @RequestBody ScriptDto script) {
+		getNullProperties.getNullProperties(script);
+		if (!script.getName().equals(name) || !script.getVersion().equals(version) ) {
+			throw new DataNotFoundException(name);
 		}
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-	}
+		try {
+			scriptConfiguration.updateScript(script.convertToEntity());
+			List<Script> scriptList = java.util.Arrays.asList(script.convertToEntity());
+			return scriptByNameDtoResourceAssembler.toResource(scriptList);
+		} catch (ScriptDoesNotExistException e) {
+			e.printStackTrace();
+			return null;
+		}
 
+	}
 //	@DeleteMapping("scripts")
 //	public ResponseEntity<?> deleteAllScripts()
 //		
@@ -142,24 +152,21 @@ public class ScriptController {
 			return ResponseEntity.status(HttpStatus.OK).build();
 		} catch (ScriptDoesNotExistException e) {
 			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+			throw new DataNotFoundException(name);
 		}
 	}
 
 	@DeleteMapping("/scripts/{name}/{version}")
 	public ResponseEntity<?> deleteByNameScriptAndVersion(@PathVariable String name, Long version) {
 		Optional<Script> scripts = scriptConfiguration.getScript(name, version);
-		if (scripts.isPresent()) {
+		try {
 			Script script = scripts.orElse(null);
-			try {
-				scriptConfiguration.deleteScript(script);
-				return ResponseEntity.status(HttpStatus.OK).build();
-			} catch (ScriptDoesNotExistException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-			}
+			scriptConfiguration.deleteScript(script);
+			return ResponseEntity.status(HttpStatus.OK).build();
+		} catch (ScriptDoesNotExistException e) {
+			e.printStackTrace();
+			throw new DataNotFoundException(name);
+
 		}
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 	}
 }

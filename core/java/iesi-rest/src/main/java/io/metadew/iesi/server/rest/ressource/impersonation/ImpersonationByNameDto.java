@@ -19,7 +19,6 @@ public class ImpersonationByNameDto extends ResourceSupport {
         return description;
     }
 
-
     public void setName(String name) {
         this.name = name;
     }

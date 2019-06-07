@@ -1,7 +1,10 @@
 package io.metadew.iesi.server.rest.error;
 
 import io.metadew.iesi.metadata.definition.*;
+import io.metadew.iesi.server.rest.ressource.component.ComponentPostByNameDto;
 import io.metadew.iesi.server.rest.ressource.environment.EnvironmentDto;
+import io.metadew.iesi.server.rest.ressource.impersonation.ImpersonationDto;
+import io.metadew.iesi.server.rest.ressource.script.ScriptDto;
 import org.springframework.stereotype.Repository;
 
 import javax.validation.Valid;
@@ -35,7 +38,7 @@ public class GetListNullProperties {
 		}
 	}
 
-	public void getNullComponent(@Valid List<Component> components) {
+	public void getNullComponent(@Valid List<ComponentPostByNameDto> components) {
 		for (int index = 0; index < components.size(); index++) {
 			List<List<ComponentParameter>> parameters = components.stream().map(x -> x.getParameters())
 					.collect(Collectors.toList());
@@ -43,13 +46,13 @@ public class GetListNullProperties {
 					.collect(Collectors.toList());
 			if (components.get(index).getDescription() == null || components.get(index).getId() == null
 					|| components.get(index).getName() == null || parameters == null || attributes == null
-					|| components.get(index).getVersion().getDescription() == null) {
+				) {
 				throw new SqlNotFoundException();
 			}
 		}
 	}
 
-	public void getNullImpersonation(@Valid List<Impersonation> impersonations) {
+	public void getNullImpersonation(@Valid List<ImpersonationDto> impersonations) {
 		for (int index = 0; index < impersonations.size(); index++) {
 			List<List<ImpersonationParameter>> parameters = impersonations.stream().map(x -> x.getParameters())
 					.collect(Collectors.toList());
@@ -60,14 +63,14 @@ public class GetListNullProperties {
 		}
 	}
 
-	public void getNullScript(@Valid List<Script> scripts) {
+	public void getNullScript(@Valid List<ScriptDto> scripts) {
 		for (int index = 0; index < scripts.size(); index++) {
 			List<List<Action>> action = scripts.stream().map(x -> x.getActions()).collect(Collectors.toList());
 			List<ScriptVersion> version = scripts.stream().map(x -> x.getVersion()).collect(Collectors.toList());
 			List<List<ScriptParameter>> parameters = scripts.stream().map(x -> x.getParameters())
 					.collect(Collectors.toList());
 			if (scripts.get(index).getName() == null || scripts.get(index).getDescription() == null
-					|| scripts.get(index).getId() == null || scripts.get(index).getType() == null || version == null
+					|| scripts.get(index).getId() == null ||  version == null
 					|| action == null || parameters == null) {
 				throw new SqlNotFoundException();
 			}

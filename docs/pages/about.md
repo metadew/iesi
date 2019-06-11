@@ -20,8 +20,8 @@ Feel free to get in touch via our [Github](https://github.com/metadew/iesi) or o
 |---|---|
 |Robbe Berrevoets|Accenture|
 |Peter Billen|Accenture|
-|Sam Roose|Accenture|
 
 # Past committers
 
 * Jonas Joostens
+* Sam Roose

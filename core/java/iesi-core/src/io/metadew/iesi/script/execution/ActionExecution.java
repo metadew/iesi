@@ -131,13 +131,17 @@ public class ActionExecution {
 				}
 
 				// Store runtime parameters for next action usage
-				this.getActionControl().getActionRuntime().setRuntimeParameters(actionParameterOperationMap);
+				// A clone is needed since the iterator through the hashmap will remove the current item to avoid a ConcurrentModificationException
+				HashMap<String, ActionParameterOperation> actionParameterOperationMapClone = null;
+				actionParameterOperationMapClone = (HashMap<String, ActionParameterOperation>) actionParameterOperationMap.clone();
+				this.getActionControl().getActionRuntime().setRuntimeParameters(actionParameterOperationMapClone);
 
 				// Store actionTypeExecution
 				this.setActionTypeExecution(instance);
 
 				// Trace function
-				this.traceDesignMetadata(actionParameterOperationMap);
+				actionParameterOperationMapClone = (HashMap<String, ActionParameterOperation>) actionParameterOperationMap.clone();
+				this.traceDesignMetadata(actionParameterOperationMapClone);
 
 				// Evaluate error expected
 				if (this.getActionControl().getExecutionMetrics().getErrorCount() > 0) {

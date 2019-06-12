@@ -4,6 +4,7 @@ import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.RequestConfiguration;
 import io.metadew.iesi.metadata.definition.Request;
 import io.metadew.iesi.metadata.definition.RequestParameter;
+import io.metadew.iesi.server.execution.tools.ExecutionServerTools;
 
 public class Requestor {
 
@@ -22,7 +23,11 @@ public class Requestor {
 	}
 
 	public synchronized String submit(Request request) {
-    	RequestConfiguration requestConfiguration = new RequestConfiguration(this.getFrameworkInstance());
+    	if (!ExecutionServerTools.isAlive()) {
+    		throw new RuntimeException("framework.server.down");
+    	}
+		
+		RequestConfiguration requestConfiguration = new RequestConfiguration(this.getFrameworkInstance());
     	
     	boolean exitOverwrite = false;
 		for (RequestParameter requestParameter : request.getParameters()) {

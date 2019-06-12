@@ -3,6 +3,7 @@ package io.metadew.iesi.framework.instance;
 import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.SqliteDatabase;
 import io.metadew.iesi.connection.database.connection.SqliteDatabaseConnection;
+import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.framework.configuration.FrameworkConfiguration;
 import io.metadew.iesi.framework.crypto.FrameworkCrypto;
 import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
@@ -22,8 +23,8 @@ public class FrameworkInstance {
 	private FrameworkControl frameworkControl;
 	private MetadataControl metadataControl;
 	private ExecutionServerMetadataRepository executionServerRepositoryConfiguration;
+	private String executionServerFilePath;
 	private FrameworkInitializationFile frameworkInitializationFile;
-
 
 	// Constructors
 	public FrameworkInstance() {
@@ -38,32 +39,36 @@ public class FrameworkInstance {
 		this.initializeFrameworkExecution(logonType, frameworkInitializationFile);
 	}
 
-	public FrameworkInstance(String logonType, FrameworkInitializationFile frameworkInitializationFile, FrameworkConfiguration frameworkConfiguration) {
+	public FrameworkInstance(String logonType, FrameworkInitializationFile frameworkInitializationFile,
+			FrameworkConfiguration frameworkConfiguration) {
 		this.frameworkConfiguration = frameworkConfiguration;
 		this.frameworkInitializationFile = frameworkInitializationFile;
 		this.frameworkCrypto = new FrameworkCrypto();
-		this.frameworkControl = new FrameworkControl(this.frameworkConfiguration, logonType, this.frameworkInitializationFile, frameworkCrypto);
+		this.frameworkControl = new FrameworkControl(this.frameworkConfiguration, logonType,
+				this.frameworkInitializationFile, frameworkCrypto);
 		this.frameworkConfiguration.setActionTypesFromPlugins(frameworkControl.getFrameworkPluginConfigurationList());
 		this.metadataControl = new MetadataControl(this.frameworkControl.getMetadataRepositoryConfigurations().stream()
 				.map(configuration -> configuration.toMetadataRepositories(frameworkConfiguration))
-				.flatMap(Collection::stream)
-				.collect(Collectors.toList()));
+				.flatMap(Collection::stream).collect(Collectors.toList()));
 		// Set up connection to the metadata repository
 		SqliteDatabaseConnection executionServerDatabaseConnection = new SqliteDatabaseConnection(
-				this.getFrameworkConfiguration().getFolderConfiguration().getFolderAbsolutePath("run.exec") + File.separator + "ExecutionServerRepository.db3");
+				this.getFrameworkConfiguration().getFolderConfiguration().getFolderAbsolutePath("run.exec")
+						+ File.separator + "ExecutionServerRepository.db3");
 		SqliteDatabase sqliteDatabase = new SqliteDatabase(executionServerDatabaseConnection);
 		Map<String, Database> databases = new HashMap<>();
 		databases.put("reader", sqliteDatabase);
 		databases.put("writer", sqliteDatabase);
 		databases.put("owner", sqliteDatabase);
 		RepositoryCoordinator repositoryCoordinator = new RepositoryCoordinator(databases);
-		this.executionServerRepositoryConfiguration = (new ExecutionServerMetadataRepository(frameworkConfiguration.getFrameworkCode(), null, null, null, repositoryCoordinator,
+		this.executionServerRepositoryConfiguration = (new ExecutionServerMetadataRepository(
+				frameworkConfiguration.getFrameworkCode(), null, null, null, repositoryCoordinator,
 				frameworkConfiguration.getFolderConfiguration().getFolderAbsolutePath("metadata.def"),
 				frameworkConfiguration.getFolderConfiguration().getFolderAbsolutePath("metadata.def")));
 	}
 
 	// Methods
-	private void initializeFrameworkExecution(String logonType, FrameworkInitializationFile frameworkInitializationFile) {
+	private void initializeFrameworkExecution(String logonType,
+			FrameworkInitializationFile frameworkInitializationFile) {
 		// Get the framework configuration
 		this.setFrameworkConfiguration(new FrameworkConfiguration());
 		this.setFrameworkCrypto(new FrameworkCrypto());
@@ -71,29 +76,44 @@ public class FrameworkInstance {
 		// Set appropriate initialization file
 		if (frameworkInitializationFile == null) {
 			this.setFrameworkInitializationFile(new FrameworkInitializationFile());
-			this.getFrameworkInitializationFile().setName(this.getFrameworkConfiguration().getFrameworkCode() + "-conf.ini");
+			this.getFrameworkInitializationFile()
+					.setName(this.getFrameworkConfiguration().getFrameworkCode() + "-conf.ini");
 		} else if (frameworkInitializationFile.getName().trim().isEmpty()) {
 			this.setFrameworkInitializationFile(new FrameworkInitializationFile());
-			this.getFrameworkInitializationFile().setName(this.getFrameworkConfiguration().getFrameworkCode() + "-conf.ini");			
+			this.getFrameworkInitializationFile()
+					.setName(this.getFrameworkConfiguration().getFrameworkCode() + "-conf.ini");
 		} else {
 			this.setFrameworkInitializationFile(frameworkInitializationFile);
 		}
-				
+
 		// Prepare configuration and shared Metadata
-		this.setFrameworkControl(new FrameworkControl(this.getFrameworkConfiguration(), logonType, this.getFrameworkInitializationFile(), this.getFrameworkCrypto()));
-		this.getFrameworkConfiguration().setActionTypesFromPlugins(this.getFrameworkControl().getFrameworkPluginConfigurationList());
-		this.setMetadataControl(new MetadataControl(this.getFrameworkControl().getMetadataRepositoryConfigurations().stream().map(configuration -> configuration.toMetadataRepositories(frameworkConfiguration)).collect(ArrayList::new, List::addAll, List::addAll)));
+		this.setFrameworkControl(new FrameworkControl(this.getFrameworkConfiguration(), logonType,
+				this.getFrameworkInitializationFile(), this.getFrameworkCrypto()));
+		this.getFrameworkConfiguration()
+				.setActionTypesFromPlugins(this.getFrameworkControl().getFrameworkPluginConfigurationList());
+		this.setMetadataControl(new MetadataControl(this.getFrameworkControl().getMetadataRepositoryConfigurations()
+				.stream().map(configuration -> configuration.toMetadataRepositories(frameworkConfiguration))
+				.collect(ArrayList::new, List::addAll, List::addAll)));
 
 		// Set up connection to the metadata repository
+		this.setExecutionServerFilePath(
+				this.getFrameworkConfiguration().getFolderConfiguration().getFolderAbsolutePath("run.exec")
+						+ File.separator + "ExecutionServerRepository.db3");
+        
+        if (!FileTools.exists(this.getExecutionServerFilePath())) {
+        	throw new RuntimeException("framework.server.repository.notfound");
+        }
+		
 		SqliteDatabaseConnection executionServerDatabaseConnection = new SqliteDatabaseConnection(
-				this.getFrameworkConfiguration().getFolderConfiguration().getFolderAbsolutePath("run.exec") + File.separator + "ExecutionServerRepository.db3");
+				this.getExecutionServerFilePath());
 		SqliteDatabase sqliteDatabase = new SqliteDatabase(executionServerDatabaseConnection);
 		Map<String, Database> databases = new HashMap<>();
 		databases.put("reader", sqliteDatabase);
 		databases.put("writer", sqliteDatabase);
 		databases.put("owner", sqliteDatabase);
 		RepositoryCoordinator repositoryCoordinator = new RepositoryCoordinator(databases);
-		this.setExecutionServerRepositoryConfiguration(new ExecutionServerMetadataRepository(frameworkConfiguration.getFrameworkCode(), null, null, null, repositoryCoordinator,
+		this.setExecutionServerRepositoryConfiguration(new ExecutionServerMetadataRepository(
+				frameworkConfiguration.getFrameworkCode(), null, null, null, repositoryCoordinator,
 				frameworkConfiguration.getFolderConfiguration().getFolderAbsolutePath("metadata.def"),
 				frameworkConfiguration.getFolderConfiguration().getFolderAbsolutePath("metadata.def")));
 	}
@@ -150,5 +170,13 @@ public class FrameworkInstance {
 
 	public void setFrameworkInitializationFile(FrameworkInitializationFile frameworkInitializationFile) {
 		this.frameworkInitializationFile = frameworkInitializationFile;
+	}
+
+	public String getExecutionServerFilePath() {
+		return executionServerFilePath;
+	}
+
+	public void setExecutionServerFilePath(String executionServerFilePath) {
+		this.executionServerFilePath = executionServerFilePath;
 	}
 }

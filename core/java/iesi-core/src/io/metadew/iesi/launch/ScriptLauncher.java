@@ -48,7 +48,6 @@ public class ScriptLauncher {
 		Option oExit = new Option("exit", true, "define if an explicit exit is required");
 		Option oUser = new Option("user", true, "define the user to log in with");
 		Option oPassword = new Option("password", true, "define the password to log in with");
-		Option oServer = new Option("server", "flag to indicate to submit a request on the execution server");
 
 		// create Options object
 		Options options = new Options();
@@ -68,12 +67,10 @@ public class ScriptLauncher {
 		options.addOption(oExit);
 		options.addOption(oUser);
 		options.addOption(oPassword);
-		options.addOption(oServer);
 
 		// create the parser
 		CommandLineParser parser = new DefaultParser();
 		boolean exit = true;
-		boolean server = false;
 		String initializationFile = "";
 		String environmentName = "";
 		String executionMode = "";
@@ -97,13 +94,6 @@ public class ScriptLauncher {
 				HelpFormatter formatter = new HelpFormatter();
 				formatter.printHelp("[command]", options);
 				System.exit(0);
-			}
-
-			// Define the execution route: server or commandline
-			if (line.hasOption("server")) {
-				server = true;
-			} else {
-				server = false;
 			}
 
 			// Define the exit behaviour
@@ -222,16 +212,26 @@ public class ScriptLauncher {
 			System.exit(1);
 		}
 
-		// Calling the launch controller
-		System.out.println();
-		System.out.println("script.launcher.start");
-		System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-
 		// Create framework instance
 		FrameworkInitializationFile frameworkInitializationFile = new FrameworkInitializationFile();
 		frameworkInitializationFile.setName(initializationFile);
 
 		FrameworkInstance frameworkInstance = new FrameworkInstance(frameworkInitializationFile);
+
+		// Server mode
+		String serverMode = "off";
+		System.out.println(frameworkInstance.getFrameworkConfiguration().getSettingConfiguration().getSettingPath("server.mode").get());
+		try {
+			serverMode = frameworkInstance.getFrameworkControl().getProperty(frameworkInstance.getFrameworkConfiguration().getSettingConfiguration().getSettingPath("server.mode").get()).toLowerCase();
+			System.out.println("Setting framework.server.mode=" + serverMode);
+		} catch (Exception e) {
+			System.out.println("Setting framework.server.mode=off (setting.notfound)");
+		}
+
+		// Calling the launch controller
+		System.out.println();
+		System.out.println("script.launcher.start");
+		System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 
 		List<RequestParameter> requestParameterList = new ArrayList();
 		RequestParameter requestParameter = null;
@@ -269,11 +269,13 @@ public class ScriptLauncher {
 		Request request = new Request("script", Long.toString(System.currentTimeMillis()), scriptName, "", 1, "",
 				scopeName, environmentName, "", userName, userPassword, requestParameterList);
 
-		if (server) {
-			Requestor.getInstance(frameworkInstance).submit(request);
-		} else {
+		if (serverMode.equalsIgnoreCase("off")) {
 			// TODO update to use executor
 			ScriptLaunchOperation.execute(frameworkInstance, request);
+		} else if (serverMode.equalsIgnoreCase("standalone")) {
+			Requestor.getInstance(frameworkInstance).submit(request);
+		} else {
+			throw new RuntimeException("unknown setting for " + frameworkInstance.getFrameworkConfiguration().getSettingConfiguration().getSettingPath("server.mode").get());
 		}
 	}
 

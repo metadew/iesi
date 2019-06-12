@@ -13,10 +13,10 @@ public class Services {
     public Thread schedulerThread;
     private FrameworkInstance frameworkInstance;
 
-    public Services() {
+    public Services(String initializationFile) {
         // Create the framework instance
         FrameworkInitializationFile frameworkInitializationFile = new FrameworkInitializationFile();
-        frameworkInitializationFile.setName("iesi-test.ini");
+        frameworkInitializationFile.setName(initializationFile);
         this.setFrameworkInstance(new FrameworkInstance(frameworkInitializationFile));
 
         // Create the framework settings
@@ -26,7 +26,7 @@ public class Services {
         Context context = new Context();
         context.setName("server");
         context.setScope("");
-
+       
         requestorRunnable = new RequestorRunnable(this.getFrameworkInstance());
         requestorThread = new Thread(requestorRunnable);
         requestorThread.setName(ExecutionServerServices.REQUESTOR.value());

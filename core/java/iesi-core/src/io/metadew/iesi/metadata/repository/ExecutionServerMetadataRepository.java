@@ -27,7 +27,7 @@ public class ExecutionServerMetadataRepository extends MetadataRepository {
 
     @Override
     public String getCategoryPrefix() {
-        return "PRC";
+        return "EXE";
     }
 
     @Override

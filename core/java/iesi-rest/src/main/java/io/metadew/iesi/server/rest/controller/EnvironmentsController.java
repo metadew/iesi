@@ -16,8 +16,11 @@ import io.metadew.iesi.server.rest.error.GetNullProperties;
 
 import io.metadew.iesi.server.rest.pagination.EnvironmentCriteria;
 import io.metadew.iesi.server.rest.pagination.EnvironmentRepository;
-import io.metadew.iesi.server.rest.ressource.HalMultipleEmbeddedResource;
-import io.metadew.iesi.server.rest.ressource.environment.*;
+import io.metadew.iesi.server.rest.resource.HalMultipleEmbeddedResource;
+import io.metadew.iesi.server.rest.resource.connection.dto.ConnectionDto;
+import io.metadew.iesi.server.rest.resource.connection.resource.ConnectionDtoResourceAssembler;
+import io.metadew.iesi.server.rest.resource.environment.dto.EnvironmentDto;
+import io.metadew.iesi.server.rest.resource.environment.resource.EnvironmentDtoResourceAssembler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +28,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -50,6 +52,9 @@ public class EnvironmentsController {
 	CustomGlobalExceptionHandler customRestExceptionHandler;
 	@Autowired
 	private EnvironmentDtoResourceAssembler environmentDtoResourceAssembler;
+
+	@Autowired
+	private ConnectionDtoResourceAssembler connectionDtoResourceAssembler;
 
 	@Autowired
 	EnvironmentsController(EnvironmentConfiguration environmentConfiguration, GetNullProperties getNullProperties, GetListNullProperties getListNullProperties, ConnectionConfiguration connectionConfiguration,
@@ -130,20 +135,15 @@ public class EnvironmentsController {
 	}
 
 	@GetMapping("/environments/{name}/connections")
-	public ResponseEntity<HalMultipleEmbeddedResource> getEnvironmentsConnections(@PathVariable String name) {
+	public HalMultipleEmbeddedResource getEnvironmentsConnections(@PathVariable String name) {
 		List<Connection> connections = connectionConfiguration.getConnections();
 		List<Connection> result = connections.stream().filter(connection -> connection.getEnvironment().equals(name))
 				.collect(Collectors.toList());
 		if (result.isEmpty()) {
 			throw new DataNotFoundException(name);
 		}
-		ConnectionByName connectionByName = new ConnectionByName(result);
-		HalMultipleEmbeddedResource halMultipleEmbeddedResource = new HalMultipleEmbeddedResource(Collections.singletonList(connectionByName));
-		halMultipleEmbeddedResource.add(linkTo(methodOn(EnvironmentsController.class)
-				.getByName(connections.get(0).getName()))
-				.withRel(connections.get(0).getName()));
-
-		return ResponseEntity.status(HttpStatus.OK).body(halMultipleEmbeddedResource);
+		HalMultipleEmbeddedResource<ConnectionDto> halMultipleEmbeddedResource = new HalMultipleEmbeddedResource<>(result.stream().map(connectionDtoResourceAssembler::toResource).collect(Collectors.toList()));
+		return halMultipleEmbeddedResource;
 
 	}
 

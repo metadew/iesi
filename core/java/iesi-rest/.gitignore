@@ -3,6 +3,7 @@ HELP.md
 /classes/
 !.mvn/wrapper/maven-wrapper.jar
 
+/src/test/resources/iesi_instance*
 ### STS ###
 .apt_generated
 .classpath

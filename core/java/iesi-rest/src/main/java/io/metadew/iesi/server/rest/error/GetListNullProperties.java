@@ -1,14 +1,15 @@
 package io.metadew.iesi.server.rest.error;
 
 import io.metadew.iesi.metadata.definition.*;
-import io.metadew.iesi.server.rest.ressource.component.ComponentDto;
+import io.metadew.iesi.server.rest.resource.component.dto.ComponentDto;
 
-import io.metadew.iesi.server.rest.ressource.connection.dto.ConnectionDto;
-import io.metadew.iesi.server.rest.ressource.environment.EnvironmentDto;
-import io.metadew.iesi.server.rest.ressource.impersonation.ImpersonationDto;
-import io.metadew.iesi.server.rest.ressource.script.ScriptActionDto;
-import io.metadew.iesi.server.rest.ressource.script.ScriptDto;
-import io.metadew.iesi.server.rest.ressource.script.ScriptVersionDto;
+import io.metadew.iesi.server.rest.resource.connection.dto.ConnectionDto;
+import io.metadew.iesi.server.rest.resource.environment.dto.EnvironmentDto;
+import io.metadew.iesi.server.rest.resource.impersonation.dto.ImpersonationDto;
+import io.metadew.iesi.server.rest.resource.impersonation.dto.ImpersonationParameterDto;
+import io.metadew.iesi.server.rest.resource.script.dto.ScriptActionDto;
+import io.metadew.iesi.server.rest.resource.script.dto.ScriptDto;
+import io.metadew.iesi.server.rest.resource.script.dto.ScriptVersionDto;
 import org.springframework.stereotype.Repository;
 
 import javax.validation.Valid;
@@ -58,7 +59,7 @@ public class GetListNullProperties {
 
 	public void getNullImpersonation(@Valid List<ImpersonationDto> impersonations) {
 		for (int index = 0; index < impersonations.size(); index++) {
-			List<List<ImpersonationParameter>> parameters = impersonations.stream().map(x -> x.getParameters())
+			List<List<ImpersonationParameterDto>> parameters = impersonations.stream().map(x -> x.getParameters())
 					.collect(Collectors.toList());
 			if (impersonations.get(index).getDescription() == null || impersonations.get(index).getName() == null
 					|| parameters == null) {
@@ -69,7 +70,7 @@ public class GetListNullProperties {
 
 	public void getNullScript(@Valid List<ScriptDto> scripts) {
 		for (int index = 0; index < scripts.size(); index++) {
-			List<ScriptActionDto> action = scripts.stream().map(x -> x.getActions()).collect(Collectors.toList());
+			List<List<ScriptActionDto>> action = scripts.stream().map(x -> x.getActions()).collect(Collectors.toList());
 			List<ScriptVersionDto> version = scripts.stream().map(x -> x.getVersion()).collect(Collectors.toList());
 			List<List<ScriptParameter>> parameters = scripts.stream().map(x -> x.getParameters())
 					.collect(Collectors.toList());

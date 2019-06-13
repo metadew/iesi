@@ -29,7 +29,7 @@ public class ScriptVersionConfiguration {
                 " (SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_VRS_DSC) VALUES (" +
                 SQLTools.GetStringForSQL(scriptId) + ", " +
                 scriptVersion.getNumber() + ", " +
-                scriptVersion.getDescription() + ");";
+                SQLTools.GetStringForSQL(scriptVersion.getDescription()) + ");";
     }
 
     // Insert

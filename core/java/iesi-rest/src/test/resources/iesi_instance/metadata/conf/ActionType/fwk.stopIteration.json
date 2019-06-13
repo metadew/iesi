@@ -1,9 +1,0 @@
-{
-  "data" : {
-    "name" : "fwk.stopIteration",
-    "className" : "io.metadew.iesi.script.action.FwkStopIteration",
-    "description" : "Stop the iteration block",
-    "parameters" : [ ]
-  },
-  "type" : "ActionType"
-}

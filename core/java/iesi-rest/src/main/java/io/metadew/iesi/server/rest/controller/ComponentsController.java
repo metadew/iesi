@@ -11,8 +11,13 @@ import io.metadew.iesi.server.rest.error.GetListNullProperties;
 import io.metadew.iesi.server.rest.error.GetNullProperties;
 import io.metadew.iesi.server.rest.pagination.ComponentCriteria;
 import io.metadew.iesi.server.rest.pagination.ComponentRepository;
-import io.metadew.iesi.server.rest.ressource.HalMultipleEmbeddedResource;
-import io.metadew.iesi.server.rest.ressource.component.*;
+import io.metadew.iesi.server.rest.resource.HalMultipleEmbeddedResource;
+import io.metadew.iesi.server.rest.resource.component.dto.ComponentDto;
+import io.metadew.iesi.server.rest.resource.component.dto.ComponentByNameDto;
+import io.metadew.iesi.server.rest.resource.component.dto.ComponentGlobalDto;
+import io.metadew.iesi.server.rest.resource.component.resource.ComponentDtoResourceAssembler;
+import io.metadew.iesi.server.rest.resource.component.resource.ComponentGetByNameDtoAssembler;
+import io.metadew.iesi.server.rest.resource.component.resource.ComponentGlobalDtoResourceAssembler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +29,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import static io.metadew.iesi.server.rest.ressource.component.ComponentDto.convertToDto;
+import static io.metadew.iesi.server.rest.resource.component.dto.ComponentDto.convertToDto;
 import static io.metadew.iesi.server.rest.helper.Filter.distinctByKey;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
@@ -40,7 +45,7 @@ public class ComponentsController {
 	private final GetListNullProperties getListNullProperties;
 
 	@Autowired
-	private ComponentGetByNameGetDtoAssembler componentGetByNameGetDtoAssembler;
+	private ComponentGetByNameDtoAssembler componentGetByNameGetDtoAssembler;
 
 	@Autowired
 	private ComponentGlobalDtoResourceAssembler componentGlobalDtoResourceAssembler;
@@ -68,7 +73,7 @@ public class ComponentsController {
 
 
 	@GetMapping("/components/{name}")
-	public ResponseEntity<ComponentGetByNameDto> getByName(@PathVariable String name) {
+	public ResponseEntity<ComponentByNameDto> getByName(@PathVariable String name) {
 		List<Component> component = componentConfiguration.getComponentsByName(name);
 		if (component.isEmpty()){
 			throw new DataNotFoundException(name);
@@ -78,7 +83,7 @@ public class ComponentsController {
 
 	@GetMapping("/components/{name}/{version}")
 	public ResponseEntity<ComponentDto> getComponentsAndVersion(@PathVariable String name,
-			@PathVariable Long version) {
+																@PathVariable Long version) {
 		Optional<Component> components = componentConfiguration.getComponent(name, version);
 		if (!components.isPresent()) {
 			throw new DataNotFoundException(name, version);

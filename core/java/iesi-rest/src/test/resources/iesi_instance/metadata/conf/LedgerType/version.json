@@ -1,8 +1,0 @@
-{
-  "data" : {
-    "name" : "version",
-    "description" : "Version ledger",
-    "parameters" : [ ]
-  },
-  "type" : "LedgerType"
-}

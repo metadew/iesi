@@ -1,8 +1,0 @@
-{
-  "data" : {
-    "name" : "val.pattern",
-    "description" : "Generate a value based on a regular expression pattern",
-    "parameters" : [ ]
-  },
-  "type" : "GenerationRuleType"
-}

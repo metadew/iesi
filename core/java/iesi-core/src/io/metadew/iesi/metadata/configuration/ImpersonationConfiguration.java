@@ -212,6 +212,7 @@ public class ImpersonationConfiguration {
                     this.getFrameworkExecution());
             if (!result.equalsIgnoreCase(""))
                 result += "\n";
+
             result += impersonationParameterConfiguration.getInsertStatement(impersonation.getName(), impersonationParameter);
         }
 

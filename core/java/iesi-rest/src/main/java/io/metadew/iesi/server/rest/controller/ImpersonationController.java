@@ -10,8 +10,9 @@ import io.metadew.iesi.server.rest.error.DataNotFoundException;
 import io.metadew.iesi.server.rest.error.GetListNullProperties;
 import io.metadew.iesi.server.rest.error.GetNullProperties;
 import io.metadew.iesi.server.rest.pagination.ImpersonationCriteria;
-import io.metadew.iesi.server.rest.ressource.HalMultipleEmbeddedResource;
-import io.metadew.iesi.server.rest.ressource.impersonation.*;
+import io.metadew.iesi.server.rest.resource.HalMultipleEmbeddedResource;
+import io.metadew.iesi.server.rest.resource.impersonation.dto.ImpersonationDto;
+import io.metadew.iesi.server.rest.resource.impersonation.resource.ImpersonatonDtoResourceAssembler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -63,15 +63,15 @@ public class ImpersonationController {
 	}
 
 	@PostMapping("")
-	public ResponseEntity<ImpersonationDto> postAllImpersonations(@Valid @RequestBody ImpersonationDto impersonation) {
+	public ResponseEntity<ImpersonationDto> postAllImpersonations(@Valid @RequestBody ImpersonationDto impersonationDto) {
 //		getNullProperties.getNullProperties(impersonation);
 		try {
-			impersonationConfiguration.insertImpersonation(impersonation.convertToEntity());
-			return ResponseEntity.ok(impersonatonDtoResourceAssembler.toResource(impersonation.convertToEntity()));
+			impersonationConfiguration.insertImpersonation(impersonationDto.convertToEntity());
+			return ResponseEntity.ok(impersonatonDtoResourceAssembler.toResource(impersonationDto.convertToEntity()));
 		} catch (ImpersonationAlreadyExistsException e) {
 			e.printStackTrace();
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-					"Impersonation " + impersonation.getName() + " already exists");
+					"Impersonation " + impersonationDto.getName() + " already exists");
 		}
 	}
 	@PutMapping("")

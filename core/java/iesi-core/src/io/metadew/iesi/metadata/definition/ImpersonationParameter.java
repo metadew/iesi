@@ -1,6 +1,8 @@
 package io.metadew.iesi.metadata.definition;
 
 
+import oadd.org.apache.calcite.avatica.com.fasterxml.jackson.annotation.JsonProperty;
+
 public class ImpersonationParameter {
 
     private String connection;
@@ -9,7 +11,12 @@ public class ImpersonationParameter {
 
     //Constructors
     public ImpersonationParameter() {
+    }
 
+    public ImpersonationParameter(String connection, String impersonatedConnection, String description) {
+        this.connection = connection;
+        this.impersonatedConnection = impersonatedConnection;
+        this.description = description;
     }
 
     //Getters and Setters

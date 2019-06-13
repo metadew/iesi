@@ -10,8 +10,13 @@ import io.metadew.iesi.server.rest.error.GetListNullProperties;
 import io.metadew.iesi.server.rest.error.GetNullProperties;
 import io.metadew.iesi.server.rest.pagination.ScriptCriteria;
 import io.metadew.iesi.server.rest.pagination.ScriptRepository;
-import io.metadew.iesi.server.rest.ressource.HalMultipleEmbeddedResource;
-import io.metadew.iesi.server.rest.ressource.script.*;
+import io.metadew.iesi.server.rest.resource.HalMultipleEmbeddedResource;
+import io.metadew.iesi.server.rest.resource.script.dto.ScriptByNameDto;
+import io.metadew.iesi.server.rest.resource.script.dto.ScriptDto;
+import io.metadew.iesi.server.rest.resource.script.dto.ScriptGlobalDto;
+import io.metadew.iesi.server.rest.resource.script.resource.ScriptByNameDtoAssembler;
+import io.metadew.iesi.server.rest.resource.script.resource.ScriptDtoResourceAssembler;
+import io.metadew.iesi.server.rest.resource.script.resource.ScriptGlobalDtoResourceAssembler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -51,7 +56,7 @@ public class ScriptController {
 //	@Autowired
 //	private ScriptByNameDtoResourceAssembler scriptByNameDtoResourceAssembler;
 	@Autowired
-	private ScriptGetByNameGetDtoAssembler scriptGetByNameGetDtoAssembler;
+	private ScriptByNameDtoAssembler scriptGetByNameGetDtoAssembler;
 	@Autowired
 	private ScriptDtoResourceAssembler scriptDtoResourceAssembler;
 	@Autowired
@@ -66,7 +71,7 @@ public class ScriptController {
 	}
 
 	@GetMapping("/scripts/{name}")
-	public ResponseEntity<ScriptGetByNameDto> getByNameScript(@PathVariable String name) {
+	public ResponseEntity<ScriptByNameDto> getByNameScript(@PathVariable String name) {
 		List<Script> script = scriptConfiguration.getScriptByName(name);
 		if (script.isEmpty()) {
 			throw new DataNotFoundException(name);

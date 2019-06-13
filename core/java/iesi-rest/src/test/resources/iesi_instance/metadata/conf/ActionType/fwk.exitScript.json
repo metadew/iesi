@@ -1,0 +1,17 @@
+{
+  "data" : {
+    "name" : "fwk.exitScript",
+    "className" : "io.metadew.iesi.script.action.FwkExitScript",
+    "description" : "Exit the script execution",
+    "parameters" : [ {
+      "name" : "status",
+      "description" : "Exit status for the script",
+      "type" : "string",
+      "mandatory" : "N",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
+    } ]
+  },
+  "type" : "ActionType"
+}

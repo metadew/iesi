@@ -1,14 +1,12 @@
 package io.metadew.iesi.server.rest.ressource.component;
 
-
 import io.metadew.iesi.metadata.definition.Component;
 import io.metadew.iesi.metadata.definition.ComponentAttribute;
 import io.metadew.iesi.metadata.definition.ComponentParameter;
-import io.metadew.iesi.metadata.definition.ComponentVersion;
 import org.springframework.hateoas.ResourceSupport;
 
-import java.util.HashMap;
 import java.util.List;
+
 
 public class ComponentDto extends ResourceSupport {
 
@@ -19,8 +17,7 @@ public class ComponentDto extends ResourceSupport {
     private List<ComponentParameter> parameters;
     private List<ComponentAttribute> attributes;
 
-    public ComponentDto() {
-    }
+    public ComponentDto() {}
 
 
     public ComponentDto(String type, String name, String description, ComponentVersionDto version,

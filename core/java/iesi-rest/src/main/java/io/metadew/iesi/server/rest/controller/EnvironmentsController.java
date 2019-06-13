@@ -6,7 +6,14 @@ import io.metadew.iesi.metadata.configuration.exception.EnvironmentAlreadyExists
 import io.metadew.iesi.metadata.configuration.exception.EnvironmentDoesNotExistException;
 import io.metadew.iesi.metadata.definition.Connection;
 import io.metadew.iesi.metadata.definition.Environment;
+
 import io.metadew.iesi.server.rest.error.*;
+
+import io.metadew.iesi.server.rest.error.CustomGlobalExceptionHandler;
+import io.metadew.iesi.server.rest.error.DataNotFoundException;
+import io.metadew.iesi.server.rest.error.GetListNullProperties;
+import io.metadew.iesi.server.rest.error.GetNullProperties;
+
 import io.metadew.iesi.server.rest.pagination.EnvironmentCriteria;
 import io.metadew.iesi.server.rest.pagination.EnvironmentRepository;
 import io.metadew.iesi.server.rest.ressource.HalMultipleEmbeddedResource;
@@ -18,7 +25,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
-import javax.xml.crypto.Data;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -161,5 +167,4 @@ public class EnvironmentsController {
 		environmentConfiguration.deleteEnvironment(name);
 		return ResponseEntity.status(HttpStatus.OK).build();
 	}
-
 }

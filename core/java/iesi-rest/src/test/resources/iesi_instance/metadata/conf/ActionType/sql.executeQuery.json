@@ -1,0 +1,41 @@
+{
+  "data" : {
+    "name" : "sql.executeQuery",
+    "className" : "io.metadew.iesi.script.action.SqlExecuteQuery",
+    "description" : "Run a SQL query",
+    "parameters" : [ {
+      "name" : "query",
+      "description" : "SQL query to run",
+      "type" : "string",
+      "mandatory" : "Y",
+      "encrypted" : "N",
+      "subroutine" : "query",
+      "impersonate" : "N"
+    }, {
+      "name" : "connection",
+      "description" : "Connection where to run the SQL query",
+      "type" : "string",
+      "mandatory" : "Y",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "Y"
+    }, {
+      "name" : "outputDataset",
+      "description" : "Dataset to write the output to",
+      "type" : "string",
+      "mandatory" : "N",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
+    }, {
+      "name" : "appendOutput",
+      "description" : "Flag indicating if previous output needs to be removed",
+      "type" : "string",
+      "mandatory" : "N",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
+    } ]
+  },
+  "type" : "ActionType"
+}

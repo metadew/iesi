@@ -1,0 +1,33 @@
+{
+  "data" : {
+    "name" : "fho.deleteFolder",
+    "className" : "io.metadew.iesi.script.action.FhoDeleteFolder",
+    "description" : "Delete one or more folders and all contents",
+    "parameters" : [ {
+      "name" : "path",
+      "description" : "Path where the folder is located",
+      "type" : "string",
+      "mandatory" : "N",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
+    }, {
+      "name" : "folder",
+      "description" : "Folder(s) to delete",
+      "type" : "string",
+      "mandatory" : "Y",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
+    }, {
+      "name" : "connection",
+      "description" : "Connection where the folder is located",
+      "type" : "string",
+      "mandatory" : "N",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "Y"
+    } ]
+  },
+  "type" : "ActionType"
+}

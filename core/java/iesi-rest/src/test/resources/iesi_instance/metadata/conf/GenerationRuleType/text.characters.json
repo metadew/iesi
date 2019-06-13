@@ -1,0 +1,8 @@
+{
+  "data" : {
+    "name" : "text.characters",
+    "description" : "Random sequence of characters",
+    "parameters" : [ ]
+  },
+  "type" : "GenerationRuleType"
+}

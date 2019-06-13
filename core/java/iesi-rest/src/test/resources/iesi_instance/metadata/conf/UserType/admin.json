@@ -1,0 +1,11 @@
+{
+  "data" : {
+    "name" : "admin",
+    "description" : "Administator",
+    "roles" : [ {
+      "name" : "administrator",
+      "description" : "Administrator"
+    } ]
+  },
+  "type" : "UserType"
+}

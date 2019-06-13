@@ -1,0 +1,25 @@
+{
+  "data" : {
+    "name" : "sql.setRuntimeVariables",
+    "className" : "io.metadew.iesi.script.action.SqlSetRuntimeVariables",
+    "description" : "Retrieve runtime variables using a SQL Statement",
+    "parameters" : [ {
+      "name" : "query",
+      "description" : "SQL query to run",
+      "type" : "string",
+      "mandatory" : "Y",
+      "encrypted" : "N",
+      "subroutine" : "query",
+      "impersonate" : "N"
+    }, {
+      "name" : "connection",
+      "description" : "Connection where to run the SQL query",
+      "type" : "string",
+      "mandatory" : "Y",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "Y"
+    } ]
+  },
+  "type" : "ActionType"
+}

@@ -1,0 +1,147 @@
+[{
+	"type": "GenerationRuleType",
+	"data": {
+		"name": "dt.date",
+		"description": "Random date values",
+		"parameters": [
+			{"name": "MIN_VALUE","description": "Lower bound for the generation","type": "date","mandatory": "Y","encrypted": "N"},
+			{"name": "MAX_VALUE","description": "Upper bound for the generation","type": "date","mandatory": "Y","encrypted": "N"},
+			{"name": "FORMAT","description": "Format to use for the generation","type": "string","mandatory": "Y","encrypted": "N"}
+	]
+}},
+{
+	"type": "GenerationRuleType",
+	"data": {
+		"name": "dt.now",
+		"description": "Generate current date, time or timestamp",
+		"parameters": [
+			{"name": "FORMAT","description": "Format to use for the generation","type": "string","mandatory": "N","encrypted": "N"}
+	]
+}},
+{
+	"type": "GenerationRuleType",
+	"data": {
+		"name": "dt.time",
+		"description": "Random time values",
+		"parameters": [
+			{"name": "MIN_VALUE","description": "Lower bound for the generation","type": "time","mandatory": "Y","encrypted": "N"},
+			{"name": "MAX_VALUE","description": "Upper bound for the generation","type": "time","mandatory": "Y","encrypted": "N"},
+			{"name": "FORMAT","description": "Format to use for the generation","type": "string","mandatory": "Y","encrypted": "N"}
+	]
+}},
+{
+	"type": "GenerationRuleType",
+	"data": {
+		"name": "dt.timstamp",
+		"description": "Random timestamp values (date and time)",
+		"parameters": [ ]
+}},
+{
+	"type": "GenerationRuleType",
+	"data": {
+		"name": "id.guid",
+		"description": "Generates 36 char hex guid values",
+		"parameters": [ ]
+}},
+{
+	"type": "GenerationRuleType",
+	"data": {
+		"name": "list.common",
+		"description": "Select items from a common list of values",
+		"parameters": [
+			{"name": "LIST_NM","description": "","type": "string","mandatory": "Y","encrypted": "N"},
+			{"name": "SELECTION_TYPE","description": "Selection type to use (RANDOM)","type": "string","mandatory": "Y","encrypted": "N"}
+	]
+}},
+{
+	"type": "GenerationRuleType",
+	"data": {
+		"name": "list.custom",
+		"description": "Select items from a custom list of values",
+		"parameters": [
+			{"name": "ITEMS","description": "List of items to select from (comma separated)","type": "string","mandatory": "Y","encrypted": "N"},
+			{"name": "SELECTION_TYPE","description": "Selection type to use (RANDOM)","type": "string","mandatory": "Y","encrypted": "N"}
+	]
+}},
+{
+	"type": "GenerationRuleType",
+	"data": {
+		"name": "num.number",
+		"description": "Random numerical values",
+		"parameters": [
+			{"name": "MIN_VALUE","description": "Lower bound for the generation","type": "number","mandatory": "Y","encrypted": "N"},
+			{"name": "MAX_VALUE","description": "Upper bound for the generation","type": "number","mandatory": "Y","encrypted": "N"},
+			{"name": "DECIMAL_FL","description": "Flag to indicate the generation of a decimal number","type": "string","mandatory": "Y","encrypted": "N"},
+			{"name": "DECIMAL_NB","description": "Number of decimals to generate","type": "number","mandatory": "N","encrypted": "N"},
+			{"name": "DECIMAL_CHAR","description": "Decimal character to use","type": "string","mandatory": "N","encrypted": "N"}
+	]
+}},
+{
+	"type": "GenerationRuleType",
+	"data": {
+		"name": "num.rowNumber",
+		"description": "Generate a sequential row number",
+		"parameters": [
+			{"name": "START_NB","description": "Initial number to use","type": "number","mandatory": "N","encrypted": "N"}
+	]
+}},
+{
+	"type": "GenerationRuleType",
+	"data": {
+		"name": "text.characters",
+		"description": "Random sequence of characters",
+		"parameters": [ ]
+}},
+{
+	"type": "GenerationRuleType",
+	"data": {
+		"name": "txt.paragraphs",
+		"description": "Random number of paragraphs",
+		"parameters": [
+			{"name": "PARAGRAPH_NB","description": "Number of paragrpahs to generate","type": "number","mandatory": "N","encrypted": "N"}
+	]
+}},
+{
+	"type": "GenerationRuleType",
+	"data": {
+		"name": "txt.sentences",
+		"description": "Random sequence of sentences",
+		"parameters": [
+			{"name": "SENTENCE_NB","description": "Number of sentences to generate","type": "number","mandatory": "N","encrypted": "N"}
+	]
+}},
+{
+	"type": "GenerationRuleType",
+	"data": {
+		"name": "txt.words",
+		"description": "Random sequence of words",
+		"parameters": [
+			{"name": "WORD_NB","description": "Number of words to generate","type": "number","mandatory": "N","encrypted": "N"}
+	]
+}},
+{
+	"type": "GenerationRuleType",
+	"data": {
+		"name": "val.blank",
+		"description": "Generate a blank or null value",
+		"parameters": [
+			{"name": "BLANK_VALUE","description": "Value to use as blank value","type": "string","mandatory": "Y","encrypted": "N"}
+	]
+}},
+{
+	"type": "GenerationRuleType",
+	"data": {
+		"name": "val.boolean",
+		"description": "Generate random boolean values (0 vs 1, true vs false, etc.)",
+		"parameters": [
+			{"name": "TRUE_VALUE","description": "Value to use as true value","type": "string","mandatory": "Y","encrypted": "N"},
+			{"name": "FALSE_VALUE","description": "Value to use as false value","type": "string","mandatory": "Y","encrypted": "N"}
+	]
+}},
+{
+	"type": "GenerationRuleType",
+	"data": {
+		"name": "val.pattern",
+		"description": "Generate a value based on a regular expression pattern",
+		"parameters": [ ]
+}}]

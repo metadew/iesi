@@ -1,0 +1,33 @@
+{
+  "data" : {
+    "name" : "fho.fileExists",
+    "className" : "io.metadew.iesi.script.action.FhoFileExists",
+    "description" : "Verify if a file exists",
+    "parameters" : [ {
+      "name" : "path",
+      "description" : "Path where the file is located",
+      "type" : "string",
+      "mandatory" : "N",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
+    }, {
+      "name" : "file",
+      "description" : "File to verify",
+      "type" : "string",
+      "mandatory" : "Y",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
+    }, {
+      "name" : "connection",
+      "description" : "Connection where the file is located",
+      "type" : "string",
+      "mandatory" : "N",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "Y"
+    } ]
+  },
+  "type" : "ActionType"
+}

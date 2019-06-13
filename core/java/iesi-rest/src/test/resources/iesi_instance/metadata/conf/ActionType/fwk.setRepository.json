@@ -1,0 +1,41 @@
+{
+  "data" : {
+    "name" : "fwk.setRepository",
+    "className" : "io.metadew.iesi.script.action.FwkSetRepository",
+    "description" : "Define a repository that can be used in any next action",
+    "parameters" : [ {
+      "name" : "name",
+      "description" : "Reference name for the repository definition",
+      "type" : "string",
+      "mandatory" : "Y",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
+    }, {
+      "name" : "repository",
+      "description" : "Name of the repository",
+      "type" : "string",
+      "mandatory" : "Y",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
+    }, {
+      "name" : "instance",
+      "description" : "Name of the repository instance",
+      "type" : "string",
+      "mandatory" : "N",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
+    }, {
+      "name" : "labels",
+      "description" : "Labels associated to the repository instance",
+      "type" : "string",
+      "mandatory" : "N",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
+    } ]
+  },
+  "type" : "ActionType"
+}

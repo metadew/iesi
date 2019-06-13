@@ -1,0 +1,17 @@
+{
+  "data" : {
+    "name" : "fwk.setParameterList",
+    "className" : "io.metadew.iesi.script.action.FwkSetParameterList",
+    "description" : "Load a list of parameters as runtime variables",
+    "parameters" : [ {
+      "name" : "list",
+      "description" : "List of parameters and values to set as runtime variables",
+      "type" : "string",
+      "mandatory" : "Y",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
+    } ]
+  },
+  "type" : "ActionType"
+}

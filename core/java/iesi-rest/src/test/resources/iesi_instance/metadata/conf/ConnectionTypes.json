@@ -1,0 +1,204 @@
+[{
+	"type": "ConnectionType",
+	"data": {
+		"name": "db.h2",
+		"description": "H2 Database Connection",
+		"parameters": [
+			{"name": "host","description": "The host name of the server where the database file is located","type": "string","mandatory": "N","encrypted": "N"},
+			{"name": "port","description": "The port number for connecting to the host","type": "number","mandatory": "N","encrypted": "N"},
+			{"name": "path","description": "The path where the database is stored","type": "string","mandatory": "N","encrypted": "N"},
+			{"name": "file","description": "The database file name to connect to","type": "string","mandatory": "Y","encrypted": "N"},
+			{"name": "user","description": "The user name to connect to the database","type": "string","mandatory": "N","encrypted": "N"},
+			{"name": "password","description": "The encrypted password to connect to the database","type": "string","mandatory": "N","encrypted": "Y"}
+	]
+}},
+{
+	"type": "ConnectionType",
+	"data": {
+		"name": "db.mysql",
+		"description": "MySql Database Connection",
+		"parameters": [
+			{"name": "host","description": "The host name of the server where the database is running","type": "string","mandatory": "Y","encrypted": "N"},
+			{"name": "port","description": "The port number for connecting to the host","type": "number","mandatory": "Y","encrypted": "N"},
+			{"name": "schema","description": "The schema name to connect to the database","type": "string","mandatory": "Y","encrypted": "N"},
+			{"name": "user","description": "The user name to connect to the database","type": "string","mandatory": "Y","encrypted": "N"},
+			{"name": "password","description": "The encrypted password to connect to the database","type": "string","mandatory": "Y","encrypted": "Y"}
+	]
+}},
+{
+	"type": "ConnectionType",
+	"data": {
+		"name": "db.netezza",
+		"description": "Netezza Database Connection",
+		"parameters": [
+			{"name": "host","description": "The host name of the server where the database is running","type": "string","mandatory": "Y","encrypted": "N"},
+			{"name": "port","description": "The port number for connecting to the host","type": "number","mandatory": "Y","encrypted": "N"},
+			{"name": "database","description": "The database name to connect to","type": "string","mandatory": "Y","encrypted": "N"},
+			{"name": "user","description": "The user name to connect to the database","type": "string","mandatory": "Y","encrypted": "N"},
+			{"name": "user","description": "The encrypted password to connect to the database","type": "string","mandatory": "Y","encrypted": "Y"}
+	]
+}},
+{
+	"type": "ConnectionType",
+	"data": {
+		"name": "db.oracle",
+		"description": "Oracle Database Connection",
+		"parameters": [
+			{"name": "host","description": "The host name of the server where the database is running","type": "string","mandatory": "Y","encrypted": "N"},
+			{"name": "port","description": "The port number for connecting to the host","type": "number","mandatory": "Y","encrypted": "N"},
+			{"name": "tnsalias","description": "The TNS Alias name to connect to the database","type": "string","mandatory": "N","encrypted": "N"},
+			{"name": "user","description": "The user name to connect to the database","type": "string","mandatory": "Y","encrypted": "N"},
+			{"name": "password","description": "The encrypted password to connect to the database","type": "string","mandatory": "Y","encrypted": "Y"},
+			{"name": "service","description": "The Service name to connect to the database","type": "string","mandatory": "N","encrypted": "N"}
+	]
+}},
+{
+	"type": "ConnectionType",
+	"data": {
+		"name": "db.postgresql",
+		"description": "Postgresql Database Connection",
+		"parameters": [
+			{"name": "host","description": "The host name of the server where the database is running","type": "string","mandatory": "Y","encrypted": "N"},
+			{"name": "port","description": "The port number for connecting to the host","type": "number","mandatory": "Y","encrypted": "N"},
+			{"name": "database","description": "The database name to connect to","type": "string","mandatory": "Y","encrypted": "N"},
+			{"name": "user","description": "The user name to connect to the database","type": "string","mandatory": "Y","encrypted": "N"},
+			{"name": "password","description": "The encrypted password to connect to the database","type": "string","mandatory": "Y","encrypted": "Y"}
+	]
+}},
+{
+	"type": "ConnectionType",
+	"data": {
+		"name": "db.presto",
+		"description": "Presto Database Connection",
+		"parameters": [
+			{"name": "host","description": "The host name of the server where the database file is located","type": "string","mandatory": "Y","encrypted": "N"},
+			{"name": "port","description": "The port number for connecting to the host","type": "number","mandatory": "Y","encrypted": "N"},
+			{"name": "catalog","description": "The catalog name to connect to","type": "string","mandatory": "N","encrypted": "N"},
+			{"name": "schema","description": "The schema name in the catalog to connect to","type": "string","mandatory": "N","encrypted": "N"},
+			{"name": "user","description": "The user name to connect to the database","type": "string","mandatory": "Y","encrypted": "N"},
+			{"name": "password","description": "The encrypted password to connect to the database","type": "string","mandatory": "N","encrypted": "Y"}
+	]
+}},
+{
+	"type": "ConnectionType",
+	"data": {
+		"name": "db.sqlite",
+		"description": "SQLite Database Connection",
+		"parameters": [
+			{"name": "filePath","description": "The file path where the database is stored","type": "string","mandatory": "Y","encrypted": "N"},
+			{"name": "fileName","description": "The file name of the the database","type": "string","mandatory": "Y","encrypted": "N"}
+	]
+}},
+{
+	"type": "ConnectionType",
+	"data": {
+		"name": "db.teradata",
+		"description": "Teradata Database Connection",
+		"parameters": [
+			{"name": "host","description": "The host name of the server where the database is running","type": "string","mandatory": "Y","encrypted": "N"},
+			{"name": "port","description": "The port number for connecting to the host","type": "number","mandatory": "Y","encrypted": "N"},
+			{"name": "database","description": "The database name to connect to","type": "string","mandatory": "Y","encrypted": "N"},
+			{"name": "user","description": "The user name to connect to the database","type": "string","mandatory": "Y","encrypted": "N"},
+			{"name": "password","description": "The encrypted password to connect to the database","type": "string","mandatory": "Y","encrypted": "Y"}
+	]
+}},
+{
+	"type": "ConnectionType",
+	"data": {
+		"name": "fwk.alias",
+		"description": "Connection alias only to be used for impersonation",
+		"parameters": [
+			{"name": "type","description": "The connection type that is impersonated","type": "string","mandatory": "Y","encrypted": "N"}
+	]
+}},
+{
+	"type": "ConnectionType",
+	"data": {
+		"name": "host.linux",
+		"description": "Linux-Based Operating System Connection",
+		"parameters": [
+			{"name": "host","description": "The host name to connect to","type": "string","mandatory": "Y","encrypted": "N"},
+			{"name": "port","description": "The port number for connecting to the host","type": "number","mandatory": "Y","encrypted": "N"},
+			{"name": "user","description": "The user name to connect to the host","type": "string","mandatory": "Y","encrypted": "N"},
+			{"name": "password","description": "The encrypted password to connect to the host","type": "string","mandatory": "Y","encrypted": "Y"},
+			{"name": "tempPath","description": "The temporary path on the host name that can be used by the solution","type": "string","mandatory": "N","encrypted": "N"},
+			{"name": "simulateTerminal","description": "Flag indicating if a terminal needs to be simulated when connecting","type": "string","mandatory": "N","encrypted": "N"},
+			{"name": "jumphostConnections","description": "Connection names that need to be used as jump host for connecting","type": "string","mandatory": "N","encrypted": "N"},
+			{"name": "allowLocalhostExecution","description": "Flag indicating if processes are allowed to run as localhost on the automation engine","type": "string","mandatory": "N","encrypted": "N"}
+	]
+}},
+{
+	"type": "ConnectionType",
+	"data": {
+		"name": "host.unix",
+		"description": "Unix-Based Operating System Connection",
+		"parameters": [
+			{"name": "host","description": "The host name to connect to","type": "string","mandatory": "Y","encrypted": "N"},
+			{"name": "port","description": "The port number for connecting to the host","type": "number","mandatory": "Y","encrypted": "N"},
+			{"name": "user","description": "The user name to connect to the host","type": "string","mandatory": "Y","encrypted": "N"},
+			{"name": "password","description": "The encrypted password to connect to the host","type": "string","mandatory": "Y","encrypted": "Y"},
+			{"name": "tempPath","description": "The temporary path on the host name that can be used by the solution","type": "string","mandatory": "N","encrypted": "N"},
+			{"name": "simulateTerminal","description": "Flag indicating if a terminal needs to be simulated when connecting","type": "string","mandatory": "N","encrypted": "N"},
+			{"name": "jumphostConnections","description": "Connection names that need to be used as jump host for connecting","type": "string","mandatory": "N","encrypted": "N"},
+			{"name": "allowLocalhostExecution","description": "Flag indicating if processes are allowed to run as localhost on the automation engine","type": "string","mandatory": "N","encrypted": "N"}
+	]
+}},
+{
+	"type": "ConnectionType",
+	"data": {
+		"name": "host.windows",
+		"description": "Windows-Based Operating System  Connection",
+		"parameters": [
+			{"name": "host","description": "The host name to connect to","type": "string","mandatory": "Y","encrypted": "N"},
+			{"name": "tempPath","description": "The temporary path on the host name that can be used by the solution","type": "string","mandatory": "N","encrypted": "N"}
+	]
+}},
+{
+	"type": "ConnectionType",
+	"data": {
+		"name": "http.host",
+		"description": "Http Host Connection",
+		"parameters": [
+			{"name": "url","description": "The connection URL","type": "string","mandatory": "Y","encrypted": "N"}
+	]
+}},
+{
+	"type": "ConnectionType",
+	"data": {
+		"name": "repo.artifactory",
+		"description": "Artifactory Repository Connection",
+		"parameters": [
+			{"name": "url","description": "The connection URL for the instance","type": "string","mandatory": "Y","encrypted": "N"},
+			{"name": "user","description": "The user name to connect to the database","type": "string","mandatory": "Y","encrypted": "N"},
+			{"name": "password","description": "The encrypted password to connect to the database","type": "string","mandatory": "Y","encrypted": "Y"},
+			{"name": "repository","description": "The repository name within the instance to connect to","type": "string","mandatory": "N","encrypted": "N"}
+	]
+}},
+{
+	"type": "ConnectionType",
+	"data": {
+		"name": "db.mssql",
+		"description": "Microsoft SQL Database Connection",
+		"parameters": [
+			{"name": "host","description": "The host name of the server where the database is running","type": "string","mandatory": "Y","encrypted": "N"},
+			{"name": "port","description": "The port number for connecting to the host","type": "number","mandatory": "Y","encrypted": "N"},
+			{"name": "database","description": "The database name to connect to","type": "string","mandatory": "Y","encrypted": "N"},
+			{"name": "user","description": "The user name to connect to the database","type": "string","mandatory": "Y","encrypted": "N"},
+			{"name": "password","description": "The encrypted password to connect to the database","type": "string","mandatory": "Y","encrypted": "Y"}
+	]
+}},
+{
+	"type": "ConnectionType",
+	"data": {
+		"name": "db.dremio",
+		"description": "Dremio Database Connection",
+		"parameters": [
+			{"name": "host","description": "The host name of the server where the database file is located","type": "string","mandatory": "Y","encrypted": "N"},
+			{"name": "port","description": "The port number for connecting to the host","type": "number","mandatory": "Y","encrypted": "N"},
+			{"name": "mode","description": "The connection mode to use: direct, zookeeper","type": "string","mandatory": "Y","encrypted": "N"},
+			{"name": "cluster","description": "The optional cluster name if connection mode is zookeeper","type": "string","mandatory": "N","encrypted": "N"},
+			{"name": "schema","description": "The schema name in the catalog to connect to","type": "string","mandatory": "N","encrypted": "N"},
+			{"name": "user","description": "The user name to connect to the database","type": "string","mandatory": "Y","encrypted": "N"},
+			{"name": "password","description": "The encrypted password to connect to the database","type": "string","mandatory": "N","encrypted": "Y"}
+	]
+}}]

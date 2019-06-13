@@ -12,6 +12,7 @@ import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 import org.apache.logging.log4j.Level;
 
+import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.MessageFormat;
@@ -106,8 +107,11 @@ public class JavaParseJar {
                 connectionName, this.getExecutionControl().getEnvName());
 
         if (isOnLocalhost) {
+        	String filePath = fileName;
+        	if (!path.isEmpty()) filePath = path + File.separator + fileName;
+        	
             JarOperation jarOperation = new JarOperation();
-            jarOperation.getJavaArchiveDefinition("target/iesi-core.jar");
+            jarOperation.getJavaArchiveDefinition(filePath);
         } else {
 
         }

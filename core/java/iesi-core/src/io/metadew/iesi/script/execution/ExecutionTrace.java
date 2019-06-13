@@ -73,14 +73,14 @@ public class ExecutionTrace {
         String sql = "";
 
         sql += "INSERT INTO " + this.getFrameworkExecution().getMetadataControl().getTraceMetadataRepository().getTableNameByLabel("ActionTraces");
-        sql += " (RUN_ID, PRC_ID, SCRIPT_ID, ACTION_ID, ACTION_NB, ACTION_TYP_NM, ACTION_NM, ACTION_DSC, COMP_NM, EXP_ERR_FL, STOP_ERR_FL) ";
+        sql += " (RUN_ID, PRC_ID, SCRIPT_PRC_ID, ACTION_ID, ACTION_NB, ACTION_TYP_NM, ACTION_NM, ACTION_DSC, COMP_NM, EXP_ERR_FL, STOP_ERR_FL) ";
         sql += "VALUES ";
         sql += "(";
         sql += SQLTools.GetStringForSQL(actionExecution.getExecutionControl().getRunId());
         sql += ",";
         sql += SQLTools.GetStringForSQL(actionExecution.getProcessId());
         sql += ",";
-        sql += SQLTools.GetStringForSQL(scriptExecution.getScript().getId());
+        sql += SQLTools.GetStringForSQL(scriptExecution.getProcessId());
         sql += ",";
         sql += SQLTools.GetStringForSQL(actionExecution.getAction().getId());
         sql += ",";
@@ -156,7 +156,7 @@ public class ExecutionTrace {
         sql += SQLTools.GetStringForSQL(actionParameterOperation.getValue() != null ? actionParameterOperation.getValue().toString() : null);
         sql += ")";
         sql += ";";
-
+        
         return sql;
     }
 

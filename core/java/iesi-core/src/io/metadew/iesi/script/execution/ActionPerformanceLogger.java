@@ -8,7 +8,6 @@ import io.metadew.iesi.metadata.definition.key.ActionPerformanceKey;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 
 public class ActionPerformanceLogger {
 

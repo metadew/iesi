@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
+@SuppressWarnings("rawtypes")
 public abstract class Configuration<T extends Metadata, V extends MetadataKey> {
 
     // TODO: once metadata control or framework instance become singleton, this class can become an interface
@@ -27,14 +28,17 @@ public abstract class Configuration<T extends Metadata, V extends MetadataKey> {
     public abstract void insert(T metadata) throws MetadataAlreadyExistsException, SQLException;
 
     // TODO: investigate casting
-    public boolean exists(T metadata) throws SQLException {
+    @SuppressWarnings("unchecked")
+	public boolean exists(T metadata) throws SQLException {
         return get((V) metadata.getMetadataKey()).isPresent();
     }
 
     public boolean exists(V key) throws SQLException {
         return get(key).isPresent();
     }
-    public void update(T metadata) throws SQLException, MetadataDoesNotExistException {
+    
+    @SuppressWarnings("unchecked")
+	public void update(T metadata) throws SQLException, MetadataDoesNotExistException {
         try {
             delete((V) metadata.getMetadataKey());
             insert(metadata);

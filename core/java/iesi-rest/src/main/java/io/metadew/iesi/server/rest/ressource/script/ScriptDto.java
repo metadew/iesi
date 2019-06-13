@@ -1,24 +1,22 @@
 package io.metadew.iesi.server.rest.ressource.script;
 
-import io.metadew.iesi.metadata.definition.Action;
-import io.metadew.iesi.metadata.definition.Script;
-import io.metadew.iesi.metadata.definition.ScriptParameter;
-import io.metadew.iesi.metadata.definition.ScriptVersion;
-import org.springframework.hateoas.ResourceSupport;
-
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import io.metadew.iesi.metadata.definition.*;
+import org.springframework.hateoas.ResourceSupport;
 
 public class ScriptDto extends ResourceSupport {
 
     private String name;
-    private  String description;
-    private  ScriptVersion version;
-    private  List<ScriptParameter> parameters;
-    private  List<Action> actions;
+    private String description;
+    private ScriptVersionDto version;
+    private List<ScriptParameter> parameters;
+    private ScriptActionDto actions;
 
-    public ScriptDto() {}
-
-    public ScriptDto(String name, String description, ScriptVersion version, List<ScriptParameter> parameters, List<Action> actions) {
+    public ScriptDto(String name, String description, ScriptVersionDto version, List<ScriptParameter> parameters, ScriptActionDto actions) {
         this.name = name;
         this.description = description;
         this.version = version;
@@ -26,20 +24,12 @@ public class ScriptDto extends ResourceSupport {
         this.actions = actions;
     }
 
-    public ScriptVersion getVersion() {
-        return version;
-    }
-
-    public void setVersion(ScriptVersion version) {
-        this.version = version;
-    }
-
-    public Script convertToEntity() { return new Script(name, description, description, version, parameters, actions);
+    public Script convertToEntity() {
+        return new Script(null, null, name, description,  version.convertToEntity(),  parameters, actions.convertToEntity());
     }
 
     public static ScriptDto convertToDto(Script script) {
-        return new ScriptDto(script.getName(),  script.getDescription(), script.getVersion(), script.getParameters()
-        , script.getActions());
+        return new ScriptDto(script.getType(), script.getName(), ScriptVersionDto.convertToDto(script.getVersion()), script.getParameters(), ScriptActionDto.convertToDto(script.getActions()));
     }
 
     public String getName() {
@@ -58,6 +48,14 @@ public class ScriptDto extends ResourceSupport {
         this.description = description;
     }
 
+    public ScriptVersionDto getVersion() {
+        return version;
+    }
+
+    public void setVersion(ScriptVersionDto version) {
+        this.version = version;
+    }
+
     public List<ScriptParameter> getParameters() {
         return parameters;
     }
@@ -66,11 +64,11 @@ public class ScriptDto extends ResourceSupport {
         this.parameters = parameters;
     }
 
-    public List<Action> getActions() {
+    public ScriptActionDto getActions() {
         return actions;
     }
 
-    public void setActions(List<Action> actions) {
+    public void setActions(ScriptActionDto actions) {
         this.actions = actions;
     }
 }

@@ -4,6 +4,7 @@ import io.metadew.iesi.metadata.configuration.ScriptConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.ScriptAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.ScriptDoesNotExistException;
 import io.metadew.iesi.metadata.definition.Script;
+import io.metadew.iesi.server.rest.error.DataBadRequestException;
 import io.metadew.iesi.server.rest.error.DataNotFoundException;
 import io.metadew.iesi.server.rest.error.GetListNullProperties;
 import io.metadew.iesi.server.rest.error.GetNullProperties;
@@ -18,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -40,22 +40,20 @@ public class ScriptController {
 
 	@Autowired
 	ScriptController(ScriptConfiguration scriptConfiguration,
-					 GetNullProperties getNullProperties, ScriptPostByNameDtoResourceAssembler scriptPostByNameDtoResourceAssembler,GetListNullProperties getListNullProperties, ScriptRepository scriptRepository) {
+					 GetNullProperties getNullProperties, ScriptDtoResourceAssembler scriptDtoResourceAssembler, GetListNullProperties getListNullProperties, ScriptRepository scriptRepository) {
 		this.scriptRepository = scriptRepository;
 		this.scriptConfiguration = scriptConfiguration;
 		this.getListNullProperties = getListNullProperties;
 		this.getNullProperties = getNullProperties;
-		this.scriptPostByNameDtoResourceAssembler = scriptPostByNameDtoResourceAssembler;
+		this.scriptDtoResourceAssembler = scriptDtoResourceAssembler;
 	}
-//	@Autowired
-//	private ScriptDtoResourceAssembler scriptDtoResourceAssembler;
 
-	@Autowired
-	private ScriptByNameDtoResourceAssembler scriptByNameDtoResourceAssembler;
+//	@Autowired
+//	private ScriptByNameDtoResourceAssembler scriptByNameDtoResourceAssembler;
 	@Autowired
 	private ScriptGetByNameGetDtoAssembler scriptGetByNameGetDtoAssembler;
 	@Autowired
-	private ScriptPostByNameDtoResourceAssembler scriptPostByNameDtoResourceAssembler;
+	private ScriptDtoResourceAssembler scriptDtoResourceAssembler;
 	@Autowired
 	private ScriptGlobalDtoResourceAssembler scriptGlobalDtoResourceAssembler;
 
@@ -85,7 +83,7 @@ public class ScriptController {
 			throw new DataNotFoundException(name, version);
 		}
 		Script script = scripts.orElse(null);
-		return ResponseEntity.ok(scriptPostByNameDtoResourceAssembler.toResource(Collections.singletonList(script)));
+		return ResponseEntity.ok(scriptDtoResourceAssembler.toResource(Collections.singletonList(script)));
 	}
 
 	@PostMapping("/scripts")
@@ -94,7 +92,7 @@ public class ScriptController {
 		try {
 			scriptConfiguration.insertScript(script.convertToEntity());
 			List<Script> scriptList = java.util.Arrays.asList(script.convertToEntity());
-			return ResponseEntity.ok(scriptPostByNameDtoResourceAssembler.toResource(scriptList));
+			return ResponseEntity.ok(scriptDtoResourceAssembler.toResource(scriptList));
 		} catch (ScriptAlreadyExistsException e) {
 			e.printStackTrace();
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND,
@@ -105,7 +103,7 @@ public class ScriptController {
 	@PutMapping("/scripts")
 	public HalMultipleEmbeddedResource<ScriptDto> putAllConnections(@Valid @RequestBody List<ScriptDto> scriptDtos) {
 		HalMultipleEmbeddedResource<ScriptDto> halMultipleEmbeddedResource = new HalMultipleEmbeddedResource<>();
-		getListNullProperties.getNullScript(scriptDtos);
+//		getListNullProperties.getNullScript(scriptDtos);
 		for (ScriptDto scriptDto : scriptDtos) {
 			try {
 				scriptConfiguration.updateScript(scriptDto.convertToEntity());
@@ -123,19 +121,21 @@ public class ScriptController {
 	}
 
 	@PutMapping("/scripts/{name}/{version}")
-	public ScriptByNameDto putScripts(@PathVariable String name,@PathVariable Long version,
+	public ScriptDto putScripts(@PathVariable String name,@PathVariable Long version,
 									  @RequestBody ScriptDto script) {
 		getNullProperties.getNullProperties(script);
 		if (!script.getName().equals(name) || !script.getVersion().equals(version) ) {
+			throw new DataBadRequestException(name);
+		} else if (script.getName() == null){
 			throw new DataNotFoundException(name);
 		}
 		try {
 			scriptConfiguration.updateScript(script.convertToEntity());
 			List<Script> scriptList = java.util.Arrays.asList(script.convertToEntity());
-			return scriptByNameDtoResourceAssembler.toResource(scriptList);
+			return scriptDtoResourceAssembler.toResource(scriptList);
 		} catch (ScriptDoesNotExistException e) {
 			e.printStackTrace();
-			return null;
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
 		}
 
 	}

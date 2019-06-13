@@ -5,7 +5,7 @@ import io.metadew.iesi.metadata.definition.ConnectionParameter;
 import java.util.List;
 import java.util.Objects;
 
-public class EnvironmentName {
+public class ConnectionByName {
 
 	private String name;
 	private String type;
@@ -13,7 +13,7 @@ public class EnvironmentName {
 	private String environment;
 	private List<ConnectionParameter> parameters;
 
-	public EnvironmentName(List<Connection> connection) {
+	public ConnectionByName(List<Connection> connection) {
 		this.name = connection.get(0).getName();
 		this.environment = connection.get(0).getEnvironment();
 		this.type = connection.get(0).getType();
@@ -28,26 +28,6 @@ public class EnvironmentName {
 
 	public void setEnvironment(String environment) {
 		this.environment = environment;
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(parameters);
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (!(obj instanceof EnvironmentName)) {
-			return false;
-		}
-		EnvironmentName other = (EnvironmentName) obj;
-		return Objects.equals(parameters, other.parameters);
 	}
 
 	public List<ConnectionParameter> getParameters() {

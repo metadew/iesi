@@ -4,6 +4,9 @@ import io.metadew.iesi.metadata.configuration.ConnectionConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.ConnectionAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.ConnectionDoesNotExistException;
 import io.metadew.iesi.metadata.definition.Connection;
+import io.metadew.iesi.server.rest.error.DataNotFoundException;
+import io.metadew.iesi.server.rest.error.GetListNullProperties;
+import io.metadew.iesi.server.rest.error.GetNullProperties;
 import io.metadew.iesi.server.rest.pagination.ConnectionCriteria;
 import io.metadew.iesi.server.rest.ressource.HalMultipleEmbeddedResource;
 import io.metadew.iesi.server.rest.ressource.connection.dto.ConnectionByNameDto;
@@ -35,10 +38,14 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 public class ConnectionsController {
 
 	private ConnectionConfiguration connectionConfiguration;
+	private final GetListNullProperties getListNullProperties;
+	private final GetNullProperties getNullProperties;
 
 	@Autowired
-	ConnectionsController(ConnectionConfiguration connectionConfiguration) {
+	ConnectionsController(ConnectionConfiguration connectionConfiguration,GetNullProperties getNullProperties,GetListNullProperties getListNullProperties) {
 		this.connectionConfiguration = connectionConfiguration;
+		this.getListNullProperties = getListNullProperties;
+		this.getNullProperties = getNullProperties;
 	}
 
 	@Autowired
@@ -92,6 +99,7 @@ public class ConnectionsController {
 	@PutMapping("")
 	public HalMultipleEmbeddedResource<ConnectionDto> putAllConnections(@Valid @RequestBody List<ConnectionDto> connectionDtos) {
 		HalMultipleEmbeddedResource<ConnectionDto> halMultipleEmbeddedResource = new HalMultipleEmbeddedResource<>();
+		getListNullProperties.getNullConnection(connectionDtos);
 		for (ConnectionDto connectionDto : connectionDtos) {
 			try {
 				ConnectionDto updatedConnectionDto = convertToDto(connectionConfiguration.updateConnection(connectionDto.convertToEntity()));
@@ -130,31 +138,44 @@ public class ConnectionsController {
 
 	@DeleteMapping("")
 	public ResponseEntity<?> deleteAllConnections() {
-		connectionConfiguration.deleteAllConnections();
-		return ResponseEntity.status(HttpStatus.OK).build();
+		List<Connection> connections = connectionConfiguration.getConnections();
+		if (!connections.isEmpty()) {
+			connectionConfiguration.deleteAllConnections();
+			return ResponseEntity.status(HttpStatus.OK).build();
+		}
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 	}
 
 	@DeleteMapping("/{name}")
 	public ResponseEntity<?> deleteConnections(@PathVariable String name) {
+		List<Connection> connections = connectionConfiguration.getConnectionByName(name);
+		if (connections.isEmpty()) {
+			throw new DataNotFoundException(name);
+		}
 		try {
 			connectionConfiguration.deleteConnectionByName(name);
+			return ResponseEntity.status(HttpStatus.OK).build();
 		} catch (ConnectionDoesNotExistException e) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-					MessageFormat.format("Connection {0} does not exist", name));
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
 		}
-		return ResponseEntity.status(HttpStatus.OK).build();
+
 	}
 
 	@DeleteMapping("/{name}/{environment}")
 	public ResponseEntity<?> deleteConnectionsandEnvironment(@PathVariable String name,
 			@PathVariable String environment) {
+		Optional<Connection> connections = connectionConfiguration.getConnection(name, environment);
+		if (!connections.isPresent()) {
+			throw new DataNotFoundException(name, environment);
+		}
 		try {
 			connectionConfiguration.deleteConnection(name, environment);
+			return ResponseEntity.status(HttpStatus.OK).build();
 		} catch (ConnectionDoesNotExistException e) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-					MessageFormat.format("Connection {0}-{1} does not exists", name, environment));
+			e.printStackTrace();
+			throw new DataNotFoundException(name, environment);
 		}
-		return ResponseEntity.status(HttpStatus.OK).build();
+
 	}
 
 }

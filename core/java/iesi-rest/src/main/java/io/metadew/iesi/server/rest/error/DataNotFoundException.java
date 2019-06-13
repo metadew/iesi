@@ -1,5 +1,8 @@
 package io.metadew.iesi.server.rest.error;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
 public class DataNotFoundException extends RuntimeException {
 
 	/**
@@ -16,9 +19,9 @@ public class DataNotFoundException extends RuntimeException {
 				+ "' ");
 	}
 
-
 	public DataNotFoundException(String name, Long integer) {
 		super("Mismatch between query parameter" + " " + " '" + name + "' " + " and query parameter " + " '" + integer
 				+ "' ");
 	}
+
 }

@@ -1,5 +1,7 @@
 package io.metadew.iesi.metadata.definition;
 
+import io.metadew.iesi.metadata.definition.ScriptParameter;
+import io.metadew.iesi.metadata.definition.ScriptVersion;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
 
 import java.util.List;
@@ -30,7 +32,7 @@ public class Script {
         this.actions = actions;
     }
     public Script(String type, String name, String description, ScriptVersion version,
-                   List<ScriptParameter> parameters, List<Action> actions) {
+                  List<ScriptParameter> parameters, List<Action> actions) {
         this.id = IdentifierTools.getScriptIdentifier(name);
         this.type = type;
         this.name = name;
@@ -98,8 +100,8 @@ public class Script {
         this.id = id;
     }
 
-	public boolean isEmpty() {
-		return (this.name == null || this.name.isEmpty()) ;
-	}
+    public boolean isEmpty() {
+        return (this.name == null || this.name.isEmpty()) ;
+    }
 
 }

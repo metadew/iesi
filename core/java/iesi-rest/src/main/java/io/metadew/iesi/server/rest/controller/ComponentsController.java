@@ -5,8 +5,7 @@ import io.metadew.iesi.metadata.configuration.exception.ComponentAlreadyExistsEx
 import io.metadew.iesi.metadata.configuration.exception.ComponentDoesNotExistException;
 import io.metadew.iesi.metadata.definition.Component;
 
-import io.metadew.iesi.server.rest.controller.JsonTransformation.ComponentGlobalByName;
-import io.metadew.iesi.server.rest.controller.JsonTransformation.ComponentPost;
+import io.metadew.iesi.server.rest.error.DataBadRequestException;
 import io.metadew.iesi.server.rest.error.DataNotFoundException;
 import io.metadew.iesi.server.rest.error.GetListNullProperties;
 import io.metadew.iesi.server.rest.error.GetNullProperties;
@@ -21,12 +20,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import static io.metadew.iesi.server.rest.ressource.component.ComponentPostByNameDto.convertToDto;
+import static io.metadew.iesi.server.rest.ressource.component.ComponentDto.convertToDto;
 import static io.metadew.iesi.server.rest.helper.Filter.distinctByKey;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
@@ -44,12 +42,11 @@ public class ComponentsController {
 	@Autowired
 	private ComponentGetByNameGetDtoAssembler componentGetByNameGetDtoAssembler;
 
-
 	@Autowired
 	private ComponentGlobalDtoResourceAssembler componentGlobalDtoResourceAssembler;
 
 	@Autowired
-	private ComponentPostByNameDtoResourceAssembler componentPostByNameDtoResourceAssembler;
+	private ComponentDtoResourceAssembler componentDtoResourceAssembler;
 
 	@Autowired
 	ComponentsController(GetNullProperties getNullProperties,GetListNullProperties getListNullProperties,ComponentConfiguration componentConfiguration,ComponentGlobalDtoResourceAssembler componentGlobalDtoResourceAssembler, ComponentRepository componentRepository) {
@@ -80,7 +77,7 @@ public class ComponentsController {
 	}
 
 	@GetMapping("/components/{name}/{version}")
-	public ResponseEntity<ComponentPostByNameDto> getComponentsAndVersion(@PathVariable String name,
+	public ResponseEntity<ComponentDto> getComponentsAndVersion(@PathVariable String name,
 			@PathVariable Long version) {
 		Optional<Component> components = componentConfiguration.getComponent(name, version);
 		if (!components.isPresent()) {
@@ -88,16 +85,15 @@ public class ComponentsController {
 		}
 		Component component = components.orElse(null);
 		List<Component> componentlist = java.util.Arrays.asList(component);
-		ComponentPost componentPost = new ComponentPost(componentlist);
-		return ResponseEntity.ok(componentPostByNameDtoResourceAssembler.toResource(componentlist));
+		return ResponseEntity.ok(componentDtoResourceAssembler.toResource(componentlist));
 	}
 //
 	@PostMapping("/components")
-	public ResponseEntity<ComponentPostByNameDto> postComponents(@Valid @RequestBody ComponentPostByNameDto component) {
+	public ResponseEntity<ComponentDto> postComponents(@Valid @RequestBody ComponentDto component) {
 		try {
 			componentConfiguration.insertComponent(component.convertToEntity());
 			List<Component> componentlist = java.util.Arrays.asList(component.convertToEntity());
-			return ResponseEntity.ok(componentPostByNameDtoResourceAssembler.toResource(componentlist));
+			return ResponseEntity.ok(componentDtoResourceAssembler.toResource(componentlist));
 		} catch (ComponentAlreadyExistsException e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -105,16 +101,15 @@ public class ComponentsController {
 
 	}
 
+
 	@PutMapping("/components")
-	public HalMultipleEmbeddedResource<ComponentPostByNameDto> putAllConnections(@Valid @RequestBody List<ComponentPostByNameDto> componentDtos) {
-		HalMultipleEmbeddedResource<ComponentPostByNameDto> halMultipleEmbeddedResource = new HalMultipleEmbeddedResource<>();
+	public HalMultipleEmbeddedResource<ComponentDto> putAllConnections(@Valid @RequestBody List<ComponentDto> componentDtos) {
+		HalMultipleEmbeddedResource<ComponentDto> halMultipleEmbeddedResource = new HalMultipleEmbeddedResource<>();
 		getListNullProperties.getNullComponent(componentDtos);
-		for (ComponentPostByNameDto componentDto : componentDtos) {
+		for (ComponentDto componentDto : componentDtos) {
 			try {
 				componentConfiguration.updateComponent(componentDto.convertToEntity());
-				Component component = componentDto.convertToEntity();
-				List<Component> componentList = java.util.Arrays.asList(component);
-				ComponentPostByNameDto componentByNameDto = convertToDto(componentList);
+				ComponentDto componentByNameDto = convertToDto(componentDto.convertToEntity());
 				halMultipleEmbeddedResource.embedResource(componentByNameDto);
 				halMultipleEmbeddedResource.add(linkTo(methodOn(ComponentsController.class)
 						.getByName(componentDto.getName()))
@@ -129,24 +124,27 @@ public class ComponentsController {
 	}
 
 
-//	@PutMapping("/components/{name}/{version}")
-//	public ComponentPostByNameDto putComponents(@PathVariable String name, @PathVariable Long version,
-//											@RequestBody ComponentPostByNameDto component) {
+	@PutMapping("/components/{name}/{version}")
+	public ComponentDto putComponents(@PathVariable String name, @PathVariable Long version,
+									  @RequestBody ComponentDto component) {
 //		getNullProperties.getNullProperties(component);
-//		Optional<Component> components = componentConfiguration.getComponent(name, version);
-//		if (!component.getName().equals(name) || !component.getVersions().equals(version)) {
-//			throw new DataNotFoundException(name);
-//		}
-//		try {
-//			componentConfiguration.updateComponent(component.convertToEntity());
-//			List<Component> componentList = java.util.Arrays.asList(component.convertToEntity());
-//			return componentPostByNameDtoResourceAssembler.toResource(componentList);
-//		} catch (ComponentDoesNotExistException e) {
-//			e.printStackTrace();
-//			return null;
-//		}
-//
-//	}
+		Optional<Component> components = componentConfiguration.getComponent(name, version);
+		if (!component.getName().equals(name) || !component.getVersion().equals(version)) {
+			throw new DataBadRequestException(name);
+		} else if (component.getName() == null){
+			throw new DataNotFoundException(name);
+		}
+		try {
+			componentConfiguration.updateComponent(component.convertToEntity());
+			List<Component> componentList = java.util.Arrays.asList(component.convertToEntity());
+			ComponentDto componentByNameDto = convertToDto(component.convertToEntity());
+			return componentDtoResourceAssembler.toResource(componentList );
+		} catch (ComponentDoesNotExistException e) {
+			e.printStackTrace();
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+		}
+
+	}
 
 	@DeleteMapping("/components")
 	public ResponseEntity<?> deleteAllComponents() {

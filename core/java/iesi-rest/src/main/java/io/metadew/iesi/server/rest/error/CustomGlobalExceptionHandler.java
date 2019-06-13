@@ -22,6 +22,12 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
 
 	}
 
+	@ExceptionHandler(DataBadRequestException.class)
+	public void HandleBadRequest(HttpServletResponse response) throws IOException {
+		response.sendError(HttpStatus.BAD_REQUEST.value());
+
+	}
+
 	@ExceptionHandler(SqlNotFoundException.class)
 	public void SqlNotFound(HttpServletResponse response) throws IOException {
 		response.sendError(HttpStatus.INTERNAL_SERVER_ERROR.value());

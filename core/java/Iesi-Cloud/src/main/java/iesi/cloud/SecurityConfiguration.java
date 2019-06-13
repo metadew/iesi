@@ -38,8 +38,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		http.csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
 		http.headers().addHeaderWriter(new XFrameOptionsHeaderWriter(XFrameOptionsMode.SAMEORIGIN));
 //		http.csrf().disable().httpBasic().and()
+		http.csrf().disable().httpBasic().and().authorizeRequests()
+				.antMatchers("/encrypt/**").permitAll();
 		http.authorizeRequests()
-				.antMatchers("/encrypt/**").authenticated().antMatchers("/iesi/**").authenticated()
+				.antMatchers("/iesi/**").authenticated()
 				.antMatchers("/decrypt/**").authenticated()
 				.antMatchers("/actuator/**" ).authenticated()
 				.antMatchers("/h2-console/**").permitAll();

@@ -1,10 +1,14 @@
 package io.metadew.iesi.server.rest.error;
 
 import io.metadew.iesi.metadata.definition.*;
-import io.metadew.iesi.server.rest.ressource.component.ComponentPostByNameDto;
+import io.metadew.iesi.server.rest.ressource.component.ComponentDto;
+
+import io.metadew.iesi.server.rest.ressource.connection.dto.ConnectionDto;
 import io.metadew.iesi.server.rest.ressource.environment.EnvironmentDto;
 import io.metadew.iesi.server.rest.ressource.impersonation.ImpersonationDto;
+import io.metadew.iesi.server.rest.ressource.script.ScriptActionDto;
 import io.metadew.iesi.server.rest.ressource.script.ScriptDto;
+import io.metadew.iesi.server.rest.ressource.script.ScriptVersionDto;
 import org.springframework.stereotype.Repository;
 
 import javax.validation.Valid;
@@ -26,7 +30,7 @@ public class GetListNullProperties {
 		}
 	}
 
-	public void getNullConnection(@Valid List<Connection> connections) {
+	public void getNullConnection(@Valid List<ConnectionDto> connections) {
 		for (int index = 0; index < connections.size(); index++) {
 			List<List<ConnectionParameter>> parameters = connections.stream().map(x -> x.getParameters())
 					.collect(Collectors.toList());
@@ -38,7 +42,7 @@ public class GetListNullProperties {
 		}
 	}
 
-	public void getNullComponent(@Valid List<ComponentPostByNameDto> components) {
+	public void getNullComponent(@Valid List<ComponentDto> components) {
 		for (int index = 0; index < components.size(); index++) {
 			List<List<ComponentParameter>> parameters = components.stream().map(x -> x.getParameters())
 					.collect(Collectors.toList());
@@ -65,8 +69,8 @@ public class GetListNullProperties {
 
 	public void getNullScript(@Valid List<ScriptDto> scripts) {
 		for (int index = 0; index < scripts.size(); index++) {
-			List<List<Action>> action = scripts.stream().map(x -> x.getActions()).collect(Collectors.toList());
-			List<ScriptVersion> version = scripts.stream().map(x -> x.getVersion()).collect(Collectors.toList());
+			List<ScriptActionDto> action = scripts.stream().map(x -> x.getActions()).collect(Collectors.toList());
+			List<ScriptVersionDto> version = scripts.stream().map(x -> x.getVersion()).collect(Collectors.toList());
 			List<List<ScriptParameter>> parameters = scripts.stream().map(x -> x.getParameters())
 					.collect(Collectors.toList());
 			if (scripts.get(index).getName() == null || scripts.get(index).getDescription() == null

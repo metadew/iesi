@@ -10,9 +10,9 @@ import org.springframework.hateoas.ResourceSupport;
 import java.util.List;
 
 public class EnvironmentDto extends ResourceSupport {
-	 @Getter @Setter private String name;
-	 @Getter @Setter private String description;
-	 @Getter @Setter private List<EnvironmentParameter> parameters;
+    @Getter @Setter private String name;
+    @Getter @Setter private String description;
+    @Getter @Setter private List<EnvironmentParameter> parameters;
 
     public EnvironmentDto(){}
 

@@ -5,6 +5,7 @@ import io.metadew.iesi.metadata.configuration.ImpersonationConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.ImpersonationAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.ImpersonationDoesNotExistException;
 import io.metadew.iesi.metadata.definition.Impersonation;
+import io.metadew.iesi.server.rest.error.DataBadRequestException;
 import io.metadew.iesi.server.rest.error.DataNotFoundException;
 import io.metadew.iesi.server.rest.error.GetListNullProperties;
 import io.metadew.iesi.server.rest.error.GetNullProperties;
@@ -33,6 +34,7 @@ public class ImpersonationController {
 	private ImpersonationConfiguration impersonationConfiguration;
 	private final GetListNullProperties getListNullProperties;
 	private final GetNullProperties getNullProperties;
+
 	@Autowired
 	ImpersonationController(ImpersonationConfiguration impersonationConfiguration,GetNullProperties getNullProperties,
 							GetListNullProperties getListNullProperties			) {
@@ -40,41 +42,32 @@ public class ImpersonationController {
 		this.getListNullProperties = getListNullProperties;
 		this.getNullProperties = getNullProperties;
 	}
-
 	@Autowired
-	private ImpersonationGlobalDtoResourceAssembler impersonationDtoResourceAssembler;
+	private ImpersonatonDtoResourceAssembler impersonatonDtoResourceAssembler ;
 
-	@Autowired
-	private ImpersonationByNameDtoResourceAssembler impersonationByNameDtoResourceAssembler;
-
-	@Autowired
-	private ImpersonationGlobalDtoResourceAssembler impersonationGlobalDtoResourceAssembler;
 
 	@GetMapping("")
-	public HalMultipleEmbeddedResource<ImpersonationGlobalDto> getAllImpersonations(@Valid ImpersonationCriteria impersonationCriteria) {
-		return new HalMultipleEmbeddedResource<>(impersonationConfiguration.getAllImpersonations().stream()
+	public HalMultipleEmbeddedResource<ImpersonationDto> getAllImpersonations(@Valid ImpersonationCriteria impersonationCriteria) {
+		return new HalMultipleEmbeddedResource<ImpersonationDto>(impersonationConfiguration.getAllImpersonations().stream()
 				.filter(distinctByKey(Impersonation::getName))
-				.map(impersonation -> impersonationGlobalDtoResourceAssembler.toResource(Collections.singletonList(impersonation)))
+				.map(impersonation -> impersonatonDtoResourceAssembler.toResource(impersonation))
 				.collect(Collectors.toList()));
 	}
 
 	@GetMapping("/{name}")
-	public ImpersonationByNameDto getByName(@PathVariable String name) {
-		Optional<Impersonation> impersonations = impersonationConfiguration.getImpersonation(name);
-		if (!impersonations.isPresent()) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-		}
-		Impersonation impersonationOptional = impersonations.orElse(null);
-		return impersonationByNameDtoResourceAssembler.toResource(Collections.singletonList(impersonationOptional));
+	public ImpersonationDto getByName(@PathVariable String name) {
+
+		return impersonationConfiguration.getImpersonation(name)
+				.map(impersonation -> impersonatonDtoResourceAssembler.toResource(impersonation))
+				.orElseThrow(() -> new DataNotFoundException(name));
 	}
 
 	@PostMapping("")
-	public ResponseEntity<ImpersonationByNameDto> postAllImpersonations(@Valid @RequestBody ImpersonationDto impersonation) {
-		getNullProperties.getNullProperties(impersonation);
+	public ResponseEntity<ImpersonationDto> postAllImpersonations(@Valid @RequestBody ImpersonationDto impersonation) {
+//		getNullProperties.getNullProperties(impersonation);
 		try {
 			impersonationConfiguration.insertImpersonation(impersonation.convertToEntity());
-			List<Impersonation> impersonationList = java.util.Arrays.asList(impersonation.convertToEntity());
-			return ResponseEntity.ok(impersonationByNameDtoResourceAssembler.toResource(impersonationList));
+			return ResponseEntity.ok(impersonatonDtoResourceAssembler.toResource(impersonation.convertToEntity()));
 		} catch (ImpersonationAlreadyExistsException e) {
 			e.printStackTrace();
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND,
@@ -102,19 +95,20 @@ public class ImpersonationController {
 	}
 
 	@PutMapping("/{name}")
-	public ImpersonationByNameDto putImpersonations(@PathVariable String name,
-													@RequestBody ImpersonationDto impersonation) {
+	public ImpersonationDto putImpersonations(@PathVariable String name,
+											  @RequestBody ImpersonationDto impersonation) {
 //			getNullProperties.getNullProperties(impersonation);
 		if (!impersonation.getName().equals(name)) {
 			throw new DataNotFoundException(name);
+		} else if (impersonation.getName() == null) {
+			throw new DataBadRequestException(name);
 		}
 		try {
 			impersonationConfiguration.updateImpersonation(impersonation.convertToEntity());
-			List<Impersonation> impersonationList = java.util.Arrays.asList(impersonation.convertToEntity());
-			return impersonationByNameDtoResourceAssembler.toResource(impersonationList);
+			return impersonatonDtoResourceAssembler.toResource(impersonation.convertToEntity());
 		} catch (ImpersonationDoesNotExistException e) {
 			e.printStackTrace();
-			return null;
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
 		}
 
 	}

@@ -42,4 +42,36 @@ public class ConnectionDto extends ResourceSupport {
     public String getEnvironment() {
         return environment;
     }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setEnvironment(String environment) {
+        this.environment = environment;
+    }
+
+    public List<ConnectionParameter> getParameters() {
+        return parameters;
+    }
+
+    public void setParameters(List<ConnectionParameter> parameters) {
+        this.parameters = parameters;
+    }
 }

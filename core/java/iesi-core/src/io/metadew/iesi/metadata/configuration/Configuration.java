@@ -30,6 +30,7 @@ public abstract class Configuration<T extends Metadata, V extends MetadataKey> {
     public boolean exists(T metadata) throws SQLException {
         return get((V) metadata.getMetadataKey()).isPresent();
     }
+
     public boolean exists(V key) throws SQLException {
         return get(key).isPresent();
     }

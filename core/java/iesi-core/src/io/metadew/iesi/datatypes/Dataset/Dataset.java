@@ -37,6 +37,8 @@ public abstract class Dataset extends DataType {
     public Dataset(String name, List<String> labels, FrameworkFolderConfiguration frameworkFolderConfiguration, ExecutionRuntime executionRuntime) throws IOException, SQLException {
         this.frameworkFolderConfiguration = frameworkFolderConfiguration;
         this.executionRuntime = executionRuntime;
+        this.name = name;
+        this.labels = labels;
         this.datasetDatabase = initializeDatasetConnection(name, labels);
     }
 

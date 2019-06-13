@@ -96,7 +96,7 @@ public class HttpExecuteRequest {
                 this.getExecutionControl(), this.getActionExecution(), this.getActionExecution().getAction().getType(),
                 "setRuntimeVariables"));
         this.setSetDataset(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), "setKeyValueDataset"));
+                this.getActionExecution(), this.getActionExecution().getAction().getType(), "setDataset"));
 
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
@@ -108,7 +108,7 @@ public class HttpExecuteRequest {
                 this.getRequestBody().setInputValue(actionParameter.getValue());
             } else if (actionParameter.getName().equalsIgnoreCase("setruntimevariables")) {
                 this.getSetRuntimeVariables().setInputValue(actionParameter.getValue());
-            } else if (actionParameter.getName().equalsIgnoreCase("setdataset")) {
+            } else if (actionParameter.getName().equalsIgnoreCase("setDataset")) {
                 this.getSetDataset().setInputValue(actionParameter.getValue());
             }
         }
@@ -118,7 +118,7 @@ public class HttpExecuteRequest {
         this.getActionParameterOperationMap().put("type", this.getRequestType());
         this.getActionParameterOperationMap().put("body", this.getRequestBody());
         this.getActionParameterOperationMap().put("setRuntimeVariables", this.getSetRuntimeVariables());
-        this.getActionParameterOperationMap().put("setKeyValueDataset", this.getSetDataset());
+        this.getActionParameterOperationMap().put("setDataset", this.getSetDataset());
     }
 
     public boolean execute() {

@@ -33,7 +33,6 @@ public class ConnectionGlobalDtoResourceAssembler extends ResourceAssemblerSuppo
     }
 
     private ConnectionGlobalDto convertToDto(List<Connection> connections) {
-
         return modelMapper.map(connections.get(0), ConnectionGlobalDto.class);
 
     }

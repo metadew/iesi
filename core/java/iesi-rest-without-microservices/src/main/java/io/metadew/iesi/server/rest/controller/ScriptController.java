@@ -81,13 +81,10 @@ public class ScriptController {
 
 
 	@GetMapping("/scripts/{name}/{version}")
-	public ResponseEntity<ScriptDto> getScriptsAndVersion(@PathVariable String name, @PathVariable Long version) {
-		Optional<Script> scripts = scriptConfiguration.getScript(name, version);
-		if (!scripts.isPresent()) {
-			throw new DataNotFoundException(name, version);
-		}
-		Script script = scripts.orElse(null);
-		return ResponseEntity.ok(scriptDtoResourceAssembler.toResource(Collections.singletonList(script)));
+	public ScriptDto getScriptsAndVersion(@PathVariable String name, @PathVariable Long version) {
+		return scriptConfiguration.getScript(name, version)
+				.map(scriptDtoResourceAssembler::toResource)
+				.orElseThrow(()-> new DataNotFoundException(name, version));
 	}
 
 	@PostMapping("/scripts")
@@ -95,8 +92,7 @@ public class ScriptController {
 //		getNullProperties.getNullScript(script);
 		try {
 			scriptConfiguration.insertScript(script.convertToEntity());
-			List<Script> scriptList = java.util.Arrays.asList(script.convertToEntity());
-			return ResponseEntity.ok(scriptDtoResourceAssembler.toResource(scriptList));
+			return ResponseEntity.ok(scriptDtoResourceAssembler.toResource(script.convertToEntity()));
 		} catch (ScriptAlreadyExistsException e) {
 			e.printStackTrace();
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND,
@@ -135,19 +131,13 @@ public class ScriptController {
 //		}
 		try {
 			scriptConfiguration.updateScript(script.convertToEntity());
-			List<Script> scriptList = java.util.Arrays.asList(script.convertToEntity());
-			return scriptDtoResourceAssembler.toResource(scriptList);
+			return scriptDtoResourceAssembler.toResource(script.convertToEntity());
 		} catch (ScriptDoesNotExistException e) {
 			e.printStackTrace();
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
 		}
 
 	}
-//	@DeleteMapping("scripts")
-//	public ResponseEntity<?> deleteAllScripts() {
-//
-//		scriptConfiguration.del
-//	}
 
 	@DeleteMapping("scripts/{name}")
 	public ResponseEntity<?> deleteScript(@PathVariable String name) {

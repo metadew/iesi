@@ -9,7 +9,7 @@ import io.metadew.iesi.connection.HttpConnection;
 import io.metadew.iesi.connection.http.HttpRequest;
 import io.metadew.iesi.connection.http.HttpResponse;
 import io.metadew.iesi.datatypes.DataType;
-import io.metadew.iesi.datatypes.Dataset.Dataset;
+import io.metadew.iesi.datatypes.dataset.Dataset;
 import io.metadew.iesi.datatypes.Text;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.ActionParameter;
@@ -127,7 +127,7 @@ public class HttpExecuteRequest {
             String requestType = convertHttpRequestType(getRequestType().getValue());
             Optional<String> requestBody = convertHttpRequestBody(getRequestBody().getValue());
             boolean setRuntimeVariables = convertSetRuntimeVariables(getSetRuntimeVariables().getValue());
-            // TODO: convert from string to Dataset DataType
+            // TODO: convert from string to dataset DataType
             String outputDatasetReferenceName = convertOutputDatasetReferenceName(getSetDataset().getValue());
 
             return executeHttpRequest(requestName, requestType, requestBody, setRuntimeVariables, outputDatasetReferenceName);

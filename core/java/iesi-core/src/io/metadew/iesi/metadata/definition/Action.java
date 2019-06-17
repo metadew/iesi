@@ -31,7 +31,7 @@ public class Action {
         this.id = id;
         this.number = number;
         this.type = type;
-        this.name = name;c
+        this.name = name;
         this.description = description;
         this.component = component;
         this.condition = condition;

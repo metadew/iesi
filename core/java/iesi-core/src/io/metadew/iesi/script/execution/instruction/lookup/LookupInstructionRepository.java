@@ -25,7 +25,7 @@ public class LookupInstructionRepository {
         // Environment
         EnvironmentLookup environmentLookup = new EnvironmentLookup(executionControl);
         lookupInstructions.put(environmentLookup.getKeyword(), environmentLookup);
-        // Dataset
+        // dataset
         DatasetLookup datasetLookup = new DatasetLookup(executionControl);
         lookupInstructions.put(datasetLookup.getKeyword(), datasetLookup);
 

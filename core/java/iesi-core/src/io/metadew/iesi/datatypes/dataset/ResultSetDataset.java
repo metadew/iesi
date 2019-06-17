@@ -1,4 +1,4 @@
-package io.metadew.iesi.datatypes.Dataset;
+package io.metadew.iesi.datatypes.dataset;
 
 import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.datatypes.DataType;

@@ -159,7 +159,7 @@ public class DatasetConfiguration {
         return result;
     }
 
-    // GEt Dataset
+    // GEt dataset
     @SuppressWarnings({"rawtypes", "unchecked"})
     public Dataset getDataset(String datasetName) {
         Dataset dataset = new Dataset();

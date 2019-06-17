@@ -1,0 +1,29 @@
+---
+type: Script
+data:
+  type: "script"
+  name: "instruction.resolvement.1"
+  description: "test nested resolvements"
+  actions:
+  - number: 1
+    type: "fwk.setParameterValue"
+    name: "set parameter according to value"
+    description: "default"
+    errorExpected: "N"
+    errorStop: "Y"
+    parameters:
+    - name: "name"
+      value : "parameter"
+    - name: "value"
+      value : "{\"amount\": 10,\"authorisation_timestamp\":\"{{*time.format({{*time.now()}}, yyyy-MM-dd'T'HH:mm:ss.SSS'Z')}}\",\"completion_timestamp\":\"{{*time.format({{*time.now()}}, yyyy-MM-dd'T'HH:mm:ss.SSS'Z')}}\""
+    - number: 2
+    type: "eval.assertEquals"
+    name: "check parameter value"
+    description: "default"
+    errorExpected: "N"
+    errorStop: "Y"
+    parameters:
+    - name: "expected"
+      value : ""
+    - name: "actual"
+      value : "#parameter#"

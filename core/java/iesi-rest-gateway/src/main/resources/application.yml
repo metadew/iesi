@@ -1,46 +1,54 @@
 server:
-  port: 8082
+  port: ${iesi-GatewayPort}
+  http2:
+    enabled: true
+  use-forward-headers: true
+  ssl:
+    enabled: true
+    key-alias: ${iesi-GatewayKeyalias}
+    key-password: ${iesi-GatewayKeypassword}
+    key-store: classpath:${iesi-GatewayKeystore}
+    key-store-password: ${iesi-GatewayKeystorepassword}
+    key-store-type: ${iesi-GatewayKeystoreType}
+
 spring:
   application:
-      name: iesi-gateway
-#  cloud:
-#    config:
-#      password: ${iesi-admin-user}
-#      username: ${iesi-admin}
-#      uri:
-#      - http://localhost:8888
-spring.security.user:
-  name: admin
-  password: admin
-  
+      name: iesi-gateway, iesi-rest
+
 security:
   jwt:
     public-key: classpath:public.txt
-    
+
+management:
+  endpoints:
+    web:
+      exposure:
+        exclude: '*'
 zuul:
   sensitiveHeaders: Cookie,Set-Cookie
   routes: 
     environments:
       service-id: environments
       path: /api/environments/**
-      url: https://localhost:8080/api/environments
+      url:  ${iesi-GatewayFullUrl}/api/environments
 
     connections:
       service-id: connections
       path: /api/connections/**
-      url: https://localhost:8080/api/connections
+      url:  ${iesi-GatewayFullUrl}/api/connections
 
     components:
       service-id: components
       path: /api/components/**
-      url: https://localhost:8080/api/components
+      url:  ${iesi-GatewayFullUrl}/api/components
       
     impersonations:
       service-id: impersonations
       path: /api/impersonations/**
-      url: https://localhost:8080/api/impersonations
+      url:  ${iesi-GatewayFullUrl}/api/impersonations
 
     spring-oauth-resource:
       service-id: oauth
       path: /api/oauth/token
-      url: https://localhost:8080
+      url: ${iesi-GatewayFullUrl}
+  ssl-hostname-validation-enabled: false

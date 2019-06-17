@@ -1,0 +1,35 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+  http2:
+    enabled: true
+  ssl:
+    enabled: true
+    key-alias: iesi
+    key-store: classpath:iesi.p12
+    key-store-type: PKCS12
+    key-password: password
+    key-store-password: password
+  use-forward-headers: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        exclude: '*'
+security:
+  jwt:
+    key-store: classpath:francois.jks
+    key-store-password: francois
+    key-pair-alias: francois
+    key-pair-password: francois
+
+spring:
+  datasource:
+    url: jdbc:h2:~/token
+    schema: classpath:/schema.sql
+    data: classpath:data.sql
+  h2:
+    console:
+      enabled: true

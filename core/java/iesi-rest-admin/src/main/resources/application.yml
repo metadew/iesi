@@ -9,8 +9,12 @@ spring:
         favicon-danger: /assets/img/iesi.png
         title: IESI
         brand: <img src="assets/img/iesi.png"><span>IESI</span>
-        public-url: http://localhost:8081
+        public-url: ${iesi-adminFullUrl}
   application:
-    name: admin-server
+    name: iesi-admin
   aop:
     proxy-target-class: true
+  security:
+    user:
+      name: ${iesi-adminUser}
+      password: ${iesi-adminPassword}

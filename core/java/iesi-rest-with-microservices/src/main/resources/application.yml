@@ -1,0 +1,41 @@
+server:
+  port: ${iesi-HttpsPort}
+  servlet:
+    context-path: /api
+  http2:
+    enabled: true
+  ssl:
+    enabled: true
+  use-forward-headers: true
+
+spring.security.user:
+  name: ${iesi-adminUser}
+  password: ${iesi-adminPassword}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+security:
+  jwt:
+    key-store: classpath:${iesi-security-keystore}
+    key-store-password: ${iesi-security-keystore-password}
+    key-pair-alias: ${iesi-security-keypair-alias}
+    key-pair-password: ${iesi-security-keypair-password}
+
+spring:
+  application:
+    name: iesi-rest, iesi-admin, iesi-cloud
+  datasource:
+    url: jdbc:h2:~/token
+    schema: classpath:/schema.sql
+    data: classpath:data.sql
+  h2:
+    console:
+      enabled: true
+  boot:
+    admin:
+      client:
+        url: ${iesi-adminFullUrl}
+        username: ${iesi-adminUser}
+        password: ${iesi-adminPassword}

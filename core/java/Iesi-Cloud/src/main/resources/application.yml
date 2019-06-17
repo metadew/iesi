@@ -1,2 +1,18 @@
 server:
   port: 8888
+
+management:
+  endpoints:
+    web:
+      exposure:
+        exclude: '*'
+spring:
+  datasource:
+    url: jdbc:h2:~/cloud
+    schema: classpath:/schema.sql
+    data: classpath:data.sql
+  h2:
+    console:
+      enabled: true
+  application:
+    name: spring-cloud

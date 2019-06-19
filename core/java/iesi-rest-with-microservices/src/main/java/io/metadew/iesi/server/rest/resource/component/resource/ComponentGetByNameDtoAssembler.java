@@ -24,11 +24,11 @@ public class ComponentGetByNameDtoAssembler extends ResourceAssemblerSupport<Lis
     @Override
     public ComponentByNameDto toResource(List<Component> components) {
         ComponentByNameDto componentDto = convertToDto(components);
-        Link versionLink = linkTo(methodOn(ComponentsController.class).getByName(String.valueOf(components.get(0).getVersion().getNumber())))
-                    .withRel("version");
+        Link versionLink = linkTo(methodOn(ComponentsController.class).getComponentsAndVersion(components.get(0).getName(),components.get(0).getVersion().getNumber()))
+                    .withRel("version: " + componentDto.getVersions().get(0));
         componentDto.add(linkTo(methodOn(ComponentsController.class)
                 .getByName(componentDto.getName()))
-                .withSelfRel());
+               .withRel("component:" + componentDto.getName()));
         componentDto.add(versionLink);
         return componentDto;
     }

@@ -26,55 +26,51 @@ import java.util.stream.Collectors;
 
 @Repository
 public class GetNullProperties {
-	
-		public void getNullEnvironment(@Valid EnvironmentDto environments) {
 
-			if (environments.getDescription() == null || environments.getName() == null
-					|| environments.getParameters().get(0).getName() == null || environments.getParameters().get(0).getValue() == null ) {
-				throw new SqlNotFoundException();
-			}
-	}
+    public void getNullEnvironment(@Valid EnvironmentDto environments) {
 
-	public void getNullImpersonation(@Valid ImpersonationDto impersonation){
+        if (environments.getDescription() == null || environments.getName() == null
+                || environments.getParameters().get(0).getName() == null || environments.getParameters().get(0).getValue() == null) {
+            throw new SqlNotFoundException();
+        }
+    }
 
-			if(impersonation.getName() == null || impersonation.getDescription() == null || impersonation.getParameters().get(0).getConnection() == null ||
-					impersonation.getParameters().get(0).getDescription() == null || impersonation.getParameters().get(0).getImpersonation() == null)
-			{
-				throw new SqlNotFoundException();
-			}
-	}
+    public void getNullImpersonation(@Valid ImpersonationDto impersonation) {
 
-		public void getNullConnection(@Valid ConnectionDto connection){
+        if (impersonation.getName() == null || impersonation.getDescription() == null || impersonation.getParameters().get(0).getConnection() == null ||
+                impersonation.getParameters().get(0).getDescription() == null || impersonation.getParameters().get(0).getImpersonation() == null) {
+            throw new SqlNotFoundException();
+        }
+    }
 
-			if(connection.getEnvironment() == null || connection.getName() == null || connection.getDescription() == null ||
-			connection.getType() == null || connection.getParameters().get(0).getName() == null || connection.getParameters().get(0).getValue() == null )
-			{
-				throw new SqlNotFoundException();
-			}
-	}
+    public void getNullConnection(@Valid ConnectionDto connection) {
 
-		public void getNullComponent (@Valid ComponentDto component){
-			List<ComponentDto> components = new ArrayList<>();
-			List<List<ComponentAttribute>> attributes = components.stream().map(x -> x.getAttributes())
-					.collect(Collectors.toList());
-			if(component.getName() == null || component.getType() == null || component.getDescription() == null ||
-			component.getVersion().getDescription() == null || component.getParameters().get(0).getName() == null || component.getParameters().get(0).getValue() == null ||
-					attributes == null
-			) {
-					throw new SqlNotFoundException();
-			}
-		}
+        if (connection.getEnvironment() == null || connection.getName() == null || connection.getDescription() == null ||
+                connection.getType() == null || connection.getParameters().get(0).getName() == null || connection.getParameters().get(0).getValue() == null) {
+            throw new SqlNotFoundException();
+        }
+    }
 
-		public void getNullScript (@Valid ScriptDto script){
-			List<ScriptDto> scripts = new ArrayList<>();
-			List<List<ScriptActionDto>> action = scripts.stream().map(x -> x.getActions()).collect(Collectors.toList());
-			List<ScriptVersionDto> version = scripts.stream().map(x -> x.getVersion()).collect(Collectors.toList());
-			List<List<ScriptParameter>> parameters = scripts.stream().map(x -> x.getParameters())
-					.collect(Collectors.toList());
-			if (script.getName() == null || script.getDescription() == null
-					|| script.getId() == null ||  version == null
-					|| action == null || parameters == null) {
-				throw new SqlNotFoundException();
-			}
-		}
+    public void getNullComponent(@Valid ComponentDto component) {
+        List<ComponentDto> components = new ArrayList<>();
+        List<List<ComponentAttribute>> attributes = components.stream().map(x -> x.getAttributes())
+                .collect(Collectors.toList());
+        if (component.getName() == null || component.getType() == null || component.getDescription() == null ||
+                component.getVersion().getDescription() == null || component.getParameters().get(0).getName() == null || component.getParameters().get(0).getValue() == null ||
+                attributes == null
+        ) {
+            throw new SqlNotFoundException();
+        }
+    }
+
+    public void getNullScript(@Valid ScriptDto script) {
+        List<ScriptDto> scripts = new ArrayList<>();
+        List<List<ScriptActionDto>> action = scripts.stream().map(x -> x.getActions()).collect(Collectors.toList());
+//			List<List<ScriptParameter>> parameters = scripts.stream().map(x -> x.getParameters())
+//					.collect(Collectors.toList());
+        if (script.getName() == null || script.getDescription() == null
+                || script.getVersion().getDescription() == null ) {
+            throw new SqlNotFoundException();
+        }
+    }
 }

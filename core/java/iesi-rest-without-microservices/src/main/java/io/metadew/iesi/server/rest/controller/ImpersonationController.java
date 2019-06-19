@@ -82,7 +82,7 @@ public class ImpersonationController {
 	@PutMapping("")
 	public HalMultipleEmbeddedResource<ImpersonationDto> putAllConnections(@Valid @RequestBody List<ImpersonationDto> impersonationDtos) {
 		HalMultipleEmbeddedResource<ImpersonationDto> halMultipleEmbeddedResource = new HalMultipleEmbeddedResource<>();
-//		getListNullProperties.getNullImpersonation(impersonationDtos);
+		getListNullProperties.getNullImpersonation(impersonationDtos);
 		for (ImpersonationDto impersonationDto : impersonationDtos) {
 			try {
 				impersonationConfiguration.updateImpersonation(impersonationDto.convertToEntity());

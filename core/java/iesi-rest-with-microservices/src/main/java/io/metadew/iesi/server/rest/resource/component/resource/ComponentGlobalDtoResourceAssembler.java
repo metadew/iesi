@@ -37,5 +37,3 @@ public class ComponentGlobalDtoResourceAssembler extends ResourceAssemblerSuppor
         }
 }
 
-
-

@@ -34,6 +34,6 @@ spring:
     console:
       enabled: true
 
-logging:
-  level:
-    ROOT: DEBUG
+#logging:
+#  level:
+#    ROOT: DEBUG

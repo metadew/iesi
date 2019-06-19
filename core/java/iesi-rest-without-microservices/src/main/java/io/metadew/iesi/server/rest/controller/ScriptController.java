@@ -1,8 +1,15 @@
 package io.metadew.iesi.server.rest.controller;
 
+import io.metadew.iesi.framework.definition.Framework;
+import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
+import io.metadew.iesi.launch.ScriptLauncher;
+import io.metadew.iesi.launch.operation.ScriptLaunchOperation;
 import io.metadew.iesi.metadata.configuration.ScriptConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.ScriptAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.ScriptDoesNotExistException;
+import io.metadew.iesi.metadata.definition.Request;
+import io.metadew.iesi.metadata.definition.RequestParameter;
 import io.metadew.iesi.metadata.definition.Script;
 import io.metadew.iesi.server.rest.error.DataBadRequestException;
 import io.metadew.iesi.server.rest.error.DataNotFoundException;
@@ -11,9 +18,7 @@ import io.metadew.iesi.server.rest.error.GetNullProperties;
 import io.metadew.iesi.server.rest.pagination.ScriptCriteria;
 import io.metadew.iesi.server.rest.pagination.ScriptPagination;
 import io.metadew.iesi.server.rest.resource.HalMultipleEmbeddedResource;
-import io.metadew.iesi.server.rest.resource.script.dto.ScriptByNameDto;
-import io.metadew.iesi.server.rest.resource.script.dto.ScriptDto;
-import io.metadew.iesi.server.rest.resource.script.dto.ScriptGlobalDto;
+import io.metadew.iesi.server.rest.resource.script.dto.*;
 import io.metadew.iesi.server.rest.resource.script.resource.ScriptByNameDtoAssembler;
 import io.metadew.iesi.server.rest.resource.script.resource.ScriptDtoResourceAssembler;
 import io.metadew.iesi.server.rest.resource.script.resource.ScriptGlobalDtoResourceAssembler;
@@ -24,6 +29,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -36,6 +42,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 @RestController
 public class ScriptController {
 
+    private final FrameworkInstance frameworkInstance;
     private ScriptConfiguration scriptConfiguration;
 
     private final GetNullProperties getNullProperties;
@@ -46,12 +53,13 @@ public class ScriptController {
 
     @Autowired
     ScriptController(ScriptConfiguration scriptConfiguration,
-                     GetNullProperties getNullProperties, ScriptDtoResourceAssembler scriptDtoResourceAssembler, GetListNullProperties getListNullProperties, ScriptPagination scriptPagination) {
+                     GetNullProperties getNullProperties, ScriptDtoResourceAssembler scriptDtoResourceAssembler, GetListNullProperties getListNullProperties, ScriptPagination scriptPagination, FrameworkInstance frameworkInstance) {
         this.scriptPagination = scriptPagination;
         this.scriptConfiguration = scriptConfiguration;
         this.getListNullProperties = getListNullProperties;
         this.getNullProperties = getNullProperties;
         this.scriptDtoResourceAssembler = scriptDtoResourceAssembler;
+        this.frameworkInstance = frameworkInstance;
     }
 
     @Autowired
@@ -91,7 +99,7 @@ public class ScriptController {
 
     @PostMapping("/scripts")
     public ScriptDto postScript(@Valid @RequestBody ScriptDto script) {
-//		getNullProperties.getNullScript(script);
+		getNullProperties.getNullScript(script);
         try {
             scriptConfiguration.insertScript(script.convertToEntity());
             return scriptDtoResourceAssembler.toResource(script.convertToEntity());
@@ -100,6 +108,20 @@ public class ScriptController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                     "Script " + script.getName() + " already exists");
         }
+    }
+
+    @PostMapping("/scripts/{name}/{version}/execute")
+    public ResponseEntity postExecuteScript (@Valid @RequestBody ScriptExecutionDto scriptExecution, @PathVariable String name, @PathVariable String version){
+        List<RequestParameter> requestParameters = new ArrayList<>();
+		requestParameters.add(new RequestParameter("version", "number", Long.toString(scriptExecution.getVersion())));
+		requestParameters.add(new RequestParameter("paramlist", "list", scriptExecution.getParameters().stream().map(scriptParameter -> scriptParameter.getName() + "=" + scriptParameter.getValue()).collect(Collectors.joining(","))));
+		requestParameters.add(new RequestParameter("mode", "name", "script"));
+		requestParameters.add(new RequestParameter("exit", "flag", Boolean.toString(false)));
+
+		Request request = new Request("script", Long.toString(System.currentTimeMillis()), scriptExecution.getScript(), "", 1, "",scriptExecution.getScript(),scriptExecution.getEnvironment(),"","","",requestParameters);
+		ScriptLaunchOperation.execute(frameworkInstance, request);
+        return ResponseEntity.ok().build();
+
     }
 
     @PutMapping("/scripts")
@@ -115,7 +137,7 @@ public class ScriptController {
                         .withRel(scriptDto.getName()));
             } catch (ScriptDoesNotExistException e) {
                 e.printStackTrace();
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+                throw new DataNotFoundException(scriptDto.getName());
             }
         }
 
@@ -126,11 +148,11 @@ public class ScriptController {
     public ScriptDto putScripts(@PathVariable String name, @PathVariable Long version,
                                 @RequestBody ScriptDto script) {
 //		getNullProperties.getNullScript(script);
-//		if (!script.getName().equals(name) ) {
-//			throw new DataBadRequestException(name);
-//		} else if (!scriptConfiguration.getScript(name, version).isPresent()){
-//			throw new DataNotFoundException(name);
-//		}
+		if (!script.getName().equals(name) ) {
+			throw new DataBadRequestException(name);
+		} else if (!scriptConfiguration.getScript(name, version).isPresent()){
+			throw new DataNotFoundException(name);
+		}
         try {
             scriptConfiguration.updateScript(script.convertToEntity());
             return scriptDtoResourceAssembler.toResource(script.convertToEntity());

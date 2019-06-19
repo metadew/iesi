@@ -83,12 +83,12 @@ public class EnvironmentsController {
 
 	//
 	@PostMapping("/environments")
-	public ResponseEntity<EnvironmentDto> postAllEnvironments(@Valid @RequestBody EnvironmentDto environment) {
+	public EnvironmentDto postAllEnvironments(@Valid @RequestBody EnvironmentDto environment) {
 		getNullProperties.getNullEnvironment(environment);
 		try {
 			// TODO: make insert return environment
 			environmentConfiguration.insertEnvironment(environment.convertToEntity());
-			return ResponseEntity.ok(environmentDtoResourceAssembler.toResource(environment.convertToEntity()));
+			return environmentDtoResourceAssembler.toResource(environment.convertToEntity());
 		} catch (EnvironmentAlreadyExistsException e) {
 			e.printStackTrace();
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND,
@@ -109,7 +109,7 @@ public class EnvironmentsController {
 						.withRel(environmentDto.getName()));
 			} catch (EnvironmentDoesNotExistException e) {
 				e.printStackTrace();
-				throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+				throw new DataNotFoundException(environmentDto.getName());
 			}
 		}
 

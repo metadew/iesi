@@ -163,11 +163,13 @@ public class ScriptConfiguration {
         ActionConfiguration actionConfiguration = new ActionConfiguration(frameworkExecution);
         StringBuilder sql = new StringBuilder();
 
+        // TODO: discuss script types
+
         if (getScriptByName(script.getName()).size() == 0) {
             sql.append("INSERT INTO ").append(this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Scripts"));
             sql.append(" (SCRIPT_ID, SCRIPT_TYP_NM, SCRIPT_NM, SCRIPT_DSC) VALUES (");
             sql.append(SQLTools.GetStringForSQL(script.getId())).append(",");
-            sql.append(SQLTools.GetStringForSQL(script.getType())).append(",");
+            sql.append(SQLTools.GetStringForSQL(script.getType()==null? "script":script.getType())).append(",");
             sql.append(SQLTools.GetStringForSQL(script.getName())).append(",");
             sql.append(SQLTools.GetStringForSQL(script.getDescription())).append(");");
         }

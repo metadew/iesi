@@ -37,7 +37,7 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
 		resources.tokenStore(tokenStore());
 	}
 
-	private static final String[] AUTH_WHITELIST = {"/api/oauth/token" };
+	private static final String[] AUTH_WHITELIST = {"/api/oauth/token"};
 
 	@Override
 	public void configure(final HttpSecurity http) throws Exception {

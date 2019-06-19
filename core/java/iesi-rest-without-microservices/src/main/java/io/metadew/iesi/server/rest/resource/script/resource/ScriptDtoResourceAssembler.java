@@ -7,6 +7,7 @@ import io.metadew.iesi.server.rest.resource.script.dto.ScriptActionDto;
 import io.metadew.iesi.server.rest.resource.script.dto.ScriptDto;
 import io.metadew.iesi.server.rest.resource.script.dto.ScriptVersionDto;
 import org.modelmapper.ModelMapper;
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
 import org.springframework.stereotype.Component;
 
@@ -29,15 +30,19 @@ public class ScriptDtoResourceAssembler extends ResourceAssemblerSupport<Script,
     @Override
     public ScriptDto toResource(Script script) {
         ScriptDto scriptByNameDto = convertToDto(script);
-        scriptByNameDto.add(linkTo(methodOn(ScriptController.class)
-                .getByNameScript(scriptByNameDto.getName()))
-                .withSelfRel());
+        Link selfLink = linkTo(methodOn(ScriptController.class).getScriptsAndVersion(script.getName(),
+                script.getVersion().getNumber()))
+                .withRel("script:" + scriptByNameDto.getName() + "-" + scriptByNameDto.getVersion().getNumber());
+        scriptByNameDto.add(selfLink);
+        Link versionLink = linkTo(methodOn(ScriptController.class).getByNameScript(script.getName()))
+                .withRel("script");
+        scriptByNameDto.add(versionLink);
         return scriptByNameDto;
     }
 
     private ScriptDto convertToDto(Script script) {
         return new ScriptDto(script.getName(), script.getType(), script.getDescription(),
                 ScriptVersionDto.convertToDto(script.getVersion()), script.getParameters(),
-                script.getActions().stream().map(ScriptActionDto::convertToDto).collect(Collectors.toList()));
+                script.getActions().stream().map(ScriptActionDto :: convertToDto).collect(Collectors.toList()));
     }
 }

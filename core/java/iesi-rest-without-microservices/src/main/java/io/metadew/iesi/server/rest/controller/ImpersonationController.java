@@ -68,11 +68,11 @@ public class ImpersonationController {
 	}
 
 	@PostMapping("")
-	public ResponseEntity<ImpersonationDto> postAllImpersonations(@Valid @RequestBody ImpersonationDto impersonationDto) {
+	public ImpersonationDto postAllImpersonations(@Valid @RequestBody ImpersonationDto impersonationDto) {
 		getNullProperties.getNullImpersonation(impersonationDto);
 		try {
 			impersonationConfiguration.insertImpersonation(impersonationDto.convertToEntity());
-			return ResponseEntity.ok(impersonatonDtoResourceAssembler.toResource(impersonationDto.convertToEntity()));
+			return impersonatonDtoResourceAssembler.toResource(impersonationDto.convertToEntity());
 		} catch (ImpersonationAlreadyExistsException e) {
 			e.printStackTrace();
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND,
@@ -82,7 +82,7 @@ public class ImpersonationController {
 	@PutMapping("")
 	public HalMultipleEmbeddedResource<ImpersonationDto> putAllConnections(@Valid @RequestBody List<ImpersonationDto> impersonationDtos) {
 		HalMultipleEmbeddedResource<ImpersonationDto> halMultipleEmbeddedResource = new HalMultipleEmbeddedResource<>();
-		getListNullProperties.getNullImpersonation(impersonationDtos);
+//		getListNullProperties.getNullImpersonation(impersonationDtos);
 		for (ImpersonationDto impersonationDto : impersonationDtos) {
 			try {
 				impersonationConfiguration.updateImpersonation(impersonationDto.convertToEntity());
@@ -92,7 +92,7 @@ public class ImpersonationController {
 						.withRel(impersonationDto.getName()));
 			} catch (ImpersonationDoesNotExistException e) {
 				e.printStackTrace();
-				throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+				throw new DataNotFoundException(impersonationDto.getName());
 			}
 		}
 

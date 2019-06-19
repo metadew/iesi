@@ -29,7 +29,7 @@ public class ScriptByNameDtoAssembler extends ResourceAssemblerSupport<List<Scri
     public ScriptByNameDto toResource(List<Script> scripts) {
         ScriptByNameDto scriptDto = convertToDto(scripts);
         scriptDto.add(linkTo(methodOn(ScriptController.class)
-                .getByNameScript(scriptDto.getDescription()))
+                .getByNameScript(scriptDto.getName()))
                 .withSelfRel());
         Link versionLink = linkTo(methodOn(ScriptController.class).getByNameScript(String.valueOf(scripts.get(0).getVersion().getNumber())))
                     .withRel("version");

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 @EnableZuulProxy
 @EnableOAuth2Sso
 @Controller
+
 public class IesiGatewayApplication {
 
 	public static void main(String[] args) {

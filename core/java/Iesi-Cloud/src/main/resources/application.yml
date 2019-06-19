@@ -11,8 +11,5 @@ spring:
     url: jdbc:h2:~/cloud
     schema: classpath:/schema.sql
     data: classpath:data.sql
-  h2:
-    console:
-      enabled: true
   application:
-    name: spring-cloud
+    name: SpringCloud

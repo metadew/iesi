@@ -49,7 +49,7 @@ public class GetListNullProperties {
 					.collect(Collectors.toList());
 			List<List<ComponentAttribute>> attributes = components.stream().map(x -> x.getAttributes())
 					.collect(Collectors.toList());
-			if (components.get(index).getDescription() == null || components.get(index).getId() == null
+			if (components.get(index).getDescription() == null || components.get(index).getVersion().getDescription() == null
 					|| components.get(index).getName() == null || parameters == null || attributes == null
 				) {
 				throw new SqlNotFoundException();
@@ -75,7 +75,7 @@ public class GetListNullProperties {
 			List<List<ScriptParameter>> parameters = scripts.stream().map(x -> x.getParameters())
 					.collect(Collectors.toList());
 			if (scripts.get(index).getName() == null || scripts.get(index).getDescription() == null
-					|| scripts.get(index).getId() == null ||  version == null
+					||   version == null
 					|| action == null || parameters == null) {
 				throw new SqlNotFoundException();
 			}

@@ -21,8 +21,8 @@ VALUES
     250000
   );
 
-
-INSERT INTO users (username,password,enabled) 
+--
+INSERT INTO users (username,password,enabled)
     VALUES ('john', '$2a$10$vCXMWCn7fDZWOcLnIEhmK.74dvK1Eh8ae2WrWlhr2ETPLoxQctN4.', TRUE);
    INSERT INTO users (username,password,enabled) 
     VALUES ('admin','$2a$10$dJYXnn2ztBU72ooXSyl9.u/xF29ADNp3mbQYy/6cvkiGLskNG1UQi', TRUE);

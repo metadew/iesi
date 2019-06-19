@@ -47,8 +47,12 @@ zuul:
       path: /api/impersonations/**
       url:  ${iesi-GatewayFullUrl}/api/impersonations
 
+    scripts:
+      service-id: scripts
+      path: /api/scripts/**
+      url:  ${iesi-GatewayFullUrl}/api/scripts
+
     spring-oauth-resource:
       service-id: oauth
       path: /api/oauth/token
       url: ${iesi-GatewayFullUrl}
-  ssl-hostname-validation-enabled: false

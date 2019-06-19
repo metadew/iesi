@@ -27,7 +27,7 @@ spring:
   application:
     name: iesi-rest, iesi-admin, iesi-cloud
   datasource:
-    url: jdbc:h2:~/token
+    url: jdbc:h2:~/token2
     schema: classpath:/schema.sql
     data: classpath:data.sql
   h2:
@@ -39,3 +39,5 @@ spring:
         url: ${iesi-adminFullUrl}
         username: ${iesi-adminUser}
         password: ${iesi-adminPassword}
+        instance:
+          name: IESI_REST

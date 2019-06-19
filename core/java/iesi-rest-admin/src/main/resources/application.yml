@@ -1,5 +1,12 @@
 server:
   port: ${iesi-adminPort}
+  ssl:
+    enabled: true
+    key-alias: ${iesi-adminkeyalias}
+    key-password: ${iesi-adminkeypassword}
+    key-store: classpath:${iesi-adminkeystore}
+    key-store-password: ${iesi-adminkeystorepassword}
+    key-store-type: ${iesi-adminkeystoretype}
 
 spring:
   boot:
@@ -18,3 +25,5 @@ spring:
     user:
       name: ${iesi-adminUser}
       password: ${iesi-adminPassword}
+
+

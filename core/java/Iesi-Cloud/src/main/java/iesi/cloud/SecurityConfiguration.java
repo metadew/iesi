@@ -40,12 +40,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 //		http.csrf().disable().httpBasic().and().authorizeRequests()
 //				.antMatchers("/**/**").permitAll();
 		http.csrf().disable().httpBasic().and().authorizeRequests()
-				.antMatchers("/encrypt/**").authenticated();
+				.antMatchers("/encrypt/**").authenticated()
+				.antMatchers("/decrypt/**").authenticated();
 		http.authorizeRequests()
-				.antMatchers("/iesi/**").authenticated()
-				.antMatchers("/decrypt/**").authenticated()
-				.antMatchers("/actuator/**" ).authenticated()
-				.antMatchers("/h2-console/**").permitAll();
+				.antMatchers("/iesi/**").denyAll()
+				.antMatchers("/actuator/**" ).denyAll()
+				.antMatchers("/h2-console/**").denyAll();
 
 	}
 

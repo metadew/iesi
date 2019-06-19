@@ -2,6 +2,7 @@ package io.metadew.iesi.server.rest.resource.connection.resource;
 
 import io.metadew.iesi.metadata.definition.Connection;
 import io.metadew.iesi.server.rest.controller.ConnectionsController;
+import io.metadew.iesi.server.rest.controller.EnvironmentsController;
 import io.metadew.iesi.server.rest.resource.connection.dto.ConnectionDto;
 import org.modelmapper.ModelMapper;
 import org.springframework.hateoas.Link;
@@ -27,7 +28,7 @@ public class ConnectionDtoResourceAssembler extends ResourceAssemblerSupport<Con
         Link selfLink = linkTo(methodOn(ConnectionsController.class).getByNameandEnvironment(connection.getName(), connection.getEnvironment()))
                 .withSelfRel();
         connectionDto.add(selfLink);
-        Link environmentLink = linkTo(methodOn(ConnectionsController.class).getByName(connection.getEnvironment()))
+        Link environmentLink = linkTo(methodOn(EnvironmentsController.class).getByName(connection.getEnvironment()))
                 .withRel("environment");
         connectionDto.add(environmentLink);
         return connectionDto;

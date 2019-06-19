@@ -415,7 +415,7 @@ public class ScriptConfiguration {
                 throw new RuntimeException("script.error.notfound");
             } else if (crsScript.size() > 1) {
                 frameworkExecution.getFrameworkLog().log(MessageFormat.format(
-                        "Found multiple implementations for script {0}-{1}. Returning first implementation", script.getName(), script.getVersion().getNumber()), Level.DEBUG);
+                        "Found multiple implementations for script {0}-{1}. Returning first implementation", scriptName, versionNumber), Level.DEBUG);
             }
             crsScript.next();
             String scriptId = crsScript.getString("SCRIPT_ID");
@@ -424,7 +424,7 @@ public class ScriptConfiguration {
             Optional<ScriptVersion> scriptVersion = scriptVersionConfiguration.getScriptVersion(scriptId, versionNumber);
             if (!scriptVersion.isPresent()) {
                 frameworkExecution.getFrameworkLog().log(MessageFormat.format(
-                        "Cannot find version {1} for script {0}.", script.getName(), script.getVersion().getNumber()), Level.WARN);
+                        "Cannot find version {1} for script {0}.", scriptName, versionNumber), Level.WARN);
                 return Optional.empty();
             }
 

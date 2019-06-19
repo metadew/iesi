@@ -34,8 +34,8 @@ public class ScriptParameterConfiguration {
                 " (SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_PAR_NM, SCRIPT_PAR_VAL) VALUES (" +
                 SQLTools.GetStringForSQL(scriptId) + "," +
                 scriptVersionNumber + "," +
-                SQLTools.GetStringForSQL(this.getScriptParameter().getName()) + "," +
-                SQLTools.GetStringForSQL(this.getScriptParameter().getValue()) + ");";
+                SQLTools.GetStringForSQL(scriptParameter.getName()) + "," +
+                SQLTools.GetStringForSQL(scriptParameter.getValue()) + ");";
     }
 
 

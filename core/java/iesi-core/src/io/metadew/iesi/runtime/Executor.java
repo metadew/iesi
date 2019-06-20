@@ -41,7 +41,6 @@ public class Executor {
 					RequestStatus.RUNNING.value(), LocalDateTime.parse(request.getTimestamp()), LocalDateTime.now(), null);
 			requestResultConfiguration.insert(requestResult);
 
-			System.out.println(request.getType());
 			if (request.getType() != null) {
 				switch (request.getType()) {
 				case "script":

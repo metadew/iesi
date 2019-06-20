@@ -77,7 +77,7 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 
     @Override
     public void configure(final ClientDetailsServiceConfigurer clients) throws Exception {
-        // point to sql database with users etc.
+
         clients.jdbc(this.dataSource);
     }
     @Override

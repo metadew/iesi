@@ -1,7 +1,7 @@
 package io.metadew.iesi.datatypes;
 
-import io.metadew.iesi.datatypes.Dataset.Dataset;
-import io.metadew.iesi.datatypes.Dataset.KeyValueDataset;
+import io.metadew.iesi.datatypes.dataset.Dataset;
+import io.metadew.iesi.datatypes.dataset.KeyValueDataset;
 import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 

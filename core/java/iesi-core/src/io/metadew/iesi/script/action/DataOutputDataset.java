@@ -1,8 +1,8 @@
 package io.metadew.iesi.script.action;
 
 import io.metadew.iesi.datatypes.DataType;
-import io.metadew.iesi.datatypes.Dataset.Dataset;
-import io.metadew.iesi.datatypes.Dataset.KeyValueDataset;
+import io.metadew.iesi.datatypes.dataset.Dataset;
+import io.metadew.iesi.datatypes.dataset.KeyValueDataset;
 import io.metadew.iesi.datatypes.Text;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.ActionParameter;

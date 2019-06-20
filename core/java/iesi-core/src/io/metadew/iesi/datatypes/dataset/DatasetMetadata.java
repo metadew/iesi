@@ -1,4 +1,4 @@
-package io.metadew.iesi.datatypes.Dataset;
+package io.metadew.iesi.datatypes.dataset;
 
 import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.SqliteDatabase;
@@ -78,7 +78,7 @@ public class DatasetMetadata {
 
 
         if (cachedRowSetFileTable.size() == 0) {
-            throw new RuntimeException(MessageFormat.format("Dataset id {0} is does not have an implementation. " +
+            throw new RuntimeException(MessageFormat.format("dataset id {0} is does not have an implementation. " +
                     "Please implement this dataset", datasetName));
         } else if (cachedRowSetFileTable.size() > 1) {
             executionRuntime.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format("Found more than implementation for dataset id {0}. " +
@@ -98,7 +98,7 @@ public class DatasetMetadata {
 
 
         if (cachedRowSetFileTable.size() == 0) {
-            throw new RuntimeException(MessageFormat.format("Dataset id {0} is does not have an implementation. " +
+            throw new RuntimeException(MessageFormat.format("dataset id {0} is does not have an implementation. " +
                     "Please implement this dataset", datasetName));
         } else if (cachedRowSetFileTable.size() > 1) {
             executionRuntime.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format("Found more than implementation for dataset id {0}. " +

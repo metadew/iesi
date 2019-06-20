@@ -1,4 +1,4 @@
-package io.metadew.iesi.datatypes.Dataset;
+package io.metadew.iesi.datatypes.dataset;
 
 import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.datatypes.Array;
@@ -37,6 +37,8 @@ public abstract class Dataset extends DataType {
     public Dataset(String name, List<String> labels, FrameworkFolderConfiguration frameworkFolderConfiguration, ExecutionRuntime executionRuntime) throws IOException, SQLException {
         this.frameworkFolderConfiguration = frameworkFolderConfiguration;
         this.executionRuntime = executionRuntime;
+        this.name = name;
+        this.labels = labels;
         this.datasetDatabase = initializeDatasetConnection(name, labels);
     }
 
@@ -65,7 +67,7 @@ public abstract class Dataset extends DataType {
                     .forEach(datasetLabel -> labels.add(convertDatasetLabel(datasetLabel)));
             return labels;
         } else {
-            executionRuntime.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format("Dataset does not accept {0} as type for datasetDatabase labels",
+            executionRuntime.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format("dataset does not accept {0} as type for datasetDatabase labels",
                     datasetLabels.getClass()), Level.WARN);
             return labels;
         }
@@ -76,7 +78,7 @@ public abstract class Dataset extends DataType {
             String variablesResolved = executionRuntime.resolveVariables(datasetName.toString());
             return executionRuntime.resolveConceptLookup(executionRuntime.getExecutionControl(), variablesResolved, true).getValue();
         } else {
-            executionRuntime.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format("Dataset does not accept {0} as type for datasetDatabase name",
+            executionRuntime.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format("dataset does not accept {0} as type for datasetDatabase name",
                     datasetName.getClass()), Level.WARN);
             return datasetName.toString();
         }
@@ -87,7 +89,7 @@ public abstract class Dataset extends DataType {
             String variablesResolved = executionRuntime.resolveVariables(datasetLabel.toString());
             return executionRuntime.resolveConceptLookup(executionRuntime.getExecutionControl(), variablesResolved, true).getValue();
         } else {
-            executionRuntime.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format("Dataset does not accept {0} as type for a datasetDatabase label",
+            executionRuntime.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format("dataset does not accept {0} as type for a datasetDatabase label",
                     datasetLabel.getClass()), Level.WARN);
             return datasetLabel.toString();
         }

@@ -9,7 +9,7 @@ import io.metadew.iesi.connection.HttpConnection;
 import io.metadew.iesi.connection.http.HttpRequest;
 import io.metadew.iesi.connection.http.HttpResponse;
 import io.metadew.iesi.datatypes.DataType;
-import io.metadew.iesi.datatypes.Dataset.Dataset;
+import io.metadew.iesi.datatypes.dataset.Dataset;
 import io.metadew.iesi.datatypes.Text;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.ActionParameter;
@@ -96,7 +96,7 @@ public class HttpExecuteRequest {
                 this.getExecutionControl(), this.getActionExecution(), this.getActionExecution().getAction().getType(),
                 "setRuntimeVariables"));
         this.setSetDataset(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), "setKeyValueDataset"));
+                this.getActionExecution(), this.getActionExecution().getAction().getType(), "setDataset"));
 
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
@@ -108,7 +108,7 @@ public class HttpExecuteRequest {
                 this.getRequestBody().setInputValue(actionParameter.getValue());
             } else if (actionParameter.getName().equalsIgnoreCase("setruntimevariables")) {
                 this.getSetRuntimeVariables().setInputValue(actionParameter.getValue());
-            } else if (actionParameter.getName().equalsIgnoreCase("setdataset")) {
+            } else if (actionParameter.getName().equalsIgnoreCase("setDataset")) {
                 this.getSetDataset().setInputValue(actionParameter.getValue());
             }
         }
@@ -118,7 +118,7 @@ public class HttpExecuteRequest {
         this.getActionParameterOperationMap().put("type", this.getRequestType());
         this.getActionParameterOperationMap().put("body", this.getRequestBody());
         this.getActionParameterOperationMap().put("setRuntimeVariables", this.getSetRuntimeVariables());
-        this.getActionParameterOperationMap().put("setKeyValueDataset", this.getSetDataset());
+        this.getActionParameterOperationMap().put("setDataset", this.getSetDataset());
     }
 
     public boolean execute() {
@@ -127,7 +127,7 @@ public class HttpExecuteRequest {
             String requestType = convertHttpRequestType(getRequestType().getValue());
             Optional<String> requestBody = convertHttpRequestBody(getRequestBody().getValue());
             boolean setRuntimeVariables = convertSetRuntimeVariables(getSetRuntimeVariables().getValue());
-            // TODO: convert from string to Dataset DataType
+            // TODO: convert from string to dataset DataType
             String outputDatasetReferenceName = convertOutputDatasetReferenceName(getSetDataset().getValue());
 
             return executeHttpRequest(requestName, requestType, requestBody, setRuntimeVariables, outputDatasetReferenceName);

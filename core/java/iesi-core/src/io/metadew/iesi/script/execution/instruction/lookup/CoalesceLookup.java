@@ -14,6 +14,7 @@ public class CoalesceLookup implements LookupInstruction {
 
     @Override
     public String generateOutput(String parameters) {
+
         Optional<String> hit = Arrays.stream(parameters.split(","))
                 .map(String::trim)
                 .filter(value -> !value.isEmpty())

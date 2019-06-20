@@ -5,7 +5,7 @@ import io.metadew.iesi.connection.database.sql.SqlScriptResult;
 import io.metadew.iesi.connection.operation.ConnectionOperation;
 import io.metadew.iesi.connection.tools.sql.SQLDataTransfer;
 import io.metadew.iesi.datatypes.DataType;
-import io.metadew.iesi.datatypes.Dataset.Dataset;
+import io.metadew.iesi.datatypes.dataset.Dataset;
 import io.metadew.iesi.datatypes.Text;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.configuration.ConnectionConfiguration;

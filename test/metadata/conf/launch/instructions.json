@@ -109,6 +109,14 @@
 		"description": "test date travel - one year in the future",
 		"parameterList": ""
 	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "instruction.resolvement.1",
+		"description": "test date travel - one year in the future",
+		"parameterList": ""
+	}
 }
 
 ]

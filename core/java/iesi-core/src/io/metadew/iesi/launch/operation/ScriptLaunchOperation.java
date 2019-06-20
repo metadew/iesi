@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.apache.logging.log4j.Level;
 
 import io.metadew.iesi.connection.tools.FileTools;
+import io.metadew.iesi.framework.definition.FrameworkRunIdentifier;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.framework.execution.FrameworkExecutionContext;
 import io.metadew.iesi.framework.execution.FrameworkExecutionSettings;
@@ -24,7 +25,7 @@ import io.metadew.iesi.script.operation.YamlInputOperation;
 
 public final class ScriptLaunchOperation {
 
-	public static void execute(FrameworkInstance frameworkInstance, Request request) {
+	public static void execute(FrameworkInstance frameworkInstance, Request request, FrameworkRunIdentifier frameworkRunIdentifier) {
 		String actionSelect = "";
 		String environmentName = request.getContext();
 		String executionMode = "";
@@ -94,7 +95,7 @@ public final class ScriptLaunchOperation {
 
 		FrameworkExecution frameworkExecution = new FrameworkExecution(frameworkInstance,
 				new FrameworkExecutionContext(context), frameworkExecutionSettings,
-				frameworkInstance.getFrameworkInitializationFile());
+				frameworkInstance.getFrameworkInitializationFile(), frameworkRunIdentifier);
 
 		// Logging
 		frameworkExecution.getFrameworkLog().log("option.script=" + scriptName, Level.INFO);

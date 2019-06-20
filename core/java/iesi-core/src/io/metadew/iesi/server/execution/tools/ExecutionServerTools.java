@@ -5,7 +5,19 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+import io.metadew.iesi.framework.instance.FrameworkInstance;
+
 public final class ExecutionServerTools {
+	public static String getServerMode(FrameworkInstance frameworkInstance) {
+		String serverMode = "off";
+		try {
+			serverMode = frameworkInstance.getFrameworkControl().getProperty(frameworkInstance.getFrameworkConfiguration().getSettingConfiguration().getSettingPath("server.mode").get()).toLowerCase();
+		} catch (Exception e) {
+			serverMode = "off";
+		}
+		return serverMode;
+	}
+	
 	public static boolean isAlive() {
 		int port = -1;
 		try {

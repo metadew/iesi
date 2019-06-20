@@ -11,6 +11,7 @@ import io.metadew.iesi.framework.execution.FrameworkControl;
 import io.metadew.iesi.metadata.execution.MetadataControl;
 import io.metadew.iesi.metadata.repository.ExecutionServerMetadataRepository;
 import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
+import io.metadew.iesi.server.execution.tools.ExecutionServerTools;
 
 import java.io.File;
 import java.util.*;
@@ -99,11 +100,13 @@ public class FrameworkInstance {
 		this.setExecutionServerFilePath(
 				this.getFrameworkConfiguration().getFolderConfiguration().getFolderAbsolutePath("run.exec")
 						+ File.separator + "ExecutionServerRepository.db3");
-        
-        if (!FileTools.exists(this.getExecutionServerFilePath())) {
-        	throw new RuntimeException("framework.server.repository.notfound");
-        }
-		
+
+		if (!ExecutionServerTools.getServerMode(this).equalsIgnoreCase("off")) {
+			if (!FileTools.exists(this.getExecutionServerFilePath())) {
+				throw new RuntimeException("framework.server.repository.notfound");
+			}
+		}
+
 		SqliteDatabaseConnection executionServerDatabaseConnection = new SqliteDatabaseConnection(
 				this.getExecutionServerFilePath());
 		SqliteDatabase sqliteDatabase = new SqliteDatabase(executionServerDatabaseConnection);

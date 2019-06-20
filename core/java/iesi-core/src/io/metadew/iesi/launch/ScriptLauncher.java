@@ -7,6 +7,7 @@ import io.metadew.iesi.metadata.definition.Request;
 import io.metadew.iesi.metadata.definition.RequestParameter;
 import io.metadew.iesi.runtime.Requestor;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -220,7 +221,6 @@ public class ScriptLauncher {
 
 		// Server mode
 		String serverMode = "off";
-		System.out.println(frameworkInstance.getFrameworkConfiguration().getSettingConfiguration().getSettingPath("server.mode").get());
 		try {
 			serverMode = frameworkInstance.getFrameworkControl().getProperty(frameworkInstance.getFrameworkConfiguration().getSettingConfiguration().getSettingPath("server.mode").get()).toLowerCase();
 			System.out.println("Setting framework.server.mode=" + serverMode);
@@ -266,12 +266,13 @@ public class ScriptLauncher {
 			System.exit(1);
 		}
 
-		Request request = new Request("script", Long.toString(System.currentTimeMillis()), scriptName, "", 1, "",
+		// TODO replace local date time in tool across solution
+		Request request = new Request("script", LocalDateTime.now().toString(), scriptName, "", 1, "",
 				scopeName, environmentName, "", userName, userPassword, requestParameterList);
 
 		if (serverMode.equalsIgnoreCase("off")) {
 			// TODO update to use executor
-			ScriptLaunchOperation.execute(frameworkInstance, request);
+			ScriptLaunchOperation.execute(frameworkInstance, request, null);
 		} else if (serverMode.equalsIgnoreCase("standalone")) {
 			Requestor.getInstance(frameworkInstance).submit(request);
 		} else {

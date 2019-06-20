@@ -1,5 +1,6 @@
 package io.metadew.iesi.launch;
 
+import io.metadew.iesi.framework.definition.FrameworkRunIdentifier;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.framework.execution.FrameworkExecutionContext;
 import io.metadew.iesi.framework.execution.FrameworkExecutionSettings;
@@ -64,7 +65,7 @@ public class GuardLauncher {
             context.setName("guard");
             context.setScope("user");
             FrameworkExecution frameworkExecution = new FrameworkExecution(frameworkInstance,
-                    new FrameworkExecutionContext(context), frameworkExecutionSettings, null, null);
+                    new FrameworkExecutionContext(context), frameworkExecutionSettings, null, new FrameworkRunIdentifier());
 
             String userName = "";
             String active = "";

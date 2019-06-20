@@ -12,6 +12,7 @@ import io.metadew.iesi.connection.tools.FolderTools;
 import io.metadew.iesi.framework.configuration.FrameworkConfiguration;
 import io.metadew.iesi.framework.configuration.FrameworkKeywords;
 import io.metadew.iesi.framework.control.ProcessIdentifierController;
+import io.metadew.iesi.framework.definition.FrameworkRunIdentifier;
 
 public class FrameworkRuntime {
 
@@ -23,11 +24,15 @@ public class FrameworkRuntime {
 	private String processIdFileName;
 	private String runId;
 
-	public FrameworkRuntime(FrameworkConfiguration frameworkConfiguration) {
+	public FrameworkRuntime(FrameworkConfiguration frameworkConfiguration, FrameworkRunIdentifier frameworkRunIdentifier) {
 		this.setFrameworkConfiguration(frameworkConfiguration);
 
 		// Create run id
-		this.setRunId(UUID.randomUUID().toString());
+		if (frameworkRunIdentifier == null) {
+			this.setRunId(UUID.randomUUID().toString());
+		} else {
+			this.setRunId(frameworkRunIdentifier.getId());
+		}
 
 		// Create run cache folder
 		this.setRunCacheFolderName(

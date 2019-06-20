@@ -29,7 +29,6 @@ public class RequestorProcessor {
 		// this.setFrameworkExecution(frameworkExecution);
 		this.executionId = executionId;
 		this.requestId = requestId;
-		System.out.println(requestId);
 		this.setProcessor();
 		this.getFields();
 	}

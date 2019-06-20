@@ -3,6 +3,7 @@ package io.metadew.iesi.framework.execution;
 import io.metadew.iesi.framework.configuration.FrameworkConfiguration;
 import io.metadew.iesi.framework.crypto.FrameworkCrypto;
 import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
+import io.metadew.iesi.framework.definition.FrameworkRunIdentifier;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.execution.MetadataControl;
 import io.metadew.iesi.metadata.repository.ExecutionServerMetadataRepository;
@@ -27,22 +28,22 @@ public class FrameworkExecution {
                               FrameworkInitializationFile frameworkInitializationFile) {
         this.setFrameworkInstance(frameworkInstance);
         this.initializeFrameworkExecution(frameworkExecutionContext, new FrameworkExecutionSettings(""), "write",
-                frameworkInitializationFile);
+                frameworkInitializationFile,null);
     }
 
     public FrameworkExecution(FrameworkInstance frameworkInstance, FrameworkExecutionContext frameworkExecutionContext, String logonType,
                               FrameworkInitializationFile frameworkInitializationFile) {
         this.setFrameworkInstance(frameworkInstance);
         this.initializeFrameworkExecution(frameworkExecutionContext, new FrameworkExecutionSettings(""), logonType,
-                frameworkInitializationFile);
+                frameworkInitializationFile, null);
     }
 
     public FrameworkExecution(FrameworkInstance frameworkInstance, FrameworkExecutionContext frameworkExecutionContext,
                               FrameworkExecutionSettings frameworkExecutionSettings,
-                              FrameworkInitializationFile frameworkInitializationFile) {
+                              FrameworkInitializationFile frameworkInitializationFile, FrameworkRunIdentifier frameworkRunIdentifier) {
         this.setFrameworkInstance(frameworkInstance);
         this.initializeFrameworkExecution(frameworkExecutionContext, frameworkExecutionSettings, "write",
-                frameworkInitializationFile);
+                frameworkInitializationFile, frameworkRunIdentifier);
     }
 
     public FrameworkExecution(FrameworkInstance frameworkInstance, FrameworkExecutionContext frameworkExecutionContext,
@@ -50,13 +51,13 @@ public class FrameworkExecution {
                               FrameworkInitializationFile frameworkInitializationFile) {
         this.setFrameworkInstance(frameworkInstance);
         this.initializeFrameworkExecution(frameworkExecutionContext, frameworkExecutionSettings, logonType,
-                frameworkInitializationFile);
+                frameworkInitializationFile, null);
     }
 
     // Methods
     private void initializeFrameworkExecution(FrameworkExecutionContext frameworkExecutionContext,
                                               FrameworkExecutionSettings frameworkExecutionSettings, String logonType,
-                                              FrameworkInitializationFile frameworkInitializationFile) {
+                                              FrameworkInitializationFile frameworkInitializationFile, FrameworkRunIdentifier frameworkRunIdentifier) {
         // Set the execution context
         this.setFrameworkExecutionContext(frameworkExecutionContext);
         this.setFrameworkExecutionSettings(frameworkExecutionSettings);
@@ -78,7 +79,7 @@ public class FrameworkExecution {
         this.setSettingsList(this.getFrameworkExecutionSettings().getSettingsList());
 
         // Setup framework runtime
-        this.setFrameworkRuntime(new FrameworkRuntime(this.getFrameworkConfiguration()));
+        this.setFrameworkRuntime(new FrameworkRuntime(this.getFrameworkConfiguration(), frameworkRunIdentifier));
         this.setFrameworkLog(new FrameworkLog(this.getFrameworkConfiguration(), this.getFrameworkExecutionContext(),
                 this.getFrameworkControl(), this.getFrameworkCrypto(), this.getFrameworkRuntime()));
         this.setFrameworkResultProvider(new FrameworkResultProvider());

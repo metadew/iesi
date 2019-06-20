@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 public final class SQLTools {
 
@@ -25,6 +26,13 @@ public final class SQLTools {
         }
     }
 
+    public static String GetStringForSQL(LocalDateTime input) {
+        if (input == null) {
+            return "null";
+        } else {
+            return "'" + GetCleanString(input.toString()) + "'";
+        }
+    }
     public static String GetStringForSQL(int input) {
         return Integer.toString(input);
     }

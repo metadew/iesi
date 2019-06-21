@@ -36,6 +36,8 @@
   * [Query based testing](/{{site.repository}}/pages/approach/querybasedtesting.html)
 * [Operate the framework](/{{site.repository}}/pages/operate/operate.html)
 * [Manage the framework](/{{site.repository}}/pages/manage/manage.html)
+  * [Framework settings file](/{{site.repository}}/pages/manage/frameworksettings.html)
+  * [Repository settings file](/{{site.repository}}/pages/manage/repositorysettings.html)
 * [Secure the framework](/{{site.repository}}/pages/secure/secure.html)
 * [Deploy the framework](/{{site.repository}}/pages/deploy/deploy.html)
   * Configuration files

@@ -153,5 +153,17 @@
 		"migrate": "Y",
 		"migrationKey": "NA"
 	}
+},
+{
+	"type": "MetadataObject",
+	"data": {
+		"name": "ScriptExecution",
+		"label": "ScriptExecutions",
+		"description": "Catalog metadata for script executions",
+		"type": "Cataog",
+		"category": "script",
+		"migrate": "Y",
+		"migrationKey": "NA"
+	}
 }
 ]

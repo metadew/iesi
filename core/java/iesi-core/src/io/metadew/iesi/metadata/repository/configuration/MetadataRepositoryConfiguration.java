@@ -4,6 +4,7 @@ import io.metadew.iesi.common.config.ConfigFile;
 import io.metadew.iesi.framework.configuration.FrameworkConfiguration;
 import io.metadew.iesi.framework.configuration.FrameworkSettingConfiguration;
 import io.metadew.iesi.framework.crypto.FrameworkCrypto;
+import io.metadew.iesi.metadata.repository.CatalogMetadataRepository;
 import io.metadew.iesi.metadata.repository.ConnectivityMetadataRepository;
 import io.metadew.iesi.metadata.repository.ControlMetadataRepository;
 import io.metadew.iesi.metadata.repository.DesignMetadataRepository;
@@ -109,6 +110,9 @@ public class MetadataRepositoryConfiguration {
         for (String category : categories) {
             if (category.equalsIgnoreCase("general")) {
                 // Make all repositories
+                metadataRepositories.add(new CatalogMetadataRepository(frameworkConfiguration.getFrameworkCode(), name, scope, instanceName, repositoryConfiguration.toRepository(),
+                        frameworkConfiguration.getFolderConfiguration().getFolderAbsolutePath("metadata.def"),
+                        frameworkConfiguration.getFolderConfiguration().getFolderAbsolutePath("metadata.def")));
                 metadataRepositories.add(new DesignMetadataRepository(frameworkConfiguration.getFrameworkCode(), name, scope, instanceName, repositoryConfiguration.toRepository(),
                         frameworkConfiguration.getFolderConfiguration().getFolderAbsolutePath("metadata.def"),
                         frameworkConfiguration.getFolderConfiguration().getFolderAbsolutePath("metadata.def")));
@@ -125,6 +129,10 @@ public class MetadataRepositoryConfiguration {
                         frameworkConfiguration.getFolderConfiguration().getFolderAbsolutePath("metadata.def"),
                         frameworkConfiguration.getFolderConfiguration().getFolderAbsolutePath("metadata.def")));
                 // metadataRepositories.add(new GeneralMetadataRepository(frameworkConfiguration.getFrameworkCode(), name, scope, instanceName, repositoryConfiguration.toRepository()));
+            } else if (category.equalsIgnoreCase("catalog")) {
+                metadataRepositories.add(new CatalogMetadataRepository(frameworkConfiguration.getFrameworkCode(), name, scope, instanceName, repositoryConfiguration.toRepository(),
+                        frameworkConfiguration.getFolderConfiguration().getFolderAbsolutePath("metadata.def"),
+                        frameworkConfiguration.getFolderConfiguration().getFolderAbsolutePath("metadata.def")));
             } else if (category.equalsIgnoreCase("design")) {
                 metadataRepositories.add(new DesignMetadataRepository(frameworkConfiguration.getFrameworkCode(), name, scope, instanceName, repositoryConfiguration.toRepository(),
                         frameworkConfiguration.getFolderConfiguration().getFolderAbsolutePath("metadata.def"),

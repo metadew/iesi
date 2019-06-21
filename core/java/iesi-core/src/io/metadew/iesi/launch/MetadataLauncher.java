@@ -154,6 +154,9 @@ public class MetadataLauncher {
 
             } else {
                 switch (type) {
+                	case "catalog":
+                		metadataRepositories.add(getFrameworkExecution().getMetadataControl().getCatalogMetadataRepository());
+                		break;
                     case "connectivity":
                         metadataRepositories.add(getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository());
                         break;
@@ -170,6 +173,7 @@ public class MetadataLauncher {
                         metadataRepositories.add(getFrameworkExecution().getMetadataControl().getTraceMetadataRepository());
                         break;
                     case "general":
+                    	metadataRepositories.add(getFrameworkExecution().getMetadataControl().getCatalogMetadataRepository());
                         metadataRepositories.add(getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository());
                         metadataRepositories.add(getFrameworkExecution().getMetadataControl().getControlMetadataRepository());
                         metadataRepositories.add(getFrameworkExecution().getMetadataControl().getDesignMetadataRepository());

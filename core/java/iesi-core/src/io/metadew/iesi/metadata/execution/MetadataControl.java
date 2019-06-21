@@ -39,6 +39,7 @@ public class MetadataControl {
     private void checkValidity() {
         boolean result = true;
         // Mandatory repository settings
+        if (this.getCatalogMetadataRepository() == null) result = false;
         if (this.getConnectivityMetadataRepository() == null) result = false;
         if (this.getControlMetadataRepository() == null) result = false;
         if (this.getDesignMetadataRepository() == null) result = false;
@@ -51,6 +52,8 @@ public class MetadataControl {
     private void setMetadataRepository(MetadataRepository metadataRepository) {
         if (metadataRepository.getCategory().equalsIgnoreCase("connectivity")) {
             this.setConnectivityMetadataRepository((ConnectivityMetadataRepository) metadataRepository);
+        } else if (metadataRepository.getCategory().equalsIgnoreCase("catalog")) {
+            this.setCatalogMetadataRepository((CatalogMetadataRepository) metadataRepository);
         } else if (metadataRepository.getCategory().equalsIgnoreCase("control")) {
             this.setControlMetadataRepository((ControlMetadataRepository) metadataRepository);
         } else if (metadataRepository.getCategory().equalsIgnoreCase("design")) {
@@ -65,6 +68,14 @@ public class MetadataControl {
     }
 
     // Getters and Setters
+    public CatalogMetadataRepository getCatalogMetadataRepository() {
+        return catalogMetadataRepository;
+    }
+
+    public void setCatalogMetadataRepository(CatalogMetadataRepository catalogMetadataRepository) {
+        this.catalogMetadataRepository = catalogMetadataRepository;
+    }
+    
     public ConnectivityMetadataRepository getConnectivityMetadataRepository() {
         return connectivityMetadataRepository;
     }
@@ -120,14 +131,6 @@ public class MetadataControl {
 
     public void setLedgerMetadataRepository(LedgerMetadataRepository ledgerMetadataRepository) {
         this.ledgerMetadataRepository = ledgerMetadataRepository;
-    }
-
-    public CatalogMetadataRepository getCatalogMetadataRepository() {
-        return catalogMetadataRepository;
-    }
-
-    public void setCatalogMetadataRepository(CatalogMetadataRepository catalogMetadataRepository) {
-        this.catalogMetadataRepository = catalogMetadataRepository;
     }
 
     public ControlMetadataRepository getControlMetadataRepository() {

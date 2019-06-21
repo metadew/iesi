@@ -1,7 +1,15 @@
 package io.metadew.iesi.metadata.repository;
 
+import java.text.MessageFormat;
+
+import org.apache.logging.log4j.Level;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.metadata.configuration.FeatureConfiguration;
 import io.metadew.iesi.metadata.definition.DataObject;
+import io.metadew.iesi.metadata.definition.Feature;
 import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
 
 public class CatalogMetadataRepository extends MetadataRepository {
@@ -12,26 +20,41 @@ public class CatalogMetadataRepository extends MetadataRepository {
 
     @Override
     public String getDefinitionFileName() {
-        return null;
+        return "CatalogTables.json";
     }
 
     @Override
     public String getObjectDefinitionFileName() {
-        return null;
+    	return "CatalogObjects.json";
     }
 
     @Override
     public String getCategory() {
-        return null;
+    	return "catalog";
     }
 
     @Override
     public String getCategoryPrefix() {
-        return null;
+        return "CAT";
     }
 
     @Override
     public void save(DataObject dataObject, FrameworkExecution frameworkExecution) {
-
+        // TODO: based on MetadataRepository object decide to insert or not insert the objects
+        // TODO: insert should be handled on database level as insert can differ from database type/dialect? JDBC Dialect/Spring
+        ObjectMapper objectMapper = new ObjectMapper();
+        if (dataObject.getType().equalsIgnoreCase("feature")) {
+            Feature feature = objectMapper.convertValue(dataObject.getData(), Feature.class);
+            save(feature, frameworkExecution);
+        } else {
+            frameworkExecution.getFrameworkLog().log(MessageFormat.format("Catalog repository is not responsible for loading saving {0}", dataObject.getType()), Level.TRACE);
+        }
     }
+
+    public void save(Feature feature, FrameworkExecution frameworkExecution) {
+        FeatureConfiguration featureConfiguration = new FeatureConfiguration(feature,
+                frameworkExecution.getFrameworkInstance());
+        executeUpdate(featureConfiguration.getInsertStatement());
+    }
+
 }

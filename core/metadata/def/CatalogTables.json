@@ -352,7 +352,7 @@
 		"migrate": "Y",
 		"migrationKey": "NA",
 		"fields": [
-			{"name": "FEATURE_ID","description": "Unique identifier for the feature design","order": "1","type": "number","length": "0","nullable": "N","defaultTimestamp": ""},
+			{"name": "FEATURE_ID","description": "Unique identifier for the feature design","order": "1","type": "string","length": "255","nullable": "N","defaultTimestamp": ""},
 			{"name": "FEATURE_TYP_NM","description": "Keyword for the feature type","order": "2","type": "string","length": "100","nullable": "N","defaultTimestamp": ""},
 			{"name": "FEATURE_NM","description": "Unique short name for the script","order": "3","type": "string","length": "200","nullable": "N","defaultTimestamp": ""},
 			{"name": "FEATURE_DSC","description": "Description of the script","order": "4","type": "string","length": "2000","nullable": "Y","defaultTimestamp": ""},
@@ -370,7 +370,7 @@
 		"migrate": "Y",
 		"migrationKey": "NA",
 		"fields": [
-			{"name": "FEATURE_ID","description": "Unique identifier for the feature design","order": "1","type": "number","length": "0","nullable": "N","defaultTimestamp": ""},
+			{"name": "FEATURE_ID","description": "Unique identifier for the feature design","order": "1","type": "string","length": "255","nullable": "N","defaultTimestamp": ""},
 			{"name": "FEATURE_VRS_NB","description": "Unique identifier for the feature version","order": "2","type": "number","length": "0","nullable": "N","defaultTimestamp": ""},
 			{"name": "FEATURE_PAR_NM","description": "Name of the feature parameter","order": "3","type": "string","length": "100","nullable": "N","defaultTimestamp": ""},
 			{"name": "FEATURE_PAR_VAL","description": "String type parameter value","order": "4","type": "string","length": "2000","nullable": "Y","defaultTimestamp": ""},
@@ -388,7 +388,7 @@
 		"migrate": "Y",
 		"migrationKey": "NA",
 		"fields": [
-			{"name": "FEATURE_ID","description": "Unique identifier for the feature design","order": "1","type": "number","length": "0","nullable": "N","defaultTimestamp": ""},
+			{"name": "FEATURE_ID","description": "Unique identifier for the feature design","order": "1","type": "string","length": "255","nullable": "N","defaultTimestamp": ""},
 			{"name": "FEATURE_VRS_NB","description": "Unique identifier for the feature version","order": "2","type": "number","length": "0","nullable": "N","defaultTimestamp": ""},
 			{"name": "FEATURE_VRS_DSC","description": "Description of the feature version","order": "3","type": "string","length": "2000","nullable": "Y","defaultTimestamp": ""},
 			{"name": "LOAD_TMS","description": "Load timestamp indicating when the record was inserted in the table","order": "4","type": "timestamp","length": "0","nullable": "N","defaultTimestamp": "Y"}
@@ -405,15 +405,18 @@
 		"migrate": "Y",
 		"migrationKey": "NA",
 		"fields": [
-			{"name": "FEATURE_ID","description": "Unique identifier for the feature design","order": "1","type": "number","length": "0","nullable": "N","defaultTimestamp": ""},
+			{"name": "FEATURE_ID","description": "Unique identifier for the feature design","order": "1","type": "string","length": "255","nullable": "N","defaultTimestamp": ""},
 			{"name": "FEATURE_VRS_NB","description": "Unique identifier for the feature version","order": "2","type": "number","length": "0","nullable": "N","defaultTimestamp": ""},
-			{"name": "SCENARIO_ID","description": "Unique identifier for the scenario design","order": "3","type": "number","length": "0","nullable": "N","defaultTimestamp": ""},
+			{"name": "SCENARIO_ID","description": "Unique identifier for the scenario design","order": "3","type": "string","length": "255","nullable": "N","defaultTimestamp": ""},
 			{"name": "SCENARIO_NB","description": "Order number for the scenario within the feature design","order": "4","type": "number","length": "0","nullable": "N","defaultTimestamp": ""},
 			{"name": "SCENARIO_TYP_NM","description": "Keyword for the scenario type","order": "5","type": "string","length": "100","nullable": "N","defaultTimestamp": ""},
 			{"name": "SCENARIO_NM","description": "Unique short name for the scenario","order": "6","type": "string","length": "200","nullable": "N","defaultTimestamp": ""},
 			{"name": "SCENARIO_DSC","description": "Description of the scenario","order": "7","type": "string","length": "2000","nullable": "Y","defaultTimestamp": ""},
 			{"name": "SCENARIO_DEP","description": "Dependencies for the scenario","order": "10","type": "string","length": "2000","nullable": "Y","defaultTimestamp": ""},
-			{"name": "LOAD_TMS","description": "Load timestamp indicating when the record was inserted in the table","order": "13","type": "timestamp","length": "0","nullable": "N","defaultTimestamp": "Y"}
+			{"name": "SCRIPT_NM","description": "Unique short name for the script","order": "11","type": "string","length": "200","nullable": "N","defaultTimestamp": ""},
+			{"name": "SCRIPT_VRS_NB","description": "Unique identifier for the script version","order": "12","type": "number","length": "0","nullable": "N","defaultTimestamp": ""},
+			{"name": "GAIN_VAL","description": "Scenario gain expressed in minutes","order": "13","type": "number","length": "0","nullable": "Y","defaultTimestamp": ""},
+			{"name": "LOAD_TMS","description": "Load timestamp indicating when the record was inserted in the table","order": "14","type": "timestamp","length": "0","nullable": "N","defaultTimestamp": "Y"}
 	]
 }},
 {
@@ -427,9 +430,32 @@
 		"migrate": "Y",
 		"migrationKey": "NA",
 		"fields": [
-			{"name": "SCENARIO_ID","description": "Unique identifier for the scenario design","order": "1","type": "number","length": "0","nullable": "N","defaultTimestamp": ""},
-			{"name": "SCENARIO_PAR_NM","description": "Name of the scenario parameter","order": "2","type": "string","length": "100","nullable": "N","defaultTimestamp": ""},
-			{"name": "SCENARIO_PAR_VAL","description": "String type parameter value","order": "3","type": "string","length": "2000","nullable": "Y","defaultTimestamp": ""},
-			{"name": "LOAD_TMS","description": "Load timestamp indicating when the record was inserted in the table","order": "4","type": "timestamp","length": "0","nullable": "N","defaultTimestamp": "Y"}
+			{"name": "FEATURE_ID","description": "Unique identifier for the feature design","order": "1","type": "string","length": "255","nullable": "N","defaultTimestamp": ""},
+			{"name": "FEATURE_VRS_NB","description": "Unique identifier for the feature version","order": "2","type": "number","length": "0","nullable": "N","defaultTimestamp": ""},
+			{"name": "SCENARIO_ID","description": "Unique identifier for the scenario design","order": "3","type": "string","length": "255","nullable": "N","defaultTimestamp": ""},
+			{"name": "SCENARIO_PAR_NM","description": "Name of the scenario parameter","order": "4","type": "string","length": "100","nullable": "N","defaultTimestamp": ""},
+			{"name": "SCENARIO_PAR_VAL","description": "String type parameter value","order": "5","type": "string","length": "2000","nullable": "Y","defaultTimestamp": ""},
+			{"name": "LOAD_TMS","description": "Load timestamp indicating when the record was inserted in the table","order": "6","type": "timestamp","length": "0","nullable": "N","defaultTimestamp": "Y"}
+	]
+}},
+{
+	"type": "MetadataTable",
+	"data": {
+		"name": "CAT_SCRIPT_EXE",
+		"label": "ScriptExecutions",
+		"description": "Catalog metadata for script executions",
+		"type": "",
+		"category": "",
+		"migrate": "",
+		"migrationKey": "",
+		"fields": [
+			{"name": "SCRIPT_EXE_ID","description": "Unique identifier for the execution combining script_id, execution month and execution year","order": "1","type": "string","length": "255","nullable": "N","defaultTimestamp": ""},
+			{"name": "ORIGIN_NM","description": "Execution entry origin","order": "2","type": "string","length": "200","nullable": "N","defaultTimestamp": ""},
+			{"name": "SCRIPT_ID","description": "Unique identifier for the script design","order": "3","type": "string","length": "255","nullable": "N","defaultTimestamp": ""},
+			{"name": "SCRIPT_NM","description": "Unique short name for the script","order": "4","type": "string","length": "200","nullable": "N","defaultTimestamp": ""},
+			{"name": "SCRIPT_VRS_NB","description": "Unique identifier for the script version","order": "5","type": "number","length": "0","nullable": "N","defaultTimestamp": ""},
+			{"name": "MONTH_NB","description": "Execution month","order": "6","type": "number","length": "0","nullable": "N","defaultTimestamp": ""},
+			{"name": "YEAR_NB","description": "Execution year","order": "7","type": "number","length": "0","nullable": "N","defaultTimestamp": ""},
+			{"name": "LOAD_TMS","description": "Load timestamp indicating when the record was inserted in the table","order": "8","type": "timestamp","length": "0","nullable": "N","defaultTimestamp": "Y"}
 	]
 }}]

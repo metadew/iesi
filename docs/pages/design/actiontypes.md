@@ -25,7 +25,8 @@ Additional details on the parameters per action type are provided below.
 <table>
 <colgroup>
 <col width="30%" />
-<col width="70%" />
+<col width="10%" />
+<col width="60%" />
 </colgroup>
 <thead>
 <tr class="header">

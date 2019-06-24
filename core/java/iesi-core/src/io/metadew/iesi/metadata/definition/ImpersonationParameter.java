@@ -1,8 +1,6 @@
 package io.metadew.iesi.metadata.definition;
 
 
-import oadd.org.apache.calcite.avatica.com.fasterxml.jackson.annotation.JsonProperty;
-
 public class ImpersonationParameter {
 
     private String connection;

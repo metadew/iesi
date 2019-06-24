@@ -2,6 +2,9 @@
 
 # Documentation guide
 
+* Overview
+  * [Introduction](/{{site.repository}}/pages/introduction.html)
+  * [The business case for automation](/{{site.repository}}/pages/benefits/businesscase.html)
 * [Download](/{{site.repository}}/pages/download.html)
 * [Quickstart](/{{site.repository}}/pages/quickstart.html)
 * Tutorials
@@ -31,6 +34,7 @@
   * [Stop on error](/{{site.repository}}/pages/design/stoponerror.html)
   * [Subroutines](/{{site.repository}}/pages/design/subroutines.html)
     * [Subroutine types](/{{site.repository}}/pages/design/subroutinetypes.html)
+* Demos
 * Automation approaches
   * [ETL flow testing](/{{site.repository}}/pages/approach/etlflowtesting.html)
   * [Query based testing](/{{site.repository}}/pages/approach/querybasedtesting.html)

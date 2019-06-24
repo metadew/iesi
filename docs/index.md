@@ -18,11 +18,11 @@ Intelligent ETL Solution Industrialization or **IESI** is an automation framewor
 Our framework aims to differentiate itself by making automation services accessible and affordable for any project or organization.
 
 |Fast install|Zero-touch on-premise (Cloud containers coming soon)|
-|Broad access|Get ROI for small and large projects or organizations|
+|Broad access|Get [ROI](/{{site.repository}}/pages/benefits/businesscase.html) for small and large projects or organizations|
 |Easy to use|Reusable configuration making automation faster|
 |Agnostic|Technology, vendor and industry agnostic|
 
-> Test automation (and data-driven automation in general) should not be considered a commodity but will provide many ways of differentiation in the future
+> For every FTE working on automation, a balanced set of only 250 script executions is required to break even.
 
 Learn more on our [introduction](/{{site.repository}}/pages/introduction.html) page.
 
@@ -41,6 +41,8 @@ Curious to know more about our upcoming release? Read more on our [preview](http
 * Processing engine driven by configuration
 * Modular and pluginable
 * Easily usable in desktop mode
+
+> Test automation (and data-driven automation in general) should not be considered a commodity but will provide many ways of differentiation in the future
 
 # Supported Technologies
 
@@ -71,5 +73,6 @@ For more information on the technology support definition, please refer to the [
 Learning to use our automation framework is easy.
 * [Download](/{{site.repository}}/pages/download.html) the latest release: you can run iesi from your desktop or laptop.
 * Read the [quick start guide](/{{site.repository}}/pages/quickstart.html) to get up and running
+* Verify if you can [benefit](/{{site.repository}}/pages/benefits/businesscase.html) from automating your end-to-end delivery and test processes
 * Learn how to automate more via the detailed [documentation](/{{site.repository}}/pages/documentation.html)
 * Explore different ways of [deploying](/{{site.repository}}/pages/deploy/deploy.html) the framework

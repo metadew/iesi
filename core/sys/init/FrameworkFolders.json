@@ -73,6 +73,15 @@
 {
 	"type": "FrameworkFolder",
 	"data": {
+		"name": "data.mapping",
+		"path": "/data/mapping",
+		"label": "Mapping",
+		"description": "Mapping definitions",
+		"permissions": "755"
+}},
+{
+	"type": "FrameworkFolder",
+	"data": {
 		"name": "metadata.def",
 		"path": "/metadata/def",
 		"label": "MetadataDef",

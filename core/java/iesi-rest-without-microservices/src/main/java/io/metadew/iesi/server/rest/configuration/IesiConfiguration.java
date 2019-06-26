@@ -4,10 +4,8 @@ import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.framework.execution.FrameworkExecutionContext;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
-import io.metadew.iesi.launch.operation.ScriptLaunchOperation;
 import io.metadew.iesi.metadata.configuration.*;
 import io.metadew.iesi.metadata.definition.Context;
-import io.metadew.iesi.metadata.definition.Request;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -15,17 +13,17 @@ import org.springframework.context.annotation.Configuration;
 public class IesiConfiguration {
 
     @Bean
-    public FrameworkExecution frameworkExecution() {
+    public FrameworkExecution frameworkExecution(FrameworkInstance frameworkInstance, FrameworkInitializationFile frameworkInitializationFile) {
         Context context = new Context();
         context.setName("restserver");
         context.setScope("");
         FrameworkExecutionContext frameworkExecutionContext = new FrameworkExecutionContext(context);
-        return new FrameworkExecution(frameworkInstance(), frameworkExecutionContext, frameworkInitializationFile());
+        return new FrameworkExecution(frameworkInstance, frameworkExecutionContext, frameworkInitializationFile);
     }
 
     @Bean
-    public FrameworkInstance frameworkInstance() {
-        return new FrameworkInstance(frameworkInitializationFile());
+    public FrameworkInstance frameworkInstance(FrameworkInitializationFile frameworkInitializationFile) {
+        return new FrameworkInstance(frameworkInitializationFile);
     }
 
     @Bean FrameworkInitializationFile frameworkInitializationFile() {

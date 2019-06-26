@@ -3,6 +3,7 @@ HELP.md
 /out/
 /classes/
 !.mvn/wrapper/maven-wrapper.jar
+iesi-home.conf
 
 /src/test/resources/iesi_instance*
 ### STS ###

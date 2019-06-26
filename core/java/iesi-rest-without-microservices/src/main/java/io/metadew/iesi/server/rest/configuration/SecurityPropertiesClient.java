@@ -4,8 +4,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.io.Resource;
 
-@Profile({"oauth"})
-@PropertySource({"classpath:application-oauth.yml"})
 @ConfigurationProperties("publickey")
 public class SecurityPropertiesClient {
 

@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: http, oauth
+    active: https
   datasource:
     url: jdbc:h2:~/token
     schema: classpath:/schema.sql
@@ -19,3 +19,11 @@ management:
     web:
       exposure:
         exclude: '*'
+
+security:
+  jwt:
+    key-store: classpath:iesikey.p12
+    key-store-password: password
+    key-pair-alias: iesi
+    key-store-type: PKCS12
+    key-pair-password: password

@@ -18,9 +18,7 @@ import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenCo
 import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter;
 import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter.XFrameOptionsMode;
 
-@Profile({"https"})
 @Configuration
-@PropertySource({"classpath:application-https.yml"})
 @EnableResourceServer
 @EnableConfigurationProperties(SecurityPropertiesClient.class)
 public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter {
@@ -47,8 +45,6 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
 	public void configure(HttpSecurity http) throws Exception {
 		// Allow H2 console traffic
 		http.headers().addHeaderWriter(new XFrameOptionsHeaderWriter(XFrameOptionsMode.SAMEORIGIN));
-		// set HTTPS
-		http.requiresChannel().anyRequest().requiresSecure();
 		http.cors().and().csrf().disable().exceptionHandling().and()
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
 				.authorizeRequests()

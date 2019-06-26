@@ -19,6 +19,7 @@ management:
 security:
   jwt:
     key-store: classpath:${iesi-security-keystore}
+    key-store-type: ${iesi-security-keystoreType}
     key-store-password: ${iesi-security-keystore-password}
     key-pair-alias: ${iesi-security-keypair-alias}
     key-pair-password: ${iesi-security-keypair-password}
@@ -32,7 +33,7 @@ spring:
     data: classpath:data.sql
   h2:
     console:
-      enabled: true
+      enabled: false
   boot:
     admin:
       client:

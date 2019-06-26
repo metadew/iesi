@@ -58,8 +58,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 		http.requestMatcher(EndpointRequest.toAnyEndpoint())
 				.authorizeRequests()
 				.antMatchers("/oauth/token").permitAll()
-				.anyRequest()
-				.hasAuthority("AUTHORIZED_ADMIN")
+				.anyRequest().authenticated()
 				.and()
 				.httpBasic();
 

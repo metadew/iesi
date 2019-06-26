@@ -1,8 +1,12 @@
 package io.metadew.iesi.server.rest.configuration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Profile;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.io.Resource;
 
-@ConfigurationProperties("security2")
+@Profile({"oauth"})
+@PropertySource({"classpath:application-oauth.yml"})
+@ConfigurationProperties("publickey")
 public class SecurityPropertiesClient {
 
 	private JwtProperties jwt;

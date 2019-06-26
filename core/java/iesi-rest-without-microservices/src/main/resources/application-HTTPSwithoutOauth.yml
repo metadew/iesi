@@ -1,0 +1,19 @@
+server:
+  ssl:
+    enabled: true
+    key-alias: iesi
+    key-store: classpath:iesi.p12
+    key-store-type: PKCS12
+    key-password: password
+    key-store-password: password
+  use-forward-headers: true
+
+security:
+  oauth2:
+    client:
+      clientId: SampleClientId
+      clientSecret: secret
+      accessTokenUri: http://localhost:8080/auth/oauth/token
+      userAuthorizationUri: http://localhost:808O/auth/oauth/authorize
+    resource:
+      userInfoUri: http://localhost:808O/auth/user/me

@@ -35,9 +35,7 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
 		resources.tokenStore(tokenStore);
 	}
 
-////	"/**/**" 
-	private static final String[] AUTH_WHITELIST = { "/v2/api-docs", "/swagger-resources", "/swagger-resources/**",
-			"/swagger-ui.html", "/webjars/**", "/h2-console/**","/oauth/token" };
+	private static final String[] AUTH_WHITELIST = { "/oauth/token" };
 
 	@Override
 	public void configure(HttpSecurity http) throws Exception {

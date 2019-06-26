@@ -1,5 +1,0 @@
-#spring:
-#  cloud:
-#    config:
-#      uri: https://localhost:8888
-##      https://localhost:8888

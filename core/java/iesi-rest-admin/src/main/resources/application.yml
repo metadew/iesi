@@ -1,12 +1,5 @@
 server:
-  port: ${iesi-adminPort}
-  ssl:
-    enabled: true
-    key-alias: ${iesi-adminkeyalias}
-    key-password: ${iesi-adminkeypassword}
-    key-store: classpath:${iesi-adminkeystore}
-    key-store-password: ${iesi-adminkeystorepassword}
-    key-store-type: ${iesi-adminkeystoretype}
+  port: 8081
 
 spring:
   boot:
@@ -16,14 +9,15 @@ spring:
         favicon-danger: /assets/img/iesi.png
         title: IESI
         brand: <img src="assets/img/iesi.png"><span>IESI</span>
-        public-url: ${iesi-adminFullUrl}
   application:
     name: iesi-admin
   aop:
     proxy-target-class: true
   security:
     user:
-      name: ${iesi-adminUser}
-      password: ${iesi-adminPassword}
+      name: admin
+      password: admin
+  profiles:
+    active: https
 
 

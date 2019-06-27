@@ -41,10 +41,9 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
 
 	@Override
 	public void configure(final HttpSecurity http) throws Exception {
-		http.requiresChannel().anyRequest().requiresSecure();
 		http.cors().and().csrf().disable().exceptionHandling().and().sessionManagement()
 		.sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().authorizeRequests()
-		.antMatchers(AUTH_WHITELIST).permitAll().antMatchers("/**").authenticated().anyRequest().authenticated();
+		.antMatchers(AUTH_WHITELIST).permitAll().anyRequest().authenticated();
 }
 
 	@Primary

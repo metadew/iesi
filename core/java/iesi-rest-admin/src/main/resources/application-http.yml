@@ -1,0 +1,5 @@
+spring:
+  boot:
+    admin:
+      ui:
+        public-url: http://localhost:8081

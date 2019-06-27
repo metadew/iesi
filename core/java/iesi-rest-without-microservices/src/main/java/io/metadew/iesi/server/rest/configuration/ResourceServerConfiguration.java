@@ -38,18 +38,14 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
 	}
 
 ////	"/**/**" 
-	private static final String[] AUTH_WHITELIST = { "/v2/api-docs", "/swagger-resources", "/swagger-resources/**",
-			"/swagger-ui.html", "/webjars/**", "/h2-console/**" };
+	private static final String[] AUTH_WHITELIST = {};
 
 	@Override
 	public void configure(HttpSecurity http) throws Exception {
-		// Allow H2 console traffic
-		http.headers().addHeaderWriter(new XFrameOptionsHeaderWriter(XFrameOptionsMode.SAMEORIGIN));
 		http.cors().and().csrf().disable().exceptionHandling().and()
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
 				.authorizeRequests()
 				.antMatchers(AUTH_WHITELIST).permitAll()
-				.antMatchers("/**").authenticated()
 				.anyRequest().authenticated();
 	}
 

@@ -27,12 +27,6 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     private CustomUserDetailsService customUserDetailsService;
 
     @Override
-    @Bean
-    public UserDetailsService userDetailsServiceBean() throws Exception {
-        return super.userDetailsServiceBean();
-    }
-
-    @Override
     protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
 
         auth.userDetailsService(customUserDetailsService).passwordEncoder(passwordEncoder());
@@ -54,10 +48,8 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 		http.csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
 		http.headers().httpStrictTransportSecurity().disable().and().httpBasic().and().formLogin().and()
 				.authorizeRequests().anyRequest().authenticated();
-		http.requiresChannel().anyRequest().requiresSecure();
 		http.requestMatcher(EndpointRequest.toAnyEndpoint())
 				.authorizeRequests()
-				.antMatchers("/oauth/token").permitAll()
 				.anyRequest().authenticated()
 				.and()
 				.httpBasic();

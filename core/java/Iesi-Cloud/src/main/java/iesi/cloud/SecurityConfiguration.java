@@ -37,8 +37,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		http.csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
 		http.headers().addHeaderWriter(new XFrameOptionsHeaderWriter(XFrameOptionsMode.SAMEORIGIN));
-//		http.csrf().disable().httpBasic().and().authorizeRequests()
-//				.antMatchers("/**/**").permitAll();
 		http.csrf().disable().httpBasic().and().authorizeRequests()
 				.antMatchers("/encrypt/**").authenticated()
 				.antMatchers("/decrypt/**").authenticated();

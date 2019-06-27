@@ -4,7 +4,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.io.Resource;
 
-@ConfigurationProperties("publickey")
+@ConfigurationProperties("securitykey")
 public class SecurityPropertiesClient {
 
 	private JwtProperties jwt;

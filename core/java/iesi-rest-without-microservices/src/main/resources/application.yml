@@ -1,3 +1,8 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
 spring:
   profiles:
     active: https
@@ -5,14 +10,6 @@ spring:
     url: jdbc:h2:~/token
     schema: classpath:/schema.sql
     data: classpath:data.sql
-  h2:
-    console:
-      enabled: true
-
-server:
-  port: 8080
-  servlet:
-    context-path: /api
 
 management:
   endpoints:
@@ -27,3 +24,7 @@ security:
     key-pair-alias: iesi
     key-store-type: PKCS12
     key-pair-password: password
+
+securitykey:
+  jwt:
+    public-key: classpath:public.txt

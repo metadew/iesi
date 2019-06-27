@@ -16,10 +16,8 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
-		http.requiresChannel().anyRequest().requiresSecure();
 		http.headers().httpStrictTransportSecurity().disable().and().httpBasic()
 		.and().formLogin().and().authorizeRequests().anyRequest().authenticated();
-//		http.authorizeRequests().antMatchers("/actuator/health").authenticated();
 		http.requestMatcher(EndpointRequest.toAnyEndpoint())
 
 				.authorizeRequests()

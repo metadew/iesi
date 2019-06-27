@@ -1,19 +1,8 @@
 server:
-  port: ${iesi-GatewayPort}
-  http2:
-    enabled: true
-  use-forward-headers: true
-  ssl:
-    enabled: true
-    key-alias: ${iesi-GatewayKeyalias}
-    key-password: ${iesi-GatewayKeypassword}
-    key-store: classpath:${iesi-GatewayKeystore}
-    key-store-password: ${iesi-GatewayKeystorepassword}
-    key-store-type: ${iesi-GatewayKeystoreType}
-
-spring:
-  application:
-      name: iesi-gateway, iesi-rest
+  port: 8082
+#spring:
+#  application:
+#      name: iesi-gateway, iesi-rest
 
 security:
   jwt:
@@ -26,33 +15,36 @@ management:
         exclude: '*'
 zuul:
   sensitiveHeaders: Cookie,Set-Cookie
-  routes: 
+  routes:
     environments:
       service-id: environments
       path: /api/environments/**
-      url:  ${iesi-GatewayFullUrl}/api/environments
+      url:  https://localhost:8080/api/environments
 
     connections:
       service-id: connections
       path: /api/connections/**
-      url:  ${iesi-GatewayFullUrl}/api/connections
+      url:  https://localhost:8080/api/connections
 
     components:
       service-id: components
       path: /api/components/**
-      url:  ${iesi-GatewayFullUrl}/api/components
-      
+      url:  https://localhost:8080/api/components
+
     impersonations:
       service-id: impersonations
       path: /api/impersonations/**
-      url:  ${iesi-GatewayFullUrl}/api/impersonations
+      url:  https://localhost:8080/api/impersonations
 
     scripts:
       service-id: scripts
       path: /api/scripts/**
-      url:  ${iesi-GatewayFullUrl}/api/scripts
+      url:  https://localhost:8080/api/scripts
 
     spring-oauth-resource:
       service-id: oauth
       path: /api/oauth/token
-      url: ${iesi-GatewayFullUrl}
+      url: https://localhost:8080
+spring:
+  profiles:
+    active: https

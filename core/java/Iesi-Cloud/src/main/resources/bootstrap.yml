@@ -1,9 +1,9 @@
 encrypt:
   key-store:
-    location: classpath:francois.jks
-    password: francois
-    alias: francois
-    secret: francois
+    location: classpath:iesiCloud.jks
+    password: iesipassword
+    alias: iesi
+    secret: password
 
 spring:
   profiles:

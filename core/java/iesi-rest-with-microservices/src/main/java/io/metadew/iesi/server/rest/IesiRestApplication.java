@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 public class IesiRestApplication {
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args){
         SpringApplication.run(IesiRestApplication.class, args);
 
     }

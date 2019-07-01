@@ -1,6 +1,9 @@
 package io.metadew.iesi.script.action;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.JsonNodeType;
 import io.metadew.iesi.common.json.JsonParsed;
 import io.metadew.iesi.common.json.JsonParsedItem;
 import io.metadew.iesi.common.json.JsonTools;
@@ -8,6 +11,7 @@ import io.metadew.iesi.common.text.ParsingTools;
 import io.metadew.iesi.connection.HttpConnection;
 import io.metadew.iesi.connection.http.HttpRequest;
 import io.metadew.iesi.connection.http.HttpResponse;
+import io.metadew.iesi.datatypes.Array;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.dataset.Dataset;
 import io.metadew.iesi.datatypes.Text;
@@ -55,6 +59,7 @@ public class HttpExecuteRequest {
     private ActionParameterOperation requestBody;
 
     private ActionParameterOperation setDataset;
+    private ActionParameterOperation expectedStatusCodes;
 
     private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
 
@@ -81,7 +86,7 @@ public class HttpExecuteRequest {
         this.setFrameworkExecution(frameworkExecution);
         this.setExecutionControl(executionControl);
         this.setActionExecution(actionExecution);
-        this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
+        this.setActionParameterOperationMap(new HashMap<>());
     }
 
     public void prepare() {
@@ -97,6 +102,8 @@ public class HttpExecuteRequest {
                 "setRuntimeVariables"));
         this.setSetDataset(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "setDataset"));
+        expectedStatusCodes = new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+                this.getActionExecution(), this.getActionExecution().getAction().getType(), "expectedStatusCodes");
 
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
@@ -110,6 +117,8 @@ public class HttpExecuteRequest {
                 this.getSetRuntimeVariables().setInputValue(actionParameter.getValue());
             } else if (actionParameter.getName().equalsIgnoreCase("setDataset")) {
                 this.getSetDataset().setInputValue(actionParameter.getValue());
+            } else if (actionParameter.getName().equalsIgnoreCase("expectedStatusCodes")) {
+                expectedStatusCodes.setInputValue(actionParameter.getValue());
             }
         }
 
@@ -119,6 +128,7 @@ public class HttpExecuteRequest {
         this.getActionParameterOperationMap().put("body", this.getRequestBody());
         this.getActionParameterOperationMap().put("setRuntimeVariables", this.getSetRuntimeVariables());
         this.getActionParameterOperationMap().put("setDataset", this.getSetDataset());
+        this.getActionParameterOperationMap().put("expectedStatusCodes", expectedStatusCodes);
     }
 
     public boolean execute() {
@@ -126,11 +136,12 @@ public class HttpExecuteRequest {
             String requestName = convertHttpRequestName(getRequestName().getValue());
             String requestType = convertHttpRequestType(getRequestType().getValue());
             Optional<String> requestBody = convertHttpRequestBody(getRequestBody().getValue());
+            Optional<List<String>> expectedStatusCodes = convertExpectStatusCodes(this.expectedStatusCodes.getValue());
             boolean setRuntimeVariables = convertSetRuntimeVariables(getSetRuntimeVariables().getValue());
             // TODO: convert from string to dataset DataType
             String outputDatasetReferenceName = convertOutputDatasetReferenceName(getSetDataset().getValue());
 
-            return executeHttpRequest(requestName, requestType, requestBody, setRuntimeVariables, outputDatasetReferenceName);
+            return executeHttpRequest(requestName, requestType, requestBody, setRuntimeVariables, outputDatasetReferenceName, expectedStatusCodes);
 
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
@@ -145,8 +156,37 @@ public class HttpExecuteRequest {
         }
     }
 
+    private Optional<List<String>> convertExpectStatusCodes(DataType expectedStatusCodes) {
+        if (expectedStatusCodes == null) {
+            return Optional.empty();
+        }
+        if (expectedStatusCodes instanceof Text) {
+            return Optional.of(Arrays.stream(expectedStatusCodes.toString().split(","))
+                    .map(String::trim)
+                    .collect(Collectors.toList()));
+        } else if (expectedStatusCodes instanceof Array){
+            return Optional.of(((Array) expectedStatusCodes).getList().stream()
+                    .map(this::convertExpectedStatusCode)
+                    .collect(Collectors.toList()));
+        } else {
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for expectedStatusCode",
+                    expectedStatusCodes.getClass()), Level.WARN);
+            return Optional.empty();
+        }
+    }
+
+    private String convertExpectedStatusCode(DataType expectedStatusCode) {
+        if (expectedStatusCode instanceof Text) {
+            return expectedStatusCode.toString();
+        } else {
+            frameworkExecution.getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for expectedStatusCode",
+                    expectedStatusCode.getClass()), Level.WARN);
+            return expectedStatusCode.toString();
+        }
+    }
+
     @SuppressWarnings("rawtypes")
-	private boolean executeHttpRequest(String requestName, String requestType, Optional<String> requestBody, boolean setRuntimeVariables, String outputDatasetReferenceName) {
+	private boolean executeHttpRequest(String requestName, String requestType, Optional<String> requestBody, boolean setRuntimeVariables, String outputDatasetReferenceName, Optional<List<String>> expectedStatusCodes) {
         // Get request configuration
         HttpRequestOperation httpRequestOperation = new HttpRequestOperation(this.getFrameworkExecution(),
                 this.getExecutionControl(), this.getActionExecution(), requestName);
@@ -188,17 +228,25 @@ public class HttpExecuteRequest {
             httpResponse = httpConnection.executePostRequest(requestBody.orElse(""));
         }
 
-        this.getActionExecution().getActionControl().logOutput("response", httpResponse.getResponse().toString());
-        this.getActionExecution().getActionControl().logOutput("status", httpResponse.getStatusLine().toString());
-        this.getActionExecution().getActionControl().logOutput("entity", httpResponse.getEntityString());
-        this.getActionExecution().getActionControl().logOutput("headers", httpResponse.getHeaders().stream()
-                .map(header -> header.getName() + ":" + header.getValue())
-                .collect(Collectors.joining(",\n")));
+        outputResponse(httpResponse);
         // Parsing entity
         writeResponseToOutputDataset(httpResponse, outputDatasetReferenceName, setRuntimeVariables);
         // Check error code
-        checkStatusCode(httpResponse);
+        checkStatusCode(httpResponse, expectedStatusCodes);
         return true;
+    }
+
+    private void outputResponse(HttpResponse httpResponse) {
+        //this.getActionExecution().getActionControl().logOutput("response", httpResponse.getResponse().toString());
+        this.getActionExecution().getActionControl().logOutput("status", httpResponse.getStatusLine().toString());
+        this.getActionExecution().getActionControl().logOutput("status.code", String.valueOf(httpResponse.getStatusLine().getStatusCode()));
+        this.getActionExecution().getActionControl().logOutput("body", httpResponse.getEntityString());
+        int headerCounter = 1;
+        for (Header header : httpResponse.getHeaders()) {
+            actionExecution.getActionControl().logOutput("header." + headerCounter, header.getName() + ":" + header.getValue());
+            headerCounter++;
+        }
+
     }
 
     private String convertOutputDatasetReferenceName(DataType outputDatasetReferenceName) {
@@ -257,6 +305,21 @@ public class HttpExecuteRequest {
         }
     }
 
+    private void checkStatusCode(HttpResponse httpResponse, Optional<List<String>> expectedStatusCodes) {
+        if (expectedStatusCodes.isPresent()) {
+            System.out.println(expectedStatusCodes.get());
+            if (expectedStatusCodes.get().contains(String.valueOf(httpResponse.getStatusLine().getStatusCode()))) {
+                actionExecution.getActionControl().increaseSuccessCount();
+            } else {
+                frameworkExecution.getFrameworkLog().log(MessageFormat.format("Status code of response {0} is not member of expected status codes {1}",
+                        httpResponse.getStatusLine().getStatusCode(), expectedStatusCodes.get()), Level.WARN);
+                actionExecution.getActionControl().increaseErrorCount();
+            }
+        } else {
+            checkStatusCode(httpResponse);
+        }
+    }
+
     private void checkStatusCode(HttpResponse httpResponse) {
         if (SUCCESS_STATUS_CODE.matcher(Integer.toString(httpResponse.getStatusLine().getStatusCode())).find()) {
             this.getActionExecution().getActionControl().increaseSuccessCount();
@@ -265,6 +328,8 @@ public class HttpExecuteRequest {
         } else if (REDIRECT_STATUS_CODE.matcher(Integer.toString(httpResponse.getStatusLine().getStatusCode())).find()) {
             this.getActionExecution().getActionControl().increaseSuccessCount();
         } else {
+            frameworkExecution.getFrameworkLog().log(MessageFormat.format("Status code of response {0} is not member of success status codes (1XX, 2XX, 3XX).",
+                    httpResponse.getStatusLine().getStatusCode()), Level.WARN);
             this.getActionExecution().getActionControl().increaseErrorCount();
         }
     }
@@ -278,8 +343,9 @@ public class HttpExecuteRequest {
             this.getActionExecution().getActionControl().logWarning("content-type",
                     MessageFormat.format("Http response contains multiple headers ({0}) defining the content type", contentTypeHeaders.size()));
         } else if (contentTypeHeaders.size() == 0) {
-            this.getActionExecution().getActionControl().logWarning("content-type", "Http response contains no header defining the content type.");
-            return;
+            this.getActionExecution().getActionControl().logWarning("content-type", "Http response contains no header defining the content type. Assuming text/plain");
+            writeTextPlainResponseToOutputDataset(httpResponse, outputDatasetReferenceName);
+
         }
 
         if (contentTypeHeaders.stream().anyMatch(header -> header.getValue().contains(ContentType.APPLICATION_JSON.getMimeType()))) {
@@ -288,6 +354,7 @@ public class HttpExecuteRequest {
             writeTextPlainResponseToOutputDataset(httpResponse, outputDatasetReferenceName);
         } else {
             this.getActionExecution().getActionControl().logWarning("content-type", "Http response contains unsupported content-type header. Response will be written to dataset as plain text.");
+            writeTextPlainResponseToOutputDataset(httpResponse, outputDatasetReferenceName);
         }
     }
 
@@ -307,11 +374,39 @@ public class HttpExecuteRequest {
         }
     }
 
-    private void writeJSONResponseToOutputDataset(HttpResponse httpResponse, String outputDatasetReferenceName, boolean setRuntimeVariables) {
+    private void writeJSONResponseToOutputDataset(JsonNode jsonNode, String keyPrefix, Dataset outputDataset) {
+
+        Iterator<Map.Entry<String, JsonNode>> fields = jsonNode.fields();
+        while (fields.hasNext()) {
+            Map.Entry<String, JsonNode> field = fields.next();
+            if (field.getValue().getNodeType().equals(JsonNodeType.OBJECT)) {
+                writeJSONResponseToOutputDataset(field.getValue(), keyPrefix + field.getKey() + ".", outputDataset);
+            } else if(field.getValue().getNodeType().equals(JsonNodeType.ARRAY)) {
+                int arrayCounter = 1;
+                for (JsonNode element : field.getValue()) {
+                    writeJSONResponseToOutputDataset(element, keyPrefix + field.getKey() + "." + arrayCounter + ".",
+                            outputDataset);
+                    arrayCounter++;
+                }
+            } else if (field.getValue().getNodeType().equals(JsonNodeType.NULL)) {
+                outputDataset.setDataItem(keyPrefix + field.getKey(), new Text(""));
+            } else if (field.getValue().isValueNode()) {
+                outputDataset.setDataItem(keyPrefix + field.getKey(), new Text(field.getValue().asText()));
+            }
+            else {
+                //TODO:
+            }
+        }
+
+
+    }
+
+
+        private void writeJSONResponseToOutputDataset(HttpResponse httpResponse, String outputDatasetReferenceName, boolean setRuntimeVariables) {
         JsonParsed jsonParsed;
         try {
-            jsonParsed = new JsonTools().parseJson("string", httpResponse.getEntityString());
-            this.setRuntimeVariable(jsonParsed, setRuntimeVariables);
+            JsonNode jsonNode = new ObjectMapper().readTree(httpResponse.getEntityString());
+            setRuntimeVariable(jsonNode, setRuntimeVariables);
 
             if (!outputDatasetReferenceName.isEmpty()) {
 //				String[] parts = outputDatasetReferenceName.split("\\.");
@@ -323,27 +418,48 @@ public class HttpExecuteRequest {
                 Optional<Dataset> outputDataset = executionControl.getExecutionRuntime().getDataset(outputDatasetReferenceName);
                 outputDataset.ifPresent(dataset -> {
                     dataset.clean();
-                    jsonParsed.getJsonParsedItemList().forEach(jsonParsedItem -> dataset.setDataItem(jsonParsedItem.getPath(), new Text(jsonParsedItem.getValue())));
+                    writeJSONResponseToOutputDataset(jsonNode, "", dataset);
                 });
-
             }
         } catch (Exception e) {
             this.getActionExecution().getActionControl().logError("json", e.getMessage());
         }
     }
 
-    private void setRuntimeVariable(JsonParsed jsonParsed, boolean setRuntimeVariables) {
+
+    private void setRuntimeVariable(JsonNode jsonNode, String keyPrefix, boolean setRuntimeVariables) {
         if (setRuntimeVariables) {
             try {
-                for (JsonParsedItem jsonParsedItem : jsonParsed.getJsonParsedItemList()) {
-                    this.getExecutionControl().getExecutionRuntime().setRuntimeVariable(actionExecution, jsonParsedItem.getPath(),
-                            jsonParsedItem.getValue());
+                Iterator<Map.Entry<String, JsonNode>> fields = jsonNode.fields();
+                while (fields.hasNext()) {
+                    Map.Entry<String, JsonNode> field = fields.next();
+                    if (field.getValue().getNodeType().equals(JsonNodeType.OBJECT)) {
+                        setRuntimeVariable(field.getValue(), keyPrefix + field.getKey() + ".", setRuntimeVariables);
+                    } else if(field.getValue().getNodeType().equals(JsonNodeType.ARRAY)) {
+                        int arrayCounter = 1;
+                        for (JsonNode element : field.getValue()) {
+                            setRuntimeVariable(element, keyPrefix + field.getKey() + "." + arrayCounter + ".",
+                                    setRuntimeVariables);
+                            arrayCounter++;
+                        }
+                    } else if (field.getValue().getNodeType().equals(JsonNodeType.NULL)) {
+                        executionControl.getExecutionRuntime().setRuntimeVariable(actionExecution, keyPrefix + field.getKey(), "");
+
+                    } else if (field.getValue().isValueNode()) {
+                        executionControl.getExecutionRuntime().setRuntimeVariable(actionExecution, keyPrefix + field.getKey(), field.getValue().asText());
+                    } else {
+                        // TODO:
+                    }
                 }
             } catch (Exception e) {
                 this.getActionExecution().getActionControl().increaseWarningCount();
                 this.getExecutionControl().logExecutionOutput(this.getActionExecution(), "SET_RUN_VAR", e.getMessage());
             }
         }
+    }
+
+    private void setRuntimeVariable(JsonNode jsonNode, boolean setRuntimeVariables) {
+        setRuntimeVariable(jsonNode, "", setRuntimeVariables);
     }
 
     // Getters and Setters

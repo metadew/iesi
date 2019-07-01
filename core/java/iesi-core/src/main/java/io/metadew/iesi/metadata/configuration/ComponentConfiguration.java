@@ -129,8 +129,9 @@ public class ComponentConfiguration extends MetadataConfiguration {
 
     public Optional<Component> getComponent(String componentName, long versionNumber) {
         String queryComponent = "select COMP_ID, COMP_TYP_NM, COMP_NM, COMP_DSC from "
-                + this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Components") + " where COMP_NM = '"
-                + componentName + "'";
+                + this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Components")
+                + " where COMP_NM = "
+                + SQLTools.GetStringForSQL(componentName);
         CachedRowSet crsComponent = this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().executeQuery(queryComponent, "reader");
 
         try {
@@ -167,7 +168,7 @@ public class ComponentConfiguration extends MetadataConfiguration {
             // get attributes
             String queryComponentAttributes = "select ENV_NM, COMP_ATT_NM, COMP_ATT_VAL from "
                     + this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ComponentAttributes")
-                    + " where COMP_ID = " + SQLTools.GetStringForSQL(componentId) + "' and COMP_VRS_NB = " + versionNumber;
+                    + " where COMP_ID = " + SQLTools.GetStringForSQL(componentId) + " and COMP_VRS_NB = " + versionNumber;
             CachedRowSet crsComponentAttributes = this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().executeQuery(queryComponentAttributes, "reader");
             List<ComponentAttribute> componentAttributes = new ArrayList<>();
             while (crsComponentAttributes.next()) {

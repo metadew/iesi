@@ -19,7 +19,15 @@
     * Define a script and its actions
     * [Load configuration](/{{site.repository}}/pages/tutorial/loadconfiguration.html)  
 	* [Execute script](/{{site.repository}}/pages/tutorial/executescript.html)  
+  * Working with environments
+    * [Define an environment to execute a script on](/{{site.repository}}/pages/tutorial/environments/environments.1.html)  
+	* [Change the environment during execution of a script](/{{site.repository}}/pages/tutorial/environments/environments.1.html)  
   * Working with parameters
+    * [Define a parameter from the command line](/{{site.repository}}/pages/tutorial/parameters/parameters.1.html)
+	* [Define a parameter inside a script](/{{site.repository}}/pages/tutorial/parameters/parameters.2.html)
+	* Define a parameter list inside a script
+	* [Load a parameter file when executing a script](/{{site.repository}}/pages/tutorial/parameters/parameters.3.html)
+	* Load a parameter file inside a script
   * Working with conditions
     * [Conditional action execution](/{{site.repository}}/pages/tutorial/conditions/conditionalactionexecution.html)  
   * Working with iterations

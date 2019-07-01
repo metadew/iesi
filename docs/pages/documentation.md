@@ -44,6 +44,7 @@
     * [Subroutine types](/{{site.repository}}/pages/design/subroutinetypes.html)
 * Demos
 * Automation approaches
+  * [Start as soon as possible and grow in steps](/{{site.repository}}/pages/approach/startandgrow.html)
   * [ETL flow testing](/{{site.repository}}/pages/approach/etlflowtesting.html)
   * [Query based testing](/{{site.repository}}/pages/approach/querybasedtesting.html)
 * [Operate the framework](/{{site.repository}}/pages/operate/operate.html)

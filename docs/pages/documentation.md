@@ -21,7 +21,7 @@
 	* [Execute script](/{{site.repository}}/pages/tutorial/executescript.html)  
   * Working with environments
     * [Define an environment to execute a script on](/{{site.repository}}/pages/tutorial/environments/environments.1.html)  
-	* [Change the environment during execution of a script](/{{site.repository}}/pages/tutorial/environments/environments.1.html)  
+	* [Change the environment during execution of a script](/{{site.repository}}/pages/tutorial/environments/environments.2.html)  
   * Working with parameters
     * [Define a parameter from the command line](/{{site.repository}}/pages/tutorial/parameters/parameters.1.html)
 	* [Define a parameter inside a script](/{{site.repository}}/pages/tutorial/parameters/parameters.2.html)

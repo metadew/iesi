@@ -13,6 +13,8 @@ So this requires another approach to make the case.
 
 This is a simple formula to build and track the business case.
 
+**Note that infrastructure costs are not taken into account here**
+
 ## Script development
 
 Our experiences has learned that automation scripts have different levels of complexity and require a different amount of effort to create. 
@@ -47,3 +49,7 @@ Note that
 ## Benefit measurement
 
 We are currently working on a mechanism that allows you to measure and track automation benefits via the automation framework.
+
+## Infrastructure costs
+
+More information will follow shortly.

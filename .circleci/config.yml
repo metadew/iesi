@@ -48,5 +48,4 @@ jobs:
             - ~/.m2
           key: v1-dependencies-{{ checksum "core/java/iesi-core/pom.xml" }}
 
-      # run tests!
-      - run: mvn integration-test
+      # run tests! - This is where we need to some magic

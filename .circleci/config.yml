@@ -21,22 +21,24 @@ jobs:
       MAVEN_OPTS: -Xmx3200m
 
     steps:
-      - checkout:
-          path: ~/core/java/iesi-core
+      - checkout
 
       # Download and cache dependencies
       - restore_cache:
           keys:
-            - v1-dependencies-{{ checksum "pom.xml" }}
+            - v1-dependencies-{{ checksum "core/java/iesi-core/pom.xml" }}
             # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
 
-      - run: mvn dependency:go-offline
+      - run: |
+          cd core/java/iesi-core
+          mvn dependency:go-offline
+          
 
       - save_cache:
           paths:
             - ~/.m2
-          key: v1-dependencies-{{ checksum "pom.xml" }}
+          key: v1-dependencies-{{ checksum "core/java/iesi-core/pom.xml" }}
 
       # run tests!
       - run: mvn integration-test

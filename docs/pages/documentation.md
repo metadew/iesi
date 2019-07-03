@@ -67,12 +67,14 @@
     * Subroutines
 	* Users
   * Data Model
+    * [Catalog data model](/{{site.repository}}/pages/understand/datamodel/catalog.html)
     * [Connectivity data model](/{{site.repository}}/pages/understand/datamodel/connectivity.html)
     * [Control data model](/{{site.repository}}/pages/understand/datamodel/control.html)
     * [design data model](/{{site.repository}}/pages/understand/datamodel/design.html)
     * [result data model](/{{site.repository}}/pages/understand/datamodel/result.html)
     * [trace data model](/{{site.repository}}/pages/understand/datamodel/trace.html)
 * Extend the framework
+  * Create a plugin
 * [Modules](/{{site.repository}}/pages/modules/modules.html)
   * [SQL Insert](/{{site.repository}}/pages/modules/sqlinsert/sqlinsert.html)
 * [How to contribute](/{{site.repository}}/pages/contribute/contribute.html)

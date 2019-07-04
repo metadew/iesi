@@ -99,7 +99,7 @@ public class MetadataRepositoryConfiguration {
 			instanceName = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.instance.name").get()).get();
 		}
 		try {
-		repositoryConfiguration = new RepositoryConfigurationFactory().createRepositoryConfiguration(configFile, frameworkSettingConfiguration, frameworkCrypto);
+		    repositoryConfiguration = new RepositoryConfigurationFactory().createRepositoryConfiguration(configFile, frameworkSettingConfiguration, frameworkCrypto);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -1,0 +1,31 @@
+---
+type: Script
+data:
+  type: "script"
+  name: "instruction.lookup.dataset.1"
+  description: "test nested resolvements"
+  actions:
+  - number: 1
+    type: "data.setDatasetConnection"
+    name: "set expected dataset connection"
+    description: "default"
+    errorExpected: "N"
+    errorStop: "Y"
+    parameters:
+    - name: "name"
+      value : "dataset"
+    - name: "dataset"
+      value : "datasetLookups"
+    - name: "labels"
+      value : "dataset"
+  - number: 2
+    type: "eval.assertEquals"
+    name: "check parameter value"
+    description: "default"
+    errorExpected: "N"
+    errorStop: "Y"
+    parameters:
+    - name: "expected"
+      value : "{{=dataset(dataset, item1)}}"
+    - name: "actual"
+      value : "value1"

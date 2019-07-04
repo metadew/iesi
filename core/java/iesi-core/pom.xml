@@ -185,6 +185,7 @@
 			<version>2.1</version>
 			<scope>test</scope>
 		</dependency>
+
 		<!-- Because of incomplete JAXS implementation, needs further investigation -->
 		<dependency>
 			<groupId>xerces</groupId>

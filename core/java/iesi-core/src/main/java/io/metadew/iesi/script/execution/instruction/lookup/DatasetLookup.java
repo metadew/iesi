@@ -1,6 +1,8 @@
 package io.metadew.iesi.script.execution.instruction.lookup;
 
 import io.metadew.iesi.datatypes.DataType;
+import io.metadew.iesi.datatypes.DataTypeResolver;
+import io.metadew.iesi.datatypes.Text;
 import io.metadew.iesi.datatypes.dataset.Dataset;
 import io.metadew.iesi.script.execution.ExecutionControl;
 
@@ -31,21 +33,32 @@ public class DatasetLookup implements LookupInstruction {
 
     @Override
     public String generateOutput(String parameters) {
+        // TODO: parse with antlr
         Matcher inputParameterMatcher = INPUT_PARAMETER_PATTERN.matcher(parameters);
         if (!inputParameterMatcher.find()) {
             throw new IllegalArgumentException(MessageFormat.format("Illegal arguments provided to dataset lookup: {0}", parameters));
         }
-        String datasetReferenceName = inputParameterMatcher.group(DATASET_NAME_KEY);
+
+        Dataset dataset = getDataset(DataTypeResolver.resolveToDataType(inputParameterMatcher.group(DATASET_NAME_KEY), executionControl.getFrameworkExecution().getFrameworkConfiguration().getFolderConfiguration() , executionControl.getExecutionRuntime()));
         String datasetItemName = inputParameterMatcher.group(DATASET_ITEM_NAME_KEY);
 
-        Optional<Dataset> dataset = executionControl.getExecutionRuntime().getDataset(datasetReferenceName);
-        Optional<DataType> dataItem = dataset.map(dataset1 -> dataset1.getDataItem(datasetItemName))
-                .orElseThrow(() -> new IllegalArgumentException(MessageFormat.format("No dataset found for reference name {0}", datasetReferenceName)));
+        Optional<DataType> dataItem = dataset.getDataItem(datasetItemName);
 
         if (!dataItem.isPresent()) {
-            throw new IllegalArgumentException(MessageFormat.format("No dataset item {0} is attached to dataset {1}", datasetItemName, datasetReferenceName));
+            throw new IllegalArgumentException(MessageFormat.format("No dataset item {0} is attached to dataset {1}", datasetItemName, dataset.toString()));
         } else {
             return dataItem.get().toString();
+        }
+    }
+
+    private Dataset getDataset(DataType dataset) {
+        if (dataset instanceof Text) {
+            return executionControl.getExecutionRuntime().getDataset(((Text) dataset).getString())
+                    .orElseThrow(() -> new IllegalArgumentException(MessageFormat.format("No dataset found with reference name {0}", ((Text) dataset).getString())));
+        } else if (dataset instanceof Dataset) {
+            return (Dataset) dataset;
+        } else {
+            throw new IllegalArgumentException(MessageFormat.format("Dataset cannot be of type {0}", dataset.getClass()));
         }
     }
 }

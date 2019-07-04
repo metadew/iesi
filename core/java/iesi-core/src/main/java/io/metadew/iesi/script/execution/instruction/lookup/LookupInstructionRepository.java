@@ -28,6 +28,9 @@ public class LookupInstructionRepository {
         // dataset
         DatasetLookup datasetLookup = new DatasetLookup(executionControl);
         lookupInstructions.put(datasetLookup.getKeyword(), datasetLookup);
+        // list
+        ListLookup listLookup = new ListLookup(executionControl);
+        lookupInstructions.put(listLookup.getKeyword(), listLookup);
 
         return lookupInstructions;
     }

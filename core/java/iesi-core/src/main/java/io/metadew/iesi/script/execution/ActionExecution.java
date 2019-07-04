@@ -2,6 +2,7 @@ package io.metadew.iesi.script.execution;
 
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.configuration.ActionPerformanceConfiguration;
+import io.metadew.iesi.metadata.configuration.type.ActionTypeConfiguration;
 import io.metadew.iesi.metadata.definition.Action;
 import io.metadew.iesi.script.configuration.IterationInstance;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
@@ -19,6 +20,7 @@ import java.util.HashMap;
 public class ActionExecution {
 
 	private final ActionPerformanceLogger actionPerformanceLogger;
+	private final ActionTypeConfiguration actionTypeConfiguration;
 	private FrameworkExecution frameworkExecution;
 	private ExecutionControl executionControl;
 	private ActionControl actionControl;
@@ -39,6 +41,7 @@ public class ActionExecution {
 		this.setScriptExecution(scriptExecution);
 		this.setAction(action);
 		this.actionPerformanceLogger = new ActionPerformanceLogger(new ActionPerformanceConfiguration(frameworkExecution.getFrameworkInstance().getMetadataControl()));
+		this.actionTypeConfiguration = new ActionTypeConfiguration(frameworkExecution.getFrameworkInstance());
 	}
 
 	// Methods
@@ -80,8 +83,7 @@ public class ActionExecution {
 						this.getExecutionControl(), this, this.getAction().getComponent().trim()));
 			}
 
-			String className = this.getFrameworkExecution().getFrameworkConfiguration().getActionTypeConfiguration()
-					.getActionTypeClass(this.getAction().getType());
+			String className = actionTypeConfiguration.getActionType(this.getAction().getType()).getClassName();
 			this.getExecutionControl().logMessage(this, "action.type=" + this.getAction().getType(), Level.DEBUG);
 
 			Class classRef = Class.forName(className);

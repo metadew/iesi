@@ -2,19 +2,16 @@ package io.metadew.iesi.script.action;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
 import io.metadew.iesi.common.json.JsonParsed;
-import io.metadew.iesi.common.json.JsonParsedItem;
-import io.metadew.iesi.common.json.JsonTools;
 import io.metadew.iesi.common.text.ParsingTools;
 import io.metadew.iesi.connection.HttpConnection;
 import io.metadew.iesi.connection.http.HttpRequest;
 import io.metadew.iesi.connection.http.HttpResponse;
 import io.metadew.iesi.datatypes.Array;
 import io.metadew.iesi.datatypes.DataType;
-import io.metadew.iesi.datatypes.dataset.Dataset;
 import io.metadew.iesi.datatypes.Text;
+import io.metadew.iesi.datatypes.dataset.Dataset;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.ActionParameter;
 import io.metadew.iesi.script.execution.ActionExecution;
@@ -34,11 +31,6 @@ import java.text.MessageFormat;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 
 public class HttpExecuteRequest {
@@ -63,13 +55,13 @@ public class HttpExecuteRequest {
 
     private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
 
-    private final Pattern INFORMATION_STATUS_CODE = Pattern.compile("1\\d\\d*");
-    private final Pattern SUCCESS_STATUS_CODE = Pattern.compile("2\\d\\d*");
-    private final Pattern REDIRECT_STATUS_CODE = Pattern.compile("3\\d\\d*");
+    private final Pattern INFORMATION_STATUS_CODE = Pattern.compile("1\\d\\d");
+    private final Pattern SUCCESS_STATUS_CODE = Pattern.compile("2\\d\\d");
+    private final Pattern REDIRECT_STATUS_CODE = Pattern.compile("3\\d\\d");
     @SuppressWarnings("unused")
-    private final Pattern SERVER_ERROR_STATUS_CODE = Pattern.compile("4\\d\\d*");
+    private final Pattern SERVER_ERROR_STATUS_CODE = Pattern.compile("4\\d\\d");
     @SuppressWarnings("unused")
-    private final Pattern CLIENT_ERROR_STATUS_CODE = Pattern.compile("5\\d\\d*");
+    private final Pattern CLIENT_ERROR_STATUS_CODE = Pattern.compile("5\\d\\d");
 
     // Constructors
     public HttpExecuteRequest() {

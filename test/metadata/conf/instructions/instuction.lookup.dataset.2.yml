@@ -1,0 +1,18 @@
+---
+type: Script
+data:
+  type: "script"
+  name: "instruction.lookup.dataset.2"
+  description: "test nested resolvements"
+  actions:
+  - number: 1
+    type: "eval.assertEquals"
+    name: "check parameter value"
+    description: "default"
+    errorExpected: "N"
+    errorStop: "Y"
+    parameters:
+    - name: "expected"
+      value : "{{=dataset({{^dataset(datasetLookups, {{^list(dataset)}}}}, item1)}}"
+    - name: "actual"
+      value : "value1"

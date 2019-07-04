@@ -201,9 +201,7 @@ public abstract class Database {
 	public String getCreateStatement(MetadataTable table) {
 		StringBuilder createQuery = new StringBuilder();
 		// StringBuilder fieldComments = new StringBuilder();
-
 		String tableName = table.getName();
-
 		createQuery.append("CREATE TABLE ").append(tableName).append("\n(\n");
 		int counter = 1;
 		for (MetadataField field : table.getFields()) {

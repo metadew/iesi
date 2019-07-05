@@ -4,7 +4,7 @@
 		"name": "bin",
 		"path": "/bin",
 		"label": "Bin",
-		"description": "",
+		"description": "Scripts for using the framework",
 		"permissions": "755"
 }},
 {
@@ -13,7 +13,7 @@
 		"name": "conf",
 		"path": "/conf",
 		"label": "Conf",
-		"description": "",
+		"description": "Configuration files definining the framework setup",
 		"permissions": "755"
 }},
 {
@@ -22,16 +22,7 @@
 		"name": "data",
 		"path": "/data",
 		"label": "Data",
-		"description": "",
-		"permissions": "755"
-}},
-{
-	"type": "FrameworkFolder",
-	"data": {
-		"name": "data.mapping",
-		"path": "/data/mapping",
-		"label": "Mapping",
-		"description": "",
+		"description": "Location where data files can be stored",
 		"permissions": "755"
 }},
 {
@@ -40,7 +31,7 @@
 		"name": "lib",
 		"path": "/lib",
 		"label": "Lib",
-		"description": "",
+		"description": "Libraries essential for running the framework",
 		"permissions": "755"
 }},
 {
@@ -49,7 +40,7 @@
 		"name": "licenses",
 		"path": "/licenses",
 		"label": "Licenses",
-		"description": "",
+		"description": "License files for libraries used by the framework",
 		"permissions": "755"
 }},
 {
@@ -58,7 +49,7 @@
 		"name": "logs",
 		"path": "/logs",
 		"label": "Logs",
-		"description": "",
+		"description": "Framework log files are stored here",
 		"permissions": "755"
 }},
 {
@@ -67,7 +58,7 @@
 		"name": "metadata",
 		"path": "/metadata",
 		"label": "Metadata",
-		"description": "",
+		"description": "The framework metadata can be found here",
 		"permissions": "755"
 }},
 {
@@ -76,7 +67,16 @@
 		"name": "metadata.conf",
 		"path": "/metadata/conf",
 		"label": "MetadataConf",
-		"description": "",
+		"description": "Data object type configurations",
+		"permissions": "755"
+}},
+{
+	"type": "FrameworkFolder",
+	"data": {
+		"name": "data.mapping",
+		"path": "/data/mapping",
+		"label": "Mapping",
+		"description": "Mapping definitions",
 		"permissions": "755"
 }},
 {
@@ -85,7 +85,7 @@
 		"name": "metadata.def",
 		"path": "/metadata/def",
 		"label": "MetadataDef",
-		"description": "",
+		"description": "Metadata table and object definitions",
 		"permissions": "755"
 }},
 {
@@ -94,7 +94,7 @@
 		"name": "metadata.gen",
 		"path": "/metadata/gen",
 		"label": "MetadataGen",
-		"description": "",
+		"description": "Data generation configuration files",
 		"permissions": "755"
 }},
 {
@@ -103,7 +103,7 @@
 		"name": "metadata.in",
 		"path": "/metadata/in",
 		"label": "MetadataIn",
-		"description": "",
+		"description": "Area for loading metadata to the configuration repository",
 		"permissions": "755"
 }},
 {
@@ -112,7 +112,7 @@
 		"name": "metadata.in.done",
 		"path": "/metadata/in/done",
 		"label": "MetadataInDone",
-		"description": "",
+		"description": "Folder for storing files that are successfully loaded",
 		"permissions": "755"
 }},
 {
@@ -121,7 +121,7 @@
 		"name": "metadata.in.error",
 		"path": "/metadata/in/error",
 		"label": "MetadataInError",
-		"description": "",
+		"description": "Folder for storing files that are not loaded due to an error",
 		"permissions": "755"
 }},
 {
@@ -130,7 +130,7 @@
 		"name": "metadata.in.new",
 		"path": "/metadata/in/new",
 		"label": "MetadataInNew",
-		"description": "",
+		"description": "Folder for submitting files that need to be loaded",
 		"permissions": "755"
 }},
 {
@@ -139,7 +139,7 @@
 		"name": "metadata.in.work",
 		"path": "/metadata/in/work",
 		"label": "MetadataInWork",
-		"description": "",
+		"description": "Folder for storing files that are being processed",
 		"permissions": "755"
 }},
 {
@@ -148,7 +148,7 @@
 		"name": "metadata.out",
 		"path": "/metadata/out",
 		"label": "MetadataOut",
-		"description": "",
+		"description": "Area for storing output metadata that has been generated",
 		"permissions": "755"
 }},
 {
@@ -157,7 +157,7 @@
 		"name": "metadata.out.ddl",
 		"path": "/metadata/out/ddl",
 		"label": "MetadataOutDdl",
-		"description": "",
+		"description": "Metadata table ddl files",
 		"permissions": "755"
 }},
 {
@@ -166,7 +166,7 @@
 		"name": "modules",
 		"path": "/modules",
 		"label": "Modules",
-		"description": "",
+		"description": "Area for add-on modules",
 		"permissions": "755"
 }},
 {
@@ -175,7 +175,7 @@
 		"name": "modules.sqlinsert",
 		"path": "/modules/sqlinsert",
 		"label": "ModulesSqlinsert",
-		"description": "",
+		"description": "SQL Insert utility",
 		"permissions": "755"
 }},
 {
@@ -184,7 +184,7 @@
 		"name": "modules.sqlinsert.conf",
 		"path": "/modules/sqlinsert/conf",
 		"label": "ModulesSqlinsertConf",
-		"description": "",
+		"description": "Configuration files",
 		"permissions": "755"
 }},
 {
@@ -193,7 +193,7 @@
 		"name": "modules.sqlinsert.conf.dbc",
 		"path": "/modules/sqlinsert/conf/dbc",
 		"label": "ModulesSqlinsertConfDbc",
-		"description": "",
+		"description": "Database configuration files",
 		"permissions": "755"
 }},
 {
@@ -202,7 +202,7 @@
 		"name": "modules.sqlinsert.logs",
 		"path": "/modules/sqlinsert/logs",
 		"label": "ModulesSqlinsertLogs",
-		"description": "",
+		"description": "Log files",
 		"permissions": "755"
 }},
 {
@@ -211,7 +211,7 @@
 		"name": "modules.sqlinsert.run",
 		"path": "/modules/sqlinsert/run",
 		"label": "ModulesSqlinsertRun",
-		"description": "",
+		"description": "Run-time variable data",
 		"permissions": "755"
 }},
 {
@@ -220,7 +220,7 @@
 		"name": "modules.sqlinsert.run.tmp",
 		"path": "/modules/sqlinsert/run/tmp",
 		"label": "ModulesSqlinsertRunTmp",
-		"description": "",
+		"description": "Temporary files",
 		"permissions": "755"
 }},
 {
@@ -229,7 +229,7 @@
 		"name": "modules.templates",
 		"path": "/modules/templates",
 		"label": "ModulesTemplates",
-		"description": "",
+		"description": "Excel templates for defining data objects",
 		"permissions": "755"
 }},
 {
@@ -238,7 +238,7 @@
 		"name": "plugins",
 		"path": "/plugins",
 		"label": "Plugins",
-		"description": "",
+		"description": "Area for plugins",
 		"permissions": "755"
 }},
 {
@@ -247,7 +247,7 @@
 		"name": "run",
 		"path": "/run",
 		"label": "Run",
-		"description": "",
+		"description": "Run-time variable data",
 		"permissions": "755"
 }},
 {
@@ -256,7 +256,7 @@
 		"name": "run.cache",
 		"path": "/run/cache",
 		"label": "RunCache",
-		"description": "",
+		"description": "Cache data",
 		"permissions": "755"
 }},
 {
@@ -265,7 +265,7 @@
 		"name": "run.exec",
 		"path": "/run/exec",
 		"label": "RunExec",
-		"description": "",
+		"description": "Execution data",
 		"permissions": "755"
 }},
 {
@@ -274,7 +274,7 @@
 		"name": "run.lock",
 		"path": "/run/lock",
 		"label": "RunLock",
-		"description": "",
+		"description": "Lock files keeping track of resources currently in use",
 		"permissions": "755"
 }},
 {
@@ -283,7 +283,7 @@
 		"name": "run.spool",
 		"path": "/run/spool",
 		"label": "RunSpool",
-		"description": "",
+		"description": "Spool files waiting to be processed",
 		"permissions": "755"
 }},
 {
@@ -292,7 +292,7 @@
 		"name": "run.tmp",
 		"path": "/run/tmp",
 		"label": "RunTmp",
-		"description": "",
+		"description": "Temporary files",
 		"permissions": "755"
 }},
 {
@@ -301,7 +301,7 @@
 		"name": "sbin",
 		"path": "/sbin",
 		"label": "Sbin",
-		"description": "",
+		"description": "Script for using framework server processes",
 		"permissions": "755"
 }},
 {
@@ -310,7 +310,7 @@
 		"name": "sys",
 		"path": "/sys",
 		"label": "Sys",
-		"description": "",
+		"description": "Framework system configuration",
 		"permissions": "755"
 }},
 {
@@ -319,6 +319,6 @@
 		"name": "sys.init",
 		"path": "/sys/init",
 		"label": "SysInit",
-		"description": "",
+		"description": "Configuration files used for initialization",
 		"permissions": "755"
 }}]

@@ -33,34 +33,34 @@ public class IesiConfiguration {
     }
 
     @Bean
-    public ConnectionConfiguration connectionConfiguration(FrameworkExecution frameworkExecution) {
-        return new ConnectionConfiguration(frameworkExecution);
+    public ConnectionConfiguration connectionConfiguration(FrameworkInstance frameworkInstance) {
+        return new ConnectionConfiguration(frameworkInstance);
     }
 
     @Bean
-    public EnvironmentConfiguration environmentConfiguration(FrameworkExecution frameworkExecution) {
-        return new EnvironmentConfiguration(frameworkExecution);
+    public EnvironmentConfiguration environmentConfiguration(FrameworkInstance frameworkInstance) {
+        return new EnvironmentConfiguration(frameworkInstance);
     }
 
     @Bean
-    public ImpersonationConfiguration impersonationConfiguration(FrameworkExecution frameworkExecution) {
-        return new ImpersonationConfiguration(frameworkExecution);
+    public ImpersonationConfiguration impersonationConfiguration(FrameworkInstance frameworkInstance) {
+        return new ImpersonationConfiguration(frameworkInstance);
     }
 
 
     @Bean
-    public ScriptConfiguration scriptConfiguration(FrameworkExecution frameworkExecution) {
-        return new ScriptConfiguration(frameworkExecution);
+    public ScriptConfiguration scriptConfiguration(FrameworkInstance frameworkInstance) {
+        return new ScriptConfiguration(frameworkInstance);
     }
 
     @Bean
-    public UserConfiguration userConfiguration(FrameworkExecution frameworkExecution) {
-        return new UserConfiguration(frameworkExecution);
+    public UserConfiguration userConfiguration(FrameworkInstance frameworkInstance) {
+        return new UserConfiguration(frameworkInstance);
     }
 
     @Bean
-    public ComponentConfiguration componentConfiguration(FrameworkExecution frameworkExecution) {
-        return new ComponentConfiguration(frameworkExecution);
+    public ComponentConfiguration componentConfiguration(FrameworkInstance frameworkInstance) {
+        return new ComponentConfiguration(frameworkInstance);
     }
 
 }

@@ -2,9 +2,9 @@
 
 # Introduction
 
-Intelligent ETL Solution Industrialization or IESI is bringing augmented automation to life. 
+Intelligent, Enhanced & Seamless Industrialization or IESI is bringing augmented automation to life. 
 It primarily acts as a DevOps orchestrator focusing on activities related to test, release, operate and monitor. 
-Yet, it augments user configuration with intelligent use of data. 
+Yet, it augments user configuration with intelligent use of data which it caches internally so that it can be used during execution.
 
 > The data science approach for automation
 
@@ -35,7 +35,7 @@ Common actions and components are managed in libraries that are maintained centr
 
 It is a toolbelt rather than a one-stop solution:
  * quick to extend with new functions
- * effective in growing the coverage of automation.
+ * effective in growing the coverage of automation
 
 The framework decouples the configuration from the data aspects and manages it in a distributed manner. 
 It is distributed by design allowing to be used on any size of project: low entry installation and onboarding (missing UI interactions for now).
@@ -46,6 +46,13 @@ With these ingredients, it will be possible to create innovative solutions.
 Our framework will help with its configuration-driven toolbelt approach.
 
 ![automation-success](/{{site.repository}}/images/introduction/automation-success.png)
+
+Growing coverage of automation is achieved through intelligent use of parameterization and design skills. 
+By making use of parameter files or metadata driven approaches, the number of executions for a common script can be scaled without requiring a new script to be written. 
+The test approach for [ETL flow testing](/{{site.repository}}/pages/approach/etlflowtesting.html) illustrates this concept:
+* Divide scripts into small reusable blocks of functionality (with a common purpose)
+* Make use of parameterization from the start
+* Infuse scripts with runtime variables, either coming from the system under test or from the any inventory that can be read by the framework
 
 ## Use cases
 

@@ -109,6 +109,38 @@
 		"description": "test date travel - one year in the future",
 		"parameterList": ""
 	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "instruction.resolvement.1",
+		"description": "test date travel - one year in the future",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "instruction.lookup.dataset.1",
+		"description": "test dataset lookup - reference name provided",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "instruction.lookup.dataset.2",
+		"description": "test dataset lookup - dataset data type provided",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "instruction.lookup.list.1",
+		"description": "test list lookup",
+		"parameterList": ""
+	}
 }
 
 ]

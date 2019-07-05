@@ -2,7 +2,7 @@
 
 # Deploy the framework
 
-The most simple mode of deployment is standalone on a server or desktop (N*X / Windows)
+The most simple mode of deployment is a local installation on a server or desktop (N*X / Windows)
 * As a next step, the containerization and/or automated deployment in a virtual infrastructure / cloud can be done possible due to limited installation steps
 
 ![deploy-basic](/{{site.repository}}/images/deploy/deploy-basic.png)
@@ -35,16 +35,32 @@ to scale and parallelize in different scenarios and adjust them quickly dependin
 * The solution is built packaged for deployment in a compressed file (`.tar` or `.zip`)
 * This package can be downloaded or made available in any artifact repository
 
-## Installation steps:
+## Installation steps
 * Download and decompress the package in the target location
 * Apply the configuration for the solution in the `#iesi.home#/conf` folder
 * If the metadata is stored outside the instance, then the solution is ready to be used
-* For the first installation, the metadata repository needs to be created: `#iesi.home#/bin/iesi-metadata.sh -create`
+* For the first installation, the metadata repository needs to be created: `#iesi.home#/bin/iesi-metadata.sh -type general -create`
 
 If the metadata is needed (partially) inside the instance, metadata actions can be initiated to load necessary metadata: 
-first get the necessary metadata file and then run `#iesi.home#/bin/iesi-metadata.sh -load`
+first get the necessary metadata file and then run `#iesi.home#/bin/iesi-metadata.sh -type general -load`
 
 In order to automate the installation steps, the configuration can be stored in an artifact or configuration repository and copied to the appropriate location
 
 For new versions and patches, new packages will be made available that can be installed in a similar manner. 
 Detailed instructions will be made available to deal with any impact.
+
+### Configure the framework
+
+The framework makes use of different setting files to manage its operations. All setting files are centralized in the `conf` folder. 
+Depending on the deployment manner specific settings need to be defined. 
+More information on the settings file can be found [here](/{{site.repository}}/pages/manage/manage.html).
+
+# Examples
+
+## Local install
+
+## Configuration stored in a database
+
+## Storing configurations in different logical instances
+
+## Separating connectivity configuration

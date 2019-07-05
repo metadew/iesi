@@ -1,0 +1,18 @@
+---
+type: Script
+data:
+  type: "script"
+  name: "instruction.lookup.list.1"
+  description: "test nested resolvements"
+  actions:
+  - number: 1
+    type: "eval.assertEquals"
+    name: "check parameter value"
+    description: "default"
+    errorExpected: "N"
+    errorStop: "Y"
+    parameters:
+    - name: "expected"
+      value : "{{=list({{^list(item1, item2}}, 2)}}"
+    - name: "actual"
+      value : "item2"

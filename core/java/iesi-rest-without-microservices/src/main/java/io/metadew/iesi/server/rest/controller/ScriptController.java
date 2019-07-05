@@ -119,7 +119,8 @@ public class ScriptController {
 		requestParameters.add(new RequestParameter("exit", "flag", Boolean.toString(false)));
 
 		Request request = new Request("script", Long.toString(System.currentTimeMillis()), scriptExecution.getScript(), "", 1, "",scriptExecution.getScript(),scriptExecution.getEnvironment(),"","","",requestParameters);
-		ScriptLaunchOperation.execute(frameworkInstance, request);
+		// TODO: FrameworkRunIdentifier
+		ScriptLaunchOperation.execute(frameworkInstance, request, null);
         return ResponseEntity.ok().build();
 
     }

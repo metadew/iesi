@@ -31,3 +31,17 @@ iesi-home.conf
 
 ### VS Code ###
 .vscode/
+<<<<<<< HEAD:core/java/iesi-rest-without-microservices/.gitignore
+=======
+
+
+### Build ###
+/classes/
+
+### IESI ###
+iesi-home.conf
+/.apt_generated_tests/
+
+/src/test/resources/iesi_instance/
+/src/test/resources/iesi_instance.zip
+>>>>>>> develop:core/java/iesi-rest/.gitignore

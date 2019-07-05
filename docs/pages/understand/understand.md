@@ -41,12 +41,25 @@ The automation framework consists of:
 
 ## Configuration templates
 
-The framework contains a set of Excel templates to create several configuration assets so that they can be loaded into the configuration repository. 
-Automation engineers can create new configuration Excel files via a well-known user interface and use any version control tool that they are used to. 
+The framework uses configuration to drive automation. Automation engineers can create or update configuration files that will be loaded and stored in a configuration repository. 
+There are multiple ways to create these files: waiting for a more advance graphical user (web)interface, the framework contains a set of standard Excel templates. 
+These provide a well-known user interface and facilitate creating a required technical `json` format. Engineers can directly create this technical format, 
+or alternatively make use of a easier to use `yaml` format.
+
+### Creating configuration files
+
+**Json format**
+
+Underneath, the framework uses the `json` object format run and communicate its services.
+
+**Yaml format**
+
+To facilitate creating and updating configuration files for technical enigeers, support for the `yaml` object format has been included.
+
+**Excel templates**
+
 The templates allow to transfer the configuration Excel files into a `json` configuration file via a `vba` macro. 
 The configuration templates can be found in folder `modules/templates`.
-
-> The Excel template files are only temporary waiting for a more advanced graphical user (web)interface. 
 
 |Template|Description|
 |--------|-----------|
@@ -54,6 +67,10 @@ The configuration templates can be found in folder `modules/templates`.
 |Connectivity|Define connections and environments|
 |Script|Design automation scripts|
 |Subroutine|Design subroutines|
+
+### Versioning configuration files
+
+Versioning can be done via any version tool that is being used.
 
 ## Configuration repository
 
@@ -75,6 +92,18 @@ The configuration data can be divided in different categories.
 |Trace|The resolution of the automation configuration design as it has been executed by the framework. All parameters and reusable constructs are replaced by actual values.|
 |Reporting|The interpretation of the technical outcome using reporting views to give context to the execution.|
 
+### Data Objects
+
+The framework is based on a set of data objects that work closely together. All objects are designed using the following principle:
+* Object relates here to a primary object, a primary object is an object which is meaningful both from a functional and technical point of view and will be used by the framework for its services
+* An object has a natural identifer (e.g. a name) for external reference (including between different primary objects; internally, a unique identifier will be used
+* An object is of a *type*
+* An object type has *paramters*
+* An object has *parameters*, in line with the object type parameters
+* If applicable, an object has a version
+* An object has fields and can contain other objects (these are always secondary objects), secondary objects 
+
+*You can replace object here with: script, environment, connection, etc.*
 
 ### Users
 
@@ -120,11 +149,46 @@ More information on the data models for the different categories can be found by
 
 ## Processing engine
 
-We are working providing more details on this.
+The installation of the automation framework deploys a set of artefacts that allow the processing engine to initialize itself and perform its operations.
+
+### Execution logic
+
+The automation framework is an orchestrator that runs actions one after the other, caches intermediate results and variables that it can use in any next action.
+
+Very simplisticly, it is a big loop over all actions:
+
+* Start the execution
+* For each action:
+  * Verify if the action needs to be executed or skipped
+  * Verify if the action needs to be iterated
+  * Execute the action (once or for every execution)
+    * If a condition has been specified, is it valid? If so, execute the action; otherwise, do not execute the action
+    * If [error expected](/{{site.repository}}/pages/design/expectederrors.html) is relevant, the result of the action execute is reversed
+  * If the action result is an error:
+    * Is [stop on error](/{{site.repository}}/pages/design/stoponerror.html) relevant? If so, stop the execution
+    * Has a retry number been specified? If so, re-execute the action
+* End the execution
 
 ### Folder structure
 
-We are working providing more details on this.
+The automation framework has the following folder structure:
+
+<table>
+<thead>
+<tr class="header">
+<th>Path</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+{% for type in site.data.framework.FrameworkFolders %}
+<tr>
+<td markdown="span">{{ type.data.path }}</td>
+<td markdown="span">{{ type.data.description }}</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
 
 ### File extensions
 

@@ -745,4 +745,26 @@
 		"group": "Framework",
 		"category": "General",
 		"type": ""
+}},
+{
+	"type": "FrameworkSetting",
+	"data": {
+		"name": "server.mode",
+		"path": "iesi.server.mode",
+		"label": "ServerMode",
+		"description": "",
+		"group": "Framework",
+		"category": "Server",
+		"type": ""
+}},
+{
+	"type": "FrameworkSetting",
+	"data": {
+		"name": "server.repository.configuration",
+		"path": "server.repository.configuration",
+		"label": "ServerRepositoryConfiguration",
+		"description": "",
+		"group": "Framework",
+		"category": "Server",
+		"type": "Repository"
 }}]

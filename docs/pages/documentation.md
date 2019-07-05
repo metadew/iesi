@@ -55,6 +55,7 @@
 * [Deploy the framework](/{{site.repository}}/pages/deploy/deploy.html)
   * Configuration files
   * [Environment strategy](/{{site.repository}}/pages/deploy/environmentstrategy.html)
+  * [Connectors](/{{site.repository}}/pages/deploy/connectors.html)
 * [Understand the framework](/{{site.repository}}/pages/understand/understand.html)
   * [Legend tables](/{{site.repository}}/pages/understand/legend.html)
   * [Important highlights](/{{site.repository}}/pages/understand/highlights.html)

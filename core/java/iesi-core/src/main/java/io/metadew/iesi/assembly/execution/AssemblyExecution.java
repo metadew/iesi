@@ -82,12 +82,24 @@ public class AssemblyExecution {
             FolderTools.copyFromFolderToFolder(licensesSource,
                     licensesTarget, true);
 
+            String licensesReportSource = repositoryHome + File.separator + "core" + File.separator + "java" + File.separator + "iesi-core" + File.separator + "target" + File.separator + "site";
+            String licensesReportTarget = versionHome + File.separator + "licenses";
+            FolderTools.copyFromFolderToFolder(licensesReportSource,
+            		licensesReportTarget, true);
+           
+            
             // Loop the file system configuration
             String fileSystemStructure = repositoryHome + File.separator + "core" + File.separator + "assembly"
                     + File.separator + "folder-assembly.conf";
             this.getAssemblyContext().getFileSystemOperation().createSolutionStructure(fileSystemStructure,
                     versionHome);
 
+            // Load maven dependencies
+            String mavenDependenciesSource = repositoryHome + File.separator + "core" + File.separator + "java" + File.separator + "iesi-core" + File.separator + "target" + File.separator + "dependencies";
+            String mavenDependenciesTarget = versionHome + File.separator + "lib";
+            FolderTools.copyFromFolderToFolder(mavenDependenciesSource,
+            		mavenDependenciesTarget, true);
+            
             // Load assets into directory structure
             String fileSystemConfig = repositoryHome + File.separator + "core" + File.separator + "assembly"
                     + File.separator + "file-assembly.conf";

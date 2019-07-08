@@ -16,7 +16,7 @@ data:
     errorStop: "N"
     parameters:
     - name: "script"
-      value : "demo2.1.1"
+      value : "demo2.mssql"
     - name: "environment"
       value : "{{$fwk.environment}}"
   - number: 2
@@ -30,6 +30,6 @@ data:
     errorStop: "N"
     parameters:
     - name: "script"
-      value : "demo2.1.2"
+      value : "demo2.mssql"
     - name: "environment"
       value : "{{$fwk.environment}}"

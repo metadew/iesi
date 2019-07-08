@@ -1,14 +1,14 @@
 ---
 type: "script"
 data:
-  name: "demo2.1.2"
-  description: "Prepare data for table2"
+  name: "demo2.1.1"
+  description: "Prepare data for table1"
   parameters: []
   actions:
   - number: 1
     type: "sql.executeStatement"
     name: "Action1"
-    description: "Remove data from Table2"
+    description: "Remove data from Table1"
     component: ""
     condition: ""
     iteration: ""
@@ -16,13 +16,13 @@ data:
     errorStop: "N"
     parameters:
     - name: "statement"
-      value : "delete from Table2;"
+      value : "delete from Table1;"
     - name: "connection"
-      value : "db.mssql.1"
+      value : "demo2.mssql"
   - number: 2
     type: "sql.executeStatement"
     name: "Action2"
-    description: "Insert data in Table2"
+    description: "Insert data in Table1"
     component: ""
     condition: ""
     iteration: ""
@@ -30,9 +30,9 @@ data:
     errorStop: "N"
     parameters:
     - name: "statement"
-      value : "{{=file(#iesi.home#/data/demo2/table2.insert.sql)}}"
+      value : "{{=file(#iesi.home#/data/demo2/table1.insert.sql)}}"
     - name: "connection"
-      value : "db.mssql.1"
+      value : "demo2.mssql"
   - number: 3
     type: "sql.evaluateResult"
     name: "action3"
@@ -44,8 +44,8 @@ data:
     errorStop: "N"
     parameters:
     - name: "query"
-      value : "select * from Table2"
+      value : "select * from Table1"
     - name: "hasResult"
       value : "Y"
     - name: "connection"
-      value : "db.mssql.1"
+      value : "demo2.mssql"

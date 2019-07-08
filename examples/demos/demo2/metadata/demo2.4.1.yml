@@ -1,7 +1,7 @@
 ---
 type: "script"
 data:
-  name: "demo2.4.2"
+  name: "demo2.4.1"
   description: "Execute a query and store the output as processing variable"
   parameters: []
   actions:
@@ -18,7 +18,7 @@ data:
     - name: "query"
       value : "select Field3 from Table1 where Field1 = 1"
     - name: "connection"
-      value : "db.mssql.1"
+      value : "demo2.mssql"
   - number: 2
     type: "fwk.outputMessage"
     name: "action2"
@@ -44,6 +44,6 @@ data:
     errorStop: "N"
     parameters:
     - name: "expected"
-      value : "bert"
+      value : "mattis"
     - name: "actual"
       value : "#Field3#"

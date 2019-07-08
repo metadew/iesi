@@ -1,7 +1,7 @@
 ---
 type: "script"
 data:
-  name: "demo2.4.4"
+  name: "demo2.4.5"
   description: "Execute a query and store the output as processing variable"
   parameters: []
   actions:
@@ -18,7 +18,7 @@ data:
     - name: "query"
       value : "select Field3 from Table1 where Field1 = 1"
     - name: "connection"
-      value : "db.mssql.1"
+      value : "demo2.mssql"
   - number: 2
     type: "fwk.outputMessage"
     name: "action2"
@@ -50,7 +50,7 @@ data:
     - name: "dataset"
       value : "demo2"
     - name: "labels"
-      value : "label.b"
+      value : "#label#"
   - number: 4
     type: "eval.assertEquals"
     name: "action4"

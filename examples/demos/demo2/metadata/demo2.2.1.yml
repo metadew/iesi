@@ -20,4 +20,4 @@ data:
     - name: "hasResult"
       value : "N"
     - name: "connection"
-      value : "db.mssql.1"
+      value : "demo2.mssql"

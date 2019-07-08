@@ -4,6 +4,7 @@ directory for text of these licenses.
 
 Apache License 2.0
 ------------------
+com.github.javafaker:javafaker
 nl.flotsam:xeger
 org.jfrog.artifactory.client:artifactory-java-client-api
 org.jfrog.artifactory.client:artifactory-java-client-httpClient

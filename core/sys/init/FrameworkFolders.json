@@ -46,6 +46,24 @@
 {
 	"type": "FrameworkFolder",
 	"data": {
+		"name": "licenses.core",
+		"path": "/licenses/core",
+		"label": "LicensesCore",
+		"description": "License files for libraries used by the core",
+		"permissions": "755"
+}},
+{
+	"type": "FrameworkFolder",
+	"data": {
+		"name": "licenses.rest",
+		"path": "/licenses/rest",
+		"label": "LicensesRest",
+		"description": "License files for libraries used by the rest server",
+		"permissions": "755"
+}},
+{
+	"type": "FrameworkFolder",
+	"data": {
 		"name": "logs",
 		"path": "/logs",
 		"label": "Logs",
@@ -68,15 +86,6 @@
 		"path": "/metadata/conf",
 		"label": "MetadataConf",
 		"description": "Data object type configurations",
-		"permissions": "755"
-}},
-{
-	"type": "FrameworkFolder",
-	"data": {
-		"name": "data.mapping",
-		"path": "/data/mapping",
-		"label": "Mapping",
-		"description": "Mapping definitions",
 		"permissions": "755"
 }},
 {

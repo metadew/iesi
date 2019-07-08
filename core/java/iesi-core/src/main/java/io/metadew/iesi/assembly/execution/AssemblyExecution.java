@@ -83,7 +83,7 @@ public class AssemblyExecution {
                     licensesTarget, true);
 
             String licensesReportSource = repositoryHome + File.separator + "core" + File.separator + "java" + File.separator + "iesi-core" + File.separator + "target" + File.separator + "site";
-            String licensesReportTarget = versionHome + File.separator + "licenses";
+            String licensesReportTarget = versionHome + File.separator + "licenses" + File.separator + "core";
             FolderTools.copyFromFolderToFolder(licensesReportSource,
             		licensesReportTarget, true);
            
@@ -99,6 +99,23 @@ public class AssemblyExecution {
             String mavenDependenciesTarget = versionHome + File.separator + "lib";
             FolderTools.copyFromFolderToFolder(mavenDependenciesSource,
             		mavenDependenciesTarget, true);
+            
+            //////////////////////////////////////////////////////////////////////////////////////////////////
+            // Rest server
+            // Licenses
+            licensesReportSource = repositoryHome + File.separator + "core" + File.separator + "java" + File.separator + "iesi-rest" + File.separator + "target" + File.separator + "site";
+            licensesReportTarget = versionHome + File.separator + "licenses" + File.separator + "rest";
+            FolderTools.copyFromFolderToFolder(licensesReportSource,
+            		licensesReportTarget, true);
+            
+            // Dependencies
+            mavenDependenciesSource = repositoryHome + File.separator + "core" + File.separator + "java" + File.separator + "iesi-rest" + File.separator + "target" + File.separator + "dependencies";
+            FolderTools.copyFromFolderToFolder(mavenDependenciesSource,
+            		mavenDependenciesTarget, true);
+                      
+            //
+            //////////////////////////////////////////////////////////////////////////////////////////////////
+            
             
             // Load assets into directory structure
             String fileSystemConfig = repositoryHome + File.separator + "core" + File.separator + "assembly"

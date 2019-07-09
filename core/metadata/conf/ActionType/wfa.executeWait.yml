@@ -1,0 +1,15 @@
+---
+data:
+  name: "wfa.executeWait"
+  className: "io.metadew.iesi.script.action.WfaExecuteWait"
+  description: "Wait for a defined interval"
+  parameters:
+  - name: "wait"
+    description: "Number of seconds to wait"
+    type: "number"
+    mandatory: "N"
+    encrypted: "N"
+    subroutine: ""
+    impersonate: "N"
+  status: "stable"
+type: "ActionType"

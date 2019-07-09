@@ -1,0 +1,6 @@
+---
+data:
+  name: "file.footer"
+  description: "File footer"
+  parameters: []
+type: "GenerationControlType"

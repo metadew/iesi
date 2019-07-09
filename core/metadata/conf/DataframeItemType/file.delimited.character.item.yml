@@ -1,0 +1,21 @@
+---
+data:
+  name: "file.delimited.character.item"
+  description: "Character delimited file dataframe item"
+  parameters:
+  - name: "order"
+    description: ""
+    type: "string"
+    mandatory: "Y"
+    encrypted: "N"
+  - name: "type"
+    description: ""
+    type: "string"
+    mandatory: "Y"
+    encrypted: "N"
+  - name: "format"
+    description: ""
+    type: "string"
+    mandatory: "N"
+    encrypted: "N"
+type: "DataframeItemType"

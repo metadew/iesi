@@ -235,5 +235,9 @@ public final class FileTools {
         return extension;
 
     }
+    
+    public static String getFolderPath(File file) {
+    	return file.getParent();
+    }
 
 }

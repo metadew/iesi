@@ -1,0 +1,6 @@
+---
+data:
+  name: "file.header"
+  description: "File header"
+  parameters: []
+type: "GenerationControlType"

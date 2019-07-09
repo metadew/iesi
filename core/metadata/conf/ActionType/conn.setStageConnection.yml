@@ -1,0 +1,23 @@
+---
+data:
+  name: "conn.setStageConnection"
+  className: "io.metadew.iesi.script.action.ConnSetStageConnection"
+  description: "Define a stage connection that can be used in any next step"
+  parameters:
+  - name: "stage"
+    description: "Name of the stage connection"
+    type: "string"
+    mandatory: "Y"
+    encrypted: "N"
+    subroutine: ""
+    impersonate: "N"
+  - name: "cleanup"
+    description: "Flag to indicate if the stage connection needs to be cleaned up\
+      \ after processing"
+    type: "string"
+    mandatory: "N"
+    encrypted: "N"
+    subroutine: ""
+    impersonate: "N"
+  status: "beta"
+type: "ActionType"

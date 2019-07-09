@@ -1,0 +1,17 @@
+---
+data:
+  name: "list.custom"
+  className: "io.metadew.iesi.data.generation.rule.ListCustom"
+  description: "Select items from a custom list of values"
+  parameters:
+  - name: "ITEMS"
+    description: "List of items to select from (comma separated)"
+    type: "string"
+    mandatory: "Y"
+    encrypted: "N"
+  - name: "SELECTION_TYPE"
+    description: "Selection type to use (RANDOM)"
+    type: "string"
+    mandatory: "Y"
+    encrypted: "N"
+type: "GenerationRuleType"

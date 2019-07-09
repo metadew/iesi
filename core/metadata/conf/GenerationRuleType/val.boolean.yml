@@ -1,0 +1,17 @@
+---
+data:
+  name: "val.boolean"
+  className: "io.metadew.iesi.data.generation.rule.ValBoolean"
+  description: "Generate random boolean values (0 vs 1, true vs false, etc.)"
+  parameters:
+  - name: "TRUE_VALUE"
+    description: "Value to use as true value"
+    type: "string"
+    mandatory: "Y"
+    encrypted: "N"
+  - name: "FALSE_VALUE"
+    description: "Value to use as false value"
+    type: "string"
+    mandatory: "Y"
+    encrypted: "N"
+type: "GenerationRuleType"

@@ -1,0 +1,11 @@
+---
+data:
+  name: "http.host"
+  description: "Http Host Connection"
+  parameters:
+  - name: "url"
+    description: "The connection URL"
+    type: "string"
+    mandatory: "Y"
+    encrypted: "N"
+type: "ConnectionType"

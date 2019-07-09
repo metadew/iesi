@@ -1,0 +1,12 @@
+---
+data:
+  name: "txt.words"
+  className: "io.metadew.iesi.data.generation.rule.TxtWords"
+  description: "Random sequence of words"
+  parameters:
+  - name: "WORD_NB"
+    description: "Number of words to generate"
+    type: "number"
+    mandatory: "N"
+    encrypted: "N"
+type: "GenerationRuleType"

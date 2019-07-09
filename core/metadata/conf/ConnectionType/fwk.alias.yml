@@ -1,0 +1,11 @@
+---
+data:
+  name: "fwk.alias"
+  description: "Connection alias only to be used for impersonation"
+  parameters:
+  - name: "type"
+    description: "The connection type that is impersonated"
+    type: "string"
+    mandatory: "Y"
+    encrypted: "N"
+type: "ConnectionType"

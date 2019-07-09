@@ -1,0 +1,16 @@
+---
+data:
+  name: "user"
+  description: "User"
+  roles:
+  - name: "guest"
+    description: "Guest"
+  - name: "member"
+    description: "Member"
+  - name: "operator"
+    description: "Operator"
+  - name: "engineer"
+    description: "Engineer"
+  - name: "specialist"
+    description: "Specialist"
+type: "UserType"

@@ -1,0 +1,16 @@
+---
+data:
+  name: "db.sqlite"
+  description: "SQLite Database Connection"
+  parameters:
+  - name: "filePath"
+    description: "The file path where the database is stored"
+    type: "string"
+    mandatory: "Y"
+    encrypted: "N"
+  - name: "fileName"
+    description: "The file name of the the database"
+    type: "string"
+    mandatory: "Y"
+    encrypted: "N"
+type: "ConnectionType"

@@ -1,0 +1,21 @@
+---
+data:
+  name: "http.request"
+  description: "Http request component type"
+  parameters:
+  - name: "url"
+    description: "url"
+    type: "string"
+    mandatory: "Y"
+    encrypted: "N"
+  - name: "queryParam"
+    description: "queryParam"
+    type: "string"
+    mandatory: "N"
+    encrypted: "N"
+  - name: "header"
+    description: "header"
+    type: "string"
+    mandatory: "N"
+    encrypted: "N"
+type: "ComponentType"

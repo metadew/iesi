@@ -1,0 +1,12 @@
+---
+data:
+  name: "val.blank"
+  className: "io.metadew.iesi.data.generation.rule.ValBlank"
+  description: "Generate a blank or null value"
+  parameters:
+  - name: "BLANK_VALUE"
+    description: "Value to use as blank value"
+    type: "string"
+    mandatory: "Y"
+    encrypted: "N"
+type: "GenerationRuleType"

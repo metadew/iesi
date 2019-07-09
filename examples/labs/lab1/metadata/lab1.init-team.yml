@@ -33,3 +33,17 @@ data:
       value : "{{=file(#iesi.home#/data/lab1/FotgTables.ddl)}}"
     - name: "connection"
       value : "lab1.fotg"
+  - number: 3
+    type: "sql.executeStatement"
+    name: "Action3"
+    description: "create team tables"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "statement"
+      value : "{{=file(#iesi.home#/data/lab1/customers.dml)}}"
+    - name: "connection"
+      value : "lab1.fotg"

@@ -1,0 +1,57 @@
+---
+type: "script"
+data:
+  name: "demo2.3.1"
+  description: "Execute Stored Procedure and store results temporarily"
+  parameters: []
+  actions:
+  - number: 1
+    type: "conn.setStageConnection"
+    name: "Action1"
+    description: "Define a stage connection"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "stage"
+      value : "demo2_3_1"
+    - name: "cleanup"
+      value: "N"
+  - number: 2
+    type: "data.setDatasetConnection"
+    name: "Action2"
+    description: "Define a dataset using the defined stage connection"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "name"
+      value : "dataset2_3_1"
+    - name: "type"
+      value : "stage"
+    - name: "dataset"
+      value : "demo2_3_1"
+  - number: 3
+    type: "sql.executeProcedure"
+    name: "Action3"
+    description: "Select data from a stored procedure and store the output in the stage dataset"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "procedure"
+      value : "GetTable1ByField1"
+    - name: "connection"
+      value : "demo2.mssql"
+    - name: "parameters"
+      value : "@Field1=1"
+    - name: "outputDataset"
+      value : "dataset2_3_1"
+    - name: "appendOutput"
+      value : "N"

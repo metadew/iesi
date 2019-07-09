@@ -1,0 +1,35 @@
+---
+type: "script"
+data:
+  name: "lab1.init-team"
+  description: "Prepare data for a team"
+  parameters: []
+  actions:
+  - number: 1
+    type: "sql.executeStatement"
+    name: "Action1"
+    description: "create team schema"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "statement"
+      value : "create schema #team#;"
+    - name: "connection"
+      value : "lab1.fotg"
+  - number: 2
+    type: "sql.executeStatement"
+    name: "Action2"
+    description: "create team tables"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "statement"
+      value : "{{=file(#iesi.home#/data/lab1/FotgTables.ddl)}}"
+    - name: "connection"
+      value : "lab1.fotg"

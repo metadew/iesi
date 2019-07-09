@@ -1,0 +1,18 @@
+---
+type: Connection
+data:
+  name: "lab1.fotg"
+  type: "db.postgresql"
+  description: "fotg connection"
+  environment: "iesi-lab1"
+  parameters:
+  - name: "host"
+    value: "localhost"
+  - name: "port"
+    value: "5432"
+  - name: "database"
+    value: "fotg"
+  - name: "user"
+    value: "fotg"
+  - name: "password"
+    value: "ENC(Vqyg3liUuSdyh+bk17yoRDqsbm/kadjQ)"

@@ -83,14 +83,14 @@ public class ScriptRunner {
      */
     @SuppressWarnings("finally")
     public SqlScriptResult runScript(Reader reader) throws IOException, SQLException {
-        SqlScriptResult dcSQLScriptResult = null;
+        SqlScriptResult sqlScriptResult = null;
         try {
             boolean originalAutoCommit = connection.getAutoCommit();
             try {
                 if (originalAutoCommit != this.autoCommit) {
                     connection.setAutoCommit(this.autoCommit);
                 }
-                dcSQLScriptResult = runScript(connection, reader);
+                sqlScriptResult = runScript(connection, reader);
             } finally {
                 connection.setAutoCommit(originalAutoCommit);
             }
@@ -101,7 +101,7 @@ public class ScriptRunner {
         } catch (Exception e) {
             throw new RuntimeException("Error running script.  Cause: " + e, e);
         } finally {
-            return dcSQLScriptResult;
+            return sqlScriptResult;
         }
     }
 
@@ -117,6 +117,7 @@ public class ScriptRunner {
     @SuppressWarnings({"unused", "finally"})
     private SqlScriptResult runScript(Connection conn, Reader reader) throws IOException, SQLException {
         int returnCode = -1;
+        int errors = 0;
         StringBuilder systemOutput = new StringBuilder();
         StringBuilder errorOutput = new StringBuilder();
         StringBuffer command = null;
@@ -158,6 +159,7 @@ public class ScriptRunner {
                             errorOutput.append("Error executing: " + command);
                             errorOutput.append("\n");
                             errorOutput.append(e.toString());
+                            errors++;
                         }
                     }
 
@@ -224,9 +226,13 @@ public class ScriptRunner {
         } finally {
             conn.rollback();
             flush();
-            SqlScriptResult dcSQLScriptResult = new SqlScriptResult(returnCode, systemOutput.toString(),
+            
+            // Ensure returnCode is captured correctly if deemed successfully by the script run itself
+            if (errors > 0 && returnCode == 0) returnCode = 1;
+            
+            SqlScriptResult sqlScriptResult = new SqlScriptResult(returnCode, systemOutput.toString(),
                     errorOutput.toString());
-            return dcSQLScriptResult;
+            return sqlScriptResult;
         }
     }
 

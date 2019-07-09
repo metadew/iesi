@@ -1,0 +1,23 @@
+---
+type: "script"
+data:
+  name: "demo2.2.1"
+  description: "Check if Table1 data that is not present in table2 data"
+  parameters: []
+  actions:
+  - number: 1
+    type: "sql.evaluateResult"
+    name: "action1"
+    description: "Check if Table1 and Table2 are equal"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "query"
+      value : "SELECT FIELD1, FIELD2, FIELD3, FIELD4, FIELD5, FIELD6, FIELD7, FIELD8, FIELD9, FIELD10 FROM TABLE1 EXCEPT SELECT FIELD1, FIELD2, FIELD3, FIELD4, FIELD5, FIELD6, FIELD7, FIELD8, FIELD9, FIELD10 FROM TABLE2;"
+    - name: "hasResult"
+      value : "N"
+    - name: "connection"
+      value : "demo2.mssql"

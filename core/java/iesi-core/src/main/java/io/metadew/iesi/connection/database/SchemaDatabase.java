@@ -14,7 +14,7 @@ public abstract class SchemaDatabase extends Database {
         super(databaseConnection);
         this.schema = schema;
     }
-
+   
     // TODO:
     public String getCreateStatement(MetadataTable table) {
         StringBuilder createQuery = new StringBuilder();

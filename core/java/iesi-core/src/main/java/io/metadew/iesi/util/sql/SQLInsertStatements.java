@@ -10,8 +10,10 @@ public class SQLInsertStatements {
 
 	public static void main(String[] args) {
 
-		String inputFile = "C:/Data/customers20190705.csv";
+		String type = "orders"; // customers restaurants orders
+		String inputFile = "C:/Data/" + type + "20190705.csv";
 		boolean headers = true;
+		StringBuilder insertStatement = new StringBuilder();
 		try {
 			@SuppressWarnings("resource")
 			BufferedReader bufferedReader = new BufferedReader(new FileReader(new File(inputFile)));
@@ -19,59 +21,89 @@ public class SQLInsertStatements {
 			int i = 0;
 			StringBuilder insertStart = new StringBuilder();
 			insertStart.append("INSERT INTO ");
-			insertStart.append("#team#.customers");
+			insertStart.append("#team#." + type);
 			insertStart.append(" (");
 			while ((readLine = bufferedReader.readLine()) != null) {
 				if (headers) {
 					if (i == 0) {
-				        String[] cols = readLine.split(";");
-				        for (int j = 0; j < cols.length; j++) {
-				        	if (j > 0) insertStart.append(",");
-				        	insertStart.append(cols[j]);				        	
-				        }
-				        insertStart.append(")");
-				        insertStart.append(" VALUES (");
+						String[] cols = readLine.split(";");
+						for (int j = 0; j < cols.length; j++) {
+							if (j > 0)
+								insertStart.append(",");
+							insertStart.append(cols[j]);
+						}
+						insertStart.append(")");
 
-				        i++;
+						i++;
 						continue;
 					}
 				}
-				
+
+				StringBuilder insertValues = new StringBuilder();
+				insertValues.append(" VALUES (");
 				if (i > 0) {
-			        String[] values = readLine.split(";");
-			        for (int j = 0; j < values.length; j++) {
-			        	if (j > 0) insertStart.append(",");
-			        	
-			        	// customers
-			        	if (j == 0) insertStart.append(values[j]);
-			        	if (j == 1) insertStart.append("'").append(values[j]).append("'");
-			        	if (j == 2) insertStart.append("'").append(values[j]).append("'");
-			        	if (j == 3) insertStart.append("'").append(values[j]).append("'");
-			        	if (j == 4) insertStart.append("'").append(values[j]).append("'");
-			        	if (j == 5) insertStart.append("'").append(values[j]).append("'");
-			        	if (j == 6) insertStart.append("'").append(values[j]).append("'");
-			        	if (j == 7) insertStart.append("'").append(values[j]).append("'");
-			        	if (j == 8) insertStart.append("'").append(values[j]).append("'");
-			        	if (j == 9) insertStart.append("'").append(values[j]).append("'");
-			        	if (j == 10) insertStart.append("'").append(values[j]).append("'");
-			        	
-			        	//insertStart.append(values[j]);				        	
-			        }
+					String[] values = readLine.split(";");
+					for (int j = 0; j < values.length; j++) {
+						if (j > 0)
+							insertValues.append(",");
+
+						if (type.equalsIgnoreCase("orders")) {
+							if (j == 0)
+								insertValues.append(values[j]);
+							if (j == 1)
+								insertValues.append("'").append(values[j]).append("'");
+							if (j == 2)
+								insertValues.append(values[j]);
+							if (j == 3)
+								insertValues.append(values[j]);
+							if (j == 4)
+								insertValues.append(values[j]);
+						} else {
+							// customers and restaurants
+							if (j == 0)
+								insertValues.append(values[j]);
+							if (j == 1)
+								insertValues.append("'").append(values[j]).append("'");
+							if (j == 2)
+								insertValues.append("'").append(values[j]).append("'");
+							if (j == 3)
+								insertValues.append("'").append(values[j]).append("'");
+							if (j == 4)
+								insertValues.append("'").append(values[j]).append("'");
+							if (j == 5)
+								insertValues.append("'").append(values[j]).append("'");
+							if (j == 6)
+								insertValues.append("'").append(values[j]).append("'");
+							if (j == 7)
+								insertValues.append("'").append(values[j]).append("'");
+							if (j == 8)
+								insertValues.append("'").append(values[j]).append("'");
+							if (j == 9)
+								insertValues.append("'").append(values[j]).append("'");
+							if (j == 10)
+								insertValues.append("'").append(values[j]).append("'");
+						}
+						// insertStart.append(values[j]);
+					}
 				}
-				
-				insertStart.append(");");
-		        System.out.println(insertStart.toString());
-				System.out.println(readLine);
-				
-				String filePath = "c:/Data/customers.dml";
-				
-				FileTools.delete(filePath);
-				FileTools.appendToFile(filePath, "", insertStart.toString());
-				
+
+				insertValues.append(");");
+				// System.out.println(insertStart.toString());
+				// System.out.println(readLine);
+
+				insertStatement.append(insertStart);
+				insertStatement.append(insertValues);
+				insertStatement.append("\n");
 				// TODO mapping to data type
 				i++;
-				break; // TODO temp
+				// break; // TODO temp
 			}
+
+			String filePath = "c:/Data/" + type + "20190705.dml";
+
+			FileTools.delete(filePath);
+			FileTools.appendToFile(filePath, "", insertStatement.toString());
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

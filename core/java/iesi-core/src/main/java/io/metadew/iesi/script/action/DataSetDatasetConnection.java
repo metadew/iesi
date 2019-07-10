@@ -65,6 +65,7 @@ public class DataSetDatasetConnection {
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "dataset"));
         this.setDatasetLabels(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "labels"));
+        
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
             if (actionParameter.getName().equalsIgnoreCase("name")) {
@@ -78,6 +79,9 @@ public class DataSetDatasetConnection {
             }
         }
 
+        // Default values
+        if (this.getDatasetLabels().getValue() == null) this.getDatasetLabels().setInputValue("");
+        
         // Create parameter list
         this.getActionParameterOperationMap().put("name", this.getReferenceName());
         this.getActionParameterOperationMap().put("type", this.getDatasetType());

@@ -16,7 +16,7 @@ data:
     errorStop: "N"
     parameters:
     - name: "statement"
-      value : "delete from Table1;"
+      value : "delete from Table#number#;"
     - name: "connection"
       value : "demo2.mssql"
   - number: 2

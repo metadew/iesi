@@ -1,0 +1,20 @@
+---
+type: Connection
+data:
+  name: "lab1.staging"
+  type: "host.linux"
+  description: "lab1.staging connection"
+  environment: "iesi-lab1"
+  parameters:
+  - name: "host"
+    value: "localhost"
+  - name: "port"
+    value: "2223"
+  - name: "user"
+    value: "root"
+  - name: "password"
+    value: "ENC(Q7e13kGbreos7eVDO+OZ+kLKM6QliBE=)"
+  - name: "tempPath"
+    value: "/tmp"
+  - name: "simulateTerminal"
+    value: "N"

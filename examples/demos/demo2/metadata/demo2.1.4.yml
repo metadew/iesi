@@ -16,9 +16,9 @@ data:
     errorStop: "N"
     parameters:
     - name: "script"
-      value : "demo2.mssql"
+      value : "demo2.1.1"
     - name: "environment"
-      value : "{{$fwk.environment}}"
+      value : "{{$run.environment}}"
   - number: 2
     type: "fwk.executeScript"
     name: "Action2"
@@ -30,6 +30,6 @@ data:
     errorStop: "N"
     parameters:
     - name: "script"
-      value : "demo2.mssql"
+      value : "demo2.1.2"
     - name: "environment"
-      value : "{{$fwk.environment}}"
+      value : "{{$run.environment}}"

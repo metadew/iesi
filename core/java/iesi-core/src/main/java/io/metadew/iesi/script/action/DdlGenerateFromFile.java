@@ -169,6 +169,7 @@ public class DdlGenerateFromFile {
 
     private boolean executeQuery(String inputPath, String inputFile, String outputType, String outputPath, String outputFile) {
 
+    	// TODO - fix for schema databases (dummy database connection)
     	Database database = DatabaseTools.getDatabase("io.metadew.iesi.connection.database.SqliteDatabase");
     	
     	ObjectMapper objectMapper = new ObjectMapper();

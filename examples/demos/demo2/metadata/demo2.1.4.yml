@@ -1,0 +1,35 @@
+---
+type: "script"
+data:
+  name: "demo2.1.4"
+  description: "Prepare data for all tables"
+  parameters: []
+  actions:
+  - number: 1
+    type: "fwk.executeScript"
+    name: "Action1"
+    description: "Prepare data for table1"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "script"
+      value : "demo2.1.1"
+    - name: "environment"
+      value : "{{$run.environment}}"
+  - number: 2
+    type: "fwk.executeScript"
+    name: "Action2"
+    description: "Prepare data for table2"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "script"
+      value : "demo2.1.2"
+    - name: "environment"
+      value : "{{$run.environment}}"

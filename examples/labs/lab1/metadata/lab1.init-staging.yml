@@ -1,0 +1,45 @@
+---
+type: "script"
+data:
+  name: "lab1.init-staging"
+  description: "Prepare staging server for a team"
+  parameters: []
+  actions:
+  - number: 1
+    type: "cli.executeCommand"
+    name: "CreateFolder"
+    description: "Create folder"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "path"
+      value : ""
+    - name: "command"
+      value : "mkdir /tmp/#team#"
+    - name: "connection"
+      value : "lab1.staging"
+  - number: 2
+    type: "fho.executeFileTransfer"
+    name: "TransferStagingFiles"
+    description: "Transfer staging files"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "sourceFilePath"
+      value : "#iesi.home#/data/lab1/staging"
+    - name: "sourceFileName"
+      value : "*"
+    - name: "sourceConnection"
+      value : "lab1.localhost"
+    - name: "targetFilePath"
+      value : "/tmp/#team#"
+    - name: "targetFileName"
+      value : ""
+    - name: "targetConnection"
+      value : "lab1.staging"

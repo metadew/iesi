@@ -450,6 +450,10 @@ public class ConnectionOperation {
 				SqliteDatabaseConnection sqliteDatabaseConnection = new SqliteDatabaseConnection(
 						FilenameUtils.normalize(filePath + File.separator + fileName));
 				database = new SqliteDatabase(sqliteDatabaseConnection);
+			} else if (connection.getType().equalsIgnoreCase("db.db2")) {
+				DbDb2ConnectionOperation dbDb2ConnectionOperation = new DbDb2ConnectionOperation(
+						this.getFrameworkExecution());
+				database = dbDb2ConnectionOperation.getDatabase(connection);
 			} else if (connection.getType().equalsIgnoreCase("db.h2")) {
 				DbH2ConnectionOperation dbH2ConnectionOperation = new DbH2ConnectionOperation(
 						this.getFrameworkExecution());
@@ -725,6 +729,7 @@ public class ConnectionOperation {
 		return artifactoryConnection;
 	}
 
+	@Deprecated
 	public boolean isOnLocalConnection(HostConnection hostConnection) {
 		boolean result = false;
 

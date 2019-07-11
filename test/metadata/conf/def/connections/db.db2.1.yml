@@ -1,0 +1,18 @@
+---
+type: Connection
+data:
+  name: "db.db2.1"
+  type: "db.db2"
+  description: "db.db2 connection"
+  environment: "iesi-test"
+  parameters:
+  - name: "host"
+    value: "localhost"
+  - name: "port"
+    value: "50000"
+  - name: "database"
+    value: "iesi"
+  - name: "user"
+    value: "db2inst1"
+  - name: "password"
+    value: "ENC(Waan0DOjDHNBnTXtldp5xnGwIP0=)"

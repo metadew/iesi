@@ -1,0 +1,51 @@
+---
+type: "script"
+data:
+  name: "demo2.1.1"
+  description: "Prepare data for table1"
+  parameters: []
+  actions:
+  - number: 1
+    type: "sql.executeStatement"
+    name: "Action1"
+    description: "Remove data from Table1"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "statement"
+      value : "delete from Table1;"
+    - name: "connection"
+      value : "demo2.mssql"
+  - number: 2
+    type: "sql.executeStatement"
+    name: "Action2"
+    description: "Insert data in Table1"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "statement"
+      value : "{{=file(#iesi.home#/data/demo2/table1.insert.sql)}}"
+    - name: "connection"
+      value : "demo2.mssql"
+  - number: 3
+    type: "sql.evaluateResult"
+    name: "action3"
+    description: "Check if Table1 has data loaded"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "query"
+      value : "select * from Table1"
+    - name: "hasResult"
+      value : "Y"
+    - name: "connection"
+      value : "demo2.mssql"

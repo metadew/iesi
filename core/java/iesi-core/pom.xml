@@ -6,7 +6,7 @@
 
 	<groupId>io.metadew.iesi</groupId>
 	<artifactId>iesi-core</artifactId>
-	<version>0.0.6-SNAPSHOT</version>
+	<version>0.1.0-SNAPSHOT</version>
 
 	<properties>
 		<maven.compiler.target>1.8</maven.compiler.target>
@@ -238,6 +238,7 @@
 							<overWriteReleases>false</overWriteReleases>
 							<overWriteSnapshots>false</overWriteSnapshots>
 							<overWriteIfNewer>true</overWriteIfNewer>
+							<prependGroupId>true</prependGroupId>
 						</configuration>
 					</execution>
 				</executions>

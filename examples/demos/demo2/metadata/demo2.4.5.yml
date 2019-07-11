@@ -1,0 +1,67 @@
+---
+type: "script"
+data:
+  name: "demo2.4.5"
+  description: "Execute a query and store the output as processing variable"
+  parameters: []
+  actions:
+  - number: 1
+    type: "sql.setRuntimeVariables"
+    name: "Action1"
+    description: "Select data from a query and store as runtime variable"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "query"
+      value : "select Field3 from Table1 where Field1 = 1"
+    - name: "connection"
+      value : "demo2.mssql"
+  - number: 2
+    type: "fwk.outputMessage"
+    name: "action2"
+    description: "output Field3 value"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "message"
+      value : "Field3 is #Field3#"
+    - name: "onScreen"
+      value : "Y"
+  - number: 3
+    type: "data.setDatasetConnection"
+    name: "action3"
+    description: "Set the expected result dataset"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "name"
+      value : "demo2"
+    - name: "type"
+      value : "general"
+    - name: "dataset"
+      value : "demo2"
+    - name: "labels"
+      value : "#label#"
+  - number: 4
+    type: "eval.assertEquals"
+    name: "action4"
+    description: "verify Field3 value"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "expected"
+      value : "{{=dataset(demo2,input.Field3)}}"
+    - name: "actual"
+      value : "#Field3#"

@@ -1,0 +1,6 @@
+---
+data:
+  name: "default"
+  description: "Default component type"
+  parameters: []
+type: "ComponentType"

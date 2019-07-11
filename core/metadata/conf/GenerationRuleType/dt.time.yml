@@ -1,0 +1,22 @@
+---
+data:
+  name: "dt.time"
+  className: "io.metadew.iesi.data.generation.rule.DtTime"
+  description: "Random time values"
+  parameters:
+  - name: "MIN_VALUE"
+    description: "Lower bound for the generation"
+    type: "time"
+    mandatory: "Y"
+    encrypted: "N"
+  - name: "MAX_VALUE"
+    description: "Upper bound for the generation"
+    type: "time"
+    mandatory: "Y"
+    encrypted: "N"
+  - name: "FORMAT"
+    description: "Format to use for the generation"
+    type: "string"
+    mandatory: "Y"
+    encrypted: "N"
+type: "GenerationRuleType"

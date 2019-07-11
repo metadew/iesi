@@ -1,0 +1,20 @@
+---
+type: Connection
+data:
+  name: "lab1.sources"
+  type: "host.linux"
+  description: "lab1.sources connection"
+  environment: "iesi-lab1"
+  parameters:
+  - name: "host"
+    value: "localhost"
+  - name: "port"
+    value: "2222"
+  - name: "user"
+    value: "root"
+  - name: "password"
+    value: "ENC(Q6yhy0uQueJxwS7iZ8rDb6tSRnU5qiw=)"
+  - name: "tempPath"
+    value: "/tmp"
+  - name: "simulateTerminal"
+    value: "N"

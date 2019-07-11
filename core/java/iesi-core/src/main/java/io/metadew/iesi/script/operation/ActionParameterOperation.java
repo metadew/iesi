@@ -127,6 +127,10 @@ public class ActionParameterOperation {
                 "action.param=" + this.getName() + ":" + resolvedInputValue, Level.DEBUG);
         resolvedInputValue = this.getExecutionControl().getExecutionRuntime().resolveConceptLookup(this.getExecutionControl(),
                 resolvedInputValue, true).getValue();
+        
+        // perform lookup again after cross concept lookup
+        resolvedInputValue = this.getExecutionControl().getExecutionRuntime().resolveVariables(this.getActionExecution(), resolvedInputValue);
+        
         String decryptedInputValue = this.getFrameworkExecution().getFrameworkCrypto().resolve(this.getFrameworkExecution(),
                 resolvedInputValue);
 

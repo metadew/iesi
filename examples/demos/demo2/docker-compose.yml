@@ -1,0 +1,15 @@
+version: '3.2'
+services:
+  mssql:
+    image: 'microsoft/mssql-server-linux'
+    ports:
+      - '1433:1433'
+    environment:
+      - "ACCEPT_EULA=Y"
+      - "SA_PASSWORD=yourStrong(!)Password"
+      - "MSSQL_PID=Express"
+    volumes:
+      - ./mount/tmp:/tmp
+    container_name: demo2_mssql
+    hostname: demo2_mssql
+    restart: unless-stopped

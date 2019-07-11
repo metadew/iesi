@@ -1,0 +1,17 @@
+---
+data:
+  name: "list.common"
+  className: "io.metadew.iesi.data.generation.rule.ListCommon"
+  description: "Select items from a common list of values"
+  parameters:
+  - name: "LIST_NM"
+    description: ""
+    type: "string"
+    mandatory: "Y"
+    encrypted: "N"
+  - name: "SELECTION_TYPE"
+    description: "Selection type to use (RANDOM)"
+    type: "string"
+    mandatory: "Y"
+    encrypted: "N"
+type: "GenerationRuleType"

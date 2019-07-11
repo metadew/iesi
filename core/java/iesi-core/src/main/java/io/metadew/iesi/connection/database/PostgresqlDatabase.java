@@ -8,7 +8,7 @@ public class PostgresqlDatabase extends SchemaDatabase {
     public PostgresqlDatabase(PostgresqlDatabaseConnection databaseConnection, String schema) {
         super(databaseConnection, schema);
     }
-
+    
     @Override
     public String getSystemTimestampExpression() {
         return "CURRENT_TIMESTAMP";

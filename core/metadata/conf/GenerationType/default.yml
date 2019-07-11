@@ -1,0 +1,6 @@
+---
+data:
+  name: "default"
+  description: "Default data generation"
+  parameters: []
+type: "GenerationType"

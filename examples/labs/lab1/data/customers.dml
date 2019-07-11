@@ -1,0 +1,1 @@
+INSERT INTO #team#.customers (ID,DateJoined,Gender,FirstName,LastName,City,Street,Email,Birthdate,Phone,Country) VALUES (0,'2019-06-01T00:19:31.934730','Female','LILY','SARDEN','San Francisco','Mcallister St','lily_sarden@mail.com','1985-09-03','0495-808581','US');

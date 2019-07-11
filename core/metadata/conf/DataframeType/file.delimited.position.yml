@@ -1,0 +1,6 @@
+---
+data:
+  name: "file.delimited.position"
+  description: "Position delimited file dataframe"
+  parameters: []
+type: "DataframeType"

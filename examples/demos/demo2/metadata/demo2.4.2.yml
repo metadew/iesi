@@ -1,0 +1,49 @@
+---
+type: "script"
+data:
+  name: "demo2.4.2"
+  description: "Execute a query and store the output as processing variable"
+  parameters: []
+  actions:
+  - number: 1
+    type: "sql.setRuntimeVariables"
+    name: "Action1"
+    description: "Select data from a query and store as runtime variable"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "query"
+      value : "select Field3 from Table1 where Field1 = 1"
+    - name: "connection"
+      value : "demo2.mssql"
+  - number: 2
+    type: "fwk.outputMessage"
+    name: "action2"
+    description: "output Field3 value"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "message"
+      value : "Field3 is #Field3#"
+    - name: "onScreen"
+      value : "Y"
+  - number: 3
+    type: "eval.assertEquals"
+    name: "action3"
+    description: "verify Field3 value"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "expected"
+      value : "bert"
+    - name: "actual"
+      value : "#Field3#"

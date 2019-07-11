@@ -1,0 +1,11 @@
+---
+data:
+  name: "table"
+  description: "Table dataframe"
+  parameters:
+  - name: "name"
+    description: ""
+    type: "string"
+    mandatory: "Y"
+    encrypted: "N"
+type: "DataframeType"

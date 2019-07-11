@@ -1,0 +1,1 @@
+FROM clue/json-server:latest

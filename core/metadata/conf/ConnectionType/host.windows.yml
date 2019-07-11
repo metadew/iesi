@@ -1,0 +1,16 @@
+---
+data:
+  name: "host.windows"
+  description: "Windows-Based Operating System  Connection"
+  parameters:
+  - name: "host"
+    description: "The host name to connect to"
+    type: "string"
+    mandatory: "Y"
+    encrypted: "N"
+  - name: "tempPath"
+    description: "The temporary path on the host name that can be used by the solution"
+    type: "string"
+    mandatory: "N"
+    encrypted: "N"
+type: "ConnectionType"

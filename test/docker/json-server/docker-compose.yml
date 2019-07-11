@@ -1,0 +1,11 @@
+version: '3.2'
+services:
+  iesi-rest-1:
+    image: 'clue/json-server'
+    ports:
+      - '3210:80'
+    volumes:
+       - ./data/db.json:/data/db.json
+    container_name: iesi-rest-1
+    hostname: iesi-rest-1
+    restart: unless-stopped

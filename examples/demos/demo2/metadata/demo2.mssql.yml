@@ -1,0 +1,18 @@
+---
+type: Connection
+data:
+  name: "demo2.mssql"
+  type: "db.mssql"
+  description: "mssql connection"
+  environment: "iesi-demo2"
+  parameters:
+  - name: "host"
+    value: "localhost"
+  - name: "port"
+    value: "1433"
+  - name: "database"
+    value: "demo2"
+  - name: "user"
+    value: "sa"
+  - name: "password"
+    value: "ENC(Sayhy3uBuDuXQdMY72NNgfdavP94U+Jk2HqEymnpYG9kjvCAvg==)"

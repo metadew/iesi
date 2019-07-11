@@ -1,0 +1,22 @@
+---
+data:
+  name: "fwk.includeScript"
+  className: "io.metadew.iesi.script.action.FwkIncludeScript"
+  description: "Include the actions of another script and execute as one script"
+  parameters:
+  - name: "script"
+    description: "Script name to execute"
+    type: "string"
+    mandatory: "Y"
+    encrypted: "N"
+    subroutine: ""
+    impersonate: "N"
+  - name: "version"
+    description: "Version of the script to run"
+    type: "string"
+    mandatory: "N"
+    encrypted: "N"
+    subroutine: ""
+    impersonate: "N"
+  status: "stable"
+type: "ActionType"

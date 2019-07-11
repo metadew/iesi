@@ -17,7 +17,7 @@ public class LookupInstructionRepository {
         ConnectionLookup connectionLookup = new ConnectionLookup(executionControl);
         lookupInstructions.put(connectionLookup.getKeyword(), connectionLookup);
         // File
-        FileLookup fileLookup = new FileLookup();
+        FileLookup fileLookup = new FileLookup(executionControl);
         lookupInstructions.put(fileLookup.getKeyword(), fileLookup);
         // Coalesce
         CoalesceLookup coalesceLookup = new CoalesceLookup();

@@ -38,6 +38,7 @@
   * [Connection types](/{{site.repository}}/pages/define/connectiontypes.html)
 * [Design automation scripts](/{{site.repository}}/pages/design/design.html)
   * [Action types](/{{site.repository}}/pages/design/actiontypes.html)
+  * [Datasets](/{{site.repository}}/pages/design/datasets.html)
   * [Expected errors](/{{site.repository}}/pages/design/expectederrors.html)
   * [Stop on error](/{{site.repository}}/pages/design/stoponerror.html)
   * [Subroutines](/{{site.repository}}/pages/design/subroutines.html)
@@ -47,6 +48,10 @@
   * [Start as soon as possible and grow in steps](/{{site.repository}}/pages/approach/startandgrow.html)
   * [ETL flow testing](/{{site.repository}}/pages/approach/etlflowtesting.html)
   * [Query based testing](/{{site.repository}}/pages/approach/querybasedtesting.html)
+  * [Adding reuse to a script](/{{site.repository}}/pages/approach/addingreusetoascript.html)
+* Use cases
+  * [Data platform verifications](/{{site.repository}}/pages/usecase/dataplatformverifications.html)
+  * [Ready for PSD2](/{{site.repository}}/pages/usecase/readyforpsd2.html)
 * [Operate the framework](/{{site.repository}}/pages/operate/operate.html)
 * [Manage the framework](/{{site.repository}}/pages/manage/manage.html)
   * [Framework settings file](/{{site.repository}}/pages/manage/frameworksettings.html)

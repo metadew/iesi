@@ -1,0 +1,21 @@
+---
+type: "script"
+data:
+  name: "db.db2.1"
+  description: "test db.db2 connection with standard select query"
+  parameters: []
+  actions:
+  - number: 1
+    type: "sql.executeQuery"
+    name: "Action1"
+    description: "Select data from table1 in the iesi schema"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "query"
+      value : "select * from iesi.table1;"
+    - name: "connection"
+      value : "db.db2.1"

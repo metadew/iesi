@@ -1,0 +1,16 @@
+version: '3.2'
+services:
+  db2:
+    build: './db2'
+    ports:
+      - '50000:50000'
+    environment:
+      - "LICENSE=accept"
+      - "DB2INST1_PASSWORD=password"
+      - "DBNAME=testdb"
+    volumes:
+     - ./database:/database
+    privileged: true
+    container_name: mydb2
+    hostname: mydb2
+    restart: unless-stopped

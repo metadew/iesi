@@ -18,15 +18,16 @@ The framework will load all necessary driver on startup.
 |Dremio|![red](/{{site.repository}}/images/icons/red-dot.png))||
 |File System|![grey](/{{site.repository}}/images/icons/green-dot.png)||
 |H2|![red](/{{site.repository}}/images/icons/red-dot.png))||
-|Maria DB|![red](/{{site.repository}}/images/icons/green-dot.png)||
+|IBM DB2|![red](/{{site.repository}}/images/icons/red-dot.png)||
+|Maria DB|![red](/{{site.repository}}/images/icons/red-dot.png)||
 |Microsoft SQL Server|![red](/{{site.repository}}/images/icons/red-dot.png)||
-|MySQL|![red](/{{site.repository}}/images/icons/green-dot.png)||
-|Netezza|![red](/{{site.repository}}/images/icons/green-dot.png)||
-|Oracle|![red](/{{site.repository}}/images/icons/green-dot.png)||
+|MySQL|![red](/{{site.repository}}/images/icons/red-dot.png)||
+|Netezza|![red](/{{site.repository}}/images/icons/red-dot.png)||
+|Oracle|![red](/{{site.repository}}/images/icons/red-dot.png)||
 |Postgresql|![red](/{{site.repository}}/images/icons/red-dot.png)||
 |Presto|![red](/{{site.repository}}/images/icons/red-dot.png)||
 |SQLite|![green](/{{site.repository}}/images/icons/green-dot.png)||
-|Teradata|![red](/{{site.repository}}/images/icons/green-dot.png)||
+|Teradata|![red](/{{site.repository}}/images/icons/red-dot.png)||
 
 *Legend*
 

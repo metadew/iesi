@@ -79,6 +79,12 @@ public class AssemblyExecution {
 			FolderTools.createFolder(instanceHome);
 			FolderTools.createFolder(versionHome);
 
+			// Loop the file system configuration
+			String fileSystemStructure = repositoryHome + File.separator + "core" + File.separator + "assembly"
+					+ File.separator + "folder-assembly.conf";
+			this.getAssemblyContext().getFileSystemOperation().createSolutionStructure(fileSystemStructure,
+					versionHome);
+			
 			// Load Licenses
 			String licensesSource = repositoryHome + File.separator + "licenses";
 			String licensesTarget = versionHome + File.separator + "licenses";
@@ -88,12 +94,6 @@ public class AssemblyExecution {
 					+ File.separator + "iesi-core" + File.separator + "target" + File.separator + "site";
 			String licensesReportTarget = versionHome + File.separator + "licenses" + File.separator + "core";
 			FolderTools.copyFromFolderToFolder(licensesReportSource, licensesReportTarget, true);
-
-			// Loop the file system configuration
-			String fileSystemStructure = repositoryHome + File.separator + "core" + File.separator + "assembly"
-					+ File.separator + "folder-assembly.conf";
-			this.getAssemblyContext().getFileSystemOperation().createSolutionStructure(fileSystemStructure,
-					versionHome);
 
 			// Load maven dependencies
 			String mavenDependenciesSource = repositoryHome + File.separator + "core" + File.separator + "java"

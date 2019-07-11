@@ -215,6 +215,7 @@
                             <overWriteReleases>false</overWriteReleases>
                             <overWriteSnapshots>false</overWriteSnapshots>
                             <overWriteIfNewer>true</overWriteIfNewer>
+                            <prependGroupId>true</prependGroupId>
                         </configuration>
                     </execution>
                 </executions>

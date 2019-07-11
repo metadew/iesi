@@ -66,7 +66,7 @@ public final class ScriptLaunchOperation {
 			case "paramlist":
 				paramList = requestParameter.getValue();
 				break;
-			case "scriptversionnumber":
+			case "version":
 				scriptVersionNumber = Long.parseLong(requestParameter.getValue());
 				break;
 			case "settings":

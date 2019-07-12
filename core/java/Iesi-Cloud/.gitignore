@@ -1,3 +1,4 @@
+src/main/resources/iesiCloud.jks
 HELP.md
 /target/
 !.mvn/wrapper/maven-wrapper.jar

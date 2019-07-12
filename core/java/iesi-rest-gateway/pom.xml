@@ -9,11 +9,9 @@
 		<version>2.1.5.RELEASE</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>IesiGatewayApplication</groupId>
-	<artifactId>IesiGatewayApplication</artifactId>
+	<groupId>io.metadew</groupId>
+	<artifactId>iesi-gateway</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>IesiGatewayApplication</name>
-	<description>IesiGatewayApplication</description>
 
 	<properties>
 		<java.version>1.8</java.version>

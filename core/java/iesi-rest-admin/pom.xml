@@ -9,11 +9,9 @@
         <version>2.1.5.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>io.metadew.iesi.eureka</groupId>
+    <groupId>io.metadew</groupId>
     <artifactId>iesi-rest-admin</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>iesi-rest-admin</name>
-    <description>IESI REST API</description>
 
     <properties>
         <java.version>1.8</java.version>

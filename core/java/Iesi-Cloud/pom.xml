@@ -9,11 +9,9 @@
         <version>2.1.5.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>IESI_CLOUD</groupId>
-    <artifactId>IESI_CLOUD</artifactId>
+    <groupId>io.metadew</groupId>
+    <artifactId>iesi-cloud</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>IESI_CLOUD</name>
-    <description>IESI_CLOUD</description>
 
     <properties>
         <java.version>1.8</java.version>

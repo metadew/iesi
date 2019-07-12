@@ -31,22 +31,22 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return true;
+        return user.getActive().equalsIgnoreCase("y");
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return !user.getLocked().equalsIgnoreCase("y");
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true;
+        return !user.getExpired().equalsIgnoreCase("y");
     }
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return user.getActive().equalsIgnoreCase("y");
     }
 
 }

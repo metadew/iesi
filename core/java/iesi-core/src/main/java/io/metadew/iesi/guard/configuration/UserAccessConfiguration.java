@@ -6,6 +6,8 @@ import io.metadew.iesi.guard.definition.UserAccess;
 import io.metadew.iesi.metadata.configuration.UserConfiguration;
 import io.metadew.iesi.metadata.definition.User;
 
+import java.util.Optional;
+
 public class UserAccessConfiguration {
 
     private FrameworkExecution frameworkExecution;
@@ -20,15 +22,15 @@ public class UserAccessConfiguration {
         userAccess.setUserName(userName);
 
         UserConfiguration userConfiguration = new UserConfiguration(this.getFrameworkExecution().getFrameworkInstance());
-        User user = userConfiguration.getUser(userName);
+        Optional<User> user = userConfiguration.getUser(userName);
 
         try {
-            if (user == null) {
+            if (!user.isPresent()) {
                 userAccess.setLoggedIn(false);
                 userAccess.setException(true);
-                userAccess.setExceptionMessage("user.unkown");
+                userAccess.setExceptionMessage("user.unknown");
             } else {
-                if (Password.check(userPassword, user.getPasswordHash())) {
+                if (Password.check(userPassword, user.get().getPasswordHash())) {
                     userAccess.setLoggedIn(true);
                     userAccess.setException(false);
                 } else {

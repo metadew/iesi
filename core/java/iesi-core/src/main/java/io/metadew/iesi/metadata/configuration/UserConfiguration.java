@@ -10,6 +10,7 @@ import java.io.StringWriter;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class UserConfiguration {
 
@@ -176,32 +177,37 @@ public class UserConfiguration {
     }
 
     // Get User
-    public User getUser(String userName) {
-        User user = new User();
-        CachedRowSet crs = null;
+    public Optional<User> getUser(String userName) {;
         String query = "select USER_NM, USER_TYP_NM, USER_FIRST_NM, USER_LAST_NM, USER_ACT_FL, USER_PWD_HASH, USER_PWD_EXP_FL, LOGIN_FAIL_CUM_NB, LOGIN_FAIL_IND_NB, USER_LOCK_FL from "
                 + this.getFrameworkInstance().getMetadataControl().getControlMetadataRepository().getTableNameByLabel("Users")
-                + " where USER_NM = '" + userName + "'";
-        crs = this.getFrameworkInstance().getMetadataControl().getControlMetadataRepository().executeQuery(query, "reader");
+                + " where USER_NM = " + SQLTools.GetStringForSQL(userName) + ";";
+        System.out.println(query);
+        CachedRowSet crs = this.getFrameworkInstance().getMetadataControl().getControlMetadataRepository().executeQuery(query, "reader");
         try {
-            while (crs.next()) {
-                user.setName(userName);
-                user.setType(crs.getString("USER_TYP_NM"));
-                user.setFirstName(crs.getString("USER_FIRST_NM"));
-                user.setLastName(crs.getString("USER_LAST_NM"));
-                user.setActive(crs.getString("USER_ACT_FL"));
-                user.setPasswordHash(crs.getString("USER_PWD_HASH"));
-                user.setExpired(crs.getString("USER_PWD_EXP_FL"));
-                user.setCumulativeLoginFails(crs.getLong("LOGIN_FAIL_CUM_NB"));
-                user.setIndividualLoginFails(crs.getLong("LOGIN_FAIL_IND_NB"));
-                user.setLocked(crs.getString("USER_LOCK_FL"));
+            if (crs.size() == 0) {
+                System.out.println("No Users found " + userName);
+                return Optional.empty();
+            } else if (crs.size() > 1) {
+                // TODO: log
             }
+            crs.next();
+            User user = new User(userName,
+                    crs.getString("USER_TYP_NM"),
+                    crs.getString("USER_FIRST_NM"),
+                    crs.getString("USER_LAST_NM"),
+                    crs.getString("USER_ACT_FL"),
+                    crs.getString("USER_PWD_HASH"),
+                    crs.getString("USER_PWD_EXP_FL"),
+                    crs.getLong("LOGIN_FAIL_CUM_NB"),
+                    crs.getLong("LOGIN_FAIL_IND_NB"),
+                    crs.getString("USER_LOCK_FL"));
             crs.close();
+            return Optional.of(user);
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
+            return Optional.empty();
         }
-        return user;
     }
 
     // Exists

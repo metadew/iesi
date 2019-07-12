@@ -1,0 +1,10 @@
+---
+type: Connection
+data:
+  name: localhost
+  description: localhost
+  type: host.windows
+  environment: lab
+  parameters:
+  - name: host
+    value: localhost

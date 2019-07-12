@@ -1,0 +1,15 @@
+---
+data:
+  name: "action.execute"
+  className: "io.metadew.iesi.script.action.ActionExecute"
+  description: "(Re-)execute an action that is already defined in the script"
+  parameters:
+  - name: "name"
+    description: "Name of the action to execute"
+    type: "string"
+    mandatory: "Y"
+    encrypted: "N"
+    subroutine: ""
+    impersonate: "N"
+  status: "beta"
+type: "ActionType"

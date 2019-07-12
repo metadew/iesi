@@ -1,0 +1,12 @@
+---
+type: Connection
+data:
+  name: db.target
+  description: target database for the customers
+  type: db.sqlite
+  environment: lab
+  parameters:
+  - name: filePath
+    value: "#iesi.home#/data/demo3"
+  - name: fileName
+    value: "target.db3"

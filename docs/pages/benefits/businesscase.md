@@ -13,7 +13,7 @@ So this requires another approach to make the case.
 
 This is a simple formula to build and track the business case.
 
-**Note that infrastructure costs are not taken into account here**
+*Note that infrastructure costs are not taken into account here*
 
 ## Script development
 

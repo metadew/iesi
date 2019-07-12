@@ -1,0 +1,12 @@
+---
+data:
+  name: "txt.characters"
+  className: "io.metadew.iesi.data.generation.rule.TxtCharacters"
+  description: "Random sequence of characters"
+  parameters:
+  - name: "CHAR_NB"
+    description: "Number of characters to generate"
+    type: "number"
+    mandatory: "Y"
+    encrypted: "N"
+type: "GenerationRuleType"

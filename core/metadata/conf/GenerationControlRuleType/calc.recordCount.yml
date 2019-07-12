@@ -1,0 +1,6 @@
+---
+data:
+  name: "calc.recordCount"
+  description: "Count the number of records in the generated set"
+  parameters: []
+type: "GenerationControlRuleType"

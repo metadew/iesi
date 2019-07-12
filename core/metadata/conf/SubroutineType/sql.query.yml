@@ -1,0 +1,11 @@
+---
+data:
+  name: "sql.query"
+  description: "SQL query subroutine"
+  parameters:
+  - name: "query"
+    description: "SQL query as subroutine code"
+    type: "string"
+    mandatory: "Y"
+    encrypted: "N"
+type: "SubroutineType"

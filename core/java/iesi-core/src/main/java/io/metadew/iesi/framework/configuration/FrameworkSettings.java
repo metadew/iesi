@@ -2,7 +2,7 @@ package io.metadew.iesi.framework.configuration;
 
 public enum FrameworkSettings {
     IDENTIFIER("iesi"),
-    VERSION("v0.0.6");
+    VERSION("v0.1.0");
 
     private String value;
 

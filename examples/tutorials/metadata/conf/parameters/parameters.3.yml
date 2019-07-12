@@ -1,0 +1,21 @@
+---
+type: "script"
+data:
+  name: "parameters.3"
+  description: "use a parameter defined from the command line using the parameter file option"
+  parameters: []
+  actions:
+  - number: 1
+    type: "fwk.outputMessage"
+    name: "outputParameter"
+    description: "View the parameter value"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "message"
+      value : "param1: #param1#"
+    - name: "onScreen"
+      value : "Y"

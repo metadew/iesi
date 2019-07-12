@@ -242,7 +242,7 @@ public class HttpExecuteRequest {
     }
 
     private String convertOutputDatasetReferenceName(DataType outputDatasetReferenceName) {
-        if (outputDatasetReferenceName instanceof Text) {
+    	if (outputDatasetReferenceName instanceof Text) {
             return outputDatasetReferenceName.toString();
         } else {
             frameworkExecution.getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for OutputDatasetReferenceName",

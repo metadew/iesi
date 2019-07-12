@@ -7,15 +7,17 @@ CD ..
 
 call set IESI_HOME=%CD%
 call set "IESI_HOME=%%IESI_HOME:\=/%%"
+call set IESI_REST_JAR=iesi-rest-0.0.1-SNAPSHOT.thin.jar
+
 
 :: bin
-echo.iesi.home=%IESI_HOME%>%IESI_HOME%\bin\iesi-home.conf
+echo.iesi.home=%IESI_HOME%>"%IESI_HOME%"\bin\iesi-home.conf
 
 :: sbin
-echo.iesi.home=%IESI_HOME%>%IESI_HOME%\sbin\iesi-home.conf
+echo.iesi.home=%IESI_HOME%>"%IESI_HOME%"\sbin\iesi-home.conf
 
 :: lib
-echo.iesi.home=%IESI_HOME%>%IESI_HOME%\lib\iesi-home.conf
+echo.iesi.home=%IESI_HOME%>"%IESI_HOME%"\lib\iesi-home.conf
 
 CD %CURRENT_DIR%
 EXIT /B %ERRORLEVEL%

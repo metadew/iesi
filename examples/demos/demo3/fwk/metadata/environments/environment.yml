@@ -1,0 +1,5 @@
+---
+type: Environment
+data:
+  name: "lab"
+  description: "Lab environment"

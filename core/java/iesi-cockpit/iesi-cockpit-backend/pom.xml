@@ -32,7 +32,7 @@
 			<artifactId>iesi-core</artifactId>
 			<version>0.0.4</version>
 			<scope>system</scope>
-			<systemPath>C:/Data/metadew/iesi/core/java/iesi-core/target/iesi-core.jar</systemPath>
+			<systemPath>C:/Data/metadew/iesi/core/java/iesi-core/target/iesi-core-0.1.0-SNAPSHOT.jar</systemPath>
 		</dependency>
 	</dependencies>
 

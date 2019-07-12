@@ -4,6 +4,7 @@ import io.metadew.iesi.connection.HostConnection;
 import io.metadew.iesi.connection.operation.ConnectionOperation;
 import io.metadew.iesi.connection.operation.FileTransferOperation;
 import io.metadew.iesi.connection.operation.filetransfer.FileTransferResult;
+import io.metadew.iesi.connection.tools.HostConnectionTools;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.Text;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
@@ -134,8 +135,11 @@ public class FhoExecuteFileTransfer {
         HostConnection targetHostConnection = connectionOperation.getHostConnection(targetConnection);
 
         // Check if source or target are localhost
-        boolean sourceIsOnLocalHost = connectionOperation.isOnLocalConnection(sourceHostConnection);
-        boolean targetIsOnLocalHost = connectionOperation.isOnLocalConnection(targetHostConnection);
+        // TODO check the creation of the sourceConnections
+        boolean sourceIsOnLocalHost = HostConnectionTools.isOnLocalhost(this.getFrameworkExecution(),
+                sourceConnectionName, this.getExecutionControl().getEnvName());
+        boolean targetIsOnLocalHost = HostConnectionTools.isOnLocalhost(this.getFrameworkExecution(),
+                targetConnectionName, this.getExecutionControl().getEnvName());;
 
         // Run the action
         FileTransferOperation fileTransferOperation = new FileTransferOperation(this.getFrameworkExecution());

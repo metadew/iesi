@@ -1,0 +1,7 @@
+---
+data:
+  name: "dt.timstamp"
+  className: "io.metadew.iesi.data.generation.rule.DtTimstamp"
+  description: "Random timestamp values (date and time)"
+  parameters: []
+type: "GenerationRuleType"

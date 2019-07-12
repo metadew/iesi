@@ -1,0 +1,12 @@
+---
+data:
+  name: "dt.now"
+  className: "io.metadew.iesi.data.generation.rule.DtNow"
+  description: "Generate current date, time or timestamp"
+  parameters:
+  - name: "FORMAT"
+    description: "Format to use for the generation"
+    type: "string"
+    mandatory: "N"
+    encrypted: "N"
+type: "GenerationRuleType"

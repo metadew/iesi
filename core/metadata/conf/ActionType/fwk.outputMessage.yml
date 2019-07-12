@@ -1,0 +1,22 @@
+---
+data:
+  name: "fwk.outputMessage"
+  className: "io.metadew.iesi.script.action.FwkOutputMessage"
+  description: "Prints a message for logging and debugging purposes"
+  parameters:
+  - name: "message"
+    description: "Message to be printed"
+    type: "string"
+    mandatory: "N"
+    encrypted: "N"
+    subroutine: ""
+    impersonate: "N"
+  - name: "onScreen"
+    description: "Flag indicating if the message needs to be printed on the screen"
+    type: "string"
+    mandatory: "N"
+    encrypted: "N"
+    subroutine: ""
+    impersonate: "N"
+  status: "stable"
+type: "ActionType"

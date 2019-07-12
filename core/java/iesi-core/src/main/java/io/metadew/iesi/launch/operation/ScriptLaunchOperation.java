@@ -29,6 +29,8 @@ public final class ScriptLaunchOperation {
 		String actionSelect = "";
 		String environmentName = request.getContext();
 		String executionMode = "";
+		@SuppressWarnings("unused")
+		@Deprecated
 		boolean exit = true;
 		String fileName = "";
 		String impersonationName = "";
@@ -178,7 +180,9 @@ public final class ScriptLaunchOperation {
 		scriptExecution.initializeAsRootScript(environmentName);
 		scriptExecution.setActionSelectOperation(new ActionSelectOperation(actionSelect));
 		scriptExecution.setImpersonations(impersonationName, impersonationCustom);
-		scriptExecution.setExitOnCompletion(exit);
+		// always set to false - deprecated (needs to be set by the executor instead)
+		// TODO remove at this detailed level
+		scriptExecution.setExitOnCompletion(false);
 
 		if (!paramList.equals("")) {
 			scriptExecution.setParamList(paramList);

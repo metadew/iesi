@@ -2,9 +2,9 @@ package io.metadew.iesi.launch;
 
 import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
-import io.metadew.iesi.launch.operation.ScriptLaunchOperation;
 import io.metadew.iesi.metadata.definition.Request;
 import io.metadew.iesi.metadata.definition.RequestParameter;
+import io.metadew.iesi.runtime.Executor;
 import io.metadew.iesi.runtime.Requestor;
 
 import java.time.LocalDateTime;
@@ -271,8 +271,7 @@ public class ScriptLauncher {
 				scopeName, environmentName, "", userName, userPassword, requestParameterList);
 
 		if (serverMode.equalsIgnoreCase("off")) {
-			// TODO update to use executor
-			ScriptLaunchOperation.execute(frameworkInstance, request, null);
+			Executor.getInstance(frameworkInstance).execute(request);
 		} else if (serverMode.equalsIgnoreCase("standalone")) {
 			Requestor.getInstance(frameworkInstance).submit(request);
 		} else {

@@ -1,0 +1,88 @@
+---
+type: Script
+data:
+  type: "script"
+  name: "etl.flow.testing"
+  description: "Testing ETL flow of a merger"
+  actions:
+  - number: 1
+    type: "cli.executeCommand"
+    name: "execute_etl_flow"
+    description: "execute etl flow"
+    errorExpected: "N"
+    errorStop: "Y"
+    parameters: 
+    - name: "path"
+      value: "#iesi.home#/data/demo3/ETL"
+    - name: "command"
+      value: "etl.cmd -sourceA #iesi.home#/data/demo3/company_a.db3 -sourceB #iesi.home#/data/demo3/company_b.db3 -target #iesi.home#/data/demo3/target.db3 -duplicates #duplicates_activated#"
+    - name: "connection"
+      value: "localhost"
+  - number: 2
+    type: "sql.setRuntimeVariables"
+    name: "fetch_missing_customers_company_a"
+    description: "fetch number of missing customers of company a in target db"
+    errorExpected: "N"
+    errorStop: "Y"
+    parameters: 
+    - name: "query"
+      value: "select count(*) as missing_customers_a from (select FirstName, LastName from customerA EXCEPT SELECT FirstName, LastName FROM customer);"
+    - name: "connection"
+      value: "db.target"
+  - number: 3
+    type: "eval.assertEquals"
+    name: "missing_customers_a_check"
+    description: "assert no missing missing customers of company a in target db"
+    errorExpected: "N"
+    errorStop: "N"
+    parameters: 
+    - name: "expected"
+      value: "0"
+    - name: "actual"
+      value: "#missing_customers_a#"
+  - number: 4
+    type: "sql.setRuntimeVariables"
+    name: "fetch_missing_customers_company_b"
+    description: "check for missing customers of company a in target db"
+    errorExpected: "N"
+    errorStop: "Y"
+    parameters: 
+    - name: "query"
+      value: "select count(*) as missing_customers_b from (select FirstName, LastName from customerB EXCEPT SELECT FirstName, LastName FROM customer);"
+    - name: "connection"
+      value: "db.target"
+  - number: 5
+    type: "eval.assertEquals"
+    name: "missing_customers_b_check"
+    description: "assert no missing missing customers of company b in target db"
+    errorExpected: "N"
+    errorStop: "N"
+    parameters: 
+    - name: "expected"
+      value: "0"
+    - name: "actual"
+      value: "#missing_customers_b#"
+  - number: 6
+    type: "sql.setRuntimeVariables"
+    name: "fetch_duplicates"
+    description: "check for missing customers of company a in target db"
+    errorExpected: "N"
+    errorStop: "Y"
+    parameters: 
+    - name: "query"
+      value: "select count(*) as duplicates from (select FirstName, LastName, count(*) as entries from customer GROUP by FirstName, LastName) where entries > 1;"
+    - name: "connection"
+      value: "db.target"
+  - number: 7
+    type: "eval.assertEquals"
+    name: "duplicates_check"
+    description: "assert no duplicate customers in target db"
+    errorExpected: "N"
+    errorStop: "N"
+    parameters: 
+    - name: "expected"
+      value: "0"
+    - name: "actual"
+      value: "#duplicates#"
+      
+

@@ -1,0 +1,7 @@
+---
+data:
+  name: "id.guid"
+  className: "io.metadew.iesi.data.generation.rule.IdGuid"
+  description: "Generates 36 char hex guid values"
+  parameters: []
+type: "GenerationRuleType"

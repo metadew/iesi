@@ -1,0 +1,11 @@
+---
+data:
+  name: "cli.command"
+  description: "Shell command subroutine"
+  parameters:
+  - name: "command"
+    description: "Shell command as subroutine code"
+    type: "string"
+    mandatory: "Y"
+    encrypted: "N"
+type: "SubroutineType"

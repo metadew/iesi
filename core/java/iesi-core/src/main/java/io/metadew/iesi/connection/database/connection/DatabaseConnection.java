@@ -360,7 +360,7 @@ public abstract class DatabaseConnection {
             System.out.println("Connection lost");
             return null;
         }
-        SqlScriptResult dcSQLScriptResult;
+        SqlScriptResult sqlScriptResult;
 
         try {
             //
@@ -376,7 +376,7 @@ public abstract class DatabaseConnection {
             }
 
             try {
-                dcSQLScriptResult = scriptRunner.runScript(reader);
+            	sqlScriptResult = scriptRunner.runScript(reader);
             } catch (IOException e) {
                 e.printStackTrace();
                 throw new RuntimeException(e.getMessage());
@@ -389,7 +389,7 @@ public abstract class DatabaseConnection {
             System.out.println(e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
-        return dcSQLScriptResult;
+        return sqlScriptResult;
     }
 
     //TODO remove

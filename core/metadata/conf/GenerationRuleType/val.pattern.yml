@@ -1,0 +1,7 @@
+---
+data:
+  name: "val.pattern"
+  className: "io.metadew.iesi.data.generation.rule.ValPattern"
+  description: "Generate a value based on a regular expression pattern"
+  parameters: []
+type: "GenerationRuleType"

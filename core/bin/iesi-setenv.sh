@@ -2,6 +2,7 @@
 CURR_DIR=$(pwd)
 SETENV_SCRIPT="$(basename "${BASH_SOURCE[0]}")"
 SETENV_DIR=`dirname $0`
+IESI_REST_JAR=iesi-rest-0.0.1-SNAPSHOT.thin.jar
 cd ${SETENV_DIR}
 cd ..
 IESI_HOME=$(pwd)

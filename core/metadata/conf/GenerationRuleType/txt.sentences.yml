@@ -1,0 +1,12 @@
+---
+data:
+  name: "txt.sentences"
+  className: "io.metadew.iesi.data.generation.rule.TxtSentences"
+  description: "Random sequence of sentences"
+  parameters:
+  - name: "SENTENCE_NB"
+    description: "Number of sentences to generate"
+    type: "number"
+    mandatory: "N"
+    encrypted: "N"
+type: "GenerationRuleType"

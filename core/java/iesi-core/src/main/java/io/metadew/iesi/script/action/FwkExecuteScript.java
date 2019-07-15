@@ -164,7 +164,7 @@ public class FwkExecuteScript {
                 this.getActionExecution().getActionControl().increaseSuccessCount();
             } else if (scriptExecution.getResult()
                     .equalsIgnoreCase(FrameworkStatus.WARNING.value())) {
-                this.getActionExecution().getActionControl().increaseSuccessCount();
+                this.getActionExecution().getActionControl().increaseWarningCount();
             } else if (scriptExecution.getResult()
                     .equalsIgnoreCase(FrameworkStatus.ERROR.value())) {
                 this.getActionExecution().getActionControl().increaseErrorCount();

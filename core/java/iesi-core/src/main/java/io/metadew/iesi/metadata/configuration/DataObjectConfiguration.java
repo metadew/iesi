@@ -9,8 +9,11 @@ import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.DataObject;
 import io.metadew.iesi.metadata.operation.MetadataRepositoryOperation;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
+import io.metadew.iesi.metadata.repository.MetadataRepositorySaveException;
+import org.apache.logging.log4j.Level;
 
 import java.io.File;
+import java.text.MessageFormat;
 import java.util.List;
 
 public class DataObjectConfiguration {
@@ -109,7 +112,11 @@ public class DataObjectConfiguration {
 
     public void saveToMetadataRepository() {
         for (DataObject dataObject : dataObjects) {
-            this.getMetadataRepository().save(dataObject, getFrameworkExecution());
+            try {
+                this.getMetadataRepository().save(dataObject, getFrameworkExecution());
+            } catch (MetadataRepositorySaveException e) {
+                frameworkExecution.getFrameworkLog().log(MessageFormat.format("Failed to save {0} to repository", dataObject.getType()), Level.WARN);
+            }
         }
     }
 

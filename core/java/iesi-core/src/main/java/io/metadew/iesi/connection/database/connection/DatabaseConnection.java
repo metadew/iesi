@@ -53,6 +53,7 @@ public abstract class DatabaseConnection {
         } catch (SQLException e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
+            System.out.println(StackTrace.toString());
             throw new RuntimeException(e.getMessage());
         }
     }

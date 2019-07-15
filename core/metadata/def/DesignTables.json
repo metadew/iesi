@@ -55,7 +55,7 @@
 		"migrate": "Y",
 		"migrationKey": "A005",
 		"fields": [
-			{"name": "COMP_ID","description": "Unique identifier for the component","order": "1","type": "number","length": "0","nullable": "N","defaultTimestamp": ""},
+			{"name": "COMP_ID","description": "Unique identifier for the component","order": "1","type": "string","length": "255","nullable": "N","defaultTimestamp": ""},
 			{"name": "COMP_TYP_NM","description": "Keyword for the component type","order": "2","type": "string","length": "100","nullable": "N","defaultTimestamp": ""},
 			{"name": "COMP_NM","description": "Unique short name for the component","order": "3","type": "string","length": "200","nullable": "N","defaultTimestamp": ""},
 			{"name": "COMP_DSC","description": "Description of the component","order": "4","type": "string","length": "2000","nullable": "Y","defaultTimestamp": ""},
@@ -73,7 +73,7 @@
 		"migrate": "Y",
 		"migrationKey": "A006",
 		"fields": [
-			{"name": "COMP_ID","description": "Unique identifier for the component","order": "1","type": "number","length": "0","nullable": "N","defaultTimestamp": ""},
+			{"name": "COMP_ID","description": "Unique identifier for the component","order": "1","type": "string","length": "255","nullable": "N","defaultTimestamp": ""},
 			{"name": "COMP_VRS_NB","description": "Unique identifier for the script version","order": "2","type": "number","length": "0","nullable": "N","defaultTimestamp": ""},
 			{"name": "ENV_NM","description": "Short name for the envioronment","order": "3","type": "string","length": "100","nullable": "N","defaultTimestamp": ""},
 			{"name": "COMP_ATT_NM","description": "Name of the attribute","order": "4","type": "string","length": "100","nullable": "N","defaultTimestamp": ""},
@@ -92,7 +92,7 @@
 		"migrate": "Y",
 		"migrationKey": "A007",
 		"fields": [
-			{"name": "COMP_ID","description": "Unique identifier for the component","order": "1","type": "number","length": "0","nullable": "N","defaultTimestamp": ""},
+			{"name": "COMP_ID","description": "Unique identifier for the component","order": "1","type": "string","length": "255","nullable": "N","defaultTimestamp": ""},
 			{"name": "COMP_VRS_NB","description": "Unique identifier for the script version","order": "2","type": "number","length": "0","nullable": "N","defaultTimestamp": ""},
 			{"name": "COMP_PAR_NM","description": "Name of the component parameter","order": "3","type": "string","length": "100","nullable": "N","defaultTimestamp": ""},
 			{"name": "COMP_PAR_VAL","description": "String type parameter value","order": "4","type": "string","length": "2000","nullable": "Y","defaultTimestamp": ""},
@@ -110,7 +110,7 @@
 		"migrate": "Y",
 		"migrationKey": "A010",
 		"fields": [
-			{"name": "COMP_ID","description": "Unique identifier for the component","order": "1","type": "number","length": "0","nullable": "N","defaultTimestamp": ""},
+			{"name": "COMP_ID","description": "Unique identifier for the component","order": "1","type": "string","length": "255","nullable": "N","defaultTimestamp": ""},
 			{"name": "COMP_VRS_NB","description": "Unique identifier for the script version","order": "2","type": "number","length": "0","nullable": "N","defaultTimestamp": ""},
 			{"name": "COMP_VRS_DSC","description": "Description of the version","order": "3","type": "string","length": "2000","nullable": "Y","defaultTimestamp": ""},
 			{"name": "LOAD_TMS","description": "Load timestamp indicating when the record was inserted in the table","order": "4","type": "timestamp","length": "0","nullable": "N","defaultTimestamp": "Y"}

@@ -85,7 +85,6 @@ public class ComponentConfiguration extends MetadataConfiguration {
 
         try {
             while (crsComponent.next()) {
-                System.out.println("Getting component " + crsComponent.getString("COMP_NM"));
                 components.addAll(getComponentsByName(crsComponent.getString("COMP_NM")));
             }
         } catch (SQLException e) {
@@ -116,7 +115,6 @@ public class ComponentConfiguration extends MetadataConfiguration {
                     + SQLTools.GetStringForSQL(componentId);
             CachedRowSet crsComponentVersions = this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().executeQuery(queryComponentVersions, "reader");
             while (crsComponentVersions.next()) {
-                System.out.println("Component Version " + crsComponentVersions.getLong("COMP_VRS_NB"));
                 getComponent(componentName, crsComponentVersions.getLong("COMP_VRS_NB")).ifPresent(components::add);
             }
             crsComponentVersions.close();
@@ -133,7 +131,6 @@ public class ComponentConfiguration extends MetadataConfiguration {
                 + " where COMP_NM = "
                 + SQLTools.GetStringForSQL(componentName);
         CachedRowSet crsComponent = this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().executeQuery(queryComponent, "reader");
-
         try {
             if (crsComponent.size() == 0) {
                 return Optional.empty();
@@ -196,7 +193,7 @@ public class ComponentConfiguration extends MetadataConfiguration {
             //this.frameworkExecution.getFrameworkLog().log("action.error=" + e, Level.INFO);
             //this.frameworkExecution.getFrameworkLog().log("action.stacktrace=" + StackTrace, Level.INFO);
 
-            System.out.println("ERROR");
+            System.out.println(StackTrace.toString());
             return Optional.empty();
         }
     }

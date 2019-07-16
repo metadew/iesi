@@ -47,7 +47,7 @@ Next, the configuration repository will need to be created. Open a command windo
 * all configuration management is via the `bin/iesi-metadata.sh` (or `iesi-metadata.cmd` on Windows) command [![info](/{{site.repository}}/images/icons/question-dot.png)](/{{site.repository}}/pages/operate/operate.html)
 
 ```
-bin/iesi-metadata.sh -drop -create -load -type general
+bin/iesi-metadata.sh -create -type general
 ```
 
 > * drop ensures that even if the tables exist they are removed first 

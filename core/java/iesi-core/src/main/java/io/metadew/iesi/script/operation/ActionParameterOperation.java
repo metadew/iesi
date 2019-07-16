@@ -119,9 +119,19 @@ public class ActionParameterOperation {
 
     public void setInputValue(String inputValue) {
         // TODO: list resolvement to a data type
-        this.inputValue = inputValue;
+        // Keep input value with orginal entry
+    	this.inputValue = inputValue;
+    	
+    	// Start manipulation with lookups
+    	// Look up inside action perimeter
+        inputValue = this.getActionExecution().getActionControl().getActionRuntime().resolveRuntimeVariables(inputValue);
+		
+		// TODO centralize lookup logic here (get inside the execution controls / runtime)
         String resolvedInputValue = this.getExecutionControl().getExecutionRuntime().resolveVariables(this.getActionExecution(), inputValue);
+        
+        // TODO verify if still needed
         value = new Text(inputValue);
+        
         resolvedInputValue = lookupSubroutine(resolvedInputValue);
         this.getExecutionControl().logMessage(this.getActionExecution(),
                 "action.param=" + this.getName() + ":" + resolvedInputValue, Level.DEBUG);

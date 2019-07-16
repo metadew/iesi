@@ -1,6 +1,6 @@
 package io.metadew.iesi.metadata.configuration.exception;
 
-public class ScriptDoesNotExistException extends Exception {
+public class ScriptDoesNotExistException extends MetadataDoesNotExistException {
 
 	private static final long serialVersionUID = 1L;
 

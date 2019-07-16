@@ -29,7 +29,7 @@ public class OracleDatabase extends SchemaDatabase {
     }
 
     public String createQueryExtras() {
-        return "\nLOGGING\nNOCOMPRESS\nNOCACHE\nNOPARALLEL\nMONITORING;\n";
+        return "\nLOGGING\nNOCOMPRESS\nNOCACHE\nNOPARALLEL\nMONITORING";
     }
 
     public String toQueryString(MetadataField field) {

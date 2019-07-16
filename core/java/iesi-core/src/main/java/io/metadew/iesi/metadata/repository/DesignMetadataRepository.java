@@ -5,6 +5,10 @@ import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.configuration.ComponentConfiguration;
 import io.metadew.iesi.metadata.configuration.GenerationConfiguration;
 import io.metadew.iesi.metadata.configuration.ScriptConfiguration;
+import io.metadew.iesi.metadata.configuration.exception.ComponentAlreadyExistsException;
+import io.metadew.iesi.metadata.configuration.exception.ComponentDoesNotExistException;
+import io.metadew.iesi.metadata.configuration.exception.ScriptAlreadyExistsException;
+import io.metadew.iesi.metadata.configuration.exception.ScriptDoesNotExistException;
 import io.metadew.iesi.metadata.definition.Component;
 import io.metadew.iesi.metadata.definition.DataObject;
 import io.metadew.iesi.metadata.definition.Generation;
@@ -42,7 +46,7 @@ public class DesignMetadataRepository extends MetadataRepository {
     }
 
     @Override
-    public void save(DataObject dataObject, FrameworkExecution frameworkExecution) {
+    public void save(DataObject dataObject, FrameworkExecution frameworkExecution) throws MetadataRepositorySaveException {
         // TODO: based on MetadataRepository object decide to insert or not insert the objects
         // TODO: insert should be handled on database level as insert can differ from database type/dialect? JDBC Dialect/Spring
         ObjectMapper objectMapper = new ObjectMapper();
@@ -62,19 +66,39 @@ public class DesignMetadataRepository extends MetadataRepository {
         }
     }
 
-    public void save(Script script, FrameworkExecution frameworkExecution) {
-        ScriptConfiguration scriptConfiguration = new ScriptConfiguration(script,
-                frameworkExecution.getFrameworkInstance());
-        executeUpdate(scriptConfiguration.getInsertStatement());
+    public void save(Script script, FrameworkExecution frameworkExecution) throws MetadataRepositorySaveException {
+        frameworkExecution.getFrameworkLog().log(MessageFormat.format("Saving script {0} into design repository", script.getName()), Level.INFO);
+        ScriptConfiguration scriptConfiguration = new ScriptConfiguration(frameworkExecution.getFrameworkInstance());
+        try {
+            scriptConfiguration.insertScript(script);
+        } catch (ScriptAlreadyExistsException e) {
+            frameworkExecution.getFrameworkLog().log(MessageFormat.format("Script {0} already exists in design repository. Updating to new definition", script.getName()), Level.INFO);
+            try {
+                scriptConfiguration.updateScript(script);
+            } catch (ScriptDoesNotExistException ex) {
+                throw new MetadataRepositorySaveException();
+
+            }
+        }
     }
 
-    public void save(Component component, FrameworkExecution frameworkExecution) {
-        ComponentConfiguration componentConfiguration = new ComponentConfiguration(component,
-                frameworkExecution.getFrameworkInstance());
-        executeUpdate(componentConfiguration.getInsertStatement());
+    public void save(Component component, FrameworkExecution frameworkExecution) throws MetadataRepositorySaveException {
+        frameworkExecution.getFrameworkLog().log(MessageFormat.format("Saving component {0} into design repository", component.getName()), Level.INFO);
+        ComponentConfiguration componentConfiguration = new ComponentConfiguration(frameworkExecution.getFrameworkInstance());
+        try {
+            componentConfiguration.insertComponent(component);
+        } catch (ComponentAlreadyExistsException e) {
+            frameworkExecution.getFrameworkLog().log(MessageFormat.format("Component {0} already exists in design repository. Updating to new definition", component.getName()), Level.INFO);
+            try {
+                componentConfiguration.updateComponent(component);
+            } catch (ComponentDoesNotExistException ex) {
+                throw new MetadataRepositorySaveException();
+            }
+        }
     }
     
     public void save(Generation generation, FrameworkExecution frameworkExecution) {
+        frameworkExecution.getFrameworkLog().log(MessageFormat.format("Saving generation {0} into design repository", generation.getName()), Level.INFO);
         GenerationConfiguration generationConfiguration = new GenerationConfiguration(generation,
                 frameworkExecution.getFrameworkInstance());
         executeUpdate(generationConfiguration.getInsertStatement());

@@ -51,6 +51,7 @@ public class Component {
     }
 
     public String getId() {
+        if (id == null) this.id = IdentifierTools.getComponentIdentifier(this.getName());
         return id;
     }
 

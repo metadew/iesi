@@ -183,8 +183,7 @@ public abstract class Database {
 			counter++;
 		}
 
-		createQuery.append("\n);\n");
-		createQuery.append(createQueryExtras());
+		createQuery.append("\n)\n").append(createQueryExtras()).append(";");
 		// createQuery.append(fieldComments).append("\n\n");
 
 		return createQuery.toString();

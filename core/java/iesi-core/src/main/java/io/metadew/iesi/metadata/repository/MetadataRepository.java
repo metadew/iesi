@@ -73,9 +73,12 @@ public abstract class MetadataRepository {
 	public abstract String getCategoryPrefix();
 
 	public String getTableNamePrefix() {
-		String frameworkCodeString = getFrameworkCode().map(frameworkCode -> frameworkCode.toUpperCase() + "_")
+		String frameworkCodeString = getFrameworkCode()
+				.map(frameworkCode -> frameworkCode.toUpperCase() + "_")
 				.orElse("");
-		String instanceNameString = getInstanceName().map(instanceName -> instanceName.toUpperCase() + "_").orElse("");
+		String instanceNameString = getInstanceName()
+				.map(instanceName -> instanceName.toUpperCase() + "_")
+				.orElse("");
 		return frameworkCodeString + instanceNameString;
 	}
 
@@ -148,7 +151,9 @@ public abstract class MetadataRepository {
 
 	public String getTableNameByLabel(String label) {
 		return metadataTables.stream().filter(metadataTable -> metadataTable.getLabel().equalsIgnoreCase(label))
-				.findFirst().map(MetadataTable::getName).orElseThrow(() -> new RuntimeException(
+				.findFirst()
+				.map(MetadataTable::getName)
+				.orElseThrow(() -> new RuntimeException(
 						MessageFormat.format("No label {0} found for metadata repository {1}", label, getCategory())));
 	}
 
@@ -172,6 +177,6 @@ public abstract class MetadataRepository {
 		return Optional.ofNullable(instanceName);
 	}
 
-	public abstract void save(DataObject dataObject, FrameworkExecution frameworkExecution);
+	public abstract void save(DataObject dataObject, FrameworkExecution frameworkExecution) throws MetadataRepositorySaveException;
 
 }

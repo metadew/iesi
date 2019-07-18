@@ -4,6 +4,7 @@ import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.User;
 
+import javax.jws.soap.SOAPBinding;
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -59,52 +60,62 @@ public class UserConfiguration {
 
     // Delete
     public String getDeleteStatement() {
-        String sql = "";
+        return "DELETE FROM " + this.getFrameworkInstance().getMetadataControl().getControlMetadataRepository().getTableNameByLabel("Users") +
+                " WHERE USER_NM = " + SQLTools.GetStringForSQL(this.getUser().getName()) + ";";
+    }
 
-        sql += "DELETE FROM " + this.getFrameworkInstance().getMetadataControl().getControlMetadataRepository().getTableNameByLabel("Users");
-        sql += " WHERE USER_NM = " + SQLTools.GetStringForSQL(this.getUser().getName());
-        sql += ";";
-        sql += "\n";
+    // Delete
+    public String getDeleteStatement(User user) {
+        return "DELETE FROM " + this.getFrameworkInstance().getMetadataControl().getControlMetadataRepository().getTableNameByLabel("Users") +
+                " WHERE USER_NM = " + SQLTools.GetStringForSQL(user.getName()) + ";";
+    }
 
-        return sql;
+
+    public List<String> getInsertStatement(User user) {
+        List<String> queries = new ArrayList<>();
+
+        if (this.exists()) {
+            queries.add(this.getDeleteStatement(user));
+        }
+
+        queries.add("INSERT INTO " + this.getFrameworkInstance().getMetadataControl().getControlMetadataRepository().getTableNameByLabel("Users") +
+                " (USER_NM, USER_TYP_NM, USER_FIRST_NM, USER_LAST_NM, USER_ACT_FL, USER_PWD_HASH, USER_PWD_EXP_FL, LOGIN_FAIL_CUM_NB, LOGIN_FAIL_IND_NB, USER_LOCK_FL) VALUES (" +
+                SQLTools.GetStringForSQL(user.getName()) + "," +
+                SQLTools.GetStringForSQL(user.getType()) + "," +
+                SQLTools.GetStringForSQL(user.getFirstName()) + "," +
+                SQLTools.GetStringForSQL(user.getLastName()) + "," +
+                SQLTools.GetStringForSQL(user.getActive()) + "," +
+                SQLTools.GetStringForSQL(user.getPasswordHash()) + "," +
+                SQLTools.GetStringForSQL(user.getExpired()) + "," +
+                SQLTools.GetStringForSQL(user.getCumulativeLoginFails()) + "," +
+                SQLTools.GetStringForSQL(user.getIndividualLoginFails()) + "," +
+                SQLTools.GetStringForSQL(user.getLocked()) + ");");
+        return queries;
 
     }
 
+
     // Insert
-    public String getInsertStatement() {
-        String sql = "";
+    public List<String> getInsertStatement() {
+        List<String> queries = new ArrayList<>();
 
         if (this.exists()) {
-            sql += this.getDeleteStatement();
+            queries.add(this.getDeleteStatement());
         }
 
-        sql += "INSERT INTO " + this.getFrameworkInstance().getMetadataControl().getControlMetadataRepository().getTableNameByLabel("Users");
-        sql += " (USER_NM, USER_TYP_NM, USER_FIRST_NM, USER_LAST_NM, USER_ACT_FL, USER_PWD_HASH, USER_PWD_EXP_FL, LOGIN_FAIL_CUM_NB, LOGIN_FAIL_IND_NB, USER_LOCK_FL) ";
-        sql += "VALUES ";
-        sql += "(";
-        sql += SQLTools.GetStringForSQL(this.getUser().getName());
-        sql += ",";
-        sql += SQLTools.GetStringForSQL(this.getUser().getType());
-        sql += ",";
-        sql += SQLTools.GetStringForSQL(this.getUser().getFirstName());
-        sql += ",";
-        sql += SQLTools.GetStringForSQL(this.getUser().getLastName());
-        sql += ",";
-        sql += SQLTools.GetStringForSQL(this.getUser().getActive());
-        sql += ",";
-        sql += SQLTools.GetStringForSQL(this.getUser().getPasswordHash());
-        sql += ",";
-        sql += SQLTools.GetStringForSQL(this.getUser().getExpired());
-        sql += ",";
-        sql += SQLTools.GetStringForSQL(this.getUser().getCumulativeLoginFails());
-        sql += ",";
-        sql += SQLTools.GetStringForSQL(this.getUser().getIndividualLoginFails());
-        sql += ",";
-        sql += SQLTools.GetStringForSQL(this.getUser().getLocked());
-        sql += ")";
-        sql += ";";
-
-        return sql;
+        queries.add("INSERT INTO " + this.getFrameworkInstance().getMetadataControl().getControlMetadataRepository().getTableNameByLabel("Users") +
+                " (USER_NM, USER_TYP_NM, USER_FIRST_NM, USER_LAST_NM, USER_ACT_FL, USER_PWD_HASH, USER_PWD_EXP_FL, LOGIN_FAIL_CUM_NB, LOGIN_FAIL_IND_NB, USER_LOCK_FL) VALUES (" +
+                SQLTools.GetStringForSQL(this.getUser().getName()) + "," +
+                SQLTools.GetStringForSQL(this.getUser().getType()) + "," +
+                SQLTools.GetStringForSQL(this.getUser().getFirstName()) + "," +
+                SQLTools.GetStringForSQL(this.getUser().getLastName()) + "," +
+                SQLTools.GetStringForSQL(this.getUser().getActive()) + "," +
+                SQLTools.GetStringForSQL(this.getUser().getPasswordHash()) + "," +
+                SQLTools.GetStringForSQL(this.getUser().getExpired()) + "," +
+                SQLTools.GetStringForSQL(this.getUser().getCumulativeLoginFails()) + "," +
+                SQLTools.GetStringForSQL(this.getUser().getIndividualLoginFails()) + "," +
+                SQLTools.GetStringForSQL(this.getUser().getLocked()) + ");");
+        return queries;
     }
 
     public String getPasswordStatement() {
@@ -132,48 +143,21 @@ public class UserConfiguration {
     }
 
     public String getActiveUpdateStatement(String userName, String status) {
-        String sql = "";
-
-        sql += "UPDATE " + this.getFrameworkInstance().getMetadataControl().getControlMetadataRepository().getTableNameByLabel("Users");
-        sql += " SET ";
-        sql += "USER_ACT_FL=";
-        sql += SQLTools.GetStringForSQL(status.toUpperCase());
-        sql += " WHERE ";
-        sql += "USER_NM =";
-        sql += SQLTools.GetStringForSQL(userName);
-        sql += ";";
-
-        return sql;
+        return "UPDATE " + this.getFrameworkInstance().getMetadataControl().getControlMetadataRepository().getTableNameByLabel("Users") +
+                " SET USER_ACT_FL=" + SQLTools.GetStringForSQL(status.toUpperCase()) + " WHERE USER_NM = + " +
+                SQLTools.GetStringForSQL(userName) + ";";
     }
 
     public String getBlockedUpdateStatement(String userName, String status) {
-        String sql = "";
-
-        sql += "UPDATE " + this.getFrameworkInstance().getMetadataControl().getControlMetadataRepository().getTableNameByLabel("Users");
-        sql += " SET ";
-        sql += "USER_BLOCK_FL=";
-        sql += SQLTools.GetStringForSQL(status.toUpperCase());
-        sql += " WHERE ";
-        sql += "USER_NM =";
-        sql += SQLTools.GetStringForSQL(userName);
-        sql += ";";
-
-        return sql;
+        return "UPDATE " + this.getFrameworkInstance().getMetadataControl().getControlMetadataRepository().getTableNameByLabel("Users") +
+                " SET USER_BLOCK_FL=" + SQLTools.GetStringForSQL(status.toUpperCase()) +
+                " WHERE USER_NM =" + SQLTools.GetStringForSQL(userName) + ";";
     }
 
     public String resetIndividualLoginFails(String userName) {
-        String sql = "";
-
-        sql += "UPDATE " + this.getFrameworkInstance().getMetadataControl().getControlMetadataRepository().getTableNameByLabel("Users");
-        sql += " SET ";
-        sql += "LOGIN_FAIL_IND_NB=";
-        sql += SQLTools.GetStringForSQL(0);
-        sql += " WHERE ";
-        sql += "USER_NM =";
-        sql += SQLTools.GetStringForSQL(userName);
-        sql += ";";
-
-        return sql;
+        return "UPDATE " + this.getFrameworkInstance().getMetadataControl().getControlMetadataRepository().getTableNameByLabel("Users") +
+                " SET LOGIN_FAIL_IND_NB=" + SQLTools.GetStringForSQL(0) +
+                " WHERE USER_NM =" + SQLTools.GetStringForSQL(userName) + ";";
     }
 
     // Get User
@@ -181,7 +165,6 @@ public class UserConfiguration {
         String query = "select USER_NM, USER_TYP_NM, USER_FIRST_NM, USER_LAST_NM, USER_ACT_FL, USER_PWD_HASH, USER_PWD_EXP_FL, LOGIN_FAIL_CUM_NB, LOGIN_FAIL_IND_NB, USER_LOCK_FL from "
                 + this.getFrameworkInstance().getMetadataControl().getControlMetadataRepository().getTableNameByLabel("Users")
                 + " where USER_NM = " + SQLTools.GetStringForSQL(userName) + ";";
-        System.out.println(query);
         CachedRowSet crs = this.getFrameworkInstance().getMetadataControl().getControlMetadataRepository().executeQuery(query, "reader");
         try {
             if (crs.size() == 0) {
@@ -212,7 +195,13 @@ public class UserConfiguration {
 
     // Exists
     public boolean exists() {
+        // TODO
         return true;
+    }
+    // Exists
+    public boolean exists(User user) {
+        // TODO
+        return false;
     }
 
     // Getters and Setters
@@ -232,4 +221,10 @@ public class UserConfiguration {
 		this.frameworkInstance = frameworkInstance;
 	}
 
+    public void insertUser(User user) {
+        if (exists(user)) {
+
+        }
+        this.getFrameworkInstance().getMetadataControl().getControlMetadataRepository().executeBatch(getInsertStatement(user));
+    }
 }

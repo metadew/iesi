@@ -36,7 +36,7 @@ public class Executor {
 
 			FrameworkRunIdentifier frameworkRunIdentifier = new FrameworkRunIdentifier();
 
-			RequestResult requestResult = new RequestResult(requestResultKey, "", frameworkRunIdentifier.getId(),
+			RequestResult requestResult = new RequestResult(requestResultKey, "-1", frameworkRunIdentifier.getId(),
 					request.getType(), request.getName(), request.getScope(), request.getContext(), request.getSpace(), request.getUser(),
 					RequestStatus.RUNNING.value(), LocalDateTime.parse(request.getTimestamp()), LocalDateTime.now(), null);
 			requestResultConfiguration.insert(requestResult);

@@ -84,7 +84,7 @@ public class RequestResultConfiguration extends Configuration<RequestResult, Req
 				+ getMetadataControl().getResultMetadataRepository().getTableNameByLabel("RequestResults")
 				+ " (REQUEST_ID, PARENT_REQUEST_ID, RUN_ID, ORIGIN_NM, REQUEST_NM, SCOPE_NM, CONTEXT_NM, SPACE_NM, USER_NM, REQUEST_TMS, ST_NM, STRT_TMS, END_TMS) values ("
 				+ SQLTools.GetStringForSQL(requestResult.getMetadataKey().getRequestId()) + ", "
-				+ SQLTools.GetStringForSQL(requestResult.getParentRequestId()) + ", "
+				+ SQLTools.GetStringForSQL(requestResult.getParentRequestId() == null ? "-1" : requestResult.getParentRequestId()) + ", "
 				+ SQLTools.GetStringForSQL(requestResult.getRunId()) + ", "
 				+ SQLTools.GetStringForSQL(requestResult.getOrigin()) + ", "
 				+ SQLTools.GetStringForSQL(requestResult.getName()) + ", "
@@ -92,7 +92,7 @@ public class RequestResultConfiguration extends Configuration<RequestResult, Req
 				+ SQLTools.GetStringForSQL(requestResult.getContext()) + ", "
 				+ SQLTools.GetStringForSQL(requestResult.getSpace()) + ", "
 				+ SQLTools.GetStringForSQL(requestResult.getUser()) + ", "
-				+ SQLTools.GetStringForSQL((requestResult.getRequestTimestamp() == null ? null : requestResult.getRequestTimestamp())) + ", "
+				+ SQLTools.GetStringForSQL((requestResult.getRequestTimestamp() == null ? LocalDateTime.now() : requestResult.getRequestTimestamp())) + ", "
 				+ SQLTools.GetStringForSQL(requestResult.getStatus()) + ", "
 				+ SQLTools.GetStringForSQL((requestResult.getStartTimestamp() == null ? null : requestResult.getStartTimestamp())) + ", "
 				+ SQLTools.GetStringForSQL((requestResult.getEndTimestamp() == null ? null : requestResult.getEndTimestamp()))

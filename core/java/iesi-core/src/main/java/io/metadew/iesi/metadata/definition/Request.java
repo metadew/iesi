@@ -2,6 +2,7 @@ package io.metadew.iesi.metadata.definition;
 
 import io.metadew.iesi.metadata.tools.IdentifierTools;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Request {
@@ -18,7 +19,7 @@ public class Request {
 	private String space;
 	private String user;
 	private String password;
-	private List<RequestParameter> parameters;
+	private List<RequestParameter> parameters = new ArrayList<>();
 
 	// Constructors
 	public Request() {

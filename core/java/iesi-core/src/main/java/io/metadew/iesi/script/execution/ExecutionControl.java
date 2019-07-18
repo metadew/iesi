@@ -14,7 +14,6 @@ import org.apache.logging.log4j.Level;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -416,20 +415,12 @@ public class ExecutionControl {
 
 		String query = "INSERT INTO "
 				+ this.getFrameworkExecution().getMetadataControl().getResultMetadataRepository().getTableNameByLabel("ActionResultOutputs")
-				+ " (RUN_ID, PRC_ID, ACTION_ID, OUT_NM, OUT_VAL)";
-		query += " VALUES ";
-		query += "(";
-		query += SQLTools.GetStringForSQL(this.getRunId());
-		query += ",";
-		query += SQLTools.GetStringForSQL(actionExecution.getProcessId());
-		query += ",";
-		query += SQLTools.GetStringForSQL(actionExecution.getAction().getId());
-		query += ",";
-		query += SQLTools.GetStringForSQL(outputName);
-		query += ",";
-		query += SQLTools.GetStringForSQL(outputValue);
-		query += ")";
-		query += ";";
+				+ " (RUN_ID, PRC_ID, ACTION_ID, OUT_NM, OUT_VAL) VALUES ("
+				+ SQLTools.GetStringForSQL(this.getRunId()) + ","
+				+ SQLTools.GetStringForSQL(actionExecution.getProcessId()) + ","
+				+ SQLTools.GetStringForSQL(actionExecution.getAction().getId()) + ","
+				+ SQLTools.GetStringForSQL(outputName) + ","
+				+ SQLTools.GetStringForSQL(outputValue) + ");";
 
 		this.getFrameworkExecution().getMetadataControl().getResultMetadataRepository().executeUpdate(query);
 	}

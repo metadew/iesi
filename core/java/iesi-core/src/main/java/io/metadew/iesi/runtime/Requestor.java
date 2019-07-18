@@ -40,7 +40,7 @@ public class Requestor {
 	    	request.getParameters().add(new RequestParameter("exit","flag",Boolean.toString(false)));
 		}
 
-		this.getFrameworkInstance().getExecutionServerRepositoryConfiguration().executeUpdate(requestConfiguration.getInsertStatement(request));
+		this.getFrameworkInstance().getExecutionServerRepositoryConfiguration().executeBatch(requestConfiguration.getInsertStatement(request));
     	
 		return request.getId();
     }

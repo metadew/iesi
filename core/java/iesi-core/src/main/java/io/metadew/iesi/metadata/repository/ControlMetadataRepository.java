@@ -41,9 +41,8 @@ public class ControlMetadataRepository extends MetadataRepository {
         ObjectMapper objectMapper = new ObjectMapper();
         if (dataObject.getType().equalsIgnoreCase("user")) {
             User user = objectMapper.convertValue(dataObject.getData(), User.class);
-            UserConfiguration userConfiguration = new UserConfiguration(user,
-                    frameworkExecution.getFrameworkInstance());
-            executeUpdate(userConfiguration.getInsertStatement());
+            UserConfiguration userConfiguration = new UserConfiguration(frameworkExecution.getFrameworkInstance());
+            userConfiguration.insertUser(user);
         } else if (dataObject.getType().equalsIgnoreCase("usergroup")) {
             //TODO
         } else if (dataObject.getType().equalsIgnoreCase("userrole")) {

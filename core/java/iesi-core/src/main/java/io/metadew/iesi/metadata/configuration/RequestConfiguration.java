@@ -115,25 +115,19 @@ public class RequestConfiguration {
 			throw new RequestDoesNotExistException(MessageFormat
 					.format("Request {0} is not present in the repository so cannot be deleted", request.getId()));
 		}
-		String query = getDeleteStatement(request);
-		this.getFrameworkInstance().getExecutionServerRepositoryConfiguration().executeUpdate(query);
+		List<String> query = getDeleteStatement(request);
+		this.getFrameworkInstance().getExecutionServerRepositoryConfiguration().executeBatch(query);
 	}
 
-	public String getDeleteStatement(Request request) {
-		String sql = "";
-
-		sql += "DELETE FROM " + this.getFrameworkInstance().getExecutionServerRepositoryConfiguration()
-				.getTableNameByLabel("Requests");
-		sql += " WHERE REQUEST_ID = " + SQLTools.GetStringForSQL(request.getId());
-		sql += ";";
-		sql += "\n";
-		sql += "DELETE FROM " + this.getFrameworkInstance().getExecutionServerRepositoryConfiguration()
-				.getTableNameByLabel("RequestParameters");
-		sql += " WHERE REQUEST_ID = " + SQLTools.GetStringForSQL(request.getId());
-		sql += ";";
-		sql += "\n";
-
-		return sql;
+	public List<String> getDeleteStatement(Request request) {
+		List<String> queries = new ArrayList<>();
+		queries.add("DELETE FROM " + this.getFrameworkInstance().getExecutionServerRepositoryConfiguration()
+				.getTableNameByLabel("Requests") + " WHERE REQUEST_ID = "
+				+ SQLTools.GetStringForSQL(request.getId()) + ";");
+		queries.add("DELETE FROM " + this.getFrameworkInstance().getExecutionServerRepositoryConfiguration()
+				.getTableNameByLabel("RequestParameters") + " WHERE REQUEST_ID = " +
+				SQLTools.GetStringForSQL(request.getId()) + ";");
+		return queries;
 
 	}
 
@@ -141,23 +135,17 @@ public class RequestConfiguration {
 		// TODO: logging
 		// this.getFrameworkInstance().getFrameworkLog().log("Deleting all requests",
 		// Level.TRACE);
-		String query = getDeleteAllStatement();
-		this.getFrameworkInstance().getExecutionServerRepositoryConfiguration().executeUpdate(query);
+		List<String> query = getDeleteAllStatement();
+		this.getFrameworkInstance().getExecutionServerRepositoryConfiguration().executeBatch(query);
 	}
 
-	private String getDeleteAllStatement() {
-		String sql = "";
-
-		sql += "DELETE FROM " + this.getFrameworkInstance().getExecutionServerRepositoryConfiguration()
-				.getTableNameByLabel("Requests");
-		sql += ";";
-		sql += "\n";
-		sql += "DELETE FROM " + this.getFrameworkInstance().getExecutionServerRepositoryConfiguration()
-				.getTableNameByLabel("RequestParameters");
-		sql += ";";
-		sql += "\n";
-
-		return sql;
+	private List<String> getDeleteAllStatement() {
+		List<String> queries = new ArrayList<>();
+		queries.add("DELETE FROM " + this.getFrameworkInstance().getExecutionServerRepositoryConfiguration()
+				.getTableNameByLabel("Requests") + ";");
+		queries.add("DELETE FROM " + this.getFrameworkInstance().getExecutionServerRepositoryConfiguration()
+				.getTableNameByLabel("RequestParameters") + ";");
+		return queries;
 	}
 
 	public void insertRequest(Request request) throws RequestAlreadyExistsException {
@@ -168,55 +156,40 @@ public class RequestConfiguration {
 			throw new RequestAlreadyExistsException(
 					MessageFormat.format("Request {0} already exists", request.getId()));
 		}
-		String query = getInsertStatement(request);
-		this.getFrameworkInstance().getExecutionServerRepositoryConfiguration().executeUpdate(query);
+		List<String> query = getInsertStatement(request);
+		this.getFrameworkInstance().getExecutionServerRepositoryConfiguration().executeBatch(query);
 	}
 
-	public String getInsertStatement(Request request) {
-		String sql = "";
-		sql += "INSERT INTO " + this.getFrameworkInstance().getExecutionServerRepositoryConfiguration()
-				.getTableNameByLabel("Requests");
-		sql += " (request_id, parent_request_id, request_typ_nm, request_tms, request_nm, request_dsc, amount_nb, notif_email, scope_nm, context_nm, space_nm, user_nm, user_password, exe_id) ";
-		sql += "VALUES ";
-		sql += "(";
-		sql += SQLTools.GetStringForSQL(request.getId());
-		sql += ",";
-		sql += SQLTools.GetStringForSQL("0");
-		sql += ",";
-		sql += SQLTools.GetStringForSQL(request.getType());
-		sql += ",";
-		sql += SQLTools.GetStringForSQL(request.getTimestamp());
-		sql += ",";
-		sql += SQLTools.GetStringForSQL(request.getName());
-		sql += ",";
-		sql += SQLTools.GetStringForSQL(request.getDescription());
-		sql += ",";
-		sql += SQLTools.GetStringForSQL(request.getAmount());
-		sql += ",";
-		sql += SQLTools.GetStringForSQL(request.getEmail());
-		sql += ",";
-		sql += SQLTools.GetStringForSQL(request.getScope());
-		sql += ",";
-		sql += SQLTools.GetStringForSQL(request.getContext());
-		sql += ",";
-		sql += SQLTools.GetStringForSQL(request.getSpace());
-		sql += ",";
-		sql += SQLTools.GetStringForSQL(request.getUser());
-		sql += ",";
-		sql += SQLTools.GetStringForSQL(request.getPassword());
-		sql += ",";
-		sql += SQLTools.GetStringForSQL(-1);
-		sql += ")";
-		sql += ";";
+	public List<String> getInsertStatement(Request request) {
+		List<String> queries = new ArrayList<>();
+		
+		queries.add("INSERT INTO " + this.getFrameworkInstance().getExecutionServerRepositoryConfiguration()
+				.getTableNameByLabel("Requests") + 
+				"(request_id, parent_request_id, request_typ_nm, request_tms, request_nm, request_dsc, amount_nb, notif_email, scope_nm, context_nm, space_nm, user_nm, user_password, exe_id) VALUES (" + 
+				SQLTools.GetStringForSQL(request.getId()) + ","
+		+ SQLTools.GetStringForSQL("0") + ","
+		+ SQLTools.GetStringForSQL(request.getType()) + ","
+		+ SQLTools.GetStringForSQL(request.getTimestamp()) + ","
+		+ SQLTools.GetStringForSQL(request.getName()) + ","
+		+ SQLTools.GetStringForSQL(request.getDescription()) + ","
+		+ SQLTools.GetStringForSQL(request.getAmount()) + ","
+		+ SQLTools.GetStringForSQL(request.getEmail()) + ","
+		+ SQLTools.GetStringForSQL(request.getScope()) + ","
+		+ SQLTools.GetStringForSQL(request.getContext()) + ","
+		+ SQLTools.GetStringForSQL(request.getSpace()) + ","
+		+ SQLTools.GetStringForSQL(request.getUser()) + ","
+		+ SQLTools.GetStringForSQL(request.getPassword()) + ","
+		+ SQLTools.GetStringForSQL(-1) + ");");
 
 		// add Parameters
-		String sqlParameters = this.getParameterInsertStatements(request);
-		if (!sqlParameters.equalsIgnoreCase("")) {
-			sql += "\n";
-			sql += sqlParameters;
+
+		RequestParameterConfiguration requestParameterConfiguration = new RequestParameterConfiguration(
+				this.getFrameworkInstance());
+		for (RequestParameter requestParameter : request.getParameters()) {
+			queries.add(requestParameterConfiguration.getInsertStatement(request.getId(), requestParameter));
 		}
 
-		return sql;
+		return queries;
 	}
 
 	public void updateRequest(Request request) throws RequestDoesNotExistException {

@@ -142,30 +142,28 @@ public class ScenarioConfiguration {
         }
     }
 
-    public String getInsertStatement(String featureId, long featureVersionNumber, Scenario scenario) {
+    public List<String> getInsertStatement(String featureId, long featureVersionNumber, Scenario scenario) {
         ScenarioParameterConfiguration scenarioParameterConfiguration = new ScenarioParameterConfiguration(this.getFrameworkInstance());
-        StringBuilder sql = new StringBuilder();
-
-        sql.append("INSERT INTO ").append(this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository()
-                .getTableNameByLabel("Scenarios"));
-        sql.append(" (FEATURE_ID, FEATURE_VRS_NB, SCENARIO_ID, SCENARIO_NB, SCENARIO_TYP_NM, SCENARIO_NM, SCENARIO_DSC, SCENARIO_DEP, SCRIPT_NM, SCRIPT_VRS_NB, GAIN_VAL) VALUES (");
-        sql.append(SQLTools.GetStringForSQL(featureId)).append(",");
-        sql.append(SQLTools.GetStringForSQL(featureVersionNumber)).append(",");
-        sql.append(SQLTools.GetStringForSQL(scenario.getId())).append(",");
-        sql.append(SQLTools.GetStringForSQL(scenario.getNumber())).append(",");
-        sql.append(SQLTools.GetStringForSQL(scenario.getType())).append(",");
-        sql.append(SQLTools.GetStringForSQL(scenario.getName())).append(",");
-        sql.append(SQLTools.GetStringForSQL(scenario.getDescription())).append(",");
-        sql.append(SQLTools.GetStringForSQL(scenario.getDependencies())).append(",");
-        sql.append(SQLTools.GetStringForSQL(scenario.getScript())).append(",");
-        sql.append(SQLTools.GetStringForSQL(scenario.getVersion())).append(",");
-        sql.append(SQLTools.GetStringForSQL(scenario.getGain())).append(");");
+        List<String> queries = new ArrayList<>();
+        queries.add("INSERT INTO " + this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository()
+                .getTableNameByLabel("Scenarios") +
+                " (FEATURE_ID, FEATURE_VRS_NB, SCENARIO_ID, SCENARIO_NB, SCENARIO_TYP_NM, SCENARIO_NM, SCENARIO_DSC, SCENARIO_DEP, SCRIPT_NM, SCRIPT_VRS_NB, GAIN_VAL) VALUES (" +
+                SQLTools.GetStringForSQL(featureId) + "," +
+                SQLTools.GetStringForSQL(featureVersionNumber) + "," +
+                SQLTools.GetStringForSQL(scenario.getId()) + "," +
+                SQLTools.GetStringForSQL(scenario.getNumber()) + "," +
+                SQLTools.GetStringForSQL(scenario.getType()) + "," +
+                SQLTools.GetStringForSQL(scenario.getName()) + "," +
+                SQLTools.GetStringForSQL(scenario.getDescription()) + "," +
+                SQLTools.GetStringForSQL(scenario.getDependencies()) + "," +
+                SQLTools.GetStringForSQL(scenario.getScript()) + "," +
+                SQLTools.GetStringForSQL(scenario.getVersion()) + "," +
+                SQLTools.GetStringForSQL(scenario.getGain()) + ");");
 
         for (ScenarioParameter scenarioParameter : scenario.getParameters()) {
-            sql.append(scenarioParameterConfiguration.getInsertStatement(featureId, featureVersionNumber, scenario.getId(), scenarioParameter));
-            sql.append("\n");
+            queries.add(scenarioParameterConfiguration.getInsertStatement(featureId, featureVersionNumber, scenario.getId(), scenarioParameter));
         }
-        return sql.toString();
+        return queries;
     }
 
     // Getters and Setters

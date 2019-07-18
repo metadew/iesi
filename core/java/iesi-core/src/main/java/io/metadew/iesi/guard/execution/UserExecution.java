@@ -18,7 +18,6 @@ public class UserExecution {
 
     // Methods
     public void createUser() {
-
         User user = new User();
         user.setName(this.getInput("Enter username (name@domain.ext)"));
         user.setFirstName(this.getInput("Enter first name"));
@@ -41,9 +40,9 @@ public class UserExecution {
             user.setPasswordHash(Password.getSaltedHash("ok"));
             // user.setPasswordHash(Password.getSaltedHash(this.getPassword()));
 
-            UserConfiguration userConfiguration = new UserConfiguration(user, this.getFrameworkExecution().getFrameworkInstance());
+            UserConfiguration userConfiguration = new UserConfiguration(this.getFrameworkExecution().getFrameworkInstance());
             this.getFrameworkExecution().getMetadataControl().getControlMetadataRepository()
-                    .executeUpdate(userConfiguration.getInsertStatement());
+                    .executeBatch(userConfiguration.getInsertStatement(user));
 
             return user;
         } catch (Exception exception) {

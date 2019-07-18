@@ -67,7 +67,7 @@ public class DesignMetadataRepository extends MetadataRepository {
     }
 
     public void save(Script script, FrameworkExecution frameworkExecution) throws MetadataRepositorySaveException {
-        frameworkExecution.getFrameworkLog().log(MessageFormat.format("Saving script {0} into design repository", script.getName()), Level.INFO);
+        frameworkExecution.getFrameworkLog().log(MessageFormat.format("Saving script {0}-{1} into design repository", script.getName(), script.getVersion().getNumber()), Level.INFO);
         ScriptConfiguration scriptConfiguration = new ScriptConfiguration(frameworkExecution.getFrameworkInstance());
         try {
             scriptConfiguration.insertScript(script);
@@ -76,7 +76,7 @@ public class DesignMetadataRepository extends MetadataRepository {
             try {
                 scriptConfiguration.updateScript(script);
             } catch (ScriptDoesNotExistException ex) {
-                throw new MetadataRepositorySaveException();
+                throw new MetadataRepositorySaveException(ex);
 
             }
         }
@@ -92,7 +92,7 @@ public class DesignMetadataRepository extends MetadataRepository {
             try {
                 componentConfiguration.updateComponent(component);
             } catch (ComponentDoesNotExistException ex) {
-                throw new MetadataRepositorySaveException();
+                throw new MetadataRepositorySaveException(ex);
             }
         }
     }

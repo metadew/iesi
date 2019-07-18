@@ -27,8 +27,6 @@ public abstract class Configuration<T extends Metadata, V extends MetadataKey> {
     public abstract void delete(V metadataKey) throws MetadataDoesNotExistException, SQLException;
     public abstract void insert(T metadata) throws MetadataAlreadyExistsException, SQLException;
 
-    // TODO: investigate casting
-    @SuppressWarnings("unchecked")
 	public boolean exists(T metadata) throws SQLException {
         return get((V) metadata.getMetadataKey()).isPresent();
     }
@@ -37,7 +35,6 @@ public abstract class Configuration<T extends Metadata, V extends MetadataKey> {
         return get(key).isPresent();
     }
     
-    @SuppressWarnings("unchecked")
 	public void update(T metadata) throws SQLException, MetadataDoesNotExistException {
         try {
             delete((V) metadata.getMetadataKey());
@@ -46,6 +43,7 @@ public abstract class Configuration<T extends Metadata, V extends MetadataKey> {
             throw e;
 
         } catch (MetadataAlreadyExistsException e) {
+
         }
     }
 

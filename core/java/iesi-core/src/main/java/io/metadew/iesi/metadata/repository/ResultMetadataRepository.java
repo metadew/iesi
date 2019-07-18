@@ -42,17 +42,10 @@ public class ResultMetadataRepository extends MetadataRepository {
     public void save(DataObject dataObject, FrameworkExecution frameworkExecution) {
         ObjectMapper objectMapper = new ObjectMapper();
         if (dataObject.getType().equalsIgnoreCase("log")) {
-            Script script = objectMapper.convertValue(dataObject.getData(), Script.class);
-            ScriptConfiguration scriptConfiguration = new ScriptConfiguration(script,
-                    frameworkExecution.getFrameworkInstance());
-            executeUpdate(scriptConfiguration.getInsertStatement());
-        } else if (dataObject.getType().equalsIgnoreCase("component")) {
-            Component component = objectMapper.convertValue(dataObject.getData(), Component.class);
-            ComponentConfiguration componentConfiguration = new ComponentConfiguration(component,
-                    frameworkExecution.getFrameworkInstance());
-            executeUpdate(componentConfiguration.getInsertStatement());
-        } else if (dataObject.getType().equalsIgnoreCase("subroutine")) {
-            // TODO
+//            Script script = objectMapper.convertValue(dataObject.getData(), Script.class);
+//            ScriptConfiguration scriptConfiguration = new ScriptConfiguration(script,
+//                    frameworkExecution.getFrameworkInstance());
+//            executeUpdate(scriptConfiguration.getInsertStatement());
         } else {
             frameworkExecution.getFrameworkLog().log(MessageFormat.format("Result repository is not responsible for loading saving {0}", dataObject.getType()), Level.TRACE);
         }

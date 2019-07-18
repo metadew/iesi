@@ -114,28 +114,22 @@ public class ImpersonationConfiguration extends MetadataConfiguration{
                             impersonation.getName()));
 
         }
-        String query = getDeleteStatement(impersonation);
-        this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().executeUpdate(query);
+        List<String> query = getDeleteStatement(impersonation);
+        this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().executeBatch(query);
     }
 
     public void deleteAllImpersonations() {
         //TODO fix logging
     	//frameworkExecution.getFrameworkLog().log("Deleting all impersonations", Level.TRACE);
-        String query = getDeleteAllStatement();
-        this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().executeUpdate(query);
+        List<String> query = getDeleteAllStatement();
+        this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().executeBatch(query);
     }
 
-    private String getDeleteAllStatement() {
-        String sql = "";
-
-        sql += "DELETE FROM " + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("Impersonations");
-        sql += ";";
-        sql += "\n";
-        sql += "DELETE FROM " + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("ImpersonationParameters");
-        sql += ";";
-        sql += "\n";
-
-        return sql;
+    private List<String> getDeleteAllStatement() {
+        List<String> queries = new ArrayList<>();
+        queries.add("DELETE FROM " + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("Impersonations") + ";");
+        queries.add("DELETE FROM " + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("ImpersonationParameters") + ";");
+        return queries;
     }
 
     public void insertImpersonation(Impersonation impersonation) throws ImpersonationAlreadyExistsException {
@@ -144,8 +138,8 @@ public class ImpersonationConfiguration extends MetadataConfiguration{
         if (exists(impersonation)) {
             throw new ImpersonationAlreadyExistsException(MessageFormat.format("Impersonation {0} already exists", impersonation.getName()));
         }
-        String query = getInsertStatement(impersonation);
-        this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().executeUpdate(query);
+        List<String> query = getInsertStatement(impersonation);
+        this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().executeBatch(query);
     }
 
     public void updateImpersonation(Impersonation impersonation) throws ImpersonationDoesNotExistException {
@@ -166,44 +160,26 @@ public class ImpersonationConfiguration extends MetadataConfiguration{
         }
     }
 
-    public String getDeleteStatement(Impersonation impersonation) {
-        String sql = "";
-
-        sql += "DELETE FROM " + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("Impersonations");
-        sql += " WHERE IMP_NM = "
-                + SQLTools.GetStringForSQL(impersonation.getName());
-        sql += ";";
-        sql += "\n";
-        sql += "DELETE FROM " + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("ImpersonationParameters");
-        sql += " WHERE IMP_NM = "
-                + SQLTools.GetStringForSQL(impersonation.getName());
-        sql += ";";
-        sql += "\n";
-
-        return sql;
+    public List<String> getDeleteStatement(Impersonation impersonation) {
+        List<String> queries = new ArrayList<>();
+        queries.add("DELETE FROM " + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("Impersonations") +
+                " WHERE IMP_NM = " + SQLTools.GetStringForSQL(impersonation.getName()) + ";");
+        queries.add("DELETE FROM " + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("ImpersonationParameters") +
+                " WHERE IMP_NM = "
+                + SQLTools.GetStringForSQL(impersonation.getName()) + ";");
+        return queries;
     }
 
-    public String getInsertStatement(Impersonation impersonation) {
-        String sql = "";
-
-        sql += "INSERT INTO " + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("Impersonations");
-        sql += " (IMP_NM, IMP_DSC) ";
-        sql += "VALUES ";
-        sql += "(";
-        sql += SQLTools.GetStringForSQL(impersonation.getName());
-        sql += ",";
-        sql += SQLTools.GetStringForSQL(impersonation.getDescription());
-        sql += ")";
-        sql += ";";
-
-        // add Parameters
-        String sqlParameters = this.getParameterInsertStatements(impersonation);
-        if (!sqlParameters.equalsIgnoreCase("")) {
-            sql += "\n";
-            sql += sqlParameters;
+    public List<String> getInsertStatement(Impersonation impersonation) {
+        ImpersonationParameterConfiguration impersonationParameterConfiguration = new ImpersonationParameterConfiguration(frameworkInstance);
+        List<String> queries = new ArrayList<>();
+        queries.add("INSERT INTO " + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("Impersonations") +" (IMP_NM, IMP_DSC) VALUES (" +
+                SQLTools.GetStringForSQL(impersonation.getName()) + "," +
+                SQLTools.GetStringForSQL(impersonation.getDescription()) + ");");
+        for (ImpersonationParameter impersonationParameter : impersonation.getParameters()) {
+            queries.add(impersonationParameterConfiguration.getInsertStatement(impersonation.getName(), impersonationParameter));
         }
-
-        return sql;
+        return queries;
     }
 
     private String getParameterInsertStatements(Impersonation impersonation) {

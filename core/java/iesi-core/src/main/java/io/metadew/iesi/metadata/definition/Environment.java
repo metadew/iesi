@@ -1,12 +1,13 @@
 package io.metadew.iesi.metadata.definition;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Environment {
 
     private String name;
     private String description;
-    private List<EnvironmentParameter> parameters;
+    private List<EnvironmentParameter> parameters = new ArrayList<>();
 
     public Environment(String name, String description, List<EnvironmentParameter> parameters) {
         this.name = name;

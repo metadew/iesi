@@ -86,6 +86,9 @@ public abstract class Database {
 	public CachedRowSet executeQuery(String query) {
 		return this.databaseConnection.executeQuery(query);
 	}
+	public void executeBatch(List<String> queries) {
+		this.databaseConnection.executeBatch(queries);
+	}
 
 	public CachedRowSet executeQuery(String query, Connection connection) {
 		return this.databaseConnection.executeQuery(query, connection);

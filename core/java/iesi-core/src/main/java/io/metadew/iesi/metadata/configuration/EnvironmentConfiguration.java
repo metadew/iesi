@@ -110,46 +110,33 @@ public class EnvironmentConfiguration extends MetadataConfiguration{
                     MessageFormat.format("Environment {0} is not present in the repository so cannot be updated",
                             environment.getName()));
         }
-        String query = getDeleteStatement(environment);
-        this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().executeUpdate(query);
+        List<String> query = getDeleteStatement(environment);
+        this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().executeBatch(query);
     }
 
-    public String getDeleteStatement(Environment environment) {
-        String sql = "";
-
-        sql += "DELETE FROM " + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("Environments");
-        sql += " WHERE ENV_NM = "
-                + SQLTools.GetStringForSQL(environment.getName());
-        sql += ";";
-        sql += "\n";
-        sql += "DELETE FROM " + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("EnvironmentParameters");
-        sql += " WHERE ENV_NM = "
-                + SQLTools.GetStringForSQL(environment.getName());
-        sql += ";";
-        sql += "\n";
-
-        return sql;
-
+    public List<String> getDeleteStatement(Environment environment) {
+        List<String> queries = new ArrayList<>();
+        queries.add("DELETE FROM " + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("Environments") +
+                " WHERE ENV_NM = " +
+                SQLTools.GetStringForSQL(environment.getName()) + ";");
+        queries.add("DELETE FROM " + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("EnvironmentParameters") +
+                " WHERE ENV_NM = "
+                + SQLTools.GetStringForSQL(environment.getName()) + ";");
+        return queries;
     }
 
     public void deleteAllEnvironments() {
         //TODO fix logging
     	//frameworkExecution.getFrameworkLog().log("Deleting all environments", Level.TRACE);
-        String query = getDeleteAllStatement();
-        this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().executeUpdate(query);
+        List<String> query = getDeleteAllStatement();
+        this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().executeBatch(query);
     }
 
-    private String getDeleteAllStatement() {
-        String sql = "";
-
-        sql += "DELETE FROM " + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("Environments");
-        sql += ";";
-        sql += "\n";
-        sql += "DELETE FROM " + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("EnvironmentParameters");
-        sql += ";";
-        sql += "\n";
-
-        return sql;
+    private List<String> getDeleteAllStatement() {
+        List<String> queries = new ArrayList<>();
+        queries.add("DELETE FROM " + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("Environments") + ";");
+        queries.add("DELETE FROM " + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("EnvironmentParameters") + ";");
+        return queries;
     }
 
     public void insertEnvironment(Environment environment) throws EnvironmentAlreadyExistsException {
@@ -158,30 +145,23 @@ public class EnvironmentConfiguration extends MetadataConfiguration{
         if (exists(environment)) {
             throw new EnvironmentAlreadyExistsException(MessageFormat.format("Environment {0} already exists", environment.getName()));
         }
-        String query = getInsertStatement(environment);
-        this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().executeUpdate(query);
+        List<String> query = getInsertStatement(environment);
+        this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().executeBatch(query);
     }
 
-    public String getInsertStatement(Environment environment) {
-        String sql = "";
-        sql += "INSERT INTO " + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("Environments");
-        sql += " (ENV_NM, ENV_DSC) ";
-        sql += "VALUES ";
-        sql += "(";
-        sql += SQLTools.GetStringForSQL(environment.getName());
-        sql += ",";
-        sql += SQLTools.GetStringForSQL(environment.getDescription());
-        sql += ")";
-        sql += ";";
+    public List<String> getInsertStatement(Environment environment) {
+        EnvironmentParameterConfiguration environmentParameterConfiguration = new EnvironmentParameterConfiguration(frameworkInstance);
+        List<String> queries = new ArrayList<>();
+        queries.add("INSERT INTO " + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("Environments") +
+                " (ENV_NM, ENV_DSC) VALUES (" +
+                SQLTools.GetStringForSQL(environment.getName()) + "," +
+                SQLTools.GetStringForSQL(environment.getDescription())+ ");");
 
-        // add Parameters
-        String sqlParameters = this.getParameterInsertStatements(environment);
-        if (!sqlParameters.equalsIgnoreCase("")) {
-            sql += "\n";
-            sql += sqlParameters;
+
+        for(EnvironmentParameter environmentParameter : environment.getParameters()) {
+            queries.add(environmentParameterConfiguration.getInsertStatement(environment.getName(), environmentParameter));
         }
-
-        return sql;
+        return queries;
     }
 
     public void updateEnvironment(Environment environment) throws EnvironmentDoesNotExistException {

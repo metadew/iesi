@@ -7,6 +7,7 @@ import javax.sql.rowset.CachedRowSet;
 import javax.sql.rowset.RowSetProvider;
 import java.io.*;
 import java.sql.*;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -314,16 +315,18 @@ public abstract class DatabaseConnection {
                 System.out.println("Connection lost");
                 return;
             }
-            // Remove illegal characters at the end
 
-            try {
-                Statement statement = connection.createStatement();
+        try {
+            connection.setAutoCommit(false);
+            Statement statement = connection.createStatement();
                 for (String query : queries) {
                     query = this.removeIllgegalCharactersForSingleQuery(query);
                     statement.addBatch(query);
                 }
                 statement.executeBatch();
                 statement.close();
+                connection.commit();
+                connection.setAutoCommit(true);
             } catch (SQLException e) {
                 StringWriter StackTrace = new StringWriter();
                 e.printStackTrace(new PrintWriter(StackTrace));
@@ -332,6 +335,8 @@ public abstract class DatabaseConnection {
                 System.out.println(e.getSQLState());
                 System.out.println(e.getErrorCode());
                 throw new RuntimeException(e);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
             }
     }
 

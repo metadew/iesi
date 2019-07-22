@@ -1,6 +1,7 @@
 package io.metadew.iesi.metadata.definition;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 //import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -13,12 +14,24 @@ public class ScriptLog {
     private long version;
     private String environment;
     private String status;
-    private Timestamp start;
-    private Timestamp end;
+    private LocalDateTime start;
+    private LocalDateTime end;
 
     // Constructors
     public ScriptLog() {
 
+    }
+
+    public ScriptLog(String run, long process, long parent, String identifier, long version, String environment, String status, LocalDateTime start, LocalDateTime end) {
+        this.run = run;
+        this.process = process;
+        this.parent = parent;
+        this.identifier = identifier;
+        this.version = version;
+        this.environment = environment;
+        this.status = status;
+        this.start = start;
+        this.end = end;
     }
 
     // Getters and Setters
@@ -38,19 +51,19 @@ public class ScriptLog {
         this.status = status;
     }
 
-    public Timestamp getStart() {
+    public LocalDateTime getStart() {
         return start;
     }
 
-    public void setStart(Timestamp start) {
+    public void setStart(LocalDateTime start) {
         this.start = start;
     }
 
-    public Timestamp getEnd() {
+    public LocalDateTime getEnd() {
         return end;
     }
 
-    public void setEnd(Timestamp end) {
+    public void setEnd(LocalDateTime end) {
         this.end = end;
     }
 

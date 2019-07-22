@@ -38,9 +38,9 @@ public class RequestResultConfiguration extends Configuration<RequestResult, Req
 				cachedRowSet.getString("ORIGIN_NM"), cachedRowSet.getString("REQUEST_NM"),
 				cachedRowSet.getString("SCOPE_NM"), cachedRowSet.getString("CONTEXT_NM"),
 				cachedRowSet.getString("SPACE_NM"), cachedRowSet.getString("USER_NM"), cachedRowSet.getString("ST_NM"),
-				cachedRowSet.getObject("REQUEST_TMS") == null ? null : LocalDateTime.parse((CharSequence) cachedRowSet.getObject("REQUEST_TMS")),
-				cachedRowSet.getObject("STRT_TMS") == null ? null : LocalDateTime.parse((CharSequence) cachedRowSet.getObject("STRT_TMS")),
-				cachedRowSet.getObject("END_TMS") == null ? null : LocalDateTime.parse((CharSequence) cachedRowSet.getObject("END_TMS"))));
+				cachedRowSet.getObject("REQUEST_TMS") == null ? null : SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("REQUEST_TMS")),
+				cachedRowSet.getObject("STRT_TMS") == null ? null : SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("STRT_TMS")),
+				cachedRowSet.getObject("END_TMS") == null ? null : LocalDateTime.parse("END_TMS")));
 	}
 
 	@Override
@@ -50,14 +50,20 @@ public class RequestResultConfiguration extends Configuration<RequestResult, Req
 				+ getMetadataControl().getResultMetadataRepository().getTableNameByLabel("RequestResults") + ";";
 		CachedRowSet cachedRowSet = getMetadataControl().getResultMetadataRepository().executeQuery(query, "reader");
 		while (cachedRowSet.next()) {
-			requestResults.add(new RequestResult(new RequestResultKey(cachedRowSet.getString("REQUEST_ID")),
-					cachedRowSet.getString("PARENT_REQUEST_ID"), cachedRowSet.getString("RUN_ID"),
-					cachedRowSet.getString("ORIGIN_NM"), cachedRowSet.getString("REQUEST_NM"),
-					cachedRowSet.getString("SCOPE_NM"), cachedRowSet.getString("CONTEXT_NM"),
-					cachedRowSet.getString("SPACE_NM"), cachedRowSet.getString("USER_NM"),
-					cachedRowSet.getString("ST_NM"), cachedRowSet.getTimestamp("REQUEST_TMS").toLocalDateTime(),
-					cachedRowSet.getTimestamp("STRT_TMS").toLocalDateTime(),
-					cachedRowSet.getTimestamp("END_TMS").toLocalDateTime()));
+			requestResults.add(new RequestResult(new RequestResultKey(
+					cachedRowSet.getString("REQUEST_ID")),
+					cachedRowSet.getString("PARENT_REQUEST_ID"),
+					cachedRowSet.getString("RUN_ID"),
+					cachedRowSet.getString("ORIGIN_NM"),
+					cachedRowSet.getString("REQUEST_NM"),
+					cachedRowSet.getString("SCOPE_NM"),
+					cachedRowSet.getString("CONTEXT_NM"),
+					cachedRowSet.getString("SPACE_NM"),
+					cachedRowSet.getString("USER_NM"),
+					cachedRowSet.getString("ST_NM"),
+					SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("REQUEST_TMS")),
+					SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("STRT_TMS")),
+					SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("END_TMS"))));
 		}
 		return requestResults;
 	}
@@ -94,8 +100,8 @@ public class RequestResultConfiguration extends Configuration<RequestResult, Req
 				+ SQLTools.GetStringForSQL(requestResult.getUser()) + ", "
 				+ SQLTools.GetStringForSQL((requestResult.getRequestTimestamp() == null ? LocalDateTime.now() : requestResult.getRequestTimestamp())) + ", "
 				+ SQLTools.GetStringForSQL(requestResult.getStatus()) + ", "
-				+ SQLTools.GetStringForSQL((requestResult.getStartTimestamp() == null ? null : requestResult.getStartTimestamp())) + ", "
-				+ SQLTools.GetStringForSQL((requestResult.getEndTimestamp() == null ? null : requestResult.getEndTimestamp()))
+				+ SQLTools.GetStringForSQL(requestResult.getStartTimestamp() == null ? null : requestResult.getStartTimestamp()) + ", "
+				+ SQLTools.GetStringForSQL(requestResult.getEndTimestamp() == null ? null : requestResult.getEndTimestamp())
 				+ ");";
 		getMetadataControl().getResultMetadataRepository().executeUpdate(query);
 	}

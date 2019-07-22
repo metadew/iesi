@@ -1,6 +1,7 @@
 package io.metadew.iesi.launch.operation;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Optional;
 
 import org.apache.logging.log4j.Level;
@@ -25,7 +26,7 @@ import io.metadew.iesi.script.operation.YamlInputOperation;
 
 public final class ScriptLaunchOperation {
 
-	public static void execute(FrameworkInstance frameworkInstance, Request request, FrameworkRunIdentifier frameworkRunIdentifier) {
+	public static void execute(FrameworkInstance frameworkInstance, Request request, FrameworkRunIdentifier frameworkRunIdentifier) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
 		String actionSelect = "";
 		String environmentName = request.getContext();
 		String executionMode = "";

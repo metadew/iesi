@@ -1204,6 +1204,14 @@
       "encrypted" : "N",
       "subroutine" : "",
       "impersonate" : "N"
+    }, {
+      "name" : "expectedStatusCodes",
+      "description" : "expected status codes from response",
+      "type" : "string",
+      "mandatory" : "N",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
     } ],
     "status" : "stable"
   },

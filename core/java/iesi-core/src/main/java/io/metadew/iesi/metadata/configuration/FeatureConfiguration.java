@@ -217,7 +217,7 @@ public class FeatureConfiguration extends MetadataConfiguration {
         CachedRowSet crs = this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().executeQuery(countQuery, "reader");
 
         try {
-            if (crs.next() && Integer.parseInt(crs.getString("total_versions")) == 0) {
+            if (crs.next() && Integer.parseInt(crs.getString("total_versions")) == 1) {
                 queries.add("DELETE FROM " + this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("Features") +
                         " WHERE FEATURE_ID = " + SQLTools.GetStringForSQL(feature.getId()) + ";");
             }

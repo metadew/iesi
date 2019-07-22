@@ -14,6 +14,7 @@ import io.metadew.iesi.metadata.restore.RestoreExecution;
 import org.apache.commons.cli.*;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -331,9 +332,7 @@ public class MetadataLauncher {
                 System.out.println("No valid arguments have been provided, type -help for help.");
             }
 
-        } catch (
-
-                ParseException e) {
+        } catch (ParseException | ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
             endLauncher(1, true);
         }

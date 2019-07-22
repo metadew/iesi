@@ -4,6 +4,7 @@ import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.configuration.ActionPerformanceConfiguration;
 import io.metadew.iesi.metadata.configuration.type.ActionTypeConfiguration;
 import io.metadew.iesi.metadata.definition.Action;
+import io.metadew.iesi.metadata.definition.ConnectionParameter;
 import io.metadew.iesi.script.configuration.IterationInstance;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 import io.metadew.iesi.script.operation.ComponentAttributeOperation;
@@ -12,6 +13,7 @@ import org.apache.logging.log4j.Level;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.time.LocalDateTime;
@@ -87,14 +89,13 @@ public class ActionExecution {
 			this.getExecutionControl().logMessage(this, "action.type=" + this.getAction().getType(), Level.DEBUG);
 
 			Class classRef = Class.forName(className);
-			Object instance = classRef.newInstance();
 
-			Class initParams[] = { FrameworkExecution.class, ExecutionControl.class, ScriptExecution.class,
-					ActionExecution.class };
-			Method init = classRef.getDeclaredMethod("init", initParams);
+			Class[] initParams = {FrameworkExecution.class, ExecutionControl.class, ScriptExecution.class,
+					ActionExecution.class};
+			Constructor constructor = classRef.getConstructor(initParams);
 			Object[] initArgs = { this.getFrameworkExecution(), this.getExecutionControl(), this.getScriptExecution(),
 					this };
-			init.invoke(instance, initArgs);
+			Object instance = constructor.newInstance(initArgs);
 
 			Method prepare = classRef.getDeclaredMethod("prepare");
 			prepare.invoke(instance);
@@ -134,8 +135,7 @@ public class ActionExecution {
 
 				// Store runtime parameters for next action usage
 				// A clone is needed since the iterator through the hashmap will remove the current item to avoid a ConcurrentModificationException
-				HashMap<String, ActionParameterOperation> actionParameterOperationMapClone = null;
-				actionParameterOperationMapClone = (HashMap<String, ActionParameterOperation>) actionParameterOperationMap.clone();
+				HashMap<String, ActionParameterOperation> actionParameterOperationMapClone = (HashMap<String, ActionParameterOperation>) actionParameterOperationMap.clone();
 				this.getActionControl().getActionRuntime().setRuntimeParameters(actionParameterOperationMapClone);
 
 				// Store actionTypeExecution

@@ -1,7 +1,7 @@
 ---
 type: "script"
 data:
-  name: "sql.evaluateResult.1"
+  name: "sql.evaluateResult.5"
   description: "test sql.evaluateResult when data is expected"
   parameters: []
   actions:

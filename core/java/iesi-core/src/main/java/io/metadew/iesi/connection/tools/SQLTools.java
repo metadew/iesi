@@ -6,6 +6,8 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 public final class SQLTools {
 
@@ -195,4 +197,7 @@ public final class SQLTools {
         return sql;
     }
 
+    public static LocalDateTime getLocalDatetimeFromSql(String localDateTime) {
+        return LocalDateTime.parse(localDateTime, DateTimeFormatter.ofPattern("yyyy-MM-dd[ ]['T']HH:mm:ss[.SSS][.SSSSSS][.SSSSSSSSS]"));
+    }
 }

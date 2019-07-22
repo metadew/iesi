@@ -7,6 +7,7 @@ import io.metadew.iesi.metadata.configuration.exception.ScriptAlreadyExistsExcep
 import io.metadew.iesi.metadata.configuration.exception.ScriptDoesNotExistException;
 import io.metadew.iesi.metadata.definition.*;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
+import org.apache.xerces.util.SynchronizedSymbolTable;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
@@ -189,7 +190,6 @@ public class ScriptConfiguration extends MetadataConfiguration {
         for (Action action : script.getActions()) {
             queries.addAll(actionConfiguration.getInsertStatement(script.getId(), script.getVersion().getNumber(), action));
         }
-
         return queries;
     }
 
@@ -206,9 +206,13 @@ public class ScriptConfiguration extends MetadataConfiguration {
         // delete actions
         for (Action action : script.getActions()) {
             queries.add("DELETE FROM " + this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Actions") +
-                    " WHERE ACTION_ID = " + SQLTools.GetStringForSQL(action.getId()) + ";");
+                    " WHERE SCRIPT_ID = " + SQLTools.GetStringForSQL(script.getId()) +
+                    " AND SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(script.getVersion().getNumber()) +
+                    " AND ACTION_ID = " + SQLTools.GetStringForSQL(action.getId()) + ";");
             queries.add("DELETE FROM " + this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ActionParameters") +
-                    " WHERE ACTION_ID = " + SQLTools.GetStringForSQL(action.getId()) + ";");
+                    " WHERE SCRIPT_ID = " + SQLTools.GetStringForSQL(script.getId()) +
+                    " AND SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(script.getVersion().getNumber()) +
+                    " AND ACTION_ID = " + SQLTools.GetStringForSQL(action.getId()) + ";");
         }
 
         // delete script info if last version
@@ -218,7 +222,7 @@ public class ScriptConfiguration extends MetadataConfiguration {
         CachedRowSet crs = this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().executeQuery(countQuery, "reader");
 
         try {
-            if (crs.next() && Integer.parseInt(crs.getString("total_versions")) == 0) {
+            if (crs.next() && Integer.parseInt(crs.getString("total_versions")) == 1) {
                 queries.add("DELETE FROM " + this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Scripts") +
                         " WHERE SCRIPT_ID = " + SQLTools.GetStringForSQL(script.getId()) + ";");
             }
@@ -417,7 +421,7 @@ public class ScriptConfiguration extends MetadataConfiguration {
                 this.getFrameworkInstance());
         try {
             if (crsScript.size() == 0) {
-                throw new RuntimeException("script.error.notfound");
+                return Optional.empty();
             } else if (crsScript.size() > 1) {
                 // frameworkExecution.getFrameworkLog().log(MessageFormat.format("Found multiple implementations for script {0}-{1}. Returning first implementation", scriptName, versionNumber), Level.DEBUG);
             }
@@ -469,6 +473,8 @@ public class ScriptConfiguration extends MetadataConfiguration {
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
+
+            System.out.println(StackTrace.toString());
             //TODO fix logging
             //this.frameworkExecution.getFrameworkLog().log("exception=" + e, Level.INFO);
             //this.frameworkExecution.getFrameworkLog().log("exception.stacktrace=" + StackTrace, Level.DEBUG);

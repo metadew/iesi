@@ -9,6 +9,7 @@ import io.metadew.iesi.script.operation.ActionSelectOperation;
 import io.metadew.iesi.script.operation.RouteOperation;
 import org.apache.logging.log4j.Level;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -56,7 +57,8 @@ public class ScriptExecution {
 	}
 
 	// Methods
-	public boolean initializeAsRootScript(String envName) {
+	public boolean initializeAsRootScript(String envName) throws ClassNotFoundException, NoSuchMethodException,
+			InstantiationException, IllegalAccessException, InvocationTargetException {
 		this.setExecutionControl(new ExecutionControl(this.getFrameworkExecution()));
 		this.getExecutionControl().setEnvName(envName);
 		this.setParentScriptExecution(this.getRootScriptExecution());
@@ -147,6 +149,7 @@ public class ScriptExecution {
 			if (this.isRootScript()) {
 				if (!this.getActionSelectOperation().getExecutionStatus(action)) {
 					// skip execution
+					System.out.println("Skipping " + action.getName());
 					execute = false;
 				} else {
 					execute = true;
@@ -345,7 +348,10 @@ public class ScriptExecution {
 				if (this.isExitOnCompletion()) {
 					this.getExecutionControl().endExecution();
 				}
-			}
+			} else {
+                // TODO: Review
+                executionControl.setActionErrorStop(false);
+            }
 		}
 
 	}

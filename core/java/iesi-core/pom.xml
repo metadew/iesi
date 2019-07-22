@@ -7,6 +7,50 @@
 	<groupId>io.metadew</groupId>
 	<artifactId>iesi-core</artifactId>
 	<version>0.1.0-SNAPSHOT</version>
+	<name>io.metadew:iesi-core</name>
+	<description>IESI Core artifact</description>
+	<url>https://metadew.github.io/metadew/</url>
+
+	<licenses>
+		<license>
+			<name>MIT License</name>
+			<url>https://github.com/metadew/iesi/blob/master/LICENSE</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<scm>
+		<connection>scm:git:git://github.com/metadew/iesi.git</connection>
+		<developerConnection>scm:git:ssh://github.com/metadew/iesi.git</developerConnection>
+		<url>https://github.com/metadew/iesi</url>
+		<tag>HEAD</tag>
+	</scm>
+
+	<developers>
+		<developer>
+			<name>Robbe Berrevoets</name>
+			<email>6872974+BerrevoetsRobbe@users.noreply.github.com</email>
+			<organization>Accenture</organization>
+			<organizationUrl>http://metadew.io</organizationUrl>
+		</developer>
+		<developer>
+			<name>Peter Billen</name>
+			<email></email>
+			<organization>Accenture</organization>
+			<organizationUrl>http://metadew.io</organizationUrl>
+		</developer>
+	</developers>
+
+	<distributionManagement>
+		<snapshotRepository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+		<repository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+		</repository>
+	</distributionManagement>
 
 	<properties>
 		<maven.compiler.target>1.8</maven.compiler.target>
@@ -197,6 +241,32 @@
 
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>3.1.0</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>3.1.1</version>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 
 			<!-- Maven Assembly Plugin -->
 			<plugin>

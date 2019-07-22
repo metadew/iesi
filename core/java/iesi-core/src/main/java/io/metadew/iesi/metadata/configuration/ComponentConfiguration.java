@@ -250,7 +250,7 @@ public class ComponentConfiguration extends MetadataConfiguration {
         CachedRowSet crs = this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().executeQuery(countQuery, "reader");
 
         try {
-            if (crs.next() && Integer.parseInt(crs.getString("total_versions")) == 0) {
+            if (crs.next() && Integer.parseInt(crs.getString("total_versions")) == 1) {
                 String deleteComponentQuery = "DELETE FROM " + this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Components") +
                         " WHERE COMP_ID = " + SQLTools.GetStringForSQL(component.getName()) + ";";
                 queries.add(deleteComponentQuery);

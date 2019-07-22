@@ -73,7 +73,7 @@ public class OracleDatabaseConnection extends DatabaseConnection {
             connection.createStatement().execute("alter session set current_schema=" + schema.get());
             // connection.setSchema(schema.get());
         }
-        connection.createStatement().execute("alter session set nls_timestamp_format='YYYY-MM-DD\"T\"HH24:MI:SS:FF'");
+        connection.createStatement().execute("alter session set nls_timestamp_format='YYYY-MM-DD\"T\" HH24:MI:SS:FF'");
         return connection;
     }
 }

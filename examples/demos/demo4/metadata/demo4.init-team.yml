@@ -1,0 +1,49 @@
+---
+type: "script"
+data:
+  name: "demo4.init-team"
+  description: "Prepare demo4 for a team"
+  parameters: []
+  actions:
+  - number: 1
+    type: "fwk.executeScript"
+    name: "InitFotg"
+    description: "Init fotg"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "script"
+      value : "demo4.init-fotg"
+    - name: "environment"
+      value : "{{$run.environment}}"
+  - number: 2
+    type: "fwk.executeScript"
+    name: "InitSources"
+    description: "Init sources"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "script"
+      value : "demo4.init-sources"
+    - name: "environment"
+      value : "{{$run.environment}}"
+  - number: 3
+    type: "fwk.executeScript"
+    name: "InitStaging"
+    description: "Init staging"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "script"
+      value : "demo4.init-staging"
+    - name: "environment"
+      value : "{{$run.environment}}"

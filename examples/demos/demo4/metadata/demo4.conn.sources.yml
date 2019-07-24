@@ -1,0 +1,20 @@
+---
+type: Connection
+data:
+  name: "demo4.sources"
+  type: "host.linux"
+  description: "demo4.sources connection"
+  environment: "iesi-demo4"
+  parameters:
+  - name: "host"
+    value: "localhost"
+  - name: "port"
+    value: "2222"
+  - name: "user"
+    value: "root"
+  - name: "password"
+    value: "ENC(Q6yhy0uQueJxwS7iZ8rDb6tSRnU5qiw=)"
+  - name: "tempPath"
+    value: "/tmp"
+  - name: "simulateTerminal"
+    value: "N"

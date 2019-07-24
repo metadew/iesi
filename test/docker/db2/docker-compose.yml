@@ -6,10 +6,10 @@ services:
       - '50000:50000'
     environment:
       - "LICENSE=accept"
-      - "DB2INST1_PASSWORD=password"
-      - "DBNAME=testdb"
+      - "DB2INST1_PASSWORD=iesi"
+      - "DBNAME=iesi"
     volumes:
-     - ./database:/database
+     - ./database/iesi:/database
     privileged: true
     container_name: mydb2
     hostname: mydb2

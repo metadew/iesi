@@ -1,0 +1,62 @@
+[{
+	"type": "MetadataTable",
+	"data": {
+		"name": "CUSTOMERS",
+		"label": "Customers",
+		"description": "Customers",
+		"type": "NA",
+		"category": "NA",
+		"migrate": "N",
+		"migrationKey": "NA",
+		"fields": [
+			{"name": "ID","description": "ID","order": "1","type": "number","length": "0","nullable": "N","defaultTimestamp": ""},
+			{"name": "DateJoined","description": "DateJoined","order": "2","type": "timestamp","length": "0","nullable": "Y","defaultTimestamp": ""},
+			{"name": "BirthDate","description": "BirthDate","order": "3","type": "timestamp","length": "0","nullable": "Y","defaultTimestamp": ""},
+			{"name": "FirstName","description": "FirstName","order": "4","type": "string","length": "255","nullable": "Y","defaultTimestamp": ""},
+			{"name": "LastName","description": "LastName","order": "5","type": "string","length": "255","nullable": "Y","defaultTimestamp": ""},
+			{"name": "Phone","description": "Phone","order": "6","type": "string","length": "255","nullable": "Y","defaultTimestamp": ""},
+			{"name": "Street","description": "Street","order": "7","type": "string","length": "255","nullable": "Y","defaultTimestamp": ""},
+			{"name": "City","description": "City","order": "8","type": "string","length": "255","nullable": "Y","defaultTimestamp": ""},
+			{"name": "Country","description": "Country","order": "9","type": "string","length": "255","nullable": "Y","defaultTimestamp": ""},
+			{"name": "Gender","description": "Gender","order": "10","type": "string","length": "255","nullable": "Y","defaultTimestamp": ""},
+			{"name": "Email","description": "Email","order": "11","type": "string","length": "255","nullable": "Y","defaultTimestamp": ""}
+	]
+}},
+{
+	"type": "MetadataTable",
+	"data": {
+		"name": "RESTAURANTS",
+		"label": "Restaurants",
+		"description": "Restaurants",
+		"type": "NA",
+		"category": "NA",
+		"migrate": "N",
+		"migrationKey": "NA",
+		"fields": [
+			{"name": "ID","description": "ID","order": "1","type": "number","length": "0","nullable": "N","defaultTimestamp": ""},
+			{"name": "DateJoined","description": "DateJoined","order": "2","type": "timestamp","length": "0","nullable": "Y","defaultTimestamp": ""},
+			{"name": "Name","description": "Name","order": "3","type": "string","length": "255","nullable": "Y","defaultTimestamp": ""},
+			{"name": "Street","description": "Street","order": "4","type": "string","length": "255","nullable": "Y","defaultTimestamp": ""},
+			{"name": "City","description": "City","order": "5","type": "string","length": "255","nullable": "Y","defaultTimestamp": ""},
+			{"name": "Country","description": "Country","order": "6","type": "string","length": "255","nullable": "Y","defaultTimestamp": ""},
+			{"name": "Email","description": "Email","order": "7","type": "string","length": "255","nullable": "Y","defaultTimestamp": ""}
+	]
+}},
+{
+	"type": "MetadataTable",
+	"data": {
+		"name": "ORDERS",
+		"label": "Orders",
+		"description": "Orders",
+		"type": "NA",
+		"category": "NA",
+		"migrate": "N",
+		"migrationKey": "NA",
+		"fields": [
+			{"name": "ID","description": "ID","order": "1","type": "number","length": "0","nullable": "N","defaultTimestamp": ""},
+			{"name": "CustomerID","description": "CustomerID","order": "2","type": "number","length": "0","nullable": "N","defaultTimestamp": ""},
+			{"name": "RestaurantID","description": "RestaurantID","order": "3","type": "number","length": "0","nullable": "N","defaultTimestamp": ""},
+			{"name": "OrderDate","description": "OrderDate","order": "4","type": "timestamp","length": "0","nullable": "Y","defaultTimestamp": ""},
+			{"name": "Price","description": "Price","order": "5","type": "number","length": "0","nullable": "Y","defaultTimestamp": ""}
+	]
+}}]

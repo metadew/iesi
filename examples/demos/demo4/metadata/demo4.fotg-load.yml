@@ -1,0 +1,49 @@
+---
+type: "script"
+data:
+  name: "demo4.fotg-load"
+  description: "Load data to database"
+  parameters: []
+  actions:
+  - number: 1
+    type: "sql.executeStatement"
+    name: "LoadCustomerData"
+    description: "Load customer data"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "statement"
+      value : "{{=file(#iesi.home#/data/demo4/staging/noschema/customers20190705.dml)}}"
+    - name: "connection"
+      value : "demo4.fotg-sqlite"
+  - number: 2
+    type: "sql.executeStatement"
+    name: "LoadRestaurantData"
+    description: "Load restaurant data"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "statement"
+      value : "{{=file(#iesi.home#/data/demo4/staging/noschema/restaurants20190705.dml)}}"
+    - name: "connection"
+      value : "demo4.fotg-sqlite"
+  - number: 3
+    type: "sql.executeStatement"
+    name: "LoadOrderData"
+    description: "Load order data"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "statement"
+      value : "{{=file(#iesi.home#/data/demo4/staging/noschema/orders20190705.dml)}}"
+    - name: "connection"
+      value : "demo4.fotg-sqlite"

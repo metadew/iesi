@@ -1,0 +1,55 @@
+---
+type: "script"
+data:
+  name: "demo4.fotg-verify-devportal-segment1"
+  description: "Verify all customers on the devportal"
+  parameters: []
+  actions:
+  - number: 1
+    type: "sql.setIterationVariables"
+    name: "GetCustomerList"
+    description: "Retrieve list of customers to check"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "list"
+      value : "customerList"
+    - name: "query"
+      value : "select * from customers where City = 'New York' and Gender = 'Female' and DateJoined > '2019-06-30'"
+    - name: "connection"
+      value : "demo4.fotg-sqlite"
+  - number: 2
+    type: "fwk.setIteration"
+    name: "DefineCustomerIteration"
+    description: "Define customer iteration"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "name"
+      value : "customerIteration"
+    - name: "type"
+      value : "list"
+    - name: "list"
+      value : "customerList"
+  - number: 3
+    type: "fwk.executeScript"
+    name: "VerifyCustomerEmail"
+    description: "Verify customer email"
+    component: ""
+    condition: ""
+    iteration: "customerIteration"
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "script"
+      value : "demo4.fotg-verify-devportal-4"
+    - name: "paramList"
+      value : "FirstName=[#iteration.FirstName#],LastName=[#iteration.LastName#]"
+    - name: "environment"
+      value : "{{$run.environment}}"

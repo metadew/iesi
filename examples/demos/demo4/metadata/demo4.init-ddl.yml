@@ -1,0 +1,28 @@
+---
+type: "script"
+data:
+  name: "demo4.init-ddl"
+  description: "Prepare data for a team"
+  parameters: []
+  actions:
+  - number: 1
+    type: "ddl.generateFromFile"
+    name: "Action1"
+    description: "create table ddls"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "inputPath"
+      value : "c:/Data/FotgTables.json"
+    - name: "inputFile"
+      value : "c:/Data/FotgTables.json"
+    - name: "outputPath"
+      value : "c:/Data/FotgTables.json"
+    - name: "outputFile"
+      value : "c:/Data/FotgTables.ddl"
+    - name: "type"
+      value : "na"
+      

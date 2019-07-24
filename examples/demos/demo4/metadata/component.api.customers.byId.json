@@ -1,0 +1,23 @@
+[{
+	"type": "Component",
+	"data": {
+		"name": "api.customers.byId",
+		"type": "http.request",
+		"description": "API Customers Call",
+		"version": {
+			"number": "1",
+			"description": "Initial Version"
+		},
+		"parameters": [
+			{
+			"name": "url",
+			"value": "http://localhost:3210/customers/#ID#"
+			},
+			{
+			"name": "header.1",
+			"value": "\"Accept\",\"application/json\""
+			}
+		],
+		"attributes": [
+		]}
+}]

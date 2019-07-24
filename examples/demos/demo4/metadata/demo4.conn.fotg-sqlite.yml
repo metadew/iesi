@@ -1,0 +1,12 @@
+---
+type: Connection
+data:
+  name: "demo4.fotg-sqlite"
+  type: "db.sqlite"
+  description: "fotg sqlite connection"
+  environment: "iesi-demo4"
+  parameters:
+  - name: "filePath"
+    value: "#iesi.home#/data/demo4/fotg-sqlite"
+  - name: "fileName"
+    value: "fotg.db3"

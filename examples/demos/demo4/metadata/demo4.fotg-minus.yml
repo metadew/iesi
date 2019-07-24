@@ -1,0 +1,39 @@
+---
+type: "script"
+data:
+  name: "demo4.fotg-minus"
+  description: "Verify database load"
+  parameters: []
+  actions:
+  - number: 1
+    type: "sql.evaluateResult"
+    name: "EvaluateTooMany"
+    description: "Evaluate if too many records were loaded"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "query"
+      value : "select * from #table# except select * from #table#_exp"
+    - name: "hasResult"
+      value : "N"
+    - name: "connection"
+      value : "demo4.fotg-sqlite"
+  - number: 2
+    type: "sql.evaluateResult"
+    name: "EvaluateNotEnough"
+    description: "Evaluate if not enough records were loaded"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "query"
+      value : "select * from #table#_exp except select * from #table#"
+    - name: "hasResult"
+      value : "N"
+    - name: "connection"
+      value : "demo4.fotg-sqlite"

@@ -1,0 +1,1 @@
+select * from customers except select * from customers_exp union all select * from customers_exp except select * from customers

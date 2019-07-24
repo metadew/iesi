@@ -1,0 +1,35 @@
+---
+type: "script"
+data:
+  name: "demo4.fotg-reload-customers"
+  description: "Reload data to database"
+  parameters: []
+  actions:
+  - number: 1
+    type: "sql.executeStatement"
+    name: "CleanCustomerData"
+    description: "Clean customer data"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "statement"
+      value : "delete from customers"
+    - name: "connection"
+      value : "demo4.fotg-sqlite"
+  - number: 2
+    type: "sql.executeStatement"
+    name: "LoadCustomerData"
+    description: "Load customer data"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "statement"
+      value : "{{=file(#iesi.home#/data/demo4/staging/noschema/customers20190705.dml)}}"
+    - name: "connection"
+      value : "demo4.fotg-sqlite"

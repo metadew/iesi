@@ -1,12 +1,13 @@
 package io.metadew.iesi.metadata.definition;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Impersonation {
 
     private String name;
     private String description;
-    private List<ImpersonationParameter> parameters;
+    private List<ImpersonationParameter> parameters = new ArrayList<>();
 
     //Constructors
     public Impersonation() {

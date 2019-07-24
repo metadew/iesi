@@ -2,6 +2,8 @@ package io.metadew.iesi.metadata.repository;
 
 import java.text.MessageFormat;
 
+import io.metadew.iesi.metadata.configuration.exception.FeatureAlreadyExistsException;
+import io.metadew.iesi.metadata.configuration.exception.FeatureDoesNotExistException;
 import org.apache.logging.log4j.Level;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -39,7 +41,7 @@ public class CatalogMetadataRepository extends MetadataRepository {
     }
 
     @Override
-    public void save(DataObject dataObject, FrameworkExecution frameworkExecution) {
+    public void save(DataObject dataObject, FrameworkExecution frameworkExecution) throws MetadataRepositorySaveException {
         // TODO: based on MetadataRepository object decide to insert or not insert the objects
         // TODO: insert should be handled on database level as insert can differ from database type/dialect? JDBC Dialect/Spring
         ObjectMapper objectMapper = new ObjectMapper();
@@ -51,10 +53,17 @@ public class CatalogMetadataRepository extends MetadataRepository {
         }
     }
 
-    public void save(Feature feature, FrameworkExecution frameworkExecution) {
-        FeatureConfiguration featureConfiguration = new FeatureConfiguration(feature,
-                frameworkExecution.getFrameworkInstance());
-        executeUpdate(featureConfiguration.getInsertStatement());
+    public void save(Feature feature, FrameworkExecution frameworkExecution) throws MetadataRepositorySaveException {
+        FeatureConfiguration featureConfiguration = new FeatureConfiguration(frameworkExecution.getFrameworkInstance());
+        try {
+            featureConfiguration.insertFeature(feature);
+        } catch (FeatureAlreadyExistsException e) {
+            try {
+                featureConfiguration.updateFeature(feature);
+            } catch (FeatureDoesNotExistException ex) {
+                throw new MetadataRepositorySaveException(ex);
+            }
+        }
     }
 
 }

@@ -158,6 +158,7 @@ public class FwkExecuteScript {
             parameterFileName.ifPresent(scriptExecution::setParamFile);
             // TODO: do it nicer
             parameterList.ifPresent(scriptExecution::setParamList);
+
             scriptExecution.execute();
 
             if (scriptExecution.getResult().equalsIgnoreCase(FrameworkStatus.SUCCESS.value())) {

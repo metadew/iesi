@@ -1,5 +1,6 @@
 package io.metadew.iesi.metadata.definition;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Connection {
@@ -8,7 +9,7 @@ public class Connection {
     private String type;
     private String description;
     private String environment;
-    private List<ConnectionParameter> parameters;
+    private List<ConnectionParameter> parameters = new ArrayList<>();
 
     // Constructors
     public Connection() {

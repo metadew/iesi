@@ -106,13 +106,13 @@ public class AssemblyExecution {
 			//
 			// Licenses
 			licensesReportSource = repositoryHome + File.separator + "core" + File.separator + "java" + File.separator
-					+ "iesi-rest" + File.separator + "target" + File.separator + "site";
+					+ "iesi-rest-without-microservices" + File.separator + "target" + File.separator + "site";
 			licensesReportTarget = versionHome + File.separator + "licenses" + File.separator + "rest";
 			FolderTools.copyFromFolderToFolder(licensesReportSource, licensesReportTarget, true);
 
 			// Dependencies
 			mavenDependenciesSource = repositoryHome + File.separator + "core" + File.separator + "java"
-					+ File.separator + "iesi-rest" + File.separator + "target" + File.separator + "dependencies";
+					+ File.separator + "iesi-rest-without-microservices" + File.separator + "target" + File.separator + "dependencies";
 			FolderTools.copyFromFolderToFolder(mavenDependenciesSource, mavenDependenciesTarget, true);
 
 			//

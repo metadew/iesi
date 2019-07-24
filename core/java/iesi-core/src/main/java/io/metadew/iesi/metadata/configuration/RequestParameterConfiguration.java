@@ -25,24 +25,13 @@ public class RequestParameterConfiguration {
     }
 
     public String getInsertStatement(String requestId, RequestParameter requestParameter) {
-        String sql = "";
-
-        sql += "INSERT INTO " + this.getFrameworkInstance().getExecutionServerRepositoryConfiguration()
-                .getTableNameByLabel("RequestParameters");
-        sql += " (REQUEST_ID, REQUEST_PAR_TYP_NM, REQUEST_PAR_NM, REQUEST_PAR_VAL) ";
-        sql += "VALUES ";
-        sql += "(";
-        sql += SQLTools.GetStringForSQL(requestId);
-        sql += ",";
-        sql += SQLTools.GetStringForSQL(requestParameter.getType());
-        sql += ",";
-        sql += SQLTools.GetStringForSQL(requestParameter.getName());
-        sql += ",";
-        sql += SQLTools.GetStringForSQL(requestParameter.getValue());
-        sql += ")";
-        sql += ";";
-
-        return sql;
+        return "INSERT INTO " + this.getFrameworkInstance().getExecutionServerRepositoryConfiguration()
+                .getTableNameByLabel("RequestParameters")
+                + " (REQUEST_ID, REQUEST_PAR_TYP_NM, REQUEST_PAR_NM, REQUEST_PAR_VAL) VALUES ("
+                + SQLTools.GetStringForSQL(requestId) + ","
+                + SQLTools.GetStringForSQL(requestParameter.getType()) + ","
+                + SQLTools.GetStringForSQL(requestParameter.getName()) + ","
+                + SQLTools.GetStringForSQL(requestParameter.getValue()) + ");";
     }
 
 

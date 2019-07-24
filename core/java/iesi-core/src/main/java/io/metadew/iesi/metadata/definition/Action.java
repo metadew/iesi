@@ -2,6 +2,7 @@ package io.metadew.iesi.metadata.definition;
 
 import io.metadew.iesi.metadata.tools.IdentifierTools;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Action {
@@ -17,7 +18,7 @@ public class Action {
     private String errorExpected;
     private String errorStop;
     private String retries;
-    private List<ActionParameter> parameters;
+    private List<ActionParameter> parameters = new ArrayList<>();
 
     //Constructors
     public Action() {

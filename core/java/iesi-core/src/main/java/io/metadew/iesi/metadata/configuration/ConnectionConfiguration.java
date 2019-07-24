@@ -187,20 +187,18 @@ public class ConnectionConfiguration extends MetadataConfiguration {
                             connection.getName(), connection.getEnvironment()));
 
         }
-        String deleteQuery = getDeleteQuery(connection);
-        this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().executeUpdate(deleteQuery);
+        List<String> deleteQuery = getDeleteQuery(connection);
+        this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().executeBatch(deleteQuery);
     }
 
-    public String getDeleteQuery(Connection connection) {
-        String deleteQuery = "";
+    public List<String> getDeleteQuery(Connection connection) {
+        List<String> queries = new ArrayList<>();
 
-        deleteQuery += "DELETE FROM " + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("ConnectionParameters");
-        deleteQuery += " WHERE CONN_NM = "
+        queries.add("DELETE FROM " + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("ConnectionParameters") +
+                " WHERE CONN_NM = "
                 + SQLTools.GetStringForSQL(connection.getName())
                 + "AND ENV_NM = "
-                + SQLTools.GetStringForSQL(connection.getEnvironment());
-        deleteQuery += ";";
-        deleteQuery += "\n";
+                + SQLTools.GetStringForSQL(connection.getEnvironment()) + ";");
 
         // If this was the last remaining connection with name CONN_NM, remove entirely from connections
         String countQuery = "SELECT COUNT(DISTINCT ENV_NM ) AS total_environments FROM "
@@ -211,17 +209,14 @@ public class ConnectionConfiguration extends MetadataConfiguration {
 
         try {
             if (crs.next() && Integer.parseInt(crs.getString("total_environments")) == 0) {
-                deleteQuery += "DELETE FROM " + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("Connections");
-                deleteQuery += " WHERE CONN_NM = "
-                        + SQLTools.GetStringForSQL(connection.getName());
-                deleteQuery += ";";
-                deleteQuery += "\n";
+                queries.add("DELETE FROM " + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("Connections") +
+                        " WHERE CONN_NM = " + SQLTools.GetStringForSQL(connection.getName())+ ";");
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return deleteQuery;
+        return queries;
     }
 
     public void deleteConnectionByName(String connectionName) throws ConnectionDoesNotExistException {
@@ -233,44 +228,34 @@ public class ConnectionConfiguration extends MetadataConfiguration {
                             connectionName));
 
         }
-        String deleteQuery = getDeleteConnectionByNameQuery(connectionName);
-        this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().executeUpdate(deleteQuery);
+        List<String> deleteQuery = getDeleteConnectionByNameQuery(connectionName);
+        this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().executeBatch(deleteQuery);
     }
 
-    public String getDeleteConnectionByNameQuery(String connectionName) {
-        String sql = "";
-
-        sql += "DELETE FROM " + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("Connections");
-        sql += " WHERE CONN_NM = "
-                + SQLTools.GetStringForSQL(connection.getName());
-        sql += ";";
-        sql += "\n";
-        sql += "DELETE FROM " + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("ConnectionParameters");
-        sql += " WHERE CONN_NM = "
-                + SQLTools.GetStringForSQL(connection.getName());
-        sql += ";";
-        sql += "\n";
-        return sql;
+    public List<String> getDeleteConnectionByNameQuery(String connectionName) {
+        List<String> queries = new ArrayList<>();
+        queries.add("DELETE FROM " + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("Connections") +
+                " WHERE CONN_NM = "
+                + SQLTools.GetStringForSQL(connection.getName()) + ";");
+        queries.add("DELETE FROM " + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("ConnectionParameters") +
+                " WHERE CONN_NM = "
+                + SQLTools.GetStringForSQL(connection.getName()) + ";");
+        return queries;
     }
 
     public void deleteAllConnections() {
     	// TODO fix logging
         //frameworkExecution.getFrameworkLog().log("Deleting all connections", Level.TRACE);
-        String query = getDeleteAllStatement();
-        this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().executeUpdate(query);
+        List<String> query = getDeleteAllStatement();
+        this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().executeBatch(query);
     }
 
-    private String getDeleteAllStatement() {
-        String sql = "";
+    private List<String> getDeleteAllStatement() {
+        List<String> queries = new ArrayList<>();
+        queries.add("DELETE FROM " + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("Connections") + ";");
+        queries.add("DELETE FROM " + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("ConnectionParameters") + ";");
 
-        sql += "DELETE FROM " + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("Connections");
-        sql += ";";
-        sql += "\n";
-        sql += "DELETE FROM " + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("ConnectionParameters");
-        sql += ";";
-        sql += "\n";
-
-        return sql;
+        return queries;
     }
 
     public Connection insertConnection(Connection connection) throws ConnectionAlreadyExistsException {
@@ -279,37 +264,29 @@ public class ConnectionConfiguration extends MetadataConfiguration {
             throw new ConnectionAlreadyExistsException(MessageFormat.format(
                     "Connection {0}-{1} already exists", connection.getName(), connection.getEnvironment()));
         }
-        String insertQuery = getInsertQuery(connection);
-        frameworkInstance.getMetadataControl().getConnectivityMetadataRepository().executeUpdate(insertQuery);
+        List<String> insertQuery = getInsertQuery(connection);
+        frameworkInstance.getMetadataControl().getConnectivityMetadataRepository().executeBatch(insertQuery);
         return connection;
     }
 
-    private String getInsertQuery(Connection connection) {
-        String sql = "";
+    private List<String> getInsertQuery(Connection connection) {
+        ConnectionParameterConfiguration connectionParameterConfiguration = new ConnectionParameterConfiguration(frameworkInstance);
+        List<String> queries = new ArrayList<>();
         if (getConnectionByName(connection.getName()).size() == 0) {
-            sql = "INSERT INTO " + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository()
-                    .getTableNameByLabel("Connections");
-            sql += " (CONN_NM, CONN_TYP_NM, CONN_DSC) ";
-            sql += "VALUES ";
-            sql += "(";
-            sql += SQLTools.GetStringForSQL(connection.getName());
-            sql += ",";
-            sql += SQLTools.GetStringForSQL(connection.getType());
-            sql += ",";
-            sql += SQLTools.GetStringForSQL(connection.getDescription());
-            sql += ")";
-            sql += ";";
+            queries.add("INSERT INTO " + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository()
+                    .getTableNameByLabel("Connections")+ " (CONN_NM, CONN_TYP_NM, CONN_DSC) VALUES (" +
+                    SQLTools.GetStringForSQL(connection.getName())+ "," +
+                    SQLTools.GetStringForSQL(connection.getType())+ "," +
+                    SQLTools.GetStringForSQL(connection.getDescription()) + ");");
         }
 
-        // add Parameters
-        String sqlParameters = this.getParameterInsertQuery(connection);
-        if (!sqlParameters.equals("")) {
-            sql += "\n";
-            sql += sqlParameters;
+        for (ConnectionParameter connectionParameter : connection.getParameters()) {
+            queries.add(connectionParameterConfiguration.getInsertStatement(connection.getName(), connection.getEnvironment(), connectionParameter));
         }
 
-        return sql;
+        return queries;
     }
+
 
     private String getParameterInsertQuery(Connection connection) {
         StringBuilder result = new StringBuilder();

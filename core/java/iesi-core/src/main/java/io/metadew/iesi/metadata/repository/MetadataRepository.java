@@ -118,6 +118,10 @@ public abstract class MetadataRepository {
 		repositoryCoordinator.executeUpdate(query);
 	}
 
+	public void executeBatch(List<String> queries) {
+		repositoryCoordinator.executeBatch(queries);
+	}
+
 	// TODO: remove because security danger: query can target objects outside of
 	// repository responsibilities
 	public void executeScript(String fileName, String logonType) {

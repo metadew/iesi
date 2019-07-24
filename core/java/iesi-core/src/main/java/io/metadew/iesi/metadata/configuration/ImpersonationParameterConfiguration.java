@@ -24,23 +24,12 @@ public class ImpersonationParameterConfiguration {
     }
 
     public String getInsertStatement(String impersonationName, ImpersonationParameter impersonationParameter) {
-        String sql = "";
-
-        sql += "INSERT INTO " + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("ImpersonationParameters");
-        sql += " (IMP_NM, CONN_NM, CONN_IMP_NM, CONN_IMP_DSC) ";
-        sql += "VALUES ";
-        sql += "(";
-        sql += SQLTools.GetStringForSQL(impersonationName);
-        sql += ",";
-        sql += SQLTools.GetStringForSQL(impersonationParameter.getConnection());
-        sql += ",";
-        sql += SQLTools.GetStringForSQL(impersonationParameter.getImpersonatedConnection());
-        sql += ",";
-        sql += SQLTools.GetStringForSQL(impersonationParameter.getDescription());
-        sql += ")";
-        sql += ";";
-
-        return sql;
+        return "INSERT INTO " + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("ImpersonationParameters") +
+                " (IMP_NM, CONN_NM, CONN_IMP_NM, CONN_IMP_DSC) VALUES (" +
+                SQLTools.GetStringForSQL(impersonationName) + "," +
+                SQLTools.GetStringForSQL(impersonationParameter.getConnection()) + "," +
+                SQLTools.GetStringForSQL(impersonationParameter.getImpersonatedConnection()) +  "," +
+                SQLTools.GetStringForSQL(impersonationParameter.getDescription()) + ");";
     }
 
     // Insert

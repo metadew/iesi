@@ -35,6 +35,9 @@ public class RepositoryCoordinator {
     public void executeUpdate(String query) {
         this.databases.get("writer").executeUpdate(query);
     }
+    public void executeBatch(List<String> queries) {
+        this.databases.get("writer").executeBatch(queries);
+    }
 
     public void executeScript(String fileName, String logonType) {
         SqlScriptResult dcSQLScriptResult = this.databases.get(logonType).executeScript(fileName);

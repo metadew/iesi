@@ -118,10 +118,11 @@ public class ActionParameterOperation {
     }
 
     public void setInputValue(String inputValue) {
+        if (inputValue == null) inputValue = "";
         // TODO: list resolvement to a data type
         // Keep input value with orginal entry
     	this.inputValue = inputValue;
-    	
+
     	// Start manipulation with lookups
     	// Look up inside action perimeter
         inputValue = this.getActionExecution().getActionControl().getActionRuntime().resolveRuntimeVariables(inputValue);

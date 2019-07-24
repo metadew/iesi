@@ -6,6 +6,8 @@ import io.metadew.iesi.metadata.definition.GenerationRule;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import org.apache.logging.log4j.Level;
 
+import java.lang.reflect.InvocationTargetException;
+
 public class GenerationExecution {
 
 	private Generation generation;
@@ -19,7 +21,8 @@ public class GenerationExecution {
 	private String paramFile = "";
 
 	// Constructors
-	public GenerationExecution(FrameworkExecution frameworkExecution, Generation generation) {
+	public GenerationExecution(FrameworkExecution frameworkExecution, Generation generation) throws ClassNotFoundException,
+			NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
 		this.setGeneration(generation);
 		this.setFrameworkExecution(frameworkExecution);
 		this.setExecutionControl(new ExecutionControl(this.getFrameworkExecution()));

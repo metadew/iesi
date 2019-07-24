@@ -4,6 +4,7 @@ import io.metadew.iesi.metadata.definition.ScriptParameter;
 import io.metadew.iesi.metadata.definition.ScriptVersion;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Script {
@@ -14,8 +15,8 @@ public class Script {
     private String description;
     // Set a default script version if not provided
     private ScriptVersion version = new ScriptVersion();
-    private List<ScriptParameter> parameters;
-    private List<Action> actions;
+    private List<ScriptParameter> parameters = new ArrayList<>();
+    private List<Action> actions = new ArrayList<>();
 
     // Constructors
     public Script() {

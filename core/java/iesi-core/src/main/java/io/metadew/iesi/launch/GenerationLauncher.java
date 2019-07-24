@@ -11,6 +11,8 @@ import io.metadew.iesi.metadata.definition.Generation;
 import org.apache.commons.cli.*;
 import org.apache.logging.log4j.Level;
 
+import java.lang.reflect.InvocationTargetException;
+
 /**
  * The generation launcher is entry point to launch all data generation scripts.
  *
@@ -18,7 +20,7 @@ import org.apache.logging.log4j.Level;
  */
 public class GenerationLauncher {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
 		
 		Option oHelp = new Option("help", "print this message");
 		Option oIni = new Option("ini", true, "define the initialization file");

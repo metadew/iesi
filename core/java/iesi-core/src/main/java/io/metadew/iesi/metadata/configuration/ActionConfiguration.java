@@ -148,32 +148,30 @@ public class ActionConfiguration {
         }
     }
 
-    public String getInsertStatement(String scriptId, long scriptVersionNumber, Action action) {
+    public List<String> getInsertStatement(String scriptId, long scriptVersionNumber, Action action) {
+        List<String> queries = new ArrayList<>();
         ActionParameterConfiguration actionParameterConfiguration = new ActionParameterConfiguration(this.getFrameworkInstance());
-        StringBuilder sql = new StringBuilder();
 
-        sql.append("INSERT INTO ").append(this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository()
-                .getTableNameByLabel("Actions"));
-        sql.append(" (SCRIPT_ID, SCRIPT_VRS_NB, ACTION_ID, ACTION_NB, ACTION_TYP_NM, ACTION_NM, ACTION_DSC, COMP_NM, ITERATION_VAL, CONDITION_VAL, RETRIES_VAL, EXP_ERR_FL, STOP_ERR_FL) VALUES (");
-        sql.append(SQLTools.GetStringForSQL(scriptId)).append(",");
-        sql.append(SQLTools.GetStringForSQL(scriptVersionNumber)).append(",");
-        sql.append(SQLTools.GetStringForSQL(action.getId())).append(",");
-        sql.append(SQLTools.GetStringForSQL(action.getNumber())).append(",");
-        sql.append(SQLTools.GetStringForSQL(action.getType())).append(",");
-        sql.append(SQLTools.GetStringForSQL(action.getName())).append(",");
-        sql.append(SQLTools.GetStringForSQL(action.getDescription())).append(",");
-        sql.append(SQLTools.GetStringForSQL(action.getComponent())).append(",");
-        sql.append(SQLTools.GetStringForSQL(action.getIteration())).append(",");
-        sql.append(SQLTools.GetStringForSQL(action.getCondition())).append(",");
-        sql.append(SQLTools.GetStringForSQL(action.getRetries())).append(",");
-        sql.append(SQLTools.GetStringForSQL(action.getErrorExpected())).append(",");
-        sql.append(SQLTools.GetStringForSQL(action.getErrorStop())).append(");");
-
+        queries.add("INSERT INTO " + this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository()
+                .getTableNameByLabel("Actions") +
+                " (SCRIPT_ID, SCRIPT_VRS_NB, ACTION_ID, ACTION_NB, ACTION_TYP_NM, ACTION_NM, ACTION_DSC, COMP_NM, ITERATION_VAL, CONDITION_VAL, RETRIES_VAL, EXP_ERR_FL, STOP_ERR_FL) VALUES (" +
+                SQLTools.GetStringForSQL(scriptId) + "," +
+                SQLTools.GetStringForSQL(scriptVersionNumber) + "," +
+                SQLTools.GetStringForSQL(action.getId()) + "," +
+                SQLTools.GetStringForSQL(action.getNumber()) + "," +
+                SQLTools.GetStringForSQL(action.getType()) + "," +
+                SQLTools.GetStringForSQL(action.getName()) + "," +
+                SQLTools.GetStringForSQL(action.getDescription()) + "," +
+                SQLTools.GetStringForSQL(action.getComponent()) + "," +
+                SQLTools.GetStringForSQL(action.getIteration()) + "," +
+                SQLTools.GetStringForSQL(action.getCondition()) + "," +
+                SQLTools.GetStringForSQL(action.getRetries()) + "," +
+                SQLTools.GetStringForSQL(action.getErrorExpected()) + "," +
+                SQLTools.GetStringForSQL(action.getErrorStop()) + ");");
         for (ActionParameter actionParameter : action.getParameters()) {
-            sql.append(actionParameterConfiguration.getInsertStatement(scriptId, scriptVersionNumber, action.getId(), actionParameter));
-            sql.append("\n");
+            queries.add(actionParameterConfiguration.getInsertStatement(scriptId, scriptVersionNumber, action.getId(), actionParameter));
         }
-        return sql.toString();
+        return queries;
     }
 
     // Getters and Setters

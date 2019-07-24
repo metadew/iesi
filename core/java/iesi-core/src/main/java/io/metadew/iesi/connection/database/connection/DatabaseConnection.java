@@ -7,6 +7,8 @@ import javax.sql.rowset.CachedRowSet;
 import javax.sql.rowset.RowSetProvider;
 import java.io.*;
 import java.sql.*;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Connection object for databases. This is extended depending on the database
@@ -54,6 +56,7 @@ public abstract class DatabaseConnection {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
             System.out.println(StackTrace.toString());
+            System.out.println(query);
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -264,7 +267,8 @@ public abstract class DatabaseConnection {
         } catch (SQLException e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
-            System.out.println("Connection Failed");
+            System.out.println(StackTrace.toString());
+            System.out.println(query);
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -284,11 +288,56 @@ public abstract class DatabaseConnection {
         } catch (SQLException e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
-            System.out.println("database Actions Failed");
-            System.out.println(e.getMessage());
+            System.out.println(StackTrace.toString());
             System.out.println(query);
+            System.out.println(e.getSQLState());
+            System.out.println(e.getErrorCode());
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void executeBatch(List<String> queries) {
+        try {
+            Connection connection = getConnection();
+            executeBatch(queries, connection);
+            connection.close();
+        } catch (SQLException e) {
+            StringWriter StackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(StackTrace));
+            System.out.println(StackTrace.toString());
+            System.out.println(queries.toString());
             throw new RuntimeException(e.getMessage());
         }
+    }
+
+    private void executeBatch(List<String> queries, Connection connection) {
+            if (connection == null) {
+                System.out.println("Connection lost");
+                return;
+            }
+
+        try {
+            connection.setAutoCommit(false);
+            Statement statement = connection.createStatement();
+                for (String query : queries) {
+                    query = this.removeIllgegalCharactersForSingleQuery(query);
+                    statement.addBatch(query);
+                }
+                statement.executeBatch();
+                statement.close();
+                connection.commit();
+                connection.setAutoCommit(true);
+            } catch (SQLException e) {
+                StringWriter StackTrace = new StringWriter();
+                e.printStackTrace(new PrintWriter(StackTrace));
+                System.out.println(StackTrace.toString());
+                System.out.println(queries.toString());
+                System.out.println(e.getSQLState());
+                System.out.println(e.getErrorCode());
+                throw new RuntimeException(e);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
     }
 
     public SqlScriptResult executeScript(String fileName) {

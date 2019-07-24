@@ -96,8 +96,8 @@ public class ActionPerformanceConfiguration extends Configuration<ActionPerforma
                 SQLTools.GetStringForSQL(actionPerformance.getMetadataKey().getActionId()) + ", " +
                 SQLTools.GetStringForSQL(actionPerformance.getMetadataKey().getScope()) + ", " +
                 SQLTools.GetStringForSQL(actionPerformance.getContext()) + ", " +
-                SQLTools.GetStringForSQL(Timestamp.valueOf(actionPerformance.getStartTimestamp())) + ", " +
-                SQLTools.GetStringForSQL(Timestamp.valueOf(actionPerformance.getEndTimestamp())) + ", " +
+                SQLTools.GetStringForSQL(actionPerformance.getStartTimestamp()) + ", " +
+                SQLTools.GetStringForSQL(actionPerformance.getEndTimestamp()) + ", " +
                 actionPerformance.getDuration() + ");";
         getMetadataControl().getResultMetadataRepository().executeUpdate(queryAction);
     }

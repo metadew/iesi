@@ -9,6 +9,7 @@ import io.metadew.iesi.metadata.definition.Script;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionSelectOperation;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -46,7 +47,7 @@ public class Negotiator {
                 try {
                     TimeUnit.SECONDS.sleep(1);
                     runScript();
-                } catch (InterruptedException e) {
+                } catch (InterruptedException | ClassNotFoundException | NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
                     throw new IllegalStateException(e);
                 }
                 return "Result of the asynchronous computation";
@@ -67,7 +68,8 @@ public class Negotiator {
 
     }
 
-    public void runScript() {
+    public void runScript() throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException,
+            InstantiationException, IllegalAccessException {
         // Create the framework instance
         FrameworkInstance frameworkInstance = new FrameworkInstance();
 

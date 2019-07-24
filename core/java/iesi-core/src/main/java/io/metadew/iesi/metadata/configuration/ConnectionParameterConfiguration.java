@@ -45,6 +45,15 @@ public class ConnectionParameterConfiguration {
         return sql;
     }
 
+    public String getInsertStatement(String connectionName, String environmentName, ConnectionParameter connectionParameter) {
+        return "INSERT INTO " + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("ConnectionParameters") +
+                " (CONN_NM, ENV_NM, CONN_PAR_NM, CONN_PAR_VAL) VALUES (" +
+                SQLTools.GetStringForSQL(connectionName) + "," +
+                SQLTools.GetStringForSQL(environmentName)+ "," +
+                SQLTools.GetStringForSQL(connectionParameter.getName()) + "," +
+                SQLTools.GetStringForSQL(connectionParameter.getValue()) + ");";
+    }
+
     public ConnectionParameter getConnectionParameter(String cpnnectionName, String environmentName, String connectionParameterName) {
         ConnectionParameter connectionParameter = new ConnectionParameter();
         CachedRowSet crsConnectionParameter = null;

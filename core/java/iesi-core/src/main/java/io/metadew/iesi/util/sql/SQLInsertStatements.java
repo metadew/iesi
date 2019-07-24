@@ -88,8 +88,6 @@ public class SQLInsertStatements {
 				}
 
 				insertValues.append(");");
-				// System.out.println(insertStart.toString());
-				// System.out.println(readLine);
 
 				insertStatement.append(insertStart);
 				insertStatement.append(insertValues);

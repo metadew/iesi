@@ -118,8 +118,8 @@ public class FeatureConfiguration extends MetadataConfiguration {
                             feature.getName(), feature.getVersion().getNumber()));
         }
 
-        String deleteQuery = getDeleteStatement(feature);
-        this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().executeUpdate(deleteQuery);
+        List<String> deleteQuery = getDeleteStatement(feature);
+        this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().executeBatch(deleteQuery);
     }
 
     public void deleteFeatureByName(String featureName) throws FeatureDoesNotExistException {
@@ -135,8 +135,8 @@ public class FeatureConfiguration extends MetadataConfiguration {
             throw new FeatureAlreadyExistsException(MessageFormat.format(
                     "Feature {0}-{1} already exists", feature.getName(), feature.getVersion().getNumber()));
         }
-        String insertStatement = getInsertStatement(feature);
-        this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().executeUpdate(insertStatement);
+        List<String> insertStatement = getInsertStatement(feature);
+        this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().executeBatch(insertStatement);
     }
 
     public void updateFeature(Feature feature) throws FeatureDoesNotExistException {
@@ -158,54 +158,56 @@ public class FeatureConfiguration extends MetadataConfiguration {
         }
     }
 
-    private String getInsertStatement(Feature feature) {
+    private List<String> getInsertStatement(Feature feature) {
+        List<String> queries = new ArrayList<>();
         FeatureVersionConfiguration featureVersionConfiguration = new FeatureVersionConfiguration(this.getFrameworkInstance());
         FeatureParameterConfiguration featureParameterConfiguration = new FeatureParameterConfiguration(this.getFrameworkInstance());
         ScenarioConfiguration scenarioConfiguration = new ScenarioConfiguration(this.getFrameworkInstance());
         StringBuilder sql = new StringBuilder();
 
         if (getFeatureByName(feature.getName()).size() == 0) {
-            sql.append("INSERT INTO ").append(this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("Features"));
-            sql.append(" (FEATURE_ID, FEATURE_TYP_NM, FEATURE_NM, FEATURE_DSC) VALUES (");
-            sql.append(SQLTools.GetStringForSQL(feature.getId())).append(",");
-            sql.append(SQLTools.GetStringForSQL(feature.getType())).append(",");
-            sql.append(SQLTools.GetStringForSQL(feature.getName())).append(",");
-            sql.append(SQLTools.GetStringForSQL(feature.getDescription())).append(");");
+            queries.add("INSERT INTO " + this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("Features") +
+                    " (FEATURE_ID, FEATURE_TYP_NM, FEATURE_NM, FEATURE_DSC) VALUES (" +
+                    SQLTools.GetStringForSQL(feature.getId()) + "," +
+                    SQLTools.GetStringForSQL(feature.getType()) + "," +
+                    SQLTools.GetStringForSQL(feature.getName()) + "," +
+                    SQLTools.GetStringForSQL(feature.getDescription()) + ");");
         }
         // add version
-        sql.append(featureVersionConfiguration.getInsertStatement(feature.getId(), feature.getVersion()));
+        queries.add(featureVersionConfiguration.getInsertStatement(feature.getId(), feature.getVersion()));
 
         // add Parameters
         for (FeatureParameter featureParameter :feature.getParameters()) {
-            sql.append(featureParameterConfiguration.getInsertStatement(feature.getId(), feature.getVersion().getNumber(), featureParameter));
-            sql.append("\n");
+            queries.add(featureParameterConfiguration.getInsertStatement(feature.getId(), feature.getVersion().getNumber(), featureParameter));
         }
 
         // add scenarios
         for (Scenario scenario : feature.getScenarios()) {
-            sql.append(scenarioConfiguration.getInsertStatement(feature.getId(), feature.getVersion().getNumber(), scenario));
-            sql.append("\n");
+            queries.addAll(scenarioConfiguration.getInsertStatement(feature.getId(), feature.getVersion().getNumber(), scenario));
         }
 
-        return sql.toString();
+        return queries;
     }
 
-    private String getDeleteStatement(Feature feature) {
+    private List<String> getDeleteStatement(Feature feature) {
+
+        List<String> queries = new ArrayList<>();
         // delete parameters
-        StringBuilder deleteQuery = new StringBuilder("DELETE FROM " + this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("FeatureParameters"));
-        deleteQuery.append(" WHERE FEATURE_ID = ").append(SQLTools.GetStringForSQL(feature.getId())).append(" AND FEATURE_VRS_NB = ").append(SQLTools.GetStringForSQL(feature.getVersion().getNumber())).append(";\n");
+        queries.add("DELETE FROM " + this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("FeatureParameters") +
+                " WHERE FEATURE_ID = " + SQLTools.GetStringForSQL(feature.getId()) + " AND FEATURE_VRS_NB = " + SQLTools.GetStringForSQL(feature.getVersion().getNumber()) + ";");
+
+
         // delete version
-        deleteQuery.append("DELETE FROM ").append(this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("FeatureVersions"));
-        deleteQuery.append(" WHERE FEATURE_ID = ").append(SQLTools.GetStringForSQL(feature.getId())).append(" AND FEATURE_VRS_NB = ").append(SQLTools.GetStringForSQL(feature.getVersion().getNumber())).append(";\n");
+
+        queries.add("DELETE FROM " + this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("FeatureVersions") +
+                " WHERE FEATURE_ID = " + SQLTools.GetStringForSQL(feature.getId()) + " AND FEATURE_VRS_NB = " + SQLTools.GetStringForSQL(feature.getVersion().getNumber()) + ";");
 
         // delete scenarios
         for (Scenario scenario : feature.getScenarios()) {
-            deleteQuery.append("DELETE FROM ").append(this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("Scenarios"));
-            deleteQuery.append(" WHERE SCENARIO_ID = ").append(SQLTools.GetStringForSQL(scenario.getId())).append(";\n");
-
-            deleteQuery.append("DELETE FROM ").append(this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("ScenarioParameters"));
-            deleteQuery.append(" WHERE SCENARIO_ID = ").append(SQLTools.GetStringForSQL(scenario.getId())).append(";\n");
-
+            queries.add("DELETE FROM " + this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("Scenarios") +
+                    " WHERE SCENARIO_ID = " + SQLTools.GetStringForSQL(scenario.getId()) + ";");
+            queries.add("DELETE FROM " + this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("ScenarioParameters") +
+                    " WHERE SCENARIO_ID = " + SQLTools.GetStringForSQL(scenario.getId()) + ";");
         }
 
         // delete feature info if last version
@@ -215,15 +217,15 @@ public class FeatureConfiguration extends MetadataConfiguration {
         CachedRowSet crs = this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().executeQuery(countQuery, "reader");
 
         try {
-            if (crs.next() && Integer.parseInt(crs.getString("total_versions")) == 0) {
-                deleteQuery.append("DELETE FROM ").append(this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("Features"));
-                deleteQuery.append(" WHERE FEATURE_ID = ").append(SQLTools.GetStringForSQL(feature.getId())).append(";\n");
+            if (crs.next() && Integer.parseInt(crs.getString("total_versions")) == 1) {
+                queries.add("DELETE FROM " + this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("Features") +
+                        " WHERE FEATURE_ID = " + SQLTools.GetStringForSQL(feature.getId()) + ";");
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return deleteQuery.toString();
+        return queries;
     }
 
     private boolean verifyFeatureConfigurationExists(String featureName) {

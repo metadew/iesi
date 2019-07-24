@@ -9,6 +9,7 @@ import io.metadew.iesi.metadata.definition.Context;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import org.apache.logging.log4j.Level;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,7 +20,8 @@ public class RestoreExecution {
 	private Long processId;
 
 	// Constructors
-	public RestoreExecution() {
+	public RestoreExecution() throws ClassNotFoundException, NoSuchMethodException, InstantiationException,
+			IllegalAccessException, InvocationTargetException {
 		// Create the framework instance
 		FrameworkInstance frameworkInstance = new FrameworkInstance();
 

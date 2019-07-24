@@ -2,6 +2,7 @@ package io.metadew.iesi.metadata.definition;
 
 import io.metadew.iesi.metadata.tools.IdentifierTools;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Component {
@@ -11,8 +12,8 @@ public class Component {
     private String name;
     private String description;
     private ComponentVersion version;
-    private List<ComponentParameter> parameters;
-    private List<ComponentAttribute> attributes;
+    private List<ComponentParameter> parameters = new ArrayList<>();
+    private List<ComponentAttribute> attributes = new ArrayList<>();
 
     //Constructors
     public Component() {

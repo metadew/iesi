@@ -84,8 +84,8 @@ public class ScriptLauncher {
 		String settings = "";
 		String impersonationName = "";
 		String impersonationCustom = "";
-		String userName = "";
-		String userPassword = "";
+		String userName = "admin";
+		String userPassword = "admin";
 		try {
 			// parse the command line arguments
 			CommandLine line = parser.parse(options, args);
@@ -268,7 +268,7 @@ public class ScriptLauncher {
 
 		// TODO replace local date time in tool across solution
 		Request request = new Request("script", LocalDateTime.now().toString(), scriptName, "", 1, "",
-				scopeName, environmentName, "", userName, userPassword, requestParameterList);
+				scopeName, environmentName, "admin", userName, userPassword, requestParameterList);
 
 		if (serverMode.equalsIgnoreCase("off")) {
 			Executor.getInstance(frameworkInstance).execute(request);

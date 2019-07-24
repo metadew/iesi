@@ -107,7 +107,8 @@ public class DbDb2ConnectionOperation {
         }
 
         Db2DatabaseConnection db2DatabaseConnection = new Db2DatabaseConnection(hostName, portNumber, databaseName, userName, userPassword);
-        database = new Db2Database(db2DatabaseConnection, "");
+        db2DatabaseConnection.setSchema(databaseName);
+        database = new Db2Database(db2DatabaseConnection, databaseName);
 
         return database;
     }

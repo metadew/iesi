@@ -58,7 +58,8 @@ public class Db2DatabaseConnection extends DatabaseConnection {
         Connection connection = super.getConnection();
         Optional<String> schema = getSchema();
         if (schema.isPresent()) {
-            connection.setSchema(schema.get());
+            //connection.setSchema(schema.get());
+            connection.createStatement().execute("set schema " + schema.get());
         }
         return connection;
     }

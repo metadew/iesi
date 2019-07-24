@@ -151,7 +151,74 @@ public class AssemblyExecution {
 					}
 				}
 			}
+			//
+			//////////////////////////////////////////////////////////////////////////////////////////////////
 
+			//////////////////////////////////////////////////////////////////////////////////////////////////
+			// Metadata Definition
+			//
+			String metadataDefEditHome = repositoryHome + File.separator + "core" + File.separator + "metadata"
+					+ File.separator + "def";
+			final File[] inputDefFolders = FolderTools.getFilesInFolder(metadataDefEditHome, "all", "");
+			for (final File inputDefFolder : inputDefFolders) {
+				if (inputDefFolder.isDirectory()) {
+					// Tables
+					final File[] inputDefTables = FolderTools.getFilesInFolder(inputDefFolder.getAbsolutePath() + File.separator + "Tables", "regex",
+							".+\\.yml");
+					List<DataObject> defTableDataObjects = new ArrayList();
+					for (final File inputDef : inputDefTables) {
+						// Read configuration
+						DataObjectOperation inputDataObjectOperation = new DataObjectOperation(null,
+								inputDef.getAbsolutePath());
+
+						ObjectMapper inputObjectMapper = new ObjectMapper();
+						for (DataObject dataObject : inputDataObjectOperation.getDataObjects()) {
+							defTableDataObjects.add(dataObject);
+						}
+						String metadataDefFileName = inputDefFolder.getName() + "Tables.json";
+						String metadataDefFilePath = metadataDefEditHome + File.separator + metadataDefFileName;
+						
+						// Write file to github repository
+						inputObjectMapper.writerWithDefaultPrettyPrinter().writeValue(
+								new File(metadataDefFilePath),
+								defTableDataObjects);
+						
+						// Copy file to docs/_data for documentation update
+						FileTools.copyFromFileToFile(metadataDefFilePath, repositoryHome + File.separator + "docs" + File.separator + "_data" + File.separator + "datamodel" + File.separator + metadataDefFileName);
+					}
+
+					// Objects
+					final File[] inputDefObjects = FolderTools.getFilesInFolder(inputDefFolder.getAbsolutePath() + File.separator + "Objects", "regex",
+							".+\\.yml");
+					List<DataObject> defObjectDataObjects = new ArrayList();
+					for (final File inputDef : inputDefObjects) {
+						// Read configuration
+						DataObjectOperation inputDataObjectOperation = new DataObjectOperation(null,
+								inputDef.getAbsolutePath());
+
+						ObjectMapper inputObjectMapper = new ObjectMapper();
+						for (DataObject dataObject : inputDataObjectOperation.getDataObjects()) {
+							defObjectDataObjects.add(dataObject);
+						}
+						String metadataDefFileName = inputDefFolder.getName() + "Objects.json";
+						String metadataDefFilePath = metadataDefEditHome + File.separator + metadataDefFileName;
+						
+						// Write file to github repository
+						inputObjectMapper.writerWithDefaultPrettyPrinter().writeValue(
+								new File(metadataDefFilePath),
+								defObjectDataObjects);
+						
+						// Copy file to docs/_data for documentation update
+						FileTools.copyFromFileToFile(metadataDefFilePath, repositoryHome + File.separator + "docs" + File.separator + "_data" + File.separator + "datamodel" + File.separator + metadataDefFileName);
+					}
+
+				}
+			}
+			//
+			//////////////////////////////////////////////////////////////////////////////////////////////////
+			
+			
+			
 			// Load assets into directory structure
 			String fileSystemConfig = repositoryHome + File.separator + "core" + File.separator + "assembly"
 					+ File.separator + "file-assembly.conf";

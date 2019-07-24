@@ -1,0 +1,10 @@
+---
+data:
+  name: "Repository"
+  label: "Repositories"
+  description: "Design metadata for repositories"
+  type: "design"
+  category: "connectivity"
+  migrate: "Y"
+  migrationKey: "NA"
+type: "MetadataObject"

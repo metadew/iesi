@@ -1,0 +1,10 @@
+---
+data:
+  name: "Dataview"
+  label: "Dataviews"
+  description: "Design metadata for dataviews"
+  type: "design"
+  category: "access"
+  migrate: "Y"
+  migrationKey: "NA"
+type: "MetadataObject"

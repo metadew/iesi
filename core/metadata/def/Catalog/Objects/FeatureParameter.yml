@@ -1,0 +1,10 @@
+---
+data:
+  name: "FeatureParameter"
+  label: "FeatureParameters"
+  description: "Design metadata for feature parameters"
+  type: "design"
+  category: "feature"
+  migrate: "Y"
+  migrationKey: "NA"
+type: "MetadataObject"

@@ -1,0 +1,10 @@
+---
+data:
+  name: "Accessrole"
+  label: "Accessroles"
+  description: "Design metadata for accessroles"
+  type: "design"
+  category: "access"
+  migrate: "Y"
+  migrationKey: "NA"
+type: "MetadataObject"

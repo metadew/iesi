@@ -1,0 +1,10 @@
+---
+data:
+  name: "Accessview"
+  label: "Accessviews"
+  description: "Design metadata for accessviews"
+  type: "design"
+  category: "access"
+  migrate: "Y"
+  migrationKey: "NA"
+type: "MetadataObject"

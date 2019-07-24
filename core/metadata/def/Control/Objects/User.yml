@@ -1,0 +1,10 @@
+---
+data:
+  name: "User"
+  label: "Users"
+  description: "Control metadata for users"
+  type: "control"
+  category: "execution"
+  migrate: "Y"
+  migrationKey: "B001"
+type: "MetadataObject"

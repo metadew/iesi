@@ -1,0 +1,10 @@
+---
+data:
+  name: "Classification"
+  label: "Classifications"
+  description: "Design metadata for classifications"
+  type: "design"
+  category: "artefact"
+  migrate: "Y"
+  migrationKey: "NA"
+type: "MetadataObject"

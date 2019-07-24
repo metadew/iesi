@@ -1,0 +1,10 @@
+---
+data:
+  name: "KeyvalueData"
+  label: "KeyvalueData"
+  description: "Design metadata for keyvalue data"
+  type: "design"
+  category: "data"
+  migrate: "Y"
+  migrationKey: "NA"
+type: "MetadataObject"

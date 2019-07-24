@@ -1204,6 +1204,14 @@
       "encrypted" : "N",
       "subroutine" : "",
       "impersonate" : "N"
+    }, {
+      "name" : "expectedStatusCodes",
+      "description" : "expected status codes from response",
+      "type" : "string",
+      "mandatory" : "N",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
     } ],
     "status" : "stable"
   },
@@ -1237,6 +1245,39 @@
       "encrypted" : "N",
       "subroutine" : "",
       "impersonate" : "Y"
+    } ],
+    "status" : "alpha"
+  },
+  "type" : "ActionType"
+}, {
+  "data" : {
+    "name" : "mod.soapui",
+    "className" : "io.metadew.iesi.script.action.ModSoapui",
+    "description" : "Run a SOAP UI test scope",
+    "parameters" : [ {
+      "name" : "project",
+      "description" : "SOAP UI xml project file",
+      "type" : "string",
+      "mandatory" : "Y",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
+    }, {
+      "name" : "suite",
+      "description" : "Test suite to execute",
+      "type" : "string",
+      "mandatory" : "N",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
+    }, {
+      "name" : "case",
+      "description" : "Test case to execute",
+      "type" : "string",
+      "mandatory" : "N",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
     } ],
     "status" : "alpha"
   },

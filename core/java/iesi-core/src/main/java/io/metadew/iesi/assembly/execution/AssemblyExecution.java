@@ -217,7 +217,44 @@ public class AssemblyExecution {
 			//
 			//////////////////////////////////////////////////////////////////////////////////////////////////
 			
-			
+
+			//////////////////////////////////////////////////////////////////////////////////////////////////
+			// Framework Initialization
+			//
+			String metadataInitEditHome = repositoryHome + File.separator + "core" + File.separator + "sys"
+					+ File.separator + "init";
+			final File[] inputInitFolders = FolderTools.getFilesInFolder(metadataInitEditHome, "all", "");
+			for (final File inputConfFolder : inputInitFolders) {
+				if (inputConfFolder.isDirectory()) {
+					final File[] inputConfs = FolderTools.getFilesInFolder(inputConfFolder.getAbsolutePath(), "regex",
+							".+\\.yml");
+
+					List<DataObject> confInitObjects = new ArrayList();
+					for (final File inputConf : inputConfs) {
+						// Read configuration
+						DataObjectOperation inputInitObjectOperation = new DataObjectOperation(null,
+								inputConf.getAbsolutePath());
+
+						ObjectMapper inputObjectMapper = new ObjectMapper();
+						for (DataObject dataObject : inputInitObjectOperation.getDataObjects()) {
+							confInitObjects.add(dataObject);
+						}
+						String metadataInitFileName = inputConfFolder.getName() + ".json";
+						String metadataInitFilePath = metadataInitEditHome + File.separator + metadataInitFileName;
+						
+						// Write file to github repository
+						inputObjectMapper.writerWithDefaultPrettyPrinter().writeValue(
+								new File(metadataInitFilePath),
+								confInitObjects);
+						
+						// Copy file to docs/_data for documentation update
+						FileTools.copyFromFileToFile(metadataInitFilePath, repositoryHome + File.separator + "docs" + File.separator + "_data" + File.separator + "framework" + File.separator + metadataInitFileName);
+					}
+				}
+			}
+			//
+			//////////////////////////////////////////////////////////////////////////////////////////////////
+
 			
 			// Load assets into directory structure
 			String fileSystemConfig = repositoryHome + File.separator + "core" + File.separator + "assembly"

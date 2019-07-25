@@ -29,6 +29,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
+
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -120,7 +122,13 @@ public class ScriptController {
 
 		Request request = new Request("script", Long.toString(System.currentTimeMillis()), scriptExecution.getScript(), "", 1, "",scriptExecution.getScript(),scriptExecution.getEnvironment(),"","","",requestParameters);
 		// TODO: FrameworkRunIdentifier
-		ScriptLaunchOperation.execute(frameworkInstance, request, null);
+		try {
+			ScriptLaunchOperation.execute(frameworkInstance, request, null);
+		} catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | InstantiationException
+				| IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         return ResponseEntity.ok().build();
 
     }

@@ -12,12 +12,12 @@ public class ExecutionServerMetadataRepository extends MetadataRepository {
 
     @Override
     public String getDefinitionFileName() {
-        return "ExecutionServerTables.json";
+        return "ExecutionTables.json";
     }
 
     @Override
     public String getObjectDefinitionFileName() {
-        return "ExecutionServerObjects.json";
+        return "ExecutionObjects.json";
     }
 
     @Override

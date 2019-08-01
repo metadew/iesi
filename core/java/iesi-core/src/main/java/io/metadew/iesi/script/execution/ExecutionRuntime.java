@@ -8,11 +8,13 @@ import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.dataset.Dataset;
 import io.metadew.iesi.datatypes.dataset.KeyValueDataset;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.execution.IESIMessage;
 import io.metadew.iesi.metadata.configuration.*;
+import io.metadew.iesi.metadata.configuration.script.ScriptResultOutputConfiguration;
 import io.metadew.iesi.metadata.definition.ComponentAttribute;
 import io.metadew.iesi.metadata.definition.Iteration;
 import io.metadew.iesi.metadata.definition.RuntimeVariable;
-import io.metadew.iesi.metadata.definition.ScriptResultOutput;
+import io.metadew.iesi.metadata.definition.script.ScriptResultOutput;
 import io.metadew.iesi.runtime.definition.LookupResult;
 import io.metadew.iesi.script.configuration.IterationVariableConfiguration;
 import io.metadew.iesi.script.configuration.RuntimeVariableConfiguration;
@@ -42,13 +44,10 @@ public class ExecutionRuntime {
 
     private FrameworkExecution frameworkExecution;
     private ExecutionControl executionControl;
-
     private RuntimeVariableConfiguration runtimeVariableConfiguration;
     private IterationVariableConfiguration iterationVariableConfiguration;
-
     private String runId;
     private String runCacheFolderName;
-
     private Level level = Level.TRACE;
 
     //private HashMap<String, StageOperation> stageOperationMap;
@@ -56,21 +55,15 @@ public class ExecutionRuntime {
     private HashMap<String, StageOperation> stageOperationMap;
     private HashMap<String, Dataset> datasetMap;
     private HashMap<String, IterationOperation> iterationOperationMap;
-
     private HashMap<String, ExecutionRuntimeExtension> executionRuntimeExtensionMap;
-
     private ImpersonationOperation impersonationOperation;
-
     private HashMap<String, DataInstruction> dataInstructions;
     private HashMap<String, VariableInstruction> variableInstructions;
     private HashMap<String, LookupInstruction> lookupInstructions;
 
     private final String INSTRUCTION_TYPE_KEY = "instructionType";
-
     private final String INSTRUCTION_KEYWORD_KEY = "instructionKeyword";
-
     private final String INSTRUCTION_ARGUMENTS_KEY = "instructionArguments";
-
     private final Pattern CONCEPT_LOOKUP_PATTERN = Pattern
             .compile("\\s*\\{\\{(?<" + INSTRUCTION_TYPE_KEY + ">[\\*=\\$!])(?<" + INSTRUCTION_KEYWORD_KEY + ">[\\w\\.]+)(?<" + INSTRUCTION_ARGUMENTS_KEY + ">\\(.*\\))?\\}\\}\\s*");
 
@@ -202,17 +195,17 @@ public class ExecutionRuntime {
 
     // Set runtime variables
     public void setRuntimeVariable(Long processId, String name, String value) {
-        this.getFrameworkExecution().getFrameworkLog().log("exec.runvar.set=" + name + ":" + value, this.getLevel());
+        executionControl.logMessage(new IESIMessage("exec.runvar.set=" + name + ":" + value), level);
         this.getRuntimeVariableConfiguration().setRuntimeVariable(this.getRunId(), processId, name, value);
     }
 
     public void setRuntimeVariable(ActionExecution actionExecution, String name, String value) {
-        this.getFrameworkExecution().getFrameworkLog().log("exec.runvar.set=" + name + ":" + value, this.getLevel());
+        executionControl.logMessage(new IESIMessage("exec.runvar.set=" + name + ":" + value), level);
         this.getRuntimeVariableConfiguration().setRuntimeVariable(this.getRunId(), actionExecution.getProcessId(), name, value);
     }
 
     public void setRuntimeVariable(ScriptExecution scriptExecution, String name, String value) {
-        this.getFrameworkExecution().getFrameworkLog().log("exec.runvar.set=" + name + ":" + value, this.getLevel());
+        executionControl.logMessage(new IESIMessage("exec.runvar.set=" + name + ":" + value), level);
         this.getRuntimeVariableConfiguration().setRuntimeVariable(this.getRunId(), scriptExecution.getProcessId(), name, value);
     }
 
@@ -307,9 +300,7 @@ public class ExecutionRuntime {
         // Second level: runtime variables
         result = this.resolveRuntimeVariables(result);
         if (!input.equalsIgnoreCase(result))
-            this.getFrameworkExecution().getFrameworkLog().log("exec.runvar.resolve=" + input + ":" + result,
-                    Level.TRACE);
-
+            executionControl.logMessage(new IESIMessage("exec.runvar.resolve=" + input + ":" + result), Level.TRACE);
         return result;
     }
 
@@ -331,9 +322,7 @@ public class ExecutionRuntime {
         // third level: runtime variables
         result = this.resolveRuntimeVariables(result);
         if (!input.equalsIgnoreCase(result))
-            this.getFrameworkExecution().getFrameworkLog().log("exec.runvar.resolve=" + input + ":" + result,
-                    Level.DEBUG);
-
+            executionControl.logMessage(new IESIMessage("exec.runvar.resolve=" + input + ":" + result), Level.DEBUG);
         return result;
     }
 
@@ -350,17 +339,13 @@ public class ExecutionRuntime {
         // third level: runtime variables
         result = this.resolveRuntimeVariables(result);
         if (!input.equalsIgnoreCase(result))
-            this.getFrameworkExecution().getFrameworkLog().log("exec.runvar.resolve=" + input + ":" + result,
-                    Level.TRACE);
-
+            executionControl.logMessage(new IESIMessage("exec.runvar.resolve=" + input + ":" + result), Level.TRACE);
         return result;
     }
 
 
     private String resolveRuntimeVariables(String input) {
-        getFrameworkExecution().getFrameworkLog().log(
-                MessageFormat.format("runvar.resolve=resolving {0} for runtime variables", input),
-                Level.TRACE);
+        executionControl.logMessage(new IESIMessage(MessageFormat.format("runvar.resolve=resolving {0} for runtime variables", input)), Level.TRACE);
         int openPos;
         int closePos;
         String variable_char = "#";
@@ -380,9 +365,7 @@ public class ExecutionRuntime {
             temp = temp.substring(closePos + 1, temp.length());
 
         }
-        getFrameworkExecution().getFrameworkLog().log(
-                MessageFormat.format("runvar.resolve.result=resolved to {0}", input),
-                Level.TRACE);
+        executionControl.logMessage(new IESIMessage(MessageFormat.format("runvar.resolve.result=resolved to {0}", input)), Level.TRACE);
         return input;
     }
 
@@ -479,10 +462,7 @@ public class ExecutionRuntime {
     }
 
     public String resolveConfiguration(ActionExecution actionExecution, String input) {
-        getFrameworkExecution().getFrameworkLog().log(
-                MessageFormat.format("configuration.resolve=resolving {0} for configurations", input),
-                Level.TRACE);
-
+        executionControl.logMessage(new IESIMessage(MessageFormat.format("configuration.resolve=resolving {0} for configurations", input)), Level.TRACE);
         int openPos;
         int closePos;
         String variable_char = "#";
@@ -510,9 +490,7 @@ public class ExecutionRuntime {
 
         }
 
-        getFrameworkExecution().getFrameworkLog().log(
-                MessageFormat.format("configuration.resolve.result=resolved to {0}", input),
-                Level.TRACE);
+        executionControl.logMessage(new IESIMessage(MessageFormat.format("configuration.resolve.result=resolved to {0}", input)), Level.TRACE);
 
         return input;
     }
@@ -523,9 +501,7 @@ public class ExecutionRuntime {
      * We will move only here when stable
      */
     public LookupResult resolveConceptLookup(ExecutionControl executionControl, String input, boolean dup) {
-        getFrameworkExecution().getFrameworkLog().log(
-                MessageFormat.format("concept.lookup.resolve=resolving {0} for concept lookup instructions", input),
-                Level.TRACE);
+        executionControl.logMessage(new IESIMessage(MessageFormat.format("concept.lookup.resolve=resolving {0} for concept lookup instructions", input)), Level.TRACE);
         LookupResult lookupResult = new LookupResult();
         lookupResult.setInputValue(input);
         // TODO: move to Antler
@@ -538,9 +514,7 @@ public class ExecutionRuntime {
         while (input.indexOf(lookupConceptStartKey, lookupConceptStopIndex) != -1) {
             lookupConceptStartIndex = input.indexOf(lookupConceptStartKey, lookupConceptStopIndex);
             if (input.indexOf(lookupConceptStopKey, lookupConceptStartIndex) == -1) {
-                frameworkExecution.getFrameworkLog().log(
-                        MessageFormat.format("concept.lookup.resolve.error=error during concept lookup resolvement of {0}. Concept lookup instruction not properly closed.", input),
-                        Level.WARN);
+                executionControl.logMessage(new IESIMessage(MessageFormat.format("concept.lookup.resolve.error=error during concept lookup resolvement of {0}. Concept lookup instruction not properly closed.", input)), Level.WARN);
                 lookupResult.setValue(input);
                 return lookupResult;
             }
@@ -549,9 +523,7 @@ public class ExecutionRuntime {
             while (nextLookupConceptStartIndex > 0 && nextLookupConceptStartIndex < lookupConceptStopIndex) {
                 lookupConceptStopIndex = input.indexOf(lookupConceptStopKey, lookupConceptStopIndex + lookupConceptStopKey.length());
                 if (lookupConceptStopIndex < 0) {
-                    frameworkExecution.getFrameworkLog().log(
-                            MessageFormat.format("concept.lookup.resolve.error=error during concept lookup resolvement of {0}. Concept lookup instruction not properly closed.", input),
-                            Level.WARN);
+                    executionControl.logMessage(new IESIMessage(MessageFormat.format("concept.lookup.resolve.error=error during concept lookup resolvement of {0}. Concept lookup instruction not properly closed.", input)), Level.WARN);
                     lookupResult.setValue(input);
                     return lookupResult;
                 }
@@ -562,42 +534,35 @@ public class ExecutionRuntime {
                     resolvement +
                     input.substring(lookupConceptStopIndex + lookupConceptStopKey.length());
         }
-        getFrameworkExecution().getFrameworkLog().log(
-                MessageFormat.format("concept.lookup.resolve.result={0}:{1}", lookupResult.getInputValue(), input),
-                Level.DEBUG);
+        executionControl.logMessage(new IESIMessage(MessageFormat.format("concept.lookup.resolve.result={0}:{1}", lookupResult.getInputValue(), input)), Level.DEBUG);
+
         lookupResult.setValue(input);
         return lookupResult;
     }
 
     public LookupResult executeConceptLookup(ExecutionControl executionControl, String input) {
-        getFrameworkExecution().getFrameworkLog().log(
-                MessageFormat.format("concept.lookup.resolve.instruction=resolving instruction {0}", input),
-                Level.TRACE);
+        executionControl.logMessage(new IESIMessage(MessageFormat.format("concept.lookup.resolve.instruction=resolving instruction {0}", input)), Level.TRACE);
         LookupResult lookupResult = new LookupResult();
         String resolvedInput = input;
         Matcher ConceptLookupMatcher = CONCEPT_LOOKUP_PATTERN.matcher(resolvedInput);
 
         if (!ConceptLookupMatcher.find()) {
             lookupResult.setValue(resolvedInput);
-            getFrameworkExecution().getFrameworkLog().log(
-                    MessageFormat.format("concept.lookup.resolve.instruction.error=no concept instruction found for {0}", input),
-                    Level.TRACE);
+            executionControl.logMessage(new IESIMessage(MessageFormat.format("concept.lookup.resolve.instruction.error=no concept instruction found for {0}", input)), Level.WARN);
             return lookupResult;
         } else {
             String instructionArgumentsString = ConceptLookupMatcher.group(INSTRUCTION_ARGUMENTS_KEY);
             String instructionType = ConceptLookupMatcher.group(INSTRUCTION_TYPE_KEY);
             String instructionKeyword = ConceptLookupMatcher.group(INSTRUCTION_KEYWORD_KEY).toLowerCase();
 
-            getFrameworkExecution().getFrameworkLog().log(
-                    MessageFormat.format("concept.lookup.resolve.instruction=executing instruction of type {0} with keyword {1} and unresolved parameters {2}", instructionType, instructionKeyword, instructionArgumentsString),
-                    Level.DEBUG);
+            executionControl.logMessage(new IESIMessage(MessageFormat.format("concept.lookup.resolve.instruction=executing instruction of type {0} with keyword {1} and unresolved parameters {2}", instructionType, instructionKeyword, instructionArgumentsString)), Level.DEBUG);
+
             List<String> instructionArguments = splitInstructionArguments(instructionArgumentsString);
             String instructionArgumentsResolved = instructionArguments.stream()
                     .map(instructionArgument -> resolveConceptLookup(executionControl, instructionArgument, true).getValue())
                     .collect(Collectors.joining(", "));
-            getFrameworkExecution().getFrameworkLog().log(
-                    MessageFormat.format("concept.lookup.resolve.instruction.parameters=resolved instructions parameters to {0}", instructionArgumentsString),
-                    Level.DEBUG);
+
+            executionControl.logMessage(new IESIMessage(MessageFormat.format("concept.lookup.resolve.instruction.parameters=resolved instructions parameters to {0}", instructionArgumentsString)), Level.DEBUG);
 
             switch (instructionType) {
                 case "=":
@@ -617,16 +582,10 @@ public class ExecutionRuntime {
                     resolvedInput = instructionArgumentsResolved;
                     break;
                 default:
-
-                    getFrameworkExecution().getFrameworkLog().log(
-                            MessageFormat.format("concept.lookup.resolve.instruction.notfound=no instruction type found for {0}", instructionType),
-                            Level.WARN);
-                    // TODO: not correct
+                    executionControl.logMessage(new IESIMessage(MessageFormat.format("concept.lookup.resolve.instruction.notfound=no instruction type found for {0}", instructionType)), Level.WARN);
                     resolvedInput = "{{" + instructionType + instructionKeyword + "(" + instructionArgumentsResolved + ")}}";
             }
-            getFrameworkExecution().getFrameworkLog().log(
-                    MessageFormat.format("concept.lookup.resolve.instruction.result=resolved {0} to {1}", input, resolvedInput),
-                    Level.TRACE);
+            executionControl.logMessage(new IESIMessage(MessageFormat.format("concept.lookup.resolve.instruction.result=resolved {0} to {1}", input, resolvedInput)), Level.TRACE);
 
             lookupResult.setInputValue(input);
             lookupResult.setType(instructionType);

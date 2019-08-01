@@ -6,13 +6,26 @@ import java.util.List;
 import io.metadew.iesi.framework.crypto.tools.CryptoTools;
 import io.metadew.iesi.framework.crypto.algo.AESGCMEncrypt;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.execution.FrameworkLog;
+import org.apache.logging.log4j.Marker;
+import org.apache.logging.log4j.MarkerManager;
 
 
 public class FrameworkCrypto {
 
 	private AESGCMEncrypt aesGcmEncrypt;
 
-	public FrameworkCrypto() {
+
+	private static FrameworkCrypto INSTANCE;
+
+	public static FrameworkCrypto getInstance() {
+		if (INSTANCE == null) {
+			INSTANCE = new FrameworkCrypto();
+		}
+		return INSTANCE;
+	}
+
+	private FrameworkCrypto() {
 		this.setAesGcmEncrypt(new AESGCMEncrypt(CryptoTools
 				.formatKeyString(CryptoTools.generateMD5Hash("c7c1e473-9115-4a6b-abff-6abee67a391e"), 16)));
 	}

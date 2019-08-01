@@ -1,6 +1,6 @@
 package io.metadew.iesi.script.operation;
 
-import io.metadew.iesi.metadata.definition.Script;
+import io.metadew.iesi.metadata.definition.script.Script;
 
 /**
  * This class contains the condition and destination required for routing purposes.

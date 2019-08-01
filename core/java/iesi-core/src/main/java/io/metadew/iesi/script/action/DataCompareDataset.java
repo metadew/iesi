@@ -5,7 +5,7 @@ import io.metadew.iesi.datatypes.dataset.Dataset;
 import io.metadew.iesi.datatypes.Text;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.configuration.MappingConfiguration;
-import io.metadew.iesi.metadata.definition.ActionParameter;
+import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.Mapping;
 import io.metadew.iesi.metadata.definition.Transformation;
 import io.metadew.iesi.script.execution.ActionExecution;

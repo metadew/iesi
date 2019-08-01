@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.configuration.ComponentConfiguration;
 import io.metadew.iesi.metadata.configuration.GenerationConfiguration;
-import io.metadew.iesi.metadata.configuration.ScriptConfiguration;
+import io.metadew.iesi.metadata.configuration.script.ScriptConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.ComponentAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.ComponentDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.exception.ScriptAlreadyExistsException;
@@ -12,7 +12,7 @@ import io.metadew.iesi.metadata.configuration.exception.ScriptDoesNotExistExcept
 import io.metadew.iesi.metadata.definition.Component;
 import io.metadew.iesi.metadata.definition.DataObject;
 import io.metadew.iesi.metadata.definition.Generation;
-import io.metadew.iesi.metadata.definition.Script;
+import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
 import org.apache.logging.log4j.Level;
 
@@ -60,6 +60,7 @@ public class DesignMetadataRepository extends MetadataRepository {
             Generation generation= objectMapper.convertValue(dataObject.getData(), Generation.class);
             save(generation, frameworkExecution);
         } else if (dataObject.getType().equalsIgnoreCase("subroutine")) {
+            System.out.println("subroutine");
             // TODO
         } else {
             frameworkExecution.getFrameworkLog().log(MessageFormat.format("Design repository is not responsible for loading saving {0}", dataObject.getType()), Level.TRACE);
@@ -72,7 +73,7 @@ public class DesignMetadataRepository extends MetadataRepository {
         try {
             scriptConfiguration.insertScript(script);
         } catch (ScriptAlreadyExistsException e) {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("Script {0} already exists in design repository. Updating to new definition", script.getName()), Level.INFO);
+            frameworkExecution.getFrameworkLog().log(MessageFormat.format("Script {0}-{1} already exists in design repository. Updating to new definition", script.getName(), script.getVersion().getNumber()), Level.INFO);
             try {
                 scriptConfiguration.updateScript(script);
             } catch (ScriptDoesNotExistException ex) {

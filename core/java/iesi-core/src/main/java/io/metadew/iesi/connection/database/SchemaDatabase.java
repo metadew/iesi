@@ -71,7 +71,7 @@ public abstract class SchemaDatabase extends Database {
     }
 
     public String getDropStatement(MetadataTable table) {
-        return "drop table " + getSchema().map(schema -> schema + ".").orElse("") + table.getName();
+        return "drop table " + getSchema().map(schema -> schema + ".").orElse("") + table.getName() + ";";
     }
 
     public Optional<String> getSchema() {

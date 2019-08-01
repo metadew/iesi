@@ -10,6 +10,8 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class RuntimeActionCacheConfiguration {
 
@@ -61,37 +63,33 @@ public class RuntimeActionCacheConfiguration {
 
     public void setRuntimeCache(String runId, String type, String name, String value) {
         // Verify if name already exists
-        String query = "";
-
-        query = "select run_id, prc_id,cache_typ_nm, cache_nm, cache_val from "
-                + this.getPRC_RUN_CACHE() + " where run_id = '"
-                + runId + "' and cache_nm = '" + name + "'";
-        CachedRowSet crs = null;
-        crs = this.getSqliteDatabaseConnection().executeQuery(query);
+        List<String> queries = new ArrayList<>();
+        CachedRowSet crs = this.getSqliteDatabaseConnection().executeQuery(
+                "select run_id, prc_id,cache_typ_nm, cache_nm, cache_val from "
+                + this.getPRC_RUN_CACHE() + " where run_id = "
+                + SQLTools.GetStringForSQL(runId) + " and cache_nm = " + SQLTools.GetStringForSQL(name) + ";");
 
         // if so, the previous values will be deleted
-        if (SQLTools.getRowCount(crs) > 0) {
-            query = "delete from " + this.getPRC_RUN_CACHE()
-                    + " where run_id = '" + runId + "' and cache_typ_nm = '" + type + "' and cache_nm = '" + name + "'";
-            this.getSqliteDatabaseConnection().executeUpdate(query);
+        if (crs.size() > 0) {
+            queries.add("delete from " + this.getPRC_RUN_CACHE() +
+                    " where run_id = " + SQLTools.GetStringForSQL(runId) +
+                    " and cache_typ_nm = " + SQLTools.GetStringForSQL(type) +
+                    " and cache_nm = " + SQLTools.GetStringForSQL(name) + ";");
         }
 
+        queries.add("delete from " + this.getPRC_RUN_CACHE() +
+                " where run_id = " + SQLTools.GetStringForSQL(runId) +
+                " and cache_typ_nm = " + SQLTools.GetStringForSQL(type) +
+                " and cache_nm = " + SQLTools.GetStringForSQL(name) + ";");
+
         // new values can be stored
-        query = "";
-        query = "INSERT INTO " + this.getPRC_RUN_CACHE();
-        query = query + "(run_id, prc_id, cache_typ_nm, cache_nm, cache_val)";
-        query = query + " VALUES (";
-        query += SQLTools.GetStringForSQL(runId);
-        query += ",";
-        query += SQLTools.GetStringForSQL(-1);
-        query += ",";
-        query += SQLTools.GetStringForSQL(type);
-        query += ",";
-        query += SQLTools.GetStringForSQL(name);
-        query += ",";
-        query += SQLTools.GetStringForSQL(value);
-        query += ")";
-        this.getSqliteDatabaseConnection().executeUpdate(query);
+        queries.add("INSERT INTO " + this.getPRC_RUN_CACHE() + "(run_id, prc_id, cache_typ_nm, cache_nm, cache_val) VALUES (" +
+                SQLTools.GetStringForSQL(runId) + "," +
+                SQLTools.GetStringForSQL(-1) + "," +
+                SQLTools.GetStringForSQL(type) + "," +
+                SQLTools.GetStringForSQL(name) + "," +
+                SQLTools.GetStringForSQL(value) + ")");
+        this.getSqliteDatabaseConnection().executeBatch(queries);
 
     }
 

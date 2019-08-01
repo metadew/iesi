@@ -3,10 +3,13 @@ package io.metadew.iesi.runtime;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.framework.execution.FrameworkExecutionContext;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
-import io.metadew.iesi.metadata.configuration.ScriptConfiguration;
+import io.metadew.iesi.metadata.configuration.script.ScriptConfiguration;
 import io.metadew.iesi.metadata.definition.Context;
-import io.metadew.iesi.metadata.definition.Script;
+import io.metadew.iesi.metadata.definition.script.Script;
+import io.metadew.iesi.script.ScriptExecutionBuildException;
+import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
+import io.metadew.iesi.script.execution.ScriptExecutionBuilder;
 import io.metadew.iesi.script.operation.ActionSelectOperation;
 
 import java.lang.reflect.InvocationTargetException;
@@ -47,7 +50,7 @@ public class Negotiator {
                 try {
                     TimeUnit.SECONDS.sleep(1);
                     runScript();
-                } catch (InterruptedException | ClassNotFoundException | NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
+                } catch (InterruptedException | ClassNotFoundException | NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException | ScriptExecutionBuildException e) {
                     throw new IllegalStateException(e);
                 }
                 return "Result of the asynchronous computation";
@@ -69,25 +72,27 @@ public class Negotiator {
     }
 
     public void runScript() throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException,
-            InstantiationException, IllegalAccessException {
+            InstantiationException, IllegalAccessException, ScriptExecutionBuildException {
         // Create the framework instance
         FrameworkInstance frameworkInstance = new FrameworkInstance();
 
         // Create the framework execution
-        Context context = new Context();
-        context.setName("negotiator");
-        context.setScope("");
+        Context context = new Context("negotiator", "");
         FrameworkExecution frameworkExecution = new FrameworkExecution(frameworkInstance, new FrameworkExecutionContext(context), null);
         // Get the Script
-        ScriptConfiguration scriptConfiguration = null;
-        Script script = null;
-        scriptConfiguration = new ScriptConfiguration(frameworkExecution.getFrameworkInstance());
-        script = scriptConfiguration.getScript("S2").get();
+        ScriptConfiguration scriptConfiguration = new ScriptConfiguration(frameworkExecution.getFrameworkInstance());
+        Script script = scriptConfiguration.getScript("S2").get();
 
-        ScriptExecution scriptExecution = new ScriptExecution(frameworkExecution, script);
-        scriptExecution.initializeAsRootScript("DEV");
-        scriptExecution.setActionSelectOperation(new ActionSelectOperation(""));
-        scriptExecution.setAsynchronously(true);
+
+
+        ScriptExecution scriptExecution = new ScriptExecutionBuilder(true, false)
+                .frameworkExecution(frameworkExecution)
+                .script(script)
+                .actionSelectOperation(new ActionSelectOperation(""))
+                .environment("DEV")
+                .executionControl(new ExecutionControl(frameworkExecution))
+                .exitOnCompletion(true)
+                .build();
 
         // Execute the Script
         scriptExecution.execute();

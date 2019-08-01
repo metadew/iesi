@@ -66,7 +66,7 @@ public class GenerationRuleExecution {
 					Level.WARN);
 		} finally {
 			// Log End
-			// this.getExecutionControl().logEnd(this);
+			// this.getExecutionControl().endExecution(this);
 		}
 
 	}

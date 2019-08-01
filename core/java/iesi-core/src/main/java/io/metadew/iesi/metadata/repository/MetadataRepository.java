@@ -149,7 +149,11 @@ public abstract class MetadataRepository {
 	}
 
 	public String generateDDL() {
-		return metadataTables.stream().map(metadataTable -> repositoryCoordinator.getCreateStatement(metadataTable))
+		return metadataTables.stream()
+				.map(metadataTable -> repositoryCoordinator.getDropStatement(metadataTable))
+				.collect(Collectors.joining("\n\n")) + "\n\n" +
+				metadataTables.stream()
+				.map(metadataTable -> repositoryCoordinator.getCreateStatement(metadataTable))
 				.collect(Collectors.joining("\n\n"));
 	}
 

@@ -1,9 +1,9 @@
 package io.metadew.iesi.script.execution;
 
-import io.metadew.iesi.metadata.configuration.ActionPerformanceConfiguration;
+import io.metadew.iesi.metadata.configuration.action.ActionPerformanceConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.ActionPerformanceAlreadyExistsException;
-import io.metadew.iesi.metadata.definition.ActionPerformance;
-import io.metadew.iesi.metadata.definition.key.ActionPerformanceKey;
+import io.metadew.iesi.metadata.definition.action.ActionPerformance;
+import io.metadew.iesi.metadata.definition.action.key.ActionPerformanceKey;
 
 import java.sql.SQLException;
 import java.time.Duration;

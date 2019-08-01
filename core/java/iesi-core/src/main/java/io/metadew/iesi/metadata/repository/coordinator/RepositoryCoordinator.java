@@ -103,6 +103,10 @@ public class RepositoryCoordinator {
         return this.databases.get("reader").getCreateStatement(table);
     }
 
+    public String getDropStatement(MetadataTable table) {
+        return this.databases.get("reader").getDropStatement(table);
+    }
+
     public String generateDDL(MetadataTable metadataTable, String tableNamePrefix) {
         return this.databases.get("reader").getCreateStatement(metadataTable, tableNamePrefix);
     }

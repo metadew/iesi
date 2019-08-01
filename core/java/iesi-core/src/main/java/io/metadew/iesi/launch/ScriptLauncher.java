@@ -18,6 +18,7 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.logging.log4j.ThreadContext;
 
 /**
  * The execution launcher is entry point to launch all automation scripts.
@@ -28,6 +29,7 @@ public class ScriptLauncher {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static void main(String[] args) {
+		ThreadContext.clearAll();
 
 		Option oHelp = new Option("help", "print this message");
 		Option oIni = new Option("ini", true, "define the initialization file");

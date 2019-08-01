@@ -62,7 +62,7 @@ public class GenerationExecution {
 		this.getGenerationOutputExecution().execute(); 
 
 		// Log End
-		//this.getExecutionControl().logEnd(this);
+		//this.getExecutionControl().endExecution(this);
 
 		// Exit the execution
 		// this.getEoControl().endExecution();

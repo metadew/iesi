@@ -12,6 +12,7 @@ import io.metadew.iesi.metadata.repository.MetadataRepository;
 import io.metadew.iesi.metadata.repository.configuration.MetadataRepositoryConfiguration;
 import io.metadew.iesi.metadata.restore.RestoreExecution;
 import org.apache.commons.cli.*;
+import org.apache.logging.log4j.ThreadContext;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
@@ -32,6 +33,7 @@ public class MetadataLauncher {
 
     @SuppressWarnings({"unchecked", "rawtypes", "unused"})
     public static void main(String[] args) {
+        ThreadContext.clearAll();
 
         Option oHelp = new Option("help", "print this message");
         Option oIni = new Option("ini", true, "define the initialization file");

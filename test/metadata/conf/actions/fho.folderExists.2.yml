@@ -23,7 +23,7 @@ data:
       value : ""
   - number: 2
     type: "fho.folderExists"
-    name: "Action1"
+    name: "Action2"
     description: "Check if connection can be set to localhost"
     component: ""
     condition: ""

@@ -1,32 +1,35 @@
 package io.metadew.iesi.launch.operation;
 
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Optional;
 
-import org.apache.logging.log4j.Level;
+import io.metadew.iesi.framework.execution.*;
+import io.metadew.iesi.script.ScriptExecutionBuildException;
+import io.metadew.iesi.script.execution.ScriptExecutionBuilder;
 
 import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.framework.definition.FrameworkRunIdentifier;
-import io.metadew.iesi.framework.execution.FrameworkExecution;
-import io.metadew.iesi.framework.execution.FrameworkExecutionContext;
-import io.metadew.iesi.framework.execution.FrameworkExecutionSettings;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.guard.configuration.UserAccessConfiguration;
 import io.metadew.iesi.guard.definition.UserAccess;
-import io.metadew.iesi.metadata.configuration.ScriptConfiguration;
+import io.metadew.iesi.metadata.configuration.script.ScriptConfiguration;
 import io.metadew.iesi.metadata.definition.Context;
 import io.metadew.iesi.metadata.definition.Request;
 import io.metadew.iesi.metadata.definition.RequestParameter;
-import io.metadew.iesi.metadata.definition.Script;
+import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionSelectOperation;
 import io.metadew.iesi.script.operation.JsonInputOperation;
 import io.metadew.iesi.script.operation.YamlInputOperation;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public final class ScriptLaunchOperation {
 
-	public static void execute(FrameworkInstance frameworkInstance, Request request, FrameworkRunIdentifier frameworkRunIdentifier) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+
+	private static final Logger LOGGER = LogManager.getLogger();
+
+	public static void execute(FrameworkInstance frameworkInstance, Request request, FrameworkRunIdentifier frameworkRunIdentifier) throws ScriptExecutionBuildException {
 		String actionSelect = "";
 		String environmentName = request.getContext();
 		String executionMode = "";
@@ -92,31 +95,25 @@ public final class ScriptLaunchOperation {
 		
 		// Create framework execution
 		FrameworkExecutionSettings frameworkExecutionSettings = new FrameworkExecutionSettings(settings);
-		Context context = new Context();
-		context.setName("script");
-		context.setScope(scriptName);
+		Context context = new Context("script", scriptName);
 
 		FrameworkExecution frameworkExecution = new FrameworkExecution(frameworkInstance,
 				new FrameworkExecutionContext(context), frameworkExecutionSettings,
 				frameworkInstance.getFrameworkInitializationFile(), frameworkRunIdentifier);
 
 		// Logging
-		frameworkExecution.getFrameworkLog().log("option.script=" + scriptName, Level.INFO);
-		frameworkExecution.getFrameworkLog().log("option.version=" + scriptVersionNumber, Level.INFO);
-		frameworkExecution.getFrameworkLog().log("option.file=" + fileName, Level.INFO);
-		frameworkExecution.getFrameworkLog().log("option.env=" + environmentName, Level.INFO);
-		frameworkExecution.getFrameworkLog().log("option.paramlist=" + paramList, Level.INFO);
-		frameworkExecution.getFrameworkLog().log("option.paramfile=" + paramFile, Level.INFO);
-		frameworkExecution.getFrameworkLog().log("option.actionselect=" + actionSelect, Level.INFO);
-		frameworkExecution.getFrameworkLog().log("option.settings=" + settings, Level.INFO);
-		frameworkExecution.getFrameworkLog().log("option.impersonation=" + impersonationName, Level.INFO);
-		frameworkExecution.getFrameworkLog().log("option.impersonate=" + impersonationCustom, Level.INFO);
-		frameworkExecution.getFrameworkLog().log("option.user=" + userName, Level.INFO);
-		if (userPassword.isEmpty()) {
-			frameworkExecution.getFrameworkLog().log("option.password=" + "", Level.INFO);
-		} else {
-			frameworkExecution.getFrameworkLog().log("option.password=" + "*****", Level.INFO);
-		}
+		LOGGER.info(new IESIMessage("option.script=" + scriptName));
+		LOGGER.info(new IESIMessage("option.version=" + scriptVersionNumber));
+		LOGGER.info(new IESIMessage("option.file=" + fileName));
+		LOGGER.info(new IESIMessage("option.env=" + environmentName));
+		LOGGER.info(new IESIMessage("option.paramlist=" + paramList));
+		LOGGER.info(new IESIMessage("option.paramfile=" + paramFile));
+		LOGGER.info(new IESIMessage("option.actionselect=" + actionSelect));
+		LOGGER.info(new IESIMessage("option.settings=" + settings));
+		LOGGER.info(new IESIMessage("option.impersonation=" + impersonationName));
+		LOGGER.info(new IESIMessage("option.impersonate=" + impersonationCustom));
+		LOGGER.info(new IESIMessage("option.user=" + userName));
+		LOGGER.info(new IESIMessage("option.password=" + (userPassword.isEmpty() ? "" : "******")));
 
 		// User authentication
 		// TODO: move outside server logic
@@ -135,9 +132,8 @@ public final class ScriptLaunchOperation {
 			UserAccess userAccess = userAccessConfiguration.doUserLogin(userName, userPassword);
 
 			if (userAccess.isException()) {
-				frameworkExecution.getFrameworkLog().log("guard.user.exception=" + userAccess.getExceptionMessage(),
-						Level.INFO);
-				frameworkExecution.getFrameworkLog().log("guard.user.denied", Level.INFO);
+				LOGGER.info(new IESIMessage("guard.user.exception=" + userAccess.getExceptionMessage()));
+				LOGGER.info(new IESIMessage("guard.user.denied"));
 				throw new RuntimeException("guard.user.denied");
 			}
 
@@ -145,10 +141,9 @@ public final class ScriptLaunchOperation {
 		// TODO link user access into framework
 
 		// Get the Script
-		ScriptConfiguration scriptConfiguration = null;
 		Optional<Script> script = Optional.empty();
 		if (executionMode.equalsIgnoreCase("script")) {
-			scriptConfiguration = new ScriptConfiguration(frameworkExecution.getFrameworkInstance());
+			ScriptConfiguration scriptConfiguration = new ScriptConfiguration(frameworkExecution.getFrameworkInstance());
 			if (scriptVersionNumber == -1) {
 				script = scriptConfiguration.getScript(scriptName);
 			} else {
@@ -177,20 +172,18 @@ public final class ScriptLaunchOperation {
 			System.exit(1);
 		}
 
-		ScriptExecution scriptExecution = new ScriptExecution(frameworkExecution, script.get());
-		scriptExecution.initializeAsRootScript(environmentName);
-		scriptExecution.setActionSelectOperation(new ActionSelectOperation(actionSelect));
+		ScriptExecution scriptExecution = new ScriptExecutionBuilder(true, false)
+				.frameworkExecution(frameworkExecution)
+				.script(script.get())
+				.exitOnCompletion(false)
+				.paramList(paramList)
+				.paramFile(paramFile)
+				.actionSelectOperation(new ActionSelectOperation(actionSelect))
+				.environment(environmentName)
+				.build();
+
 		scriptExecution.setImpersonations(impersonationName, impersonationCustom);
 		// always set to false - deprecated (needs to be set by the executor instead)
-		// TODO remove at this detailed level
-		scriptExecution.setExitOnCompletion(false);
-
-		if (!paramList.equals("")) {
-			scriptExecution.setParamList(paramList);
-		}
-		if (!paramFile.equals("")) {
-			scriptExecution.setParamFile(paramFile);
-		}
 
 		// Execute the Script
 		scriptExecution.execute();

@@ -9,6 +9,8 @@ IESI_HOME=$(pwd)
 echo -e "iesi.home=${IESI_HOME}" >${IESI_HOME}/bin/iesi-home.conf
 echo -e "iesi.home=${IESI_HOME}" >${IESI_HOME}/sbin/iesi-home.conf
 echo -e "iesi.home=${IESI_HOME}" >${IESI_HOME}/lib/iesi-home.conf
+cp ${IESI_HOME}/conf/log4j2.xml > ${IESI_HOME}/lib/log4j2.xml
+
 cd ${CURR_DIR}
 
 #Environment Settings Extensions

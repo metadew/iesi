@@ -2,7 +2,7 @@ package io.metadew.iesi.script.execution;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
-import io.metadew.iesi.metadata.definition.ScriptLog;
+import io.metadew.iesi.metadata.definition.script.ScriptLog;
 
 public class ExecutionLog {
 

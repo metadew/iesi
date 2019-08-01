@@ -7,7 +7,9 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoField;
 
 public final class SQLTools {
 
@@ -18,6 +20,9 @@ public final class SQLTools {
         } else {
             return "'" + GetCleanString(input) + "'";
         }
+    }
+    public static String GetStringForSQL(boolean input) {
+        return "'" + (input ? "Y" : "N") + "'";
     }
 
     public static String GetStringForSQL(Timestamp input) {
@@ -198,6 +203,9 @@ public final class SQLTools {
     }
 
     public static LocalDateTime getLocalDatetimeFromSql(String localDateTime) {
-        return LocalDateTime.parse(localDateTime, DateTimeFormatter.ofPattern("yyyy-MM-dd[ ]['T']HH:mm:ss[.SSS][.SSSSSS][.SSSSSSSSS]"));
+        return LocalDateTime.parse(localDateTime, new DateTimeFormatterBuilder()
+                .appendPattern("yyyy-MM-dd[ ]['T']HH:mm:ss")
+                .appendFraction(ChronoField.MICRO_OF_SECOND, 0, 9, true)
+                .toFormatter());
     }
 }

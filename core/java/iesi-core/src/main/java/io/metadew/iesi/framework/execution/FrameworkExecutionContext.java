@@ -12,7 +12,7 @@ public class FrameworkExecutionContext {
     private Context context;
 
     public FrameworkExecutionContext(Context context) {
-        this.setContext(context);
+        this.context = context;
     }
 
     // Getters and setters

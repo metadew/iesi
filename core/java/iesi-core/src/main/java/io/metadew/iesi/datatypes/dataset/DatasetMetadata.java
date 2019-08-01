@@ -4,6 +4,7 @@ import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.SqliteDatabase;
 import io.metadew.iesi.connection.database.connection.SqliteDatabaseConnection;
 import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
+import io.metadew.iesi.framework.execution.IESIMessage;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 import org.apache.logging.log4j.Level;
 
@@ -58,15 +59,17 @@ public class DatasetMetadata {
         } else if (cachedRowSetLabels.size() == 1) {
             cachedRowSetLabels.next();
             datasetInventoryId = cachedRowSetLabels.getLong("DATASET_INV_ID");
-            executionRuntime.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format("Found dataset id {0} for labels {1}-{2}.", Long.toString(datasetInventoryId), datasetName, String.join(", ", labels)), Level.TRACE);
+            executionRuntime.getExecutionControl().logMessage(new IESIMessage(MessageFormat.format("Found dataset id {0} for labels {1}-{2}.", Long.toString(datasetInventoryId), datasetName, String.join(", ", labels))), Level.TRACE);
         } else {
             List<Integer> datasetInventoryIds = new ArrayList<>();
             while (cachedRowSetLabels.next()) {
                 datasetInventoryIds.add(cachedRowSetLabels.getInt("DATASET_INV_ID"));
             }
-            executionRuntime.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format("Found more than one dataset id ({0}) for name ''{1}'' and labels ''{2}''. " +
+
+            executionRuntime.getExecutionControl().logMessage(new IESIMessage(MessageFormat.format("Found more than one dataset id ({0}) for name ''{1}'' and labels ''{2}''. " +
                             "Returning first occurrence.", datasetInventoryIds.stream().map(id -> Integer.toString(id)).collect(Collectors.joining(", ")),
-                    datasetName, String.join(", ", labels)), Level.WARN);
+                    datasetName, String.join(", ", labels))), Level.WARN);
+
             datasetInventoryId = datasetInventoryIds.get(0);
         }
         return Optional.of(datasetInventoryId);
@@ -81,9 +84,8 @@ public class DatasetMetadata {
             throw new RuntimeException(MessageFormat.format("dataset id {0} is does not have an implementation. " +
                     "Please implement this dataset", datasetName));
         } else if (cachedRowSetFileTable.size() > 1) {
-            executionRuntime.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format("Found more than implementation for dataset id {0}. " +
-                            "Returning first occurrence.",
-                    id), Level.WARN);
+            executionRuntime.getExecutionControl().logMessage(new IESIMessage(MessageFormat.format("Found more than implementation for dataset id {0}. " +
+                    "Returning first occurrence.", id)), Level.WARN);
         }
         cachedRowSetFileTable.next();
         Database database = new SqliteDatabase(new SqliteDatabaseConnection(frameworkFolderConfiguration.getFolderAbsolutePath("data") + File.separator + "datasets"
@@ -101,9 +103,10 @@ public class DatasetMetadata {
             throw new RuntimeException(MessageFormat.format("dataset id {0} is does not have an implementation. " +
                     "Please implement this dataset", datasetName));
         } else if (cachedRowSetFileTable.size() > 1) {
-            executionRuntime.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format("Found more than implementation for dataset id {0}. " +
-                            "Returning first occurrence.",
-                    id), Level.WARN);
+
+            executionRuntime.getExecutionControl().logMessage(new IESIMessage(MessageFormat.format("Found more than implementation for dataset id {0}. " +
+                    "Returning first occurrence.",id)), Level.WARN);
+
         }
         cachedRowSetFileTable.next();
         String tableName = cachedRowSetFileTable.getString("DATASET_TABLE_NM");

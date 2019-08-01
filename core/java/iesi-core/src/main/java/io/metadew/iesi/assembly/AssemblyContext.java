@@ -25,7 +25,7 @@ public class AssemblyContext {
 
     // Methods
     private void createInstallationTools() {
-        this.setFrameworkCrypto(new FrameworkCrypto());
+        this.setFrameworkCrypto(FrameworkCrypto.getInstance());
         this.setConfigTools(new FrameworkControl(new FrameworkConfiguration(this.getRepositoryHome()), "assembly", this.getRepositoryHome()));
 
         // Create other tools

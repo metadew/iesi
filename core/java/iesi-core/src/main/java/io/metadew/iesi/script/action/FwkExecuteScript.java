@@ -6,12 +6,13 @@ import io.metadew.iesi.datatypes.DataTypeResolver;
 import io.metadew.iesi.datatypes.Text;
 import io.metadew.iesi.framework.configuration.FrameworkStatus;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
-import io.metadew.iesi.metadata.configuration.ScriptConfiguration;
-import io.metadew.iesi.metadata.definition.ActionParameter;
-import io.metadew.iesi.metadata.definition.Script;
+import io.metadew.iesi.metadata.configuration.script.ScriptConfiguration;
+import io.metadew.iesi.metadata.definition.action.ActionParameter;
+import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
+import io.metadew.iesi.script.execution.ScriptExecutionBuilder;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 import org.apache.logging.log4j.Level;
 
@@ -152,21 +153,24 @@ public class FwkExecuteScript {
                     .map(version -> scriptConfiguration.getScript(scriptName, version))
                     .orElse(scriptConfiguration.getScript(scriptName)).get();
 
-            ScriptExecution scriptExecution = new ScriptExecution(this.getFrameworkExecution(), script);
-            scriptExecution.initializeAsNonRootExecution(this.getExecutionControl(), this.getScriptExecution());
+            ScriptExecution subScriptScriptExecution = new ScriptExecutionBuilder(false, false)
+                    .frameworkExecution(frameworkExecution)
+                    .script(script)
+                    .executionControl(executionControl)
+                    .parentScriptExecution(this.scriptExecution)
+                    .exitOnCompletion(false)
+                    .paramFile(parameterFileName.orElse(""))
+                    .paramList(parameterList.orElse(""))
+                    .build();
 
-            parameterFileName.ifPresent(scriptExecution::setParamFile);
-            // TODO: do it nicer
-            parameterList.ifPresent(scriptExecution::setParamList);
+            subScriptScriptExecution.execute();
 
-            scriptExecution.execute();
-
-            if (scriptExecution.getResult().equalsIgnoreCase(FrameworkStatus.SUCCESS.value())) {
+            if (subScriptScriptExecution.getResult().equalsIgnoreCase(FrameworkStatus.SUCCESS.value())) {
                 this.getActionExecution().getActionControl().increaseSuccessCount();
-            } else if (scriptExecution.getResult()
+            } else if (subScriptScriptExecution.getResult()
                     .equalsIgnoreCase(FrameworkStatus.WARNING.value())) {
                 this.getActionExecution().getActionControl().increaseWarningCount();
-            } else if (scriptExecution.getResult()
+            } else if (subScriptScriptExecution.getResult()
                     .equalsIgnoreCase(FrameworkStatus.ERROR.value())) {
                 this.getActionExecution().getActionControl().increaseErrorCount();
             } else {

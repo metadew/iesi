@@ -2,7 +2,7 @@ package io.metadew.iesi.metadata.configuration.type;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
-import io.metadew.iesi.metadata.definition.ActionType;
+import io.metadew.iesi.metadata.definition.action.ActionType;
 import io.metadew.iesi.metadata.operation.DataObjectOperation;
 import io.metadew.iesi.metadata.operation.TypeConfigurationOperation;
 

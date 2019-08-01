@@ -54,7 +54,7 @@ public class BackupExecution {
 		}
 
 		// Log End
-		// this.getExecutionControl().logEnd(this);
+		// this.getExecutionControl().endExecution(this);
 		// this.getFrameworkExecution().getFrameworkLog().log("metadata.backup.end",
 		// Level.INFO);
 
@@ -153,7 +153,7 @@ public class BackupExecution {
 		}
 
 		// Log End
-		// this.getExecutionControl().logEnd(this);
+		// this.getExecutionControl().endExecution(this);
 		// this.getFrameworkExecution().getFrameworkLog().log("metadata.backup.end",
 		// Level.INFO);
 

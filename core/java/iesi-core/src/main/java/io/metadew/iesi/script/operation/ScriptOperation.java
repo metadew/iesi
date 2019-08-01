@@ -1,7 +1,7 @@
 package io.metadew.iesi.script.operation;
 
-import io.metadew.iesi.metadata.definition.Action;
-import io.metadew.iesi.metadata.definition.Script;
+import io.metadew.iesi.metadata.definition.action.Action;
+import io.metadew.iesi.metadata.definition.script.Script;
 
 import java.util.HashMap;
 

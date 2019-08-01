@@ -1,7 +1,7 @@
 package io.metadew.iesi.script.execution.instruction.lookup.script;
 
-import io.metadew.iesi.metadata.configuration.ScriptResultOutputConfiguration;
-import io.metadew.iesi.metadata.definition.ScriptResultOutput;
+import io.metadew.iesi.metadata.configuration.script.ScriptResultOutputConfiguration;
+import io.metadew.iesi.metadata.definition.script.ScriptResultOutput;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.instruction.lookup.LookupInstruction;
 

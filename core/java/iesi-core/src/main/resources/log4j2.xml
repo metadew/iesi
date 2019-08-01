@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <Appenders>
+        <Routing name="MyRoutingAppender">
+            <Routes pattern="$${marker:}$${ctx:runId}">
+                <Route>
+                    <File fileName="${ctx:location}/${ctx:runId}/script.log" name="appender-${marker:}-${ctx:runId}" append="false">
+                        <PatternLayout>
+                            <Pattern>%d %-5p [%c{1}] - %m%n</Pattern>
+                        </PatternLayout>
+                    </File>
+                </Route>
+                <Route key="FWK${ctx:runId}">
+                    <File fileName="${ctx:location}/${ctx:fwk.code}.log" name="appender-${marker:}" append="false">
+                        <PatternLayout>
+                            <Pattern>%d %-5p [%c{1}] - %m%n</Pattern>
+                        </PatternLayout>
+                    </File>
+                </Route>
+                <Route key="${marker:}${ctx:runId}">
+                    <File fileName="${ctx:location}/${ctx:fwk.code}.log" name="appender" append="false">
+                        <PatternLayout>
+                            <Pattern>%d %-5p [%c{1}] - %m%n</Pattern>
+                        </PatternLayout>
+                    </File>
+                </Route>
+            </Routes>
+        </Routing>
+        <Console name="STDOUT" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d %-5p [%c{1}] - %m%n" />
+        </Console>
+    </Appenders>
+    <Loggers>
+        <Logger name="io.metadew.iesi" level="all" additivity="false">
+            <AppenderRef ref="STDOUT" />
+            <AppenderRef ref="MyRoutingAppender" />
+        </Logger>
+        <Root level="all">
+            <AppenderRef ref="STDOUT" />
+        </Root>
+    </Loggers>
+</Configuration>

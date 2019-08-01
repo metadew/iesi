@@ -2,6 +2,7 @@ package io.metadew.iesi.framework.execution;
 
 import io.metadew.iesi.framework.configuration.FrameworkConfiguration;
 import io.metadew.iesi.framework.crypto.FrameworkCrypto;
+import io.metadew.iesi.framework.definition.Framework;
 import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
 import io.metadew.iesi.framework.definition.FrameworkRunIdentifier;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
@@ -80,8 +81,9 @@ public class FrameworkExecution {
 
         // Setup framework runtime
         this.setFrameworkRuntime(new FrameworkRuntime(this.getFrameworkConfiguration(), frameworkRunIdentifier));
-        this.setFrameworkLog(new FrameworkLog(this.getFrameworkConfiguration(), this.getFrameworkExecutionContext(),
-                this.getFrameworkControl(), this.getFrameworkCrypto(), this.getFrameworkRuntime()));
+        FrameworkLog frameworkLog = FrameworkLog.getInstance();
+        frameworkLog.init(frameworkConfiguration, frameworkExecutionContext, frameworkControl, frameworkCrypto, frameworkRuntime);
+        this.frameworkLog = frameworkLog;
         this.setFrameworkResultProvider(new FrameworkResultProvider());
     }
 

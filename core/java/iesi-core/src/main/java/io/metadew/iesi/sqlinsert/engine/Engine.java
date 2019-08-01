@@ -71,7 +71,7 @@ public class Engine {
                     e.printStackTrace();
                 }
             }
-            FrameworkCrypto cryptoOperation = new FrameworkCrypto();
+            FrameworkCrypto cryptoOperation = FrameworkCrypto.getInstance();
             this.password = cryptoOperation.decrypt(temp.substring(4, temp.length() - 1));
         } else {
             this.password = temp;

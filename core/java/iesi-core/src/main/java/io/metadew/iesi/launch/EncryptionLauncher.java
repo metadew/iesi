@@ -31,7 +31,7 @@ public class EncryptionLauncher {
 
         String input = new String(passwordArray);
 
-        FrameworkCrypto frameworkCrypto = new FrameworkCrypto();
+        FrameworkCrypto frameworkCrypto = FrameworkCrypto.getInstance();
 
         String output = "";
         try {

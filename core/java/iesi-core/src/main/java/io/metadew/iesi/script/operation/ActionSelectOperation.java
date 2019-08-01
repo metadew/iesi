@@ -1,6 +1,6 @@
 package io.metadew.iesi.script.operation;
 
-import io.metadew.iesi.metadata.definition.Action;
+import io.metadew.iesi.metadata.definition.action.Action;
 
 import java.util.ArrayList;
 
@@ -12,19 +12,14 @@ import java.util.ArrayList;
 public class ActionSelectOperation {
 
     private String type = "number";
-    private String mode = "include";
-    private ArrayList<String> fromList = null;
-    private ArrayList<String> toList = null;
+    private String mode = "exclude";
+    private ArrayList<String> fromList = new ArrayList<>();
+    private ArrayList<String> toList = new ArrayList<>();
     private boolean active = true;
 
     // Constructors
-    @SuppressWarnings({"unchecked", "rawtypes"})
     public ActionSelectOperation(String input) {
         // Create arraylists
-        this.setFromList(new ArrayList());
-        this.setToList(new ArrayList());
-
-        // Read input
         this.loadInput(input);
     }
 
@@ -79,24 +74,12 @@ public class ActionSelectOperation {
     }
 
     public boolean getExecutionStatus(Action action) {
-        if (this.getMode().equalsIgnoreCase("include")) {
-            if (inList(this.getFromList(), Long.toString(action.getNumber()))) {
-                if (!this.isActive()) {
-                    this.setActive(true);
-                }
-                return true;
-            } else {
-                return this.isActive();
-            }
-        } else if (this.getMode().equalsIgnoreCase("exclude")) {
-            if (inList(this.getFromList(), Long.toString(action.getNumber()))) {
-                if (this.isActive()) {
-                    this.setActive(false);
-                }
-                return false;
-            } else {
-                return this.isActive();
-            }
+        if (mode.equalsIgnoreCase("include")) {
+            active = fromList.stream().anyMatch(s -> s.equalsIgnoreCase(Long.toString(action.getNumber())));
+            return active;
+        } else if (mode.equalsIgnoreCase("exclude")) {
+            active = fromList.stream().noneMatch(s -> s.equalsIgnoreCase(Long.toString(action.getNumber())));
+            return active;
         } else {
             throw new RuntimeException("Invalid action selection mode");
         }

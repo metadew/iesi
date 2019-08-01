@@ -5,7 +5,7 @@ import io.metadew.iesi.datatypes.DataTypeResolver;
 import io.metadew.iesi.datatypes.Text;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.configuration.type.ActionTypeParameterConfiguration;
-import io.metadew.iesi.metadata.definition.ActionTypeParameter;
+import io.metadew.iesi.metadata.definition.action.ActionTypeParameter;
 import io.metadew.iesi.runtime.subroutine.ShellCommandSubroutine;
 import io.metadew.iesi.runtime.subroutine.SqlStatementSubroutine;
 import io.metadew.iesi.script.execution.ActionExecution;

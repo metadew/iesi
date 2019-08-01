@@ -10,8 +10,8 @@ import org.apache.logging.log4j.Level;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.Text;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
-import io.metadew.iesi.metadata.definition.Action;
-import io.metadew.iesi.metadata.definition.ActionParameter;
+import io.metadew.iesi.metadata.definition.action.Action;
+import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
@@ -103,13 +103,14 @@ public class ActionExecute {
 			// Get the action
 			Action action = null;
 			boolean result = false;
-			for (int i = 0; i < this.getScriptExecution().getActions().size(); i++) {
-				action = this.getScriptExecution().getActions().get(i);
-				if (action.getName().equalsIgnoreCase(actionName)) {
-					result = true;
-					break;
-				}
-			}
+			// TODO
+//			for (int i = 0; i < this.getScriptExecution().getActions().size(); i++) {
+//				action = this.getScriptExecution().getActions().get(i);
+//				if (action.getName().equalsIgnoreCase(actionName)) {
+//					result = true;
+//					break;
+//				}
+//			}
 			if (!result) {
 				throw new RuntimeException("action.name.notfound");
 			}

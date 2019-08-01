@@ -116,6 +116,8 @@ public class DataObjectConfiguration {
                 this.getMetadataRepository().save(dataObject, getFrameworkExecution());
             } catch (MetadataRepositorySaveException e) {
                 frameworkExecution.getFrameworkLog().log(MessageFormat.format("Failed to save {0} to repository", dataObject.getType()), Level.WARN);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }

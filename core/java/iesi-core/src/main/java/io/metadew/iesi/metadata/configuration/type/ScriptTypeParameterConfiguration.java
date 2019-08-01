@@ -1,8 +1,8 @@
 package io.metadew.iesi.metadata.configuration.type;
 
 import io.metadew.iesi.framework.instance.FrameworkInstance;
-import io.metadew.iesi.metadata.definition.ScriptType;
-import io.metadew.iesi.metadata.definition.ScriptTypeParameter;
+import io.metadew.iesi.metadata.definition.script.ScriptType;
+import io.metadew.iesi.metadata.definition.script.ScriptTypeParameter;
 
 public class ScriptTypeParameterConfiguration {
 

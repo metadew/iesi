@@ -52,7 +52,7 @@ public class RestoreTargetOperation {
             this.getFrameworkExecution().getFrameworkLog().log("restore.error.file.parse" + dataFile, Level.ERROR);
         } finally {
             // Log End
-            // this.getEoControl().logEnd(this);
+            // this.getEoControl().endExecution(this);
         }
 
     }

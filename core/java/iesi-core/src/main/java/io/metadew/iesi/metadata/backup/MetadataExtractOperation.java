@@ -93,7 +93,7 @@ public class MetadataExtractOperation {
                     "metadata.extract.error", Level.INFO);
         } finally {
             // Log End
-            // this.getEoControl().logEnd(this);
+            // this.getEoControl().endExecution(this);
         }
 
     }

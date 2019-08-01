@@ -3,7 +3,7 @@ package io.metadew.iesi.framework.configuration;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.metadata.configuration.FrameworkPluginConfiguration;
-import io.metadew.iesi.metadata.definition.ActionType;
+import io.metadew.iesi.metadata.definition.action.ActionType;
 import io.metadew.iesi.metadata.definition.DataObject;
 import io.metadew.iesi.metadata.operation.DataObjectOperation;
 import org.apache.commons.io.FilenameUtils;

@@ -44,7 +44,7 @@ public class FrameworkInstance {
 			FrameworkConfiguration frameworkConfiguration) {
 		this.frameworkConfiguration = frameworkConfiguration;
 		this.frameworkInitializationFile = frameworkInitializationFile;
-		this.frameworkCrypto = new FrameworkCrypto();
+		this.frameworkCrypto = FrameworkCrypto.getInstance();
 		this.frameworkControl = new FrameworkControl(this.frameworkConfiguration, logonType,
 				this.frameworkInitializationFile, frameworkCrypto);
 		this.frameworkConfiguration.setActionTypesFromPlugins(frameworkControl.getFrameworkPluginConfigurationList());
@@ -72,7 +72,7 @@ public class FrameworkInstance {
 			FrameworkInitializationFile frameworkInitializationFile) {
 		// Get the framework configuration
 		this.setFrameworkConfiguration(new FrameworkConfiguration());
-		this.setFrameworkCrypto(new FrameworkCrypto());
+		this.setFrameworkCrypto(FrameworkCrypto.getInstance());
 
 		// Set appropriate initialization file
 		if (frameworkInitializationFile == null) {

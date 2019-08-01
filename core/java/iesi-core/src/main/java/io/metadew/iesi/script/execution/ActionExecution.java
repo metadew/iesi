@@ -1,10 +1,9 @@
 package io.metadew.iesi.script.execution;
 
 import io.metadew.iesi.framework.execution.FrameworkExecution;
-import io.metadew.iesi.metadata.configuration.ActionPerformanceConfiguration;
+import io.metadew.iesi.metadata.configuration.action.ActionPerformanceConfiguration;
 import io.metadew.iesi.metadata.configuration.type.ActionTypeConfiguration;
-import io.metadew.iesi.metadata.definition.Action;
-import io.metadew.iesi.metadata.definition.ConnectionParameter;
+import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.script.configuration.IterationInstance;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 import io.metadew.iesi.script.operation.ComponentAttributeOperation;
@@ -143,17 +142,18 @@ public class ActionExecution {
 
 				// Trace function
 				actionParameterOperationMapClone = (HashMap<String, ActionParameterOperation>) actionParameterOperationMap.clone();
+
 				this.traceDesignMetadata(actionParameterOperationMapClone);
 
 				// Evaluate error expected
 				if (this.getActionControl().getExecutionMetrics().getErrorCount() > 0) {
-					if (this.getAction().getErrorExpected().equalsIgnoreCase("y")) {
+					if (this.getAction().getErrorExpected()) {
 						this.getActionControl().getExecutionMetrics().resetErrorCount();
 						this.getActionControl().getExecutionMetrics().increaseSuccessCount(1);
 						this.getExecutionControl().logMessage(this, "action.status=ERROR:expected", Level.INFO);
 					}
 				} else {
-					if (this.getAction().getErrorExpected().equalsIgnoreCase("y")) {
+					if (this.getAction().getErrorExpected()) {
 						this.getActionControl().getExecutionMetrics().resetSuccessCount();
 						this.getActionControl().getExecutionMetrics().increaseErrorCount(1);
 						this.getExecutionControl().logMessage(this, "action.status=SUCCESS:unexpected", Level.INFO);

@@ -1,21 +1,19 @@
 package io.metadew.iesi.script.execution;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.common.text.TextTools;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.configuration.FrameworkStatus;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.execution.IESIMessage;
 import io.metadew.iesi.metadata.backup.BackupExecution;
-import io.metadew.iesi.metadata.configuration.ScriptTraceConfiguration;
-import io.metadew.iesi.metadata.definition.ScriptLog;
+import io.metadew.iesi.metadata.configuration.script.ScriptTraceConfiguration;
+import io.metadew.iesi.metadata.definition.script.ScriptLog;
 import io.metadew.iesi.metadata.restore.RestoreExecution;
-import org.apache.logging.log4j.Level;
+import io.metadew.iesi.metadata.service.script.ScriptDesignTraceService;
+import org.apache.logging.log4j.*;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,28 +21,25 @@ import java.util.List;
 public class ExecutionControl {
 
     private FrameworkExecution frameworkExecution;
-
     private ExecutionRuntime executionRuntime;
-
     private ExecutionLog executionLog;
-
     private ExecutionTrace executionTrace;
-
     private ScriptLog scriptLog;
-
     private String runId;
-
     private String envName;
-
     private List<Long> processIdList;
-
     private boolean actionErrorStop = false;
     private boolean scriptExit = false;
+    private ScriptDesignTraceService scriptDesignTraceService;
+
+    private static final Marker SCRIPTMARKER = MarkerManager.getMarker("SCRIPT");
+    private static final Logger LOGGER = LogManager.getLogger();
 
     // Constructors
     public ExecutionControl(FrameworkExecution frameworkExecution) throws ClassNotFoundException, NoSuchMethodException,
             InvocationTargetException, InstantiationException, IllegalAccessException {
         this.frameworkExecution = frameworkExecution;
+        this.scriptDesignTraceService = new ScriptDesignTraceService(frameworkExecution.getMetadataControl());
         this.executionLog = new ExecutionLog(frameworkExecution);
         this.executionTrace = new ExecutionTrace(frameworkExecution);
         setRunId(frameworkExecution.getFrameworkRuntime().getRunId());
@@ -61,14 +56,7 @@ public class ExecutionControl {
             Class classRef = Class.forName(frameworkExecution.getFrameworkControl().getProperty(frameworkExecution.getFrameworkConfiguration().getSettingConfiguration().getSettingPath("script.execution.runtime").get()));
             Class[] initParams = {FrameworkExecution.class, ExecutionControl.class, String.class};
             Constructor constructor = classRef.getConstructor(initParams);
-            Object instance = constructor.newInstance(this.getFrameworkExecution(), this, runId);
-
-//				classRef = ClassOperation.getExecutionRuntime(frameworkExecution.getFrameworkControl().getProperty(frameworkExecution.getFrameworkConfiguration().getSettingConfiguration().getSettingPath("script.execution.runtime").get()));
-//				instance = classRef.newInstance();
-
-            ObjectMapper objectMapper = new ObjectMapper();
-            this.executionRuntime = objectMapper.convertValue(instance, ExecutionRuntime.class);
-
+           this.executionRuntime = (ExecutionRuntime) constructor.newInstance(this.getFrameworkExecution(), this, runId);
         } else {
             this.executionRuntime = new ExecutionRuntime(frameworkExecution, this, runId);
         }
@@ -90,24 +78,10 @@ public class ExecutionControl {
     }
 
     // Log start
-    public void logStart(ScriptExecution scriptExecution, ScriptExecution parentScriptExecution) {
-        Long parentProcessId;
-        if (scriptExecution.isRootScript()) {
-            // Set parent Process Id
-            parentProcessId = 0L;
-            // Initialize runtime variables
-            this.getExecutionRuntime().setRuntimeVariablesFromList(scriptExecution, this.getFrameworkExecution().getMetadataControl()
-                    .getConnectivityMetadataRepository()
-                    .executeQuery("select env_par_nm, env_par_val from "
-                            + this.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("EnvironmentParameters")
-                            + " where env_nm = '" + this.getEnvName() + "' order by env_par_nm asc, env_par_val asc", "reader"));
-        } else if (scriptExecution.isRouteScript()) {
-            // Set parent Process Id
-            parentProcessId = scriptExecution.getParentScriptExecution().getProcessId();
-        } else {
-            // Set parent Process Id
-            parentProcessId = parentScriptExecution.getProcessId();
-        }
+    public void logStart(ScriptExecution scriptExecution) {
+        Long parentProcessId = scriptExecution.getParentScriptExecution().map(ScriptExecution::getProcessId).orElse(0L);
+
+        // TODO:
 
         // Insert into result area
         String query = "INSERT INTO "
@@ -131,10 +105,9 @@ public class ExecutionControl {
         this.executionLog.setLog(scriptLog);
 
         // Trace the design of the script
-        ScriptTraceConfiguration scriptTraceConfiguration = new ScriptTraceConfiguration(scriptExecution.getScript(), this.getFrameworkExecution().getFrameworkInstance());
-        InputStream traceInputStream = new ByteArrayInputStream(scriptTraceConfiguration.getInsertStatement(scriptExecution).getBytes(StandardCharsets.UTF_8));
-        this.getFrameworkExecution().getMetadataControl().getResultMetadataRepository().executeScript(traceInputStream);
-
+        scriptDesignTraceService.trace(scriptExecution);
+        // ScriptTraceConfiguration scriptTraceConfiguration = new ScriptTraceConfiguration(frameworkExecution.getFrameworkInstance());
+        // this.getFrameworkExecution().getMetadataControl().getResultMetadataRepository().executeBatch(scriptTraceConfiguration.getInsertStatement(scriptExecution));
     }
 
     public void logStart(ActionExecution actionExecution) {
@@ -184,28 +157,23 @@ public class ExecutionControl {
 
     public Long getNewProcessId() {
         Long processId = frameworkExecution.getFrameworkRuntime().getNextProcessId();
-        frameworkExecution.getFrameworkLog().log("exec.processid=" + processId, Level.DEBUG);
+        logMessage(new IESIMessage("exec.processid=" + processId), Level.TRACE);
         return processId;
     }
 
     public String logEnd(ScriptExecution scriptExecution) {
-        String status = this.getStatus(scriptExecution);
+        String status = getStatus(scriptExecution);
         String query = "update "
                 + this.getFrameworkExecution().getMetadataControl().getResultMetadataRepository().getTableNameByLabel("ScriptResults")
-                + " set ST_NM = '" + status + "', END_TMS = " +
-                this.getFrameworkExecution().getMetadataControl().getResultMetadataRepository().getRepository().getDatabases().values().stream().findFirst().get().getSystemTimestampExpression();
-        query += " where RUN_ID = '" + this.getRunId() + "' and PRC_ID = " + scriptExecution.getProcessId() + ";";
+                + " set ST_NM = '" + status + "', END_TMS = "
+                + SQLTools.GetStringForSQL(LocalDateTime.now())
+                + " where RUN_ID = '" + this.getRunId() + "' and PRC_ID = " + scriptExecution.getProcessId() + ";";
 
-        InputStream inputStream = new ByteArrayInputStream(query.getBytes(StandardCharsets.UTF_8));
-        this.getFrameworkExecution().getMetadataControl().getResultMetadataRepository().executeScript(inputStream);
+        this.getFrameworkExecution().getMetadataControl().getResultMetadataRepository().executeUpdate(query);
 
         // Clear processing variables
         // Only is the script is a root script, this will be cleaned
         // In other scripts, the processing variables are still valid
-        if (scriptExecution.isRootScript()) {
-            //this.getExecutionRuntime().cleanRuntimeVariables();
-            //Cleaning is no longer relevant since runtime is managed individually
-        }
 
         this.getScriptLog().setEnd(LocalDateTime.now());
         this.getScriptLog().setStatus(status);
@@ -341,23 +309,26 @@ public class ExecutionControl {
 
     // Log message
     public void logMessage(ActionExecution actionExecution, String message, Level level) {
-        if (!actionExecution.getScriptExecution().isRootScript() && level == Level.INFO || level == Level.ALL) {
-            // do not display non-root info on info level
-            // redirect to debug level
-            level = Level.DEBUG;
-        }
+//        if (!actionExecution.getScriptExecution().isRootScript() && level == Level.INFO || level == Level.ALL) {
+//            // do not display non-root info on info level
+//            // redirect to debug level
+//            level = Level.DEBUG;
+//        }
+        LOGGER.log(level, SCRIPTMARKER, message);
+    }
 
-        frameworkExecution.getFrameworkLog().log(message, level);
+    public void logMessage(IESIMessage message, Level level) {
+        LOGGER.log(level, SCRIPTMARKER, message);
     }
 
     public void logMessage(ScriptExecution scriptExecution, String message, Level level) {
-        if (!scriptExecution.isRootScript() && level == Level.INFO || level == Level.ALL) {
-            // do not display non-root info on info level
-            // redirect to debug level
-            level = Level.DEBUG;
-        }
+//        if (!scriptExecution.isRootScript() && level == Level.INFO || level == Level.ALL) {
+//            // do not display non-root info on info level
+//            // redirect to debug level
+//            level = Level.DEBUG;
+//        }
 
-        frameworkExecution.getFrameworkLog().log(message, level);
+        LOGGER.log(level, SCRIPTMARKER, message);
     }
 
     public void endExecution() {
@@ -381,7 +352,8 @@ public class ExecutionControl {
 
     public void setRunId(String runId) {
         this.runId = runId;
-        frameworkExecution.getFrameworkLog().log("exec.runid=" + this.getRunId(), Level.INFO);
+        ThreadContext.put("runId", runId);
+        logMessage(new IESIMessage("exec.runid=" + runId), Level.INFO);
     }
 
     public String getEnvName() {

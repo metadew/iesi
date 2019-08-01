@@ -56,7 +56,7 @@ public class GenerationControlRuleExecution {
 					Level.INFO);
 		} finally {
 			// Log End
-			//this.getExecutionControl().logEnd(this);
+			//this.getExecutionControl().endExecution(this);
 		}
 
 	}

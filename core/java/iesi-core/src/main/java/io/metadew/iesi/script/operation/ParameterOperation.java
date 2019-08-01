@@ -1,9 +1,9 @@
 package io.metadew.iesi.script.operation;
 
-import io.metadew.iesi.metadata.definition.Action;
-import io.metadew.iesi.metadata.definition.ActionParameter;
+import io.metadew.iesi.metadata.definition.action.Action;
+import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.InputParameter;
-import io.metadew.iesi.metadata.definition.Script;
+import io.metadew.iesi.metadata.definition.script.Script;
 
 import java.util.ArrayList;
 import java.util.List;

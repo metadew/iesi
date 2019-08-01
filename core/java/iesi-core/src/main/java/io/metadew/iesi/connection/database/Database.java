@@ -197,7 +197,7 @@ public abstract class Database {
 	}
 
 	public String getDropStatement(MetadataTable table) {
-		return "drop table " + table.getName();
+		return "drop table " + table.getName() + ";";
 	}
 
 	public String getCreateStatement(MetadataTable table) {

@@ -11,7 +11,7 @@
 //import io.metadew.iesi.metadata.configuration.ConnectionConfiguration;
 //import io.metadew.iesi.metadata.configuration.RepositoryConfiguration;
 //import io.metadew.iesi.metadata.configuration.RepositoryInstanceConfiguration;
-//import io.metadew.iesi.metadata.definition.Connection;
+//import io.metadew.iesi.metadata.definition.connection.Connection;
 //import io.metadew.iesi.metadata.definition.Repository;
 //import io.metadew.iesi.metadata.definition.RepositoryInstance;
 //import io.metadew.iesi.metadata.definition.RepositoryInstanceParameter;

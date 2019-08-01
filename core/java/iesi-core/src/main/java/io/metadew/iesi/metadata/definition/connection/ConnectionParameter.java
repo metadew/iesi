@@ -1,4 +1,4 @@
-package io.metadew.iesi.metadata.definition;
+package io.metadew.iesi.metadata.definition.connection;
 
 
 public class ConnectionParameter {

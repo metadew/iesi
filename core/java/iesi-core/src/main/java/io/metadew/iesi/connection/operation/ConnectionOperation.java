@@ -14,10 +14,10 @@ import io.metadew.iesi.connection.host.LinuxHostConnection;
 import io.metadew.iesi.connection.host.WindowsHostConnection;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.configuration.type.ConnectionTypeConfiguration;
-import io.metadew.iesi.metadata.definition.Connection;
-import io.metadew.iesi.metadata.definition.ConnectionParameter;
-import io.metadew.iesi.metadata.definition.ConnectionType;
-import io.metadew.iesi.metadata.definition.ConnectionTypeParameter;
+import io.metadew.iesi.metadata.definition.connection.Connection;
+import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
+import io.metadew.iesi.metadata.definition.connection.ConnectionType;
+import io.metadew.iesi.metadata.definition.connection.ConnectionTypeParameter;
 
 import org.apache.commons.io.FilenameUtils;
 

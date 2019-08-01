@@ -4,7 +4,7 @@ import io.metadew.iesi.connection.HostConnection;
 import io.metadew.iesi.connection.operation.ConnectionOperation;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.configuration.ConnectionConfiguration;
-import io.metadew.iesi.metadata.definition.Connection;
+import io.metadew.iesi.metadata.definition.connection.Connection;
 import org.apache.commons.lang3.SystemUtils;
 
 public final class HostConnectionTools {

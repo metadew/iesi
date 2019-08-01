@@ -9,7 +9,7 @@ import io.metadew.iesi.connection.operation.filetransfer.FileToTransfer;
 import io.metadew.iesi.connection.operation.filetransfer.FileTransferResult;
 import io.metadew.iesi.connection.operation.filetransfer.FileTransfered;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
-import io.metadew.iesi.metadata.definition.Connection;
+import io.metadew.iesi.metadata.definition.connection.Connection;
 import org.apache.logging.log4j.Level;
 
 import java.io.File;

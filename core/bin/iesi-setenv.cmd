@@ -19,5 +19,7 @@ echo.iesi.home=%IESI_HOME%>"%IESI_HOME%"\sbin\iesi-home.conf
 :: lib
 echo.iesi.home=%IESI_HOME%>"%IESI_HOME%"\lib\iesi-home.conf
 
+copy /y %IESI_HOME%\conf\log4j2.xml %IESI_HOME%\lib\log4j2.xml
+
 CD %CURRENT_DIR%
 EXIT /B %ERRORLEVEL%

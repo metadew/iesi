@@ -7,7 +7,7 @@ import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
-import io.metadew.iesi.metadata.definition.Connection;
+import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.operation.DataObjectOperation;
 
 import java.io.InputStream;

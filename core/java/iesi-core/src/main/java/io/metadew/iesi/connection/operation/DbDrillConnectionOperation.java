@@ -8,10 +8,10 @@ import io.metadew.iesi.connection.database.DrillDatabase;
 import io.metadew.iesi.connection.database.connection.DrillDatabaseConnection;
 import io.metadew.iesi.connection.tools.ConnectionTools;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
-import io.metadew.iesi.metadata.definition.Connection;
-import io.metadew.iesi.metadata.definition.ConnectionParameter;
-import io.metadew.iesi.metadata.definition.ConnectionType;
-import io.metadew.iesi.metadata.definition.ConnectionTypeParameter;
+import io.metadew.iesi.metadata.definition.connection.Connection;
+import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
+import io.metadew.iesi.metadata.definition.connection.ConnectionType;
+import io.metadew.iesi.metadata.definition.connection.ConnectionTypeParameter;
 
 public class DbDrillConnectionOperation {
 

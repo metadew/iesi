@@ -5,10 +5,10 @@ import io.metadew.iesi.connection.database.DremioDatabase;
 import io.metadew.iesi.connection.database.connection.DremioDatabaseConnection;
 import io.metadew.iesi.connection.tools.ConnectionTools;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
-import io.metadew.iesi.metadata.definition.Connection;
-import io.metadew.iesi.metadata.definition.ConnectionParameter;
-import io.metadew.iesi.metadata.definition.ConnectionType;
-import io.metadew.iesi.metadata.definition.ConnectionTypeParameter;
+import io.metadew.iesi.metadata.definition.connection.Connection;
+import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
+import io.metadew.iesi.metadata.definition.connection.ConnectionType;
+import io.metadew.iesi.metadata.definition.connection.ConnectionTypeParameter;
 
 import java.util.ArrayList;
 import java.util.List;

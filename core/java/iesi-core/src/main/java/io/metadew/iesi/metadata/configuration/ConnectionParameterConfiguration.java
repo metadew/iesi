@@ -2,7 +2,7 @@ package io.metadew.iesi.metadata.configuration;
 
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
-import io.metadew.iesi.metadata.definition.ConnectionParameter;
+import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;

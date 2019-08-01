@@ -5,8 +5,8 @@ import io.metadew.iesi.framework.configuration.FrameworkObjectConfiguration;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.exception.ConnectionAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.ConnectionDoesNotExistException;
-import io.metadew.iesi.metadata.definition.Connection;
-import io.metadew.iesi.metadata.definition.ConnectionParameter;
+import io.metadew.iesi.metadata.definition.connection.Connection;
+import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
 import io.metadew.iesi.metadata.definition.ListObject;
 
 import javax.sql.rowset.CachedRowSet;

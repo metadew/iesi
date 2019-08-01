@@ -6,7 +6,7 @@ import io.metadew.iesi.metadata.configuration.ConnectionConfiguration;
 import io.metadew.iesi.metadata.configuration.EnvironmentConfiguration;
 import io.metadew.iesi.metadata.configuration.ImpersonationConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.*;
-import io.metadew.iesi.metadata.definition.Connection;
+import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.DataObject;
 import io.metadew.iesi.metadata.definition.Environment;
 import io.metadew.iesi.metadata.definition.Impersonation;

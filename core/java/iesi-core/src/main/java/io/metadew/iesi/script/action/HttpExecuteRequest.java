@@ -36,20 +36,14 @@ import java.util.stream.Collectors;
 public class HttpExecuteRequest {
 
     private ActionExecution actionExecution;
-
     private FrameworkExecution frameworkExecution;
-
     private ExecutionControl executionControl;
 
     // Parameters
     private ActionParameterOperation requestType;
-
     private ActionParameterOperation requestName;
-
     private ActionParameterOperation setRuntimeVariables;
-
     private ActionParameterOperation requestBody;
-
     private ActionParameterOperation setDataset;
     private ActionParameterOperation expectedStatusCodes;
 

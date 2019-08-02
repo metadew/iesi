@@ -44,23 +44,29 @@ public class ActionTraceService {
         }
     }
 
-    private void trace(ActionExecution actionExecution, String key, DataType value) throws MetadataAlreadyExistsException, SQLException {
-        if (value == null) {
-            actionParameterTraceConfiguration.insert(new ActionParameterTrace(new ActionParameterTraceKey(actionExecution.getExecutionControl().getRunId(), actionExecution.getProcessId(), actionExecution.getAction().getId(), key), "null"));
-        } else if (value instanceof Text) {
-            actionParameterTraceConfiguration.insert(new ActionParameterTrace(new ActionParameterTraceKey(actionExecution.getExecutionControl().getRunId(), actionExecution.getProcessId(), actionExecution.getAction().getId(), key), ((Text) value).getString()));
-        } else if (value instanceof Array) {
-            int counter = 0;
-            for (DataType element : ((Array) value).getList()) {
-                trace(actionExecution, key + counter, element);
-                counter++;
+    public void trace(ActionExecution actionExecution, String key, DataType value) {
+        try {
+            if (value == null) {
+                actionParameterTraceConfiguration.insert(new ActionParameterTrace(new ActionParameterTraceKey(actionExecution.getExecutionControl().getRunId(), actionExecution.getProcessId(), actionExecution.getAction().getId(), key), "null"));
+
+            } else if (value instanceof Text) {
+                actionParameterTraceConfiguration.insert(new ActionParameterTrace(new ActionParameterTraceKey(actionExecution.getExecutionControl().getRunId(), actionExecution.getProcessId(), actionExecution.getAction().getId(), key), ((Text) value).getString()));
+            } else if (value instanceof Array) {
+                int counter = 0;
+                for (DataType element : ((Array) value).getList()) {
+                    trace(actionExecution, key + counter, element);
+                    counter++;
+                }
+            } else if (value instanceof Dataset) {
+                for (Map.Entry<String, DataType> datasetItem : ((Dataset) value).getDataItems().entrySet()) {
+                    trace(actionExecution, key + datasetItem.getKey(), datasetItem.getValue());
+                }
+            } else {
+                logger.warn(MessageFormat.format("DataType ''{0}'' is unknown to trace", value.getClass()));
             }
-        } else if (value instanceof Dataset) {
-            for (Map.Entry<String, DataType> datasetItem : ((Dataset) value).getDataItems().entrySet()) {
-                trace(actionExecution, key + datasetItem.getKey(), datasetItem.getValue());
-            }
-        } else {
-            logger.warn(MessageFormat.format("DataType ''{0}'' is unknown to trace", value.getClass()));
+
+        } catch (MetadataAlreadyExistsException | SQLException e) {
+            e.printStackTrace();
         }
     }
 }

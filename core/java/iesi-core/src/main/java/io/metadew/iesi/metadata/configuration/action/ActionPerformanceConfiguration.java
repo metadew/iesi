@@ -90,7 +90,7 @@ public class ActionPerformanceConfiguration extends Configuration<ActionPerforma
         }
         String queryAction = "insert into "
                 + getMetadataControl().getResultMetadataRepository().getTableNameByLabel("ActionResultPerformances")+
-                " (RUN_ID, PRC_ID, ACTION_ID, CONTEXT_NM, SCOPE_NM, STRT_TMS, END_TMS, DURATION_VAL) values (" +
+                " (RUN_ID, PRC_ID, ACTION_ID, SCOPE_NM, CONTEXT_NM, STRT_TMS, END_TMS, DURATION_VAL) values (" +
                 SQLTools.GetStringForSQL(actionPerformance.getMetadataKey().getRunId()) + ", " +
                 actionPerformance.getMetadataKey().getProcedureId() + ", " +
                 SQLTools.GetStringForSQL(actionPerformance.getMetadataKey().getActionId()) + ", " +

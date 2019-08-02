@@ -1,4 +1,4 @@
-package io.metadew.iesi.script.action.HttpExecuteRequest;
+package io.metadew.iesi.script.action.http;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

@@ -4,9 +4,12 @@ import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.StatusLine;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.util.EntityUtils;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Object used to manage the http response resulting from the http connection object.
@@ -15,42 +18,38 @@ import java.util.List;
  */
 public class HttpResponse {
 
-    private CloseableHttpResponse response;
-    private StatusLine statusLine;
-    private HttpEntity entity;
-    private String entityString;
+    private final CloseableHttpResponse response;
+    private final StatusLine statusLine;
+    private final HttpEntity entity;
+    private final String entityString;
 
-    // Getters and setters
-    public StatusLine getStatusLine() {
-        return statusLine;
+
+    public HttpResponse(CloseableHttpResponse response) throws IOException {
+        this.response = response;
+        this.statusLine = response.getStatusLine();
+        this.entity = response.getEntity();
+        if (this.entity != null) {
+            this.entityString = EntityUtils.toString(getEntity());
+        } else {
+            this.entityString = null;
+        }
+        EntityUtils.consume(response.getEntity());
     }
 
-    public void setStatusLine(StatusLine statusLine) {
-        this.statusLine = statusLine;
+    public StatusLine getStatusLine() {
+        return statusLine;
     }
 
     public HttpEntity getEntity() {
         return entity;
     }
 
-    public void setEntity(HttpEntity entity) {
-        this.entity = entity;
-    }
-
     public CloseableHttpResponse getResponse() {
         return response;
     }
 
-    public void setResponse(CloseableHttpResponse response) {
-        this.response = response;
-    }
-
-    public String getEntityString() {
-        return entityString;
-    }
-
-    public void setEntityString(String entityString) {
-        this.entityString = entityString;
+    public Optional<String> getEntityString() {
+        return Optional.ofNullable(entityString);
     }
 
     public List<Header> getHeaders() {

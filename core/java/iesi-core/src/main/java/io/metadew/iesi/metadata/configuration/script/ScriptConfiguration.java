@@ -164,7 +164,7 @@ public class ScriptConfiguration extends MetadataConfiguration {
 
         } catch (ScriptAlreadyExistsException e) {
         	// TODO fix logging
-        	//frameworkExecution.getFrameworkLog().log(MessageFormat.format("Script {0}-{1} is not deleted correctly during update. {2}",script.getName(), script.getVersion().getNumber(), e.toString()),Level.WARN);
+        	LOGGER.warn(MessageFormat.format("Script {0}-{1} is not deleted correctly during update. {2}",script.getName(), script.getVersion().getNumber(), e.toString()));
         }
     }
 
@@ -225,11 +225,12 @@ public class ScriptConfiguration extends MetadataConfiguration {
         // delete script info if last version
         String countQuery = "SELECT COUNT(DISTINCT SCRIPT_VRS_NB ) AS total_versions FROM "
                 + this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ScriptVersions")
-                + " WHERE SCRIPT_ID != " + SQLTools.GetStringForSQL(script.getId()) + ";";
+                + " WHERE SCRIPT_ID = " + SQLTools.GetStringForSQL(script.getId()) + " AND "
+                + " SCRIPT_VRS_NB != " + SQLTools.GetStringForSQL(script.getVersion().getNumber()) + ";";
         CachedRowSet crs = this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().executeQuery(countQuery, "reader");
 
         try {
-            if (crs.next() && Integer.parseInt(crs.getString("total_versions")) == 1) {
+            if (crs.next() && Integer.parseInt(crs.getString("total_versions")) == 0) {
                 queries.add("DELETE FROM " + this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Scripts") +
                         " WHERE SCRIPT_ID = " + SQLTools.GetStringForSQL(script.getId()) + ";");
             }

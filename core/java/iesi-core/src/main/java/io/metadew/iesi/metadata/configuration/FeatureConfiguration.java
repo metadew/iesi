@@ -213,11 +213,12 @@ public class FeatureConfiguration extends MetadataConfiguration {
         // delete feature info if last version
         String countQuery = "SELECT COUNT(DISTINCT FEATURE_VRS_NB ) AS total_versions FROM "
                 + this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("FeatureVersions")
-                + " WHERE FEATURE_ID != " + SQLTools.GetStringForSQL(feature.getId()) + ";";
+                + " WHERE FEATURE_ID = " + SQLTools.GetStringForSQL(feature.getId()) + " AND "
+                + " FEATURE_VRS_NB != " + SQLTools.GetStringForSQL(feature.getVersion().getNumber()) + ";";
         CachedRowSet crs = this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().executeQuery(countQuery, "reader");
 
         try {
-            if (crs.next() && Integer.parseInt(crs.getString("total_versions")) == 1) {
+            if (crs.next() && Integer.parseInt(crs.getString("total_versions")) == 0) {
                 queries.add("DELETE FROM " + this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("Features") +
                         " WHERE FEATURE_ID = " + SQLTools.GetStringForSQL(feature.getId()) + ";");
             }

@@ -246,11 +246,12 @@ public class ComponentConfiguration extends MetadataConfiguration {
         // delete component info if last version
         String countQuery = "SELECT COUNT(DISTINCT COMP_VRS_NB ) AS total_versions FROM "
                 + this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ComponentVersions")
-                + " WHERE COMP_ID != " + SQLTools.GetStringForSQL(component.getId()) + ";";
+                + " WHERE COMP_ID = " + SQLTools.GetStringForSQL(component.getId()) + " AND "
+                + " COMPONENT_VRS_NB != " + SQLTools.GetStringForSQL(component.getVersion().getNumber()) + ";";
         CachedRowSet crs = this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().executeQuery(countQuery, "reader");
 
         try {
-            if (crs.next() && Integer.parseInt(crs.getString("total_versions")) == 1) {
+            if (crs.next() && Integer.parseInt(crs.getString("total_versions")) == 0) {
                 String deleteComponentQuery = "DELETE FROM " + this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Components") +
                         " WHERE COMP_ID = " + SQLTools.GetStringForSQL(component.getName()) + ";";
                 queries.add(deleteComponentQuery);

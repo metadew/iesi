@@ -2,12 +2,15 @@ package io.metadew.iesi.connection.database.connection;
 
 import io.metadew.iesi.connection.database.sql.SqlScriptResult;
 import io.metadew.iesi.connection.operation.database.ScriptRunner;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.Marker;
+import org.apache.logging.log4j.MarkerManager;
 
 import javax.sql.rowset.CachedRowSet;
 import javax.sql.rowset.RowSetProvider;
 import java.io.*;
 import java.sql.*;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -17,6 +20,9 @@ import java.util.List;
  * @author peter.billen
  */
 public abstract class DatabaseConnection {
+
+    private static Logger LOGGER = LogManager.getLogger();
+    private static final Marker SQLMARKER = MarkerManager.getMarker("SQL");
 
     private String type;
     private String databaseClassName;
@@ -69,6 +75,7 @@ public abstract class DatabaseConnection {
         }
         // Remove illegal characters at the end
         query = this.removeIllgegalCharactersForSingleQuery(query);
+        LOGGER.info(SQLMARKER, query);
 
 //        try {
 //            Class.forName(this.getDriver());
@@ -127,6 +134,7 @@ public abstract class DatabaseConnection {
         }
         CachedRowSet crs = null;
         query = this.removeIllgegalCharactersForSingleQuery(query);
+        LOGGER.info(SQLMARKER, query);
 
         try {
             Statement statement = connection.createStatement(ResultSet.TYPE_FORWARD_ONLY,
@@ -280,6 +288,7 @@ public abstract class DatabaseConnection {
         }
         // Remove illegal characters at the end
         query = this.removeIllgegalCharactersForSingleQuery(query);
+        LOGGER.info(SQLMARKER, query);
 
         try {
             Statement statement = connection.createStatement();
@@ -321,6 +330,7 @@ public abstract class DatabaseConnection {
             Statement statement = connection.createStatement();
                 for (String query : queries) {
                     query = this.removeIllgegalCharactersForSingleQuery(query);
+                    LOGGER.info(SQLMARKER, query);
                     statement.addBatch(query);
                 }
                 statement.executeBatch();

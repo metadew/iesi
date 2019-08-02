@@ -10,8 +10,9 @@ import io.metadew.iesi.datatypes.Text;
 import io.metadew.iesi.datatypes.dataset.Dataset;
 import io.metadew.iesi.datatypes.dataset.KeyValueDataset;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
-import io.metadew.iesi.metadata.definition.ActionParameter;
+import io.metadew.iesi.metadata.configuration.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.HttpRequestComponent;
+import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
@@ -20,7 +21,8 @@ import io.metadew.iesi.script.operation.HttpRequestComponentOperation;
 import org.apache.http.Header;
 import org.apache.http.HttpHeaders;
 import org.apache.http.entity.ContentType;
-import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -35,6 +37,8 @@ import java.util.stream.Collectors;
 
 public class HttpExecuteRequest {
 
+    private static Logger LOGGER = LogManager.getLogger();
+
     private HttpRequestService httpRequestService;
     private HttpRequestComponentOperation httpRequestComponentOperation;
     private ActionExecution actionExecution;
@@ -44,6 +48,7 @@ public class HttpExecuteRequest {
     private final String typeKey = "type";
     private final String requestKey = "request";
     private final String bodyKey = "body";
+    private final String proxyKey = "proxy";
     private final String setRuntimeVariablesKey = "setRuntimeVariablesActionParameterOperation";
     private final String setDatasetKey = "setDatasetActionParameterOperation";
     private final String expectedStatusCodesKey = "expectedStatusCodesActionParameterOperation";
@@ -52,6 +57,7 @@ public class HttpExecuteRequest {
     private ActionParameterOperation requestNameActionParameterOperation;
     private ActionParameterOperation setRuntimeVariablesActionParameterOperation;
     private ActionParameterOperation requestBodyActionParameterOperation;
+    private ActionParameterOperation proxyActionParameterOperation;
     private ActionParameterOperation setDatasetActionParameterOperation;
     private ActionParameterOperation expectedStatusCodesActionParameterOperation;
     private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
@@ -59,6 +65,7 @@ public class HttpExecuteRequest {
     private HttpRequest httpRequest;
     private boolean setRuntimeVariables;
     private Dataset outputDataset;
+    private ProxyConnection proxyConnection;
     private Dataset rawOutputDataset;
     private List<String> expectedStatusCodes;
 
@@ -100,6 +107,8 @@ public class HttpExecuteRequest {
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), setDatasetKey);
         expectedStatusCodesActionParameterOperation = new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), expectedStatusCodesKey);
+        proxyActionParameterOperation = new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+                this.getActionExecution(), this.getActionExecution().getAction().getType(), proxyKey);
 
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
@@ -115,6 +124,8 @@ public class HttpExecuteRequest {
                 setDatasetActionParameterOperation.setInputValue(actionParameter.getValue());
             } else if (actionParameter.getName().equalsIgnoreCase(expectedStatusCodesKey)) {
                 expectedStatusCodesActionParameterOperation.setInputValue(actionParameter.getValue());
+            } else if (actionParameter.getName().equalsIgnoreCase(proxyKey)) {
+                proxyActionParameterOperation.setInputValue(actionParameter.getValue());
             }
         }
 
@@ -125,6 +136,7 @@ public class HttpExecuteRequest {
         this.getActionParameterOperationMap().put(setRuntimeVariablesKey, setRuntimeVariablesActionParameterOperation);
         this.getActionParameterOperationMap().put(setDatasetKey, setDatasetActionParameterOperation);
         this.getActionParameterOperationMap().put(expectedStatusCodesKey, expectedStatusCodesActionParameterOperation);
+        this.getActionParameterOperationMap().put(proxyKey, proxyActionParameterOperation);
 
         HttpRequestComponent httpRequestComponent = httpRequestComponentOperation.getHttpRequestComponent(convertHttpRequestName(requestNameActionParameterOperation.getValue()), actionExecution);
         HttpRequestBuilder httpRequestBuilder = new HttpRequestBuilder()
@@ -186,8 +198,8 @@ public class HttpExecuteRequest {
                     .map(this::convertExpectedStatusCode)
                     .collect(Collectors.toList());
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for expectedStatusCode",
-                    expectedStatusCodes.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for expectedStatusCode",
+                    expectedStatusCodes.getClass()));
             return null;
         }
     }
@@ -196,9 +208,21 @@ public class HttpExecuteRequest {
         if (expectedStatusCode instanceof Text) {
             return expectedStatusCode.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for expectedStatusCode",
-                    expectedStatusCode.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for expectedStatusCode",
+                    expectedStatusCode.getClass()));
             return expectedStatusCode.toString();
+        }
+    }
+
+    private ProxyConnection convertProxyName(DataType connectionName) {
+        if (connectionName instanceof Text) {
+            ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution().getFrameworkInstance());
+            return proxyConnection = connectionConfiguration.getConnection(((Text) connectionName).getString(), executionControl.getEnvName())
+                    .map(ProxyConnection::from)
+                    .orElseThrow(() -> new RuntimeException(MessageFormat.format("Cannot find connection {0}", ((Text) connectionName).getString())));
+        } else {
+            throw new RuntimeException(MessageFormat.format("{0} does not accept {1} as type for proxy connection name",
+                    actionExecution.getAction().getType(), connectionName.getClass()));
         }
     }
 
@@ -219,8 +243,8 @@ public class HttpExecuteRequest {
         if (outputDatasetReferenceName instanceof Text) {
             return outputDatasetReferenceName.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for OutputDatasetReferenceName",
-                    outputDatasetReferenceName.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for OutputDatasetReferenceName",
+                    outputDatasetReferenceName.getClass()));
             return outputDatasetReferenceName.toString();
         }
     }
@@ -232,8 +256,8 @@ public class HttpExecuteRequest {
         if (setRuntimeVariables instanceof Text) {
             return setRuntimeVariables.toString().equalsIgnoreCase("y");
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for setRuntimeVariablesActionParameterOperation",
-                    setRuntimeVariables.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for setRuntimeVariablesActionParameterOperation",
+                    setRuntimeVariables.getClass()));
             return false;
         }
     }
@@ -245,8 +269,8 @@ public class HttpExecuteRequest {
         if (httpRequestBody instanceof Text) {
             return Optional.of(httpRequestBody.toString());
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for request body",
-                    httpRequestBody.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for request body",
+                    httpRequestBody.getClass()));
             return Optional.of(httpRequestBody.toString());
         }
     }
@@ -255,8 +279,8 @@ public class HttpExecuteRequest {
         if (httpRequestType instanceof Text) {
             return httpRequestType.toString();
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for request type",
-                    httpRequestType.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for request type",
+                    httpRequestType.getClass()));
             return httpRequestType.toString();
         }
     }
@@ -265,8 +289,8 @@ public class HttpExecuteRequest {
         if (httpRequestName instanceof Text) {
             return httpRequestName.toString();
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for request name",
-                    httpRequestName.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for request name",
+                    httpRequestName.getClass()));
             return httpRequestName.toString();
         }
     }
@@ -276,8 +300,8 @@ public class HttpExecuteRequest {
             if (expectedStatusCodes.contains(String.valueOf(httpResponse.getStatusLine().getStatusCode()))) {
                 actionExecution.getActionControl().increaseSuccessCount();
             } else {
-                frameworkExecution.getFrameworkLog().log(MessageFormat.format("Status code of response {0} is not member of expected status codes {1}",
-                        httpResponse.getStatusLine().getStatusCode(), expectedStatusCodes), Level.WARN);
+                LOGGER.warn(MessageFormat.format("Status code of response {0} is not member of expected status codes {1}",
+                        httpResponse.getStatusLine().getStatusCode(), expectedStatusCodes));
                 actionExecution.getActionControl().increaseErrorCount();
             }
         } else {
@@ -293,8 +317,8 @@ public class HttpExecuteRequest {
         } else if (REDIRECT_STATUS_CODE.matcher(Integer.toString(httpResponse.getStatusLine().getStatusCode())).find()) {
             this.getActionExecution().getActionControl().increaseSuccessCount();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("Status code of response {0} is not member of success status codes (1XX, 2XX, 3XX).",
-                    httpResponse.getStatusLine().getStatusCode()), Level.WARN);
+            LOGGER.warn((MessageFormat.format("Status code of response {0} is not member of success status codes (1XX, 2XX, 3XX).",
+                    httpResponse.getStatusLine().getStatusCode())));
             this.getActionExecution().getActionControl().increaseErrorCount();
         }
     }
@@ -383,9 +407,7 @@ public class HttpExecuteRequest {
 
 
     private void writeJSONResponseToOutputDataset(HttpResponse httpResponse) {
-        if (!httpResponse.getEntityString().isPresent()) {
-            return;
-        } else {
+        if (httpResponse.getEntityString().isPresent()) {
             try {
                 JsonNode jsonNode = new ObjectMapper().readTree(httpResponse.getEntityString().get());
                 setRuntimeVariable(jsonNode, setRuntimeVariables);
@@ -472,6 +494,9 @@ public class HttpExecuteRequest {
 
     private Optional<Dataset> getOutputDataset() {
         return Optional.ofNullable(outputDataset);
+    }
+    private Optional<ProxyConnection> getProxyConnection() {
+        return Optional.ofNullable(proxyConnection);
     }
 
     private Optional<Dataset> getRawOutputDataset() {

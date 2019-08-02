@@ -1162,7 +1162,7 @@
 }, {
   "data" : {
     "name" : "http.executeRequest",
-    "className" : "io.metadew.iesi.script.action.HttpExecuteRequest",
+    "className" : "io.metadew.iesi.script.action.http.HttpExecuteRequest",
     "description" : "Execute a http request",
     "parameters" : [ {
       "name" : "type",

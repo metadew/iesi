@@ -21,6 +21,15 @@ public final class SQLTools {
             return "'" + GetCleanString(input) + "'";
         }
     }
+
+    public static String GetStringForSQLTable(String input) {
+        if (input == null) {
+            return "\"null\"";
+        } else {
+            return "\"" + GetCleanString(input) + "\"";
+        }
+    }
+
     public static String GetStringForSQL(boolean input) {
         return "'" + (input ? "Y" : "N") + "'";
     }

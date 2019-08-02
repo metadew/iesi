@@ -3,14 +3,12 @@ package io.metadew.iesi.script.operation;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.configuration.ComponentConfiguration;
-import io.metadew.iesi.metadata.definition.Action;
 import io.metadew.iesi.metadata.definition.Component;
 import io.metadew.iesi.metadata.definition.ComponentParameter;
 import io.metadew.iesi.metadata.definition.HttpRequestComponent;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 
-import javax.xml.crypto.Data;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;

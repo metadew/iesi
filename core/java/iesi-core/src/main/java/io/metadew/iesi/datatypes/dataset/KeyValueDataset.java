@@ -3,6 +3,7 @@ package io.metadew.iesi.datatypes.dataset;
 import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.SqliteDatabase;
 import io.metadew.iesi.connection.database.connection.SqliteDatabaseConnection;
+import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeResolver;
 import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
@@ -30,8 +31,7 @@ public class KeyValueDataset extends Dataset {
     public Map<String, DataType> getDataItems() {
         CachedRowSet crs;
         String query;
-        query = "select key, value from " +
-                getTableName() + ";";
+        query = "select key, value from " + SQLTools.GetStringForSQLTable(getTableName()) + ";";
 
         Map<String, DataType> dataItems = new HashMap<>();
         crs = getDatasetDatabase().executeQuery(query);
@@ -51,9 +51,7 @@ public class KeyValueDataset extends Dataset {
     public Optional<DataType> getDataItem(String dataItem) {
         CachedRowSet crs;
         String query;
-        query = "select value from \"" +
-                getTableName() +
-                "\" where key = '" + dataItem + "'";
+        query = "select value from " + SQLTools.GetStringForSQLTable(getTableName()) + " where key = " + SQLTools.GetStringForSQL(dataItem) + ";";
 
         DataType value = null;
         crs = getDatasetDatabase().executeQuery(query);
@@ -97,22 +95,21 @@ public class KeyValueDataset extends Dataset {
     @SuppressWarnings("unused")
 	public void clean() {
         // Check if table exists
-        String queryTableExists = "select name from sqlite_master where name = '" + getTableName() + "'";
-        CachedRowSet crs = null;
-        crs = getDatasetDatabase().executeQuery(queryTableExists);
+        String queryTableExists = "select name from sqlite_master where name = " + SQLTools.GetStringForSQL(getTableName()) + ";";
+        CachedRowSet crs = getDatasetDatabase().executeQuery(queryTableExists);
         String value = "";
         boolean tableExists = false;
         try {
             if (crs.size() >= 1) {
                 if (crs.getString("NAME").equalsIgnoreCase(getTableName())) {
-                    String clean = "delete from " + getTableName();
+                    String clean = "delete from " + SQLTools.GetStringForSQLTable(getTableName()) + ";";
                     getDatasetDatabase().executeUpdate(clean);
                 } else {
-                    String create = "CREATE TABLE " + getTableName() + " (key TEXT, value TEXT)";
+                    String create = "CREATE TABLE " + SQLTools.GetStringForSQLTable(getTableName()) + " (key TEXT, value TEXT);";
                     getDatasetDatabase().executeUpdate(create);
                 }
             } else {
-                String create = "CREATE TABLE " + getTableName() + " (key TEXT, value TEXT)";
+                String create = "CREATE TABLE " + SQLTools.GetStringForSQLTable(getTableName()) + " (key TEXT, value TEXT);";
                 getDatasetDatabase().executeUpdate(create);
             }
             crs.close();

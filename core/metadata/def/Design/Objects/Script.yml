@@ -1,0 +1,10 @@
+---
+data:
+  name: "Script"
+  label: "Scripts"
+  description: "Design metadata for scripts"
+  type: "design"
+  category: "execution"
+  migrate: "Y"
+  migrationKey: "B001"
+type: "MetadataObject"

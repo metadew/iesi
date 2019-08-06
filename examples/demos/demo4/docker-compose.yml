@@ -1,0 +1,52 @@
+version: '3.2'
+services:
+  fotg:
+    restart: 'always'
+    ports:
+      - '5432:5432'
+    environment:
+      - "FOTG_DB_USER=fotg"
+      - "FOTG_DB_PASSWORD=fotgpass"
+      - "FOTG_DB_DATABASE=fotg"
+      - "POSTGRES_PASSWORD=password"
+    build: './fotg'
+    container_name: demo4_fotg
+    restart: unless-stopped
+  
+  pgadmin:
+    image: 'dpage/pgadmin4'
+    ports:
+      - '3006:80'
+    volumes:
+     - ./pgadmin/config/servers.json:/pgadmin4/servers.json
+    environment:
+      - "PGADMIN_DEFAULT_EMAIL=user@enterprise.com"
+      - "PGADMIN_DEFAULT_PASSWORD=pgadminpass"
+    container_name: demo4_pgadmin
+    restart: unless-stopped
+  
+  sources:
+    build: './sources'
+    ports:
+      - '2222:22'
+    container_name: demo4_sources
+    hostname: demo4_sources
+    restart: unless-stopped
+
+  staging:
+    build: './staging'
+    ports:
+      - '2223:22'
+    container_name: demo4_staging
+    hostname: demo4_staging
+    restart: unless-stopped
+
+  devportal:
+    image: 'clue/json-server'
+    ports:
+      - '3210:80'
+    volumes:
+       - ./devportal/db.json:/data/db.json
+    container_name: demo4_devportal
+    hostname: demo4_devportal
+    restart: unless-stopped

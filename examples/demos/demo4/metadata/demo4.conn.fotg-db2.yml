@@ -1,0 +1,18 @@
+---
+type: Connection
+data:
+  name: "demo4.fotg-db2"
+  type: "db.db2"
+  description: "fotg db2 connection"
+  environment: "iesi-demo4"
+  parameters:
+  - name: "host"
+    value: "localhost"
+  - name: "port"
+    value: "50000"
+  - name: "database"
+    value: "fotg"
+  - name: "user"
+    value: "db2inst1"
+  - name: "password"
+    value: "ENC(Vqyg3liUuSdyh+bk17yoRDqsbm/kadjQ)"

@@ -1,0 +1,10 @@
+---
+data:
+  name: "Component"
+  label: "Components"
+  description: "Design metadata for components"
+  type: "design"
+  category: "structure"
+  migrate: "Y"
+  migrationKey: "B003"
+type: "MetadataObject"

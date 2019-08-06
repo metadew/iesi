@@ -1,0 +1,1 @@
+select * from orders except select * from orders_exp union all select * from orders_exp except select * from orders

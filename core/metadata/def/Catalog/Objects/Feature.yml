@@ -1,0 +1,10 @@
+---
+data:
+  name: "Feature"
+  label: "Features"
+  description: "Design metadata for features"
+  type: "design"
+  category: "feature"
+  migrate: "Y"
+  migrationKey: "NA"
+type: "MetadataObject"

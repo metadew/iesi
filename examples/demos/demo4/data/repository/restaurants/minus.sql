@@ -1,0 +1,1 @@
+select * from restaurants except select * from restaurants_exp union all select * from restaurants_exp except select * from restaurants

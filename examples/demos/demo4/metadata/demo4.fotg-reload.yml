@@ -1,0 +1,35 @@
+---
+type: "script"
+data:
+  name: "demo4.fotg-reload"
+  description: "Reload data to database"
+  parameters: []
+  actions:
+  - number: 1
+    type: "sql.executeStatement"
+    name: "CleanData"
+    description: "Clean data"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "statement"
+      value : "delete from #table#"
+    - name: "connection"
+      value : "demo4.fotg-sqlite"
+  - number: 2
+    type: "sql.executeStatement"
+    name: "LoadData"
+    description: "Load data"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "statement"
+      value : "{{=file(#iesi.home#/data/demo4/staging/noschema/#table#20190705.dml)}}"
+    - name: "connection"
+      value : "demo4.fotg-sqlite"

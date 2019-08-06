@@ -1,0 +1,10 @@
+---
+data:
+  name: "RequestExecution"
+  label: "RequestExecutions"
+  description: "In-process runtime execution control"
+  type: "operational"
+  category: "execution"
+  migrate: "Y"
+  migrationKey: "B002"
+type: "MetadataObject"

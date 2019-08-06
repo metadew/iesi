@@ -1,0 +1,12 @@
+---
+type: Connection
+data:
+  name: "demo4.localhost"
+  type: "host.windows"
+  description: "host.windows.1 connection"
+  environment: "iesi-demo4"
+  parameters:
+  - name: "host"
+    value: "localhost"
+  - name: "tempPath"
+    value: "#iesi.home#/run/tmp"

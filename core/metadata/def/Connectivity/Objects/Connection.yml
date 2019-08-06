@@ -1,0 +1,10 @@
+---
+data:
+  name: "Connection"
+  label: "Connections"
+  description: "Design metadata for connections"
+  type: "design"
+  category: "connectivity"
+  migrate: "Y"
+  migrationKey: "NA"
+type: "MetadataObject"

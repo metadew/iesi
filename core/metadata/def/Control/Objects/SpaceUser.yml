@@ -1,0 +1,10 @@
+---
+data:
+  name: "SpaceUser"
+  label: "SpaceUsers"
+  description: "Control metadata for space users"
+  type: "control"
+  category: "execution"
+  migrate: "Y"
+  migrationKey: "B001"
+type: "MetadataObject"

@@ -1,0 +1,10 @@
+---
+data:
+  name: "UserGroup"
+  label: "UserGroups"
+  description: "Control metadata for user groups"
+  type: "control"
+  category: "execution"
+  migrate: "Y"
+  migrationKey: "B001"
+type: "MetadataObject"

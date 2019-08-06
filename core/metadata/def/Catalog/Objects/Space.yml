@@ -1,0 +1,10 @@
+---
+data:
+  name: "Space"
+  label: "Spaces"
+  description: "Design metadata for spaces"
+  type: "catalog"
+  category: "space"
+  migrate: "Y"
+  migrationKey: "NA"
+type: "MetadataObject"

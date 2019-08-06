@@ -1,0 +1,35 @@
+---
+type: "script"
+data:
+  name: "demo4.fotg-verify-duplicates"
+  description: "Verify duplicates"
+  parameters: []
+  actions:
+  - number: 1
+    type: "sql.setRuntimeVariables"
+    name: "CheckRecordCount"
+    description: "Get count for customer"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "query"
+      value : "select count(*) as 'COUNT' from customers where LastName = '#LastName#' and FirstName = '#FirstName#'"
+    - name: "connection"
+      value : "demo4.fotg-sqlite"
+  - number: 2
+    type: "eval.assertEquals"
+    name: "VerifyDuplicates"
+    description: "Verify that no duplicates exist"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "Y"
+    parameters:
+    - name: "expected"
+      value : "1"
+    - name: "actual"
+      value : "#COUNT#"

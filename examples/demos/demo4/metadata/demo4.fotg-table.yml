@@ -1,0 +1,39 @@
+---
+type: "script"
+data:
+  name: "demo4.fotg-table"
+  description: "Verify load"
+  parameters: []
+  actions:
+  - number: 1
+    type: "fwk.executeScript"
+    name: "LoadTable"
+    description: "Load data"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "script"
+      value : "demo4.fotg-load"
+    - name: "paramList"
+      value : "table=#table#"
+    - name: "environment"
+      value : "{{$run.environment}}"
+  - number: 2
+    type: "fwk.executeScript"
+    name: "VerifyTable"
+    description: "Verify table"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "script"
+      value : "demo4.fotg-minus"
+    - name: "paramList"
+      value : "table=#table#"
+    - name: "environment"
+      value : "{{$run.environment}}"

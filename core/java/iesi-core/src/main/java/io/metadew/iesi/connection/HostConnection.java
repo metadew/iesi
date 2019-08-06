@@ -203,7 +203,11 @@ public class HostConnection {
             errorOutput = IOUtils.toString(p.getErrorStream());
 
         } catch (InterruptedException | IOException e) {
-            throw new RuntimeException(e.getMessage(), e);
+			StringWriter StackTrace = new StringWriter();
+			e.printStackTrace(new PrintWriter(StackTrace));
+			
+            rc = 1;
+            errorOutput = StackTrace.toString();
         }
 
         return new ShellCommandResult(rc, systemOutput, errorOutput);

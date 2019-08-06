@@ -1,0 +1,10 @@
+---
+data:
+  name: "Subroutine"
+  label: "Subroutines"
+  description: "Design metadata for subroutines"
+  type: "design"
+  category: "reference"
+  migrate: "Y"
+  migrationKey: "B020"
+type: "MetadataObject"

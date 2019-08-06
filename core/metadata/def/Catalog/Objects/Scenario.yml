@@ -1,0 +1,10 @@
+---
+data:
+  name: "Scenario"
+  label: "Scenarios"
+  description: "Design metadata for scenarios"
+  type: "design"
+  category: "feature"
+  migrate: "Y"
+  migrationKey: "NA"
+type: "MetadataObject"

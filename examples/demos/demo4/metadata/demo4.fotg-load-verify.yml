@@ -1,0 +1,51 @@
+---
+type: "script"
+data:
+  name: "demo4.fotg-load-verify"
+  description: "Reload and verify data"
+  parameters: []
+  actions:
+  - number: 1
+    type: "sql.executeStatement"
+    name: "CleanData"
+    description: "Clean data"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "statement"
+      value : "{{=file(#iesi.home#/data/demo4/repository/#table#/clean.sql)}}"
+    - name: "connection"
+      value : "demo4.fotg-sqlite"
+  - number: 2
+    type: "sql.executeStatement"
+    name: "LoadData"
+    description: "Load data"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "statement"
+      value : "{{=file(#iesi.home#/data/demo4/repository/#table#/data.dml)}}"
+    - name: "connection"
+      value : "demo4.fotg-sqlite"
+  - number: 3
+    type: "sql.evaluateResult"
+    name: "EvaluateMinus"
+    description: "Evaluate minus query"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "query"
+      value : "{{=file(#iesi.home#/data/demo4/repository/#table#/minus.sql)}}"
+    - name: "hasResult"
+      value : "N"
+    - name: "connection"
+      value : "demo4.fotg-sqlite"

@@ -1,0 +1,39 @@
+---
+type: "script"
+data:
+  name: "demo4.fotg-customers"
+  description: "Verify customers load"
+  parameters: []
+  actions:
+  - number: 1
+    type: "fwk.executeScript"
+    name: "LoadCustomers"
+    description: "Load customers data"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "script"
+      value : "demo4.fotg-load"
+    - name: "paramList"
+      value : "table=customers"
+    - name: "environment"
+      value : "{{$run.environment}}"
+  - number: 2
+    type: "fwk.executeScript"
+    name: "VerifyCustomers"
+    description: "Verify customers"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "script"
+      value : "demo4.fotg-minus"
+    - name: "paramList"
+      value : "table=customers"
+    - name: "environment"
+      value : "{{$run.environment}}"

@@ -6,6 +6,8 @@ import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.DefaultProxyRoutePlanner;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.net.ssl.*;
 import java.io.IOException;
@@ -14,6 +16,8 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 
 public class HttpRequestService {
+
+    private static Logger LOGGER = LogManager.getLogger();
 
     public HttpResponse send(HttpRequest httpRequest) throws IOException, KeyManagementException, NoSuchAlgorithmException {
         CloseableHttpClient httpClient = noSSLCertificateVerification();
@@ -117,6 +121,7 @@ public class HttpRequestService {
         // create an SSL Socket Factory to use the SSLContext with the trust self signed certificate strategy
         // and allow all hosts verifier.
         SSLConnectionSocketFactory connectionFactory = new SSLConnectionSocketFactory(sslContext, allowAllHosts);
+        LOGGER.info("Adding proxy: "+ proxyConnection.getHostName() + ":" + proxyConnection.getPort());
         HttpHost proxy = new HttpHost(proxyConnection.getHostName(), proxyConnection.getPort());
         DefaultProxyRoutePlanner routePlanner = new DefaultProxyRoutePlanner(proxy);
         // finally create the HttpClient using HttpClient factory methods and assign the ssl socket factory

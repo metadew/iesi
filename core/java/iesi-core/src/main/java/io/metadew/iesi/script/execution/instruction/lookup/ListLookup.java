@@ -1,14 +1,12 @@
 package io.metadew.iesi.script.execution.instruction.lookup;
 
-import io.metadew.iesi.datatypes.Array;
+import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.datatypes.DataType;
-import io.metadew.iesi.datatypes.DataTypeResolver;
-import io.metadew.iesi.datatypes.Text;
-import io.metadew.iesi.datatypes.dataset.Dataset;
+import io.metadew.iesi.datatypes.DataTypeService;
 import io.metadew.iesi.script.execution.ExecutionControl;
 
 import java.text.MessageFormat;
-import java.util.Optional;
+import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,10 +18,10 @@ public class ListLookup implements LookupInstruction {
 
 	private final Pattern INPUT_PARAMETER_PATTERN = Pattern
             .compile("\\s*\"?(?<" + ARRAY_KEY + ">(\\w|\\.)+)\"?\\s*,\\s*(?<" + ELEMENT_KEY + ">(\\w|\\.)+)\\s*");
-    private final ExecutionControl executionControl;
+    private final DataTypeService dataTypeService;
 
     public ListLookup(ExecutionControl executionControl) {
-        this.executionControl = executionControl;
+        this.dataTypeService = new DataTypeService(executionControl.getFrameworkExecution().getFrameworkConfiguration().getFolderConfiguration(), executionControl.getExecutionRuntime());
     }
 
     @Override
@@ -34,7 +32,7 @@ public class ListLookup implements LookupInstruction {
             throw new IllegalArgumentException(MessageFormat.format("Illegal arguments provided to list lookup: {0}", parameters));
         }
 
-        Array array = getArray(DataTypeResolver.resolveToDataType(inputParameterMatcher.group(ARRAY_KEY), executionControl.getFrameworkExecution().getFrameworkConfiguration().getFolderConfiguration() , executionControl.getExecutionRuntime()));
+        Array array = getArray(dataTypeService.resolve(inputParameterMatcher.group(ARRAY_KEY)));
         int arrayElementIndex = Integer.parseInt(inputParameterMatcher.group(ELEMENT_KEY)) - 1;
 
         return array.getList().get(arrayElementIndex).toString();

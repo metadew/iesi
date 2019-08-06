@@ -1,8 +1,8 @@
 package io.metadew.iesi.script.operation;
 
 import io.metadew.iesi.datatypes.DataType;
-import io.metadew.iesi.datatypes.DataTypeResolver;
-import io.metadew.iesi.datatypes.Text;
+import io.metadew.iesi.datatypes.DataTypeService;
+import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.configuration.type.ActionTypeParameterConfiguration;
 import io.metadew.iesi.metadata.definition.action.ActionTypeParameter;
@@ -19,6 +19,7 @@ import org.apache.logging.log4j.Level;
  */
 public class ActionParameterOperation {
 
+    private final DataTypeService dataTypeService;
     private FrameworkExecution frameworkExecution;
     private ExecutionControl executionControl;
     private ActionExecution actionExecution;
@@ -39,6 +40,7 @@ public class ActionParameterOperation {
         this.setActionTypeName(actionTypeName);
         this.setName(name);
         this.lookupActionTypeParameter();
+        this.dataTypeService = new DataTypeService(frameworkExecution.getFrameworkConfiguration().getFolderConfiguration(), executionControl.getExecutionRuntime());
     }
 
     public ActionParameterOperation(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
@@ -48,8 +50,8 @@ public class ActionParameterOperation {
         this.setActionTypeName(actionTypeName);
         this.setName(name);
         this.lookupActionTypeParameter();
-
         this.setInputValue(value);
+        this.dataTypeService = new DataTypeService(frameworkExecution.getFrameworkConfiguration().getFolderConfiguration(), executionControl.getExecutionRuntime());
     }
 
     // Methods
@@ -157,7 +159,7 @@ public class ActionParameterOperation {
         }
 
         // Resolve to data type
-        value = DataTypeResolver.resolveToDataType(resolvedInputValue, frameworkExecution.getFrameworkConfiguration().getFolderConfiguration(), executionControl.getExecutionRuntime());
+        value = dataTypeService.resolve(resolvedInputValue);
     }
 
     public ExecutionControl getExecutionControl() {

@@ -8,7 +8,7 @@ import io.metadew.iesi.connection.host.LinuxHostUserInfo;
 import io.metadew.iesi.connection.operation.ConnectionOperation;
 import io.metadew.iesi.connection.tools.FolderTools;
 import io.metadew.iesi.datatypes.DataType;
-import io.metadew.iesi.datatypes.Text;
+import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.configuration.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;

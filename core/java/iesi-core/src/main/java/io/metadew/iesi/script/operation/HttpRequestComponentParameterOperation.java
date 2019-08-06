@@ -1,19 +1,18 @@
 package io.metadew.iesi.script.operation;
 
 import io.metadew.iesi.datatypes.DataType;
-import io.metadew.iesi.datatypes.DataTypeResolver;
-import io.metadew.iesi.datatypes.Text;
+import io.metadew.iesi.datatypes.DataTypeService;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
-import io.metadew.iesi.metadata.configuration.type.ComponentTypeParameterConfiguration;
 import io.metadew.iesi.metadata.definition.ComponentAttribute;
 import io.metadew.iesi.metadata.definition.ComponentParameter;
-import io.metadew.iesi.metadata.definition.ComponentTypeParameter;
 import io.metadew.iesi.runtime.definition.LookupResult;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import org.apache.logging.log4j.Level;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Operation that manages the parameters for http requests that have been defined as components.
@@ -22,7 +21,7 @@ import java.util.List;
  */
 public class HttpRequestComponentParameterOperation {
 
-    private ComponentTypeParameterConfiguration componentTypeParameterConfiguration;
+    private final DataTypeService dataTypeService;
     private FrameworkExecution frameworkExecution;
     private ExecutionControl executionControl;
     private ActionExecution actionExecution;
@@ -31,49 +30,13 @@ public class HttpRequestComponentParameterOperation {
     private String value = "";
     private String inputValue = "";
 
-    private ComponentTypeParameter componentTypeParameter;
-    private SubroutineOperation subroutineOperation;
-
-    // Constructors
-    public HttpRequestComponentParameterOperation(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
-                                                  ActionExecution actionExecution, List<ComponentAttribute> attributes, String name) {
-        this.setFrameworkExecution(frameworkExecution);
-        this.setExecutionControl(executionControl);
-        this.setActionExecution(actionExecution);
-        this.setAttributes(attributes);
-        this.setName(name);
-        this.lookupComponentTypeParameter();
-    }
-
-    public HttpRequestComponentParameterOperation(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
-                                                  ActionExecution actionExecution, List<ComponentAttribute> attributes, String name, String value) {
-        this.setFrameworkExecution(frameworkExecution);
-        this.setExecutionControl(executionControl);
-        this.setActionExecution(actionExecution);
-        this.setAttributes(attributes);
-        this.setName(name);
-        this.lookupComponentTypeParameter();
-
-        this.setInputValue(value);
-    }
-
-    public HttpRequestComponentParameterOperation(ExecutionControl executionControl, ActionExecution actionExecution) {
-        this.executionControl = executionControl;
-        this.actionExecution = actionExecution;
-        this.componentTypeParameterConfiguration = new ComponentTypeParameterConfiguration(executionControl.getFrameworkExecution().getFrameworkInstance());
-    }
-
     public HttpRequestComponentParameterOperation(ExecutionControl executionControl) {
         this.executionControl = executionControl;
-        this.componentTypeParameterConfiguration = new ComponentTypeParameterConfiguration(executionControl.getFrameworkExecution().getFrameworkInstance());
+        this.dataTypeService = new DataTypeService(executionControl.getFrameworkExecution().getFrameworkConfiguration().getFolderConfiguration(), executionControl.getExecutionRuntime());
 
     }
 
-    public DataType getParameterValue(ComponentParameter componentParameter, List<ComponentAttribute> componentAttributes, ActionExecution actionExecution) {
-        ComponentTypeParameter componentTypeParameter = componentTypeParameterConfiguration.getComponentTypeParameter("http.request", componentParameter.getName());
-        executionControl.logMessage(this.getActionExecution(), "component.param " + this.getName() + ": " + componentParameter.getValue(), Level.DEBUG);
-
-        String value = componentParameter.getValue();
+    private DataType getParameterValue(String value, List<ComponentAttribute> componentAttributes, ActionExecution actionExecution) {
         // Resolve attributes
         value = executionControl.getExecutionRuntime().resolveComponentTypeVariables(value, componentAttributes, executionControl.getEnvName());
         // Resolve concept lookups
@@ -83,16 +46,43 @@ public class HttpRequestComponentParameterOperation {
                 value, true).getValue();
         value = executionControl.getExecutionRuntime().resolveVariables(actionExecution, value);
         // Resolve internal encryption
-        value = executionControl.getFrameworkExecution().getFrameworkCrypto().resolve(this.getFrameworkExecution(), value);
-        return DataTypeResolver.resolveToDataType(value, frameworkExecution.getFrameworkConfiguration().getFolderConfiguration(), executionControl.getExecutionRuntime());
+        value = executionControl.getFrameworkExecution().getFrameworkCrypto().resolve(actionExecution.getFrameworkExecution(), value);
+        return dataTypeService.resolve(value);
     }
 
-    // Methods
-    private void lookupComponentTypeParameter() {
-        ComponentTypeParameterConfiguration componentTypeParameterConfiguration = new ComponentTypeParameterConfiguration(
-                this.getFrameworkExecution().getFrameworkInstance());
-        this.setComponentTypeParameter(
-                componentTypeParameterConfiguration.getComponentTypeParameter("http.request", this.getName()));
+    public DataType getParameterValue(ComponentParameter componentParameter, List<ComponentAttribute> componentAttributes, ActionExecution actionExecution) {
+        executionControl.logMessage(this.getActionExecution(), "component.param " + this.getName() + ": " + componentParameter.getValue(), Level.DEBUG);
+        return getParameterValue(componentParameter.getValue(), componentAttributes, actionExecution);
+    }
+
+    public boolean isHeader(ComponentParameter componentParameter) {
+        return componentParameter.getName().startsWith("header");
+    }
+
+    public boolean isQueryParameter(ComponentParameter componentParameter) {
+        return componentParameter.getName().startsWith("queryparam");
+    }
+
+    public Map<String, DataType> getHeader(ComponentParameter componentParameter, List<ComponentAttribute> componentAttributes, ActionExecution actionExecution) {
+        Map<String, DataType> header = new HashMap<>();
+        if (isHeader(componentParameter)) {
+            header.put(componentParameter.getValue().split(",")[0],
+                    getParameterValue(componentParameter.getValue().split(",")[1], componentAttributes, actionExecution));
+            return header;
+        } else {
+            throw new RuntimeException();
+        }
+    }
+
+    public Map<String, DataType> getQueryParameter(ComponentParameter componentParameter, List<ComponentAttribute> componentAttributes, ActionExecution actionExecution) {
+        Map<String, DataType> header = new HashMap<>();
+        if (isQueryParameter(componentParameter)) {
+            header.put(componentParameter.getValue().split(",")[0],
+                    getParameterValue(componentParameter.getValue().split(",")[1], componentAttributes, actionExecution));
+            return header;
+        } else {
+            throw new RuntimeException();
+        }
     }
 
     // Getters and Setters
@@ -156,28 +146,12 @@ public class HttpRequestComponentParameterOperation {
         this.executionControl = executionControl;
     }
 
-    public SubroutineOperation getSubroutineOperation() {
-        return subroutineOperation;
-    }
-
-    public void setSubroutineOperation(SubroutineOperation subroutineOperation) {
-        this.subroutineOperation = subroutineOperation;
-    }
-
     public ActionExecution getActionExecution() {
         return actionExecution;
     }
 
     public void setActionExecution(ActionExecution actionExecution) {
         this.actionExecution = actionExecution;
-    }
-
-    public ComponentTypeParameter getComponentTypeParameter() {
-        return componentTypeParameter;
-    }
-
-    public void setComponentTypeParameter(ComponentTypeParameter componentTypeParameter) {
-        this.componentTypeParameter = componentTypeParameter;
     }
 
     public List<ComponentAttribute> getAttributes() {

@@ -1,9 +1,9 @@
 package io.metadew.iesi.script.action;
 
-import io.metadew.iesi.datatypes.Array;
+import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.datatypes.DataType;
-import io.metadew.iesi.datatypes.DataTypeResolver;
-import io.metadew.iesi.datatypes.Text;
+import io.metadew.iesi.datatypes.DataTypeService;
+import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.script.execution.ActionExecution;
@@ -34,6 +34,7 @@ public class FwkSetRepository {
     private ActionParameterOperation repositoryInstanceName;
     private ActionParameterOperation repositoryInstanceLabels;
     private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
+    private DataTypeService dataTypeService;
 
     // Constructors
     public FwkSetRepository() {
@@ -47,10 +48,11 @@ public class FwkSetRepository {
 
     public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
                      ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.setFrameworkExecution(frameworkExecution);
-        this.setExecutionControl(executionControl);
-        this.setActionExecution(actionExecution);
-        this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
+        this.frameworkExecution = frameworkExecution;
+        this.executionControl = executionControl;
+        this.actionExecution = actionExecution;
+        this.actionParameterOperationMap = new HashMap<>();
+        this.dataTypeService = new DataTypeService(frameworkExecution.getFrameworkConfiguration().getFolderConfiguration(), executionControl.getExecutionRuntime());
     }
 
     public void prepare() {
@@ -139,7 +141,7 @@ public class FwkSetRepository {
         List<String> labels = new ArrayList<>();
         if (repositoryLabels instanceof Text) {
             Arrays.stream(repositoryLabels.toString().split(","))
-                    .forEach(repositoryLabel -> labels.add(convertRepositoryInstanceLabel(DataTypeResolver.resolveToDataType(repositoryLabel.trim(), frameworkExecution.getFrameworkConfiguration().getFolderConfiguration(), executionControl.getExecutionRuntime()))));
+                    .forEach(repositoryLabel -> labels.add(convertRepositoryInstanceLabel(dataTypeService.resolve(repositoryLabel.trim()))));
             return labels;
         } else if (repositoryLabels instanceof Array) {
             ((Array) repositoryLabels).getList()

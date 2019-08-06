@@ -5,6 +5,8 @@ import org.apache.http.HttpEntity;
 import org.apache.http.StatusLine;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.util.EntityUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -14,7 +16,6 @@ import java.util.Optional;
 /**
  * Object used to manage the http response resulting from the http connection object.
  *
- * @author peter.billen
  */
 public class HttpResponse {
 
@@ -23,13 +24,15 @@ public class HttpResponse {
     private final HttpEntity entity;
     private final String entityString;
 
+    private final static Logger LOGGER = LogManager.getLogger();
+
 
     public HttpResponse(CloseableHttpResponse response) throws IOException {
         this.response = response;
         this.statusLine = response.getStatusLine();
         this.entity = response.getEntity();
         if (this.entity != null) {
-            this.entityString = EntityUtils.toString(getEntity());
+            this.entityString = EntityUtils.toString(response.getEntity());
         } else {
             this.entityString = null;
         }

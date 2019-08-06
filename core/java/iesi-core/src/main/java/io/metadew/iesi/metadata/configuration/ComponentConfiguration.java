@@ -247,7 +247,7 @@ public class ComponentConfiguration extends MetadataConfiguration {
         String countQuery = "SELECT COUNT(DISTINCT COMP_VRS_NB ) AS total_versions FROM "
                 + this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ComponentVersions")
                 + " WHERE COMP_ID = " + SQLTools.GetStringForSQL(component.getId()) + " AND "
-                + " COMPONENT_VRS_NB != " + SQLTools.GetStringForSQL(component.getVersion().getNumber()) + ";";
+                + " COMP_VRS_NB != " + SQLTools.GetStringForSQL(component.getVersion().getNumber()) + ";";
         CachedRowSet crs = this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().executeQuery(countQuery, "reader");
 
         try {

@@ -1,20 +1,13 @@
 package io.metadew.iesi.framework.execution;
 
 import io.metadew.iesi.connection.operation.filetransfer.FileTransfered;
-import io.metadew.iesi.datatypes.Array;
 import io.metadew.iesi.framework.configuration.FrameworkConfiguration;
 import io.metadew.iesi.framework.crypto.FrameworkCrypto;
 import io.metadew.iesi.framework.crypto.RedactionSource;
 import io.metadew.iesi.metadata.definition.Context;
-import org.apache.commons.lang3.concurrent.ThresholdCircuitBreaker;
 import org.apache.logging.log4j.*;
 
-import java.io.File;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class FrameworkLog {
 
@@ -49,11 +42,11 @@ public class FrameworkLog {
         //System.setProperty("log4j.configurationFile",
         //        frameworkConfiguration.getFolderConfiguration().getFolderAbsolutePath("conf") + File.separator
         // + frameworkConfiguration.getFrameworkCode() + "-log4j2-cli.xml");
-        ThreadContext.put("fwk.code", frameworkConfiguration.getFrameworkCode());
-        ThreadContext.put("location", frameworkConfiguration.getFolderConfiguration().getFolderAbsolutePath("logs"));
-        ThreadContext.put("context.name", frameworkExecutionContext.getContext().getName());
-        ThreadContext.put("context.scope", frameworkExecutionContext.getContext().getScope());
-        ThreadContext.put("fwk.runid", frameworkRuntime.getRunId());
+//        ThreadContext.put("fwk.code", frameworkConfiguration.getFrameworkCode());
+//        ThreadContext.put("location", frameworkConfiguration.getFolderConfiguration().getFolderAbsolutePath("logs"));
+//        ThreadContext.put("context.name", frameworkExecutionContext.getContext().getName());
+//        ThreadContext.put("context.scope", frameworkExecutionContext.getContext().getScope());
+//        ThreadContext.put("fwk.runid", frameworkRuntime.getRunId());
 
 
         // Set log file name

@@ -8,9 +8,9 @@
 //import io.metadew.iesi.connection.HttpConnection;
 //import io.metadew.iesi.connection.http.HttpRequest;
 //import io.metadew.iesi.connection.http.HttpResponse;
-//import io.metadew.iesi.datatypes.Array;
+//import io.metadew.iesi.datatypes.array.Array;
 //import io.metadew.iesi.datatypes.DataType;
-//import io.metadew.iesi.datatypes.Text;
+//import io.metadew.iesi.datatypes.text.Text;
 //import io.metadew.iesi.datatypes.dataset.Dataset;
 //import io.metadew.iesi.framework.execution.FrameworkExecution;
 //import io.metadew.iesi.metadata.definition.action.ActionParameter;

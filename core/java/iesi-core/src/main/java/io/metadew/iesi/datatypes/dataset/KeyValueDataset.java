@@ -5,10 +5,12 @@ import io.metadew.iesi.connection.database.SqliteDatabase;
 import io.metadew.iesi.connection.database.connection.SqliteDatabaseConnection;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.datatypes.DataType;
-import io.metadew.iesi.datatypes.DataTypeResolver;
+import io.metadew.iesi.datatypes.DataTypeService;
 import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 import org.apache.commons.io.FileUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.File;
@@ -20,12 +22,15 @@ import java.util.*;
 
 public class KeyValueDataset extends Dataset {
 
+    private static final Logger LOGGER = LogManager.getLogger();
+
     public KeyValueDataset(DataType name, DataType labels, FrameworkFolderConfiguration frameworkFolderConfiguration, ExecutionRuntime executionRuntime) throws IOException, SQLException {
         super(name, labels, frameworkFolderConfiguration, executionRuntime);
     }
 
     public KeyValueDataset(String name, List<String> labels, FrameworkFolderConfiguration frameworkFolderConfiguration, ExecutionRuntime executionRuntime) throws IOException, SQLException {
         super(name, labels, frameworkFolderConfiguration, executionRuntime);
+        LOGGER.info("Creating dataset with " + name + " and " + labels.toString());
     }
 
     public Map<String, DataType> getDataItems() {
@@ -37,7 +42,7 @@ public class KeyValueDataset extends Dataset {
         crs = getDatasetDatabase().executeQuery(query);
         try {
             while (crs.next()) {
-                dataItems.put(crs.getString("key"), DataTypeResolver.resolveToDataType(crs.getString("value"), getFrameworkFolderConfiguration(), getExecutionRuntime()));
+                dataItems.put(crs.getString("key"), dataTypeService.resolve(crs.getString("value")));
             }
             crs.close();
         } catch (Exception e) {
@@ -57,7 +62,7 @@ public class KeyValueDataset extends Dataset {
         crs = getDatasetDatabase().executeQuery(query);
         try {
             while (crs.next()) {
-                value = DataTypeResolver.resolveToDataType(crs.getString("VALUE"), getFrameworkFolderConfiguration(), getExecutionRuntime());
+                value = dataTypeService.resolve(crs.getString("VALUE"));
             }
             crs.close();
         } catch (Exception e) {
@@ -71,8 +76,8 @@ public class KeyValueDataset extends Dataset {
     public void setDataItem(String key, DataType value) {
         // Store the data
         try {
-            String query = "";
-            query = "insert into " + getTableName() + " (key, value) values ('" + key + "','" + value.toString() + "')";
+            String query = "insert into " + SQLTools.GetStringForSQLTable(getTableName()) + " (key, value) values ("
+                    + SQLTools.GetStringForSQL(key) + ", " + SQLTools.GetStringForSQL(value.toString()) + ");";
             getDatasetDatabase().executeUpdate(query);
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
@@ -87,7 +92,7 @@ public class KeyValueDataset extends Dataset {
         FileUtils.touch(new File(filepath));
         getDatasetMetadata().insertDatasetDatabaseInformation(inventoryId, filename, tableName);
         Database database = new SqliteDatabase(new SqliteDatabaseConnection(filepath));
-        String create = "CREATE TABLE " + tableName + " (key TEXT, value TEXT)";
+        String create = "CREATE TABLE " + SQLTools.GetStringForSQLTable(tableName) + " (key TEXT, value TEXT)";
         database.executeUpdate(create);
         return database;
     }
@@ -97,8 +102,6 @@ public class KeyValueDataset extends Dataset {
         // Check if table exists
         String queryTableExists = "select name from sqlite_master where name = " + SQLTools.GetStringForSQL(getTableName()) + ";";
         CachedRowSet crs = getDatasetDatabase().executeQuery(queryTableExists);
-        String value = "";
-        boolean tableExists = false;
         try {
             if (crs.size() >= 1) {
                 if (crs.getString("NAME").equalsIgnoreCase(getTableName())) {

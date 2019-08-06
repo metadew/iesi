@@ -1,9 +1,9 @@
 package io.metadew.iesi.script.execution.instruction.lookup;
 
 import io.metadew.iesi.datatypes.DataType;
-import io.metadew.iesi.datatypes.DataTypeResolver;
-import io.metadew.iesi.datatypes.Text;
+import io.metadew.iesi.datatypes.DataTypeService;
 import io.metadew.iesi.datatypes.dataset.Dataset;
+import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.script.execution.ExecutionControl;
 
 import java.text.MessageFormat;
@@ -21,9 +21,11 @@ public class DatasetLookup implements LookupInstruction {
             .compile("\\s*\"?(?<" + DATASET_NAME_KEY + ">(\\w|\\.)+)\"?\\s*,\\s*(?<" + DATASET_ITEM_NAME_KEY + ">(\\w|\\.)+)\\s*");
 
     private final ExecutionControl executionControl;
+    private final DataTypeService dataTypeService;
 
     public DatasetLookup(ExecutionControl executionControl) {
         this.executionControl = executionControl;
+        this.dataTypeService = new DataTypeService(executionControl.getFrameworkExecution().getFrameworkConfiguration().getFolderConfiguration(), executionControl.getExecutionRuntime());
     }
 
     @Override
@@ -39,7 +41,7 @@ public class DatasetLookup implements LookupInstruction {
             throw new IllegalArgumentException(MessageFormat.format("Illegal arguments provided to dataset lookup: {0}", parameters));
         }
 
-        Dataset dataset = getDataset(DataTypeResolver.resolveToDataType(inputParameterMatcher.group(DATASET_NAME_KEY), executionControl.getFrameworkExecution().getFrameworkConfiguration().getFolderConfiguration() , executionControl.getExecutionRuntime()));
+        Dataset dataset = getDataset(dataTypeService.resolve(inputParameterMatcher.group(DATASET_NAME_KEY)));
         String datasetItemName = inputParameterMatcher.group(DATASET_ITEM_NAME_KEY);
 
         Optional<DataType> dataItem = dataset.getDataItem(datasetItemName);

@@ -1,4 +1,6 @@
-package io.metadew.iesi.datatypes;
+package io.metadew.iesi.datatypes.text;
+
+import io.metadew.iesi.datatypes.DataType;
 
 public class Text extends DataType {
 

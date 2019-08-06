@@ -1,8 +1,11 @@
 package io.metadew.iesi.metadata.definition;
 
 import io.metadew.iesi.datatypes.DataType;
-import io.metadew.iesi.datatypes.Text;
+import io.metadew.iesi.datatypes.text.Text;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,6 +14,8 @@ public class HttpRequestComponent {
     private String uri;
     private Map<String, String> headers;
     private Map<String, String> queryParameters;
+
+    private final static Logger LOGGER = LogManager.getLogger();
 
     public HttpRequestComponent(String uri, Map<String, String> headers, Map<String, String> queryParameters) {
         this.uri = uri;
@@ -34,19 +39,18 @@ public class HttpRequestComponent {
 
     private Map<String, String> convertHeaders(Map<String, DataType> headers) {
         HashMap<String, String> headersConverted = new HashMap<>();
-        headers
-                .forEach((header, headerValue) ->
+        headers.forEach((header, headerValue) ->
                         headersConverted.put(header, convertHeader(headerValue)));
         return headersConverted;
     }
 
     private String convertHeader(DataType header) {
-        if(header == null) {
+        if (header == null) {
             return "";
         } else if (header instanceof Text) {
             return ((Text) header).getString();
         } else {
-            // TODO: framework log
+            LOGGER.warn(MessageFormat.format("Http request does not accept ''{0}'' as header type", header.getClass()));
             return "";
         }
     }
@@ -57,7 +61,7 @@ public class HttpRequestComponent {
         } else if (queryParameter instanceof Text) {
             return ((Text) queryParameter).getString();
         } else {
-            // TODO: framework log
+            LOGGER.warn(MessageFormat.format("Http request does not accept ''{0}'' as query parameter type", queryParameter.getClass()));
             return "";
         }
     }
@@ -68,7 +72,7 @@ public class HttpRequestComponent {
         } else if (uri instanceof Text) {
             return ((Text) uri).getString();
         } else {
-            // TODO: framework log
+            LOGGER.warn(MessageFormat.format("Http request does not accept ''{0}'' as uri type", uri.getClass()));
             return "";
         }
     }

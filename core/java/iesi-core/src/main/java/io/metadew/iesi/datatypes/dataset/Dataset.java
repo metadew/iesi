@@ -1,13 +1,15 @@
 package io.metadew.iesi.datatypes.dataset;
 
 import io.metadew.iesi.connection.database.Database;
-import io.metadew.iesi.datatypes.Array;
+import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.datatypes.DataType;
-import io.metadew.iesi.datatypes.DataTypeResolver;
-import io.metadew.iesi.datatypes.Text;
+import io.metadew.iesi.datatypes.DataTypeService;
+import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -25,27 +27,27 @@ public abstract class Dataset extends DataType {
     private Database datasetDatabase;
     private String tableName;
     private DatasetMetadata datasetMetadata;
+    protected DataTypeService dataTypeService;
+
+    private final static Logger LOGGER = LogManager.getLogger();
 
     public Dataset(DataType name, DataType labels, FrameworkFolderConfiguration frameworkFolderConfiguration, ExecutionRuntime executionRuntime) throws IOException, SQLException {
-        // TODO: centralize resolvement to circumvent ExecutionRuntime needs
-        // TODO: include types
         this.frameworkFolderConfiguration = frameworkFolderConfiguration;
         this.executionRuntime = executionRuntime;
-        this.datasetDatabase = initializeDatasetConnection(name, labels);
+        this.dataTypeService = new DataTypeService(frameworkFolderConfiguration, executionRuntime);
+        this.name = convertDatasetName(name);
+        this.labels = convertDatasetLabels(labels);
+        this.datasetDatabase = initializeDatasetConnection(this.name, this.labels);
     }
 
     public Dataset(String name, List<String> labels, FrameworkFolderConfiguration frameworkFolderConfiguration, ExecutionRuntime executionRuntime) throws IOException, SQLException {
+        LOGGER.info(MessageFormat.format("Creating dataset ''{0}'' with labels {1}", name, labels.toString()));
         this.frameworkFolderConfiguration = frameworkFolderConfiguration;
         this.executionRuntime = executionRuntime;
+        this.dataTypeService = new DataTypeService(frameworkFolderConfiguration, executionRuntime);
         this.name = name;
         this.labels = labels;
         this.datasetDatabase = initializeDatasetConnection(name, labels);
-    }
-
-    private Database initializeDatasetConnection(DataType name, DataType labels) throws IOException, SQLException {
-        this.name = convertDatasetName(name);
-        this.labels = convertDatasetLabels(labels);
-        return initializeDatasetConnection(this.name, this.labels);
     }
 
     public abstract void clean();
@@ -60,7 +62,7 @@ public abstract class Dataset extends DataType {
         List<String> labels = new ArrayList<>();
         if (datasetLabels instanceof Text) {
             Arrays.stream(datasetLabels.toString().split(","))
-                    .forEach(datasetLabel -> labels.add(convertDatasetLabel(DataTypeResolver.resolveToDataType(datasetLabel.trim(), frameworkFolderConfiguration, executionRuntime))));
+                    .forEach(datasetLabel -> labels.add(convertDatasetLabel(dataTypeService.resolve(datasetLabel.trim()))));
             return labels;
         } else if (datasetLabels instanceof Array) {
             ((Array) datasetLabels).getList()
@@ -110,6 +112,7 @@ public abstract class Dataset extends DataType {
     }
 
     protected Database createNewDataset(String datasetName, List<String> labels) throws IOException {
+        LOGGER.debug(MessageFormat.format("Initializing new dataset for ''{0}'' with labels {1}", datasetName, labels.toString()));
         int nextInventoryId = getDatasetMetadata().getLatestInventoryId() + 1;
         String datasetFilename = UUID.randomUUID().toString() + ".db3";
         setTableName("data");

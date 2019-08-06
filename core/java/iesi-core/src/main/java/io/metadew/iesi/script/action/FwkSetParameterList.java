@@ -1,9 +1,9 @@
 package io.metadew.iesi.script.action;
 
-import io.metadew.iesi.datatypes.Array;
 import io.metadew.iesi.datatypes.DataType;
-import io.metadew.iesi.datatypes.DataTypeResolver;
-import io.metadew.iesi.datatypes.Text;
+import io.metadew.iesi.datatypes.DataTypeService;
+import io.metadew.iesi.datatypes.array.Array;
+import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.script.execution.ActionExecution;
@@ -23,6 +23,7 @@ import java.util.regex.Pattern;
 
 public class FwkSetParameterList {
 
+    private final DataTypeService dataTypeService;
     private ActionExecution actionExecution;
     private FrameworkExecution frameworkExecution;
     private ExecutionControl executionControl;
@@ -33,20 +34,13 @@ public class FwkSetParameterList {
     private ActionParameterOperation parameterList;
     private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
 
-    // Constructors
-    public FwkSetParameterList() {
-
-    }
 
     public FwkSetParameterList(FrameworkExecution frameworkExecution, ExecutionControl executionControl, ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.init(frameworkExecution, executionControl, scriptExecution, actionExecution);
-    }
-
-    public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl, ScriptExecution scriptExecution, ActionExecution actionExecution) {
         this.setFrameworkExecution(frameworkExecution);
         this.setExecutionControl(executionControl);
         this.setActionExecution(actionExecution);
         this.setActionParameterOperationMap(new HashMap<>());
+        this.dataTypeService = new DataTypeService(frameworkExecution.getFrameworkConfiguration().getFolderConfiguration(), executionControl.getExecutionRuntime());
     }
 
     public void prepare() {
@@ -88,7 +82,7 @@ public class FwkSetParameterList {
         Map<String, String> parameterMap = new HashMap<>();
         if (list instanceof Text) {
             Arrays.stream(list.toString().split(","))
-                    .forEach(parameterEntry -> parameterMap.putAll(convertParameterEntry(DataTypeResolver.resolveToDataType(parameterEntry, frameworkExecution.getFrameworkConfiguration().getFolderConfiguration(), executionControl.getExecutionRuntime()))));
+                    .forEach(parameterEntry -> parameterMap.putAll(convertParameterEntry(dataTypeService.resolve(parameterEntry))));
             return parameterMap;
         } else if (list instanceof Array) {
             for (DataType parameterEntry : ((Array) list).getList()) {

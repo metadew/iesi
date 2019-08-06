@@ -1,8 +1,8 @@
 package io.metadew.iesi.metadata.service.action;
 
-import io.metadew.iesi.datatypes.Array;
+import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.datatypes.DataType;
-import io.metadew.iesi.datatypes.Text;
+import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.datatypes.dataset.Dataset;
 import io.metadew.iesi.metadata.configuration.action.ActionParameterTraceConfiguration;
 import io.metadew.iesi.metadata.configuration.action.ActionTraceConfiguration;

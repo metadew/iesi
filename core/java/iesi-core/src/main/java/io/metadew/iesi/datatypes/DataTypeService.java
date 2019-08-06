@@ -1,9 +1,16 @@
 package io.metadew.iesi.datatypes;
 
-import io.metadew.iesi.datatypes.dataset.Dataset;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.*;
+import io.metadew.iesi.datatypes.array.ArrayService;
 import io.metadew.iesi.datatypes.dataset.KeyValueDataset;
+import io.metadew.iesi.datatypes.dataset.KeyValueDatasetService;
+import io.metadew.iesi.datatypes.text.Text;
+import io.metadew.iesi.datatypes.text.TextService;
 import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -12,27 +19,39 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
-public class DataTypeResolver {
+public class DataTypeService {
+
+    private final static Logger LOGGER = LogManager.getLogger();
 
     private static String DatatypeStartCharacters = "{{";
     private static String DatatypeStopCharacters = "}}";
     private static Pattern DatatypePattern = Pattern.compile("\\^(?<datatype>\\w+)\\((?<arguments>.+)\\)");
 
+    private KeyValueDatasetService keyValueDatasetService;
+    private ArrayService arrayService;
+    private TextService textService;
+
+
+    public DataTypeService(FrameworkFolderConfiguration frameworkFolderConfiguration, ExecutionRuntime executionRuntime) {
+        this.keyValueDatasetService = new KeyValueDatasetService(this, frameworkFolderConfiguration, executionRuntime);
+        this.arrayService = new ArrayService(this);
+        this.textService = new TextService();
+    }
+
     /*
-    In case of multiple dataset types (keyvalue, resultset..) --> proposition dataset.kv and dataset.rs as keys
-     */
-    public static DataType resolveToDataType(String input, FrameworkFolderConfiguration frameworkFolderConfiguration, ExecutionRuntime executionRuntime) {
+        In case of multiple dataset types (keyvalue, resultset..) --> proposition dataset.kv and dataset.rs as keys
+    */
+    public DataType resolve(String input) {
         if (input.startsWith(DatatypeStartCharacters) && input.endsWith(DatatypeStopCharacters)) {
             Matcher matcher = DatatypePattern.matcher(input.substring(DatatypeStartCharacters.length(), input.length() - DatatypeStopCharacters.length()));
             if (matcher.find()) {
                 switch (matcher.group("datatype")) {
                     case "list":
-                        return resolveToList(matcher.group("arguments"), frameworkFolderConfiguration, executionRuntime);
+                        return arrayService.resolve(matcher.group("arguments"));
                     case "dataset":
                         try {
-                            return resolveToDataset(matcher.group("arguments"), frameworkFolderConfiguration, executionRuntime);
+                            return keyValueDatasetService.resolve(matcher.group("arguments"));
                         } catch (IOException | SQLException e) {
                             throw new RuntimeException(e);
                         }
@@ -47,27 +66,7 @@ public class DataTypeResolver {
         }
     }
 
-    private static Dataset resolveToDataset(String arguments, FrameworkFolderConfiguration frameworkFolderConfiguration, ExecutionRuntime executionRuntime) throws IOException, SQLException {
-        List<String> splittedArguments = splitInstructionArguments(arguments);
-        if (splittedArguments.size() == 2) {
-            List<DataType> resolvedArguments = splittedArguments.stream()
-                    .map(argument -> resolveToDataType(argument, frameworkFolderConfiguration, executionRuntime))
-                    .collect(Collectors.toList());
-            return new KeyValueDataset(resolvedArguments.get(0), resolvedArguments.get(1), frameworkFolderConfiguration, executionRuntime);
-        } else {
-            throw new RuntimeException(MessageFormat.format("Cannot create dataset with arguments ''{0}''", splittedArguments.toString()));
-        }
-    }
-
-    private static Array resolveToList(String arguments, FrameworkFolderConfiguration frameworkFolderConfiguration, ExecutionRuntime executionRuntime) {
-        List<String> splittedArguments = splitInstructionArguments(arguments);
-        List<DataType> resolvedArguments = splittedArguments.stream()
-                .map(argument -> resolveToDataType(argument, frameworkFolderConfiguration, executionRuntime))
-                .collect(Collectors.toList());
-        return new Array(resolvedArguments);
-    }
-
-    private static List<String> splitInstructionArguments(String argumentsString) {
+    public List<String> splitInstructionArguments(String argumentsString) {
         // TODO: move to Antler
         List<String> instructionArguments = new ArrayList<>();
         String instructionStart = "{{";
@@ -110,6 +109,33 @@ public class DataTypeResolver {
             }
         }
         return instructionArguments;
+    }
+
+    public DataType resolve(KeyValueDataset rootDataset, String key, JsonNode jsonNode) throws IOException, SQLException {
+        if (jsonNode.getNodeType().equals(JsonNodeType.ARRAY)) {
+            return arrayService.resolve(rootDataset, key, (ArrayNode) jsonNode);
+        } else if (jsonNode.getNodeType().equals(JsonNodeType.NULL)) {
+            return textService.resolve((NullNode) jsonNode);
+        } else if (jsonNode.isValueNode()) {
+            return textService.resolve((ValueNode) jsonNode);
+        } if (jsonNode.getNodeType().equals(JsonNodeType.OBJECT)) {
+            return keyValueDatasetService.resolve(rootDataset, key, (ObjectNode) jsonNode);
+        } else {
+            LOGGER.warn(MessageFormat.format("dataset.json.unknownnode=cannot decipher json node of type {0}", jsonNode.getNodeType().toString()));
+        }
+        return rootDataset;
+    }
+
+    public KeyValueDatasetService getKeyValueDatasetService() {
+        return keyValueDatasetService;
+    }
+
+    public ArrayService getArrayService() {
+        return arrayService;
+    }
+
+    public TextService getTextService() {
+        return textService;
     }
 
 }

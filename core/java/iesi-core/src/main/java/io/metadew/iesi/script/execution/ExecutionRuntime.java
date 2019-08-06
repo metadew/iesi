@@ -30,6 +30,7 @@ import org.apache.logging.log4j.Level;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.security.Key;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -53,7 +54,7 @@ public class ExecutionRuntime {
     //private HashMap<String, StageOperation> stageOperationMap;
     private HashMap<String, RepositoryOperation> repositoryOperationMap;
     private HashMap<String, StageOperation> stageOperationMap;
-    private HashMap<String, Dataset> datasetMap;
+    private HashMap<String, KeyValueDataset> datasetMap;
     private HashMap<String, IterationOperation> iterationOperationMap;
     private HashMap<String, ExecutionRuntimeExtension> executionRuntimeExtensionMap;
     private ImpersonationOperation impersonationOperation;
@@ -776,7 +777,6 @@ public class ExecutionRuntime {
                 .orElse(input);
     }
 
-    @SuppressWarnings("unused")
 	private String lookupDatasetInstruction(ExecutionControl executionControl, String input) {
         String output = input;
 
@@ -786,7 +786,7 @@ public class ExecutionRuntime {
         String datasetItem = parts[1].trim();
 
 
-        Optional<Dataset> dataset = getDataset(datasetReferenceName);
+        Optional<KeyValueDataset> dataset = getDataset(datasetReferenceName);
         String dataItem = dataset
                 .map(dataset1 -> dataset1.getDataItem(datasetItem)
                         .map(DataType::toString)
@@ -918,7 +918,7 @@ public class ExecutionRuntime {
 
 
 
-    public Optional<Dataset> getDataset(String referenceName) {
+    public Optional<KeyValueDataset> getDataset(String referenceName) {
         return Optional.ofNullable(datasetMap.get(referenceName));
     }
 

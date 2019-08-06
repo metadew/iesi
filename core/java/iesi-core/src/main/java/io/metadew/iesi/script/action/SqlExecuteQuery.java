@@ -5,8 +5,8 @@ import io.metadew.iesi.connection.database.sql.SqlScriptResult;
 import io.metadew.iesi.connection.operation.ConnectionOperation;
 import io.metadew.iesi.connection.tools.sql.SQLDataTransfer;
 import io.metadew.iesi.datatypes.DataType;
-import io.metadew.iesi.datatypes.dataset.Dataset;
-import io.metadew.iesi.datatypes.Text;
+import io.metadew.iesi.datatypes.text.Text;
+import io.metadew.iesi.datatypes.dataset.KeyValueDataset;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.configuration.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
@@ -171,7 +171,7 @@ public class SqlExecuteQuery {
 
         SqlScriptResult sqlScriptResult;
 
-        Optional<Dataset> dataset = this.getExecutionControl().getExecutionRuntime()
+        Optional<KeyValueDataset> dataset = this.getExecutionControl().getExecutionRuntime()
                 .getDataset(outputDatasetReferenceName);
         CachedRowSet crs = database.executeQuery(query);
         this.getActionExecution().getActionControl().logOutput("sql.execute.size", Integer.toString(crs.size()));

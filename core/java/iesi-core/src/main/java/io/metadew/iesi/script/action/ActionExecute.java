@@ -8,7 +8,7 @@ import java.util.HashMap;
 import org.apache.logging.log4j.Level;
 
 import io.metadew.iesi.datatypes.DataType;
-import io.metadew.iesi.datatypes.Text;
+import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;

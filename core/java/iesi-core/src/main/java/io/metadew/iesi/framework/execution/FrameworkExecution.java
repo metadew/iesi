@@ -8,6 +8,7 @@ import io.metadew.iesi.framework.definition.FrameworkRunIdentifier;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.execution.MetadataControl;
 import io.metadew.iesi.metadata.repository.ExecutionServerMetadataRepository;
+import org.apache.logging.log4j.ThreadContext;
 
 public class FrameworkExecution {
 
@@ -107,6 +108,8 @@ public class FrameworkExecution {
 
     public void setFrameworkConfiguration(FrameworkConfiguration frameworkConfiguration) {
         this.frameworkConfiguration = frameworkConfiguration;
+        ThreadContext.put("fwk.code", frameworkConfiguration.getFrameworkCode());
+        ThreadContext.put("location", frameworkConfiguration.getFolderConfiguration().getFolderAbsolutePath("logs"));
     }
 
     public FrameworkExecutionSettings getFrameworkExecutionSettings() {
@@ -147,6 +150,8 @@ public class FrameworkExecution {
 
     public void setFrameworkExecutionContext(FrameworkExecutionContext frameworkExecutionContext) {
         this.frameworkExecutionContext = frameworkExecutionContext;
+        ThreadContext.put("context.name", frameworkExecutionContext.getContext().getName());
+        ThreadContext.put("context.scope", frameworkExecutionContext.getContext().getScope());
     }
 
     public FrameworkControl getFrameworkControl() {
@@ -171,6 +176,7 @@ public class FrameworkExecution {
 
     public void setFrameworkRuntime(FrameworkRuntime frameworkRuntime) {
         this.frameworkRuntime = frameworkRuntime;
+        ThreadContext.put("fwk.runid", frameworkRuntime.getRunId());
     }
 
     public FrameworkInstance getFrameworkInstance() {

@@ -1,9 +1,9 @@
 package io.metadew.iesi.script.action;
 
-import io.metadew.iesi.datatypes.Array;
+import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.datatypes.DataType;
-import io.metadew.iesi.datatypes.DataTypeResolver;
-import io.metadew.iesi.datatypes.Text;
+import io.metadew.iesi.datatypes.DataTypeService;
+import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.script.execution.ActionExecution;
@@ -36,6 +36,7 @@ public class DataSetDatasetConnection {
     private ActionParameterOperation datasetName;
     private ActionParameterOperation datasetLabels;
     private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
+    private DataTypeService dataTypeService;
 
     // Constructors
     public DataSetDatasetConnection() {
@@ -49,10 +50,11 @@ public class DataSetDatasetConnection {
 
     public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
                      ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.setFrameworkExecution(frameworkExecution);
-        this.setExecutionControl(executionControl);
-        this.setActionExecution(actionExecution);
-        this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
+        this.frameworkExecution = frameworkExecution;
+        this.executionControl = executionControl;
+        this.actionExecution = actionExecution;
+        this.actionParameterOperationMap = new HashMap<>();
+        this.dataTypeService = new DataTypeService(frameworkExecution.getFrameworkConfiguration().getFolderConfiguration(), executionControl.getExecutionRuntime());
     }
 
     public void prepare() {
@@ -135,7 +137,7 @@ public class DataSetDatasetConnection {
         List<String> labels = new ArrayList<>();
         if (datasetLabels instanceof Text) {
             Arrays.stream(datasetLabels.toString().split(","))
-                    .forEach(datasetLabel -> labels.add(convertDatasetLabel(DataTypeResolver.resolveToDataType(datasetLabel.trim(), frameworkExecution.getFrameworkConfiguration().getFolderConfiguration(), executionControl.getExecutionRuntime()))));
+                    .forEach(datasetLabel -> labels.add(convertDatasetLabel(dataTypeService.resolve(datasetLabel.trim()))));
             return labels;
         } else if (datasetLabels instanceof Array) {
             ((Array) datasetLabels).getList()

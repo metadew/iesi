@@ -3,10 +3,12 @@ package io.metadew.iesi.script.action.http;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.metadew.iesi.connection.http.*;
-import io.metadew.iesi.datatypes.Array;
+import io.metadew.iesi.datatypes.DataTypeService;
+import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.datatypes.DataType;
-import io.metadew.iesi.datatypes.Text;
+import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.datatypes.dataset.Dataset;
 import io.metadew.iesi.datatypes.dataset.KeyValueDataset;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
@@ -44,14 +46,15 @@ public class HttpExecuteRequest {
     private ActionExecution actionExecution;
     private FrameworkExecution frameworkExecution;
     private ExecutionControl executionControl;
+    private DataTypeService dataTypeService;
     // Parameters
     private final String typeKey = "type";
     private final String requestKey = "request";
     private final String bodyKey = "body";
     private final String proxyKey = "proxy";
-    private final String setRuntimeVariablesKey = "setRuntimeVariablesActionParameterOperation";
-    private final String setDatasetKey = "setDatasetActionParameterOperation";
-    private final String expectedStatusCodesKey = "expectedStatusCodesActionParameterOperation";
+    private final String setRuntimeVariablesKey = "setRuntimeVariables";
+    private final String setDatasetKey = "setDataset";
+    private final String expectedStatusCodesKey = "expectedStatusCodes";
 
     private ActionParameterOperation requestTypeActionParameterOperation;
     private ActionParameterOperation requestNameActionParameterOperation;
@@ -64,9 +67,9 @@ public class HttpExecuteRequest {
 
     private HttpRequest httpRequest;
     private boolean setRuntimeVariables;
-    private Dataset outputDataset;
+    private KeyValueDataset outputDataset;
     private ProxyConnection proxyConnection;
-    private Dataset rawOutputDataset;
+    private KeyValueDataset rawOutputDataset;
     private List<String> expectedStatusCodes;
 
     private final Pattern INFORMATION_STATUS_CODE = Pattern.compile("1\\d\\d");
@@ -90,6 +93,7 @@ public class HttpExecuteRequest {
         this.actionParameterOperationMap = new HashMap<>();
         this.httpRequestComponentOperation = new HttpRequestComponentOperation(executionControl);
         this.httpRequestService = new HttpRequestService();
+        this.dataTypeService = new DataTypeService(frameworkExecution.getFrameworkConfiguration().getFolderConfiguration(), executionControl.getExecutionRuntime());
     }
 
     public void prepare() throws URISyntaxException, HttpRequestBuilderException, IOException, SQLException {
@@ -152,12 +156,12 @@ public class HttpExecuteRequest {
         httpRequest = httpRequestBuilder.build();
         expectedStatusCodes = convertExpectStatusCodes(expectedStatusCodesActionParameterOperation.getValue());
         setRuntimeVariables = convertSetRuntimeVariables(setRuntimeVariablesActionParameterOperation.getValue());
+        proxyConnection = convertProxyName(proxyActionParameterOperation.getValue());
         // TODO: convert from string to dataset DataType
-        outputDataset = executionControl.getExecutionRuntime().getDataset(convertOutputDatasetReferenceName(setDatasetActionParameterOperation.getValue()))
-                .orElse(null);
+        outputDataset = convertOutputDatasetReferenceName(setDatasetActionParameterOperation.getValue());
         if (getOutputDataset().isPresent()) {
-            List<String> labels = outputDataset.getLabels();
-            labels.add("raw");
+            List<String> labels = new ArrayList<>(outputDataset.getLabels());
+            labels.add("typed");
             rawOutputDataset = new KeyValueDataset(outputDataset.getName(), labels, frameworkExecution.getFrameworkConfiguration().getFolderConfiguration(), executionControl.getExecutionRuntime());
         }
 
@@ -165,7 +169,12 @@ public class HttpExecuteRequest {
 
     public boolean execute() {
         try {
-            HttpResponse httpResponse = httpRequestService.send(httpRequest);
+            HttpResponse httpResponse;
+            if (getProxyConnection().isPresent()) {
+                httpResponse = httpRequestService.send(httpRequest, proxyConnection);
+            }else {
+                httpResponse = httpRequestService.send(httpRequest);
+            }
             outputResponse(httpResponse);
             // Parsing entity
             writeResponseToOutputDataset(httpResponse);
@@ -215,7 +224,9 @@ public class HttpExecuteRequest {
     }
 
     private ProxyConnection convertProxyName(DataType connectionName) {
-        if (connectionName instanceof Text) {
+        if (connectionName == null) {
+            return null;
+        } else if (connectionName instanceof Text) {
             ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution().getFrameworkInstance());
             return proxyConnection = connectionConfiguration.getConnection(((Text) connectionName).getString(), executionControl.getEnvName())
                     .map(ProxyConnection::from)
@@ -239,13 +250,16 @@ public class HttpExecuteRequest {
 
     }
 
-    private String convertOutputDatasetReferenceName(DataType outputDatasetReferenceName) {
-        if (outputDatasetReferenceName instanceof Text) {
-            return outputDatasetReferenceName.toString();
+    private KeyValueDataset convertOutputDatasetReferenceName(DataType outputDatasetReferenceName) {
+        if (outputDatasetReferenceName == null) {
+            return null;
+        } else if (outputDatasetReferenceName instanceof Text) {
+            return executionControl.getExecutionRuntime().getDataset(((Text) outputDatasetReferenceName).getString())
+                .orElseThrow(() -> new RuntimeException(MessageFormat.format("No dataset found with name ''{0}''", ((Text) outputDatasetReferenceName).getString())));
         } else {
             LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for OutputDatasetReferenceName",
                     outputDatasetReferenceName.getClass()));
-            return outputDatasetReferenceName.toString();
+            throw new RuntimeException(MessageFormat.format("Output dataset does not allow type ''{0}''", outputDatasetReferenceName.getClass()));
         }
     }
 
@@ -287,7 +301,7 @@ public class HttpExecuteRequest {
 
     private String convertHttpRequestName(DataType httpRequestName) {
         if (httpRequestName instanceof Text) {
-            return httpRequestName.toString();
+            return ((Text) httpRequestName).getString();
         } else {
             LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for request name",
                     httpRequestName.getClass()));
@@ -296,7 +310,7 @@ public class HttpExecuteRequest {
     }
 
     private void checkStatusCode(HttpResponse httpResponse) {
-        if (!expectedStatusCodes.isEmpty()) {
+        if (getExpectedStatusCodes().isPresent()) {
             if (expectedStatusCodes.contains(String.valueOf(httpResponse.getStatusLine().getStatusCode()))) {
                 actionExecution.getActionControl().increaseSuccessCount();
             } else {
@@ -357,70 +371,32 @@ public class HttpExecuteRequest {
         });
     }
 
-    private void writeRawJSONResponseToOutputDataset(JsonNode jsonNode, String keyPrefix, Dataset outputDataset) {
-
-        Iterator<Map.Entry<String, JsonNode>> fields = jsonNode.fields();
-        while (fields.hasNext()) {
-            Map.Entry<String, JsonNode> field = fields.next();
-            if (field.getValue().getNodeType().equals(JsonNodeType.OBJECT)) {
-                writeRawJSONResponseToOutputDataset(field.getValue(), keyPrefix + field.getKey() + ".", outputDataset);
-            } else if (field.getValue().getNodeType().equals(JsonNodeType.ARRAY)) {
-                int arrayCounter = 1;
-                for (JsonNode element : field.getValue()) {
-                    writeRawJSONResponseToOutputDataset(element, keyPrefix + field.getKey() + "." + arrayCounter + ".",
-                            outputDataset);
-                    arrayCounter++;
-                }
-            } else if (field.getValue().getNodeType().equals(JsonNodeType.NULL)) {
-                outputDataset.setDataItem(keyPrefix + field.getKey(), new Text(""));
-            } else if (field.getValue().isValueNode()) {
-                outputDataset.setDataItem(keyPrefix + field.getKey(), new Text(field.getValue().asText()));
-            } else {
-                //TODO:
-            }
-        }
-    }
-
-    private void writeJSONResponseToOutputDataset(JsonNode jsonNode, String keyPrefix, Dataset outputDataset) {
-        Iterator<Map.Entry<String, JsonNode>> fields = jsonNode.fields();
-        while (fields.hasNext()) {
-            Map.Entry<String, JsonNode> field = fields.next();
-            if (field.getValue().getNodeType().equals(JsonNodeType.OBJECT)) {
-                writeJSONResponseToOutputDataset(field.getValue(), keyPrefix + field.getKey() + ".", outputDataset);
-            } else if (field.getValue().getNodeType().equals(JsonNodeType.ARRAY)) {
-                // TODO: create list with dependent on element type a new dataset or plain value
-                int arrayCounter = 1;
-                for (JsonNode element : field.getValue()) {
-                    writeJSONResponseToOutputDataset(element, keyPrefix + field.getKey() + "." + arrayCounter + ".",
-                            outputDataset);
-                    arrayCounter++;
-                }
-            } else if (field.getValue().getNodeType().equals(JsonNodeType.NULL)) {
-                outputDataset.setDataItem(keyPrefix + field.getKey(), new Text(""));
-            } else if (field.getValue().isValueNode()) {
-                outputDataset.setDataItem(keyPrefix + field.getKey(), new Text(field.getValue().asText()));
-            } else {
-                //TODO:
-            }
-        }
-    }
-
-
     private void writeJSONResponseToOutputDataset(HttpResponse httpResponse) {
         if (httpResponse.getEntityString().isPresent()) {
             try {
                 JsonNode jsonNode = new ObjectMapper().readTree(httpResponse.getEntityString().get());
                 setRuntimeVariable(jsonNode, setRuntimeVariables);
+                // TODO: flip raw/normal if ready to migrate
                 getRawOutputDataset().ifPresent(dataset -> {
                     dataset.clean();
-                    writeRawJSONResponseToOutputDataset(jsonNode, "", dataset);
+                    try {
+                        dataTypeService.getKeyValueDatasetService().write(dataset, (ObjectNode) jsonNode);
+                    } catch (IOException | SQLException e) {
+                        StringWriter StackTrace = new StringWriter();
+                        e.printStackTrace(new PrintWriter(StackTrace));
+                        this.getActionExecution().getActionControl().logOutput("json.exception", e.getMessage());
+                        this.getActionExecution().getActionControl().logOutput("json.stacktrace", StackTrace.toString());
+                    }
                 });
                 getOutputDataset().ifPresent(dataset -> {
                     dataset.clean();
-                    writeJSONResponseToOutputDataset(jsonNode, "", dataset);
+                    dataTypeService.getKeyValueDatasetService().writeRawJSON(dataset, jsonNode);
                 });
             } catch (Exception e) {
-                this.getActionExecution().getActionControl().logError("json", e.getMessage());
+                StringWriter StackTrace = new StringWriter();
+                e.printStackTrace(new PrintWriter(StackTrace));
+                this.getActionExecution().getActionControl().logOutput("json.exception", e.getMessage());
+                this.getActionExecution().getActionControl().logOutput("json.stacktrace", StackTrace.toString());
             }
         }
     }
@@ -492,14 +468,17 @@ public class HttpExecuteRequest {
         this.actionParameterOperationMap = actionParameterOperationMap;
     }
 
-    private Optional<Dataset> getOutputDataset() {
+    private Optional<KeyValueDataset> getOutputDataset() {
         return Optional.ofNullable(outputDataset);
+    }
+    private Optional<List<String>> getExpectedStatusCodes() {
+        return Optional.ofNullable(expectedStatusCodes);
     }
     private Optional<ProxyConnection> getProxyConnection() {
         return Optional.ofNullable(proxyConnection);
     }
 
-    private Optional<Dataset> getRawOutputDataset() {
+    private Optional<KeyValueDataset> getRawOutputDataset() {
         return Optional.ofNullable(rawOutputDataset);
     }
 }

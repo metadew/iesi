@@ -11,15 +11,17 @@ public class Requestor {
 	private static Requestor INSTANCE;
 	private FrameworkInstance frameworkInstance;
 
-	public Requestor(FrameworkInstance frameworkInstance) {
-		this.setFrameworkInstance(frameworkInstance);
-	}
+	public Requestor() {}
 
-	public synchronized static Requestor getInstance(FrameworkInstance frameworkInstance) {
+	public synchronized static Requestor getInstance() {
 		if (INSTANCE == null) {
-			INSTANCE = new Requestor(frameworkInstance);
+			INSTANCE = new Requestor();
 		}
 		return INSTANCE;
+	}
+
+	public void init(FrameworkInstance frameworkInstance) {
+		this.frameworkInstance = frameworkInstance;
 	}
 
 	public synchronized String submit(Request request) {

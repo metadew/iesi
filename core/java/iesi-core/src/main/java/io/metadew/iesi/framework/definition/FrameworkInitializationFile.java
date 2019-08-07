@@ -9,6 +9,10 @@ public class FrameworkInitializationFile {
 
     }
 
+    public FrameworkInitializationFile(String name) {
+        this.name = name;
+    }
+
     //Getters and Setters
     public String getName() {
         return name;

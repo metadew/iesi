@@ -228,28 +228,17 @@ public class ScriptLauncher {
 		System.out.println("script.launcher.start");
 		System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 
-		List<RequestParameter> requestParameterList = new ArrayList();
-		RequestParameter requestParameter = null;
-		requestParameter = new RequestParameter("version", "number", Long.toString(scriptVersionNumber));
-		requestParameterList.add(requestParameter);
-		requestParameter = new RequestParameter("file", "name", fileName);
-		requestParameterList.add(requestParameter);
-		requestParameter = new RequestParameter("paramlist", "list", paramList);
-		requestParameterList.add(requestParameter);
-		requestParameter = new RequestParameter("paramfile", "name", paramFile);
-		requestParameterList.add(requestParameter);
-		requestParameter = new RequestParameter("actionselect", "list", actionSelect);
-		requestParameterList.add(requestParameter);
-		requestParameter = new RequestParameter("impersonation", "name", impersonationName);
-		requestParameterList.add(requestParameter);
-		requestParameter = new RequestParameter("impersonate", "mapping", impersonationCustom);
-		requestParameterList.add(requestParameter);
-		requestParameter = new RequestParameter("mode", "name", executionMode);
-		requestParameterList.add(requestParameter);
-		requestParameter = new RequestParameter("settings", "list", settings);
-		requestParameterList.add(requestParameter);
-		requestParameter = new RequestParameter("exit", "flag", Boolean.toString(exit));
-		requestParameterList.add(requestParameter);
+		List<RequestParameter> requestParameters = new ArrayList();
+		requestParameters.add(new RequestParameter("version", "number", Long.toString(scriptVersionNumber)));
+		requestParameters.add(new RequestParameter("file", "name", fileName));
+		requestParameters.add(new RequestParameter("paramlist", "list", paramList));
+		requestParameters.add(new RequestParameter("paramfile", "name", paramFile));
+		requestParameters.add(new RequestParameter("actionselect", "list", actionSelect));
+		requestParameters.add(new RequestParameter("impersonation", "name", impersonationName));
+		requestParameters.add(new RequestParameter("impersonate", "mapping", impersonationCustom));
+		requestParameters.add(new RequestParameter("mode", "name", executionMode));
+		requestParameters.add(new RequestParameter("settings", "list", settings));
+		requestParameters.add(new RequestParameter("exit", "flag", Boolean.toString(exit)));
 
 		String scopeName = "";
 		if (executionMode.equalsIgnoreCase("script")) {
@@ -263,12 +252,12 @@ public class ScriptLauncher {
 
 		// TODO replace local date time in tool across solution
 		Request request = new Request("script", LocalDateTime.now().toString(), scriptName, "", 1, "",
-				scopeName, environmentName, "admin", userName, userPassword, requestParameterList);
+				scopeName, environmentName, "admin", userName, userPassword, requestParameters);
 
 		if (serverMode.equalsIgnoreCase("off")) {
-			Executor.getInstance(frameworkInstance).execute(request);
+			Executor.getInstance().execute(request);
 		} else if (serverMode.equalsIgnoreCase("standalone")) {
-			Requestor.getInstance(frameworkInstance).submit(request);
+			Requestor.getInstance().submit(request);
 		} else {
 			throw new RuntimeException("unknown setting for " + frameworkInstance.getFrameworkConfiguration().getSettingConfiguration().getSettingPath("server.mode").get());
 		}

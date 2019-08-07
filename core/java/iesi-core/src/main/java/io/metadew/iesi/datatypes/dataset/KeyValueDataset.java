@@ -32,7 +32,7 @@ public class KeyValueDataset extends Dataset {
 
     public KeyValueDataset(String name, List<String> labels, FrameworkFolderConfiguration frameworkFolderConfiguration, ExecutionRuntime executionRuntime) throws IOException, SQLException {
         super(name, labels, frameworkFolderConfiguration, executionRuntime);
-        LOGGER.info("Creating dataset with " + name + " and " + labels.toString());
+        LOGGER.trace("Creating dataset with " + name + " and " + labels.toString());
     }
 
     public Map<String, DataType> getDataItems() {

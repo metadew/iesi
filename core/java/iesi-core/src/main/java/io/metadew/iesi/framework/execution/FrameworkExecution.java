@@ -107,8 +107,6 @@ public class FrameworkExecution {
 
     public void setFrameworkConfiguration(FrameworkConfiguration frameworkConfiguration) {
         this.frameworkConfiguration = frameworkConfiguration;
-        ThreadContext.put("fwk.code", frameworkConfiguration.getFrameworkCode());
-        ThreadContext.put("location", frameworkConfiguration.getFolderConfiguration().getFolderAbsolutePath("logs"));
     }
 
     public FrameworkExecutionSettings getFrameworkExecutionSettings() {

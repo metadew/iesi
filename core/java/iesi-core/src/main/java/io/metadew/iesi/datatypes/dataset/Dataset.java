@@ -41,7 +41,7 @@ public abstract class Dataset extends DataType {
     }
 
     public Dataset(String name, List<String> labels, FrameworkFolderConfiguration frameworkFolderConfiguration, ExecutionRuntime executionRuntime) throws IOException, SQLException {
-        LOGGER.info(MessageFormat.format("Creating dataset ''{0}'' with labels {1}", name, labels.toString()));
+        LOGGER.trace(MessageFormat.format("Creating dataset ''{0}'' with labels {1}", name, labels.toString()));
         this.frameworkFolderConfiguration = frameworkFolderConfiguration;
         this.executionRuntime = executionRuntime;
         this.dataTypeService = new DataTypeService(frameworkFolderConfiguration, executionRuntime);
@@ -112,7 +112,7 @@ public abstract class Dataset extends DataType {
     }
 
     protected Database createNewDataset(String datasetName, List<String> labels) throws IOException {
-        LOGGER.debug(MessageFormat.format("Initializing new dataset for ''{0}'' with labels {1}", datasetName, labels.toString()));
+        LOGGER.trace(MessageFormat.format("Initializing new dataset for ''{0}'' with labels {1}", datasetName, labels.toString()));
         int nextInventoryId = getDatasetMetadata().getLatestInventoryId() + 1;
         String datasetFilename = UUID.randomUUID().toString() + ".db3";
         setTableName("data");

@@ -16,15 +16,17 @@ public class Executor {
 	private static Executor INSTANCE;
 	private FrameworkInstance frameworkInstance;
 
-	public Executor(FrameworkInstance frameworkInstance) {
-		this.setFrameworkInstance(frameworkInstance);
-	}
+	private Executor() {}
 
-	public synchronized static Executor getInstance(FrameworkInstance frameworkInstance) {
+	public synchronized static Executor getInstance() {
 		if (INSTANCE == null) {
-			INSTANCE = new Executor(frameworkInstance);
+			INSTANCE = new Executor();
 		}
 		return INSTANCE;
+	}
+
+	public void init(FrameworkInstance frameworkInstance) {
+		this.frameworkInstance = frameworkInstance;
 	}
 
 	public synchronized String execute(Request request) {

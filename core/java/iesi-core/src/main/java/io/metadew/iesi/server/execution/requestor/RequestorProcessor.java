@@ -71,7 +71,7 @@ public class RequestorProcessor {
 
 	public void execute() {
 		// Execution logic
-		Executor.getInstance(this.getFrameworkInstance()).execute(this.getRequest().get());
+		Executor.getInstance().execute(this.getRequest().get());
 		
 		try {
 			Thread.sleep(5000);

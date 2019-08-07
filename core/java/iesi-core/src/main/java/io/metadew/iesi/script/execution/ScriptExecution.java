@@ -10,7 +10,10 @@ import io.metadew.iesi.script.operation.RouteOperation;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Marker;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.*;
 
 public abstract class ScriptExecution {

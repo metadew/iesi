@@ -1,7 +1,6 @@
 package io.metadew.iesi.assembly.execution;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import io.metadew.iesi.assembly.AssemblyContext;
 import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.connection.tools.FolderTools;

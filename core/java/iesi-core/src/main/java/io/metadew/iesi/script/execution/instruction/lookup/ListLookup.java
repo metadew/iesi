@@ -1,12 +1,11 @@
 package io.metadew.iesi.script.execution.instruction.lookup;
 
-import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeService;
+import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.script.execution.ExecutionControl;
 
 import java.text.MessageFormat;
-import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

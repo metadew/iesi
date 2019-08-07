@@ -1,14 +1,13 @@
 package io.metadew.iesi.metadata.configuration.action;
 
+import io.metadew.iesi.framework.instance.FrameworkInstance;
+import io.metadew.iesi.metadata.definition.action.ActionResult;
+
+import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.sql.rowset.CachedRowSet;
-
-import io.metadew.iesi.framework.instance.FrameworkInstance;
-import io.metadew.iesi.metadata.definition.action.ActionResult;
 
 public class ActionResultConfiguration {
 

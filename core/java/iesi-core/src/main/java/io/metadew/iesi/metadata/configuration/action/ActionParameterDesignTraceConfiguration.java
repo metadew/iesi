@@ -1,14 +1,12 @@
 package io.metadew.iesi.metadata.configuration.action;
 
 import io.metadew.iesi.connection.tools.SQLTools;
-import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.exception.ActionParameterTraceAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.ActionParameterTraceDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.action.ActionParameterDesignTrace;
-import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.action.key.ActionParameterDesignTraceKey;
 import io.metadew.iesi.metadata.execution.MetadataControl;
 import org.apache.logging.log4j.LogManager;

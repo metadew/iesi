@@ -1,9 +1,9 @@
 package io.metadew.iesi.datatypes.dataset;
 
 import io.metadew.iesi.connection.database.Database;
-import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeService;
+import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
 import io.metadew.iesi.script.execution.ExecutionRuntime;

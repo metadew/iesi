@@ -1,5 +1,6 @@
 package io.metadew.iesi.launch;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.sql.SqlScriptResult;
 import io.metadew.iesi.connection.operation.ConnectionOperation;
@@ -9,12 +10,9 @@ import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.operation.DataObjectOperation;
-
-import java.io.InputStream;
-
 import org.apache.commons.cli.*;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.InputStream;
 
 /**
  * The connection launcher is the entry point to access a specific connection

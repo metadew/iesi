@@ -1,17 +1,16 @@
 package io.metadew.iesi.util.metadata;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import io.metadew.iesi.connection.tools.FileTools;
+import io.metadew.iesi.connection.tools.FolderTools;
+import io.metadew.iesi.metadata.definition.DataObject;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-
-import io.metadew.iesi.connection.tools.FileTools;
-import io.metadew.iesi.connection.tools.FolderTools;
-import io.metadew.iesi.metadata.definition.DataObject;
 
 public class ConvertConfigFiles {
 

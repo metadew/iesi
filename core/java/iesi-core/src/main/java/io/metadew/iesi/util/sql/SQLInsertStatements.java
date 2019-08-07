@@ -1,10 +1,10 @@
 package io.metadew.iesi.util.sql;
 
+import io.metadew.iesi.connection.tools.FileTools;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-
-import io.metadew.iesi.connection.tools.FileTools;
 
 public class SQLInsertStatements {
 

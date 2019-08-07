@@ -6,7 +6,6 @@ import io.metadew.iesi.metadata.configuration.exception.ActionTraceAlreadyExists
 import io.metadew.iesi.metadata.configuration.exception.ActionTraceDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
-import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.metadata.definition.script.ScriptDesignTrace;
 import io.metadew.iesi.metadata.definition.script.key.ScriptDesignTraceKey;
 import io.metadew.iesi.metadata.execution.MetadataControl;

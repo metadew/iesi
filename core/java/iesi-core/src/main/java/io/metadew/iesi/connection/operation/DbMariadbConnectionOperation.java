@@ -1,8 +1,5 @@
 package io.metadew.iesi.connection.operation;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.MariadbDatabase;
 import io.metadew.iesi.connection.database.connection.MariadbDatabaseConnection;
@@ -12,6 +9,9 @@ import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
 import io.metadew.iesi.metadata.definition.connection.ConnectionType;
 import io.metadew.iesi.metadata.definition.connection.ConnectionTypeParameter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DbMariadbConnectionOperation {
 	

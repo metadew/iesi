@@ -1,11 +1,5 @@
 package io.metadew.iesi.framework.execution;
 
-import java.io.File;
-import java.util.Properties;
-import java.util.UUID;
-
-import org.apache.commons.io.FilenameUtils;
-
 import io.metadew.iesi.common.properties.PropertiesTools;
 import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.connection.tools.FolderTools;
@@ -13,6 +7,11 @@ import io.metadew.iesi.framework.configuration.FrameworkConfiguration;
 import io.metadew.iesi.framework.configuration.FrameworkKeywords;
 import io.metadew.iesi.framework.control.ProcessIdentifierController;
 import io.metadew.iesi.framework.definition.FrameworkRunIdentifier;
+import org.apache.commons.io.FilenameUtils;
+
+import java.io.File;
+import java.util.Properties;
+import java.util.UUID;
 
 public class FrameworkRuntime {
 

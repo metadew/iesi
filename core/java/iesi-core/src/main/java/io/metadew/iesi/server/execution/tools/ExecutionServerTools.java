@@ -1,11 +1,11 @@
 package io.metadew.iesi.server.execution.tools;
 
+import io.metadew.iesi.framework.instance.FrameworkInstance;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-
-import io.metadew.iesi.framework.instance.FrameworkInstance;
 
 public final class ExecutionServerTools {
 	public static String getServerMode(FrameworkInstance frameworkInstance) {

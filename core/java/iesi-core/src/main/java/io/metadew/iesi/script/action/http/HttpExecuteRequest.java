@@ -5,12 +5,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.metadew.iesi.connection.http.*;
+import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeService;
 import io.metadew.iesi.datatypes.array.Array;
-import io.metadew.iesi.datatypes.DataType;
-import io.metadew.iesi.datatypes.text.Text;
-import io.metadew.iesi.datatypes.dataset.Dataset;
 import io.metadew.iesi.datatypes.dataset.KeyValueDataset;
+import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.configuration.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.HttpRequestComponent;
@@ -377,6 +376,10 @@ public class HttpExecuteRequest {
                 JsonNode jsonNode = new ObjectMapper().readTree(httpResponse.getEntityString().get());
                 setRuntimeVariable(jsonNode, setRuntimeVariables);
                 // TODO: flip raw/normal if ready to migrate
+                getOutputDataset().ifPresent(dataset -> {
+                    dataset.clean();
+                    dataTypeService.getKeyValueDatasetService().writeRawJSON(dataset, jsonNode);
+                });
                 getRawOutputDataset().ifPresent(dataset -> {
                     dataset.clean();
                     try {
@@ -387,10 +390,6 @@ public class HttpExecuteRequest {
                         this.getActionExecution().getActionControl().logOutput("json.exception", e.getMessage());
                         this.getActionExecution().getActionControl().logOutput("json.stacktrace", StackTrace.toString());
                     }
-                });
-                getOutputDataset().ifPresent(dataset -> {
-                    dataset.clean();
-                    dataTypeService.getKeyValueDatasetService().writeRawJSON(dataset, jsonNode);
                 });
             } catch (Exception e) {
                 StringWriter StackTrace = new StringWriter();

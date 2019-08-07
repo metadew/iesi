@@ -1,11 +1,7 @@
 package io.metadew.iesi.metadata.definition.action;
 
 import io.metadew.iesi.metadata.definition.Metadata;
-import io.metadew.iesi.metadata.definition.action.key.ActionParameterTraceKey;
 import io.metadew.iesi.metadata.definition.action.key.ActionTraceKey;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class ActionTrace extends Metadata<ActionTraceKey> {
 

@@ -8,9 +8,9 @@ import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.exception.RequestAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.RequestDoesNotExistException;
 import io.metadew.iesi.metadata.definition.DataObject;
+import io.metadew.iesi.metadata.definition.ListObject;
 import io.metadew.iesi.metadata.definition.Request;
 import io.metadew.iesi.metadata.definition.RequestParameter;
-import io.metadew.iesi.metadata.definition.ListObject;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.InputStream;

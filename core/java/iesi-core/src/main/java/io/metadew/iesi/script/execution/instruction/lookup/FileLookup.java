@@ -1,11 +1,11 @@
 package io.metadew.iesi.script.execution.instruction.lookup;
 
+import io.metadew.iesi.script.execution.ExecutionControl;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-
-import io.metadew.iesi.script.execution.ExecutionControl;
 
 public class FileLookup implements LookupInstruction {
     private final ExecutionControl executionControl;

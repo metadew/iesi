@@ -2,7 +2,6 @@ package io.metadew.iesi.framework.execution;
 
 import io.metadew.iesi.framework.configuration.FrameworkConfiguration;
 import io.metadew.iesi.framework.crypto.FrameworkCrypto;
-import io.metadew.iesi.framework.definition.Framework;
 import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
 import io.metadew.iesi.framework.definition.FrameworkRunIdentifier;
 import io.metadew.iesi.framework.instance.FrameworkInstance;

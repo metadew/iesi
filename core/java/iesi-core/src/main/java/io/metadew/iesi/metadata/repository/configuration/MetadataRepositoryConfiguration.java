@@ -4,13 +4,7 @@ import io.metadew.iesi.common.config.ConfigFile;
 import io.metadew.iesi.framework.configuration.FrameworkConfiguration;
 import io.metadew.iesi.framework.configuration.FrameworkSettingConfiguration;
 import io.metadew.iesi.framework.crypto.FrameworkCrypto;
-import io.metadew.iesi.metadata.repository.CatalogMetadataRepository;
-import io.metadew.iesi.metadata.repository.ConnectivityMetadataRepository;
-import io.metadew.iesi.metadata.repository.ControlMetadataRepository;
-import io.metadew.iesi.metadata.repository.DesignMetadataRepository;
-import io.metadew.iesi.metadata.repository.MetadataRepository;
-import io.metadew.iesi.metadata.repository.ResultMetadataRepository;
-import io.metadew.iesi.metadata.repository.TraceMetadataRepository;
+import io.metadew.iesi.metadata.repository.*;
 import io.metadew.iesi.metadata.repository.coordinator.configuration.RepositoryConfiguration;
 import io.metadew.iesi.metadata.repository.coordinator.configuration.RepositoryConfigurationFactory;
 

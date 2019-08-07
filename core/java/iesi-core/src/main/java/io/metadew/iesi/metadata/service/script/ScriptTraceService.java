@@ -1,8 +1,5 @@
 package io.metadew.iesi.metadata.service.script;
 
-import io.metadew.iesi.connection.tools.SQLTools;
-import io.metadew.iesi.metadata.configuration.action.ActionParameterTraceConfiguration;
-import io.metadew.iesi.metadata.configuration.action.ActionTraceConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.script.ScriptParameterTraceConfiguration;
 import io.metadew.iesi.metadata.configuration.script.ScriptTraceConfiguration;
@@ -12,14 +9,9 @@ import io.metadew.iesi.metadata.definition.script.ScriptParameterTrace;
 import io.metadew.iesi.metadata.definition.script.ScriptTrace;
 import io.metadew.iesi.metadata.definition.script.ScriptVersionTrace;
 import io.metadew.iesi.metadata.execution.MetadataControl;
-import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ScriptExecution;
-import io.metadew.iesi.script.operation.ActionParameterOperation;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 public class ScriptTraceService {
 

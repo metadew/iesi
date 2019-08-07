@@ -1,7 +1,5 @@
 package io.metadew.iesi.metadata.configuration;
 
-import io.metadew.iesi.metadata.definition.DataObject;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.configuration.FrameworkObjectConfiguration;

@@ -6,19 +6,12 @@ import io.metadew.iesi.metadata.definition.Request;
 import io.metadew.iesi.metadata.definition.RequestParameter;
 import io.metadew.iesi.runtime.Executor;
 import io.metadew.iesi.runtime.Requestor;
+import org.apache.commons.cli.*;
+import org.apache.logging.log4j.ThreadContext;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-import org.apache.logging.log4j.ThreadContext;
 
 /**
  * The execution launcher is entry point to launch all automation scripts.

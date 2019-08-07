@@ -7,7 +7,7 @@ import io.metadew.iesi.metadata.configuration.MetadataConfiguration;
 import io.metadew.iesi.metadata.configuration.action.ActionConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.ScriptAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.ScriptDoesNotExistException;
-import io.metadew.iesi.metadata.definition.*;
+import io.metadew.iesi.metadata.definition.ListObject;
 import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.metadata.definition.script.ScriptParameter;

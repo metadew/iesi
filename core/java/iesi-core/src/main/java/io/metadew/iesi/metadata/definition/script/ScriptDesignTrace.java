@@ -2,7 +2,6 @@ package io.metadew.iesi.metadata.definition.script;
 
 import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.script.key.ScriptDesignTraceKey;
-import io.metadew.iesi.metadata.definition.script.key.ScriptTraceKey;
 
 public class ScriptDesignTrace extends Metadata<ScriptDesignTraceKey> {
 

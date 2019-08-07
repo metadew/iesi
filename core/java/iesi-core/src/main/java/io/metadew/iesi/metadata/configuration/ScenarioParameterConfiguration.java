@@ -2,9 +2,9 @@ package io.metadew.iesi.metadata.configuration;
 
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
+import io.metadew.iesi.metadata.definition.Feature;
 import io.metadew.iesi.metadata.definition.Scenario;
 import io.metadew.iesi.metadata.definition.ScenarioParameter;
-import io.metadew.iesi.metadata.definition.Feature;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;

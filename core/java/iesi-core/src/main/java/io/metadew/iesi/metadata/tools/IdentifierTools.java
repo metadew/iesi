@@ -1,8 +1,8 @@
 package io.metadew.iesi.metadata.tools;
 
-import java.util.UUID;
-
 import org.apache.commons.codec.digest.DigestUtils;
+
+import java.util.UUID;
 
 public final class IdentifierTools {
 

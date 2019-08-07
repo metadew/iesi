@@ -6,7 +6,6 @@ import io.metadew.iesi.framework.configuration.FrameworkStatus;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.framework.execution.IESIMessage;
 import io.metadew.iesi.metadata.backup.BackupExecution;
-import io.metadew.iesi.metadata.configuration.script.ScriptTraceConfiguration;
 import io.metadew.iesi.metadata.definition.script.ScriptLog;
 import io.metadew.iesi.metadata.restore.RestoreExecution;
 import io.metadew.iesi.metadata.service.script.ScriptDesignTraceService;

@@ -1,14 +1,11 @@
 package io.metadew.iesi.framework.crypto;
 
+import io.metadew.iesi.framework.crypto.algo.AESGCMEncrypt;
+import io.metadew.iesi.framework.crypto.tools.CryptoTools;
+import io.metadew.iesi.framework.execution.FrameworkExecution;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import io.metadew.iesi.framework.crypto.tools.CryptoTools;
-import io.metadew.iesi.framework.crypto.algo.AESGCMEncrypt;
-import io.metadew.iesi.framework.execution.FrameworkExecution;
-import io.metadew.iesi.framework.execution.FrameworkLog;
-import org.apache.logging.log4j.Marker;
-import org.apache.logging.log4j.MarkerManager;
 
 
 public class FrameworkCrypto {

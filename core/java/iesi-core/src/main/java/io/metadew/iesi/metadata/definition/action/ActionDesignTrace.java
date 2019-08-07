@@ -2,7 +2,6 @@ package io.metadew.iesi.metadata.definition.action;
 
 import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.action.key.ActionDesignTraceKey;
-import io.metadew.iesi.metadata.definition.action.key.ActionTraceKey;
 
 public class ActionDesignTrace extends Metadata<ActionDesignTraceKey> {
 

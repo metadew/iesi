@@ -8,8 +8,8 @@ import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.framework.execution.FrameworkExecutionContext;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.ConnectionConfiguration;
-import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.Context;
+import io.metadew.iesi.metadata.definition.connection.Connection;
 
 import java.io.File;
 import java.io.PrintWriter;

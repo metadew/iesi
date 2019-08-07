@@ -1,8 +1,5 @@
 package io.metadew.iesi.data.generation.execution;
 
-import java.io.File;
-
-
 import io.metadew.iesi.client.execution.ProgressBar;
 import io.metadew.iesi.connection.database.connection.SqliteDatabaseConnection;
 import io.metadew.iesi.connection.tools.FolderTools;
@@ -10,6 +7,8 @@ import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.Generation;
 import io.metadew.iesi.metadata.definition.GenerationRule;
 import io.metadew.iesi.script.execution.ExecutionControl;
+
+import java.io.File;
 
 
 public class GenerationRuntime {

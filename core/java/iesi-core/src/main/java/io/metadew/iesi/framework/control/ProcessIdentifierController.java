@@ -1,10 +1,10 @@
 package io.metadew.iesi.framework.control;
 
-import java.util.Properties;
-import java.util.concurrent.Semaphore;
-
 import io.metadew.iesi.common.properties.PropertiesTools;
 import io.metadew.iesi.connection.tools.FileTools;
+
+import java.util.Properties;
+import java.util.concurrent.Semaphore;
 
 public final class ProcessIdentifierController {
 	

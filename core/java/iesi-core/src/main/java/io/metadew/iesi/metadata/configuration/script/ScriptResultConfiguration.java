@@ -1,15 +1,14 @@
 package io.metadew.iesi.metadata.configuration.script;
 
+import io.metadew.iesi.framework.instance.FrameworkInstance;
+import io.metadew.iesi.metadata.configuration.action.ActionResultConfiguration;
+import io.metadew.iesi.metadata.definition.script.ScriptResult;
+
+import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.sql.rowset.CachedRowSet;
-
-import io.metadew.iesi.framework.instance.FrameworkInstance;
-import io.metadew.iesi.metadata.configuration.action.ActionResultConfiguration;
-import io.metadew.iesi.metadata.definition.script.ScriptResult;
 
 public class ScriptResultConfiguration {
 

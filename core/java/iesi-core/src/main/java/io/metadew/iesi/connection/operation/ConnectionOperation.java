@@ -3,12 +3,7 @@ package io.metadew.iesi.connection.operation;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.connection.ArtifactoryConnection;
 import io.metadew.iesi.connection.HostConnection;
-import io.metadew.iesi.connection.database.Database;
-import io.metadew.iesi.connection.database.MysqlDatabase;
-import io.metadew.iesi.connection.database.NetezzaDatabase;
-import io.metadew.iesi.connection.database.OracleDatabase;
-import io.metadew.iesi.connection.database.PostgresqlDatabase;
-import io.metadew.iesi.connection.database.SqliteDatabase;
+import io.metadew.iesi.connection.database.*;
 import io.metadew.iesi.connection.database.connection.*;
 import io.metadew.iesi.connection.host.LinuxHostConnection;
 import io.metadew.iesi.connection.host.WindowsHostConnection;
@@ -18,7 +13,6 @@ import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
 import io.metadew.iesi.metadata.definition.connection.ConnectionType;
 import io.metadew.iesi.metadata.definition.connection.ConnectionTypeParameter;
-
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;

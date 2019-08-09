@@ -2,8 +2,8 @@ package io.metadew.iesi.metadata.configuration.action;
 
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
-import io.metadew.iesi.metadata.configuration.exception.ActionTraceAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.exception.ActionTraceDoesNotExistException;
+import io.metadew.iesi.metadata.configuration.exception.action.ActionTraceAlreadyExistsException;
+import io.metadew.iesi.metadata.configuration.exception.action.ActionTraceDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.action.ActionTrace;
@@ -39,7 +39,7 @@ public class ActionTraceConfiguration extends Configuration<ActionTrace, ActionT
         if (cachedRowSet.size() == 0) {
             return Optional.empty();
         } else if (cachedRowSet.size() > 1) {
-            LOGGER.info(MessageFormat.format("Found multiple implementations for ActionTrace {0}. Returning first implementation", actionTraceKey.toString()));
+            LOGGER.warn(MessageFormat.format("Found multiple implementations for ActionTrace {0}. Returning first implementation", actionTraceKey.toString()));
         }
         cachedRowSet.next();
         return Optional.of(new ActionTrace(actionTraceKey,
@@ -101,7 +101,7 @@ public class ActionTraceConfiguration extends Configuration<ActionTrace, ActionT
 
     @Override
     public void insert(ActionTrace actionTrace) throws MetadataAlreadyExistsException, SQLException {
-        LOGGER.trace(MessageFormat.format("Inserting ActionParameterTrace {0}.", actionTrace.getMetadataKey().toString()));
+        LOGGER.trace(MessageFormat.format("Inserting ActionTrace {0}.", actionTrace.getMetadataKey().toString()));
         if (exists(actionTrace.getMetadataKey())) {
             throw new ActionTraceAlreadyExistsException(MessageFormat.format(
                     "ActionParameterTrace {0} already exists", actionTrace.getMetadataKey().toString()));

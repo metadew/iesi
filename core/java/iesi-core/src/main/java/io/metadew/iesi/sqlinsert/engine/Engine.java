@@ -56,7 +56,8 @@ public class Engine {
 
     // constructor method
     public Engine(String RDBMS) {
-        this.setFrameworkConfiguration(new FrameworkConfiguration());
+        this.frameworkConfiguration = FrameworkConfiguration.getInstance();
+        frameworkConfiguration.init();
         ConfigFile cfg = new ConfigFile(this.getFrameworkConfiguration().getFolderConfiguration().getFolderAbsolutePath("modules.sqlinsert.run") + File.separator + "engine.config");
         this.name = cfg.getProperty("name");
         this.dbdriver = cfg.getProperty("dbdriver");

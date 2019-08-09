@@ -6,10 +6,13 @@ import io.metadew.iesi.metadata.definition.Feature;
 import io.metadew.iesi.metadata.definition.Scenario;
 import io.metadew.iesi.metadata.definition.ScenarioParameter;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -19,6 +22,8 @@ public class ScenarioConfiguration {
     private Scenario scenario;
     private FrameworkInstance frameworkInstance;
 
+    private static final Logger LOGGER = LogManager.getLogger();
+
     // Constructors
     public ScenarioConfiguration(Scenario scenario, FrameworkInstance frameworkInstance) {
         this.setScenario(scenario);
@@ -26,7 +31,7 @@ public class ScenarioConfiguration {
     }
 
     public ScenarioConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
+        this.setFrameworkInstance(frameworkInstance);
     }
 
     // Insert
@@ -92,8 +97,7 @@ public class ScenarioConfiguration {
     }
 
     public Optional<Scenario> getScenario(String featureId, long featureVersionNumber, String scenarioId) {
-    	// TODO fix logging
-    	//frameworkExecution.getFrameworkLog().log(MessageFormat.format("Fetching scenario {0}.", scenarioId), Level.DEBUG);
+        LOGGER.trace(MessageFormat.format("Fetching scenario {0}.", scenarioId));
         String queryScenario = "select FEATURE_ID, FEATURE_VRS_NB, SCENARIO_ID, SCENARIO_NB, SCENARIO_TYP_NM, SCENARIO_NM, SCENARIO_DSC, SCENARIO_DEP, SCRIPT_NM, SCRIPT_VRS_NB, GAIN_VAL from "
                 + this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository()
                 .getTableNameByLabel("Scenarios")
@@ -103,8 +107,7 @@ public class ScenarioConfiguration {
             if (crsScenario.size() == 0) {
                 return Optional.empty();
             } else if (crsScenario.size() > 1) {
-                // TODO fix logging
-            	//frameworkExecution.getFrameworkLog().log(MessageFormat.format("Found multiple implementations for scenario {0}. Returning first implementation", scenarioId), Level.DEBUG);
+                LOGGER.warn(MessageFormat.format("Found multiple implementations for scenario {0}. Returning first implementation", scenarioId));
             }
             crsScenario.next();
             // Get parameters
@@ -134,9 +137,8 @@ public class ScenarioConfiguration {
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
-            //TODO fix logging
-            //this.frameworkExecution.getFrameworkLog().log("exception=" + e, Level.INFO);
-            //this.frameworkExecution.getFrameworkLog().log("exception.stacktrace=" + StackTrace, Level.DEBUG);
+            LOGGER.warn("exception=" + e);
+            LOGGER.info("exception.stacktrace=" + StackTrace);
 
             return Optional.empty();
         }
@@ -175,11 +177,11 @@ public class ScenarioConfiguration {
         this.scenario = scenario;
     }
 
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
+    public FrameworkInstance getFrameworkInstance() {
+        return frameworkInstance;
+    }
 
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
+    public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
+        this.frameworkInstance = frameworkInstance;
+    }
 }

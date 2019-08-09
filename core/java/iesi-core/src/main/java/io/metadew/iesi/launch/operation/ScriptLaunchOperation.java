@@ -35,8 +35,6 @@ public final class ScriptLaunchOperation {
 		String actionSelect = "";
 		String environmentName = request.getContext();
 		String executionMode = "";
-		@SuppressWarnings("unused")
-		@Deprecated
 		boolean exit = true;
 		String fileName = "";
 		String impersonationName = "";
@@ -147,9 +145,9 @@ public final class ScriptLaunchOperation {
 		if (executionMode.equalsIgnoreCase("script")) {
 			ScriptConfiguration scriptConfiguration = new ScriptConfiguration(frameworkExecution.getFrameworkInstance());
 			if (scriptVersionNumber == -1) {
-				script = scriptConfiguration.getScript(scriptName);
+				script = scriptConfiguration.get(scriptName);
 			} else {
-				script = scriptConfiguration.getScript(scriptName, scriptVersionNumber);
+				script = scriptConfiguration.get(scriptName, scriptVersionNumber);
 			}
 			if (!script.isPresent()) {
 				System.out.println("No script found for execution");

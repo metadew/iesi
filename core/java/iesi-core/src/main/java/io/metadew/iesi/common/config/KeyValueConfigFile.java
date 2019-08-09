@@ -36,7 +36,6 @@ public class KeyValueConfigFile extends ConfigFile {
         }
     }
 
-    @SuppressWarnings("resource")
     public KeyValueConfigFile(String fileName) {
         super();
         try {

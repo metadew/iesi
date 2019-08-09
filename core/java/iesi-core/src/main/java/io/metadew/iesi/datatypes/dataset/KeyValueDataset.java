@@ -36,21 +36,22 @@ public class KeyValueDataset extends Dataset {
     }
 
     public Map<String, DataType> getDataItems() {
-        CachedRowSet crs;
         String query;
         query = "select key, value from " + SQLTools.GetStringForSQLTable(getTableName()) + ";";
 
         Map<String, DataType> dataItems = new HashMap<>();
-        crs = getDatasetDatabase().executeQuery(query);
+        CachedRowSet crs = getDatasetDatabase().executeQuery(query);
         try {
             while (crs.next()) {
                 dataItems.put(crs.getString("key"), dataTypeService.resolve(crs.getString("value")));
             }
             crs.close();
         } catch (Exception e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-            return dataItems;
+            StringWriter stackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTrace));
+
+            LOGGER.warn("exception=" + e.getMessage());
+            LOGGER.warn("stacktrace=" + stackTrace.toString());
         }
         return dataItems;
     }

@@ -22,16 +22,37 @@ public class FrameworkControl {
 	private List<FrameworkPluginConfiguration> frameworkPluginConfigurationList;
 	private String logonType;
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public FrameworkControl(FrameworkConfiguration frameworkConfiguration, String logonType, FrameworkInitializationFile frameworkInitializationFile, FrameworkCrypto frameworkCrypto) {
+
+	private static FrameworkControl INSTANCE;
+
+	public synchronized static FrameworkControl getInstance() {
+		if (INSTANCE == null) {
+			INSTANCE = new FrameworkControl();
+		}
+		return INSTANCE;
+	}
+
+	private FrameworkControl() {}
+
+	public void init(Properties properties, List<MetadataRepositoryConfiguration> metadataRepositoryConfigurations,
+							List<FrameworkPluginConfiguration> frameworkPluginConfigurationList, String logonType) {
+		this.properties = properties;
+		this.metadataRepositoryConfigurations = metadataRepositoryConfigurations;
+		this.frameworkPluginConfigurationList = frameworkPluginConfigurationList;
+		this.logonType = logonType;
+	}
+
+	public void init(FrameworkConfiguration frameworkConfiguration, String logonType,
+							FrameworkInitializationFile frameworkInitializationFile, FrameworkCrypto frameworkCrypto) {
+		this.logonType = logonType;
+		this.properties = new Properties();
+		this.metadataRepositoryConfigurations = new ArrayList<>();
+		this.frameworkPluginConfigurationList = new ArrayList<>();
 		try {
-			this.setLogonType(logonType);
-			this.setProperties(new Properties());
-			this.setMetadataRepositoryConfigurations(new ArrayList());
-			this.setFrameworkPluginConfigurationList(new ArrayList());
-			this.getProperties().put(frameworkConfiguration.getFrameworkCode() + ".home",
+
+			properties.put(frameworkConfiguration.getFrameworkCode() + ".home",
 					frameworkConfiguration.getFrameworkHome());
-			this.readSettingFiles(frameworkConfiguration, frameworkInitializationFile.getName(), frameworkCrypto);
+			readSettingFiles(frameworkConfiguration, frameworkInitializationFile.getName(), frameworkCrypto);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -40,16 +61,13 @@ public class FrameworkControl {
 
 	}
 
-	public FrameworkControl(FrameworkConfiguration frameworkConfiguration, String assemblyHome, String repositoryHome) {
-		try {
-			this.setProperties(new Properties());
-			this.addSetting("iesi.home", assemblyHome);
-			this.addSetting("iesi.identifier", "iesi");
-			this.addSetting("iesi.metadata.repository.instance.name", "");
-		} catch (Exception e) {
-			throw new RuntimeException("Issue setting config tools " + e);
-		}
-
+	public void init(String assemblyHome) {
+		this.properties = new Properties();
+		addSetting("iesi.home", assemblyHome);
+		addSetting("iesi.identifier", "iesi");
+		addSetting("iesi.metadata.repository.instance.name", "");
+		this.metadataRepositoryConfigurations = new ArrayList<>();
+		this.frameworkPluginConfigurationList = new ArrayList<>();
 	}
 
 	// Methods

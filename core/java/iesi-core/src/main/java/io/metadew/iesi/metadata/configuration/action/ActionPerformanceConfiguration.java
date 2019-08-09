@@ -2,11 +2,13 @@ package io.metadew.iesi.metadata.configuration.action;
 
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
-import io.metadew.iesi.metadata.configuration.exception.ActionPerformanceAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.exception.ActionPerformanceDoesNotExistException;
+import io.metadew.iesi.metadata.configuration.exception.action.ActionPerformanceAlreadyExistsException;
+import io.metadew.iesi.metadata.configuration.exception.action.ActionPerformanceDoesNotExistException;
 import io.metadew.iesi.metadata.definition.action.ActionPerformance;
 import io.metadew.iesi.metadata.definition.action.key.ActionPerformanceKey;
 import io.metadew.iesi.metadata.execution.MetadataControl;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
@@ -18,6 +20,7 @@ import java.util.Optional;
 public class ActionPerformanceConfiguration extends Configuration<ActionPerformance, ActionPerformanceKey> {
 
 
+    private static final Logger LOGGER = LogManager.getLogger();
     public ActionPerformanceConfiguration(MetadataControl metadataControl) {
         super(metadataControl);
     }
@@ -34,7 +37,7 @@ public class ActionPerformanceConfiguration extends Configuration<ActionPerforma
         if (cachedRowSet.size() == 0) {
             return Optional.empty();
         } else if (cachedRowSet.size() > 1) {
-            // TODO: log
+            LOGGER.warn(MessageFormat.format("Found multiple implementations for ActionParameterTrace {0}. Returning first implementation", key.toString()));
         }
         cachedRowSet.next();
         return Optional.of(new ActionPerformance(new ActionPerformanceKey(cachedRowSet.getString("RUN_ID"),

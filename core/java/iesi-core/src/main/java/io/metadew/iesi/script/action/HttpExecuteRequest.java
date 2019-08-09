@@ -78,21 +78,21 @@
 //    public void prepare() {
 //        // Reset Parameters
 //        this.setRequestType(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
-//                this.getActionExecution(), this.getActionExecution().getAction().getType(), "type"));
+//                this.getActionExecution(), this.getActionExecution().get().getType(), "type"));
 //        this.setRequestName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
-//                this.getActionExecution(), this.getActionExecution().getAction().getType(), "request"));
+//                this.getActionExecution(), this.getActionExecution().get().getType(), "request"));
 //        this.setRequestBody(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
-//                this.getActionExecution(), this.getActionExecution().getAction().getType(), "body"));
+//                this.getActionExecution(), this.getActionExecution().get().getType(), "body"));
 //        this.setSetRuntimeVariables(new ActionParameterOperation(this.getFrameworkExecution(),
-//                this.getExecutionControl(), this.getActionExecution(), this.getActionExecution().getAction().getType(),
+//                this.getExecutionControl(), this.getActionExecution(), this.getActionExecution().get().getType(),
 //                "setRuntimeVariables"));
 //        this.setSetDataset(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
-//                this.getActionExecution(), this.getActionExecution().getAction().getType(), "setDataset"));
+//                this.getActionExecution(), this.getActionExecution().get().getType(), "setDataset"));
 //        expectedStatusCodes = new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
-//                this.getActionExecution(), this.getActionExecution().getAction().getType(), "expectedStatusCodes");
+//                this.getActionExecution(), this.getActionExecution().get().getType(), "expectedStatusCodes");
 //
 //        // Get Parameters
-//        for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
+//        for (ActionParameter actionParameter : this.getActionExecution().get().getParameters()) {
 //            if (actionParameter.getName().equalsIgnoreCase("request")) {
 //                this.getRequestName().setInputValue(actionParameter.getValue());
 //            } else if (actionParameter.getName().equalsIgnoreCase("type")) {
@@ -155,7 +155,7 @@
 //                    .map(this::convertExpectedStatusCode)
 //                    .collect(Collectors.toList()));
 //        } else {
-//            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for expectedStatusCode",
+//            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().get().getType() + " does not accept {0} as type for expectedStatusCode",
 //                    expectedStatusCodes.getClass()), Level.WARN);
 //            return Optional.empty();
 //        }
@@ -165,7 +165,7 @@
 //        if (expectedStatusCode instanceof Text) {
 //            return expectedStatusCode.toString();
 //        } else {
-//            frameworkExecution.getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for expectedStatusCode",
+//            frameworkExecution.getFrameworkLog().log(MessageFormat.format(this.getActionExecution().get().getType() + " does not accept {0} as type for expectedStatusCode",
 //                    expectedStatusCode.getClass()), Level.WARN);
 //            return expectedStatusCode.toString();
 //        }
@@ -239,7 +239,7 @@
 //    	if (outputDatasetReferenceName instanceof Text) {
 //            return outputDatasetReferenceName.toString();
 //        } else {
-//            frameworkExecution.getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for OutputDatasetReferenceName",
+//            frameworkExecution.getFrameworkLog().log(MessageFormat.format(this.getActionExecution().get().getType() + " does not accept {0} as type for OutputDatasetReferenceName",
 //                    outputDatasetReferenceName.getClass()), Level.WARN);
 //            return outputDatasetReferenceName.toString();
 //        }
@@ -252,7 +252,7 @@
 //        if (setRuntimeVariables instanceof Text) {
 //            return setRuntimeVariables.toString().equalsIgnoreCase("y");
 //        } else {
-//            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for setRuntimeVariables",
+//            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().get().getType() + " does not accept {0} as type for setRuntimeVariables",
 //                    setRuntimeVariables.getClass()), Level.WARN);
 //            return false;
 //        }
@@ -265,7 +265,7 @@
 //        if (httpRequestBody instanceof Text) {
 //            return Optional.of(httpRequestBody.toString());
 //        } else {
-//            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for request body",
+//            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().get().getType() + " does not accept {0} as type for request body",
 //                    httpRequestBody.getClass()), Level.WARN);
 //            return Optional.of(httpRequestBody.toString());
 //        }
@@ -275,7 +275,7 @@
 //        if (httpRequestType instanceof Text) {
 //            return httpRequestType.toString();
 //        } else {
-//            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for request type",
+//            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().get().getType() + " does not accept {0} as type for request type",
 //                    httpRequestType.getClass()), Level.WARN);
 //            return httpRequestType.toString();
 //        }
@@ -285,7 +285,7 @@
 //        if (httpRequestName instanceof Text) {
 //            return httpRequestName.toString();
 //        } else {
-//            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for request name",
+//            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().get().getType() + " does not accept {0} as type for request name",
 //                    httpRequestName.getClass()), Level.WARN);
 //            return httpRequestName.toString();
 //        }

@@ -155,7 +155,7 @@ public abstract class ScriptExecution {
 //		 * Loop all actions inside the script
 //		 */
 //		boolean execute = true;
-//		this.setActions(this.getScript().getActions());
+//		this.setActions(this.get().getActions());
 //		for (int i = 0; i < this.getActions().size(); i++) {
 //			Action action = this.getActions().get(i);
 //			// Check if the action needs to be executed
@@ -270,7 +270,7 @@ public abstract class ScriptExecution {
 //					// Subselect the past actions including the include action itself
 //					includeActions.addAll(this.getActions().subList(0, i + 1));
 //					// Add the include script
-//					includeActions.addAll(fwkIncludeScript.getScript().getActions());
+//					includeActions.addAll(fwkIncludeScript.get().getActions());
 //					// If not at the end of the script, add the remainder of actions
 //					if (i < this.getActions().size() - 1) {
 //						includeActions.addAll(this.getActions().subList(i + 1, this.getActions().size()));

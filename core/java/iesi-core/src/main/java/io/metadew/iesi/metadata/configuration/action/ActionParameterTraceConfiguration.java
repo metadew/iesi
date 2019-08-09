@@ -2,8 +2,8 @@ package io.metadew.iesi.metadata.configuration.action;
 
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
-import io.metadew.iesi.metadata.configuration.exception.ActionParameterTraceAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.exception.ActionParameterTraceDoesNotExistException;
+import io.metadew.iesi.metadata.configuration.exception.action.ActionParameterTraceAlreadyExistsException;
+import io.metadew.iesi.metadata.configuration.exception.action.ActionParameterTraceDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.action.ActionParameterTrace;
@@ -41,7 +41,7 @@ public class ActionParameterTraceConfiguration extends Configuration<ActionParam
         if (cachedRowSet.size() == 0) {
             return Optional.empty();
         } else if (cachedRowSet.size() > 1) {
-            LOGGER.info(MessageFormat.format("Found multiple implementations for ActionParameterTrace {0}. Returning first implementation", actionParameterTraceKey.toString()));
+            LOGGER.warn(MessageFormat.format("Found multiple implementations for ActionParameterTrace {0}. Returning first implementation", actionParameterTraceKey.toString()));
         }
         cachedRowSet.next();
         return Optional.of(new ActionParameterTrace(actionParameterTraceKey, cachedRowSet.getString("ACTION_PAR_VAL")));

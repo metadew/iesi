@@ -7,38 +7,43 @@ import io.metadew.iesi.metadata.operation.DataObjectOperation;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 public class FrameworkSettingConfiguration {
 
     private String solutionHome;
-    private HashMap<String, String> settingMap;
+    private Map<String, String> settingMap;
 
-    public FrameworkSettingConfiguration(String solutionHome) {
-        this.setSolutionHome(solutionHome);
-        this.initalizeValues();
+
+    private static FrameworkSettingConfiguration INSTANCE;
+
+    public synchronized static FrameworkSettingConfiguration getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new FrameworkSettingConfiguration();
+        }
+        return INSTANCE;
     }
 
-    private void initalizeValues() {
-        this.setSettingMap(new HashMap<String, String>());
+    private FrameworkSettingConfiguration() {}
 
-        StringBuilder initFilePath = new StringBuilder();
-        initFilePath.append(this.getSolutionHome());
-        initFilePath.append(File.separator);
-        initFilePath.append("sys");
-        initFilePath.append(File.separator);
-        initFilePath.append("init");
-        initFilePath.append(File.separator);
-        initFilePath.append("FrameworkSettings.json");
+    public void init(String solutionHome, Map<String, String> settingMap) {
+        this.solutionHome = solutionHome;
+        this.settingMap = settingMap;
+    }
 
-        DataObjectOperation dataObjectOperation = new DataObjectOperation();
-        dataObjectOperation.setInputFile(initFilePath.toString());
+    public void init(String solutionHome) {
+        this.solutionHome = solutionHome;
+        this.settingMap = new HashMap<>();
+        String initFilePath = this.getSolutionHome() + File.separator + "sys" + File.separator + "init" + File.separator +
+                "FrameworkSettings.json";
+        DataObjectOperation dataObjectOperation = new DataObjectOperation(initFilePath);
         dataObjectOperation.parseFile();
         ObjectMapper objectMapper = new ObjectMapper();
         for (DataObject dataObject : dataObjectOperation.getDataObjects()) {
             if (dataObject.getType().equalsIgnoreCase("frameworksetting")) {
                 FrameworkSetting frameworkSetting = objectMapper.convertValue(dataObject.getData(), FrameworkSetting.class);
-                this.getSettingMap().put(frameworkSetting.getName(), frameworkSetting.getPath());
+                settingMap.put(frameworkSetting.getName(), frameworkSetting.getPath());
             }
         }
     }
@@ -61,7 +66,7 @@ public class FrameworkSettingConfiguration {
         this.solutionHome = solutionHome;
     }
 
-    public HashMap<String, String> getSettingMap() {
+    public Map<String, String> getSettingMap() {
         return settingMap;
     }
 

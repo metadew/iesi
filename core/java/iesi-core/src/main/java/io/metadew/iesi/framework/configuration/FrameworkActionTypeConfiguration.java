@@ -7,35 +7,47 @@ import io.metadew.iesi.metadata.definition.DataObject;
 import io.metadew.iesi.metadata.definition.action.ActionType;
 import io.metadew.iesi.metadata.operation.DataObjectOperation;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class FrameworkActionTypeConfiguration {
 
-    private HashMap<String, ActionType> actionTypeMap;
+    private Map<String, ActionType> actionTypeMap;
 
-    public FrameworkActionTypeConfiguration(FrameworkFolderConfiguration frameworkFolderConfiguration) {
-        this.initalizeValues(frameworkFolderConfiguration);
+    private static final Logger LOGGER = LogManager.getLogger();
+
+
+
+    private static FrameworkActionTypeConfiguration INSTANCE;
+
+    public synchronized static FrameworkActionTypeConfiguration getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new FrameworkActionTypeConfiguration();
+        }
+        return INSTANCE;
     }
 
-    private void initalizeValues(FrameworkFolderConfiguration frameworkFolderConfiguration) {
-        this.setActionTypeMap(new HashMap<String, ActionType>());
+    private FrameworkActionTypeConfiguration() {}
 
-        StringBuilder initFilePath = new StringBuilder();
-        initFilePath.append(frameworkFolderConfiguration.getFolderAbsolutePath("metadata.conf"));
-        initFilePath.append(File.separator);
-        initFilePath.append("ActionTypes.json");
+    public void init(FrameworkFolderConfiguration frameworkFolderConfiguration) {
+        actionTypeMap = new HashMap<>();
 
-        DataObjectOperation dataObjectOperation = new DataObjectOperation();
-        dataObjectOperation.setInputFile(initFilePath.toString());
+        String initFilePath = frameworkFolderConfiguration.getFolderAbsolutePath("metadata.conf") +
+                File.separator +
+                "ActionTypes.json";
+        DataObjectOperation dataObjectOperation = new DataObjectOperation(initFilePath);
         dataObjectOperation.parseFile();
+
         ObjectMapper objectMapper = new ObjectMapper();
         for (DataObject dataObject : dataObjectOperation.getDataObjects()) {
             if (dataObject.getType().equalsIgnoreCase("actiontype")) {
                 ActionType actionType = objectMapper.convertValue(dataObject.getData(), ActionType.class);
-                this.getActionTypeMap().put(actionType.getName().toLowerCase(), actionType);
+                actionTypeMap.put(actionType.getName().toLowerCase(), actionType);
             }
         }
     }
@@ -43,26 +55,23 @@ public class FrameworkActionTypeConfiguration {
     public void setActionTypesFromPlugins(FrameworkFolderConfiguration frameworkFolderConfiguration,
                                           List<FrameworkPluginConfiguration> frameworkPluginConfigurationList) {
         for (FrameworkPluginConfiguration frameworkPluginConfiguration : frameworkPluginConfigurationList) {
-            StringBuilder initFilePath = new StringBuilder();
-            initFilePath.append(frameworkPluginConfiguration.getFrameworkPlugin().getPath());
-            initFilePath.append(frameworkFolderConfiguration.getFolderPath("metadata.conf"));
-            initFilePath.append(File.separator);
-            initFilePath.append("ActionTypes.json");
-            String filePath = FilenameUtils.normalize(initFilePath.toString());
+            String initFilePath = frameworkPluginConfiguration.getFrameworkPlugin().getPath() +
+                    frameworkFolderConfiguration.getFolderPath("metadata.conf") +
+                    File.separator +
+                    "ActionTypes.json";
+            String filePath = FilenameUtils.normalize(initFilePath);
 
             if (FileTools.exists(filePath)) {
-                DataObjectOperation dataObjectOperation = new DataObjectOperation();
-                dataObjectOperation.setInputFile(filePath);
+                DataObjectOperation dataObjectOperation = new DataObjectOperation(filePath);
                 dataObjectOperation.parseFile();
                 ObjectMapper objectMapper = new ObjectMapper();
                 for (DataObject dataObject : dataObjectOperation.getDataObjects()) {
                     if (dataObject.getType().equalsIgnoreCase("actiontype")) {
                         ActionType actionType = objectMapper.convertValue(dataObject.getData(), ActionType.class);
                         if (this.getActionTypeMap().containsKey(actionType.getName().toLowerCase())) {
-                            //System.out.println("item already present - skipping " + actionType.getName());
-                            // TODO provide startup alert
+                            LOGGER.warn("item already present - skipping " + actionType.getName());
                         } else {
-                            this.getActionTypeMap().put(actionType.getName().toLowerCase(), actionType);
+                            actionTypeMap.put(actionType.getName().toLowerCase(), actionType);
                         }
                     }
                 }
@@ -79,7 +88,7 @@ public class FrameworkActionTypeConfiguration {
         return this.getActionTypeMap().get(key.toLowerCase()).getClassName();
     }
 
-    public HashMap<String, ActionType> getActionTypeMap() {
+    public Map<String, ActionType> getActionTypeMap() {
         return actionTypeMap;
     }
 

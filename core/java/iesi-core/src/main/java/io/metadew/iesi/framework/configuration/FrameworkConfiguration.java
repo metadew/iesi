@@ -3,12 +3,12 @@ package io.metadew.iesi.framework.configuration;
 import io.metadew.iesi.common.config.KeyValueConfigFile;
 import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.metadata.configuration.FrameworkPluginConfiguration;
+import org.apache.logging.log4j.ThreadContext;
 
 import java.io.File;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Properties;
 
 public class FrameworkConfiguration {
 
@@ -19,26 +19,67 @@ public class FrameworkConfiguration {
 	private FrameworkActionTypeConfiguration actionTypeConfiguration;
 	private FrameworkGenerationRuleTypeConfiguration generationRuleTypeConfiguration;
 
-	public FrameworkConfiguration() {
-		this.setFrameworkCode(FrameworkSettings.IDENTIFIER.value());
-		this.initializeFrameworkHome();
-		this.setFolderConfiguration(new FrameworkFolderConfiguration(this.getFrameworkHome()));
-		this.setSettingConfiguration(new FrameworkSettingConfiguration(this.getFrameworkHome()));
-		this.setActionTypeConfiguration(new FrameworkActionTypeConfiguration(this.getFolderConfiguration()));
-		this.setGenerationRuleTypeConfiguration(
-				new FrameworkGenerationRuleTypeConfiguration(this.getFolderConfiguration()));
+	private static FrameworkConfiguration INSTANCE;
+
+	public synchronized static FrameworkConfiguration getInstance() {
+		if (INSTANCE == null) {
+			INSTANCE = new FrameworkConfiguration();
+		}
+		return INSTANCE;
 	}
 
-	public FrameworkConfiguration(String repositoryHome) {
-		this.setFrameworkCode(FrameworkSettings.IDENTIFIER.value());
+	private FrameworkConfiguration() {}
+
+
+//	public FrameworkConfiguration() {
+//		this.setFrameworkCode(FrameworkSettings.IDENTIFIER.value());
+//		this.initializeFrameworkHome();
+//		this.setFolderConfiguration(new FrameworkFolderConfiguration(this.getFrameworkHome()));
+//		this.setSettingConfiguration(new FrameworkSettingConfiguration(this.getFrameworkHome()));
+//		this.setActionTypeConfiguration(new FrameworkActionTypeConfiguration(this.getFolderConfiguration()));
+//		this.setGenerationRuleTypeConfiguration(
+//				new FrameworkGenerationRuleTypeConfiguration(this.getFolderConfiguration()));
+//	}
+
+	public void init() {
+		this.frameworkCode = FrameworkSettings.IDENTIFIER.value();
+		ThreadContext.put("fwk.code", frameworkCode);
+		String configurationFile = FrameworkSettings.IDENTIFIER.value() + "-home.conf";
+		if (FileTools.exists(configurationFile)) {
+			KeyValueConfigFile home = new KeyValueConfigFile(configurationFile);
+			this.frameworkHome = home.getProperties().getProperty(frameworkCode  + ".home");
+		} else {
+			Path path = FileSystems.getDefault().getPath(".").toAbsolutePath();
+			throw new RuntimeException(configurationFile + " not found at " + path.getRoot());
+		}
+
+		this.folderConfiguration = FrameworkFolderConfiguration.getInstance();
+		folderConfiguration.init(frameworkHome);
+
+		this.settingConfiguration = FrameworkSettingConfiguration.getInstance();
+		settingConfiguration.init(frameworkHome);
+
+		this.actionTypeConfiguration = FrameworkActionTypeConfiguration.getInstance();
+		actionTypeConfiguration.init(folderConfiguration);
+
+		this.generationRuleTypeConfiguration = new FrameworkGenerationRuleTypeConfiguration(folderConfiguration);
+	}
+
+	public void init(String repositoryHome) {
 		// TODO: add core substring in assembly context in order to start the framework with custom iesi home
 		//  for testing purposes
-		this.setFrameworkHome(repositoryHome + File.separator + "core");
-		this.setFolderConfiguration(new FrameworkFolderConfiguration(this.getFrameworkHome()));
-		this.setSettingConfiguration(new FrameworkSettingConfiguration(this.getFrameworkHome()));
+		this.frameworkCode = FrameworkSettings.IDENTIFIER.value();
+		ThreadContext.put("fwk.code", frameworkCode);
+		this.frameworkHome = repositoryHome + File.separator + "core";
+
+		this.folderConfiguration = FrameworkFolderConfiguration.getInstance();
+		folderConfiguration.init(frameworkHome);
+
+		this.settingConfiguration = FrameworkSettingConfiguration.getInstance();
+		settingConfiguration.init(frameworkHome);
 	}
 
-	public FrameworkConfiguration(String frameworkHome, FrameworkFolderConfiguration frameworkFolderConfiguration, FrameworkSettingConfiguration frameworkSettingConfiguration,
+	public void init(String frameworkHome, FrameworkFolderConfiguration frameworkFolderConfiguration, FrameworkSettingConfiguration frameworkSettingConfiguration,
 								  FrameworkActionTypeConfiguration frameworkActionTypeConfiguration, FrameworkGenerationRuleTypeConfiguration frameworkGenerationRuleTypeConfiguration) {
 		this.frameworkCode = FrameworkSettings.IDENTIFIER.value();
 		this.frameworkHome = frameworkHome;
@@ -48,22 +89,22 @@ public class FrameworkConfiguration {
 		this.generationRuleTypeConfiguration = frameworkGenerationRuleTypeConfiguration;
 	}
 
-	private void initializeFrameworkHome() {
-		String configurationFile = FrameworkSettings.IDENTIFIER.value() + "-home.conf";
-		Properties properties = new Properties();
-		if (FileTools.exists(configurationFile)) {
-			KeyValueConfigFile home = new KeyValueConfigFile(configurationFile);
-			properties.putAll(home.getProperties());
-		} else {
-			Path path = FileSystems.getDefault().getPath(".").toAbsolutePath();
-			System.out.println("Working dir" + path.toString());
-			throw new RuntimeException(configurationFile + " not found at " + path.getRoot());
-		}
-		this.setFrameworkHome(properties.getProperty(this.getFrameworkCode() + ".home"));
-	}
+//	private void initializeFrameworkHome() {
+//		String configurationFile = FrameworkSettings.IDENTIFIER.value() + "-home.conf";
+//		Properties properties = new Properties();
+//		if (FileTools.exists(configurationFile)) {
+//			KeyValueConfigFile home = new KeyValueConfigFile(configurationFile);
+//			properties.putAll(home.getProperties());
+//		} else {
+//			Path path = FileSystems.getDefault().getPath(".").toAbsolutePath();
+//			System.out.println("Working dir" + path.toString());
+//			throw new RuntimeException(configurationFile + " not found at " + path.getRoot());
+//		}
+//		this.setFrameworkHome(properties.getProperty(this.getFrameworkCode() + ".home"));
+//	}
 
 	public void setActionTypesFromPlugins(List<FrameworkPluginConfiguration> frameworkPluginConfigurationList) {
-		this.getActionTypeConfiguration().setActionTypesFromPlugins(this.getFolderConfiguration(),
+		actionTypeConfiguration.setActionTypesFromPlugins(this.getFolderConfiguration(),
 				frameworkPluginConfigurationList);
 	}
 

@@ -8,6 +8,8 @@ import io.metadew.iesi.metadata.definition.Component;
 import io.metadew.iesi.metadata.definition.ComponentAttribute;
 import io.metadew.iesi.metadata.definition.ComponentParameter;
 import io.metadew.iesi.metadata.definition.ComponentVersion;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
@@ -22,6 +24,8 @@ public class ComponentConfiguration extends MetadataConfiguration {
 
     private Component component;
     private FrameworkInstance frameworkInstance;
+
+    private final static Logger LOGGER = LogManager.getLogger();
 
     // Constructors
     public ComponentConfiguration(FrameworkInstance frameworkInstance) {
@@ -101,12 +105,10 @@ public class ComponentConfiguration extends MetadataConfiguration {
         CachedRowSet crsComponent = this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().executeQuery(queryComponent, "reader");
         try {
             if (crsComponent.size() == 0) {
-                //TODO fix logging
-            	//frameworkExecution.getFrameworkLog().log(MessageFormat.format("component.version=no implementations for component {0}.", componentName), Level.WARN);
+                LOGGER.warn(MessageFormat.format("component.version=no implementations for component {0}.", componentName));
                 return components;
             } else if (crsComponent.size() > 1) {
-                //TODO fix logging
-            	//frameworkExecution.getFrameworkLog().log(MessageFormat.format("component.version=found multiple implementations for component {0}." +" Returning first implementation.", componentName), Level.WARN);
+                LOGGER.warn(MessageFormat.format("component.version=found multiple implementations for component {0}." +" Returning first implementation.", componentName));
             }
             crsComponent.next();
             String componentId = crsComponent.getString("COMP_ID");
@@ -135,8 +137,7 @@ public class ComponentConfiguration extends MetadataConfiguration {
             if (crsComponent.size() == 0) {
                 return Optional.empty();
             } else if (crsComponent.size() > 1) {
-                //TODO fix logging
-            	//frameworkExecution.getFrameworkLog().log(MessageFormat.format("component.version=found multiple implementations for component {0}." +"Returning first implementation.", componentName), Level.WARN);
+                LOGGER.warn(MessageFormat.format("component.version=found multiple implementations for component {0}." +"Returning first implementation.", componentName));
             }
             crsComponent.next();
             String componentId = crsComponent.getString("COMP_ID");

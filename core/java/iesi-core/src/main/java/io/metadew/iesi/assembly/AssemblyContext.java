@@ -4,6 +4,7 @@ import io.metadew.iesi.assembly.operation.FileSystemOperation;
 import io.metadew.iesi.connection.tools.OutputTools;
 import io.metadew.iesi.framework.configuration.FrameworkConfiguration;
 import io.metadew.iesi.framework.crypto.FrameworkCrypto;
+import io.metadew.iesi.framework.definition.Framework;
 import io.metadew.iesi.framework.execution.FrameworkControl;
 import io.metadew.iesi.framework.execution.FrameworkLog;
 
@@ -26,7 +27,13 @@ public class AssemblyContext {
     // Methods
     private void createInstallationTools() {
         this.setFrameworkCrypto(FrameworkCrypto.getInstance());
-        this.setConfigTools(new FrameworkControl(new FrameworkConfiguration(this.getRepositoryHome()), "assembly", this.getRepositoryHome()));
+        FrameworkConfiguration frameworkConfiguration = FrameworkConfiguration.getInstance();
+        frameworkConfiguration.init(repositoryHome);
+
+        FrameworkControl frameworkControl = FrameworkControl.getInstance();
+        frameworkControl.init("assembly");
+
+        this.setConfigTools(frameworkControl);
 
         // Create other tools
         this.setOutputTools(new OutputTools());

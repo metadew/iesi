@@ -1,4 +1,6 @@
-package io.metadew.iesi.metadata.configuration.exception;
+package io.metadew.iesi.metadata.configuration.exception.action;
+
+import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 
 public class ActionParameterTraceAlreadyExistsException extends MetadataAlreadyExistsException {
 

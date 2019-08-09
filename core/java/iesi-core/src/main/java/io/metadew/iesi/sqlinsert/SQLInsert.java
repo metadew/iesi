@@ -26,8 +26,9 @@ public class SQLInsert {
 
     public static void main(String[] args) throws InterruptedException, IOException {
 
+        FrameworkConfiguration frameworkConfiguration = FrameworkConfiguration.getInstance();
+        frameworkConfiguration.init();
         //Get ConfigFile
-        FrameworkConfiguration frameworkConfiguration = new FrameworkConfiguration();
         ConfigFile cfg = new ConfigFile(frameworkConfiguration.getFolderConfiguration().getFolderAbsolutePath("modules.sqlinsert.run.tmp") + File.separator + "service.config");
         ConfigFile eng = new ConfigFile(frameworkConfiguration.getFolderConfiguration().getFolderAbsolutePath("modules.sqlinsert.run") + File.separator + "engine.config");
         String Type = eng.getProperty("type");

@@ -2,29 +2,43 @@ package io.metadew.iesi.metadata.configuration.script;
 
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
+import io.metadew.iesi.metadata.configuration.exception.script.ScriptParameterAlreadyExistsException;
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.metadata.definition.script.ScriptParameter;
 import io.metadew.iesi.metadata.definition.script.ScriptVersion;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.sql.rowset.CachedRowSet;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.sql.SQLException;
+import java.text.MessageFormat;
+import java.util.Optional;
 
 public class ScriptParameterConfiguration {
 
-    private ScriptVersion scriptVersion;
-    private ScriptParameter scriptParameter;
     private FrameworkInstance frameworkInstance;
-
-    // Constructors
-    public ScriptParameterConfiguration(ScriptVersion scriptVersion, ScriptParameter scriptParameter, FrameworkInstance frameworkInstance) {
-        this.setScriptVersion(scriptVersion);
-        this.setScriptParameter(scriptParameter);
-        this.setFrameworkInstance(frameworkInstance);
-    }
+    private static final Logger LOGGER = LogManager.getLogger();
 
     public ScriptParameterConfiguration(FrameworkInstance frameworkInstance) {
     	this.setFrameworkInstance(frameworkInstance);
+    }
+
+    public void insert(String scriptId, long scriptVersionNumber, ScriptParameter scriptParameter) throws ScriptParameterAlreadyExistsException {
+        LOGGER.trace(MessageFormat.format("Inserting ScriptParameter {0}-{1}.", scriptId, scriptVersionNumber));
+        if (exists(scriptId, scriptVersionNumber, scriptParameter)) {
+            throw new ScriptParameterAlreadyExistsException(MessageFormat.format(
+                    "ScriptParameter {0}-{1} already exists", scriptId, scriptVersionNumber));
+        }
+        this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().executeUpdate(getInsertStatement(scriptId, scriptVersionNumber, scriptParameter));
+
+
+    }
+
+    private boolean exists(String scriptId, long scriptVersionNumber, ScriptParameter scriptParameter) {
+        String queryScriptParameter = "select SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_PAR_NM, SCRIPT_PAR_VAL from " + this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ScriptParameters")
+                + " where SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptId) + " and SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(scriptVersionNumber) + " and SCRIPT_PAR_NM = " + SQLTools.GetStringForSQL(scriptParameter.getName()) + ";";
+        CachedRowSet cachedRowSet = this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().executeQuery(queryScriptParameter, "reader");
+        return cachedRowSet.size() >= 1;
     }
 
     // Insert
@@ -39,64 +53,20 @@ public class ScriptParameterConfiguration {
     }
 
 
-    public String getInsertStatement(Script script) {
-        String sql = "";
-
-        sql += "INSERT INTO "
-                + this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository()
-                .getTableNameByLabel("ScriptParameters");
-        sql += " (SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_PAR_NM, SCRIPT_PAR_VAL) ";
-        sql += "VALUES ";
-        sql += "(";
-        sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository()
-                .getTableNameByLabel("Scripts"), "SCRIPT_ID", "where SCRIPT_NM = '" + script.getName()) + "')";
-        sql += ",";
-        sql += SQLTools.GetStringForSQL(this.getScriptVersion().getNumber());
-        sql += ",";
-        sql += SQLTools.GetStringForSQL(this.getScriptParameter().getName());
-        sql += ",";
-        sql += SQLTools.GetStringForSQL(this.getScriptParameter().getValue());
-        sql += ")";
-        sql += ";";
-
-        return sql;
-    }
-
-    public ScriptParameter getScriptParameter(String scriptId, long scriptVersionNumber, String scriptParameterName) {
-        ScriptParameter scriptParameter = new ScriptParameter();
-        CachedRowSet crsScriptParameter = null;
+    public Optional<ScriptParameter> getScriptParameter(String scriptId, long scriptVersionNumber, String scriptParameterName) throws SQLException {
         String queryScriptParameter = "select SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_PAR_NM, SCRIPT_PAR_VAL from " + this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ScriptParameters")
-                + " where SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptId) + "' and SCRIPT_VRS_NB = " + scriptVersionNumber + " and SCRIPT_PAR_NM = '" + scriptParameterName + "'";
-        crsScriptParameter = this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().executeQuery(queryScriptParameter, "reader");
-        try {
-            while (crsScriptParameter.next()) {
-                scriptParameter.setName(scriptParameterName);
-                scriptParameter.setValue(crsScriptParameter.getString("SCRIPT_PAR_VAL"));
-            }
-            crsScriptParameter.close();
-        } catch (Exception e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
+                + " where SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptId) + " and SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(scriptVersionNumber) + " and SCRIPT_PAR_NM = " + SQLTools.GetStringForSQL(scriptParameterName) + ";";
+        CachedRowSet cachedRowSet = this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().executeQuery(queryScriptParameter, "reader");
+        if (cachedRowSet.size() == 0) {
+            return Optional.empty();
+        } else if (cachedRowSet.size() > 1) {
+            LOGGER.info(MessageFormat.format("Found multiple implementations for ScriptParameter {0}-{1}-{2}. Returning first implementation", scriptId, scriptVersionNumber, scriptParameterName));
         }
-        return scriptParameter;
+        cachedRowSet.next();
+        return Optional.of(new ScriptParameter(scriptParameterName, cachedRowSet.getString("ACTION_PAR_VAL")));
     }
 
     // Getters and Setters
-    public ScriptParameter getScriptParameter() {
-        return scriptParameter;
-    }
-
-    public void setScriptParameter(ScriptParameter scriptParameter) {
-        this.scriptParameter = scriptParameter;
-    }
-
-    public ScriptVersion getScriptVersion() {
-        return scriptVersion;
-    }
-
-    public void setScriptVersion(ScriptVersion scriptVersion) {
-        this.scriptVersion = scriptVersion;
-    }
 
 	public FrameworkInstance getFrameworkInstance() {
 		return frameworkInstance;

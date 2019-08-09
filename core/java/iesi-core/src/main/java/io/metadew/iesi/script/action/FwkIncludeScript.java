@@ -98,8 +98,8 @@ public class FwkIncludeScript {
     private boolean includeScript(String scriptName, Optional<Long> scriptVersion) {
         ScriptConfiguration scriptConfiguration = new ScriptConfiguration(this.getFrameworkExecution().getFrameworkInstance());
         Script script = scriptVersion
-                .map(scriptVersion1 -> scriptConfiguration.getScript(scriptName, scriptVersion1))
-                .orElse(scriptConfiguration.getScript(scriptName)).get();
+                .map(scriptVersion1 -> scriptConfiguration.get(scriptName, scriptVersion1))
+                .orElse(scriptConfiguration.get(scriptName)).get();
         setScript(script);
         this.getActionExecution().getActionControl().increaseSuccessCount();
         return true;

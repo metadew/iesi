@@ -1,5 +1,6 @@
 package io.metadew.iesi.launch;
 
+import io.metadew.iesi.framework.configuration.FrameworkSettingConfiguration;
 import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.Request;
@@ -209,10 +210,7 @@ public class ScriptLauncher {
 		}
 
 		// Create framework instance
-		FrameworkInitializationFile frameworkInitializationFile = new FrameworkInitializationFile();
-		frameworkInitializationFile.setName(initializationFile);
-
-		FrameworkInstance frameworkInstance = new FrameworkInstance(frameworkInitializationFile);
+		FrameworkInstance frameworkInstance = new FrameworkInstance(new FrameworkInitializationFile(initializationFile));
 
 		// Server mode
 		String serverMode = "off";
@@ -259,7 +257,7 @@ public class ScriptLauncher {
 		} else if (serverMode.equalsIgnoreCase("standalone")) {
 			Requestor.getInstance().submit(request);
 		} else {
-			throw new RuntimeException("unknown setting for " + frameworkInstance.getFrameworkConfiguration().getSettingConfiguration().getSettingPath("server.mode").get());
+			throw new RuntimeException("unknown setting for " + FrameworkSettingConfiguration.getInstance().getSettingPath("server.mode").get());
 		}
 	}
 

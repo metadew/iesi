@@ -2,10 +2,10 @@ package io.metadew.iesi.metadata.configuration.script;
 
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
-import io.metadew.iesi.metadata.configuration.exception.ActionTraceAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.exception.ActionTraceDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
+import io.metadew.iesi.metadata.configuration.exception.script.ScriptDesignTraceAlreadyExistsException;
+import io.metadew.iesi.metadata.configuration.exception.script.ScriptDesignTraceDoesNotExistException;
 import io.metadew.iesi.metadata.definition.script.ScriptDesignTrace;
 import io.metadew.iesi.metadata.definition.script.key.ScriptDesignTraceKey;
 import io.metadew.iesi.metadata.execution.MetadataControl;
@@ -40,7 +40,7 @@ public class ScriptDesignTraceConfiguration extends Configuration<ScriptDesignTr
 		if (cachedRowSet.size() == 0) {
 			return Optional.empty();
 		} else if (cachedRowSet.size() > 1) {
-			LOGGER.info(MessageFormat.format("Found multiple implementations for ActionTrace {0}. Returning first implementation", scriptDesignTraceKey.toString()));
+			LOGGER.warn(MessageFormat.format("Found multiple implementations for ScriptDesignTrace {0}. Returning first implementation", scriptDesignTraceKey.toString()));
 		}
 		cachedRowSet.next();
 		return Optional.of(new ScriptDesignTrace(scriptDesignTraceKey,
@@ -72,9 +72,9 @@ public class ScriptDesignTraceConfiguration extends Configuration<ScriptDesignTr
 
 	@Override
 	public void delete(ScriptDesignTraceKey scriptDesignTraceKey) throws MetadataDoesNotExistException, SQLException {
-		LOGGER.trace(MessageFormat.format("Deleting ActionTrace {0}.", scriptDesignTraceKey.toString()));
+		LOGGER.trace(MessageFormat.format("Deleting ScriptDesignTrace {0}.", scriptDesignTraceKey.toString()));
 		if (!exists(scriptDesignTraceKey)) {
-			throw new ActionTraceDoesNotExistException(MessageFormat.format(
+			throw new ScriptDesignTraceDoesNotExistException(MessageFormat.format(
 					"ScriptTrace {0} does not exists", scriptDesignTraceKey.toString()));
 		}
 		String deleteStatement = deleteStatement(scriptDesignTraceKey);
@@ -92,7 +92,7 @@ public class ScriptDesignTraceConfiguration extends Configuration<ScriptDesignTr
 	public void insert(ScriptDesignTrace scriptDesignTrace) throws MetadataAlreadyExistsException, SQLException {
 		LOGGER.trace(MessageFormat.format("Inserting ActionParameterTrace {0}.", scriptDesignTrace.toString()));
 		if (exists(scriptDesignTrace.getMetadataKey())) {
-			throw new ActionTraceAlreadyExistsException(MessageFormat.format(
+			throw new ScriptDesignTraceAlreadyExistsException(MessageFormat.format(
 					"ActionParameterTrace {0} already exists", scriptDesignTrace.getMetadataKey().toString()));
 		}
 		String insertStatement = insertStatement(scriptDesignTrace);

@@ -2,8 +2,8 @@ package io.metadew.iesi.metadata.configuration.script;
 
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
-import io.metadew.iesi.metadata.configuration.exception.ActionTraceAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.exception.ActionTraceDoesNotExistException;
+import io.metadew.iesi.metadata.configuration.exception.action.ActionTraceAlreadyExistsException;
+import io.metadew.iesi.metadata.configuration.exception.action.ActionTraceDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.script.ScriptParameterDesignTrace;
@@ -38,7 +38,7 @@ public class ScriptParameterDesignTraceConfiguration extends Configuration<Scrip
         if (cachedRowSet.size() == 0) {
             return Optional.empty();
         } else if (cachedRowSet.size() > 1) {
-            LOGGER.info(MessageFormat.format("Found multiple implementations for ActionTrace {0}. Returning first implementation", scriptParameterDesignTraceKey.toString()));
+            LOGGER.warn(MessageFormat.format("Found multiple implementations for ActionTrace {0}. Returning first implementation", scriptParameterDesignTraceKey.toString()));
         }
         cachedRowSet.next();
         return Optional.of(new ScriptParameterDesignTrace(scriptParameterDesignTraceKey,

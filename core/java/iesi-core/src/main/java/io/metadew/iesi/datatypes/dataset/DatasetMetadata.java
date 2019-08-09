@@ -13,10 +13,8 @@ import javax.sql.rowset.CachedRowSet;
 import java.io.File;
 import java.sql.SQLException;
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class DatasetMetadata {
 
@@ -37,8 +35,8 @@ public class DatasetMetadata {
     public Optional<Long> getId(List<String> labels) throws SQLException {
         // TODO: specific SQLite behaviour!!
         String query = "SELECT DATASET_INV_ID FROM " +
-                "(SELECT DATASET_INV_ID, group_concat(DATASET_LBL_VAL, ',') as LABELS FROM CFG_DATASET_LBL) " +
-                "WHERE LABELS=" + SQLTools.GetStringForSQL(String.join(", ", labels))+";";
+                "(SELECT DATASET_INV_ID, group_concat(DATASET_LBL_VAL, ',') as LABELS FROM CFG_DATASET_LBL GROUP BY DATASET_INV_ID) " +
+                "WHERE LABELS=" + SQLTools.GetStringForSQL(String.join(",", labels))+";";
         CachedRowSet cachedRowSet = database.executeQuery(query);
         if (cachedRowSet.size() == 0) {
             return Optional.empty();

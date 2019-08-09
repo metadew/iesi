@@ -2,8 +2,8 @@ package io.metadew.iesi.metadata.configuration.action;
 
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
-import io.metadew.iesi.metadata.configuration.exception.ActionTraceAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.exception.ActionTraceDoesNotExistException;
+import io.metadew.iesi.metadata.configuration.exception.action.ActionDesignTraceAlreadyExistsException;
+import io.metadew.iesi.metadata.configuration.exception.action.ActionDesignTraceDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.action.ActionDesignTrace;
@@ -40,7 +40,7 @@ public class ActionDesignTraceConfiguration extends Configuration<ActionDesignTr
         if (cachedRowSet.size() == 0) {
             return Optional.empty();
         } else if (cachedRowSet.size() > 1) {
-            LOGGER.info(MessageFormat.format("Found multiple implementations for ActionTrace {0}. Returning first implementation", actionDesignTraceKey.toString()));
+            LOGGER.info(MessageFormat.format("Found multiple implementations for ActionDesignTrace {0}. Returning first implementation", actionDesignTraceKey.toString()));
         }
         cachedRowSet.next();
         return Optional.of(new ActionDesignTrace(actionDesignTraceKey,
@@ -83,9 +83,9 @@ public class ActionDesignTraceConfiguration extends Configuration<ActionDesignTr
 
     @Override
     public void delete(ActionDesignTraceKey actionDesignTraceKey) throws MetadataDoesNotExistException, SQLException {
-        LOGGER.trace(MessageFormat.format("Deleting ActionTrace {0}.", actionDesignTraceKey.toString()));
+        LOGGER.trace(MessageFormat.format("Deleting ActionDesignTrace {0}.", actionDesignTraceKey.toString()));
         if (!exists(actionDesignTraceKey)) {
-            throw new ActionTraceDoesNotExistException(MessageFormat.format(
+            throw new ActionDesignTraceDoesNotExistException(MessageFormat.format(
                     "ActionTrace {0} does not exists", actionDesignTraceKey.toString()));
         }
         String deleteStatement = deleteStatement(actionDesignTraceKey);
@@ -102,9 +102,9 @@ public class ActionDesignTraceConfiguration extends Configuration<ActionDesignTr
 
     @Override
     public void insert(ActionDesignTrace actionDesignTrace) throws MetadataAlreadyExistsException, SQLException {
-        LOGGER.trace(MessageFormat.format("Inserting ActionParameterTrace {0}.", actionDesignTrace.toString()));
+        LOGGER.trace(MessageFormat.format("Inserting ActionDesignTrace {0}.", actionDesignTrace.toString()));
         if (exists(actionDesignTrace.getMetadataKey())) {
-            throw new ActionTraceAlreadyExistsException(MessageFormat.format(
+            throw new ActionDesignTraceAlreadyExistsException(MessageFormat.format(
                     "ActionParameterTrace {0} already exists", actionDesignTrace.getMetadataKey().toString()));
         }
         String insertStatement = insertStatement(actionDesignTrace);

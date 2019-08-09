@@ -71,11 +71,11 @@ public class DesignMetadataRepository extends MetadataRepository {
         frameworkExecution.getFrameworkLog().log(MessageFormat.format("Saving script {0}-{1} into design repository", script.getName(), script.getVersion().getNumber()), Level.INFO);
         ScriptConfiguration scriptConfiguration = new ScriptConfiguration(frameworkExecution.getFrameworkInstance());
         try {
-            scriptConfiguration.insertScript(script);
+            scriptConfiguration.insert(script);
         } catch (ScriptAlreadyExistsException e) {
             frameworkExecution.getFrameworkLog().log(MessageFormat.format("Script {0}-{1} already exists in design repository. Updating to new definition", script.getName(), script.getVersion().getNumber()), Level.INFO);
             try {
-                scriptConfiguration.updateScript(script);
+                scriptConfiguration.update(script);
             } catch (ScriptDoesNotExistException ex) {
                 throw new MetadataRepositorySaveException(ex);
 

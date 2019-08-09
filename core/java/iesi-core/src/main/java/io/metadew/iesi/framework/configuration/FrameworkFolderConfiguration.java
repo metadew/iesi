@@ -5,50 +5,71 @@ import io.metadew.iesi.framework.definition.FrameworkFolder;
 import io.metadew.iesi.metadata.definition.DataObject;
 import io.metadew.iesi.metadata.operation.DataObjectOperation;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.logging.log4j.ThreadContext;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.Map;
 
 public class FrameworkFolderConfiguration {
 
     private String solutionHome;
 
-    private HashMap<String, FrameworkFolder> folderMap;
+    private Map<String, FrameworkFolder> folderMap;
 
-    public FrameworkFolderConfiguration(String solutionHome) {
-        this.setSolutionHome(solutionHome);
-        this.initalizeValues();
+    private static FrameworkFolderConfiguration INSTANCE;
+
+    public synchronized static FrameworkFolderConfiguration getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new FrameworkFolderConfiguration();
+        }
+        return INSTANCE;
     }
 
-    private void initalizeValues() {
-        this.setFolderMap(new HashMap<String, FrameworkFolder>());
+    private FrameworkFolderConfiguration() {}
 
-        StringBuilder initFilePath = new StringBuilder();
-        initFilePath.append(this.getSolutionHome());
-        initFilePath.append(File.separator);
-        initFilePath.append("sys");
-        initFilePath.append(File.separator);
-        initFilePath.append("init");
-        initFilePath.append(File.separator);
-        initFilePath.append("FrameworkFolders.json");
+    public void init(String solutionHome) {
+        this.setSolutionHome(solutionHome);
+        this.folderMap = new HashMap<>();
 
-        DataObjectOperation dataObjectOperation = new DataObjectOperation();
-        dataObjectOperation.setInputFile(initFilePath.toString());
+        String initFilePath = solutionHome + File.separator + "sys" + File.separator + "init" + File.separator +
+                "FrameworkFolders.json";
+        DataObjectOperation dataObjectOperation = new DataObjectOperation(initFilePath);
         dataObjectOperation.parseFile();
         ObjectMapper objectMapper = new ObjectMapper();
         for (DataObject dataObject : dataObjectOperation.getDataObjects()) {
             if (dataObject.getType().equalsIgnoreCase("frameworkfolder")) {
                 FrameworkFolder frameworkFolder = objectMapper.convertValue(dataObject.getData(), FrameworkFolder.class);
-                StringBuilder folderPath = new StringBuilder();
-                folderPath.append(this.getSolutionHome());
-                String subFolderPath = frameworkFolder.getPath().replace("/", File.separator);
-                folderPath.append(subFolderPath);
-                frameworkFolder.setAbsolutePath(FilenameUtils.normalize(folderPath.toString()));
-                //this.getFolderMap().put(frameworkFolder.getName(), FilenameUtils.normalize(folderPath.toString()));
-                this.getFolderMap().put(frameworkFolder.getName(), frameworkFolder);
+                String folderPath = solutionHome + File.separator + frameworkFolder.getPath().replace("/", File.separator);
+                frameworkFolder.setAbsolutePath(FilenameUtils.normalize(folderPath));
+                folderMap.put(frameworkFolder.getName(), frameworkFolder);
             }
         }
+        ThreadContext.put("location", getFolderAbsolutePath("logs"));
     }
+
+    public void init(String solutionHome, Map<String, FrameworkFolder> folderMap) {
+        this.solutionHome = solutionHome;
+        this.folderMap = folderMap;
+    }
+
+//    private void initalizeValues() {
+//        this.folderMap = new HashMap<>();
+//
+//        String initFilePath = solutionHome + File.separator + "sys" + File.separator + "init" + File.separator +
+//                "FrameworkFolders.json";
+//        DataObjectOperation dataObjectOperation = new DataObjectOperation(initFilePath);
+//        dataObjectOperation.parseFile();
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        for (DataObject dataObject : dataObjectOperation.getDataObjects()) {
+//            if (dataObject.getType().equalsIgnoreCase("frameworkfolder")) {
+//                FrameworkFolder frameworkFolder = objectMapper.convertValue(dataObject.getData(), FrameworkFolder.class);
+//                String folderPath = solutionHome + File.separator + frameworkFolder.getPath().replace("/", File.separator);
+//                frameworkFolder.setAbsolutePath(FilenameUtils.normalize(folderPath));
+//                folderMap.put(frameworkFolder.getName(), frameworkFolder);
+//            }
+//        }
+//    }
 
     // Create Getters and Setters
     public String getFolderAbsolutePath(String key) {
@@ -67,7 +88,7 @@ public class FrameworkFolderConfiguration {
         this.solutionHome = solutionHome;
     }
 
-    public HashMap<String, FrameworkFolder> getFolderMap() {
+    public Map<String, FrameworkFolder> getFolderMap() {
         return folderMap;
     }
 

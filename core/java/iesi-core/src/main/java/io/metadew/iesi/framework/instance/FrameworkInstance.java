@@ -30,7 +30,6 @@ public class FrameworkInstance {
 	private String executionServerFilePath;
 	private FrameworkInitializationFile frameworkInitializationFile;
 
-	// Constructors
 	public FrameworkInstance() {
 		this("write", null);
 	}
@@ -41,9 +40,9 @@ public class FrameworkInstance {
 
 	public FrameworkInstance(String logonType, FrameworkInitializationFile frameworkInitializationFile) {
 		// Get the framework configuration
-		this.frameworkConfiguration = new FrameworkConfiguration();
-		ThreadContext.put("location", frameworkConfiguration.getFolderConfiguration().getFolderAbsolutePath("logs"));
-		ThreadContext.put("fwk.code", frameworkConfiguration.getFrameworkCode());
+		this.frameworkConfiguration = FrameworkConfiguration.getInstance();
+		frameworkConfiguration.init();
+
 		this.frameworkCrypto = FrameworkCrypto.getInstance();
 
 		// Set appropriate initialization file
@@ -54,9 +53,13 @@ public class FrameworkInstance {
 		}
 
 		// Prepare configuration and shared Metadata
-		this.frameworkControl = new FrameworkControl(frameworkConfiguration, logonType, this.frameworkInitializationFile, frameworkCrypto);
+		this.frameworkControl = FrameworkControl.getInstance();
+		frameworkControl.init(frameworkConfiguration, logonType, this.frameworkInitializationFile, frameworkCrypto);
+
 		frameworkConfiguration.setActionTypesFromPlugins(frameworkControl.getFrameworkPluginConfigurationList());
-		this.metadataControl = new MetadataControl(frameworkControl.getMetadataRepositoryConfigurations()
+
+		this.metadataControl = MetadataControl.getInstance();
+		metadataControl.init(frameworkControl.getMetadataRepositoryConfigurations()
 				.stream().map(configuration -> configuration.toMetadataRepositories(frameworkConfiguration))
 				.collect(ArrayList::new, List::addAll, List::addAll));
 
@@ -88,16 +91,19 @@ public class FrameworkInstance {
 	public FrameworkInstance(String logonType, FrameworkInitializationFile frameworkInitializationFile,
 			FrameworkConfiguration frameworkConfiguration) {
 		this.frameworkConfiguration = frameworkConfiguration;
-		ThreadContext.put("location", frameworkConfiguration.getFolderConfiguration().getFolderAbsolutePath("logs"));
-		ThreadContext.put("fwk.code", frameworkConfiguration.getFrameworkCode());
 		this.frameworkInitializationFile = frameworkInitializationFile;
 		this.frameworkCrypto = FrameworkCrypto.getInstance();
-		this.frameworkControl = new FrameworkControl(this.frameworkConfiguration, logonType,
-				this.frameworkInitializationFile, frameworkCrypto);
+
+		this.frameworkControl = FrameworkControl.getInstance();
+		frameworkControl.init(this.frameworkConfiguration, logonType, this.frameworkInitializationFile, frameworkCrypto);
+
 		this.frameworkConfiguration.setActionTypesFromPlugins(frameworkControl.getFrameworkPluginConfigurationList());
-		this.metadataControl = new MetadataControl(this.frameworkControl.getMetadataRepositoryConfigurations().stream()
+
+		this.metadataControl = MetadataControl.getInstance();
+		metadataControl.init(this.frameworkControl.getMetadataRepositoryConfigurations().stream()
 				.map(configuration -> configuration.toMetadataRepositories(frameworkConfiguration))
 				.flatMap(Collection::stream).collect(Collectors.toList()));
+
 		// Set up connection to the metadata repository
 		SqliteDatabaseConnection executionServerDatabaseConnection = new SqliteDatabaseConnection(
 				this.getFrameworkConfiguration().getFolderConfiguration().getFolderAbsolutePath("run.exec")
@@ -112,6 +118,7 @@ public class FrameworkInstance {
 				frameworkConfiguration.getFrameworkCode(), null, null, null, repositoryCoordinator,
 				frameworkConfiguration.getFolderConfiguration().getFolderAbsolutePath("metadata.def"),
 				frameworkConfiguration.getFolderConfiguration().getFolderAbsolutePath("metadata.def")));
+
 		Executor.getInstance().init(this);
 		Requestor.getInstance().init(this);
 	}

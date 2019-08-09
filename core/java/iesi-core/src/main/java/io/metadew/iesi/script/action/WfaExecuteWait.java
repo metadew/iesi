@@ -116,7 +116,7 @@ public class WfaExecuteWait {
         if (waitInterval instanceof Text) {
             return Integer.parseInt(waitInterval.toString());
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + "this.getActionExecution().getAction().getType() +  does not accept {0} as type for wait interval",
+            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + "this.getActionExecution().get().getType() +  does not accept {0} as type for wait interval",
                     waitInterval.getClass()), Level.WARN);
             return defaultWaitInterval;
         }

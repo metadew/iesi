@@ -1,7 +1,7 @@
 package io.metadew.iesi.script.execution;
 
 import io.metadew.iesi.metadata.configuration.action.ActionPerformanceConfiguration;
-import io.metadew.iesi.metadata.configuration.exception.ActionPerformanceAlreadyExistsException;
+import io.metadew.iesi.metadata.configuration.exception.action.ActionPerformanceAlreadyExistsException;
 import io.metadew.iesi.metadata.definition.action.ActionPerformance;
 import io.metadew.iesi.metadata.definition.action.key.ActionPerformanceKey;
 

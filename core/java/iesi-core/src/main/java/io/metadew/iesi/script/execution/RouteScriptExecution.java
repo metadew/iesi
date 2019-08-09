@@ -26,7 +26,7 @@ public class RouteScriptExecution extends ScriptExecution {
 //        /*
 //         * Start script execution Not applicable for routing executions
 //         */
-//        this.getExecutionControl().logMessage(this, "script.name=" + this.getScript().getName(), Level.INFO);
+//        this.getExecutionControl().logMessage(this, "script.name=" + this.get().getName(), Level.INFO);
 //        this.getExecutionControl().logMessage(this, "exec.env=" + this.getExecutionControl().getEnvName(),
 //                Level.INFO);
 //        this.getExecutionControl().logStart(this, this.getParentScriptExecution());
@@ -56,7 +56,7 @@ public class RouteScriptExecution extends ScriptExecution {
 //     * Loop all actions inside the script
 //     */
 //    boolean execute = true;
-//		this.setActions(this.getScript().getActions());
+//		this.setActions(this.get().getActions());
 //		for (int i = 0; i < this.getActions().size(); i++) {
 //        Action action = this.getActions().get(i);
 //        // Check if the action needs to be executed
@@ -88,7 +88,7 @@ public class RouteScriptExecution extends ScriptExecution {
 //                        .getRouteOperations()) {
 //                    Callable<ScriptExecution> callableScriptExecution = () -> {
 //                        ScriptExecution scriptExecution = new ScriptExecution(this.getFrameworkExecution(),
-//                                routeOperation.getScript());
+//                                routeOperation.get());
 //                        scriptExecution.initializeAsRouteExecution(this);
 //                        scriptExecution.execute();
 //                        return scriptExecution;
@@ -205,7 +205,7 @@ public class RouteScriptExecution extends ScriptExecution {
 //                // Subselect the past actions including the include action itself
 //                includeActions.addAll(this.getActions().subList(0, i + 1));
 //                // Add the include script
-//                includeActions.addAll(fwkIncludeScript.getScript().getActions());
+//                includeActions.addAll(fwkIncludeScript.get().getActions());
 //                // If not at the end of the script, add the remainder of actions
 //                if (i < this.getActions().size() - 1) {
 //                    includeActions.addAll(this.getActions().subList(i + 1, this.getActions().size()));

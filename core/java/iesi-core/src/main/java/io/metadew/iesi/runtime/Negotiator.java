@@ -81,7 +81,7 @@ public class Negotiator {
         FrameworkExecution frameworkExecution = new FrameworkExecution(frameworkInstance, new FrameworkExecutionContext(context), null);
         // Get the Script
         ScriptConfiguration scriptConfiguration = new ScriptConfiguration(frameworkExecution.getFrameworkInstance());
-        Script script = scriptConfiguration.getScript("S2").get();
+        Script script = scriptConfiguration.get("S2").get();
 
 
 

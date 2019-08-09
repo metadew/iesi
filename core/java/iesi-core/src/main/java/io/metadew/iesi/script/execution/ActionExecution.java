@@ -1,6 +1,7 @@
 package io.metadew.iesi.script.execution;
 
 import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.action.ActionPerformanceConfiguration;
 import io.metadew.iesi.metadata.configuration.type.ActionTypeConfiguration;
 import io.metadew.iesi.metadata.definition.action.Action;
@@ -41,8 +42,8 @@ public class ActionExecution {
 		this.setExecutionControl(executionControl);
 		this.setScriptExecution(scriptExecution);
 		this.setAction(action);
-		this.actionPerformanceLogger = new ActionPerformanceLogger(new ActionPerformanceConfiguration(frameworkExecution.getFrameworkInstance().getMetadataControl()));
-		this.actionTypeConfiguration = new ActionTypeConfiguration(frameworkExecution.getFrameworkInstance());
+		this.actionPerformanceLogger = new ActionPerformanceLogger(new ActionPerformanceConfiguration());
+		this.actionTypeConfiguration = new ActionTypeConfiguration(FrameworkInstance.getInstance());
 	}
 
 	// Methods

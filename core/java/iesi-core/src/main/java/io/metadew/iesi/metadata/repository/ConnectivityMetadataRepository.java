@@ -2,6 +2,7 @@ package io.metadew.iesi.metadata.repository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.ConnectionConfiguration;
 import io.metadew.iesi.metadata.configuration.EnvironmentConfiguration;
 import io.metadew.iesi.metadata.configuration.ImpersonationConfiguration;
@@ -12,10 +13,13 @@ import io.metadew.iesi.metadata.definition.Impersonation;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 
 public class ConnectivityMetadataRepository extends MetadataRepository {
+    private static final Logger LOGGER = LogManager.getLogger();
 
     public ConnectivityMetadataRepository(String frameworkCode, String name, String scope, String instanceName, RepositoryCoordinator repositoryCoordinator, String repositoryObjectsPath, String repositoryTablesPath) {
         super(frameworkCode, name, scope, instanceName, repositoryCoordinator, repositoryObjectsPath, repositoryTablesPath);
@@ -58,19 +62,19 @@ public class ConnectivityMetadataRepository extends MetadataRepository {
         } else if (dataObject.getType().equalsIgnoreCase("repository")) {
             // TODO
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("Connectivity repository is not responsible for loading saving {0}", dataObject.getType()), Level.TRACE);
+            LOGGER.trace(MessageFormat.format("Connectivity repository is not responsible for loading saving {0}", dataObject.getType()));
         }
     }
 
     public void save(Connection connection, FrameworkExecution frameworkExecution) {
-        frameworkExecution.getFrameworkLog().log(MessageFormat.format("Inserting connection {0}-{1} into connectivity repository",
-                connection.getName(), connection.getEnvironment()), Level.INFO);
-        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(frameworkExecution.getFrameworkInstance());
+        LOGGER.info(MessageFormat.format("Inserting connection {0}-{1} into connectivity repository",
+                connection.getName(), connection.getEnvironment()));
+        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(FrameworkInstance.getInstance());
         try {
             connectionConfiguration.insertConnection(connection);
         } catch (ConnectionAlreadyExistsException e1) {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("Connection {0}-{1} already exists in connectivity repository. Updating connection {0}-{1} instead.",
-                    connection.getName(), connection.getEnvironment()), Level.DEBUG);
+            LOGGER.debug(MessageFormat.format("Connection {0}-{1} already exists in connectivity repository. Updating connection {0}-{1} instead.",
+                    connection.getName(), connection.getEnvironment()));
             try {
                 connectionConfiguration.updateConnection(connection);
             } catch (ConnectionDoesNotExistException | ConnectionAlreadyExistsException e2) {
@@ -80,14 +84,14 @@ public class ConnectivityMetadataRepository extends MetadataRepository {
     }
 
     public void save(Environment environment, FrameworkExecution frameworkExecution) {
-        frameworkExecution.getFrameworkLog().log(MessageFormat.format("Inserting environment {0} into connectivity repository",
-                environment.getName()), Level.INFO);
-        EnvironmentConfiguration environmentConfiguration = new EnvironmentConfiguration(frameworkExecution.getFrameworkInstance());
+        LOGGER.info(MessageFormat.format("Inserting environment {0} into connectivity repository",
+                environment.getName()));
+        EnvironmentConfiguration environmentConfiguration = new EnvironmentConfiguration(FrameworkInstance.getInstance());
         try {
             environmentConfiguration.insertEnvironment(environment);
         } catch (EnvironmentAlreadyExistsException e) {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("Environment {0} already exists in connectivity repository. Updating connection {0} instead.",
-                    environment.getName()), Level.DEBUG);
+            LOGGER.debug(MessageFormat.format("Environment {0} already exists in connectivity repository. Updating connection {0} instead.",
+                    environment.getName()));
             try {
                 environmentConfiguration.updateEnvironment(environment);
             } catch (EnvironmentDoesNotExistException e1) {
@@ -97,14 +101,14 @@ public class ConnectivityMetadataRepository extends MetadataRepository {
     }
 
     public void save(Impersonation impersonation, FrameworkExecution frameworkExecution) {
-        frameworkExecution.getFrameworkLog().log(MessageFormat.format("Inserting impersonation {0} into connectivity repository",
-                impersonation.getName()), Level.INFO);
-        ImpersonationConfiguration impersonationConfiguration = new ImpersonationConfiguration(frameworkExecution.getFrameworkInstance());
+        LOGGER.info(MessageFormat.format("Inserting impersonation {0} into connectivity repository",
+                impersonation.getName()));
+        ImpersonationConfiguration impersonationConfiguration = new ImpersonationConfiguration(FrameworkInstance.getInstance());
         try {
             impersonationConfiguration.insertImpersonation(impersonation);
         } catch (ImpersonationAlreadyExistsException e) {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("Impersonation {0} already exists in connectivity repository. Updating impersonation {0} instead.",
-                    impersonation.getName()), Level.DEBUG);
+            LOGGER.debug(MessageFormat.format("Impersonation {0} already exists in connectivity repository. Updating impersonation {0} instead.",
+                    impersonation.getName()));
             try {
                 impersonationConfiguration.updateImpersonation(impersonation);
             } catch (ImpersonationDoesNotExistException e1) {

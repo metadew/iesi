@@ -4,7 +4,8 @@ import io.metadew.iesi.data.generation.output.DelimitedFile;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.GenerationOutput;
 import io.metadew.iesi.script.execution.ExecutionControl;
-import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class GenerationOutputExecution {
 
@@ -12,6 +13,7 @@ public class GenerationOutputExecution {
 	private ExecutionControl executionControl;
 	private GenerationExecution generationExecution;
 	private GenerationOutput generationOutput;
+	private static final Logger LOGGER = LogManager.getLogger();
 	
 	// Constructors
 	public GenerationOutputExecution(FrameworkExecution frameworkExecution, ExecutionControl executionControl, GenerationExecution generationExecution, String generationOutputName) {
@@ -36,8 +38,7 @@ public class GenerationOutputExecution {
 
 			}
 		} catch (Exception e) {
-			this.getFrameworkExecution().getFrameworkLog()
-			.log("generation.output.error=" + this.getGenerationOutput().getType()+e, Level.INFO);
+			LOGGER.info("generation.output.error=" + this.getGenerationOutput().getType()+e);
 
 		} finally {
 	

@@ -1,10 +1,12 @@
 package io.metadew.iesi.data.generation.execution;
 
+import io.metadew.iesi.framework.execution.FrameworkControl;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.Generation;
 import io.metadew.iesi.metadata.definition.GenerationRule;
 import io.metadew.iesi.script.execution.ExecutionControl;
-import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -19,6 +21,7 @@ public class GenerationExecution {
 	private long numberOfRecords = 0;
 	private String paramList = "";
 	private String paramFile = "";
+	private static final Logger LOGGER = LogManager.getLogger();
 
 	// Constructors
 	public GenerationExecution(FrameworkExecution frameworkExecution, Generation generation) throws ClassNotFoundException,
@@ -30,8 +33,7 @@ public class GenerationExecution {
 	
 	// Methods
 	public void execute(String generationOutputName) {
-		this.getFrameworkExecution().getFrameworkLog()
-				.log("generation.name=" + this.getGeneration().getName(), Level.INFO);
+		LOGGER.info("generation.name=" + this.getGeneration().getName());
 
 		// Log Start
 		//this.getExecutionControl().logStart(this);
@@ -98,7 +100,7 @@ public class GenerationExecution {
 	}
 
 	public void setParamFile(String paramFile) {
-		this.paramFile = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(paramFile);
+		this.paramFile = FrameworkControl.getInstance().resolveConfiguration(paramFile);
 	}
 
 	public GenerationRuntime getGenerationRuntime() {

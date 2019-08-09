@@ -6,6 +6,7 @@ import io.metadew.iesi.connection.host.ShellCommandResult;
 import io.metadew.iesi.connection.host.ShellCommandSettings;
 import io.metadew.iesi.connection.operation.ConnectionOperation;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import org.apache.commons.io.IOUtils;
@@ -258,7 +259,7 @@ public class HostConnection {
                     if (i < jumphostConnections.length) {
                         jumphostConnection = jumphostConnections[i];
                         ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(
-                                shellCommandSettings.getFrameworkExecution().getFrameworkInstance());
+                                FrameworkInstance.getInstance());
                         Connection connection = connectionConfiguration
                                 .getConnection(jumphostConnection, shellCommandSettings.getEnvironment()).get();
                         ConnectionOperation connectionOperation = new ConnectionOperation(
@@ -509,7 +510,7 @@ public class HostConnection {
                     if (i < jumphostConnections.length) {
                         jumphostConnection = jumphostConnections[i];
                         ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(
-                                shellCommandSettings.getFrameworkExecution().getFrameworkInstance());
+                                FrameworkInstance.getInstance());
                         Connection connection = connectionConfiguration
                                 .getConnection(jumphostConnection, shellCommandSettings.getEnvironment()).get();
                         ConnectionOperation connectionOperation = new ConnectionOperation(
@@ -731,7 +732,7 @@ public class HostConnection {
                     if (i < jumphostConnections.length) {
                         jumphostConnection = jumphostConnections[i];
                         ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(
-                                shellCommandSettings.getFrameworkExecution().getFrameworkInstance());
+                                FrameworkInstance.getInstance());
                         Connection connection = connectionConfiguration
                                 .getConnection(jumphostConnection, shellCommandSettings.getEnvironment()).get();
                         ConnectionOperation connectionOperation = new ConnectionOperation(

@@ -25,12 +25,10 @@ public class KeyValueDatasetService {
 
     private final static Logger LOGGER = LogManager.getLogger();
     private final DataTypeService dataTypeService;
-    private FrameworkFolderConfiguration frameworkFolderConfiguration;
     private ExecutionRuntime executionRuntime;
 
-    public KeyValueDatasetService(DataTypeService dataTypeService, FrameworkFolderConfiguration frameworkFolderConfiguration, ExecutionRuntime executionRuntime) {
+    public KeyValueDatasetService(DataTypeService dataTypeService, ExecutionRuntime executionRuntime) {
         this.dataTypeService = dataTypeService;
-        this.frameworkFolderConfiguration = frameworkFolderConfiguration;
         this.executionRuntime = executionRuntime;
     }
 
@@ -38,7 +36,7 @@ public class KeyValueDatasetService {
         if (keyPrefix != null) {
             List<String> labels = new ArrayList<>(dataset.getLabels());
             labels.add(keyPrefix);
-            return new KeyValueDataset(dataset.getName(), labels, frameworkFolderConfiguration, executionRuntime);
+            return new KeyValueDataset(dataset.getName(), labels, executionRuntime);
         } else {
             return dataset;
         }
@@ -86,7 +84,7 @@ public class KeyValueDatasetService {
             List<DataType> resolvedArguments = splittedArguments.stream()
                     .map(dataTypeService::resolve)
                     .collect(Collectors.toList());
-            return new KeyValueDataset(resolvedArguments.get(0), resolvedArguments.get(1), frameworkFolderConfiguration, executionRuntime);
+            return new KeyValueDataset(resolvedArguments.get(0), resolvedArguments.get(1), executionRuntime);
         } else {
             throw new RuntimeException(MessageFormat.format("Cannot create dataset with arguments ''{0}''", splittedArguments.toString()));
         }

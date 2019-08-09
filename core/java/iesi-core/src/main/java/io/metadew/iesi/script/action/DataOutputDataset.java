@@ -4,6 +4,7 @@ import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.dataset.Dataset;
 import io.metadew.iesi.datatypes.dataset.KeyValueDataset;
 import io.metadew.iesi.datatypes.text.Text;
+import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.script.execution.ActionExecution;
@@ -11,6 +12,8 @@ import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -33,6 +36,7 @@ public class DataOutputDataset {
     private ActionParameterOperation datasetLabels;
     private ActionParameterOperation onScreen;
     private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
+    private static final Logger LOGGER = LogManager.getLogger();
 
     // Constructors
     public DataOutputDataset() {
@@ -80,7 +84,7 @@ public class DataOutputDataset {
 
     public boolean execute() {
         try {
-            Dataset dataset = new KeyValueDataset(getDatasetName().getValue(), getDatasetLabels().getValue(), frameworkExecution.getFrameworkConfiguration().getFolderConfiguration(), executionControl.getExecutionRuntime());
+            Dataset dataset = new KeyValueDataset(getDatasetName().getValue(), getDatasetLabels().getValue(), executionControl.getExecutionRuntime());
             boolean onScreen = convertOnScreen(getOnScreen().getValue());
             return outputDataset(dataset, onScreen);
         } catch (Exception e) {
@@ -100,7 +104,7 @@ public class DataOutputDataset {
     private boolean outputDataset(Dataset dataset, boolean onScreen) {
         // TODO: loop over all dataset item and print them
         dataset.getDataItems()
-                .forEach((key, value) -> frameworkExecution.getFrameworkLog().log(MessageFormat.format("{0}:{1}", key, value), Level.INFO));
+                .forEach((key, value) -> LOGGER.info(MessageFormat.format("{0}:{1}", key, value)));
 
         this.getActionExecution().getActionControl().increaseSuccessCount();
         return true;
@@ -113,8 +117,8 @@ public class DataOutputDataset {
         } else if (onScreen instanceof Text) {
             return onScreen.toString().equalsIgnoreCase("y");
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() +  " does not accept {0} as type for onScreen",
-                    onScreen.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() +  " does not accept {0} as type for onScreen",
+                    onScreen.getClass()));
             return false;
         }
     }

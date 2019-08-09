@@ -7,7 +7,9 @@ import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.connection.DatabaseConnection;
 import io.metadew.iesi.connection.database.connection.SqliteDatabaseConnection;
 import io.metadew.iesi.connection.operation.ConnectionOperation;
+import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.ConnectionConfiguration;
 import io.metadew.iesi.metadata.configuration.RepositoryConfiguration;
 import io.metadew.iesi.metadata.configuration.RepositoryInstanceConfiguration;
@@ -54,9 +56,9 @@ public class RepositoryOperation {
         this.setRepositoryInstanceName(repositoryInstanceName);
         this.setRepositoryInstanceLabels(repositoryInstanceLabels);
 
-        RepositoryConfiguration repositoryConfiguration = new RepositoryConfiguration(this.getFrameworkExecution().getFrameworkInstance());
+        RepositoryConfiguration repositoryConfiguration = new RepositoryConfiguration(FrameworkInstance.getInstance());
         this.setRepository(repositoryConfiguration.getRepository(this.getRepositoryName()));
-        RepositoryInstanceConfiguration repositoryInstanceConfiguration = new RepositoryInstanceConfiguration(this.getFrameworkExecution().getFrameworkInstance());
+        RepositoryInstanceConfiguration repositoryInstanceConfiguration = new RepositoryInstanceConfiguration(FrameworkInstance.getInstance());
         this.setRepositoryInstance(repositoryInstanceConfiguration.getRepositoryInstance(this.getRepository(), this.getRepositoryInstanceName()));
 
         this.setRepositoryInstanceConnectionName(new RepositoryParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(), "connection"));
@@ -67,7 +69,7 @@ public class RepositoryOperation {
         }
 
         // Get Connection
-        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution().getFrameworkInstance());
+        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(FrameworkInstance.getInstance());
         Connection connection = connectionConfiguration.getConnection(this.getRepositoryInstanceConnectionName().getValue(),
                 this.getExecutionControl().getEnvName()).get();
         ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
@@ -76,7 +78,7 @@ public class RepositoryOperation {
 
 
         ObjectMapper objectMapper = new ObjectMapper();
-        String datasetFolderName = this.getFrameworkExecution().getFrameworkConfiguration().getFolderConfiguration()
+        String datasetFolderName = FrameworkFolderConfiguration.getInstance()
                 .getFolderAbsolutePath("data") + File.separator + "datasets" + File.separator + "";
         String metadataFileName = datasetFolderName + File.separator + "metadata" + File.separator + "metadata.db3";
         SqliteDatabaseConnection dcSQLiteConnection = new SqliteDatabaseConnection(metadataFileName);

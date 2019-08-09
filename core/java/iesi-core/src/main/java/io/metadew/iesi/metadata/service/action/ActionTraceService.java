@@ -26,9 +26,9 @@ public class ActionTraceService {
     private ActionParameterTraceConfiguration actionParameterTraceConfiguration;
     private static final Logger logger = LogManager.getLogger();
 
-    public ActionTraceService(MetadataControl metadataControl) {
-        this.actionTraceConfiguration = new ActionTraceConfiguration(metadataControl);
-        this.actionParameterTraceConfiguration = new ActionParameterTraceConfiguration(metadataControl);
+    public ActionTraceService() {
+        this.actionTraceConfiguration = new ActionTraceConfiguration();
+        this.actionParameterTraceConfiguration = new ActionParameterTraceConfiguration();
     }
 
     public void trace(ActionExecution actionExecution, Map<String, ActionParameterOperation> actionParameterOperationMap) {

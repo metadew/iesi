@@ -6,6 +6,8 @@ import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.GenerationControlRuleParameter;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -18,6 +20,7 @@ public class Print {
     private String generationControlRuleTypeName = "print";
     private String output = "";
 
+    private static final Logger LOGGER = LogManager.getLogger();
     // Parameters
     private GenerationControlRuleParameterExecution value;
 
@@ -31,8 +34,7 @@ public class Print {
     //
     public boolean execute() {
         try {
-            this.getFrameworkExecution().getFrameworkLog()
-                    .log("generation.control.rule.type=" + this.getGenerationControlRuleTypeName(), Level.INFO);
+            LOGGER.warn("generation.control.rule.type=" + this.getGenerationControlRuleTypeName(), Level.INFO);
 
             // Reset Parameters
             this.setValue(new GenerationControlRuleParameterExecution(this.getFrameworkExecution(), this.getExecutionControl(),

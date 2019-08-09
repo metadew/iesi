@@ -7,6 +7,8 @@ import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.DataObject;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 
@@ -16,6 +18,7 @@ public class RestoreTargetOperation {
     private ExecutionControl executionControl;
     private Long processId;
     private String dataFileLocation;
+    private static final Logger LOGGER = LogManager.getLogger();
 
     // Constructors
     public RestoreTargetOperation(FrameworkExecution frameworkExecution, ExecutionControl executionControl) {
@@ -25,8 +28,7 @@ public class RestoreTargetOperation {
 
     // Methods
     public void execute(String dataFile) {
-        this.getFrameworkExecution().getFrameworkLog()
-                .log("restore.file=" + dataFile, Level.INFO);
+        LOGGER.info("restore.file=" + dataFile);
 
         try {
             // Parse input file
@@ -42,14 +44,14 @@ public class RestoreTargetOperation {
                     restoreTableOperation.execute();
 
                 } else {
-                    this.getFrameworkExecution().getFrameworkLog().log("restore.error.object.type.invalid" + dataFile, Level.ERROR);
+                    LOGGER.error("restore.error.object.type.invalid" + dataFile);
                 }
 
             } catch (Exception e) {
-                this.getFrameworkExecution().getFrameworkLog().log("restore.error.file.read" + dataFile, Level.ERROR);
+                LOGGER.error("restore.error.file.read" + dataFile);
             }
         } catch (Exception e) {
-            this.getFrameworkExecution().getFrameworkLog().log("restore.error.file.parse" + dataFile, Level.ERROR);
+            LOGGER.error("restore.error.file.parse" + dataFile);
         } finally {
             // Log End
             // this.getEoControl().endExecution(this);

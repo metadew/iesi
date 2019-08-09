@@ -3,6 +3,9 @@ package io.metadew.iesi.framework.crypto;
 import io.metadew.iesi.framework.crypto.algo.AESGCMEncrypt;
 import io.metadew.iesi.framework.crypto.tools.CryptoTools;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.execution.FrameworkLog;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +14,7 @@ import java.util.List;
 public class FrameworkCrypto {
 
 	private AESGCMEncrypt aesGcmEncrypt;
-
+	private static final Logger LOGGER = LogManager.getLogger();
 
 	private static FrameworkCrypto INSTANCE;
 
@@ -149,7 +152,7 @@ public class FrameworkCrypto {
 			replaceValue = this.decrypt(variable_char + midBit + variable_char_close);
 			if (replaceValue != null) {
 				input = input.replace(variable_char + midBit + variable_char_close, replaceValue);
-				frameworkExecution.getFrameworkLog().getEncryptionRedactionList().add(replaceValue);
+				FrameworkLog.getInstance().getEncryptionRedactionList().add(replaceValue);
 			}
 			temp = temp.substring(closePos + 1, temp.length());
 

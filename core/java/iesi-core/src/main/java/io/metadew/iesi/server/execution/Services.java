@@ -17,7 +17,9 @@ public class Services {
         // Create the framework instance
         FrameworkInitializationFile frameworkInitializationFile = new FrameworkInitializationFile();
         frameworkInitializationFile.setName(initializationFile);
-        this.setFrameworkInstance(new FrameworkInstance(frameworkInitializationFile));
+        FrameworkInstance frameworkInstance = FrameworkInstance.getInstance();
+        frameworkInstance.init(frameworkInitializationFile);
+        this.setFrameworkInstance(frameworkInstance);
 
         // Create the framework settings
         //FrameworkExecutionSettings frameworkExecutionSettings = new FrameworkExecutionSettings("");

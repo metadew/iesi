@@ -9,6 +9,8 @@ import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -25,6 +27,7 @@ public class EvalAssertEquals {
     private ActionParameterOperation expectedValue;
     private ActionParameterOperation actualValue;
     private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
+    private static final Logger LOGGER = LogManager.getLogger();
 
     // Constructors
     public EvalAssertEquals() {
@@ -98,8 +101,8 @@ public class EvalAssertEquals {
         if (actualValue instanceof Text) {
             return actualValue.toString();
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for actualValue",
-                    actualValue.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for actualValue",
+                    actualValue.getClass()));
             return actualValue.toString();
         }
     }
@@ -108,8 +111,8 @@ public class EvalAssertEquals {
         if (expectedValue instanceof Text) {
             return expectedValue.toString();
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for expectedValue",
-                    expectedValue.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for expectedValue",
+                    expectedValue.getClass()));
             return expectedValue.toString();
         }
     }

@@ -23,8 +23,8 @@ public class ActionTraceConfiguration extends Configuration<ActionTrace, ActionT
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public ActionTraceConfiguration(MetadataControl metadataControl) {
-        super(metadataControl);
+    public ActionTraceConfiguration() {
+        super();
     }
 
     @Override

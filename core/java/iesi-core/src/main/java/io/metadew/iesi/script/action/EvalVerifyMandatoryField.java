@@ -5,6 +5,7 @@ import io.metadew.iesi.connection.operation.ConnectionOperation;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.connection.Connection;
@@ -12,7 +13,8 @@ import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
-import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
@@ -53,6 +55,7 @@ public class EvalVerifyMandatoryField {
     private String sqlError;
 
     private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
+    private static final Logger LOGGER = LogManager.getLogger();
 
     // Constructors
     public EvalVerifyMandatoryField() {
@@ -152,7 +155,7 @@ public class EvalVerifyMandatoryField {
 
     private boolean verifyMandatoryField(String databaseName, String schemaName, String tableName, String fieldName, String evaluationFieldName, String evaluationFieldValue, boolean isMandatory, String connectionName) throws SQLException {
         // Get Connection
-        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution().getFrameworkInstance());
+        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(FrameworkInstance.getInstance());
         Connection connection = connectionConfiguration.getConnection(connectionName, this.getExecutionControl().getEnvName()).get();
         ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
         Database database = connectionOperation.getDatabase(connection);
@@ -193,8 +196,8 @@ public class EvalVerifyMandatoryField {
         if (isMandatory instanceof Text) {
             return isMandatory.toString().equalsIgnoreCase("y");
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for mandatory flag",
-                    isMandatory.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for mandatory flag",
+                    isMandatory.getClass()));
             return false;
         }
     }
@@ -203,8 +206,8 @@ public class EvalVerifyMandatoryField {
         if (evaluationFieldValue instanceof Text) {
             return evaluationFieldValue.toString();
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for evaluation field value",
-                    evaluationFieldValue.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for evaluation field value",
+                    evaluationFieldValue.getClass()));
             return evaluationFieldValue.toString();
         }
     }
@@ -213,8 +216,8 @@ public class EvalVerifyMandatoryField {
         if (evaluatonFieldName instanceof Text) {
             return evaluatonFieldName.toString();
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for evaluation field name",
-                    evaluatonFieldName.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for evaluation field name",
+                    evaluatonFieldName.getClass()));
             return evaluatonFieldName.toString();
         }
     }
@@ -224,8 +227,8 @@ public class EvalVerifyMandatoryField {
         if (tableName instanceof Text) {
             return tableName.toString();
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for table name",
-                    tableName.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for table name",
+                    tableName.getClass()));
             return tableName.toString();
         }
     }
@@ -234,8 +237,8 @@ public class EvalVerifyMandatoryField {
         if (fieldName instanceof Text) {
             return fieldName.toString();
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for field name",
-                    fieldName.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for field name",
+                    fieldName.getClass()));
             return fieldName.toString();
         }
     }
@@ -244,8 +247,8 @@ public class EvalVerifyMandatoryField {
         if (schemaName instanceof Text) {
             return schemaName.toString();
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for schema name",
-                    schemaName.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for schema name",
+                    schemaName.getClass()));
             return schemaName.toString();
         }
     }
@@ -254,8 +257,8 @@ public class EvalVerifyMandatoryField {
         if (databaseName instanceof Text) {
             return databaseName.toString();
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for database name",
-                    databaseName.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for database name",
+                    databaseName.getClass()));
             return databaseName.toString();
         }
     }
@@ -264,8 +267,8 @@ public class EvalVerifyMandatoryField {
         if (connectionName instanceof Text) {
             return connectionName.toString();
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for connection name",
-                    connectionName.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for connection name",
+                    connectionName.getClass()));
             return connectionName.toString();
         }
     }

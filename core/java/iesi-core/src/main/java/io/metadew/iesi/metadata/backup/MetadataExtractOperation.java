@@ -7,8 +7,11 @@ import io.metadew.iesi.data.definition.DataTable;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.configuration.DataObjectConfiguration;
 import io.metadew.iesi.metadata.definition.MetadataTable;
+import io.metadew.iesi.metadata.execution.MetadataControl;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.File;
@@ -22,6 +25,7 @@ public class MetadataExtractOperation {
     private ExecutionControl executionControl;
     private Long processId;
     private String dataFileLocation;
+    private static final Logger LOGGER = LogManager.getLogger();
 
     // Constructors
     public MetadataExtractOperation(FrameworkExecution frameworkExecution, ExecutionControl executionControl) {
@@ -32,17 +36,16 @@ public class MetadataExtractOperation {
     // Methods
     @SuppressWarnings({"rawtypes", "unchecked"})
     public void execute(MetadataTable metadataTable, String outputFilePath) {
-        this.getFrameworkExecution().getFrameworkLog().log(
-                "metadata.extract.table=" + metadataTable.getName(), Level.INFO);
+        LOGGER.info("metadata.extract.table=" + metadataTable.getName());
 
         // Log Start
         // this.getEoControl().logStart(this);
         // this.setProcessId(this.getEoControl().getProcessId());
         // TODO
         String schemaName = "";
-        // this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getRepository().getDatabases().get("reader");
+        // MetadataControl.getInstance().getDesignMetadataRepository().getRepository().getDatabases().get("reader");
         //		.getMetadataTableConfiguration().getSchemaPrefix();
-        String tableNamePrefix = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNamePrefix();
+        String tableNamePrefix = MetadataControl.getInstance().getDesignMetadataRepository().getTableNamePrefix();
         String tableName = schemaName + tableNamePrefix + metadataTable.getName();
         DataTable dataTable = new DataTable();
         // Setting the table name without instance
@@ -54,7 +57,7 @@ public class MetadataExtractOperation {
 
             CachedRowSet crs = null;
             // TODO repo redesign
-            crs = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(query, "reader");
+            crs = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(query, "reader");
             ResultSetMetaData rsmd = crs.getMetaData();
             int cols = rsmd.getColumnCount();
             int rows = 1;
@@ -89,8 +92,7 @@ public class MetadataExtractOperation {
             // System.out.println(dataObjectConfiguration.getPrettyDataObjectJSON(dataTable));
 
         } catch (Exception e) {
-            this.getFrameworkExecution().getFrameworkLog().log(
-                    "metadata.extract.error", Level.INFO);
+            LOGGER.info("metadata.extract.error");
         } finally {
             // Log End
             // this.getEoControl().endExecution(this);

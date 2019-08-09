@@ -8,6 +8,7 @@ import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.dataset.KeyValueDataset;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.connection.Connection;
@@ -16,6 +17,8 @@ import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
@@ -38,6 +41,7 @@ public class SqlExecuteProcedure {
     private ActionParameterOperation outputDataset;
     private ActionParameterOperation appendOutput;
     private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
+    private static final Logger LOGGER = LogManager.getLogger();
 
     // Constructors
     public SqlExecuteProcedure() {
@@ -121,7 +125,7 @@ public class SqlExecuteProcedure {
     private boolean execute(String sqlProcedure, String connectionName, String sqlParameters, String outputDatasetReferenceName, boolean appendOutput) throws SQLException {
 
         // Get Connection
-        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution().getFrameworkInstance());
+        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(FrameworkInstance.getInstance());
         Connection connection = connectionConfiguration
                 .getConnection(connectionName, this.getExecutionControl().getEnvName()).get();
         ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
@@ -165,8 +169,8 @@ public class SqlExecuteProcedure {
         if (sqlProcedure instanceof Text) {
             return sqlProcedure.toString();
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for sqlProcedure",
-                    sqlProcedure.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for sqlProcedure",
+                    sqlProcedure.getClass()));
             return sqlProcedure.toString();
         }
     }
@@ -175,8 +179,8 @@ public class SqlExecuteProcedure {
         if (sqlParameters instanceof Text) {
             return sqlParameters.toString();
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for sqlParameters",
-                    sqlParameters.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for sqlParameters",
+                    sqlParameters.getClass()));
             return sqlParameters.toString();
         }
     }
@@ -186,8 +190,8 @@ public class SqlExecuteProcedure {
         if (connectionName instanceof Text) {
             return connectionName.toString();
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for connection name",
-                    connectionName.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for connection name",
+                    connectionName.getClass()));
             return connectionName.toString();
         }
     }
@@ -197,8 +201,8 @@ public class SqlExecuteProcedure {
         if (appendOutput instanceof Text) {
             return appendOutput.toString().equalsIgnoreCase("y");
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for appendOutput",
-                    appendOutput.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for appendOutput",
+                    appendOutput.getClass()));
             return false;
         }
     }
@@ -207,8 +211,8 @@ public class SqlExecuteProcedure {
         if (datasetReferenceName instanceof Text) {
             return datasetReferenceName.toString();
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for dataset reference name",
-                    datasetReferenceName.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for dataset reference name",
+                    datasetReferenceName.getClass()));
             return datasetReferenceName.toString();
         }
     }

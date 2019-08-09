@@ -6,7 +6,9 @@ import io.metadew.iesi.connection.operation.ConnectionOperation;
 import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.text.Text;
+import io.metadew.iesi.framework.execution.FrameworkControl;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.connection.Connection;
@@ -15,6 +17,8 @@ import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.InputStream;
 import java.io.PrintWriter;
@@ -32,6 +36,7 @@ public class SqlExecuteStatement {
     private ActionParameterOperation sqlStatement;
     private ActionParameterOperation connectionName;
     private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
+    private static final Logger LOGGER = LogManager.getLogger();
 
     // Constructors
     public SqlExecuteStatement() {
@@ -95,7 +100,7 @@ public class SqlExecuteStatement {
 
     private boolean execute(String sqlStatement, String connectionName) {
         // Get Connection
-        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution().getFrameworkInstance());
+        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(FrameworkInstance.getInstance());
         Connection connection = connectionConfiguration
                 .getConnection(connectionName, this.getExecutionControl().getEnvName()).get();
         ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
@@ -113,7 +118,7 @@ public class SqlExecuteStatement {
 
         SqlScriptResult sqlScriptResult;
         InputStream inputStream = FileTools.convertToInputStream(sqlStatement,
-                this.getFrameworkExecution().getFrameworkControl());
+                FrameworkControl.getInstance());
         sqlScriptResult = database.executeScript(inputStream);
 
         // Evaluate result
@@ -132,8 +137,8 @@ public class SqlExecuteStatement {
         if (sqlStatement instanceof Text) {
             return sqlStatement.toString();
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for sql statement",
-                    sqlStatement.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for sql statement",
+                    sqlStatement.getClass()));
             return sqlStatement.toString();
         }
     }
@@ -143,8 +148,8 @@ public class SqlExecuteStatement {
         if (connectionName instanceof Text) {
             return connectionName.toString();
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for connection name",
-                    connectionName.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for connection name",
+                    connectionName.getClass()));
             return connectionName.toString();
         }
     }

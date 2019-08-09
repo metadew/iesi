@@ -7,7 +7,6 @@ import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -23,7 +22,6 @@ public abstract class Dataset extends DataType {
     private String name;
     private List<String> labels;
 
-    private final FrameworkFolderConfiguration frameworkFolderConfiguration;
     private Database datasetDatabase;
     private String tableName;
     private DatasetMetadata datasetMetadata;
@@ -31,20 +29,18 @@ public abstract class Dataset extends DataType {
 
     private final static Logger LOGGER = LogManager.getLogger();
 
-    public Dataset(DataType name, DataType labels, FrameworkFolderConfiguration frameworkFolderConfiguration, ExecutionRuntime executionRuntime) throws IOException, SQLException {
-        this.frameworkFolderConfiguration = frameworkFolderConfiguration;
+    public Dataset(DataType name, DataType labels, ExecutionRuntime executionRuntime) throws IOException, SQLException {
         this.executionRuntime = executionRuntime;
-        this.dataTypeService = new DataTypeService(frameworkFolderConfiguration, executionRuntime);
+        this.dataTypeService = new DataTypeService(executionRuntime);
         this.name = convertDatasetName(name);
         this.labels = convertDatasetLabels(labels);
         this.datasetDatabase = initializeDatasetConnection(this.name, this.labels);
     }
 
-    public Dataset(String name, List<String> labels, FrameworkFolderConfiguration frameworkFolderConfiguration, ExecutionRuntime executionRuntime) throws IOException, SQLException {
+    public Dataset(String name, List<String> labels, ExecutionRuntime executionRuntime) throws IOException, SQLException {
         LOGGER.trace(MessageFormat.format("Creating dataset ''{0}'' with labels {1}", name, labels.toString()));
-        this.frameworkFolderConfiguration = frameworkFolderConfiguration;
         this.executionRuntime = executionRuntime;
-        this.dataTypeService = new DataTypeService(frameworkFolderConfiguration, executionRuntime);
+        this.dataTypeService = new DataTypeService(executionRuntime);
         this.name = name;
         this.labels = labels;
         this.datasetDatabase = initializeDatasetConnection(name, labels);
@@ -69,8 +65,8 @@ public abstract class Dataset extends DataType {
                     .forEach(datasetLabel -> labels.add(convertDatasetLabel(datasetLabel)));
             return labels;
         } else {
-            executionRuntime.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format("dataset does not accept {0} as type for datasetDatabase labels",
-                    datasetLabels.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format("dataset does not accept {0} as type for datasetDatabase labels",
+                    datasetLabels.getClass()));
             return labels;
         }
     }
@@ -80,8 +76,8 @@ public abstract class Dataset extends DataType {
             String variablesResolved = executionRuntime.resolveVariables(datasetName.toString());
             return executionRuntime.resolveConceptLookup(executionRuntime.getExecutionControl(), variablesResolved, true).getValue();
         } else {
-            executionRuntime.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format("dataset does not accept {0} as type for datasetDatabase name",
-                    datasetName.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format("dataset does not accept {0} as type for datasetDatabase name",
+                    datasetName.getClass()));
             return datasetName.toString();
         }
     }
@@ -91,14 +87,14 @@ public abstract class Dataset extends DataType {
             String variablesResolved = executionRuntime.resolveVariables(datasetLabel.toString());
             return executionRuntime.resolveConceptLookup(executionRuntime.getExecutionControl(), variablesResolved, true).getValue();
         } else {
-            executionRuntime.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format("dataset does not accept {0} as type for a datasetDatabase label",
-                    datasetLabel.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format("dataset does not accept {0} as type for a datasetDatabase label",
+                    datasetLabel.getClass()));
             return datasetLabel.toString();
         }
     }
 
     private Database initializeDatasetConnection(String datasetName, List<String> labels) throws SQLException, IOException {
-        datasetMetadata = new DatasetMetadata(datasetName, executionRuntime, frameworkFolderConfiguration);
+        datasetMetadata = new DatasetMetadata(datasetName, executionRuntime);
         if (labels.isEmpty()) {
             return null;
         }
@@ -139,10 +135,6 @@ public abstract class Dataset extends DataType {
 
     public DatasetMetadata getDatasetMetadata() {
         return datasetMetadata;
-    }
-
-    public FrameworkFolderConfiguration getFrameworkFolderConfiguration() {
-        return frameworkFolderConfiguration;
     }
 
     public ExecutionRuntime getExecutionRuntime() {

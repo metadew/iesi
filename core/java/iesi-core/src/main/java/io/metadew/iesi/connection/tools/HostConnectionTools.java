@@ -3,6 +3,7 @@ package io.metadew.iesi.connection.tools;
 import io.metadew.iesi.connection.HostConnection;
 import io.metadew.iesi.connection.operation.ConnectionOperation;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import org.apache.commons.lang3.SystemUtils;
@@ -17,7 +18,7 @@ public final class HostConnectionTools {
         } else if (connectionName.equalsIgnoreCase("localhost")) {
             isOnLocalhost = true;
         } else {
-            ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(frameworkExecution.getFrameworkInstance());
+            ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(FrameworkInstance.getInstance());
             Connection connection = connectionConfiguration
                     .getConnection(connectionName, environmentName).get();
             ConnectionOperation connectionOperation = new ConnectionOperation(frameworkExecution);

@@ -2,6 +2,7 @@ package io.metadew.iesi.launch;
 
 import io.metadew.iesi.data.generation.execution.GenerationExecution;
 import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
+import io.metadew.iesi.framework.execution.FrameworkControl;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.framework.execution.FrameworkExecutionContext;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
@@ -10,6 +11,8 @@ import io.metadew.iesi.metadata.definition.Context;
 import io.metadew.iesi.metadata.definition.Generation;
 import org.apache.commons.cli.*;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -19,6 +22,7 @@ import java.lang.reflect.InvocationTargetException;
  * @author peter.billen
  */
 public class GenerationLauncher {
+	private static final Logger LOGGER = LogManager.getLogger();
 
 	public static void main(String[] args) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
 		
@@ -122,29 +126,30 @@ public class GenerationLauncher {
 		FrameworkInitializationFile frameworkInitializationFile = new FrameworkInitializationFile();
 		frameworkInitializationFile.setName(initializationFile);
 
-		FrameworkInstance frameworkInstance = new FrameworkInstance(frameworkInitializationFile);
+		FrameworkInstance frameworkInstance = FrameworkInstance.getInstance();
+		frameworkInstance.init(frameworkInitializationFile);
 
 		// Create the framework execution
 		Context context = new Context();
 		context.setName("generation");
 		context.setScope(generationName);
-		FrameworkExecution frameworkExecution = new FrameworkExecution(frameworkInstance, new FrameworkExecutionContext(context), null);
+		FrameworkExecution frameworkExecution = new FrameworkExecution(new FrameworkExecutionContext(context));
 		
 		// Logging
-		frameworkExecution.getFrameworkLog().log("option.generation=" + generationName, Level.INFO);
-		frameworkExecution.getFrameworkLog().log("option.output=" + outputName, Level.INFO);
-		frameworkExecution.getFrameworkLog().log("option.records=" + records, Level.INFO);
-		frameworkExecution.getFrameworkLog().log("option.paramlist=" + paramList, Level.INFO);
-		frameworkExecution.getFrameworkLog().log("option.paramfile=" + paramFile, Level.INFO);
-		frameworkExecution.getFrameworkLog().log("option.settings=" + settings, Level.INFO);
+		LOGGER.info("option.generation=" + generationName);
+		LOGGER.info("option.output=" + outputName);
+		LOGGER.info("option.records=" + records);
+		LOGGER.info("option.paramlist=" + paramList);
+		LOGGER.info("option.paramfile=" + paramFile);
+		LOGGER.info("option.settings=" + settings);
 
 		// Set specific settings
 		if (!settings.equalsIgnoreCase("")) {
-			frameworkExecution.getFrameworkControl().setSettingsList(settings);
+			FrameworkControl.getInstance().setSettingsList(settings);
 		}
 		
 		// Get the Generation
-		GenerationConfiguration generationConfiguration = new GenerationConfiguration(frameworkExecution.getFrameworkInstance());
+		GenerationConfiguration generationConfiguration = new GenerationConfiguration(frameworkInstance);
 		Generation generation = generationConfiguration.getGeneration(generationName);
 		GenerationExecution eoGeneration = new GenerationExecution(frameworkExecution, generation);
 		

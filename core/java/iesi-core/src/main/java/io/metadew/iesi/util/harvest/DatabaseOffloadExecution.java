@@ -22,13 +22,14 @@ public class DatabaseOffloadExecution {
     // Constructors
     public DatabaseOffloadExecution() {
         // Create the framework instance
-        FrameworkInstance frameworkInstance = new FrameworkInstance();
+        FrameworkInstance frameworkInstance = FrameworkInstance.getInstance();
+        frameworkInstance.init();
 
         // Create the framework execution
         Context context = new Context();
         context.setName("offload");
         context.setScope("");
-        this.setFrameworkExecution(new FrameworkExecution(frameworkInstance, new FrameworkExecutionContext(context), null));
+        this.setFrameworkExecution(new FrameworkExecution(new FrameworkExecutionContext(context)));
     }
 
     // Methods
@@ -37,7 +38,7 @@ public class DatabaseOffloadExecution {
 
         // Get Connection
         ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
-        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution().getFrameworkInstance());
+        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(FrameworkInstance.getInstance());
 
         Connection sourceConnection = connectionConfiguration.getConnection(sourceConnectionName, sourceEnvironmentName).get();
         Database sourceDatabase = connectionOperation.getDatabase(sourceConnection);

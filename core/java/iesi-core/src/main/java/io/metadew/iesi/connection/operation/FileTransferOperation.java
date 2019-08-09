@@ -9,8 +9,11 @@ import io.metadew.iesi.connection.operation.filetransfer.FileToTransfer;
 import io.metadew.iesi.connection.operation.filetransfer.FileTransferResult;
 import io.metadew.iesi.connection.operation.filetransfer.FileTransfered;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.execution.FrameworkLog;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -21,6 +24,7 @@ import java.util.Vector;
 public class FileTransferOperation {
 
     private FrameworkExecution frameworkExecution;
+    private static final Logger LOGGER = LogManager.getLogger();
 
     public FileTransferOperation(FrameworkExecution frameworkExecution) {
         this.setFrameworkExecution(frameworkExecution);
@@ -35,9 +39,9 @@ public class FileTransferOperation {
         List<FileTransfered> fileTransferedList = new ArrayList();
         ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
         HostConnection sourceConnectionConnection = connectionOperation.getHostConnection(sourceConnection);
-        this.getFrameworkExecution().getFrameworkLog().log("fho.transfer.source.connection=" + sourceConnection.getName(), Level.TRACE);
+        LOGGER.trace("fho.transfer.source.connection=" + sourceConnection.getName());
         HostConnection targetConnectionConnection = connectionOperation.getHostConnection(targetConnection);
-        this.getFrameworkExecution().getFrameworkLog().log("fho.transfer.target.connection=" + targetConnection.getName(), Level.TRACE);
+        LOGGER.trace("fho.transfer.target.connection=" + targetConnection.getName());
 
         try {
             String filepath = sourceFilePath + File.separator + sourceFileName;
@@ -64,7 +68,7 @@ public class FileTransferOperation {
                         c.put(file.getName(), file.getName());
                         FileTransfered fileTransfered = new FileTransfered(sourceFilePath, file.getName(),
                                 targetFilePath, file.getName());
-                        this.getFrameworkExecution().getFrameworkLog().log(fileTransfered, Level.TRACE);
+                        FrameworkLog.getInstance().log(fileTransfered, Level.TRACE);
                         fileTransferedList.add(fileTransfered);
                         filepath = sourceFilePath + File.separator + file.getName();
                     }
@@ -87,7 +91,7 @@ public class FileTransferOperation {
                         c.put(file.getName(), file.getName());
                         FileTransfered fileTransfered = new FileTransfered(sourceFilePath, file.getName(),
                                 targetFilePath, file.getName());
-                        this.getFrameworkExecution().getFrameworkLog().log(fileTransfered, Level.TRACE);
+                        FrameworkLog.getInstance().log(fileTransfered, Level.TRACE);
                         fileTransferedList.add(fileTransfered);
                         filepath = sourceFilePath + File.separator + file.getName();
                     }
@@ -110,7 +114,7 @@ public class FileTransferOperation {
                         c.put(file.getName(), targetFileName);
                         FileTransfered fileTransfered = new FileTransfered(sourceFilePath, file.getName(),
                                 targetFilePath, targetFileName);
-                        this.getFrameworkExecution().getFrameworkLog().log(fileTransfered, Level.TRACE);
+                        FrameworkLog.getInstance().log(fileTransfered, Level.TRACE);
                         fileTransferedList.add(fileTransfered);
                         filepath = sourceFileName + File.separator + file.getName();
                     }
@@ -136,9 +140,9 @@ public class FileTransferOperation {
         List<FileTransfered> fileTransferedList = new ArrayList();
         ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
         HostConnection sourceConnectionConnection = connectionOperation.getHostConnection(sourceConnection);
-        this.getFrameworkExecution().getFrameworkLog().log("fho.transfer.source.connection=" + sourceConnection.getName(), Level.TRACE);
+        LOGGER.trace("fho.transfer.source.connection=" + sourceConnection.getName());
         HostConnection targetConnectionConnection = connectionOperation.getHostConnection(targetConnection);
-        this.getFrameworkExecution().getFrameworkLog().log("fho.transfer.target.connection=" + targetConnection.getName(), Level.TRACE);
+        LOGGER.trace("fho.transfer.target.connection=" + targetConnection.getName());
 
         try {
             String filepath = targetFilePath + File.separator + targetFileName;
@@ -183,7 +187,7 @@ public class FileTransferOperation {
                             c.get(fileToTransfer.getFileName(), fileToTransfer.getFileName());
                             FileTransfered fileTransfered = new FileTransfered(sourceFilePath,
                                     fileToTransfer.getFileName(), targetFilePath, fileToTransfer.getFileName());
-                            this.getFrameworkExecution().getFrameworkLog().log(fileTransfered, Level.TRACE);
+                            FrameworkLog.getInstance().log(fileTransfered, Level.TRACE);
                             fileTransferedList.add(fileTransfered);
                             filepath = sourceFilePath + "/" + fileToTransfer.getFileName();
                         }
@@ -218,7 +222,7 @@ public class FileTransferOperation {
                             c.get(fileToTransfer.getFileName(), fileToTransfer.getFileName());
                             FileTransfered fileTransfered = new FileTransfered(sourceFilePath,
                                     fileToTransfer.getFileName(), targetFilePath, fileToTransfer.getFileName());
-                            this.getFrameworkExecution().getFrameworkLog().log(fileTransfered, Level.TRACE);
+                            FrameworkLog.getInstance().log(fileTransfered, Level.TRACE);
                             fileTransferedList.add(fileTransfered);
                             filepath = sourceFilePath + "/" + fileToTransfer.getFileName();
                         }
@@ -252,7 +256,7 @@ public class FileTransferOperation {
                             c.get(fileToTransfer.getFileName(), targetFileName);
                             FileTransfered fileTransfered = new FileTransfered(sourceFilePath,
                                     fileToTransfer.getFileName(), targetFilePath, targetFileName);
-                            this.getFrameworkExecution().getFrameworkLog().log(fileTransfered, Level.TRACE);
+                            FrameworkLog.getInstance().log(fileTransfered, Level.TRACE);
                             fileTransferedList.add(fileTransfered);
                             filepath = sourceFilePath + "/" + targetFileName;
                         }

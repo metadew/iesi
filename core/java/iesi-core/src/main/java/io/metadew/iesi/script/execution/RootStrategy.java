@@ -2,6 +2,7 @@ package io.metadew.iesi.script.execution;
 
 import io.metadew.iesi.framework.execution.IESIMessage;
 import io.metadew.iesi.metadata.definition.action.Action;
+import io.metadew.iesi.metadata.execution.MetadataControl;
 import io.metadew.iesi.script.operation.ActionSelectOperation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,10 +22,10 @@ public class RootStrategy implements RootingStrategy {
     @Override
     public void prepareExecution(ScriptExecution scriptExecution) {
         scriptExecution.getExecutionControl().setEnvName(environment);
-        scriptExecution.getExecutionControl().getExecutionRuntime().setRuntimeVariablesFromList(scriptExecution, scriptExecution.getFrameworkExecution().getMetadataControl()
+        scriptExecution.getExecutionControl().getExecutionRuntime().setRuntimeVariablesFromList(scriptExecution, MetadataControl.getInstance()
                 .getConnectivityMetadataRepository()
                 .executeQuery("select env_par_nm, env_par_val from "
-                        + scriptExecution.getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("EnvironmentParameters")
+                        + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("EnvironmentParameters")
                         + " where env_nm = '" + scriptExecution.getExecutionControl().getEnvName() + "' order by env_par_nm asc, env_par_val asc", "reader"));
     }
 

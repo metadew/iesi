@@ -8,7 +8,6 @@ import io.metadew.iesi.metadata.configuration.exception.script.ScriptDesignTrace
 import io.metadew.iesi.metadata.configuration.exception.script.ScriptDesignTraceDoesNotExistException;
 import io.metadew.iesi.metadata.definition.script.ScriptDesignTrace;
 import io.metadew.iesi.metadata.definition.script.key.ScriptDesignTraceKey;
-import io.metadew.iesi.metadata.execution.MetadataControl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -24,8 +23,8 @@ public class ScriptDesignTraceConfiguration extends Configuration<ScriptDesignTr
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	// Constructors
-	public ScriptDesignTraceConfiguration(MetadataControl metadataControl) {
-		super(metadataControl);
+	public ScriptDesignTraceConfiguration() {
+		super();
 	}
 
 

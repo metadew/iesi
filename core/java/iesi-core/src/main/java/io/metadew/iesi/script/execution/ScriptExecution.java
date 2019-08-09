@@ -1,6 +1,7 @@
 package io.metadew.iesi.script.execution;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.metadew.iesi.framework.execution.FrameworkControl;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.script.Script;
@@ -419,7 +420,7 @@ public abstract class ScriptExecution {
 	}
 
 	public void setParamFile(String paramFile) {
-		this.paramFile = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(paramFile);
+		this.paramFile = FrameworkControl.getInstance().resolveConfiguration(paramFile);
 	}
 
 	public Long getProcessId() {

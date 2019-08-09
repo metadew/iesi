@@ -1,5 +1,6 @@
 package io.metadew.iesi.script.execution.instruction.lookup;
 
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.EnvironmentParameterConfiguration;
 import io.metadew.iesi.script.execution.ExecutionControl;
 
@@ -36,8 +37,7 @@ public class EnvironmentLookup implements LookupInstruction {
         String environmentName = inputParameterMatcher.group(ENVIRONMENT_NAME_KEY);
         String environmentParameterName = inputParameterMatcher.group(ENVIRONMENT_PARAMETER_NAME_KEY);
 
-        EnvironmentParameterConfiguration environmentParameterConfiguration = new EnvironmentParameterConfiguration(
-                executionControl.getFrameworkExecution().getFrameworkInstance());
+        EnvironmentParameterConfiguration environmentParameterConfiguration = new EnvironmentParameterConfiguration(FrameworkInstance.getInstance());
         Optional<String> environmentParameterValue = environmentParameterConfiguration.getEnvironmentParameterValue(environmentName, environmentParameterName);
 
         if (!environmentParameterValue.isPresent()) {

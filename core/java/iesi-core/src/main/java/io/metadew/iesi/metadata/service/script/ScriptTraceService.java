@@ -20,10 +20,10 @@ public class ScriptTraceService {
     private ScriptParameterTraceConfiguration scriptParameterTraceConfiguration;
 
 
-    public ScriptTraceService(MetadataControl metadataControl) {
-        this.scriptTraceConfiguration = new ScriptTraceConfiguration(metadataControl);
-        this.scriptVersionTraceConfiguration = new ScriptVersionTraceConfiguration(metadataControl);
-        this.scriptParameterTraceConfiguration = new ScriptParameterTraceConfiguration(metadataControl);
+    public ScriptTraceService() {
+        this.scriptTraceConfiguration = new ScriptTraceConfiguration();
+        this.scriptVersionTraceConfiguration = new ScriptVersionTraceConfiguration();
+        this.scriptParameterTraceConfiguration = new ScriptParameterTraceConfiguration();
     }
 
     public void trace(ScriptExecution scriptExecution) {

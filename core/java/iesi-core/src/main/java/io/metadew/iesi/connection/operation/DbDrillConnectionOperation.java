@@ -4,6 +4,8 @@ import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.DrillDatabase;
 import io.metadew.iesi.connection.database.connection.DrillDatabaseConnection;
 import io.metadew.iesi.connection.tools.ConnectionTools;
+import io.metadew.iesi.framework.crypto.FrameworkCrypto;
+import io.metadew.iesi.framework.execution.FrameworkControl;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
@@ -41,23 +43,23 @@ public class DbDrillConnectionOperation {
 		for (ConnectionParameter connectionParameter : connection.getParameters()) {
 			if (connectionParameter.getName().equalsIgnoreCase("mode")) {
 				connectionMode = connectionParameter.getValue();
-				connectionMode = this.getFrameworkExecution().getFrameworkControl()
+				connectionMode = FrameworkControl.getInstance()
 						.resolveConfiguration(connectionMode);
 			} else if (connectionParameter.getName().equalsIgnoreCase("cluster")) {
 				clusterNames = connectionParameter.getValue();
-				clusterNames = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(clusterNames);
+				clusterNames = FrameworkControl.getInstance().resolveConfiguration(clusterNames);
 			} else if (connectionParameter.getName().equalsIgnoreCase("directory")) {
 				directoryName = connectionParameter.getValue();
-				directoryName = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(directoryName);
+				directoryName = FrameworkControl.getInstance().resolveConfiguration(directoryName);
 			} else if (connectionParameter.getName().equalsIgnoreCase("clusterId")) {
 				clusterId = connectionParameter.getValue();
-				clusterId = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(clusterId);
+				clusterId = FrameworkControl.getInstance().resolveConfiguration(clusterId);
 			} else if (connectionParameter.getName().equalsIgnoreCase("schema")) {
 				schemaName = connectionParameter.getValue();
-				schemaName = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(schemaName);
+				schemaName = FrameworkControl.getInstance().resolveConfiguration(schemaName);
 			} else if (connectionParameter.getName().equalsIgnoreCase("tries")) {
 				triesParameter = connectionParameter.getValue();
-				triesParameter = this.getFrameworkExecution().getFrameworkControl()
+				triesParameter = FrameworkControl.getInstance()
 						.resolveConfiguration(triesParameter);
 			}
 		}
@@ -99,17 +101,17 @@ public class DbDrillConnectionOperation {
 		for (ConnectionTypeParameter connectionTypeParameter : connectionType.getParameters()) {
 			if (connectionTypeParameter.getEncrypted().equalsIgnoreCase("y")) {
 				if (connectionTypeParameter.getName().equalsIgnoreCase("mode")) {
-					connectionMode = this.getFrameworkExecution().getFrameworkCrypto().decrypt(connectionMode);
+					connectionMode = FrameworkCrypto.getInstance().decrypt(connectionMode);
 				} else if (connectionTypeParameter.getName().equalsIgnoreCase("cluster")) {
-					clusterNames = this.getFrameworkExecution().getFrameworkCrypto().decrypt(clusterNames);
+					clusterNames = FrameworkCrypto.getInstance().decrypt(clusterNames);
 				} else if (connectionTypeParameter.getName().equalsIgnoreCase("directory")) {
-					directoryName = this.getFrameworkExecution().getFrameworkCrypto().decrypt(directoryName);
+					directoryName = FrameworkCrypto.getInstance().decrypt(directoryName);
 				} else if (connectionTypeParameter.getName().equalsIgnoreCase("clusterId")) {
-					clusterId = this.getFrameworkExecution().getFrameworkCrypto().decrypt(clusterId);
+					clusterId = FrameworkCrypto.getInstance().decrypt(clusterId);
 				} else if (connectionTypeParameter.getName().equalsIgnoreCase("schema")) {
-					schemaName = this.getFrameworkExecution().getFrameworkCrypto().decrypt(triesParameter);
+					schemaName = FrameworkCrypto.getInstance().decrypt(triesParameter);
 				} else if (connectionTypeParameter.getName().equalsIgnoreCase("tries")) {
-					triesParameter = this.getFrameworkExecution().getFrameworkCrypto().decrypt(userName);
+					triesParameter = FrameworkCrypto.getInstance().decrypt(userName);
 				}
 			}
 		}

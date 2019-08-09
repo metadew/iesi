@@ -82,7 +82,8 @@ public class ConnectionLauncher {
             if (line.hasOption("ini")) {
                 frameworkInitializationFile.setName(line.getOptionValue("ini"));
                 System.out.println("Option -ini (ini) value = " + frameworkInitializationFile.getName());
-                frameworkInstance = new FrameworkInstance(frameworkInitializationFile);
+                frameworkInstance = FrameworkInstance.getInstance();
+                frameworkInstance.init(frameworkInitializationFile);
             } else if (line.hasOption("config")) {
             	configFile = line.getOptionValue("config");
             }
@@ -93,7 +94,7 @@ public class ConnectionLauncher {
             ObjectMapper objectMapper = new ObjectMapper();
             Connection connection = objectMapper.convertValue(dataObjectOperation.getDataObject(), Connection.class);
             // TODO rework getting the connection
-            ConnectionOperation connectionOperation = new ConnectionOperation(new FrameworkExecution(null, null, null));
+            ConnectionOperation connectionOperation = new ConnectionOperation(new FrameworkExecution());
             Database database = connectionOperation.getDatabase(connection);
 
             if (database == null) {

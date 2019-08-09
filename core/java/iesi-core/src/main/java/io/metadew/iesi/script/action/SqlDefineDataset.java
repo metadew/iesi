@@ -11,6 +11,8 @@ import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -30,6 +32,7 @@ public class SqlDefineDataset {
     private ActionParameterOperation sqlStatement;
     private ActionParameterOperation sqlIdentifier;
     private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
+    private static final Logger LOGGER = LogManager.getLogger();
 
     // Constructors
     public SqlDefineDataset() {
@@ -125,8 +128,8 @@ public class SqlDefineDataset {
         if (identifierName instanceof Text) {
             return identifierName.toString();
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for identifierName",
-                    identifierName.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for identifierName",
+                    identifierName.getClass()));
             return identifierName.toString();
         }
     }
@@ -135,8 +138,8 @@ public class SqlDefineDataset {
         if (statementName instanceof Text) {
             return statementName.toString();
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for statementName",
-                    statementName.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for statementName",
+                    statementName.getClass()));
             return statementName.toString();
         }
     }
@@ -145,8 +148,8 @@ public class SqlDefineDataset {
         if (referenceName instanceof Text) {
             return referenceName.toString();
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for referenceName",
-                    referenceName.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for referenceName",
+                    referenceName.getClass()));
             return referenceName.toString();
         }
     }

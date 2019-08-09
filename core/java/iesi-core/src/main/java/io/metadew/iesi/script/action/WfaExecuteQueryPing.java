@@ -6,6 +6,7 @@ import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.connection.Connection;
@@ -13,7 +14,8 @@ import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
-import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
@@ -39,6 +41,8 @@ public class WfaExecuteQueryPing {
 
     private final int defaultWaitInterval = 1000;
     private final int defaultTimeoutInterval = -1;
+
+    private static final Logger LOGGER = LogManager.getLogger();
 
     // Constructors
     public WfaExecuteQueryPing() {
@@ -128,8 +132,8 @@ public class WfaExecuteQueryPing {
         if (waitInterval instanceof Text) {
             return Integer.parseInt(waitInterval.toString());
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for wait interval",
-                    waitInterval.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for wait interval",
+                    waitInterval.getClass()));
             return defaultWaitInterval;
         }
     }
@@ -141,15 +145,15 @@ public class WfaExecuteQueryPing {
         if (timeoutInterval instanceof Text) {
             return Integer.parseInt(timeoutInterval.toString());
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for timeout interval",
-                    timeoutInterval.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for timeout interval",
+                    timeoutInterval.getClass()));
             return defaultTimeoutInterval;
         }
     }
 
     private boolean executeQueryPing(String query, String connectionName, boolean hasResult, boolean setRuntimeVariables, int waitInterval, int timeoutInterval) {
         // Get Connection
-        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution().getFrameworkInstance());
+        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(FrameworkInstance.getInstance());
         Connection connection = connectionConfiguration.getConnection(connectionName,
                 this.getExecutionControl().getEnvName()).get();
         ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
@@ -211,8 +215,8 @@ public class WfaExecuteQueryPing {
         if (setRuntimeVariables instanceof Text) {
             return setRuntimeVariables.toString().equalsIgnoreCase("y");
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("wfa.executeQueryPing does not accept {0} as type for setRuntimeVariables",
-                    setRuntimeVariables.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format("wfa.executeQueryPing does not accept {0} as type for setRuntimeVariables",
+                    setRuntimeVariables.getClass()));
             return false;
         }
     }
@@ -222,8 +226,8 @@ public class WfaExecuteQueryPing {
         if (hasResult instanceof Text) {
             return hasResult.toString().equalsIgnoreCase("y");
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("wfa.executeQueryPing does not accept {0} as type for expect result",
-                    hasResult.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format("wfa.executeQueryPing does not accept {0} as type for expect result",
+                    hasResult.getClass()));
             return false;
         }
     }
@@ -232,8 +236,8 @@ public class WfaExecuteQueryPing {
         if (connectionName instanceof Text) {
             return connectionName.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("wfa.executeQueryPing does not accept {0} as type for connection name",
-                    connectionName.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format("wfa.executeQueryPing does not accept {0} as type for connection name",
+                    connectionName.getClass()));
             return connectionName.toString();
         }
     }
@@ -242,8 +246,8 @@ public class WfaExecuteQueryPing {
         if (query instanceof Text) {
             return query.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("wfa.executeQueryPing does not accept {0} as type for query",
-                    query.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format("wfa.executeQueryPing does not accept {0} as type for query",
+                    query.getClass()));
             return query.toString();
         }
     }

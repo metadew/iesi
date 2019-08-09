@@ -11,6 +11,8 @@ import io.metadew.iesi.metadata.operation.MetadataRepositoryOperation;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import io.metadew.iesi.metadata.repository.MetadataRepositorySaveException;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.text.MessageFormat;
@@ -22,6 +24,7 @@ public class DataObjectConfiguration {
     private List<DataObject> dataObjects;
     private MetadataRepository metadataRepository;
     private MetadataRepositoryOperation metadataRepositoryOperation;
+    private static final Logger LOGGER = LogManager.getLogger();
 
     // Constructors
     public DataObjectConfiguration() {
@@ -115,7 +118,7 @@ public class DataObjectConfiguration {
             try {
                 this.getMetadataRepository().save(dataObject, getFrameworkExecution());
             } catch (MetadataRepositorySaveException e) {
-                frameworkExecution.getFrameworkLog().log(MessageFormat.format("Failed to save {0} to repository", dataObject.getType()), Level.WARN);
+                LOGGER.warn(MessageFormat.format("Failed to save {0} to repository", dataObject.getType()));
             } catch (Exception e) {
                 e.printStackTrace();
             }

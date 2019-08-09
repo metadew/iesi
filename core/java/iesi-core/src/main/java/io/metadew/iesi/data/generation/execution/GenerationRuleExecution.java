@@ -1,9 +1,13 @@
 package io.metadew.iesi.data.generation.execution;
 
+import io.metadew.iesi.framework.configuration.FrameworkConfiguration;
+import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.GenerationRule;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.Method;
 
@@ -15,6 +19,7 @@ public class GenerationRuleExecution {
 	private GenerationRule generationRule;
 	private Long processId;
 
+	private static final Logger LOGGER = LogManager.getLogger();
 	// Constructors
 	public GenerationRuleExecution(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
 			GenerationExecution generationExecution, GenerationRule generationRule) {
@@ -27,15 +32,15 @@ public class GenerationRuleExecution {
 	// Methods
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void execute() {
-		this.getFrameworkExecution().getFrameworkLog().log("generation.rule.name=" + this.getGenerationRule().getField()
-				+ " (ID=" + this.getGenerationRule().getId() + ")", Level.INFO);
+		LOGGER.info("generation.rule.name=" + this.getGenerationRule().getField()
+				+ " (ID=" + this.getGenerationRule().getId() + ")");
 
 		// Log Start
 		// this.getExecutionControl().logStart(this);
 		this.setProcessId(0L);
 
 		try {
-			String className = this.getFrameworkExecution().getFrameworkConfiguration().getGenerationRuleTypeConfiguration()
+			String className = FrameworkConfiguration.getInstance().getGenerationRuleTypeConfiguration()
 					.getGenerationRuleTypeClass(this.getGenerationRule().getType());
 			// TODO add log
 			// this.getExecutionControl().logMessage(this, "generation.rule.type=" + this.getGenerationRule().getType(), Level.DEBUG);
@@ -60,9 +65,8 @@ public class GenerationRuleExecution {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			this.getFrameworkExecution().getFrameworkLog().log("Exception during Executing Generation Rule (NAME) "
-					+ this.getGenerationRule().getField() + " (ID=" + this.getGenerationRule().getId() + ")",
-					Level.WARN);
+			LOGGER.warn("Exception during Executing Generation Rule (NAME) "
+					+ this.getGenerationRule().getField() + " (ID=" + this.getGenerationRule().getId() + ")");
 		} finally {
 			// Log End
 			// this.getExecutionControl().endExecution(this);

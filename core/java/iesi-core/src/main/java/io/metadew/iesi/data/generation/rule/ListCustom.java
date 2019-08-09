@@ -7,6 +7,8 @@ import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.GenerationRuleParameter;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -23,6 +25,7 @@ public class ListCustom {
 	// Parameters
 	private GenerationRuleParameterExecution items;
 	private GenerationRuleParameterExecution selectionType;
+	private static final Logger LOGGER = LogManager.getLogger();
 
 	// Constructors
 	public ListCustom() {
@@ -45,8 +48,7 @@ public class ListCustom {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public boolean execute() {
 		try {
-			this.getFrameworkExecution().getFrameworkLog()
-					.log("generation.rule.type=" + this.getGenerationRuleTypeName(), Level.INFO);
+			LOGGER.warn("generation.rule.type=" + this.getGenerationRuleTypeName(), Level.INFO);
 
 			// Reset Parameters
 			this.setItems(new GenerationRuleParameterExecution(this.getFrameworkExecution(), this.getEoControl(),

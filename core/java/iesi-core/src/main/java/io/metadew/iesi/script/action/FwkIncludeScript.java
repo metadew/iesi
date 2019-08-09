@@ -3,6 +3,7 @@ package io.metadew.iesi.script.action;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.script.ScriptConfiguration;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.script.Script;
@@ -10,7 +11,8 @@ import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
-import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -37,6 +39,8 @@ public class FwkIncludeScript {
 
     // Exposed Script
     private Script script;
+
+    private static final Logger LOGGER = LogManager.getLogger();
 
     // Constructors
     public FwkIncludeScript() {
@@ -96,7 +100,7 @@ public class FwkIncludeScript {
     }
 
     private boolean includeScript(String scriptName, Optional<Long> scriptVersion) {
-        ScriptConfiguration scriptConfiguration = new ScriptConfiguration(this.getFrameworkExecution().getFrameworkInstance());
+        ScriptConfiguration scriptConfiguration = new ScriptConfiguration(FrameworkInstance.getInstance());
         Script script = scriptVersion
                 .map(scriptVersion1 -> scriptConfiguration.get(scriptName, scriptVersion1))
                 .orElse(scriptConfiguration.get(scriptName)).get();
@@ -112,8 +116,8 @@ public class FwkIncludeScript {
         if (scriptVersion instanceof Text) {
             return Optional.of(Long.parseLong(scriptVersion.toString()));
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for script name",
-                    scriptVersion.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for script name",
+                    scriptVersion.getClass()));
             return Optional.empty();
         }
     }
@@ -123,8 +127,8 @@ public class FwkIncludeScript {
         if (scriptName instanceof Text) {
             return scriptName.toString();
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for script name",
-                    scriptName.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for script name",
+                    scriptName.getClass()));
             return scriptName.toString();
         }
     }

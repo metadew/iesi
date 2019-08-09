@@ -9,6 +9,8 @@ import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -26,6 +28,7 @@ public class FwkSetParameterValue {
     private ActionParameterOperation operationName;
     private ActionParameterOperation operationValue;
     private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
+    private static final Logger LOGGER = LogManager.getLogger();
 
     // Constructors
     public FwkSetParameterValue() {
@@ -93,8 +96,8 @@ public class FwkSetParameterValue {
         if (value instanceof Text) {
             return value.toString();
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for value",
-                    value.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for value",
+                    value.getClass()));
             return value.toString();
         }
     }
@@ -103,8 +106,8 @@ public class FwkSetParameterValue {
         if (name instanceof Text) {
             return name.toString();
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for name",
-                    name.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for name",
+                    name.getClass()));
             return name.toString();
         }
     }

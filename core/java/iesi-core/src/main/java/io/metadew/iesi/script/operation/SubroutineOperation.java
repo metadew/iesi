@@ -2,6 +2,7 @@ package io.metadew.iesi.script.operation;
 
 import io.metadew.iesi.common.list.ListTools;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.SubroutineConfiguration;
 import io.metadew.iesi.metadata.definition.Subroutine;
 
@@ -113,7 +114,7 @@ public class SubroutineOperation {
 
     public void setValid(boolean valid) {
         if (valid) {
-            SubroutineConfiguration subroutineConfiguration = new SubroutineConfiguration(this.getFrameworkExecution().getFrameworkInstance());
+            SubroutineConfiguration subroutineConfiguration = new SubroutineConfiguration(FrameworkInstance.getInstance());
             this.setSubroutine(subroutineConfiguration.getSubroutine(this.getName()));
 
             if (this.getSubroutine().getName() == null) {

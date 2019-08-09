@@ -4,6 +4,7 @@ import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.dataset.Dataset;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.MappingConfiguration;
 import io.metadew.iesi.metadata.definition.Mapping;
 import io.metadew.iesi.metadata.definition.Transformation;
@@ -13,6 +14,8 @@ import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -35,6 +38,7 @@ public class DataCompareDataset {
     private ActionParameterOperation rightDatasetName;
     private ActionParameterOperation mappingName;
     private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
+    private static final Logger LOGGER = LogManager.getLogger();
 
     // Constructors
     public DataCompareDataset() {
@@ -108,7 +112,7 @@ public class DataCompareDataset {
 
 
         long errorsDetected = 0;
-        MappingConfiguration mappingConfiguration = new MappingConfiguration(this.getFrameworkExecution().getFrameworkInstance());
+        MappingConfiguration mappingConfiguration = new MappingConfiguration(FrameworkInstance.getInstance());
         Mapping mapping = mappingConfiguration.getMapping(mappingName);
         for (Transformation transformation : mapping.getTransformations()) {
 
@@ -138,8 +142,8 @@ public class DataCompareDataset {
         if (datasetName instanceof Text) {
             return datasetName.toString();
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() +  " does not accept {0} as type for dataset name",
-                    datasetName.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() +  " does not accept {0} as type for dataset name",
+                    datasetName.getClass()));
             return datasetName.toString();
         }
     }
@@ -148,8 +152,8 @@ public class DataCompareDataset {
         if (mappingName instanceof Text) {
             return mappingName.toString();
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() +  " does not accept {0} as type for mapping name",
-                    mappingName.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() +  " does not accept {0} as type for mapping name",
+                    mappingName.getClass()));
             return mappingName.toString();
         }
     }

@@ -7,6 +7,8 @@ import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.GenerationControlRule;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.*;
 
@@ -16,6 +18,7 @@ public class Header {
     private FrameworkExecution frameworkExecution;
     private ExecutionControl executionControl;
     private String generationControlTypeName = "header";
+    private static final Logger LOGGER = LogManager.getLogger();
 
     // Parameters
 
@@ -30,8 +33,7 @@ public class Header {
     //
     public boolean execute(String fullFileName) {
         try {
-            this.getFrameworkExecution().getFrameworkLog()
-                    .log("generation.control.type=" + this.generationControlTypeName, Level.INFO);
+            LOGGER.info("generation.control.type=" + this.generationControlTypeName);
 
             // Reset Parameters
 

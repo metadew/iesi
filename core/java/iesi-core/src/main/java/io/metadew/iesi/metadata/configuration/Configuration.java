@@ -19,8 +19,8 @@ public abstract class Configuration<T extends Metadata, V extends MetadataKey> {
 
     // TODO: change metadataControl to MetadataRepository
     // TODO: make singleton
-    public Configuration(MetadataControl metadataControl) {
-        this.metadataControl = metadataControl;
+    public Configuration() {
+        this.metadataControl = MetadataControl.getInstance();
     }
 
     public abstract Optional<T> get(V metadataKey) throws SQLException;

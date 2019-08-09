@@ -1,5 +1,6 @@
 package io.metadew.iesi.script.execution.instruction.lookup.script;
 
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.script.ScriptResultOutputConfiguration;
 import io.metadew.iesi.metadata.definition.script.ScriptResultOutput;
 import io.metadew.iesi.script.execution.ExecutionControl;
@@ -23,7 +24,7 @@ public class ScriptOutputLookup implements LookupInstruction {
     @Override
     public String generateOutput(String parameters) {
         ScriptResultOutputConfiguration scriptResultOutputConfiguration = new ScriptResultOutputConfiguration(
-                executionControl.getFrameworkExecution().getFrameworkInstance());
+                FrameworkInstance.getInstance());
         // TODO only for root scripts - extend to others
         Optional<ScriptResultOutput> scriptResultOutput = scriptResultOutputConfiguration.getScriptOutput(executionControl.getRunId(), 0, parameters.trim());
         if (!scriptResultOutput.isPresent()) {

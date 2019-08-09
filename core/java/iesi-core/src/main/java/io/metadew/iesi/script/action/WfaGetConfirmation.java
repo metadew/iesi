@@ -9,6 +9,8 @@ import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -28,6 +30,7 @@ public class WfaGetConfirmation {
     private ActionParameterOperation timeoutInterval;
     private final int defaultTimeoutInterval = 1000;
     private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
+    private static final Logger LOGGER = LogManager.getLogger();
 
     // Constructors
     public WfaGetConfirmation() {
@@ -120,8 +123,8 @@ public class WfaGetConfirmation {
         if (type instanceof Text) {
             return type.toString();
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for type",
-                    type.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for type",
+                    type.getClass()));
             return type.toString();
         }
     }
@@ -130,8 +133,8 @@ public class WfaGetConfirmation {
         if (question instanceof Text) {
             return question.toString();
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for question",
-                    question.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for question",
+                    question.getClass()));
             return question.toString();
         }
     }
@@ -144,8 +147,8 @@ public class WfaGetConfirmation {
         if (timeoutInterval instanceof Text) {
             return Integer.parseInt(timeoutInterval.toString());
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for timeout interval",
-                    timeoutInterval.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for timeout interval",
+                    timeoutInterval.getClass()));
             return defaultTimeoutInterval;
         }
     }

@@ -1,11 +1,9 @@
 package io.metadew.iesi.launch.operation;
 
 import io.metadew.iesi.connection.tools.FileTools;
+import io.metadew.iesi.framework.configuration.FrameworkSettingConfiguration;
 import io.metadew.iesi.framework.definition.FrameworkRunIdentifier;
-import io.metadew.iesi.framework.execution.FrameworkExecution;
-import io.metadew.iesi.framework.execution.FrameworkExecutionContext;
-import io.metadew.iesi.framework.execution.FrameworkExecutionSettings;
-import io.metadew.iesi.framework.execution.IESIMessage;
+import io.metadew.iesi.framework.execution.*;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.guard.configuration.UserAccessConfiguration;
 import io.metadew.iesi.guard.definition.UserAccess;
@@ -97,9 +95,7 @@ public final class ScriptLaunchOperation {
 		FrameworkExecutionSettings frameworkExecutionSettings = new FrameworkExecutionSettings(settings);
 		Context context = new Context("script", scriptName);
 
-		FrameworkExecution frameworkExecution = new FrameworkExecution(frameworkInstance,
-				new FrameworkExecutionContext(context), frameworkExecutionSettings,
-				frameworkInstance.getFrameworkInitializationFile(), frameworkRunIdentifier);
+		FrameworkExecution frameworkExecution = new FrameworkExecution(new FrameworkExecutionContext(context), frameworkExecutionSettings, frameworkRunIdentifier);
 
 		// Logging
 		LOGGER.info(new IESIMessage("option.script=" + scriptName));
@@ -117,8 +113,7 @@ public final class ScriptLaunchOperation {
 
 		// User authentication
 		// TODO: move outside server logic
-		if (frameworkExecution.getFrameworkControl().getProperty(frameworkExecution.getFrameworkConfiguration()
-				.getSettingConfiguration().getSettingPath("guard.authenticate").get()).equalsIgnoreCase("y")) {
+		if (FrameworkControl.getInstance().getProperty(FrameworkSettingConfiguration.getInstance().getSettingPath("guard.authenticate").get()).equalsIgnoreCase("y")) {
 
 			if (userName.isEmpty()) {
 				throw new RuntimeException("guard.user.name.missing");
@@ -143,7 +138,7 @@ public final class ScriptLaunchOperation {
 		// Get the Script
 		Optional<Script> script = Optional.empty();
 		if (executionMode.equalsIgnoreCase("script")) {
-			ScriptConfiguration scriptConfiguration = new ScriptConfiguration(frameworkExecution.getFrameworkInstance());
+			ScriptConfiguration scriptConfiguration = new ScriptConfiguration(FrameworkInstance.getInstance());
 			if (scriptVersionNumber == -1) {
 				script = scriptConfiguration.get(scriptName);
 			} else {

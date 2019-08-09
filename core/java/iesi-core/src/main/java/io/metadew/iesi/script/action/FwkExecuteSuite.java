@@ -7,7 +7,9 @@ import io.metadew.iesi.connection.tools.CompressionTools;
 import io.metadew.iesi.connection.tools.FolderTools;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.text.Text;
+import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.connection.Connection;
@@ -21,6 +23,8 @@ import io.metadew.iesi.script.operation.ActionSelectOperation;
 import io.metadew.iesi.script.operation.JsonInputOperation;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.PrintWriter;
@@ -51,6 +55,7 @@ public class FwkExecuteSuite {
     private ActionParameterOperation repositoryBuildAsset;
     private ActionParameterOperation environmentName;
     private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
+    private static final Logger LOGGER = LogManager.getLogger();
 
     // Constructors
     public FwkExecuteSuite() {
@@ -166,7 +171,7 @@ public class FwkExecuteSuite {
     @SuppressWarnings({ "rawtypes", "unchecked" })
 	private boolean execute(String componentName, String suiteName, String suiteVersion, String suiteBuild, String repositoryConnectionName, String repositoryComponentPath, String repositorySuitePath, String repositoryVersionPath, String repositoryBuildPath, String repositoryBuildAsset, String environmentName) {
         // Get Connection
-        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution().getFrameworkInstance());
+        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(FrameworkInstance.getInstance());
         Connection connection = connectionConfiguration.getConnection(repositoryConnectionName,
                 this.getExecutionControl().getEnvName()).get();
 
@@ -197,7 +202,7 @@ public class FwkExecuteSuite {
         resolvedRepositoryAssetPath += buildAsset;
 
         // Check folder structure
-        String rootSuiteFolder = this.getFrameworkExecution().getFrameworkConfiguration().getFolderConfiguration().getFolderAbsolutePath("run.cache") + File.separator + "suites";
+        String rootSuiteFolder = FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("run.cache") + File.separator + "suites";
         FolderTools.createFolder(rootSuiteFolder);
         String rootComponentFolder = rootSuiteFolder + File.separator + this.getComponentName().getValue();
         FolderTools.createFolder(rootComponentFolder);
@@ -259,8 +264,8 @@ public class FwkExecuteSuite {
         if (field instanceof Text) {
             return field.toString();
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for field",
-                    field.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for field",
+                    field.getClass()));
             return field.toString();
         }
     }

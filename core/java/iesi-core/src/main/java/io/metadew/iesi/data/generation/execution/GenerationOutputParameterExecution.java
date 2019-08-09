@@ -1,10 +1,13 @@
 package io.metadew.iesi.data.generation.execution;
 
 import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.type.GenerationOutputTypeParameterConfiguration;
 import io.metadew.iesi.metadata.definition.GenerationOutputTypeParameter;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class GenerationOutputParameterExecution {
 
@@ -14,6 +17,7 @@ public class GenerationOutputParameterExecution {
     private String name;
     private String value = "";
     private String inputValue = "";
+    private static final Logger LOGGER = LogManager.getLogger();
 
     private GenerationOutputTypeParameter generationOutputTypeParameter;
 
@@ -39,7 +43,7 @@ public class GenerationOutputParameterExecution {
 
     // Methods
     private void lookupGenerationOutputTypeParameter() {
-        GenerationOutputTypeParameterConfiguration generationOutputTypeParameterConfiguration = new GenerationOutputTypeParameterConfiguration(this.getFrameworkExecution().getFrameworkInstance());
+        GenerationOutputTypeParameterConfiguration generationOutputTypeParameterConfiguration = new GenerationOutputTypeParameterConfiguration(FrameworkInstance.getInstance());
         this.setGenerationOutputTypeParameter(generationOutputTypeParameterConfiguration.getGenerationOutputTypeParameter(this.getGenerationOutputTypeName(), this.getName()));
     }
 
@@ -76,8 +80,7 @@ public class GenerationOutputParameterExecution {
         this.inputValue = inputValue;
         this.setValue(inputValue);
 
-        this.getFrameworkExecution().getFrameworkLog().log("generation.output.parameter.set." + this.getName() + "=" + this.getValue(),
-                Level.DEBUG);
+        LOGGER.debug("generation.output.parameter.set." + this.getName() + "=" + this.getValue());
     }
 
     public GenerationOutputTypeParameter getGenerationOutputTypeParameter() {

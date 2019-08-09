@@ -4,6 +4,7 @@ import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeService;
 import io.metadew.iesi.datatypes.dataset.Dataset;
 import io.metadew.iesi.datatypes.text.Text;
+import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
 import io.metadew.iesi.script.execution.ExecutionControl;
 
 import java.text.MessageFormat;
@@ -25,7 +26,7 @@ public class DatasetLookup implements LookupInstruction {
 
     public DatasetLookup(ExecutionControl executionControl) {
         this.executionControl = executionControl;
-        this.dataTypeService = new DataTypeService(executionControl.getFrameworkExecution().getFrameworkConfiguration().getFolderConfiguration(), executionControl.getExecutionRuntime());
+        this.dataTypeService = new DataTypeService(executionControl.getExecutionRuntime());
     }
 
     @Override

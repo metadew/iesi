@@ -23,8 +23,8 @@ public class ActionParameterDesignTraceConfiguration extends Configuration<Actio
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public ActionParameterDesignTraceConfiguration(MetadataControl metadataControl) {
-        super(metadataControl);
+    public ActionParameterDesignTraceConfiguration() {
+        super();
     }
 
     @Override

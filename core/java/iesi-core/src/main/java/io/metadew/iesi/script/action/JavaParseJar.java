@@ -11,6 +11,8 @@ import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.PrintWriter;
@@ -34,6 +36,7 @@ public class JavaParseJar {
     private ActionParameterOperation fileName;
     private ActionParameterOperation connectionName;
     private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
+    private static final Logger LOGGER = LogManager.getLogger();
 
     // Constructors
     public JavaParseJar() {
@@ -124,8 +127,8 @@ public class JavaParseJar {
         if (connectionName instanceof Text) {
             return connectionName.toString();
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for connectionName",
-                    connectionName.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for connectionName",
+                    connectionName.getClass()));
             return connectionName.toString();
         }
     }
@@ -134,8 +137,8 @@ public class JavaParseJar {
         if (folderName instanceof Text) {
             return folderName.toString();
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for folderName",
-                    folderName.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for folderName",
+                    folderName.getClass()));
             return folderName.toString();
         }
     }
@@ -144,8 +147,8 @@ public class JavaParseJar {
         if (folderName instanceof Text) {
             return folderName.toString();
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for folderName",
-                    folderName.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for folderName",
+                    folderName.getClass()));
             return folderName.toString();
         }
     }

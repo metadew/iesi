@@ -3,10 +3,12 @@ package io.metadew.iesi.framework.execution;
 public class FrameworkExecutionSettings {
 
     private String settingsList = "";
-    ;
 
+    public FrameworkExecutionSettings() {
+        this("");
+    }
     public FrameworkExecutionSettings(String settingsList) {
-        this.setSettingsList(settingsList);
+        this.settingsList = settingsList;
     }
 
     // Getters and setters

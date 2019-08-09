@@ -4,6 +4,8 @@ import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.PrestoDatabase;
 import io.metadew.iesi.connection.database.connection.PrestoDatabaseConnection;
 import io.metadew.iesi.connection.tools.ConnectionTools;
+import io.metadew.iesi.framework.crypto.FrameworkCrypto;
+import io.metadew.iesi.framework.execution.FrameworkControl;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
@@ -40,22 +42,22 @@ public class DbPrestoConnectionOperation {
         for (ConnectionParameter connectionParameter : connection.getParameters()) {
             if (connectionParameter.getName().equalsIgnoreCase("host")) {
                 hostName = (connectionParameter.getValue());
-                hostName = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(hostName);
+                hostName = FrameworkControl.getInstance().resolveConfiguration(hostName);
             } else if (connectionParameter.getName().equalsIgnoreCase("port")) {
                 portNumberTemp = connectionParameter.getValue();
-                portNumberTemp = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(portNumberTemp);
+                portNumberTemp = FrameworkControl.getInstance().resolveConfiguration(portNumberTemp);
             } else if (connectionParameter.getName().equalsIgnoreCase("catalog")) {
                 catalogName = connectionParameter.getValue();
-                catalogName = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(catalogName);
+                catalogName = FrameworkControl.getInstance().resolveConfiguration(catalogName);
             } else if (connectionParameter.getName().equalsIgnoreCase("schema")) {
                 schemaName = connectionParameter.getValue();
-                schemaName = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(schemaName);
+                schemaName = FrameworkControl.getInstance().resolveConfiguration(schemaName);
             } else if (connectionParameter.getName().equalsIgnoreCase("user")) {
                 userName = connectionParameter.getValue();
-                userName = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(userName);
+                userName = FrameworkControl.getInstance().resolveConfiguration(userName);
             } else if (connectionParameter.getName().equalsIgnoreCase("password")) {
                 userPassword = connectionParameter.getValue();
-                userPassword = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(userPassword);
+                userPassword = FrameworkControl.getInstance().resolveConfiguration(userPassword);
             }
         }
 
@@ -95,17 +97,17 @@ public class DbPrestoConnectionOperation {
         for (ConnectionTypeParameter connectionTypeParameter : connectionType.getParameters()) {
             if (connectionTypeParameter.getEncrypted().equalsIgnoreCase("y")) {
                 if (connectionTypeParameter.getName().equalsIgnoreCase("host")) {
-                    hostName = this.getFrameworkExecution().getFrameworkCrypto().decrypt(hostName);
+                    hostName = FrameworkCrypto.getInstance().decrypt(hostName);
                 } else if (connectionTypeParameter.getName().equalsIgnoreCase("port")) {
-                    portNumberTemp = this.getFrameworkExecution().getFrameworkCrypto().decrypt(portNumberTemp);
+                    portNumberTemp = FrameworkCrypto.getInstance().decrypt(portNumberTemp);
                 } else if (connectionTypeParameter.getName().equalsIgnoreCase("catalog")) {
-                    catalogName = this.getFrameworkExecution().getFrameworkCrypto().decrypt(catalogName);
+                    catalogName = FrameworkCrypto.getInstance().decrypt(catalogName);
                 } else if (connectionTypeParameter.getName().equalsIgnoreCase("schema")) {
-                    schemaName = this.getFrameworkExecution().getFrameworkCrypto().decrypt(schemaName);
+                    schemaName = FrameworkCrypto.getInstance().decrypt(schemaName);
                 } else if (connectionTypeParameter.getName().equalsIgnoreCase("user")) {
-                    userName = this.getFrameworkExecution().getFrameworkCrypto().decrypt(userName);
+                    userName = FrameworkCrypto.getInstance().decrypt(userName);
                 } else if (connectionTypeParameter.getName().equalsIgnoreCase("password")) {
-                    userPassword = this.getFrameworkExecution().getFrameworkCrypto().decrypt(userPassword);
+                    userPassword = FrameworkCrypto.getInstance().decrypt(userPassword);
                 }
             }
         }

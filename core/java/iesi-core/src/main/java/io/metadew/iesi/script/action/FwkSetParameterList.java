@@ -4,6 +4,7 @@ import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeService;
 import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.datatypes.text.Text;
+import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.script.execution.ActionExecution;
@@ -11,6 +12,8 @@ import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -34,13 +37,14 @@ public class FwkSetParameterList {
     private ActionParameterOperation parameterList;
     private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
 
+    private static final Logger LOGGER = LogManager.getLogger();
 
     public FwkSetParameterList(FrameworkExecution frameworkExecution, ExecutionControl executionControl, ScriptExecution scriptExecution, ActionExecution actionExecution) {
         this.setFrameworkExecution(frameworkExecution);
         this.setExecutionControl(executionControl);
         this.setActionExecution(actionExecution);
         this.setActionParameterOperationMap(new HashMap<>());
-        this.dataTypeService = new DataTypeService(frameworkExecution.getFrameworkConfiguration().getFolderConfiguration(), executionControl.getExecutionRuntime());
+        this.dataTypeService = new DataTypeService(executionControl.getExecutionRuntime());
     }
 
     public void prepare() {
@@ -90,8 +94,8 @@ public class FwkSetParameterList {
             }
             return parameterMap;
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for list",
-                    list.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for list",
+                    list.getClass()));
             return parameterMap;
         }
     }
@@ -103,13 +107,13 @@ public class FwkSetParameterList {
             if (matcher.find()) {
                 parameterMap.put(matcher.group("parameter"), matcher.group("value"));
             } else {
-                this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + ": parameter entry ''{0}'' does not follow correct syntax",
-                        parameterEntry), Level.WARN);
+                LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + ": parameter entry ''{0}'' does not follow correct syntax",
+                        parameterEntry));
             }
             return parameterMap;
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for parameter entry",
-                    parameterEntry.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for parameter entry",
+                    parameterEntry.getClass()));
             return parameterMap;
         }
     }

@@ -9,6 +9,8 @@ import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -31,6 +33,7 @@ public class ScriptLogOutput {
     private ActionParameterOperation outputName;
     private ActionParameterOperation outputValue;
     private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
+    private static final Logger LOGGER = LogManager.getLogger();
 
     // Constructors
     public ScriptLogOutput() {
@@ -109,8 +112,8 @@ public class ScriptLogOutput {
         if (outputName instanceof Text) {
             return outputName.toString();
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for expect outputName",
-                    outputName.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for expect outputName",
+                    outputName.getClass()));
             return outputName.toString();
         }
     }

@@ -24,8 +24,8 @@ public class ActionParameterTraceConfiguration extends Configuration<ActionParam
     private static final Logger LOGGER = LogManager.getLogger();
 
 
-    public ActionParameterTraceConfiguration(MetadataControl metadataControl) {
-        super(metadataControl);
+    public ActionParameterTraceConfiguration() {
+        super();
     }
 
     @Override

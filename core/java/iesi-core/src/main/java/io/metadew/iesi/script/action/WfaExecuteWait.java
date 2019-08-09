@@ -10,6 +10,8 @@ import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -28,6 +30,7 @@ public class WfaExecuteWait {
     private ActionParameterOperation waitIntervalInput;
     private long startTime;
     private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
+    private static final Logger LOGGER = LogManager.getLogger();
 
     // Constructors
     public WfaExecuteWait() {
@@ -116,8 +119,8 @@ public class WfaExecuteWait {
         if (waitInterval instanceof Text) {
             return Integer.parseInt(waitInterval.toString());
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + "this.getActionExecution().get().getType() +  does not accept {0} as type for wait interval",
-                    waitInterval.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + "this.getActionExecution().get().getType() +  does not accept {0} as type for wait interval",
+                    waitInterval.getClass()));
             return defaultWaitInterval;
         }
     }

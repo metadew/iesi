@@ -6,6 +6,8 @@ import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.GenerationControlRule;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class GenerationControlRuleExecution {
 
@@ -15,6 +17,7 @@ public class GenerationControlRuleExecution {
 	private GenerationControlRule generationControlRule;
 	private Long processId;
 	private String output = "";
+	private static final Logger LOGGER = LogManager.getLogger();
 
 	// Constructors
 	public GenerationControlRuleExecution(FrameworkExecution frameworkExecution, ExecutionControl executionControl, GenerationExecution generationExecution,
@@ -27,7 +30,7 @@ public class GenerationControlRuleExecution {
 
 	// Methods
 	public void execute() {
-		this.getFrameworkExecution().getFrameworkLog().log("generation.rule.name="
+		LOGGER.warn("generation.rule.name="
 				+ this.getGenerationControlRule().getName() + " (ID=" + this.getGenerationControlRule().getId() + ")",
 				Level.INFO);
 
@@ -51,7 +54,7 @@ public class GenerationControlRuleExecution {
 			}
 
 		} catch (Exception e) {
-			this.getFrameworkExecution().getFrameworkLog().log("generation.rule.error="
+			LOGGER.warn("generation.rule.error="
 					+ this.getGenerationControlRule().getName() + " (ID=" + this.getGenerationControlRule().getId() + ")"+e,
 					Level.INFO);
 		} finally {

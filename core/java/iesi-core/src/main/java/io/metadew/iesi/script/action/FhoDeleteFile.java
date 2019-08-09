@@ -12,6 +12,7 @@ import io.metadew.iesi.connection.tools.fho.FileConnectionTools;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.connection.Connection;
@@ -20,6 +21,8 @@ import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -43,6 +46,7 @@ public class FhoDeleteFile {
     private ActionParameterOperation fileName;
     private ActionParameterOperation connectionName;
     private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
+    private static final Logger LOGGER = LogManager.getLogger();
 
     // Constructors
     public FhoDeleteFile() {
@@ -140,7 +144,7 @@ public class FhoDeleteFile {
             }
         } else {
             ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(
-                    this.getFrameworkExecution().getFrameworkInstance());
+                    FrameworkInstance.getInstance());
             Connection connection = connectionConfiguration
                     .getConnection(connectionName, this.getExecutionControl().getEnvName())
                     .get();
@@ -170,8 +174,8 @@ public class FhoDeleteFile {
         if (connectionName instanceof Text) {
             return connectionName.toString();
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for connectionName",
-                    connectionName.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for connectionName",
+                    connectionName.getClass()));
             return connectionName.toString();
         }
     }
@@ -181,8 +185,8 @@ public class FhoDeleteFile {
         if (folderName instanceof Text) {
             return folderName.toString();
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for folderName",
-                    folderName.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for folderName",
+                    folderName.getClass()));
             return folderName.toString();
         }
     }
@@ -192,8 +196,8 @@ public class FhoDeleteFile {
         if (folderPath instanceof Text) {
             return folderPath.toString();
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for folderPath",
-                    folderPath.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for folderPath",
+                    folderPath.getClass()));
             return folderPath.toString();
         }
     }

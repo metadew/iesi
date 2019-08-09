@@ -13,12 +13,12 @@ import java.util.Optional;
 
 public class ResultSetDataset extends Dataset {
 
-    public ResultSetDataset(DataType name, DataType labels, FrameworkFolderConfiguration frameworkFolderConfiguration, ExecutionRuntime executionRuntime) throws IOException, SQLException {
-        super(name, labels, frameworkFolderConfiguration, executionRuntime);
+    public ResultSetDataset(DataType name, DataType labels, ExecutionRuntime executionRuntime) throws IOException, SQLException {
+        super(name, labels, executionRuntime);
     }
 
-    public ResultSetDataset(String name, List<String> labels, FrameworkFolderConfiguration frameworkFolderConfiguration, ExecutionRuntime executionRuntime) throws IOException, SQLException {
-        super(name, labels, frameworkFolderConfiguration, executionRuntime);
+    public ResultSetDataset(String name, List<String> labels, ExecutionRuntime executionRuntime) throws IOException, SQLException {
+        super(name, labels,  executionRuntime);
     }
 
     @Override

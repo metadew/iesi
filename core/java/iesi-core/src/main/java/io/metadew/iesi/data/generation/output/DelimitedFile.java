@@ -7,11 +7,15 @@ import io.metadew.iesi.connection.tools.OutputTools;
 import io.metadew.iesi.data.generation.execution.GenerationControlExecution;
 import io.metadew.iesi.data.generation.execution.GenerationOutputExecution;
 import io.metadew.iesi.data.generation.execution.GenerationOutputParameterExecution;
+import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
+import io.metadew.iesi.framework.definition.FrameworkFolder;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.GenerationControl;
 import io.metadew.iesi.metadata.definition.GenerationOutputParameter;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.File;
@@ -33,6 +37,7 @@ public class DelimitedFile {
 	private GenerationOutputParameterExecution includeFieldNames;
 	private GenerationOutputParameterExecution encoding;
 	private GenerationOutputParameterExecution controls;
+	private static final Logger LOGGER = LogManager.getLogger();
 
 	// Constructors
 	public DelimitedFile(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
@@ -46,8 +51,7 @@ public class DelimitedFile {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public boolean execute() {
 		try {
-			this.getFrameworkExecution().getFrameworkLog()
-					.log("generation.output.type=" + this.getGenerationOutputTypeName(), Level.INFO);
+			LOGGER.info("generation.output.type=" + this.getGenerationOutputTypeName());
 
 			// Reset Parameters
 			this.setFileName(new GenerationOutputParameterExecution(this.getFrameworkExecution(), this.getExecutionControl(),
@@ -85,7 +89,7 @@ public class DelimitedFile {
 			String fullFileName = "";
 			try {
 
-				String folderName = this.getFrameworkExecution().getFrameworkConfiguration().getFolderConfiguration().getFolderAbsolutePath("run.tmp")
+				String folderName = FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("run.tmp")
 						+ File.separator + this.getGenerationOutputExecution().getGenerationExecution().getGeneration().getName();
 				FolderTools.createFolder(folderName);
 				String fileName = this.composeFileName();

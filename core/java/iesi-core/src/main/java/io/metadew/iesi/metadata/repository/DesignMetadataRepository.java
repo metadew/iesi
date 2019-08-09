@@ -2,6 +2,7 @@ package io.metadew.iesi.metadata.repository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.ComponentConfiguration;
 import io.metadew.iesi.metadata.configuration.GenerationConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.ComponentAlreadyExistsException;
@@ -15,10 +16,13 @@ import io.metadew.iesi.metadata.definition.Generation;
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 
 public class DesignMetadataRepository extends MetadataRepository {
+    private static final Logger LOGGER = LogManager.getLogger();
 
     public DesignMetadataRepository(String frameworkCode, String name, String scope, String instanceName, RepositoryCoordinator repositoryCoordinator, String repositoryObjectsPath, String repositoryTablesPath) {
         super(frameworkCode, name, scope, instanceName, repositoryCoordinator, repositoryObjectsPath, repositoryTablesPath);
@@ -63,17 +67,17 @@ public class DesignMetadataRepository extends MetadataRepository {
             System.out.println("subroutine");
             // TODO
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("Design repository is not responsible for loading saving {0}", dataObject.getType()), Level.TRACE);
+            LOGGER.trace(MessageFormat.format("Design repository is not responsible for loading saving {0}", dataObject.getType()));
         }
     }
 
     public void save(Script script, FrameworkExecution frameworkExecution) throws MetadataRepositorySaveException {
-        frameworkExecution.getFrameworkLog().log(MessageFormat.format("Saving script {0}-{1} into design repository", script.getName(), script.getVersion().getNumber()), Level.INFO);
-        ScriptConfiguration scriptConfiguration = new ScriptConfiguration(frameworkExecution.getFrameworkInstance());
+        LOGGER.info(MessageFormat.format("Saving script {0}-{1} into design repository", script.getName(), script.getVersion().getNumber()));
+        ScriptConfiguration scriptConfiguration = new ScriptConfiguration(FrameworkInstance.getInstance());
         try {
             scriptConfiguration.insert(script);
         } catch (ScriptAlreadyExistsException e) {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("Script {0}-{1} already exists in design repository. Updating to new definition", script.getName(), script.getVersion().getNumber()), Level.INFO);
+            LOGGER.info(MessageFormat.format("Script {0}-{1} already exists in design repository. Updating to new definition", script.getName(), script.getVersion().getNumber()));
             try {
                 scriptConfiguration.update(script);
             } catch (ScriptDoesNotExistException ex) {
@@ -84,12 +88,12 @@ public class DesignMetadataRepository extends MetadataRepository {
     }
 
     public void save(Component component, FrameworkExecution frameworkExecution) throws MetadataRepositorySaveException {
-        frameworkExecution.getFrameworkLog().log(MessageFormat.format("Saving component {0} into design repository", component.getName()), Level.INFO);
-        ComponentConfiguration componentConfiguration = new ComponentConfiguration(frameworkExecution.getFrameworkInstance());
+        LOGGER.info(MessageFormat.format("Saving component {0} into design repository", component.getName()));
+        ComponentConfiguration componentConfiguration = new ComponentConfiguration(FrameworkInstance.getInstance());
         try {
             componentConfiguration.insertComponent(component);
         } catch (ComponentAlreadyExistsException e) {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("Component {0} already exists in design repository. Updating to new definition", component.getName()), Level.INFO);
+            LOGGER.warn(MessageFormat.format("Component {0} already exists in design repository. Updating to new definition", component.getName()), Level.INFO);
             try {
                 componentConfiguration.updateComponent(component);
             } catch (ComponentDoesNotExistException ex) {
@@ -99,9 +103,9 @@ public class DesignMetadataRepository extends MetadataRepository {
     }
     
     public void save(Generation generation, FrameworkExecution frameworkExecution) {
-        frameworkExecution.getFrameworkLog().log(MessageFormat.format("Saving generation {0} into design repository", generation.getName()), Level.INFO);
+        LOGGER.info(MessageFormat.format("Saving generation {0} into design repository", generation.getName()));
         GenerationConfiguration generationConfiguration = new GenerationConfiguration(generation,
-                frameworkExecution.getFrameworkInstance());
+                FrameworkInstance.getInstance());
         executeUpdate(generationConfiguration.getInsertStatement());
     }
 

@@ -1,5 +1,6 @@
 package io.metadew.iesi.script.execution.instruction.lookup;
 
+import io.metadew.iesi.framework.execution.FrameworkControl;
 import io.metadew.iesi.script.execution.ExecutionControl;
 
 import java.io.BufferedReader;
@@ -28,7 +29,7 @@ public class FileLookup implements LookupInstruction {
             bufferedReader = new BufferedReader(new FileReader(file));
             String readLine = "";
             while ((readLine = bufferedReader.readLine()) != null) {
-                output += this.executionControl.getFrameworkExecution().getFrameworkControl().resolveConfiguration(readLine);
+                output += FrameworkControl.getInstance().resolveConfiguration(readLine);
                 output += "\n";
             }
         } catch (Exception e) {

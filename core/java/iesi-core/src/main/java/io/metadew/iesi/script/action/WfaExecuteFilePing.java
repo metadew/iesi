@@ -10,6 +10,7 @@ import io.metadew.iesi.connection.tools.FolderTools;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.connection.Connection;
@@ -18,6 +19,8 @@ import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.File;
@@ -47,6 +50,7 @@ public class WfaExecuteFilePing {
     private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
     private final int defaultWaitInterval = 1000;
     private final int defaultTimeoutInterval = -1;
+    private static final Logger LOGGER = LogManager.getLogger();
 
     // Constructors
     public WfaExecuteFilePing() {
@@ -136,7 +140,7 @@ public class WfaExecuteFilePing {
 
     private boolean executeFilePing(String filePath, String fileName, boolean hasResult, boolean setRuntimeVariables, String connectionName, int waitInterval, int timeoutInterval) {
         // Get Connection
-        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution().getFrameworkInstance());
+        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(FrameworkInstance.getInstance());
         Connection connection = connectionConfiguration.getConnection(connectionName, this.getExecutionControl().getEnvName()).get();
         ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
         HostConnection dcConnection = connectionOperation.getHostConnection(connection);
@@ -200,8 +204,8 @@ public class WfaExecuteFilePing {
         if (waitInterval instanceof Text) {
             return Integer.parseInt(waitInterval.toString());
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for wait interval",
-                    waitInterval.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for wait interval",
+                    waitInterval.getClass()));
             return defaultWaitInterval;
         }
     }
@@ -213,8 +217,8 @@ public class WfaExecuteFilePing {
         if (timeoutInterval instanceof Text) {
             return Integer.parseInt(timeoutInterval.toString());
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for timeout interval",
-                    timeoutInterval.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for timeout interval",
+                    timeoutInterval.getClass()));
             return defaultTimeoutInterval;
         }
     }
@@ -223,8 +227,8 @@ public class WfaExecuteFilePing {
         if (connectionName instanceof Text) {
             return connectionName.toString();
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for connection name",
-                    connectionName.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for connection name",
+                    connectionName.getClass()));
             return connectionName.toString();
         }
     }
@@ -236,8 +240,8 @@ public class WfaExecuteFilePing {
         if (setRuntimeVariables instanceof Text) {
             return setRuntimeVariables.toString().equalsIgnoreCase("y");
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for setRuntimeVariables",
-                    setRuntimeVariables.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for setRuntimeVariables",
+                    setRuntimeVariables.getClass()));
             return false;
         }
     }
@@ -249,8 +253,8 @@ public class WfaExecuteFilePing {
         if (hasResult instanceof Text) {
             return hasResult.toString().equalsIgnoreCase("y");
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for hasResult",
-                    hasResult.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for hasResult",
+                    hasResult.getClass()));
             return false;
         }
     }
@@ -259,8 +263,8 @@ public class WfaExecuteFilePing {
         if (fileName instanceof Text) {
             return fileName.toString();
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for file name",
-                    fileName.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for file name",
+                    fileName.getClass()));
             return fileName.toString();
         }
     }
@@ -269,8 +273,8 @@ public class WfaExecuteFilePing {
         if (filePath instanceof Text) {
             return filePath.toString();
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for file path",
-                    filePath.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for file path",
+                    filePath.getClass()));
             return filePath.toString();
         }
     }

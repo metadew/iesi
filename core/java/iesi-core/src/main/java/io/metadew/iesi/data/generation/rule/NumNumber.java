@@ -7,6 +7,8 @@ import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.GenerationRuleParameter;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -31,6 +33,7 @@ public class NumNumber {
 	private GenerationRuleParameterExecution decimalFlag;
 	private GenerationRuleParameterExecution decimalNumber;
 	private GenerationRuleParameterExecution decimalChar;
+	private static final Logger LOGGER = LogManager.getLogger();
 
 	// Constructors
 	public NumNumber() {
@@ -52,8 +55,7 @@ public class NumNumber {
 	//
 	public boolean execute() {
 		try {
-			this.getFrameworkExecution().getFrameworkLog()
-					.log("generation.rule.type=" + this.getGenerationRuleTypeName(), Level.INFO);
+			LOGGER.info("generation.rule.type=" + this.getGenerationRuleTypeName(), Level.INFO);
 
 			// Reset Parameters
 			this.setMinimumValue(new GenerationRuleParameterExecution(this.getFrameworkExecution(), this.getEoControl(),

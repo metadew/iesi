@@ -11,6 +11,7 @@ import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.datatypes.dataset.KeyValueDataset;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.HttpRequestComponent;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
@@ -92,7 +93,7 @@ public class HttpExecuteRequest {
         this.actionParameterOperationMap = new HashMap<>();
         this.httpRequestComponentOperation = new HttpRequestComponentOperation(executionControl);
         this.httpRequestService = new HttpRequestService();
-        this.dataTypeService = new DataTypeService(frameworkExecution.getFrameworkConfiguration().getFolderConfiguration(), executionControl.getExecutionRuntime());
+        this.dataTypeService = new DataTypeService(executionControl.getExecutionRuntime());
     }
 
     public void prepare() throws URISyntaxException, HttpRequestBuilderException, IOException, SQLException {
@@ -161,7 +162,7 @@ public class HttpExecuteRequest {
         if (getOutputDataset().isPresent()) {
             List<String> labels = new ArrayList<>(outputDataset.getLabels());
             labels.add("typed");
-            rawOutputDataset = new KeyValueDataset(outputDataset.getName(), labels, frameworkExecution.getFrameworkConfiguration().getFolderConfiguration(), executionControl.getExecutionRuntime());
+            rawOutputDataset = new KeyValueDataset(outputDataset.getName(), labels, executionControl.getExecutionRuntime());
         }
 
     }
@@ -226,7 +227,7 @@ public class HttpExecuteRequest {
         if (connectionName == null) {
             return null;
         } else if (connectionName instanceof Text) {
-            ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution().getFrameworkInstance());
+            ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(FrameworkInstance.getInstance());
             return proxyConnection = connectionConfiguration.getConnection(((Text) connectionName).getString(), executionControl.getEnvName())
                     .map(ProxyConnection::from)
                     .orElseThrow(() -> new RuntimeException(MessageFormat.format("Cannot find connection {0}", ((Text) connectionName).getString())));

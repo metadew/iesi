@@ -23,8 +23,8 @@ public class ScriptParameterDesignTraceConfiguration extends Configuration<Scrip
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public ScriptParameterDesignTraceConfiguration(MetadataControl metadataControl) {
-        super(metadataControl);
+    public ScriptParameterDesignTraceConfiguration() {
+        super();
     }
 
     @Override

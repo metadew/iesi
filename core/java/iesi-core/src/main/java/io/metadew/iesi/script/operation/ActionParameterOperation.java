@@ -3,7 +3,11 @@ package io.metadew.iesi.script.operation;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeService;
 import io.metadew.iesi.datatypes.text.Text;
+import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
+import io.metadew.iesi.framework.crypto.FrameworkCrypto;
+import io.metadew.iesi.framework.execution.FrameworkControl;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.type.ActionTypeParameterConfiguration;
 import io.metadew.iesi.metadata.definition.action.ActionTypeParameter;
 import io.metadew.iesi.runtime.subroutine.ShellCommandSubroutine;
@@ -40,7 +44,7 @@ public class ActionParameterOperation {
         this.setActionTypeName(actionTypeName);
         this.setName(name);
         this.lookupActionTypeParameter();
-        this.dataTypeService = new DataTypeService(frameworkExecution.getFrameworkConfiguration().getFolderConfiguration(), executionControl.getExecutionRuntime());
+        this.dataTypeService = new DataTypeService(executionControl.getExecutionRuntime());
     }
 
     public ActionParameterOperation(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
@@ -51,13 +55,13 @@ public class ActionParameterOperation {
         this.setName(name);
         this.lookupActionTypeParameter();
         this.setInputValue(value);
-        this.dataTypeService = new DataTypeService(frameworkExecution.getFrameworkConfiguration().getFolderConfiguration(), executionControl.getExecutionRuntime());
+        this.dataTypeService = new DataTypeService(executionControl.getExecutionRuntime());
     }
 
     // Methods
     private void lookupActionTypeParameter() {
         ActionTypeParameterConfiguration actionTypeParameterConfiguration = new ActionTypeParameterConfiguration(
-                this.getFrameworkExecution().getFrameworkInstance());
+                FrameworkInstance.getInstance());
         this.setActionTypeParameter(
                 actionTypeParameterConfiguration.getActionTypeParameter(this.getActionTypeName(), this.getName()));
     }
@@ -144,7 +148,7 @@ public class ActionParameterOperation {
         // perform lookup again after cross concept lookup
         resolvedInputValue = this.getExecutionControl().getExecutionRuntime().resolveVariables(this.getActionExecution(), resolvedInputValue);
         
-        String decryptedInputValue = this.getFrameworkExecution().getFrameworkCrypto().resolve(this.getFrameworkExecution(),
+        String decryptedInputValue = FrameworkCrypto.getInstance().resolve(this.getFrameworkExecution(),
                 resolvedInputValue);
 
         // Impersonate

@@ -1,6 +1,7 @@
 package io.metadew.iesi.script.operation;
 
 import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.ComponentConfiguration;
 import io.metadew.iesi.metadata.definition.Component;
 import io.metadew.iesi.metadata.definition.ComponentParameter;
@@ -48,7 +49,7 @@ public class HttpRequestOperation {
     }
 
     private void getRequestConfiguration() {
-        ComponentConfiguration componentConfiguration = new ComponentConfiguration(this.getFrameworkExecution().getFrameworkInstance());
+        ComponentConfiguration componentConfiguration = new ComponentConfiguration(FrameworkInstance.getInstance());
         Component request = componentConfiguration.getComponent(this.getRequestName())
                 .orElseThrow(() -> new RuntimeException(MessageFormat.format("component.notfound=no component exists with name {0}.", getRequestName())));
         this.setRequest(request);

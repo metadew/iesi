@@ -21,14 +21,12 @@ public class DatasetMetadata {
     private final Database database;
     private final ExecutionRuntime executionRuntime;
     private final String datasetName;
-    private final FrameworkFolderConfiguration frameworkFolderConfiguration;
 
-    public DatasetMetadata(String datasetName, ExecutionRuntime executionRuntime, FrameworkFolderConfiguration frameworkFolderConfiguration) {
+    public DatasetMetadata(String datasetName, ExecutionRuntime executionRuntime) {
         this.datasetName = datasetName;
-        this.database =  new SqliteDatabase(new SqliteDatabaseConnection(frameworkFolderConfiguration.getFolderAbsolutePath("data") + File.separator + "datasets"
+        this.database =  new SqliteDatabase(new SqliteDatabaseConnection(FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("data") + File.separator + "datasets"
                 + File.separator + datasetName + File.separator + "metadata" + File.separator + "metadata.db3"));
         this.executionRuntime = executionRuntime;
-        this.frameworkFolderConfiguration = frameworkFolderConfiguration;
     }
 
 
@@ -108,7 +106,7 @@ public class DatasetMetadata {
                     "Returning first occurrence.", id)), Level.WARN);
         }
         cachedRowSetFileTable.next();
-        Database database = new SqliteDatabase(new SqliteDatabaseConnection(frameworkFolderConfiguration.getFolderAbsolutePath("data") + File.separator + "datasets"
+        Database database = new SqliteDatabase(new SqliteDatabaseConnection(FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("data") + File.separator + "datasets"
                 + File.separator  + datasetName + File.separator + "data" + File.separator + cachedRowSetFileTable.getString("DATASET_FILE_NM")));
         cachedRowSetFileTable.close();
         return database;

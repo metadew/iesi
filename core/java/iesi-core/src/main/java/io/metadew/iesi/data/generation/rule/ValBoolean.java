@@ -7,6 +7,8 @@ import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.GenerationRuleParameter;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -21,6 +23,7 @@ public class ValBoolean {
 	// Parameters
 	private GenerationRuleParameterExecution trueValue;
 	private GenerationRuleParameterExecution falseValue;
+	private static final Logger LOGGER = LogManager.getLogger();
 
 	// Constructors
 	public ValBoolean() {
@@ -42,8 +45,7 @@ public class ValBoolean {
 	//
 	public boolean execute() {
 		try {
-			this.getFrameworkExecution().getFrameworkLog()
-					.log("generation.rule.type=" + this.getGenerationRuleTypeName(), Level.INFO);
+			LOGGER.info("generation.rule.type=" + this.getGenerationRuleTypeName());
 
 			// Reset Parameters
 			this.setTrueValue(new GenerationRuleParameterExecution(this.getFrameworkExecution(), this.getExecutionControl(),

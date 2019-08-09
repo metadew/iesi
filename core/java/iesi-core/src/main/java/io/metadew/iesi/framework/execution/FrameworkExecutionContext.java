@@ -11,6 +11,9 @@ public class FrameworkExecutionContext {
 
     private Context context;
 
+    public FrameworkExecutionContext() {
+        this(new Context());
+    }
     public FrameworkExecutionContext(Context context) {
         this.context = context;
     }

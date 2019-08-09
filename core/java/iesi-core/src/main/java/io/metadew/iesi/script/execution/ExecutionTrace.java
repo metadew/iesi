@@ -19,8 +19,8 @@ public class ExecutionTrace {
 
     // Constructors
     public ExecutionTrace(FrameworkExecution frameworkExecution) {
-        this.actionTraceService = new ActionTraceService(frameworkExecution.getMetadataControl());
-        this.scriptTraceService = new ScriptTraceService(frameworkExecution.getMetadataControl());
+        this.actionTraceService = new ActionTraceService();
+        this.scriptTraceService = new ScriptTraceService();
     }
 
     // Insert

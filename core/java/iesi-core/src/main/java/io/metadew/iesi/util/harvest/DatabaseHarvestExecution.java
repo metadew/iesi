@@ -4,6 +4,7 @@ import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.operation.ConnectionOperation;
 import io.metadew.iesi.connection.operation.DatabaseOperation;
 import io.metadew.iesi.connection.tools.FileTools;
+import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.framework.execution.FrameworkExecutionContext;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
@@ -26,13 +27,14 @@ public class DatabaseHarvestExecution {
 
     public DatabaseHarvestExecution() {
         // Create the framework instance
-        FrameworkInstance frameworkInstance = new FrameworkInstance();
+        FrameworkInstance frameworkInstance = FrameworkInstance.getInstance();
+        frameworkInstance.init();
 
         // Create the framework execution
         Context context = new Context();
         context.setName("harvest");
         context.setScope("");
-        this.setFrameworkExecution(new FrameworkExecution(frameworkInstance, new FrameworkExecutionContext(context), null));
+        this.setFrameworkExecution(new FrameworkExecution(new FrameworkExecutionContext(context)));
     }
 
     // Methods
@@ -65,7 +67,7 @@ public class DatabaseHarvestExecution {
         // Prepare output file
         String outputFileName = targetFileName;
         // Location for temp harvest
-        String outputFilePath = this.getFrameworkExecution().getFrameworkConfiguration().getFolderConfiguration().getFolderAbsolutePath("run.tmp");
+        String outputFilePath = FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("run.tmp");
         boolean insertAppendFlag = false;
         boolean insertOverwriteFlag = false;
         if (!insertAppendFlag) {
@@ -81,7 +83,7 @@ public class DatabaseHarvestExecution {
         }
 
         // Get Connection
-        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution().getFrameworkInstance());
+        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(FrameworkInstance.getInstance());
         Connection connection = connectionConfiguration.getConnection(sourceConnectionName, environmentName).get();
         ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
         Database database = connectionOperation.getDatabase(connection);

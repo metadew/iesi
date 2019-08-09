@@ -2,6 +2,7 @@ package io.metadew.iesi.script.operation;
 
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.ComponentConfiguration;
 import io.metadew.iesi.metadata.definition.Component;
 import io.metadew.iesi.metadata.definition.HttpRequestComponent;
@@ -31,7 +32,7 @@ public class HttpRequestComponentOperation {
 
     public HttpRequestComponentOperation(ExecutionControl executionControl) {
         this.executionControl = executionControl;
-        this.componentConfiguration = new ComponentConfiguration(executionControl.getFrameworkExecution().getFrameworkInstance());
+        this.componentConfiguration = new ComponentConfiguration(FrameworkInstance.getInstance());
         this.httpRequestComponentParameterOperation = new HttpRequestComponentParameterOperation(executionControl);
     }
 

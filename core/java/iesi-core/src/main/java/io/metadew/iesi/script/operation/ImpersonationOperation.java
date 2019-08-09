@@ -1,10 +1,13 @@
 package io.metadew.iesi.script.operation;
 
 import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.ImpersonationConfiguration;
 import io.metadew.iesi.metadata.definition.Impersonation;
 import io.metadew.iesi.metadata.definition.ImpersonationParameter;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -22,6 +25,7 @@ public class ImpersonationOperation {
 
     private FrameworkExecution frameworkExecution;
     private HashMap<String, String> impersonationMap;
+    private static final Logger LOGGER = LogManager.getLogger();
 
     // Constructors
     public ImpersonationOperation(FrameworkExecution frameworkExecution) {
@@ -33,15 +37,15 @@ public class ImpersonationOperation {
     // Methods
     public void setImpersonation(String impersonationName) {
         if (!impersonationName.trim().equalsIgnoreCase("")) {
-            ImpersonationConfiguration impersonationConfiguration = new ImpersonationConfiguration(this.getFrameworkExecution().getFrameworkInstance());
+            ImpersonationConfiguration impersonationConfiguration = new ImpersonationConfiguration(FrameworkInstance.getInstance());
             Optional<Impersonation> impersonation = impersonationConfiguration.getImpersonation(impersonationName);
 
 
             if (!impersonation.isPresent()) {
-                this.getFrameworkExecution().getFrameworkLog().log("impersonation.notfound=" + impersonationName, Level.INFO);
+                LOGGER.info("impersonation.notfound=" + impersonationName);
             } else {
                 if (impersonation.get().getParameters() == null) {
-                    this.getFrameworkExecution().getFrameworkLog().log("impersonation.conn.notfound=" + impersonationName, Level.INFO);
+                    LOGGER.info("impersonation.conn.notfound=" + impersonationName);
                 } else {
                     for (ImpersonationParameter impersonationParameter : impersonation.get().getParameters()) {
                         this.setImpersonation(impersonationParameter.getConnection(), impersonationParameter.getImpersonatedConnection());

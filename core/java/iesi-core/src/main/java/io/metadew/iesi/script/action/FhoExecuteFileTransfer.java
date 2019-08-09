@@ -8,6 +8,7 @@ import io.metadew.iesi.connection.tools.HostConnectionTools;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.connection.Connection;
@@ -16,6 +17,8 @@ import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -36,6 +39,7 @@ public class FhoExecuteFileTransfer {
     private ActionParameterOperation targetFileName;
     private ActionParameterOperation targetConnectionName;
     private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
+    private static final Logger LOGGER = LogManager.getLogger();
 
     // Constructors
     public FhoExecuteFileTransfer() {
@@ -125,7 +129,7 @@ public class FhoExecuteFileTransfer {
 
     private boolean execute(String sourceFilePath, String sourceFileName, String sourceConnectionName, String targetFilePath, String targetFileName, String targetConnectionName) {
         // Get Connections
-        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution().getFrameworkInstance());
+        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(FrameworkInstance.getInstance());
         Connection sourceConnection = connectionConfiguration
                 .getConnection(sourceConnectionName, this.getExecutionControl().getEnvName()).get();
         ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
@@ -177,8 +181,8 @@ public class FhoExecuteFileTransfer {
         if (targetConnection instanceof Text) {
             return targetConnection.toString();
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for targetConnection",
-                    targetConnection.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for targetConnection",
+                    targetConnection.getClass()));
             return targetConnection.toString();
         }
     }
@@ -187,8 +191,8 @@ public class FhoExecuteFileTransfer {
         if (targetFileName instanceof Text) {
             return targetFileName.toString();
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for targetFileName",
-                    targetFileName.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for targetFileName",
+                    targetFileName.getClass()));
             return targetFileName.toString();
         }
     }
@@ -197,8 +201,8 @@ public class FhoExecuteFileTransfer {
         if (targetFilePath instanceof Text) {
             return targetFilePath.toString();
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for targetFilePath",
-                    targetFilePath.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for targetFilePath",
+                    targetFilePath.getClass()));
             return targetFilePath.toString();
         }
     }
@@ -207,8 +211,8 @@ public class FhoExecuteFileTransfer {
         if (sourceConnectionName instanceof Text) {
             return sourceConnectionName.toString();
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for sourceConnectionName",
-                    sourceConnectionName.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for sourceConnectionName",
+                    sourceConnectionName.getClass()));
             return sourceConnectionName.toString();
         }
     }
@@ -217,8 +221,8 @@ public class FhoExecuteFileTransfer {
         if (sourceFileName instanceof Text) {
             return sourceFileName.toString();
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for sourceFileName",
-                    sourceFileName.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for sourceFileName",
+                    sourceFileName.getClass()));
             return sourceFileName.toString();
         }
     }
@@ -227,8 +231,8 @@ public class FhoExecuteFileTransfer {
         if (sourceFilePath instanceof Text) {
             return sourceFilePath.toString();
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for sourceFilePath",
-                    sourceFilePath.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for sourceFilePath",
+                    sourceFilePath.getClass()));
             return sourceFilePath.toString();
         }
     }

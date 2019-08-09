@@ -5,6 +5,7 @@ import io.metadew.iesi.connection.host.ShellCommandResult;
 import io.metadew.iesi.connection.tools.FolderTools;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.text.Text;
+import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.script.execution.ActionExecution;
@@ -12,6 +13,8 @@ import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.PrintWriter;
@@ -30,6 +33,7 @@ public class ModSoapui {
 	private ActionParameterOperation testSuite;
 	private ActionParameterOperation testCase;
 	private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
+	private static final Logger LOGGER = LogManager.getLogger();
 
 	// Constructors
 	public ModSoapui() {
@@ -99,9 +103,9 @@ public class ModSoapui {
 		if (project instanceof Text) {
 			return project.toString();
 		} else {
-			this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(
+			LOGGER.warn(MessageFormat.format(
 					this.getActionExecution().getAction().getType() + " does not accept {0} as type for project",
-					project.getClass()), Level.WARN);
+					project.getClass()));
 			return project.toString();
 		}
 	}
@@ -110,10 +114,9 @@ public class ModSoapui {
 		if (testSuite instanceof Text) {
 			return testSuite.toString();
 		} else {
-			this.getFrameworkExecution().getFrameworkLog()
-					.log(MessageFormat.format(
+			LOGGER.warn(MessageFormat.format(
 							this.getActionExecution().getAction().getType() + " does not accept {0} as type for suite",
-							testSuite.getClass()), Level.WARN);
+							testSuite.getClass()));
 			return testSuite.toString();
 		}
 	}
@@ -122,10 +125,9 @@ public class ModSoapui {
 		if (testCase instanceof Text) {
 			return testCase.toString();
 		} else {
-			this.getFrameworkExecution().getFrameworkLog()
-					.log(MessageFormat.format(
+			LOGGER.warn(MessageFormat.format(
 							this.getActionExecution().getAction().getType() + " does not accept {0} as type for case",
-							testCase.getClass()), Level.WARN);
+							testCase.getClass()));
 			return testCase.toString();
 		}
 	}
@@ -135,9 +137,8 @@ public class ModSoapui {
 		String output = this.getActionExecution().getActionControl().getActionRuntime().getRunCacheFolderName() + "soapui";
 		FolderTools.createFolder(output);
 				
-		String command = this.getFrameworkExecution().getFrameworkConfiguration().getFolderConfiguration()
-				.getFolderAbsolutePath("modules") + File.separator  + "soapui" + File.separator + "bin" + File.separator
-				+ "iesi-soapui.cmd";
+		String command = FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("modules") +
+				File.separator  + "soapui" + File.separator + "bin" + File.separator + "iesi-soapui.cmd";
 		command = command + " -project " + project;
 		if (!testSuite.isEmpty()) command = command + " -suite " + testSuite;
 		if (!testCase.isEmpty()) command = command + " -case " + testCase;

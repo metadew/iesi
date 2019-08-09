@@ -9,6 +9,7 @@ import io.metadew.iesi.connection.tools.HostConnectionTools;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.connection.Connection;
@@ -18,6 +19,8 @@ import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.PrintWriter;
@@ -41,6 +44,7 @@ public class FhoCreateFolder {
     private ActionParameterOperation folderName;
     private ActionParameterOperation connectionName;
     private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
+    private static final Logger LOGGER = LogManager.getLogger();
 
     // Constructors
     public FhoCreateFolder() {
@@ -132,7 +136,7 @@ public class FhoCreateFolder {
 
         } else {
             ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(
-                    this.getFrameworkExecution().getFrameworkInstance());
+                    FrameworkInstance.getInstance());
             Connection connection = connectionConfiguration
                     .getConnection(connectionName, this.getExecutionControl().getEnvName())
                     .get();
@@ -171,8 +175,8 @@ public class FhoCreateFolder {
         if (connectionName instanceof Text) {
             return connectionName.toString();
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for connectionName",
-                    connectionName.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for connectionName",
+                    connectionName.getClass()));
             return connectionName.toString();
         }
     }
@@ -181,8 +185,8 @@ public class FhoCreateFolder {
         if (folderName instanceof Text) {
             return folderName.toString();
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for folderName",
-                    folderName.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for folderName",
+                    folderName.getClass()));
             return folderName.toString();
         }
     }
@@ -191,8 +195,8 @@ public class FhoCreateFolder {
         if (folderName instanceof Text) {
             return folderName.toString();
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for folderName",
-                    folderName.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for folderName",
+                    folderName.getClass()));
             return folderName.toString();
         }
     }

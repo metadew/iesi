@@ -21,8 +21,8 @@ public class ActionPerformanceConfiguration extends Configuration<ActionPerforma
 
 
     private static final Logger LOGGER = LogManager.getLogger();
-    public ActionPerformanceConfiguration(MetadataControl metadataControl) {
-        super(metadataControl);
+    public ActionPerformanceConfiguration() {
+        super();
     }
 
     @Override

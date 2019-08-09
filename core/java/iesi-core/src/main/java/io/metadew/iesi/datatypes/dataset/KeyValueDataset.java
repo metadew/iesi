@@ -26,12 +26,12 @@ public class KeyValueDataset extends Dataset {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public KeyValueDataset(DataType name, DataType labels, FrameworkFolderConfiguration frameworkFolderConfiguration, ExecutionRuntime executionRuntime) throws IOException, SQLException {
-        super(name, labels, frameworkFolderConfiguration, executionRuntime);
+    public KeyValueDataset(DataType name, DataType labels, ExecutionRuntime executionRuntime) throws IOException, SQLException {
+        super(name, labels, executionRuntime);
     }
 
-    public KeyValueDataset(String name, List<String> labels, FrameworkFolderConfiguration frameworkFolderConfiguration, ExecutionRuntime executionRuntime) throws IOException, SQLException {
-        super(name, labels, frameworkFolderConfiguration, executionRuntime);
+    public KeyValueDataset(String name, List<String> labels, ExecutionRuntime executionRuntime) throws IOException, SQLException {
+        super(name, labels, executionRuntime);
         LOGGER.trace("Creating dataset with " + name + " and " + labels.toString());
     }
 
@@ -90,7 +90,7 @@ public class KeyValueDataset extends Dataset {
 
 
     protected Database createNewDatasetDatabase(String datasetName, String filename, String tableName, int inventoryId) throws IOException {
-        String filepath = getFrameworkFolderConfiguration().getFolderAbsolutePath("data") + File.separator + "datasets"
+        String filepath = FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("data") + File.separator + "datasets"
                 + File.separator + datasetName + File.separator + "data" + File.separator + filename;
         FileUtils.touch(new File(filepath));
         getDatasetMetadata().insertDatasetDatabaseInformation(inventoryId, filename, tableName);

@@ -4,6 +4,7 @@ import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeService;
 import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.datatypes.text.Text;
+import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.script.execution.ActionExecution;
@@ -11,6 +12,8 @@ import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -36,6 +39,7 @@ public class DataSetDatasetConnection {
     private ActionParameterOperation datasetLabels;
     private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
     private DataTypeService dataTypeService;
+    private static final Logger LOGGER = LogManager.getLogger();
 
     // Constructors
     public DataSetDatasetConnection() {
@@ -53,7 +57,7 @@ public class DataSetDatasetConnection {
         this.executionControl = executionControl;
         this.actionExecution = actionExecution;
         this.actionParameterOperationMap = new HashMap<>();
-        this.dataTypeService = new DataTypeService(frameworkExecution.getFrameworkConfiguration().getFolderConfiguration(), executionControl.getExecutionRuntime());
+        this.dataTypeService = new DataTypeService(executionControl.getExecutionRuntime());
     }
 
     public void prepare() {
@@ -125,8 +129,8 @@ public class DataSetDatasetConnection {
         if (referenceName instanceof Text) {
             return referenceName.toString();
         } else {
-        	this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() +   " does not accept {0} as type for reference name",
-                    referenceName.getClass()),Level.WARN);
+        	LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() +   " does not accept {0} as type for reference name",
+                    referenceName.getClass()));
             return referenceName.toString();
         }
     }
@@ -143,8 +147,8 @@ public class DataSetDatasetConnection {
                     .forEach(datasetLabel -> labels.add(convertDatasetLabel(datasetLabel)));
             return labels;
         } else {
-        	this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() +  " does not accept {0} as type for dataset labels",
-                    datasetLabels.getClass()),Level.WARN);
+        	LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() +  " does not accept {0} as type for dataset labels",
+                    datasetLabels.getClass()));
             return labels;
         }
     }
@@ -156,8 +160,8 @@ public class DataSetDatasetConnection {
         if (datasetType instanceof Text) {
             return datasetType.toString();
         } else {
-        	this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() +  " does not accept {0} as type for dataset type",
-                    datasetType.getClass()),Level.WARN);
+        	LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() +  " does not accept {0} as type for dataset type",
+                    datasetType.getClass()));
             return datasetType.toString();
         }
     }
@@ -166,8 +170,8 @@ public class DataSetDatasetConnection {
         if (datasetName instanceof Text) {
             return datasetName.toString();
         } else {
-        	this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() +  " does not accept {0} as type for dataset name",
-                    datasetName.getClass()),Level.WARN);
+        	LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() +  " does not accept {0} as type for dataset name",
+                    datasetName.getClass()));
             return datasetName.toString();
         }
     }
@@ -176,8 +180,8 @@ public class DataSetDatasetConnection {
         if (datasetLabel instanceof Text) {
             return datasetLabel.toString();
         } else {
-        	this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() +  " does not accept {0} as type for a dataset label",
-                    datasetLabel.getClass()), Level.WARN);
+        	LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() +  " does not accept {0} as type for a dataset label",
+                    datasetLabel.getClass()));
             return datasetLabel.toString();
         }
     }

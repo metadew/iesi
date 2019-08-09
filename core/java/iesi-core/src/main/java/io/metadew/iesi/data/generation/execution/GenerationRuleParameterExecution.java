@@ -1,10 +1,13 @@
 package io.metadew.iesi.data.generation.execution;
 
 import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.type.GenerationRuleTypeParameterConfiguration;
 import io.metadew.iesi.metadata.definition.GenerationRuleTypeParameter;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 
 public class GenerationRuleParameterExecution {
@@ -17,6 +20,7 @@ public class GenerationRuleParameterExecution {
     private String inputValue = "";
 
     private GenerationRuleTypeParameter generationRuleTypeParameter;
+    private static final Logger LOGGER = LogManager.getLogger();
 
     // Constructors
     public GenerationRuleParameterExecution(FrameworkExecution frameworkExecution, ExecutionControl executionControl, String generationRuleTypeName, String name) {
@@ -40,7 +44,7 @@ public class GenerationRuleParameterExecution {
 
     // Methods
     private void lookupGenerationRuleTypeParameter() {
-        GenerationRuleTypeParameterConfiguration generationRuleTypeParameterConfiguration = new GenerationRuleTypeParameterConfiguration(this.getFrameworkExecution().getFrameworkInstance());
+        GenerationRuleTypeParameterConfiguration generationRuleTypeParameterConfiguration = new GenerationRuleTypeParameterConfiguration(FrameworkInstance.getInstance());
         this.setGenerationRuleTypeParameter(generationRuleTypeParameterConfiguration.getGenerationRuleTypeParameter(this.getGenerationRuleTypeName(), this.getName()));
     }
 
@@ -77,8 +81,7 @@ public class GenerationRuleParameterExecution {
         this.inputValue = inputValue;
         this.setValue(inputValue);
 
-        this.getFrameworkExecution().getFrameworkLog().log("generation.rule.parameter.set." + this.getName() + "=" + this.getValue(),
-                Level.DEBUG);
+        LOGGER.debug("generation.rule.parameter.set." + this.getName() + "=" + this.getValue());
     }
 
     public GenerationRuleTypeParameter getGenerationRuleTypeParameter() {

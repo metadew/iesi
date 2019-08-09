@@ -1,12 +1,19 @@
 package io.metadew.iesi.launch;
 
 import io.metadew.iesi.common.config.ConfigFile;
+import io.metadew.iesi.framework.configuration.FrameworkConfiguration;
+import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
+import io.metadew.iesi.framework.configuration.FrameworkSettingConfiguration;
+import io.metadew.iesi.framework.crypto.FrameworkCrypto;
 import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
+import io.metadew.iesi.framework.definition.FrameworkRunIdentifier;
+import io.metadew.iesi.framework.execution.FrameworkControl;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.framework.execution.FrameworkExecutionContext;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.backup.BackupExecution;
 import io.metadew.iesi.metadata.definition.Context;
+import io.metadew.iesi.metadata.execution.MetadataControl;
 import io.metadew.iesi.metadata.operation.MetadataRepositoryOperation;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import io.metadew.iesi.metadata.repository.configuration.MetadataRepositoryConfiguration;
@@ -123,13 +130,14 @@ public class MetadataLauncher {
                 System.out.println("Option -ini (ini) value = " + frameworkInitializationFile.getName());
             }
 
-            FrameworkInstance frameworkInstance = new FrameworkInstance(frameworkInitializationFile);
+            FrameworkInstance frameworkInstance = FrameworkInstance.getInstance();
+            frameworkInstance.init("owner", frameworkInitializationFile);
 
             // Create the framework execution
             Context context = new Context();
             context.setName("metadata");
             context.setScope("");
-            setFrameworkExecution(new FrameworkExecution(frameworkInstance, new FrameworkExecutionContext(context), "owner", frameworkInitializationFile));
+            setFrameworkExecution(new FrameworkExecution(new FrameworkExecutionContext(context)));
             MetadataRepositoryOperation metadataRepositoryOperation = null;
             List<MetadataRepository> metadataRepositories = new ArrayList();
 
@@ -146,42 +154,42 @@ public class MetadataLauncher {
             if (line.hasOption("config")) {
                 String config = line.getOptionValue("config");
 
-                ConfigFile configFile = frameworkExecution.getFrameworkControl().getConfigFile("keyvalue",
-                        frameworkExecution.getFrameworkConfiguration().getFolderConfiguration().getFolderAbsolutePath("conf")
+                ConfigFile configFile = FrameworkControl.getInstance().getConfigFile("keyvalue",
+                        FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("conf")
                                 + File.separator + config);
 
-                metadataRepositories = new MetadataRepositoryConfiguration(configFile, getFrameworkExecution().getFrameworkConfiguration().getSettingConfiguration(), getFrameworkExecution().getFrameworkCrypto())
-                        .toMetadataRepositories(frameworkExecution.getFrameworkConfiguration());
+                metadataRepositories = new MetadataRepositoryConfiguration(configFile, FrameworkSettingConfiguration.getInstance(), FrameworkCrypto.getInstance())
+                        .toMetadataRepositories(FrameworkConfiguration.getInstance());
 
                 // metadataRepositories.addAll(metadataRepositories);
 
             } else {
                 switch (type) {
                 	case "catalog":
-                		metadataRepositories.add(getFrameworkExecution().getMetadataControl().getCatalogMetadataRepository());
+                		metadataRepositories.add(MetadataControl.getInstance().getCatalogMetadataRepository());
                 		break;
                     case "connectivity":
-                        metadataRepositories.add(getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository());
+                        metadataRepositories.add(MetadataControl.getInstance().getConnectivityMetadataRepository());
                         break;
                     case "control":
-                        metadataRepositories.add(getFrameworkExecution().getMetadataControl().getControlMetadataRepository());
+                        metadataRepositories.add(MetadataControl.getInstance().getControlMetadataRepository());
                         break;
                     case "design":
-                        metadataRepositories.add(getFrameworkExecution().getMetadataControl().getDesignMetadataRepository());
+                        metadataRepositories.add(MetadataControl.getInstance().getDesignMetadataRepository());
                         break;
                     case "result":
-                        metadataRepositories.add(getFrameworkExecution().getMetadataControl().getResultMetadataRepository());
+                        metadataRepositories.add(MetadataControl.getInstance().getResultMetadataRepository());
                         break;
                     case "trace":
-                        metadataRepositories.add(getFrameworkExecution().getMetadataControl().getTraceMetadataRepository());
+                        metadataRepositories.add(MetadataControl.getInstance().getTraceMetadataRepository());
                         break;
                     case "general":
-                    	metadataRepositories.add(getFrameworkExecution().getMetadataControl().getCatalogMetadataRepository());
-                        metadataRepositories.add(getFrameworkExecution().getMetadataControl().getConnectivityMetadataRepository());
-                        metadataRepositories.add(getFrameworkExecution().getMetadataControl().getControlMetadataRepository());
-                        metadataRepositories.add(getFrameworkExecution().getMetadataControl().getDesignMetadataRepository());
-                        metadataRepositories.add(getFrameworkExecution().getMetadataControl().getResultMetadataRepository());
-                        metadataRepositories.add(getFrameworkExecution().getMetadataControl().getTraceMetadataRepository());
+                    	metadataRepositories.add(MetadataControl.getInstance().getCatalogMetadataRepository());
+                        metadataRepositories.add(MetadataControl.getInstance().getConnectivityMetadataRepository());
+                        metadataRepositories.add(MetadataControl.getInstance().getControlMetadataRepository());
+                        metadataRepositories.add(MetadataControl.getInstance().getDesignMetadataRepository());
+                        metadataRepositories.add(MetadataControl.getInstance().getResultMetadataRepository());
+                        metadataRepositories.add(MetadataControl.getInstance().getTraceMetadataRepository());
                         break;
                     default:
                         System.out.println("Unknown Option -type (type) = " + type);

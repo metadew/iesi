@@ -3,6 +3,7 @@ package io.metadew.iesi.script.operation;
 import io.metadew.iesi.connection.database.connection.SqliteDatabaseConnection;
 import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.connection.tools.FolderTools;
+import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import org.apache.commons.io.FilenameUtils;
 
@@ -28,7 +29,7 @@ public class StageOperation {
         this.setStageName(stageName);
         this.setStageCleanup(StageCleanup);
 
-        String stageFolderName = this.getFrameworkExecution().getFrameworkConfiguration().getFolderConfiguration().getFolderAbsolutePath("run.tmp") + File.separator + "stage";
+        String stageFolderName = FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("run.tmp") + File.separator + "stage";
         FolderTools.createFolder(stageFolderName);
         this.setStageFileName(this.getStageName() + ".db3");
         this.setStageFilePath(FilenameUtils.normalize(stageFolderName + File.separator + this.getStageFileName()));

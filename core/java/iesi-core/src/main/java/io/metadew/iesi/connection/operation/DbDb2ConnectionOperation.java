@@ -4,6 +4,8 @@ import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.Db2Database;
 import io.metadew.iesi.connection.database.connection.Db2DatabaseConnection;
 import io.metadew.iesi.connection.tools.ConnectionTools;
+import io.metadew.iesi.framework.crypto.FrameworkCrypto;
+import io.metadew.iesi.framework.execution.FrameworkControl;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
@@ -39,19 +41,19 @@ public class DbDb2ConnectionOperation {
         for (ConnectionParameter connectionParameter : connection.getParameters()) {
             if (connectionParameter.getName().equalsIgnoreCase("host")) {
                 hostName = (connectionParameter.getValue());
-                hostName = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(hostName);
+                hostName = FrameworkControl.getInstance().resolveConfiguration(hostName);
             } else if (connectionParameter.getName().equalsIgnoreCase("port")) {
                 portNumberTemp = connectionParameter.getValue();
-                portNumberTemp = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(portNumberTemp);
+                portNumberTemp = FrameworkControl.getInstance().resolveConfiguration(portNumberTemp);
             } else if (connectionParameter.getName().equalsIgnoreCase("database")) {
                 databaseName = connectionParameter.getValue();
-                databaseName = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(databaseName);
+                databaseName = FrameworkControl.getInstance().resolveConfiguration(databaseName);
             } else if (connectionParameter.getName().equalsIgnoreCase("user")) {
                 userName = connectionParameter.getValue();
-                userName = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(userName);
+                userName = FrameworkControl.getInstance().resolveConfiguration(userName);
             } else if (connectionParameter.getName().equalsIgnoreCase("password")) {
                 userPassword = connectionParameter.getValue();
-                userPassword = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(userPassword);
+                userPassword = FrameworkControl.getInstance().resolveConfiguration(userPassword);
             }
         }
 
@@ -88,15 +90,15 @@ public class DbDb2ConnectionOperation {
         for (ConnectionTypeParameter connectionTypeParameter : connectionType.getParameters()) {
             if (connectionTypeParameter.getEncrypted().equalsIgnoreCase("y")) {
                 if (connectionTypeParameter.getName().equalsIgnoreCase("host")) {
-                    hostName = this.getFrameworkExecution().getFrameworkCrypto().decrypt(hostName);
+                    hostName = FrameworkCrypto.getInstance().decrypt(hostName);
                 } else if (connectionTypeParameter.getName().equalsIgnoreCase("port")) {
-                    portNumberTemp = this.getFrameworkExecution().getFrameworkCrypto().decrypt(portNumberTemp);
+                    portNumberTemp = FrameworkCrypto.getInstance().decrypt(portNumberTemp);
                 } else if (connectionTypeParameter.getName().equalsIgnoreCase("database")) {
-                    databaseName = this.getFrameworkExecution().getFrameworkCrypto().decrypt(databaseName);
+                    databaseName = FrameworkCrypto.getInstance().decrypt(databaseName);
                 } else if (connectionTypeParameter.getName().equalsIgnoreCase("user")) {
-                    userName = this.getFrameworkExecution().getFrameworkCrypto().decrypt(userName);
+                    userName = FrameworkCrypto.getInstance().decrypt(userName);
                 } else if (connectionTypeParameter.getName().equalsIgnoreCase("password")) {
-                    userPassword = this.getFrameworkExecution().getFrameworkCrypto().decrypt(userPassword);
+                    userPassword = FrameworkCrypto.getInstance().decrypt(userPassword);
                 }
             }
         }

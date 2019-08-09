@@ -19,11 +19,11 @@ public class ScriptDesignTraceService {
     private ScriptParameterDesignTraceConfiguration scriptParameterDesignTraceConfiguration;
     private ActionDesignTraceService actionDesignTraceService;
 
-    public ScriptDesignTraceService(MetadataControl metadataControl) {
-        this.scriptDesignTraceConfiguration = new ScriptDesignTraceConfiguration(metadataControl);
-        this.scriptVersionDesignTraceConfiguration = new ScriptVersionDesignTraceConfiguration(metadataControl);
-        this.scriptParameterDesignTraceConfiguration = new ScriptParameterDesignTraceConfiguration(metadataControl);
-        this.actionDesignTraceService = new ActionDesignTraceService(metadataControl);
+    public ScriptDesignTraceService() {
+        this.scriptDesignTraceConfiguration = new ScriptDesignTraceConfiguration();
+        this.scriptVersionDesignTraceConfiguration = new ScriptVersionDesignTraceConfiguration();
+        this.scriptParameterDesignTraceConfiguration = new ScriptParameterDesignTraceConfiguration();
+        this.actionDesignTraceService = new ActionDesignTraceService();
     }
 
     public void trace(ScriptExecution scriptExecution) {

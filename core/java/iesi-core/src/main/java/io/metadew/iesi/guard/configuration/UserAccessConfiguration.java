@@ -2,6 +2,7 @@ package io.metadew.iesi.guard.configuration;
 
 import io.metadew.iesi.framework.crypto.Password;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.guard.definition.UserAccess;
 import io.metadew.iesi.metadata.configuration.UserConfiguration;
 import io.metadew.iesi.metadata.definition.User;
@@ -21,7 +22,7 @@ public class UserAccessConfiguration {
         UserAccess userAccess = new UserAccess();
         userAccess.setUserName(userName);
 
-        UserConfiguration userConfiguration = new UserConfiguration(this.getFrameworkExecution().getFrameworkInstance());
+        UserConfiguration userConfiguration = new UserConfiguration(FrameworkInstance.getInstance());
         Optional<User> user = userConfiguration.getUser(userName);
 
         try {

@@ -6,6 +6,7 @@ import io.metadew.iesi.connection.database.connection.SqliteDatabaseConnection;
 import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.framework.configuration.FrameworkConfiguration;
 import io.metadew.iesi.framework.crypto.FrameworkCrypto;
+import io.metadew.iesi.framework.definition.Framework;
 import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
 import io.metadew.iesi.framework.execution.FrameworkControl;
 import io.metadew.iesi.metadata.execution.MetadataControl;
@@ -30,15 +31,28 @@ public class FrameworkInstance {
 	private String executionServerFilePath;
 	private FrameworkInitializationFile frameworkInitializationFile;
 
-	public FrameworkInstance() {
-		this("write", null);
+
+	private static FrameworkInstance INSTANCE;
+
+	public synchronized static FrameworkInstance getInstance() {
+		if (INSTANCE == null) {
+			INSTANCE = new FrameworkInstance();
+		}
+		return INSTANCE;
 	}
 
-	public FrameworkInstance(FrameworkInitializationFile frameworkInitializationFile) {
-		this("write", frameworkInitializationFile);
+	private FrameworkInstance() {}
+
+
+	public void init() {
+		init("write", null);
 	}
 
-	public FrameworkInstance(String logonType, FrameworkInitializationFile frameworkInitializationFile) {
+	public void init(FrameworkInitializationFile frameworkInitializationFile) {
+		init("write", frameworkInitializationFile);
+	}
+
+	public void init(String logonType, FrameworkInitializationFile frameworkInitializationFile) {
 		// Get the framework configuration
 		this.frameworkConfiguration = FrameworkConfiguration.getInstance();
 		frameworkConfiguration.init();
@@ -88,7 +102,7 @@ public class FrameworkInstance {
 		Executor.getInstance().init(this);
 	}
 
-	public FrameworkInstance(String logonType, FrameworkInitializationFile frameworkInitializationFile,
+	public void init(String logonType, FrameworkInitializationFile frameworkInitializationFile,
 			FrameworkConfiguration frameworkConfiguration) {
 		this.frameworkConfiguration = frameworkConfiguration;
 		this.frameworkInitializationFile = frameworkInitializationFile;
@@ -123,24 +137,9 @@ public class FrameworkInstance {
 		Requestor.getInstance().init(this);
 	}
 
-	// Methods
-	private void initializeFrameworkExecution(String logonType,
-			FrameworkInitializationFile frameworkInitializationFile) {
-
-	}
-
-	public void setSettingsList(String input) {
-		this.getFrameworkControl().setSettingsList(input);
-	}
-
 	// Getters and Setters
 	public ExecutionServerMetadataRepository getExecutionServerRepositoryConfiguration() {
 		return executionServerRepositoryConfiguration;
-	}
-
-	public void setExecutionServerRepositoryConfiguration(
-			ExecutionServerMetadataRepository executionServerRepositoryConfiguration) {
-		this.executionServerRepositoryConfiguration = executionServerRepositoryConfiguration;
 	}
 
 	public FrameworkConfiguration getFrameworkConfiguration() {
@@ -171,23 +170,11 @@ public class FrameworkInstance {
 		return frameworkControl;
 	}
 
-	public void setFrameworkControl(FrameworkControl frameworkControl) {
-		this.frameworkControl = frameworkControl;
-	}
-
 	public FrameworkInitializationFile getFrameworkInitializationFile() {
 		return frameworkInitializationFile;
 	}
 
-	public void setFrameworkInitializationFile(FrameworkInitializationFile frameworkInitializationFile) {
-		this.frameworkInitializationFile = frameworkInitializationFile;
-	}
-
 	public String getExecutionServerFilePath() {
 		return executionServerFilePath;
-	}
-
-	public void setExecutionServerFilePath(String executionServerFilePath) {
-		this.executionServerFilePath = executionServerFilePath;
 	}
 }

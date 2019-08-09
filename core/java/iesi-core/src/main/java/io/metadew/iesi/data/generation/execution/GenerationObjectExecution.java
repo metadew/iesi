@@ -4,6 +4,7 @@ import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.connection.tools.FolderTools;
 import io.metadew.iesi.data.generation.configuration.*;
 import io.metadew.iesi.data.generation.tools.GenerationTools;
+import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import org.yaml.snakeyaml.Yaml;
 
@@ -93,7 +94,7 @@ public class GenerationObjectExecution {
         // Default Configuration
         try {
             for (File file : FolderTools.getFilesInFolder(
-                    this.getFrameworkExecution().getFrameworkConfiguration().getFolderConfiguration().getFolderAbsolutePath("metadata.gen"),
+                    FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.gen"),
                     "regex", ".+\\.yml")) {
 
                 if (i == 0) {
@@ -111,7 +112,7 @@ public class GenerationObjectExecution {
         // User configuration
         try {
             for (File file : FolderTools.getFilesInFolder(
-                    this.getFrameworkExecution().getFrameworkConfiguration().getFolderConfiguration().getFolderAbsolutePath("metadata.conf"),
+                    FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.conf"),
                     "regex", ".+\\.yml")) {
 
                 if (i == 0) {

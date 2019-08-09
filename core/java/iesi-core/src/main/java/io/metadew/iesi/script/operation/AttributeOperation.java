@@ -1,6 +1,7 @@
 package io.metadew.iesi.script.operation;
 
 import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.metadata.execution.MetadataControl;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import org.apache.logging.log4j.Level;
@@ -40,16 +41,16 @@ public class AttributeOperation {
         String query = "";
         if (this.getType().equals("component")) {
             query = "select a.comp_id, a.comp_att_nm, a.comp_att_val from "
-                    + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ComponentAttributes")
+                    + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("ComponentAttributes")
                     + " a inner join "
-                    + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Components")
+                    + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("Components")
                     + " b on a.comp_id = b.comp_id where b.comp_nm = '" + this.getName() + "'";
         }
 
         // Set attribute values
         CachedRowSet crs = null;
         this.getExecutionControl().logMessage(this.getActionExecution(), "component.name=" + name, Level.DEBUG);
-        crs = this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeQuery(query, "reader");
+        crs = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(query, "reader");
         try {
             while (crs.next()) {
                 String key = crs.getString("COMP_ATT_NM");

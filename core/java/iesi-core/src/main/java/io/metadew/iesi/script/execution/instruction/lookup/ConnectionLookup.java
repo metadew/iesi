@@ -1,5 +1,6 @@
 package io.metadew.iesi.script.execution.instruction.lookup;
 
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.ConnectionParameterConfiguration;
 import io.metadew.iesi.script.execution.ExecutionControl;
 
@@ -37,7 +38,7 @@ public class ConnectionLookup implements LookupInstruction {
         String connectionParameterName = inputParameterMatcher.group(CONNECTION_PARAMETER_NAME_KEY);
 
         ConnectionParameterConfiguration connectionParameterConfiguration = new ConnectionParameterConfiguration(
-                executionControl.getFrameworkExecution().getFrameworkInstance());
+                FrameworkInstance.getInstance());
         Optional<String> connectionParameterValue = connectionParameterConfiguration.getConnectionParameterValue(connectionName,
                 executionControl.getEnvName(), connectionParameterName);
 

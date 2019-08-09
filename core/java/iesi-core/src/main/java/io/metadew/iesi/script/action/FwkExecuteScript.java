@@ -4,8 +4,10 @@ import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeService;
 import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.datatypes.text.Text;
+import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
 import io.metadew.iesi.framework.configuration.FrameworkStatus;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.script.ScriptConfiguration;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.script.Script;
@@ -14,7 +16,8 @@ import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.execution.ScriptExecutionBuilder;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
-import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -50,6 +53,7 @@ public class FwkExecuteScript {
 
     private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
     private DataTypeService dataTypeService;
+    private static final Logger LOGGER = LogManager.getLogger();
 
     public FwkExecuteScript(FrameworkExecution frameworkExecution, ExecutionControl executionControl, ScriptExecution scriptExecution,
                             ActionExecution actionExecution) {
@@ -58,7 +62,7 @@ public class FwkExecuteScript {
         this.setActionExecution(actionExecution);
         this.setScriptExecution(scriptExecution);
         this.setActionParameterOperationMap(new HashMap<>());
-        this.dataTypeService = new DataTypeService(frameworkExecution.getFrameworkConfiguration().getFolderConfiguration(), executionControl.getExecutionRuntime());
+        this.dataTypeService = new DataTypeService(executionControl.getExecutionRuntime());
     }
 
     public void prepare() {
@@ -126,8 +130,8 @@ public class FwkExecuteScript {
         if (parameterList instanceof Text) {
             return Optional.of(parameterList.toString());
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for parameterList",
-                    parameterList.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for parameterList",
+                    parameterList.getClass()));
             return Optional.empty();
         }
     }
@@ -139,7 +143,7 @@ public class FwkExecuteScript {
         }
 
         try {
-            ScriptConfiguration scriptConfiguration = new ScriptConfiguration(this.getFrameworkExecution().getFrameworkInstance());
+            ScriptConfiguration scriptConfiguration = new ScriptConfiguration(FrameworkInstance.getInstance());
             // Script script = scriptConfiguration.get(this.getScriptName().getValue());
             Script script = scriptVersion
                     .map(version -> scriptConfiguration.get(scriptName, version))
@@ -182,19 +186,19 @@ public class FwkExecuteScript {
             if (matcher.find()) {
                 parameterMap.put(matcher.group("parameter"), matcher.group("value"));
             } else {
-                this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " parameter entry ''{0}'' does not follow correct syntax",
-                        parameterEntry), Level.WARN);
+                LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " parameter entry ''{0}'' does not follow correct syntax",
+                        parameterEntry));
             }
             return parameterMap;
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for parameter entry",
-                    parameterEntry.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for parameter entry",
+                    parameterEntry.getClass()));
             return parameterMap;
         }
     }
 
     @SuppressWarnings("unused")
-	private Optional<Map<String, String>> convertParameterList(DataType list) {
+    private Optional<Map<String, String>> convertParameterList(DataType list) {
         if (list == null) {
             return Optional.empty();
         }
@@ -209,8 +213,8 @@ public class FwkExecuteScript {
             }
             return Optional.of(parameterMap);
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("fwk.setParameterList does not accept {0} as type for list",
-                    list.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format("fwk.setParameterList does not accept {0} as type for list",
+                    list.getClass()));
             return Optional.empty();
         }
     }
@@ -222,8 +226,8 @@ public class FwkExecuteScript {
         if (scriptVersion instanceof Text) {
             return Optional.of(Long.parseLong(scriptVersion.toString()));
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("fwk.executeScript does not accept {0} as type for script name",
-                    scriptVersion.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format("fwk.executeScript does not accept {0} as type for script name",
+                    scriptVersion.getClass()));
             return Optional.empty();
         }
     }
@@ -235,8 +239,8 @@ public class FwkExecuteScript {
         if (parameterFileName instanceof Text) {
             return Optional.of(parameterFileName.toString());
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("fwk.executeScript does not accept {0} as type for parameter file name",
-                    parameterFileName.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format("fwk.executeScript does not accept {0} as type for parameter file name",
+                    parameterFileName.getClass()));
             return Optional.empty();
         }
     }
@@ -249,8 +253,8 @@ public class FwkExecuteScript {
         if (environmentName instanceof Text) {
             return Optional.of(environmentName.toString());
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("fwk.executeScript does not accept {0} as type for environment name",
-                    environmentName.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format("fwk.executeScript does not accept {0} as type for environment name",
+                    environmentName.getClass()));
             return Optional.of(environmentName.toString());
         }
     }
@@ -259,8 +263,8 @@ public class FwkExecuteScript {
         if (scriptName instanceof Text) {
             return scriptName.toString();
         } else {
-            frameworkExecution.getFrameworkLog().log(MessageFormat.format("fwk.executeScript does not accept {0} as type for script name",
-                    scriptName.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format("fwk.executeScript does not accept {0} as type for script name",
+                    scriptName.getClass()));
             return scriptName.toString();
         }
     }

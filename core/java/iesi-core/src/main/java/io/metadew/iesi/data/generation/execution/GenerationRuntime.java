@@ -3,6 +3,7 @@ package io.metadew.iesi.data.generation.execution;
 import io.metadew.iesi.client.execution.ProgressBar;
 import io.metadew.iesi.connection.database.connection.SqliteDatabaseConnection;
 import io.metadew.iesi.connection.tools.FolderTools;
+import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.Generation;
 import io.metadew.iesi.metadata.definition.GenerationRule;
@@ -33,7 +34,7 @@ public class GenerationRuntime {
 
 	private void createTemporaryDatabase() {
 		// Create work database
-		String temporaryDatabaseFolder = this.getFrameworkExecution().getFrameworkConfiguration().getFolderConfiguration().getFolderAbsolutePath("run.tmp")
+		String temporaryDatabaseFolder = FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("run.tmp")
 				+ File.separator + this.getExecutionControl().getRunId();
 		FolderTools.createFolder(temporaryDatabaseFolder);
 		String temporaryDatabaseFile = "genTempDb" + ".db3";

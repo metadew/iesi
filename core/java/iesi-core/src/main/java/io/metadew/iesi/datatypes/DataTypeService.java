@@ -33,8 +33,8 @@ public class DataTypeService {
     private TextService textService;
 
 
-    public DataTypeService(FrameworkFolderConfiguration frameworkFolderConfiguration, ExecutionRuntime executionRuntime) {
-        this.keyValueDatasetService = new KeyValueDatasetService(this, frameworkFolderConfiguration, executionRuntime);
+    public DataTypeService(ExecutionRuntime executionRuntime) {
+        this.keyValueDatasetService = new KeyValueDatasetService(this, executionRuntime);
         this.arrayService = new ArrayService(this);
         this.textService = new TextService();
     }

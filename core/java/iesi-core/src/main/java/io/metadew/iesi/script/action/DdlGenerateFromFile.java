@@ -16,6 +16,8 @@ import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -36,6 +38,7 @@ public class DdlGenerateFromFile {
     private ActionParameterOperation outputPath;
     private ActionParameterOperation outputFile;
     private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
+    private static final Logger LOGGER = LogManager.getLogger();
 
     // Constructors
     public DdlGenerateFromFile() {
@@ -118,8 +121,8 @@ public class DdlGenerateFromFile {
         if (inputFile instanceof Text) {
             return inputFile.toString();
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for connection name",
-            		inputFile.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for connection name",
+            		inputFile.getClass()));
             return inputFile.toString();
         }
     }
@@ -128,8 +131,8 @@ public class DdlGenerateFromFile {
         if (inputPath instanceof Text) {
             return inputPath.toString();
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() +  " does not accept {0} as type for query",
-            		inputPath.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() +  " does not accept {0} as type for query",
+            		inputPath.getClass()));
             return inputPath.toString();
         }
     }
@@ -139,8 +142,8 @@ public class DdlGenerateFromFile {
         if (outputType instanceof Text) {
             return outputType.toString();
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for dataset reference name",
-            		outputType.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for dataset reference name",
+            		outputType.getClass()));
             return outputType.toString();
         }
     }
@@ -149,8 +152,8 @@ public class DdlGenerateFromFile {
         if (outputPath instanceof Text) {
             return outputPath.toString();
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for dataset reference name",
-            		outputPath.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for dataset reference name",
+            		outputPath.getClass()));
             return outputPath.toString();
         }
     }
@@ -159,8 +162,8 @@ public class DdlGenerateFromFile {
         if (outputFile instanceof Text) {
             return outputFile.toString();
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for dataset reference name",
-            		outputFile.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for dataset reference name",
+            		outputFile.getClass()));
             return outputFile.toString();
         }
     }

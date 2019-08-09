@@ -7,6 +7,8 @@ import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.GenerationRuleParameter;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -19,6 +21,7 @@ public class DtNow {
 	private FrameworkExecution frameworkExecution;
 	private ExecutionControl executionControl;
 	private String generationRuleTypeName = "dt.now";
+	private static final Logger LOGGER = LogManager.getLogger();
 	
 	//Defaults
 	 private static final String DEFAULT_FORMAT = "yyyy-MM-dd HH:mm:ss";
@@ -46,8 +49,7 @@ public class DtNow {
 	//
 	public boolean execute() {
 		try {
-			this.getFrameworkExecution().getFrameworkLog()
-					.log("generation.rule.type=" + this.getGenerationRuleTypeName(), Level.INFO);
+			LOGGER.warn("generation.rule.type=" + this.getGenerationRuleTypeName(), Level.INFO);
 
 			// Reset Parameters
 			this.setFormat(new GenerationRuleParameterExecution(this.getFrameworkExecution(), this.getEoControl(),

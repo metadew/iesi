@@ -4,6 +4,8 @@ import io.metadew.iesi.data.generation.execution.GenerationControlRuleExecution;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
@@ -16,6 +18,7 @@ public class RecordCount {
     private ExecutionControl executionControl;
     private String generationControlRuleTypeName = "record.count";
     private String output = "";
+    private static final Logger LOGGER = LogManager.getLogger();
 
     // Parameters
 
@@ -30,8 +33,7 @@ public class RecordCount {
     //
     public boolean execute() {
         try {
-            this.getFrameworkExecution().getFrameworkLog()
-                    .log("generation.control.rule.type=" + this.getGenerationControlRuleTypeName(), Level.INFO);
+            LOGGER.info("generation.control.rule.type=" + this.getGenerationControlRuleTypeName());
 
             // Reset Parameters
 

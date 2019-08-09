@@ -3,6 +3,7 @@ package io.metadew.iesi.script.execution.instruction.lookup;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeService;
 import io.metadew.iesi.datatypes.array.Array;
+import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
 import io.metadew.iesi.script.execution.ExecutionControl;
 
 import java.text.MessageFormat;
@@ -20,7 +21,7 @@ public class ListLookup implements LookupInstruction {
     private final DataTypeService dataTypeService;
 
     public ListLookup(ExecutionControl executionControl) {
-        this.dataTypeService = new DataTypeService(executionControl.getFrameworkExecution().getFrameworkConfiguration().getFolderConfiguration(), executionControl.getExecutionRuntime());
+        this.dataTypeService = new DataTypeService(executionControl.getExecutionRuntime());
     }
 
     @Override

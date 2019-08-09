@@ -74,13 +74,14 @@ public class Negotiator {
     public void runScript() throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException,
             InstantiationException, IllegalAccessException, ScriptExecutionBuildException {
         // Create the framework instance
-        FrameworkInstance frameworkInstance = new FrameworkInstance();
+        FrameworkInstance frameworkInstance = FrameworkInstance.getInstance();
+        frameworkInstance.init();
 
         // Create the framework execution
         Context context = new Context("negotiator", "");
-        FrameworkExecution frameworkExecution = new FrameworkExecution(frameworkInstance, new FrameworkExecutionContext(context), null);
+        FrameworkExecution frameworkExecution = new FrameworkExecution(new FrameworkExecutionContext(context));
         // Get the Script
-        ScriptConfiguration scriptConfiguration = new ScriptConfiguration(frameworkExecution.getFrameworkInstance());
+        ScriptConfiguration scriptConfiguration = new ScriptConfiguration(frameworkInstance);
         Script script = scriptConfiguration.get("S2").get();
 
 

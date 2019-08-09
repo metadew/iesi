@@ -3,7 +3,7 @@ package io.metadew.iesi.framework.execution;
 import io.metadew.iesi.common.properties.PropertiesTools;
 import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.connection.tools.FolderTools;
-import io.metadew.iesi.framework.configuration.FrameworkConfiguration;
+import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
 import io.metadew.iesi.framework.configuration.FrameworkKeywords;
 import io.metadew.iesi.framework.control.ProcessIdentifierController;
 import io.metadew.iesi.framework.definition.FrameworkRunIdentifier;
@@ -15,7 +15,6 @@ import java.util.UUID;
 
 public class FrameworkRuntime {
 
-	private FrameworkConfiguration frameworkConfiguration;
 	private String runCacheFolderName;
 	private String localHostChallenge;
 	private String localHostChallengeFileName;
@@ -23,38 +22,67 @@ public class FrameworkRuntime {
 	private String processIdFileName;
 	private String runId;
 
-	public FrameworkRuntime(FrameworkConfiguration frameworkConfiguration, FrameworkRunIdentifier frameworkRunIdentifier) {
-		this.setFrameworkConfiguration(frameworkConfiguration);
+	public FrameworkRuntime() {
+		this(UUID.randomUUID().toString());
+	}
 
-		// Create run id
-		if (frameworkRunIdentifier == null) {
-			this.setRunId(UUID.randomUUID().toString());
-		} else {
-			this.setRunId(frameworkRunIdentifier.getId());
-		}
+	public FrameworkRuntime(FrameworkRunIdentifier frameworkRunIdentifier) {
+		this(frameworkRunIdentifier.getId());
+	}
 
-		// Create run cache folder
-		this.setRunCacheFolderName(
-				this.getFrameworkConfiguration().getFolderConfiguration().getFolderAbsolutePath("run.cache")
-						+ File.separator + this.getRunId());
-		FolderTools.createFolder(this.getRunCacheFolderName());
+	public FrameworkRuntime(String runId) {
+		this.runId = runId;
+		this.runCacheFolderName = FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("run.cache")
+				+ File.separator + this.getRunId();
+		FolderTools.createFolder(runCacheFolderName);
 
-		// Create spool folder
-		this.setRunSpoolFolderName(
-				this.getRunCacheFolderName() + File.separator + "spool");
-		FolderTools.createFolder(this.getRunSpoolFolderName());
+		this.runSpoolFolderName = this.getRunCacheFolderName() + File.separator + "spool";
+		FolderTools.createFolder(runSpoolFolderName);
 
-		// Create localhost challenge
-		this.setLocalHostChallenge(UUID.randomUUID().toString());
-		this.setLocalHostChallengeFileName(FilenameUtils.normalize(this.getRunCacheFolderName() + File.separator + this.getLocalHostChallenge()  + ".fwk"));
-		FileTools.appendToFile(this.getLocalHostChallengeFileName(), "", "localhost.challenge=" + this.getLocalHostChallenge());
+		this.localHostChallenge = UUID.randomUUID().toString();
+		this.localHostChallengeFileName = FilenameUtils.normalize(runCacheFolderName + File.separator + this.getLocalHostChallenge()  + ".fwk");
+		FileTools.appendToFile(localHostChallengeFileName, "", "localhost.challenge=" + this.getLocalHostChallenge());
 
 		// Initialize process id
-		this.setProcessIdFileName(FilenameUtils.normalize(this.getRunCacheFolderName() + File.separator  + "processId.fwk"));
+		this.processIdFileName = FilenameUtils.normalize(runCacheFolderName + File.separator  + "processId.fwk");
 		Properties processIdProperties = new Properties();
 		processIdProperties.put("processId", "-1");
-		PropertiesTools.setProperties(this.getProcessIdFileName(), processIdProperties);
+		PropertiesTools.setProperties(processIdFileName, processIdProperties);
 	}
+
+
+//	public FrameworkRuntime(FrameworkConfiguration frameworkConfiguration, FrameworkRunIdentifier frameworkRunIdentifier) {
+//		this.setFrameworkConfiguration(frameworkConfiguration);
+//
+//		// Create run id
+//		if (frameworkRunIdentifier == null) {
+//			this.setRunId(UUID.randomUUID().toString());
+//		} else {
+//			this.setRunId(frameworkRunIdentifier.getId());
+//		}
+//
+//		// Create run cache folder
+//		this.setRunCacheFolderName(
+//				this.getFrameworkConfiguration().getFolderConfiguration().getFolderAbsolutePath("run.cache")
+//						+ File.separator + this.getRunId());
+//		FolderTools.createFolder(this.getRunCacheFolderName());
+//
+//		// Create spool folder
+//		this.setRunSpoolFolderName(
+//				this.getRunCacheFolderName() + File.separator + "spool");
+//		FolderTools.createFolder(this.getRunSpoolFolderName());
+//
+//		// Create localhost challenge
+//		this.setLocalHostChallenge(UUID.randomUUID().toString());
+//		this.setLocalHostChallengeFileName(FilenameUtils.normalize(this.getRunCacheFolderName() + File.separator + this.getLocalHostChallenge()  + ".fwk"));
+//		FileTools.appendToFile(this.getLocalHostChallengeFileName(), "", "localhost.challenge=" + this.getLocalHostChallenge());
+//
+//		// Initialize process id
+//		this.setProcessIdFileName(FilenameUtils.normalize(this.getRunCacheFolderName() + File.separator  + "processId.fwk"));
+//		Properties processIdProperties = new Properties();
+//		processIdProperties.put("processId", "-1");
+//		PropertiesTools.setProperties(this.getProcessIdFileName(), processIdProperties);
+//	}
 	
 	public Long getNextProcessId() {
 		String spoolFileName = this.getRunSpoolFolderName() + File.separator + UUID.randomUUID().toString() + ".fwk";
@@ -74,18 +102,6 @@ public class FrameworkRuntime {
 		return runCacheFolderName;
 	}
 
-	public void setRunCacheFolderName(String runCacheFolderName) {
-		this.runCacheFolderName = runCacheFolderName;
-	}
-
-	public FrameworkConfiguration getFrameworkConfiguration() {
-		return frameworkConfiguration;
-	}
-
-	public void setFrameworkConfiguration(FrameworkConfiguration frameworkConfiguration) {
-		this.frameworkConfiguration = frameworkConfiguration;
-	}
-
 	public String getRunId() {
 		return runId;
 	}
@@ -98,32 +114,16 @@ public class FrameworkRuntime {
 		return localHostChallengeFileName;
 	}
 
-	public void setLocalHostChallengeFileName(String localHostChallengeFileName) {
-		this.localHostChallengeFileName = localHostChallengeFileName;
-	}
-
 	public String getLocalHostChallenge() {
 		return localHostChallenge;
-	}
-
-	public void setLocalHostChallenge(String localHostChallenge) {
-		this.localHostChallenge = localHostChallenge;
 	}
 
 	public String getProcessIdFileName() {
 		return processIdFileName;
 	}
 
-	public void setProcessIdFileName(String processIdFileName) {
-		this.processIdFileName = processIdFileName;
-	}
-
 	public String getRunSpoolFolderName() {
 		return runSpoolFolderName;
-	}
-
-	public void setRunSpoolFolderName(String runSpoolFolderName) {
-		this.runSpoolFolderName = runSpoolFolderName;
 	}
 
 }

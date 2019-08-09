@@ -5,14 +5,18 @@ import io.metadew.iesi.data.definition.DataField;
 import io.metadew.iesi.data.definition.DataRow;
 import io.metadew.iesi.data.definition.DataTable;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.metadata.execution.MetadataControl;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class RestoreTableOperation {
 
     private FrameworkExecution frameworkExecution;
     private ExecutionControl executionControl;
     private DataTable dataTable;
+    private static final Logger LOGGER = LogManager.getLogger();
 
     // Constructors
     public RestoreTableOperation(FrameworkExecution frameworkExecution, ExecutionControl executionControl, DataTable dataTable) {
@@ -26,8 +30,7 @@ public class RestoreTableOperation {
         for (DataRow dataRow : this.getDataTable().getRows()) {
             // Skip CFG_MTD tables
             if (this.getDataTable().getName().contains("CFG_MTD")) {
-                this.getFrameworkExecution().getFrameworkLog()
-                        .log("restore.table.skip=" + this.getDataTable().getName(), Level.DEBUG);
+                LOGGER.debug("restore.table.skip=" + this.getDataTable().getName());
                 return;
             }
 
@@ -66,8 +69,8 @@ public class RestoreTableOperation {
             // TODO
             sql = "";
             sql += "INSERT INTO "
-                    // + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getMetadataTableConfiguration().getSchemaPrefix()
-                    + this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().getTableNamePrefix()
+                    // + MetadataControl.getInstance().getDesignMetadataRepository().getMetadataTableConfiguration().getSchemaPrefix()
+                    + MetadataControl.getInstance().getDesignMetadataRepository().getTableNamePrefix()
                     + this.getDataTable().getName();
             sql += " (";
             sql += sqlFields;
@@ -76,7 +79,7 @@ public class RestoreTableOperation {
             sql += ");";
 
             // TODO repo redesign
-            this.getFrameworkExecution().getMetadataControl().getDesignMetadataRepository().executeUpdate(sql);
+            MetadataControl.getInstance().getDesignMetadataRepository().executeUpdate(sql);
         }
 
     }

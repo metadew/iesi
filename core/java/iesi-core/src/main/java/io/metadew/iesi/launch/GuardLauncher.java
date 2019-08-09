@@ -57,15 +57,15 @@ public class GuardLauncher {
             System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 
             // Create the framework instance
-            FrameworkInstance frameworkInstance = new FrameworkInstance();
+            FrameworkInstance frameworkInstance = FrameworkInstance.getInstance();
+            frameworkInstance.init();
 
             // Create the framework execution
             FrameworkExecutionSettings frameworkExecutionSettings = new FrameworkExecutionSettings(settings);
             Context context = new Context();
             context.setName("guard");
             context.setScope("user");
-            FrameworkExecution frameworkExecution = new FrameworkExecution(frameworkInstance,
-                    new FrameworkExecutionContext(context), frameworkExecutionSettings, null, new FrameworkRunIdentifier());
+            FrameworkExecution frameworkExecution = new FrameworkExecution(new FrameworkExecutionContext(context), frameworkExecutionSettings, new FrameworkRunIdentifier());
 
             String userName = "";
             String active = "";

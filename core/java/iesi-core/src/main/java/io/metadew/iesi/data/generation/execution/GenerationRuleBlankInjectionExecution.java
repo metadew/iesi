@@ -4,6 +4,8 @@ import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -16,6 +18,7 @@ public class GenerationRuleBlankInjectionExecution {
     private FrameworkExecution frameworkExecution;
     private ExecutionControl executionControl;
     private String generationRuleTypeName = "NUMBER";
+    private static final Logger LOGGER = LogManager.getLogger();
 
     // Constructors
     public GenerationRuleBlankInjectionExecution(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
@@ -26,10 +29,9 @@ public class GenerationRuleBlankInjectionExecution {
     }
 
     //
-    @SuppressWarnings({"unchecked", "rawtypes"})
     public boolean execute() {
         try {
-            this.getFrameworkExecution().getFrameworkLog().log("generation.rule.blankinjection", Level.INFO);
+            LOGGER.info("generation.rule.blankinjection");
 
             // Run the injection
             try {

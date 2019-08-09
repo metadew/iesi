@@ -1,6 +1,8 @@
 package io.metadew.iesi.script.operation;
 
+import io.metadew.iesi.framework.crypto.FrameworkCrypto;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.type.ComponentTypeParameterConfiguration;
 import io.metadew.iesi.metadata.definition.ComponentAttribute;
 import io.metadew.iesi.metadata.definition.ComponentTypeParameter;
@@ -55,7 +57,7 @@ public class HttpRequestParameterOperation {
     // Methods
     private void lookupComponentTypeParameter() {
         ComponentTypeParameterConfiguration componentTypeParameterConfiguration = new ComponentTypeParameterConfiguration(
-                this.getFrameworkExecution().getFrameworkInstance());
+                FrameworkInstance.getInstance());
         this.setComponentTypeParameter(
                 componentTypeParameterConfiguration.getComponentTypeParameter("http.request", this.getName()));
     }
@@ -106,7 +108,7 @@ public class HttpRequestParameterOperation {
         this.setValue(lookupResult.getValue());
 
         // Resolve internal encryption
-        String decryptedValue = this.getFrameworkExecution().getFrameworkCrypto().resolve(this.getFrameworkExecution(),
+        String decryptedValue = FrameworkCrypto.getInstance().resolve(this.getFrameworkExecution(),
                 this.getValue());
 
         this.setValue(decryptedValue);

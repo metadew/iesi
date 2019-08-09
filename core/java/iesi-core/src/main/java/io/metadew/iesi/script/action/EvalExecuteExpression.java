@@ -10,6 +10,8 @@ import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 import io.metadew.iesi.script.operation.ConditionOperation;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -26,6 +28,7 @@ public class EvalExecuteExpression {
     // Parameters
     private ActionParameterOperation evaluationExpression;
     private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
+    private static final Logger LOGGER = LogManager.getLogger();
 
     // Constructors
     public EvalExecuteExpression() {
@@ -86,8 +89,8 @@ public class EvalExecuteExpression {
         if (expression instanceof Text) {
             return expression.toString();
         } else {
-            this.getFrameworkExecution().getFrameworkLog().log(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for expression",
-                    expression.getClass()), Level.WARN);
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for expression",
+                    expression.getClass()));
             return expression.toString();
         }
     }

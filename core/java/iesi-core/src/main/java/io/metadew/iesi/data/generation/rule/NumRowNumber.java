@@ -7,6 +7,8 @@ import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.GenerationRuleParameter;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -17,6 +19,7 @@ public class NumRowNumber {
 	private FrameworkExecution frameworkExecution;
 	private ExecutionControl executionControl;
 	private String generationRuleTypeName = "num.rowNumber";
+	private static final Logger LOGGER = LogManager.getLogger();
 
 	// Parameters
 	private GenerationRuleParameterExecution startNumber;
@@ -41,8 +44,7 @@ public class NumRowNumber {
 	//
 	public boolean execute() {
 		try {
-			this.getFrameworkExecution().getFrameworkLog()
-					.log("generation.rule.type=" + this.getGenerationRuleTypeName(), Level.INFO);
+			LOGGER.warn("generation.rule.type=" + this.getGenerationRuleTypeName(), Level.INFO);
 
 			// Reset Parameters
 			this.setStartNumber(new GenerationRuleParameterExecution(this.getFrameworkExecution(), this.getEoControl(),

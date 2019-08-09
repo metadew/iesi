@@ -24,8 +24,8 @@ public class ScriptTraceConfiguration extends Configuration<ScriptTrace, ScriptT
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	// Constructors
-	public ScriptTraceConfiguration(MetadataControl metadataControl) {
-		super(metadataControl);
+	public ScriptTraceConfiguration() {
+		super();
 	}
 
 	@Override

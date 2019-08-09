@@ -18,9 +18,9 @@ public class ActionDesignTraceService {
     private ActionParameterDesignTraceConfiguration actionParameterDesignTraceConfiguration;
 
 
-    public ActionDesignTraceService(MetadataControl metadataControl) {
-        this.actionDesignTraceConfiguration = new ActionDesignTraceConfiguration(metadataControl);
-        this.actionParameterDesignTraceConfiguration = new ActionParameterDesignTraceConfiguration(metadataControl);
+    public ActionDesignTraceService() {
+        this.actionDesignTraceConfiguration = new ActionDesignTraceConfiguration();
+        this.actionParameterDesignTraceConfiguration = new ActionParameterDesignTraceConfiguration();
     }
 
     public void trace(String runId, Long processId, Action action) {

@@ -6,8 +6,12 @@ import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.data.generation.execution.GenerationObjectExecution;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.dataset.KeyValueDataset;
+import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
+import io.metadew.iesi.framework.configuration.FrameworkSettingConfiguration;
+import io.metadew.iesi.framework.execution.FrameworkControl;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.framework.execution.IESIMessage;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.ConnectionParameterConfiguration;
 import io.metadew.iesi.metadata.configuration.EnvironmentParameterConfiguration;
 import io.metadew.iesi.metadata.configuration.script.ScriptResultOutputConfiguration;
@@ -81,8 +85,7 @@ public class ExecutionRuntime {
         this.setRunId(runId);
 
         // Create cache folder
-        this.setRunCacheFolderName(this.getFrameworkExecution().getFrameworkConfiguration().getFolderConfiguration()
-                .getFolderAbsolutePath("run.cache") + File.separator + this.getRunId());
+        this.setRunCacheFolderName(FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("run.cache") + File.separator + this.getRunId());
         FolderTools.createFolder(this.getRunCacheFolderName());
 
         this.setRuntimeVariableConfiguration(
@@ -295,7 +298,7 @@ public class ExecutionRuntime {
         String result = "";
 
         // First level: settings
-        result = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(input);
+        result = FrameworkControl.getInstance().resolveConfiguration(input);
 
         // Second level: runtime variables
         result = this.resolveRuntimeVariables(result);
@@ -312,7 +315,7 @@ public class ExecutionRuntime {
         String result = "";
 
         // First level: settings
-        result = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(input);
+        result = FrameworkControl.getInstance().resolveConfiguration(input);
 
         // Second: Action attributes
         if (actionExecution != null) {
@@ -334,7 +337,7 @@ public class ExecutionRuntime {
         String result = "";
 
         // First level: settings
-        result = this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(input);
+        result = FrameworkControl.getInstance().resolveConfiguration(input);
 
         // third level: runtime variables
         result = this.resolveRuntimeVariables(result);
@@ -743,7 +746,7 @@ public class ExecutionRuntime {
         String connectionParameterName = parts[1].trim();
 
         ConnectionParameterConfiguration connectionParameterConfiguration = new ConnectionParameterConfiguration(
-                this.getFrameworkExecution().getFrameworkInstance());
+                FrameworkInstance.getInstance());
         Optional<String> connectionParameterValue = connectionParameterConfiguration.getConnectionParameterValue(connectionName,
                 executionControl.getEnvName(), connectionParameterName);
 
@@ -760,7 +763,7 @@ public class ExecutionRuntime {
         String environmentParameterName = parts[1].trim();
 
         EnvironmentParameterConfiguration environmentParameterConfiguration = new EnvironmentParameterConfiguration(
-                this.getFrameworkExecution().getFrameworkInstance());
+                FrameworkInstance.getInstance());
 
         return environmentParameterConfiguration.getEnvironmentParameterValue(environmentName, environmentParameterName)
                 .orElse(input);
@@ -769,7 +772,7 @@ public class ExecutionRuntime {
 
     private String lookupScriptResultInstruction(ExecutionControl executionControl, String input) {
         ScriptResultOutputConfiguration scriptResultOutputConfiguration = new ScriptResultOutputConfiguration(
-                this.getFrameworkExecution().getFrameworkInstance());
+                FrameworkInstance.getInstance());
         // TODO only for root scripts - extend to others
         return scriptResultOutputConfiguration.getScriptOutput(executionControl.getRunId(), 0, input)
                 .map(ScriptResultOutput::getValue)
@@ -809,7 +812,7 @@ public class ExecutionRuntime {
             bufferedReader = new BufferedReader(new FileReader(file));
             String readLine = "";
             while ((readLine = bufferedReader.readLine()) != null) {
-                output += this.getFrameworkExecution().getFrameworkControl().resolveConfiguration(readLine);
+                output += FrameworkControl.getInstance().resolveConfiguration(readLine);
                 output += "\n";
             }
         } catch (Exception e) {
@@ -878,9 +881,8 @@ public class ExecutionRuntime {
 
     // Define logging level
     private void defineLoggingLevel() {
-        if (this.getFrameworkExecution().getFrameworkControl()
-                .getProperty(this.getFrameworkExecution().getFrameworkConfiguration().getSettingConfiguration()
-                        .getSettingPath("commandline.display.runtime.variable").get())
+        if (FrameworkControl.getInstance()
+                .getProperty(FrameworkSettingConfiguration.getInstance().getSettingPath("commandline.display.runtime.variable").get())
                 .equals("Y")) {
             this.setLevel(Level.INFO);
         } else {
@@ -911,8 +913,7 @@ public class ExecutionRuntime {
 
     public void setKeyValueDataset(String referenceName, String datasetName, List<String> datasetLabels) throws IOException, SQLException {
         datasetMap.put(referenceName,
-                new KeyValueDataset(datasetName, datasetLabels, frameworkExecution.getFrameworkConfiguration().getFolderConfiguration(),
-                        this));
+                new KeyValueDataset(datasetName, datasetLabels, this));
     }
 
 

@@ -2,6 +2,7 @@ package io.metadew.iesi.metadata.configuration.action;
 
 import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.action.ActionResultOutput;
+import io.metadew.iesi.metadata.execution.MetadataControl;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
@@ -25,9 +26,9 @@ public class ActionResultOutputConfiguration {
 	public List<ActionResultOutput> getActionResultOutputs(String runId, long processId) {
         List<ActionResultOutput> actionResultOutputs = new ArrayList();
         CachedRowSet crsActionResultOutputs;
-        String queryActionResultOutputs = "select RUN_ID, PRC_ID, ACTION_ID, OUT_NM, OUT_VAL from " + this.getFrameworkInstance().getMetadataControl().getResultMetadataRepository().getTableNameByLabel("ActionResultOutputs")
+        String queryActionResultOutputs = "select RUN_ID, PRC_ID, ACTION_ID, OUT_NM, OUT_VAL from " + MetadataControl.getInstance().getResultMetadataRepository().getTableNameByLabel("ActionResultOutputs")
                 + " where RUN_ID = '" + runId + "' and PRC_ID = " + processId + " order by LOAD_TMS asc";
-        crsActionResultOutputs = this.getFrameworkInstance().getMetadataControl().getResultMetadataRepository().executeQuery(queryActionResultOutputs, "reader");
+        crsActionResultOutputs = MetadataControl.getInstance().getResultMetadataRepository().executeQuery(queryActionResultOutputs, "reader");
         try {
             while (crsActionResultOutputs.next()) {
             	ActionResultOutput actionResultOutput= new ActionResultOutput();

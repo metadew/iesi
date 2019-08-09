@@ -4,6 +4,7 @@ import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.GenerationRule;
 import io.metadew.iesi.metadata.definition.GenerationRuleParameter;
+import io.metadew.iesi.metadata.execution.MetadataControl;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
@@ -30,13 +31,13 @@ public class GenerationRuleConfiguration {
     public String getInsertStatement(String generationName, int generationRuleNumber) {
         String sql = "";
 
-        sql += "INSERT INTO " + this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("GenerationRules");
+        sql += "INSERT INTO " + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("GenerationRules");
         sql += " (GEN_ID, GEN_RULE_ID, GEN_RULE_NB, GEN_RULE_TYP_NM, FIELD_NM, GEN_RULE_DSC, BLANK_INJ_FL, BLANK_INJ_UNIT, BLANK_INJ_MEAS, BLANK_INJ_VAL) ";
         sql += "VALUES ";
         sql += "(";
-        sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Generations"), "GEN_ID", "GEN_NM", generationName) + ")";
+        sql += "(" + SQLTools.GetLookupIdStatement(MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("Generations"), "GEN_ID", "GEN_NM", generationName) + ")";
         sql += ",";
-        sql += "(" + SQLTools.GetNextIdStatement(this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("GenerationRules"), "GEN_RULE_ID") + ")";
+        sql += "(" + SQLTools.GetNextIdStatement(MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("GenerationRules"), "GEN_RULE_ID") + ")";
         sql += ",";
         sql += SQLTools.GetStringForSQL(generationRuleNumber);
         sql += ",";
@@ -84,8 +85,8 @@ public class GenerationRuleConfiguration {
         GenerationRule generationRule = new GenerationRule();
         CachedRowSet crsGenerationRule = null;
         String queryGenerationRule = "select GEN_ID, GEN_RULE_ID, GEN_RULE_NB, GEN_RULE_TYP_NM, FIELD_NM, GEN_RULE_DSC, BLANK_INJ_FL, BLANK_INJ_UNIT, BLANK_INJ_MEAS, BLANK_INJ_VAL from "
-                + this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("GenerationRules") + " where GEN_RULE_ID = " + generationRuleId;
-        crsGenerationRule = this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().executeQuery(queryGenerationRule, "reader");
+                + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("GenerationRules") + " where GEN_RULE_ID = " + generationRuleId;
+        crsGenerationRule = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(queryGenerationRule, "reader");
         GenerationRuleParameterConfiguration generationRuleParameterConfiguration = new GenerationRuleParameterConfiguration(this.getFrameworkInstance());
         try {
             while (crsGenerationRule.next()) {
@@ -101,9 +102,9 @@ public class GenerationRuleConfiguration {
 
                 // Get parameters
                 CachedRowSet crsGenerationRuleParameters = null;
-                String queryGenerationRuleParameters = "select GEN_RULE_ID, GEN_RULE_PAR_NM from " + this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("GenerationRuleParameters")
+                String queryGenerationRuleParameters = "select GEN_RULE_ID, GEN_RULE_PAR_NM from " + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("GenerationRuleParameters")
                         + " where GEN_RULE_ID = " + generationRuleId;
-                crsGenerationRuleParameters = this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().executeQuery(queryGenerationRuleParameters, "reader");
+                crsGenerationRuleParameters = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(queryGenerationRuleParameters, "reader");
                 List<GenerationRuleParameter> generationRuleParameterList = new ArrayList();
                 while (crsGenerationRuleParameters.next()) {
                     generationRuleParameterList

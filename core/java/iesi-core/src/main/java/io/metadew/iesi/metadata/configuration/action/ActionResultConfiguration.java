@@ -2,6 +2,7 @@ package io.metadew.iesi.metadata.configuration.action;
 
 import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.action.ActionResult;
+import io.metadew.iesi.metadata.execution.MetadataControl;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
@@ -23,11 +24,11 @@ public class ActionResultConfiguration {
 		List<ActionResult> actionResults = new ArrayList();
 		CachedRowSet crsActionResults = null;
 		String query = "select RUN_ID, PRC_ID, SCRIPT_PRC_ID, ACTION_ID, ACTION_NM, ENV_NM, ST_NM, STRT_TMS, END_TMS from "
-				+ this.getFrameworkInstance().getMetadataControl().getResultMetadataRepository()
+				+ MetadataControl.getInstance().getResultMetadataRepository()
 						.getTableNameByLabel("ActionResults")
 				+ " where RUN_ID = '" + runId + "' order by PRC_ID asc, STRT_TMS asc";
 		System.out.println(query);
-		crsActionResults = this.getFrameworkInstance().getMetadataControl().getResultMetadataRepository()
+		crsActionResults = MetadataControl.getInstance().getResultMetadataRepository()
 				.executeQuery(query, "reader");
 		ActionResultOutputConfiguration actionResultOutputConfiguration = new ActionResultOutputConfiguration(this.getFrameworkInstance());
 		try {
@@ -63,11 +64,11 @@ public class ActionResultConfiguration {
 		List<ActionResult> actionResults = new ArrayList();
 		CachedRowSet crsActionResults = null;
 		String query = "select RUN_ID, PRC_ID, SCRIPT_PRC_ID, ACTION_ID, ACTION_NM, ENV_NM, ST_NM, STRT_TMS, END_TMS from "
-				+ this.getFrameworkInstance().getMetadataControl().getResultMetadataRepository()
+				+ MetadataControl.getInstance().getResultMetadataRepository()
 						.getTableNameByLabel("ActionResults")
 				+ " where RUN_ID = '" + runId + "' and SCRIPT_PRC_ID = " + scriptProcessId + " order by PRC_ID asc, STRT_TMS asc";
 		System.out.println(query);
-		crsActionResults = this.getFrameworkInstance().getMetadataControl().getResultMetadataRepository()
+		crsActionResults = MetadataControl.getInstance().getResultMetadataRepository()
 				.executeQuery(query, "reader");
 		try {
 			while (crsActionResults.next()) {

@@ -1,5 +1,7 @@
 package io.metadew.iesi.server.execution.tools;
 
+import io.metadew.iesi.framework.configuration.FrameworkSettingConfiguration;
+import io.metadew.iesi.framework.execution.FrameworkControl;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
 
 import java.io.BufferedReader;
@@ -11,7 +13,7 @@ public final class ExecutionServerTools {
 	public static String getServerMode(FrameworkInstance frameworkInstance) {
 		String serverMode = "off";
 		try {
-			serverMode = frameworkInstance.getFrameworkControl().getProperty(frameworkInstance.getFrameworkConfiguration().getSettingConfiguration().getSettingPath("server.mode").get()).toLowerCase();
+			serverMode = FrameworkControl.getInstance().getProperty(FrameworkSettingConfiguration.getInstance().getSettingPath("server.mode").get()).toLowerCase();
 		} catch (Exception e) {
 			serverMode = "off";
 		}

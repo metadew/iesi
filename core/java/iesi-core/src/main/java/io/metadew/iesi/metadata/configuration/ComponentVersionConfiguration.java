@@ -3,6 +3,7 @@ package io.metadew.iesi.metadata.configuration;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.ComponentVersion;
+import io.metadew.iesi.metadata.execution.MetadataControl;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
@@ -28,11 +29,11 @@ public class ComponentVersionConfiguration {
     public String getInsertStatement(String componentName) {
         String sql = "";
 
-        sql += "INSERT INTO " + this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ComponentVersions");
+        sql += "INSERT INTO " + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("ComponentVersions");
         sql += " (COMP_ID, COMP_VRS_NB, COMP_VRS_DSC) ";
         sql += "VALUES ";
         sql += "(";
-        sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Components"), "COMP_ID", "where COMP_NM = '" + componentName) + "')";
+        sql += "(" + SQLTools.GetLookupIdStatement(MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("Components"), "COMP_ID", "where COMP_NM = '" + componentName) + "')";
         sql += ",";
         sql += SQLTools.GetStringForSQL(this.getComponentVersion().getNumber());
         sql += ",";
@@ -46,11 +47,11 @@ public class ComponentVersionConfiguration {
     public String getDefaultInsertStatement(String componentName) {
         String sql = "";
 
-        sql += "INSERT INTO " + this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ComponentVersions");
+        sql += "INSERT INTO " + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("ComponentVersions");
         sql += " (COMP_ID, COMP_VRS_NB, COMP_VRS_DSC) ";
         sql += "VALUES ";
         sql += "(";
-        sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Components"), "COMP_ID", "where COMP_NM = '" + componentName) + "')";
+        sql += "(" + SQLTools.GetLookupIdStatement(MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("Components"), "COMP_ID", "where COMP_NM = '" + componentName) + "')";
         sql += ",";
         sql += SQLTools.GetStringForSQL("0");
         sql += ",";
@@ -64,9 +65,9 @@ public class ComponentVersionConfiguration {
 
     public Optional<ComponentVersion> getComponentVersion(String componentId, long componentVersionNumber) {
         ComponentVersion componentVersion = null;
-        String queryComponentVersion = "select COMP_ID, COMP_VRS_NB, COMP_VRS_DSC from " + this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ComponentVersions")
+        String queryComponentVersion = "select COMP_ID, COMP_VRS_NB, COMP_VRS_DSC from " + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("ComponentVersions")
                 + " where COMP_ID = " + SQLTools.GetStringForSQL(componentId) + " and COMP_VRS_NB = " + componentVersionNumber;
-        CachedRowSet crsComponentVersion = this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().executeQuery(queryComponentVersion, "reader");
+        CachedRowSet crsComponentVersion = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(queryComponentVersion, "reader");
         try {
             if (crsComponentVersion.size() == 0) {
                 return Optional.empty();

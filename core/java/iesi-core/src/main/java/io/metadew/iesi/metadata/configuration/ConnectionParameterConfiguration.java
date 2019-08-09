@@ -3,6 +3,7 @@ package io.metadew.iesi.metadata.configuration;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
+import io.metadew.iesi.metadata.execution.MetadataControl;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
@@ -28,7 +29,7 @@ public class ConnectionParameterConfiguration {
     public String getInsertStatement(String connectionName, String environmentName) {
         String sql = "";
 
-        sql += "INSERT INTO " + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("ConnectionParameters");
+        sql += "INSERT INTO " + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("ConnectionParameters");
         sql += " (CONN_NM, ENV_NM, CONN_PAR_NM, CONN_PAR_VAL) ";
         sql += "VALUES ";
         sql += "(";
@@ -46,7 +47,7 @@ public class ConnectionParameterConfiguration {
     }
 
     public String getInsertStatement(String connectionName, String environmentName, ConnectionParameter connectionParameter) {
-        return "INSERT INTO " + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("ConnectionParameters") +
+        return "INSERT INTO " + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("ConnectionParameters") +
                 " (CONN_NM, ENV_NM, CONN_PAR_NM, CONN_PAR_VAL) VALUES (" +
                 SQLTools.GetStringForSQL(connectionName) + "," +
                 SQLTools.GetStringForSQL(environmentName)+ "," +
@@ -57,9 +58,9 @@ public class ConnectionParameterConfiguration {
     public ConnectionParameter getConnectionParameter(String cpnnectionName, String environmentName, String connectionParameterName) {
         ConnectionParameter connectionParameter = new ConnectionParameter();
         CachedRowSet crsConnectionParameter = null;
-        String queryConnectionParameter = "select CONN_NM, ENV_NM, CONN_PAR_NM, CONN_PAR_VAL from " + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("ConnectionParameters")
+        String queryConnectionParameter = "select CONN_NM, ENV_NM, CONN_PAR_NM, CONN_PAR_VAL from " + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("ConnectionParameters")
                 + " where CONN_NM = '" + cpnnectionName + "' and CONN_PAR_NM = '" + connectionParameterName + "' and ENV_NM = '" + environmentName + "'";
-        crsConnectionParameter = this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().executeQuery(queryConnectionParameter, "reader");
+        crsConnectionParameter = MetadataControl.getInstance().getConnectivityMetadataRepository().executeQuery(queryConnectionParameter, "reader");
         try {
             while (crsConnectionParameter.next()) {
                 connectionParameter.setName(connectionParameterName);
@@ -79,9 +80,9 @@ public class ConnectionParameterConfiguration {
         String output = null;
         CachedRowSet crsConnectionParameter;
         String queryConnectionParameter = "select CONN_NM, ENV_NM, CONN_PAR_NM, CONN_PAR_VAL from "
-                + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("ConnectionParameters") + " where CONN_NM = '"
+                + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("ConnectionParameters") + " where CONN_NM = '"
                 + connectionName + "' and ENV_NM = '" + environmentName + "' and CONN_PAR_NM = '" + connectionParameterName + "'";
-        crsConnectionParameter = this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().executeQuery(queryConnectionParameter, "reader");
+        crsConnectionParameter = MetadataControl.getInstance().getConnectivityMetadataRepository().executeQuery(queryConnectionParameter, "reader");
         try {
             while (crsConnectionParameter.next()) {
                 output = crsConnectionParameter.getString("CONN_PAR_VAL");

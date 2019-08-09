@@ -3,6 +3,7 @@ package io.metadew.iesi.metadata.configuration;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.DatasetInstanceLabel;
+import io.metadew.iesi.metadata.execution.MetadataControl;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
@@ -29,22 +30,22 @@ public class DatasetInstanceLabelConfiguration {
         String sql = "";
 
         sql += "INSERT INTO "
-                + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository()
+                + MetadataControl.getInstance().getConnectivityMetadataRepository()
                 .getTableNameByLabel("DatasetInstanceLabels");
         sql += " (DST_ID, DST_INST_ID, DST_INST_LBL_VAL) ";
         sql += "VALUES ";
         sql += "(";
         sql += "(" + SQLTools.GetLookupIdStatement(
-                this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository()
+                MetadataControl.getInstance().getConnectivityMetadataRepository()
                         .getTableNameByLabel("Datasets"),
                 "DST_ID", "where DST_NM = '" + datasetName) + "')";
         sql += ",";
         sql += "(" + SQLTools.GetLookupIdStatement(
-                this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository()
+                MetadataControl.getInstance().getConnectivityMetadataRepository()
                         .getTableNameByLabel("DatasetInstances"),
                 "DST_INST_ID",
                 "where DST_ID = (" + SQLTools.GetLookupIdStatement(
-                        this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository()
+                        MetadataControl.getInstance().getConnectivityMetadataRepository()
                                 .getTableNameByLabel("Repositories"),
                         "DST_ID", "where DST_NM = '" + datasetName) + "') and DST_INST_NM = '"
                         + datasetInstanceName)
@@ -62,10 +63,10 @@ public class DatasetInstanceLabelConfiguration {
         DatasetInstanceLabel datasetInstanceLabel = new DatasetInstanceLabel();
         CachedRowSet crsDatasetInstanceLabel = null;
         String queryDatasetInstanceLabel = "select DST_ID, DST_INST_ID, DST_INST_LBL_VAL from "
-                + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository()
+                + MetadataControl.getInstance().getConnectivityMetadataRepository()
                 .getTableNameByLabel("DatasetInstanceLabels")
                 + " where DST_ID = " + datasetId + " and DST_INST_ID = " + datasetInstanceId + " and DST_INST_LBL_VAL = '" + datasetInstanceLabelName + "'";
-        crsDatasetInstanceLabel = this.getFrameworkInstance().getMetadataControl()
+        crsDatasetInstanceLabel = MetadataControl.getInstance()
                 .getConnectivityMetadataRepository().executeQuery(queryDatasetInstanceLabel, "reader");
         try {
             while (crsDatasetInstanceLabel.next()) {

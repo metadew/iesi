@@ -5,6 +5,7 @@ import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.Feature;
 import io.metadew.iesi.metadata.definition.FeatureParameter;
 import io.metadew.iesi.metadata.definition.FeatureVersion;
+import io.metadew.iesi.metadata.execution.MetadataControl;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
@@ -29,7 +30,7 @@ public class FeatureParameterConfiguration {
 
     // Insert
     public String getInsertStatement(String featureId, long featureVersionNumber, FeatureParameter featureParameter) {
-        return "INSERT INTO " + this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository()
+        return "INSERT INTO " + MetadataControl.getInstance().getCatalogMetadataRepository()
                 .getTableNameByLabel("FeatureParameters") +
                 " (FEATURE_ID, FEATURE_VRS_NB, FEATURE_PAR_NM, FEATURE_PAR_VAL) VALUES (" +
                 SQLTools.GetStringForSQL(featureId) + "," +
@@ -43,12 +44,12 @@ public class FeatureParameterConfiguration {
         String sql = "";
 
         sql += "INSERT INTO "
-                + this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository()
+                + MetadataControl.getInstance().getCatalogMetadataRepository()
                 .getTableNameByLabel("FeatureParameters");
         sql += " (FEATURE_ID, FEATURE_VRS_NB, FEATURE_PAR_NM, FEATURE_PAR_VAL) ";
         sql += "VALUES ";
         sql += "(";
-        sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository()
+        sql += "(" + SQLTools.GetLookupIdStatement(MetadataControl.getInstance().getCatalogMetadataRepository()
                 .getTableNameByLabel("Features"), "FEATURE_ID", "where FEATURE_NM = '" + feature.getName()) + "')";
         sql += ",";
         sql += SQLTools.GetStringForSQL(this.getFeatureVersion().getNumber());
@@ -65,9 +66,9 @@ public class FeatureParameterConfiguration {
     public FeatureParameter getFeatureParameter(String featureId, long featureVersionNumber, String featureParameterName) {
         FeatureParameter featureParameter = new FeatureParameter();
         CachedRowSet crsFeatureParameter = null;
-        String queryFeatureParameter = "select FEATURE_ID, FEATURE_VRS_NB, FEATURE_PAR_NM, FEATURE_PAR_VAL from " + this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("FeatureParameters")
+        String queryFeatureParameter = "select FEATURE_ID, FEATURE_VRS_NB, FEATURE_PAR_NM, FEATURE_PAR_VAL from " + MetadataControl.getInstance().getCatalogMetadataRepository().getTableNameByLabel("FeatureParameters")
                 + " where FEATURE_ID = " + SQLTools.GetStringForSQL(featureId) + "' and FEATURE_VRS_NB = " + featureVersionNumber + " and FEATURE_PAR_NM = '" + featureParameterName + "'";
-        crsFeatureParameter = this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().executeQuery(queryFeatureParameter, "reader");
+        crsFeatureParameter = MetadataControl.getInstance().getCatalogMetadataRepository().executeQuery(queryFeatureParameter, "reader");
         try {
             while (crsFeatureParameter.next()) {
                 featureParameter.setName(featureParameterName);

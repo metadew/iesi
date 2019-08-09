@@ -5,6 +5,7 @@ import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.exception.action.ActionDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.exception.script.ScriptVersionAlreadyExistsException;
 import io.metadew.iesi.metadata.definition.script.ScriptVersion;
+import io.metadew.iesi.metadata.execution.MetadataControl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -31,7 +32,7 @@ public class ScriptVersionConfiguration {
             throw new ScriptVersionAlreadyExistsException(MessageFormat.format(
                     "ScriptVersion {0}-{1} already exists", scriptId, scriptVersion.getNumber()));
         }
-        this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().executeUpdate(getInsertStatement(scriptId, scriptVersion));
+        MetadataControl.getInstance().getDesignMetadataRepository().executeUpdate(getInsertStatement(scriptId, scriptVersion));
     }
 
     public void delete(String scriptId, long scriptVersionNumber) throws ActionDoesNotExistException {
@@ -40,30 +41,30 @@ public class ScriptVersionConfiguration {
             throw new ActionDoesNotExistException(MessageFormat.format("ScriptVersion {0}-{1} does not exists", scriptId, scriptVersionNumber));
         }
         String deleteStatement = deleteStatement(scriptId, scriptVersionNumber);
-        frameworkInstance.getMetadataControl().getTraceMetadataRepository().executeUpdate(deleteStatement);
+        MetadataControl.getInstance().getTraceMetadataRepository().executeUpdate(deleteStatement);
     }
 
     private String deleteStatement(String scriptId, long scriptVersionNumber) {
-        return "DELETE FROM " + this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ScriptVersions") +
+        return "DELETE FROM " + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("ScriptVersions") +
                 " WHERE SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptId) + " AND SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(scriptVersionNumber) + ";";
 
     }
 
     private boolean exists(String scriptId, ScriptVersion scriptVersion) {
-        String query = "select SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_VRS_DSC from " + this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ScriptVersions")
+        String query = "select SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_VRS_DSC from " + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("ScriptVersions")
                 + " where SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptId) + " and SCRIPT_VRS_NB = " + scriptVersion.getNumber() + ";";
-        CachedRowSet cachedRowSet = this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().executeQuery(query, "reader");
+        CachedRowSet cachedRowSet = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(query, "reader");
         return cachedRowSet.size() >= 1;
     }
     private boolean exists(String scriptId, long scriptVersionNumber) {
-        String query = "select SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_VRS_DSC from " + this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ScriptVersions")
+        String query = "select SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_VRS_DSC from " + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("ScriptVersions")
                 + " where SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptId) + " and SCRIPT_VRS_NB = " + scriptVersionNumber + ";";
-        CachedRowSet cachedRowSet = this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().executeQuery(query, "reader");
+        CachedRowSet cachedRowSet = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(query, "reader");
         return cachedRowSet.size() >= 1;
     }
 
     public String getInsertStatement(String scriptId, ScriptVersion scriptVersion) {
-        return "INSERT INTO " + this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ScriptVersions") +
+        return "INSERT INTO " + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("ScriptVersions") +
                 " (SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_VRS_DSC) VALUES (" +
                 SQLTools.GetStringForSQL(scriptId) + ", " +
                 scriptVersion.getNumber() + ", " +
@@ -71,9 +72,9 @@ public class ScriptVersionConfiguration {
     }
 
     public Optional<ScriptVersion> getScriptVersion(String scriptId, long scriptVersionNumber) {
-        String queryScriptVersion = "select SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_VRS_DSC from " + this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ScriptVersions")
+        String queryScriptVersion = "select SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_VRS_DSC from " + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("ScriptVersions")
                 + " where SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptId) + " and SCRIPT_VRS_NB = " + scriptVersionNumber;
-        CachedRowSet crsScriptVersion = this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().executeQuery(queryScriptVersion, "reader");
+        CachedRowSet crsScriptVersion = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(queryScriptVersion, "reader");
         try {
             if (crsScriptVersion.size() == 0) {
                 return Optional.empty();

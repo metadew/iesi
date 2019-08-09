@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.configuration.FrameworkObjectConfiguration;
+import io.metadew.iesi.framework.execution.FrameworkControl;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.exception.RequestAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.RequestDoesNotExistException;
@@ -286,7 +287,7 @@ public class RequestConfiguration {
 				String output = requestConfiguration.getInsertStatement();
 
 				InputStream inputStream = FileTools.convertToInputStream(output,
-						this.getFrameworkInstance().getFrameworkControl());
+						FrameworkControl.getInstance());
 				this.getFrameworkInstance().getExecutionServerRepositoryConfiguration()
 						.executeScript(inputStream);
 
@@ -298,7 +299,7 @@ public class RequestConfiguration {
 			String output = requestConfiguration.getInsertStatement();
 
 			InputStream inputStream = FileTools.convertToInputStream(output,
-					this.getFrameworkInstance().getFrameworkControl());
+					FrameworkControl.getInstance());
 			this.getFrameworkInstance().getExecutionServerRepositoryConfiguration()
 					.executeScript(inputStream);
 		}
@@ -311,7 +312,7 @@ public class RequestConfiguration {
 			String output = requestConfiguration.getDeleteStatement();
 
 			InputStream inputStream = FileTools.convertToInputStream(output,
-					this.getFrameworkInstance().getFrameworkControl());
+					FrameworkControl.getInstance());
 			this.getFrameworkInstance().getExecutionServerRepositoryConfiguration()
 					.executeScript(inputStream);
 		});
@@ -329,7 +330,7 @@ public class RequestConfiguration {
 		String output = requestConfiguration.getInsertStatement();
 
 		InputStream inputStream = FileTools.convertToInputStream(output,
-				this.getFrameworkInstance().getFrameworkControl());
+				FrameworkControl.getInstance());
 		this.getFrameworkInstance().getExecutionServerRepositoryConfiguration()
 				.executeScript(inputStream);
 	}

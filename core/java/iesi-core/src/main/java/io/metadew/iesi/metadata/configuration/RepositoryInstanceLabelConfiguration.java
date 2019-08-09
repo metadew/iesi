@@ -3,6 +3,7 @@ package io.metadew.iesi.metadata.configuration;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.RepositoryInstanceLabel;
+import io.metadew.iesi.metadata.execution.MetadataControl;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
@@ -29,22 +30,22 @@ public class RepositoryInstanceLabelConfiguration {
         String sql = "";
 
         sql += "INSERT INTO "
-                + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository()
+                + MetadataControl.getInstance().getConnectivityMetadataRepository()
                 .getTableNameByLabel("RepositoryInstanceLabels");
         sql += " (REPO_ID, REPO_INST_ID, REPO_INST_LBL_VAL) ";
         sql += "VALUES ";
         sql += "(";
         sql += "(" + SQLTools.GetLookupIdStatement(
-                this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository()
+                MetadataControl.getInstance().getConnectivityMetadataRepository()
                         .getTableNameByLabel("Repositories"),
                 "REPO_ID", "where REPO_NM = '" + repositoryName) + "')";
         sql += ",";
         sql += "(" + SQLTools.GetLookupIdStatement(
-                this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository()
+                MetadataControl.getInstance().getConnectivityMetadataRepository()
                         .getTableNameByLabel("RepositoryInstances"),
                 "REPO_INST_ID",
                 "where REPO_ID = (" + SQLTools.GetLookupIdStatement(
-                        this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository()
+                        MetadataControl.getInstance().getConnectivityMetadataRepository()
                                 .getTableNameByLabel("Repositories"),
                         "REPO_ID", "where REPO_NM = '" + repositoryName) + "') and REPO_INST_NM = '"
                         + repositoryInstanceName)
@@ -62,10 +63,10 @@ public class RepositoryInstanceLabelConfiguration {
         RepositoryInstanceLabel repositoryInstanceLabel = new RepositoryInstanceLabel();
         CachedRowSet crsRepositoryInstanceLabel = null;
         String queryRepositoryInstanceLabel = "select REPO_ID, REPO_INST_ID, REPO_INST_LBL_VAL from "
-                + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository()
+                + MetadataControl.getInstance().getConnectivityMetadataRepository()
                 .getTableNameByLabel("RepositoryInstanceLabels")
                 + " where REPO_ID = " + repositoryId + " and REPO_INST_ID = " + repositoryInstanceId + " and REPO_INST_LBL_VAL = '" + repositoryInstanceLabelName + "'";
-        crsRepositoryInstanceLabel = this.getFrameworkInstance().getMetadataControl()
+        crsRepositoryInstanceLabel = MetadataControl.getInstance()
                 .getConnectivityMetadataRepository().executeQuery(queryRepositoryInstanceLabel, "reader");
         try {
             while (crsRepositoryInstanceLabel.next()) {

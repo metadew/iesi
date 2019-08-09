@@ -3,6 +3,7 @@ package io.metadew.iesi.metadata.configuration;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.ImpersonationParameter;
+import io.metadew.iesi.metadata.execution.MetadataControl;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
@@ -24,7 +25,7 @@ public class ImpersonationParameterConfiguration {
     }
 
     public String getInsertStatement(String impersonationName, ImpersonationParameter impersonationParameter) {
-        return "INSERT INTO " + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("ImpersonationParameters") +
+        return "INSERT INTO " + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("ImpersonationParameters") +
                 " (IMP_NM, CONN_NM, CONN_IMP_NM, CONN_IMP_DSC) VALUES (" +
                 SQLTools.GetStringForSQL(impersonationName) + "," +
                 SQLTools.GetStringForSQL(impersonationParameter.getConnection()) + "," +
@@ -36,7 +37,7 @@ public class ImpersonationParameterConfiguration {
     public String getInsertStatement(String impersonationName) {
         String sql = "";
 
-        sql += "INSERT INTO " + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("ImpersonationParameters");
+        sql += "INSERT INTO " + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("ImpersonationParameters");
         sql += " (IMP_NM, CONN_NM, CONN_IMP_NM, CONN_IMP_DSC) ";
         sql += "VALUES ";
         sql += "(";
@@ -56,9 +57,9 @@ public class ImpersonationParameterConfiguration {
     public ImpersonationParameter getImpersonationParameter(String impersonationName, String impersonationParameterName) {
         ImpersonationParameter impersonationParameter = new ImpersonationParameter();
         CachedRowSet crsImpersonationParameter = null;
-        String queryImpersonationParameter = "select IMP_NM, CONN_NM, CONN_IMP_NM, CONN_IMP_DSC from " + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().getTableNameByLabel("ImpersonationParameters")
+        String queryImpersonationParameter = "select IMP_NM, CONN_NM, CONN_IMP_NM, CONN_IMP_DSC from " + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("ImpersonationParameters")
                 + " where IMP_NM = '" + impersonationName + "' and CONN_NM = '" + impersonationParameterName + "'";
-        crsImpersonationParameter = this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository().executeQuery(queryImpersonationParameter, "reader");
+        crsImpersonationParameter = MetadataControl.getInstance().getConnectivityMetadataRepository().executeQuery(queryImpersonationParameter, "reader");
         try {
             while (crsImpersonationParameter.next()) {
                 impersonationParameter.setConnection(impersonationParameterName);

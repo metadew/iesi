@@ -6,6 +6,7 @@ import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.exception.FeatureAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.FeatureDoesNotExistException;
 import io.metadew.iesi.metadata.definition.*;
+import io.metadew.iesi.metadata.execution.MetadataControl;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
 
 import javax.sql.rowset.CachedRowSet;
@@ -61,8 +62,8 @@ public class FeatureConfiguration extends MetadataConfiguration {
     public List<Feature> getAllFeatures() {
         List<Feature> features = new ArrayList<>();
         String queryFeature = "select FEATURE_ID, FEATURE_NM from "
-                + this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("Features");
-        CachedRowSet crsFeature = this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().executeQuery(queryFeature, "reader");
+                + MetadataControl.getInstance().getCatalogMetadataRepository().getTableNameByLabel("Features");
+        CachedRowSet crsFeature = MetadataControl.getInstance().getCatalogMetadataRepository().executeQuery(queryFeature, "reader");
 
         try {
             while (crsFeature.next()) {
@@ -78,9 +79,9 @@ public class FeatureConfiguration extends MetadataConfiguration {
     public List<Feature> getFeatureByName(String featureName) {
         List<Feature> features = new ArrayList<>();
         String queryFeature = "select FEATURE_ID from "
-                + this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("Features") + " where FEATURE_NM = '"
+                + MetadataControl.getInstance().getCatalogMetadataRepository().getTableNameByLabel("Features") + " where FEATURE_NM = '"
                 + featureName + "'";
-        CachedRowSet crsFeature = this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().executeQuery(queryFeature, "reader");
+        CachedRowSet crsFeature = MetadataControl.getInstance().getCatalogMetadataRepository().executeQuery(queryFeature, "reader");
         try {
             if (crsFeature.size() == 0) {
                 return features;
@@ -89,9 +90,9 @@ public class FeatureConfiguration extends MetadataConfiguration {
             }
             crsFeature.next();
             String queryFeatureVersions = "select FEATURE_VRS_NB from "
-                    + this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("FeatureVersions") + " where FEATURE_ID = "
+                    + MetadataControl.getInstance().getCatalogMetadataRepository().getTableNameByLabel("FeatureVersions") + " where FEATURE_ID = "
                     + SQLTools.GetStringForSQL(crsFeature.getString("FEATURE_ID"));
-            CachedRowSet crsFeatureVersions = this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().executeQuery(queryFeatureVersions, "reader");
+            CachedRowSet crsFeatureVersions = MetadataControl.getInstance().getCatalogMetadataRepository().executeQuery(queryFeatureVersions, "reader");
             while (crsFeatureVersions.next()) {
                 Optional<Feature> feature = getFeature(featureName, crsFeatureVersions.getLong("FEATURE_VRS_NB"));
                 if (feature.isPresent()) {
@@ -119,7 +120,7 @@ public class FeatureConfiguration extends MetadataConfiguration {
         }
 
         List<String> deleteQuery = getDeleteStatement(feature);
-        this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().executeBatch(deleteQuery);
+        MetadataControl.getInstance().getCatalogMetadataRepository().executeBatch(deleteQuery);
     }
 
     public void deleteFeatureByName(String featureName) throws FeatureDoesNotExistException {
@@ -136,7 +137,7 @@ public class FeatureConfiguration extends MetadataConfiguration {
                     "Feature {0}-{1} already exists", feature.getName(), feature.getVersion().getNumber()));
         }
         List<String> insertStatement = getInsertStatement(feature);
-        this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().executeBatch(insertStatement);
+        MetadataControl.getInstance().getCatalogMetadataRepository().executeBatch(insertStatement);
     }
 
     public void updateFeature(Feature feature) throws FeatureDoesNotExistException {
@@ -166,7 +167,7 @@ public class FeatureConfiguration extends MetadataConfiguration {
         StringBuilder sql = new StringBuilder();
 
         if (getFeatureByName(feature.getName()).size() == 0) {
-            queries.add("INSERT INTO " + this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("Features") +
+            queries.add("INSERT INTO " + MetadataControl.getInstance().getCatalogMetadataRepository().getTableNameByLabel("Features") +
                     " (FEATURE_ID, FEATURE_TYP_NM, FEATURE_NM, FEATURE_DSC) VALUES (" +
                     SQLTools.GetStringForSQL(feature.getId()) + "," +
                     SQLTools.GetStringForSQL(feature.getType()) + "," +
@@ -193,33 +194,33 @@ public class FeatureConfiguration extends MetadataConfiguration {
 
         List<String> queries = new ArrayList<>();
         // delete parameters
-        queries.add("DELETE FROM " + this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("FeatureParameters") +
+        queries.add("DELETE FROM " + MetadataControl.getInstance().getCatalogMetadataRepository().getTableNameByLabel("FeatureParameters") +
                 " WHERE FEATURE_ID = " + SQLTools.GetStringForSQL(feature.getId()) + " AND FEATURE_VRS_NB = " + SQLTools.GetStringForSQL(feature.getVersion().getNumber()) + ";");
 
 
         // delete version
 
-        queries.add("DELETE FROM " + this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("FeatureVersions") +
+        queries.add("DELETE FROM " + MetadataControl.getInstance().getCatalogMetadataRepository().getTableNameByLabel("FeatureVersions") +
                 " WHERE FEATURE_ID = " + SQLTools.GetStringForSQL(feature.getId()) + " AND FEATURE_VRS_NB = " + SQLTools.GetStringForSQL(feature.getVersion().getNumber()) + ";");
 
         // delete scenarios
         for (Scenario scenario : feature.getScenarios()) {
-            queries.add("DELETE FROM " + this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("Scenarios") +
+            queries.add("DELETE FROM " + MetadataControl.getInstance().getCatalogMetadataRepository().getTableNameByLabel("Scenarios") +
                     " WHERE SCENARIO_ID = " + SQLTools.GetStringForSQL(scenario.getId()) + ";");
-            queries.add("DELETE FROM " + this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("ScenarioParameters") +
+            queries.add("DELETE FROM " + MetadataControl.getInstance().getCatalogMetadataRepository().getTableNameByLabel("ScenarioParameters") +
                     " WHERE SCENARIO_ID = " + SQLTools.GetStringForSQL(scenario.getId()) + ";");
         }
 
         // delete feature info if last version
         String countQuery = "SELECT COUNT(DISTINCT FEATURE_VRS_NB ) AS total_versions FROM "
-                + this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("FeatureVersions")
+                + MetadataControl.getInstance().getCatalogMetadataRepository().getTableNameByLabel("FeatureVersions")
                 + " WHERE FEATURE_ID = " + SQLTools.GetStringForSQL(feature.getId()) + " AND "
                 + " FEATURE_VRS_NB != " + SQLTools.GetStringForSQL(feature.getVersion().getNumber()) + ";";
-        CachedRowSet crs = this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().executeQuery(countQuery, "reader");
+        CachedRowSet crs = MetadataControl.getInstance().getCatalogMetadataRepository().executeQuery(countQuery, "reader");
 
         try {
             if (crs.next() && Integer.parseInt(crs.getString("total_versions")) == 0) {
-                queries.add("DELETE FROM " + this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("Features") +
+                queries.add("DELETE FROM " + MetadataControl.getInstance().getCatalogMetadataRepository().getTableNameByLabel("Features") +
                         " WHERE FEATURE_ID = " + SQLTools.GetStringForSQL(feature.getId()) + ";");
             }
         } catch (SQLException e) {
@@ -233,9 +234,9 @@ public class FeatureConfiguration extends MetadataConfiguration {
         Feature feature = new Feature();
         CachedRowSet crsFeature = null;
         String queryFeature = "select FEATURE_ID, FEATURE_TYP_NM, FEATURE_NM, FEATURE_DSC from "
-                + this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("Features") + " where FEATURE_NM = '"
+                + MetadataControl.getInstance().getCatalogMetadataRepository().getTableNameByLabel("Features") + " where FEATURE_NM = '"
                 + featureName + "'";
-        crsFeature = this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().executeQuery(queryFeature, "reader");
+        crsFeature = MetadataControl.getInstance().getCatalogMetadataRepository().executeQuery(queryFeature, "reader");
         try {
             while (crsFeature.next()) {
                 feature.setId(crsFeature.getString("FEATURE_ID"));
@@ -262,17 +263,17 @@ public class FeatureConfiguration extends MetadataConfiguration {
         this.getFeature().setId(IdentifierTools.getFeatureIdentifier(this.getFeature().getName()));
 
         if (this.exists()) {
-            sql += "DELETE FROM " + this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("ScenarioParameters");
+            sql += "DELETE FROM " + MetadataControl.getInstance().getCatalogMetadataRepository().getTableNameByLabel("ScenarioParameters");
             sql += " WHERE FEATURE_ID = '" + this.getFeature().getId() + "'";
             sql += " AND FEATURE_VRS_NB = " + this.getFeature().getVersion().getNumber();
             sql += ";";
             sql += "\n";
-            sql += "DELETE FROM " + this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("Scenarios");
+            sql += "DELETE FROM " + MetadataControl.getInstance().getCatalogMetadataRepository().getTableNameByLabel("Scenarios");
             sql += " WHERE FEATURE_ID = '" + this.getFeature().getId() + "'";
             sql += " AND FEATURE_VRS_NB = " + this.getFeature().getVersion().getNumber();
             sql += ";";
             sql += "\n";
-            sql += "DELETE FROM " + this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("FeatureVersions");
+            sql += "DELETE FROM " + MetadataControl.getInstance().getCatalogMetadataRepository().getTableNameByLabel("FeatureVersions");
             sql += " WHERE FEATURE_ID = '" + this.getFeature().getId() + "'";
             sql += " AND FEATURE_VRS_NB = " + this.getFeature().getVersion().getNumber();
             sql += ";";
@@ -280,7 +281,7 @@ public class FeatureConfiguration extends MetadataConfiguration {
         }
 
         if (!this.verifyFeatureConfigurationExists(this.getFeature().getName())) {
-            sql += "INSERT INTO " + this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("Features");
+            sql += "INSERT INTO " + MetadataControl.getInstance().getCatalogMetadataRepository().getTableNameByLabel("Features");
             sql += " (FEATURE_ID, FEATURE_TYP_NM, FEATURE_NM, FEATURE_DSC) ";
             sql += "VALUES ";
             sql += "(";
@@ -371,10 +372,10 @@ public class FeatureConfiguration extends MetadataConfiguration {
         // TODO fix logging
     	//frameworkExecution.getFrameworkLog().log(MessageFormat.format("Fetching latest version for feature {0}.", featureName), Level.DEBUG);
         String queryFeatureVersion = "select max(FEATURE_VRS_NB) as \"MAX_VRS_NB\" from "
-                + this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("FeatureVersions") + " a inner join "
-                + this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("Features")
+                + MetadataControl.getInstance().getCatalogMetadataRepository().getTableNameByLabel("FeatureVersions") + " a inner join "
+                + MetadataControl.getInstance().getCatalogMetadataRepository().getTableNameByLabel("Features")
                 + " b on a.feature_id = b.feature_id where b.feature_nm = '" + featureName + "'";
-        CachedRowSet crsFeatureVersion = this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().executeQuery(queryFeatureVersion, "reader");
+        CachedRowSet crsFeatureVersion = MetadataControl.getInstance().getCatalogMetadataRepository().executeQuery(queryFeatureVersion, "reader");
         try {
             if (crsFeatureVersion.size() == 0) {
                 crsFeatureVersion.close();
@@ -409,9 +410,9 @@ public class FeatureConfiguration extends MetadataConfiguration {
         //TODO fix logging
     	//frameworkExecution.getFrameworkLog().log(MessageFormat.format("Fetching feature {0}-{1}.", featureName, versionNumber), Level.DEBUG);
         String queryFeature = "select FEATURE_ID, FEATURE_TYP_NM, FEATURE_NM, FEATURE_DSC from "
-                + this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("Features") + " where FEATURE_NM = '"
+                + MetadataControl.getInstance().getCatalogMetadataRepository().getTableNameByLabel("Features") + " where FEATURE_NM = '"
                 + featureName + "'";
-        CachedRowSet crsFeature = this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().executeQuery(queryFeature, "reader");
+        CachedRowSet crsFeature = MetadataControl.getInstance().getCatalogMetadataRepository().executeQuery(queryFeature, "reader");
         ScenarioConfiguration scenarioConfiguration = new ScenarioConfiguration(this.getFrameworkInstance());
         FeatureVersionConfiguration featureVersionConfiguration = new FeatureVersionConfiguration(
                 this.getFrameworkInstance());
@@ -436,10 +437,10 @@ public class FeatureConfiguration extends MetadataConfiguration {
             // Get the scenarios
             List<Scenario> scenarios = new ArrayList<>();
             String queryScenarios = "select FEATURE_ID, FEATURE_VRS_NB, SCENARIO_ID, SCENARIO_NB from "
-                    + this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("Scenarios")
+                    + MetadataControl.getInstance().getCatalogMetadataRepository().getTableNameByLabel("Scenarios")
                     + " where FEATURE_ID = " + SQLTools.GetStringForSQL(featureId) + " and FEATURE_VRS_NB = " + versionNumber
                     + " order by SCENARIO_NB asc ";
-            CachedRowSet crsScenarios = this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().executeQuery(queryScenarios, "reader");
+            CachedRowSet crsScenarios = MetadataControl.getInstance().getCatalogMetadataRepository().executeQuery(queryScenarios, "reader");
 
             while (crsScenarios.next()) {
                 Optional<Scenario> scenario = scenarioConfiguration.getScenario(featureId, featureVersion.get().getNumber(), crsScenarios.getString("SCENARIO_ID"));
@@ -454,9 +455,9 @@ public class FeatureConfiguration extends MetadataConfiguration {
 
             // Get parameters
             String queryFeatureParameters = "select FEATURE_ID, FEATURE_VRS_NB, FEATURE_PAR_NM, FEATURE_PAR_VAL from "
-                    + this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("FeatureParameters")
+                    + MetadataControl.getInstance().getCatalogMetadataRepository().getTableNameByLabel("FeatureParameters")
                     + " where FEATURE_ID = " + SQLTools.GetStringForSQL(featureId) + " and FEATURE_VRS_NB = " + versionNumber;
-            CachedRowSet crsFeatureParameters = this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository()
+            CachedRowSet crsFeatureParameters = MetadataControl.getInstance().getCatalogMetadataRepository()
                     .executeQuery(queryFeatureParameters, "reader");
             List<FeatureParameter> featureParameters = new ArrayList<>();
             while (crsFeatureParameters.next()) {
@@ -485,8 +486,8 @@ public class FeatureConfiguration extends MetadataConfiguration {
         List<Feature> featureList = new ArrayList<>();
         CachedRowSet crs = null;
         String query = "select FEATURE_NM, FEATURE_DSC from "
-                + this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("Features") + " order by FEATURE_NM ASC";
-        crs = this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().executeQuery(query, "reader");
+                + MetadataControl.getInstance().getCatalogMetadataRepository().getTableNameByLabel("Features") + " order by FEATURE_NM ASC";
+        crs = MetadataControl.getInstance().getCatalogMetadataRepository().executeQuery(query, "reader");
         FeatureConfiguration featureConfiguration = new FeatureConfiguration(this.getFrameworkInstance());
         try {
             String featureName = "";

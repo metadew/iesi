@@ -3,6 +3,7 @@ package io.metadew.iesi.metadata.configuration;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.RepositoryInstanceParameter;
+import io.metadew.iesi.metadata.execution.MetadataControl;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
@@ -29,22 +30,22 @@ public class RepositoryInstanceParameterConfiguration {
         String sql = "";
 
         sql += "INSERT INTO "
-                + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository()
+                + MetadataControl.getInstance().getConnectivityMetadataRepository()
                 .getTableNameByLabel("RepositoryInstanceParameters");
         sql += " (REPO_ID, REPO_INST_ID, REPO_INST_PAR_NM, REPO_INST_PAR_VAL) ";
         sql += "VALUES ";
         sql += "(";
         sql += "(" + SQLTools.GetLookupIdStatement(
-                this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository()
+                MetadataControl.getInstance().getConnectivityMetadataRepository()
                         .getTableNameByLabel("Repositories"),
                 "REPO_ID", "where REPO_NM = '" + repositoryName) + "')";
         sql += ",";
         sql += "(" + SQLTools.GetLookupIdStatement(
-                this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository()
+                MetadataControl.getInstance().getConnectivityMetadataRepository()
                         .getTableNameByLabel("RepositoryInstances"),
                 "REPO_INST_ID",
                 "where REPO_ID = (" + SQLTools.GetLookupIdStatement(
-                        this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository()
+                        MetadataControl.getInstance().getConnectivityMetadataRepository()
                                 .getTableNameByLabel("Repositories"),
                         "REPO_ID", "where REPO_NM = '" + repositoryName) + "') and REPO_INST_NM = '"
                         + repositoryInstanceName)
@@ -64,10 +65,10 @@ public class RepositoryInstanceParameterConfiguration {
         RepositoryInstanceParameter repositoryInstanceParameter = new RepositoryInstanceParameter();
         CachedRowSet crsRepositoryInstanceParameter = null;
         String queryRepositoryInstanceParameter = "select REPO_ID, REPO_INST_ID, REPO_INST_PAR_NM, REPO_INST_PAR_VAL from "
-                + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository()
+                + MetadataControl.getInstance().getConnectivityMetadataRepository()
                 .getTableNameByLabel("RepositoryInstanceParameters")
                 + " where REPO_ID = " + repositoryId + " and REPO_INST_ID = " + repositoryInstanceId + " and REPO_INST_PAR_NM = '" + repositoryInstanceParameterName + "'";
-        crsRepositoryInstanceParameter = this.getFrameworkInstance().getMetadataControl()
+        crsRepositoryInstanceParameter = MetadataControl.getInstance()
                 .getConnectivityMetadataRepository().executeQuery(queryRepositoryInstanceParameter, "reader");
         try {
             while (crsRepositoryInstanceParameter.next()) {

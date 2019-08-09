@@ -3,6 +3,7 @@ package io.metadew.iesi.metadata.backup;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.connection.tools.FolderTools;
 import io.metadew.iesi.connection.tools.OutputTools;
+import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.DataObject;
 import io.metadew.iesi.metadata.definition.MetadataTable;
@@ -108,7 +109,7 @@ public class BackupExecution {
 
 		// Get source configuration
 		DataObjectOperation dataObjectOperation = new DataObjectOperation(
-				this.getFrameworkInstance().getFrameworkConfiguration().getFolderConfiguration()
+				FrameworkFolderConfiguration.getInstance()
 						.getFolderAbsolutePath("metadata.def") + File.separator + "MetadataTables.json");
 
 		// Create backup location
@@ -117,16 +118,16 @@ public class BackupExecution {
 		Timestamp timestamp = new Timestamp(date.getTime());
 		String folderName = "";
 		if (path.trim().equalsIgnoreCase("")) {
-			folderName = this.getFrameworkInstance().getFrameworkConfiguration().getFolderConfiguration()
+			folderName = FrameworkFolderConfiguration.getInstance()
 					.getFolderAbsolutePath("metadata.def") + File.separator + sdf.format(timestamp);
 			;
 
 			// Ensure the base folder structure exists
-			FolderTools.createFolder(this.getFrameworkInstance().getFrameworkConfiguration().getFolderConfiguration()
+			FolderTools.createFolder(FrameworkFolderConfiguration.getInstance()
 					.getFolderAbsolutePath("data")); // Data
-			FolderTools.createFolder(this.getFrameworkInstance().getFrameworkConfiguration().getFolderConfiguration()
+			FolderTools.createFolder(FrameworkFolderConfiguration.getInstance()
 					.getFolderAbsolutePath("data")); // Backups
-			FolderTools.createFolder(this.getFrameworkInstance().getFrameworkConfiguration().getFolderConfiguration()
+			FolderTools.createFolder(FrameworkFolderConfiguration.getInstance()
 					.getFolderAbsolutePath("data")); // Backups Metadata
 		} else {
 			folderName = path;

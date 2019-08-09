@@ -3,6 +3,7 @@ package io.metadew.iesi.metadata.configuration;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.User;
+import io.metadew.iesi.metadata.execution.MetadataControl;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
@@ -31,8 +32,8 @@ public class UserConfiguration {
     public List<User> getUsers() {
         List<User> users = new ArrayList<>();
         String query = "select USER_NM, USER_TYP_NM, USER_FIRST_NM, USER_LAST_NM, USER_ACT_FL, USER_PWD_HASH, USER_PWD_EXP_FL, LOGIN_FAIL_CUM_NB, LOGIN_FAIL_IND_NB, USER_LOCK_FL from "
-                + this.getFrameworkInstance().getMetadataControl().getControlMetadataRepository().getTableNameByLabel("Users");
-        CachedRowSet crs = this.getFrameworkInstance().getMetadataControl().getControlMetadataRepository().executeQuery(query, "reader");
+                + MetadataControl.getInstance().getControlMetadataRepository().getTableNameByLabel("Users");
+        CachedRowSet crs = MetadataControl.getInstance().getControlMetadataRepository().executeQuery(query, "reader");
         try {
             while (crs.next()) {
                 users.add(new User(crs.getString("USER_NM"),
@@ -59,13 +60,13 @@ public class UserConfiguration {
 
     // Delete
     public String getDeleteStatement() {
-        return "DELETE FROM " + this.getFrameworkInstance().getMetadataControl().getControlMetadataRepository().getTableNameByLabel("Users") +
+        return "DELETE FROM " + MetadataControl.getInstance().getControlMetadataRepository().getTableNameByLabel("Users") +
                 " WHERE USER_NM = " + SQLTools.GetStringForSQL(this.getUser().getName()) + ";";
     }
 
     // Delete
     public String getDeleteStatement(User user) {
-        return "DELETE FROM " + this.getFrameworkInstance().getMetadataControl().getControlMetadataRepository().getTableNameByLabel("Users") +
+        return "DELETE FROM " + MetadataControl.getInstance().getControlMetadataRepository().getTableNameByLabel("Users") +
                 " WHERE USER_NM = " + SQLTools.GetStringForSQL(user.getName()) + ";";
     }
 
@@ -77,7 +78,7 @@ public class UserConfiguration {
             queries.add(this.getDeleteStatement(user));
         }
 
-        queries.add("INSERT INTO " + this.getFrameworkInstance().getMetadataControl().getControlMetadataRepository().getTableNameByLabel("Users") +
+        queries.add("INSERT INTO " + MetadataControl.getInstance().getControlMetadataRepository().getTableNameByLabel("Users") +
                 " (USER_NM, USER_TYP_NM, USER_FIRST_NM, USER_LAST_NM, USER_ACT_FL, USER_PWD_HASH, USER_PWD_EXP_FL, LOGIN_FAIL_CUM_NB, LOGIN_FAIL_IND_NB, USER_LOCK_FL) VALUES (" +
                 SQLTools.GetStringForSQL(user.getName()) + "," +
                 SQLTools.GetStringForSQL(user.getType()) + "," +
@@ -102,7 +103,7 @@ public class UserConfiguration {
             queries.add(this.getDeleteStatement());
         }
 
-        queries.add("INSERT INTO " + this.getFrameworkInstance().getMetadataControl().getControlMetadataRepository().getTableNameByLabel("Users") +
+        queries.add("INSERT INTO " + MetadataControl.getInstance().getControlMetadataRepository().getTableNameByLabel("Users") +
                 " (USER_NM, USER_TYP_NM, USER_FIRST_NM, USER_LAST_NM, USER_ACT_FL, USER_PWD_HASH, USER_PWD_EXP_FL, LOGIN_FAIL_CUM_NB, LOGIN_FAIL_IND_NB, USER_LOCK_FL) VALUES (" +
                 SQLTools.GetStringForSQL(this.getUser().getName()) + "," +
                 SQLTools.GetStringForSQL(this.getUser().getType()) + "," +
@@ -120,7 +121,7 @@ public class UserConfiguration {
     public String getPasswordStatement() {
         String sql = "";
 
-        sql += "UPDATE " + this.getFrameworkInstance().getMetadataControl().getControlMetadataRepository().getTableNameByLabel("Users");
+        sql += "UPDATE " + MetadataControl.getInstance().getControlMetadataRepository().getTableNameByLabel("Users");
         sql += " SET ";
         sql += "USER_PWD_HASH=";
         sql += SQLTools.GetStringForSQL(this.getUser().getPasswordHash());
@@ -142,19 +143,19 @@ public class UserConfiguration {
     }
 
     public String getActiveUpdateStatement(String userName, String status) {
-        return "UPDATE " + this.getFrameworkInstance().getMetadataControl().getControlMetadataRepository().getTableNameByLabel("Users") +
+        return "UPDATE " + MetadataControl.getInstance().getControlMetadataRepository().getTableNameByLabel("Users") +
                 " SET USER_ACT_FL=" + SQLTools.GetStringForSQL(status.toUpperCase()) + " WHERE USER_NM = + " +
                 SQLTools.GetStringForSQL(userName) + ";";
     }
 
     public String getBlockedUpdateStatement(String userName, String status) {
-        return "UPDATE " + this.getFrameworkInstance().getMetadataControl().getControlMetadataRepository().getTableNameByLabel("Users") +
+        return "UPDATE " + MetadataControl.getInstance().getControlMetadataRepository().getTableNameByLabel("Users") +
                 " SET USER_BLOCK_FL=" + SQLTools.GetStringForSQL(status.toUpperCase()) +
                 " WHERE USER_NM =" + SQLTools.GetStringForSQL(userName) + ";";
     }
 
     public String resetIndividualLoginFails(String userName) {
-        return "UPDATE " + this.getFrameworkInstance().getMetadataControl().getControlMetadataRepository().getTableNameByLabel("Users") +
+        return "UPDATE " + MetadataControl.getInstance().getControlMetadataRepository().getTableNameByLabel("Users") +
                 " SET LOGIN_FAIL_IND_NB=" + SQLTools.GetStringForSQL(0) +
                 " WHERE USER_NM =" + SQLTools.GetStringForSQL(userName) + ";";
     }
@@ -162,9 +163,9 @@ public class UserConfiguration {
     // Get User
     public Optional<User> getUser(String userName) {;
         String query = "select USER_NM, USER_TYP_NM, USER_FIRST_NM, USER_LAST_NM, USER_ACT_FL, USER_PWD_HASH, USER_PWD_EXP_FL, LOGIN_FAIL_CUM_NB, LOGIN_FAIL_IND_NB, USER_LOCK_FL from "
-                + this.getFrameworkInstance().getMetadataControl().getControlMetadataRepository().getTableNameByLabel("Users")
+                + MetadataControl.getInstance().getControlMetadataRepository().getTableNameByLabel("Users")
                 + " where USER_NM = " + SQLTools.GetStringForSQL(userName) + ";";
-        CachedRowSet crs = this.getFrameworkInstance().getMetadataControl().getControlMetadataRepository().executeQuery(query, "reader");
+        CachedRowSet crs = MetadataControl.getInstance().getControlMetadataRepository().executeQuery(query, "reader");
         try {
             if (crs.size() == 0) {
                 System.out.println("No Users found " + userName);
@@ -224,6 +225,6 @@ public class UserConfiguration {
         if (exists(user)) {
 
         }
-        this.getFrameworkInstance().getMetadataControl().getControlMetadataRepository().executeBatch(getInsertStatement(user));
+        MetadataControl.getInstance().getControlMetadataRepository().executeBatch(getInsertStatement(user));
     }
 }

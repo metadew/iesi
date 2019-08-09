@@ -2,6 +2,7 @@ package io.metadew.iesi.metadata.configuration.script;
 
 import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.script.ScriptResultOutput;
+import io.metadew.iesi.metadata.execution.MetadataControl;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
@@ -32,9 +33,9 @@ public class ScriptResultOutputConfiguration {
 	public List<ScriptResultOutput> getScriptResultOutputs(String runId, long processId) {
         List<ScriptResultOutput> scriptResultOutputs = new ArrayList();
         CachedRowSet crsScriptResultOutputs;
-        String queryScriptResultOutputs = "select RUN_ID, PRC_ID, SCRIPT_ID, OUT_NM, OUT_VAL from " + this.getFrameworkInstance().getMetadataControl().getResultMetadataRepository().getTableNameByLabel("ScriptResultOutputs")
+        String queryScriptResultOutputs = "select RUN_ID, PRC_ID, SCRIPT_ID, OUT_NM, OUT_VAL from " + MetadataControl.getInstance().getResultMetadataRepository().getTableNameByLabel("ScriptResultOutputs")
                 + " where RUN_ID = '" + runId + "' and PRC_ID = " + processId + " order by LOAD_TMS asc";
-        crsScriptResultOutputs = this.getFrameworkInstance().getMetadataControl().getResultMetadataRepository().executeQuery(queryScriptResultOutputs, "reader");
+        crsScriptResultOutputs = MetadataControl.getInstance().getResultMetadataRepository().executeQuery(queryScriptResultOutputs, "reader");
         try {
             while (crsScriptResultOutputs.next()) {
             	ScriptResultOutput scriptResultOutput= new ScriptResultOutput();
@@ -55,9 +56,9 @@ public class ScriptResultOutputConfiguration {
     public Optional<ScriptResultOutput> getScriptOutput(String runId, long processId, String scriptResultOutputName) {
         ScriptResultOutput scriptResultOutput = null;
         CachedRowSet crsScriptResultOutput;
-        String queryScriptResultOutput = "select RUN_ID, PRC_ID, SCRIPT_ID, OUT_NM, OUT_VAL from " + this.getFrameworkInstance().getMetadataControl().getResultMetadataRepository().getTableNameByLabel("ScriptResultOutputs")
+        String queryScriptResultOutput = "select RUN_ID, PRC_ID, SCRIPT_ID, OUT_NM, OUT_VAL from " + MetadataControl.getInstance().getResultMetadataRepository().getTableNameByLabel("ScriptResultOutputs")
                 + " where RUN_ID = '" + runId + "' and PRC_ID = " + processId + " and OUT_NM = '" + scriptResultOutputName + "'";
-        crsScriptResultOutput = this.getFrameworkInstance().getMetadataControl().getResultMetadataRepository().executeQuery(queryScriptResultOutput, "reader");
+        crsScriptResultOutput = MetadataControl.getInstance().getResultMetadataRepository().executeQuery(queryScriptResultOutput, "reader");
         try {
             while (crsScriptResultOutput.next()) {
                 scriptResultOutput = new ScriptResultOutput(scriptResultOutputName,

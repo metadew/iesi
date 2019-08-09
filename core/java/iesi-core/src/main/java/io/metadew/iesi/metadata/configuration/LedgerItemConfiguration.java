@@ -3,6 +3,7 @@ package io.metadew.iesi.metadata.configuration;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.LedgerItem;
+import io.metadew.iesi.metadata.execution.MetadataControl;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
@@ -27,14 +28,14 @@ public class LedgerItemConfiguration {
     public String getInsertStatement(String ledgerName) {
         String sql = "";
 
-        sql += "INSERT INTO " + this.getFrameworkInstance().getMetadataControl().getLedgerMetadataRepository()
+        sql += "INSERT INTO " + MetadataControl.getInstance().getLedgerMetadataRepository()
                 .getTableNameByLabel("LedgerItems");
         sql += " (LEDGER_ID, ITEM_NM, ITEM_VAL) ";
         sql += "VALUES ";
         sql += "(";
         sql += "("
                 + SQLTools.GetLookupIdStatement(
-                this.getFrameworkInstance().getMetadataControl().getLedgerMetadataRepository()
+                MetadataControl.getInstance().getLedgerMetadataRepository()
                         .getTableNameByLabel("Ledgers"),
                 "LEDGER_ID", "where LEDGER_NM = '" + ledgerName)
                 + "')";
@@ -52,10 +53,10 @@ public class LedgerItemConfiguration {
         LedgerItem ledgerItem = new LedgerItem();
         CachedRowSet crsLedgerItem = null;
         String queryLedgerItem = "select LEDGER_ID, ITEM_NM, ITEM_VAL from "
-                + this.getFrameworkInstance().getMetadataControl().getLedgerMetadataRepository()
+                + MetadataControl.getInstance().getLedgerMetadataRepository()
                 .getTableNameByLabel("LedgerItems")
                 + " where LEDGER_ID = " + ledgerId + " and ITEM_NM = '" + ledgerItemName + "'";
-        crsLedgerItem = this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository()
+        crsLedgerItem = MetadataControl.getInstance().getDesignMetadataRepository()
                 .executeQuery(queryLedgerItem, "reader");
         try {
             while (crsLedgerItem.next()) {

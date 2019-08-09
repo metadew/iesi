@@ -5,6 +5,7 @@ import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.Dataset;
 import io.metadew.iesi.metadata.definition.DatasetInstance;
 import io.metadew.iesi.metadata.definition.DatasetParameter;
+import io.metadew.iesi.metadata.execution.MetadataControl;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
@@ -32,46 +33,46 @@ public class DatasetConfiguration {
         String sql = "";
 
         sql += "DELETE FROM "
-                + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository()
+                + MetadataControl.getInstance().getConnectivityMetadataRepository()
                 .getTableNameByLabel("DatasetInstanceLabels");
         sql += " WHERE DST_ID = (";
-        sql += "select DST_ID FROM " + this.getFrameworkInstance().getMetadataControl()
+        sql += "select DST_ID FROM " + MetadataControl.getInstance()
                 .getConnectivityMetadataRepository().getTableNameByLabel("Datasets");
         sql += " WHERE DST_NM = " + SQLTools.GetStringForSQL(this.getDataset().getName());
         sql += ")";
         sql += ";";
         sql += "\n";
         sql += "DELETE FROM "
-                + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository()
+                + MetadataControl.getInstance().getConnectivityMetadataRepository()
                 .getTableNameByLabel("DatasetInstanceParameters");
         sql += " WHERE DST_ID = (";
-        sql += "select DST_ID FROM " + this.getFrameworkInstance().getMetadataControl()
+        sql += "select DST_ID FROM " + MetadataControl.getInstance()
                 .getConnectivityMetadataRepository().getTableNameByLabel("Datasets");
         sql += " WHERE DST_NM = " + SQLTools.GetStringForSQL(this.getDataset().getName());
         sql += ")";
         sql += ";";
         sql += "\n";
         sql += "DELETE FROM "
-                + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository()
+                + MetadataControl.getInstance().getConnectivityMetadataRepository()
                 .getTableNameByLabel("DatasetInstances");
         sql += " WHERE DST_ID = (";
-        sql += "select DST_ID FROM " + this.getFrameworkInstance().getMetadataControl()
+        sql += "select DST_ID FROM " + MetadataControl.getInstance()
                 .getConnectivityMetadataRepository().getTableNameByLabel("Datasets");
         sql += " WHERE DST_NM = " + SQLTools.GetStringForSQL(this.getDataset().getName());
         sql += ")";
         sql += ";";
         sql += "\n";
         sql += "DELETE FROM "
-                + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository()
+                + MetadataControl.getInstance().getConnectivityMetadataRepository()
                 .getTableNameByLabel("DatasetParameters");
         sql += " WHERE DST_ID = (";
-        sql += "select DST_ID FROM " + this.getFrameworkInstance().getMetadataControl()
+        sql += "select DST_ID FROM " + MetadataControl.getInstance()
                 .getConnectivityMetadataRepository().getTableNameByLabel("Datasets");
         sql += " WHERE DST_NM = " + SQLTools.GetStringForSQL(this.getDataset().getName());
         sql += ")";
         sql += ";";
         sql += "\n";
-        sql += "DELETE FROM " + this.getFrameworkInstance().getMetadataControl()
+        sql += "DELETE FROM " + MetadataControl.getInstance()
                 .getConnectivityMetadataRepository().getTableNameByLabel("Datasets");
         sql += " WHERE DST_NM = " + SQLTools.GetStringForSQL(this.getDataset().getName());
         sql += ";";
@@ -89,12 +90,12 @@ public class DatasetConfiguration {
             sql += this.getDeleteStatement();
         }
 
-        sql += "INSERT INTO " + this.getFrameworkInstance().getMetadataControl()
+        sql += "INSERT INTO " + MetadataControl.getInstance()
                 .getConnectivityMetadataRepository().getTableNameByLabel("Datasets");
         sql += " (DST_ID, DST_NM, DST_TYP_NM, DST_DSC) ";
         sql += "VALUES ";
         sql += "(";
-        sql += "(" + SQLTools.GetNextIdStatement(this.getFrameworkInstance().getMetadataControl()
+        sql += "(" + SQLTools.GetNextIdStatement(MetadataControl.getInstance()
                         .getConnectivityMetadataRepository().getTableNameByLabel("Datasets"),
                 "DST_ID") + ")";
         sql += ",";
@@ -165,10 +166,10 @@ public class DatasetConfiguration {
         Dataset dataset = new Dataset();
         CachedRowSet crsDataset = null;
         String queryDataset = "select DST_ID, DST_NM, DST_TYP_NM, DST_DSC from "
-                + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository()
+                + MetadataControl.getInstance().getConnectivityMetadataRepository()
                 .getTableNameByLabel("Datasets")
                 + " where DST_NM = '" + datasetName + "'";
-        crsDataset = this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository()
+        crsDataset = MetadataControl.getInstance().getConnectivityMetadataRepository()
                 .executeQuery(queryDataset, "reader");
         DatasetParameterConfiguration datasetParameterConfiguration = new DatasetParameterConfiguration(
                 this.getFrameworkInstance());
@@ -184,10 +185,10 @@ public class DatasetConfiguration {
                 // Get parameters
                 CachedRowSet crsDatasetParameters = null;
                 String queryDatasetParameters = "select DST_ID, DST_PAR_NM, DST_PAR_VAL from "
-                        + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository()
+                        + MetadataControl.getInstance().getConnectivityMetadataRepository()
                         .getTableNameByLabel("DatasetParameters")
                         + " where DST_ID = " + dataset.getId();
-                crsDatasetParameters = this.getFrameworkInstance().getMetadataControl()
+                crsDatasetParameters = MetadataControl.getInstance()
                         .getConnectivityMetadataRepository().executeQuery(queryDatasetParameters, "reader");
                 List<DatasetParameter> datasetParameterList = new ArrayList();
                 while (crsDatasetParameters.next()) {
@@ -200,10 +201,10 @@ public class DatasetConfiguration {
                 // Get Instances
                 CachedRowSet crsDatasetInstances = null;
                 String queryDatasetInstances = "select DST_ID, DST_INST_ID, DST_INST_NM from "
-                        + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository()
+                        + MetadataControl.getInstance().getConnectivityMetadataRepository()
                         .getTableNameByLabel("DatasetInstances")
                         + " where DST_ID = " + dataset.getId();
-                crsDatasetInstances = this.getFrameworkInstance().getMetadataControl()
+                crsDatasetInstances = MetadataControl.getInstance()
                         .getConnectivityMetadataRepository().executeQuery(queryDatasetInstances, "reader");
                 List<DatasetInstance> datasetInstanceList = new ArrayList();
                 while (crsDatasetInstances.next()) {
@@ -226,10 +227,10 @@ public class DatasetConfiguration {
         Dataset dataset = new Dataset();
         CachedRowSet crsDataset = null;
         String queryDataset = "select DST_ID, DST_NM, DST_TYP_NM, DST_DSC from "
-                + this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository()
+                + MetadataControl.getInstance().getConnectivityMetadataRepository()
                 .getTableNameByLabel("Datasets")
                 + " where DST_NM = '" + datasetName + "'";
-        crsDataset = this.getFrameworkInstance().getMetadataControl().getConnectivityMetadataRepository()
+        crsDataset = MetadataControl.getInstance().getConnectivityMetadataRepository()
                 .executeQuery(queryDataset, "reader");
         try {
             while (crsDataset.next()) {

@@ -2,6 +2,7 @@ package io.metadew.iesi.launch;
 
 import io.metadew.iesi.framework.configuration.FrameworkSettingConfiguration;
 import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
+import io.metadew.iesi.framework.execution.FrameworkControl;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.Request;
 import io.metadew.iesi.metadata.definition.RequestParameter;
@@ -216,7 +217,7 @@ public class ScriptLauncher {
 		// Server mode
 		String serverMode = "off";
 		try {
-			serverMode = frameworkInstance.getFrameworkControl().getProperty(frameworkInstance.getFrameworkConfiguration().getSettingConfiguration().getSettingPath("server.mode").get()).toLowerCase();
+			serverMode = FrameworkControl.getInstance().getProperty(FrameworkSettingConfiguration.getInstance().getSettingPath("server.mode").get()).toLowerCase();
 			System.out.println("Setting framework.server.mode=" + serverMode);
 		} catch (Exception e) {
 			System.out.println("Setting framework.server.mode=off (setting.notfound)");

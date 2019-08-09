@@ -6,6 +6,7 @@ import io.metadew.iesi.metadata.configuration.exception.script.ScriptParameterAl
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.metadata.definition.script.ScriptParameter;
 import io.metadew.iesi.metadata.definition.script.ScriptVersion;
+import io.metadew.iesi.metadata.execution.MetadataControl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -29,21 +30,21 @@ public class ScriptParameterConfiguration {
             throw new ScriptParameterAlreadyExistsException(MessageFormat.format(
                     "ScriptParameter {0}-{1} already exists", scriptId, scriptVersionNumber));
         }
-        this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().executeUpdate(getInsertStatement(scriptId, scriptVersionNumber, scriptParameter));
+        MetadataControl.getInstance().getDesignMetadataRepository().executeUpdate(getInsertStatement(scriptId, scriptVersionNumber, scriptParameter));
 
 
     }
 
     private boolean exists(String scriptId, long scriptVersionNumber, ScriptParameter scriptParameter) {
-        String queryScriptParameter = "select SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_PAR_NM, SCRIPT_PAR_VAL from " + this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ScriptParameters")
+        String queryScriptParameter = "select SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_PAR_NM, SCRIPT_PAR_VAL from " + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("ScriptParameters")
                 + " where SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptId) + " and SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(scriptVersionNumber) + " and SCRIPT_PAR_NM = " + SQLTools.GetStringForSQL(scriptParameter.getName()) + ";";
-        CachedRowSet cachedRowSet = this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().executeQuery(queryScriptParameter, "reader");
+        CachedRowSet cachedRowSet = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(queryScriptParameter, "reader");
         return cachedRowSet.size() >= 1;
     }
 
     // Insert
     public String getInsertStatement(String scriptId, long scriptVersionNumber, ScriptParameter scriptParameter) {
-        return "INSERT INTO " + this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository()
+        return "INSERT INTO " + MetadataControl.getInstance().getDesignMetadataRepository()
                 .getTableNameByLabel("ScriptParameters") +
                 " (SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_PAR_NM, SCRIPT_PAR_VAL) VALUES (" +
                 SQLTools.GetStringForSQL(scriptId) + "," +
@@ -54,9 +55,9 @@ public class ScriptParameterConfiguration {
 
 
     public Optional<ScriptParameter> getScriptParameter(String scriptId, long scriptVersionNumber, String scriptParameterName) throws SQLException {
-        String queryScriptParameter = "select SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_PAR_NM, SCRIPT_PAR_VAL from " + this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ScriptParameters")
+        String queryScriptParameter = "select SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_PAR_NM, SCRIPT_PAR_VAL from " + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("ScriptParameters")
                 + " where SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptId) + " and SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(scriptVersionNumber) + " and SCRIPT_PAR_NM = " + SQLTools.GetStringForSQL(scriptParameterName) + ";";
-        CachedRowSet cachedRowSet = this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().executeQuery(queryScriptParameter, "reader");
+        CachedRowSet cachedRowSet = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(queryScriptParameter, "reader");
         if (cachedRowSet.size() == 0) {
             return Optional.empty();
         } else if (cachedRowSet.size() > 1) {

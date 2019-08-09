@@ -3,6 +3,7 @@ package io.metadew.iesi.metadata.configuration.script;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.action.ActionResultConfiguration;
 import io.metadew.iesi.metadata.definition.script.ScriptResult;
+import io.metadew.iesi.metadata.execution.MetadataControl;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
@@ -23,10 +24,10 @@ public class ScriptResultConfiguration {
 		ScriptResult scriptResult = new ScriptResult();
 		CachedRowSet crsScriptResult = null;
 		String queryScript = "select RUN_ID, PRC_ID, PARENT_PRC_ID, SCRIPT_ID, SCRIPT_NM, SCRIPT_VRS_NB, ENV_NM, ST_NM, STRT_TMS, END_TMS from "
-				+ this.getFrameworkInstance().getMetadataControl().getResultMetadataRepository()
+				+ MetadataControl.getInstance().getResultMetadataRepository()
 						.getTableNameByLabel("ScriptResults")
 				+ " where RUN_ID = '" + runId + "' and PARENT_PRC_ID = 0";
-		crsScriptResult = this.getFrameworkInstance().getMetadataControl().getResultMetadataRepository()
+		crsScriptResult = MetadataControl.getInstance().getResultMetadataRepository()
 				.executeQuery(queryScript, "reader");
 		ActionResultConfiguration actionResultConfiguration = new ActionResultConfiguration(this.getFrameworkInstance());
 		ScriptResultOutputConfiguration scriptResultOutputConfiguration =  new ScriptResultOutputConfiguration(this.getFrameworkInstance());
@@ -66,10 +67,10 @@ public class ScriptResultConfiguration {
 		List<ScriptResult> scriptResults = new ArrayList();
 		CachedRowSet crsScriptResult = null;
 		String queryScript = "select RUN_ID, PRC_ID, PARENT_PRC_ID, SCRIPT_ID, SCRIPT_NM, SCRIPT_VRS_NB, ENV_NM, ST_NM, STRT_TMS, END_TMS from "
-				+ this.getFrameworkInstance().getMetadataControl().getResultMetadataRepository()
+				+ MetadataControl.getInstance().getResultMetadataRepository()
 						.getTableNameByLabel("ScriptResults")
 				+ " where RUN_ID = '" + runId + "' and PARENT_PRC_ID > 0";
-		crsScriptResult = this.getFrameworkInstance().getMetadataControl().getResultMetadataRepository()
+		crsScriptResult = MetadataControl.getInstance().getResultMetadataRepository()
 				.executeQuery(queryScript, "reader");
 		ActionResultConfiguration actionResultConfiguration = new ActionResultConfiguration(this.getFrameworkInstance());
 		ScriptResultOutputConfiguration scriptResultOutputConfiguration =  new ScriptResultOutputConfiguration(this.getFrameworkInstance());

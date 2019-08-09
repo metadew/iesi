@@ -6,6 +6,7 @@ import io.metadew.iesi.metadata.configuration.exception.action.ActionParameterAl
 import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.script.Script;
+import io.metadew.iesi.metadata.execution.MetadataControl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -25,7 +26,7 @@ public class ActionParameterConfiguration {
     }
 
     public String getInsertStatement(String scriptId, long scriptVersionNumber, String actionId, ActionParameter actionParameter) {
-        return "INSERT INTO " + this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository()
+        return "INSERT INTO " + MetadataControl.getInstance().getDesignMetadataRepository()
                 .getTableNameByLabel("ActionParameters") +
                 " (SCRIPT_ID, SCRIPT_VRS_NB, ACTION_ID, ACTION_PAR_NM, ACTION_PAR_VAL) VALUES (" +
                 SQLTools.GetStringForSQL(scriptId) + "," +
@@ -38,10 +39,10 @@ public class ActionParameterConfiguration {
     public Optional<ActionParameter> get(String scriptId, long scriptVersionNumber, String actionId, String actionParameterName) throws SQLException {
         ActionParameter actionParameter = new ActionParameter();
         String queryActionParameter = "select SCRIPT_ID, SCRIPT_VRS_NB, ACTION_ID, ACTION_PAR_NM, ACTION_PAR_VAL from "
-                + this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ActionParameters")
+                + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("ActionParameters")
                 + " where SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptId) + " and SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(scriptVersionNumber)
                 + " AND ACTION_ID = " + SQLTools.GetStringForSQL(actionId) + " and ACTION_PAR_NM = " + SQLTools.GetStringForSQL(actionParameterName) + ";";
-        CachedRowSet cachedRowSet = this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository()
+        CachedRowSet cachedRowSet = MetadataControl.getInstance().getDesignMetadataRepository()
                 .executeQuery(queryActionParameter, "reader");
         if (cachedRowSet.size() == 0) {
             return Optional.empty();
@@ -59,7 +60,7 @@ public class ActionParameterConfiguration {
             throw new ActionParameterAlreadyExistsException(MessageFormat.format(
                     "Action {0}-{1}-{2}-{3} already exists", scriptId, scriptVersionNumber, actionId, actionParameter.getName()));
         }
-        String insertQuery = "INSERT INTO " + this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository()
+        String insertQuery = "INSERT INTO " + MetadataControl.getInstance().getDesignMetadataRepository()
                 .getTableNameByLabel("ActionParameters") +
                 " (SCRIPT_ID, SCRIPT_VRS_NB, ACTION_ID, ACTION_PAR_NM, ACTION_PAR_VAL) VALUES (" +
                 SQLTools.GetStringForSQL(scriptId) + "," +
@@ -67,15 +68,15 @@ public class ActionParameterConfiguration {
                 SQLTools.GetStringForSQL(actionId) + "," +
                 SQLTools.GetStringForSQL(actionParameter.getName()) + "," +
                 SQLTools.GetStringForSQL(actionParameter.getValue()) + ");";
-        getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().executeUpdate(insertQuery);
+        MetadataControl.getInstance().getDesignMetadataRepository().executeUpdate(insertQuery);
     }
 
     private boolean exists(String scriptId, long scriptVersionNumber, String actionId, ActionParameter actionParameter) {
         String query = "select SCRIPT_ID, SCRIPT_VRS_NB, ACTION_ID, ACTION_PAR_NM, ACTION_PAR_VAL from "
-                + this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ActionParameters")
+                + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("ActionParameters")
                 + " where SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptId) + " and SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(scriptVersionNumber)
                 + " AND ACTION_ID = " + SQLTools.GetStringForSQL(actionId) + " and ACTION_PAR_NM = " + SQLTools.GetStringForSQL(actionParameter.getName()) + ";";
-        CachedRowSet cachedRowSet = this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().executeQuery(query, "reader");
+        CachedRowSet cachedRowSet = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(query, "reader");
         return cachedRowSet.size() >= 1;
     }
 

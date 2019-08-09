@@ -4,6 +4,7 @@ import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.Artefact;
 import io.metadew.iesi.metadata.definition.Classification;
+import io.metadew.iesi.metadata.execution.MetadataControl;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
@@ -31,17 +32,17 @@ public class ArtefactConfiguration {
     public String getDeleteStatement() {
         String sql = "";
 
-        sql += "DELETE FROM " + this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository()
+        sql += "DELETE FROM " + MetadataControl.getInstance().getCatalogMetadataRepository()
                 .getTableNameByLabel("Artefacts");
         sql += " WHERE ARTEFACT_NM = " + SQLTools.GetStringForSQL(this.getArtefact().getName());
         sql += " AND ARTEFACT_TYP_NM = ";
         sql += SQLTools.GetStringForSQL(this.getArtefact().getName());
         sql += ";";
         sql += "\n";
-        sql += "DELETE FROM " + this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository()
+        sql += "DELETE FROM " + MetadataControl.getInstance().getCatalogMetadataRepository()
                 .getTableNameByLabel("Classifications");
         sql += " WHERE ARTEFACT_ID = (";
-        sql += "select ARTEFACT_ID FROM " + this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository()
+        sql += "select ARTEFACT_ID FROM " + MetadataControl.getInstance().getCatalogMetadataRepository()
                 .getTableNameByLabel("Artefacts");
         sql += " WHERE ARTEFACT_NM = " + SQLTools.GetStringForSQL(this.getArtefact().getName());
         sql += " AND ARTEFACT_TYP_NM = ";
@@ -62,12 +63,12 @@ public class ArtefactConfiguration {
             sql += this.getDeleteStatement();
         }
 
-        sql += "INSERT INTO " + this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository()
+        sql += "INSERT INTO " + MetadataControl.getInstance().getCatalogMetadataRepository()
                 .getTableNameByLabel("Artefacts");
         sql += " (ARTEFACT_ID, ARTEFACT_NM, ARTEFACT_TYP_NM) ";
         sql += "VALUES ";
         sql += "(";
-        sql += "(" + SQLTools.GetNextIdStatement(this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository()
+        sql += "(" + SQLTools.GetNextIdStatement(MetadataControl.getInstance().getCatalogMetadataRepository()
                 .getTableNameByLabel("Artefacts"), "ARTEFACT_ID") + ")";
         sql += ",";
         sql += SQLTools.GetStringForSQL(this.getArtefact().getName());
@@ -113,10 +114,10 @@ public class ArtefactConfiguration {
         Artefact artefact = new Artefact();
         CachedRowSet crsArtefact = null;
         String queryArtefact = "select ARTEFACT_ID, ARTEFACT_NM, ARTEFACT_TYP_NM from "
-                + this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository()
+                + MetadataControl.getInstance().getCatalogMetadataRepository()
                 .getTableNameByLabel("Artefacts")
                 + " where ARTEFACT_NM = '" + artefactName + "' AND ARTEFACT_TYP_NM = '" + artefactType + "'";
-        crsArtefact = this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository()
+        crsArtefact = MetadataControl.getInstance().getCatalogMetadataRepository()
                 .executeQuery(queryArtefact, "reader");
         ClassificationConfiguration classificationConfiguration = new ClassificationConfiguration(this.getFrameworkInstance());
         try {
@@ -128,10 +129,10 @@ public class ArtefactConfiguration {
                 // Get classifications
                 CachedRowSet crsArtefactClassifications = null;
                 String queryArtefactClassifications = "select ARTIFACT_ID, CLASSIF_ID from "
-                        + this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository()
+                        + MetadataControl.getInstance().getCatalogMetadataRepository()
                         .getTableNameByLabel("Classifications")
                         + " where ARTEFACT_ID = " + artefact.getId();
-                crsArtefactClassifications = this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository()
+                crsArtefactClassifications = MetadataControl.getInstance().getCatalogMetadataRepository()
                         .executeQuery(queryArtefactClassifications, "reader");
                 List<Classification> artefactClassificationList = new ArrayList();
                 while (crsArtefactClassifications.next()) {

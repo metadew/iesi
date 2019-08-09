@@ -3,6 +3,7 @@ package io.metadew.iesi.metadata.configuration;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.DataframeVersion;
+import io.metadew.iesi.metadata.execution.MetadataControl;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
@@ -27,11 +28,11 @@ public class DataframeVersionConfiguration {
     public String getInsertStatement(String dataframeName) {
         String sql = "";
 
-        sql += "INSERT INTO " + this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("DataframeVersions");
+        sql += "INSERT INTO " + MetadataControl.getInstance().getCatalogMetadataRepository().getTableNameByLabel("DataframeVersions");
         sql += " (DATAFRAME_ID, DATAFRAME_VRS_NB, DATAFRAME_VRS_DSC) ";
         sql += "VALUES ";
         sql += "(";
-        sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("Dataviews"), "DATAFRAME_ID", "where DATAFRAME_NM = '" + dataframeName) + "')";
+        sql += "(" + SQLTools.GetLookupIdStatement(MetadataControl.getInstance().getCatalogMetadataRepository().getTableNameByLabel("Dataviews"), "DATAFRAME_ID", "where DATAFRAME_NM = '" + dataframeName) + "')";
         sql += ",";
         sql += SQLTools.GetStringForSQL(this.getDataframeVersion().getNumber());
         sql += ",";
@@ -46,11 +47,11 @@ public class DataframeVersionConfiguration {
     public String getDefaultInsertStatement(String dataframeName) {
         String sql = "";
 
-        sql += "INSERT INTO " + this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("DataframeVersions");
+        sql += "INSERT INTO " + MetadataControl.getInstance().getCatalogMetadataRepository().getTableNameByLabel("DataframeVersions");
         sql += " (DATAFRAME_ID, DATAFRAME_VRS_NB, DATAFRAME_VRS_DSC) ";
         sql += "VALUES ";
         sql += "(";
-        sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("Dataviews"), "DATAFRAME_ID", "where DATAFRAME_NM = '" + dataframeName) + "')";
+        sql += "(" + SQLTools.GetLookupIdStatement(MetadataControl.getInstance().getCatalogMetadataRepository().getTableNameByLabel("Dataviews"), "DATAFRAME_ID", "where DATAFRAME_NM = '" + dataframeName) + "')";
         sql += ",";
         sql += SQLTools.GetStringForSQL("0");
         sql += ",";
@@ -64,9 +65,9 @@ public class DataframeVersionConfiguration {
     public DataframeVersion getDataframeVersion(long dataframeId, long dataframeVersionNumber) {
         DataframeVersion dataframeVersion = new DataframeVersion();
         CachedRowSet crsDataframeVersion = null;
-        String queryDataframeVersion = "select DATAFRAME_ID, DATAFRAME_VRS_NB, DATAFRAME_VRS_DSC from " + this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("DataframeVersions")
+        String queryDataframeVersion = "select DATAFRAME_ID, DATAFRAME_VRS_NB, DATAFRAME_VRS_DSC from " + MetadataControl.getInstance().getCatalogMetadataRepository().getTableNameByLabel("DataframeVersions")
                 + " where DATAFRAME_ID = " + dataframeId + " and DATAFRAME_VRS_NB = " + dataframeVersionNumber;
-        crsDataframeVersion = this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().executeQuery(queryDataframeVersion, "reader");
+        crsDataframeVersion = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(queryDataframeVersion, "reader");
         try {
             while (crsDataframeVersion.next()) {
                 dataframeVersion.setNumber(dataframeVersionNumber);

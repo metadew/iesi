@@ -8,6 +8,7 @@ import io.metadew.iesi.metadata.configuration.exception.action.ActionParameterAl
 import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.script.Script;
+import io.metadew.iesi.metadata.execution.MetadataControl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -38,10 +39,10 @@ public class ActionConfiguration {
     public Optional<Action> get(String scriptId, long scriptVersionNumber, String actionId) {
     	LOGGER.trace(MessageFormat.format("Fetching action {0}.", actionId));
         String queryAction = "select SCRIPT_ID, SCRIPT_VRS_NB, ACTION_ID, ACTION_NB, ACTION_TYP_NM, ACTION_NM, ACTION_DSC, COMP_NM, ITERATION_VAL, CONDITION_VAL, EXP_ERR_FL, STOP_ERR_FL, RETRIES_VAL from "
-                + this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository()
+                + MetadataControl.getInstance().getDesignMetadataRepository()
                 .getTableNameByLabel("Actions")
                 + " where ACTION_ID = " + SQLTools.GetStringForSQL(actionId) + " AND SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptId) + " AND SCRIPT_VRS_NB = '" + scriptVersionNumber + "'";
-        CachedRowSet crsAction = this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().executeQuery(queryAction, "reader");
+        CachedRowSet crsAction = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(queryAction, "reader");
         try {
             if (crsAction.size() == 0) {
                 return Optional.empty();
@@ -51,9 +52,9 @@ public class ActionConfiguration {
             crsAction.next();
             // Get parameters
             String queryActionParameters = "select ACTION_ID, ACTION_PAR_NM, ACTION_PAR_VAL from "
-                    + this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ActionParameters")
+                    + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("ActionParameters")
                     + " where ACTION_ID = " + SQLTools.GetStringForSQL(actionId) + " AND SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptId) + " AND SCRIPT_VRS_NB = '" + scriptVersionNumber + "'";
-            CachedRowSet crsActionParameters = this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().executeQuery(queryActionParameters, "reader");
+            CachedRowSet crsActionParameters = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(queryActionParameters, "reader");
             List<ActionParameter> actionParameters = new ArrayList<>();
             while (crsActionParameters.next()) {
                 actionParameters.add(new ActionParameter(crsActionParameters.getString("ACTION_PAR_NM"),
@@ -89,7 +90,7 @@ public class ActionConfiguration {
         List<String> queries = new ArrayList<>();
         ActionParameterConfiguration actionParameterConfiguration = new ActionParameterConfiguration(this.getFrameworkInstance());
 
-        queries.add("INSERT INTO " + this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository()
+        queries.add("INSERT INTO " + MetadataControl.getInstance().getDesignMetadataRepository()
                 .getTableNameByLabel("Actions") +
                 " (SCRIPT_ID, SCRIPT_VRS_NB, ACTION_ID, ACTION_NB, ACTION_TYP_NM, ACTION_NM, ACTION_DSC, COMP_NM, ITERATION_VAL, CONDITION_VAL, RETRIES_VAL, EXP_ERR_FL, STOP_ERR_FL) VALUES (" +
                 SQLTools.GetStringForSQL(scriptId) + "," +
@@ -124,7 +125,7 @@ public class ActionConfiguration {
                 LOGGER.warn(e.getMessage() + ". Skipping");
             }
         }
-        String query = "INSERT INTO " + this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository()
+        String query = "INSERT INTO " + MetadataControl.getInstance().getDesignMetadataRepository()
                 .getTableNameByLabel("Actions") +
                 " (SCRIPT_ID, SCRIPT_VRS_NB, ACTION_ID, ACTION_NB, ACTION_TYP_NM, ACTION_NM, ACTION_DSC, COMP_NM, ITERATION_VAL, CONDITION_VAL, RETRIES_VAL, EXP_ERR_FL, STOP_ERR_FL) VALUES (" +
                 SQLTools.GetStringForSQL(scriptId) + "," +
@@ -140,24 +141,24 @@ public class ActionConfiguration {
                 SQLTools.GetStringForSQL(action.getRetries()) + "," +
                 SQLTools.GetStringForSQL(action.getErrorExpected()) + "," +
                 SQLTools.GetStringForSQL(action.getErrorStop()) + ");";
-        this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().executeUpdate(query);
+        MetadataControl.getInstance().getDesignMetadataRepository().executeUpdate(query);
     }
 
     public boolean exists(String scriptId, long scriptVersionNumber, Action action) {
         String query = "select SCRIPT_ID, SCRIPT_VRS_NB, ACTION_ID from "
-                + this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository()
+                + MetadataControl.getInstance().getDesignMetadataRepository()
                 .getTableNameByLabel("Actions")
                 + " where ACTION_ID = " + SQLTools.GetStringForSQL(action.getId()) + " AND SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptId) + " AND SCRIPT_VRS_NB = '" + scriptVersionNumber + "'";
-        CachedRowSet cachedRowSet = this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().executeQuery(query, "reader");
+        CachedRowSet cachedRowSet = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(query, "reader");
         return cachedRowSet.size() >= 1;
     }
 
     public boolean exists(String scriptId, long scriptVersionNumber, String actionId) {
         String query = "select SCRIPT_ID, SCRIPT_VRS_NB, ACTION_ID from "
-                + this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository()
+                + MetadataControl.getInstance().getDesignMetadataRepository()
                 .getTableNameByLabel("Actions")
                 + " where ACTION_ID = " + SQLTools.GetStringForSQL(actionId) + " AND SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptId) + " AND SCRIPT_VRS_NB = '" + scriptVersionNumber + "'";
-        CachedRowSet cachedRowSet = this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().executeQuery(query, "reader");
+        CachedRowSet cachedRowSet = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(query, "reader");
         return cachedRowSet.size() >= 1;
     }
 
@@ -167,16 +168,16 @@ public class ActionConfiguration {
             throw new ActionDoesNotExistException(MessageFormat.format("Action {0}-{1}-{2} does not exists", scriptId, scriptVersionNumber, actionId));
         }
         List<String> deleteStatement = deleteStatement(scriptId, scriptVersionNumber, actionId);
-        frameworkInstance.getMetadataControl().getTraceMetadataRepository().executeBatch(deleteStatement);
+        MetadataControl.getInstance().getTraceMetadataRepository().executeBatch(deleteStatement);
     }
 
     private List<String> deleteStatement(String scriptId, long scriptVersionNumber, String actionId) {
         List<String> queries = new ArrayList<>();
-        queries.add("DELETE FROM " + frameworkInstance.getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("Actions") +
+        queries.add("DELETE FROM " + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("Actions") +
                 " WHERE SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptId) +
                 " AND SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(scriptVersionNumber) +
                 " AND ACTION_ID = " + SQLTools.GetStringForSQL(actionId) + ";");
-        queries.add("DELETE FROM " + this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().getTableNameByLabel("ActionParameters") +
+        queries.add("DELETE FROM " + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("ActionParameters") +
                 " WHERE SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptId) +
                 " AND SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(scriptVersionNumber) +
                 " AND ACTION_ID = " + SQLTools.GetStringForSQL(actionId) + ";");

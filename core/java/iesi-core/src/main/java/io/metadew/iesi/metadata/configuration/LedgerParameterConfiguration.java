@@ -3,6 +3,7 @@ package io.metadew.iesi.metadata.configuration;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.LedgerParameter;
+import io.metadew.iesi.metadata.execution.MetadataControl;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
@@ -27,14 +28,14 @@ public class LedgerParameterConfiguration {
     public String getInsertStatement(String ledgerName) {
         String sql = "";
 
-        sql += "INSERT INTO " + this.getFrameworkInstance().getMetadataControl().getLedgerMetadataRepository()
+        sql += "INSERT INTO " + MetadataControl.getInstance().getLedgerMetadataRepository()
                 .getTableNameByLabel("LedgerParameters");
         sql += " (LEDGER_ID, LEDGER_PAR_NM, LEDGER_PAR_VAL) ";
         sql += "VALUES ";
         sql += "(";
         sql += "("
                 + SQLTools.GetLookupIdStatement(
-                this.getFrameworkInstance().getMetadataControl().getLedgerMetadataRepository()
+                MetadataControl.getInstance().getLedgerMetadataRepository()
                         .getTableNameByLabel("Ledgers"),
                 "LEDGER_ID", "where LEDGER_NM = '" + ledgerName)
                 + "')";
@@ -52,10 +53,10 @@ public class LedgerParameterConfiguration {
         LedgerParameter ledgerParameter = new LedgerParameter();
         CachedRowSet crsLedgerParameter = null;
         String queryLedgerParameter = "select LEDGER_ID, LEDGER_PAR_NM, LEDGER_PAR_VAL from "
-                + this.getFrameworkInstance().getMetadataControl().getLedgerMetadataRepository()
+                + MetadataControl.getInstance().getLedgerMetadataRepository()
                 .getTableNameByLabel("LedgerParameters")
                 + " where LEDGER_ID = " + ledgerId + " and LEDGER_PAR_NM = '" + ledgerParameterName + "'";
-        crsLedgerParameter = this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository()
+        crsLedgerParameter = MetadataControl.getInstance().getDesignMetadataRepository()
                 .executeQuery(queryLedgerParameter, "reader");
         try {
             while (crsLedgerParameter.next()) {

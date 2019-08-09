@@ -1,6 +1,8 @@
 package io.metadew.iesi.framework.operation;
 
 import io.metadew.iesi.connection.tools.FileTools;
+import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
+import io.metadew.iesi.framework.execution.FrameworkControl;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.FrameworkPluginConfiguration;
 import org.apache.commons.io.FilenameUtils;
@@ -18,10 +20,10 @@ public class FrameworkPluginOperation {
 
     public boolean verifyPlugins(String configurationToVerify) {
         boolean result = false;
-        for (FrameworkPluginConfiguration frameworkPluginConfiguration : this.getFrameworkInstance().getFrameworkControl().getFrameworkPluginConfigurationList()) {
+        for (FrameworkPluginConfiguration frameworkPluginConfiguration : FrameworkControl.getInstance().getFrameworkPluginConfigurationList()) {
             StringBuilder configurationFile = new StringBuilder();
             configurationFile.append(frameworkPluginConfiguration.getFrameworkPlugin().getPath());
-            configurationFile.append(this.getFrameworkInstance().getFrameworkConfiguration().getFolderConfiguration().getFolderPath("metadata.conf"));
+            configurationFile.append(FrameworkFolderConfiguration.getInstance().getFolderPath("metadata.conf"));
             configurationFile.append(File.separator);
             configurationFile.append(configurationToVerify);
             String filePath = FilenameUtils.normalize(configurationFile.toString());

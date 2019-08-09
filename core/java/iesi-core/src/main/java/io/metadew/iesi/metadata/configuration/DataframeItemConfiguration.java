@@ -4,6 +4,7 @@ import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.DataframeItem;
 import io.metadew.iesi.metadata.definition.DataframeItemParameter;
+import io.metadew.iesi.metadata.execution.MetadataControl;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
@@ -30,15 +31,15 @@ public class DataframeItemConfiguration {
     public String getInsertStatement(String scriptName, long scriptVersionNumber, int dataframeItemNumber) {
         String sql = "";
 
-        sql += "INSERT INTO " + this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("DataframeItems");
+        sql += "INSERT INTO " + MetadataControl.getInstance().getCatalogMetadataRepository().getTableNameByLabel("DataframeItems");
         sql += " (DATAFRAME_ID, DATAFRAME_VRS_NB, DATAFRAME_ITEM_ID, DATAFRAME_ITEM_NB, DATAFRAME_ITEM_TYP_NM, DATAFRAME_ITEM_NM, DATAFRAME_ITEM_DSC) ";
         sql += "VALUES ";
         sql += "(";
-        sql += "(" + SQLTools.GetLookupIdStatement(this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("Dataviews"), "DATAFRAME_ID", "DATAFRAME_NM", scriptName) + ")";
+        sql += "(" + SQLTools.GetLookupIdStatement(MetadataControl.getInstance().getCatalogMetadataRepository().getTableNameByLabel("Dataviews"), "DATAFRAME_ID", "DATAFRAME_NM", scriptName) + ")";
         sql += ",";
         sql += SQLTools.GetStringForSQL(scriptVersionNumber);
         sql += ",";
-        sql += "(" + SQLTools.GetNextIdStatement(this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("DataframeItems"), "DATAFRAME_ITEM_ID") + ")";
+        sql += "(" + SQLTools.GetNextIdStatement(MetadataControl.getInstance().getCatalogMetadataRepository().getTableNameByLabel("DataframeItems"), "DATAFRAME_ITEM_ID") + ")";
         sql += ",";
         sql += SQLTools.GetStringForSQL(dataframeItemNumber);
         sql += ",";
@@ -78,8 +79,8 @@ public class DataframeItemConfiguration {
         DataframeItem dataframeItem = new DataframeItem();
         CachedRowSet crsDataframeItem = null;
         String queryDataframeItem = "select DATAFRAME_ID, DATAFRAME_VRS_NB, DATAFRAME_ITEM_ID, DATAFRAME_ITEM_NB, DATAFRAME_ITEM_TYP_NM, DATAFRAME_ITEM_NM, DATAFRAME_ITEM_DSC from "
-                + this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("DataframeItems") + " where DATAFRAME_ITEM_ID = " + dataframeItemId;
-        crsDataframeItem = this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().executeQuery(queryDataframeItem, "reader");
+                + MetadataControl.getInstance().getCatalogMetadataRepository().getTableNameByLabel("DataframeItems") + " where DATAFRAME_ITEM_ID = " + dataframeItemId;
+        crsDataframeItem = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(queryDataframeItem, "reader");
         DataframeItemParameterConfiguration dataframeItemParameterConfiguration = new DataframeItemParameterConfiguration(this.getFrameworkInstance());
         try {
             while (crsDataframeItem.next()) {
@@ -91,9 +92,9 @@ public class DataframeItemConfiguration {
 
                 // Get parameters
                 CachedRowSet crsDataframeItemParameters = null;
-                String queryDataframeItemParameters = "select DATAFRAME_ITEM_ID, DATAFRAME_ITEM_PAR_NM from " + this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("DataframeItemParameters")
+                String queryDataframeItemParameters = "select DATAFRAME_ITEM_ID, DATAFRAME_ITEM_PAR_NM from " + MetadataControl.getInstance().getCatalogMetadataRepository().getTableNameByLabel("DataframeItemParameters")
                         + " where DATAFRAME_ITEM_ID = " + dataframeItemId;
-                crsDataframeItemParameters = this.getFrameworkInstance().getMetadataControl().getDesignMetadataRepository().executeQuery(queryDataframeItemParameters, "reader");
+                crsDataframeItemParameters = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(queryDataframeItemParameters, "reader");
                 List<DataframeItemParameter> dataframeItemParameterList = new ArrayList();
                 while (crsDataframeItemParameters.next()) {
                     dataframeItemParameterList

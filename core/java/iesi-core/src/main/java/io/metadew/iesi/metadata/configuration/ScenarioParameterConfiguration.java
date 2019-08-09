@@ -5,6 +5,7 @@ import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.Feature;
 import io.metadew.iesi.metadata.definition.Scenario;
 import io.metadew.iesi.metadata.definition.ScenarioParameter;
+import io.metadew.iesi.metadata.execution.MetadataControl;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
@@ -26,7 +27,7 @@ public class ScenarioParameterConfiguration {
     }
 
     public String getInsertStatement(String featureId, long featureVersionNumber, String scenarioId, ScenarioParameter scenarioParameter) {
-        return "INSERT INTO " + this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository()
+        return "INSERT INTO " + MetadataControl.getInstance().getCatalogMetadataRepository()
                 .getTableNameByLabel("ScenarioParameters") +
                 " (FEATURE_ID, FEATURE_VRS_NB, SCENARIO_ID, SCENARIO_PAR_NM, SCENARIO_PAR_VAL) VALUES (" +
                 SQLTools.GetStringForSQL(featureId) + "," +
@@ -40,7 +41,7 @@ public class ScenarioParameterConfiguration {
     public String getInsertStatement(Feature feature, Scenario scenario) {
         String sql = "";
 
-        sql += "INSERT INTO " + this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository()
+        sql += "INSERT INTO " + MetadataControl.getInstance().getCatalogMetadataRepository()
                 .getTableNameByLabel("ScenarioParameters");
         sql += " (FEATURE_ID, FEATURE_VRS_NB, SCENARIO_ID, SCENARIO_PAR_NM, SCENARIO_PAR_VAL) ";
         sql += "VALUES ";
@@ -64,11 +65,11 @@ public class ScenarioParameterConfiguration {
         ScenarioParameter scenarioParameter = new ScenarioParameter();
         CachedRowSet crsScenarioParameter = null;
         String queryScenarioParameter = "select FEATURE_ID, FEATURE_VRS_NB, SCENARIO_ID, SCENARIO_PAR_NM, SCENARIO_PAR_VAL from "
-                + this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository()
+                + MetadataControl.getInstance().getCatalogMetadataRepository()
                 .getTableNameByLabel("ScenarioParameters")
                 + " where FEATURE_ID = " + SQLTools.GetStringForSQL(feature.getId()) + " and FEATURE_VRS_NB = " + feature.getVersion().getNumber()
                 + " AND SCENARIO_ID = " + SQLTools.GetStringForSQL(scenarioId) + "' and SCENARIO_PAR_NM = '" + scenarioParameterName + "'";
-        crsScenarioParameter = this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository()
+        crsScenarioParameter = MetadataControl.getInstance().getCatalogMetadataRepository()
                 .executeQuery(queryScenarioParameter, "reader");
         try {
             while (crsScenarioParameter.next()) {

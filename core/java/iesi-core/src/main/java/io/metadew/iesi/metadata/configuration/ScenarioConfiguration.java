@@ -5,6 +5,7 @@ import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.Feature;
 import io.metadew.iesi.metadata.definition.Scenario;
 import io.metadew.iesi.metadata.definition.ScenarioParameter;
+import io.metadew.iesi.metadata.execution.MetadataControl;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -40,7 +41,7 @@ public class ScenarioConfiguration {
         long featureVersionNumber = feature.getVersion().getNumber();
         this.getScenario().setId(IdentifierTools.getScenarioIdentifier(this.getScenario().getName()));
 
-        sql += "INSERT INTO " + this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository()
+        sql += "INSERT INTO " + MetadataControl.getInstance().getCatalogMetadataRepository()
                 .getTableNameByLabel("Scenarios");
         sql += " (FEATURE_ID, FEATURE_VRS_NB, SCENARIO_ID, SCENARIO_NB, SCENARIO_TYP_NM, SCENARIO_NM, SCENARIO_DSC, SCENARIO_DEP, SCRIPT_NM, SCRIPT_VRS_NB, GAIN_VAL) ";
         sql += "VALUES (";
@@ -99,10 +100,10 @@ public class ScenarioConfiguration {
     public Optional<Scenario> getScenario(String featureId, long featureVersionNumber, String scenarioId) {
         LOGGER.trace(MessageFormat.format("Fetching scenario {0}.", scenarioId));
         String queryScenario = "select FEATURE_ID, FEATURE_VRS_NB, SCENARIO_ID, SCENARIO_NB, SCENARIO_TYP_NM, SCENARIO_NM, SCENARIO_DSC, SCENARIO_DEP, SCRIPT_NM, SCRIPT_VRS_NB, GAIN_VAL from "
-                + this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository()
+                + MetadataControl.getInstance().getCatalogMetadataRepository()
                 .getTableNameByLabel("Scenarios")
                 + " where SCENARIO_ID = " + SQLTools.GetStringForSQL(scenarioId) + " AND FEATURE_ID = " + SQLTools.GetStringForSQL(featureId) + " AND FEATURE_VRS_NB = '" + featureVersionNumber + "'";
-        CachedRowSet crsScenario = this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().executeQuery(queryScenario, "reader");
+        CachedRowSet crsScenario = MetadataControl.getInstance().getCatalogMetadataRepository().executeQuery(queryScenario, "reader");
         try {
             if (crsScenario.size() == 0) {
                 return Optional.empty();
@@ -112,9 +113,9 @@ public class ScenarioConfiguration {
             crsScenario.next();
             // Get parameters
             String queryScenarioParameters = "select SCENARIO_ID, SCENARIO_PAR_NM, SCENARIO_PAR_VAL from "
-                    + this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().getTableNameByLabel("ScenarioParameters")
+                    + MetadataControl.getInstance().getCatalogMetadataRepository().getTableNameByLabel("ScenarioParameters")
                     + " where SCENARIO_ID = " + SQLTools.GetStringForSQL(scenarioId) + " AND FEATURE_ID = " + SQLTools.GetStringForSQL(featureId) + " AND FEATURE_VRS_NB = '" + featureVersionNumber + "'";
-            CachedRowSet crsScenarioParameters = this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository().executeQuery(queryScenarioParameters, "reader");
+            CachedRowSet crsScenarioParameters = MetadataControl.getInstance().getCatalogMetadataRepository().executeQuery(queryScenarioParameters, "reader");
             List<ScenarioParameter> scenarioParameters = new ArrayList<>();
             while (crsScenarioParameters.next()) {
                 scenarioParameters.add(new ScenarioParameter(crsScenarioParameters.getString("SCENARIO_PAR_NM"),
@@ -147,7 +148,7 @@ public class ScenarioConfiguration {
     public List<String> getInsertStatement(String featureId, long featureVersionNumber, Scenario scenario) {
         ScenarioParameterConfiguration scenarioParameterConfiguration = new ScenarioParameterConfiguration(this.getFrameworkInstance());
         List<String> queries = new ArrayList<>();
-        queries.add("INSERT INTO " + this.getFrameworkInstance().getMetadataControl().getCatalogMetadataRepository()
+        queries.add("INSERT INTO " + MetadataControl.getInstance().getCatalogMetadataRepository()
                 .getTableNameByLabel("Scenarios") +
                 " (FEATURE_ID, FEATURE_VRS_NB, SCENARIO_ID, SCENARIO_NB, SCENARIO_TYP_NM, SCENARIO_NM, SCENARIO_DSC, SCENARIO_DEP, SCRIPT_NM, SCRIPT_VRS_NB, GAIN_VAL) VALUES (" +
                 SQLTools.GetStringForSQL(featureId) + "," +

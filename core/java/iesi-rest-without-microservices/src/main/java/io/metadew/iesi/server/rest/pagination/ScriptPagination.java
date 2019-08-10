@@ -1,12 +1,11 @@
 package io.metadew.iesi.server.rest.pagination;
 
-import static java.util.stream.Collectors.toList;
+import io.metadew.iesi.metadata.definition.script.Script;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-import org.springframework.stereotype.Repository;
-
-import io.metadew.iesi.metadata.definition.Script;
+import static java.util.stream.Collectors.toList;
 
 @Repository
 public class ScriptPagination {

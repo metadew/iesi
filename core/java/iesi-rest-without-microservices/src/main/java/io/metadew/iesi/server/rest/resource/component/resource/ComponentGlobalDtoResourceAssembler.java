@@ -1,11 +1,10 @@
 package io.metadew.iesi.server.rest.resource.component.resource;
 
+import io.metadew.iesi.metadata.definition.Component;
 import io.metadew.iesi.server.rest.controller.ComponentsController;
 import io.metadew.iesi.server.rest.resource.component.dto.ComponentGlobalDto;
-import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
 import org.modelmapper.ModelMapper;
-
-import io.metadew.iesi.metadata.definition.Component;
+import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
 
 import java.util.List;
 

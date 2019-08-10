@@ -1,13 +1,11 @@
 package io.metadew.iesi.server.rest.pagination;
 
-import static java.util.stream.Collectors.toList;
+import io.metadew.iesi.metadata.definition.Environment;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-import io.metadew.iesi.server.rest.resource.environment.dto.EnvironmentDto;
-import org.springframework.stereotype.Repository;
-
-import io.metadew.iesi.metadata.definition.Environment;
+import static java.util.stream.Collectors.toList;
 
 @Repository
 public class EnvironmentPagination {

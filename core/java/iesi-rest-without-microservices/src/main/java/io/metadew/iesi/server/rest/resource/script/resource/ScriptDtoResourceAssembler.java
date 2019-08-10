@@ -1,7 +1,7 @@
 package io.metadew.iesi.server.rest.resource.script.resource;
 
 
-import io.metadew.iesi.metadata.definition.Script;
+import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.server.rest.controller.ScriptController;
 import io.metadew.iesi.server.rest.resource.script.dto.ScriptActionDto;
 import io.metadew.iesi.server.rest.resource.script.dto.ScriptDto;
@@ -11,7 +11,6 @@ import org.springframework.hateoas.Link;
 import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;

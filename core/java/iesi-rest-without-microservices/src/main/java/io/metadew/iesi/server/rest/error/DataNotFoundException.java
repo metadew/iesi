@@ -1,8 +1,5 @@
 package io.metadew.iesi.server.rest.error;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-
 public class DataNotFoundException extends RuntimeException {
 
 	/**

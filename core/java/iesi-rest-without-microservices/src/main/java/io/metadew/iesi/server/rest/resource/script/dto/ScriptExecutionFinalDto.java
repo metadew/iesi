@@ -2,8 +2,6 @@ package io.metadew.iesi.server.rest.resource.script.dto;
 
 import org.springframework.hateoas.ResourceSupport;
 
-import java.util.stream.Collectors;
-
 public class ScriptExecutionFinalDto extends ResourceSupport {
 
     private String run_id;

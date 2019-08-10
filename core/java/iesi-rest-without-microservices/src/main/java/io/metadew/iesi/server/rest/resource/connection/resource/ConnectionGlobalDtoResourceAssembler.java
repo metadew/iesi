@@ -1,6 +1,6 @@
 package io.metadew.iesi.server.rest.resource.connection.resource;
 
-import io.metadew.iesi.metadata.definition.Connection;
+import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.server.rest.controller.ConnectionsController;
 import io.metadew.iesi.server.rest.resource.connection.dto.ConnectionGlobalDto;
 import org.modelmapper.ModelMapper;
@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-import static io.metadew.iesi.server.rest.helper.Filter.distinctByKey;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 

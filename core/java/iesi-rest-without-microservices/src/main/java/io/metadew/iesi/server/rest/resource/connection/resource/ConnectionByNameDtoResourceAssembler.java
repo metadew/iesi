@@ -1,13 +1,12 @@
 package io.metadew.iesi.server.rest.resource.connection.resource;
 
-import io.metadew.iesi.metadata.definition.Connection;
+import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.server.rest.controller.ConnectionsController;
 import io.metadew.iesi.server.rest.resource.connection.dto.ConnectionByNameDto;
 import org.modelmapper.ModelMapper;
 import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
 import org.springframework.stereotype.Component;
 
-import java.text.MessageFormat;
 import java.util.List;
 import java.util.stream.Collectors;
 

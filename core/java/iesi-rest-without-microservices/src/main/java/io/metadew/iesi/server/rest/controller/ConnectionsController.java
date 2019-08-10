@@ -3,7 +3,7 @@ package io.metadew.iesi.server.rest.controller;
 import io.metadew.iesi.metadata.configuration.ConnectionConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.ConnectionAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.ConnectionDoesNotExistException;
-import io.metadew.iesi.metadata.definition.Connection;
+import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.server.rest.error.DataBadRequestException;
 import io.metadew.iesi.server.rest.error.DataNotFoundException;
 import io.metadew.iesi.server.rest.error.GetListNullProperties;
@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
-import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;

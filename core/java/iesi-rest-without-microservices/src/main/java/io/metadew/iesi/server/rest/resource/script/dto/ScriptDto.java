@@ -1,11 +1,12 @@
 package io.metadew.iesi.server.rest.resource.script.dto;
 
+import io.metadew.iesi.metadata.definition.script.Script;
+import io.metadew.iesi.metadata.definition.script.ScriptParameter;
+import org.springframework.hateoas.ResourceSupport;
+
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-
-import io.metadew.iesi.metadata.definition.*;
-import org.springframework.hateoas.ResourceSupport;
 
 public class ScriptDto extends ResourceSupport {
 

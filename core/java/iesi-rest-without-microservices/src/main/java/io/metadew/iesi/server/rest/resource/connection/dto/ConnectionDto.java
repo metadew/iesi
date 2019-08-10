@@ -1,8 +1,8 @@
 package io.metadew.iesi.server.rest.resource.connection.dto;
 
 
-import io.metadew.iesi.metadata.definition.Connection;
-import io.metadew.iesi.metadata.definition.ConnectionParameter;
+import io.metadew.iesi.metadata.definition.connection.Connection;
+import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.hateoas.ResourceSupport;

@@ -1,8 +1,8 @@
 package io.metadew.iesi.server.rest.resource.script.dto;
 
-import org.springframework.hateoas.ResourceSupport;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.hateoas.ResourceSupport;
 
 public class ScriptGlobalDto extends ResourceSupport {
 

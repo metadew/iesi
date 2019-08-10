@@ -24,9 +24,10 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static io.metadew.iesi.server.rest.helper.Filter.distinctByKey;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
-import static io.metadew.iesi.server.rest.helper.Filter.distinctByKey;
 
 @RestController
 @RequestMapping("/impersonations")

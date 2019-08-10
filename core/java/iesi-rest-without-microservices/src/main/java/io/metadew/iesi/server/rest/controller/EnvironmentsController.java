@@ -4,15 +4,12 @@ import io.metadew.iesi.metadata.configuration.ConnectionConfiguration;
 import io.metadew.iesi.metadata.configuration.EnvironmentConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.EnvironmentAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.EnvironmentDoesNotExistException;
-import io.metadew.iesi.metadata.definition.Connection;
 import io.metadew.iesi.metadata.definition.Environment;
-
-import io.metadew.iesi.server.rest.error.*;
-
+import io.metadew.iesi.metadata.definition.connection.Connection;
+import io.metadew.iesi.server.rest.error.DataBadRequestException;
 import io.metadew.iesi.server.rest.error.DataNotFoundException;
 import io.metadew.iesi.server.rest.error.GetListNullProperties;
 import io.metadew.iesi.server.rest.error.GetNullProperties;
-
 import io.metadew.iesi.server.rest.pagination.EnvironmentCriteria;
 import io.metadew.iesi.server.rest.pagination.EnvironmentPagination;
 import io.metadew.iesi.server.rest.resource.HalMultipleEmbeddedResource;

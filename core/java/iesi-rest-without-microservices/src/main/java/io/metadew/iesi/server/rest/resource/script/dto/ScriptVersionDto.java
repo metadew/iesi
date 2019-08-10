@@ -1,6 +1,6 @@
 package io.metadew.iesi.server.rest.resource.script.dto;
 
-import io.metadew.iesi.metadata.definition.ScriptVersion;
+import io.metadew.iesi.metadata.definition.script.ScriptVersion;
 import org.springframework.hateoas.ResourceSupport;
 
 public class ScriptVersionDto extends ResourceSupport {

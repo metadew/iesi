@@ -1,7 +1,7 @@
 package io.metadew.iesi.server.rest.resource.script.resource;
 
 
-import io.metadew.iesi.metadata.definition.Script;
+import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.server.rest.controller.ScriptController;
 import io.metadew.iesi.server.rest.resource.script.dto.ScriptGlobalDto;
 import org.modelmapper.ModelMapper;

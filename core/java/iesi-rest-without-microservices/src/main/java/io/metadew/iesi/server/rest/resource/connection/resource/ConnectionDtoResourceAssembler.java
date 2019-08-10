@@ -1,6 +1,6 @@
 package io.metadew.iesi.server.rest.resource.connection.resource;
 
-import io.metadew.iesi.metadata.definition.Connection;
+import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.server.rest.controller.ConnectionsController;
 import io.metadew.iesi.server.rest.controller.EnvironmentsController;
 import io.metadew.iesi.server.rest.resource.connection.dto.ConnectionDto;

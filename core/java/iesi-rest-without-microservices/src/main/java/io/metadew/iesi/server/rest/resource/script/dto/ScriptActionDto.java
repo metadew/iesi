@@ -1,28 +1,30 @@
 package io.metadew.iesi.server.rest.resource.script.dto;
 
-import io.metadew.iesi.metadata.definition.Action;
-import io.metadew.iesi.metadata.definition.ActionParameter;
+import io.metadew.iesi.metadata.definition.action.Action;
+import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import org.springframework.hateoas.ResourceSupport;
 
 import java.util.List;
 
 public class ScriptActionDto extends ResourceSupport {
 
-    private String retries;
+    private int retries;
     private String iteration;
     private String condition;
     private long number;
     private String name;
     private String description;
     private String component;
-    private String errorExpected;
-    private String errorStop;
+    private boolean errorExpected;
+    private boolean errorStop;
     private String type;
     private List<ActionParameter>  parameters;
 
     public ScriptActionDto() {}
 
-    public ScriptActionDto(long number, String name, String type, String description, String component, String condition, String iteration, String errorExpected, String errorStop, String retries, List<ActionParameter> parameters) {
+    public ScriptActionDto(long number, String name, String type, String description, String component, String condition,
+                           String iteration, boolean errorExpected, boolean errorStop, int retries,
+                           List<ActionParameter> parameters) {
         this.number = number;
         this.name = name;
         this.description = description;
@@ -78,19 +80,19 @@ public class ScriptActionDto extends ResourceSupport {
         this.component = component;
     }
 
-    public String getErrorExpected() {
+    public boolean getErrorExpected() {
         return errorExpected;
     }
 
-    public void setErrorExpected(String errorExpected) {
+    public void setErrorExpected(boolean errorExpected) {
         this.errorExpected = errorExpected;
     }
 
-    public String getErrorStop() {
+    public boolean getErrorStop() {
         return errorStop;
     }
 
-    public void setErrorStop(String errorStop) {
+    public void setErrorStop(boolean errorStop) {
         this.errorStop = errorStop;
     }
 
@@ -108,5 +110,25 @@ public class ScriptActionDto extends ResourceSupport {
 
     public void setParameters(List<ActionParameter> parameters) {
         this.parameters = parameters;
+    }
+
+    public int getRetries() {
+        return retries;
+    }
+
+    public String getIteration() {
+        return iteration;
+    }
+
+    public String getCondition() {
+        return condition;
+    }
+
+    public boolean isErrorExpected() {
+        return errorExpected;
+    }
+
+    public boolean isErrorStop() {
+        return errorStop;
     }
 }

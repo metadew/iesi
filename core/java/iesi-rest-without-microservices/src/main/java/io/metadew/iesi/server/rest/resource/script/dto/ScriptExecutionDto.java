@@ -1,11 +1,8 @@
 package io.metadew.iesi.server.rest.resource.script.dto;
 
-import io.metadew.iesi.metadata.definition.Script;
-import io.metadew.iesi.metadata.definition.ScriptParameter;
-import org.springframework.hateoas.ResourceSupport;
+import io.metadew.iesi.metadata.definition.script.ScriptParameter;
 
 import java.util.List;
-import java.util.Optional;
 
 public class ScriptExecutionDto  {
 

@@ -1,27 +1,17 @@
 package io.metadew.iesi.server.rest.error;
 
 import io.metadew.iesi.metadata.definition.ComponentAttribute;
-import io.metadew.iesi.metadata.definition.EnvironmentParameter;
-import io.metadew.iesi.metadata.definition.ScriptParameter;
 import io.metadew.iesi.server.rest.resource.component.dto.ComponentDto;
 import io.metadew.iesi.server.rest.resource.connection.dto.ConnectionDto;
 import io.metadew.iesi.server.rest.resource.environment.dto.EnvironmentDto;
 import io.metadew.iesi.server.rest.resource.impersonation.dto.ImpersonationDto;
 import io.metadew.iesi.server.rest.resource.script.dto.ScriptActionDto;
 import io.metadew.iesi.server.rest.resource.script.dto.ScriptDto;
-import io.metadew.iesi.server.rest.resource.script.dto.ScriptVersionDto;
 import org.springframework.stereotype.Repository;
 
 import javax.validation.Valid;
-import java.beans.BeanInfo;
-import java.beans.IntrospectionException;
-import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 @Repository

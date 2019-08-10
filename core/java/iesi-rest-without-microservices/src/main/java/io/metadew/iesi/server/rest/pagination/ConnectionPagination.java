@@ -1,12 +1,11 @@
 package io.metadew.iesi.server.rest.pagination;
 
-import static java.util.stream.Collectors.toList;
+import io.metadew.iesi.metadata.definition.connection.Connection;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-import io.metadew.iesi.metadata.definition.Connection;
-import io.metadew.iesi.server.rest.resource.connection.dto.ConnectionDto;
-import org.springframework.stereotype.Repository;
+import static java.util.stream.Collectors.toList;
 
 
 @Repository

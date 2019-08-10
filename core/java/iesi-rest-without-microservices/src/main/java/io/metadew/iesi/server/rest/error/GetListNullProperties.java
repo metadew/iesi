@@ -1,15 +1,15 @@
 package io.metadew.iesi.server.rest.error;
 
-import io.metadew.iesi.metadata.definition.*;
+import io.metadew.iesi.metadata.definition.ComponentAttribute;
+import io.metadew.iesi.metadata.definition.ComponentParameter;
+import io.metadew.iesi.metadata.definition.EnvironmentParameter;
+import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
 import io.metadew.iesi.server.rest.resource.component.dto.ComponentDto;
-
 import io.metadew.iesi.server.rest.resource.connection.dto.ConnectionDto;
 import io.metadew.iesi.server.rest.resource.environment.dto.EnvironmentDto;
 import io.metadew.iesi.server.rest.resource.impersonation.dto.ImpersonationDto;
 import io.metadew.iesi.server.rest.resource.impersonation.dto.ImpersonationParameterDto;
-import io.metadew.iesi.server.rest.resource.script.dto.ScriptActionDto;
 import io.metadew.iesi.server.rest.resource.script.dto.ScriptDto;
-import io.metadew.iesi.server.rest.resource.script.dto.ScriptVersionDto;
 import org.springframework.stereotype.Repository;
 
 import javax.validation.Valid;
@@ -33,7 +33,7 @@ public class GetListNullProperties {
 
     public void getNullConnection(@Valid List<ConnectionDto> connections) {
         for (int index = 0; index < connections.size(); index++) {
-            List<List<ConnectionParameter>> parameters = connections.stream().map(x -> x.getParameters())
+            List<List<ConnectionParameter>> parameters = connections.stream().map(ConnectionDto::getParameters)
                     .collect(Collectors.toList());
             if (connections.get(index).getEnvironment() == null
                     || connections.get(index).getName() == null || parameters == null

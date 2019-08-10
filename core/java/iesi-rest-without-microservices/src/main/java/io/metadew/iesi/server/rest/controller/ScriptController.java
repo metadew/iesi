@@ -1,16 +1,14 @@
 package io.metadew.iesi.server.rest.controller;
 
-import io.metadew.iesi.framework.definition.Framework;
-import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
-import io.metadew.iesi.launch.ScriptLauncher;
 import io.metadew.iesi.launch.operation.ScriptLaunchOperation;
-import io.metadew.iesi.metadata.configuration.ScriptConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.ScriptAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.ScriptDoesNotExistException;
+import io.metadew.iesi.metadata.configuration.script.ScriptConfiguration;
 import io.metadew.iesi.metadata.definition.Request;
 import io.metadew.iesi.metadata.definition.RequestParameter;
-import io.metadew.iesi.metadata.definition.Script;
+import io.metadew.iesi.metadata.definition.script.Script;
+import io.metadew.iesi.script.ScriptExecutionBuildException;
 import io.metadew.iesi.server.rest.error.DataBadRequestException;
 import io.metadew.iesi.server.rest.error.DataNotFoundException;
 import io.metadew.iesi.server.rest.error.GetListNullProperties;
@@ -18,7 +16,10 @@ import io.metadew.iesi.server.rest.error.GetNullProperties;
 import io.metadew.iesi.server.rest.pagination.ScriptCriteria;
 import io.metadew.iesi.server.rest.pagination.ScriptPagination;
 import io.metadew.iesi.server.rest.resource.HalMultipleEmbeddedResource;
-import io.metadew.iesi.server.rest.resource.script.dto.*;
+import io.metadew.iesi.server.rest.resource.script.dto.ScriptByNameDto;
+import io.metadew.iesi.server.rest.resource.script.dto.ScriptDto;
+import io.metadew.iesi.server.rest.resource.script.dto.ScriptExecutionDto;
+import io.metadew.iesi.server.rest.resource.script.dto.ScriptGlobalDto;
 import io.metadew.iesi.server.rest.resource.script.resource.ScriptByNameDtoAssembler;
 import io.metadew.iesi.server.rest.resource.script.resource.ScriptDtoResourceAssembler;
 import io.metadew.iesi.server.rest.resource.script.resource.ScriptGlobalDtoResourceAssembler;
@@ -29,12 +30,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
-
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static io.metadew.iesi.server.rest.helper.Filter.distinctByKey;
@@ -73,7 +71,7 @@ public class ScriptController {
 
     @GetMapping("/scripts")
     public HalMultipleEmbeddedResource<ScriptGlobalDto> getAllScripts(@Valid ScriptCriteria scriptCriteria) {
-        List<Script> scripts = scriptConfiguration.getAllScripts();
+        List<Script> scripts = scriptConfiguration.getAll();
         List<Script> pagination = scriptPagination.search(scripts, scriptCriteria);
         return new HalMultipleEmbeddedResource<>(pagination.stream()
                 .filter(distinctByKey(Script :: getName))
@@ -83,7 +81,7 @@ public class ScriptController {
 
 	@GetMapping("/scripts/{name}")
 	public ResponseEntity<ScriptByNameDto> getByNameScript(@PathVariable String name) {
-		List<Script> script = scriptConfiguration.getScriptByName(name);
+		List<Script> script = scriptConfiguration.getByName(name);
 		if (script.isEmpty()) {
 			throw new DataNotFoundException(name);
 		}
@@ -94,7 +92,7 @@ public class ScriptController {
 
     @GetMapping("/scripts/{name}/{version}")
     public ScriptDto getScriptsAndVersion(@PathVariable String name, @PathVariable Long version) {
-        return scriptConfiguration.getScript(name, version)
+        return scriptConfiguration.get(name, version)
                 .map(scriptDtoResourceAssembler :: toResource)
                 .orElseThrow(() -> new DataNotFoundException(name, version));
     }
@@ -103,7 +101,7 @@ public class ScriptController {
     public ScriptDto postScript(@Valid @RequestBody ScriptDto script) {
 		getNullProperties.getNullScript(script);
         try {
-            scriptConfiguration.insertScript(script.convertToEntity());
+            scriptConfiguration.insert(script.convertToEntity());
             return scriptDtoResourceAssembler.toResource(script.convertToEntity());
         } catch (ScriptAlreadyExistsException e) {
             e.printStackTrace();
@@ -123,9 +121,8 @@ public class ScriptController {
 		Request request = new Request("script", Long.toString(System.currentTimeMillis()), scriptExecution.getScript(), "", 1, "",scriptExecution.getScript(),scriptExecution.getEnvironment(),"","","",requestParameters);
 		// TODO: FrameworkRunIdentifier
 		try {
-			ScriptLaunchOperation.execute(frameworkInstance, request, null);
-		} catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | InstantiationException
-				| IllegalAccessException e) {
+			ScriptLaunchOperation.execute(request, null);
+		} catch (ScriptExecutionBuildException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -139,7 +136,7 @@ public class ScriptController {
 //		getListNullProperties.getNullScript(scriptDtos);
         for (ScriptDto scriptDto : scriptDtos) {
             try {
-                scriptConfiguration.updateScript(scriptDto.convertToEntity());
+                scriptConfiguration.update(scriptDto.convertToEntity());
                 halMultipleEmbeddedResource.embedResource(scriptDto);
                 halMultipleEmbeddedResource.add(linkTo(methodOn(ScriptController.class)
                         .getByNameScript(scriptDto.getName()))
@@ -159,11 +156,11 @@ public class ScriptController {
 //		getNullProperties.getNullScript(script);
 		if (!script.getName().equals(name) ) {
 			throw new DataBadRequestException(name);
-		} else if (!scriptConfiguration.getScript(name, version).isPresent()){
+		} else if (!scriptConfiguration.get(name, version).isPresent()){
 			throw new DataNotFoundException(name);
 		}
         try {
-            scriptConfiguration.updateScript(script.convertToEntity());
+            scriptConfiguration.update(script.convertToEntity());
             return scriptDtoResourceAssembler.toResource(script.convertToEntity());
         } catch (ScriptDoesNotExistException e) {
             e.printStackTrace();
@@ -175,7 +172,7 @@ public class ScriptController {
     @DeleteMapping("scripts/{name}")
     public ResponseEntity<?> deleteScript(@PathVariable String name) {
         try {
-            scriptConfiguration.deleteScriptByName(name);
+            scriptConfiguration.deleteByName(name);
             return ResponseEntity.status(HttpStatus.OK).build();
         } catch (ScriptDoesNotExistException e) {
             e.printStackTrace();
@@ -185,15 +182,12 @@ public class ScriptController {
 
     @DeleteMapping("/scripts/{name}/{version}")
     public ResponseEntity<?> deleteByNameScriptAndVersion(@PathVariable String name, Long version) {
-        Optional<Script> scripts = scriptConfiguration.getScript(name, version);
+        Script script = scriptConfiguration.get(name, version).orElseThrow(() -> new DataNotFoundException(name));
         try {
-            Script script = scripts.orElse(null);
-            scriptConfiguration.deleteScript(script);
+            scriptConfiguration.delete(script);
             return ResponseEntity.status(HttpStatus.OK).build();
         } catch (ScriptDoesNotExistException e) {
-            e.printStackTrace();
             throw new DataNotFoundException(name);
-
         }
     }
 }

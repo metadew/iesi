@@ -21,9 +21,6 @@ import java.util.Date;
 
 public class DatabaseHarvestExecution {
 
-    private FrameworkExecution frameworkExecution;
-
-    // Constructors
 
     public DatabaseHarvestExecution() {
         // Create the framework instance
@@ -34,7 +31,8 @@ public class DatabaseHarvestExecution {
         Context context = new Context();
         context.setName("harvest");
         context.setScope("");
-        this.setFrameworkExecution(new FrameworkExecution(new FrameworkExecutionContext(context)));
+        FrameworkExecution frameworkExecution = FrameworkExecution.getInstance();
+        frameworkExecution.init(new FrameworkExecutionContext(context));
     }
 
     // Methods
@@ -83,9 +81,9 @@ public class DatabaseHarvestExecution {
         }
 
         // Get Connection
-        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(FrameworkInstance.getInstance());
+        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
         Connection connection = connectionConfiguration.getConnection(sourceConnectionName, environmentName).get();
-        ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
+        ConnectionOperation connectionOperation = new ConnectionOperation();
         Database database = connectionOperation.getDatabase(connection);
 
 //		if (databaseConnection.getType().trim().equalsIgnoreCase("oracle")) {
@@ -105,12 +103,4 @@ public class DatabaseHarvestExecution {
 
     }
 
-    // Getters and setters
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
-    }
 }

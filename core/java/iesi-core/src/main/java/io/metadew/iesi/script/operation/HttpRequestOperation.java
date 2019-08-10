@@ -43,13 +43,13 @@ public class HttpRequestOperation {
         this.setFrameworkExecution(frameworkExecution);
         this.setExecutionControl(executionControl);
         this.setActionExecution(actionExecution);
-        this.setRequestParameterOperationMap(new HashMap<String, HttpRequestParameterOperation>());
+        this.setRequestParameterOperationMap(new HashMap<>());
         this.setRequestName(requestName);
         this.getRequestConfiguration();
     }
 
     private void getRequestConfiguration() {
-        ComponentConfiguration componentConfiguration = new ComponentConfiguration(FrameworkInstance.getInstance());
+        ComponentConfiguration componentConfiguration = new ComponentConfiguration();
         Component request = componentConfiguration.getComponent(this.getRequestName())
                 .orElseThrow(() -> new RuntimeException(MessageFormat.format("component.notfound=no component exists with name {0}.", getRequestName())));
         this.setRequest(request);

@@ -19,7 +19,6 @@ import java.util.List;
 
 public class DataObjectOperation {
 
-	private FrameworkExecution frameworkExecution;
 	private String inputFile;
 	private List<DataObject> dataObjects;
 	private DataObject dataObject;
@@ -28,7 +27,6 @@ public class DataObjectOperation {
 
 	// Constructors
 	public DataObjectOperation() {
-
 	}
 
 	public DataObjectOperation(String inputFile) {
@@ -41,23 +39,19 @@ public class DataObjectOperation {
 		}
 	}
 
-	public DataObjectOperation(FrameworkExecution frameworkExecution, String inputFile) {
-		this.setFrameworkExecution(frameworkExecution);
-		this.setInputFile(inputFile);
-		File file = new File(inputFile);
-		if (FileTools.getFileExtension(file).equalsIgnoreCase("json")) {
-			this.parseFile();
-		} else {
-			this.parseYamlFile();
-		}
-		this.setDataObjectConfiguration(
-				new DataObjectConfiguration(this.getFrameworkExecution(), this.getDataObjects()));
-	}
+//	public DataObjectOperation(String inputFile) {
+//		this.setInputFile(inputFile);
+//		File file = new File(inputFile);
+//		if (FileTools.getFileExtension(file).equalsIgnoreCase("json")) {
+//			this.parseFile();
+//		} else {
+//			this.parseYamlFile();
+//		}
+//		this.setDataObjectConfiguration(new DataObjectConfiguration(this.getDataObjects()));
+//	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public DataObjectOperation(FrameworkExecution frameworkExecution, MetadataRepository metadataRepositories,
-			String inputFile) {
-		this.setFrameworkExecution(frameworkExecution);
+	public DataObjectOperation(MetadataRepository metadataRepositories, String inputFile) {
 		this.setInputFile(inputFile);
 		File file = new File(inputFile);
 		if (FileTools.getFileExtension(file).equalsIgnoreCase("json")) {
@@ -67,14 +61,11 @@ public class DataObjectOperation {
 		}
 		this.setMetadataRepositories(new ArrayList());
 		this.getMetadataRepositories().add(metadataRepositories);
-		this.setDataObjectConfiguration(
-				new DataObjectConfiguration(this.getFrameworkExecution(), metadataRepositories, this.getDataObjects()));
+		this.setDataObjectConfiguration(new DataObjectConfiguration(metadataRepositories, this.getDataObjects()));
 
 	}
 
-	public DataObjectOperation(FrameworkExecution frameworkExecution,
-			List<MetadataRepository> metadataRepositoryConfigurationList, String inputFile) {
-		this.setFrameworkExecution(frameworkExecution);
+	public DataObjectOperation(List<MetadataRepository> metadataRepositoryConfigurationList, String inputFile) {
 		this.setMetadataRepositories(metadataRepositoryConfigurationList);
 		this.setInputFile(inputFile);
 		File file = new File(inputFile);
@@ -209,8 +200,7 @@ public class DataObjectOperation {
 	// TODO remove from this operation - create new one
 	public void saveToMetadataRepository() {
 		for (MetadataRepository metadataRepository : this.getMetadataRepositories()) {
-			this.setDataObjectConfiguration(new DataObjectConfiguration(this.getFrameworkExecution(),
-					metadataRepository, this.getDataObjects()));
+			this.setDataObjectConfiguration(new DataObjectConfiguration(metadataRepository, this.getDataObjects()));
 			this.getDataObjectConfiguration().saveToMetadataRepository();
 		}
 	}
@@ -222,14 +212,6 @@ public class DataObjectOperation {
 
 	public void setInputFile(String inputFile) {
 		this.inputFile = FilenameUtils.normalize(inputFile);
-	}
-
-	public FrameworkExecution getFrameworkExecution() {
-		return frameworkExecution;
-	}
-
-	public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-		this.frameworkExecution = frameworkExecution;
 	}
 
 	public DataObjectConfiguration getDataObjectConfiguration() {

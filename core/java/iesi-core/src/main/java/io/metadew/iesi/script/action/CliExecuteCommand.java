@@ -7,7 +7,6 @@ import io.metadew.iesi.connection.operation.ConnectionOperation;
 import io.metadew.iesi.connection.tools.HostConnectionTools;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.text.Text;
-import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
@@ -16,7 +15,6 @@ import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -33,7 +31,6 @@ import java.util.HashMap;
 public class CliExecuteCommand {
 
     private ActionExecution actionExecution;
-    private FrameworkExecution frameworkExecution;
     private ExecutionControl executionControl;
 
     // Parameters
@@ -51,14 +48,13 @@ public class CliExecuteCommand {
 
     }
 
-    public CliExecuteCommand(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+    public CliExecuteCommand(ExecutionControl executionControl,
                              ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.init(frameworkExecution, executionControl, scriptExecution, actionExecution);
+        this.init(executionControl, scriptExecution, actionExecution);
     }
 
-    public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+    public void init(ExecutionControl executionControl,
                      ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.setFrameworkExecution(frameworkExecution);
         this.setExecutionControl(executionControl);
         this.setActionExecution(actionExecution);
         this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
@@ -66,18 +62,18 @@ public class CliExecuteCommand {
 
     public void prepare() {
         // Reset Parameters
-        this.setShellPath(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        this.setShellPath(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "path"));
-        this.setShellCommand(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        this.setShellCommand(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "command"));
-        this.setSetRunVar(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        this.setSetRunVar(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "setRuntimeVariables"));
-        this.setSetRunVarPrefix(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        this.setSetRunVarPrefix(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(),
                 "setRuntimeVariablesPrefix"));
-        this.setSetRunVarMode(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        this.setSetRunVarMode(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "setRuntimeVariablesMode"));
-        this.setConnectionName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        this.setConnectionName(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "connection"));
 
         // Get Parameters
@@ -132,17 +128,17 @@ public class CliExecuteCommand {
 
     private boolean executeCommand(String shellPath, String shellCommand, boolean settingRuntimeVariables, String settingRuntimeVariablesPrefix, String settingRuntimeVariablesMode, String connectionName) {
         // Get Connection
-        boolean isOnLocalhost = HostConnectionTools.isOnLocalhost(this.getFrameworkExecution(),
+        boolean isOnLocalhost = HostConnectionTools.isOnLocalhost(
                 connectionName, this.getExecutionControl().getEnvName());
 
         HostConnection hostConnection;
         if (connectionName.isEmpty() || connectionName.equalsIgnoreCase("localhost")) {
             hostConnection = new HostConnection(HostConnectionTools.getLocalhostType());
         } else {
-            ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(FrameworkInstance.getInstance());
+            ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
             Connection connection = connectionConfiguration.getConnection(connectionName,
                     this.getExecutionControl().getEnvName()).get();
-            ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
+            ConnectionOperation connectionOperation = new ConnectionOperation();
             hostConnection = connectionOperation.getHostConnection(connection);
         }
 
@@ -153,7 +149,6 @@ public class CliExecuteCommand {
         shellCommandSettings.setSetRunVar(settingRuntimeVariables);
         shellCommandSettings.setSetRunVarPrefix(settingRuntimeVariablesPrefix);
         shellCommandSettings.setSetRunVarMode(settingRuntimeVariablesMode);
-        shellCommandSettings.setFrameworkExecution(this.getFrameworkExecution());
         shellCommandSettings.setEnvironment(this.getExecutionControl().getEnvName());
 
         if (isOnLocalhost) {
@@ -256,15 +251,6 @@ public class CliExecuteCommand {
                     ShellPath.getClass()));
             return ShellPath.toString();
         }
-    }
-
-    // Getters and Setters
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
     }
 
     public ExecutionControl getExecutionControl() {

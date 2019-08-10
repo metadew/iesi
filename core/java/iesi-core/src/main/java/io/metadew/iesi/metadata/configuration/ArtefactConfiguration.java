@@ -16,16 +16,12 @@ public class ArtefactConfiguration {
 
     private Artefact artefact;
 
-    private FrameworkInstance frameworkInstance;
-
     // Constructors
-    public ArtefactConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
+    public ArtefactConfiguration() {
     }
 
     public ArtefactConfiguration(Artefact artefact, FrameworkInstance frameworkInstance) {
         this.setArtefact(artefact);
-        this.setFrameworkInstance(frameworkInstance);
     }
 
     // Delete
@@ -97,8 +93,7 @@ public class ArtefactConfiguration {
         }
 
         for (Classification classification : this.getArtefact().getClassifications()) {
-            ClassificationConfiguration classificationConfiguration = new ClassificationConfiguration(classification,
-                    this.getFrameworkInstance());
+            ClassificationConfiguration classificationConfiguration = new ClassificationConfiguration(classification);
             if (!result.equalsIgnoreCase("")) {
                 result += "\n";
             }
@@ -119,7 +114,7 @@ public class ArtefactConfiguration {
                 + " where ARTEFACT_NM = '" + artefactName + "' AND ARTEFACT_TYP_NM = '" + artefactType + "'";
         crsArtefact = MetadataControl.getInstance().getCatalogMetadataRepository()
                 .executeQuery(queryArtefact, "reader");
-        ClassificationConfiguration classificationConfiguration = new ClassificationConfiguration(this.getFrameworkInstance());
+        ClassificationConfiguration classificationConfiguration = new ClassificationConfiguration();
         try {
             while (crsArtefact.next()) {
                 artefact.setName(artefactName);
@@ -163,13 +158,5 @@ public class ArtefactConfiguration {
     public void setArtefact(Artefact artefact) {
         this.artefact = artefact;
     }
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
 
 }

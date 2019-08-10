@@ -56,8 +56,7 @@ public class HttpRequestParameterOperation {
 
     // Methods
     private void lookupComponentTypeParameter() {
-        ComponentTypeParameterConfiguration componentTypeParameterConfiguration = new ComponentTypeParameterConfiguration(
-                FrameworkInstance.getInstance());
+        ComponentTypeParameterConfiguration componentTypeParameterConfiguration = new ComponentTypeParameterConfiguration();
         this.setComponentTypeParameter(
                 componentTypeParameterConfiguration.getComponentTypeParameter("http.request", this.getName()));
     }
@@ -108,7 +107,7 @@ public class HttpRequestParameterOperation {
         this.setValue(lookupResult.getValue());
 
         // Resolve internal encryption
-        String decryptedValue = FrameworkCrypto.getInstance().resolve(this.getFrameworkExecution(),
+        String decryptedValue = FrameworkCrypto.getInstance().resolve(
                 this.getValue());
 
         this.setValue(decryptedValue);

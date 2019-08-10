@@ -14,21 +14,17 @@ public class ActionResultOutputConfiguration {
 
     private String runId;
     private ActionResultOutput actionResultOutput;
-    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public ActionResultOutputConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
+    public ActionResultOutputConfiguration() {
     }
 
     // Methods
-    @SuppressWarnings({ "unchecked", "rawtypes" })
 	public List<ActionResultOutput> getActionResultOutputs(String runId, long processId) {
-        List<ActionResultOutput> actionResultOutputs = new ArrayList();
-        CachedRowSet crsActionResultOutputs;
+        List<ActionResultOutput> actionResultOutputs = new ArrayList<>();
         String queryActionResultOutputs = "select RUN_ID, PRC_ID, ACTION_ID, OUT_NM, OUT_VAL from " + MetadataControl.getInstance().getResultMetadataRepository().getTableNameByLabel("ActionResultOutputs")
                 + " where RUN_ID = '" + runId + "' and PRC_ID = " + processId + " order by LOAD_TMS asc";
-        crsActionResultOutputs = MetadataControl.getInstance().getResultMetadataRepository().executeQuery(queryActionResultOutputs, "reader");
+        CachedRowSet crsActionResultOutputs = MetadataControl.getInstance().getResultMetadataRepository().executeQuery(queryActionResultOutputs, "reader");
         try {
             while (crsActionResultOutputs.next()) {
             	ActionResultOutput actionResultOutput= new ActionResultOutput();
@@ -54,14 +50,6 @@ public class ActionResultOutputConfiguration {
     public void setRunId(String runId) {
         this.runId = runId;
     }
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
 
 	public ActionResultOutput getActionResultOutput() {
 		return actionResultOutput;

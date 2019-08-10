@@ -12,13 +12,13 @@ public class FileStoreRepositoryConfiguration extends RepositoryConfiguration {
     private String path;
 
 
-    public FileStoreRepositoryConfiguration(ConfigFile configFile, FrameworkSettingConfiguration frameworkSettingConfiguration, FrameworkCrypto frameworkCrypto) {
-        super(configFile, frameworkSettingConfiguration, frameworkCrypto);
+    public FileStoreRepositoryConfiguration(ConfigFile configFile) {
+        super(configFile);
     }
 
     @Override
-    void fromConfigFile(ConfigFile configFile, FrameworkSettingConfiguration frameworkSettingConfiguration, FrameworkCrypto frameworkCrypto) {
-    	path = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.filestore.path");
+    void fromConfigFile(ConfigFile configFile) {
+    	path = getSettingValue(configFile, "metadata.repository.filestore.path");
     }
 
     @Override

@@ -15,16 +15,13 @@ import java.util.List;
 public class DataframeItemConfiguration {
 
     private DataframeItem dataframeItem;
-    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public DataframeItemConfiguration(DataframeItem dataframeItem, FrameworkInstance frameworkInstance) {
+    public DataframeItemConfiguration(DataframeItem dataframeItem) {
         this.setDataframeItem(dataframeItem);
-        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public DataframeItemConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
+    public DataframeItemConfiguration() {
     }
 
     // Insert
@@ -65,7 +62,7 @@ public class DataframeItemConfiguration {
         String result = "";
 
         for (DataframeItemParameter dataframeItemParameter : this.getDataframeItem().getParameters()) {
-            DataframeItemParameterConfiguration dataframeItemParameterConfiguration = new DataframeItemParameterConfiguration(dataframeItemParameter, this.getFrameworkInstance());
+            DataframeItemParameterConfiguration dataframeItemParameterConfiguration = new DataframeItemParameterConfiguration(dataframeItemParameter);
             if (!result.equalsIgnoreCase(""))
                 result += "\n";
             result += dataframeItemParameterConfiguration.getInsertStatement(scriptName, scriptVersionNumber, this.getDataframeItem().getName());
@@ -81,7 +78,7 @@ public class DataframeItemConfiguration {
         String queryDataframeItem = "select DATAFRAME_ID, DATAFRAME_VRS_NB, DATAFRAME_ITEM_ID, DATAFRAME_ITEM_NB, DATAFRAME_ITEM_TYP_NM, DATAFRAME_ITEM_NM, DATAFRAME_ITEM_DSC from "
                 + MetadataControl.getInstance().getCatalogMetadataRepository().getTableNameByLabel("DataframeItems") + " where DATAFRAME_ITEM_ID = " + dataframeItemId;
         crsDataframeItem = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(queryDataframeItem, "reader");
-        DataframeItemParameterConfiguration dataframeItemParameterConfiguration = new DataframeItemParameterConfiguration(this.getFrameworkInstance());
+        DataframeItemParameterConfiguration dataframeItemParameterConfiguration = new DataframeItemParameterConfiguration();
         try {
             while (crsDataframeItem.next()) {
                 dataframeItem.setId(dataframeItemId);
@@ -120,13 +117,5 @@ public class DataframeItemConfiguration {
     public void setDataframeItem(DataframeItem dataframeItem) {
         this.dataframeItem = dataframeItem;
     }
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
 
 }

@@ -1,12 +1,8 @@
 package io.metadew.iesi.server.execution.requestor;
 
-import io.metadew.iesi.framework.instance.FrameworkInstance;
-
 public class RequestorRunnable implements Runnable {
-    private FrameworkInstance frameworkInstance;
 
-    public RequestorRunnable(FrameworkInstance frameworkInstance) {
-        this.setFrameworkInstance(frameworkInstance);
+    public RequestorRunnable() {
     }
 
     // @Override
@@ -14,7 +10,7 @@ public class RequestorRunnable implements Runnable {
 
         int interval = Integer.parseInt("1000");
 
-        RequestorService requestServer = new RequestorService(this.getFrameworkInstance());
+        RequestorService requestServer = new RequestorService();
 
         int i = 1;
         while (i == 1) {
@@ -28,15 +24,6 @@ public class RequestorRunnable implements Runnable {
                 requestServer.execute();
             }
         }
-    }
-
-    // Getters and setters
-    public FrameworkInstance getFrameworkInstance() {
-        return frameworkInstance;
-    }
-
-    public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-        this.frameworkInstance = frameworkInstance;
     }
 
 }

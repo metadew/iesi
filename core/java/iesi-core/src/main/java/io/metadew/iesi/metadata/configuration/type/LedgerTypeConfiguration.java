@@ -11,17 +11,14 @@ import java.io.File;
 public class LedgerTypeConfiguration {
 
     private LedgerType ledgerType;
-    private FrameworkInstance frameworkInstance;
     private String dataObjectType = "LedgerType";
 
     // Constructors
-    public LedgerTypeConfiguration(LedgerType ledgerType, FrameworkInstance frameworkInstance) {
+    public LedgerTypeConfiguration(LedgerType ledgerType) {
         this.setLedgerType(ledgerType);
-        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public LedgerTypeConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
+    public LedgerTypeConfiguration() {
     }
 
     public LedgerType getLedgerType(String ledgerTypeName) {
@@ -50,13 +47,5 @@ public class LedgerTypeConfiguration {
     public void setDataObjectType(String dataObjectType) {
         this.dataObjectType = dataObjectType;
     }
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
 
 }

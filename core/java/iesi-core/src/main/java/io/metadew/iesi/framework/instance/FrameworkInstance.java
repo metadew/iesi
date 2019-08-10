@@ -29,7 +29,6 @@ public class FrameworkInstance {
 	private String executionServerFilePath;
 	private FrameworkInitializationFile frameworkInitializationFile;
 
-
 	private static FrameworkInstance INSTANCE;
 
 	public synchronized static FrameworkInstance getInstance() {
@@ -79,7 +78,7 @@ public class FrameworkInstance {
 		this.executionServerFilePath = FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("run.exec")
 						+ File.separator + "ExecutionServerRepository.db3";
 
-		if (!ExecutionServerTools.getServerMode(this).equalsIgnoreCase("off")) {
+		if (!ExecutionServerTools.getServerMode().equalsIgnoreCase("off")) {
 			if (!FileTools.exists(this.getExecutionServerFilePath())) {
 				throw new RuntimeException("framework.server.repository.notfound");
 			}

@@ -19,7 +19,7 @@ import java.security.GeneralSecurityException;
  */
 public class EncryptionLauncher {
 
-    public static void main(String[] args) throws GeneralSecurityException, InterruptedException, IOException {
+    public static void main(String[] args) {
 
         Console console = System.console();
         if (console == null) {

@@ -19,13 +19,10 @@ public class ElasticsearchConnection {
     private String connectionURL;
 
     // Constructor
-    public ElasticsearchConnection() {
-        super();
-    }
+    public ElasticsearchConnection() {}
 
     public ElasticsearchConnection(String connectionUrl) {
-        super();
-        this.setConnectionURL(connectionUrl);
+        this.connectionURL = connectionUrl;
     }
 
     // Methods

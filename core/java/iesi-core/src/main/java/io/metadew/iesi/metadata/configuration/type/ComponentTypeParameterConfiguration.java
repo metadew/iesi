@@ -7,22 +7,19 @@ import io.metadew.iesi.metadata.definition.ComponentTypeParameter;
 public class ComponentTypeParameterConfiguration {
 
     private ComponentTypeParameter componentTypeParameter;
-    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public ComponentTypeParameterConfiguration(ComponentTypeParameter componentTypeParameter, FrameworkInstance frameworkInstance) {
+    public ComponentTypeParameterConfiguration(ComponentTypeParameter componentTypeParameter) {
         this.setComponentTypeParameter(componentTypeParameter);
-        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public ComponentTypeParameterConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
+    public ComponentTypeParameterConfiguration() {
     }
 
     // Get Component Type Parameter
     public ComponentTypeParameter getComponentTypeParameter(String componentTypeName, String componentTypeParameterName) {
         ComponentTypeParameter componentTypeParameterResult = null;
-        ComponentTypeConfiguration componentTypeConfiguration = new ComponentTypeConfiguration(this.getFrameworkInstance());
+        ComponentTypeConfiguration componentTypeConfiguration = new ComponentTypeConfiguration();
         ComponentType componentType = componentTypeConfiguration.getComponentType(componentTypeName);
         for (ComponentTypeParameter componentTypeParameter : componentType.getParameters()) {
             if (componentTypeParameter.getName().equalsIgnoreCase(componentTypeParameterName)) {
@@ -41,13 +38,4 @@ public class ComponentTypeParameterConfiguration {
     public void setComponentTypeParameter(ComponentTypeParameter componentTypeParameter) {
         this.componentTypeParameter = componentTypeParameter;
     }
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
-
 }

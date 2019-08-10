@@ -26,12 +26,10 @@ import java.util.List;
 
 public class ConnectionOperation {
 
-	private FrameworkExecution frameworkExecution;
 	private boolean missingMandatoryFields;
 	private List<String> missingMandatoryFieldsList;
 
-	public ConnectionOperation(FrameworkExecution frameworkExecution) {
-		this.setFrameworkExecution(frameworkExecution);
+	public ConnectionOperation() {
 	}
 
 	// Methods
@@ -448,32 +446,25 @@ public class ConnectionOperation {
 						FilenameUtils.normalize(filePath + File.separator + fileName));
 				database = new SqliteDatabase(sqliteDatabaseConnection);
 			} else if (connection.getType().equalsIgnoreCase("db.db2")) {
-				DbDb2ConnectionOperation dbDb2ConnectionOperation = new DbDb2ConnectionOperation(
-						this.getFrameworkExecution());
+				DbDb2ConnectionOperation dbDb2ConnectionOperation = new DbDb2ConnectionOperation();
 				database = dbDb2ConnectionOperation.getDatabase(connection);
 			} else if (connection.getType().equalsIgnoreCase("db.h2")) {
-				DbH2ConnectionOperation dbH2ConnectionOperation = new DbH2ConnectionOperation(
-						this.getFrameworkExecution());
+				DbH2ConnectionOperation dbH2ConnectionOperation = new DbH2ConnectionOperation();
 				database = dbH2ConnectionOperation.getDatabase(connection);
 			} else if (connection.getType().equalsIgnoreCase("db.mariadb")) {
-				DbMariadbConnectionOperation dbMariadbConnectionOperation = new DbMariadbConnectionOperation(
-						this.getFrameworkExecution());
+				DbMariadbConnectionOperation dbMariadbConnectionOperation = new DbMariadbConnectionOperation();
 				database = dbMariadbConnectionOperation.getDatabase(connection);
 			} else if (connection.getType().equalsIgnoreCase("db.mssql")) {
-				DbMssqlConnectionOperation dbMssqlConnectionOperation = new DbMssqlConnectionOperation(
-						this.getFrameworkExecution());
+				DbMssqlConnectionOperation dbMssqlConnectionOperation = new DbMssqlConnectionOperation();
 				database = dbMssqlConnectionOperation.getDatabase(connection);
 			} else if (connection.getType().equalsIgnoreCase("db.presto")) {
-				DbPrestoConnectionOperation dbPrestoConnectionOperation = new DbPrestoConnectionOperation(
-						this.getFrameworkExecution());
+				DbPrestoConnectionOperation dbPrestoConnectionOperation = new DbPrestoConnectionOperation();
 				database = dbPrestoConnectionOperation.getDatabase(connection);
 			} else if (connection.getType().equalsIgnoreCase("db.dremio")) {
-				DbDremioConnectionOperation dbDremioConnectionOperation = new DbDremioConnectionOperation(
-						this.getFrameworkExecution());
+				DbDremioConnectionOperation dbDremioConnectionOperation = new DbDremioConnectionOperation();
 				database = dbDremioConnectionOperation.getDatabase(connection);
 			} else if (connection.getType().equalsIgnoreCase("db.drill")) {
-				DbDrillConnectionOperation dbDrillConnectionOperation = new DbDrillConnectionOperation(
-						this.getFrameworkExecution());
+				DbDrillConnectionOperation dbDrillConnectionOperation = new DbDrillConnectionOperation();
 				database = dbDrillConnectionOperation.getDatabase(connection);
 			} else {
 				String message = "Database type is not (yet) supported: " + connection.getType();
@@ -742,8 +733,7 @@ public class ConnectionOperation {
 	}
 
 	public ConnectionType getConnectionType(String connectionTypeName) {
-		ConnectionTypeConfiguration connectionTypeConfiguration = new ConnectionTypeConfiguration(
-				FrameworkInstance.getInstance());
+		ConnectionTypeConfiguration connectionTypeConfiguration = new ConnectionTypeConfiguration();
 		ConnectionType connectionType = null;
 
 		try {
@@ -777,11 +767,4 @@ public class ConnectionOperation {
 		this.missingMandatoryFieldsList = missingMandatoryFieldsList;
 	}
 
-	public FrameworkExecution getFrameworkExecution() {
-		return frameworkExecution;
-	}
-
-	public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-		this.frameworkExecution = frameworkExecution;
-	}
 }

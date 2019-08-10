@@ -16,19 +16,16 @@ import java.util.List;
 public class DataframeConfiguration {
 
     private Dataframe dataframe;
-    private FrameworkInstance frameworkInstance;
     private MetadataRepositoryOperation metadataRepositoryOperation;
 
     // Constructors
-    public DataframeConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
+    public DataframeConfiguration() {
     }
 
-    public DataframeConfiguration(Dataframe dataframe, FrameworkInstance frameworkInstance, MetadataRepositoryOperation metadataRepositoryOperation) {
+    public DataframeConfiguration(Dataframe dataframe, MetadataRepositoryOperation metadataRepositoryOperation) {
         this.setDataframe(dataframe);
         this.setMetadataRepositoryOperation(metadataRepositoryOperation);
         this.verifyVersionExists();
-        this.setFrameworkInstance(frameworkInstance);
     }
 
     // Checks
@@ -165,7 +162,7 @@ public class DataframeConfiguration {
             return result;
 
         DataframeVersionConfiguration dataframeVersionConfiguration = new DataframeVersionConfiguration(
-                this.getDataframe().getVersion(), this.getFrameworkInstance());
+                this.getDataframe().getVersion());
         result += dataframeVersionConfiguration.getInsertStatement(this.getDataframe().getName());
 
         return result;
@@ -180,7 +177,7 @@ public class DataframeConfiguration {
 
         for (DataframeItem dataframeItem : this.getDataframe().getItems()) {
             counter++;
-            DataframeItemConfiguration dataframeItemConfiguration = new DataframeItemConfiguration(dataframeItem, this.getFrameworkInstance());
+            DataframeItemConfiguration dataframeItemConfiguration = new DataframeItemConfiguration(dataframeItem);
             if (!result.equalsIgnoreCase(""))
                 result += "\n";
             result += dataframeItemConfiguration.getInsertStatement(this.getDataframe().getName(),
@@ -198,7 +195,7 @@ public class DataframeConfiguration {
 
         for (DataframeParameter dataframeParameter : this.getDataframe().getParameters()) {
             DataframeParameterConfiguration dataframeParameterConfiguration = new DataframeParameterConfiguration(
-                    this.getDataframe().getVersion(), dataframeParameter, this.getFrameworkInstance());
+                    this.getDataframe().getVersion(), dataframeParameter);
             if (!result.equalsIgnoreCase(""))
                 result += "\n";
             result += dataframeParameterConfiguration.getInsertStatement(this.getDataframe().getName());
@@ -244,11 +241,9 @@ public class DataframeConfiguration {
                 + MetadataControl.getInstance().getCatalogMetadataRepository().getTableNameByLabel("Dataviews") + " where DATAFRAME_NM = '"
                 + dataframeName + "'";
         crsDataframe = this.getMetadataRepositoryOperation().getMetadataRepository().executeQuery(queryDataframe, "reader");
-        DataframeItemConfiguration dataframeItemConfiguration = new DataframeItemConfiguration(this.getFrameworkInstance());
-        DataframeParameterConfiguration dataframeParameterConfiguration = new DataframeParameterConfiguration(
-                this.getFrameworkInstance());
-        DataframeVersionConfiguration dataframeVersionConfiguration = new DataframeVersionConfiguration(
-                this.getFrameworkInstance());
+        DataframeItemConfiguration dataframeItemConfiguration = new DataframeItemConfiguration();
+        DataframeParameterConfiguration dataframeParameterConfiguration = new DataframeParameterConfiguration();
+        DataframeVersionConfiguration dataframeVersionConfiguration = new DataframeVersionConfiguration();
         try {
             while (crsDataframe.next()) {
                 dataframe.setId(crsDataframe.getLong("DATAFRAME_ID"));
@@ -310,7 +305,7 @@ public class DataframeConfiguration {
         String query = "select DATAFRAME_NM, DATAFRAME_DSC from "
                 + MetadataControl.getInstance().getCatalogMetadataRepository().getTableNameByLabel("Dataviews") + " order by DATAFRAME_NM ASC";
         crs = this.getMetadataRepositoryOperation().getMetadataRepository().executeQuery(query, "reader");
-        DataframeConfiguration dataframeConfiguration = new DataframeConfiguration(this.getFrameworkInstance());
+        DataframeConfiguration dataframeConfiguration = new DataframeConfiguration();
         try {
             String dataframeName = "";
             while (crs.next()) {
@@ -349,13 +344,5 @@ public class DataframeConfiguration {
     public void setMetadataRepositoryOperation(MetadataRepositoryOperation metadataRepositoryOperation) {
         this.metadataRepositoryOperation = metadataRepositoryOperation;
     }
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
 
 }

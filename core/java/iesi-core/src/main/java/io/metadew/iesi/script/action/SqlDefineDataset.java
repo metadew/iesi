@@ -10,7 +10,6 @@ import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -24,7 +23,6 @@ import java.util.List;
 public class SqlDefineDataset {
 
     private ActionExecution actionExecution;
-    private FrameworkExecution frameworkExecution;
     private ExecutionControl executionControl;
 
     // Parameters
@@ -39,14 +37,13 @@ public class SqlDefineDataset {
 
     }
 
-    public SqlDefineDataset(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+    public SqlDefineDataset(ExecutionControl executionControl,
                             ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.init(frameworkExecution, executionControl, scriptExecution, actionExecution);
+        this.init(executionControl, scriptExecution, actionExecution);
     }
 
-    public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+    public void init(ExecutionControl executionControl,
                      ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.setFrameworkExecution(frameworkExecution);
         this.setExecutionControl(executionControl);
         this.setActionExecution(actionExecution);
         this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
@@ -54,11 +51,11 @@ public class SqlDefineDataset {
 
     public void prepare() {
         // Set Parameters
-        this.setReferenceName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        this.setReferenceName(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "name"));
-        this.setSqlStatement(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        this.setSqlStatement(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "statement"));
-        this.setSqlIdentifier(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        this.setSqlIdentifier(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "identifier"));
 
         // Get Parameters
@@ -152,15 +149,6 @@ public class SqlDefineDataset {
                     referenceName.getClass()));
             return referenceName.toString();
         }
-    }
-
-    // Getters and Setters
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
     }
 
     public ExecutionControl getExecutionControl() {

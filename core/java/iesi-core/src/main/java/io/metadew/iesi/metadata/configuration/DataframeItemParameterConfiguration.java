@@ -12,16 +12,13 @@ import java.io.StringWriter;
 public class DataframeItemParameterConfiguration {
 
     private DataframeItemParameter dataframeItemParameter;
-    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public DataframeItemParameterConfiguration(DataframeItemParameter dataframeItemParameter, FrameworkInstance frameworkInstance) {
+    public DataframeItemParameterConfiguration(DataframeItemParameter dataframeItemParameter) {
         this.setDataframeItemParameter(dataframeItemParameter);
-        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public DataframeItemParameterConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
+    public DataframeItemParameterConfiguration() {
     }
 
     // Insert
@@ -70,13 +67,5 @@ public class DataframeItemParameterConfiguration {
     public void setDataframeItemParameter(DataframeItemParameter dataframeItemParameter) {
         this.dataframeItemParameter = dataframeItemParameter;
     }
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
 
 }

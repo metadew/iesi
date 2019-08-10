@@ -17,16 +17,13 @@ import java.util.List;
 public class DatasetInstanceConfiguration {
 
     private DatasetInstance datasetInstance;
-    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public DatasetInstanceConfiguration(DatasetInstance datasetInstance, FrameworkInstance frameworkInstance) {
+    public DatasetInstanceConfiguration(DatasetInstance datasetInstance) {
         this.setDatasetInstance(datasetInstance);
-        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public DatasetInstanceConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
+    public DatasetInstanceConfiguration() {
     }
 
     // Insert
@@ -81,7 +78,7 @@ public class DatasetInstanceConfiguration {
 
         for (DatasetInstanceParameter datasetInstanceParameter : this.getDatasetInstance().getParameters()) {
             DatasetInstanceParameterConfiguration datasetInstanceParameterConfiguration = new DatasetInstanceParameterConfiguration(
-                    datasetInstanceParameter, this.getFrameworkInstance());
+                    datasetInstanceParameter);
             if (!result.equalsIgnoreCase(""))
                 result += "\n";
             result += datasetInstanceParameterConfiguration.getInsertStatement(datasetName,
@@ -100,7 +97,7 @@ public class DatasetInstanceConfiguration {
 
         for (DatasetInstanceLabel datasetInstanceLabel : this.getDatasetInstance().getLabels()) {
             DatasetInstanceLabelConfiguration datasetInstanceLabelConfiguration = new DatasetInstanceLabelConfiguration(
-                    datasetInstanceLabel, this.getFrameworkInstance());
+                    datasetInstanceLabel);
             if (!result.equalsIgnoreCase(""))
                 result += "\n";
             result += datasetInstanceLabelConfiguration.getInsertStatement(datasetName,
@@ -120,10 +117,8 @@ public class DatasetInstanceConfiguration {
                 + " where DST_ID = " + datasetId + " and DST_INST_NM = '" + datasetInstanceName + "'";
         crsDatasetInstance = MetadataControl.getInstance().getConnectivityMetadataRepository()
                 .executeQuery(queryDatasetInstance, "reader");
-        DatasetInstanceParameterConfiguration datasetInstanceParameterConfiguration = new DatasetInstanceParameterConfiguration(
-                this.getFrameworkInstance());
-        DatasetInstanceLabelConfiguration datasetInstanceLabelConfiguration = new DatasetInstanceLabelConfiguration(
-                this.getFrameworkInstance());
+        DatasetInstanceParameterConfiguration datasetInstanceParameterConfiguration = new DatasetInstanceParameterConfiguration();
+        DatasetInstanceLabelConfiguration datasetInstanceLabelConfiguration = new DatasetInstanceLabelConfiguration();
         try {
             while (crsDatasetInstance.next()) {
                 datasetInstance.setName(datasetInstanceName);
@@ -172,7 +167,7 @@ public class DatasetInstanceConfiguration {
     }
 
     public DatasetInstance getDatasetInstance(String datasetName, String datasetInstanceName) {
-        DatasetConfiguration datasetConfiguration = new DatasetConfiguration(this.getFrameworkInstance());
+        DatasetConfiguration datasetConfiguration = new DatasetConfiguration();
         return this.getDatasetInstance(datasetConfiguration.getDatasetId(datasetName), datasetInstanceName);
     }
 
@@ -196,13 +191,5 @@ public class DatasetInstanceConfiguration {
     public void setDatasetInstance(DatasetInstance datasetInstance) {
         this.datasetInstance = datasetInstance;
     }
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
 
 }

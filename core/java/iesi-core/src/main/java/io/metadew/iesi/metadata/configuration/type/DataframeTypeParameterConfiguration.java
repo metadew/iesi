@@ -7,22 +7,19 @@ import io.metadew.iesi.metadata.definition.DataframeTypeParameter;
 public class DataframeTypeParameterConfiguration {
 
     private DataframeTypeParameter dataframeTypeParameter;
-    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public DataframeTypeParameterConfiguration(DataframeTypeParameter dataframeTypeParameter, FrameworkInstance frameworkInstance) {
+    public DataframeTypeParameterConfiguration(DataframeTypeParameter dataframeTypeParameter) {
         this.setDataframeTypeParameter(dataframeTypeParameter);
-        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public DataframeTypeParameterConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
+    public DataframeTypeParameterConfiguration() {
     }
 
     // Get Dataframe Type Parameter
     public DataframeTypeParameter getDataframeTypeParameter(String dataframeTypeName, String dataframeTypeParameterName) {
         DataframeTypeParameter dataframeTypeParameterResult = null;
-        DataframeTypeConfiguration dataframeTypeConfiguration = new DataframeTypeConfiguration(this.getFrameworkInstance());
+        DataframeTypeConfiguration dataframeTypeConfiguration = new DataframeTypeConfiguration();
         DataframeType dataframeType = dataframeTypeConfiguration.getDataframeType(dataframeTypeName);
         for (DataframeTypeParameter dataframeTypeParameter : dataframeType.getParameters()) {
             if (dataframeTypeParameter.getName().equalsIgnoreCase(dataframeTypeParameterName)) {
@@ -41,13 +38,5 @@ public class DataframeTypeParameterConfiguration {
     public void setDataframeTypeParameter(DataframeTypeParameter dataframeTypeParameter) {
         this.dataframeTypeParameter = dataframeTypeParameter;
     }
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
 
 }

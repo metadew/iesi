@@ -9,22 +9,18 @@ import io.metadew.iesi.metadata.operation.TypeConfigurationOperation;
 public class ConnectionTypeConfiguration {
 
     private ConnectionType connectionType;
-    private FrameworkInstance frameworkInstance;
     private String dataObjectType = "ConnectionType";
 
     // Constructors
-    public ConnectionTypeConfiguration(ConnectionType connectionType, FrameworkInstance frameworkInstance) {
+    public ConnectionTypeConfiguration(ConnectionType connectionType) {
         this.setConnectionType(connectionType);
-        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public ConnectionTypeConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
+    public ConnectionTypeConfiguration() {
     }
 
     public ConnectionType getConnectionType(String connectionTypeName) {
-        String conf = TypeConfigurationOperation.getTypeConfigurationFile(this.getFrameworkInstance(),
-                this.getDataObjectType(), connectionTypeName);
+        String conf = TypeConfigurationOperation.getTypeConfigurationFile(this.getDataObjectType(), connectionTypeName);
         DataObjectOperation dataObjectOperation = new DataObjectOperation(conf);
         ObjectMapper objectMapper = new ObjectMapper();
         ConnectionType connectionType = objectMapper.convertValue(dataObjectOperation.getDataObject().getData(),
@@ -49,11 +45,4 @@ public class ConnectionTypeConfiguration {
         this.dataObjectType = dataObjectType;
     }
 
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
 }

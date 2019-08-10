@@ -13,14 +13,12 @@ import org.apache.logging.log4j.Logger;
 
 public class RestoreTableOperation {
 
-    private FrameworkExecution frameworkExecution;
     private ExecutionControl executionControl;
     private DataTable dataTable;
     private static final Logger LOGGER = LogManager.getLogger();
 
     // Constructors
-    public RestoreTableOperation(FrameworkExecution frameworkExecution, ExecutionControl executionControl, DataTable dataTable) {
-        this.setFrameworkExecution(frameworkExecution);
+    public RestoreTableOperation(ExecutionControl executionControl, DataTable dataTable) {
         this.setExecutionControl(executionControl);
         this.setDataTable(dataTable);
     }
@@ -82,15 +80,6 @@ public class RestoreTableOperation {
             MetadataControl.getInstance().getDesignMetadataRepository().executeUpdate(sql);
         }
 
-    }
-
-    // Getters and Setters
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
     }
 
     public DataTable getDataTable() {

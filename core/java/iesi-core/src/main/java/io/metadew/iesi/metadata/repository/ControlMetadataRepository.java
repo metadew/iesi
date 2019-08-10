@@ -41,11 +41,11 @@ public class ControlMetadataRepository extends MetadataRepository {
     }
 
     @Override
-    public void save(DataObject dataObject, FrameworkExecution frameworkExecution) {
+    public void save(DataObject dataObject) {
         ObjectMapper objectMapper = new ObjectMapper();
         if (dataObject.getType().equalsIgnoreCase("user")) {
             User user = objectMapper.convertValue(dataObject.getData(), User.class);
-            UserConfiguration userConfiguration = new UserConfiguration(FrameworkInstance.getInstance());
+            UserConfiguration userConfiguration = new UserConfiguration();
             userConfiguration.insertUser(user);
         } else if (dataObject.getType().equalsIgnoreCase("usergroup")) {
             //TODO

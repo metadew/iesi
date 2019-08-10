@@ -12,16 +12,13 @@ import java.io.StringWriter;
 public class ImpersonationParameterConfiguration {
 
     private ImpersonationParameter impersonationParameter;
-    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public ImpersonationParameterConfiguration(ImpersonationParameter impersonationParameter, FrameworkInstance frameworkInstance) {
+    public ImpersonationParameterConfiguration(ImpersonationParameter impersonationParameter) {
         this.setImpersonationParameter(impersonationParameter);
-        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public ImpersonationParameterConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
+    public ImpersonationParameterConfiguration() {
     }
 
     public String getInsertStatement(String impersonationName, ImpersonationParameter impersonationParameter) {
@@ -83,13 +80,5 @@ public class ImpersonationParameterConfiguration {
     public void setImpersonationParameter(ImpersonationParameter impersonationParameter) {
         this.impersonationParameter = impersonationParameter;
     }
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
 
 }

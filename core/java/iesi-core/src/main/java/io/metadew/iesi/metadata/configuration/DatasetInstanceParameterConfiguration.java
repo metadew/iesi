@@ -12,17 +12,13 @@ import java.io.StringWriter;
 public class DatasetInstanceParameterConfiguration {
 
     private DatasetInstanceParameter datasetParameter;
-    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public DatasetInstanceParameterConfiguration(DatasetInstanceParameter datasetParameter,
-    		FrameworkInstance frameworkInstance) {
+    public DatasetInstanceParameterConfiguration(DatasetInstanceParameter datasetParameter) {
         this.setDatasetInstanceParameter(datasetParameter);
-        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public DatasetInstanceParameterConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
+    public DatasetInstanceParameterConfiguration() {
     }
 
     // Insert
@@ -91,13 +87,5 @@ public class DatasetInstanceParameterConfiguration {
     public void setDatasetInstanceParameter(DatasetInstanceParameter datasetParameter) {
         this.datasetParameter = datasetParameter;
     }
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
 
 }

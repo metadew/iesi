@@ -9,22 +9,18 @@ import io.metadew.iesi.metadata.operation.TypeConfigurationOperation;
 public class SubroutineTypeConfiguration {
 
     private SubroutineType subroutineType;
-    private FrameworkInstance frameworkInstance;
     private String dataObjectType = "SubroutineType";
 
     // Constructors
-    public SubroutineTypeConfiguration(SubroutineType subroutineType, FrameworkInstance frameworkInstance) {
+    public SubroutineTypeConfiguration(SubroutineType subroutineType) {
         this.setSubroutineType(subroutineType);
-        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public SubroutineTypeConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
+    public SubroutineTypeConfiguration() {
     }
 
     public SubroutineType getSubroutineType(String subroutineTypeName) {
-        String conf = TypeConfigurationOperation.getTypeConfigurationFile(this.getFrameworkInstance(),
-                this.getDataObjectType(), subroutineTypeName);
+        String conf = TypeConfigurationOperation.getTypeConfigurationFile(this.getDataObjectType(), subroutineTypeName);
         DataObjectOperation dataObjectOperation = new DataObjectOperation(conf);
         ObjectMapper objectMapper = new ObjectMapper();
         SubroutineType subroutineType = objectMapper.convertValue(dataObjectOperation.getDataObject().getData(),
@@ -48,12 +44,4 @@ public class SubroutineTypeConfiguration {
     public void setDataObjectType(String dataObjectType) {
         this.dataObjectType = dataObjectType;
     }
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
 }

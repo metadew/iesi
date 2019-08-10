@@ -12,16 +12,13 @@ import java.io.StringWriter;
 public class ComponentBuildConfiguration {
 
     private ComponentBuild componentBuild;
-    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public ComponentBuildConfiguration(ComponentBuild componentBuild, FrameworkInstance frameworkInstance) {
+    public ComponentBuildConfiguration(ComponentBuild componentBuild) {
         this.setComponentBuild(componentBuild);
-        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public ComponentBuildConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
+    public ComponentBuildConfiguration() {
     }
 
     // Insert
@@ -72,14 +69,5 @@ public class ComponentBuildConfiguration {
     public void setComponentBuild(ComponentBuild componentBuild) {
         this.componentBuild = componentBuild;
     }
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
-
 
 }

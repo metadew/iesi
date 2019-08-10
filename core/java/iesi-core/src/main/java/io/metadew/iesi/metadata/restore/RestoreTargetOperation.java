@@ -14,15 +14,13 @@ import java.io.File;
 
 public class RestoreTargetOperation {
 
-    private FrameworkExecution frameworkExecution;
     private ExecutionControl executionControl;
     private Long processId;
     private String dataFileLocation;
     private static final Logger LOGGER = LogManager.getLogger();
 
     // Constructors
-    public RestoreTargetOperation(FrameworkExecution frameworkExecution, ExecutionControl executionControl) {
-        this.setFrameworkExecution(frameworkExecution);
+    public RestoreTargetOperation(ExecutionControl executionControl) {
         this.setExecutionControl(executionControl);
     }
 
@@ -39,7 +37,7 @@ public class RestoreTargetOperation {
                 });
                 if (dataObject.getType().equalsIgnoreCase("datatable")) {
                     DataTable dataTable = objectMapper.convertValue(dataObject.getData(), DataTable.class);
-                    RestoreTableOperation restoreTableOperation = new RestoreTableOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+                    RestoreTableOperation restoreTableOperation = new RestoreTableOperation(this.getExecutionControl(),
                             dataTable);
                     restoreTableOperation.execute();
 
@@ -57,15 +55,6 @@ public class RestoreTargetOperation {
             // this.getEoControl().endExecution(this);
         }
 
-    }
-
-    // Getters and Setters
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
     }
 
     public ExecutionControl getExecutionControl() {

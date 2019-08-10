@@ -29,7 +29,8 @@ public class DatabaseOffloadExecution {
         Context context = new Context();
         context.setName("offload");
         context.setScope("");
-        this.setFrameworkExecution(new FrameworkExecution(new FrameworkExecutionContext(context)));
+
+        FrameworkExecution.getInstance().init(new FrameworkExecutionContext(context));
     }
 
     // Methods
@@ -37,8 +38,8 @@ public class DatabaseOffloadExecution {
                             String targetEnvironmentName, String sqlStatement, String name, boolean cleanPrevious) throws SQLException {
 
         // Get Connection
-        ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
-        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(FrameworkInstance.getInstance());
+        ConnectionOperation connectionOperation = new ConnectionOperation();
+        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
 
         Connection sourceConnection = connectionConfiguration.getConnection(sourceConnectionName, sourceEnvironmentName).get();
         Database sourceDatabase = connectionOperation.getDatabase(sourceConnection);

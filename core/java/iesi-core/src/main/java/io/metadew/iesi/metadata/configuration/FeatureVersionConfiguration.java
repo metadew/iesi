@@ -13,16 +13,13 @@ import java.util.Optional;
 public class FeatureVersionConfiguration {
 
     private FeatureVersion featureVersion;
-    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public FeatureVersionConfiguration(FeatureVersion featureVersion, FrameworkInstance frameworkInstance) {
+    public FeatureVersionConfiguration(FeatureVersion featureVersion) {
         this.setFeatureVersion(featureVersion);
-        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public FeatureVersionConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
+    public FeatureVersionConfiguration() {
     }
 
     public String getInsertStatement(String featureId, FeatureVersion featureVersion) {
@@ -98,13 +95,5 @@ public class FeatureVersionConfiguration {
     public void setFeatureVersion(FeatureVersion featureVersion) {
         this.featureVersion = featureVersion;
     }
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
 
 }

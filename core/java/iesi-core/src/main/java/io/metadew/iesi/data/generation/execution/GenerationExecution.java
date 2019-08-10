@@ -28,7 +28,7 @@ public class GenerationExecution {
 			NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
 		this.setGeneration(generation);
 		this.setFrameworkExecution(frameworkExecution);
-		this.setExecutionControl(new ExecutionControl(this.getFrameworkExecution()));
+		this.setExecutionControl(new ExecutionControl());
 	}
 	
 	// Methods

@@ -6,12 +6,20 @@ public class UserAccess {
     private String spaceName;
     private boolean loggedIn;
     private boolean exception = false;
+
     private String exceptionMessage;
 
     // Constructors
-    public UserAccess() {
 
+    public UserAccess(String userName, String spaceName, boolean loggedIn, boolean exception, String exceptionMessage) {
+        this.userName = userName;
+        this.spaceName = spaceName;
+        this.loggedIn = loggedIn;
+        this.exception = exception;
+        this.exceptionMessage = exceptionMessage;
     }
+
+    public UserAccess() {}
 
     // Getters and Setters
     public boolean isLoggedIn() {

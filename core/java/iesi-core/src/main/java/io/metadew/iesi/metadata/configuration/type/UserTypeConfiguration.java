@@ -9,23 +9,19 @@ import io.metadew.iesi.metadata.operation.TypeConfigurationOperation;
 public class UserTypeConfiguration {
 
     private UserType userType;
-    private FrameworkInstance frameworkInstance;
     private String dataObjectType = "UserType";
 
     // Constructors
-    public UserTypeConfiguration(UserType userType, FrameworkInstance frameworkInstance) {
+    public UserTypeConfiguration(UserType userType) {
         this.setUserType(userType);
-        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public UserTypeConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
+    public UserTypeConfiguration() {
     }
 
     // Methods
     public UserType getUserType(String userTypeName) {
-        String conf = TypeConfigurationOperation.getTypeConfigurationFile(this.getFrameworkInstance(),
-                this.getDataObjectType(), userTypeName);
+        String conf = TypeConfigurationOperation.getTypeConfigurationFile(this.getDataObjectType(), userTypeName);
         DataObjectOperation dataObjectOperation = new DataObjectOperation(conf);
         ObjectMapper objectMapper = new ObjectMapper();
         UserType userType = objectMapper.convertValue(dataObjectOperation.getDataObject().getData(),
@@ -49,13 +45,5 @@ public class UserTypeConfiguration {
     public void setDataObjectType(String dataObjectType) {
         this.dataObjectType = dataObjectType;
     }
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
 
 }

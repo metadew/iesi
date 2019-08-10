@@ -11,17 +11,14 @@ import java.io.StringWriter;
 
 public class SubroutineParameterConfiguration {
 
-    private FrameworkInstance frameworkInstance;
     private SubroutineParameter subroutineParameter;
 
     // Constructors
-    public SubroutineParameterConfiguration(SubroutineParameter subroutineParameter, FrameworkInstance frameworkInstance) {
+    public SubroutineParameterConfiguration(SubroutineParameter subroutineParameter) {
         this.setSubroutineParameter(subroutineParameter);
-        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public SubroutineParameterConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
+    public SubroutineParameterConfiguration() {
     }
 
     // Insert
@@ -70,13 +67,4 @@ public class SubroutineParameterConfiguration {
     public void setSubroutineParameter(SubroutineParameter subroutineParameter) {
         this.subroutineParameter = subroutineParameter;
     }
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
-
 }

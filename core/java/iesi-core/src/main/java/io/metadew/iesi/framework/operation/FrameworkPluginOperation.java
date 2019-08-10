@@ -11,11 +11,9 @@ import java.io.File;
 
 public class FrameworkPluginOperation {
 
-    private FrameworkInstance frameworkInstance;
     private String pluginConfigurationFile;
 
-    public FrameworkPluginOperation(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
+    public FrameworkPluginOperation() {
     }
 
     public boolean verifyPlugins(String configurationToVerify) {
@@ -44,14 +42,5 @@ public class FrameworkPluginOperation {
     public void setPluginConfigurationFile(String pluginConfigurationFile) {
         this.pluginConfigurationFile = pluginConfigurationFile;
     }
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
-
 
 }

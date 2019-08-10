@@ -15,27 +15,15 @@ public class ScriptResultOutputConfiguration {
 
     private String runId;
     private ScriptResultOutput scriptResultOutput;
-    private FrameworkInstance frameworkInstance;
 
-    // Constructors
-    public ScriptResultOutputConfiguration(String runId, ScriptResultOutput scriptResultOutput, FrameworkInstance frameworkInstance) {
-        this.setRunId(runId);
-        this.setScriptResultOutput(scriptResultOutput);
-        this.setFrameworkInstance(frameworkInstance);
-    }
-
-    public ScriptResultOutputConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
-    }
+    public ScriptResultOutputConfiguration() {}
 
     // Methods
-    @SuppressWarnings({ "unchecked", "rawtypes" })
 	public List<ScriptResultOutput> getScriptResultOutputs(String runId, long processId) {
-        List<ScriptResultOutput> scriptResultOutputs = new ArrayList();
-        CachedRowSet crsScriptResultOutputs;
+        List<ScriptResultOutput> scriptResultOutputs = new ArrayList<>();
         String queryScriptResultOutputs = "select RUN_ID, PRC_ID, SCRIPT_ID, OUT_NM, OUT_VAL from " + MetadataControl.getInstance().getResultMetadataRepository().getTableNameByLabel("ScriptResultOutputs")
                 + " where RUN_ID = '" + runId + "' and PRC_ID = " + processId + " order by LOAD_TMS asc";
-        crsScriptResultOutputs = MetadataControl.getInstance().getResultMetadataRepository().executeQuery(queryScriptResultOutputs, "reader");
+        CachedRowSet crsScriptResultOutputs = MetadataControl.getInstance().getResultMetadataRepository().executeQuery(queryScriptResultOutputs, "reader");
         try {
             while (crsScriptResultOutputs.next()) {
             	ScriptResultOutput scriptResultOutput= new ScriptResultOutput();
@@ -55,10 +43,9 @@ public class ScriptResultOutputConfiguration {
     
     public Optional<ScriptResultOutput> getScriptOutput(String runId, long processId, String scriptResultOutputName) {
         ScriptResultOutput scriptResultOutput = null;
-        CachedRowSet crsScriptResultOutput;
         String queryScriptResultOutput = "select RUN_ID, PRC_ID, SCRIPT_ID, OUT_NM, OUT_VAL from " + MetadataControl.getInstance().getResultMetadataRepository().getTableNameByLabel("ScriptResultOutputs")
                 + " where RUN_ID = '" + runId + "' and PRC_ID = " + processId + " and OUT_NM = '" + scriptResultOutputName + "'";
-        crsScriptResultOutput = MetadataControl.getInstance().getResultMetadataRepository().executeQuery(queryScriptResultOutput, "reader");
+        CachedRowSet crsScriptResultOutput = MetadataControl.getInstance().getResultMetadataRepository().executeQuery(queryScriptResultOutput, "reader");
         try {
             while (crsScriptResultOutput.next()) {
                 scriptResultOutput = new ScriptResultOutput(scriptResultOutputName,
@@ -89,13 +76,5 @@ public class ScriptResultOutputConfiguration {
     public void setScriptResultOutput(ScriptResultOutput scriptResultOutput) {
         this.scriptResultOutput = scriptResultOutput;
     }
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
 
 }

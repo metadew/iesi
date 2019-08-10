@@ -19,10 +19,6 @@ public abstract class Database {
 
 	DatabaseConnection databaseConnection;
 
-	public Database() {
-		
-	}
-	
 	public Database(DatabaseConnection databaseConnection) {
 		this.databaseConnection = databaseConnection;
 	}

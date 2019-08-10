@@ -1,63 +1,48 @@
 package io.metadew.iesi.guard.execution;
 
-import io.metadew.iesi.framework.execution.FrameworkExecution;
-
 public class GuardExecution {
 
-    private FrameworkExecution frameworkExecution;
-
-    public GuardExecution(FrameworkExecution frameworkExecution) {
-        this.setFrameworkExecution(frameworkExecution);
-    }
+    public GuardExecution() {}
 
     //Methods
     public void createUser() {
-        UserExecution userExecution = new UserExecution(this.getFrameworkExecution());
+        UserExecution userExecution = new UserExecution();
         userExecution.createUser();
     }
 
     public void createUser(String userName) {
 
-        UserExecution userExecution = new UserExecution(this.getFrameworkExecution());
+        UserExecution userExecution = new UserExecution();
         userExecution.createUser(userName);
 
     }
 
     public void resetPassword(String userName) {
 
-        UserExecution userExecution = new UserExecution(this.getFrameworkExecution());
+        UserExecution userExecution = new UserExecution();
         userExecution.resetPassword(userName);
 
     }
 
     public void updateActive(String userName, String status) {
 
-        UserExecution userExecution = new UserExecution(this.getFrameworkExecution());
+        UserExecution userExecution = new UserExecution();
         userExecution.updateActive(userName, status);
 
     }
 
     public void updateLocked(String userName, String status) {
 
-        UserExecution userExecution = new UserExecution(this.getFrameworkExecution());
+        UserExecution userExecution = new UserExecution();
         userExecution.updateLocked(userName, status);
 
     }
 
     public void resetIndividualLoginFails(String userName) {
 
-        UserExecution userExecution = new UserExecution(this.getFrameworkExecution());
+        UserExecution userExecution = new UserExecution();
         userExecution.resetIndividualLoginFails(userName);
 
-    }
-
-    // Getters and setters
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
     }
 
 }

@@ -1,14 +1,13 @@
 package io.metadew.iesi.script.execution;
 
-import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.script.operation.ActionSelectOperation;
 import org.apache.logging.log4j.Level;
 
 public class NonRouteScriptExecution extends ScriptExecution {
 
-    public NonRouteScriptExecution(Script script, FrameworkExecution frameworkExecution, ExecutionControl executionControl, ExecutionMetrics executionMetrics, Long processId, boolean exitOnCompletion, ScriptExecution parentScriptExecution, String paramList, String paramFile, ActionSelectOperation actionSelectOperation, RootingStrategy rootingStrategy) {
-        super(script, frameworkExecution, executionControl, executionMetrics, processId, exitOnCompletion, parentScriptExecution, paramList, paramFile, actionSelectOperation, rootingStrategy);
+    public NonRouteScriptExecution(Script script, ExecutionControl executionControl, ExecutionMetrics executionMetrics, Long processId, boolean exitOnCompletion, ScriptExecution parentScriptExecution, String paramList, String paramFile, ActionSelectOperation actionSelectOperation, RootingStrategy rootingStrategy) {
+        super(script, executionControl, executionMetrics, processId, exitOnCompletion, parentScriptExecution, paramList, paramFile, actionSelectOperation, rootingStrategy);
     }
 
     @Override

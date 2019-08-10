@@ -20,15 +20,13 @@ import java.util.Properties;
 public class AttributeOperation {
 
     private Properties properties;
-    private FrameworkExecution frameworkExecution;
     private ExecutionControl executionControl;
     private ActionExecution actionExecution;
     private String type;
     private String name;
 
     // Constructors
-    public AttributeOperation(FrameworkExecution frameworkExecution, ExecutionControl executionControl, ActionExecution actionExecution, String type, String name) {
-        this.setFrameworkExecution(frameworkExecution);
+    public AttributeOperation(ExecutionControl executionControl, ActionExecution actionExecution, String type, String name) {
         this.setExecutionControl(executionControl);
         this.setActionExecution(actionExecution);
         this.setType(type);
@@ -82,16 +80,6 @@ public class AttributeOperation {
 
     private void setProperties(Properties properties) {
         this.properties = properties;
-    }
-
-
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
     }
 
 

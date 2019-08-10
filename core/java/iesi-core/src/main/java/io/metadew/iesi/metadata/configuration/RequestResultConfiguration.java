@@ -17,7 +17,7 @@ import java.util.Optional;
 
 public class RequestResultConfiguration extends Configuration<RequestResult, RequestResultKey> {
 
-	public RequestResultConfiguration(MetadataControl metadataControl) {
+	public RequestResultConfiguration() {
 		super();
 	}
 

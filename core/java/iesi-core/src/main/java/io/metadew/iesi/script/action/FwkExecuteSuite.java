@@ -8,8 +8,6 @@ import io.metadew.iesi.connection.tools.FolderTools;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
-import io.metadew.iesi.framework.execution.FrameworkExecution;
-import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.connection.Connection;
@@ -22,7 +20,6 @@ import io.metadew.iesi.script.operation.ActionParameterOperation;
 import io.metadew.iesi.script.operation.ActionSelectOperation;
 import io.metadew.iesi.script.operation.JsonInputOperation;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -39,7 +36,6 @@ public class FwkExecuteSuite {
 
     private ActionExecution actionExecution;
     private ScriptExecution scriptExecution;
-    private FrameworkExecution frameworkExecution;
     private ExecutionControl executionControl;
 
     // Parameters
@@ -62,12 +58,11 @@ public class FwkExecuteSuite {
 
     }
 
-    public FwkExecuteSuite(FrameworkExecution frameworkExecution, ExecutionControl executionControl, ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.init(frameworkExecution, executionControl, scriptExecution, actionExecution);
+    public FwkExecuteSuite(ExecutionControl executionControl, ScriptExecution scriptExecution, ActionExecution actionExecution) {
+        this.init(executionControl, scriptExecution, actionExecution);
     }
 
-    public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl, ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.setFrameworkExecution(frameworkExecution);
+    public void init(ExecutionControl executionControl, ScriptExecution scriptExecution, ActionExecution actionExecution) {
         this.setExecutionControl(executionControl);
         this.setActionExecution(actionExecution);
         this.setScriptExecution(scriptExecution);
@@ -76,27 +71,27 @@ public class FwkExecuteSuite {
 
     public void prepare() {
         // Reset Parameters
-        this.setComponentName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(), this.getActionExecution(),
+        this.setComponentName(new ActionParameterOperation(this.getExecutionControl(), this.getActionExecution(),
                 this.getActionExecution().getAction().getType(), "COMP_NM"));
-        this.setSuiteName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(), this.getActionExecution(),
+        this.setSuiteName(new ActionParameterOperation(this.getExecutionControl(), this.getActionExecution(),
                 this.getActionExecution().getAction().getType(), "SUITE_NM"));
-        this.setSuiteVersion(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(), this.getActionExecution(),
+        this.setSuiteVersion(new ActionParameterOperation(this.getExecutionControl(), this.getActionExecution(),
                 this.getActionExecution().getAction().getType(), "SUITE_VERSION"));
-        this.setSuiteBuild(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(), this.getActionExecution(),
+        this.setSuiteBuild(new ActionParameterOperation(this.getExecutionControl(), this.getActionExecution(),
                 this.getActionExecution().getAction().getType(), "SUITE_BUILD"));
-        this.setRepositoryConnectionName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        this.setRepositoryConnectionName(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "REPO_CONN_NM"));
-        this.setRepositoryComponentPath(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        this.setRepositoryComponentPath(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "REPO_COMP_PATH"));
-        this.setRepositorySuitePath(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        this.setRepositorySuitePath(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "REPO_SUITE_PATH"));
-        this.setRepositoryVersionPath(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        this.setRepositoryVersionPath(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "REPO_VERSION_PATH"));
-        this.setRepositoryBuildPath(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        this.setRepositoryBuildPath(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "REPO_BUILD_PATH"));
-        this.setRepositoryBuildAsset(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        this.setRepositoryBuildAsset(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "REPO_BUILD_ASSET"));
-        this.setEnvironmentName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        this.setEnvironmentName(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "ENV_NM"));
 
         // Get Parameters
@@ -171,14 +166,14 @@ public class FwkExecuteSuite {
     @SuppressWarnings({ "rawtypes", "unchecked" })
 	private boolean execute(String componentName, String suiteName, String suiteVersion, String suiteBuild, String repositoryConnectionName, String repositoryComponentPath, String repositorySuitePath, String repositoryVersionPath, String repositoryBuildPath, String repositoryBuildAsset, String environmentName) {
         // Get Connection
-        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(FrameworkInstance.getInstance());
+        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
         Connection connection = connectionConfiguration.getConnection(repositoryConnectionName,
                 this.getExecutionControl().getEnvName()).get();
 
         // Artifactory
         // *********************************************************
         // Get repository
-        ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
+        ConnectionOperation connectionOperation = new ConnectionOperation();
         ArtifactoryConnection artifactoryConnection = connectionOperation.getArtifactoryConnection(connection);
 
         // Compile asset path
@@ -218,11 +213,11 @@ public class FwkExecuteSuite {
         artifactoryConnection.downloadArtifact(resolvedRepositoryAssetPath, suiteBuildFolder + File.separator + buildAsset);
 
         // Untar the build
-        CompressionTools.unTarFile(this.getFrameworkExecution(), suiteBuildFolder, buildAsset);
+        CompressionTools.unTarFile(suiteBuildFolder, buildAsset);
         // Untar the payload
         String buildAssetFolder = suiteBuildFolder + File.separator + FilenameUtils.removeExtension(buildAsset) + File.separator + this.getSuiteName().getValue();
         FolderTools.deleteFolder(buildAssetFolder, true);
-        CompressionTools.unTarFile(this.getFrameworkExecution(), suiteBuildFolder + File.separator + FilenameUtils.removeExtension(buildAsset), this.getSuiteName().getValue() + ".tar");
+        CompressionTools.unTarFile(suiteBuildFolder + File.separator + FilenameUtils.removeExtension(buildAsset), this.getSuiteName().getValue() + ".tar");
 
         // Run the suite
         List<FileConnection> fileConnectionList = new ArrayList();
@@ -231,7 +226,7 @@ public class FwkExecuteSuite {
             try {
                 Script script = null;
 
-                JsonInputOperation jsonInputOperation = new JsonInputOperation(this.getFrameworkExecution(), fileConnection.getFilePath());
+                JsonInputOperation jsonInputOperation = new JsonInputOperation(fileConnection.getFilePath());
                 script = jsonInputOperation.getScript().get();
                 if (script == null) {
                     System.out.println("No script found for execution");
@@ -239,7 +234,6 @@ public class FwkExecuteSuite {
                     this.getActionExecution().getActionControl().increaseWarningCount();
                 } else {
                     ScriptExecution scriptExecution = new ScriptExecutionBuilder(true, false)
-                            .frameworkExecution(frameworkExecution)
                             .script(script)
                             .actionSelectOperation(new ActionSelectOperation(""))
                             .environment(environmentName)
@@ -268,15 +262,6 @@ public class FwkExecuteSuite {
                     field.getClass()));
             return field.toString();
         }
-    }
-
-    // Getters and Setters
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
     }
 
     public ExecutionControl getExecutionControl() {

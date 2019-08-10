@@ -46,19 +46,19 @@ public class ConnectivityMetadataRepository extends MetadataRepository {
     }
 
     @Override
-    public void save(DataObject dataObject, FrameworkExecution frameworkExecution) {
+    public void save(DataObject dataObject) {
         // TODO: based on MetadataRepository object decide to insert or not insert the objects
         // TODO: insert should be handled on database level as insert can differ from database type/dialect? JDBC Dialect/Spring
         ObjectMapper objectMapper = new ObjectMapper();
         if (dataObject.getType().equalsIgnoreCase("connection")) {
             Connection connection = objectMapper.convertValue(dataObject.getData(), Connection.class);
-            save(connection, frameworkExecution);
+            save(connection);
         } else if (dataObject.getType().equalsIgnoreCase("environment")) {
             Environment environment = objectMapper.convertValue(dataObject.getData(), Environment.class);
-            save(environment, frameworkExecution);
+            save(environment);
         } else if (dataObject.getType().equalsIgnoreCase("impersonation")) {
             Impersonation impersonation = objectMapper.convertValue(dataObject.getData(), Impersonation.class);
-            save(impersonation, frameworkExecution);
+            save(impersonation);
         } else if (dataObject.getType().equalsIgnoreCase("repository")) {
             // TODO
         } else {
@@ -66,10 +66,10 @@ public class ConnectivityMetadataRepository extends MetadataRepository {
         }
     }
 
-    public void save(Connection connection, FrameworkExecution frameworkExecution) {
+    public void save(Connection connection) {
         LOGGER.info(MessageFormat.format("Inserting connection {0}-{1} into connectivity repository",
                 connection.getName(), connection.getEnvironment()));
-        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(FrameworkInstance.getInstance());
+        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
         try {
             connectionConfiguration.insertConnection(connection);
         } catch (ConnectionAlreadyExistsException e1) {
@@ -83,10 +83,10 @@ public class ConnectivityMetadataRepository extends MetadataRepository {
         }
     }
 
-    public void save(Environment environment, FrameworkExecution frameworkExecution) {
+    public void save(Environment environment) {
         LOGGER.info(MessageFormat.format("Inserting environment {0} into connectivity repository",
                 environment.getName()));
-        EnvironmentConfiguration environmentConfiguration = new EnvironmentConfiguration(FrameworkInstance.getInstance());
+        EnvironmentConfiguration environmentConfiguration = new EnvironmentConfiguration();
         try {
             environmentConfiguration.insertEnvironment(environment);
         } catch (EnvironmentAlreadyExistsException e) {
@@ -100,10 +100,10 @@ public class ConnectivityMetadataRepository extends MetadataRepository {
         }
     }
 
-    public void save(Impersonation impersonation, FrameworkExecution frameworkExecution) {
+    public void save(Impersonation impersonation) {
         LOGGER.info(MessageFormat.format("Inserting impersonation {0} into connectivity repository",
                 impersonation.getName()));
-        ImpersonationConfiguration impersonationConfiguration = new ImpersonationConfiguration(FrameworkInstance.getInstance());
+        ImpersonationConfiguration impersonationConfiguration = new ImpersonationConfiguration();
         try {
             impersonationConfiguration.insertImpersonation(impersonation);
         } catch (ImpersonationAlreadyExistsException e) {

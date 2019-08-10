@@ -20,7 +20,6 @@ import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -38,7 +37,6 @@ import java.util.List;
 public class FhoDeleteFile {
 
     private ActionExecution actionExecution;
-    private FrameworkExecution frameworkExecution;
     private ExecutionControl executionControl;
 
     // Parameters
@@ -53,14 +51,13 @@ public class FhoDeleteFile {
 
     }
 
-    public FhoDeleteFile(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+    public FhoDeleteFile(ExecutionControl executionControl,
                          ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.init(frameworkExecution, executionControl, scriptExecution, actionExecution);
+        this.init(executionControl, scriptExecution, actionExecution);
     }
 
-    public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+    public void init(ExecutionControl executionControl,
                      ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.setFrameworkExecution(frameworkExecution);
         this.setExecutionControl(executionControl);
         this.setActionExecution(actionExecution);
         this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
@@ -68,11 +65,11 @@ public class FhoDeleteFile {
 
     public void prepare() {
         // Reset Parameters
-        this.setFilePath(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        this.setFilePath(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "path"));
-        this.setFileName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        this.setFileName(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "file"));
-        this.setConnectionName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        this.setConnectionName(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "connection"));
 
         // Get Parameters
@@ -116,7 +113,7 @@ public class FhoDeleteFile {
 
     private boolean execute(String path, String fileName, String connectionName) {
         System.out.println("Deleting " + path + " " + fileName + " on " + connectionName);
-        boolean isOnLocalhost = HostConnectionTools.isOnLocalhost(this.getFrameworkExecution(),
+        boolean isOnLocalhost = HostConnectionTools.isOnLocalhost(
                 connectionName, this.getExecutionControl().getEnvName());
 
         if (isOnLocalhost) {
@@ -143,12 +140,11 @@ public class FhoDeleteFile {
                 }
             }
         } else {
-            ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(
-                    FrameworkInstance.getInstance());
+            ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
             Connection connection = connectionConfiguration
                     .getConnection(connectionName, this.getExecutionControl().getEnvName())
                     .get();
-            ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
+            ConnectionOperation connectionOperation = new ConnectionOperation();
             HostConnection hostConnection = connectionOperation.getHostConnection(connection);
 
             if (path.isEmpty()) {
@@ -230,15 +226,6 @@ public class FhoDeleteFile {
     private void setSuccess() {
         this.getActionExecution().getActionControl().logOutput("file.delete.success", "confirmed");
         this.getActionExecution().getActionControl().increaseSuccessCount();
-    }
-
-    // Getters and Setters
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
     }
 
     public ExecutionControl getExecutionControl() {

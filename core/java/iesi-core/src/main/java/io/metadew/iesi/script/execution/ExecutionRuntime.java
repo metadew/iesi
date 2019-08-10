@@ -9,9 +9,7 @@ import io.metadew.iesi.datatypes.dataset.KeyValueDataset;
 import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
 import io.metadew.iesi.framework.configuration.FrameworkSettingConfiguration;
 import io.metadew.iesi.framework.execution.FrameworkControl;
-import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.framework.execution.IESIMessage;
-import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.ConnectionParameterConfiguration;
 import io.metadew.iesi.metadata.configuration.EnvironmentParameterConfiguration;
 import io.metadew.iesi.metadata.configuration.script.ScriptResultOutputConfiguration;
@@ -46,7 +44,6 @@ import java.util.stream.Collectors;
 
 public class ExecutionRuntime {
 
-    private FrameworkExecution frameworkExecution;
     private ExecutionControl executionControl;
     private RuntimeVariableConfiguration runtimeVariableConfiguration;
     private IterationVariableConfiguration iterationVariableConfiguration;
@@ -75,13 +72,12 @@ public class ExecutionRuntime {
 
     }
 
-    public ExecutionRuntime(FrameworkExecution frameworkExecution, ExecutionControl executionControl, String runId) {
+    public ExecutionRuntime(ExecutionControl executionControl, String runId) {
         this.setExecutionControl(executionControl);
-        this.init(frameworkExecution, runId);
+        this.init(runId);
     }
 
-    public void init(FrameworkExecution frameworkExecution, String runId) {
-        this.setFrameworkExecution(frameworkExecution);
+    public void init(String runId) {
         this.setRunId(runId);
 
         // Create cache folder
@@ -89,9 +85,9 @@ public class ExecutionRuntime {
         FolderTools.createFolder(this.getRunCacheFolderName());
 
         this.setRuntimeVariableConfiguration(
-                new RuntimeVariableConfiguration(this.getFrameworkExecution(), this.getRunCacheFolderName()));
+                new RuntimeVariableConfiguration(this.getRunCacheFolderName()));
         this.setIterationVariableConfiguration(
-                new IterationVariableConfiguration(this.getFrameworkExecution(), this.getRunCacheFolderName(), true));
+                new IterationVariableConfiguration(this.getRunCacheFolderName(), true));
         this.defineLoggingLevel();
 
         // Initialize maps
@@ -101,12 +97,12 @@ public class ExecutionRuntime {
         this.setExecutionRuntimeExtensionMap(new HashMap<String, ExecutionRuntimeExtension>());
 
         // Initialize impersonations
-        this.setImpersonationOperation(new ImpersonationOperation(this.getFrameworkExecution()));
+        this.setImpersonationOperation(new ImpersonationOperation());
 
         // Initialize extensions
 
         // Initialize data instructions
-        dataInstructions = DataInstructionRepository.getRepository(new GenerationObjectExecution(this.getFrameworkExecution()));
+        dataInstructions = DataInstructionRepository.getRepository(new GenerationObjectExecution());
         variableInstructions = VariableInstructionRepository.getRepository(this.getExecutionControl());
         lookupInstructions = LookupInstructionRepository.getRepository(getExecutionControl());
         datasetMap = new HashMap<>();
@@ -745,8 +741,7 @@ public class ExecutionRuntime {
         String connectionName = parts[0].trim();
         String connectionParameterName = parts[1].trim();
 
-        ConnectionParameterConfiguration connectionParameterConfiguration = new ConnectionParameterConfiguration(
-                FrameworkInstance.getInstance());
+        ConnectionParameterConfiguration connectionParameterConfiguration = new ConnectionParameterConfiguration();
         Optional<String> connectionParameterValue = connectionParameterConfiguration.getConnectionParameterValue(connectionName,
                 executionControl.getEnvName(), connectionParameterName);
 
@@ -762,8 +757,7 @@ public class ExecutionRuntime {
         String environmentName = parts[0].trim();
         String environmentParameterName = parts[1].trim();
 
-        EnvironmentParameterConfiguration environmentParameterConfiguration = new EnvironmentParameterConfiguration(
-                FrameworkInstance.getInstance());
+        EnvironmentParameterConfiguration environmentParameterConfiguration = new EnvironmentParameterConfiguration();
 
         return environmentParameterConfiguration.getEnvironmentParameterValue(environmentName, environmentParameterName)
                 .orElse(input);
@@ -771,8 +765,7 @@ public class ExecutionRuntime {
 
 
     private String lookupScriptResultInstruction(ExecutionControl executionControl, String input) {
-        ScriptResultOutputConfiguration scriptResultOutputConfiguration = new ScriptResultOutputConfiguration(
-                FrameworkInstance.getInstance());
+        ScriptResultOutputConfiguration scriptResultOutputConfiguration = new ScriptResultOutputConfiguration();
         // TODO only for root scripts - extend to others
         return scriptResultOutputConfiguration.getScriptOutput(executionControl.getRunId(), 0, input)
                 .map(ScriptResultOutput::getValue)
@@ -892,7 +885,7 @@ public class ExecutionRuntime {
 
     // Stage Management
     public void setStage(String stageName, boolean stageCleanup) {
-        StageOperation stageOperation = new StageOperation(this.getFrameworkExecution(), stageName, stageCleanup);
+        StageOperation stageOperation = new StageOperation(stageName, stageCleanup);
         this.getStageOperationMap().put(stageName, stageOperation);
     }
 
@@ -906,7 +899,7 @@ public class ExecutionRuntime {
 
     // Repository Management
     public void setRepository(ExecutionControl executionControl, String repositoryReferenceName, String repositoryName, String repositoryInstanceName, String repositoryInstanceLabels) {
-        RepositoryOperation repositoryOperation = new RepositoryOperation(this.getFrameworkExecution(), executionControl, repositoryName,
+        RepositoryOperation repositoryOperation = new RepositoryOperation(executionControl, repositoryName,
                 repositoryInstanceName, repositoryInstanceLabels);
         this.getRepositoryOperationMap().put(repositoryReferenceName, repositoryOperation);
     }
@@ -971,15 +964,6 @@ public class ExecutionRuntime {
 
     public void setImpersonationCustom(String impersonationCustom) {
         this.getImpersonationOperation().setImpersonationCustom(impersonationCustom);
-    }
-
-    // Getters and Setters
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
     }
 
     public RuntimeVariableConfiguration getRuntimeVariableConfiguration() {

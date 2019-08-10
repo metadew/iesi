@@ -17,11 +17,9 @@ import java.util.Optional;
 
 public class ScriptParameterConfiguration {
 
-    private FrameworkInstance frameworkInstance;
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public ScriptParameterConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
+    public ScriptParameterConfiguration() {
     }
 
     public void insert(String scriptId, long scriptVersionNumber, ScriptParameter scriptParameter) throws ScriptParameterAlreadyExistsException {
@@ -66,15 +64,5 @@ public class ScriptParameterConfiguration {
         cachedRowSet.next();
         return Optional.of(new ScriptParameter(scriptParameterName, cachedRowSet.getString("ACTION_PAR_VAL")));
     }
-
-    // Getters and Setters
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
 
 }

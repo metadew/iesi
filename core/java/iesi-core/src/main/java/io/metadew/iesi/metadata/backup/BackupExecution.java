@@ -18,11 +18,8 @@ import java.util.List;
 
 public class BackupExecution {
 
-	private FrameworkInstance frameworkInstance;
-
 	// Constructors
-	public BackupExecution(FrameworkInstance frameworkInstance) {
-		this.setFrameworkInstance(frameworkInstance);
+	public BackupExecution() {
 	}
 
 	// Methods
@@ -47,10 +44,10 @@ public class BackupExecution {
 			this.saveAllObjects(path, "Environment");
 			this.saveAllObjects(path, "Connection");
 			this.saveAllObjects(path, "Impersonation");
-			
+
 			this.saveAllObjects(path, "Component");
 			this.saveAllObjects(path, "Script");
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -64,7 +61,6 @@ public class BackupExecution {
 		// this.getEoControl().endExecution();
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void saveAllObjects(String path, String dataObjectName) {
 		try {
 			String subjectAreaPath = path + File.separator + dataObjectName.toLowerCase() + "s";
@@ -75,8 +71,8 @@ public class BackupExecution {
 			String objectClassName = "io.metadew.iesi.metadata.definition" + "." + dataObjectName;
 
 			Class configurationClassRef = Class.forName(configurationClassName);
-			Class instanceParams[] = { FrameworkInstance.class };
-			Object instance = configurationClassRef.getDeclaredConstructor(instanceParams).newInstance(this.getFrameworkInstance());
+			Class instanceParams[] = {};
+			Object instance = configurationClassRef.getDeclaredConstructor(instanceParams).newInstance();
 
 			Class objectClassRef = Class.forName(objectClassName);
 			Method getName = objectClassRef.getDeclaredMethod("getName");
@@ -163,12 +159,4 @@ public class BackupExecution {
 		// this.getEoControl().endExecution();
 	}
 
-	// Getters and Setters
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
 }

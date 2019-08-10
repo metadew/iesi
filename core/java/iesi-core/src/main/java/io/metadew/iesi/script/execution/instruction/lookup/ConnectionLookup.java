@@ -37,8 +37,7 @@ public class ConnectionLookup implements LookupInstruction {
         String connectionName = inputParameterMatcher.group(CONNECTION_NAME_KEY);
         String connectionParameterName = inputParameterMatcher.group(CONNECTION_PARAMETER_NAME_KEY);
 
-        ConnectionParameterConfiguration connectionParameterConfiguration = new ConnectionParameterConfiguration(
-                FrameworkInstance.getInstance());
+        ConnectionParameterConfiguration connectionParameterConfiguration = new ConnectionParameterConfiguration();
         Optional<String> connectionParameterValue = connectionParameterConfiguration.getConnectionParameterValue(connectionName,
                 executionControl.getEnvName(), connectionParameterName);
 

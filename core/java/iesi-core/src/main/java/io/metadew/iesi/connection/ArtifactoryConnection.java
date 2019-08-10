@@ -30,10 +30,10 @@ import static org.jfrog.artifactory.client.model.impl.RepositoryTypeImpl.LOCAL;
  */
 public class ArtifactoryConnection {
 
-    private String connectionURL = "";
-    private String userName = "";
-    private String userPassword = null;
-    private String repositoryName = "";
+    private String connectionURL;
+    private String userName;
+    private String userPassword;
+    private String repositoryName;
 
     // Examples
     private static String fileNameToUpload = "ex_upload_1.txt";
@@ -42,22 +42,19 @@ public class ArtifactoryConnection {
 
     // Constructor
     public ArtifactoryConnection() {
+        this("", "", null, "");
 
     }
 
     public ArtifactoryConnection(String connectionUrl, String userName, String userPassword) {
-        super();
-        this.setConnectionURL(connectionUrl);
-        this.setUserName(userName);
-        this.setUserPassword(userPassword);
+        this(connectionUrl, userName, userPassword, "");
     }
 
     public ArtifactoryConnection(String connectionUrl, String userName, String userPassword, String repositoryName) {
-        super();
-        this.setConnectionURL(connectionUrl);
-        this.setUserName(userName);
-        this.setUserPassword(userPassword);
-        this.setRepositoryName(repositoryName);
+        this.connectionURL = connectionUrl;
+        this.userName = userName;
+        this.userPassword = userPassword;
+        this.repositoryName = repositoryName;
     }
 
     public boolean downloadArtifact(String sourceFilePath, String targetFilePath) {

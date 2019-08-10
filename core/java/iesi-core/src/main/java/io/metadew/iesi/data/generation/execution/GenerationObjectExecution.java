@@ -44,10 +44,8 @@ public class GenerationObjectExecution {
     private String locale;
     private GenerationDataExecution execution;
     private GenerationTools generationTools;
-    private FrameworkExecution frameworkExecution;
 
-    public GenerationObjectExecution(FrameworkExecution frameworkExecution) {
-        this.setFrameworkExecution(frameworkExecution);
+    public GenerationObjectExecution() {
         this.initialize(DEFAULT_LOCALE);
     }
 
@@ -355,14 +353,6 @@ public class GenerationObjectExecution {
 
     public void setPattern(Pattern pattern) {
         this.pattern = pattern;
-    }
-
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
     }
 
     public Motd getMotd() {

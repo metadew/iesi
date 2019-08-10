@@ -29,7 +29,7 @@ public class Requestor {
     		throw new RuntimeException("framework.server.down");
     	}
 		
-		RequestConfiguration requestConfiguration = new RequestConfiguration(this.getFrameworkInstance());
+		RequestConfiguration requestConfiguration = new RequestConfiguration();
     	
     	boolean exitOverwrite = false;
 		for (RequestParameter requestParameter : request.getParameters()) {

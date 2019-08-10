@@ -7,7 +7,6 @@ import io.metadew.iesi.script.operation.IterationOperation;
 
 public class IterationExecution {
 
-    private FrameworkExecution frameworkExecution;
     private ExecutionControl executionControl;
     private ActionExecution actionExecution;
     private long iterationNumber;
@@ -24,14 +23,14 @@ public class IterationExecution {
     }
 
     // Methods
-    public void initialize(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+    public void initialize(ExecutionControl executionControl,
                            ActionExecution actionExecution, String iterationName) {
         this.setExecutionControl(executionControl);
         this.setActionExecution(actionExecution);
         this.setIterationName(iterationName);
         this.setIterationOperation(
                 this.getExecutionControl().getExecutionRuntime().getIterationOperation(this.getIterationName()));
-        this.setIterationConfiguration(new IterationConfiguration(this.getFrameworkExecution(),
+        this.setIterationConfiguration(new IterationConfiguration(
                 this.getExecutionControl().getExecutionRuntime().getRunCacheFolderName(), executionControl));
         if (this.getIterationOperation().getIteration().getType().trim().equalsIgnoreCase("values")) {
             this.getIterationConfiguration().setIterationValues(this.getExecutionControl().getRunId(),
@@ -128,14 +127,6 @@ public class IterationExecution {
 
     public void setExecutionControl(ExecutionControl executionControl) {
         this.executionControl = executionControl;
-    }
-
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
     }
 
     public String getIterationType() {

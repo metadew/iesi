@@ -28,7 +28,6 @@ import java.util.Optional;
 public class FwkIncludeScript {
 
     private ActionExecution actionExecution;
-    private FrameworkExecution frameworkExecution;
     private ExecutionControl executionControl;
 
     // Parameters
@@ -47,14 +46,13 @@ public class FwkIncludeScript {
 
     }
 
-    public FwkIncludeScript(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+    public FwkIncludeScript(ExecutionControl executionControl,
                             ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.init(frameworkExecution, executionControl, scriptExecution, actionExecution);
+        this.init(executionControl, scriptExecution, actionExecution);
     }
 
-    public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+    public void init(ExecutionControl executionControl,
                      ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.setFrameworkExecution(frameworkExecution);
         this.setExecutionControl(executionControl);
         this.setActionExecution(actionExecution);
         this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
@@ -62,9 +60,9 @@ public class FwkIncludeScript {
 
     public void prepare() {
         // Reset Parameters
-        this.setScriptName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        this.setScriptName(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "script"));
-        this.setScriptVersion(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        this.setScriptVersion(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "version"));
 
         // Get Parameters
@@ -100,7 +98,7 @@ public class FwkIncludeScript {
     }
 
     private boolean includeScript(String scriptName, Optional<Long> scriptVersion) {
-        ScriptConfiguration scriptConfiguration = new ScriptConfiguration(FrameworkInstance.getInstance());
+        ScriptConfiguration scriptConfiguration = new ScriptConfiguration();
         Script script = scriptVersion
                 .map(scriptVersion1 -> scriptConfiguration.get(scriptName, scriptVersion1))
                 .orElse(scriptConfiguration.get(scriptName)).get();
@@ -131,15 +129,6 @@ public class FwkIncludeScript {
                     scriptName.getClass()));
             return scriptName.toString();
         }
-    }
-
-    // Getters and Setters
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
     }
 
     public ExecutionControl getExecutionControl() {

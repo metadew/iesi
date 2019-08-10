@@ -9,24 +9,19 @@ import io.metadew.iesi.metadata.operation.TypeConfigurationOperation;
 public class GenerationOutputTypeConfiguration {
 
     private GenerationOutputType generationOutputType;
-    private FrameworkInstance frameworkInstance;
     private String dataObjectType = "GenerationOutputType";
 
     // Constructors
-    public GenerationOutputTypeConfiguration(GenerationOutputType generationOutputType,
-    		FrameworkInstance frameworkInstance) {
+    public GenerationOutputTypeConfiguration(GenerationOutputType generationOutputType) {
         this.setgenerationOutputType(generationOutputType);
-        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public GenerationOutputTypeConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
+    public GenerationOutputTypeConfiguration() {
     }
 
     // Methods
     public GenerationOutputType getGenerationOutputType(String GenerationOutputTypeName) {
-        String conf = TypeConfigurationOperation.getTypeConfigurationFile(this.getFrameworkInstance(),
-                this.getDataObjectType(), GenerationOutputTypeName);
+        String conf = TypeConfigurationOperation.getTypeConfigurationFile(this.getDataObjectType(), GenerationOutputTypeName);
         DataObjectOperation dataObjectOperation = new DataObjectOperation(conf);
         ObjectMapper objectMapper = new ObjectMapper();
         GenerationOutputType GenerationOutputType = objectMapper
@@ -50,13 +45,5 @@ public class GenerationOutputTypeConfiguration {
     public void setDataObjectType(String dataObjectType) {
         this.dataObjectType = dataObjectType;
     }
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
 
 }

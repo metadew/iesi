@@ -25,23 +25,23 @@ public class NetezzaRepositoryConfiguration extends RepositoryConfiguration {
     private String readerUser;
     private String readerUserPassword;
 
-    public NetezzaRepositoryConfiguration(ConfigFile configFile, FrameworkSettingConfiguration frameworkSettingConfiguration, FrameworkCrypto frameworkCrypto) {
-        super(configFile, frameworkSettingConfiguration, frameworkCrypto);
+    public NetezzaRepositoryConfiguration(ConfigFile configFile) {
+        super(configFile);
     }
 
     @Override
-    void fromConfigFile(ConfigFile configFile, FrameworkSettingConfiguration frameworkSettingConfiguration, FrameworkCrypto frameworkCrypto) {
-    	host= getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.netezza.host");
-    	port= getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.netezza.port");
-    	name= getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.netezza.name");
-    	schema = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.netezza.schema");
-    	schemaUser = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.netezza.schema.user");
-    	schemaUserPassword = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.netezza.schema.password");
-    	writerUser = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.netezza.writer");
-    	writerUserPassword = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.netezza.writer.password");
-    	readerUser = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.netezza.reader");
-    	readerUserPassword = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.netezza.reader.password");
-    	jdbcConnectionString = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.connection.string");
+    void fromConfigFile(ConfigFile configFile) {
+    	host= getSettingValue(configFile, "metadata.repository.netezza.host");
+    	port= getSettingValue(configFile, "metadata.repository.netezza.port");
+    	name= getSettingValue(configFile, "metadata.repository.netezza.name");
+    	schema = getSettingValue(configFile, "metadata.repository.netezza.schema");
+    	schemaUser = getSettingValue(configFile, "metadata.repository.netezza.schema.user");
+    	schemaUserPassword = getSettingValue(configFile, "metadata.repository.netezza.schema.password");
+    	writerUser = getSettingValue(configFile, "metadata.repository.netezza.writer");
+    	writerUserPassword = getSettingValue(configFile, "metadata.repository.netezza.writer.password");
+    	readerUser = getSettingValue(configFile, "metadata.repository.netezza.reader");
+    	readerUserPassword = getSettingValue(configFile, "metadata.repository.netezza.reader.password");
+    	jdbcConnectionString = getSettingValue(configFile, "metadata.repository.connection.string");
     }
 
     @Override

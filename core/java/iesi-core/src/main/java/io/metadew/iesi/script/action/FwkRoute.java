@@ -20,8 +20,6 @@ public class FwkRoute {
 
     private ScriptExecution scriptExecution;
 
-    private FrameworkExecution frameworkExecution;
-
     private ExecutionControl executionControl;
 
     // Parameters
@@ -35,14 +33,13 @@ public class FwkRoute {
 
     }
 
-    public FwkRoute(FrameworkExecution frameworkExecution, ExecutionControl executionControl, ScriptExecution scriptExecution,
+    public FwkRoute(ExecutionControl executionControl, ScriptExecution scriptExecution,
                     ActionExecution actionExecution) {
-        this.init(frameworkExecution, executionControl, scriptExecution, actionExecution);
+        this.init(executionControl, scriptExecution, actionExecution);
     }
 
-    public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl, ScriptExecution scriptExecution,
+    public void init(ExecutionControl executionControl, ScriptExecution scriptExecution,
                      ActionExecution actionExecution) {
-        this.setFrameworkExecution(frameworkExecution);
         this.setExecutionControl(executionControl);
         this.setActionExecution(actionExecution);
         this.setScriptExecution(scriptExecution);
@@ -52,13 +49,13 @@ public class FwkRoute {
 
     public void prepare() {
         // Reset Parameters
-        this.setDestination(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        this.setDestination(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "destination"));
 
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
             if (actionParameter.getName().toLowerCase().startsWith("condition")) {
-                ActionParameterOperation condition = new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+                ActionParameterOperation condition = new ActionParameterOperation(this.getExecutionControl(),
                         this.getActionExecution(), this.getActionExecution().getAction().getType(), "condition");
 
                 condition.setInputValue(actionParameter.getValue());
@@ -77,7 +74,7 @@ public class FwkRoute {
 
                 this.getActionParameterOperationMap().put(actionParameter.getName(), condition);
             } else if (actionParameter.getName().equalsIgnoreCase("destination")) {
-                ActionParameterOperation destination = new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+                ActionParameterOperation destination = new ActionParameterOperation(this.getExecutionControl(),
                         this.getActionExecution(), this.getActionExecution().getAction().getType(), "destination");
 
                 destination.setInputValue(actionParameter.getValue());
@@ -175,15 +172,6 @@ public class FwkRoute {
 
     private void setRouteOperation(RouteOperation routeOperation) {
         this.getRouteOperationMap().put(Integer.toString(routeOperation.getId()), routeOperation);
-    }
-
-    // Getters and Setters
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
     }
 
     public ExecutionControl getExecutionControl() {

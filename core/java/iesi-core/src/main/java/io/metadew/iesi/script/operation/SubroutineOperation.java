@@ -15,7 +15,6 @@ import java.util.ArrayList;
  */
 public class SubroutineOperation {
 
-    private FrameworkExecution frameworkExecution;
     private String input;
     private boolean valid = false;
     private String type;
@@ -24,8 +23,7 @@ public class SubroutineOperation {
     private ArrayList<String> subroutineTypeList = null;
 
     // Constructors
-    public SubroutineOperation(FrameworkExecution frameworkExecution, String input) {
-        this.setFrameworkExecution(frameworkExecution);
+    public SubroutineOperation(String input) {
         this.initializeSubroutineTypeList();
         this.setInput(input);
     }
@@ -114,7 +112,7 @@ public class SubroutineOperation {
 
     public void setValid(boolean valid) {
         if (valid) {
-            SubroutineConfiguration subroutineConfiguration = new SubroutineConfiguration(FrameworkInstance.getInstance());
+            SubroutineConfiguration subroutineConfiguration = new SubroutineConfiguration();
             this.setSubroutine(subroutineConfiguration.getSubroutine(this.getName()));
 
             if (this.getSubroutine().getName() == null) {
@@ -133,14 +131,6 @@ public class SubroutineOperation {
 
     public void setSubroutine(Subroutine subroutine) {
         this.subroutine = subroutine;
-    }
-
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
     }
 
     public ArrayList<String> getSubroutineTypeList() {

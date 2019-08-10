@@ -3,9 +3,7 @@ package io.metadew.iesi.script.operation;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeService;
 import io.metadew.iesi.datatypes.text.Text;
-import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
 import io.metadew.iesi.framework.crypto.FrameworkCrypto;
-import io.metadew.iesi.framework.execution.FrameworkControl;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.type.ActionTypeParameterConfiguration;
@@ -24,7 +22,6 @@ import org.apache.logging.log4j.Level;
 public class ActionParameterOperation {
 
     private final DataTypeService dataTypeService;
-    private FrameworkExecution frameworkExecution;
     private ExecutionControl executionControl;
     private ActionExecution actionExecution;
     private String actionTypeName;
@@ -36,9 +33,8 @@ public class ActionParameterOperation {
     private SubroutineOperation subroutineOperation;
 
     // Constructors
-    public ActionParameterOperation(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+    public ActionParameterOperation(ExecutionControl executionControl,
                                     ActionExecution actionExecution, String actionTypeName, String name) {
-        this.setFrameworkExecution(frameworkExecution);
         this.setExecutionControl(executionControl);
         this.setActionExecution(actionExecution);
         this.setActionTypeName(actionTypeName);
@@ -47,9 +43,8 @@ public class ActionParameterOperation {
         this.dataTypeService = new DataTypeService(executionControl.getExecutionRuntime());
     }
 
-    public ActionParameterOperation(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+    public ActionParameterOperation(ExecutionControl executionControl,
                                     String actionTypeName, String name, String value) {
-        this.setFrameworkExecution(frameworkExecution);
         this.setExecutionControl(executionControl);
         this.setActionTypeName(actionTypeName);
         this.setName(name);
@@ -60,8 +55,7 @@ public class ActionParameterOperation {
 
     // Methods
     private void lookupActionTypeParameter() {
-        ActionTypeParameterConfiguration actionTypeParameterConfiguration = new ActionTypeParameterConfiguration(
-                FrameworkInstance.getInstance());
+        ActionTypeParameterConfiguration actionTypeParameterConfiguration = new ActionTypeParameterConfiguration();
         this.setActionTypeParameter(
                 actionTypeParameterConfiguration.getActionTypeParameter(this.getActionTypeName(), this.getName()));
     }
@@ -71,7 +65,7 @@ public class ActionParameterOperation {
         if (this.getActionTypeParameter().getSubroutine() == null
                 || this.getActionTypeParameter().getSubroutine().equalsIgnoreCase(""))
             return input;
-        this.setSubroutineOperation(new SubroutineOperation(this.getFrameworkExecution(), input));
+        this.setSubroutineOperation(new SubroutineOperation(input));
         if (this.getSubroutineOperation().isValid()) {
             if (this.getSubroutineOperation().getSubroutine().getType().equalsIgnoreCase("query")) {
                 return new SqlStatementSubroutine(this.getSubroutineOperation().getSubroutine()).getValue();
@@ -111,14 +105,6 @@ public class ActionParameterOperation {
         this.actionTypeName = actionTypeName;
     }
 
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
-    }
-
     public String getInputValue() {
         return inputValue;
     }
@@ -148,8 +134,7 @@ public class ActionParameterOperation {
         // perform lookup again after cross concept lookup
         resolvedInputValue = this.getExecutionControl().getExecutionRuntime().resolveVariables(this.getActionExecution(), resolvedInputValue);
         
-        String decryptedInputValue = FrameworkCrypto.getInstance().resolve(this.getFrameworkExecution(),
-                resolvedInputValue);
+        String decryptedInputValue = FrameworkCrypto.getInstance().resolve(resolvedInputValue);
 
         // Impersonate
         if (this.getActionTypeParameter().getImpersonate().trim().equalsIgnoreCase("y")) {

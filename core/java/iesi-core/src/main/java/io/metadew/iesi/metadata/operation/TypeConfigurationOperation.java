@@ -13,14 +13,13 @@ public class TypeConfigurationOperation {
 
     }
 
-    public static String getTypeConfigurationFile(FrameworkInstance frameworkInstance, String dataObjectType,
-                                                  String typeName) {
+    public static String getTypeConfigurationFile(String dataObjectType, String typeName) {
         String configurationObject = dataObjectType + File.separator + typeName + ".json";
         String conf = FrameworkFolderConfiguration.getInstance()
                 .getFolderAbsolutePath("metadata.conf") + File.separator + configurationObject;
 
         if (!FileTools.exists(conf)) {
-            FrameworkPluginOperation frameworkPluginOperation = new FrameworkPluginOperation(frameworkInstance);
+            FrameworkPluginOperation frameworkPluginOperation = new FrameworkPluginOperation();
             if (frameworkPluginOperation.verifyPlugins(configurationObject)) {
                 conf = frameworkPluginOperation.getPluginConfigurationFile();
             } else {
@@ -30,7 +29,7 @@ public class TypeConfigurationOperation {
         return conf;
     }
 
-    public static String getMappingConfigurationFile(FrameworkInstance frameworkInstance, String dataObjectType, String mappingName) {
+    public static String getMappingConfigurationFile(String dataObjectType, String mappingName) {
         String configurationObject = mappingName + ".json";
         String conf = FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("data.mapping")
                 + File.separator + configurationObject;

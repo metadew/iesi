@@ -7,22 +7,19 @@ import io.metadew.iesi.metadata.definition.GenerationControlTypeParameter;
 public class GenerationControlTypeParameterConfiguration {
 
     private GenerationControlTypeParameter generationControlTypeParameter;
-    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public GenerationControlTypeParameterConfiguration(GenerationControlTypeParameter generationControlTypeParameter, FrameworkInstance frameworkInstance) {
+    public GenerationControlTypeParameterConfiguration(GenerationControlTypeParameter generationControlTypeParameter) {
         this.setgenerationControlTypeParameter(generationControlTypeParameter);
-        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public GenerationControlTypeParameterConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
+    public GenerationControlTypeParameterConfiguration() {
     }
 
     // Get GenerationControl Type Parameter
     public GenerationControlTypeParameter getGenerationControlTypeParameter(String GenerationControlTypeName, String GenerationControlTypeParameterName) {
         GenerationControlTypeParameter GenerationControlTypeParameterResult = null;
-        GenerationControlTypeConfiguration GenerationControlTypeConfiguration = new GenerationControlTypeConfiguration(this.getFrameworkInstance());
+        GenerationControlTypeConfiguration GenerationControlTypeConfiguration = new GenerationControlTypeConfiguration();
         GenerationControlType GenerationControlType = GenerationControlTypeConfiguration.getGenerationControlType(GenerationControlTypeName);
         for (GenerationControlTypeParameter GenerationControlTypeParameter : GenerationControlType.getParameters()) {
             if (GenerationControlTypeParameter.getName().equalsIgnoreCase(GenerationControlTypeParameterName)) {
@@ -41,13 +38,5 @@ public class GenerationControlTypeParameterConfiguration {
     public void setgenerationControlTypeParameter(GenerationControlTypeParameter generationControlTypeParameter) {
         this.generationControlTypeParameter = generationControlTypeParameter;
     }
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
 
 }

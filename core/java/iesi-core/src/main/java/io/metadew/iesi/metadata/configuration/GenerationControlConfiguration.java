@@ -16,16 +16,13 @@ import java.util.List;
 public class GenerationControlConfiguration {
 
     private GenerationControl generationControl;
-    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public GenerationControlConfiguration(GenerationControl generationControl, FrameworkInstance frameworkInstance) {
+    public GenerationControlConfiguration(GenerationControl generationControl) {
         this.setgenerationControl(generationControl);
-        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public GenerationControlConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
+    public GenerationControlConfiguration() {
     }
 
     // Insert
@@ -72,7 +69,7 @@ public class GenerationControlConfiguration {
         if (this.getgenerationControl().getParameters() == null) return result;
 
         for (GenerationControlParameter generationControlParameter : this.getgenerationControl().getParameters()) {
-            GenerationControlParameterConfiguration generationControlParameterConfiguration = new GenerationControlParameterConfiguration(generationControlParameter, this.getFrameworkInstance());
+            GenerationControlParameterConfiguration generationControlParameterConfiguration = new GenerationControlParameterConfiguration(generationControlParameter);
             if (!result.equalsIgnoreCase(""))
                 result += "\n";
             result += generationControlParameterConfiguration.getInsertStatement(generationName, this.getgenerationControl().getName());
@@ -89,7 +86,7 @@ public class GenerationControlConfiguration {
 
         for (GenerationControlRule generationControlRule : this.getgenerationControl().getRules()) {
             counter++;
-            GenerationControlRuleConfiguration generationControlRuleConfiguration = new GenerationControlRuleConfiguration(generationControlRule, this.getFrameworkInstance());
+            GenerationControlRuleConfiguration generationControlRuleConfiguration = new GenerationControlRuleConfiguration(generationControlRule);
             if (!result.equalsIgnoreCase(""))
                 result += "\n";
             result += generationControlRuleConfiguration.getInsertStatement(generationName, generationControlName, counter);
@@ -105,8 +102,8 @@ public class GenerationControlConfiguration {
         String queryGenerationControl = "select GEN_ID, GEN_CTL_ID, GEN_CTL_NM, GEN_CTL_TYP_NM, GEN_CTL_DSC from "
                 + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("GenerationControls") + " where GEN_CTL_ID = " + generationControlId;
         crsGenerationControl = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(queryGenerationControl, "reader");
-        GenerationControlParameterConfiguration generationControlParameterConfiguration = new GenerationControlParameterConfiguration(this.getFrameworkInstance());
-        GenerationControlRuleConfiguration generationControlRuleConfiguration = new GenerationControlRuleConfiguration(this.getFrameworkInstance());
+        GenerationControlParameterConfiguration generationControlParameterConfiguration = new GenerationControlParameterConfiguration();
+        GenerationControlRuleConfiguration generationControlRuleConfiguration = new GenerationControlRuleConfiguration();
         try {
             while (crsGenerationControl.next()) {
                 generationControl.setId(generationControlId);
@@ -156,13 +153,5 @@ public class GenerationControlConfiguration {
     public void setgenerationControl(GenerationControl generationControl) {
         this.generationControl = generationControl;
     }
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
 
 }

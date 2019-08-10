@@ -17,12 +17,10 @@ import java.util.List;
 
 public class DbH2ConnectionOperation {
 
-    private FrameworkExecution frameworkExecution;
     private boolean missingMandatoryFields;
     private List<String> missingMandatoryFieldsList;
 
-    public DbH2ConnectionOperation(FrameworkExecution frameworkExecution) {
-        this.setFrameworkExecution(frameworkExecution);
+    public DbH2ConnectionOperation() {
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -63,7 +61,7 @@ public class DbH2ConnectionOperation {
 
         // Check Mandatory Parameters
         this.setMissingMandatoryFields(false);
-        ConnectionType connectionType = ConnectionTools.getConnectionType(this.getFrameworkExecution(), connection.getType());
+        ConnectionType connectionType = ConnectionTools.getConnectionType(connection.getType());
         for (ConnectionTypeParameter connectionTypeParameter : connectionType.getParameters()) {
             if (connectionTypeParameter.getMandatory().equalsIgnoreCase("y")) {
                 if (connectionTypeParameter.getName().equalsIgnoreCase("host")) {
@@ -125,15 +123,6 @@ public class DbH2ConnectionOperation {
     protected void addMissingField(String fieldName) {
         this.setMissingMandatoryFields(true);
         this.getMissingMandatoryFieldsList().add(fieldName);
-    }
-
-    // Getters and setters
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
     }
 
     public List<String> getMissingMandatoryFieldsList() {

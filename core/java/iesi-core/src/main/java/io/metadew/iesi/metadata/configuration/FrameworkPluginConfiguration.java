@@ -10,13 +10,11 @@ import java.io.File;
 
 public class FrameworkPluginConfiguration {
 
-    private FrameworkConfiguration frameworkConfiguration;
     private ConfigFile configFile;
     private FrameworkPlugin frameworkPlugin;
 
     // Constructors
-    public FrameworkPluginConfiguration(FrameworkConfiguration frameworkConfiguration, ConfigFile configFile) {
-        this.setFrameworkConfiguration(frameworkConfiguration);
+    public FrameworkPluginConfiguration(ConfigFile configFile) {
         this.setFrameworkPlugin(new FrameworkPlugin());
         this.getFrameworkPlugin()
                 .setName(configFile.getProperty(
@@ -27,15 +25,6 @@ public class FrameworkPluginConfiguration {
         path.append(File.separator);
         path.append(this.getFrameworkPlugin().getName());
         this.getFrameworkPlugin().setPath(path.toString());
-    }
-
-    // Getters and Setters
-    public FrameworkConfiguration getFrameworkConfiguration() {
-        return frameworkConfiguration;
-    }
-
-    public void setFrameworkConfiguration(FrameworkConfiguration frameworkConfiguration) {
-        this.frameworkConfiguration = frameworkConfiguration;
     }
 
     public ConfigFile getConfigFile() {

@@ -22,7 +22,7 @@ public class UserAccessConfiguration {
         UserAccess userAccess = new UserAccess();
         userAccess.setUserName(userName);
 
-        UserConfiguration userConfiguration = new UserConfiguration(FrameworkInstance.getInstance());
+        UserConfiguration userConfiguration = new UserConfiguration();
         Optional<User> user = userConfiguration.getUser(userName);
 
         try {

@@ -12,7 +12,6 @@ import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -25,7 +24,6 @@ import java.util.HashMap;
 public class ModSoapui {
 
 	private ActionExecution actionExecution;
-	private FrameworkExecution frameworkExecution;
 	private ExecutionControl executionControl;
 
 	// Parameters
@@ -40,14 +38,13 @@ public class ModSoapui {
 
 	}
 
-	public ModSoapui(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+	public ModSoapui(ExecutionControl executionControl,
 			ScriptExecution scriptExecution, ActionExecution actionExecution) {
-		this.init(frameworkExecution, executionControl, scriptExecution, actionExecution);
+		this.init(executionControl, scriptExecution, actionExecution);
 	}
 
-	public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+	public void init(ExecutionControl executionControl,
 			ScriptExecution scriptExecution, ActionExecution actionExecution) {
-		this.setFrameworkExecution(frameworkExecution);
 		this.setExecutionControl(executionControl);
 		this.setActionExecution(actionExecution);
 		this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
@@ -55,11 +52,11 @@ public class ModSoapui {
 
 	public void prepare() {
 		// Set Parameters
-		this.setProject(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+		this.setProject(new ActionParameterOperation(this.getExecutionControl(),
 				this.getActionExecution(), this.getActionExecution().getAction().getType(), "project"));
-		this.setTestSuite(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+		this.setTestSuite(new ActionParameterOperation(this.getExecutionControl(),
 				this.getActionExecution(), this.getActionExecution().getAction().getType(), "suite"));
-		this.setTestCase(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+		this.setTestCase(new ActionParameterOperation(this.getExecutionControl(),
 				this.getActionExecution(), this.getActionExecution().getAction().getType(), "case"));
 
 		// Get Parameters
@@ -164,15 +161,6 @@ public class ModSoapui {
 
 		this.getActionExecution().getActionControl().increaseSuccessCount();
 		return true;
-	}
-
-	// Getters and Setters
-	public FrameworkExecution getFrameworkExecution() {
-		return frameworkExecution;
-	}
-
-	public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-		this.frameworkExecution = frameworkExecution;
 	}
 
 	public ExecutionControl getExecutionControl() {

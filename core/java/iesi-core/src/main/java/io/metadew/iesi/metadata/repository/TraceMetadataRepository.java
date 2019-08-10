@@ -40,7 +40,7 @@ public class TraceMetadataRepository extends MetadataRepository {
 
     @SuppressWarnings("unused")
     @Override
-    public void save(DataObject dataObject, FrameworkExecution frameworkExecution) {
+    public void save(DataObject dataObject) {
         ObjectMapper objectMapper = new ObjectMapper();
         if (dataObject.getType().equalsIgnoreCase("trace")) {
             // TODO

@@ -14,17 +14,14 @@ import java.util.List;
 
 public class SubroutineConfiguration {
 
-    private FrameworkInstance frameworkInstance;
     private Subroutine subroutine;
 
     // Constructors
-    public SubroutineConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
+    public SubroutineConfiguration() {
     }
 
-    public SubroutineConfiguration(Subroutine subroutine, FrameworkInstance frameworkInstance) {
+    public SubroutineConfiguration(Subroutine subroutine) {
         this.setSubroutine(subroutine);
-        this.setFrameworkInstance(frameworkInstance);
     }
 
     // Insert
@@ -69,7 +66,7 @@ public class SubroutineConfiguration {
 
         for (SubroutineParameter subroutineParameter : this.getSubroutine().getParameters()) {
             SubroutineParameterConfiguration subroutineParameterConfiguration = new SubroutineParameterConfiguration(
-                    subroutineParameter, this.getFrameworkInstance());
+                    subroutineParameter);
             if (!result.equalsIgnoreCase(""))
                 result += "\n";
             result += subroutineParameterConfiguration.getInsertStatement(this.getSubroutine().getName());
@@ -84,7 +81,7 @@ public class SubroutineConfiguration {
         CachedRowSet crsSubroutine = null;
         String querySubroutine = "select SRT_NM, SRT_TYP_NM, SRT_DSC from " + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("Subroutines") + " where SRT_NM = '" + subroutineName + "'";
         crsSubroutine = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(querySubroutine, "reader");
-        SubroutineParameterConfiguration subroutineParameterConfiguration = new SubroutineParameterConfiguration(this.getFrameworkInstance());
+        SubroutineParameterConfiguration subroutineParameterConfiguration = new SubroutineParameterConfiguration();
         try {
             while (crsSubroutine.next()) {
                 subroutine.setName(subroutineName);
@@ -126,11 +123,4 @@ public class SubroutineConfiguration {
         this.subroutine = subroutine;
     }
 
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
 }

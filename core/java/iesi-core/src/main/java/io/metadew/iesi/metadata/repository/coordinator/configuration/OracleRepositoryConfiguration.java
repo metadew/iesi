@@ -28,25 +28,25 @@ public class OracleRepositoryConfiguration extends RepositoryConfiguration {
     private String readerUserPassword;
 
 
-    public OracleRepositoryConfiguration(ConfigFile configFile, FrameworkSettingConfiguration frameworkSettingConfiguration, FrameworkCrypto frameworkCrypto) {
-       super(configFile, frameworkSettingConfiguration, frameworkCrypto);
+    public OracleRepositoryConfiguration(ConfigFile configFile) {
+       super(configFile);
     }
 
     @Override
-    void fromConfigFile(ConfigFile configFile, FrameworkSettingConfiguration frameworkSettingConfiguration, FrameworkCrypto frameworkCrypto) {
-    	host = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.oracle.host");
-    	port = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.oracle.port");
-    	service = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.oracle.service");
-    	tnsAlias = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.oracle.tnsalias");
-    	schema = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.oracle.schema");
-    	name = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.oracle.name");
-    	schemaUser = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.oracle.schema");
-    	schemaUserPassword = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.oracle.schema.password");
-    	writerUser = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.oracle.writer");
-    	writerUserPassword = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.oracle.writer.password");
-    	readerUser = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.oracle.reader");
-    	readerUserPassword = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.oracle.reader.password");
-    	jdbcConnectionString = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.connection.string");
+    void fromConfigFile(ConfigFile configFile) {
+    	host = getSettingValue(configFile, "metadata.repository.oracle.host");
+    	port = getSettingValue(configFile, "metadata.repository.oracle.port");
+    	service = getSettingValue(configFile, "metadata.repository.oracle.service");
+    	tnsAlias = getSettingValue(configFile, "metadata.repository.oracle.tnsalias");
+    	schema = getSettingValue(configFile, "metadata.repository.oracle.schema");
+    	name = getSettingValue(configFile, "metadata.repository.oracle.name");
+    	schemaUser = getSettingValue(configFile, "metadata.repository.oracle.schema");
+    	schemaUserPassword = getSettingValue(configFile, "metadata.repository.oracle.schema.password");
+    	writerUser = getSettingValue(configFile, "metadata.repository.oracle.writer");
+    	writerUserPassword = getSettingValue(configFile, "metadata.repository.oracle.writer.password");
+    	readerUser = getSettingValue(configFile, "metadata.repository.oracle.reader");
+    	readerUserPassword = getSettingValue(configFile, "metadata.repository.oracle.reader.password");
+    	jdbcConnectionString = getSettingValue(configFile, "metadata.repository.connection.string");
     }
 
     @Override

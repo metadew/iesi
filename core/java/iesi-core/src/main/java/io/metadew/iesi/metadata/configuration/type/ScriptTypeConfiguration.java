@@ -9,23 +9,19 @@ import io.metadew.iesi.metadata.operation.TypeConfigurationOperation;
 public class ScriptTypeConfiguration {
 
     private ScriptType scriptType;
-    private FrameworkInstance frameworkInstance;
     private String dataObjectType = "ScriptType";
 
     // Constructors
-    public ScriptTypeConfiguration(ScriptType scriptType, FrameworkInstance frameworkInstance) {
+    public ScriptTypeConfiguration(ScriptType scriptType) {
         this.setScriptType(scriptType);
-        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public ScriptTypeConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
+    public ScriptTypeConfiguration() {
     }
 
     // Methods
     public ScriptType getScriptType(String scriptTypeName) {
-        String conf = TypeConfigurationOperation.getTypeConfigurationFile(this.getFrameworkInstance(),
-                this.getDataObjectType(), scriptTypeName);
+        String conf = TypeConfigurationOperation.getTypeConfigurationFile(this.getDataObjectType(), scriptTypeName);
         DataObjectOperation dataObjectOperation = new DataObjectOperation(conf);
         ObjectMapper objectMapper = new ObjectMapper();
         ScriptType scriptType = objectMapper.convertValue(dataObjectOperation.getDataObject().getData(),
@@ -49,13 +45,5 @@ public class ScriptTypeConfiguration {
     public void setDataObjectType(String dataObjectType) {
         this.dataObjectType = dataObjectType;
     }
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
 
 }

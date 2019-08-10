@@ -15,17 +15,14 @@ public class FeatureParameterConfiguration {
 
     private FeatureVersion featureVersion;
     private FeatureParameter featureParameter;
-    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public FeatureParameterConfiguration(FeatureVersion featureVersion, FeatureParameter featureParameter, FrameworkInstance frameworkInstance) {
+    public FeatureParameterConfiguration(FeatureVersion featureVersion, FeatureParameter featureParameter) {
         this.setFeatureVersion(featureVersion);
         this.setFeatureParameter(featureParameter);
-        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public FeatureParameterConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
+    public FeatureParameterConfiguration() {
     }
 
     // Insert
@@ -98,13 +95,5 @@ public class FeatureParameterConfiguration {
     public void setFeatureVersion(FeatureVersion featureVersion) {
         this.featureVersion = featureVersion;
     }
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
 
 }

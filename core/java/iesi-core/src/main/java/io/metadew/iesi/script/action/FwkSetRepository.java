@@ -4,14 +4,12 @@ import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeService;
 import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.datatypes.text.Text;
-import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -27,7 +25,6 @@ import java.util.List;
 public class FwkSetRepository {
 
     private ActionExecution actionExecution;
-    private FrameworkExecution frameworkExecution;
     private ExecutionControl executionControl;
 
     // Parameters
@@ -44,14 +41,13 @@ public class FwkSetRepository {
 
     }
 
-    public FwkSetRepository(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+    public FwkSetRepository(ExecutionControl executionControl,
                             ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.init(frameworkExecution, executionControl, scriptExecution, actionExecution);
+        this.init(executionControl, scriptExecution, actionExecution);
     }
 
-    public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+    public void init(ExecutionControl executionControl,
                      ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.frameworkExecution = frameworkExecution;
         this.executionControl = executionControl;
         this.actionExecution = actionExecution;
         this.actionParameterOperationMap = new HashMap<>();
@@ -61,15 +57,15 @@ public class FwkSetRepository {
     public void prepare() {
         // Reset Parameters
         this.setRepositoryReferenceName(
-                new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+                new ActionParameterOperation(this.getExecutionControl(),
                         this.getActionExecution(), this.getActionExecution().getAction().getType(), "name"));
-        this.setRepositoryName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        this.setRepositoryName(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "repository"));
         this.setRepositoryInstanceName(
-                new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+                new ActionParameterOperation(this.getExecutionControl(),
                         this.getActionExecution(), this.getActionExecution().getAction().getType(), "instance"));
         this.setRepositoryInstanceLabels(
-                new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+                new ActionParameterOperation(this.getExecutionControl(),
                         this.getActionExecution(), this.getActionExecution().getAction().getType(), "labels"));
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
@@ -180,15 +176,6 @@ public class FwkSetRepository {
         }
     }
 
-
-    // Getters and Setters
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
-    }
 
     public ExecutionControl getExecutionControl() {
         return executionControl;

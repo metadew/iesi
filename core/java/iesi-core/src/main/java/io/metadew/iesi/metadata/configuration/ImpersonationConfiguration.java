@@ -25,16 +25,13 @@ import java.util.Optional;
 public class ImpersonationConfiguration extends MetadataConfiguration{
 
     private Impersonation impersonation;
-    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public ImpersonationConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
+    public ImpersonationConfiguration() {
     }
 
-    public ImpersonationConfiguration(Impersonation impersonation, FrameworkInstance frameworkInstance) {
+    public ImpersonationConfiguration(Impersonation impersonation) {
         this.setImpersonation(impersonation);
-        this.setFrameworkInstance(frameworkInstance);
     }
 
     // Abstract method implementations
@@ -62,7 +59,7 @@ public class ImpersonationConfiguration extends MetadataConfiguration{
                         .executeQuery(queryImpersonationParameters, "reader");
                 List<ImpersonationParameter> impersonationParameterList = new ArrayList<>();
                 while (crsImpersonationParameters.next()) {
-                    impersonationParameterList.add(new ImpersonationParameterConfiguration(this.getFrameworkInstance())
+                    impersonationParameterList.add(new ImpersonationParameterConfiguration()
                             .getImpersonationParameter(impersonationName, crsImpersonationParameters.getString("CONN_NM")));
                 }
                 crsImpersonationParameters.close();
@@ -171,7 +168,7 @@ public class ImpersonationConfiguration extends MetadataConfiguration{
     }
 
     public List<String> getInsertStatement(Impersonation impersonation) {
-        ImpersonationParameterConfiguration impersonationParameterConfiguration = new ImpersonationParameterConfiguration(frameworkInstance);
+        ImpersonationParameterConfiguration impersonationParameterConfiguration = new ImpersonationParameterConfiguration();
         List<String> queries = new ArrayList<>();
         queries.add("INSERT INTO " + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("Impersonations") +" (IMP_NM, IMP_DSC) VALUES (" +
                 SQLTools.GetStringForSQL(impersonation.getName()) + "," +
@@ -190,8 +187,7 @@ public class ImpersonationConfiguration extends MetadataConfiguration{
             return result;
 
         for (ImpersonationParameter impersonationParameter : impersonation.getParameters()) {
-            ImpersonationParameterConfiguration impersonationParameterConfiguration = new ImpersonationParameterConfiguration(
-                    this.getFrameworkInstance());
+            ImpersonationParameterConfiguration impersonationParameterConfiguration = new ImpersonationParameterConfiguration();
             if (!result.equalsIgnoreCase(""))
                 result += "\n";
 
@@ -258,8 +254,7 @@ public class ImpersonationConfiguration extends MetadataConfiguration{
             return result;
 
         for (ImpersonationParameter impersonationParameter : this.getImpersonation().getParameters()) {
-            ImpersonationParameterConfiguration impersonationParameterConfiguration = new ImpersonationParameterConfiguration(impersonationParameter,
-                    this.getFrameworkInstance());
+            ImpersonationParameterConfiguration impersonationParameterConfiguration = new ImpersonationParameterConfiguration(impersonationParameter);
             if (!result.equalsIgnoreCase(""))
                 result += "\n";
             result += impersonationParameterConfiguration.getInsertStatement(impersonationName);
@@ -274,7 +269,7 @@ public class ImpersonationConfiguration extends MetadataConfiguration{
         String query = "select IMP_NM from " + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("Impersonations")
                 + " order by IMP_NM ASC";
         crs = MetadataControl.getInstance().getConnectivityMetadataRepository().executeQuery(query, "reader");
-        ImpersonationConfiguration impersonationConfiguration = new ImpersonationConfiguration(this.getFrameworkInstance());
+        ImpersonationConfiguration impersonationConfiguration = new ImpersonationConfiguration();
         try {
             String impersonationName = "";
             while (crs.next()) {
@@ -292,7 +287,7 @@ public class ImpersonationConfiguration extends MetadataConfiguration{
 
     public void deleteImpersonation(String impersonationName) {
         this.getImpersonation(impersonationName).ifPresent(impersonation -> {
-            ImpersonationConfiguration impersonationConfiguration = new ImpersonationConfiguration(impersonation, this.getFrameworkInstance());
+            ImpersonationConfiguration impersonationConfiguration = new ImpersonationConfiguration(impersonation);
             String output = impersonationConfiguration.getDeleteStatement();
 
             InputStream inputStream = FileTools
@@ -309,7 +304,7 @@ public class ImpersonationConfiguration extends MetadataConfiguration{
         // Set new impersonation name
         impersonation.setName(toImpersonationName);
 
-        ImpersonationConfiguration impersonationConfiguration = new ImpersonationConfiguration(impersonation, this.getFrameworkInstance());
+        ImpersonationConfiguration impersonationConfiguration = new ImpersonationConfiguration(impersonation);
         String output = impersonationConfiguration.getInsertStatement();
 
         InputStream inputStream = FileTools.convertToInputStream(output,
@@ -330,13 +325,5 @@ public class ImpersonationConfiguration extends MetadataConfiguration{
     public void setImpersonation(Impersonation impersonation) {
         this.impersonation = impersonation;
     }
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
 
 }

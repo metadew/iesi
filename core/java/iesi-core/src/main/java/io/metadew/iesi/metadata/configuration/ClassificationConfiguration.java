@@ -12,16 +12,13 @@ import java.io.StringWriter;
 public class ClassificationConfiguration {
 
     private Classification classification;
-    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public ClassificationConfiguration(Classification classification, FrameworkInstance frameworkInstance) {
+    public ClassificationConfiguration(Classification classification) {
         this.setClassification(classification);
-        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public ClassificationConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
+    public ClassificationConfiguration() {
     }
 
     // Insert
@@ -79,14 +76,5 @@ public class ClassificationConfiguration {
     public void setClassification(Classification classification) {
         this.classification = classification;
     }
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
-
 
 }

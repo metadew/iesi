@@ -13,7 +13,6 @@ import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -27,7 +26,6 @@ import java.util.regex.Pattern;
 public class DataCompareDataset {
 
     private ActionExecution actionExecution;
-    private FrameworkExecution frameworkExecution;
     private ExecutionControl executionControl;
 
     @SuppressWarnings("unused")
@@ -45,14 +43,13 @@ public class DataCompareDataset {
 
     }
 
-    public DataCompareDataset(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+    public DataCompareDataset(ExecutionControl executionControl,
                               ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.init(frameworkExecution, executionControl, scriptExecution, actionExecution);
+        this.init(executionControl, scriptExecution, actionExecution);
     }
 
-    public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl, ScriptExecution scriptExecution,
+    public void init(ExecutionControl executionControl, ScriptExecution scriptExecution,
                      ActionExecution actionExecution) {
-        this.setFrameworkExecution(frameworkExecution);
         this.setExecutionControl(executionControl);
         this.setActionExecution(actionExecution);
         this.setActionParameterOperationMap(new HashMap<>());
@@ -60,11 +57,11 @@ public class DataCompareDataset {
 
     public void prepare() {
         // Reset Parameters
-        this.setLeftDatasetName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        this.setLeftDatasetName(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "leftDataset"));
-        this.setRightDatasetName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        this.setRightDatasetName(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "rightDataset"));
-        this.setMappingName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        this.setMappingName(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "mapping"));
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
@@ -156,15 +153,6 @@ public class DataCompareDataset {
                     mappingName.getClass()));
             return mappingName.toString();
         }
-    }
-
-    // Getters and Setters
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
     }
 
     public ExecutionControl getExecutionControl() {

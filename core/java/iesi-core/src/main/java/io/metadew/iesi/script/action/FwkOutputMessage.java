@@ -29,7 +29,6 @@ import java.util.List;
 public class FwkOutputMessage {
 
     private ActionExecution actionExecution;
-    private FrameworkExecution frameworkExecution;
     private ExecutionControl executionControl;
 
     // Parameters
@@ -43,14 +42,13 @@ public class FwkOutputMessage {
 
     }
 
-    public FwkOutputMessage(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+    public FwkOutputMessage(ExecutionControl executionControl,
                             ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.init(frameworkExecution, executionControl, scriptExecution, actionExecution);
+        this.init(executionControl, scriptExecution, actionExecution);
     }
 
-    public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+    public void init(ExecutionControl executionControl,
                      ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.setFrameworkExecution(frameworkExecution);
         this.setExecutionControl(executionControl);
         this.setActionExecution(actionExecution);
         this.setActionParameterOperationMap(new HashMap<>());
@@ -58,9 +56,9 @@ public class FwkOutputMessage {
 
     public void prepare() {
         // Reset Parameters
-        this.setMessage(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        this.setMessage(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "message"));
-        this.setOnScreen(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        this.setOnScreen(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "onScreen"));
 
         // Get Parameters
@@ -127,7 +125,7 @@ public class FwkOutputMessage {
 
         messages.forEach(message -> {
             if (message.trim().isEmpty()) {
-                GenerationObjectExecution generationObjectExecution = new GenerationObjectExecution(this.getFrameworkExecution());
+                GenerationObjectExecution generationObjectExecution = new GenerationObjectExecution();
                 this.getExecutionControl().logMessage(this.getActionExecution(),
                         "action.message=" + generationObjectExecution.getMotd().message(), level);
             } else {
@@ -137,15 +135,6 @@ public class FwkOutputMessage {
             this.getActionExecution().getActionControl().increaseSuccessCount();
         });
         return true;
-    }
-
-    // Getters and Setters
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
     }
 
     public ExecutionControl getExecutionControl() {

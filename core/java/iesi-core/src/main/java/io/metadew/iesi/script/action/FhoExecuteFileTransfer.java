@@ -16,7 +16,6 @@ import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -28,7 +27,6 @@ import java.util.HashMap;
 public class FhoExecuteFileTransfer {
 
     private ActionExecution actionExecution;
-    private FrameworkExecution frameworkExecution;
     private ExecutionControl executionControl;
 
     // Parameters
@@ -46,14 +44,13 @@ public class FhoExecuteFileTransfer {
 
     }
 
-    public FhoExecuteFileTransfer(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+    public FhoExecuteFileTransfer(ExecutionControl executionControl,
                                   ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.init(frameworkExecution, executionControl, scriptExecution, actionExecution);
+        this.init(executionControl, scriptExecution, actionExecution);
     }
 
-    public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+    public void init(ExecutionControl executionControl,
                      ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.setFrameworkExecution(frameworkExecution);
         this.setExecutionControl(executionControl);
         this.setActionExecution(actionExecution);
         this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
@@ -61,18 +58,18 @@ public class FhoExecuteFileTransfer {
 
     public void prepare() {
         // Set Parameters
-        this.setSourceFilePath(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        this.setSourceFilePath(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "sourceFilePath"));
-        this.setSourceFileName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        this.setSourceFileName(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "sourceFileName"));
-        this.setSourceConnectionName(new ActionParameterOperation(this.getFrameworkExecution(),
+        this.setSourceConnectionName(new ActionParameterOperation(
                 this.getExecutionControl(), this.getActionExecution(), this.getActionExecution().getAction().getType(),
                 "sourceConnection"));
-        this.setTargetFilePath(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        this.setTargetFilePath(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "targetFilePath"));
-        this.setTargetFileName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        this.setTargetFileName(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "targetFileName"));
-        this.setTargetConnectionName(new ActionParameterOperation(this.getFrameworkExecution(),
+        this.setTargetConnectionName(new ActionParameterOperation(
                 this.getExecutionControl(), this.getActionExecution(), this.getActionExecution().getAction().getType(),
                 "targetConnection"));
 
@@ -129,10 +126,10 @@ public class FhoExecuteFileTransfer {
 
     private boolean execute(String sourceFilePath, String sourceFileName, String sourceConnectionName, String targetFilePath, String targetFileName, String targetConnectionName) {
         // Get Connections
-        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(FrameworkInstance.getInstance());
+        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
         Connection sourceConnection = connectionConfiguration
                 .getConnection(sourceConnectionName, this.getExecutionControl().getEnvName()).get();
-        ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
+        ConnectionOperation connectionOperation = new ConnectionOperation();
         HostConnection sourceHostConnection = connectionOperation.getHostConnection(sourceConnection);
         Connection targetConnection = connectionConfiguration
                 .getConnection(targetConnectionName, this.getExecutionControl().getEnvName()).get();
@@ -140,13 +137,13 @@ public class FhoExecuteFileTransfer {
 
         // Check if source or target are localhost
         // TODO check the creation of the sourceConnections
-        boolean sourceIsOnLocalHost = HostConnectionTools.isOnLocalhost(this.getFrameworkExecution(),
+        boolean sourceIsOnLocalHost = HostConnectionTools.isOnLocalhost(
                 sourceConnectionName, this.getExecutionControl().getEnvName());
-        boolean targetIsOnLocalHost = HostConnectionTools.isOnLocalhost(this.getFrameworkExecution(),
+        boolean targetIsOnLocalHost = HostConnectionTools.isOnLocalhost(
                 targetConnectionName, this.getExecutionControl().getEnvName());;
 
         // Run the action
-        FileTransferOperation fileTransferOperation = new FileTransferOperation(this.getFrameworkExecution());
+        FileTransferOperation fileTransferOperation = new FileTransferOperation();
         FileTransferResult fileTransferResult = null;
         if (sourceIsOnLocalHost && !targetIsOnLocalHost) {
             fileTransferResult = fileTransferOperation.transferLocalToRemote(sourceFilePath,
@@ -235,15 +232,6 @@ public class FhoExecuteFileTransfer {
                     sourceFilePath.getClass()));
             return sourceFilePath.toString();
         }
-    }
-
-    // Getters and Setters
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
     }
 
     public ExecutionControl getExecutionControl() {

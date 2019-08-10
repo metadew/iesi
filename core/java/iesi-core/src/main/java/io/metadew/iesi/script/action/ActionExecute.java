@@ -28,7 +28,6 @@ public class ActionExecute {
 
 	private ActionExecution actionExecution;
 	private ScriptExecution scriptExecution;
-	private FrameworkExecution frameworkExecution;
 	private ExecutionControl executionControl;
 
 	// Parameters
@@ -41,23 +40,22 @@ public class ActionExecute {
 
 	}
 
-	public ActionExecute(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+	public ActionExecute(ExecutionControl executionControl,
 			ScriptExecution scriptExecution, ActionExecution actionExecution) {
-		this.init(frameworkExecution, executionControl, scriptExecution, actionExecution);
+		this.init(executionControl, scriptExecution, actionExecution);
 	}
 
-	public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+	public void init(ExecutionControl executionControl,
 			ScriptExecution scriptExecution, ActionExecution actionExecution) {
-		this.setFrameworkExecution(frameworkExecution);
 		this.setExecutionControl(executionControl);
 		this.setScriptExecution(scriptExecution);
 		this.setActionExecution(actionExecution);
-		this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
+		this.setActionParameterOperationMap(new HashMap<>());
 	}
 
 	public void prepare() {
 		// Reset Parameters
-		this.setName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+		this.setName(new ActionParameterOperation(this.getExecutionControl(),
 				this.getActionExecution(), this.getActionExecution().getAction().getType(), "name"));
 
 		// Get Parameters
@@ -117,7 +115,7 @@ public class ActionExecute {
 				throw new RuntimeException("action.name.notfound");
 			}
 			
-			ActionExecution actionExecution = new ActionExecution(this.getFrameworkExecution(),
+			ActionExecution actionExecution = new ActionExecution(
 					this.getExecutionControl(), this.getScriptExecution(), action);
 			
 			// Initialize
@@ -144,15 +142,6 @@ public class ActionExecute {
 			return false;
 		}
 
-	}
-
-	// Getters and Setters
-	public FrameworkExecution getFrameworkExecution() {
-		return frameworkExecution;
-	}
-
-	public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-		this.frameworkExecution = frameworkExecution;
 	}
 
 	public ExecutionControl getExecutionControl() {

@@ -17,7 +17,6 @@ import java.sql.SQLException;
 
 public class IterationConfiguration {
 
-    private FrameworkExecution frameworkExecution;
     private ExecutionControl executionControl;
     private String runCacheFolderName;
     private String runCacheFileName = "iterationExecutions.db3";
@@ -26,9 +25,8 @@ public class IterationConfiguration {
     private String PRC_ITERATION_EXEC = "PRC_ITERATION_EXEC";
 
     // Constructors
-    public IterationConfiguration(FrameworkExecution frameworkExecution, String runCacheFolderName,
+    public IterationConfiguration(String runCacheFolderName,
                                   ExecutionControl executionControl) {
-        this.setFrameworkExecution(frameworkExecution);
         this.setExecutionControl(executionControl);
 
         // Define path
@@ -156,7 +154,7 @@ public class IterationConfiguration {
 
         // Get iteration variable configuration
         IterationVariableConfiguration iterationVariableConfiguration = new IterationVariableConfiguration(
-                this.getFrameworkExecution(), this.getRunCacheFolderName(), false);
+                this.getRunCacheFolderName(), false);
         CachedRowSet crs = iterationVariableConfiguration.getIterationList(runId, inputList);
 
         // Iterate over the iteration sets
@@ -307,15 +305,6 @@ public class IterationConfiguration {
 
         runtimeVariable.setValue(value);
         return runtimeVariable;
-    }
-
-    // Getters and Setters
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
     }
 
     public String getRunCacheFileName() {

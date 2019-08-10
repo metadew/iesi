@@ -37,7 +37,7 @@ public class EnvironmentLookup implements LookupInstruction {
         String environmentName = inputParameterMatcher.group(ENVIRONMENT_NAME_KEY);
         String environmentParameterName = inputParameterMatcher.group(ENVIRONMENT_PARAMETER_NAME_KEY);
 
-        EnvironmentParameterConfiguration environmentParameterConfiguration = new EnvironmentParameterConfiguration(FrameworkInstance.getInstance());
+        EnvironmentParameterConfiguration environmentParameterConfiguration = new EnvironmentParameterConfiguration();
         Optional<String> environmentParameterValue = environmentParameterConfiguration.getEnvironmentParameterValue(environmentName, environmentParameterName);
 
         if (!environmentParameterValue.isPresent()) {

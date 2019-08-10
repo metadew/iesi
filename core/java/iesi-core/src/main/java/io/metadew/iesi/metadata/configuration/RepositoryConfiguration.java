@@ -16,16 +16,13 @@ import java.util.List;
 public class RepositoryConfiguration {
 
     private Repository repository;
-    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public RepositoryConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
+    public RepositoryConfiguration() {
     }
 
-    public RepositoryConfiguration(Repository repository, FrameworkInstance frameworkInstance) {
+    public RepositoryConfiguration(Repository repository) {
         this.setRepository(repository);
-        this.setFrameworkInstance(frameworkInstance);
     }
 
     // Delete
@@ -133,7 +130,7 @@ public class RepositoryConfiguration {
 
         for (RepositoryParameter repositoryParameter : this.getRepository().getParameters()) {
             RepositoryParameterConfiguration repositoryParameterConfiguration = new RepositoryParameterConfiguration(
-                    repositoryParameter, this.getFrameworkInstance());
+                    repositoryParameter);
             if (!result.equalsIgnoreCase(""))
                 result += "\n";
             result += repositoryParameterConfiguration.getInsertStatement(this.getRepository().getName());
@@ -151,7 +148,7 @@ public class RepositoryConfiguration {
 
         for (RepositoryInstance repositoryInstance : this.getRepository().getInstances()) {
             RepositoryInstanceConfiguration repositoryInstanceConfiguration = new RepositoryInstanceConfiguration(
-                    repositoryInstance, this.getFrameworkInstance());
+                    repositoryInstance);
             if (!result.equalsIgnoreCase(""))
                 result += "\n";
             result += repositoryInstanceConfiguration.getInsertStatement(this.getRepository().getName());
@@ -171,10 +168,8 @@ public class RepositoryConfiguration {
                 + " where REPO_NM = '" + repositoryName + "'";
         crsRepository = MetadataControl.getInstance().getConnectivityMetadataRepository()
                 .executeQuery(queryRepository, "reader");
-        RepositoryParameterConfiguration repositoryParameterConfiguration = new RepositoryParameterConfiguration(
-                this.getFrameworkInstance());
-        RepositoryInstanceConfiguration repositoryInstanceConfiguration = new RepositoryInstanceConfiguration(
-                this.getFrameworkInstance());
+        RepositoryParameterConfiguration repositoryParameterConfiguration = new RepositoryParameterConfiguration();
+        RepositoryInstanceConfiguration repositoryInstanceConfiguration = new RepositoryInstanceConfiguration();
         try {
             while (crsRepository.next()) {
                 repository.setName(repositoryName);
@@ -261,13 +256,5 @@ public class RepositoryConfiguration {
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
 
 }

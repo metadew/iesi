@@ -15,16 +15,13 @@ import java.util.List;
 public class GenerationOutputConfiguration {
 
     private GenerationOutput generationOutput;
-    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public GenerationOutputConfiguration(GenerationOutput generationOutput, FrameworkInstance frameworkInstance) {
+    public GenerationOutputConfiguration(GenerationOutput generationOutput) {
         this.setgenerationOutput(generationOutput);
-        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public GenerationOutputConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
+    public GenerationOutputConfiguration() {
     }
 
     // Insert
@@ -63,7 +60,7 @@ public class GenerationOutputConfiguration {
         if (this.getgenerationOutput().getParameters() == null) return result;
 
         for (GenerationOutputParameter generationOutputParameter : this.getgenerationOutput().getParameters()) {
-            GenerationOutputParameterConfiguration generationOutputParameterConfiguration = new GenerationOutputParameterConfiguration(generationOutputParameter, this.getFrameworkInstance());
+            GenerationOutputParameterConfiguration generationOutputParameterConfiguration = new GenerationOutputParameterConfiguration(generationOutputParameter);
             if (!result.equalsIgnoreCase(""))
                 result += "\n";
             result += generationOutputParameterConfiguration.getInsertStatement(generationName, this.getgenerationOutput().getName());
@@ -79,7 +76,7 @@ public class GenerationOutputConfiguration {
         String queryGenerationOutput = "select GEN_ID, GEN_OUT_ID, GEN_OUT_NM, GEN_OUT_TYP_NM, GEN_OUT_DSC from "
                 + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("GenerationOutputs") + " where GEN_OUT_ID = " + generationOutputId;
         crsGenerationOutput = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(queryGenerationOutput, "reader");
-        GenerationOutputParameterConfiguration generationOutputParameterConfiguration = new GenerationOutputParameterConfiguration(this.getFrameworkInstance());
+        GenerationOutputParameterConfiguration generationOutputParameterConfiguration = new GenerationOutputParameterConfiguration();
         try {
             while (crsGenerationOutput.next()) {
                 generationOutput.setId(generationOutputId);
@@ -117,13 +114,5 @@ public class GenerationOutputConfiguration {
     public void setgenerationOutput(GenerationOutput generationOutput) {
         this.generationOutput = generationOutput;
     }
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
 
 }

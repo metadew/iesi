@@ -6,8 +6,8 @@ import io.metadew.iesi.script.operation.ActionSelectOperation;
 
 public class RouteScriptExecution extends ScriptExecution {
 
-    public RouteScriptExecution(Script script, FrameworkExecution frameworkExecution, ExecutionControl executionControl, ExecutionMetrics executionMetrics, Long processId, boolean exitOnCompletion, ScriptExecution parentScriptExecution, String paramList, String paramFile, ActionSelectOperation actionSelectOperation, RootingStrategy rootingStrategy) {
-        super(script, frameworkExecution, executionControl, executionMetrics, processId, exitOnCompletion, parentScriptExecution, paramList, paramFile, actionSelectOperation, rootingStrategy);
+    public RouteScriptExecution(Script script, ExecutionControl executionControl, ExecutionMetrics executionMetrics, Long processId, boolean exitOnCompletion, ScriptExecution parentScriptExecution, String paramList, String paramFile, ActionSelectOperation actionSelectOperation, RootingStrategy rootingStrategy) {
+        super(script, executionControl, executionMetrics, processId, exitOnCompletion, parentScriptExecution, paramList, paramFile, actionSelectOperation, rootingStrategy);
     }
 
     @Override

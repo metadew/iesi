@@ -7,22 +7,19 @@ import io.metadew.iesi.metadata.definition.GenerationTypeParameter;
 public class GenerationTypeParameterConfiguration {
 
     private GenerationTypeParameter generationTypeParameter;
-    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public GenerationTypeParameterConfiguration(GenerationTypeParameter generationTypeParameter, FrameworkInstance frameworkInstance) {
+    public GenerationTypeParameterConfiguration(GenerationTypeParameter generationTypeParameter) {
         this.setgenerationTypeParameter(generationTypeParameter);
-        this.setFrameworkInstance(frameworkInstance);
     }
 
     public GenerationTypeParameterConfiguration(FrameworkInstance frameworkInstance) {
-        this.setFrameworkInstance(frameworkInstance);
     }
 
     // Get Generation Type Parameter
     public GenerationTypeParameter getGenerationTypeParameter(String GenerationTypeName, String GenerationTypeParameterName) {
         GenerationTypeParameter GenerationTypeParameterResult = null;
-        GenerationTypeConfiguration GenerationTypeConfiguration = new GenerationTypeConfiguration(this.getFrameworkInstance());
+        GenerationTypeConfiguration GenerationTypeConfiguration = new GenerationTypeConfiguration();
         GenerationType GenerationType = GenerationTypeConfiguration.getGenerationType(GenerationTypeName);
         for (GenerationTypeParameter GenerationTypeParameter : GenerationType.getParameters()) {
             if (GenerationTypeParameter.getName().equalsIgnoreCase(GenerationTypeParameterName)) {
@@ -42,13 +39,5 @@ public class GenerationTypeParameterConfiguration {
     public void setgenerationTypeParameter(GenerationTypeParameter generationTypeParameter) {
         this.generationTypeParameter = generationTypeParameter;
     }
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
 
 }

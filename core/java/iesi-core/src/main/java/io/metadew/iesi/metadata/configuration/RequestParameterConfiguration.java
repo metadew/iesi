@@ -12,20 +12,17 @@ import java.util.Optional;
 public class RequestParameterConfiguration {
 
     private RequestParameter requestParameter;
-    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public RequestParameterConfiguration(RequestParameter requestParameter, FrameworkInstance frameworkInstance) {
+    public RequestParameterConfiguration(RequestParameter requestParameter) {
         this.setRequestParameter(requestParameter);
-        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public RequestParameterConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
+    public RequestParameterConfiguration() {
     }
 
     public String getInsertStatement(String requestId, RequestParameter requestParameter) {
-        return "INSERT INTO " + this.getFrameworkInstance().getExecutionServerRepositoryConfiguration()
+        return "INSERT INTO " + FrameworkInstance.getInstance().getExecutionServerRepositoryConfiguration()
                 .getTableNameByLabel("RequestParameters")
                 + " (REQUEST_ID, REQUEST_PAR_TYP_NM, REQUEST_PAR_NM, REQUEST_PAR_VAL) VALUES ("
                 + SQLTools.GetStringForSQL(requestId) + ","
@@ -39,7 +36,7 @@ public class RequestParameterConfiguration {
     public String getInsertStatement(String requestId) {
         String sql = "";
 
-        sql += "INSERT INTO " + this.getFrameworkInstance().getExecutionServerRepositoryConfiguration()
+        sql += "INSERT INTO " + FrameworkInstance.getInstance().getExecutionServerRepositoryConfiguration()
                 .getTableNameByLabel("RequestParameters");
         sql += " (REQUEST_ID, REQUEST_PAR_TYP_NM, REQUEST_PAR_NM, REQUEST_PAR_VAL) ";
         sql += "VALUES ";
@@ -61,10 +58,10 @@ public class RequestParameterConfiguration {
         RequestParameter requestParameter = new RequestParameter();
         CachedRowSet crsRequestParameter = null;
         String queryRequestParameter = "select REQUEST_ID, REQUEST_PAR_TYP_NM, REQUEST_PAR_NM, REQUEST_PAR_VAL from "
-                + this.getFrameworkInstance().getExecutionServerRepositoryConfiguration()
+                + FrameworkInstance.getInstance().getExecutionServerRepositoryConfiguration()
                 .getTableNameByLabel("RequestParameters")
                 + " where REQUEST_ID = '" + requestId + "' and REQUEST_PAR_TYP_NM = '" + requestParameterType + "' and REQUEST_PAR_NM = '" + requestParameterName + "'";
-        crsRequestParameter = this.getFrameworkInstance().getExecutionServerRepositoryConfiguration()
+        crsRequestParameter = FrameworkInstance.getInstance().getExecutionServerRepositoryConfiguration()
                 .executeQuery(queryRequestParameter, "reader");
         try {
             while (crsRequestParameter.next()) {
@@ -84,10 +81,10 @@ public class RequestParameterConfiguration {
         String output = null;
         CachedRowSet crsRequestParameter = null;
         String queryRequestParameter = "select REQUEST_ID, REQUEST_PAR_TYP_NM, REQUEST_PAR_NM, REQUEST_PAR_VAL from "
-                + this.getFrameworkInstance().getExecutionServerRepositoryConfiguration()
+                + FrameworkInstance.getInstance().getExecutionServerRepositoryConfiguration()
                 .getTableNameByLabel("RequestParameters")
                 + " where REQUEST_ID = '" + requestId + "' and REQUEST_PAR_TYP_NM = '" + requestParameterType + "'" + "' and REQUEST_PAR_NM = '" + requestParameterName + "'";
-        crsRequestParameter = this.getFrameworkInstance().getExecutionServerRepositoryConfiguration()
+        crsRequestParameter = FrameworkInstance.getInstance().getExecutionServerRepositoryConfiguration()
                 .executeQuery(queryRequestParameter, "reader");
         try {
             while (crsRequestParameter.next()) {
@@ -111,13 +108,5 @@ public class RequestParameterConfiguration {
     public void setRequestParameter(RequestParameter requestParameter) {
         this.requestParameter = requestParameter;
     }
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
 
 }

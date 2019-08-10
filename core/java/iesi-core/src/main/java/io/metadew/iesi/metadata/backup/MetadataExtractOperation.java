@@ -21,15 +21,13 @@ import java.util.List;
 
 public class MetadataExtractOperation {
 
-    private FrameworkExecution frameworkExecution;
     private ExecutionControl executionControl;
     private Long processId;
     private String dataFileLocation;
     private static final Logger LOGGER = LogManager.getLogger();
 
     // Constructors
-    public MetadataExtractOperation(FrameworkExecution frameworkExecution, ExecutionControl executionControl) {
-        this.setFrameworkExecution(frameworkExecution);
+    public MetadataExtractOperation(ExecutionControl executionControl) {
         this.setExecutionControl(executionControl);
     }
 
@@ -81,7 +79,7 @@ public class MetadataExtractOperation {
             crs.close();
             dataTable.setRows(dataRowList);
 
-            DataObjectConfiguration dataObjectConfiguration = new DataObjectConfiguration(this.getFrameworkExecution());
+            DataObjectConfiguration dataObjectConfiguration = new DataObjectConfiguration();
 
             String fileName = metadataTable.getName() + ".json";
 
@@ -125,11 +123,4 @@ public class MetadataExtractOperation {
         this.dataFileLocation = dataFileLocation;
     }
 
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
-    }
 }

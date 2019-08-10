@@ -24,19 +24,16 @@ import java.util.Optional;
 public class ComponentConfiguration extends MetadataConfiguration {
 
     private Component component;
-    private FrameworkInstance frameworkInstance;
 
     private final static Logger LOGGER = LogManager.getLogger();
 
     // Constructors
-    public ComponentConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
+    public ComponentConfiguration() {
     }
 
-    public ComponentConfiguration(Component component, FrameworkInstance frameworkInstance) {
+    public ComponentConfiguration(Component component) {
         this.setComponent(component);
         this.verifyVersionExists();
-        this.setFrameworkInstance(frameworkInstance);
     }
     
     // Abstract method implementations
@@ -144,8 +141,7 @@ public class ComponentConfiguration extends MetadataConfiguration {
             String componentId = crsComponent.getString("COMP_ID");
 
             // get version
-            ComponentVersionConfiguration componentVersionConfiguration = new ComponentVersionConfiguration(
-                    this.getFrameworkInstance());
+            ComponentVersionConfiguration componentVersionConfiguration = new ComponentVersionConfiguration();
             Optional<ComponentVersion> componentVersion = componentVersionConfiguration.getComponentVersion(componentId, versionNumber);
             if (!componentVersion.isPresent()) {
             	//TODO fix logging
@@ -441,7 +437,7 @@ public class ComponentConfiguration extends MetadataConfiguration {
 
         for (ComponentAttribute componentAttribute : this.getComponent().getAttributes()) {
             ComponentAttributeConfiguration componentAttributeConfiguration = new ComponentAttributeConfiguration(
-                    this.getComponent().getVersion(), componentAttribute, this.getFrameworkInstance());
+                    this.getComponent().getVersion(), componentAttribute);
             if (!result.equalsIgnoreCase(""))
                 result += "\n";
             result += componentAttributeConfiguration.getInsertStatement(this.getComponent().getName());
@@ -457,7 +453,7 @@ public class ComponentConfiguration extends MetadataConfiguration {
             return result;
 
         ComponentVersionConfiguration componentVersionConfiguration = new ComponentVersionConfiguration(
-                this.getComponent().getVersion(), this.getFrameworkInstance());
+                this.getComponent().getVersion());
         result += componentVersionConfiguration.getInsertStatement(this.getComponent().getName());
 
         return result;
@@ -471,7 +467,7 @@ public class ComponentConfiguration extends MetadataConfiguration {
 
         for (ComponentParameter componentParameter : this.getComponent().getParameters()) {
             ComponentParameterConfiguration componentParameterConfiguration = new ComponentParameterConfiguration(
-                    this.getComponent().getVersion(), componentParameter, this.getFrameworkInstance());
+                    this.getComponent().getVersion(), componentParameter);
             if (!result.equalsIgnoreCase(""))
                 result += "\n";
             result += componentParameterConfiguration.getInsertStatement(this.getComponent().getName());
@@ -522,13 +518,5 @@ public class ComponentConfiguration extends MetadataConfiguration {
     public void setComponent(Component component) {
         this.component = component;
     }
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
 
 }

@@ -32,7 +32,7 @@ public class HttpRequestComponentOperation {
 
     public HttpRequestComponentOperation(ExecutionControl executionControl) {
         this.executionControl = executionControl;
-        this.componentConfiguration = new ComponentConfiguration(FrameworkInstance.getInstance());
+        this.componentConfiguration = new ComponentConfiguration();
         this.httpRequestComponentParameterOperation = new HttpRequestComponentParameterOperation(executionControl);
     }
 

@@ -18,7 +18,6 @@ import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -36,7 +35,6 @@ import java.util.HashMap;
 public class FhoCreateFolder {
 
     private ActionExecution actionExecution;
-    private FrameworkExecution frameworkExecution;
     private ExecutionControl executionControl;
 
     // Parameters
@@ -51,14 +49,13 @@ public class FhoCreateFolder {
 
     }
 
-    public FhoCreateFolder(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+    public FhoCreateFolder(ExecutionControl executionControl,
                            ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.init(frameworkExecution, executionControl, scriptExecution, actionExecution);
+        this.init(executionControl, scriptExecution, actionExecution);
     }
 
-    public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+    public void init(ExecutionControl executionControl,
                      ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.setFrameworkExecution(frameworkExecution);
         this.setExecutionControl(executionControl);
         this.setActionExecution(actionExecution);
         this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
@@ -66,11 +63,11 @@ public class FhoCreateFolder {
 
     public void prepare() {
         // Reset Parameters
-        this.setFolderPath(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        this.setFolderPath(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "path"));
-        this.setFolderName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        this.setFolderName(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "folder"));
-        this.setConnectionName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        this.setConnectionName(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "connection"));
 
         // Get Parameters
@@ -114,7 +111,7 @@ public class FhoCreateFolder {
 
     private boolean execute(String path, String folder, String connectionName) {
 
-        boolean isOnLocalhost = HostConnectionTools.isOnLocalhost(this.getFrameworkExecution(),
+        boolean isOnLocalhost = HostConnectionTools.isOnLocalhost(
                 connectionName, this.getExecutionControl().getEnvName());
 
         if (isOnLocalhost) {
@@ -135,12 +132,11 @@ public class FhoCreateFolder {
             }
 
         } else {
-            ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(
-                    FrameworkInstance.getInstance());
+            ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
             Connection connection = connectionConfiguration
                     .getConnection(connectionName, this.getExecutionControl().getEnvName())
                     .get();
-            ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
+            ConnectionOperation connectionOperation = new ConnectionOperation();
             HostConnection hostConnection = connectionOperation.getHostConnection(connection);
 
             String subjectFolderPath = "";
@@ -213,15 +209,6 @@ public class FhoCreateFolder {
     private void setSuccess() {
         this.getActionExecution().getActionControl().logOutput("folder.create.success", "confirmed");
         this.getActionExecution().getActionControl().increaseSuccessCount();
-    }
-
-    // Getters and Setters
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
     }
 
     public ExecutionControl getExecutionControl() {

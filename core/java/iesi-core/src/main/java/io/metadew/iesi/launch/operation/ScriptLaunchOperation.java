@@ -29,7 +29,7 @@ public final class ScriptLaunchOperation {
 
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	public static void execute(FrameworkInstance frameworkInstance, Request request, FrameworkRunIdentifier frameworkRunIdentifier) throws ScriptExecutionBuildException {
+	public static void execute(Request request, FrameworkRunIdentifier frameworkRunIdentifier) throws ScriptExecutionBuildException {
 		String actionSelect = "";
 		String environmentName = request.getContext();
 		String executionMode = "";
@@ -95,7 +95,8 @@ public final class ScriptLaunchOperation {
 		FrameworkExecutionSettings frameworkExecutionSettings = new FrameworkExecutionSettings(settings);
 		Context context = new Context("script", scriptName);
 
-		FrameworkExecution frameworkExecution = new FrameworkExecution(new FrameworkExecutionContext(context), frameworkExecutionSettings, frameworkRunIdentifier);
+		FrameworkExecution frameworkExecution = FrameworkExecution.getInstance();
+		frameworkExecution.init(new FrameworkExecutionContext(context), frameworkExecutionSettings, frameworkRunIdentifier);
 
 		// Logging
 		LOGGER.info(new IESIMessage("option.script=" + scriptName));
@@ -138,7 +139,7 @@ public final class ScriptLaunchOperation {
 		// Get the Script
 		Optional<Script> script = Optional.empty();
 		if (executionMode.equalsIgnoreCase("script")) {
-			ScriptConfiguration scriptConfiguration = new ScriptConfiguration(FrameworkInstance.getInstance());
+			ScriptConfiguration scriptConfiguration = new ScriptConfiguration();
 			if (scriptVersionNumber == -1) {
 				script = scriptConfiguration.get(scriptName);
 			} else {
@@ -152,7 +153,7 @@ public final class ScriptLaunchOperation {
 		} else if (executionMode.equalsIgnoreCase("file")) {
 			File file = new File(fileName);
 			if (FileTools.getFileExtension(file).equalsIgnoreCase("json")) {
-				JsonInputOperation jsonInputOperation = new JsonInputOperation(frameworkExecution, fileName);
+				JsonInputOperation jsonInputOperation = new JsonInputOperation(fileName);
 				script = jsonInputOperation.getScript();
 			} else if (FileTools.getFileExtension(file).equalsIgnoreCase("yml")) {
 				YamlInputOperation yamlInputOperation = new YamlInputOperation(frameworkExecution, fileName);
@@ -168,7 +169,6 @@ public final class ScriptLaunchOperation {
 		}
 
 		ScriptExecution scriptExecution = new ScriptExecutionBuilder(true, false)
-				.frameworkExecution(frameworkExecution)
 				.script(script.get())
 				.exitOnCompletion(false)
 				.paramList(paramList)

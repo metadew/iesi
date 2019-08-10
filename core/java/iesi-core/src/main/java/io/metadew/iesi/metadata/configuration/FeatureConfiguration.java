@@ -21,17 +21,14 @@ import java.util.Optional;
 public class FeatureConfiguration extends MetadataConfiguration {
 
     private Feature feature;
-    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public FeatureConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
+    public FeatureConfiguration() {
     }
 
-    public FeatureConfiguration(Feature feature, FrameworkInstance frameworkInstance) {
+    public FeatureConfiguration(Feature feature) {
         this.setFeature(feature);
         this.verifyVersionExists();
-        this.setFrameworkInstance(frameworkInstance);
     }
 
     // Abstract method implementations
@@ -161,9 +158,9 @@ public class FeatureConfiguration extends MetadataConfiguration {
 
     private List<String> getInsertStatement(Feature feature) {
         List<String> queries = new ArrayList<>();
-        FeatureVersionConfiguration featureVersionConfiguration = new FeatureVersionConfiguration(this.getFrameworkInstance());
-        FeatureParameterConfiguration featureParameterConfiguration = new FeatureParameterConfiguration(this.getFrameworkInstance());
-        ScenarioConfiguration scenarioConfiguration = new ScenarioConfiguration(this.getFrameworkInstance());
+        FeatureVersionConfiguration featureVersionConfiguration = new FeatureVersionConfiguration();
+        FeatureParameterConfiguration featureParameterConfiguration = new FeatureParameterConfiguration();
+        ScenarioConfiguration scenarioConfiguration = new ScenarioConfiguration();
         StringBuilder sql = new StringBuilder();
 
         if (getFeatureByName(feature.getName()).size() == 0) {
@@ -327,7 +324,7 @@ public class FeatureConfiguration extends MetadataConfiguration {
             return result;
 
         FeatureVersionConfiguration featureVersionConfiguration = new FeatureVersionConfiguration(
-                this.getFeature().getVersion(), this.getFrameworkInstance());
+                this.getFeature().getVersion());
         result += featureVersionConfiguration.getInsertStatement(this.getFeature().getName());
 
         return result;
@@ -342,7 +339,7 @@ public class FeatureConfiguration extends MetadataConfiguration {
 
         for (Scenario scenario : this.getFeature().getScenarios()) {
             counter++;
-            ScenarioConfiguration scenarioConfiguration = new ScenarioConfiguration(scenario, this.getFrameworkInstance());
+            ScenarioConfiguration scenarioConfiguration = new ScenarioConfiguration(scenario);
             if (!result.equalsIgnoreCase(""))
                 result += "\n";
             result += scenarioConfiguration.getInsertStatement(this.getFeature(), counter);
@@ -359,7 +356,7 @@ public class FeatureConfiguration extends MetadataConfiguration {
 
         for (FeatureParameter featureParameter : this.getFeature().getParameters()) {
             FeatureParameterConfiguration featureParameterConfiguration = new FeatureParameterConfiguration(
-                    this.getFeature().getVersion(), featureParameter, this.getFrameworkInstance());
+                    this.getFeature().getVersion(), featureParameter);
             if (!result.equalsIgnoreCase(""))
                 result += "\n";
             result += featureParameterConfiguration.getInsertStatement(this.getFeature());
@@ -413,9 +410,8 @@ public class FeatureConfiguration extends MetadataConfiguration {
                 + MetadataControl.getInstance().getCatalogMetadataRepository().getTableNameByLabel("Features") + " where FEATURE_NM = '"
                 + featureName + "'";
         CachedRowSet crsFeature = MetadataControl.getInstance().getCatalogMetadataRepository().executeQuery(queryFeature, "reader");
-        ScenarioConfiguration scenarioConfiguration = new ScenarioConfiguration(this.getFrameworkInstance());
-        FeatureVersionConfiguration featureVersionConfiguration = new FeatureVersionConfiguration(
-                this.getFrameworkInstance());
+        ScenarioConfiguration scenarioConfiguration = new ScenarioConfiguration();
+        FeatureVersionConfiguration featureVersionConfiguration = new FeatureVersionConfiguration();
         try {
             if (crsFeature.size() == 0) {
                 throw new RuntimeException("feature.error.notfound");
@@ -488,7 +484,7 @@ public class FeatureConfiguration extends MetadataConfiguration {
         String query = "select FEATURE_NM, FEATURE_DSC from "
                 + MetadataControl.getInstance().getCatalogMetadataRepository().getTableNameByLabel("Features") + " order by FEATURE_NM ASC";
         crs = MetadataControl.getInstance().getCatalogMetadataRepository().executeQuery(query, "reader");
-        FeatureConfiguration featureConfiguration = new FeatureConfiguration(this.getFrameworkInstance());
+        FeatureConfiguration featureConfiguration = new FeatureConfiguration();
         try {
             String featureName = "";
             while (crs.next()) {
@@ -519,13 +515,5 @@ public class FeatureConfiguration extends MetadataConfiguration {
     public void setFeature(Feature feature) {
         this.feature = feature;
     }
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
 
 }

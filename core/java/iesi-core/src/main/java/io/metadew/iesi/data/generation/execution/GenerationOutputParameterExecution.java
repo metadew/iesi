@@ -43,7 +43,7 @@ public class GenerationOutputParameterExecution {
 
     // Methods
     private void lookupGenerationOutputTypeParameter() {
-        GenerationOutputTypeParameterConfiguration generationOutputTypeParameterConfiguration = new GenerationOutputTypeParameterConfiguration(FrameworkInstance.getInstance());
+        GenerationOutputTypeParameterConfiguration generationOutputTypeParameterConfiguration = new GenerationOutputTypeParameterConfiguration();
         this.setGenerationOutputTypeParameter(generationOutputTypeParameterConfiguration.getGenerationOutputTypeParameter(this.getGenerationOutputTypeName(), this.getName()));
     }
 

@@ -15,16 +15,13 @@ import java.util.List;
 public class GenerationRuleConfiguration {
 
     private GenerationRule generationRule;
-    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public GenerationRuleConfiguration(GenerationRule generationRule, FrameworkInstance frameworkInstance) {
+    public GenerationRuleConfiguration(GenerationRule generationRule) {
         this.setgenerationRule(generationRule);
-        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public GenerationRuleConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
+    public GenerationRuleConfiguration() {
     }
 
     // Insert
@@ -71,7 +68,7 @@ public class GenerationRuleConfiguration {
         String result = "";
 
         for (GenerationRuleParameter generationRuleParameter : this.getgenerationRule().getParameters()) {
-            GenerationRuleParameterConfiguration generationRuleParameterConfiguration = new GenerationRuleParameterConfiguration(generationRuleParameter, this.getFrameworkInstance());
+            GenerationRuleParameterConfiguration generationRuleParameterConfiguration = new GenerationRuleParameterConfiguration(generationRuleParameter);
             if (!result.equalsIgnoreCase(""))
                 result += "\n";
             result += generationRuleParameterConfiguration.getInsertStatement(generationName, this.getgenerationRule().getField());
@@ -87,7 +84,7 @@ public class GenerationRuleConfiguration {
         String queryGenerationRule = "select GEN_ID, GEN_RULE_ID, GEN_RULE_NB, GEN_RULE_TYP_NM, FIELD_NM, GEN_RULE_DSC, BLANK_INJ_FL, BLANK_INJ_UNIT, BLANK_INJ_MEAS, BLANK_INJ_VAL from "
                 + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("GenerationRules") + " where GEN_RULE_ID = " + generationRuleId;
         crsGenerationRule = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(queryGenerationRule, "reader");
-        GenerationRuleParameterConfiguration generationRuleParameterConfiguration = new GenerationRuleParameterConfiguration(this.getFrameworkInstance());
+        GenerationRuleParameterConfiguration generationRuleParameterConfiguration = new GenerationRuleParameterConfiguration();
         try {
             while (crsGenerationRule.next()) {
                 generationRule.setId(generationRuleId);
@@ -130,13 +127,5 @@ public class GenerationRuleConfiguration {
     public void setgenerationRule(GenerationRule generationRule) {
         this.generationRule = generationRule;
     }
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
 
 }

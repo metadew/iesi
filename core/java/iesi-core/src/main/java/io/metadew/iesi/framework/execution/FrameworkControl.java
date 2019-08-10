@@ -106,7 +106,7 @@ public class FrameworkControl {
 					MetadataRepositoryConfiguration metadataRepositoryConfiguration = new MetadataRepositoryConfiguration(configFile, FrameworkSettingConfiguration.getInstance(), frameworkCrypto);
 					this.getMetadataRepositoryConfigurations().add(metadataRepositoryConfiguration);
 				} else if (type.trim().equalsIgnoreCase("plugin")) {
-					FrameworkPluginConfiguration frameworkPluginConfiguration = new FrameworkPluginConfiguration(frameworkConfiguration, configFile);
+					FrameworkPluginConfiguration frameworkPluginConfiguration = new FrameworkPluginConfiguration(configFile);
 					this.getFrameworkPluginConfigurationList().add(frameworkPluginConfiguration);
 				} else {
 					this.getProperties().putAll(configFile.getProperties());

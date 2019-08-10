@@ -15,15 +15,13 @@ import java.util.Optional;
  */
 public class JsonInputOperation {
 
-    private FrameworkExecution frameworkExecution;
     private String fileName;
     private DataObjectOperation dataObjectOperation;
 
 
-    public JsonInputOperation(FrameworkExecution frameworkExecution, String fileName) {
-        this.setFrameworkExecution(frameworkExecution);
+    public JsonInputOperation(String fileName) {
         this.setFileName(fileName);
-        this.setDataObjectOperation(new DataObjectOperation(this.getFrameworkExecution(), this.getFileName()));
+        this.setDataObjectOperation(new DataObjectOperation(this.getFileName()));
     }
 
     public Optional<Script> getScript() {
@@ -44,14 +42,6 @@ public class JsonInputOperation {
 
     public void setFileName(String fileName) {
         this.fileName = fileName;
-    }
-
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
     }
 
     public DataObjectOperation getDataObjectOperation() {

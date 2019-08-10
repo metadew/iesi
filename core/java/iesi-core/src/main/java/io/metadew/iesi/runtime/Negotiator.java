@@ -79,19 +79,19 @@ public class Negotiator {
 
         // Create the framework execution
         Context context = new Context("negotiator", "");
-        FrameworkExecution frameworkExecution = new FrameworkExecution(new FrameworkExecutionContext(context));
+        FrameworkExecution frameworkExecution = FrameworkExecution.getInstance();
+        frameworkExecution.init(new FrameworkExecutionContext(context));
         // Get the Script
-        ScriptConfiguration scriptConfiguration = new ScriptConfiguration(frameworkInstance);
+        ScriptConfiguration scriptConfiguration = new ScriptConfiguration();
         Script script = scriptConfiguration.get("S2").get();
 
 
 
         ScriptExecution scriptExecution = new ScriptExecutionBuilder(true, false)
-                .frameworkExecution(frameworkExecution)
                 .script(script)
                 .actionSelectOperation(new ActionSelectOperation(""))
                 .environment("DEV")
-                .executionControl(new ExecutionControl(frameworkExecution))
+                .executionControl(new ExecutionControl())
                 .exitOnCompletion(true)
                 .build();
 

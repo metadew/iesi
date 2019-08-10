@@ -16,7 +16,6 @@ import java.io.File;
  */
 public class StageOperation {
 
-    private FrameworkExecution frameworkExecution;
     private SqliteDatabaseConnection stageConnection;
     private String stageName;
     private String stageFileName;
@@ -24,8 +23,7 @@ public class StageOperation {
     private boolean stageCleanup;
 
     //Constructors
-    public StageOperation(FrameworkExecution frameworkExecution, String stageName, boolean StageCleanup) {
-        this.setFrameworkExecution(frameworkExecution);
+    public StageOperation(String stageName, boolean StageCleanup) {
         this.setStageName(stageName);
         this.setStageCleanup(StageCleanup);
 
@@ -41,17 +39,6 @@ public class StageOperation {
             FileTools.delete(this.getStageFilePath());
         }
     }
-
-    //Getters and setters
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
-    }
-
 
     public String getStageName() {
         return stageName;

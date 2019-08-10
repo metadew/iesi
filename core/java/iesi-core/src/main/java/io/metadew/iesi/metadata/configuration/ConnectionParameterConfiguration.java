@@ -12,17 +12,14 @@ import java.util.Optional;
 
 public class ConnectionParameterConfiguration {
 
-    private FrameworkInstance frameworkInstance;
     private ConnectionParameter connectionParameter;
 
     // Constructors
-    public ConnectionParameterConfiguration(ConnectionParameter connectionParameter, FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
+    public ConnectionParameterConfiguration(ConnectionParameter connectionParameter) {
     	this.setConnectionParameter(connectionParameter);
     }
 
-    public ConnectionParameterConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
+    public ConnectionParameterConfiguration() {
     }
 
     // Insert
@@ -106,13 +103,5 @@ public class ConnectionParameterConfiguration {
     public void setConnectionParameter(ConnectionParameter connectionParameter) {
         this.connectionParameter = connectionParameter;
     }
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
 
 }

@@ -17,12 +17,10 @@ import java.util.Optional;
 
 public class ActionParameterConfiguration {
 
-    private FrameworkInstance frameworkInstance;
     private final static Logger LOGGER = LogManager.getLogger();
 
 
-    public ActionParameterConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
+    public ActionParameterConfiguration() {
     }
 
     public String getInsertStatement(String scriptId, long scriptVersionNumber, String actionId, ActionParameter actionParameter) {
@@ -80,11 +78,4 @@ public class ActionParameterConfiguration {
         return cachedRowSet.size() >= 1;
     }
 
-    public FrameworkInstance getFrameworkInstance() {
-        return frameworkInstance;
-    }
-
-    public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-        this.frameworkInstance = frameworkInstance;
-    }
 }

@@ -23,7 +23,6 @@ import java.util.List;
 
 public class ExecutionControl {
 
-    private FrameworkExecution frameworkExecution;
     private ExecutionRuntime executionRuntime;
     private ExecutionLog executionLog;
     private ExecutionTrace executionTrace;
@@ -39,29 +38,28 @@ public class ExecutionControl {
     private static final Logger LOGGER = LogManager.getLogger();
 
     // Constructors
-    public ExecutionControl(FrameworkExecution frameworkExecution) throws ClassNotFoundException, NoSuchMethodException,
+    public ExecutionControl() throws ClassNotFoundException, NoSuchMethodException,
             InvocationTargetException, InstantiationException, IllegalAccessException {
-        this.frameworkExecution = frameworkExecution;
         this.scriptDesignTraceService = new ScriptDesignTraceService();
-        this.executionLog = new ExecutionLog(frameworkExecution);
-        this.executionTrace = new ExecutionTrace(frameworkExecution);
-        setRunId(frameworkExecution.getFrameworkRuntime().getRunId());
-        initializeExecutionRuntime(frameworkExecution, runId);
+        this.executionLog = new ExecutionLog();
+        this.executionTrace = new ExecutionTrace();
+        setRunId(FrameworkExecution.getInstance().getFrameworkRuntime().getRunId());
+        initializeExecutionRuntime(runId);
         this.processIdList = new ArrayList<>();
         this.processIdList.add(-1L);
     }
 
 
-    private void initializeExecutionRuntime(FrameworkExecution frameworkExecution, String runId) throws ClassNotFoundException,
+    private void initializeExecutionRuntime(String runId) throws ClassNotFoundException,
             NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         if (FrameworkSettingConfiguration.getInstance().getSettingPath("script.execution.runtime").isPresent() &&
                 !FrameworkControl.getInstance().getProperty(FrameworkSettingConfiguration.getInstance().getSettingPath("script.execution.runtime").get()).isEmpty()) {
             Class classRef = Class.forName(FrameworkControl.getInstance().getProperty(FrameworkSettingConfiguration.getInstance().getSettingPath("script.execution.runtime").get()));
-            Class[] initParams = {FrameworkExecution.class, ExecutionControl.class, String.class};
+            Class[] initParams = {ExecutionControl.class, String.class};
             Constructor constructor = classRef.getConstructor(initParams);
-           this.executionRuntime = (ExecutionRuntime) constructor.newInstance(this.getFrameworkExecution(), this, runId);
+           this.executionRuntime = (ExecutionRuntime) constructor.newInstance(this, runId);
         } else {
-            this.executionRuntime = new ExecutionRuntime(frameworkExecution, this, runId);
+            this.executionRuntime = new ExecutionRuntime(this, runId);
         }
     }
 
@@ -151,15 +149,15 @@ public class ExecutionControl {
     }
 
     public void logStart(BackupExecution backupExecution) {
-        setRunId(frameworkExecution.getFrameworkRuntime().getRunId());
+        setRunId(FrameworkExecution.getInstance().getFrameworkRuntime().getRunId());
     }
 
     public void logStart(RestoreExecution restoreExecution) {
-        setRunId(frameworkExecution.getFrameworkRuntime().getRunId());
+        setRunId(FrameworkExecution.getInstance().getFrameworkRuntime().getRunId());
     }
 
     public Long getNewProcessId() {
-        Long processId = frameworkExecution.getFrameworkRuntime().getNextProcessId();
+        Long processId = FrameworkExecution.getInstance().getFrameworkRuntime().getNextProcessId();
         logMessage(new IESIMessage("exec.processid=" + processId), Level.TRACE);
         return processId;
     }
@@ -338,15 +336,6 @@ public class ExecutionControl {
         System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
         System.out.println("script.launcher.end");
         System.exit(0);
-    }
-
-    // Getters and Setters
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
     }
 
     public String getRunId() {

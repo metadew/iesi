@@ -1,8 +1,6 @@
 package io.metadew.iesi.metadata.repository.coordinator.configuration;
 
 import io.metadew.iesi.common.config.ConfigFile;
-import io.metadew.iesi.framework.configuration.FrameworkSettingConfiguration;
-import io.metadew.iesi.framework.crypto.FrameworkCrypto;
 import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
 
 public class ElasticSearchRepositoryConfiguration extends RepositoryConfiguration {
@@ -10,13 +8,13 @@ public class ElasticSearchRepositoryConfiguration extends RepositoryConfiguratio
     private String url;
 
 
-    public ElasticSearchRepositoryConfiguration(ConfigFile configFile, FrameworkSettingConfiguration frameworkSettingConfiguration, FrameworkCrypto frameworkCrypto) {
-        super(configFile, frameworkSettingConfiguration, frameworkCrypto);
+    public ElasticSearchRepositoryConfiguration(ConfigFile configFile) {
+        super(configFile);
     }
 
     @Override
-    void fromConfigFile(ConfigFile configFile, FrameworkSettingConfiguration frameworkSettingConfiguration, FrameworkCrypto frameworkCrypto) {
-    	url = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.elasticsearch.url");
+    void fromConfigFile(ConfigFile configFile) {
+    	url = getSettingValue(configFile, "metadata.repository.elasticsearch.url");
     }
 
     @Override

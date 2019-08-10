@@ -9,7 +9,6 @@ import io.metadew.iesi.framework.execution.FrameworkExecution;
  */
 public class ShellCommandSettings {
 
-    private FrameworkExecution frameworkExecution = null;
     private String environment = "";
     private boolean setRunVar;
     private String setRunVarPrefix = "";
@@ -57,14 +56,5 @@ public class ShellCommandSettings {
     public void setEnvironment(String environment) {
         this.environment = environment;
     }
-
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
-    }
-
 
 }

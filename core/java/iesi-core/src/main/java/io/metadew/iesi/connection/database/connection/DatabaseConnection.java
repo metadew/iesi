@@ -25,13 +25,12 @@ public abstract class DatabaseConnection {
     private static final Marker SQLMARKER = MarkerManager.getMarker("SQL");
 
     private String type;
-    private String databaseClassName;
     private String connectionURL;
     private String userName;
     private String userPassword;
 
     public DatabaseConnection(String type, String connectionURL, String userName, String userPassword) {
-        this.setType(type);
+        this.type = type;
         this.connectionURL = connectionURL;
         this.userName = userName;
         this.userPassword = userPassword;
@@ -77,14 +76,6 @@ public abstract class DatabaseConnection {
         query = this.removeIllgegalCharactersForSingleQuery(query);
         LOGGER.info(SQLMARKER, query);
 
-//        try {
-//            Class.forName(this.getDriver());
-//        } catch (ClassNotFoundException e) {
-//            StringWriter StackTrace = new StringWriter();
-//            e.printStackTrace(new PrintWriter(StackTrace));
-//            System.out.println("JDBC Driver Not Available");
-//            throw new RuntimeException(e.getMessage());
-//        }
         try {
             Statement statement = connection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
             try {
@@ -452,7 +443,6 @@ public abstract class DatabaseConnection {
         return sqlScriptResult;
     }
 
-    //TODO remove
     @Deprecated
     public PreparedStatement createPreparedStatement(Connection connection, String sqlStatement) {
         PreparedStatement preparedStatement = null;
@@ -472,11 +462,4 @@ public abstract class DatabaseConnection {
 		this.type = type;
 	}
 
-	public String getDatabaseClassName() {
-		return databaseClassName;
-	}
-
-	public void setDatabaseClassName(String databaseClassName) {
-		this.databaseClassName = databaseClassName;
-	}
 }

@@ -27,23 +27,23 @@ public class PostgresqlRepositoryConfiguration extends RepositoryConfiguration {
     private String readerUserPassword;
 
 
-    public PostgresqlRepositoryConfiguration(ConfigFile configFile, FrameworkSettingConfiguration frameworkSettingConfiguration, FrameworkCrypto frameworkCrypto) {
-        super(configFile, frameworkSettingConfiguration, frameworkCrypto);
+    public PostgresqlRepositoryConfiguration(ConfigFile configFile) {
+        super(configFile);
     }
 
     @Override
-    void fromConfigFile(ConfigFile configFile, FrameworkSettingConfiguration frameworkSettingConfiguration, FrameworkCrypto frameworkCrypto) {
-    	host = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.postgresql.host");
-    	port = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.postgresql.port");
-    	name = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.postgresql.name");
-    	schema = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.postgresql.schema");
-    	schemaUser = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.postgresql.schema.user");
-    	schemaUserPassword = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.postgresql.schema.user.password");
-    	writerUser = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.postgresql.writer");
-    	writerUserPassword = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.postgresql.writer.password");
-    	readerUser = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.postgresql.reader");
-    	readerUserPassword = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.postgresql.reader.password");
-    	jdbcConnectionString = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.connection.string");
+    void fromConfigFile(ConfigFile configFile) {
+    	host = getSettingValue(configFile, "metadata.repository.postgresql.host");
+    	port = getSettingValue(configFile, "metadata.repository.postgresql.port");
+    	name = getSettingValue(configFile, "metadata.repository.postgresql.name");
+    	schema = getSettingValue(configFile, "metadata.repository.postgresql.schema");
+    	schemaUser = getSettingValue(configFile, "metadata.repository.postgresql.schema.user");
+    	schemaUserPassword = getSettingValue(configFile, "metadata.repository.postgresql.schema.user.password");
+    	writerUser = getSettingValue(configFile, "metadata.repository.postgresql.writer");
+    	writerUserPassword = getSettingValue(configFile, "metadata.repository.postgresql.writer.password");
+    	readerUser = getSettingValue(configFile, "metadata.repository.postgresql.reader");
+    	readerUserPassword = getSettingValue(configFile, "metadata.repository.postgresql.reader.password");
+    	jdbcConnectionString = getSettingValue(configFile, "metadata.repository.connection.string");
     }
 
     @Override

@@ -16,16 +16,13 @@ import java.util.List;
 public class DatasetConfiguration {
 
     private Dataset dataset;
-    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public DatasetConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
+    public DatasetConfiguration() {
     }
 
-    public DatasetConfiguration(Dataset dataset, FrameworkInstance frameworkInstance) {
+    public DatasetConfiguration(Dataset dataset) {
         this.setDataset(dataset);
-        this.setFrameworkInstance(frameworkInstance);
     }
 
     // Delete
@@ -133,7 +130,7 @@ public class DatasetConfiguration {
 
         for (DatasetParameter datasetParameter : this.getDataset().getParameters()) {
             DatasetParameterConfiguration datasetParameterConfiguration = new DatasetParameterConfiguration(
-                    datasetParameter, this.getFrameworkInstance());
+                    datasetParameter);
             if (!result.equalsIgnoreCase(""))
                 result += "\n";
             result += datasetParameterConfiguration.getInsertStatement(this.getDataset().getName());
@@ -151,7 +148,7 @@ public class DatasetConfiguration {
 
         for (DatasetInstance datasetInstance : this.getDataset().getInstances()) {
             DatasetInstanceConfiguration datasetInstanceConfiguration = new DatasetInstanceConfiguration(
-                    datasetInstance, this.getFrameworkInstance());
+                    datasetInstance);
             if (!result.equalsIgnoreCase(""))
                 result += "\n";
             result += datasetInstanceConfiguration.getInsertStatement(this.getDataset().getName());
@@ -171,10 +168,8 @@ public class DatasetConfiguration {
                 + " where DST_NM = '" + datasetName + "'";
         crsDataset = MetadataControl.getInstance().getConnectivityMetadataRepository()
                 .executeQuery(queryDataset, "reader");
-        DatasetParameterConfiguration datasetParameterConfiguration = new DatasetParameterConfiguration(
-                this.getFrameworkInstance());
-        DatasetInstanceConfiguration datasetInstanceConfiguration = new DatasetInstanceConfiguration(
-                this.getFrameworkInstance());
+        DatasetParameterConfiguration datasetParameterConfiguration = new DatasetParameterConfiguration();
+        DatasetInstanceConfiguration datasetInstanceConfiguration = new DatasetInstanceConfiguration();
         try {
             while (crsDataset.next()) {
                 dataset.setName(datasetName);
@@ -261,13 +256,5 @@ public class DatasetConfiguration {
     public void setDataset(Dataset dataset) {
         this.dataset = dataset;
     }
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
 
 }

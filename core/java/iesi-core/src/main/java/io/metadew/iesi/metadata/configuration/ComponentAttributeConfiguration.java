@@ -14,17 +14,14 @@ public class ComponentAttributeConfiguration {
 
     private ComponentVersion componentVersion;
     private ComponentAttribute componentAttribute;
-    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public ComponentAttributeConfiguration(ComponentVersion componentVersion, ComponentAttribute componentAttribute, FrameworkInstance frameworkInstance) {
+    public ComponentAttributeConfiguration(ComponentVersion componentVersion, ComponentAttribute componentAttribute) {
         this.setComponentVersion(componentVersion);
         this.setComponentAttribute(componentAttribute);
-        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public ComponentAttributeConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
+    public ComponentAttributeConfiguration() {
     }
 
     // Insert
@@ -86,13 +83,5 @@ public class ComponentAttributeConfiguration {
     public void setComponentVersion(ComponentVersion componentVersion) {
         this.componentVersion = componentVersion;
     }
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
 
 }

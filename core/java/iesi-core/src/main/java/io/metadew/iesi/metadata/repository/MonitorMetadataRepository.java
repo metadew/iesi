@@ -31,7 +31,7 @@ public class MonitorMetadataRepository extends MetadataRepository {
     }
 
     @Override
-    public void save(DataObject dataObject, FrameworkExecution frameworkExecution) {
+    public void save(DataObject dataObject) {
 
     }
 }

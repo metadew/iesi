@@ -9,21 +9,18 @@ import io.metadew.iesi.metadata.operation.TypeConfigurationOperation;
 public class ActionTypeConfiguration {
 
     private ActionType actionType;
-    private FrameworkInstance frameworkInstance;
     private String dataObjectType = "ActionType";
 
     // Constructors
-    public ActionTypeConfiguration(ActionType actionType, FrameworkInstance frameworkInstance) {
+    public ActionTypeConfiguration(ActionType actionType) {
         this.setActionType(actionType);
-        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public ActionTypeConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
+    public ActionTypeConfiguration() {
     }
 
     public ActionType getActionType(String actionTypeName) {
-        String conf = TypeConfigurationOperation.getTypeConfigurationFile(this.getFrameworkInstance(), this.getDataObjectType(), actionTypeName);
+        String conf = TypeConfigurationOperation.getTypeConfigurationFile(this.getDataObjectType(), actionTypeName);
         DataObjectOperation dataObjectOperation = new DataObjectOperation(conf);
         ObjectMapper objectMapper = new ObjectMapper();
         ActionType actionType = objectMapper.convertValue(dataObjectOperation.getDataObject().getData(),
@@ -47,13 +44,5 @@ public class ActionTypeConfiguration {
     public void setDataObjectType(String dataObjectType) {
         this.dataObjectType = dataObjectType;
     }
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
 
 }

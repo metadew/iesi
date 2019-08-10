@@ -9,22 +9,18 @@ import io.metadew.iesi.metadata.operation.TypeConfigurationOperation;
 public class DataframeTypeConfiguration {
 
     private DataframeType dataframeType;
-    private FrameworkInstance frameworkInstance;
     private String dataObjectType = "DataframeType";
 
     // Constructors
-    public DataframeTypeConfiguration(DataframeType dataframeType, FrameworkInstance frameworkInstance) {
+    public DataframeTypeConfiguration(DataframeType dataframeType) {
         this.setDataframeType(dataframeType);
-        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public DataframeTypeConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
+    public DataframeTypeConfiguration() {
     }
 
     public DataframeType getDataframeType(String dataframeTypeName) {
-        String conf = TypeConfigurationOperation.getTypeConfigurationFile(this.getFrameworkInstance(),
-                this.getDataObjectType(), dataframeTypeName);
+        String conf = TypeConfigurationOperation.getTypeConfigurationFile(this.getDataObjectType(), dataframeTypeName);
         DataObjectOperation dataObjectOperation = new DataObjectOperation(conf);
         ObjectMapper objectMapper = new ObjectMapper();
         DataframeType dataframeType = objectMapper.convertValue(dataObjectOperation.getDataObject().getData(),
@@ -48,13 +44,5 @@ public class DataframeTypeConfiguration {
     public void setDataObjectType(String dataObjectType) {
         this.dataObjectType = dataObjectType;
     }
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
 
 }

@@ -94,7 +94,9 @@ public class ConnectionLauncher {
             ObjectMapper objectMapper = new ObjectMapper();
             Connection connection = objectMapper.convertValue(dataObjectOperation.getDataObject(), Connection.class);
             // TODO rework getting the connection
-            ConnectionOperation connectionOperation = new ConnectionOperation(new FrameworkExecution());
+            FrameworkExecution frameworkExecution = FrameworkExecution.getInstance();
+            frameworkExecution.init();
+            ConnectionOperation connectionOperation = new ConnectionOperation();
             Database database = connectionOperation.getDatabase(connection);
 
             if (database == null) {

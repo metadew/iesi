@@ -23,9 +23,6 @@ public class Engine {
     public String schema;
     public String file;
 
-    // Configuration
-    private FrameworkConfiguration frameworkConfiguration;
-
     // return object variables
     public String getName() {
         return this.name;
@@ -57,7 +54,7 @@ public class Engine {
 
     // constructor method
     public Engine(String RDBMS) {
-        this.frameworkConfiguration = FrameworkConfiguration.getInstance();
+        FrameworkConfiguration frameworkConfiguration = FrameworkConfiguration.getInstance();
         frameworkConfiguration.init();
         ConfigFile cfg = new ConfigFile(FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("modules.sqlinsert.run") + File.separator + "engine.config");
         this.name = cfg.getProperty("name");
@@ -82,14 +79,6 @@ public class Engine {
         this.file = cfg.getProperty("file");
     }
 
-    // Getters and Setters
-    public FrameworkConfiguration getFrameworkConfiguration() {
-        return frameworkConfiguration;
-    }
-
-    public void setFrameworkConfiguration(FrameworkConfiguration frameworkConfiguration) {
-        this.frameworkConfiguration = frameworkConfiguration;
-    }
 }
 
 

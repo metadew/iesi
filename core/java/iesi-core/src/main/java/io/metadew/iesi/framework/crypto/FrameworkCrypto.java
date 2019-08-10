@@ -2,7 +2,6 @@ package io.metadew.iesi.framework.crypto;
 
 import io.metadew.iesi.framework.crypto.algo.AESGCMEncrypt;
 import io.metadew.iesi.framework.crypto.tools.CryptoTools;
-import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.framework.execution.FrameworkLog;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -135,7 +134,7 @@ public class FrameworkCrypto {
 		return output;
 	}
 
-	public String resolve(FrameworkExecution frameworkExecution, String input) {
+	public String resolve(String input) {
 		int openPos;
 		int closePos;
 		String variable_char = "ENC(";

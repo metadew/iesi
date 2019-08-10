@@ -38,7 +38,7 @@ public class ResultMetadataRepository extends MetadataRepository {
     }
 
     @Override
-    public void save(DataObject dataObject, FrameworkExecution frameworkExecution) {
+    public void save(DataObject dataObject) {
         ObjectMapper objectMapper = new ObjectMapper();
         if (dataObject.getType().equalsIgnoreCase("log")) {
 //            Script script = objectMapper.convertValue(dataObject.getData(), Script.class);

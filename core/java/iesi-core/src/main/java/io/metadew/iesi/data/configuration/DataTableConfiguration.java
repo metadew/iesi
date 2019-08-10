@@ -6,16 +6,13 @@ import io.metadew.iesi.framework.execution.FrameworkExecution;
 public class DataTableConfiguration {
 
     private DataTable dataTable;
-    private FrameworkExecution frameworkExecution;
 
     // Constructors
-    public DataTableConfiguration(DataTable dataTable, FrameworkExecution frameworkExecution) {
-        this.setFrameworkExecution(frameworkExecution);
+    public DataTableConfiguration(DataTable dataTable) {
         this.setDataTable(dataTable);
     }
 
-    public DataTableConfiguration(FrameworkExecution frameworkExecution) {
-        this.setFrameworkExecution(frameworkExecution);
+    public DataTableConfiguration() {
     }
 
     // Create
@@ -29,12 +26,5 @@ public class DataTableConfiguration {
         this.dataTable = dataTable;
     }
 
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
-    }
 
 }

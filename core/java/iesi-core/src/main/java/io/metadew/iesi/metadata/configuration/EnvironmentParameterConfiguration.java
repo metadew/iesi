@@ -14,16 +14,12 @@ public class EnvironmentParameterConfiguration {
 
     private EnvironmentParameter environmentParameter;
 
-    private FrameworkInstance frameworkInstance;
-
     // Constructors
-    public EnvironmentParameterConfiguration(EnvironmentParameter environmentParameter, FrameworkInstance frameworkInstance) {
+    public EnvironmentParameterConfiguration(EnvironmentParameter environmentParameter) {
         this.setEnvironmentParameter(environmentParameter);
-        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public EnvironmentParameterConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
+    public EnvironmentParameterConfiguration() {
     }
 
     public String getInsertStatement(String environmentName, EnvironmentParameter environmentParameter) {
@@ -108,13 +104,5 @@ public class EnvironmentParameterConfiguration {
     public void setEnvironmentParameter(EnvironmentParameter environmentParameter) {
         this.environmentParameter = environmentParameter;
     }
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
 
 }

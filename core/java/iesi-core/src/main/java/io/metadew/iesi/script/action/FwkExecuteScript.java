@@ -4,7 +4,6 @@ import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeService;
 import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.datatypes.text.Text;
-import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
 import io.metadew.iesi.framework.configuration.FrameworkStatus;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
@@ -36,8 +35,6 @@ public class FwkExecuteScript {
 
     private ScriptExecution scriptExecution;
 
-    private FrameworkExecution frameworkExecution;
-
     private ExecutionControl executionControl;
     private final Pattern keyValuePattern = Pattern.compile("\\s*(?<parameter>.+)\\s*=\\s*(?<value>.+)\\s*");
     // Parameters
@@ -55,9 +52,8 @@ public class FwkExecuteScript {
     private DataTypeService dataTypeService;
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public FwkExecuteScript(FrameworkExecution frameworkExecution, ExecutionControl executionControl, ScriptExecution scriptExecution,
+    public FwkExecuteScript(ExecutionControl executionControl, ScriptExecution scriptExecution,
                             ActionExecution actionExecution) {
-        this.setFrameworkExecution(frameworkExecution);
         this.setExecutionControl(executionControl);
         this.setActionExecution(actionExecution);
         this.setScriptExecution(scriptExecution);
@@ -67,15 +63,15 @@ public class FwkExecuteScript {
 
     public void prepare() {
         // Reset Parameters
-        this.setScriptName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        this.setScriptName(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "script"));
-        this.setScriptVersion(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        this.setScriptVersion(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "version"));
-        this.setEnvironmentName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        this.setEnvironmentName(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "environment"));
-        this.setParamList(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        this.setParamList(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "paramList"));
-        this.setParamFile(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        this.setParamFile(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "paramFile"));
 
         // Get Parameters
@@ -143,14 +139,13 @@ public class FwkExecuteScript {
         }
 
         try {
-            ScriptConfiguration scriptConfiguration = new ScriptConfiguration(FrameworkInstance.getInstance());
+            ScriptConfiguration scriptConfiguration = new ScriptConfiguration();
             // Script script = scriptConfiguration.get(this.getScriptName().getValue());
             Script script = scriptVersion
                     .map(version -> scriptConfiguration.get(scriptName, version))
                     .orElse(scriptConfiguration.get(scriptName)).get();
 
             ScriptExecution subScriptScriptExecution = new ScriptExecutionBuilder(false, false)
-                    .frameworkExecution(frameworkExecution)
                     .script(script)
                     .executionControl(executionControl)
                     .parentScriptExecution(this.scriptExecution)
@@ -270,14 +265,6 @@ public class FwkExecuteScript {
     }
 
     // Getters and Setters
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
-    }
-
     public ExecutionControl getExecutionControl() {
         return executionControl;
     }

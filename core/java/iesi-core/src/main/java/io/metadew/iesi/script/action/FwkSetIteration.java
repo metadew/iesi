@@ -9,7 +9,6 @@ import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -22,7 +21,6 @@ import java.util.HashMap;
 public class FwkSetIteration {
 
     private ActionExecution actionExecution;
-    private FrameworkExecution frameworkExecution;
     private ExecutionControl executionControl;
 
     // Parameters
@@ -43,14 +41,13 @@ public class FwkSetIteration {
 
     }
 
-    public FwkSetIteration(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+    public FwkSetIteration(ExecutionControl executionControl,
                            ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.init(frameworkExecution, executionControl, scriptExecution, actionExecution);
+        this.init(executionControl, scriptExecution, actionExecution);
     }
 
-    public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl, ScriptExecution scriptExecution,
+    public void init(ExecutionControl executionControl, ScriptExecution scriptExecution,
                      ActionExecution actionExecution) {
-        this.setFrameworkExecution(frameworkExecution);
         this.setExecutionControl(executionControl);
         this.setActionExecution(actionExecution);
         this.setActionParameterOperationMap(new HashMap<>());
@@ -59,23 +56,23 @@ public class FwkSetIteration {
     public void prepare() {
         // TODO: based on type a different class should be defined? e.g. fwk.setIteration.list or fwk.setIteration.range or fwk.setIteration.values
         // Reset Parameters
-        this.setIterationName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        this.setIterationName(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "name"));
-        this.setIterationType(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        this.setIterationType(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "type"));
-        this.setIterationList(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        this.setIterationList(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "list"));
-        this.setIterationValues(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        this.setIterationValues(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "values"));
-        this.setIterationFrom(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        this.setIterationFrom(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "from"));
-        this.setIterationTo(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        this.setIterationTo(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "to"));
-        this.setIterationStep(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        this.setIterationStep(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "step"));
-        this.setIterationCondition(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        this.setIterationCondition(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "condition"));
-        this.setIterationInterrupt(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        this.setIterationInterrupt(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "interrupt"));
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
@@ -257,15 +254,6 @@ public class FwkSetIteration {
                     iterationName.getClass()));
             return iterationName.toString();
         }
-    }
-
-    // Getters and Setters
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
     }
 
     public ExecutionControl getExecutionControl() {

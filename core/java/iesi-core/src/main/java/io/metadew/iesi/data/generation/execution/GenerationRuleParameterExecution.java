@@ -44,7 +44,7 @@ public class GenerationRuleParameterExecution {
 
     // Methods
     private void lookupGenerationRuleTypeParameter() {
-        GenerationRuleTypeParameterConfiguration generationRuleTypeParameterConfiguration = new GenerationRuleTypeParameterConfiguration(FrameworkInstance.getInstance());
+        GenerationRuleTypeParameterConfiguration generationRuleTypeParameterConfiguration = new GenerationRuleTypeParameterConfiguration();
         this.setGenerationRuleTypeParameter(generationRuleTypeParameterConfiguration.getGenerationRuleTypeParameter(this.getGenerationRuleTypeName(), this.getName()));
     }
 

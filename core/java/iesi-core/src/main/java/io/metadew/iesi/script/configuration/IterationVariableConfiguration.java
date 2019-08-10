@@ -15,7 +15,6 @@ import java.sql.SQLException;
 
 public class IterationVariableConfiguration {
 
-	private FrameworkExecution frameworkExecution;
 	private String runCacheFolderName;
     private String runCacheFileName = "iterationVariables.db3";
     private String runCacheFilePath;
@@ -23,10 +22,8 @@ public class IterationVariableConfiguration {
     private String PRC_ITERATION_VAR = "PRC_ITERATION_VAR";
 
     // Constructors
-    public IterationVariableConfiguration(FrameworkExecution frameworkExecution, String runCacheFolderName,
+    public IterationVariableConfiguration(String runCacheFolderName,
                                           boolean initialize) {
-    	this.setFrameworkExecution(frameworkExecution);
-    	
         // Define path
         this.setRunCacheFolderName(runCacheFolderName);
         this.setRunCacheFilePath(this.getRunCacheFolderName() + File.separator + this.getRunCacheFileName());
@@ -215,13 +212,5 @@ public class IterationVariableConfiguration {
     public void setPRC_ITERATION_VAR(String pRC_ITERATION_VAR) {
         PRC_ITERATION_VAR = pRC_ITERATION_VAR;
     }
-
-	public FrameworkExecution getFrameworkExecution() {
-		return frameworkExecution;
-	}
-
-	public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-		this.frameworkExecution = frameworkExecution;
-	}
 
 }

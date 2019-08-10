@@ -137,7 +137,8 @@ public class MetadataLauncher {
             Context context = new Context();
             context.setName("metadata");
             context.setScope("");
-            setFrameworkExecution(new FrameworkExecution(new FrameworkExecutionContext(context)));
+            FrameworkExecution frameworkExecution = FrameworkExecution.getInstance();
+            frameworkExecution.init(new FrameworkExecutionContext(context));
             MetadataRepositoryOperation metadataRepositoryOperation = null;
             List<MetadataRepository> metadataRepositories = new ArrayList();
 
@@ -218,7 +219,7 @@ public class MetadataLauncher {
                     }
 
                     // Execute
-                    BackupExecution backupExecution = new BackupExecution(frameworkInstance);
+                    BackupExecution backupExecution = new BackupExecution();
                     backupExecution.execute(path);
                     writeFooterMessage();
                     endLauncher(0, true);
@@ -257,7 +258,7 @@ public class MetadataLauncher {
             // Drop
             if (line.hasOption("drop")) {
                 for (MetadataRepository metadataRepository : metadataRepositories) {
-                    metadataRepositoryOperation = new MetadataRepositoryOperation(getFrameworkExecution(), metadataRepository);
+                    metadataRepositoryOperation = new MetadataRepositoryOperation(metadataRepository);
 
                     if (actionMatch) {
                         System.out.println();
@@ -281,7 +282,7 @@ public class MetadataLauncher {
 
             // Create
             for (MetadataRepository metadataRepository : metadataRepositories) {
-                metadataRepositoryOperation = new MetadataRepositoryOperation(getFrameworkExecution(), metadataRepository);
+                metadataRepositoryOperation = new MetadataRepositoryOperation(metadataRepository);
                 if (line.hasOption("create")) {
                     if (actionMatch) {
                         System.out.println();
@@ -300,7 +301,7 @@ public class MetadataLauncher {
             // clean
             if (line.hasOption("clean")) {
                 for (MetadataRepository metadataRepository : metadataRepositories) {
-                    metadataRepositoryOperation = new MetadataRepositoryOperation(getFrameworkExecution(), metadataRepository);
+                    metadataRepositoryOperation = new MetadataRepositoryOperation(metadataRepository);
                     if (actionMatch) {
                         System.out.println();
                     }
@@ -350,7 +351,7 @@ public class MetadataLauncher {
     }
 
     private static void endLauncher(int status, boolean exit) {
-        getFrameworkExecution().getFrameworkRuntime().terminate();
+        FrameworkExecution.getInstance().getFrameworkRuntime().terminate();
         if (exit) {
             System.exit(status);
         }
@@ -366,14 +367,6 @@ public class MetadataLauncher {
 
     private static void writeFooterMessage() {
         System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-    }
-
-    public static FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public static void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        MetadataLauncher.frameworkExecution = frameworkExecution;
     }
 
 }

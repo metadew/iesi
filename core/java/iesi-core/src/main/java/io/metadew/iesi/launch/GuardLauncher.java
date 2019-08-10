@@ -65,7 +65,8 @@ public class GuardLauncher {
             Context context = new Context();
             context.setName("guard");
             context.setScope("user");
-            FrameworkExecution frameworkExecution = new FrameworkExecution(new FrameworkExecutionContext(context), frameworkExecutionSettings, new FrameworkRunIdentifier());
+            FrameworkExecution frameworkExecution = FrameworkExecution.getInstance();
+            frameworkExecution.init(new FrameworkExecutionContext(context), frameworkExecutionSettings, new FrameworkRunIdentifier());
 
             String userName = "";
             String active = "";
@@ -75,29 +76,29 @@ public class GuardLauncher {
                 System.out.println("Option -user (user) value = " + userName);
 
                 if (line.hasOption("create")) {
-                    GuardExecution guardExecution = new GuardExecution(frameworkExecution);
+                    GuardExecution guardExecution = new GuardExecution();
                     guardExecution.createUser(userName);
                 }
 
                 if (line.hasOption("password")) {
-                    GuardExecution guardExecution = new GuardExecution(frameworkExecution);
+                    GuardExecution guardExecution = new GuardExecution();
                     guardExecution.resetPassword(userName);
                 }
 
                 if (line.hasOption("active")) {
                     active = line.getOptionValue("active");
-                    GuardExecution guardExecution = new GuardExecution(frameworkExecution);
+                    GuardExecution guardExecution = new GuardExecution();
                     guardExecution.updateActive(userName, active);
                 }
 
                 if (line.hasOption("locked")) {
                     locked = line.getOptionValue("locked");
-                    GuardExecution guardExecution = new GuardExecution(frameworkExecution);
+                    GuardExecution guardExecution = new GuardExecution();
                     guardExecution.updateLocked(userName, locked);
                 }
 
                 if (line.hasOption("reset")) {
-                    GuardExecution guardExecution = new GuardExecution(frameworkExecution);
+                    GuardExecution guardExecution = new GuardExecution();
                     guardExecution.resetIndividualLoginFails(userName);
                 }
 

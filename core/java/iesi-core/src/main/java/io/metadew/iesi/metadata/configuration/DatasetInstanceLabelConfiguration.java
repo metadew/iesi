@@ -12,17 +12,13 @@ import java.io.StringWriter;
 public class DatasetInstanceLabelConfiguration {
 
     private DatasetInstanceLabel datasetLabel;
-    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public DatasetInstanceLabelConfiguration(DatasetInstanceLabel datasetLabel,
-    		FrameworkInstance frameworkInstance) {
+    public DatasetInstanceLabelConfiguration(DatasetInstanceLabel datasetLabel) {
         this.setDatasetInstanceLabel(datasetLabel);
-        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public DatasetInstanceLabelConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
+    public DatasetInstanceLabelConfiguration() {
     }
 
     // Insert
@@ -88,13 +84,5 @@ public class DatasetInstanceLabelConfiguration {
     public void setDatasetInstanceLabel(DatasetInstanceLabel datasetLabel) {
         this.datasetLabel = datasetLabel;
     }
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
 
 }

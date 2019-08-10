@@ -13,7 +13,6 @@ public class ScriptExecutionBuilder {
     private final boolean root;
     private final boolean route;
     private Script script;
-    private FrameworkExecution frameworkExecution;
     private ExecutionControl executionControl;
     private ExecutionMetrics executionMetrics;
     private Long processId;
@@ -37,11 +36,6 @@ public class ScriptExecutionBuilder {
     
     public ScriptExecutionBuilder environment(String environment) {
         this.environment = environment;
-        return this;
-    }
-
-    public ScriptExecutionBuilder frameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
         return this;
     }
 
@@ -96,11 +90,9 @@ public class ScriptExecutionBuilder {
     private ScriptExecution buildNonRouteScriptExecution() throws ScriptExecutionBuildException {
         if (root) {
             try {
-                FrameworkExecution frameworkExecution = getFrameworkExecution().orElseThrow(() -> new ScriptExecutionBuildException("No framework execution supplied to script execution builder"));
-                ExecutionControl executionControl = new ExecutionControl(frameworkExecution);
+                ExecutionControl executionControl = new ExecutionControl();
                 return new NonRouteScriptExecution(
                         getScript().orElseThrow(() -> new ScriptExecutionBuildException("No script supplied to script execution builder")),
-                        frameworkExecution,
                         executionControl,
                         new ExecutionMetrics(),
                         executionControl.getNewProcessId(),
@@ -118,7 +110,6 @@ public class ScriptExecutionBuilder {
             ActionSelectOperation actionSelectOperation = new ActionSelectOperation("");
             return new NonRouteScriptExecution(
                     getScript().orElseThrow(() -> new ScriptExecutionBuildException("No script supplied to script execution builder")),
-                    frameworkExecution,
                     executionControl,
                     new ExecutionMetrics(),
                     executionControl.getNewProcessId(),
@@ -134,11 +125,9 @@ public class ScriptExecutionBuilder {
 
     private ScriptExecution buildRouteScriptExecution() throws ScriptExecutionBuildException {
         try {
-            FrameworkExecution frameworkExecution = getFrameworkExecution().orElseThrow(() -> new ScriptExecutionBuildException("No framework execution supplied to script execution builder"));
-            ExecutionControl executionControl = root ? new ExecutionControl(frameworkExecution) : getExecutionControl().orElseThrow(() -> new ScriptExecutionBuildException("No execution control supplied to route script execution builder"));
+            ExecutionControl executionControl = root ? new ExecutionControl() : getExecutionControl().orElseThrow(() -> new ScriptExecutionBuildException("No execution control supplied to route script execution builder"));
             return new RouteScriptExecution (
                     getScript().orElseThrow(() -> new ScriptExecutionBuildException("No script supplied to route script execution builder")),
-                    frameworkExecution,
                     executionControl,
                     getExecutionMetrics().orElseThrow(() -> new ScriptExecutionBuildException("No execution metrics supplied to route script execution builder")),
                     executionControl.getNewProcessId(),
@@ -156,10 +145,6 @@ public class ScriptExecutionBuilder {
 
     public Optional<Script> getScript() {
         return  Optional.ofNullable(script);
-    }
-
-    public Optional<FrameworkExecution> getFrameworkExecution() {
-        return Optional.ofNullable(frameworkExecution);
     }
 
     public Optional<ExecutionControl> getExecutionControl() {

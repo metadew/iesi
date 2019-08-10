@@ -6,11 +6,8 @@ import io.metadew.iesi.metadata.definition.script.ScriptLog;
 
 public class ExecutionLog {
 
-    private FrameworkExecution frameworkExecution;
-
     // Constructors
-    public ExecutionLog(FrameworkExecution frameworkExecution) {
-        this.setFrameworkExecution(frameworkExecution);
+    public ExecutionLog() {
     }
 
     // Insert
@@ -31,15 +28,6 @@ public class ExecutionLog {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    // Getters and Setters
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
     }
 
 }

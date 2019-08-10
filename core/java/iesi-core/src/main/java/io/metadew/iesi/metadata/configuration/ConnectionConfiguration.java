@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 
 public class ConnectionConfiguration extends MetadataConfiguration {
 
-    private FrameworkInstance frameworkInstance;
     private Connection connection;
 
     // Constructors
@@ -30,13 +29,8 @@ public class ConnectionConfiguration extends MetadataConfiguration {
     	
     }
     
-    public ConnectionConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
-    }
-
-    public ConnectionConfiguration(Connection connection, FrameworkInstance frameworkInstance) {
+    public ConnectionConfiguration(Connection connection) {
         this.setConnection(connection);
-        this.setFrameworkInstance(frameworkInstance);
     }
     
     // Abstract method implementations
@@ -52,7 +46,7 @@ public class ConnectionConfiguration extends MetadataConfiguration {
         String query = "select * from " + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("Connections")
                 + " order by CONN_NM ASC";
         CachedRowSet crs = MetadataControl.getInstance().getConnectivityMetadataRepository().executeQuery(query, "reader");
-        ConnectionParameterConfiguration connectionParameterConfiguration = new ConnectionParameterConfiguration(this.getFrameworkInstance());
+        ConnectionParameterConfiguration connectionParameterConfiguration = new ConnectionParameterConfiguration();
         try {
             while (crs.next()) {
                 String connectionName = crs.getString("CONN_NM");
@@ -127,8 +121,7 @@ public class ConnectionConfiguration extends MetadataConfiguration {
                 + " where CONN_NM = '" + connectionName + "'";
         crsConnection = MetadataControl.getInstance().getConnectivityMetadataRepository()
                 .executeQuery(queryConnection, "reader");
-        ConnectionParameterConfiguration connectionParameterConfiguration = new ConnectionParameterConfiguration(
-                this.getFrameworkInstance());
+        ConnectionParameterConfiguration connectionParameterConfiguration = new ConnectionParameterConfiguration();
         try {
             while (crsConnection.next()) {
                 // TODO: if no parameters are found for environment_name, it does not exist?!
@@ -270,7 +263,7 @@ public class ConnectionConfiguration extends MetadataConfiguration {
     }
 
     private List<String> getInsertQuery(Connection connection) {
-        ConnectionParameterConfiguration connectionParameterConfiguration = new ConnectionParameterConfiguration(frameworkInstance);
+        ConnectionParameterConfiguration connectionParameterConfiguration = new ConnectionParameterConfiguration();
         List<String> queries = new ArrayList<>();
         if (getConnectionByName(connection.getName()).size() == 0) {
             queries.add("INSERT INTO " + MetadataControl.getInstance().getConnectivityMetadataRepository()
@@ -293,7 +286,7 @@ public class ConnectionConfiguration extends MetadataConfiguration {
 
         for (ConnectionParameter connectionParameter : connection.getParameters()) {
             ConnectionParameterConfiguration connectionParameterConfiguration = new ConnectionParameterConfiguration(
-                    connectionParameter, this.getFrameworkInstance());
+                    connectionParameter);
             if (!result.toString().equals(""))
                 result.append("\n");
             result.append(connectionParameterConfiguration.getInsertStatement(connection.getName(), connection.getEnvironment()));
@@ -367,7 +360,7 @@ public class ConnectionConfiguration extends MetadataConfiguration {
 
         for (ConnectionParameter connectionParameter : this.getConnection().getParameters()) {
             ConnectionParameterConfiguration connectionParameterConfiguration = new ConnectionParameterConfiguration(
-                    connectionParameter, this.getFrameworkInstance());
+                    connectionParameter);
             if (!result.equalsIgnoreCase(""))
                 result += "\n";
             result += connectionParameterConfiguration.getInsertStatement(this.getConnection().getName(),
@@ -386,7 +379,7 @@ public class ConnectionConfiguration extends MetadataConfiguration {
                 .getTableNameByLabel("Connections")
                 + " order by CONN_NM ASC";
         crs = MetadataControl.getInstance().getConnectivityMetadataRepository().executeQuery(query, "reader");
-        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkInstance());
+        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
         try {
             String connectionName = "";
             while (crs.next()) {
@@ -435,13 +428,5 @@ public class ConnectionConfiguration extends MetadataConfiguration {
     public void setConnection(Connection connection) {
         this.connection = connection;
     }
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
 
 }

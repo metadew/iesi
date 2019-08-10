@@ -23,11 +23,9 @@ import java.util.Vector;
 
 public class FileTransferOperation {
 
-    private FrameworkExecution frameworkExecution;
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public FileTransferOperation(FrameworkExecution frameworkExecution) {
-        this.setFrameworkExecution(frameworkExecution);
+    public FileTransferOperation() {
     }
 
     // File Transfer
@@ -37,7 +35,7 @@ public class FileTransferOperation {
                                                     Connection targetConnection) {
 
         List<FileTransfered> fileTransferedList = new ArrayList();
-        ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
+        ConnectionOperation connectionOperation = new ConnectionOperation();
         HostConnection sourceConnectionConnection = connectionOperation.getHostConnection(sourceConnection);
         LOGGER.trace("fho.transfer.source.connection=" + sourceConnection.getName());
         HostConnection targetConnectionConnection = connectionOperation.getHostConnection(targetConnection);
@@ -138,7 +136,7 @@ public class FileTransferOperation {
                                                     Connection targetConnection) {
 
         List<FileTransfered> fileTransferedList = new ArrayList();
-        ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
+        ConnectionOperation connectionOperation = new ConnectionOperation();
         HostConnection sourceConnectionConnection = connectionOperation.getHostConnection(sourceConnection);
         LOGGER.trace("fho.transfer.source.connection=" + sourceConnection.getName());
         HostConnection targetConnectionConnection = connectionOperation.getHostConnection(targetConnection);
@@ -281,7 +279,7 @@ public class FileTransferOperation {
                                                    Connection sourceConnection, String targetFilePath, String targetFileName,
                                                    Connection targetConnection) {
 
-        ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
+        ConnectionOperation connectionOperation = new ConnectionOperation();
         HostConnection sourceConnectionConnection = connectionOperation.getHostConnection(sourceConnection);
         HostConnection targetConnectionConnection = connectionOperation.getHostConnection(targetConnection);
 
@@ -387,15 +385,6 @@ public class FileTransferOperation {
                                                      Connection targetConnection) {
 
         throw new RuntimeException("method not supported");
-    }
-
-    // Getters and Setters
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
     }
 
 }

@@ -28,7 +28,7 @@ public class GenerationRuntime {
 	public GenerationRuntime(FrameworkExecution frameworkExecution, ExecutionControl executionControl) {
 		this.setFrameworkExecution(frameworkExecution);
 		this.setExecutionControl(executionControl);
-		this.setGenerationObjectExecution(new GenerationObjectExecution(this.getFrameworkExecution()));
+		this.setGenerationObjectExecution(new GenerationObjectExecution());
 		this.createTemporaryDatabase();
 	}
 

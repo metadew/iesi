@@ -7,21 +7,18 @@ import io.metadew.iesi.metadata.definition.SubroutineTypeParameter;
 public class SubroutineTypeParameterConfiguration {
 
     private SubroutineTypeParameter subroutineTypeParameter;
-    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public SubroutineTypeParameterConfiguration(SubroutineTypeParameter subroutineTypeParameter, FrameworkInstance frameworkInstance) {
+    public SubroutineTypeParameterConfiguration(SubroutineTypeParameter subroutineTypeParameter) {
         this.setSubroutineTypeParameter(subroutineTypeParameter);
-        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public SubroutineTypeParameterConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
+    public SubroutineTypeParameterConfiguration() {
     }
 
     public SubroutineTypeParameter getSubroutineTypeParameter(String subroutineTypeName, String subroutineTypeParameterName) {
         SubroutineTypeParameter subroutineTypeParameterResult = null;
-        SubroutineTypeConfiguration subroutineTypeConfiguration = new SubroutineTypeConfiguration(this.getFrameworkInstance());
+        SubroutineTypeConfiguration subroutineTypeConfiguration = new SubroutineTypeConfiguration();
         SubroutineType subroutineType = subroutineTypeConfiguration.getSubroutineType(subroutineTypeName);
         for (SubroutineTypeParameter subroutineTypeParameter : subroutineType.getParameters()) {
             if (subroutineTypeParameter.getName().equalsIgnoreCase(subroutineTypeParameterName)) {
@@ -40,13 +37,5 @@ public class SubroutineTypeParameterConfiguration {
     public void setSubroutineTypeParameter(SubroutineTypeParameter subroutineTypeParameter) {
         this.subroutineTypeParameter = subroutineTypeParameter;
     }
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
 
 }

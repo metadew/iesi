@@ -1,5 +1,6 @@
 package io.metadew.iesi.server.execution.requestor;
 
+import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
 
 import javax.sql.rowset.CachedRowSet;
@@ -9,38 +10,36 @@ import java.sql.SQLException;
 
 public class RequestorService {
 
-	private FrameworkInstance frameworkInstance;
 	public CachedRowSet crs;
 
 	// fields
 	public String requestId;
 
-	public RequestorService(FrameworkInstance frameworkInstance) {
-		this.setFrameworkInstance(frameworkInstance);
+	public RequestorService() {
 		this.clearProcessors();
 		this.createProcessors();
 	}
 
 	// Initialize
 	public void clearProcessors() {
-		String QueryString = "delete from " + this.getFrameworkInstance().getExecutionServerRepositoryConfiguration()
+		String QueryString = "delete from " + FrameworkExecution.getInstance().getExecutionServerRepositoryConfiguration()
 				.getTableNameByLabel("RequestExecutions");
-		this.getFrameworkInstance().getExecutionServerRepositoryConfiguration().executeUpdate(QueryString);
+		FrameworkExecution.getInstance().getExecutionServerRepositoryConfiguration().executeUpdate(QueryString);
 	}
 
 	public void createProcessors() {
-		String QueryString = "insert into " + this.getFrameworkInstance().getExecutionServerRepositoryConfiguration()
+		String QueryString = "insert into " + FrameworkExecution.getInstance().getExecutionServerRepositoryConfiguration()
 				.getTableNameByLabel("RequestExecutions") + " (exe_id,request_id) values (1,-1)";
-		this.getFrameworkInstance().getExecutionServerRepositoryConfiguration().executeUpdate(QueryString);
+		FrameworkExecution.getInstance().getExecutionServerRepositoryConfiguration().executeUpdate(QueryString);
 	}
 
 	public int getAvailableProcessor() {
 		int executionId = -1;
 
-		String QueryString = "select min(exe_id) exe_id from " + this.getFrameworkInstance()
+		String QueryString = "select min(exe_id) exe_id from " + FrameworkExecution.getInstance()
 				.getExecutionServerRepositoryConfiguration().getTableNameByLabel("RequestExecutions")
 				+ " where request_id = -1";
-		this.crs = this.getFrameworkInstance().getExecutionServerRepositoryConfiguration().executeQuery(QueryString,
+		this.crs = FrameworkExecution.getInstance().getExecutionServerRepositoryConfiguration().executeQuery(QueryString,
 				"reader");
 
 		try {
@@ -60,9 +59,9 @@ public class RequestorService {
 	public void getNextQueID() {
 		String QueryString = "";
 		CachedRowSet crs = null;
-		QueryString = "select min(load_tms) LOAD_TMS from " + this.getFrameworkInstance()
+		QueryString = "select min(load_tms) LOAD_TMS from " + FrameworkExecution.getInstance()
 				.getExecutionServerRepositoryConfiguration().getTableNameByLabel("Requests") + " where exe_id = -1";
-		crs = this.getFrameworkInstance().getExecutionServerRepositoryConfiguration().executeQuery(QueryString,
+		crs = FrameworkExecution.getInstance().getExecutionServerRepositoryConfiguration().executeQuery(QueryString,
 				"reader");
 		String loadTimestamp = "";
 		try {
@@ -73,10 +72,10 @@ public class RequestorService {
 			crs.close();
 
 			// Get the request identifier
-			QueryString = "select request_id from " + this.getFrameworkInstance()
+			QueryString = "select request_id from " + FrameworkExecution.getInstance()
 					.getExecutionServerRepositoryConfiguration().getTableNameByLabel("Requests") + " where load_tms = '"
 					+ loadTimestamp + "'";
-			crs = this.getFrameworkInstance().getExecutionServerRepositoryConfiguration().executeQuery(QueryString,
+			crs = FrameworkExecution.getInstance().getExecutionServerRepositoryConfiguration().executeQuery(QueryString,
 					"reader");
 			while (crs.next()) {
 				this.requestId = crs.getString("REQUEST_ID");
@@ -112,7 +111,7 @@ public class RequestorService {
 		}
 
 		// set processor
-		RequestorProcessor prc = new RequestorProcessor(this.getFrameworkInstance(), availableExecutionId, this.requestId);
+		RequestorProcessor prc = new RequestorProcessor(availableExecutionId, this.requestId);
 		prc.execute();
 		System.out.println(this.requestId);
 
@@ -122,9 +121,9 @@ public class RequestorService {
 		int avaiableRequests = -1;
 		int availableProcesses = -1;
 
-		String QueryString = "select count(request_id) 'REQUEST_NB' from " + this.getFrameworkInstance()
+		String QueryString = "select count(request_id) 'REQUEST_NB' from " + FrameworkExecution.getInstance()
 				.getExecutionServerRepositoryConfiguration().getTableNameByLabel("Requests") + " where exe_id = -1";
-		this.crs = this.getFrameworkInstance().getExecutionServerRepositoryConfiguration().executeQuery(QueryString,
+		this.crs = FrameworkExecution.getInstance().getExecutionServerRepositoryConfiguration().executeQuery(QueryString,
 				"reader");
 
 		try {
@@ -133,10 +132,10 @@ public class RequestorService {
 			}
 
 			// Get available processes
-			QueryString = "select count(exe_id) 'PRC_NB' from " + this.getFrameworkInstance()
+			QueryString = "select count(exe_id) 'PRC_NB' from " + FrameworkExecution.getInstance()
 					.getExecutionServerRepositoryConfiguration().getTableNameByLabel("RequestExecutions")
 					+ " where request_id = -1";
-			this.crs = this.getFrameworkInstance().getExecutionServerRepositoryConfiguration().executeQuery(QueryString,
+			this.crs = FrameworkExecution.getInstance().getExecutionServerRepositoryConfiguration().executeQuery(QueryString,
 					"reader");
 			while (crs.next()) {
 				availableProcesses = crs.getInt("PRC_NB");
@@ -153,15 +152,6 @@ public class RequestorService {
 		} else {
 			return false;
 		}
-	}
-
-	// Getters and setters
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
 	}
 
 }

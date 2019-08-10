@@ -7,22 +7,19 @@ import io.metadew.iesi.metadata.definition.script.ScriptTypeParameter;
 public class ScriptTypeParameterConfiguration {
 
     private ScriptTypeParameter scriptTypeParameter;
-    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public ScriptTypeParameterConfiguration(ScriptTypeParameter scriptTypeParameter, FrameworkInstance frameworkInstance) {
+    public ScriptTypeParameterConfiguration(ScriptTypeParameter scriptTypeParameter) {
         this.setScriptTypeParameter(scriptTypeParameter);
-        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public ScriptTypeParameterConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
+    public ScriptTypeParameterConfiguration() {
     }
 
     // Get Script Type Parameter
     public ScriptTypeParameter getScriptTypeParameter(String scriptTypeName, String scriptTypeParameterName) {
         ScriptTypeParameter scriptTypeParameterResult = null;
-        ScriptTypeConfiguration scriptTypeConfiguration = new ScriptTypeConfiguration(this.getFrameworkInstance());
+        ScriptTypeConfiguration scriptTypeConfiguration = new ScriptTypeConfiguration();
         ScriptType scriptType = scriptTypeConfiguration.getScriptType(scriptTypeName);
         for (ScriptTypeParameter scriptTypeParameter : scriptType.getParameters()) {
             if (scriptTypeParameter.getName().equalsIgnoreCase(scriptTypeParameterName)) {
@@ -41,13 +38,4 @@ public class ScriptTypeParameterConfiguration {
     public void setScriptTypeParameter(ScriptTypeParameter scriptTypeParameter) {
         this.scriptTypeParameter = scriptTypeParameter;
     }
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
-
 }

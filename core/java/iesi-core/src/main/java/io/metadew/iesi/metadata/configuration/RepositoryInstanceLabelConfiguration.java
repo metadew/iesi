@@ -12,17 +12,13 @@ import java.io.StringWriter;
 public class RepositoryInstanceLabelConfiguration {
 
     private RepositoryInstanceLabel repositoryLabel;
-    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public RepositoryInstanceLabelConfiguration(RepositoryInstanceLabel repositoryLabel,
-    		FrameworkInstance frameworkInstance) {
+    public RepositoryInstanceLabelConfiguration(RepositoryInstanceLabel repositoryLabel) {
         this.setRepositoryInstanceLabel(repositoryLabel);
-        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public RepositoryInstanceLabelConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
+    public RepositoryInstanceLabelConfiguration() {
     }
 
     // Insert
@@ -88,13 +84,5 @@ public class RepositoryInstanceLabelConfiguration {
     public void setRepositoryInstanceLabel(RepositoryInstanceLabel repositoryLabel) {
         this.repositoryLabel = repositoryLabel;
     }
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
 
 }

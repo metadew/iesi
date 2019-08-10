@@ -11,7 +11,6 @@ public class Services {
     public Thread requestorThread;
     public Runnable schedulerRunnable;
     public Thread schedulerThread;
-    private FrameworkInstance frameworkInstance;
 
     public Services(String initializationFile) {
         // Create the framework instance
@@ -19,7 +18,6 @@ public class Services {
         frameworkInitializationFile.setName(initializationFile);
         FrameworkInstance frameworkInstance = FrameworkInstance.getInstance();
         frameworkInstance.init(frameworkInitializationFile);
-        this.setFrameworkInstance(frameworkInstance);
 
         // Create the framework settings
         //FrameworkExecutionSettings frameworkExecutionSettings = new FrameworkExecutionSettings("");
@@ -29,7 +27,7 @@ public class Services {
         context.setName("server");
         context.setScope("");
        
-        requestorRunnable = new RequestorRunnable(this.getFrameworkInstance());
+        requestorRunnable = new RequestorRunnable();
         requestorThread = new Thread(requestorRunnable);
         requestorThread.setName(ExecutionServerServices.REQUESTOR.value());
         // schedulerRunnable = new SchedulerRunnable();
@@ -176,15 +174,5 @@ public class Services {
     public boolean statusScheduler() {
         return schedulerThread.isAlive();
     }
-
-    // Getters and setters
-    public FrameworkInstance getFrameworkInstance() {
-        return frameworkInstance;
-    }
-
-    public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-        this.frameworkInstance = frameworkInstance;
-    }
-
 
 }

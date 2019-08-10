@@ -17,17 +17,13 @@ import java.util.List;
 public class RepositoryInstanceConfiguration {
 
     private RepositoryInstance repositoryInstance;
-    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public RepositoryInstanceConfiguration(RepositoryInstance repositoryInstance,
-    		FrameworkInstance frameworkInstance) {
+    public RepositoryInstanceConfiguration(RepositoryInstance repositoryInstance) {
         this.setRepositoryInstance(repositoryInstance);
-        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public RepositoryInstanceConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
+    public RepositoryInstanceConfiguration() {
     }
 
     // Insert
@@ -83,8 +79,7 @@ public class RepositoryInstanceConfiguration {
             return result;
 
         for (RepositoryInstanceParameter repositoryInstanceParameter : this.getRepositoryInstance().getParameters()) {
-            RepositoryInstanceParameterConfiguration repositoryInstanceParameterConfiguration = new RepositoryInstanceParameterConfiguration(
-                    repositoryInstanceParameter, this.getFrameworkInstance());
+            RepositoryInstanceParameterConfiguration repositoryInstanceParameterConfiguration = new RepositoryInstanceParameterConfiguration(repositoryInstanceParameter);
             if (!result.equalsIgnoreCase(""))
                 result += "\n";
             result += repositoryInstanceParameterConfiguration.getInsertStatement(repositoryName, this.getRepositoryInstance().getName());
@@ -102,8 +97,7 @@ public class RepositoryInstanceConfiguration {
             return result;
 
         for (RepositoryInstanceLabel repositoryInstanceLabel : this.getRepositoryInstance().getLabels()) {
-            RepositoryInstanceLabelConfiguration repositoryInstanceLabelConfiguration = new RepositoryInstanceLabelConfiguration(
-                    repositoryInstanceLabel, this.getFrameworkInstance());
+            RepositoryInstanceLabelConfiguration repositoryInstanceLabelConfiguration = new RepositoryInstanceLabelConfiguration(repositoryInstanceLabel);
             if (!result.equalsIgnoreCase(""))
                 result += "\n";
             result += repositoryInstanceLabelConfiguration.getInsertStatement(repositoryName, this.getRepositoryInstance().getName());
@@ -122,10 +116,8 @@ public class RepositoryInstanceConfiguration {
                 + " where REPO_ID = " + repositoryId + " and REPO_INST_NM = '" + repositoryInstanceName + "'";
         crsRepositoryInstance = MetadataControl.getInstance().getConnectivityMetadataRepository()
                 .executeQuery(queryRepositoryInstance, "reader");
-        RepositoryInstanceParameterConfiguration repositoryInstanceParameterConfiguration = new RepositoryInstanceParameterConfiguration(
-                this.getFrameworkInstance());
-        RepositoryInstanceLabelConfiguration repositoryInstanceLabelConfiguration = new RepositoryInstanceLabelConfiguration(
-                this.getFrameworkInstance());
+        RepositoryInstanceParameterConfiguration repositoryInstanceParameterConfiguration = new RepositoryInstanceParameterConfiguration();
+        RepositoryInstanceLabelConfiguration repositoryInstanceLabelConfiguration = new RepositoryInstanceLabelConfiguration();
         try {
             while (crsRepositoryInstance.next()) {
                 repositoryInstance.setName(repositoryInstanceName);
@@ -173,7 +165,7 @@ public class RepositoryInstanceConfiguration {
     }
 
     public RepositoryInstance getRepositoryInstance(String repositoryName, String repositoryInstanceName) {
-        RepositoryConfiguration repositoryConfiguration = new RepositoryConfiguration(this.getFrameworkInstance());
+        RepositoryConfiguration repositoryConfiguration = new RepositoryConfiguration();
         return this.getRepositoryInstance(repositoryConfiguration.getRepositoryId(repositoryName), repositoryInstanceName);
     }
 
@@ -197,13 +189,5 @@ public class RepositoryInstanceConfiguration {
     public void setRepositoryInstance(RepositoryInstance repositoryInstance) {
         this.repositoryInstance = repositoryInstance;
     }
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
 
 }

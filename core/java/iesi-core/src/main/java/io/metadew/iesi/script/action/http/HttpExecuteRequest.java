@@ -11,7 +11,6 @@ import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.datatypes.dataset.KeyValueDataset;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
-import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.HttpRequestComponent;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
@@ -44,7 +43,6 @@ public class HttpExecuteRequest {
     private HttpRequestService httpRequestService;
     private HttpRequestComponentOperation httpRequestComponentOperation;
     private ActionExecution actionExecution;
-    private FrameworkExecution frameworkExecution;
     private ExecutionControl executionControl;
     private DataTypeService dataTypeService;
     // Parameters
@@ -85,9 +83,8 @@ public class HttpExecuteRequest {
 
     }
 
-    public HttpExecuteRequest(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+    public HttpExecuteRequest(ExecutionControl executionControl,
                               ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.frameworkExecution = frameworkExecution;
         this.executionControl = executionControl;
         this.actionExecution = actionExecution;
         this.actionParameterOperationMap = new HashMap<>();
@@ -98,20 +95,20 @@ public class HttpExecuteRequest {
 
     public void prepare() throws URISyntaxException, HttpRequestBuilderException, IOException, SQLException {
         // Reset Parameters
-        requestTypeActionParameterOperation = new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        requestTypeActionParameterOperation = new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), typeKey);
-        requestNameActionParameterOperation = new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        requestNameActionParameterOperation = new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), requestKey);
-        requestBodyActionParameterOperation = new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        requestBodyActionParameterOperation = new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), bodyKey);
-        setRuntimeVariablesActionParameterOperation = new ActionParameterOperation(this.getFrameworkExecution(),
+        setRuntimeVariablesActionParameterOperation = new ActionParameterOperation(
                 this.getExecutionControl(), this.getActionExecution(), this.getActionExecution().getAction().getType(),
                 setRuntimeVariablesKey);
-        setDatasetActionParameterOperation = new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        setDatasetActionParameterOperation = new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), setDatasetKey);
-        expectedStatusCodesActionParameterOperation = new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        expectedStatusCodesActionParameterOperation = new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), expectedStatusCodesKey);
-        proxyActionParameterOperation = new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        proxyActionParameterOperation = new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), proxyKey);
 
         // Get Parameters
@@ -227,7 +224,7 @@ public class HttpExecuteRequest {
         if (connectionName == null) {
             return null;
         } else if (connectionName instanceof Text) {
-            ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(FrameworkInstance.getInstance());
+            ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
             return proxyConnection = connectionConfiguration.getConnection(((Text) connectionName).getString(), executionControl.getEnvName())
                     .map(ProxyConnection::from)
                     .orElseThrow(() -> new RuntimeException(MessageFormat.format("Cannot find connection {0}", ((Text) connectionName).getString())));
@@ -433,15 +430,6 @@ public class HttpExecuteRequest {
 
     private void setRuntimeVariable(JsonNode jsonNode, boolean setRuntimeVariables) {
         setRuntimeVariable(jsonNode, "");
-    }
-
-    // Getters and Setters
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
     }
 
     public ExecutionControl getExecutionControl() {

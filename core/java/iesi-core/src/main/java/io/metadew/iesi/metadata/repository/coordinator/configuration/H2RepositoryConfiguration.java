@@ -26,22 +26,22 @@ public class H2RepositoryConfiguration extends RepositoryConfiguration {
     private String readerUserPassword;
 
 
-    public H2RepositoryConfiguration(ConfigFile configFile, FrameworkSettingConfiguration frameworkSettingConfiguration, FrameworkCrypto frameworkCrypto) {
-       super(configFile, frameworkSettingConfiguration, frameworkCrypto);
+    public H2RepositoryConfiguration(ConfigFile configFile) {
+       super(configFile);
     }
 
     @Override
-    void fromConfigFile(ConfigFile configFile, FrameworkSettingConfiguration frameworkSettingConfiguration, FrameworkCrypto frameworkCrypto) {
-    	host = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.h2.host");
-    	port = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.h2.port");
-    	schema = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.h2.schema");
-    	ownerUser = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.h2.owner");
-    	ownerUserPassword = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.h2.owner.password");
-    	writerUser = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.h2.writer");
-    	writerUserPassword = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.h2.writer.password");
-    	readerUser = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.h2.reader");
-    	readerUserPassword = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.h2.reader.password");
-    	jdbcConnectionString = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.connection.string");    	
+    void fromConfigFile(ConfigFile configFile) {
+    	host = getSettingValue(configFile, "metadata.repository.h2.host");
+    	port = getSettingValue(configFile, "metadata.repository.h2.port");
+    	schema = getSettingValue(configFile, "metadata.repository.h2.schema");
+    	ownerUser = getSettingValue(configFile, "metadata.repository.h2.owner");
+    	ownerUserPassword = getSettingValue(configFile, "metadata.repository.h2.owner.password");
+    	writerUser = getSettingValue(configFile, "metadata.repository.h2.writer");
+    	writerUserPassword = getSettingValue(configFile, "metadata.repository.h2.writer.password");
+    	readerUser = getSettingValue(configFile, "metadata.repository.h2.reader");
+    	readerUserPassword = getSettingValue(configFile, "metadata.repository.h2.reader.password");
+    	jdbcConnectionString = getSettingValue(configFile, "metadata.repository.connection.string");    	
     }
 
     @Override

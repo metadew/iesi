@@ -185,6 +185,6 @@ public abstract class MetadataRepository {
 		return Optional.ofNullable(instanceName);
 	}
 
-	public abstract void save(DataObject dataObject, FrameworkExecution frameworkExecution) throws MetadataRepositorySaveException;
+	public abstract void save(DataObject dataObject) throws MetadataRepositorySaveException;
 
 }

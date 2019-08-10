@@ -9,23 +9,19 @@ import io.metadew.iesi.metadata.operation.TypeConfigurationOperation;
 public class GenerationControlRuleTypeConfiguration {
 
     private GenerationControlRuleType generationControlRuleType;
-    private FrameworkInstance frameworkInstance;
     private String dataObjectType = "GenerationControlRuleType";
 
     // Constructors
-    public GenerationControlRuleTypeConfiguration(GenerationControlRuleType generationControlRuleType, FrameworkInstance frameworkInstance) {
+    public GenerationControlRuleTypeConfiguration(GenerationControlRuleType generationControlRuleType) {
         this.setgenerationControlRuleType(generationControlRuleType);
-        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public GenerationControlRuleTypeConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
+    public GenerationControlRuleTypeConfiguration() {
     }
 
     //	// Methods
     public GenerationControlRuleType getGenerationControlRuleType(String GenerationControlRuleTypeName) {
-        String conf = TypeConfigurationOperation.getTypeConfigurationFile(this.getFrameworkInstance(),
-                this.getDataObjectType(), GenerationControlRuleTypeName);
+        String conf = TypeConfigurationOperation.getTypeConfigurationFile(this.getDataObjectType(), GenerationControlRuleTypeName);
         DataObjectOperation dataObjectOperation = new DataObjectOperation(conf);
         ObjectMapper objectMapper = new ObjectMapper();
         return objectMapper.convertValue(dataObjectOperation.getDataObject().getData(),
@@ -48,13 +44,5 @@ public class GenerationControlRuleTypeConfiguration {
     public void setDataObjectType(String dataObjectType) {
         this.dataObjectType = dataObjectType;
     }
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
 
 }

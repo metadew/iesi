@@ -7,23 +7,20 @@ import io.metadew.iesi.script.execution.ExecutionControl;
 
 public class RepositoryParameterOperation {
 
-    private FrameworkExecution frameworkExecution;
     private ExecutionControl executionControl;
     private String name;
     private String value = "";
     private String inputValue = "";
 
     // Constructors
-    public RepositoryParameterOperation(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+    public RepositoryParameterOperation(ExecutionControl executionControl,
                                         String name) {
-        this.setFrameworkExecution(frameworkExecution);
         this.setExecutionControl(executionControl);
         this.setName(name);
     }
 
-    public RepositoryParameterOperation(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+    public RepositoryParameterOperation(ExecutionControl executionControl,
                                         String name, String value) {
-        this.setFrameworkExecution(frameworkExecution);
         this.setExecutionControl(executionControl);
         this.setName(name);
 
@@ -47,14 +44,6 @@ public class RepositoryParameterOperation {
         this.value = this.getExecutionControl().getExecutionRuntime().resolveVariables(value, true);
     }
 
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
-    }
-
     public String getInputValue() {
         return inputValue;
     }
@@ -72,7 +61,7 @@ public class RepositoryParameterOperation {
         this.setValue(lookupResult.getValue());
 
         // Resolve internal encryption
-        String decryptedValue = FrameworkCrypto.getInstance().resolve(this.getFrameworkExecution(),
+        String decryptedValue = FrameworkCrypto.getInstance().resolve(
                 this.getValue());
 
         this.setValue(decryptedValue);

@@ -1,6 +1,5 @@
 package io.metadew.iesi.connection.tools;
 
-import io.metadew.iesi.framework.execution.FrameworkExecution;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.io.IOUtils;
@@ -39,7 +38,7 @@ public final class CompressionTools {
         }
     }
 
-    public static void unTarFile(FrameworkExecution frameworkExecution, String sourcePath, String sourceFile) {
+    public static void unTarFile(String sourcePath, String sourceFile) {
         // Path to input file, which is a tar file
         String inputFilePath = sourcePath + File.separator + sourceFile;
 

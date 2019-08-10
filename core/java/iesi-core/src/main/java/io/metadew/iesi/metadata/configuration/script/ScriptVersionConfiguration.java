@@ -18,12 +18,10 @@ import java.util.Optional;
 
 public class ScriptVersionConfiguration {
 
-    private FrameworkInstance frameworkInstance;
     private static final Logger LOGGER = LogManager.getLogger();
 
 
-    public ScriptVersionConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
+    public ScriptVersionConfiguration() {
     }
 
     public void insert(String scriptId, ScriptVersion scriptVersion) throws ScriptVersionAlreadyExistsException {
@@ -91,15 +89,5 @@ public class ScriptVersionConfiguration {
             return Optional.empty();
         }
     }
-
-    // Getters and Setters
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
 
 }

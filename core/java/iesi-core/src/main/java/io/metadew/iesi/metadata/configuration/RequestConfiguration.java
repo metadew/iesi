@@ -25,37 +25,33 @@ import java.util.Optional;
 public class RequestConfiguration {
 
 	private Request request;
-	private FrameworkInstance frameworkInstance;
 
 	// Constructors
-	public RequestConfiguration(FrameworkInstance frameworkInstance) {
-		this.setFrameworkInstance(frameworkInstance);
+	public RequestConfiguration() {
 	}
 
-	public RequestConfiguration(Request request, FrameworkInstance frameworkInstance) {
+	public RequestConfiguration(Request request) {
 		this.setRequest(request);
-		this.setFrameworkInstance(frameworkInstance);
 	}
 
 	public Optional<Request> getRequest(String requestId) {
 		Request request = null;
 		String queryRequest = "select request_id, parent_request_id, request_typ_nm, request_tms, request_nm, request_dsc, amount_nb, notif_email, scope_nm, context_nm, space_nm, user_nm, user_password, exe_id from "
-				+ this.getFrameworkInstance().getExecutionServerRepositoryConfiguration()
+				+ FrameworkInstance.getInstance().getExecutionServerRepositoryConfiguration()
 						.getTableNameByLabel("Requests")
 				+ " where request_id = " + SQLTools.GetStringForSQL(requestId);
 
-		CachedRowSet crsRequest = this.getFrameworkInstance().getExecutionServerRepositoryConfiguration()
+		CachedRowSet crsRequest = FrameworkInstance.getInstance().getExecutionServerRepositoryConfiguration()
 				.executeQuery(queryRequest, "reader");
-		RequestParameterConfiguration requestParameterConfiguration = new RequestParameterConfiguration(
-				this.getFrameworkInstance());
+		RequestParameterConfiguration requestParameterConfiguration = new RequestParameterConfiguration();
 		try {
 			while (crsRequest.next()) {
 				// Get parameters
 				String queryRequestParameters = "select REQUEST_ID, REQUEST_PAR_TYP_NM, REQUEST_PAR_NM, REQUEST_PAR_VAL from "
-						+ this.getFrameworkInstance().getExecutionServerRepositoryConfiguration()
+						+ FrameworkInstance.getInstance().getExecutionServerRepositoryConfiguration()
 								.getTableNameByLabel("RequestParameters")
 						+ " where REQUEST_ID = '" + requestId + "'";
-				CachedRowSet crsRequestParameters = this.getFrameworkInstance()
+				CachedRowSet crsRequestParameters = FrameworkInstance.getInstance()
 						.getExecutionServerRepositoryConfiguration().executeQuery(queryRequestParameters, "reader");
 				List<RequestParameter> requestParameters = new ArrayList<>();
 				while (crsRequestParameters.next()) {
@@ -81,20 +77,20 @@ public class RequestConfiguration {
 	}
 
 	public boolean exists(Request request) {
-		String queryRequest = "select * from " + this.getFrameworkInstance().getExecutionServerRepositoryConfiguration()
+		String queryRequest = "select * from " + FrameworkInstance.getInstance().getExecutionServerRepositoryConfiguration()
 				.getTableNameByLabel("Requests") + " where REQUEST_ID = '" + request.getId() + "'";
-		CachedRowSet crsRequest = this.getFrameworkInstance().getExecutionServerRepositoryConfiguration()
+		CachedRowSet crsRequest = FrameworkInstance.getInstance().getExecutionServerRepositoryConfiguration()
 				.executeQuery(queryRequest, "reader");
 		return crsRequest.size() == 1;
 	}
 
 	public List<Request> getAllRequests() {
 		List<Request> requests = new ArrayList<>();
-		String query = "select REQUEST_ID from " + this.getFrameworkInstance()
+		String query = "select REQUEST_ID from " + FrameworkInstance.getInstance()
 				.getExecutionServerRepositoryConfiguration().getTableNameByLabel("Requests") + " order by LOAD_TMS ASC";
-		CachedRowSet crs = this.getFrameworkInstance().getExecutionServerRepositoryConfiguration().executeQuery(query,
+		CachedRowSet crs = FrameworkInstance.getInstance().getExecutionServerRepositoryConfiguration().executeQuery(query,
 				"reader");
-		RequestConfiguration requestConfiguration = new RequestConfiguration(this.getFrameworkInstance());
+		RequestConfiguration requestConfiguration = new RequestConfiguration();
 		try {
 			while (crs.next()) {
 				String requestId = crs.getString("REQUEST_ID");
@@ -110,22 +106,22 @@ public class RequestConfiguration {
 
 	public void deleteRequest(Request request) throws RequestDoesNotExistException {
 		// TODO: logging
-		// this.getFrameworkInstance().getFrameworkLog().log(MessageFormat.format("Deleting
+		// FrameworkInstance.getInstance().getFrameworkLog().log(MessageFormat.format("Deleting
 		// request {0}", request.getName()),Level.TRACE);
 		if (!exists(request)) {
 			throw new RequestDoesNotExistException(MessageFormat
 					.format("Request {0} is not present in the repository so cannot be deleted", request.getId()));
 		}
 		List<String> query = getDeleteStatement(request);
-		this.getFrameworkInstance().getExecutionServerRepositoryConfiguration().executeBatch(query);
+		FrameworkInstance.getInstance().getExecutionServerRepositoryConfiguration().executeBatch(query);
 	}
 
 	public List<String> getDeleteStatement(Request request) {
 		List<String> queries = new ArrayList<>();
-		queries.add("DELETE FROM " + this.getFrameworkInstance().getExecutionServerRepositoryConfiguration()
+		queries.add("DELETE FROM " + FrameworkInstance.getInstance().getExecutionServerRepositoryConfiguration()
 				.getTableNameByLabel("Requests") + " WHERE REQUEST_ID = "
 				+ SQLTools.GetStringForSQL(request.getId()) + ";");
-		queries.add("DELETE FROM " + this.getFrameworkInstance().getExecutionServerRepositoryConfiguration()
+		queries.add("DELETE FROM " + FrameworkInstance.getInstance().getExecutionServerRepositoryConfiguration()
 				.getTableNameByLabel("RequestParameters") + " WHERE REQUEST_ID = " +
 				SQLTools.GetStringForSQL(request.getId()) + ";");
 		return queries;
@@ -134,37 +130,37 @@ public class RequestConfiguration {
 
 	public void deleteAllRequests() {
 		// TODO: logging
-		// this.getFrameworkInstance().getFrameworkLog().log("Deleting all requests",
+		// FrameworkInstance.getInstance().getFrameworkLog().log("Deleting all requests",
 		// Level.TRACE);
 		List<String> query = getDeleteAllStatement();
-		this.getFrameworkInstance().getExecutionServerRepositoryConfiguration().executeBatch(query);
+		FrameworkInstance.getInstance().getExecutionServerRepositoryConfiguration().executeBatch(query);
 	}
 
 	private List<String> getDeleteAllStatement() {
 		List<String> queries = new ArrayList<>();
-		queries.add("DELETE FROM " + this.getFrameworkInstance().getExecutionServerRepositoryConfiguration()
+		queries.add("DELETE FROM " + FrameworkInstance.getInstance().getExecutionServerRepositoryConfiguration()
 				.getTableNameByLabel("Requests") + ";");
-		queries.add("DELETE FROM " + this.getFrameworkInstance().getExecutionServerRepositoryConfiguration()
+		queries.add("DELETE FROM " + FrameworkInstance.getInstance().getExecutionServerRepositoryConfiguration()
 				.getTableNameByLabel("RequestParameters") + ";");
 		return queries;
 	}
 
 	public void insertRequest(Request request) throws RequestAlreadyExistsException {
 		// TODO:logging
-		// this.getFrameworkInstance().getFrameworkLog().log(MessageFormat.format("Inserting
+		// FrameworkInstance.getInstance().getFrameworkLog().log(MessageFormat.format("Inserting
 		// request {0}", request.getName()), Level.TRACE);
 		if (exists(request)) {
 			throw new RequestAlreadyExistsException(
 					MessageFormat.format("Request {0} already exists", request.getId()));
 		}
 		List<String> query = getInsertStatement(request);
-		this.getFrameworkInstance().getExecutionServerRepositoryConfiguration().executeBatch(query);
+		FrameworkInstance.getInstance().getExecutionServerRepositoryConfiguration().executeBatch(query);
 	}
 
 	public List<String> getInsertStatement(Request request) {
 		List<String> queries = new ArrayList<>();
 		
-		queries.add("INSERT INTO " + this.getFrameworkInstance().getExecutionServerRepositoryConfiguration()
+		queries.add("INSERT INTO " + FrameworkInstance.getInstance().getExecutionServerRepositoryConfiguration()
 				.getTableNameByLabel("Requests") + 
 				"(request_id, parent_request_id, request_typ_nm, request_tms, request_nm, request_dsc, amount_nb, notif_email, scope_nm, context_nm, space_nm, user_nm, user_password, exe_id) VALUES (" + 
 				SQLTools.GetStringForSQL(request.getId()) + ","
@@ -184,8 +180,7 @@ public class RequestConfiguration {
 
 		// add Parameters
 
-		RequestParameterConfiguration requestParameterConfiguration = new RequestParameterConfiguration(
-				this.getFrameworkInstance());
+		RequestParameterConfiguration requestParameterConfiguration = new RequestParameterConfiguration();
 		for (RequestParameter requestParameter : request.getParameters()) {
 			queries.add(requestParameterConfiguration.getInsertStatement(request.getId(), requestParameter));
 		}
@@ -194,17 +189,17 @@ public class RequestConfiguration {
 	}
 
 	public void updateRequest(Request request) throws RequestDoesNotExistException {
-		// this.getFrameworkInstance().getFrameworkLog().log(MessageFormat.format("Updating
+		// FrameworkInstance.getInstance().getFrameworkLog().log(MessageFormat.format("Updating
 		// request {0}.", request.getName()),Level.TRACE);
 		try {
 			deleteRequest(request);
 			insertRequest(request);
 		} catch (RequestDoesNotExistException e) {
-//			this.getFrameworkInstance().getFrameworkLog().log(MessageFormat.format("Request {0} is not present in the repository so cannot be updated", request.getName()),	Level.TRACE);
+//			FrameworkInstance.getInstance().getFrameworkLog().log(MessageFormat.format("Request {0} is not present in the repository so cannot be updated", request.getName()),	Level.TRACE);
 			throw new RequestDoesNotExistException(MessageFormat
 					.format("Request {0} is not present in the repository so cannot be updated", request.getId()));
 		} catch (RequestAlreadyExistsException e) {
-			// this.getFrameworkInstance().getFrameworkLog().log(MessageFormat.format("Request
+			// FrameworkInstance.getInstance().getFrameworkLog().log(MessageFormat.format("Request
 			// {0} is not deleted correctly during update. {1}", request.getName(),
 			// e.toString()),Level.WARN);
 		}
@@ -241,8 +236,7 @@ public class RequestConfiguration {
 			return result;
 
 		for (RequestParameter requestParameter : request.getParameters()) {
-			RequestParameterConfiguration requestParameterConfiguration = new RequestParameterConfiguration(
-					this.getFrameworkInstance());
+			RequestParameterConfiguration requestParameterConfiguration = new RequestParameterConfiguration();
 			if (!result.equalsIgnoreCase(""))
 				result += "\n";
 			result += requestParameterConfiguration.getInsertStatement(request.getId(), requestParameter);
@@ -260,8 +254,7 @@ public class RequestConfiguration {
 			return result;
 
 		for (RequestParameter requestParameter : this.getRequest().getParameters()) {
-			RequestParameterConfiguration requestParameterConfiguration = new RequestParameterConfiguration(
-					requestParameter, this.getFrameworkInstance());
+			RequestParameterConfiguration requestParameterConfiguration = new RequestParameterConfiguration();
 			if (!result.equalsIgnoreCase(""))
 				result += "\n";
 			result += requestParameterConfiguration.getInsertStatement(requestName);
@@ -282,25 +275,24 @@ public class RequestConfiguration {
 			for (DataObject dataObject : dataObjectConfiguration.getDataArray(data)) {
 
 				Request request = objectMapper.convertValue(dataObject.getData(), Request.class);
-				RequestConfiguration requestConfiguration = new RequestConfiguration(request,
-						this.getFrameworkInstance());
+				RequestConfiguration requestConfiguration = new RequestConfiguration(request);
 				String output = requestConfiguration.getInsertStatement();
 
 				InputStream inputStream = FileTools.convertToInputStream(output,
 						FrameworkControl.getInstance());
-				this.getFrameworkInstance().getExecutionServerRepositoryConfiguration()
+				FrameworkInstance.getInstance().getExecutionServerRepositoryConfiguration()
 						.executeScript(inputStream);
 
 			}
 		} else {
 			Request request = objectMapper.convertValue(dataObjectConfiguration.getDataObject(data).getData(),
 					Request.class);
-			RequestConfiguration requestConfiguration = new RequestConfiguration(request, this.getFrameworkInstance());
+			RequestConfiguration requestConfiguration = new RequestConfiguration(request);
 			String output = requestConfiguration.getInsertStatement();
 
 			InputStream inputStream = FileTools.convertToInputStream(output,
 					FrameworkControl.getInstance());
-			this.getFrameworkInstance().getExecutionServerRepositoryConfiguration()
+			FrameworkInstance.getInstance().getExecutionServerRepositoryConfiguration()
 					.executeScript(inputStream);
 		}
 
@@ -308,12 +300,12 @@ public class RequestConfiguration {
 
 	public void deleteRequest(String requestName) {
 		this.getRequest(requestName).ifPresent(request -> {
-			RequestConfiguration requestConfiguration = new RequestConfiguration(request, this.getFrameworkInstance());
+			RequestConfiguration requestConfiguration = new RequestConfiguration(request);
 			String output = requestConfiguration.getDeleteStatement();
 
 			InputStream inputStream = FileTools.convertToInputStream(output,
 					FrameworkControl.getInstance());
-			this.getFrameworkInstance().getExecutionServerRepositoryConfiguration()
+			FrameworkInstance.getInstance().getExecutionServerRepositoryConfiguration()
 					.executeScript(inputStream);
 		});
 
@@ -326,12 +318,12 @@ public class RequestConfiguration {
 		// Set new request name
 		request.setName(toRequestName);
 
-		RequestConfiguration requestConfiguration = new RequestConfiguration(request, this.getFrameworkInstance());
+		RequestConfiguration requestConfiguration = new RequestConfiguration(request);
 		String output = requestConfiguration.getInsertStatement();
 
 		InputStream inputStream = FileTools.convertToInputStream(output,
 				FrameworkControl.getInstance());
-		this.getFrameworkInstance().getExecutionServerRepositoryConfiguration()
+		FrameworkInstance.getInstance().getExecutionServerRepositoryConfiguration()
 				.executeScript(inputStream);
 	}
 
@@ -347,14 +339,6 @@ public class RequestConfiguration {
 
 	public void setRequest(Request request) {
 		this.request = request;
-	}
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
 	}
 
 }

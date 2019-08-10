@@ -13,16 +13,13 @@ import java.util.Optional;
 public class ComponentVersionConfiguration {
 
     private ComponentVersion componentVersion;
-    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public ComponentVersionConfiguration(ComponentVersion componentVersion, FrameworkInstance frameworkInstance) {
+    public ComponentVersionConfiguration(ComponentVersion componentVersion) {
         this.setComponentVersion(componentVersion);
-        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public ComponentVersionConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
+    public ComponentVersionConfiguration() {
     }
 
     // Insert
@@ -102,13 +99,5 @@ public class ComponentVersionConfiguration {
     public void setComponentVersion(ComponentVersion componentVersion) {
         this.componentVersion = componentVersion;
     }
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
 
 }

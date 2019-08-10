@@ -7,22 +7,19 @@ import io.metadew.iesi.metadata.definition.DataframeItemTypeParameter;
 public class DataframeItemTypeParameterConfiguration {
 
     private DataframeItemTypeParameter dataframeItemTypeParameter;
-    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public DataframeItemTypeParameterConfiguration(DataframeItemTypeParameter dataframeItemTypeParameter, FrameworkInstance frameworkInstance) {
+    public DataframeItemTypeParameterConfiguration(DataframeItemTypeParameter dataframeItemTypeParameter) {
         this.setDataframeItemTypeParameter(dataframeItemTypeParameter);
-        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public DataframeItemTypeParameterConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
+    public DataframeItemTypeParameterConfiguration() {
     }
 
     // Get DataframeItem Type Parameter
     public DataframeItemTypeParameter getDataframeItemTypeParameter(String dataframeItemTypeName, String dataframeItemTypeParameterName) {
         DataframeItemTypeParameter dataframeItemTypeParameterResult = null;
-        DataframeItemTypeConfiguration dataframeItemTypeConfiguration = new DataframeItemTypeConfiguration(this.getFrameworkInstance());
+        DataframeItemTypeConfiguration dataframeItemTypeConfiguration = new DataframeItemTypeConfiguration();
         DataframeItemType dataframeItemType = dataframeItemTypeConfiguration.getDataframeItemType(dataframeItemTypeName);
         for (DataframeItemTypeParameter dataframeItemTypeParameter : dataframeItemType.getParameters()) {
             if (dataframeItemTypeParameter.getName().equalsIgnoreCase(dataframeItemTypeParameterName)) {
@@ -41,13 +38,5 @@ public class DataframeItemTypeParameterConfiguration {
     public void setDataframeItemTypeParameter(DataframeItemTypeParameter dataframeItemTypeParameter) {
         this.dataframeItemTypeParameter = dataframeItemTypeParameter;
     }
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
 
 }

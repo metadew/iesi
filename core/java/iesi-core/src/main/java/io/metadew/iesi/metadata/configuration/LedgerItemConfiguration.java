@@ -12,16 +12,13 @@ import java.io.StringWriter;
 public class LedgerItemConfiguration {
 
     private LedgerItem ledgerItem;
-    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public LedgerItemConfiguration(LedgerItem ledgerItem, FrameworkInstance frameworkInstance) {
+    public LedgerItemConfiguration(LedgerItem ledgerItem) {
         this.setLedgerItem(ledgerItem);
-        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public LedgerItemConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
+    public LedgerItemConfiguration() {
     }
 
     // Insert
@@ -79,13 +76,5 @@ public class LedgerItemConfiguration {
     public void setLedgerItem(LedgerItem ledgerItem) {
         this.ledgerItem = ledgerItem;
     }
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
 
 }

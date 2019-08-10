@@ -21,7 +21,6 @@ import java.util.UUID;
 
 public class MetadataRepositoryOperation {
 
-    private FrameworkExecution frameworkExecution;
     private MetadataRepository metadataRepository;
     private String action;
     private boolean generateDdl;
@@ -31,9 +30,7 @@ public class MetadataRepositoryOperation {
 
     // Constructors
 
-    public MetadataRepositoryOperation(FrameworkExecution frameworkExecution,
-                                       MetadataRepository metadataRepository) {
-        this.setFrameworkExecution(frameworkExecution);
+    public MetadataRepositoryOperation(MetadataRepository metadataRepository) {
         this.setMetadataRepository(metadataRepository);
     }
 
@@ -164,7 +161,7 @@ public class MetadataRepositoryOperation {
         if (!workFile.isDirectory()) {
             try {
                 LOGGER.info("metadata.file=" + file.getName());
-                DataObjectOperation dataObjectOperation = new DataObjectOperation(this.getFrameworkExecution(), metadataRepositories, workFile.getAbsolutePath());
+                DataObjectOperation dataObjectOperation = new DataObjectOperation(metadataRepositories, workFile.getAbsolutePath());
                 dataObjectOperation.saveToMetadataRepository();
 
                 // Move file to archive folder
@@ -211,8 +208,7 @@ public class MetadataRepositoryOperation {
         } else {
             try {
                 LOGGER.info("metadata.file=" + file.getName());
-                DataObjectOperation dataObjectOperation = new DataObjectOperation(this.getFrameworkExecution(),
-                        this.getMetadataRepository(), file.getAbsolutePath());
+                DataObjectOperation dataObjectOperation = new DataObjectOperation(this.getMetadataRepository(), file.getAbsolutePath());
                 dataObjectOperation.saveToMetadataRepository();
 
                 // Move file to archive folder
@@ -252,15 +248,6 @@ public class MetadataRepositoryOperation {
         targetFilePath.append(".ddl");
         FileTools.delete(targetFilePath.toString());
         FileTools.appendToFile(targetFilePath.toString(), "", ddl);
-    }
-
-    // Getters and setters
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
     }
 
     public MetadataRepository getMetadataRepository() {

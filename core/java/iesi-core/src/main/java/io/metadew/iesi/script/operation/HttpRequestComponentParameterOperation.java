@@ -2,7 +2,6 @@ package io.metadew.iesi.script.operation;
 
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeService;
-import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
 import io.metadew.iesi.framework.crypto.FrameworkCrypto;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.ComponentAttribute;
@@ -48,7 +47,7 @@ public class HttpRequestComponentParameterOperation {
                 value, true).getValue();
         value = executionControl.getExecutionRuntime().resolveVariables(actionExecution, value);
         // Resolve internal encryption
-        value = FrameworkCrypto.getInstance().resolve(actionExecution.getFrameworkExecution(), value);
+        value = FrameworkCrypto.getInstance().resolve(value);
         return dataTypeService.resolve(value);
     }
 
@@ -133,7 +132,7 @@ public class HttpRequestComponentParameterOperation {
         this.setValue(lookupResult.getValue());
 
         // Resolve internal encryption
-        String decryptedValue = FrameworkCrypto.getInstance().resolve(this.getFrameworkExecution(),
+        String decryptedValue = FrameworkCrypto.getInstance().resolve(
                 this.getValue());
 
         this.setValue(decryptedValue);

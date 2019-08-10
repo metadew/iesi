@@ -14,7 +14,6 @@ import java.sql.SQLException;
 public class RuntimeVariableConfiguration {
 
     private RuntimeVariable runtimeVariable;
-    private FrameworkExecution frameworkExecution;
     private String runCacheFolderName;
     private String runCacheFileName = "runtimeVariables.db3";
     private String runCacheFilePath;
@@ -22,9 +21,7 @@ public class RuntimeVariableConfiguration {
     private String PRC_RUN_VAR = "PRC_RUN_VAR";
 
     // Constructors
-    public RuntimeVariableConfiguration(FrameworkExecution frameworkExecution, String runCacheFolderName) {
-        this.setFrameworkExecution(frameworkExecution);
-
+    public RuntimeVariableConfiguration(String runCacheFolderName) {
         // Define path
         this.setRunCacheFolderName(runCacheFolderName);
         this.setRunCacheFilePath(this.getRunCacheFolderName() + File.separator + this.getRunCacheFileName());
@@ -139,14 +136,6 @@ public class RuntimeVariableConfiguration {
 
     public void setRuntimeVariable(RuntimeVariable runtimeVariable) {
         this.runtimeVariable = runtimeVariable;
-    }
-
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
     }
 
     public String getRunCacheFileName() {

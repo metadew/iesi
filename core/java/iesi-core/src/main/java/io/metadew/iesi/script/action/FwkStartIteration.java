@@ -13,7 +13,6 @@ import java.util.HashMap;
 public class FwkStartIteration {
 
     private ActionExecution actionExecution;
-    private FrameworkExecution frameworkExecution;
     private ExecutionControl executionControl;
 
     // Parameters
@@ -27,28 +26,27 @@ public class FwkStartIteration {
     private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
 
     // Constructors
-    public FwkStartIteration(FrameworkExecution frameworkExecution, ExecutionControl executionControl, ActionExecution actionExecution) {
-        this.setFrameworkExecution(frameworkExecution);
+    public FwkStartIteration(ExecutionControl executionControl, ActionExecution actionExecution) {
         this.setExecutionControl(executionControl);
         this.setActionExecution(actionExecution);
-        this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
+        this.setActionParameterOperationMap(new HashMap<>());
     }
 
     public void prepare() {
         // Reset Parameters
-        this.setTypeName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(), this.getActionExecution(),
+        this.setTypeName(new ActionParameterOperation(this.getExecutionControl(), this.getActionExecution(),
                 this.getActionExecution().getAction().getType(), "TYPE_NM"));
-        this.setListName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(), this.getActionExecution(),
+        this.setListName(new ActionParameterOperation(this.getExecutionControl(), this.getActionExecution(),
                 this.getActionExecution().getAction().getType(), "LIST_NM"));
-        this.setListValues(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(), this.getActionExecution(),
+        this.setListValues(new ActionParameterOperation(this.getExecutionControl(), this.getActionExecution(),
                 this.getActionExecution().getAction().getType(), "LIST_VAL"));
-        this.setNumberFrom(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(), this.getActionExecution(),
+        this.setNumberFrom(new ActionParameterOperation(this.getExecutionControl(), this.getActionExecution(),
                 this.getActionExecution().getAction().getType(), "NUMBER_FROM"));
-        this.setNumberTo(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(), this.getActionExecution(),
+        this.setNumberTo(new ActionParameterOperation(this.getExecutionControl(), this.getActionExecution(),
                 this.getActionExecution().getAction().getType(), "NUMBER_TO"));
-        this.setNumberAction(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(), this.getActionExecution(),
+        this.setNumberAction(new ActionParameterOperation(this.getExecutionControl(), this.getActionExecution(),
                 this.getActionExecution().getAction().getType(), "NUMBER_STEP"));
-        this.setBreakOnError(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(), this.getActionExecution(),
+        this.setBreakOnError(new ActionParameterOperation(this.getExecutionControl(), this.getActionExecution(),
                 this.getActionExecution().getAction().getType(), "BREAK_ON_ERROR"));
 
         // Get Parameters
@@ -98,15 +96,6 @@ public class FwkStartIteration {
             return false;
         }
 
-    }
-
-    // Getters and Setters
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
     }
 
     public ExecutionControl getExecutionControl() {

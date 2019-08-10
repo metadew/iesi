@@ -23,12 +23,10 @@ import java.util.Optional;
 public class ActionConfiguration {
 
     private final ActionParameterConfiguration actionParameterConfiguration;
-    private FrameworkInstance frameworkInstance;
     private final static Logger LOGGER = LogManager.getLogger();
 
-    public ActionConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
-    	this.actionParameterConfiguration = new ActionParameterConfiguration(frameworkInstance);
+    public ActionConfiguration() {
+    	this.actionParameterConfiguration = new ActionParameterConfiguration();
     }
 
 
@@ -88,8 +86,6 @@ public class ActionConfiguration {
 
     public List<String> getInsertStatement(String scriptId, long scriptVersionNumber, Action action) {
         List<String> queries = new ArrayList<>();
-        ActionParameterConfiguration actionParameterConfiguration = new ActionParameterConfiguration(this.getFrameworkInstance());
-
         queries.add("INSERT INTO " + MetadataControl.getInstance().getDesignMetadataRepository()
                 .getTableNameByLabel("Actions") +
                 " (SCRIPT_ID, SCRIPT_VRS_NB, ACTION_ID, ACTION_NB, ACTION_TYP_NM, ACTION_NM, ACTION_DSC, COMP_NM, ITERATION_VAL, CONDITION_VAL, RETRIES_VAL, EXP_ERR_FL, STOP_ERR_FL) VALUES (" +
@@ -184,12 +180,4 @@ public class ActionConfiguration {
         return queries;
     }
 
-    // Getters and Setters
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
 }

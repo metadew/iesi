@@ -9,22 +9,18 @@ import io.metadew.iesi.metadata.operation.TypeConfigurationOperation;
 public class MappingConfiguration {
 
     private Mapping mapping;
-    private FrameworkInstance frameworkInstance;
     private String dataObjectType = "Mapping";
 
     // Constructors
-    public MappingConfiguration(Mapping mapping, FrameworkInstance frameworkInstance) {
+    public MappingConfiguration(Mapping mapping) {
         this.setMapping(mapping);
-        this.setFrameworkInstance(frameworkInstance);
     }
 
     public MappingConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
     }
 
     public Mapping getMapping(String mappingName) {
-        String conf = TypeConfigurationOperation.getMappingConfigurationFile(this.getFrameworkInstance(),
-                this.getDataObjectType(), mappingName);
+        String conf = TypeConfigurationOperation.getMappingConfigurationFile(this.getDataObjectType(), mappingName);
         DataObjectOperation dataObjectOperation = new DataObjectOperation(conf);
         ObjectMapper objectMapper = new ObjectMapper();
         return objectMapper.convertValue(dataObjectOperation.getDataObject().getData(),
@@ -47,13 +43,5 @@ public class MappingConfiguration {
     public void setMapping(Mapping mapping) {
         this.mapping = mapping;
     }
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
 
 }

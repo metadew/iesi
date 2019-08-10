@@ -15,16 +15,13 @@ import java.util.List;
 public class GenerationControlRuleConfiguration {
 
     private GenerationControlRule generationControlRule;
-    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public GenerationControlRuleConfiguration(GenerationControlRule generationControlRule, FrameworkInstance frameworkInstance) {
+    public GenerationControlRuleConfiguration(GenerationControlRule generationControlRule) {
         this.setgenerationControlRule(generationControlRule);
-        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public GenerationControlRuleConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
+    public GenerationControlRuleConfiguration() {
     }
 
     // Insert
@@ -63,7 +60,7 @@ public class GenerationControlRuleConfiguration {
         String result = "";
 
         for (GenerationControlRuleParameter generationControlRuleParameter : this.getgenerationControlRule().getParameters()) {
-            GenerationControlRuleParameterConfiguration generationControlRuleParameterConfiguration = new GenerationControlRuleParameterConfiguration(generationControlRuleParameter, this.getFrameworkInstance());
+            GenerationControlRuleParameterConfiguration generationControlRuleParameterConfiguration = new GenerationControlRuleParameterConfiguration(generationControlRuleParameter);
             if (!result.equalsIgnoreCase(""))
                 result += "\n";
             result += generationControlRuleParameterConfiguration.getInsertStatement(generationName, generationControlName, this.getgenerationControlRule().getName());
@@ -79,7 +76,7 @@ public class GenerationControlRuleConfiguration {
         String queryGenerationControlRule = "select GEN_CTL_ID, GEN_CTL_RULE_ID, GEN_CTL_RULE_NB, GEN_CTL_RULE_TYP_NM, GEN_CTL_RULE_NM, GEN_CTL_RULE_DSC from "
                 + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("GenerationControlRules") + " where GEN_CTL_RULE_ID = " + generationControlRuleId;
         crsGenerationControlRule = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(queryGenerationControlRule, "reader");
-        GenerationControlRuleParameterConfiguration generationControlRuleParameterConfiguration = new GenerationControlRuleParameterConfiguration(this.getFrameworkInstance());
+        GenerationControlRuleParameterConfiguration generationControlRuleParameterConfiguration = new GenerationControlRuleParameterConfiguration();
         try {
             while (crsGenerationControlRule.next()) {
                 generationControlRule.setId(generationControlRuleId);
@@ -118,13 +115,5 @@ public class GenerationControlRuleConfiguration {
     public void setgenerationControlRule(GenerationControlRule generationControlRule) {
         this.generationControlRule = generationControlRule;
     }
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
 
 }

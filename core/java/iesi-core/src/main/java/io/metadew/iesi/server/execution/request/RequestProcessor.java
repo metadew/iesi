@@ -9,7 +9,6 @@ import java.sql.SQLException;
 
 public class RequestProcessor {
 
-    private FrameworkExecution frameworkExecution;
     public CachedRowSet crs;
     // fields
     public int executionId;
@@ -21,8 +20,7 @@ public class RequestProcessor {
     public int context_id;
     public int scope_id;
 
-    public RequestProcessor(FrameworkExecution frameworkExecution, int executionId, int que_id) {
-        this.setFrameworkExecution(frameworkExecution);
+    public RequestProcessor(int executionId, int que_id) {
         this.executionId = executionId;
         this.que_id = que_id;
         this.setProcessor();
@@ -32,23 +30,23 @@ public class RequestProcessor {
     public void setProcessor() {
         String QueryString = "update " + "PRC_CTL"
                 + " set request_id = " + this.que_id + " where exe_id = " + this.executionId;
-        this.getFrameworkExecution().getExecutionServerRepositoryConfiguration().executeUpdate(QueryString);
+        FrameworkExecution.getInstance().getExecutionServerRepositoryConfiguration().executeUpdate(QueryString);
 
         QueryString = "update " + "PRC_REQ"
                 + " set exe_id = " + this.executionId + " where request_id = " + this.que_id;
-        this.getFrameworkExecution().getExecutionServerRepositoryConfiguration().executeUpdate(QueryString);
+        FrameworkExecution.getInstance().getExecutionServerRepositoryConfiguration().executeUpdate(QueryString);
     }
 
     public void clearProcessor() {
         String QueryString = "update " + "PRC_CTL"
                 + " set request_id = -1 where exe_id = " + this.executionId;
-        this.getFrameworkExecution().getExecutionServerRepositoryConfiguration().executeUpdate(QueryString);
+        FrameworkExecution.getInstance().getExecutionServerRepositoryConfiguration().executeUpdate(QueryString);
     }
 
     public void removeFromQueue() {
         String QueryString = "delete from " + "PRC_REQ"
                 + " where request_id = " + this.que_id;
-        this.getFrameworkExecution().getExecutionServerRepositoryConfiguration().executeUpdate(QueryString);
+        FrameworkExecution.getInstance().getExecutionServerRepositoryConfiguration().executeUpdate(QueryString);
     }
 
     public void getFields() {
@@ -57,7 +55,7 @@ public class RequestProcessor {
         QueryString = "select request_id, request_type, script_nm, env_nm, prc_id from "
                 + "PRC_REQ" + " where request_id = "
                 + this.que_id;
-        crs = this.getFrameworkExecution().getExecutionServerRepositoryConfiguration().executeQuery(QueryString, "reader");
+        crs = FrameworkExecution.getInstance().getExecutionServerRepositoryConfiguration().executeQuery(QueryString, "reader");
 
         try {
             while (crs.next()) {
@@ -79,15 +77,6 @@ public class RequestProcessor {
         this.removeFromQueue();
         this.clearProcessor();
 
-    }
-
-    // Getters and setters
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
     }
 
 }

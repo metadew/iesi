@@ -13,7 +13,6 @@ import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -27,8 +26,6 @@ import java.util.HashMap;
 public class EvalVerifySingleField {
 
     private ActionExecution actionExecution;
-
-    private FrameworkExecution frameworkExecution;
 
     private ExecutionControl executionControl;
 
@@ -62,14 +59,13 @@ public class EvalVerifySingleField {
 
     }
 
-    public EvalVerifySingleField(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+    public EvalVerifySingleField(ExecutionControl executionControl,
                                  ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.init(frameworkExecution, executionControl, scriptExecution, actionExecution);
+        this.init(executionControl, scriptExecution, actionExecution);
     }
 
-    public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+    public void init(ExecutionControl executionControl,
                      ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.setFrameworkExecution(frameworkExecution);
         this.setExecutionControl(executionControl);
         this.setActionExecution(actionExecution);
         this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
@@ -77,21 +73,21 @@ public class EvalVerifySingleField {
 
     public void prepare() {
         // Reset Parameters
-        this.setDatabaseName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        this.setDatabaseName(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "database"));
-        this.setSchemaName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        this.setSchemaName(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "schema"));
-        this.setTableName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        this.setTableName(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "table"));
-        this.setFieldName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        this.setFieldName(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "field"));
-        this.setCheckName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        this.setCheckName(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "check"));
-        this.setCheckOperatorName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        this.setCheckOperatorName(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "operator"));
-        this.setCheckValue(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        this.setCheckValue(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "value"));
-        this.setConnectionName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        this.setConnectionName(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "connection"));
 
         // Get Parameters
@@ -153,9 +149,9 @@ public class EvalVerifySingleField {
 
     private boolean verifySingleField(String databaseName, String schemaName, String tableName, String fieldName, String checkName, String checkName1, String checkValue, String checkOperatorName, String connectionName) throws SQLException {
         // Get Connection
-        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(FrameworkInstance.getInstance());
+        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
         Connection connection = connectionConfiguration.getConnection(connectionName, this.getExecutionControl().getEnvName()).get();
-        ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
+        ConnectionOperation connectionOperation = new ConnectionOperation();
         Database database = connectionOperation.getDatabase(connection);
 
         // Run the action
@@ -310,15 +306,6 @@ public class EvalVerifySingleField {
         }
 
         return resTestQueries;
-    }
-
-    // Getters and Setters
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
     }
 
     public ExecutionControl getExecutionControl() {

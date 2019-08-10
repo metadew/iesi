@@ -13,7 +13,6 @@ import java.util.HashMap;
 public class FwkStopIteration {
 
     private ActionExecution actionExecution;
-    private FrameworkExecution frameworkExecution;
     private ExecutionControl executionControl;
 
     // Parameters
@@ -21,16 +20,15 @@ public class FwkStopIteration {
     private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
 
     // Constructors
-    public FwkStopIteration(FrameworkExecution frameworkExecution, ExecutionControl executionControl, ActionExecution actionExecution) {
-        this.setFrameworkExecution(frameworkExecution);
+    public FwkStopIteration(ExecutionControl executionControl, ActionExecution actionExecution) {
         this.setExecutionControl(executionControl);
         this.setActionExecution(actionExecution);
-        this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
+        this.setActionParameterOperationMap(new HashMap<>());
     }
 
     public void prepare() {
         // Reset Parameters
-        this.setStartActionName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(), this.getActionExecution(),
+        this.setStartActionName(new ActionParameterOperation(this.getExecutionControl(), this.getActionExecution(),
                 this.getActionExecution().getAction().getType(), "START_STEP_NM"));
 
         // Get Parameters
@@ -62,15 +60,6 @@ public class FwkStopIteration {
             return false;
         }
 
-    }
-
-    // Getters and Setters
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
     }
 
     public ExecutionControl getExecutionControl() {

@@ -12,11 +12,10 @@ public class SqlScriptResult {
     private String errorOutput;
 
     public SqlScriptResult(int returnCode, String systemOutput, String errorOutput) {
-        this.setReturnCode(returnCode);
-        this.setSystemOutput(systemOutput);
-        this.setErrorOutput(errorOutput);
+        this.returnCode = returnCode;
+        this.systemOutput = systemOutput;
+        this.errorOutput = errorOutput;
     }
-
     // Getters and Setters
     public void setReturnCode(int returnCode) {
         this.returnCode = returnCode;

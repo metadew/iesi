@@ -8,7 +8,6 @@ import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -21,7 +20,6 @@ import java.util.Scanner;
 public class WfaGetConfirmation {
 
     private ActionExecution actionExecution;
-    private FrameworkExecution frameworkExecution;
     private ExecutionControl executionControl;
 
     // Parameters
@@ -37,14 +35,13 @@ public class WfaGetConfirmation {
 
     }
 
-    public WfaGetConfirmation(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+    public WfaGetConfirmation(ExecutionControl executionControl,
                               ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.init(frameworkExecution, executionControl, scriptExecution, actionExecution);
+        this.init(executionControl, scriptExecution, actionExecution);
     }
 
-    public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+    public void init(ExecutionControl executionControl,
                      ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.setFrameworkExecution(frameworkExecution);
         this.setExecutionControl(executionControl);
         this.setActionExecution(actionExecution);
         this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
@@ -52,11 +49,11 @@ public class WfaGetConfirmation {
 
     public void prepare() {
         // Set Parameters
-        this.setConfirmationType(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        this.setConfirmationType(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "type"));
-        this.setConfirmationQuestion(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        this.setConfirmationQuestion(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "question"));
-        this.setTimeoutInterval(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(), this.getActionExecution(),
+        this.setTimeoutInterval(new ActionParameterOperation(this.getExecutionControl(), this.getActionExecution(),
                 this.getActionExecution().getAction().getType(), "timeout"));
 
         // Get Parameters
@@ -300,15 +297,6 @@ public class WfaGetConfirmation {
         readInput = readInput.toUpperCase();
         this.getActionExecution().getActionControl().logOutput("confirmation", readInput);
         return true;
-    }
-
-    // Getters and Setters
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
     }
 
     public ExecutionControl getExecutionControl() {

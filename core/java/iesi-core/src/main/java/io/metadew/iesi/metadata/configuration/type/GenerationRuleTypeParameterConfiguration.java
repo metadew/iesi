@@ -7,22 +7,19 @@ import io.metadew.iesi.metadata.definition.GenerationRuleTypeParameter;
 public class GenerationRuleTypeParameterConfiguration {
 
     private GenerationRuleTypeParameter generationRuleTypeParameter;
-    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public GenerationRuleTypeParameterConfiguration(GenerationRuleTypeParameter generationRuleTypeParameter, FrameworkInstance frameworkInstance) {
+    public GenerationRuleTypeParameterConfiguration(GenerationRuleTypeParameter generationRuleTypeParameter) {
         this.setgenerationRuleTypeParameter(generationRuleTypeParameter);
-        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public GenerationRuleTypeParameterConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
+    public GenerationRuleTypeParameterConfiguration() {
     }
 
     // Get GenerationRule Type Parameter
     public GenerationRuleTypeParameter getGenerationRuleTypeParameter(String GenerationRuleTypeName, String GenerationRuleTypeParameterName) {
         GenerationRuleTypeParameter GenerationRuleTypeParameterResult = null;
-        GenerationRuleTypeConfiguration GenerationRuleTypeConfiguration = new GenerationRuleTypeConfiguration(this.getFrameworkInstance());
+        GenerationRuleTypeConfiguration GenerationRuleTypeConfiguration = new GenerationRuleTypeConfiguration();
         GenerationRuleType GenerationRuleType = GenerationRuleTypeConfiguration.getGenerationRuleType(GenerationRuleTypeName);
         for (GenerationRuleTypeParameter GenerationRuleTypeParameter : GenerationRuleType.getParameters()) {
             if (GenerationRuleTypeParameter.getName().equalsIgnoreCase(GenerationRuleTypeParameterName)) {
@@ -41,13 +38,5 @@ public class GenerationRuleTypeParameterConfiguration {
     public void setgenerationRuleTypeParameter(GenerationRuleTypeParameter generationRuleTypeParameter) {
         this.generationRuleTypeParameter = generationRuleTypeParameter;
     }
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
 
 }

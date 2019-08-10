@@ -21,18 +21,15 @@ import java.util.Optional;
 public class ScenarioConfiguration {
 
     private Scenario scenario;
-    private FrameworkInstance frameworkInstance;
 
     private static final Logger LOGGER = LogManager.getLogger();
 
     // Constructors
-    public ScenarioConfiguration(Scenario scenario, FrameworkInstance frameworkInstance) {
+    public ScenarioConfiguration(Scenario scenario) {
         this.setScenario(scenario);
-        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public ScenarioConfiguration(FrameworkInstance frameworkInstance) {
-        this.setFrameworkInstance(frameworkInstance);
+    public ScenarioConfiguration() {
     }
 
     // Insert
@@ -83,7 +80,7 @@ public class ScenarioConfiguration {
         StringBuilder result = new StringBuilder();
 
         for (ScenarioParameter scenarioParameter : this.getScenario().getParameters()) {
-            ScenarioParameterConfiguration scenarioParameterConfiguration = new ScenarioParameterConfiguration(scenarioParameter, this.getFrameworkInstance());
+            ScenarioParameterConfiguration scenarioParameterConfiguration = new ScenarioParameterConfiguration(scenarioParameter);
             if (!result.toString().equalsIgnoreCase(""))
                 result.append("\n");
             result.append(scenarioParameterConfiguration.getInsertStatement(feature, this.getScenario()));
@@ -146,7 +143,7 @@ public class ScenarioConfiguration {
     }
 
     public List<String> getInsertStatement(String featureId, long featureVersionNumber, Scenario scenario) {
-        ScenarioParameterConfiguration scenarioParameterConfiguration = new ScenarioParameterConfiguration(this.getFrameworkInstance());
+        ScenarioParameterConfiguration scenarioParameterConfiguration = new ScenarioParameterConfiguration();
         List<String> queries = new ArrayList<>();
         queries.add("INSERT INTO " + MetadataControl.getInstance().getCatalogMetadataRepository()
                 .getTableNameByLabel("Scenarios") +
@@ -178,11 +175,4 @@ public class ScenarioConfiguration {
         this.scenario = scenario;
     }
 
-    public FrameworkInstance getFrameworkInstance() {
-        return frameworkInstance;
-    }
-
-    public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-        this.frameworkInstance = frameworkInstance;
-    }
 }

@@ -12,17 +12,13 @@ import java.io.StringWriter;
 public class GenerationControlRuleParameterConfiguration {
 
     private GenerationControlRuleParameter generationControlRuleParameter;
-    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public GenerationControlRuleParameterConfiguration(GenerationControlRuleParameter generationControlRuleParameter,
-    		FrameworkInstance frameworkInstance) {
+    public GenerationControlRuleParameterConfiguration(GenerationControlRuleParameter generationControlRuleParameter) {
         this.setgenerationControlRuleParameter(generationControlRuleParameter);
-        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public GenerationControlRuleParameterConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
+    public GenerationControlRuleParameterConfiguration() {
     }
 
     // Insert
@@ -90,13 +86,5 @@ public class GenerationControlRuleParameterConfiguration {
     public void setgenerationControlRuleParameter(GenerationControlRuleParameter generationControlRuleParameter) {
         this.generationControlRuleParameter = generationControlRuleParameter;
     }
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
 
 }

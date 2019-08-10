@@ -9,21 +9,18 @@ import io.metadew.iesi.metadata.operation.TypeConfigurationOperation;
 public class ComponentTypeConfiguration {
 
     private ComponentType componentType;
-    private FrameworkInstance frameworkInstance;
     private String dataObjectType = "ComponentType";
 
     // Constructors
-    public ComponentTypeConfiguration(ComponentType componentType, FrameworkInstance frameworkInstance) {
+    public ComponentTypeConfiguration(ComponentType componentType) {
         this.setComponentType(componentType);
-        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public ComponentTypeConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
+    public ComponentTypeConfiguration() {
     }
 
     public ComponentType getComponentType(String componentTypeName) {
-        String conf = TypeConfigurationOperation.getTypeConfigurationFile(this.getFrameworkInstance(), this.getDataObjectType(), componentTypeName);
+        String conf = TypeConfigurationOperation.getTypeConfigurationFile(this.getDataObjectType(), componentTypeName);
         DataObjectOperation dataObjectOperation = new DataObjectOperation(conf);
         ObjectMapper objectMapper = new ObjectMapper();
         ComponentType componentType = objectMapper.convertValue(dataObjectOperation.getDataObject().getData(),
@@ -47,13 +44,5 @@ public class ComponentTypeConfiguration {
     public void setDataObjectType(String dataObjectType) {
         this.dataObjectType = dataObjectType;
     }
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
 
 }

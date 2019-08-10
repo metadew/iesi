@@ -13,24 +13,23 @@ import java.util.List;
 
 public class ScriptResultConfiguration {
 
-	private FrameworkInstance frameworkInstance;
+	private final ActionResultConfiguration actionResultConfiguration;
+	private final ScriptResultOutputConfiguration scriptResultOutputConfiguration;
 
 	// Constructors
-	public ScriptResultConfiguration(FrameworkInstance frameworkInstance) {
-		this.setFrameworkInstance(frameworkInstance);
+	public ScriptResultConfiguration() {
+		this.actionResultConfiguration = new ActionResultConfiguration();
+		this.scriptResultOutputConfiguration =  new ScriptResultOutputConfiguration();
 	}
 
 	public ScriptResult getScript(String runId) {
 		ScriptResult scriptResult = new ScriptResult();
-		CachedRowSet crsScriptResult = null;
 		String queryScript = "select RUN_ID, PRC_ID, PARENT_PRC_ID, SCRIPT_ID, SCRIPT_NM, SCRIPT_VRS_NB, ENV_NM, ST_NM, STRT_TMS, END_TMS from "
 				+ MetadataControl.getInstance().getResultMetadataRepository()
 						.getTableNameByLabel("ScriptResults")
 				+ " where RUN_ID = '" + runId + "' and PARENT_PRC_ID = 0";
-		crsScriptResult = MetadataControl.getInstance().getResultMetadataRepository()
+		CachedRowSet crsScriptResult = MetadataControl.getInstance().getResultMetadataRepository()
 				.executeQuery(queryScript, "reader");
-		ActionResultConfiguration actionResultConfiguration = new ActionResultConfiguration(this.getFrameworkInstance());
-		ScriptResultOutputConfiguration scriptResultOutputConfiguration =  new ScriptResultOutputConfiguration(this.getFrameworkInstance());
 		try {
 			while (crsScriptResult.next()) {
 				scriptResult.setRunId(runId);
@@ -62,18 +61,14 @@ public class ScriptResultConfiguration {
 	}
 
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public List<ScriptResult> getChildScripts(String runId) {
-		List<ScriptResult> scriptResults = new ArrayList();
-		CachedRowSet crsScriptResult = null;
+		List<ScriptResult> scriptResults = new ArrayList<>();
 		String queryScript = "select RUN_ID, PRC_ID, PARENT_PRC_ID, SCRIPT_ID, SCRIPT_NM, SCRIPT_VRS_NB, ENV_NM, ST_NM, STRT_TMS, END_TMS from "
 				+ MetadataControl.getInstance().getResultMetadataRepository()
 						.getTableNameByLabel("ScriptResults")
 				+ " where RUN_ID = '" + runId + "' and PARENT_PRC_ID > 0";
-		crsScriptResult = MetadataControl.getInstance().getResultMetadataRepository()
+		CachedRowSet crsScriptResult = MetadataControl.getInstance().getResultMetadataRepository()
 				.executeQuery(queryScript, "reader");
-		ActionResultConfiguration actionResultConfiguration = new ActionResultConfiguration(this.getFrameworkInstance());
-		ScriptResultOutputConfiguration scriptResultOutputConfiguration =  new ScriptResultOutputConfiguration(this.getFrameworkInstance());
 		try {
 			while (crsScriptResult.next()) {
 				ScriptResult scriptResult = new ScriptResult();
@@ -100,15 +95,6 @@ public class ScriptResultConfiguration {
 		}
 
 		return scriptResults;
-	}
-
-	// Getters and Setters
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
 	}
 
 }

@@ -43,20 +43,20 @@ public class CatalogMetadataRepository extends MetadataRepository {
     }
 
     @Override
-    public void save(DataObject dataObject, FrameworkExecution frameworkExecution) throws MetadataRepositorySaveException {
+    public void save(DataObject dataObject) throws MetadataRepositorySaveException {
         // TODO: based on MetadataRepository object decide to insert or not insert the objects
         // TODO: insert should be handled on database level as insert can differ from database type/dialect? JDBC Dialect/Spring
         ObjectMapper objectMapper = new ObjectMapper();
         if (dataObject.getType().equalsIgnoreCase("feature")) {
             Feature feature = objectMapper.convertValue(dataObject.getData(), Feature.class);
-            save(feature, frameworkExecution);
+            save(feature);
         } else {
             LOGGER.trace(MessageFormat.format("Catalog repository is not responsible for loading saving {0}", dataObject.getType()));
         }
     }
 
-    public void save(Feature feature, FrameworkExecution frameworkExecution) throws MetadataRepositorySaveException {
-        FeatureConfiguration featureConfiguration = new FeatureConfiguration(FrameworkInstance.getInstance());
+    public void save(Feature feature) throws MetadataRepositorySaveException {
+        FeatureConfiguration featureConfiguration = new FeatureConfiguration();
         try {
             featureConfiguration.insertFeature(feature);
         } catch (FeatureAlreadyExistsException e) {

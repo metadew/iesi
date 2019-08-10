@@ -12,16 +12,13 @@ import java.io.StringWriter;
 public class DataframeVersionConfiguration {
 
     private DataframeVersion dataframeVersion;
-    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public DataframeVersionConfiguration(DataframeVersion dataframeVersion, FrameworkInstance frameworkInstance) {
+    public DataframeVersionConfiguration(DataframeVersion dataframeVersion) {
         this.setDataframeVersion(dataframeVersion);
-        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public DataframeVersionConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
+    public DataframeVersionConfiguration() {
     }
 
     // Insert
@@ -89,13 +86,5 @@ public class DataframeVersionConfiguration {
     public void setDataframeVersion(DataframeVersion dataframeVersion) {
         this.dataframeVersion = dataframeVersion;
     }
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
 
 }

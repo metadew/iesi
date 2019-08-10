@@ -7,21 +7,18 @@ import io.metadew.iesi.metadata.definition.connection.ConnectionTypeParameter;
 public class ConnectionTypeParameterConfiguration {
 
     private ConnectionTypeParameter connectionTypeParameter;
-    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public ConnectionTypeParameterConfiguration(ConnectionTypeParameter connectionTypeParameter, FrameworkInstance frameworkInstance) {
+    public ConnectionTypeParameterConfiguration(ConnectionTypeParameter connectionTypeParameter) {
         this.setConnectionTypeParameter(connectionTypeParameter);
-        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public ConnectionTypeParameterConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
+    public ConnectionTypeParameterConfiguration() {
     }
 
     public ConnectionTypeParameter getConnectionTypeParameter(String connectionTypeName, String connectionTypeParameterName) {
         ConnectionTypeParameter connectionTypeParameterResult = null;
-        ConnectionTypeConfiguration connectionTypeConfiguration = new ConnectionTypeConfiguration(this.getFrameworkInstance());
+        ConnectionTypeConfiguration connectionTypeConfiguration = new ConnectionTypeConfiguration();
         ConnectionType connectionType = connectionTypeConfiguration.getConnectionType(connectionTypeName);
         for (ConnectionTypeParameter connectionTypeParameter : connectionType.getParameters()) {
             if (connectionTypeParameter.getName().equalsIgnoreCase(connectionTypeParameterName)) {
@@ -40,13 +37,4 @@ public class ConnectionTypeParameterConfiguration {
     public void setConnectionTypeParameter(ConnectionTypeParameter connectionTypeParameter) {
         this.connectionTypeParameter = connectionTypeParameter;
     }
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
-
 }

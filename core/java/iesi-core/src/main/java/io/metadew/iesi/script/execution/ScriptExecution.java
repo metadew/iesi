@@ -20,7 +20,6 @@ import java.util.concurrent.*;
 public abstract class ScriptExecution {
 	private RootingStrategy rootingStrategy;
 	private Script script;
-	private FrameworkExecution frameworkExecution;
 	private ExecutionControl executionControl;
 	private ExecutionMetrics executionMetrics;
 	private Long processId;
@@ -32,12 +31,11 @@ public abstract class ScriptExecution {
 	private ActionSelectOperation actionSelectOperation;
 	private Marker SCRIPT;
 
-	public ScriptExecution(Script script, FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+	public ScriptExecution(Script script, ExecutionControl executionControl,
 						   ExecutionMetrics executionMetrics, Long processId, boolean exitOnCompletion,
 						   ScriptExecution parentScriptExecution, String paramList, String paramFile,
 						   ActionSelectOperation actionSelectOperation, RootingStrategy rootingStrategy) {
 		this.script = script;
-		this.frameworkExecution = frameworkExecution;
 		this.executionControl = executionControl;
 		this.executionMetrics = executionMetrics;
 		this.processId = processId;
@@ -71,7 +69,7 @@ public abstract class ScriptExecution {
 		while (actionIndex < actionsToExecute.size()) {
 			Action action = actionsToExecute.get(actionIndex);
 
-			ActionExecution actionExecution = new ActionExecution(frameworkExecution, executionControl, this, action);
+			ActionExecution actionExecution = new ActionExecution(executionControl, this, action);
 
 			if (!rootingStrategy.executionAllowed(actionSelectOperation, action)) {
 				// TODO: log
@@ -90,7 +88,7 @@ public abstract class ScriptExecution {
 
 			IterationExecution iterationExecution = new IterationExecution();
 			if (action.getIteration() != null && !action.getIteration().trim().isEmpty()) {
-				iterationExecution.initialize(frameworkExecution, executionControl, actionExecution, action.getIteration());
+				iterationExecution.initialize(executionControl, actionExecution, action.getIteration());
 			}
 
 			while (iterationExecution.hasNext()) {
@@ -356,7 +354,6 @@ public abstract class ScriptExecution {
 				.getRouteOperations()) {
 
 			Callable<ScriptExecution> callableScriptExecution = () -> new ScriptExecutionBuilder(true, true)
-					.frameworkExecution(frameworkExecution)
 					.script(routeOperation.getScript())
 					.executionControl(executionControl)
 					.parentScriptExecution(parentScriptExecution)
@@ -388,15 +385,6 @@ public abstract class ScriptExecution {
 
 	public void traceDesignMetadata() {
 		this.getExecutionControl().getExecutionTrace().setExecution(this);
-	}
-
-	// Getters and Setters
-	public FrameworkExecution getFrameworkExecution() {
-		return frameworkExecution;
-	}
-
-	public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-		this.frameworkExecution = frameworkExecution;
 	}
 
 	public ExecutionControl getExecutionControl() {

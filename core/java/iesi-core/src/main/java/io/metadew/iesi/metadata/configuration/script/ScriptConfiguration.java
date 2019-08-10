@@ -1,7 +1,6 @@
 package io.metadew.iesi.metadata.configuration.script;
 
 import io.metadew.iesi.connection.tools.SQLTools;
-import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.MetadataConfiguration;
 import io.metadew.iesi.metadata.configuration.action.ActionConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.ScriptAlreadyExistsException;
@@ -17,6 +16,7 @@ import io.metadew.iesi.metadata.definition.script.ScriptVersion;
 import io.metadew.iesi.metadata.execution.MetadataControl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -31,15 +31,13 @@ public class ScriptConfiguration extends MetadataConfiguration {
     private final ActionConfiguration actionConfiguration;
     private final ScriptVersionConfiguration scriptVersionConfiguration;
     private final ScriptParameterConfiguration scriptParameterConfiguration;
-    private FrameworkInstance frameworkInstance;
     private static final Logger LOGGER = LogManager.getLogger();
 
     // Constructors
-    public ScriptConfiguration(FrameworkInstance frameworkInstance) {
-        this.frameworkInstance = frameworkInstance;
-        this.actionConfiguration = new ActionConfiguration(frameworkInstance);
-        this.scriptVersionConfiguration = new ScriptVersionConfiguration(frameworkInstance);
-        this.scriptParameterConfiguration = new ScriptParameterConfiguration(frameworkInstance);
+    public ScriptConfiguration() {
+        this.actionConfiguration = new ActionConfiguration();
+        this.scriptVersionConfiguration = new ScriptVersionConfiguration();
+        this.scriptParameterConfiguration = new ScriptParameterConfiguration();
     }
 
     @Override
@@ -336,14 +334,4 @@ public class ScriptConfiguration extends MetadataConfiguration {
             return Optional.empty();
         }
     }
-
-    // Getters and Setters
-    public FrameworkInstance getFrameworkInstance() {
-        return frameworkInstance;
-    }
-
-    public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-        this.frameworkInstance = frameworkInstance;
-    }
-
 }

@@ -18,14 +18,14 @@ public class SqliteRepositoryConfiguration extends RepositoryConfiguration {
     private String file;
 
 
-    public SqliteRepositoryConfiguration(ConfigFile configFile, FrameworkSettingConfiguration frameworkSettingConfiguration, FrameworkCrypto frameworkCrypto) {
-        super(configFile, frameworkSettingConfiguration, frameworkCrypto);
+    public SqliteRepositoryConfiguration(ConfigFile configFile) {
+        super(configFile);
     }
 
     @Override
-    void fromConfigFile(ConfigFile configFile, FrameworkSettingConfiguration frameworkSettingConfiguration, FrameworkCrypto frameworkCrypto) {
-        file = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.sqlite.file");
-        jdbcConnectionString = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.connection.string");
+    void fromConfigFile(ConfigFile configFile) {
+        file = getSettingValue(configFile, "metadata.repository.sqlite.file");
+        jdbcConnectionString = getSettingValue(configFile, "metadata.repository.connection.string");
     }
 
     @Override

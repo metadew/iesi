@@ -35,7 +35,7 @@ public class Executor {
 
 	public void init(FrameworkInstance frameworkInstance) {
 		this.frameworkInstance = frameworkInstance;
-		this.requestResultConfiguration = new RequestResultConfiguration(MetadataControl.getInstance());
+		this.requestResultConfiguration = new RequestResultConfiguration();
 	}
 
 	public synchronized void execute(Request request) {
@@ -50,7 +50,7 @@ public class Executor {
 			if (request.getType() != null) {
 				switch (request.getType()) {
 				case "script":
-					ScriptLaunchOperation.execute(frameworkInstance, request, frameworkRunIdentifier);
+					ScriptLaunchOperation.execute(request, frameworkRunIdentifier);
 					break;
 				default:
 					throw new RuntimeException("Request type is not supported");

@@ -10,16 +10,11 @@ public class FileStoreConnection {
     private String path;
 
     public FileStoreConnection() {
-
     }
 
     public FileStoreConnection(String path) {
-        super();
         this.setPath(path);
     }
-
-    // Methods
-
 
     // Getters and Setters
     public String getPath() {

@@ -16,21 +16,21 @@ public class RepositoryConfigurationFactory {
             throw new RuntimeException("No repository type defined in configuration file");
         }
         if (configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.type").get()).get().equalsIgnoreCase("netezza")) {
-            return new NetezzaRepositoryConfiguration(configFile, frameworkSettingConfiguration,frameworkCrypto);
+            return new NetezzaRepositoryConfiguration(configFile);
         } else if (configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.type").get()).get().equalsIgnoreCase("h2")) {
-            return new H2RepositoryConfiguration(configFile, frameworkSettingConfiguration,frameworkCrypto);
+            return new H2RepositoryConfiguration(configFile);
         } else if (configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.type").get()).get().equalsIgnoreCase("mssql")) {
-            return new MssqlRepositoryConfiguration(configFile, frameworkSettingConfiguration,frameworkCrypto);
+            return new MssqlRepositoryConfiguration(configFile);
         } else if (configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.type").get()).get().equalsIgnoreCase("sqlite")) {
-            return new SqliteRepositoryConfiguration(configFile, frameworkSettingConfiguration,frameworkCrypto);
+            return new SqliteRepositoryConfiguration(configFile);
         } else if (configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.type").get()).get().equalsIgnoreCase("oracle")) {
-            return new OracleRepositoryConfiguration(configFile, frameworkSettingConfiguration,frameworkCrypto);
+            return new OracleRepositoryConfiguration(configFile);
         } else if (configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.type").get()).get().equalsIgnoreCase("postgresql")) {
-            return new PostgresqlRepositoryConfiguration(configFile, frameworkSettingConfiguration,frameworkCrypto);
+            return new PostgresqlRepositoryConfiguration(configFile);
         } else if (configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.type").get()).get().equalsIgnoreCase("filestore")) {
-            return new FileStoreRepositoryConfiguration(configFile, frameworkSettingConfiguration,frameworkCrypto);
+            return new FileStoreRepositoryConfiguration(configFile);
         } else if (configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.type").get()).get().equalsIgnoreCase("elasticsearch")) {
-            return new ElasticSearchRepositoryConfiguration(configFile, frameworkSettingConfiguration,frameworkCrypto);
+            return new ElasticSearchRepositoryConfiguration(configFile);
         } else {
             throw new RuntimeException(MessageFormat.format("Could not initiate reppository configuration for type {0}",
                     configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.type").get()).get()));

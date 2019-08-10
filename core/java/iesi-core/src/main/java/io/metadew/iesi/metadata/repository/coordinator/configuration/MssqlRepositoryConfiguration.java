@@ -26,23 +26,23 @@ public class MssqlRepositoryConfiguration extends RepositoryConfiguration {
     private String readerUserPassword;
 
 
-    public MssqlRepositoryConfiguration(ConfigFile configFile, FrameworkSettingConfiguration frameworkSettingConfiguration, FrameworkCrypto frameworkCrypto) {
-       super(configFile, frameworkSettingConfiguration, frameworkCrypto);
+    public MssqlRepositoryConfiguration(ConfigFile configFile) {
+       super(configFile);
     }
 
     @Override
-    void fromConfigFile(ConfigFile configFile, FrameworkSettingConfiguration frameworkSettingConfiguration, FrameworkCrypto frameworkCrypto) {
-    	host = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.mssql.host");
-    	port = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.mssql.port");
-    	database = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.mssql.database");
-    	schema = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.mssql.schema");
-    	ownerUser = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.mssql.owner");
-    	ownerUserPassword = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.mssql.owner.password");
-    	writerUser = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.mssql.writer");
-    	writerUserPassword = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.mssql.writer.password");
-    	readerUser = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.mssql.reader");
-    	readerUserPassword = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.mssql.reader.password");
-    	jdbcConnectionString = getSettingValue(frameworkSettingConfiguration, frameworkCrypto, configFile, "metadata.repository.connection.string");
+    void fromConfigFile(ConfigFile configFile) {
+    	host = getSettingValue(configFile, "metadata.repository.mssql.host");
+    	port = getSettingValue(configFile, "metadata.repository.mssql.port");
+    	database = getSettingValue(configFile, "metadata.repository.mssql.database");
+    	schema = getSettingValue(configFile, "metadata.repository.mssql.schema");
+    	ownerUser = getSettingValue(configFile, "metadata.repository.mssql.owner");
+    	ownerUserPassword = getSettingValue(configFile, "metadata.repository.mssql.owner.password");
+    	writerUser = getSettingValue(configFile, "metadata.repository.mssql.writer");
+    	writerUserPassword = getSettingValue(configFile, "metadata.repository.mssql.writer.password");
+    	readerUser = getSettingValue(configFile, "metadata.repository.mssql.reader");
+    	readerUserPassword = getSettingValue(configFile, "metadata.repository.mssql.reader.password");
+    	jdbcConnectionString = getSettingValue(configFile, "metadata.repository.connection.string");
     }
 
     @Override

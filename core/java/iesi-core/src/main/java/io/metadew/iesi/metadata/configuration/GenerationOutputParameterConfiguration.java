@@ -11,17 +11,14 @@ import java.io.StringWriter;
 
 public class GenerationOutputParameterConfiguration {
 
-    private FrameworkInstance frameworkInstance;
     private GenerationOutputParameter generationOutputParameter;
 
     // Constructors
-    public GenerationOutputParameterConfiguration(GenerationOutputParameter generationOutputParameter, FrameworkInstance frameworkInstance) {
+    public GenerationOutputParameterConfiguration(GenerationOutputParameter generationOutputParameter) {
         this.setgenerationOutputParameter(generationOutputParameter);
-        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public GenerationOutputParameterConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
+    public GenerationOutputParameterConfiguration() {
     }
 
     // Insert
@@ -78,13 +75,5 @@ public class GenerationOutputParameterConfiguration {
     public void setgenerationOutputParameter(GenerationOutputParameter generationOutputParameter) {
         this.generationOutputParameter = generationOutputParameter;
     }
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
 
 }

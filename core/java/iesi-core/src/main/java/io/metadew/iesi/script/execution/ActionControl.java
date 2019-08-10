@@ -1,6 +1,5 @@
 package io.metadew.iesi.script.execution;
 
-import io.metadew.iesi.framework.execution.FrameworkExecution;
 import org.apache.logging.log4j.Level;
 
 public class ActionControl {
@@ -8,14 +7,12 @@ public class ActionControl {
     private ExecutionControl executionControl;
     private ActionExecution actionExecution;
     private ExecutionMetrics executionMetrics;
-    private FrameworkExecution frameworkExecution;
     private ActionRuntime actionRuntime;
 
-    public ActionControl(FrameworkExecution frameworkExecution, ExecutionControl executionControl, ActionExecution actionExecution) {
-        this.setFrameworkExecution(frameworkExecution);
+    public ActionControl(ExecutionControl executionControl, ActionExecution actionExecution) {
         this.setExecutionControl(executionControl);
         this.setActionExecution(actionExecution);
-        this.setActionRuntime(new ActionRuntime(this.getFrameworkExecution(), this.getExecutionControl().getRunId(), this.getActionExecution().getProcessId()));
+        this.setActionRuntime(new ActionRuntime(this.getExecutionControl().getRunId(), this.getActionExecution().getProcessId()));
         this.setExecutionMetrics(new ExecutionMetrics());
     }
 
@@ -92,14 +89,6 @@ public class ActionControl {
 
     public void setActionRuntime(ActionRuntime actionRuntime) {
         this.actionRuntime = actionRuntime;
-    }
-
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
     }
 
     public ExecutionControl getExecutionControl() {

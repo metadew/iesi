@@ -9,10 +9,6 @@ public class SqliteDatabase extends Database {
         super(databaseConnection);
     }
     
-    public SqliteDatabase() {
-    	super();
-    }
-
     @Override
     public String getSystemTimestampExpression() {
         return "datetime(CURRENT_TIMESTAMP, 'localtime')";

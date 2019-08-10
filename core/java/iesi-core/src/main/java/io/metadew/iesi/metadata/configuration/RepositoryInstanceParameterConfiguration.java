@@ -12,17 +12,13 @@ import java.io.StringWriter;
 public class RepositoryInstanceParameterConfiguration {
 
     private RepositoryInstanceParameter repositoryParameter;
-    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public RepositoryInstanceParameterConfiguration(RepositoryInstanceParameter repositoryParameter,
-    		FrameworkInstance frameworkInstance) {
+    public RepositoryInstanceParameterConfiguration(RepositoryInstanceParameter repositoryParameter) {
         this.setRepositoryInstanceParameter(repositoryParameter);
-        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public RepositoryInstanceParameterConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
+    public RepositoryInstanceParameterConfiguration() {
     }
 
     // Insert
@@ -91,13 +87,5 @@ public class RepositoryInstanceParameterConfiguration {
     public void setRepositoryInstanceParameter(RepositoryInstanceParameter repositoryParameter) {
         this.repositoryParameter = repositoryParameter;
     }
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
 
 }

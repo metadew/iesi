@@ -26,16 +26,13 @@ import java.util.Optional;
 public class EnvironmentConfiguration extends MetadataConfiguration{
 
     private Environment environment;
-    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public EnvironmentConfiguration(FrameworkInstance frameworkInstance) {
-        this.setFrameworkInstance(frameworkInstance);
+    public EnvironmentConfiguration() {
     }
 
-    public EnvironmentConfiguration(Environment environment, FrameworkInstance frameworkInstance) {
+    public EnvironmentConfiguration(Environment environment) {
         this.setEnvironment(environment);
-        this.setFrameworkInstance(frameworkInstance);
     }
     
     // Abstract method implementations
@@ -51,7 +48,7 @@ public class EnvironmentConfiguration extends MetadataConfiguration{
                 + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("Environments") + " where ENV_NM = '"
                 + environmentName + "'";
         CachedRowSet crsEnvironment = MetadataControl.getInstance().getConnectivityMetadataRepository().executeQuery(queryEnvironment, "reader");
-        EnvironmentParameterConfiguration environmentParameterConfiguration = new EnvironmentParameterConfiguration(this.getFrameworkInstance());
+        EnvironmentParameterConfiguration environmentParameterConfiguration = new EnvironmentParameterConfiguration();
         try {
             while (crsEnvironment.next()) {
                 // Get parameters
@@ -90,7 +87,7 @@ public class EnvironmentConfiguration extends MetadataConfiguration{
         String query = "select ENV_NM from " + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("Environments")
                 + " order by ENV_NM ASC";
         CachedRowSet crs = MetadataControl.getInstance().getConnectivityMetadataRepository().executeQuery(query, "reader");
-        EnvironmentConfiguration environmentConfiguration = new EnvironmentConfiguration(this.getFrameworkInstance());
+        EnvironmentConfiguration environmentConfiguration = new EnvironmentConfiguration();
         try {
             while (crs.next()) {
                 String environmentName = crs.getString("ENV_NM");
@@ -152,7 +149,7 @@ public class EnvironmentConfiguration extends MetadataConfiguration{
     }
 
     public List<String> getInsertStatement(Environment environment) {
-        EnvironmentParameterConfiguration environmentParameterConfiguration = new EnvironmentParameterConfiguration(frameworkInstance);
+        EnvironmentParameterConfiguration environmentParameterConfiguration = new EnvironmentParameterConfiguration();
         List<String> queries = new ArrayList<>();
         queries.add("INSERT INTO " + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("Environments") +
                 " (ENV_NM, ENV_DSC) VALUES (" +
@@ -239,7 +236,7 @@ public class EnvironmentConfiguration extends MetadataConfiguration{
             return result;
 
         for (EnvironmentParameter environmentParameter : environment.getParameters()) {
-            EnvironmentParameterConfiguration environmentParameterConfiguration = new EnvironmentParameterConfiguration(this.getFrameworkInstance());
+            EnvironmentParameterConfiguration environmentParameterConfiguration = new EnvironmentParameterConfiguration();
             if (!result.equalsIgnoreCase(""))
                 result += "\n";
             result += environmentParameterConfiguration.getInsertStatement(environment.getName(), environmentParameter);
@@ -257,8 +254,7 @@ public class EnvironmentConfiguration extends MetadataConfiguration{
             return result;
 
         for (EnvironmentParameter environmentParameter : this.getEnvironment().getParameters()) {
-            EnvironmentParameterConfiguration environmentParameterConfiguration = new EnvironmentParameterConfiguration(environmentParameter,
-                    this.getFrameworkInstance());
+            EnvironmentParameterConfiguration environmentParameterConfiguration = new EnvironmentParameterConfiguration(environmentParameter);
             if (!result.equalsIgnoreCase(""))
                 result += "\n";
             result += environmentParameterConfiguration.getInsertStatement(environmentName);
@@ -273,7 +269,7 @@ public class EnvironmentConfiguration extends MetadataConfiguration{
         String query = "select ENV_NM from " + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("Environments")
                 + " order by ENV_NM ASC";
         crs = MetadataControl.getInstance().getConnectivityMetadataRepository().executeQuery(query, "reader");
-        EnvironmentConfiguration environmentConfiguration = new EnvironmentConfiguration(this.getFrameworkInstance());
+        EnvironmentConfiguration environmentConfiguration = new EnvironmentConfiguration();
         try {
             String environmentName = "";
             while (crs.next()) {
@@ -297,7 +293,7 @@ public class EnvironmentConfiguration extends MetadataConfiguration{
             for (DataObject dataObject : dataObjectConfiguration.getDataArray(data)) {
 
                 Environment environment = objectMapper.convertValue(dataObject.getData(), Environment.class);
-                EnvironmentConfiguration environmentConfiguration = new EnvironmentConfiguration(environment, this.getFrameworkInstance());
+                EnvironmentConfiguration environmentConfiguration = new EnvironmentConfiguration(environment);
                 String output = environmentConfiguration.getInsertStatement();
 
                 InputStream inputStream = FileTools
@@ -307,7 +303,7 @@ public class EnvironmentConfiguration extends MetadataConfiguration{
             }
         } else {
             Environment environment = objectMapper.convertValue(dataObjectConfiguration.getDataObject(data).getData(), Environment.class);
-            EnvironmentConfiguration environmentConfiguration = new EnvironmentConfiguration(environment, this.getFrameworkInstance());
+            EnvironmentConfiguration environmentConfiguration = new EnvironmentConfiguration(environment);
             String output = environmentConfiguration.getInsertStatement();
 
             InputStream inputStream = FileTools.convertToInputStream(output,FrameworkControl.getInstance());
@@ -318,7 +314,7 @@ public class EnvironmentConfiguration extends MetadataConfiguration{
 
     public void deleteEnvironment(String environmentName) {
         this.getEnvironment(environmentName).ifPresent(environment -> {
-                    EnvironmentConfiguration environmentConfiguration = new EnvironmentConfiguration(environment, this.getFrameworkInstance());
+                    EnvironmentConfiguration environmentConfiguration = new EnvironmentConfiguration(environment);
                     String output = environmentConfiguration.getDeleteStatement();
 
                     InputStream inputStream = FileTools
@@ -336,7 +332,7 @@ public class EnvironmentConfiguration extends MetadataConfiguration{
         // Set new environment name
         environment.setName(toEnvironmentName);
 
-        EnvironmentConfiguration environmentConfiguration = new EnvironmentConfiguration(environment, this.getFrameworkInstance());
+        EnvironmentConfiguration environmentConfiguration = new EnvironmentConfiguration(environment);
         String output = environmentConfiguration.getInsertStatement();
 
         InputStream inputStream = FileTools.convertToInputStream(output,
@@ -357,14 +353,6 @@ public class EnvironmentConfiguration extends MetadataConfiguration{
     public void setEnvironment(Environment environment) {
         this.environment = environment;
     }
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
 
 }
 

@@ -16,7 +16,6 @@ import java.util.List;
 public class RuntimeActionCacheConfiguration {
 
     private RuntimeActionCache runtimeActionCache;
-    private FrameworkExecution frameworkExecution;
     private String runCacheFolderName;
     private String runCacheFileName = "runtimeCache.db3";
     private String runCacheFilePath;
@@ -24,9 +23,7 @@ public class RuntimeActionCacheConfiguration {
     private String PRC_RUN_CACHE = "PRC_RUN_CACHE";
 
     // Constructors
-    public RuntimeActionCacheConfiguration(FrameworkExecution frameworkExecution, String runCacheFolderName) {
-        this.setFrameworkExecution(frameworkExecution);
-
+    public RuntimeActionCacheConfiguration(String runCacheFolderName) {
         // Define path
         this.setRunCacheFolderName(runCacheFolderName);
         this.setRunCacheFilePath(this.getRunCacheFolderName() + File.separator + this.getRunCacheFileName());
@@ -132,15 +129,6 @@ public class RuntimeActionCacheConfiguration {
 
         runtimeCache.setValue(value);
         return runtimeCache;
-    }
-
-    // Getters and Setters
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
     }
 
     public String getRunCacheFileName() {

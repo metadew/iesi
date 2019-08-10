@@ -133,7 +133,8 @@ public class GenerationLauncher {
 		Context context = new Context();
 		context.setName("generation");
 		context.setScope(generationName);
-		FrameworkExecution frameworkExecution = new FrameworkExecution(new FrameworkExecutionContext(context));
+		FrameworkExecution frameworkExecution = FrameworkExecution.getInstance();
+		frameworkExecution.init(new FrameworkExecutionContext(context));
 		
 		// Logging
 		LOGGER.info("option.generation=" + generationName);
@@ -149,7 +150,7 @@ public class GenerationLauncher {
 		}
 		
 		// Get the Generation
-		GenerationConfiguration generationConfiguration = new GenerationConfiguration(frameworkInstance);
+		GenerationConfiguration generationConfiguration = new GenerationConfiguration();
 		Generation generation = generationConfiguration.getGeneration(generationName);
 		GenerationExecution eoGeneration = new GenerationExecution(frameworkExecution, generation);
 		

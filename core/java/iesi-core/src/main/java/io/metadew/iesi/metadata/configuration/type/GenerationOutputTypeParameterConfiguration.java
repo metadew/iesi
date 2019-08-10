@@ -7,22 +7,19 @@ import io.metadew.iesi.metadata.definition.GenerationOutputTypeParameter;
 public class GenerationOutputTypeParameterConfiguration {
 
     private GenerationOutputTypeParameter generationOutputTypeParameter;
-    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public GenerationOutputTypeParameterConfiguration(GenerationOutputTypeParameter generationOutputTypeParameter, FrameworkInstance frameworkInstance) {
+    public GenerationOutputTypeParameterConfiguration(GenerationOutputTypeParameter generationOutputTypeParameter) {
         this.setgenerationOutputTypeParameter(generationOutputTypeParameter);
-        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public GenerationOutputTypeParameterConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
+    public GenerationOutputTypeParameterConfiguration() {
     }
 
     // Get GenerationOutput Type Parameter
     public GenerationOutputTypeParameter getGenerationOutputTypeParameter(String GenerationOutputTypeName, String GenerationOutputTypeParameterName) {
         GenerationOutputTypeParameter GenerationOutputTypeParameterResult = null;
-        GenerationOutputTypeConfiguration GenerationOutputTypeConfiguration = new GenerationOutputTypeConfiguration(this.getFrameworkInstance());
+        GenerationOutputTypeConfiguration GenerationOutputTypeConfiguration = new GenerationOutputTypeConfiguration();
         GenerationOutputType GenerationOutputType = GenerationOutputTypeConfiguration.getGenerationOutputType(GenerationOutputTypeName);
         for (GenerationOutputTypeParameter GenerationOutputTypeParameter : GenerationOutputType.getParameters()) {
             if (GenerationOutputTypeParameter.getName().equalsIgnoreCase(GenerationOutputTypeParameterName)) {
@@ -41,13 +38,5 @@ public class GenerationOutputTypeParameterConfiguration {
     public void setgenerationOutputTypeParameter(GenerationOutputTypeParameter generationOutputTypeParameter) {
         this.generationOutputTypeParameter = generationOutputTypeParameter;
     }
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
 
 }

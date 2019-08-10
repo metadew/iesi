@@ -133,8 +133,7 @@ public class AssemblyExecution {
 					List<DataObject> confDataObjects = new ArrayList();
 					for (final File inputConf : inputConfs) {
 						// Read configuration
-						DataObjectOperation inputDataObjectOperation = new DataObjectOperation(null,
-								inputConf.getAbsolutePath());
+						DataObjectOperation inputDataObjectOperation = new DataObjectOperation(inputConf.getAbsolutePath());
 
 						ObjectMapper inputObjectMapper = new ObjectMapper();
 						for (DataObject dataObject : inputDataObjectOperation.getDataObjects()) {
@@ -170,8 +169,7 @@ public class AssemblyExecution {
 					List<DataObject> defTableDataObjects = new ArrayList();
 					for (final File inputDef : inputDefTables) {
 						// Read configuration
-						DataObjectOperation inputDataObjectOperation = new DataObjectOperation(null,
-								inputDef.getAbsolutePath());
+						DataObjectOperation inputDataObjectOperation = new DataObjectOperation(inputDef.getAbsolutePath());
 
 						ObjectMapper inputObjectMapper = new ObjectMapper();
 						for (DataObject dataObject : inputDataObjectOperation.getDataObjects()) {
@@ -195,8 +193,7 @@ public class AssemblyExecution {
 					List<DataObject> defObjectDataObjects = new ArrayList();
 					for (final File inputDef : inputDefObjects) {
 						// Read configuration
-						DataObjectOperation inputDataObjectOperation = new DataObjectOperation(null,
-								inputDef.getAbsolutePath());
+						DataObjectOperation inputDataObjectOperation = new DataObjectOperation(inputDef.getAbsolutePath());
 
 						ObjectMapper inputObjectMapper = new ObjectMapper();
 						for (DataObject dataObject : inputDataObjectOperation.getDataObjects()) {
@@ -234,8 +231,7 @@ public class AssemblyExecution {
 					List<DataObject> confInitObjects = new ArrayList();
 					for (final File inputConf : inputConfs) {
 						// Read configuration
-						DataObjectOperation inputInitObjectOperation = new DataObjectOperation(null,
-								inputConf.getAbsolutePath());
+						DataObjectOperation inputInitObjectOperation = new DataObjectOperation(inputConf.getAbsolutePath());
 
 						ObjectMapper inputObjectMapper = new ObjectMapper();
 						for (DataObject dataObject : inputInitObjectOperation.getDataObjects()) {
@@ -331,7 +327,7 @@ public class AssemblyExecution {
 			final File[] confs = FolderTools.getFilesInFolder(metadataConfHome, "regex", ".+\\.json");
 			for (final File conf : confs) {
 				// Read configuration
-				DataObjectOperation dataObjectOperation = new DataObjectOperation(null, conf.getAbsolutePath());
+				DataObjectOperation dataObjectOperation = new DataObjectOperation(conf.getAbsolutePath());
 
 				ObjectMapper objectMapper = new ObjectMapper();
 				for (DataObject dataObject : dataObjectOperation.getDataObjects()) {

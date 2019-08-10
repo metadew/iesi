@@ -6,12 +6,10 @@ import io.metadew.iesi.script.ScriptExecutionBuildException;
 
 public class ScriptRunnable implements Runnable {
     private Script script;
-    private FrameworkExecution frameworkExecution;
     private ScriptExecution scriptExecution;
 
 
-    ScriptRunnable(FrameworkExecution frameworkExecution, ScriptExecution scriptExecution, Script script) {
-        this.setFrameworkExecution(frameworkExecution);
+    ScriptRunnable(ScriptExecution scriptExecution, Script script) {
         this.setScriptExecution(scriptExecution);
         this.setScript(script);
     }
@@ -20,7 +18,6 @@ public class ScriptRunnable implements Runnable {
     public void run() {
         try {
             ScriptExecution scriptExecution = new ScriptExecutionBuilder(true, true)
-                    .frameworkExecution(frameworkExecution)
                     .script(script)
                     .executionControl(this.scriptExecution.getExecutionControl())
                     .executionMetrics(this.scriptExecution.getExecutionMetrics())
@@ -40,14 +37,6 @@ public class ScriptRunnable implements Runnable {
 
     public void setScript(Script script) {
         this.script = script;
-    }
-
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
     }
 
     public ScriptExecution getScriptExecution() {

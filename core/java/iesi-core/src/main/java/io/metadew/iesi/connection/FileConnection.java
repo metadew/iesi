@@ -14,8 +14,16 @@ public class FileConnection {
     private String attributes;
     private boolean directory;
 
-    public FileConnection() {
+    public FileConnection(String filePath, String fileName, String longName, String extension, String attributes, boolean directory) {
+        this.filePath = filePath;
+        this.fileName = fileName;
+        this.longName = longName;
+        this.extension = extension;
+        this.attributes = attributes;
+        this.directory = directory;
+    }
 
+    public FileConnection() {
     }
 
     // Getters and Setters

@@ -14,17 +14,14 @@ public class DataframeParameterConfiguration {
 
     private DataframeVersion dataframeVersion;
     private DataframeParameter dataframeParameter;
-    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public DataframeParameterConfiguration(DataframeVersion dataframeVersion, DataframeParameter dataframeParameter, FrameworkInstance frameworkInstance) {
+    public DataframeParameterConfiguration(DataframeVersion dataframeVersion, DataframeParameter dataframeParameter) {
         this.setDataframeVersion(dataframeVersion);
         this.setDataframeParameter(dataframeParameter);
-        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public DataframeParameterConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
+    public DataframeParameterConfiguration() {
     }
 
     // Insert
@@ -83,13 +80,5 @@ public class DataframeParameterConfiguration {
     public void setDataframeVersion(DataframeVersion dataframeVersion) {
         this.dataframeVersion = dataframeVersion;
     }
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
 
 }

@@ -1,6 +1,7 @@
 package io.metadew.iesi.framework.execution;
 
 import io.metadew.iesi.framework.definition.FrameworkRunIdentifier;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.repository.ExecutionServerMetadataRepository;
 import org.apache.logging.log4j.ThreadContext;
 
@@ -13,15 +14,26 @@ public class FrameworkExecution {
     private FrameworkRuntime frameworkRuntime;
     private ExecutionServerMetadataRepository executionServerRepositoryConfiguration;
 
-    public FrameworkExecution() {
-        this(new FrameworkExecutionContext(), new FrameworkExecutionSettings(), new FrameworkRunIdentifier());
+    private static FrameworkExecution INSTANCE;
+
+    public synchronized static FrameworkExecution getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new FrameworkExecution();
+        }
+        return INSTANCE;
     }
 
-    public FrameworkExecution(FrameworkExecutionContext frameworkExecutionContext) {
-        this(frameworkExecutionContext, new FrameworkExecutionSettings(), new FrameworkRunIdentifier());
+    private FrameworkExecution() {}
+
+    public void init() {
+        init(new FrameworkExecutionContext(), new FrameworkExecutionSettings(), new FrameworkRunIdentifier());
     }
 
-    public FrameworkExecution(FrameworkExecutionContext frameworkExecutionContext, FrameworkExecutionSettings frameworkExecutionSettings, FrameworkRunIdentifier frameworkRunIdentifier) {
+    public void init(FrameworkExecutionContext frameworkExecutionContext) {
+        init(frameworkExecutionContext, new FrameworkExecutionSettings(), new FrameworkRunIdentifier());
+    }
+
+    public void init(FrameworkExecutionContext frameworkExecutionContext, FrameworkExecutionSettings frameworkExecutionSettings, FrameworkRunIdentifier frameworkRunIdentifier) {
         this.frameworkExecutionContext = frameworkExecutionContext;
         this.frameworkExecutionSettings = frameworkExecutionSettings;
         FrameworkControl.getInstance().setSettingsList(frameworkExecutionSettings.getSettingsList());

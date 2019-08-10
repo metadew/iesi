@@ -12,25 +12,22 @@ import java.util.List;
 
 public class ActionResultConfiguration {
 
-	private FrameworkInstance frameworkInstance;
+	private final ActionResultOutputConfiguration actionResultOutputConfiguration;
 
 	// Constructors
-	public ActionResultConfiguration(FrameworkInstance frameworkInstance) {
-		this.setFrameworkInstance(frameworkInstance);
+	public ActionResultConfiguration() {
+		this.actionResultOutputConfiguration = new ActionResultOutputConfiguration();
+
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public List<ActionResult> getActions(String runId) {
-		List<ActionResult> actionResults = new ArrayList();
-		CachedRowSet crsActionResults = null;
+		List<ActionResult> actionResults = new ArrayList<>();
 		String query = "select RUN_ID, PRC_ID, SCRIPT_PRC_ID, ACTION_ID, ACTION_NM, ENV_NM, ST_NM, STRT_TMS, END_TMS from "
 				+ MetadataControl.getInstance().getResultMetadataRepository()
 						.getTableNameByLabel("ActionResults")
 				+ " where RUN_ID = '" + runId + "' order by PRC_ID asc, STRT_TMS asc";
-		System.out.println(query);
-		crsActionResults = MetadataControl.getInstance().getResultMetadataRepository()
+		CachedRowSet crsActionResults = MetadataControl.getInstance().getResultMetadataRepository()
 				.executeQuery(query, "reader");
-		ActionResultOutputConfiguration actionResultOutputConfiguration = new ActionResultOutputConfiguration(this.getFrameworkInstance());
 		try {
 			while (crsActionResults.next()) {
 				ActionResult actionResult = new ActionResult();
@@ -59,16 +56,13 @@ public class ActionResultConfiguration {
 		return actionResults;
 	}
 	
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public List<ActionResult> getActions(String runId, Long scriptProcessId) {
-		List<ActionResult> actionResults = new ArrayList();
-		CachedRowSet crsActionResults = null;
+		List<ActionResult> actionResults = new ArrayList<>();
 		String query = "select RUN_ID, PRC_ID, SCRIPT_PRC_ID, ACTION_ID, ACTION_NM, ENV_NM, ST_NM, STRT_TMS, END_TMS from "
 				+ MetadataControl.getInstance().getResultMetadataRepository()
 						.getTableNameByLabel("ActionResults")
 				+ " where RUN_ID = '" + runId + "' and SCRIPT_PRC_ID = " + scriptProcessId + " order by PRC_ID asc, STRT_TMS asc";
-		System.out.println(query);
-		crsActionResults = MetadataControl.getInstance().getResultMetadataRepository()
+		CachedRowSet crsActionResults = MetadataControl.getInstance().getResultMetadataRepository()
 				.executeQuery(query, "reader");
 		try {
 			while (crsActionResults.next()) {
@@ -94,15 +88,6 @@ public class ActionResultConfiguration {
 		}
 
 		return actionResults;
-	}
-
-	// Getters and Setters
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
 	}
 
 }

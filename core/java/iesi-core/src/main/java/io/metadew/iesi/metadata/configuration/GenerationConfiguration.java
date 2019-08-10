@@ -15,16 +15,13 @@ import java.util.List;
 public class GenerationConfiguration {
 
     private Generation generation;
-    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public GenerationConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
+    public GenerationConfiguration() {
     }
 
-    public GenerationConfiguration(Generation generation, FrameworkInstance frameworkInstance) {
+    public GenerationConfiguration(Generation generation) {
         this.setGeneration(generation);
-        this.setFrameworkInstance(frameworkInstance);
     }
 
     // Insert
@@ -175,7 +172,7 @@ public class GenerationConfiguration {
 
         for (GenerationRule generationRule : this.getGeneration().getRules()) {
             counter++;
-            GenerationRuleConfiguration generationRuleConfiguration = new GenerationRuleConfiguration(generationRule, this.getFrameworkInstance());
+            GenerationRuleConfiguration generationRuleConfiguration = new GenerationRuleConfiguration(generationRule);
             if (!result.equalsIgnoreCase(""))
                 result += "\n";
             result += generationRuleConfiguration.getInsertStatement(this.getGeneration().getName(), counter);
@@ -190,7 +187,7 @@ public class GenerationConfiguration {
         if (this.getGeneration().getOutputs() == null) return result;
 
         for (GenerationOutput generationOutput : this.getGeneration().getOutputs()) {
-            GenerationOutputConfiguration generationOutputConfiguration = new GenerationOutputConfiguration(generationOutput, this.getFrameworkInstance());
+            GenerationOutputConfiguration generationOutputConfiguration = new GenerationOutputConfiguration(generationOutput);
             if (!result.equalsIgnoreCase(""))
                 result += "\n";
             result += generationOutputConfiguration.getInsertStatement(this.getGeneration().getName());
@@ -205,7 +202,7 @@ public class GenerationConfiguration {
         if (this.getGeneration().getControls() == null) return result;
 
         for (GenerationControl generationControl : this.getGeneration().getControls()) {
-            GenerationControlConfiguration generationControlConfiguration = new GenerationControlConfiguration(generationControl, this.getFrameworkInstance());
+            GenerationControlConfiguration generationControlConfiguration = new GenerationControlConfiguration(generationControl);
             if (!result.equalsIgnoreCase(""))
                 result += "\n";
             result += generationControlConfiguration.getInsertStatement(this.getGeneration().getName());
@@ -220,7 +217,7 @@ public class GenerationConfiguration {
         if (this.getGeneration().getParameters() == null) return result;
 
         for (GenerationParameter generationParameter : this.getGeneration().getParameters()) {
-            GenerationParameterConfiguration generationParameterConfiguration = new GenerationParameterConfiguration(generationParameter, this.getFrameworkInstance());
+            GenerationParameterConfiguration generationParameterConfiguration = new GenerationParameterConfiguration(generationParameter);
             if (!result.equalsIgnoreCase(""))
                 result += "\n";
             result += generationParameterConfiguration.getInsertStatement(this.getGeneration().getName());
@@ -235,10 +232,10 @@ public class GenerationConfiguration {
         CachedRowSet crsGeneration = null;
         String queryGeneration = "select GEN_ID, GEN_TYP_NM, GEN_NM, GEN_DSC from " + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("Generations") + " where GEN_NM = '" + generationName + "'";
         crsGeneration = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(queryGeneration, "reader");
-        GenerationRuleConfiguration generationRuleConfiguration = new GenerationRuleConfiguration(this.getFrameworkInstance());
-        GenerationOutputConfiguration generationOutputConfiguration = new GenerationOutputConfiguration(this.getFrameworkInstance());
-        GenerationControlConfiguration generationControlConfiguration = new GenerationControlConfiguration(this.getFrameworkInstance());
-        GenerationParameterConfiguration generationParameterConfiguration = new GenerationParameterConfiguration(this.getFrameworkInstance());
+        GenerationRuleConfiguration generationRuleConfiguration = new GenerationRuleConfiguration();
+        GenerationOutputConfiguration generationOutputConfiguration = new GenerationOutputConfiguration();
+        GenerationControlConfiguration generationControlConfiguration = new GenerationControlConfiguration();
+        GenerationParameterConfiguration generationParameterConfiguration = new GenerationParameterConfiguration();
         try {
             while (crsGeneration.next()) {
                 generation.setId(crsGeneration.getLong("GEN_ID"));
@@ -316,7 +313,7 @@ public class GenerationConfiguration {
         String query = "select GEN_NM, GEN_DSC from " + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("Generations")
                 + " order by GEN_NM ASC";
         crs = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(query, "reader");
-        GenerationConfiguration generationConfiguration = new GenerationConfiguration(this.getFrameworkInstance());
+        GenerationConfiguration generationConfiguration = new GenerationConfiguration();
         try {
             String generationName = "";
             while (crs.next()) {
@@ -345,14 +342,5 @@ public class GenerationConfiguration {
     public void setGeneration(Generation generation) {
         this.generation = generation;
     }
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
-
 
 }

@@ -50,19 +50,19 @@ public class DesignMetadataRepository extends MetadataRepository {
     }
 
     @Override
-    public void save(DataObject dataObject, FrameworkExecution frameworkExecution) throws MetadataRepositorySaveException {
+    public void save(DataObject dataObject) throws MetadataRepositorySaveException {
         // TODO: based on MetadataRepository object decide to insert or not insert the objects
         // TODO: insert should be handled on database level as insert can differ from database type/dialect? JDBC Dialect/Spring
         ObjectMapper objectMapper = new ObjectMapper();
         if (dataObject.getType().equalsIgnoreCase("script")) {
             Script script = objectMapper.convertValue(dataObject.getData(), Script.class);
-            save(script, frameworkExecution);
+            save(script);
         } else if (dataObject.getType().equalsIgnoreCase("component")) {
             Component component = objectMapper.convertValue(dataObject.getData(), Component.class);
-            save(component, frameworkExecution);
+            save(component);
         } else if (dataObject.getType().equalsIgnoreCase("generation")) {
             Generation generation= objectMapper.convertValue(dataObject.getData(), Generation.class);
-            save(generation, frameworkExecution);
+            save(generation);
         } else if (dataObject.getType().equalsIgnoreCase("subroutine")) {
             System.out.println("subroutine");
             // TODO
@@ -71,9 +71,9 @@ public class DesignMetadataRepository extends MetadataRepository {
         }
     }
 
-    public void save(Script script, FrameworkExecution frameworkExecution) throws MetadataRepositorySaveException {
+    public void save(Script script) throws MetadataRepositorySaveException {
         LOGGER.info(MessageFormat.format("Saving script {0}-{1} into design repository", script.getName(), script.getVersion().getNumber()));
-        ScriptConfiguration scriptConfiguration = new ScriptConfiguration(FrameworkInstance.getInstance());
+        ScriptConfiguration scriptConfiguration = new ScriptConfiguration();
         try {
             scriptConfiguration.insert(script);
         } catch (ScriptAlreadyExistsException e) {
@@ -87,9 +87,9 @@ public class DesignMetadataRepository extends MetadataRepository {
         }
     }
 
-    public void save(Component component, FrameworkExecution frameworkExecution) throws MetadataRepositorySaveException {
+    public void save(Component component) throws MetadataRepositorySaveException {
         LOGGER.info(MessageFormat.format("Saving component {0} into design repository", component.getName()));
-        ComponentConfiguration componentConfiguration = new ComponentConfiguration(FrameworkInstance.getInstance());
+        ComponentConfiguration componentConfiguration = new ComponentConfiguration();
         try {
             componentConfiguration.insertComponent(component);
         } catch (ComponentAlreadyExistsException e) {
@@ -102,10 +102,9 @@ public class DesignMetadataRepository extends MetadataRepository {
         }
     }
     
-    public void save(Generation generation, FrameworkExecution frameworkExecution) {
+    public void save(Generation generation) {
         LOGGER.info(MessageFormat.format("Saving generation {0} into design repository", generation.getName()));
-        GenerationConfiguration generationConfiguration = new GenerationConfiguration(generation,
-                FrameworkInstance.getInstance());
+        GenerationConfiguration generationConfiguration = new GenerationConfiguration(generation);
         executeUpdate(generationConfiguration.getInsertStatement());
     }
 

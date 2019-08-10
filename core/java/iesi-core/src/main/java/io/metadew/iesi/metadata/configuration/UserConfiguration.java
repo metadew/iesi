@@ -17,16 +17,12 @@ public class UserConfiguration {
 
     private User user;
 
-    private FrameworkInstance frameworkInstance;
-
     // Constructors
-    public UserConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
+    public UserConfiguration() {
     }
 
-    public UserConfiguration(User user, FrameworkInstance frameworkInstance) {
-        this.setUser(user);
-        this.setFrameworkInstance(frameworkInstance);
+    public UserConfiguration(User user) {
+        this.user = user;
     }
 
     public List<User> getUsers() {
@@ -212,14 +208,6 @@ public class UserConfiguration {
     public void setUser(User user) {
         this.user = user;
     }
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
 
     public void insertUser(User user) {
         if (exists(user)) {

@@ -7,19 +7,19 @@ import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
 
 public abstract class RepositoryConfiguration {
 	
-    RepositoryConfiguration(ConfigFile configFile, FrameworkSettingConfiguration frameworkSettingConfiguration, FrameworkCrypto frameworkCrypto) {
-    	fromConfigFile(configFile, frameworkSettingConfiguration, frameworkCrypto);
+    RepositoryConfiguration(ConfigFile configFile) {
+    	fromConfigFile(configFile);
     }
 
-    abstract void fromConfigFile(ConfigFile configFile, FrameworkSettingConfiguration frameworkSettingConfiguration,FrameworkCrypto frameworkCrypto);
+    abstract void fromConfigFile(ConfigFile configFile);
 
     public abstract RepositoryCoordinator toRepository();
     
-    public String getSettingValue(FrameworkSettingConfiguration frameworkSettingConfiguration, FrameworkCrypto frameworkCrypto, ConfigFile configFile, String settingPath) {
+    public String getSettingValue(ConfigFile configFile, String settingPath) {
     	String output = null;
-        if (frameworkSettingConfiguration.getSettingPath(settingPath).isPresent() &&
-                configFile.getProperty(frameworkSettingConfiguration.getSettingPath(settingPath).get()).isPresent()) {
-        	output =frameworkCrypto.decryptIfNeeded(configFile.getProperty(frameworkSettingConfiguration.getSettingPath(settingPath).get()).get());
+        if (FrameworkSettingConfiguration.getInstance().getSettingPath(settingPath).isPresent() &&
+                configFile.getProperty(FrameworkSettingConfiguration.getInstance().getSettingPath(settingPath).get()).isPresent()) {
+        	output =FrameworkCrypto.getInstance().decryptIfNeeded(configFile.getProperty(FrameworkSettingConfiguration.getInstance().getSettingPath(settingPath).get()).get());
         }
         return output;
     }

@@ -14,6 +14,7 @@ import org.apache.commons.io.IOUtils;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Connection object for hosts. This is extended depending on the host type.
@@ -22,49 +23,76 @@ import java.util.ArrayList;
  */
 public class HostConnection {
 
-    private String type = "";
-    private String hostName = "";
+    private String type;
+    private String hostName;
     private int portNumber;
-    private String userName = "";
-    private String userPassword = null;
-    private String tempPath = "";
-    private String terminalFlag = "Y";
-    private String jumphostConnectionName = "";
-    private String allowLocalhostExecution = "Y";
-    private String outputSystemOutput = "";
-    private String outputReturnCode = "";
-    private String outputRuntimeVariablesOutput = "";
-    private ArrayList<String> systemOutputKeywordList = null;
+    private String userName;
+    private String userPassword;
+    private String tempPath;
+    private String terminalFlag;
+    private String jumphostConnectionName;
+    private String allowLocalhostExecution;
+    private String outputSystemOutput;
+    private String outputReturnCode;
+    private String outputRuntimeVariablesOutput;
+    private List<String> systemOutputKeywordList;
 
     // Session management
     // private Session[] sessions;
-
     public HostConnection() {
-        super();
+        this("", "", -1, "", null, "", "Y", "", "Y",
+                "", "", "");
+    }
+
+    public HostConnection(String type, String hostName, int portNumber, String userName, String userPassword, String tempPath,
+                          String terminalFlag, String jumphostConnectionName, String allowLocalhostExecution,
+                          String outputSystemOutput, String outputReturnCode, String outputRuntimeVariablesOutput,
+                          List<String> systemOutputKeywordList) {
+        this.type = type;
+        this.hostName = hostName;
+        this.portNumber = portNumber;
+        this.userName = userName;
+        this.userPassword = userPassword;
+        this.tempPath = tempPath;
+        this.terminalFlag = terminalFlag;
+        this.jumphostConnectionName = jumphostConnectionName;
+        this.allowLocalhostExecution = allowLocalhostExecution;
+        this.outputSystemOutput = outputSystemOutput;
+        this.outputReturnCode = outputReturnCode;
+        this.outputRuntimeVariablesOutput = outputRuntimeVariablesOutput;
+        this.systemOutputKeywordList = systemOutputKeywordList;
+    }
+    public HostConnection(String type, String hostName, int portNumber, String userName, String userPassword, String tempPath,
+                          String terminalFlag, String jumphostConnectionName, String allowLocalhostExecution,
+                          String outputSystemOutput, String outputReturnCode, String outputRuntimeVariablesOutput) {
+        this.type = type;
+        this.hostName = hostName;
+        this.portNumber = portNumber;
+        this.userName = userName;
+        this.userPassword = userPassword;
+        this.tempPath = tempPath;
+        this.terminalFlag = terminalFlag;
+        this.jumphostConnectionName = jumphostConnectionName;
+        this.allowLocalhostExecution = allowLocalhostExecution;
+        this.outputSystemOutput = outputSystemOutput;
+        this.outputReturnCode = outputReturnCode;
+        this.outputRuntimeVariablesOutput = outputRuntimeVariablesOutput;
+
+        this.systemOutputKeywordList = new ArrayList<>();
+        this.systemOutputKeywordList.add("SHELL_RUN_CMD");
+        this.systemOutputKeywordList.add("SHELL_RUN_CMD_RC");
+        this.systemOutputKeywordList.add("SHELL_RUN_CMD_RUN_VAR");
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     public HostConnection(String type, String hostName, int portNumber, String userName, String userPassword,
                           String tempPath, String terminalFlag, String jumphostConnectionName, String allowLocalhostExecution) {
-        super();
-        this.setType(type);
-        this.setHostName(hostName);
-        this.setPortNumber(portNumber);
-        this.setUserName(userName);
-        this.setUserPassword(userPassword);
-        this.setTempPath(tempPath);
-        this.setTerminalFlag(terminalFlag);
-        this.setJumphostConnectionName(jumphostConnectionName);
-        this.setAllowLocalhostExecution(allowLocalhostExecution);
-        this.setSystemOutputKeywordList(new ArrayList());
-        this.getSystemOutputKeywordList().add("SHELL_RUN_CMD");
-        this.getSystemOutputKeywordList().add("SHELL_RUN_CMD_RC");
-        this.getSystemOutputKeywordList().add("SHELL_RUN_CMD_RUN_VAR");
+        this(type, hostName, portNumber, userName, userPassword, tempPath, terminalFlag, jumphostConnectionName,
+                allowLocalhostExecution, "", "", "");
     }
 
     // Constructor for localhost override
     public HostConnection(String type) {
-        super();
         this.setType(type);
     }
 
@@ -106,12 +134,12 @@ public class HostConnection {
         return output;
     }
 
-    public boolean isOnLocalhost(FrameworkExecution frameworkExecution) {
+    public boolean isOnLocalhost() {
         boolean result = true;
 
         // Check if execution can be performed as being on localhost
         if (this.getAllowLocalhostExecution().equalsIgnoreCase("y")) {
-            if (this.localhostFileExists(frameworkExecution.getFrameworkRuntime().getLocalHostChallengeFileName())) {
+            if (this.localhostFileExists(FrameworkExecution.getInstance().getFrameworkRuntime().getLocalHostChallengeFileName())) {
                 result = true;
             } else {
                 result = false;
@@ -258,12 +286,10 @@ public class HostConnection {
                     HostConnection hostConnection = null;
                     if (i < jumphostConnections.length) {
                         jumphostConnection = jumphostConnections[i];
-                        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(
-                                FrameworkInstance.getInstance());
+                        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
                         Connection connection = connectionConfiguration
                                 .getConnection(jumphostConnection, shellCommandSettings.getEnvironment()).get();
-                        ConnectionOperation connectionOperation = new ConnectionOperation(
-                                shellCommandSettings.getFrameworkExecution());
+                        ConnectionOperation connectionOperation = new ConnectionOperation();
                         hostConnection = connectionOperation.getHostConnection(connection);
                     } else {
                         hostConnection = this;
@@ -509,12 +535,10 @@ public class HostConnection {
                     HostConnection hostConnection = null;
                     if (i < jumphostConnections.length) {
                         jumphostConnection = jumphostConnections[i];
-                        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(
-                                FrameworkInstance.getInstance());
+                        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
                         Connection connection = connectionConfiguration
                                 .getConnection(jumphostConnection, shellCommandSettings.getEnvironment()).get();
-                        ConnectionOperation connectionOperation = new ConnectionOperation(
-                                shellCommandSettings.getFrameworkExecution());
+                        ConnectionOperation connectionOperation = new ConnectionOperation();
                         hostConnection = connectionOperation.getHostConnection(connection);
                     } else {
                         hostConnection = this;
@@ -731,12 +755,10 @@ public class HostConnection {
                     HostConnection hostConnection = null;
                     if (i < jumphostConnections.length) {
                         jumphostConnection = jumphostConnections[i];
-                        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(
-                                FrameworkInstance.getInstance());
+                        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
                         Connection connection = connectionConfiguration
                                 .getConnection(jumphostConnection, shellCommandSettings.getEnvironment()).get();
-                        ConnectionOperation connectionOperation = new ConnectionOperation(
-                                shellCommandSettings.getFrameworkExecution());
+                        ConnectionOperation connectionOperation = new ConnectionOperation();
                         hostConnection = connectionOperation.getHostConnection(connection);
                     } else {
                         hostConnection = this;
@@ -896,7 +918,7 @@ public class HostConnection {
         }
     }
 
-    private boolean inList(ArrayList<String> list, String checkItem) {
+    private boolean inList(List<String> list, String checkItem) {
         boolean tempResult = false;
 
         for (String curVal : list) {
@@ -1032,7 +1054,7 @@ public class HostConnection {
         this.outputRuntimeVariablesOutput = outputRuntimeVariablesOutput;
     }
 
-    public ArrayList<String> getSystemOutputKeywordList() {
+    public List<String> getSystemOutputKeywordList() {
         return systemOutputKeywordList;
     }
 

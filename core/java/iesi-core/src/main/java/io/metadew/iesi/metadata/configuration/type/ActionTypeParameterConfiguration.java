@@ -7,22 +7,19 @@ import io.metadew.iesi.metadata.definition.action.ActionTypeParameter;
 public class ActionTypeParameterConfiguration {
 
     private ActionTypeParameter actionTypeParameter;
-    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public ActionTypeParameterConfiguration(ActionTypeParameter actionTypeParameter, FrameworkInstance frameworkInstance) {
+    public ActionTypeParameterConfiguration(ActionTypeParameter actionTypeParameter) {
         this.setActionTypeParameter(actionTypeParameter);
-        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public ActionTypeParameterConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
+    public ActionTypeParameterConfiguration() {
     }
 
     // Get Action Type Parameter
     public ActionTypeParameter getActionTypeParameter(String actionTypeName, String actionTypeParameterName) {
         ActionTypeParameter actionTypeParameterResult = null;
-        ActionTypeConfiguration actionTypeConfiguration = new ActionTypeConfiguration(this.getFrameworkInstance());
+        ActionTypeConfiguration actionTypeConfiguration = new ActionTypeConfiguration();
         ActionType actionType = actionTypeConfiguration.getActionType(actionTypeName);
         for (ActionTypeParameter actionTypeParameter : actionType.getParameters()) {
             if (actionTypeParameter.getName().equalsIgnoreCase(actionTypeParameterName.toLowerCase())) {
@@ -41,14 +38,5 @@ public class ActionTypeParameterConfiguration {
     public void setActionTypeParameter(ActionTypeParameter actionTypeParameter) {
         this.actionTypeParameter = actionTypeParameter;
     }
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
-
 
 }

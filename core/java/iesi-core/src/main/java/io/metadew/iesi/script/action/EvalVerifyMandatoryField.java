@@ -28,8 +28,6 @@ public class EvalVerifyMandatoryField {
 
     private ActionExecution actionExecution;
 
-    private FrameworkExecution frameworkExecution;
-
     private ExecutionControl executionControl;
 
     // Parameters
@@ -62,14 +60,13 @@ public class EvalVerifyMandatoryField {
 
     }
 
-    public EvalVerifyMandatoryField(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+    public EvalVerifyMandatoryField(ExecutionControl executionControl,
                                     ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.init(frameworkExecution, executionControl, scriptExecution, actionExecution);
+        this.init(executionControl, scriptExecution, actionExecution);
     }
 
-    public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+    public void init(ExecutionControl executionControl,
                      ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.setFrameworkExecution(frameworkExecution);
         this.setExecutionControl(executionControl);
         this.setActionExecution(actionExecution);
         this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
@@ -77,23 +74,23 @@ public class EvalVerifyMandatoryField {
 
     public void prepare() {
         // Reset Parameters
-        this.setDatabaseName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        this.setDatabaseName(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "database"));
-        this.setSchemaName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        this.setSchemaName(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "schema"));
-        this.setTableName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        this.setTableName(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "table"));
-        this.setFieldName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        this.setFieldName(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "field"));
         this.setEvaluationFieldName(
-                new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+                new ActionParameterOperation(this.getExecutionControl(),
                         this.getActionExecution(), this.getActionExecution().getAction().getType(), "evaluationField"));
         this.setEvaluationFieldValue(
-                new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+                new ActionParameterOperation(this.getExecutionControl(),
                         this.getActionExecution(), this.getActionExecution().getAction().getType(), "evaluationValue"));
-        this.setMandatoryFlag(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        this.setMandatoryFlag(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "isMandatory"));
-        this.setConnectionName(new ActionParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(),
+        this.setConnectionName(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "connection"));
 
         // Get Parameters
@@ -155,9 +152,9 @@ public class EvalVerifyMandatoryField {
 
     private boolean verifyMandatoryField(String databaseName, String schemaName, String tableName, String fieldName, String evaluationFieldName, String evaluationFieldValue, boolean isMandatory, String connectionName) throws SQLException {
         // Get Connection
-        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(FrameworkInstance.getInstance());
+        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
         Connection connection = connectionConfiguration.getConnection(connectionName, this.getExecutionControl().getEnvName()).get();
-        ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
+        ConnectionOperation connectionOperation = new ConnectionOperation();
         Database database = connectionOperation.getDatabase(connection);
 
         // Run the action
@@ -333,15 +330,6 @@ public class EvalVerifyMandatoryField {
         }
 
         return resTestQueries;
-    }
-
-    // Getters and Setters
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
     }
 
     public ExecutionControl getExecutionControl() {

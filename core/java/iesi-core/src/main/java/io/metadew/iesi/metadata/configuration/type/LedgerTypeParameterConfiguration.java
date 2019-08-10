@@ -7,22 +7,19 @@ import io.metadew.iesi.metadata.definition.LedgerTypeParameter;
 public class LedgerTypeParameterConfiguration {
 
     private LedgerTypeParameter ledgerTypeParameter;
-    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public LedgerTypeParameterConfiguration(LedgerTypeParameter ledgerTypeParameter, FrameworkInstance frameworkInstance) {
+    public LedgerTypeParameterConfiguration(LedgerTypeParameter ledgerTypeParameter) {
         this.setLedgerTypeParameter(ledgerTypeParameter);
-        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public LedgerTypeParameterConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
+    public LedgerTypeParameterConfiguration() {
     }
 
     // Get Ledger Type Parameter
     public LedgerTypeParameter getLedgerTypeParameter(String ledgerTypeName, String ledgerTypeParameterName) {
         LedgerTypeParameter ledgerTypeParameterResult = null;
-        LedgerTypeConfiguration ledgerTypeConfiguration = new LedgerTypeConfiguration(this.getFrameworkInstance());
+        LedgerTypeConfiguration ledgerTypeConfiguration = new LedgerTypeConfiguration();
         LedgerType ledgerType = ledgerTypeConfiguration.getLedgerType(ledgerTypeName);
         for (LedgerTypeParameter ledgerTypeParameter : ledgerType.getParameters()) {
             if (ledgerTypeParameter.getName().equalsIgnoreCase(ledgerTypeParameterName)) {
@@ -41,13 +38,5 @@ public class LedgerTypeParameterConfiguration {
     public void setLedgerTypeParameter(LedgerTypeParameter ledgerTypeParameter) {
         this.ledgerTypeParameter = ledgerTypeParameter;
     }
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
 
 }

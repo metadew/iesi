@@ -16,7 +16,6 @@ import java.util.List;
 
 public class RestoreExecution {
 
-	private FrameworkExecution frameworkExecution;
 	private ExecutionControl executionControl;
 	private Long processId;
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -32,8 +31,9 @@ public class RestoreExecution {
 		Context context = new Context();
 		context.setName("restore");
 		context.setScope("");
-		this.setFrameworkExecution(new FrameworkExecution(new FrameworkExecutionContext(context)));
-		this.setExecutionControl(new ExecutionControl(this.getFrameworkExecution()));
+		FrameworkExecution frameworkExecution = FrameworkExecution.getInstance();
+		frameworkExecution.init(new FrameworkExecutionContext(context));
+		this.setExecutionControl(new ExecutionControl());
 	}
 
 	// Methods
@@ -50,12 +50,12 @@ public class RestoreExecution {
 			@SuppressWarnings("unchecked")
 			List<FileConnection> fileConnectionList = FolderTools.getConnectionsInFolder(path, "all", "", new ArrayList());
 			for (FileConnection fileConnection : fileConnectionList) {
-				RestoreTargetOperation restoreTargetOperation = new RestoreTargetOperation(this.getFrameworkExecution(), this.getExecutionControl());
+				RestoreTargetOperation restoreTargetOperation = new RestoreTargetOperation(this.getExecutionControl());
 				restoreTargetOperation.execute(fileConnection.getFilePath());			
 			}
 		} else {
 			LOGGER.debug("restore.error.path.isFile");
-			RestoreTargetOperation restoreTargetOperation = new RestoreTargetOperation(this.getFrameworkExecution(), this.getExecutionControl());
+			RestoreTargetOperation restoreTargetOperation = new RestoreTargetOperation(this.getExecutionControl());
 			restoreTargetOperation.execute(path);		
 		}
 		
@@ -64,15 +64,6 @@ public class RestoreExecution {
 
 		// Exit the execution
 		// this.getEoControl().endExecution();
-	}
-
-	// Getters and Setters
-	public FrameworkExecution getFrameworkExecution() {
-		return frameworkExecution;
-	}
-
-	public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-		this.frameworkExecution = frameworkExecution;
 	}
 
 	public ExecutionControl getExecutionControl() {

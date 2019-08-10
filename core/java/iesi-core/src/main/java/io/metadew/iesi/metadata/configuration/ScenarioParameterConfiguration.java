@@ -14,16 +14,13 @@ import java.io.StringWriter;
 public class ScenarioParameterConfiguration {
 
     private ScenarioParameter scenarioParameter;
-    private FrameworkInstance frameworkInstance;
 
     // Constructors
-    public ScenarioParameterConfiguration(ScenarioParameter scenarioParameter, FrameworkInstance frameworkInstance) {
+    public ScenarioParameterConfiguration(ScenarioParameter scenarioParameter) {
         this.setScenarioParameter(scenarioParameter);
-        this.setFrameworkInstance(frameworkInstance);
     }
 
-    public ScenarioParameterConfiguration(FrameworkInstance frameworkInstance) {
-    	this.setFrameworkInstance(frameworkInstance);
+    public ScenarioParameterConfiguration() {
     }
 
     public String getInsertStatement(String featureId, long featureVersionNumber, String scenarioId, ScenarioParameter scenarioParameter) {
@@ -92,14 +89,5 @@ public class ScenarioParameterConfiguration {
     public void setScenarioParameter(ScenarioParameter scenarioParameter) {
         this.scenarioParameter = scenarioParameter;
     }
-
-	public FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
-
 
 }

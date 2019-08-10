@@ -1,7 +1,5 @@
 package io.metadew.iesi.script.execution;
 
-import io.metadew.iesi.framework.execution.FrameworkExecution;
-import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.action.ActionPerformanceConfiguration;
 import io.metadew.iesi.metadata.configuration.type.ActionTypeConfiguration;
 import io.metadew.iesi.metadata.definition.action.Action;
@@ -23,7 +21,6 @@ public class ActionExecution {
 
 	private final ActionPerformanceLogger actionPerformanceLogger;
 	private final ActionTypeConfiguration actionTypeConfiguration;
-	private FrameworkExecution frameworkExecution;
 	private ExecutionControl executionControl;
 	private ActionControl actionControl;
 	private ScriptExecution scriptExecution;
@@ -36,14 +33,13 @@ public class ActionExecution {
 	private boolean childExecution = false;
 
 	// Constructors
-	public ActionExecution(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
-			ScriptExecution scriptExecution, Action action) {
-		this.setFrameworkExecution(frameworkExecution);
+	public ActionExecution(ExecutionControl executionControl,
+						   ScriptExecution scriptExecution, Action action) {
 		this.setExecutionControl(executionControl);
 		this.setScriptExecution(scriptExecution);
 		this.setAction(action);
 		this.actionPerformanceLogger = new ActionPerformanceLogger(new ActionPerformanceConfiguration());
-		this.actionTypeConfiguration = new ActionTypeConfiguration(FrameworkInstance.getInstance());
+		this.actionTypeConfiguration = new ActionTypeConfiguration();
 	}
 
 	// Methods
@@ -64,7 +60,7 @@ public class ActionExecution {
 		this.getExecutionControl().logStart(this);
 
 		// Initialize control
-		this.setActionControl(new ActionControl(this.getFrameworkExecution(), this.getExecutionControl(), this));
+		this.setActionControl(new ActionControl(this.getExecutionControl(), this));
 		this.getActionControl().getActionRuntime().initActionCache(this.getAction().getName(),
 				this.getExecutionControl().getExecutionRuntime().getRunCacheFolderName());
 
@@ -81,7 +77,7 @@ public class ActionExecution {
 			// Set Attributes
 			if (this.getAction().getComponent() != null
 					&& !this.getAction().getComponent().trim().equalsIgnoreCase("")) {
-				this.setComponentAttributeOperation(new ComponentAttributeOperation(this.getFrameworkExecution(),
+				this.setComponentAttributeOperation(new ComponentAttributeOperation(
 						this.getExecutionControl(), this, this.getAction().getComponent().trim()));
 			}
 
@@ -90,10 +86,10 @@ public class ActionExecution {
 
 			Class classRef = Class.forName(className);
 
-			Class[] initParams = {FrameworkExecution.class, ExecutionControl.class, ScriptExecution.class,
+			Class[] initParams = { ExecutionControl.class, ScriptExecution.class,
 					ActionExecution.class};
 			Constructor constructor = classRef.getConstructor(initParams);
-			Object[] initArgs = { this.getFrameworkExecution(), this.getExecutionControl(), this.getScriptExecution(),
+			Object[] initArgs = { this.getExecutionControl(), this.getScriptExecution(),
 					this };
 			Object instance = constructor.newInstance(initArgs);
 
@@ -195,15 +191,6 @@ public class ActionExecution {
 	public void traceDesignMetadata(HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
 		this.getExecutionControl().getExecutionTrace().setExecution(this.getScriptExecution(), this,
 				actionParameterOperationMap);
-	}
-
-	// Getters and Setters
-	public FrameworkExecution getFrameworkExecution() {
-		return frameworkExecution;
-	}
-
-	public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-		this.frameworkExecution = frameworkExecution;
 	}
 
 	public Action getAction() {

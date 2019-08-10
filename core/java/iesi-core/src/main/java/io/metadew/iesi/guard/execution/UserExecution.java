@@ -1,8 +1,6 @@
 package io.metadew.iesi.guard.execution;
 
 import io.metadew.iesi.framework.crypto.Password;
-import io.metadew.iesi.framework.execution.FrameworkExecution;
-import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.UserConfiguration;
 import io.metadew.iesi.metadata.definition.User;
 import io.metadew.iesi.metadata.execution.MetadataControl;
@@ -12,11 +10,7 @@ import java.util.Scanner;
 
 public class UserExecution {
 
-    private FrameworkExecution frameworkExecution;
-
-    public UserExecution(FrameworkExecution frameworkExecution) {
-        this.setFrameworkExecution(frameworkExecution);
-    }
+    public UserExecution() {}
 
     // Methods
     public void createUser() {
@@ -42,7 +36,7 @@ public class UserExecution {
             user.setPasswordHash(Password.getSaltedHash("ok"));
             // user.setPasswordHash(Password.getSaltedHash(this.getPassword()));
 
-            UserConfiguration userConfiguration = new UserConfiguration(FrameworkInstance.getInstance());
+            UserConfiguration userConfiguration = new UserConfiguration();
             MetadataControl.getInstance().getControlMetadataRepository()
                     .executeBatch(userConfiguration.getInsertStatement(user));
 
@@ -62,7 +56,7 @@ public class UserExecution {
             user.setPasswordHash(Password.getSaltedHash("ok"));
             // user.setPasswordHash(Password.getSaltedHash(this.getPassword()));
 
-            UserConfiguration userConfiguration = new UserConfiguration(user, FrameworkInstance.getInstance());
+            UserConfiguration userConfiguration = new UserConfiguration(user);
             MetadataControl.getInstance().getControlMetadataRepository()
                     .executeUpdate(userConfiguration.getPasswordStatement());
         } catch (Exception exception) {
@@ -71,19 +65,19 @@ public class UserExecution {
     }
 
     public void updateActive(String userName, String status) {
-        UserConfiguration userConfiguration = new UserConfiguration(FrameworkInstance.getInstance());
+        UserConfiguration userConfiguration = new UserConfiguration();
         MetadataControl.getInstance().getControlMetadataRepository()
                 .executeUpdate(userConfiguration.getActiveUpdateStatement(userName, status));
     }
 
     public void updateLocked(String userName, String status) {
-        UserConfiguration userConfiguration = new UserConfiguration(FrameworkInstance.getInstance());
+        UserConfiguration userConfiguration = new UserConfiguration();
         MetadataControl.getInstance().getControlMetadataRepository()
                 .executeUpdate(userConfiguration.getBlockedUpdateStatement(userName, status));
     }
 
     public void resetIndividualLoginFails(String userName) {
-        UserConfiguration userConfiguration = new UserConfiguration(FrameworkInstance.getInstance());
+        UserConfiguration userConfiguration = new UserConfiguration();
         MetadataControl.getInstance().getControlMetadataRepository()
                 .executeUpdate(userConfiguration.resetIndividualLoginFails(userName));
     }
@@ -143,15 +137,6 @@ public class UserExecution {
             return readInput;
         }
 
-    }
-
-    // Getters and setters
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
     }
 
 }

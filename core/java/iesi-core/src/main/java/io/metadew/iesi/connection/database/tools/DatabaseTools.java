@@ -5,9 +5,8 @@ import io.metadew.iesi.connection.database.connection.DatabaseConnection;
 
 public final class DatabaseTools {
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
 	public static Database getDatabase(DatabaseConnection databaseConnection, String className) {
-    	Object instance = null;
+    	Object instance;
 		try {
 			Class classRef = Class.forName(databaseConnection.getType());
 			instance = classRef.getDeclaredConstructor(databaseConnection.getClass()).newInstance(databaseConnection);
@@ -17,9 +16,8 @@ public final class DatabaseTools {
     	return (Database) instance;
     }
     
-    @SuppressWarnings({ "rawtypes", "unchecked" })
 	public static Database getDatabase(String className) {
-    	Object instance = null;
+    	Object instance;
 		try {
 			Class classRef = Class.forName(className);
 			instance = classRef.getDeclaredConstructor().newInstance();

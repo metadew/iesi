@@ -28,35 +28,32 @@ public class MetadataTableConfiguration {
     private HashMap<String, String> tableMap;
 
     // Set metadata repository type
-    public MetadataTableConfiguration(FrameworkConfiguration frameworkConfiguration, Properties properties,
-                                      FrameworkSettingConfiguration settingsConfig, String metadataRepositoryType,
+    public MetadataTableConfiguration(Properties properties, String metadataRepositoryType,
                                       MetadataRepositoryCategoryConfiguration metadataRepositoryCategoryConfiguration) {
         this.setMetadataRepositoryType(metadataRepositoryType);
         if (metadataRepositoryCategoryConfiguration != null) {
-            this.getTableConfig(frameworkConfiguration, metadataRepositoryCategoryConfiguration, properties, settingsConfig);
+            this.getTableConfig(metadataRepositoryCategoryConfiguration, properties);
         }
     }
 
-    private void getTableConfig(FrameworkConfiguration frameworkConfiguration,
-                                MetadataRepositoryCategoryConfiguration metadataRepositoryCategoryConfiguration, Properties properties,
-                                FrameworkSettingConfiguration settingsConfig) {
+    private void getTableConfig(MetadataRepositoryCategoryConfiguration metadataRepositoryCategoryConfiguration, Properties properties) {
         // Initialize map
         this.setTableMap(new HashMap<String, String>());
 
         // Set table name prefix
-        String instanceName = (String) properties.get(settingsConfig.getSettingPath("metadata.repository.instance.name"));
+        String instanceName = (String) properties.get(FrameworkSettingConfiguration.getInstance().getSettingPath("metadata.repository.instance.name"));
         String tempTableNamePrefix = "";
         if (instanceName == null || instanceName.equalsIgnoreCase("")) {
-            if (frameworkConfiguration.getFrameworkCode() == null || frameworkConfiguration.getFrameworkCode().equalsIgnoreCase("")) {
+            if (FrameworkConfiguration.getInstance().getFrameworkCode() == null || FrameworkConfiguration.getInstance().getFrameworkCode().equalsIgnoreCase("")) {
                 tempTableNamePrefix = "";
             } else {
-                tempTableNamePrefix = frameworkConfiguration.getFrameworkCode();
+                tempTableNamePrefix = FrameworkConfiguration.getInstance().getFrameworkCode();
             }
         } else {
-            if (frameworkConfiguration.getFrameworkCode() == null || frameworkConfiguration.getFrameworkCode().equalsIgnoreCase("")) {
+            if (FrameworkConfiguration.getInstance().getFrameworkCode() == null || FrameworkConfiguration.getInstance().getFrameworkCode().equalsIgnoreCase("")) {
                 tempTableNamePrefix = instanceName;
             } else {
-                tempTableNamePrefix = frameworkConfiguration.getFrameworkCode() + "_" + instanceName;
+                tempTableNamePrefix = FrameworkConfiguration.getInstance().getFrameworkCode() + "_" + instanceName;
             }
         }
         this.setTableNamePrefix(tempTableNamePrefix);
@@ -73,11 +70,11 @@ public class MetadataTableConfiguration {
         }
 
         if (this.getMetadataRepositoryType().equalsIgnoreCase("oracle")) {
-            this.setSchema(properties.getProperty(settingsConfig.getSettingPath("metadata.repository.oracle.schema").get()));
+            this.setSchema(properties.getProperty(FrameworkSettingConfiguration.getInstance().getSettingPath("metadata.repository.oracle.schema").get()));
         } else if (this.getMetadataRepositoryType().equalsIgnoreCase("netezza")) {
-            this.setSchema(properties.getProperty(settingsConfig.getSettingPath("metadata.repository.netezza.schema").get()));
+            this.setSchema(properties.getProperty(FrameworkSettingConfiguration.getInstance().getSettingPath("metadata.repository.netezza.schema").get()));
         } else if (this.getMetadataRepositoryType().equalsIgnoreCase("postgresql")) {
-            this.setSchema(properties.getProperty(settingsConfig.getSettingPath("metadata.repository.postgresql.schema").get()));
+            this.setSchema(properties.getProperty(FrameworkSettingConfiguration.getInstance().getSettingPath("metadata.repository.postgresql.schema").get()));
         } else if (this.getMetadataRepositoryType().equalsIgnoreCase("sqlite")) {
             this.setSchema("");
         } else if (this.getMetadataRepositoryType().equalsIgnoreCase("elasticsearch")) {

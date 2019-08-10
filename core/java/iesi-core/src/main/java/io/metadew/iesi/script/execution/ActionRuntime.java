@@ -2,7 +2,6 @@ package io.metadew.iesi.script.execution;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.connection.tools.FolderTools;
-import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.script.configuration.RuntimeActionCacheConfiguration;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 import io.metadew.iesi.script.operation.RouteOperation;
@@ -12,15 +11,13 @@ import java.util.*;
 
 public class ActionRuntime {
 
-    private FrameworkExecution frameworkExecution;
     private RuntimeActionCacheConfiguration runtimeActionCacheConfiguration;
     private String runCacheFolderName;
     private String runId;
     private Long processId;
     private List<RouteOperation> routeOperations;
 
-    public ActionRuntime(FrameworkExecution frameworkExecution, String runId, long processId) {
-        this.setFrameworkExecution(frameworkExecution);
+    public ActionRuntime(String runId, long processId) {
         this.setRunId(runId);
         this.setProcessId(processId);
     }
@@ -30,7 +27,7 @@ public class ActionRuntime {
         this.setRunCacheFolderName(runCacheFolderName + File.separator + this.getProcessId());
         FolderTools.createFolder(this.getRunCacheFolderName());
         this.setRuntimeActionCacheConfiguration(
-                new RuntimeActionCacheConfiguration(this.getFrameworkExecution(), this.getRunCacheFolderName()));
+                new RuntimeActionCacheConfiguration(this.getRunCacheFolderName()));
     }
 
     @SuppressWarnings("rawtypes")
@@ -111,15 +108,6 @@ public class ActionRuntime {
         }
 
         return input;
-    }
-
-    // Getters and Setters
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
     }
 
     public String getRunCacheFolderName() {

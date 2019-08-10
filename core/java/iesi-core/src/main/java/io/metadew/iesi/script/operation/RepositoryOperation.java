@@ -8,8 +8,6 @@ import io.metadew.iesi.connection.database.connection.DatabaseConnection;
 import io.metadew.iesi.connection.database.connection.SqliteDatabaseConnection;
 import io.metadew.iesi.connection.operation.ConnectionOperation;
 import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
-import io.metadew.iesi.framework.execution.FrameworkExecution;
-import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.ConnectionConfiguration;
 import io.metadew.iesi.metadata.configuration.RepositoryConfiguration;
 import io.metadew.iesi.metadata.configuration.RepositoryInstanceConfiguration;
@@ -32,7 +30,6 @@ import java.util.UUID;
  */
 public class RepositoryOperation {
 
-    private FrameworkExecution frameworkExecution;
     private ExecutionControl executionControl;
     private DatabaseConnection datasetConnection;
 
@@ -48,20 +45,19 @@ public class RepositoryOperation {
 
     // Constructors
     @SuppressWarnings("unused")
-    public RepositoryOperation(FrameworkExecution frameworkExecution, ExecutionControl executionControl, String repositoryName,
+    public RepositoryOperation(ExecutionControl executionControl, String repositoryName,
                                String repositoryInstanceName, String repositoryInstanceLabels) {
-        this.setFrameworkExecution(frameworkExecution);
         this.setExecutionControl(executionControl);
         this.setRepositoryName(repositoryName);
         this.setRepositoryInstanceName(repositoryInstanceName);
         this.setRepositoryInstanceLabels(repositoryInstanceLabels);
 
-        RepositoryConfiguration repositoryConfiguration = new RepositoryConfiguration(FrameworkInstance.getInstance());
+        RepositoryConfiguration repositoryConfiguration = new RepositoryConfiguration();
         this.setRepository(repositoryConfiguration.getRepository(this.getRepositoryName()));
-        RepositoryInstanceConfiguration repositoryInstanceConfiguration = new RepositoryInstanceConfiguration(FrameworkInstance.getInstance());
+        RepositoryInstanceConfiguration repositoryInstanceConfiguration = new RepositoryInstanceConfiguration();
         this.setRepositoryInstance(repositoryInstanceConfiguration.getRepositoryInstance(this.getRepository(), this.getRepositoryInstanceName()));
 
-        this.setRepositoryInstanceConnectionName(new RepositoryParameterOperation(this.getFrameworkExecution(), this.getExecutionControl(), "connection"));
+        this.setRepositoryInstanceConnectionName(new RepositoryParameterOperation(this.getExecutionControl(), "connection"));
         for (RepositoryInstanceParameter repositoryInstanceParameter : this.getRepositoryInstance().getParameters()) {
             if (repositoryInstanceParameter.getName().equalsIgnoreCase("connection")) {
                 this.getRepositoryInstanceConnectionName().setInputValue(repositoryInstanceParameter.getValue());
@@ -69,10 +65,10 @@ public class RepositoryOperation {
         }
 
         // Get Connection
-        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(FrameworkInstance.getInstance());
+        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
         Connection connection = connectionConfiguration.getConnection(this.getRepositoryInstanceConnectionName().getValue(),
                 this.getExecutionControl().getEnvName()).get();
-        ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
+        ConnectionOperation connectionOperation = new ConnectionOperation();
         this.setRepositoryDatabaseInstance(connectionOperation
                 .getDatabase(connection));
 
@@ -251,15 +247,6 @@ public class RepositoryOperation {
             this.getDatasetConnection().executeUpdate(create);
         }
 
-    }
-
-    // Getters and setters
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
     }
 
     public DatabaseConnection getDatasetConnection() {

@@ -5,7 +5,6 @@ import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.ImpersonationConfiguration;
 import io.metadew.iesi.metadata.definition.Impersonation;
 import io.metadew.iesi.metadata.definition.ImpersonationParameter;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -23,13 +22,11 @@ import java.util.Optional;
  */
 public class ImpersonationOperation {
 
-    private FrameworkExecution frameworkExecution;
     private HashMap<String, String> impersonationMap;
     private static final Logger LOGGER = LogManager.getLogger();
 
     // Constructors
-    public ImpersonationOperation(FrameworkExecution frameworkExecution) {
-        this.setFrameworkExecution(frameworkExecution);
+    public ImpersonationOperation() {
         // Initialize impersonation
         this.setImpersonationMap(new HashMap<String, String>());
     }
@@ -37,7 +34,7 @@ public class ImpersonationOperation {
     // Methods
     public void setImpersonation(String impersonationName) {
         if (!impersonationName.trim().equalsIgnoreCase("")) {
-            ImpersonationConfiguration impersonationConfiguration = new ImpersonationConfiguration(FrameworkInstance.getInstance());
+            ImpersonationConfiguration impersonationConfiguration = new ImpersonationConfiguration();
             Optional<Impersonation> impersonation = impersonationConfiguration.getImpersonation(impersonationName);
 
 
@@ -139,15 +136,6 @@ public class ImpersonationOperation {
         String result = this.getImpersonationMap().get(connectionName);
         if (result == null) result = "";
         return result;
-    }
-
-    // Getters and Setters
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
     }
 
     public HashMap<String, String> getImpersonationMap() {

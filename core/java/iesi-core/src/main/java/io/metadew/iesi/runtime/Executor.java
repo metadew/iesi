@@ -7,7 +7,6 @@ import io.metadew.iesi.metadata.configuration.RequestResultConfiguration;
 import io.metadew.iesi.metadata.definition.Request;
 import io.metadew.iesi.metadata.definition.RequestResult;
 import io.metadew.iesi.metadata.definition.key.RequestResultKey;
-import io.metadew.iesi.metadata.execution.MetadataControl;
 import io.metadew.iesi.runtime.configuration.RequestStatus;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

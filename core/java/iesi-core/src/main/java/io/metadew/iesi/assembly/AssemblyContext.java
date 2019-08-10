@@ -4,7 +4,6 @@ import io.metadew.iesi.assembly.operation.FileSystemOperation;
 import io.metadew.iesi.connection.tools.OutputTools;
 import io.metadew.iesi.framework.configuration.FrameworkConfiguration;
 import io.metadew.iesi.framework.crypto.FrameworkCrypto;
-import io.metadew.iesi.framework.definition.Framework;
 import io.metadew.iesi.framework.execution.FrameworkControl;
 import io.metadew.iesi.framework.execution.FrameworkLog;
 

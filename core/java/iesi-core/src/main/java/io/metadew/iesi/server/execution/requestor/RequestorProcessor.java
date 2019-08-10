@@ -2,7 +2,6 @@ package io.metadew.iesi.server.execution.requestor;
 
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
-import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.RequestConfiguration;
 import io.metadew.iesi.metadata.definition.Request;
 import io.metadew.iesi.runtime.Executor;

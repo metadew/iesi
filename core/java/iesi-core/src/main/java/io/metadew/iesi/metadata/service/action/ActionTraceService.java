@@ -10,7 +10,6 @@ import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsExc
 import io.metadew.iesi.metadata.definition.action.ActionParameterTrace;
 import io.metadew.iesi.metadata.definition.action.ActionTrace;
 import io.metadew.iesi.metadata.definition.action.key.ActionParameterTraceKey;
-import io.metadew.iesi.metadata.execution.MetadataControl;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 import org.apache.logging.log4j.LogManager;

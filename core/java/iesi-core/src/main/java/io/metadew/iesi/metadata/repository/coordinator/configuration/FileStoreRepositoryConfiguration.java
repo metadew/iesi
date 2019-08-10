@@ -1,8 +1,6 @@
 package io.metadew.iesi.metadata.repository.coordinator.configuration;
 
 import io.metadew.iesi.common.config.ConfigFile;
-import io.metadew.iesi.framework.configuration.FrameworkSettingConfiguration;
-import io.metadew.iesi.framework.crypto.FrameworkCrypto;
 import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
 
 import java.util.Optional;

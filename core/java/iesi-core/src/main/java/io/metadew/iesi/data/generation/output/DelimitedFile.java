@@ -8,12 +8,10 @@ import io.metadew.iesi.data.generation.execution.GenerationControlExecution;
 import io.metadew.iesi.data.generation.execution.GenerationOutputExecution;
 import io.metadew.iesi.data.generation.execution.GenerationOutputParameterExecution;
 import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
-import io.metadew.iesi.framework.definition.FrameworkFolder;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.GenerationControl;
 import io.metadew.iesi.metadata.definition.GenerationOutputParameter;
 import io.metadew.iesi.script.execution.ExecutionControl;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

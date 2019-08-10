@@ -4,7 +4,6 @@ import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.framework.configuration.FrameworkSettingConfiguration;
 import io.metadew.iesi.framework.definition.FrameworkRunIdentifier;
 import io.metadew.iesi.framework.execution.*;
-import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.guard.configuration.UserAccessConfiguration;
 import io.metadew.iesi.guard.definition.UserAccess;
 import io.metadew.iesi.metadata.configuration.script.ScriptConfiguration;

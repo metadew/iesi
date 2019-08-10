@@ -3,7 +3,6 @@ package io.metadew.iesi.script.action;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.dataset.Dataset;
 import io.metadew.iesi.datatypes.text.Text;
-import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.MappingConfiguration;
 import io.metadew.iesi.metadata.definition.Mapping;

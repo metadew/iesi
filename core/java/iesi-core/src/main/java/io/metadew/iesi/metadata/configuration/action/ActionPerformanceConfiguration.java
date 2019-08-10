@@ -6,7 +6,6 @@ import io.metadew.iesi.metadata.configuration.exception.action.ActionPerformance
 import io.metadew.iesi.metadata.configuration.exception.action.ActionPerformanceDoesNotExistException;
 import io.metadew.iesi.metadata.definition.action.ActionPerformance;
 import io.metadew.iesi.metadata.definition.action.key.ActionPerformanceKey;
-import io.metadew.iesi.metadata.execution.MetadataControl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

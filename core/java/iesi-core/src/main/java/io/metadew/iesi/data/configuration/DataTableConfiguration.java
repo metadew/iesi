@@ -1,7 +1,6 @@
 package io.metadew.iesi.data.configuration;
 
 import io.metadew.iesi.data.definition.DataTable;
-import io.metadew.iesi.framework.execution.FrameworkExecution;
 
 public class DataTableConfiguration {
 

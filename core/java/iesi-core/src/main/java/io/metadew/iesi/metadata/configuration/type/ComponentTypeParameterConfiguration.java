@@ -1,6 +1,5 @@
 package io.metadew.iesi.metadata.configuration.type;
 
-import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.ComponentType;
 import io.metadew.iesi.metadata.definition.ComponentTypeParameter;
 

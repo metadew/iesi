@@ -2,7 +2,6 @@ package io.metadew.iesi.metadata.operation;
 
 import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
-import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.framework.operation.FrameworkPluginOperation;
 
 import java.io.File;

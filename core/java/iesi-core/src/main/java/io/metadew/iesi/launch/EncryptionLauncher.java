@@ -9,7 +9,6 @@ import java.io.BufferedReader;
 import java.io.Console;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.security.GeneralSecurityException;
 
 /**
  * The encryption launcher is entry point to launch the encryption utility from commandline.

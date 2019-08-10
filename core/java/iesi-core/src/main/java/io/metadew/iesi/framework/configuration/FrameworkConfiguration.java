@@ -2,13 +2,11 @@ package io.metadew.iesi.framework.configuration;
 
 import io.metadew.iesi.common.config.KeyValueConfigFile;
 import io.metadew.iesi.connection.tools.FileTools;
-import io.metadew.iesi.metadata.configuration.FrameworkPluginConfiguration;
 import org.apache.logging.log4j.ThreadContext;
 
 import java.io.File;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
-import java.util.List;
 
 public class FrameworkConfiguration {
 

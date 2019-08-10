@@ -3,7 +3,6 @@ package io.metadew.iesi.script.execution.instruction.lookup;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeService;
 import io.metadew.iesi.datatypes.array.Array;
-import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
 import io.metadew.iesi.script.execution.ExecutionControl;
 
 import java.text.MessageFormat;

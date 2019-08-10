@@ -8,7 +8,6 @@ import io.metadew.iesi.metadata.definition.script.ScriptParameter;
 import io.metadew.iesi.metadata.definition.script.ScriptParameterTrace;
 import io.metadew.iesi.metadata.definition.script.ScriptTrace;
 import io.metadew.iesi.metadata.definition.script.ScriptVersionTrace;
-import io.metadew.iesi.metadata.execution.MetadataControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 
 import java.sql.SQLException;

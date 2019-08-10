@@ -1,6 +1,5 @@
 package io.metadew.iesi.metadata.configuration.action;
 
-import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.action.ActionResultOutput;
 import io.metadew.iesi.metadata.execution.MetadataControl;
 

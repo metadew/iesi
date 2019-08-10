@@ -6,7 +6,6 @@ import io.metadew.iesi.connection.database.tools.DatabaseTools;
 import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.text.Text;
-import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.DataObject;
 import io.metadew.iesi.metadata.definition.MetadataTable;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;

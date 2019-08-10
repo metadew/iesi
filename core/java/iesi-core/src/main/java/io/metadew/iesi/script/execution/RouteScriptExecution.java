@@ -1,6 +1,5 @@
 package io.metadew.iesi.script.execution;
 
-import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.script.operation.ActionSelectOperation;
 

@@ -5,7 +5,6 @@ import io.metadew.iesi.metadata.configuration.exception.RequestResultAlreadyExis
 import io.metadew.iesi.metadata.configuration.exception.RequestResultDoesNotExistException;
 import io.metadew.iesi.metadata.definition.RequestResult;
 import io.metadew.iesi.metadata.definition.key.RequestResultKey;
-import io.metadew.iesi.metadata.execution.MetadataControl;
 
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;

@@ -1,7 +1,6 @@
 package io.metadew.iesi.server.execution.requestor;
 
 import io.metadew.iesi.framework.execution.FrameworkExecution;
-import io.metadew.iesi.framework.instance.FrameworkInstance;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;

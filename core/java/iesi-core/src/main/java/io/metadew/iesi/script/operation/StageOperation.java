@@ -4,7 +4,6 @@ import io.metadew.iesi.connection.database.connection.SqliteDatabaseConnection;
 import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.connection.tools.FolderTools;
 import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
-import io.metadew.iesi.framework.execution.FrameworkExecution;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;

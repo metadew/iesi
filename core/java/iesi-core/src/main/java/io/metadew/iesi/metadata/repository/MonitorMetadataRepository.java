@@ -1,6 +1,5 @@
 package io.metadew.iesi.metadata.repository;
 
-import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.DataObject;
 import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
 

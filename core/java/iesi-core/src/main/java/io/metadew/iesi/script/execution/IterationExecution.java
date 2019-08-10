@@ -1,6 +1,5 @@
 package io.metadew.iesi.script.execution;
 
-import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.script.configuration.IterationConfiguration;
 import io.metadew.iesi.script.configuration.IterationInstance;
 import io.metadew.iesi.script.operation.IterationOperation;

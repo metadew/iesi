@@ -3,7 +3,6 @@ package io.metadew.iesi.framework.operation;
 import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
 import io.metadew.iesi.framework.execution.FrameworkControl;
-import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.FrameworkPluginConfiguration;
 import org.apache.commons.io.FilenameUtils;
 

@@ -1,7 +1,6 @@
 package io.metadew.iesi.metadata.configuration.script;
 
 import io.metadew.iesi.connection.tools.SQLTools;
-import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.exception.action.ActionDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.exception.script.ScriptVersionAlreadyExistsException;
 import io.metadew.iesi.metadata.definition.script.ScriptVersion;
@@ -13,7 +12,6 @@ import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.MessageFormat;
-import java.util.List;
 import java.util.Optional;
 
 public class ScriptVersionConfiguration {

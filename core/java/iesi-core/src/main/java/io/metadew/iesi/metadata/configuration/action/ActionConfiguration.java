@@ -1,7 +1,6 @@
 package io.metadew.iesi.metadata.configuration.action;
 
 import io.metadew.iesi.connection.tools.SQLTools;
-import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.exception.action.ActionAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.action.ActionDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.exception.action.ActionParameterAlreadyExistsException;

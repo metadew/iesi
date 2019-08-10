@@ -1,7 +1,6 @@
 package io.metadew.iesi.metadata.configuration;
 
 import io.metadew.iesi.common.config.ConfigFile;
-import io.metadew.iesi.framework.configuration.FrameworkConfiguration;
 import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
 import io.metadew.iesi.framework.configuration.FrameworkSettingConfiguration;
 import io.metadew.iesi.framework.definition.FrameworkPlugin;

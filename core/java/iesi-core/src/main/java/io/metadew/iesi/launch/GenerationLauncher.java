@@ -10,7 +10,6 @@ import io.metadew.iesi.metadata.configuration.GenerationConfiguration;
 import io.metadew.iesi.metadata.definition.Context;
 import io.metadew.iesi.metadata.definition.Generation;
 import org.apache.commons.cli.*;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

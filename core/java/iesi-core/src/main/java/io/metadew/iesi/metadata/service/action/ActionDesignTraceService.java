@@ -7,7 +7,6 @@ import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.action.ActionDesignTrace;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.action.ActionParameterDesignTrace;
-import io.metadew.iesi.metadata.execution.MetadataControl;
 
 import java.sql.SQLException;
 

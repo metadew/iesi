@@ -1,6 +1,5 @@
 package io.metadew.iesi.script.execution.instruction.lookup.script;
 
-import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.script.ScriptResultOutputConfiguration;
 import io.metadew.iesi.metadata.definition.script.ScriptResultOutput;
 import io.metadew.iesi.script.execution.ExecutionControl;

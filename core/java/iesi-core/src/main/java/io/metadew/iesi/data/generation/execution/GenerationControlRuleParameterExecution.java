@@ -1,7 +1,6 @@
 package io.metadew.iesi.data.generation.execution;
 
 import io.metadew.iesi.framework.execution.FrameworkExecution;
-import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.type.GenerationControlRuleTypeParameterConfiguration;
 import io.metadew.iesi.metadata.definition.GenerationControlRuleTypeParameter;
 import io.metadew.iesi.script.execution.ExecutionControl;

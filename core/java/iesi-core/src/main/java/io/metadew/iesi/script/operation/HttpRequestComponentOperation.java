@@ -2,7 +2,6 @@ package io.metadew.iesi.script.operation;
 
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
-import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.ComponentConfiguration;
 import io.metadew.iesi.metadata.definition.Component;
 import io.metadew.iesi.metadata.definition.HttpRequestComponent;

@@ -2,7 +2,6 @@ package io.metadew.iesi.datatypes.dataset;
 
 import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.datatypes.DataType;
-import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 
 import java.io.IOException;

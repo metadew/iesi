@@ -1,7 +1,6 @@
 package io.metadew.iesi.framework.execution;
 
 import io.metadew.iesi.framework.definition.FrameworkRunIdentifier;
-import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.repository.ExecutionServerMetadataRepository;
 import org.apache.logging.log4j.ThreadContext;
 

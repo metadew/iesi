@@ -1,8 +1,6 @@
 package io.metadew.iesi.script.operation;
 
 import io.metadew.iesi.common.list.ListTools;
-import io.metadew.iesi.framework.execution.FrameworkExecution;
-import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.SubroutineConfiguration;
 import io.metadew.iesi.metadata.definition.Subroutine;
 

@@ -5,7 +5,6 @@ import io.metadew.iesi.connection.tools.FolderTools;
 import io.metadew.iesi.data.generation.configuration.*;
 import io.metadew.iesi.data.generation.tools.GenerationTools;
 import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
-import io.metadew.iesi.framework.execution.FrameworkExecution;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;

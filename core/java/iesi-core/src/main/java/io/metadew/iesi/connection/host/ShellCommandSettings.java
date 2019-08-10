@@ -1,7 +1,5 @@
 package io.metadew.iesi.connection.host;
 
-import io.metadew.iesi.framework.execution.FrameworkExecution;
-
 /**
  * Object containing all settings for shell command executions.
  *

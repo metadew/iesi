@@ -1,7 +1,6 @@
 package io.metadew.iesi.runtime;
 
 import io.metadew.iesi.framework.definition.FrameworkRunIdentifier;
-import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.launch.operation.ScriptLaunchOperation;
 import io.metadew.iesi.metadata.configuration.RequestResultConfiguration;
 import io.metadew.iesi.metadata.definition.Request;
@@ -18,7 +17,6 @@ import java.time.LocalDateTime;
 public class Executor {
 
 	private static Executor INSTANCE;
-	private FrameworkInstance frameworkInstance;
 
 	private static final Logger LOGGER = LogManager.getLogger();
 	private RequestResultConfiguration requestResultConfiguration;
@@ -32,8 +30,7 @@ public class Executor {
 		return INSTANCE;
 	}
 
-	public void init(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
+	public void init() {
 		this.requestResultConfiguration = new RequestResultConfiguration();
 	}
 
@@ -68,15 +65,6 @@ public class Executor {
 			LOGGER.warn("exception=" + e.getMessage());
 			LOGGER.warn("stacktrace=" + stackTrace.toString());
 		}
-	}
-
-	// Getters and setters
-	public synchronized FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public synchronized void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
 	}
 
 }

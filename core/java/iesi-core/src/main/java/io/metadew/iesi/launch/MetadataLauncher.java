@@ -37,7 +37,6 @@ public class MetadataLauncher {
 
     private static boolean actionMatch = false;
 
-    @SuppressWarnings({"unchecked", "rawtypes", "unused"})
     public static void main(String[] args) {
         ThreadContext.clearAll();
 
@@ -129,17 +128,13 @@ public class MetadataLauncher {
                 System.out.println("Option -ini (ini) value = " + frameworkInitializationFile.getName());
             }
 
-            FrameworkInstance frameworkInstance = FrameworkInstance.getInstance();
-            frameworkInstance.init("owner", frameworkInitializationFile);
+            FrameworkInstance.getInstance().init("owner", frameworkInitializationFile);
 
             // Create the framework execution
-            Context context = new Context();
-            context.setName("metadata");
-            context.setScope("");
-            FrameworkExecution frameworkExecution = FrameworkExecution.getInstance();
-            frameworkExecution.init(new FrameworkExecutionContext(context));
+            FrameworkExecution.getInstance().init(new FrameworkExecutionContext(new Context("metadata", "")));
+
             MetadataRepositoryOperation metadataRepositoryOperation = null;
-            List<MetadataRepository> metadataRepositories = new ArrayList();
+            List<MetadataRepository> metadataRepositories = new ArrayList<>();
 
             String type = "";
             if (line.hasOption("type")) {

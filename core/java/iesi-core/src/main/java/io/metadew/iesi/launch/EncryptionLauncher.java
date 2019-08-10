@@ -26,7 +26,7 @@ public class EncryptionLauncher {
             System.exit(1);
         }
 
-        char passwordArray[] = console.readPassword("Enter the password to encrypt: ");
+        char[] passwordArray = console.readPassword("Enter the password to encrypt: ");
 
         String input = new String(passwordArray);
 

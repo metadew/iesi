@@ -77,17 +77,14 @@ public class ConnectionLauncher {
 
             // Create the framework instance
             FrameworkInitializationFile frameworkInitializationFile = new FrameworkInitializationFile();
-            @SuppressWarnings("unused")
-			FrameworkInstance frameworkInstance = null;
             String configFile = "";
             if (line.hasOption("ini")) {
                 frameworkInitializationFile.setName(line.getOptionValue("ini"));
                 System.out.println("Option -ini (ini) value = " + frameworkInitializationFile.getName());
-                frameworkInstance = FrameworkInstance.getInstance();
-                frameworkInstance.init(frameworkInitializationFile);
             } else if (line.hasOption("config")) {
-            	configFile = line.getOptionValue("config");
+                configFile = line.getOptionValue("config");
             }
+            FrameworkInstance.getInstance().init(frameworkInitializationFile);
 
             // Execute
             writeHeaderMessage();

@@ -9,7 +9,6 @@ import io.metadew.iesi.server.execution.tools.ExecutionServerTools;
 public class Requestor {
 
 	private static Requestor INSTANCE;
-	private FrameworkInstance frameworkInstance;
 
 	public Requestor() {}
 
@@ -20,8 +19,7 @@ public class Requestor {
 		return INSTANCE;
 	}
 
-	public void init(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
+	public void init() {
 	}
 
 	public synchronized String submit(Request request) {
@@ -42,18 +40,9 @@ public class Requestor {
 	    	request.getParameters().add(new RequestParameter("exit","flag",Boolean.toString(false)));
 		}
 
-		this.getFrameworkInstance().getExecutionServerRepositoryConfiguration().executeBatch(requestConfiguration.getInsertStatement(request));
+		FrameworkInstance.getInstance().getExecutionServerRepositoryConfiguration().executeBatch(requestConfiguration.getInsertStatement(request));
     	
 		return request.getId();
     }
-
-	// Getters and setters
-	public synchronized FrameworkInstance getFrameworkInstance() {
-		return frameworkInstance;
-	}
-
-	public synchronized void setFrameworkInstance(FrameworkInstance frameworkInstance) {
-		this.frameworkInstance = frameworkInstance;
-	}
 
 }

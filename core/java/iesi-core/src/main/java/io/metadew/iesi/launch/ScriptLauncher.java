@@ -211,8 +211,7 @@ public class ScriptLauncher {
 		}
 
 		// Create framework instance
-		FrameworkInstance frameworkInstance = FrameworkInstance.getInstance();
-		frameworkInstance.init(new FrameworkInitializationFile(initializationFile));
+		FrameworkInstance.getInstance().init(new FrameworkInitializationFile(initializationFile));
 
 		// Server mode
 		String serverMode = "off";

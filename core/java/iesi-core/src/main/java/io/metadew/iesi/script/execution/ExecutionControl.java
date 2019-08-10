@@ -6,7 +6,7 @@ import io.metadew.iesi.framework.configuration.FrameworkSettingConfiguration;
 import io.metadew.iesi.framework.configuration.FrameworkStatus;
 import io.metadew.iesi.framework.crypto.FrameworkCrypto;
 import io.metadew.iesi.framework.execution.FrameworkControl;
-import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.execution.FrameworkRuntime;
 import io.metadew.iesi.framework.execution.IESIMessage;
 import io.metadew.iesi.metadata.backup.BackupExecution;
 import io.metadew.iesi.metadata.definition.script.ScriptLog;
@@ -43,7 +43,7 @@ public class ExecutionControl {
         this.scriptDesignTraceService = new ScriptDesignTraceService();
         this.executionLog = new ExecutionLog();
         this.executionTrace = new ExecutionTrace();
-        setRunId(FrameworkExecution.getInstance().getFrameworkRuntime().getRunId());
+        setRunId(FrameworkRuntime.getInstance().getRunId());
         initializeExecutionRuntime(runId);
         this.processIdList = new ArrayList<>();
         this.processIdList.add(-1L);
@@ -149,15 +149,15 @@ public class ExecutionControl {
     }
 
     public void logStart(BackupExecution backupExecution) {
-        setRunId(FrameworkExecution.getInstance().getFrameworkRuntime().getRunId());
+        setRunId(FrameworkRuntime.getInstance().getRunId());
     }
 
     public void logStart(RestoreExecution restoreExecution) {
-        setRunId(FrameworkExecution.getInstance().getFrameworkRuntime().getRunId());
+        setRunId(FrameworkRuntime.getInstance().getRunId());
     }
 
     public Long getNewProcessId() {
-        Long processId = FrameworkExecution.getInstance().getFrameworkRuntime().getNextProcessId();
+        Long processId = FrameworkRuntime.getInstance().getNextProcessId();
         logMessage(new IESIMessage("exec.processid=" + processId), Level.TRACE);
         return processId;
     }

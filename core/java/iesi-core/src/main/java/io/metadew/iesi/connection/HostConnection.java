@@ -6,6 +6,7 @@ import io.metadew.iesi.connection.host.ShellCommandResult;
 import io.metadew.iesi.connection.host.ShellCommandSettings;
 import io.metadew.iesi.connection.operation.ConnectionOperation;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.execution.FrameworkRuntime;
 import io.metadew.iesi.metadata.configuration.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import org.apache.commons.io.IOUtils;
@@ -138,7 +139,7 @@ public class HostConnection {
 
         // Check if execution can be performed as being on localhost
         if (this.getAllowLocalhostExecution().equalsIgnoreCase("y")) {
-            if (this.localhostFileExists(FrameworkExecution.getInstance().getFrameworkRuntime().getLocalHostChallengeFileName())) {
+            if (this.localhostFileExists(FrameworkRuntime.getInstance().getLocalHostChallengeFileName())) {
                 result = true;
             } else {
                 result = false;

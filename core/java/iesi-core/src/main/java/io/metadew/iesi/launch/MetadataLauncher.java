@@ -9,6 +9,7 @@ import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
 import io.metadew.iesi.framework.execution.FrameworkControl;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.framework.execution.FrameworkExecutionContext;
+import io.metadew.iesi.framework.execution.FrameworkRuntime;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.backup.BackupExecution;
 import io.metadew.iesi.metadata.definition.Context;
@@ -35,7 +36,6 @@ import java.util.List;
 public class MetadataLauncher {
 
     private static boolean actionMatch = false;
-    private static FrameworkExecution frameworkExecution;
 
     @SuppressWarnings({"unchecked", "rawtypes", "unused"})
     public static void main(String[] args) {
@@ -350,7 +350,7 @@ public class MetadataLauncher {
     }
 
     private static void endLauncher(int status, boolean exit) {
-        FrameworkExecution.getInstance().getFrameworkRuntime().terminate();
+        FrameworkRuntime.getInstance().terminate();
         if (exit) {
             System.exit(status);
         }

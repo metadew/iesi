@@ -1,7 +1,7 @@
 package io.metadew.iesi.server.execution.requestor;
 
 import io.metadew.iesi.connection.tools.SQLTools;
-import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.RequestConfiguration;
 import io.metadew.iesi.metadata.definition.Request;
 import io.metadew.iesi.runtime.Executor;
@@ -32,33 +32,33 @@ public class RequestorProcessor {
 
 	public void setProcessor() {
 		String QueryString = "update "
-				+ FrameworkExecution.getInstance().getExecutionServerRepositoryConfiguration().getTableNameByLabel(
+				+ FrameworkInstance.getInstance().getExecutionServerRepositoryConfiguration().getTableNameByLabel(
 						"RequestExecutions")
 				+ " set request_id = " + SQLTools.GetStringForSQL(this.requestId) + " where exe_id = "
 				+ SQLTools.GetStringForSQL(this.executionId);
-		FrameworkExecution.getInstance().getExecutionServerRepositoryConfiguration().executeUpdate(QueryString);
+		FrameworkInstance.getInstance().getExecutionServerRepositoryConfiguration().executeUpdate(QueryString);
 
 		QueryString = "update "
-				+ FrameworkExecution.getInstance().getExecutionServerRepositoryConfiguration()
+				+ FrameworkInstance.getInstance().getExecutionServerRepositoryConfiguration()
 						.getTableNameByLabel("Requests")
 				+ " set exe_id = " + SQLTools.GetStringForSQL(this.executionId) + " where request_id = "
 				+ SQLTools.GetStringForSQL(this.requestId);
-		FrameworkExecution.getInstance().getExecutionServerRepositoryConfiguration().executeUpdate(QueryString);
+		FrameworkInstance.getInstance().getExecutionServerRepositoryConfiguration().executeUpdate(QueryString);
 	}
 
 	public void clearProcessor() {
 		String QueryString = "update "
-				+ FrameworkExecution.getInstance().getExecutionServerRepositoryConfiguration()
+				+ FrameworkInstance.getInstance().getExecutionServerRepositoryConfiguration()
 						.getTableNameByLabel("RequestExecutions")
 				+ " set request_id =  " + SQLTools.GetStringForSQL("-1") + " where exe_id = "
 				+ SQLTools.GetStringForSQL(this.executionId);
-		FrameworkExecution.getInstance().getExecutionServerRepositoryConfiguration().executeUpdate(QueryString);
+		FrameworkInstance.getInstance().getExecutionServerRepositoryConfiguration().executeUpdate(QueryString);
 	}
 
 	public void removeFromQueue() {
-		String QueryString = "delete from " + FrameworkExecution.getInstance().getExecutionServerRepositoryConfiguration()
+		String QueryString = "delete from " + FrameworkInstance.getInstance().getExecutionServerRepositoryConfiguration()
 				.getTableNameByLabel("Requests") + " where request_id = " + SQLTools.GetStringForSQL(this.requestId);
-		FrameworkExecution.getInstance().getExecutionServerRepositoryConfiguration().executeUpdate(QueryString);
+		FrameworkInstance.getInstance().getExecutionServerRepositoryConfiguration().executeUpdate(QueryString);
 	}
 
 	public void getFields() {

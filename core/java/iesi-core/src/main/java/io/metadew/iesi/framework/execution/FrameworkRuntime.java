@@ -8,6 +8,7 @@ import io.metadew.iesi.framework.configuration.FrameworkKeywords;
 import io.metadew.iesi.framework.control.ProcessIdentifierController;
 import io.metadew.iesi.framework.definition.FrameworkRunIdentifier;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.logging.log4j.ThreadContext;
 
 import java.io.File;
 import java.util.Properties;
@@ -22,16 +23,28 @@ public class FrameworkRuntime {
 	private String processIdFileName;
 	private String runId;
 
-	public FrameworkRuntime() {
-		this(UUID.randomUUID().toString());
+	private static FrameworkRuntime INSTANCE;
+
+	public synchronized static FrameworkRuntime getInstance() {
+		if (INSTANCE == null) {
+			INSTANCE = new FrameworkRuntime();
+		}
+		return INSTANCE;
 	}
 
-	public FrameworkRuntime(FrameworkRunIdentifier frameworkRunIdentifier) {
-		this(frameworkRunIdentifier.getId());
+	private FrameworkRuntime() {}
+
+	public void init() {
+		init(UUID.randomUUID().toString());
 	}
 
-	public FrameworkRuntime(String runId) {
+	public void init(FrameworkRunIdentifier frameworkRunIdentifier) {
+		init(frameworkRunIdentifier.getId());
+	}
+
+	public void init(String runId) {
 		this.runId = runId;
+		ThreadContext.put("fwk.runid", runId);
 		this.runCacheFolderName = FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("run.cache")
 				+ File.separator + this.getRunId();
 		FolderTools.createFolder(runCacheFolderName);

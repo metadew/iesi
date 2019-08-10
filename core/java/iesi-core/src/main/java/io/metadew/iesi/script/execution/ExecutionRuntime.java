@@ -69,7 +69,6 @@ public class ExecutionRuntime {
             .compile("\\s*\\{\\{(?<" + INSTRUCTION_TYPE_KEY + ">[\\*=\\$!])(?<" + INSTRUCTION_KEYWORD_KEY + ">[\\w\\.]+)(?<" + INSTRUCTION_ARGUMENTS_KEY + ">\\(.*\\))?\\}\\}\\s*");
 
     public ExecutionRuntime() {
-
     }
 
     public ExecutionRuntime(ExecutionControl executionControl, String runId) {

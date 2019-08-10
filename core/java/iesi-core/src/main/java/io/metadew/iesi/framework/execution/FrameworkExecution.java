@@ -1,7 +1,6 @@
 package io.metadew.iesi.framework.execution;
 
 import io.metadew.iesi.framework.definition.FrameworkRunIdentifier;
-import io.metadew.iesi.metadata.repository.ExecutionServerMetadataRepository;
 import org.apache.logging.log4j.ThreadContext;
 
 public class FrameworkExecution {
@@ -10,8 +9,6 @@ public class FrameworkExecution {
     private FrameworkExecutionContext frameworkExecutionContext;
     private FrameworkExecutionSettings frameworkExecutionSettings;
     private FrameworkResultProvider frameworkResultProvider;
-    private FrameworkRuntime frameworkRuntime;
-    private ExecutionServerMetadataRepository executionServerRepositoryConfiguration;
 
     private static FrameworkExecution INSTANCE;
 
@@ -34,11 +31,12 @@ public class FrameworkExecution {
 
     public void init(FrameworkExecutionContext frameworkExecutionContext, FrameworkExecutionSettings frameworkExecutionSettings, FrameworkRunIdentifier frameworkRunIdentifier) {
         this.frameworkExecutionContext = frameworkExecutionContext;
+        ThreadContext.put("context.name", frameworkExecutionContext.getContext().getName());
+        ThreadContext.put("context.scope", frameworkExecutionContext.getContext().getScope());
         this.frameworkExecutionSettings = frameworkExecutionSettings;
         FrameworkControl.getInstance().setSettingsList(frameworkExecutionSettings.getSettingsList());
-        this.frameworkRuntime = new FrameworkRuntime(frameworkRunIdentifier);
-        FrameworkLog frameworkLog = FrameworkLog.getInstance();
-        frameworkLog.init();
+        FrameworkRuntime.getInstance().init(frameworkRunIdentifier);
+        FrameworkLog.getInstance().init();
         this.frameworkResultProvider = new FrameworkResultProvider();
     }
 
@@ -106,52 +104,16 @@ public class FrameworkExecution {
 //        this.setFrameworkResultProvider(new FrameworkResultProvider());
 //    }
 
-    public void setSettingsList(String input) {
-        FrameworkControl.getInstance().setSettingsList(input);
-    }
-
-    // Getters and Setters
-    public ExecutionServerMetadataRepository getExecutionServerRepositoryConfiguration() {
-        return executionServerRepositoryConfiguration;
-    }
-
-    public void setExecutionServerRepositoryConfiguration(
-            ExecutionServerMetadataRepository executionServerRepositoryConfiguration) {
-        this.executionServerRepositoryConfiguration = executionServerRepositoryConfiguration;
+    public FrameworkExecutionContext getFrameworkExecutionContext() {
+        return frameworkExecutionContext;
     }
 
     public FrameworkExecutionSettings getFrameworkExecutionSettings() {
         return frameworkExecutionSettings;
     }
 
-    public void setFrameworkExecutionSettings(FrameworkExecutionSettings frameworkExecutionSettings) {
-        this.frameworkExecutionSettings = frameworkExecutionSettings;
+    public FrameworkResultProvider getFrameworkResultProvider() {
+        return frameworkResultProvider;
     }
 
-    public FrameworkExecutionContext getFrameworkExecutionContext() {
-        return frameworkExecutionContext;
-    }
-
-    public void setFrameworkExecutionContext(FrameworkExecutionContext frameworkExecutionContext) {
-        this.frameworkExecutionContext = frameworkExecutionContext;
-        ThreadContext.put("context.name", frameworkExecutionContext.getContext().getName());
-        ThreadContext.put("context.scope", frameworkExecutionContext.getContext().getScope());
-    }
-
-    public FrameworkRuntime getFrameworkRuntime() {
-        return frameworkRuntime;
-    }
-
-    public void setFrameworkRuntime(FrameworkRuntime frameworkRuntime) {
-        this.frameworkRuntime = frameworkRuntime;
-        ThreadContext.put("fwk.runid", frameworkRuntime.getRunId());
-    }
-
-	public FrameworkResultProvider getFrameworkResultProvider() {
-		return frameworkResultProvider;
-	}
-
-	public void setFrameworkResultProvider(FrameworkResultProvider frameworkResultProvider) {
-		this.frameworkResultProvider = frameworkResultProvider;
-	}
 }

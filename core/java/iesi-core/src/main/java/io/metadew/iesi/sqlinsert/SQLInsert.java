@@ -7,6 +7,7 @@
 package io.metadew.iesi.sqlinsert;
 
 import io.metadew.iesi.framework.configuration.FrameworkConfiguration;
+import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
 import io.metadew.iesi.sqlinsert.engine.ConfigFile;
 
 import javax.swing.*;
@@ -29,8 +30,8 @@ public class SQLInsert {
         FrameworkConfiguration frameworkConfiguration = FrameworkConfiguration.getInstance();
         frameworkConfiguration.init();
         //Get ConfigFile
-        ConfigFile cfg = new ConfigFile(frameworkConfiguration.getFolderConfiguration().getFolderAbsolutePath("modules.sqlinsert.run.tmp") + File.separator + "service.config");
-        ConfigFile eng = new ConfigFile(frameworkConfiguration.getFolderConfiguration().getFolderAbsolutePath("modules.sqlinsert.run") + File.separator + "engine.config");
+        ConfigFile cfg = new ConfigFile(FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("modules.sqlinsert.run.tmp") + File.separator + "service.config");
+        ConfigFile eng = new ConfigFile(FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("modules.sqlinsert.run") + File.separator + "engine.config");
         String Type = eng.getProperty("type");
         String RDBMS = eng.getProperty("rdbms");
         String Service = cfg.getProperty("service");

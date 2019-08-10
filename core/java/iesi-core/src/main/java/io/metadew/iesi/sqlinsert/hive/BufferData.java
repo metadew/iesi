@@ -1,6 +1,7 @@
 package io.metadew.iesi.sqlinsert.hive;
 
 import io.metadew.iesi.framework.configuration.FrameworkConfiguration;
+import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
 import io.metadew.iesi.sqlinsert.engine.ConfigFile;
 import io.metadew.iesi.sqlinsert.engine.Engine;
 
@@ -21,7 +22,7 @@ public class BufferData {
         this.tgt = new Engine("hive");
         // Get ConfigFile
         this.setFrameworkConfiguration(frameworkConfiguration);
-        ConfigFile cfg = new ConfigFile(this.getFrameworkConfiguration().getFolderConfiguration().getFolderAbsolutePath("modules.sqlinsert.run.tmp") + File.separator + "buffer.config");
+        ConfigFile cfg = new ConfigFile(FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("modules.sqlinsert.run.tmp") + File.separator + "buffer.config");
         this.sql = cfg.getProperty("sql");
         this.localdb = cfg.getProperty("localdb");
         this.dataset = cfg.getProperty("dataset");

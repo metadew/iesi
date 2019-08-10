@@ -1,6 +1,7 @@
 package io.metadew.iesi.sqlinsert.netezza;
 
 import io.metadew.iesi.framework.configuration.FrameworkConfiguration;
+import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
 import io.metadew.iesi.sqlinsert.engine.ConfigFile;
 import io.metadew.iesi.sqlinsert.engine.Engine;
 import io.metadew.iesi.sqlinsert.engine.OutputFile;
@@ -19,7 +20,7 @@ public class GetData {
         this.tgt = new Engine("netezza");
         //Get ConfigFile
         this.setFrameworkConfiguration(frameworkConfiguration);
-        ConfigFile cfg = new ConfigFile(this.getFrameworkConfiguration().getFolderConfiguration().getFolderAbsolutePath("modules.sqlinsert.run.tmp") + File.separator + "data.config");
+        ConfigFile cfg = new ConfigFile(FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("modules.sqlinsert.run.tmp") + File.separator + "data.config");
         this.sql = cfg.getProperty("sql");
     }
 
@@ -56,7 +57,7 @@ public class GetData {
                     rs = statement.executeQuery(QueryString);
                     //outputfile
                     OutputFile of = new OutputFile();
-                    of.PrintToFile(rs, this.getFrameworkConfiguration().getFolderConfiguration().getFolderAbsolutePath("modules.sqlinsert.run.tmp") + File.separator + "data.txt");
+                    of.PrintToFile(rs, FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("modules.sqlinsert.run.tmp") + File.separator + "data.txt");
                     rs.close();
                 } catch (Exception e) {
                     System.out.println(QueryString);

@@ -1,6 +1,7 @@
 package io.metadew.iesi.sqlinsert.mysql;
 
 import io.metadew.iesi.framework.configuration.FrameworkConfiguration;
+import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
 import io.metadew.iesi.sqlinsert.engine.ConfigFile;
 import io.metadew.iesi.sqlinsert.engine.Engine;
 import io.metadew.iesi.sqlinsert.engine.ScriptRunner;
@@ -22,7 +23,7 @@ public class RunScript {
         this.tgt = new Engine("mysql");
 
         this.setFrameworkConfiguration(frameworkConfiguration);
-        this.cfg = new ConfigFile(this.getFrameworkConfiguration().getFolderConfiguration().getFolderAbsolutePath("modules.sqlinsert.run.tmp") + File.separator + "exec.config");
+        this.cfg = new ConfigFile(FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("modules.sqlinsert.run.tmp") + File.separator + "exec.config");
     }
 
     public void doExec() {

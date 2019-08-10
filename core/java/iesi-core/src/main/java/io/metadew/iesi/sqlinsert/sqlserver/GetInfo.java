@@ -1,6 +1,7 @@
 package io.metadew.iesi.sqlinsert.sqlserver;
 
 import io.metadew.iesi.framework.configuration.FrameworkConfiguration;
+import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
 import io.metadew.iesi.sqlinsert.engine.ConfigFile;
 import io.metadew.iesi.sqlinsert.engine.Engine;
 import io.metadew.iesi.sqlinsert.engine.OutputFile;
@@ -20,7 +21,7 @@ public class GetInfo {
         this.tgt = new Engine("sqlserver");
         //Get ConfigFile
         this.setFrameworkConfiguration(frameworkConfiguration);
-        ConfigFile cfg = new ConfigFile(this.getFrameworkConfiguration().getFolderConfiguration().getFolderAbsolutePath("modules.sqlinsert.run.tmp") + File.separator + "info.config");
+        ConfigFile cfg = new ConfigFile(FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("modules.sqlinsert.run.tmp") + File.separator + "info.config");
         this.schema = cfg.getProperty("schema");
         this.table = cfg.getProperty("table");
     }
@@ -64,7 +65,7 @@ public class GetInfo {
                     rs = statement.executeQuery(QueryString);
                     //outputfile
                     OutputFile of = new OutputFile();
-                    of.PrintToFile(rs, this.getFrameworkConfiguration().getFolderConfiguration().getFolderAbsolutePath("modules.sqlinsert.run.tmp") + File.separator + "info.txt");
+                    of.PrintToFile(rs, FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("modules.sqlinsert.run.tmp") + File.separator + "info.txt");
                     rs.close();
                 } catch (Exception e) {
                     System.out.println(QueryString);

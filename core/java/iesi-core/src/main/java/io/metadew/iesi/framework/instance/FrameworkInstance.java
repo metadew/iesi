@@ -4,7 +4,9 @@ import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.SqliteDatabase;
 import io.metadew.iesi.connection.database.connection.SqliteDatabaseConnection;
 import io.metadew.iesi.connection.tools.FileTools;
+import io.metadew.iesi.framework.configuration.FrameworkActionTypeConfiguration;
 import io.metadew.iesi.framework.configuration.FrameworkConfiguration;
+import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
 import io.metadew.iesi.framework.crypto.FrameworkCrypto;
 import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
 import io.metadew.iesi.framework.execution.FrameworkControl;
@@ -66,7 +68,7 @@ public class FrameworkInstance {
 		FrameworkControl frameworkControl = FrameworkControl.getInstance();
 		frameworkControl.init(frameworkConfiguration, logonType, this.frameworkInitializationFile, frameworkCrypto);
 
-		frameworkConfiguration.setActionTypesFromPlugins(frameworkControl.getFrameworkPluginConfigurationList());
+		FrameworkActionTypeConfiguration.getInstance().setActionTypesFromPlugins(frameworkControl.getFrameworkPluginConfigurationList());
 
 		MetadataControl metadataControl = MetadataControl.getInstance();
 		metadataControl.init(frameworkControl.getMetadataRepositoryConfigurations()
@@ -74,7 +76,7 @@ public class FrameworkInstance {
 				.collect(ArrayList::new, List::addAll, List::addAll));
 
 		// Set up connection to the metadata repository
-		this.executionServerFilePath = frameworkConfiguration.getFolderConfiguration().getFolderAbsolutePath("run.exec")
+		this.executionServerFilePath = FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("run.exec")
 						+ File.separator + "ExecutionServerRepository.db3";
 
 		if (!ExecutionServerTools.getServerMode(this).equalsIgnoreCase("off")) {
@@ -93,8 +95,8 @@ public class FrameworkInstance {
 		RepositoryCoordinator repositoryCoordinator = new RepositoryCoordinator(databases);
 		this.executionServerRepositoryConfiguration = new ExecutionServerMetadataRepository(
 				frameworkConfiguration.getFrameworkCode(), null, null, null, repositoryCoordinator,
-				frameworkConfiguration.getFolderConfiguration().getFolderAbsolutePath("metadata.def"),
-				frameworkConfiguration.getFolderConfiguration().getFolderAbsolutePath("metadata.def"));
+				FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.def"),
+				FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.def"));
 		Executor.getInstance().init(this);
 		Requestor.getInstance().init(this);
 	}

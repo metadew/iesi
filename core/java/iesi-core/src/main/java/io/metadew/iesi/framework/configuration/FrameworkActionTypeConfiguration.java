@@ -52,11 +52,10 @@ public class FrameworkActionTypeConfiguration {
         }
     }
 
-    public void setActionTypesFromPlugins(FrameworkFolderConfiguration frameworkFolderConfiguration,
-                                          List<FrameworkPluginConfiguration> frameworkPluginConfigurationList) {
+    public void setActionTypesFromPlugins(List<FrameworkPluginConfiguration> frameworkPluginConfigurationList) {
         for (FrameworkPluginConfiguration frameworkPluginConfiguration : frameworkPluginConfigurationList) {
             String initFilePath = frameworkPluginConfiguration.getFrameworkPlugin().getPath() +
-                    frameworkFolderConfiguration.getFolderPath("metadata.conf") +
+                    FrameworkFolderConfiguration.getInstance().getFolderPath("metadata.conf") +
                     File.separator +
                     "ActionTypes.json";
             String filePath = FilenameUtils.normalize(initFilePath);

@@ -1,6 +1,7 @@
 package io.metadew.iesi.sqlinsert.engine;
 
 import io.metadew.iesi.framework.configuration.FrameworkConfiguration;
+import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
 import io.metadew.iesi.framework.crypto.FrameworkCrypto;
 
 import java.io.File;
@@ -58,7 +59,7 @@ public class Engine {
     public Engine(String RDBMS) {
         this.frameworkConfiguration = FrameworkConfiguration.getInstance();
         frameworkConfiguration.init();
-        ConfigFile cfg = new ConfigFile(this.getFrameworkConfiguration().getFolderConfiguration().getFolderAbsolutePath("modules.sqlinsert.run") + File.separator + "engine.config");
+        ConfigFile cfg = new ConfigFile(FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("modules.sqlinsert.run") + File.separator + "engine.config");
         this.name = cfg.getProperty("name");
         this.dbdriver = cfg.getProperty("dbdriver");
         this.connectionURL = cfg.getProperty("connectionURL");

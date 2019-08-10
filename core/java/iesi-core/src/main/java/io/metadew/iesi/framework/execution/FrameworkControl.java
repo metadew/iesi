@@ -3,6 +3,7 @@ package io.metadew.iesi.framework.execution;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.common.config.*;
 import io.metadew.iesi.framework.configuration.FrameworkConfiguration;
+import io.metadew.iesi.framework.configuration.FrameworkSettingConfiguration;
 import io.metadew.iesi.framework.crypto.FrameworkCrypto;
 import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
 import io.metadew.iesi.metadata.configuration.FrameworkPluginConfiguration;
@@ -102,7 +103,7 @@ public class FrameworkControl {
 				}
 
 				if (type.trim().equalsIgnoreCase("repository")) {
-					MetadataRepositoryConfiguration metadataRepositoryConfiguration = new MetadataRepositoryConfiguration(configFile, frameworkConfiguration.getSettingConfiguration(), frameworkCrypto);
+					MetadataRepositoryConfiguration metadataRepositoryConfiguration = new MetadataRepositoryConfiguration(configFile, FrameworkSettingConfiguration.getInstance(), frameworkCrypto);
 					this.getMetadataRepositoryConfigurations().add(metadataRepositoryConfiguration);
 				} else if (type.trim().equalsIgnoreCase("plugin")) {
 					FrameworkPluginConfiguration frameworkPluginConfiguration = new FrameworkPluginConfiguration(frameworkConfiguration, configFile);

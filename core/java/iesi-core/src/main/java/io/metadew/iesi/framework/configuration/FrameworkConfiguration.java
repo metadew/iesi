@@ -14,9 +14,7 @@ public class FrameworkConfiguration {
 
 	private String frameworkCode;
 	private String frameworkHome;
-	private FrameworkFolderConfiguration folderConfiguration;
-	private FrameworkSettingConfiguration settingConfiguration;
-	private FrameworkActionTypeConfiguration actionTypeConfiguration;
+
 	private FrameworkGenerationRuleTypeConfiguration generationRuleTypeConfiguration;
 
 	private static FrameworkConfiguration INSTANCE;
@@ -53,13 +51,13 @@ public class FrameworkConfiguration {
 			throw new RuntimeException(configurationFile + " not found at " + path.getRoot());
 		}
 
-		this.folderConfiguration = FrameworkFolderConfiguration.getInstance();
+		FrameworkFolderConfiguration folderConfiguration = FrameworkFolderConfiguration.getInstance();
 		folderConfiguration.init(frameworkHome);
 
-		this.settingConfiguration = FrameworkSettingConfiguration.getInstance();
+		FrameworkSettingConfiguration settingConfiguration = FrameworkSettingConfiguration.getInstance();
 		settingConfiguration.init(frameworkHome);
 
-		this.actionTypeConfiguration = FrameworkActionTypeConfiguration.getInstance();
+		FrameworkActionTypeConfiguration actionTypeConfiguration = FrameworkActionTypeConfiguration.getInstance();
 		actionTypeConfiguration.init(folderConfiguration);
 
 		this.generationRuleTypeConfiguration = new FrameworkGenerationRuleTypeConfiguration(folderConfiguration);
@@ -72,20 +70,27 @@ public class FrameworkConfiguration {
 		ThreadContext.put("fwk.code", frameworkCode);
 		this.frameworkHome = repositoryHome + File.separator + "core";
 
-		this.folderConfiguration = FrameworkFolderConfiguration.getInstance();
+		FrameworkFolderConfiguration folderConfiguration = FrameworkFolderConfiguration.getInstance();
 		folderConfiguration.init(frameworkHome);
 
-		this.settingConfiguration = FrameworkSettingConfiguration.getInstance();
+		FrameworkSettingConfiguration settingConfiguration = FrameworkSettingConfiguration.getInstance();
 		settingConfiguration.init(frameworkHome);
 	}
 
-	public void init(String frameworkHome, FrameworkFolderConfiguration frameworkFolderConfiguration, FrameworkSettingConfiguration frameworkSettingConfiguration,
-								  FrameworkActionTypeConfiguration frameworkActionTypeConfiguration, FrameworkGenerationRuleTypeConfiguration frameworkGenerationRuleTypeConfiguration) {
+	public void init(String frameworkHome, FrameworkGenerationRuleTypeConfiguration frameworkGenerationRuleTypeConfiguration) {
 		this.frameworkCode = FrameworkSettings.IDENTIFIER.value();
+		ThreadContext.put("fwk.code", frameworkCode);
 		this.frameworkHome = frameworkHome;
-		this.folderConfiguration = frameworkFolderConfiguration;
-		this.settingConfiguration = frameworkSettingConfiguration;
-		this.actionTypeConfiguration = frameworkActionTypeConfiguration;
+		FrameworkFolderConfiguration folderConfiguration = FrameworkFolderConfiguration.getInstance();
+		folderConfiguration.init(frameworkHome);
+
+		FrameworkSettingConfiguration settingConfiguration = FrameworkSettingConfiguration.getInstance();
+		settingConfiguration.init(frameworkHome);
+
+
+		FrameworkActionTypeConfiguration actionTypeConfiguration = FrameworkActionTypeConfiguration.getInstance();
+		actionTypeConfiguration.init(folderConfiguration);
+
 		this.generationRuleTypeConfiguration = frameworkGenerationRuleTypeConfiguration;
 	}
 
@@ -103,32 +108,6 @@ public class FrameworkConfiguration {
 //		this.setFrameworkHome(properties.getProperty(this.getFrameworkCode() + ".home"));
 //	}
 
-	public void setActionTypesFromPlugins(List<FrameworkPluginConfiguration> frameworkPluginConfigurationList) {
-		actionTypeConfiguration.setActionTypesFromPlugins(this.getFolderConfiguration(),
-				frameworkPluginConfigurationList);
-	}
-
-	public void setGenerationRuleTypesFromPlugins(List<FrameworkPluginConfiguration> frameworkPluginConfigurationList) {
-		this.getGenerationRuleTypeConfiguration().setGenerationRuleTypesFromPlugins(this.getFolderConfiguration(),
-				frameworkPluginConfigurationList);
-	}
-
-	// Getters and Setters
-	public FrameworkFolderConfiguration getFolderConfiguration() {
-		return folderConfiguration;
-	}
-
-	public void setFolderConfiguration(FrameworkFolderConfiguration folderConfiguration) {
-		this.folderConfiguration = folderConfiguration;
-	}
-
-	public FrameworkSettingConfiguration getSettingConfiguration() {
-		return settingConfiguration;
-	}
-
-	public void setSettingConfiguration(FrameworkSettingConfiguration settingConfiguration) {
-		this.settingConfiguration = settingConfiguration;
-	}
 
 	public String getFrameworkHome() {
 		return frameworkHome;
@@ -144,14 +123,6 @@ public class FrameworkConfiguration {
 
 	public void setFrameworkCode(String frameworkCode) {
 		this.frameworkCode = frameworkCode;
-	}
-
-	public FrameworkActionTypeConfiguration getActionTypeConfiguration() {
-		return actionTypeConfiguration;
-	}
-
-	public void setActionTypeConfiguration(FrameworkActionTypeConfiguration actionTypeConfiguration) {
-		this.actionTypeConfiguration = actionTypeConfiguration;
 	}
 
 	public FrameworkGenerationRuleTypeConfiguration getGenerationRuleTypeConfiguration() {

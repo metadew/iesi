@@ -2,6 +2,7 @@ package io.metadew.iesi.metadata.repository.configuration;
 
 import io.metadew.iesi.common.config.ConfigFile;
 import io.metadew.iesi.framework.configuration.FrameworkConfiguration;
+import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
 import io.metadew.iesi.framework.configuration.FrameworkSettingConfiguration;
 import io.metadew.iesi.framework.crypto.FrameworkCrypto;
 import io.metadew.iesi.metadata.repository.*;
@@ -105,48 +106,48 @@ public class MetadataRepositoryConfiguration {
             if (category.equalsIgnoreCase("general")) {
                 // Make all repositories
                 metadataRepositories.add(new CatalogMetadataRepository(frameworkConfiguration.getFrameworkCode(), name, scope, instanceName, repositoryConfiguration.toRepository(),
-                        frameworkConfiguration.getFolderConfiguration().getFolderAbsolutePath("metadata.def"),
-                        frameworkConfiguration.getFolderConfiguration().getFolderAbsolutePath("metadata.def")));
+                        FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.def"),
+                        FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.def")));
                 metadataRepositories.add(new DesignMetadataRepository(frameworkConfiguration.getFrameworkCode(), name, scope, instanceName, repositoryConfiguration.toRepository(),
-                        frameworkConfiguration.getFolderConfiguration().getFolderAbsolutePath("metadata.def"),
-                        frameworkConfiguration.getFolderConfiguration().getFolderAbsolutePath("metadata.def")));
+                        FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.def"),
+                        FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.def")));
                 metadataRepositories.add(new ConnectivityMetadataRepository(frameworkConfiguration.getFrameworkCode(), name, scope, instanceName, repositoryConfiguration.toRepository(),
-                        frameworkConfiguration.getFolderConfiguration().getFolderAbsolutePath("metadata.def"),
-                        frameworkConfiguration.getFolderConfiguration().getFolderAbsolutePath("metadata.def")));
+                        FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.def"),
+                        FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.def")));
                 metadataRepositories.add(new ControlMetadataRepository(frameworkConfiguration.getFrameworkCode(), name, scope, instanceName, repositoryConfiguration.toRepository(),
-                        frameworkConfiguration.getFolderConfiguration().getFolderAbsolutePath("metadata.def"),
-                        frameworkConfiguration.getFolderConfiguration().getFolderAbsolutePath("metadata.def")));
+                        FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.def"),
+                        FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.def")));
                 metadataRepositories.add(new TraceMetadataRepository(frameworkConfiguration.getFrameworkCode(), name, scope, instanceName, repositoryConfiguration.toRepository(),
-                        frameworkConfiguration.getFolderConfiguration().getFolderAbsolutePath("metadata.def"),
-                        frameworkConfiguration.getFolderConfiguration().getFolderAbsolutePath("metadata.def")));
+                        FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.def"),
+                        FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.def")));
                 metadataRepositories.add(new ResultMetadataRepository(frameworkConfiguration.getFrameworkCode(), name, scope, instanceName, repositoryConfiguration.toRepository(),
-                        frameworkConfiguration.getFolderConfiguration().getFolderAbsolutePath("metadata.def"),
-                        frameworkConfiguration.getFolderConfiguration().getFolderAbsolutePath("metadata.def")));
+                        FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.def"),
+                        FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.def")));
                 // metadataRepositories.add(new GeneralMetadataRepository(frameworkConfiguration.getFrameworkCode(), name, scope, instanceName, repositoryConfiguration.toRepository()));
             } else if (category.equalsIgnoreCase("catalog")) {
                 metadataRepositories.add(new CatalogMetadataRepository(frameworkConfiguration.getFrameworkCode(), name, scope, instanceName, repositoryConfiguration.toRepository(),
-                        frameworkConfiguration.getFolderConfiguration().getFolderAbsolutePath("metadata.def"),
-                        frameworkConfiguration.getFolderConfiguration().getFolderAbsolutePath("metadata.def")));
+                        FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.def"),
+                        FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.def")));
             } else if (category.equalsIgnoreCase("design")) {
                 metadataRepositories.add(new DesignMetadataRepository(frameworkConfiguration.getFrameworkCode(), name, scope, instanceName, repositoryConfiguration.toRepository(),
-                        frameworkConfiguration.getFolderConfiguration().getFolderAbsolutePath("metadata.def"),
-                        frameworkConfiguration.getFolderConfiguration().getFolderAbsolutePath("metadata.def")));
+                        FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.def"),
+                        FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.def")));
             } else if (category.equalsIgnoreCase("connectivity")) {
                 metadataRepositories.add(new ConnectivityMetadataRepository(frameworkConfiguration.getFrameworkCode(), name, scope, instanceName, repositoryConfiguration.toRepository(),
-                        frameworkConfiguration.getFolderConfiguration().getFolderAbsolutePath("metadata.def"),
-                        frameworkConfiguration.getFolderConfiguration().getFolderAbsolutePath("metadata.def")));
+                        FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.def"),
+                        FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.def")));
             } else if (category.equalsIgnoreCase("control")) {
                 metadataRepositories.add(new ControlMetadataRepository(frameworkConfiguration.getFrameworkCode(), name, scope, instanceName, repositoryConfiguration.toRepository(),
-                        frameworkConfiguration.getFolderConfiguration().getFolderAbsolutePath("metadata.def"),
-                        frameworkConfiguration.getFolderConfiguration().getFolderAbsolutePath("metadata.def")));
+                        FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.def"),
+                        FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.def")));
             } else if (category.equalsIgnoreCase("trace")) {
                 metadataRepositories.add(new TraceMetadataRepository(frameworkConfiguration.getFrameworkCode(), name, scope, instanceName, repositoryConfiguration.toRepository(),
-                        frameworkConfiguration.getFolderConfiguration().getFolderAbsolutePath("metadata.def"),
-                        frameworkConfiguration.getFolderConfiguration().getFolderAbsolutePath("metadata.def")));
+                        FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.def"),
+                        FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.def")));
             } else if (category.equalsIgnoreCase("result")) {
                 metadataRepositories.add(new ResultMetadataRepository(frameworkConfiguration.getFrameworkCode(), name, scope, instanceName, repositoryConfiguration.toRepository(),
-                        frameworkConfiguration.getFolderConfiguration().getFolderAbsolutePath("metadata.def"),
-                        frameworkConfiguration.getFolderConfiguration().getFolderAbsolutePath("metadata.def")));
+                        FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.def"),
+                        FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.def")));
             } else {
                 throw new RuntimeException(MessageFormat.format("No Metadata repository can be created for {0}", category));
             }

@@ -82,7 +82,7 @@ public class ScriptParameterTraceConfiguration extends Configuration<ScriptParam
 
     @Override
     public void insert(ScriptParameterTrace scriptParameterTrace) throws MetadataAlreadyExistsException, SQLException {
-        LOGGER.trace(MessageFormat.format("Inserting ActionParameterTrace {0}.", scriptParameterTrace.getMetadataKey().toString()));
+        LOGGER.trace(MessageFormat.format("Inserting ScriptParameterTrace {0}.", scriptParameterTrace.getMetadataKey().toString()));
         if (exists(scriptParameterTrace.getMetadataKey())) {
             throw new ActionTraceAlreadyExistsException(MessageFormat.format(
                     "ActionParameterTrace {0} already exists", scriptParameterTrace.getMetadataKey().toString()));

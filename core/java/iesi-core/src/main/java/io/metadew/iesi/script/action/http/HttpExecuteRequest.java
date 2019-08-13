@@ -17,7 +17,7 @@ import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
-import io.metadew.iesi.script.operation.HttpRequestComponentOperation;
+import io.metadew.iesi.script.operation.HttpRequestComponentService;
 import org.apache.http.Header;
 import org.apache.http.HttpHeaders;
 import org.apache.http.entity.ContentType;
@@ -40,7 +40,7 @@ public class HttpExecuteRequest {
     private static Logger LOGGER = LogManager.getLogger();
 
     private HttpRequestService httpRequestService;
-    private HttpRequestComponentOperation httpRequestComponentOperation;
+    private HttpRequestComponentService httpRequestComponentService;
     private ActionExecution actionExecution;
     private ExecutionControl executionControl;
     private DataTypeService dataTypeService;
@@ -87,7 +87,7 @@ public class HttpExecuteRequest {
         this.executionControl = executionControl;
         this.actionExecution = actionExecution;
         this.actionParameterOperationMap = new HashMap<>();
-        this.httpRequestComponentOperation = new HttpRequestComponentOperation(executionControl);
+        this.httpRequestComponentService = new HttpRequestComponentService(executionControl);
         this.httpRequestService = new HttpRequestService();
         this.dataTypeService = new DataTypeService(executionControl.getExecutionRuntime());
     }
@@ -138,7 +138,7 @@ public class HttpExecuteRequest {
         this.getActionParameterOperationMap().put(expectedStatusCodesKey, expectedStatusCodesActionParameterOperation);
         this.getActionParameterOperationMap().put(proxyKey, proxyActionParameterOperation);
 
-        HttpRequestComponent httpRequestComponent = httpRequestComponentOperation.getHttpRequestComponent(convertHttpRequestName(requestNameActionParameterOperation.getValue()), actionExecution);
+        HttpRequestComponent httpRequestComponent = httpRequestComponentService.getHttpRequestComponent(convertHttpRequestName(requestNameActionParameterOperation.getValue()), actionExecution);
         HttpRequestBuilder httpRequestBuilder = new HttpRequestBuilder()
                 .type(convertHttpRequestType(requestTypeActionParameterOperation.getValue()))
                 .uri(httpRequestComponent.getUri())

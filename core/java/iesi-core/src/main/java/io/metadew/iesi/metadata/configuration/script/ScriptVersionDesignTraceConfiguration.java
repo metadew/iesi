@@ -81,7 +81,7 @@ public class ScriptVersionDesignTraceConfiguration extends Configuration<ScriptV
 
     @Override
     public void insert(ScriptVersionDesignTrace scriptVersionDesignTrace) throws MetadataAlreadyExistsException, SQLException {
-        LOGGER.trace(MessageFormat.format("Inserting ActionParameterTrace {0}.", scriptVersionDesignTrace.toString()));
+        LOGGER.trace(MessageFormat.format("Inserting scriptVersionDesignTrace {0}.", scriptVersionDesignTrace.toString()));
         if (exists(scriptVersionDesignTrace.getMetadataKey())) {
             throw new ActionTraceAlreadyExistsException(MessageFormat.format(
                     "ActionParameterTrace {0} already exists", scriptVersionDesignTrace.getMetadataKey().toString()));

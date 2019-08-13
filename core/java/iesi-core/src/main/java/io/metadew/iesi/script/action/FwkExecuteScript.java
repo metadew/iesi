@@ -8,6 +8,7 @@ import io.metadew.iesi.framework.configuration.FrameworkStatus;
 import io.metadew.iesi.metadata.configuration.script.ScriptConfiguration;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.script.Script;
+import io.metadew.iesi.script.ScriptExecutionBuildException;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
@@ -29,23 +30,17 @@ import java.util.regex.Pattern;
 
 public class FwkExecuteScript {
 
-    private ActionExecution actionExecution;
-
-    private ScriptExecution scriptExecution;
-
-    private ExecutionControl executionControl;
     private final Pattern keyValuePattern = Pattern.compile("\\s*(?<parameter>.+)\\s*=\\s*(?<value>.+)\\s*");
+
+    private ActionExecution actionExecution;
+    private ScriptExecution scriptExecution;
+    private ExecutionControl executionControl;
     // Parameters
     private ActionParameterOperation scriptName;
-
     private ActionParameterOperation scriptVersion;
-
     private ActionParameterOperation environmentName;
-
     private ActionParameterOperation paramList;
-
     private ActionParameterOperation paramFile;
-
     private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
     private DataTypeService dataTypeService;
     private static final Logger LOGGER = LogManager.getLogger();
@@ -130,45 +125,43 @@ public class FwkExecuteScript {
         }
     }
 
-    private boolean executeScript(String scriptName, Optional<Long> scriptVersion, Optional<String> environmentName, Optional<String> parameterList, Optional<String> parameterFileName) {
+    private boolean executeScript(String scriptName, Optional<Long> scriptVersion, Optional<String> environmentName, Optional<String> parameterList, Optional<String> parameterFileName) throws ScriptExecutionBuildException {
         // Check on Running a script in a loop
         if (this.getScriptExecution().getScript().getName().equalsIgnoreCase(scriptName)) {
             throw new RuntimeException("Not allowed to run the script recursively");
         }
 
-        try {
-            ScriptConfiguration scriptConfiguration = new ScriptConfiguration();
-            // Script script = scriptConfiguration.get(this.getScriptName().getValue());
-            Script script = scriptVersion
-                    .map(version -> scriptConfiguration.get(scriptName, version))
-                    .orElse(scriptConfiguration.get(scriptName)).get();
+        ScriptConfiguration scriptConfiguration = new ScriptConfiguration();
+        // Script script = scriptConfiguration.get(this.getScriptName().getValue());
+        Script script = scriptVersion
+                .map(version -> scriptConfiguration.get(scriptName, version)
+                        .orElseThrow(() -> new RuntimeException(MessageFormat.format("No implementation for script {0}-{1} found", scriptName, version))))
+                .orElse(scriptConfiguration.get(scriptName)
+                        .orElseThrow(() -> new RuntimeException(MessageFormat.format("No implementation for script {0} found", scriptName))));
 
-            ScriptExecution subScriptScriptExecution = new ScriptExecutionBuilder(false, false)
-                    .script(script)
-                    .executionControl(executionControl)
-                    .parentScriptExecution(this.scriptExecution)
-                    .exitOnCompletion(false)
-                    .paramFile(parameterFileName.orElse(""))
-                    .paramList(parameterList.orElse(""))
-                    .build();
+        ScriptExecution subScriptScriptExecution = new ScriptExecutionBuilder(false, false)
+                .script(script)
+                .executionControl(executionControl)
+                .parentScriptExecution(this.scriptExecution)
+                .exitOnCompletion(false)
+                .paramFile(parameterFileName.orElse(""))
+                .paramList(parameterList.orElse(""))
+                .build();
 
-            subScriptScriptExecution.execute();
+        subScriptScriptExecution.execute();
 
-            if (subScriptScriptExecution.getResult().equalsIgnoreCase(FrameworkStatus.SUCCESS.value())) {
-                this.getActionExecution().getActionControl().increaseSuccessCount();
-            } else if (subScriptScriptExecution.getResult()
-                    .equalsIgnoreCase(FrameworkStatus.WARNING.value())) {
-                this.getActionExecution().getActionControl().increaseWarningCount();
-            } else if (subScriptScriptExecution.getResult()
-                    .equalsIgnoreCase(FrameworkStatus.ERROR.value())) {
-                this.getActionExecution().getActionControl().increaseErrorCount();
-            } else {
-                this.getActionExecution().getActionControl().increaseErrorCount();
-            }
-
-        } catch (Exception e) {
-            throw new RuntimeException("Issue setting runtime variables: " + e, e);
+        if (subScriptScriptExecution.getResult().equalsIgnoreCase(FrameworkStatus.SUCCESS.value())) {
+            this.getActionExecution().getActionControl().increaseSuccessCount();
+        } else if (subScriptScriptExecution.getResult()
+                .equalsIgnoreCase(FrameworkStatus.WARNING.value())) {
+            this.getActionExecution().getActionControl().increaseWarningCount();
+        } else if (subScriptScriptExecution.getResult()
+                .equalsIgnoreCase(FrameworkStatus.ERROR.value())) {
+            this.getActionExecution().getActionControl().increaseErrorCount();
+        } else {
+            this.getActionExecution().getActionControl().increaseErrorCount();
         }
+
         return true;
     }
 

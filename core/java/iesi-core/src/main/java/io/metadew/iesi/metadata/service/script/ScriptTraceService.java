@@ -9,10 +9,15 @@ import io.metadew.iesi.metadata.definition.script.ScriptParameterTrace;
 import io.metadew.iesi.metadata.definition.script.ScriptTrace;
 import io.metadew.iesi.metadata.definition.script.ScriptVersionTrace;
 import io.metadew.iesi.script.execution.ScriptExecution;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.sql.SQLException;
 
 public class ScriptTraceService {
+    private static final Logger LOGGER = LogManager.getLogger();
 
     private ScriptTraceConfiguration scriptTraceConfiguration;
     private ScriptVersionTraceConfiguration scriptVersionTraceConfiguration;
@@ -38,7 +43,11 @@ public class ScriptTraceService {
             }
 
         } catch (MetadataAlreadyExistsException | SQLException e) {
-            e.printStackTrace();
+            StringWriter StackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(StackTrace));
+
+            LOGGER.warn("exception=" + e.getMessage());
+            LOGGER.info("stacktrace" + StackTrace.toString());
         }
     }
 

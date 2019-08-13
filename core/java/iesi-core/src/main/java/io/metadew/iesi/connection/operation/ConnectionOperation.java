@@ -26,14 +26,13 @@ public class ConnectionOperation {
 
 	private boolean missingMandatoryFields;
 	private List<String> missingMandatoryFieldsList;
-
+	// TODO: remove
 	public ConnectionOperation() {
 	}
 
 	// Methods
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Database getDatabase(Connection connection) {
-		this.setMissingMandatoryFieldsList(new ArrayList());
+		this.setMissingMandatoryFieldsList(new ArrayList<>());
 
 		Database database = null;
 		try {
@@ -474,9 +473,8 @@ public class ConnectionOperation {
 		return database;
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public HostConnection getHostConnection(Connection connection) {
-		this.setMissingMandatoryFieldsList(new ArrayList());
+		this.setMissingMandatoryFieldsList(new ArrayList<>());
 
 		ObjectMapper objectMapper = new ObjectMapper();
 		HostConnection hostConnection = null;
@@ -637,9 +635,8 @@ public class ConnectionOperation {
 		return hostConnection;
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public ArtifactoryConnection getArtifactoryConnection(Connection connection) {
-		this.setMissingMandatoryFieldsList(new ArrayList());
+		this.setMissingMandatoryFieldsList(new ArrayList<>());
 
 		ArtifactoryConnection artifactoryConnection = null;
 		if (connection.getType().equalsIgnoreCase("repo.artifactory")) {

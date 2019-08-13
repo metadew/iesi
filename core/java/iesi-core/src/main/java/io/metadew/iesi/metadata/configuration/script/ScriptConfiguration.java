@@ -121,14 +121,7 @@ public class ScriptConfiguration extends MetadataConfiguration {
             LOGGER.warn(e.getMessage() + ". Skipping");
         }
 
-        for (Action action : script.getActions()) {
-            try {
-                actionConfiguration.delete(script.getId(), script.getVersion().getNumber(), action.getId());
-            } catch (ActionDoesNotExistException e) {
-                LOGGER.warn(e.getMessage() + ". Skipping");
-            }
-        }
-
+        actionConfiguration.deleteActionsFromScript(script.getId(), script.getVersion().getNumber());
         List<String> deleteQuery = getDeleteStatement(script);
         MetadataControl.getInstance().getDesignMetadataRepository().executeBatch(deleteQuery);
     }
@@ -141,12 +134,10 @@ public class ScriptConfiguration extends MetadataConfiguration {
 
     public void insert(Script script) throws ScriptAlreadyExistsException {
         LOGGER.trace(MessageFormat.format("Inserting script {0}-{1}.", script.getName(), script.getVersion().getNumber()));
-
         if (exists(script)) {
             throw new ScriptAlreadyExistsException(MessageFormat.format(
                     "Script {0}-{1} already exists", script.getName(), script.getVersion().getNumber()));
         }
-
 
         // add Parameters
         for (ScriptParameter scriptParameter : script.getParameters()) {

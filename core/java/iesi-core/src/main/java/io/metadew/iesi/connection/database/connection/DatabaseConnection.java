@@ -58,10 +58,10 @@ public abstract class DatabaseConnection {
             connection.close();
             return cachedRowSet;
         } catch (SQLException e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-            System.out.println(StackTrace.toString());
-            System.out.println(query);
+            StringWriter stackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTrace));
+            LOGGER.info("exception=" + e);
+            LOGGER.debug("exception.stacktrace=" + stackTrace);
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -84,21 +84,20 @@ public abstract class DatabaseConnection {
                 crs.populate(resultSet);
                 resultSet.close();
             } catch (Exception e) {
-                StringWriter StackTrace = new StringWriter();
-                e.printStackTrace(new PrintWriter(StackTrace));
-                System.out.println("Query Actions Failed");
-                System.out.println(e.getMessage());
-                System.out.println(query);
+                StringWriter stackTrace = new StringWriter();
+                e.printStackTrace(new PrintWriter(stackTrace));
+                LOGGER.info("exception=" + e);
+                LOGGER.debug("exception.stacktrace=" + stackTrace);
                 throw new RuntimeException(e.getMessage());
             }
 
             statement.close();
 
         } catch (SQLException e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-            System.out.println("database actions Failed");
-            System.out.println(e.getMessage());
+            StringWriter stackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTrace));
+            LOGGER.info("exception=" + e);
+            LOGGER.debug("exception.stacktrace=" + stackTrace);
         }
         return crs;
     }
@@ -147,10 +146,10 @@ public abstract class DatabaseConnection {
             statement.close();
 
         } catch (SQLException e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-            System.out.println("database actions Failed");
-            System.out.println(e.getMessage());
+            StringWriter stackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTrace));
+            LOGGER.info("exception=" + e);
+            LOGGER.debug("exception.stacktrace=" + stackTrace);
         }
 
         return crs;
@@ -228,11 +227,10 @@ public abstract class DatabaseConnection {
                 crs.populate(rs);
                 rs.close();
             } catch (Exception e) {
-                StringWriter StackTrace = new StringWriter();
-                e.printStackTrace(new PrintWriter(StackTrace));
-                System.out.println("Query Actions Failed");
-                System.out.println(e.getMessage());
-                System.out.println(sqlProcedure.toString());
+                StringWriter stackTrace = new StringWriter();
+                e.printStackTrace(new PrintWriter(stackTrace));
+                LOGGER.info("exception=" + e);
+                LOGGER.debug("exception.stacktrace=" + stackTrace);
                 throw new RuntimeException(e.getMessage());
             }
 
@@ -264,10 +262,10 @@ public abstract class DatabaseConnection {
             executeUpdate(query, connection);
             connection.close();
         } catch (SQLException e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-            System.out.println(StackTrace.toString());
-            System.out.println(query);
+            StringWriter stackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTrace));
+            LOGGER.info("exception=" + e);
+            LOGGER.debug("exception.stacktrace=" + stackTrace);
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -286,12 +284,10 @@ public abstract class DatabaseConnection {
             statement.executeUpdate(query);
             statement.close();
         } catch (SQLException e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-            System.out.println(StackTrace.toString());
-            System.out.println(query);
-            System.out.println(e.getSQLState());
-            System.out.println(e.getErrorCode());
+            StringWriter stackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTrace));
+            LOGGER.info("exception=" + e);
+            LOGGER.debug("exception.stacktrace=" + stackTrace);
             throw new RuntimeException(e);
         }
     }
@@ -302,10 +298,10 @@ public abstract class DatabaseConnection {
             executeBatch(queries, connection);
             connection.close();
         } catch (SQLException e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-            System.out.println(StackTrace.toString());
-            System.out.println(queries.toString());
+            StringWriter stackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTrace));
+            LOGGER.info("exception=" + e);
+            LOGGER.debug("exception.stacktrace=" + stackTrace);
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -329,15 +325,16 @@ public abstract class DatabaseConnection {
                 connection.commit();
                 connection.setAutoCommit(true);
             } catch (SQLException e) {
-                StringWriter StackTrace = new StringWriter();
-                e.printStackTrace(new PrintWriter(StackTrace));
-                System.out.println(StackTrace.toString());
-                System.out.println(queries.toString());
-                System.out.println(e.getSQLState());
-                System.out.println(e.getErrorCode());
+            StringWriter stackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTrace));
+            LOGGER.info("exception=" + e);
+            LOGGER.debug("exception.stacktrace=" + stackTrace);
                 throw new RuntimeException(e);
             } catch (Exception e) {
-                System.out.println(e.getMessage());
+            StringWriter stackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTrace));
+            LOGGER.info("exception=" + e);
+            LOGGER.debug("exception.stacktrace=" + stackTrace);
             }
     }
 
@@ -348,9 +345,10 @@ public abstract class DatabaseConnection {
             connection.close();
             return sqlScriptResult;
         } catch (SQLException e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-            System.out.println("Connection Failed");
+            StringWriter stackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTrace));
+            LOGGER.info("exception=" + e);
+            LOGGER.debug("exception.stacktrace=" + stackTrace);
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -383,10 +381,10 @@ public abstract class DatabaseConnection {
             }
 
         } catch (SQLException e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-            System.out.println("database Actions Failed");
-            System.out.println(e.getMessage());
+            StringWriter stackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTrace));
+            LOGGER.info("exception=" + e);
+            LOGGER.debug("exception.stacktrace=" + stackTrace);
             throw new RuntimeException(e.getMessage());
         }
         return dcSQLScriptResult;
@@ -434,10 +432,10 @@ public abstract class DatabaseConnection {
             }
 
         } catch (SQLException e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-            System.out.println("database Actions Failed");
-            System.out.println(e.getMessage());
+            StringWriter stackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTrace));
+            LOGGER.info("exception=" + e);
+            LOGGER.debug("exception.stacktrace=" + stackTrace);
             throw new RuntimeException(e.getMessage());
         }
         return sqlScriptResult;

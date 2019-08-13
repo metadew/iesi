@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.SQLException;
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +33,7 @@ public class KeyValueDataset extends Dataset {
 
     public KeyValueDataset(String name, List<String> labels, ExecutionRuntime executionRuntime) throws IOException, SQLException {
         super(name, labels, executionRuntime);
-        LOGGER.trace("Creating dataset with " + name + " and " + labels.toString());
+        LOGGER.trace("datatype.dataset.keyvalue=creating dataset with " + name + " and " + labels.toString());
     }
 
     public Map<String, DataType> getDataItems() {
@@ -57,23 +58,25 @@ public class KeyValueDataset extends Dataset {
     }
 
     public Optional<DataType> getDataItem(String dataItem) {
-        CachedRowSet crs;
-        String query;
-        query = "select value from " + SQLTools.GetStringForSQLTable(getTableName()) + " where key = " + SQLTools.GetStringForSQL(dataItem) + ";";
-
-        DataType value = null;
-        crs = getDatasetDatabase().executeQuery(query);
+        String query = "select value from " + SQLTools.GetStringForSQLTable(getTableName()) + " where key = " + SQLTools.GetStringForSQL(dataItem) + ";";
+        CachedRowSet crs = getDatasetDatabase().executeQuery(query);
         try {
-            while (crs.next()) {
-                value = dataTypeService.resolve(crs.getString("VALUE"));
+            if (crs.size() == 0) {
+                return Optional.empty();
+            } else if (crs.size() > 1) {
+                LOGGER.warn(MessageFormat.format("Dataset contains multiple items with key ''{0}''. Returning first value", dataItem));
             }
+            crs.next();
+            DataType value = dataTypeService.resolve(crs.getString("VALUE"));
             crs.close();
+            return Optional.of(value);
         } catch (Exception e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
+            StringWriter stackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTrace));
+            LOGGER.info("exception=" + e);
+            LOGGER.debug("exception.stacktrace=" + stackTrace);
             return Optional.empty();
         }
-        return Optional.ofNullable(value);
     }
 
     public void setDataItem(String key, DataType value) {
@@ -83,8 +86,10 @@ public class KeyValueDataset extends Dataset {
                     + SQLTools.GetStringForSQL(key) + ", " + SQLTools.GetStringForSQL(value.toString()) + ");";
             getDatasetDatabase().executeUpdate(query);
         } catch (Exception e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
+            StringWriter stackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTrace));
+            LOGGER.info("exception=" + e);
+            LOGGER.debug("exception.stacktrace=" + stackTrace);
         }
     }
 
@@ -100,28 +105,30 @@ public class KeyValueDataset extends Dataset {
         return database;
     }
 
-    @SuppressWarnings("unused")
-	public void clean() {
+    public void clean() {
         // Check if table exists
-        String queryTableExists = "select name from sqlite_master where name = " + SQLTools.GetStringForSQL(getTableName()) + ";";
+        String queryTableExists = "select name from sqlite_master where name = " + SQLTools.GetStringForSQLTable(getTableName()) + ";";
         CachedRowSet crs = getDatasetDatabase().executeQuery(queryTableExists);
         try {
             if (crs.size() >= 1) {
-                if (crs.getString("NAME").equalsIgnoreCase(getTableName())) {
-                    String clean = "delete from " + SQLTools.GetStringForSQLTable(getTableName()) + ";";
-                    getDatasetDatabase().executeUpdate(clean);
-                } else {
-                    String create = "CREATE TABLE " + SQLTools.GetStringForSQLTable(getTableName()) + " (key TEXT, value TEXT);";
-                    getDatasetDatabase().executeUpdate(create);
-                }
+                crs.next();
+//                if (crs.getString("NAME").equalsIgnoreCase(getTableName())) {
+                String clean = "delete from " + SQLTools.GetStringForSQLTable(getTableName()) + ";";
+                getDatasetDatabase().executeUpdate(clean);
+//                } else {
+//                    String create = "CREATE TABLE " + SQLTools.GetStringForSQLTable(getTableName()) + " (key TEXT, value TEXT);";
+//                    getDatasetDatabase().executeUpdate(create);
+//                }
             } else {
                 String create = "CREATE TABLE " + SQLTools.GetStringForSQLTable(getTableName()) + " (key TEXT, value TEXT);";
                 getDatasetDatabase().executeUpdate(create);
             }
             crs.close();
         } catch (Exception e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
+            StringWriter stackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTrace));
+            LOGGER.info("exception=" + e);
+            LOGGER.debug("exception.stacktrace=" + stackTrace);
         }
     }
 

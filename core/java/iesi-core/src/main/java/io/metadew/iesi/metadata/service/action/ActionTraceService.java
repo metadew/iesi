@@ -15,6 +15,8 @@ import io.metadew.iesi.script.operation.ActionParameterOperation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.Map;
@@ -23,7 +25,7 @@ public class ActionTraceService {
 
     private ActionTraceConfiguration actionTraceConfiguration;
     private ActionParameterTraceConfiguration actionParameterTraceConfiguration;
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
 
     public ActionTraceService() {
         this.actionTraceConfiguration = new ActionTraceConfiguration();
@@ -39,7 +41,11 @@ public class ActionTraceService {
             }
 
         } catch (MetadataAlreadyExistsException | SQLException e) {
-            e.printStackTrace();
+            StringWriter StackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(StackTrace));
+
+            LOGGER.warn("exception=" + e.getMessage());
+            LOGGER.info("stacktrace" + StackTrace.toString());
         }
     }
 
@@ -61,7 +67,7 @@ public class ActionTraceService {
                     trace(actionExecution, key + datasetItem.getKey(), datasetItem.getValue());
                 }
             } else {
-                logger.warn(MessageFormat.format("DataType ''{0}'' is unknown to trace", value.getClass()));
+                LOGGER.warn(MessageFormat.format("DataType ''{0}'' is unknown to trace", value.getClass()));
             }
 
         } catch (MetadataAlreadyExistsException | SQLException e) {

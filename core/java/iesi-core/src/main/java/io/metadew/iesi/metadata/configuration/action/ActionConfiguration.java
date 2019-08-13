@@ -179,4 +179,15 @@ public class ActionConfiguration {
         return queries;
     }
 
+    public void deleteActionsFromScript(String scriptId, long scriptVersionNumber) {
+        List<String> queries = new ArrayList<>();
+        queries.add("DELETE FROM " + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("Actions") +
+                " WHERE SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptId) +
+                " AND SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(scriptVersionNumber) + ";");
+        queries.add("DELETE FROM " + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("ActionParameters") +
+                " WHERE SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptId) +
+                " AND SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(scriptVersionNumber) + ";");
+        MetadataControl.getInstance().getTraceMetadataRepository().executeBatch(queries);
+    }
+
 }

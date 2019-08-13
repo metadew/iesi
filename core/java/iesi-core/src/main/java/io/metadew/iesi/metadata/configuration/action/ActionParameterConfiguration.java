@@ -53,7 +53,7 @@ public class ActionParameterConfiguration {
         LOGGER.trace(MessageFormat.format("Inserting ActionParameter {0}-{1}-{2}-{3}.", scriptId, scriptVersionNumber, actionId, actionParameter.getName()));
         if (exists(scriptId, scriptVersionNumber, actionId, actionParameter)) {
             throw new ActionParameterAlreadyExistsException(MessageFormat.format(
-                    "Action {0}-{1}-{2}-{3} already exists", scriptId, scriptVersionNumber, actionId, actionParameter.getName()));
+                    "ActionParameter {0}-{1}-{2}-{3} already exists", scriptId, scriptVersionNumber, actionId, actionParameter.getName()));
         }
         String insertQuery = "INSERT INTO " + MetadataControl.getInstance().getDesignMetadataRepository()
                 .getTableNameByLabel("ActionParameters") +

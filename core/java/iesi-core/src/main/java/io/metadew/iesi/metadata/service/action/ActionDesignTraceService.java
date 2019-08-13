@@ -7,7 +7,11 @@ import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.action.ActionDesignTrace;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.action.ActionParameterDesignTrace;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.sql.SQLException;
 
 public class ActionDesignTraceService {
@@ -15,6 +19,7 @@ public class ActionDesignTraceService {
 
     private ActionDesignTraceConfiguration actionDesignTraceConfiguration;
     private ActionParameterDesignTraceConfiguration actionParameterDesignTraceConfiguration;
+    private static final Logger LOGGER = LogManager.getLogger();
 
 
     public ActionDesignTraceService() {
@@ -29,7 +34,11 @@ public class ActionDesignTraceService {
                 actionParameterDesignTraceConfiguration.insert(new ActionParameterDesignTrace(runId, processId, action.getId(), actionParameter));
             }
         } catch (MetadataAlreadyExistsException | SQLException e) {
-            e.printStackTrace();
+            StringWriter StackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(StackTrace));
+
+            LOGGER.warn("exception=" + e.getMessage());
+            LOGGER.info("stacktrace" + StackTrace.toString());
         }
     }
 }

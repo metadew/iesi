@@ -15,6 +15,7 @@ import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class DatasetMetadata {
 
@@ -29,12 +30,10 @@ public class DatasetMetadata {
         this.executionRuntime = executionRuntime;
     }
 
-
     public Optional<Long> getId(List<String> labels) throws SQLException {
         // TODO: specific SQLite behaviour!!
-        String query = "SELECT DATASET_INV_ID FROM " +
-                "(SELECT DATASET_INV_ID, group_concat(DATASET_LBL_VAL, ',') as LABELS FROM CFG_DATASET_LBL GROUP BY DATASET_INV_ID) " +
-                "WHERE LABELS=" + SQLTools.GetStringForSQL(String.join(",", labels))+";";
+        String query = "SELECT DATASET_INV_ID FROM CFG_DATASET_LBL WHERE DATASET_LBL_VAL in (" + labels.stream().map(SQLTools::GetStringForSQL).collect(Collectors.joining(",")) +
+                ") GROUP BY DATASET_INV_ID HAVING COUNT(DISTINCT DATASET_LBL_VAL) = " + labels.size() + ";";
         CachedRowSet cachedRowSet = database.executeQuery(query);
         if (cachedRowSet.size() == 0) {
             return Optional.empty();
@@ -48,50 +47,6 @@ public class DatasetMetadata {
 
         return Optional.of(datasetInventoryId);
     }
-
-//    public Optional<Long> getId(List<String> labels) throws SQLException {
-//        String fetchLabelQuery = "SELECT DATASET_INV_ID FROM CFG_DATASET_LBL WHERE DATASET_LBL_VAL = \"{0}\"";
-//        StringBuilder labelMatchQuery = new StringBuilder();
-//        int labelIndex = 0;
-//        for (String label : labels) {
-//            labelMatchQuery.append(MessageFormat.format(fetchLabelQuery, label));
-//            if (labelIndex != labels.size() - 1) {
-//                labelMatchQuery.append(" and DATASET_INV_ID in (");
-//            }
-//            labelIndex++;
-//        }
-//        for (int i = 1; i < labels.size(); i++) {
-//            labelMatchQuery.append(")");
-//        }
-//        String strictLabelMatchQuery = "SELECT DATASET_INV_ID from (SELECT b.DATASET_INV_ID, count(b.DATASET_LBL_VAL) as label_count from (" +
-//                labelMatchQuery.toString() +
-//                ") as a inner join CFG_DATASET_LBL as b on a.DATASET_INV_ID = b.DATASET_INV_ID group by b.DATASET_INV_ID) " +
-//                "where label_count = " + labels.size() + ";";
-//
-//
-//        long datasetInventoryId;
-//        CachedRowSet cachedRowSetLabels = database.executeQuery(strictLabelMatchQuery);
-//
-//        if (cachedRowSetLabels.size() == 0) {
-//            return Optional.empty();
-//        } else if (cachedRowSetLabels.size() > 1) {
-//            cachedRowSetLabels.next();
-//            datasetInventoryId = cachedRowSetLabels.getLong("DATASET_INV_ID");
-//            executionRuntime.getExecutionControl().logMessage(new IESIMessage(MessageFormat.format("Found dataset id {0} for labels {1}-{2}.", Long.toString(datasetInventoryId), datasetName, String.join(", ", labels))), Level.TRACE);
-//        } else {
-//            List<Integer> datasetInventoryIds = new ArrayList<>();
-//            while (cachedRowSetLabels.next()) {
-//                datasetInventoryIds.add(cachedRowSetLabels.getInt("DATASET_INV_ID"));
-//            }
-//
-//            executionRuntime.getExecutionControl().logMessage(new IESIMessage(MessageFormat.format("Found more than one dataset id ({0}) for name ''{1}'' and labels ''{2}''. " +
-//                            "Returning first occurrence.", datasetInventoryIds.stream().map(id -> Integer.toString(id)).collect(Collectors.joining(", ")),
-//                    datasetName, String.join(", ", labels))), Level.WARN);
-//
-//            datasetInventoryId = datasetInventoryIds.get(0);
-//        }
-//        return Optional.of(datasetInventoryId);
-//    }
 
     public Database getDatasetDatabase(long id) throws SQLException {
         String query = "select DATASET_FILE_NM, DATASET_TABLE_NM from CFG_DATASET_INV where DATASET_INV_ID = " + id;

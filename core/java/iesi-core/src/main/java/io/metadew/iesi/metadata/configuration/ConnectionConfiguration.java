@@ -172,7 +172,7 @@ public class ConnectionConfiguration extends MetadataConfiguration {
 
     public void deleteConnection(Connection connection) throws ConnectionDoesNotExistException {
         // TODO fix logging
-    	//frameworkExecution.getFrameworkLog().log(MessageFormat.format("Deleting connection {0}-{1}.", connection.getName(), connection.getEnvironment()), Level.TRACE);
+    	//frameworkExecution.getFrameworkLog().log(MessageFormat.format("Deleting connection {0}-{1}.", connection.getScriptName(), connection.getEnvironment()), Level.TRACE);
         if (!exists(connection)) {
             throw new ConnectionDoesNotExistException(
                     MessageFormat.format("Connection {0}-{1} is not present in the repository so cannot be updated",
@@ -251,7 +251,7 @@ public class ConnectionConfiguration extends MetadataConfiguration {
     }
 
     public Connection insertConnection(Connection connection) throws ConnectionAlreadyExistsException {
-        // frameworkInstance.getFrameworkLog().log(MessageFormat.format("Inserting connection {0}-{1}.", connection.getName(), connection.getEnvironment()), Level.TRACE);
+        // frameworkInstance.getFrameworkLog().log(MessageFormat.format("Inserting connection {0}-{1}.", connection.getScriptName(), connection.getEnvironment()), Level.TRACE);
         if (exists(connection)) {
             throw new ConnectionAlreadyExistsException(MessageFormat.format(
                     "Connection {0}-{1} already exists", connection.getName(), connection.getEnvironment()));
@@ -295,18 +295,18 @@ public class ConnectionConfiguration extends MetadataConfiguration {
     }
 
     public Connection updateConnection(Connection connection) throws ConnectionDoesNotExistException, ConnectionAlreadyExistsException {
-        // frameworkExecution.getFrameworkLog().log(MessageFormat.format("Updating connection {0}-{1}.", connection.getName(), connection.getEnvironment()), Level.TRACE);
+        // frameworkExecution.getFrameworkLog().log(MessageFormat.format("Updating connection {0}-{1}.", connection.getScriptName(), connection.getEnvironment()), Level.TRACE);
         try {
             deleteConnection(connection);
             return insertConnection(connection);
         } catch (ConnectionDoesNotExistException e) {
             // TODO fix logging
-        	//frameworkExecution.getFrameworkLog().log(MessageFormat.format("Connection {0}-{1} is not present in the repository so cannot be updated",connection.getName(), connection.getEnvironment()),Level.TRACE);
+        	//frameworkExecution.getFrameworkLog().log(MessageFormat.format("Connection {0}-{1} is not present in the repository so cannot be updated",connection.getScriptName(), connection.getEnvironment()),Level.TRACE);
             throw new ConnectionDoesNotExistException(MessageFormat.format(
                     "Connection {0}-{1} is not present in the repository so cannot be updated", connection.getName()));
 
         } catch (ConnectionAlreadyExistsException e) {
-            // frameworkExecution.getFrameworkLog().log(MessageFormat.format("Connection {0}-{1} is not deleted correctly during update. {2}",connection.getName(), connection.getEnvironment(), e.toString()),Level.WARN);
+            // frameworkExecution.getFrameworkLog().log(MessageFormat.format("Connection {0}-{1} is not deleted correctly during update. {2}",connection.getScriptName(), connection.getEnvironment(), e.toString()),Level.WARN);
             throw e;
         }
     }

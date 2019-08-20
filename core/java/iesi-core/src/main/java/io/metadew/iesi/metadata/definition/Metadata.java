@@ -25,8 +25,8 @@ public abstract class Metadata<T extends MetadataKey> {
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("{");
-        Field[] fields = this.getClass().getDeclaredFields();
-        Method[] methods = getClass().getDeclaredMethods();
+        Field[] fields = this.getClass().getFields();
+        Method[] methods = getClass().getMethods();
 
         //print field names paired with their values
         stringBuilder.append(Arrays.stream(fields).map(field -> {
@@ -34,7 +34,7 @@ public abstract class Metadata<T extends MetadataKey> {
                     .findFirst()
                     .map(method -> {
                         try {
-                            return method.invoke(this).toString();
+                            return method.invoke(this)==null ? "<null>" : method.invoke(this).toString();
                         } catch (IllegalAccessException | InvocationTargetException e) {
                             return "<private>";
                         }

@@ -122,7 +122,7 @@
 //			}
 //
 //			Context context = new Context();
-//			context.setName("data");
+//			context.setScriptName("data");
 //			context.setScope("");
 //			FrameworkExecution frameworkExecution = new FrameworkExecution(new FrameworkExecutionContext(context),
 //					"owner",null);

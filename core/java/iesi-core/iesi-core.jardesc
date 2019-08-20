@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="WINDOWS-1252" standalone="no"?>
+<?xml scriptVersion="1.0" encoding="WINDOWS-1252" standalone="no"?>
 <jardesc>
     <jar path="iesi-core/target/iesi-core.jar"/>
     <options buildIfNeeded="true" compress="true" descriptionLocation="/iesi-core/iesi-core.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="false" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>

@@ -5,8 +5,8 @@ import io.metadew.iesi.metadata.configuration.ComponentConfiguration;
 import io.metadew.iesi.metadata.configuration.GenerationConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.ComponentAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.ComponentDoesNotExistException;
-import io.metadew.iesi.metadata.configuration.exception.ScriptAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.exception.ScriptDoesNotExistException;
+import io.metadew.iesi.metadata.configuration.script.exception.ScriptAlreadyExistsException;
+import io.metadew.iesi.metadata.configuration.script.exception.ScriptDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.script.ScriptConfiguration;
 import io.metadew.iesi.metadata.definition.Component;
 import io.metadew.iesi.metadata.definition.DataObject;
@@ -46,7 +46,6 @@ public class DesignMetadataRepository extends MetadataRepository {
         return "design";
     }
 
-
     @Override
     public String getCategoryPrefix() {
         return "DES";
@@ -78,6 +77,7 @@ public class DesignMetadataRepository extends MetadataRepository {
         LOGGER.info(MessageFormat.format("Saving script {0}-{1} into design repository", script.getName(), script.getVersion().getNumber()));
         if (!verifyScript(script)) {
             LOGGER.error(MessageFormat.format("Script {0}-{1} cannot be saved as it contains errors", script.getName(), script.getVersion().getNumber()));
+            return;
         }
         ScriptConfiguration scriptConfiguration = new ScriptConfiguration();
         try {
@@ -118,14 +118,14 @@ public class DesignMetadataRepository extends MetadataRepository {
         List<String> parameterNames = script.getParameters().stream().map(ScriptParameter::getName).collect(Collectors.toList());
         List<String> duplicateParameters = parameterNames.stream().filter(i -> Collections.frequency(parameterNames, i) > 1).collect(Collectors.toList());
         if (duplicateParameters.size() > 1) {
-            LOGGER.error(MessageFormat.format("Script {0}-{1} has duplicate parameters: {3}", script.getName(), script.getVersion().getNumber(), duplicateParameters.toString()));
+            LOGGER.error(MessageFormat.format("Script {0}-{1} has duplicate parameters: {2}", script.getName(), script.getVersion().getNumber(), duplicateParameters.toString()));
         }
         List<String> actionNames = script.getActions().stream().map(Action::getName).collect(Collectors.toList());
         List<String> duplicateActions = actionNames.stream().filter(i -> Collections.frequency(actionNames, i) > 1).collect(Collectors.toList());
         if (duplicateActions.size() > 1) {
-            LOGGER.error(MessageFormat.format("Script {0}-{1} has duplicate actions: {3}", script.getName(), script.getVersion().getNumber(), duplicateActions.toString()));
+            LOGGER.error(MessageFormat.format("Script {0}-{1} has duplicate actions: {2}", script.getName(), script.getVersion().getNumber(), duplicateActions.toString()));
         }
-        return duplicateParameters.size() > 1 || duplicateActions.size() > 1;
+        return duplicateParameters.size() == 0 && duplicateActions.size() == 0;
 
     }
 

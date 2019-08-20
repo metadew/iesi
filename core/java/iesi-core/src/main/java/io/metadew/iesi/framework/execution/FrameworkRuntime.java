@@ -71,7 +71,7 @@ public class FrameworkRuntime {
 //		if (frameworkRunIdentifier == null) {
 //			this.setRunId(UUID.randomUUID().toString());
 //		} else {
-//			this.setRunId(frameworkRunIdentifier.getId());
+//			this.setRunId(frameworkRunIdentifier.getScriptId());
 //		}
 //
 //		// Create run cache folder

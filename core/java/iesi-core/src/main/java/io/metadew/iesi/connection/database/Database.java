@@ -176,7 +176,7 @@ public abstract class Database {
 			 * 
 			 * if (addComments() && field.getDescription().isPresent()) {
 			 * fieldComments.append("\nCOMMENT ON COLUMN ").append(tableName).append(".").
-			 * append(field.getName())
+			 * append(field.getScriptName())
 			 * .append(" IS '").append(field.getDescription().get()).append("';"); }
 			 */
 			counter++;
@@ -226,7 +226,7 @@ public abstract class Database {
 			 * 
 			 * if (addComments() && field.getDescription().isPresent()) {
 			 * fieldComments.append("\nCOMMENT ON COLUMN ").append(tableName).append(".").
-			 * append(field.getName())
+			 * append(field.getScriptName())
 			 * .append(" IS '").append(field.getDescription().get()).append("';"); }
 			 */
 			counter++;

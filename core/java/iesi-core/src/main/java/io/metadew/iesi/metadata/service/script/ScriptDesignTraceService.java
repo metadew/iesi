@@ -1,11 +1,14 @@
 package io.metadew.iesi.metadata.service.script;
 
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.script.ScriptDesignTraceConfiguration;
-import io.metadew.iesi.metadata.configuration.script.ScriptParameterDesignTraceConfiguration;
-import io.metadew.iesi.metadata.configuration.script.ScriptVersionDesignTraceConfiguration;
+import io.metadew.iesi.metadata.configuration.script.design.ScriptDesignTraceConfiguration;
+import io.metadew.iesi.metadata.configuration.script.design.ScriptParameterDesignTraceConfiguration;
+import io.metadew.iesi.metadata.configuration.script.design.ScriptVersionDesignTraceConfiguration;
 import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.script.*;
+import io.metadew.iesi.metadata.definition.script.design.ScriptDesignTrace;
+import io.metadew.iesi.metadata.definition.script.design.ScriptParameterDesignTrace;
+import io.metadew.iesi.metadata.definition.script.design.ScriptVersionDesignTrace;
 import io.metadew.iesi.metadata.service.action.ActionDesignTraceService;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import org.apache.logging.log4j.LogManager;

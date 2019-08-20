@@ -107,7 +107,7 @@ public class RequestConfiguration {
 	public void deleteRequest(Request request) throws RequestDoesNotExistException {
 		// TODO: logging
 		// FrameworkInstance.getInstance().getFrameworkLog().log(MessageFormat.format("Deleting
-		// request {0}", request.getName()),Level.TRACE);
+		// request {0}", request.getScriptName()),Level.TRACE);
 		if (!exists(request)) {
 			throw new RequestDoesNotExistException(MessageFormat
 					.format("Request {0} is not present in the repository so cannot be deleted", request.getId()));
@@ -148,7 +148,7 @@ public class RequestConfiguration {
 	public void insertRequest(Request request) throws RequestAlreadyExistsException {
 		// TODO:logging
 		// FrameworkInstance.getInstance().getFrameworkLog().log(MessageFormat.format("Inserting
-		// request {0}", request.getName()), Level.TRACE);
+		// request {0}", request.getScriptName()), Level.TRACE);
 		if (exists(request)) {
 			throw new RequestAlreadyExistsException(
 					MessageFormat.format("Request {0} already exists", request.getId()));
@@ -190,17 +190,17 @@ public class RequestConfiguration {
 
 	public void updateRequest(Request request) throws RequestDoesNotExistException {
 		// FrameworkInstance.getInstance().getFrameworkLog().log(MessageFormat.format("Updating
-		// request {0}.", request.getName()),Level.TRACE);
+		// request {0}.", request.getScriptName()),Level.TRACE);
 		try {
 			deleteRequest(request);
 			insertRequest(request);
 		} catch (RequestDoesNotExistException e) {
-//			FrameworkInstance.getInstance().getFrameworkLog().log(MessageFormat.format("Request {0} is not present in the repository so cannot be updated", request.getName()),	Level.TRACE);
+//			FrameworkInstance.getInstance().getFrameworkLog().log(MessageFormat.format("Request {0} is not present in the repository so cannot be updated", request.getScriptName()),	Level.TRACE);
 			throw new RequestDoesNotExistException(MessageFormat
 					.format("Request {0} is not present in the repository so cannot be updated", request.getId()));
 		} catch (RequestAlreadyExistsException e) {
 			// FrameworkInstance.getInstance().getFrameworkLog().log(MessageFormat.format("Request
-			// {0} is not deleted correctly during update. {1}", request.getName(),
+			// {0} is not deleted correctly during update. {1}", request.getScriptName(),
 			// e.toString()),Level.WARN);
 		}
 	}

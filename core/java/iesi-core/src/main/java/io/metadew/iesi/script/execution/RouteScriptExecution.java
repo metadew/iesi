@@ -25,7 +25,7 @@ public class RouteScriptExecution extends ScriptExecution {
 //        /*
 //         * Start script execution Not applicable for routing executions
 //         */
-//        this.getExecutionControl().logMessage(this, "script.name=" + this.get().getName(), Level.INFO);
+//        this.getExecutionControl().logMessage(this, "script.name=" + this.get().getScriptName(), Level.INFO);
 //        this.getExecutionControl().logMessage(this, "exec.env=" + this.getExecutionControl().getEnvName(),
 //                Level.INFO);
 //        this.getExecutionControl().logStart(this, this.getParentScriptExecution());
@@ -62,7 +62,7 @@ public class RouteScriptExecution extends ScriptExecution {
 //        if (this.isRootScript()) {
 //            if (!this.getActionSelectOperation().getExecutionStatus(action)) {
 //                // skip execution
-//                System.out.println("Skipping " + action.getName());
+//                System.out.println("Skipping " + action.getScriptName());
 //                execute = false;
 //            } else {
 //                execute = true;

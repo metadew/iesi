@@ -23,7 +23,7 @@ public class ConfigFile {
     }
 
     public Optional<String> getProperty(String key) {
-        if (properties.getProperty(key).isEmpty()) {
+        if (properties.getProperty(key, "").isEmpty()) {
             return Optional.empty();
         } else {
             return Optional.ofNullable(this.properties.getProperty(key));

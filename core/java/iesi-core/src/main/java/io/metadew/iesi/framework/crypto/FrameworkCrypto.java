@@ -160,6 +160,7 @@ public class FrameworkCrypto {
 	}
 
 	public String redact(String input) {
+		// TODO: encrypted values should be secure enough?
 		// Catch null pointer exceptions
 		if (input == null)
 			input = "";

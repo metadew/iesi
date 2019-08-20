@@ -1,18 +1,27 @@
 package io.metadew.iesi.script.execution.instruction.lookup.script;
 
-import io.metadew.iesi.metadata.configuration.script.ScriptResultOutputConfiguration;
-import io.metadew.iesi.metadata.definition.script.ScriptResultOutput;
+import io.metadew.iesi.metadata.configuration.script.result.ScriptResultOutputConfiguration;
+import io.metadew.iesi.metadata.definition.script.result.ScriptResultOutput;
+import io.metadew.iesi.metadata.definition.script.result.key.ScriptResultOutputKey;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.instruction.lookup.LookupInstruction;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.Optional;
 
 public class ScriptOutputLookup implements LookupInstruction {
     private final ExecutionControl executionControl;
+    private static final Logger LOGGER = LogManager.getLogger();
+    private final ScriptResultOutputConfiguration scriptResultOutputConfiguration;
 
     public ScriptOutputLookup(ExecutionControl executionControl) {
         this.executionControl = executionControl;
+        this.scriptResultOutputConfiguration = new ScriptResultOutputConfiguration();
     }
 
     @Override
@@ -22,13 +31,19 @@ public class ScriptOutputLookup implements LookupInstruction {
 
     @Override
     public String generateOutput(String parameters) {
-        ScriptResultOutputConfiguration scriptResultOutputConfiguration = new ScriptResultOutputConfiguration();
-        // TODO only for root scripts - extend to others
-        Optional<ScriptResultOutput> scriptResultOutput = scriptResultOutputConfiguration.getScriptOutput(executionControl.getRunId(), 0, parameters.trim());
-        if (!scriptResultOutput.isPresent()) {
+        try {
+            Optional<ScriptResultOutput> scriptResultOutput = scriptResultOutputConfiguration.get(new ScriptResultOutputKey(executionControl.getRunId(), 0L, parameters.trim()));
+            if (!scriptResultOutput.isPresent()) {
+                throw new IllegalArgumentException(MessageFormat.format("No script output parameter {0} found for run id {1}", parameters.trim(), executionControl.getRunId()));
+            } else {
+                return scriptResultOutput.get().getValue();
+            }
+        } catch (SQLException e) {
+            StringWriter stackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTrace));
+            LOGGER.warn("exception=" + e.getMessage());
+            LOGGER.info("stacktrace=" + stackTrace.toString());
             throw new IllegalArgumentException(MessageFormat.format("No script output parameter {0} found for run id {1}", parameters.trim(), executionControl.getRunId()));
-        } else {
-            return scriptResultOutput.get().getValue();
         }
     }
 }

@@ -24,6 +24,35 @@ class DateFormatTest {
         DateFormat dateFormatddMMyyyy = new DateFormat();
         assertEquals("01/05/2000", dateFormatddMMyyyy.generateOutput("01052000, \"dd/MM/yyyy\""));
     }
+    @Test
+    void generateOutputDot() {
+        DateFormat dateFormatddMMyyyy = new DateFormat();
+        assertEquals("01.05.2000", dateFormatddMMyyyy.generateOutput("01052000, \"dd.MM.yyyy\""));
+    }
+
+    @Test
+    void generateOutputWithOriginalFormat() {
+        DateFormat dateFormatddMMyyyy = new DateFormat();
+        assertEquals("01052000", dateFormatddMMyyyy.generateOutput("01052000, \"ddMMyyyy\", \"ddMMyyyy\""));
+    }
+
+    @Test
+    void generateOutputWithOriginalFormatHyphen() {
+        DateFormat dateFormatddMMyyyy = new DateFormat();
+        assertEquals("01052000", dateFormatddMMyyyy.generateOutput("01-05-2000, \"dd-MM-yyyy\", \"ddMMyyyy\""));
+    }
+
+    @Test
+    void generateOutputWithOriginalFormatSlash() {
+        DateFormat dateFormatddMMyyyy = new DateFormat();
+        assertEquals("01052000", dateFormatddMMyyyy.generateOutput("01/05/2000, \"dd/MM/yyyy\", \"ddMMyyyy\""));
+    }
+
+    @Test
+    void generateOutputWithOriginalFormatDot() {
+        DateFormat dateFormatddMMyyyy = new DateFormat();
+        assertEquals("01052000", dateFormatddMMyyyy.generateOutput("01.05.2000, \"dd.MM.yyyy\", \"ddMMyyyy\""));
+    }
 
     @Test
     void generateOutputText() {

@@ -1,8 +1,8 @@
 package io.metadew.iesi.metadata.configuration.script;
 
 import io.metadew.iesi.connection.tools.SQLTools;
-import io.metadew.iesi.metadata.configuration.exception.action.ActionDoesNotExistException;
-import io.metadew.iesi.metadata.configuration.exception.script.ScriptVersionAlreadyExistsException;
+import io.metadew.iesi.metadata.configuration.action.exception.ActionDoesNotExistException;
+import io.metadew.iesi.metadata.configuration.script.exception.ScriptVersionAlreadyExistsException;
 import io.metadew.iesi.metadata.definition.script.ScriptVersion;
 import io.metadew.iesi.metadata.execution.MetadataControl;
 import org.apache.logging.log4j.LogManager;

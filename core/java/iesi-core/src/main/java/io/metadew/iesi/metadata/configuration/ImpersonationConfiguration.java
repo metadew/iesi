@@ -103,7 +103,7 @@ public class ImpersonationConfiguration extends MetadataConfiguration{
 
     public void deleteImpersonation(Impersonation impersonation) throws ImpersonationDoesNotExistException {
         //TODO fix logging
-    	//frameworkExecution.getFrameworkLog().log(MessageFormat.format("Deleting impersonation {0}.", impersonation.getName()), Level.TRACE);
+    	//frameworkExecution.getFrameworkLog().log(MessageFormat.format("Deleting impersonation {0}.", impersonation.getScriptName()), Level.TRACE);
         if (!exists(impersonation)) {
             throw new ImpersonationDoesNotExistException(
                     MessageFormat.format("Impersonation {0} is not present in the repository so cannot be updated",
@@ -130,7 +130,7 @@ public class ImpersonationConfiguration extends MetadataConfiguration{
 
     public void insertImpersonation(Impersonation impersonation) throws ImpersonationAlreadyExistsException {
     	//TODO fix logging
-    	//frameworkExecution.getFrameworkLog().log(MessageFormat.format("Inserting impersonation {0}.", impersonation.getName()), Level.TRACE);
+    	//frameworkExecution.getFrameworkLog().log(MessageFormat.format("Inserting impersonation {0}.", impersonation.getScriptName()), Level.TRACE);
         if (exists(impersonation)) {
             throw new ImpersonationAlreadyExistsException(MessageFormat.format("Impersonation {0} already exists", impersonation.getName()));
         }
@@ -140,19 +140,19 @@ public class ImpersonationConfiguration extends MetadataConfiguration{
 
     public void updateImpersonation(Impersonation impersonation) throws ImpersonationDoesNotExistException {
         //TODO fix logging
-    	//frameworkExecution.getFrameworkLog().log(MessageFormat.format("Updating impersonation {0}.", impersonation.getName()), Level.TRACE);
+    	//frameworkExecution.getFrameworkLog().log(MessageFormat.format("Updating impersonation {0}.", impersonation.getScriptName()), Level.TRACE);
         try {
             deleteImpersonation(impersonation);
             insertImpersonation(impersonation);
         } catch (ImpersonationDoesNotExistException e) {
             //TODO fix logging
-        	//frameworkExecution.getFrameworkLog().log(MessageFormat.format("Impersonation {0} is not present in the repository so cannot be updated", impersonation.getName()),Level.TRACE);
+        	//frameworkExecution.getFrameworkLog().log(MessageFormat.format("Impersonation {0} is not present in the repository so cannot be updated", impersonation.getScriptName()),Level.TRACE);
             throw new ImpersonationDoesNotExistException(MessageFormat.format(
                     "Impersonation {0} is not present in the repository so cannot be updated", impersonation.getName()));
 
         } catch (ImpersonationAlreadyExistsException e) {
             //TODO fix logging
-        	//frameworkExecution.getFrameworkLog().log(MessageFormat.format("Environment {0} is not deleted correctly during update. {1}", impersonation.getName(), e.toString()),Level.WARN);
+        	//frameworkExecution.getFrameworkLog().log(MessageFormat.format("Environment {0} is not deleted correctly during update. {1}", impersonation.getScriptName(), e.toString()),Level.WARN);
         }
     }
 

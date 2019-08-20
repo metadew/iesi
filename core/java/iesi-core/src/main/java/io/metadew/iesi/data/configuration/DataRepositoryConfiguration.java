@@ -49,11 +49,11 @@
 //		this.setRepositoryInstancePrefix("");
 //		this.setSchema("");
 //		for (RepositoryInstanceParameter repositoryInstanceParameter : this.getRepositoryInstance().getParameters()) {
-//			if (repositoryInstanceParameter.getName().equalsIgnoreCase("connection")) {
+//			if (repositoryInstanceParameter.getScriptName().equalsIgnoreCase("connection")) {
 //				this.setRepositoryInstanceConnectionName(repositoryInstanceParameter.getValue());
-//			} else if (repositoryInstanceParameter.getName().equalsIgnoreCase("prefix")) {
+//			} else if (repositoryInstanceParameter.getScriptName().equalsIgnoreCase("prefix")) {
 //				this.setRepositoryInstancePrefix(repositoryInstanceParameter.getValue());
-//			} else if (repositoryInstanceParameter.getName().equalsIgnoreCase("schema")) {
+//			} else if (repositoryInstanceParameter.getScriptName().equalsIgnoreCase("schema")) {
 //				this.setSchema(repositoryInstanceParameter.getValue());
 //			}
 //		}

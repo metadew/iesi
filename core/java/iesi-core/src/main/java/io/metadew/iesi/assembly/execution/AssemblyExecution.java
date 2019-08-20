@@ -5,9 +5,9 @@ import io.metadew.iesi.assembly.AssemblyContext;
 import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.connection.tools.FolderTools;
 import io.metadew.iesi.metadata.definition.*;
-import io.metadew.iesi.metadata.definition.action.ActionType;
+import io.metadew.iesi.metadata.definition.action.type.ActionType;
 import io.metadew.iesi.metadata.definition.connection.ConnectionType;
-import io.metadew.iesi.metadata.definition.script.ScriptType;
+import io.metadew.iesi.metadata.definition.script.type.ScriptType;
 import io.metadew.iesi.metadata.operation.DataObjectOperation;
 
 import java.io.BufferedReader;

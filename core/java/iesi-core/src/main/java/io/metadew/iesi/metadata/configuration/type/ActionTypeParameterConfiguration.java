@@ -1,7 +1,7 @@
 package io.metadew.iesi.metadata.configuration.type;
 
-import io.metadew.iesi.metadata.definition.action.ActionType;
-import io.metadew.iesi.metadata.definition.action.ActionTypeParameter;
+import io.metadew.iesi.metadata.definition.action.type.ActionType;
+import io.metadew.iesi.metadata.definition.action.type.ActionTypeParameter;
 
 public class ActionTypeParameterConfiguration {
 

@@ -88,7 +88,7 @@ public final class CompressionTools {
                     outputFile.mkdirs();
                 }
             } else {
-                // File outputFile = new File(destFile + File.separator + tarEntry.getName());
+                // File outputFile = new File(destFile + File.separator + tarEntry.getScriptName());
                 // System.out.println("outputFile File ---- " + outputFile.getAbsolutePath());
                 outputFile.getParentFile().mkdirs();
                 // outputFile.createNewFile();

@@ -59,7 +59,7 @@ public class FrameworkGenerationRuleTypeConfiguration {
 					if (dataObject.getType().equalsIgnoreCase("generationruletype")) {
 						GenerationRuleType generationRuleType = objectMapper.convertValue(dataObject.getData(), GenerationRuleType.class);
 						if (this.getGenerationRuleTypeMap().containsKey(generationRuleType.getName().toLowerCase())) {
-							//System.out.println("item already present - skipping " + generationRuleType.getName());
+							//System.out.println("item already present - skipping " + generationRuleType.getScriptName());
 							// TODO provide startup alert
 						} else {
 							this.getGenerationRuleTypeMap().put(generationRuleType.getName().toLowerCase(), generationRuleType);

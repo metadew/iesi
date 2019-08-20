@@ -12,12 +12,14 @@ import java.util.regex.Pattern;
  * @author robbe.berrevoets
  */
 public class DateFormat implements DataInstruction {
-    private final String ORIGINAL_DATE_REPRESENTATION_KEY = "OriginalDateRepresentation";
+    private final String FIRST_PARAMETER = "FirstParameter";
+    private final String SECOND_PARAMETER = "SecondParameter";
+    private final String THIRD_PARAMETER = "ThirdParameter";
 
-    private final String DESIRED_DATE_REPRESENTATION_KEY = "DesiredDateRepresentation";
+    private final Pattern INPUT_PARAMETER_PATTERN = Pattern.compile("\\s*\"?(?<"+FIRST_PARAMETER+">[\\d-\\w\\./]+)\"?\\s*,\\s*\"?(?<"+SECOND_PARAMETER+">[^\",]+)\"?\\s*(,\\s*\"?(?<"+THIRD_PARAMETER+">[^\"]+)\"?)?");
 
-    private final Pattern INPUT_PARAMETER_PATTERN = Pattern.compile("\\s*\"?(?<" + ORIGINAL_DATE_REPRESENTATION_KEY
-            + ">\\d{8})\"?\\s*,\\s*\"?(?<" + DESIRED_DATE_REPRESENTATION_KEY + ">[^\"]+)\"?\\s*");
+//            "\\s*\"?(?<" + FIRST_PARAMETER
+//            + ">\\d{8})\"?\\s*,\\s*\"?(?<" + SECOND_PARAMETER + ">[^\"]+)\"?\\s*");
 
     private final DateTimeFormatter ORIGINAL_DATE_FORMAT = DateTimeFormatter.ofPattern("ddMMyyyy");
 
@@ -31,9 +33,20 @@ public class DateFormat implements DataInstruction {
         if (!inputParameterMatcher.find()) {
             throw new IllegalArgumentException(MessageFormat.format("Illegal arguments provided to " + this.getKeyword() + ": {0}", parameters));
         } else {
-            LocalDate date = LocalDate.parse(inputParameterMatcher.group(ORIGINAL_DATE_REPRESENTATION_KEY), ORIGINAL_DATE_FORMAT);
-            return date.format(DateTimeFormatter.ofPattern(inputParameterMatcher.group(DESIRED_DATE_REPRESENTATION_KEY)));
+            if (inputParameterMatcher.group(THIRD_PARAMETER) != null) {
+                return formatDate(inputParameterMatcher.group(FIRST_PARAMETER), inputParameterMatcher.group(SECOND_PARAMETER), inputParameterMatcher.group(THIRD_PARAMETER));
+            } else {
+                return formatDate(inputParameterMatcher.group(FIRST_PARAMETER), inputParameterMatcher.group(SECOND_PARAMETER));
+            }
         }
+    }
+
+    private String formatDate(String originalDate, String targetedFormat) {
+        return LocalDate.parse(originalDate, ORIGINAL_DATE_FORMAT).format(DateTimeFormatter.ofPattern(targetedFormat));
+    }
+
+    private String formatDate(String originalDate, String originalFormat, String targetedFormat) {
+        return LocalDate.parse(originalDate, DateTimeFormatter.ofPattern(originalFormat)).format(DateTimeFormatter.ofPattern(targetedFormat));
     }
 
     @Override

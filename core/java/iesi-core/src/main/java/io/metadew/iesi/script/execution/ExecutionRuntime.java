@@ -12,11 +12,12 @@ import io.metadew.iesi.framework.execution.FrameworkControl;
 import io.metadew.iesi.framework.execution.IESIMessage;
 import io.metadew.iesi.metadata.configuration.ConnectionParameterConfiguration;
 import io.metadew.iesi.metadata.configuration.EnvironmentParameterConfiguration;
-import io.metadew.iesi.metadata.configuration.script.ScriptResultOutputConfiguration;
+import io.metadew.iesi.metadata.configuration.script.result.ScriptResultOutputConfiguration;
 import io.metadew.iesi.metadata.definition.ComponentAttribute;
 import io.metadew.iesi.metadata.definition.Iteration;
 import io.metadew.iesi.metadata.definition.RuntimeVariable;
-import io.metadew.iesi.metadata.definition.script.ScriptResultOutput;
+import io.metadew.iesi.metadata.definition.script.result.ScriptResultOutput;
+import io.metadew.iesi.metadata.definition.script.result.key.ScriptResultOutputKey;
 import io.metadew.iesi.runtime.definition.LookupResult;
 import io.metadew.iesi.script.configuration.IterationVariableConfiguration;
 import io.metadew.iesi.script.configuration.RuntimeVariableConfiguration;
@@ -29,6 +30,8 @@ import io.metadew.iesi.script.execution.instruction.variable.VariableInstruction
 import io.metadew.iesi.script.execution.instruction.variable.VariableInstructionTools;
 import io.metadew.iesi.script.operation.*;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -44,6 +47,7 @@ import java.util.stream.Collectors;
 
 public class ExecutionRuntime {
 
+    private final ScriptResultOutputConfiguration scriptResultOutputConfiguration;
     private ExecutionControl executionControl;
     private RuntimeVariableConfiguration runtimeVariableConfiguration;
     private IterationVariableConfiguration iterationVariableConfiguration;
@@ -68,10 +72,14 @@ public class ExecutionRuntime {
     private final Pattern CONCEPT_LOOKUP_PATTERN = Pattern
             .compile("\\s*\\{\\{(?<" + INSTRUCTION_TYPE_KEY + ">[\\*=\\$!])(?<" + INSTRUCTION_KEYWORD_KEY + ">[\\w\\.]+)(?<" + INSTRUCTION_ARGUMENTS_KEY + ">\\(.*\\))?\\}\\}\\s*");
 
+    private static final Logger LOGGER = LogManager.getLogger();
+
     public ExecutionRuntime() {
+        this.scriptResultOutputConfiguration = new ScriptResultOutputConfiguration();
     }
 
     public ExecutionRuntime(ExecutionControl executionControl, String runId) {
+        this.scriptResultOutputConfiguration = new ScriptResultOutputConfiguration();
         this.setExecutionControl(executionControl);
         this.init(runId);
     }
@@ -694,7 +702,7 @@ public class ExecutionRuntime {
                 } else if (lookupContext.equalsIgnoreCase("coalesce") || lookupContext.equalsIgnoreCase("ifnull") || lookupContext.equalsIgnoreCase("nvl")) {
                     instructionOutput = this.lookupCoalesceResult(executionControl, lookupScope);
                 } else if (lookupContext.equalsIgnoreCase("script.output") || lookupContext.equalsIgnoreCase("s.out")) {
-                    instructionOutput = this.lookupScriptResultInstruction(executionControl, lookupScope);
+                    instructionOutput = this.lookupScriptResultInstruction(executionControl, lookupScope).orElse(input);
                 }
                 // Variable lookup
             } else if (instructionType.equalsIgnoreCase("$")) {
@@ -763,12 +771,18 @@ public class ExecutionRuntime {
     }
 
 
-    private String lookupScriptResultInstruction(ExecutionControl executionControl, String input) {
-        ScriptResultOutputConfiguration scriptResultOutputConfiguration = new ScriptResultOutputConfiguration();
+    private Optional<String> lookupScriptResultInstruction(ExecutionControl executionControl, String input) {
         // TODO only for root scripts - extend to others
-        return scriptResultOutputConfiguration.getScriptOutput(executionControl.getRunId(), 0, input)
-                .map(ScriptResultOutput::getValue)
-                .orElse(input);
+        try {
+            return scriptResultOutputConfiguration.get(new ScriptResultOutputKey(executionControl.getRunId(), 0L, input))
+                    .map(ScriptResultOutput::getValue);
+        } catch (SQLException e) {
+            StringWriter stackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTrace));
+            LOGGER.warn("exception=" + e.getMessage());
+            LOGGER.info("stacktrace=" + stackTrace.toString());
+            return Optional.empty();
+        }
     }
 
 	private String lookupDatasetInstruction(ExecutionControl executionControl, String input) {

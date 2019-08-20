@@ -210,7 +210,7 @@ public final class SQLTools {
     }
 
     public static LocalDateTime getLocalDatetimeFromSql(String localDateTime) {
-        return LocalDateTime.parse(localDateTime, new DateTimeFormatterBuilder()
+        return localDateTime == null ? null : LocalDateTime.parse(localDateTime, new DateTimeFormatterBuilder()
                 .appendPattern("yyyy-MM-dd[ ]['T']HH:mm:ss")
                 .appendFraction(ChronoField.MICRO_OF_SECOND, 0, 9, true)
                 .toFormatter());

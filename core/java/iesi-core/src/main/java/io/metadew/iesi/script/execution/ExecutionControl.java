@@ -1,7 +1,6 @@
 package io.metadew.iesi.script.execution;
 
 import io.metadew.iesi.common.text.TextTools;
-import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.configuration.FrameworkSettingConfiguration;
 import io.metadew.iesi.framework.configuration.FrameworkStatus;
 import io.metadew.iesi.framework.crypto.FrameworkCrypto;
@@ -9,20 +8,43 @@ import io.metadew.iesi.framework.execution.FrameworkControl;
 import io.metadew.iesi.framework.execution.FrameworkRuntime;
 import io.metadew.iesi.framework.execution.IESIMessage;
 import io.metadew.iesi.metadata.backup.BackupExecution;
+import io.metadew.iesi.metadata.configuration.action.result.ActionResultConfiguration;
+import io.metadew.iesi.metadata.configuration.action.result.ActionResultOutputConfiguration;
+import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
+import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
+import io.metadew.iesi.metadata.configuration.script.result.exception.ScriptResultDoesNotExistException;
+import io.metadew.iesi.metadata.configuration.script.result.ScriptResultConfiguration;
+import io.metadew.iesi.metadata.configuration.script.result.ScriptResultOutputConfiguration;
+import io.metadew.iesi.metadata.definition.action.result.ActionResult;
+import io.metadew.iesi.metadata.definition.action.result.ActionResultOutput;
+import io.metadew.iesi.metadata.definition.action.result.key.ActionResultKey;
+import io.metadew.iesi.metadata.definition.action.result.key.ActionResultOutputKey;
 import io.metadew.iesi.metadata.definition.script.ScriptLog;
+import io.metadew.iesi.metadata.definition.script.result.ScriptResult;
+import io.metadew.iesi.metadata.definition.script.result.ScriptResultOutput;
+import io.metadew.iesi.metadata.definition.script.result.key.ScriptResultKey;
+import io.metadew.iesi.metadata.definition.script.result.key.ScriptResultOutputKey;
 import io.metadew.iesi.metadata.execution.MetadataControl;
 import io.metadew.iesi.metadata.restore.RestoreExecution;
 import io.metadew.iesi.metadata.service.script.ScriptDesignTraceService;
 import org.apache.logging.log4j.*;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.sql.SQLException;
+import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ExecutionControl {
 
+    private final ScriptResultConfiguration scriptResultConfiguration;
+    private final ActionResultConfiguration actionResultConfiguration;
+    private final ActionResultOutputConfiguration actionResultOutputConfiguration;
+    private final ScriptResultOutputConfiguration scriptResultOutputConfiguration;
     private ExecutionRuntime executionRuntime;
     private ExecutionLog executionLog;
     private ExecutionTrace executionTrace;
@@ -40,6 +62,10 @@ public class ExecutionControl {
     // Constructors
     public ExecutionControl() throws ClassNotFoundException, NoSuchMethodException,
             InvocationTargetException, InstantiationException, IllegalAccessException {
+        this.scriptResultConfiguration = new ScriptResultConfiguration();
+        this.actionResultConfiguration = new ActionResultConfiguration();
+        this.actionResultOutputConfiguration = new ActionResultOutputConfiguration();
+        this.scriptResultOutputConfiguration = new ScriptResultOutputConfiguration();
         this.scriptDesignTraceService = new ScriptDesignTraceService();
         this.executionLog = new ExecutionLog();
         this.executionTrace = new ExecutionTrace();
@@ -57,7 +83,7 @@ public class ExecutionControl {
             Class classRef = Class.forName(FrameworkControl.getInstance().getProperty(FrameworkSettingConfiguration.getInstance().getSettingPath("script.execution.runtime").get()));
             Class[] initParams = {ExecutionControl.class, String.class};
             Constructor constructor = classRef.getConstructor(initParams);
-           this.executionRuntime = (ExecutionRuntime) constructor.newInstance(this, runId);
+            this.executionRuntime = (ExecutionRuntime) constructor.newInstance(this, runId);
         } else {
             this.executionRuntime = new ExecutionRuntime(this, runId);
         }
@@ -67,7 +93,7 @@ public class ExecutionControl {
         this.envName = environmentName;
 
         // Set environment variables
-        this.getExecutionRuntime().setRuntimeVariablesFromList(actionExecution, MetadataControl.getInstance()
+        executionRuntime.setRuntimeVariablesFromList(actionExecution, MetadataControl.getInstance()
                 .getConnectivityMetadataRepository()
                 .executeQuery("select env_par_nm, env_par_val from "
                         + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("EnvironmentParameters")
@@ -80,72 +106,80 @@ public class ExecutionControl {
 
     // Log start
     public void logStart(ScriptExecution scriptExecution) {
-        Long parentProcessId = scriptExecution.getParentScriptExecution().map(ScriptExecution::getProcessId).orElse(0L);
+        try {
+            Long parentProcessId = scriptExecution.getParentScriptExecution().map(ScriptExecution::getProcessId).orElse(0L);
+            ScriptResult scriptResult = new ScriptResult(new ScriptResultKey(runId, scriptExecution.getProcessId()),
+                    parentProcessId,
+                    scriptExecution.getScript().getId(),
+                    scriptExecution.getScript().getName(),
+                    scriptExecution.getScript().getVersion().getNumber(),
+                    envName,
+                    "ACTIVE",
+                    LocalDateTime.now(),
+                    null
+            );
+            scriptResultConfiguration.insert(scriptResult);
 
-        // TODO:
 
-        // Insert into result area
-        String query = "INSERT INTO "
-                + MetadataControl.getInstance().getResultMetadataRepository().getTableNameByLabel("ScriptResults")
-                + " (RUN_ID, PRC_ID, PARENT_PRC_ID, SCRIPT_ID, SCRIPT_NM, SCRIPT_VRS_NB, ENV_NM, ST_NM, STRT_TMS, END_TMS) VALUES ("
-                + SQLTools.GetStringForSQL(this.runId) + ","
-                + SQLTools.GetStringForSQL(scriptExecution.getProcessId()) + ","
-                + SQLTools.GetStringForSQL(parentProcessId) + ","
-                + SQLTools.GetStringForSQL(scriptExecution.getScript().getId()) + ","
-                + SQLTools.GetStringForSQL(scriptExecution.getScript().getName()) + ","
-                + SQLTools.GetStringForSQL(scriptExecution.getScript().getVersion().getNumber()) + ","
-                + SQLTools.GetStringForSQL(this.envName) + ","
-                + SQLTools.GetStringForSQL("ACTIVE") + ","
-                + SQLTools.GetStringForSQL(LocalDateTime.now()) + ","
-                + "null);";
+            this.scriptLog = new ScriptLog(runId, scriptExecution.getProcessId(), parentProcessId, scriptExecution.getScript().getId(),
+                    scriptExecution.getScript().getVersion().getNumber(), envName, "ACTIVE", LocalDateTime.now(), null);
+            this.executionLog.setLog(scriptLog);
 
-        MetadataControl.getInstance().getResultMetadataRepository().executeUpdate(query);
-
-        this.scriptLog = new ScriptLog(runId, scriptExecution.getProcessId(), parentProcessId, scriptExecution.getScript().getId(),
-                scriptExecution.getScript().getVersion().getNumber(), envName, "ACTIVE", LocalDateTime.now(), null);
-        this.executionLog.setLog(scriptLog);
-
-        // Trace the design of the script
-        scriptDesignTraceService.trace(scriptExecution);
-        // ScriptTraceConfiguration scriptTraceConfiguration = new ScriptTraceConfiguration(frameworkExecution.getFrameworkInstance());
-        // MetadataControl.getInstance().getResultMetadataRepository().executeBatch(scriptTraceConfiguration.getInsertStatement(scriptExecution));
+            // Trace the design of the script
+            scriptDesignTraceService.trace(scriptExecution);
+        } catch (MetadataAlreadyExistsException | SQLException e) {
+            StringWriter stackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTrace));
+            LOGGER.warn("exception=" + e.getMessage());
+            LOGGER.info("stacktrace=" + stackTrace.toString());
+        }
     }
 
     public void logStart(ActionExecution actionExecution) {
-        String query = "INSERT INTO "
-                + MetadataControl.getInstance().getResultMetadataRepository().getTableNameByLabel("ActionResults")
-                + " (RUN_ID, PRC_ID, SCRIPT_PRC_ID, ACTION_ID, ACTION_NM, ENV_NM, ST_NM, STRT_TMS, END_TMS) VALUES ("
-                + SQLTools.GetStringForSQL(this.getRunId()) + ","
-                + SQLTools.GetStringForSQL(actionExecution.getProcessId()) + ","
-                + SQLTools.GetStringForSQL(actionExecution.getScriptExecution().getProcessId()) + ","
-                + SQLTools.GetStringForSQL(actionExecution.getAction().getId()) + ","
-                + SQLTools.GetStringForSQL(actionExecution.getAction().getName()) + ","
-                + SQLTools.GetStringForSQL(this.getEnvName()) + ","
-                + SQLTools.GetStringForSQL("ACTIVE") + ","
-                + SQLTools.GetStringForSQL(LocalDateTime.now())
-                + ",null);";
-
-        MetadataControl.getInstance().getResultMetadataRepository().executeUpdate(query);
+        try {
+            ActionResult actionResult = new ActionResult(
+                    runId,
+                    actionExecution.getProcessId(),
+                    actionExecution.getAction().getId(),
+                    actionExecution.getScriptExecution().getProcessId(),
+                    actionExecution.getAction().getName(),
+                    envName,
+                    "ACTIVE",
+                    LocalDateTime.now(),
+                    null
+            );
+            actionResultConfiguration.insert(actionResult);
+        } catch (MetadataAlreadyExistsException | SQLException e) {
+            StringWriter stackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTrace));
+            LOGGER.warn("exception=" + e.getMessage());
+            LOGGER.info("stacktrace=" + stackTrace.toString());
+        }
     }
 
     public void logSkip(ActionExecution actionExecution) {
-        String query = "INSERT INTO "
-                + MetadataControl.getInstance().getResultMetadataRepository().getTableNameByLabel("ActionResults")
-                + " (RUN_ID, PRC_ID, ACTION_ID, ACTION_NM, ENV_NM, ST_NM, STRT_TMS, END_TMS) VALUES ("
-                + SQLTools.GetStringForSQL(this.getRunId()) + ","
-                + SQLTools.GetStringForSQL(actionExecution.getProcessId()) + ","
-                + SQLTools.GetStringForSQL(actionExecution.getAction().getId()) + ","
-                + SQLTools.GetStringForSQL(actionExecution.getAction().getName()) + ","
-                + SQLTools.GetStringForSQL(this.getEnvName()) + ","
-                + SQLTools.GetStringForSQL("SKIPPED") + ","
-                + MetadataControl.getInstance().getResultMetadataRepository().getRepository().getDatabases().values().stream().findFirst().get().getSystemTimestampExpression() + ","
-                + MetadataControl.getInstance().getResultMetadataRepository().getRepository().getDatabases().values().stream().findFirst().get().getSystemTimestampExpression() + ");";
+        try {
+            ActionResult actionResult = new ActionResult(
+                    runId,
+                    actionExecution.getProcessId(),
+                    actionExecution.getAction().getId(),
+                    actionExecution.getScriptExecution().getProcessId(),
+                    actionExecution.getAction().getName(),
+                    envName,
+                    "SKIPPED",
+                    null,
+                    null
+            );
+            actionResultConfiguration.insert(actionResult);
 
-        MetadataControl.getInstance().getResultMetadataRepository().executeUpdate(query);
+            this.logMessage(actionExecution, "action.status=" + FrameworkStatus.SKIPPED.value(), Level.INFO);
+        } catch (MetadataAlreadyExistsException | SQLException e) {
+            StringWriter stackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTrace));
+            LOGGER.warn("exception=" + e.getMessage());
+            LOGGER.info("stacktrace=" + stackTrace.toString());
+        }
 
-        String status = FrameworkStatus.SKIPPED.value();
-
-        this.logMessage(actionExecution, "action.status=" + status, Level.INFO);
     }
 
     public void logStart(BackupExecution backupExecution) {
@@ -163,36 +197,51 @@ public class ExecutionControl {
     }
 
     public String logEnd(ScriptExecution scriptExecution) {
-        String status = getStatus(scriptExecution);
-        String query = "update "
-                + MetadataControl.getInstance().getResultMetadataRepository().getTableNameByLabel("ScriptResults")
-                + " set ST_NM = '" + status + "', END_TMS = "
-                + SQLTools.GetStringForSQL(LocalDateTime.now())
-                + " where RUN_ID = '" + this.getRunId() + "' and PRC_ID = " + scriptExecution.getProcessId() + ";";
+        try {
+            ScriptResult scriptResult = scriptResultConfiguration.get(new ScriptResultKey(runId, scriptExecution.getProcessId()))
+                    .orElseThrow(() -> new ScriptResultDoesNotExistException(MessageFormat.format("ScriptResult {0} does not exist, cannot log ending of execution", new ScriptResultKey(runId, scriptExecution.getProcessId()).toString())));
 
-        MetadataControl.getInstance().getResultMetadataRepository().executeUpdate(query);
+            String status = getStatus(scriptExecution);
+            scriptResult.setStatus(status);
+            scriptResult.setEndTimestamp(LocalDateTime.now());
+            scriptResultConfiguration.update(scriptResult);
 
-        // Clear processing variables
-        // Only is the script is a root script, this will be cleaned
-        // In other scripts, the processing variables are still valid
+            // Clear processing variables
+            // Only is the script is a root script, this will be cleaned
+            // In other scripts, the processing variables are still valid
 
-        this.getScriptLog().setEnd(LocalDateTime.now());
-        this.getScriptLog().setStatus(status);
-        this.getExecutionLog().setLog(this.getScriptLog());
+            scriptLog.setEnd(LocalDateTime.now());
+            scriptLog.setStatus(status);
+            executionLog.setLog(this.getScriptLog());
 
-        // return
-        return status;
+            // return
+            return status;
+
+        } catch (SQLException | MetadataDoesNotExistException e) {
+            StringWriter stackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTrace));
+            LOGGER.warn("exception=" + e.getMessage());
+            LOGGER.info("stacktrace=" + stackTrace.toString());
+            return FrameworkStatus.UNKOWN.value();
+        }
     }
 
     public void logEnd(ActionExecution actionExecution, ScriptExecution scriptExecution) {
-        String status = this.getStatus(actionExecution, scriptExecution);
-        String query = "update "
-                + MetadataControl.getInstance().getResultMetadataRepository().getTableNameByLabel("ActionResults")
-                + " set ST_NM = '" + status + "', END_TMS = "
-                + MetadataControl.getInstance().getResultMetadataRepository().getRepository().getDatabases().values().stream().findFirst().get().getSystemTimestampExpression()
-                + " where RUN_ID = '" + this.getRunId() + "' and PRC_ID = " + actionExecution.getProcessId() + ";";
+        try {
+            ActionResult actionResult = actionResultConfiguration.get(new ActionResultKey(runId, scriptExecution.getProcessId(), actionExecution.getAction().getId()))
+                    .orElseThrow(() -> new ScriptResultDoesNotExistException(MessageFormat.format("ActionResult {0} does not exist, cannot log ending of execution", new ScriptResultKey(runId, scriptExecution.getProcessId()).toString())));
 
-        MetadataControl.getInstance().getResultMetadataRepository().executeUpdate(query);
+            String status = getStatus(actionExecution, scriptExecution);
+            actionResult.setStatus(status);
+            actionResult.setEndTimestamp(LocalDateTime.now());
+            actionResultConfiguration.update(actionResult);
+
+        } catch (SQLException | MetadataDoesNotExistException e) {
+            StringWriter stackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTrace));
+            LOGGER.warn("exception=" + e.getMessage());
+            LOGGER.info("stacktrace=" + stackTrace.toString());
+        }
     }
 
     public void logEnd(BackupExecution backupExecution) {
@@ -270,17 +319,15 @@ public class ExecutionControl {
         // Redact any encrypted values
         outputValue = FrameworkCrypto.getInstance().redact(outputValue);
         outputValue = TextTools.shortenTextForDatabase(outputValue, 2000);
-
-        String query = "INSERT INTO "
-                + MetadataControl.getInstance().getResultMetadataRepository().getTableNameByLabel("ScriptResultOutputs")
-                + " (RUN_ID, PRC_ID, SCRIPT_ID, OUT_NM, OUT_VAL) VALUES ("
-                + SQLTools.GetStringForSQL(runId) + ","
-                + SQLTools.GetStringForSQL(scriptExecution.getProcessId()) + ","
-                + SQLTools.GetStringForSQL(scriptExecution.getScript().getId()) + ","
-                + SQLTools.GetStringForSQL(outputName) + ","
-                + SQLTools.GetStringForSQL(outputValue) + ");";
-
-        MetadataControl.getInstance().getResultMetadataRepository().executeUpdate(query);
+        try {
+            ScriptResultOutput scriptResultOutput = new ScriptResultOutput(new ScriptResultOutputKey(runId, scriptExecution.getProcessId(), outputName), scriptExecution.getScript().getId(), outputValue);
+            scriptResultOutputConfiguration.insert(scriptResultOutput);
+        } catch (MetadataAlreadyExistsException | SQLException e) {
+            StringWriter stackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTrace));
+            LOGGER.warn("exception=" + e.getMessage());
+            LOGGER.info("stacktrace=" + stackTrace.toString());
+        }
     }
 
     public void logExecutionOutput(ActionExecution actionExecution, String outputName, int outputValue) {
@@ -292,20 +339,23 @@ public class ExecutionControl {
     }
 
     public void logExecutionOutput(ActionExecution actionExecution, String outputName, String outputValue) {
-        // Redact any encrypted values
-        outputValue = FrameworkCrypto.getInstance().redact(outputValue);
-        outputValue = TextTools.shortenTextForDatabase(outputValue, 2000);
+        try {
+            // Redact any encrypted values
+            outputValue = FrameworkCrypto.getInstance().redact(outputValue);
+            // TODO: why shorten?
+            outputValue = TextTools.shortenTextForDatabase(outputValue, 2000);
 
-        String query = "INSERT INTO "
-                + MetadataControl.getInstance().getResultMetadataRepository().getTableNameByLabel("ActionResultOutputs")
-                + " (RUN_ID, PRC_ID, ACTION_ID, OUT_NM, OUT_VAL) VALUES ("
-                + SQLTools.GetStringForSQL(this.getRunId()) + ","
-                + SQLTools.GetStringForSQL(actionExecution.getProcessId()) + ","
-                + SQLTools.GetStringForSQL(actionExecution.getAction().getId()) + ","
-                + SQLTools.GetStringForSQL(outputName) + ","
-                + SQLTools.GetStringForSQL(outputValue) + ");";
+            ActionResultOutput actionResultOutput = new ActionResultOutput(
+                    new ActionResultOutputKey(runId, actionExecution.getProcessId(), actionExecution.getAction().getId(), outputName),
+                    outputValue);
+            actionResultOutputConfiguration.insert(actionResultOutput);
 
-        MetadataControl.getInstance().getResultMetadataRepository().executeUpdate(query);
+        } catch (SQLException | MetadataAlreadyExistsException e) {
+            StringWriter stackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTrace));
+            LOGGER.warn("exception=" + e.getMessage());
+            LOGGER.info("stacktrace=" + stackTrace.toString());
+        }
     }
 
     // Log message

@@ -105,7 +105,7 @@ public class DataframeConfiguration {
              * MetadataControl.getInstance().getDesignMetadataRepository().getMetadataTableConfiguration().getCFG_DATAFRAME();
              * sql += " WHERE DATAFRAME_NM = " +
              * this.getFrameworkInstance().getSqlTools().GetStringForSQL(this.getDataframe().
-             * getName()); sql += ";";
+             * getScriptName()); sql += ";";
              */
 
             sql += "\n";

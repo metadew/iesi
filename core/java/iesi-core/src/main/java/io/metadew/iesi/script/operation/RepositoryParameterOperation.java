@@ -52,7 +52,7 @@ public class RepositoryParameterOperation {
         this.setValue(inputValue);
 
         // this.getExecutionControl().logMessage(this.getActionExecution(),"PARAM " +
-        // this.getName() + ": " + this.getValue(), Level.DEBUG);
+        // this.getScriptName() + ": " + this.getValue(), Level.DEBUG);
 
         // Cross concept lookup
         LookupResult lookupResult = this.getExecutionControl().getExecutionRuntime()

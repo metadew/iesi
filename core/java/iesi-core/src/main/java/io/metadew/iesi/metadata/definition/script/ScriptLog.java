@@ -2,7 +2,6 @@ package io.metadew.iesi.metadata.definition.script;
 
 import java.time.LocalDateTime;
 
-//import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class ScriptLog {
 
@@ -15,11 +14,6 @@ public class ScriptLog {
     private String status;
     private LocalDateTime start;
     private LocalDateTime end;
-
-    // Constructors
-    public ScriptLog() {
-
-    }
 
     public ScriptLog(String run, long process, long parent, String identifier, long version, String environment, String status, LocalDateTime start, LocalDateTime end) {
         this.run = run;

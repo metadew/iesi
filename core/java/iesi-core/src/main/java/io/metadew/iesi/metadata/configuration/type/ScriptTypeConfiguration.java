@@ -1,7 +1,7 @@
 package io.metadew.iesi.metadata.configuration.type;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.metadew.iesi.metadata.definition.script.ScriptType;
+import io.metadew.iesi.metadata.definition.script.type.ScriptType;
 import io.metadew.iesi.metadata.operation.DataObjectOperation;
 import io.metadew.iesi.metadata.operation.TypeConfigurationOperation;
 

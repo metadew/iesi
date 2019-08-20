@@ -1,7 +1,7 @@
 package io.metadew.iesi.metadata.configuration.action;
 
 import io.metadew.iesi.connection.tools.SQLTools;
-import io.metadew.iesi.metadata.configuration.exception.action.ActionParameterAlreadyExistsException;
+import io.metadew.iesi.metadata.configuration.action.exception.ActionParameterAlreadyExistsException;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.execution.MetadataControl;
 import org.apache.logging.log4j.LogManager;

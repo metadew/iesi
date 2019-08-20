@@ -108,7 +108,7 @@ public class FeatureConfiguration extends MetadataConfiguration {
 
     public void deleteFeature(Feature feature) throws FeatureDoesNotExistException {
         //TODO fix logging
-    	//frameworkExecution.getFrameworkLog().log(MessageFormat.format("Deleting feature {0}-{1}.", feature.getName(), feature.getVersion().getNumber()), Level.TRACE);
+    	//frameworkExecution.getFrameworkLog().log(MessageFormat.format("Deleting feature {0}-{1}.", feature.getScriptName(), feature.getScriptVersion().getNumber()), Level.TRACE);
         if (!exists(feature)) {
             throw new FeatureDoesNotExistException(
                     MessageFormat.format("Feature {0}-{1} is not present in the repository so cannot be deleted",
@@ -127,7 +127,7 @@ public class FeatureConfiguration extends MetadataConfiguration {
 
     public void insertFeature(Feature feature) throws FeatureAlreadyExistsException {
         //TODO fix logging
-    	//frameworkExecution.getFrameworkLog().log(MessageFormat.format("Inserting feature {0}-{1}.", feature.getName(), feature.getVersion().getNumber()), Level.TRACE);
+    	//frameworkExecution.getFrameworkLog().log(MessageFormat.format("Inserting feature {0}-{1}.", feature.getScriptName(), feature.getScriptVersion().getNumber()), Level.TRACE);
         if (exists(feature)) {
             throw new FeatureAlreadyExistsException(MessageFormat.format(
                     "Feature {0}-{1} already exists", feature.getName(), feature.getVersion().getNumber()));
@@ -138,20 +138,20 @@ public class FeatureConfiguration extends MetadataConfiguration {
 
     public void updateFeature(Feature feature) throws FeatureDoesNotExistException {
         //TODO fix logging
-    	//frameworkExecution.getFrameworkLog().log(MessageFormat.format("Updating feature {0}-{1}.", feature.getName(), feature.getVersion().getNumber()), Level.TRACE);
+    	//frameworkExecution.getFrameworkLog().log(MessageFormat.format("Updating feature {0}-{1}.", feature.getScriptName(), feature.getScriptVersion().getNumber()), Level.TRACE);
         try {
             deleteFeature(feature);
             insertFeature(feature);
         } catch (FeatureDoesNotExistException e) {
             //TODO fix logging
-        	//frameworkExecution.getFrameworkLog().log(MessageFormat.format("Feature {0}-{1} is not present in the repository so cannot be updated",feature.getName(), feature.getVersion().getNumber()),Level.TRACE);
+        	//frameworkExecution.getFrameworkLog().log(MessageFormat.format("Feature {0}-{1} is not present in the repository so cannot be updated",feature.getScriptName(), feature.getScriptVersion().getNumber()),Level.TRACE);
             throw e;
             // throw new ComponentDoesNotExistException(MessageFormat.format(
-            //        "Component {0}-{1} is not present in the repository so cannot be updated", component.getName(),  component.getVersion().getNumber()));
+            //        "Component {0}-{1} is not present in the repository so cannot be updated", component.getScriptName(),  component.getScriptVersion().getNumber()));
 
         } catch (FeatureAlreadyExistsException e) {
         	// TODO fix logging
-        	//frameworkExecution.getFrameworkLog().log(MessageFormat.format("Feature {0}-{1} is not deleted correctly during update. {2}",feature.getName(), feature.getVersion().getNumber(), e.toString()),Level.WARN);
+        	//frameworkExecution.getFrameworkLog().log(MessageFormat.format("Feature {0}-{1} is not deleted correctly during update. {2}",feature.getScriptName(), feature.getScriptVersion().getNumber(), e.toString()),Level.WARN);
         }
     }
 
@@ -416,7 +416,7 @@ public class FeatureConfiguration extends MetadataConfiguration {
                 throw new RuntimeException("feature.error.notfound");
             } else if (crsFeature.size() > 1) {
                 //TODO fix logging
-            	//frameworkExecution.getFrameworkLog().log(MessageFormat.format("Found multiple implementations for feature {0}-{1}. Returning first implementation", feature.getName(), feature.getVersion().getNumber()), Level.DEBUG);
+            	//frameworkExecution.getFrameworkLog().log(MessageFormat.format("Found multiple implementations for feature {0}-{1}. Returning first implementation", feature.getScriptName(), feature.getScriptVersion().getNumber()), Level.DEBUG);
             }
             crsFeature.next();
             String featureId = crsFeature.getString("FEATURE_ID");
@@ -425,7 +425,7 @@ public class FeatureConfiguration extends MetadataConfiguration {
             Optional<FeatureVersion> featureVersion = featureVersionConfiguration.getFeatureVersion(featureId, versionNumber);
             if (!featureVersion.isPresent()) {
                 //TODO fix logging
-            	//frameworkExecution.getFrameworkLog().log(MessageFormat.format("Cannot find version {1} for feature {0}.", feature.getName(), feature.getVersion().getNumber()), Level.WARN);
+            	//frameworkExecution.getFrameworkLog().log(MessageFormat.format("Cannot find version {1} for feature {0}.", feature.getScriptName(), feature.getScriptVersion().getNumber()), Level.WARN);
                 return Optional.empty();
             }
 

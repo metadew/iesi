@@ -105,7 +105,7 @@ public class ActionExecute {
 			// TODO
 //			for (int i = 0; i < this.getScriptExecution().getActions().size(); i++) {
 //				action = this.getScriptExecution().getActions().get(i);
-//				if (action.getName().equalsIgnoreCase(actionName)) {
+//				if (action.getScriptName().equalsIgnoreCase(actionName)) {
 //					result = true;
 //					break;
 //				}

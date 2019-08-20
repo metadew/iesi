@@ -216,7 +216,7 @@ public class ComponentConfiguration extends MetadataConfiguration {
 
     public void deleteComponent(Component component) throws ComponentDoesNotExistException {
         //TODO fix logging
-    	//frameworkExecution.getFrameworkLog().log(MessageFormat.format("Deleting component {0}-{1}.", component.getName(), component.getVersion().getNumber()), Level.TRACE);
+    	//frameworkExecution.getFrameworkLog().log(MessageFormat.format("Deleting component {0}-{1}.", component.getScriptName(), component.getScriptVersion().getNumber()), Level.TRACE);
         if (!exists(component)) {
             throw new ComponentDoesNotExistException(
                     MessageFormat.format("Component {0}-{1} is not present in the repository so cannot be deleted",
@@ -263,7 +263,7 @@ public class ComponentConfiguration extends MetadataConfiguration {
     public void insertComponent(Component component) throws ComponentAlreadyExistsException {
         // TODO handle component ID
         // TODO fix logging
-    	//frameworkExecution.getFrameworkLog().log(MessageFormat.format("Inserting component {0}-{1}.", component.getName(), component.getVersion().getNumber()), Level.TRACE);
+    	//frameworkExecution.getFrameworkLog().log(MessageFormat.format("Inserting component {0}-{1}.", component.getScriptName(), component.getScriptVersion().getNumber()), Level.TRACE);
         if (exists(component)) {
             throw new ComponentAlreadyExistsException(MessageFormat.format(
                     "Component {0}-{1} already exists", component.getName(), component.getVersion().getNumber()));
@@ -328,20 +328,20 @@ public class ComponentConfiguration extends MetadataConfiguration {
 
     public void updateComponent(Component component) throws ComponentDoesNotExistException {
         //TODO fix logggin
-    	//frameworkExecution.getFrameworkLog().log(MessageFormat.format("Updating component {0}-{1}.", component.getName(), component.getVersion().getNumber()), Level.TRACE);
+    	//frameworkExecution.getFrameworkLog().log(MessageFormat.format("Updating component {0}-{1}.", component.getScriptName(), component.getScriptVersion().getNumber()), Level.TRACE);
         try {
             deleteComponent(component);
             insertComponent(component);
         } catch (ComponentDoesNotExistException e) {
         	//TODO fix logging
-            //frameworkExecution.getFrameworkLog().log(MessageFormat.format("Component {0}-{1} is not present in the repository so cannot be updated",component.getName(), component.getVersion().getNumber()),Level.TRACE);
+            //frameworkExecution.getFrameworkLog().log(MessageFormat.format("Component {0}-{1} is not present in the repository so cannot be updated",component.getScriptName(), component.getScriptVersion().getNumber()),Level.TRACE);
             throw e;
             // throw new ComponentDoesNotExistException(MessageFormat.format(
-            //        "Component {0}-{1} is not present in the repository so cannot be updated", component.getName(),  component.getVersion().getNumber()));
+            //        "Component {0}-{1} is not present in the repository so cannot be updated", component.getScriptName(),  component.getScriptVersion().getNumber()));
 
         } catch (ComponentAlreadyExistsException e) {
             //TODO fix logging
-        	//frameworkExecution.getFrameworkLog().log(MessageFormat.format("Component {0}-{1} is not deleted correctly during update. {2}",component.getName(), component.getVersion().getNumber(), e.toString()),Level.WARN);
+        	//frameworkExecution.getFrameworkLog().log(MessageFormat.format("Component {0}-{1} is not deleted correctly during update. {2}",component.getScriptName(), component.getScriptVersion().getNumber(), e.toString()),Level.WARN);
         }
     }
 
@@ -383,7 +383,7 @@ public class ComponentConfiguration extends MetadataConfiguration {
              * MetadataControl.getInstance().getDesignMetadataRepository().getTableConfig().getCFG_COMP(); sql
              * += " WHERE COMP_NM = " +
              * this.getFrameworkInstance().getSqlTools().GetStringForSQL(this.getComponent().
-             * getName()); sql += ";"; sql += "\n";
+             * getScriptName()); sql += ";"; sql += "\n";
              */
         }
 

@@ -1,15 +1,15 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml scriptVersion="1.0" encoding="UTF-8"?>
 <Configuration>
   <Appenders>
-	<Console name="Console" target="SYSTEM_OUT">
+	<Console scriptName="Console" target="SYSTEM_OUT">
 	  <PatternLayout pattern="%d %-5p [%c{1}] - %m%n"/>
 	</Console>
-	<File name="File" fileName="assembly/run/log/iesi-assembly.log" immediateFlush="true" append="false">
+	<File scriptName="File" fileName="assembly/run/log/iesi-assembly.log" immediateFlush="true" append="false">
 	  <PatternLayout pattern="%d %-5p [%c{1}] - %m%n"/>
 	</File>
   </Appenders>
   <Loggers>
-	<Logger name="org.apache.log4j.xml" level="info"/>
+	<Logger scriptName="org.apache.log4j.xml" level="info"/>
 	<Root level="all">
 	  <AppenderRef ref="Console" level="info"/>
 	  <AppenderRef ref="File" level="all"/>

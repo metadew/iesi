@@ -160,7 +160,7 @@ public abstract class ScriptExecution {
 //			if (this.isRootScript()) {
 //				if (!this.getActionSelectOperation().getExecutionStatus(action)) {
 //					// skip execution
-//					System.out.println("Skipping " + action.getName());
+//					System.out.println("Skipping " + action.getScriptName());
 //					execute = false;
 //				} else {
 //					execute = true;

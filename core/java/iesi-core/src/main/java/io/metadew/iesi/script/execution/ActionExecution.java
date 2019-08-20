@@ -1,6 +1,6 @@
 package io.metadew.iesi.script.execution;
 
-import io.metadew.iesi.metadata.configuration.action.ActionPerformanceConfiguration;
+import io.metadew.iesi.metadata.configuration.action.performance.ActionPerformanceConfiguration;
 import io.metadew.iesi.metadata.configuration.type.ActionTypeConfiguration;
 import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.script.configuration.IterationInstance;

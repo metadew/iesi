@@ -74,7 +74,7 @@ public class BackupExecution {
 			Object instance = configurationClassRef.getDeclaredConstructor(instanceParams).newInstance();
 
 			Class objectClassRef = Class.forName(objectClassName);
-			Method getName = objectClassRef.getDeclaredMethod("getName");
+			Method getName = objectClassRef.getDeclaredMethod("getScriptName");
 
 			Method getAllObjects = configurationClassRef.getDeclaredMethod("getAllObjects");
 			List<?> objects = (List<?>) getAllObjects.invoke(instance);

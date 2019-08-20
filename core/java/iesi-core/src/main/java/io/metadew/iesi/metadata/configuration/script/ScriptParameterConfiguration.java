@@ -1,7 +1,7 @@
 package io.metadew.iesi.metadata.configuration.script;
 
 import io.metadew.iesi.connection.tools.SQLTools;
-import io.metadew.iesi.metadata.configuration.exception.script.ScriptParameterAlreadyExistsException;
+import io.metadew.iesi.metadata.configuration.script.exception.ScriptParameterAlreadyExistsException;
 import io.metadew.iesi.metadata.definition.script.ScriptParameter;
 import io.metadew.iesi.metadata.execution.MetadataControl;
 import org.apache.logging.log4j.LogManager;

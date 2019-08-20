@@ -66,7 +66,7 @@ public class FrameworkFolderConfiguration {
 //                FrameworkFolder frameworkFolder = objectMapper.convertValue(dataObject.getData(), FrameworkFolder.class);
 //                String folderPath = solutionHome + File.separator + frameworkFolder.getPath().replace("/", File.separator);
 //                frameworkFolder.setAbsolutePath(FilenameUtils.normalize(folderPath));
-//                folderMap.put(frameworkFolder.getName(), frameworkFolder);
+//                folderMap.put(frameworkFolder.getScriptName(), frameworkFolder);
 //            }
 //        }
 //    }

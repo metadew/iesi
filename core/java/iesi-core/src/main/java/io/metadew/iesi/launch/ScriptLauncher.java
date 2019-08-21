@@ -3,7 +3,9 @@ package io.metadew.iesi.launch;
 import io.metadew.iesi.framework.configuration.FrameworkSettingConfiguration;
 import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
 import io.metadew.iesi.framework.execution.FrameworkControl;
+import io.metadew.iesi.framework.execution.FrameworkExecutionContext;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
+import io.metadew.iesi.metadata.definition.Context;
 import io.metadew.iesi.metadata.definition.Request;
 import io.metadew.iesi.metadata.definition.RequestParameter;
 import io.metadew.iesi.runtime.Executor;
@@ -211,7 +213,8 @@ public class ScriptLauncher {
 		}
 
 		// Create framework instance
-		FrameworkInstance.getInstance().init(new FrameworkInitializationFile(initializationFile));
+		FrameworkInstance.getInstance().init(new FrameworkInitializationFile(initializationFile),
+				new FrameworkExecutionContext(new Context("script", "")));
 
 		// Server mode
 		String serverMode = "off";

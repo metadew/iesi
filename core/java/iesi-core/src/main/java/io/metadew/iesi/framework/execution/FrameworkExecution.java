@@ -1,6 +1,5 @@
 package io.metadew.iesi.framework.execution;
 
-import io.metadew.iesi.framework.definition.FrameworkRunIdentifier;
 import org.apache.logging.log4j.ThreadContext;
 
 public class FrameworkExecution {
@@ -22,20 +21,20 @@ public class FrameworkExecution {
     private FrameworkExecution() {}
 
     public void init() {
-        init(new FrameworkExecutionContext(), new FrameworkExecutionSettings(), new FrameworkRunIdentifier());
+        init(new FrameworkExecutionContext());
     }
 
     public void init(FrameworkExecutionContext frameworkExecutionContext) {
-        init(frameworkExecutionContext, new FrameworkExecutionSettings(), new FrameworkRunIdentifier());
+        init(frameworkExecutionContext, new FrameworkExecutionSettings());
     }
 
-    public void init(FrameworkExecutionContext frameworkExecutionContext, FrameworkExecutionSettings frameworkExecutionSettings, FrameworkRunIdentifier frameworkRunIdentifier) {
-        this.frameworkExecutionContext = frameworkExecutionContext;
+    public void init(FrameworkExecutionContext frameworkExecutionContext, FrameworkExecutionSettings frameworkExecutionSettings) {
+            this.frameworkExecutionContext = frameworkExecutionContext;
         ThreadContext.put("context.name", frameworkExecutionContext.getContext().getName());
         ThreadContext.put("context.scope", frameworkExecutionContext.getContext().getScope());
         this.frameworkExecutionSettings = frameworkExecutionSettings;
         FrameworkControl.getInstance().setSettingsList(frameworkExecutionSettings.getSettingsList());
-        FrameworkRuntime.getInstance().init(frameworkRunIdentifier);
+        FrameworkRuntime.getInstance().init();
         FrameworkLog.getInstance().init();
         this.frameworkResultProvider = new FrameworkResultProvider();
     }

@@ -7,8 +7,10 @@ import io.metadew.iesi.connection.operation.ConnectionOperation;
 import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.execution.FrameworkExecutionContext;
 import io.metadew.iesi.framework.execution.FrameworkRuntime;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
+import io.metadew.iesi.metadata.definition.Context;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.operation.DataObjectOperation;
 import org.apache.commons.cli.*;
@@ -84,7 +86,9 @@ public class ConnectionLauncher {
             } else if (line.hasOption("config")) {
                 configFile = line.getOptionValue("config");
             }
-            FrameworkInstance.getInstance().init(frameworkInitializationFile);
+
+            // TODO: Combine FWK Isntance and FWK Exec
+            FrameworkInstance.getInstance().init(frameworkInitializationFile, new FrameworkExecutionContext(new Context("connection", "")));
 
             // Execute
             writeHeaderMessage();
@@ -92,8 +96,6 @@ public class ConnectionLauncher {
             ObjectMapper objectMapper = new ObjectMapper();
             Connection connection = objectMapper.convertValue(dataObjectOperation.getDataObject(), Connection.class);
             // TODO rework getting the connection
-            FrameworkExecution frameworkExecution = FrameworkExecution.getInstance();
-            frameworkExecution.init();
             ConnectionOperation connectionOperation = new ConnectionOperation();
             Database database = connectionOperation.getDatabase(connection);
 

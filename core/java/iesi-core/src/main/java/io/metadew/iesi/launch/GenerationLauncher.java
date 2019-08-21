@@ -122,19 +122,14 @@ public class GenerationLauncher {
 		System.out.println();
 
 		// Create framework instance
+		// TODO: FWK instance and FWK Exec init should be combined
 		FrameworkInitializationFile frameworkInitializationFile = new FrameworkInitializationFile();
 		frameworkInitializationFile.setName(initializationFile);
 
-		FrameworkInstance frameworkInstance = FrameworkInstance.getInstance();
-		frameworkInstance.init(frameworkInitializationFile);
+		FrameworkInstance.getInstance().init(frameworkInitializationFile,
+				new FrameworkExecutionContext(new Context("generation", generationName)));
 
-		// Create the framework execution
-		Context context = new Context();
-		context.setName("generation");
-		context.setScope(generationName);
-		FrameworkExecution frameworkExecution = FrameworkExecution.getInstance();
-		frameworkExecution.init(new FrameworkExecutionContext(context));
-		
+
 		// Logging
 		LOGGER.info("option.generation=" + generationName);
 		LOGGER.info("option.output=" + outputName);
@@ -151,7 +146,7 @@ public class GenerationLauncher {
 		// Get the Generation
 		GenerationConfiguration generationConfiguration = new GenerationConfiguration();
 		Generation generation = generationConfiguration.getGeneration(generationName);
-		GenerationExecution eoGeneration = new GenerationExecution(frameworkExecution, generation);
+		GenerationExecution eoGeneration = new GenerationExecution(FrameworkExecution.getInstance(), generation);
 		
 		// Get the number of records
 		long numberOfRecords = 0;

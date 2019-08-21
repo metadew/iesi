@@ -1,5 +1,9 @@
 package io.metadew.iesi.launch;
 
+import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
+import io.metadew.iesi.framework.execution.FrameworkExecutionContext;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
+import io.metadew.iesi.metadata.definition.Context;
 import io.metadew.iesi.util.harvest.DatabaseOffloadExecution;
 import org.apache.commons.cli.*;
 
@@ -158,7 +162,11 @@ public class OffloadLauncher {
                     cleanPrevious = true;
                 }
 
-                // Execute
+                // Create the framework instance
+                // TODO: Move FWK init to Launcher
+                FrameworkInstance.getInstance().init(new FrameworkInitializationFile(),
+                        new FrameworkExecutionContext(new Context("offload", "")));
+
                 DatabaseOffloadExecution databaseOffloadExecution = new DatabaseOffloadExecution();
                 databaseOffloadExecution.offloadData(sourceName, sourceEnvironmentName, targetName,
                         targetEnvironmentName, sqlStatement, name, cleanPrevious);

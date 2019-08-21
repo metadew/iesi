@@ -129,7 +129,7 @@ public class ScriptResultConfiguration extends Configuration<ScriptResult, Scrip
 //				.executeQuery(queryScript, "reader");
 //		try {
 //			while (crsScriptResult.next()) {
-//				scriptResult.setRunId(runId);
+//				scriptResult.setFrameworkRunId(runId);
 //				Long processId = crsScriptResult.getLong("PRC_ID");
 //				scriptResult.setProcessId(processId);
 //				scriptResult.setParentProcessId(crsScriptResult.getLong("PARENT_PRC_ID"));
@@ -169,7 +169,7 @@ public class ScriptResultConfiguration extends Configuration<ScriptResult, Scrip
 //		try {
 //			while (crsScriptResult.next()) {
 //				ScriptResult scriptResult = new ScriptResult();
-//				scriptResult.setRunId(runId);
+//				scriptResult.setFrameworkRunId(runId);
 //				Long processId = crsScriptResult.getLong("PRC_ID");
 //				scriptResult.setProcessId(processId);
 //				scriptResult.setParentProcessId(crsScriptResult.getLong("PARENT_PRC_ID"));

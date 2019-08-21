@@ -12,6 +12,7 @@ import org.apache.commons.cli.*;
 public class AssemblyLauncher {
 
     public static void main(String[] args) {
+        // TODO: no FWK instance necessary?
 
         Option oHelp = new Option("help", "print this message");
         Option oRepository = new Option("repository", true, "set repository location");

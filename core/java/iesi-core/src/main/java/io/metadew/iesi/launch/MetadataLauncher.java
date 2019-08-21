@@ -128,10 +128,8 @@ public class MetadataLauncher {
                 System.out.println("Option -ini (ini) value = " + frameworkInitializationFile.getName());
             }
 
-            FrameworkInstance.getInstance().init("owner", frameworkInitializationFile);
-
-            // Create the framework execution
-            FrameworkExecution.getInstance().init(new FrameworkExecutionContext(new Context("metadata", "")));
+            FrameworkInstance.getInstance().init(frameworkInitializationFile,
+                    new FrameworkExecutionContext(new Context("metadata", "")));
 
             MetadataRepositoryOperation metadataRepositoryOperation = null;
             List<MetadataRepository> metadataRepositories = new ArrayList<>();

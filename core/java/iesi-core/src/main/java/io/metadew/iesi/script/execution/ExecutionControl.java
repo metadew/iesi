@@ -12,9 +12,9 @@ import io.metadew.iesi.metadata.configuration.action.result.ActionResultConfigur
 import io.metadew.iesi.metadata.configuration.action.result.ActionResultOutputConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
-import io.metadew.iesi.metadata.configuration.script.result.exception.ScriptResultDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.script.result.ScriptResultConfiguration;
 import io.metadew.iesi.metadata.configuration.script.result.ScriptResultOutputConfiguration;
+import io.metadew.iesi.metadata.configuration.script.result.exception.ScriptResultDoesNotExistException;
 import io.metadew.iesi.metadata.definition.action.result.ActionResult;
 import io.metadew.iesi.metadata.definition.action.result.ActionResultOutput;
 import io.metadew.iesi.metadata.definition.action.result.key.ActionResultKey;
@@ -69,7 +69,7 @@ public class ExecutionControl {
         this.scriptDesignTraceService = new ScriptDesignTraceService();
         this.executionLog = new ExecutionLog();
         this.executionTrace = new ExecutionTrace();
-        setRunId(FrameworkRuntime.getInstance().getRunId());
+        setRunId(FrameworkRuntime.getInstance().getFrameworkRunId());
         initializeExecutionRuntime(runId);
         this.processIdList = new ArrayList<>();
         this.processIdList.add(-1L);
@@ -183,11 +183,11 @@ public class ExecutionControl {
     }
 
     public void logStart(BackupExecution backupExecution) {
-        setRunId(FrameworkRuntime.getInstance().getRunId());
+        setRunId(FrameworkRuntime.getInstance().getFrameworkRunId());
     }
 
     public void logStart(RestoreExecution restoreExecution) {
-        setRunId(FrameworkRuntime.getInstance().getRunId());
+        setRunId(FrameworkRuntime.getInstance().getFrameworkRunId());
     }
 
     public Long getNewProcessId() {

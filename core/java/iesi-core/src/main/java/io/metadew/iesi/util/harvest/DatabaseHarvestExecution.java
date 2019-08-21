@@ -23,16 +23,7 @@ public class DatabaseHarvestExecution {
 
 
     public DatabaseHarvestExecution() {
-        // Create the framework instance
-        FrameworkInstance frameworkInstance = FrameworkInstance.getInstance();
-        frameworkInstance.init();
 
-        // Create the framework execution
-        Context context = new Context();
-        context.setName("harvest");
-        context.setScope("");
-        FrameworkExecution frameworkExecution = FrameworkExecution.getInstance();
-        frameworkExecution.init(new FrameworkExecutionContext(context));
     }
 
     // Methods

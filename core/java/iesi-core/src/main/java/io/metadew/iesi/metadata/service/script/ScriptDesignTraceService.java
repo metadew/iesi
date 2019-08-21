@@ -5,7 +5,8 @@ import io.metadew.iesi.metadata.configuration.script.design.ScriptDesignTraceCon
 import io.metadew.iesi.metadata.configuration.script.design.ScriptParameterDesignTraceConfiguration;
 import io.metadew.iesi.metadata.configuration.script.design.ScriptVersionDesignTraceConfiguration;
 import io.metadew.iesi.metadata.definition.action.Action;
-import io.metadew.iesi.metadata.definition.script.*;
+import io.metadew.iesi.metadata.definition.script.Script;
+import io.metadew.iesi.metadata.definition.script.ScriptParameter;
 import io.metadew.iesi.metadata.definition.script.design.ScriptDesignTrace;
 import io.metadew.iesi.metadata.definition.script.design.ScriptParameterDesignTrace;
 import io.metadew.iesi.metadata.definition.script.design.ScriptVersionDesignTrace;

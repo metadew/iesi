@@ -33,7 +33,8 @@ public class RequestResultConfiguration extends Configuration<RequestResult, Req
 		}
 		cachedRowSet.next();
 		return Optional.of(new RequestResult(new RequestResultKey(cachedRowSet.getString("REQUEST_ID")),
-				cachedRowSet.getString("PARENT_REQUEST_ID"), cachedRowSet.getString("RUN_ID"),
+				cachedRowSet.getString("PARENT_REQUEST_ID"),
+				cachedRowSet.getString("RUN_ID"),
 				cachedRowSet.getString("ORIGIN_NM"), cachedRowSet.getString("REQUEST_NM"),
 				cachedRowSet.getString("SCOPE_NM"), cachedRowSet.getString("CONTEXT_NM"),
 				cachedRowSet.getString("SPACE_NM"), cachedRowSet.getString("USER_NM"), cachedRowSet.getString("ST_NM"),

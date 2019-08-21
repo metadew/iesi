@@ -169,12 +169,12 @@ public class RuntimeVariableConfiguration {
         this.sqliteDatabaseConnection = sqliteDatabaseConnection;
     }
 
-    public String getPRC_RUN_VAR() {
-        return PRC_RUN_VAR;
-    }
-
     public void setPRC_RUN_VAR(String pRC_RUN_VAR) {
         PRC_RUN_VAR = pRC_RUN_VAR;
+    }
+
+    public String getPRC_RUN_VAR() {
+        return PRC_RUN_VAR;
     }
 
 }

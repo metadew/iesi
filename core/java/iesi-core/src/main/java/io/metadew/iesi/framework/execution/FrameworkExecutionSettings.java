@@ -7,6 +7,7 @@ public class FrameworkExecutionSettings {
     public FrameworkExecutionSettings() {
         this("");
     }
+
     public FrameworkExecutionSettings(String settingsList) {
         this.settingsList = settingsList;
     }

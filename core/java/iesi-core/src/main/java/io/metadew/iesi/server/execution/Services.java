@@ -1,6 +1,7 @@
 package io.metadew.iesi.server.execution;
 
 import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
+import io.metadew.iesi.framework.execution.FrameworkExecutionContext;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.Context;
 import io.metadew.iesi.server.execution.configuration.ExecutionServerServices;
@@ -14,19 +15,9 @@ public class Services {
 
     public Services(String initializationFile) {
         // Create the framework instance
-        FrameworkInitializationFile frameworkInitializationFile = new FrameworkInitializationFile();
-        frameworkInitializationFile.setName(initializationFile);
-        FrameworkInstance frameworkInstance = FrameworkInstance.getInstance();
-        frameworkInstance.init(frameworkInitializationFile);
+        FrameworkInstance.getInstance().init(new FrameworkInitializationFile(initializationFile),
+                new FrameworkExecutionContext(new Context("server", "")));
 
-        // Create the framework settings
-        //FrameworkExecutionSettings frameworkExecutionSettings = new FrameworkExecutionSettings("");
-
-        // Create the framework execution
-        Context context = new Context();
-        context.setName("server");
-        context.setScope("");
-       
         requestorRunnable = new RequestorRunnable();
         requestorThread = new Thread(requestorRunnable);
         requestorThread.setName(ExecutionServerServices.REQUESTOR.value());

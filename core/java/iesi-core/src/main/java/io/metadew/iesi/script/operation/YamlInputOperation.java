@@ -1,7 +1,6 @@
 package io.metadew.iesi.script.operation;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.DataObject;
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.metadata.operation.DataObjectOperation;
@@ -19,7 +18,7 @@ public class YamlInputOperation {
     private DataObjectOperation dataObjectOperation;
 
 
-    public YamlInputOperation(FrameworkExecution frameworkExecution, String fileName) {
+    public YamlInputOperation(String fileName) {
         this.setFileName(fileName);
         this.setDataObjectOperation(new DataObjectOperation(this.getFileName()));
     }

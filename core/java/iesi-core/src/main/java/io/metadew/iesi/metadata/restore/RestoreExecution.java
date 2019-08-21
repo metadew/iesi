@@ -2,6 +2,7 @@ package io.metadew.iesi.metadata.restore;
 
 import io.metadew.iesi.connection.FileConnection;
 import io.metadew.iesi.connection.tools.FolderTools;
+import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.framework.execution.FrameworkExecutionContext;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
@@ -25,14 +26,7 @@ public class RestoreExecution {
 			IllegalAccessException, InvocationTargetException {
 		//TODO:
 		// Create the framework instance
-		FrameworkInstance frameworkInstance = FrameworkInstance.getInstance();
-
-		// Create the framework execution
-		Context context = new Context();
-		context.setName("restore");
-		context.setScope("");
-		FrameworkExecution frameworkExecution = FrameworkExecution.getInstance();
-		frameworkExecution.init(new FrameworkExecutionContext(context));
+		FrameworkInstance.getInstance().init(new FrameworkInitializationFile(), new FrameworkExecutionContext(new Context("restore", "")));
 		this.setExecutionControl(new ExecutionControl());
 	}
 

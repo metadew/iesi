@@ -1,5 +1,6 @@
 package io.metadew.iesi.launch;
 
+import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
 import io.metadew.iesi.framework.definition.FrameworkRunIdentifier;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.framework.execution.FrameworkExecutionContext;
@@ -39,7 +40,6 @@ public class GuardLauncher {
 
         // create the parser
         CommandLineParser parser = new DefaultParser();
-        String settings = "";
         try {
             // parse the command line arguments
             CommandLine line = parser.parse(options, args);
@@ -57,16 +57,9 @@ public class GuardLauncher {
             System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 
             // Create the framework instance
-            FrameworkInstance frameworkInstance = FrameworkInstance.getInstance();
-            frameworkInstance.init();
+            FrameworkInstance.getInstance().init(new FrameworkInitializationFile(),
+                    new FrameworkExecutionContext(new Context("guard", "user")));
 
-            // Create the framework execution
-            FrameworkExecutionSettings frameworkExecutionSettings = new FrameworkExecutionSettings(settings);
-            Context context = new Context();
-            context.setName("guard");
-            context.setScope("user");
-            FrameworkExecution frameworkExecution = FrameworkExecution.getInstance();
-            frameworkExecution.init(new FrameworkExecutionContext(context), frameworkExecutionSettings, new FrameworkRunIdentifier());
 
             String userName = "";
             String active = "";

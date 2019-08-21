@@ -4,8 +4,8 @@ import io.metadew.iesi.metadata.configuration.action.design.ActionDesignTraceCon
 import io.metadew.iesi.metadata.configuration.action.design.ActionParameterDesignTraceConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.definition.action.Action;
-import io.metadew.iesi.metadata.definition.action.design.ActionDesignTrace;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
+import io.metadew.iesi.metadata.definition.action.design.ActionDesignTrace;
 import io.metadew.iesi.metadata.definition.action.design.ActionParameterDesignTrace;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

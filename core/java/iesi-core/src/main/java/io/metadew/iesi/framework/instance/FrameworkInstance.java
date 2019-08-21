@@ -10,6 +10,9 @@ import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
 import io.metadew.iesi.framework.crypto.FrameworkCrypto;
 import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
 import io.metadew.iesi.framework.execution.FrameworkControl;
+import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.execution.FrameworkExecutionContext;
+import io.metadew.iesi.metadata.definition.Context;
 import io.metadew.iesi.metadata.execution.MetadataControl;
 import io.metadew.iesi.metadata.repository.ExecutionServerMetadataRepository;
 import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
@@ -42,14 +45,14 @@ public class FrameworkInstance {
 
 
 	public void init() {
-		init("write", null);
+		init(new FrameworkInitializationFile(), new FrameworkExecutionContext(new Context("general", "")));
 	}
 
-	public void init(FrameworkInitializationFile frameworkInitializationFile) {
-		init("write", frameworkInitializationFile);
+	public void init(FrameworkInitializationFile frameworkInitializationFile, FrameworkExecutionContext context) {
+		init("write", frameworkInitializationFile, context);
 	}
 
-	public void init(String logonType, FrameworkInitializationFile frameworkInitializationFile) {
+	public void init(String logonType, FrameworkInitializationFile frameworkInitializationFile, FrameworkExecutionContext context) {
 		// Get the framework configuration
 		FrameworkConfiguration frameworkConfiguration = FrameworkConfiguration.getInstance();
 		frameworkConfiguration.init();
@@ -96,6 +99,8 @@ public class FrameworkInstance {
 				FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.def"));
 		Executor.getInstance().init();
 		Requestor.getInstance().init();
+
+		FrameworkExecution.getInstance().init(context);
 	}
 
 	// Getters and Setters

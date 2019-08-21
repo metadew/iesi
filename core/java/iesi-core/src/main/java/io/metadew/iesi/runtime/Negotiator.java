@@ -1,5 +1,6 @@
 package io.metadew.iesi.runtime;
 
+import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.framework.execution.FrameworkExecutionContext;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
@@ -74,13 +75,8 @@ public class Negotiator {
     public void runScript() throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException,
             InstantiationException, IllegalAccessException, ScriptExecutionBuildException {
         // Create the framework instance
-        FrameworkInstance frameworkInstance = FrameworkInstance.getInstance();
-        frameworkInstance.init();
+        FrameworkInstance.getInstance().init(new FrameworkInitializationFile(), new FrameworkExecutionContext(new Context("negotiator", "")));
 
-        // Create the framework execution
-        Context context = new Context("negotiator", "");
-        FrameworkExecution frameworkExecution = FrameworkExecution.getInstance();
-        frameworkExecution.init(new FrameworkExecutionContext(context));
         // Get the Script
         ScriptConfiguration scriptConfiguration = new ScriptConfiguration();
         Script script = scriptConfiguration.get("S2").get();

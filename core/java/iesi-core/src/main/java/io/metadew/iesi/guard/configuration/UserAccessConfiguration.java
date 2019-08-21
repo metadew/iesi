@@ -10,11 +10,9 @@ import java.util.Optional;
 
 public class UserAccessConfiguration {
 
-    private FrameworkExecution frameworkExecution;
 
     // Constructors
-    public UserAccessConfiguration(FrameworkExecution frameworkExecution) {
-        this.setFrameworkExecution(frameworkExecution);
+    public UserAccessConfiguration() {
     }
 
     public UserAccess doUserLogin(String userName, String userPassword) {
@@ -45,15 +43,5 @@ public class UserAccessConfiguration {
 
         return userAccess;
     }
-
-    public FrameworkExecution getFrameworkExecution() {
-        return frameworkExecution;
-    }
-
-    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-        this.frameworkExecution = frameworkExecution;
-    }
-
-    // Getters and Setters
 
 }

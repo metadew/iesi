@@ -7,15 +7,15 @@
 			</PatternLayout>
 		</File>
         <Routing name="MyRoutingAppender">
-            <Routes pattern="$${marker:}$${ctx:runId}">
-                <Route key="FWK${ctx:runId}">
+            <Routes pattern="$${marker:}$${ctx:fwk.runid}">
+                <Route key="FWK${ctx:fwk.runid}">
                     <File fileName="${ctx:location}/${ctx:fwk.code}.log" name="appender-${marker:}" append="false">
                         <PatternLayout>
                             <Pattern>%d %-5p [%c{1.}] - %m%n</Pattern>
                         </PatternLayout>
                     </File>
                 </Route>
-                <Route key="${marker:}${ctx:runId}">
+                <Route key="${marker:}${ctx:fwk.runid}">
                     <File fileName="${ctx:location}/${ctx:fwk.code}.log" name="appender" append="false">
                         <PatternLayout>
                             <Pattern>%d %-5p [%c{1.}] - %m%n</Pattern>
@@ -23,7 +23,7 @@
                     </File>
                 </Route>
                 <Route>
-                    <File fileName="${ctx:location}/${ctx:runId}/script.log" name="appender-${marker:}-${ctx:runId}" append="false">
+                    <File fileName="${ctx:location}/${ctx:fwk.runid}/script.log" name="appender-${marker:}-${ctx:fwk.runid}" append="false">
                         <PatternLayout>
                             <Pattern>%d %-5p [%c{1.}] - %m%n</Pattern>
                         </PatternLayout>

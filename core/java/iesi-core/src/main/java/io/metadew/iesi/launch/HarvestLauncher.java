@@ -1,5 +1,10 @@
 package io.metadew.iesi.launch;
 
+import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
+import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.execution.FrameworkExecutionContext;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
+import io.metadew.iesi.metadata.definition.Context;
 import io.metadew.iesi.util.harvest.DatabaseHarvestExecution;
 import org.apache.commons.cli.*;
 
@@ -126,6 +131,9 @@ public class HarvestLauncher {
                     System.out.println("Option -file (file) missing");
                     System.exit(1);
                 }
+
+                // Create the framework instance
+                FrameworkInstance.getInstance().init(new FrameworkInitializationFile(), new FrameworkExecutionContext(new Context("harvest", "")));
 
                 // Execute
                 DatabaseHarvestExecution databaseHarvestExecution = new DatabaseHarvestExecution();

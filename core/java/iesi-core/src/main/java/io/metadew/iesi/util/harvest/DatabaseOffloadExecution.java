@@ -20,18 +20,7 @@ public class DatabaseOffloadExecution {
     private FrameworkExecution frameworkExecution;
 
     // Constructors
-    public DatabaseOffloadExecution() {
-        // Create the framework instance
-        FrameworkInstance frameworkInstance = FrameworkInstance.getInstance();
-        frameworkInstance.init();
-
-        // Create the framework execution
-        Context context = new Context();
-        context.setName("offload");
-        context.setScope("");
-
-        FrameworkExecution.getInstance().init(new FrameworkExecutionContext(context));
-    }
+    public DatabaseOffloadExecution() {}
 
     // Methods
     public void offloadData(String sourceConnectionName, String sourceEnvironmentName, String targetConnectionName,

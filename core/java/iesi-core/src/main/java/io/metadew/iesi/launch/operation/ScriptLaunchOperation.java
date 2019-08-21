@@ -2,12 +2,10 @@ package io.metadew.iesi.launch.operation;
 
 import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.framework.configuration.FrameworkSettingConfiguration;
-import io.metadew.iesi.framework.definition.FrameworkRunIdentifier;
 import io.metadew.iesi.framework.execution.*;
 import io.metadew.iesi.guard.configuration.UserAccessConfiguration;
 import io.metadew.iesi.guard.definition.UserAccess;
 import io.metadew.iesi.metadata.configuration.script.ScriptConfiguration;
-import io.metadew.iesi.metadata.definition.Context;
 import io.metadew.iesi.metadata.definition.Request;
 import io.metadew.iesi.metadata.definition.RequestParameter;
 import io.metadew.iesi.metadata.definition.script.Script;
@@ -28,7 +26,7 @@ public final class ScriptLaunchOperation {
 
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	public static void execute(Request request, FrameworkRunIdentifier frameworkRunIdentifier) throws ScriptExecutionBuildException {
+	public static void execute(Request request) throws ScriptExecutionBuildException {
 		String actionSelect = "";
 		String environmentName = request.getContext();
 		String executionMode = "";
@@ -91,11 +89,6 @@ public final class ScriptLaunchOperation {
 		}
 		
 		// Create framework execution
-		FrameworkExecutionSettings frameworkExecutionSettings = new FrameworkExecutionSettings(settings);
-		Context context = new Context("script", scriptName);
-
-		FrameworkExecution frameworkExecution = FrameworkExecution.getInstance();
-		frameworkExecution.init(new FrameworkExecutionContext(context), frameworkExecutionSettings, frameworkRunIdentifier);
 
 		// Logging
 		LOGGER.info(new IESIMessage("option.script=" + scriptName));
@@ -123,7 +116,7 @@ public final class ScriptLaunchOperation {
 				throw new RuntimeException("guard.user.password.missing");
 			}
 
-			UserAccessConfiguration userAccessConfiguration = new UserAccessConfiguration(frameworkExecution);
+			UserAccessConfiguration userAccessConfiguration = new UserAccessConfiguration();
 			UserAccess userAccess = userAccessConfiguration.doUserLogin(userName, userPassword);
 
 			if (userAccess.isException()) {
@@ -155,7 +148,7 @@ public final class ScriptLaunchOperation {
 				JsonInputOperation jsonInputOperation = new JsonInputOperation(fileName);
 				script = jsonInputOperation.getScript();
 			} else if (FileTools.getFileExtension(file).equalsIgnoreCase("yml")) {
-				YamlInputOperation yamlInputOperation = new YamlInputOperation(frameworkExecution, fileName);
+				YamlInputOperation yamlInputOperation = new YamlInputOperation(fileName);
 				script = yamlInputOperation.getScript();
 			}
 			if (!script.isPresent()) {

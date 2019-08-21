@@ -21,7 +21,7 @@ public class FrameworkRuntime {
 	private String localHostChallengeFileName;
 	private String runSpoolFolderName;
 	private String processIdFileName;
-	private String runId;
+	private String frameworkRunId;
 
 	private static FrameworkRuntime INSTANCE;
 
@@ -35,7 +35,7 @@ public class FrameworkRuntime {
 	private FrameworkRuntime() {}
 
 	public void init() {
-		init(UUID.randomUUID().toString());
+		init(new FrameworkRunIdentifier());
 	}
 
 	public void init(FrameworkRunIdentifier frameworkRunIdentifier) {
@@ -43,10 +43,10 @@ public class FrameworkRuntime {
 	}
 
 	public void init(String runId) {
-		this.runId = runId;
+		this.frameworkRunId = runId;
 		ThreadContext.put("fwk.runid", runId);
 		this.runCacheFolderName = FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("run.cache")
-				+ File.separator + this.getRunId();
+				+ File.separator + this.getFrameworkRunId();
 		FolderTools.createFolder(runCacheFolderName);
 
 		this.runSpoolFolderName = this.getRunCacheFolderName() + File.separator + "spool";
@@ -69,15 +69,15 @@ public class FrameworkRuntime {
 //
 //		// Create run id
 //		if (frameworkRunIdentifier == null) {
-//			this.setRunId(UUID.randomUUID().toString());
+//			this.setFrameworkRunId(UUID.randomUUID().toString());
 //		} else {
-//			this.setRunId(frameworkRunIdentifier.getScriptId());
+//			this.setFrameworkRunId(frameworkRunIdentifier.getScriptId());
 //		}
 //
 //		// Create run cache folder
 //		this.setRunCacheFolderName(
 //				this.getFrameworkConfiguration().getFolderConfiguration().getFolderAbsolutePath("run.cache")
-//						+ File.separator + this.getRunId());
+//						+ File.separator + this.getFrameworkRunId());
 //		FolderTools.createFolder(this.getRunCacheFolderName());
 //
 //		// Create spool folder
@@ -115,12 +115,12 @@ public class FrameworkRuntime {
 		return runCacheFolderName;
 	}
 
-	public String getRunId() {
-		return runId;
+	public String getFrameworkRunId() {
+		return frameworkRunId;
 	}
 
-	public void setRunId(String runId) {
-		this.runId = runId;
+	public void setFrameworkRunId(String frameworkRunId) {
+		this.frameworkRunId = frameworkRunId;
 	}
 
 	public String getLocalHostChallengeFileName() {

@@ -4,8 +4,6 @@ import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
-import io.metadew.iesi.metadata.configuration.action.trace.exception.ActionTraceAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.action.trace.exception.ActionTraceDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.script.design.exception.ScriptVersionDesignTraceAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.script.design.exception.ScriptVersionDesignTraceDoesNotExistException;
 import io.metadew.iesi.metadata.definition.script.design.ScriptVersionDesignTrace;

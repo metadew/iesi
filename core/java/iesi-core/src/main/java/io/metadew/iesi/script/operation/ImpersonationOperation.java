@@ -1,8 +1,8 @@
 package io.metadew.iesi.script.operation;
 
-import io.metadew.iesi.metadata.configuration.ImpersonationConfiguration;
-import io.metadew.iesi.metadata.definition.Impersonation;
-import io.metadew.iesi.metadata.definition.ImpersonationParameter;
+import io.metadew.iesi.metadata.configuration.impersonation.ImpersonationConfiguration;
+import io.metadew.iesi.metadata.definition.impersonation.Impersonation;
+import io.metadew.iesi.metadata.definition.impersonation.ImpersonationParameter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

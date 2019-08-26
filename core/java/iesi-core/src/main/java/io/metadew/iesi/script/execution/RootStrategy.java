@@ -1,5 +1,6 @@
 package io.metadew.iesi.script.execution;
 
+import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.execution.IESIMessage;
 import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.execution.MetadataControl;
@@ -11,22 +12,18 @@ import java.text.MessageFormat;
 
 public class RootStrategy implements RootingStrategy {
 
-    private String environment;
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public RootStrategy(String environment) {
-        this.environment = environment;
-    }
+    public RootStrategy() {}
 
     @Override
     public void prepareExecution(ScriptExecution scriptExecution) {
-        scriptExecution.getExecutionControl().setEnvName(environment);
         scriptExecution.getExecutionControl().getExecutionRuntime().setRuntimeVariablesFromList(scriptExecution, MetadataControl.getInstance()
                 .getConnectivityMetadataRepository()
                 .executeQuery("select env_par_nm, env_par_val from "
                         + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("EnvironmentParameters")
-                        + " where env_nm = '" + scriptExecution.getExecutionControl().getEnvName() + "' order by env_par_nm asc, env_par_val asc", "reader"));
+                        + " where env_nm = " + SQLTools.GetStringForSQL(scriptExecution.getEnvironment()) + " order by env_par_nm asc, env_par_val asc", "reader"));
     }
 
     @Override

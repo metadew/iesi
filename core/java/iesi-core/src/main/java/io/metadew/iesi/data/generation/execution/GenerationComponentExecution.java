@@ -25,7 +25,6 @@ public abstract class GenerationComponentExecution {
         return this.getGenerationTools().getStringTools().camelToSnake(this.getClass().getSimpleName());
     }
 
-    @SuppressWarnings("rawtypes")
     protected String fetch(String key) {
         String[] keys = key.split("\\.");
 

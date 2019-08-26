@@ -2,7 +2,7 @@ package io.metadew.iesi.datatypes.dataset;
 
 import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.SqliteDatabase;
-import io.metadew.iesi.connection.database.connection.SqliteDatabaseConnection;
+import io.metadew.iesi.connection.database.connection.sqlite.SqliteDatabaseConnection;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
 import io.metadew.iesi.framework.execution.IESIMessage;

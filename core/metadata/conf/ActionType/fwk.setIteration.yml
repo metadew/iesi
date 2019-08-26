@@ -1,7 +1,7 @@
 ---
 data:
   name: "fwk.setIteration"
-  className: "io.metadew.iesi.script.action.FwkSetIteration"
+  className: "io.metadew.iesi.script.action.fwk.FwkSetIteration"
   description: "Define an interation that can be used in any next action"
   parameters:
   - name: "name"

@@ -1,7 +1,7 @@
 ---
 data:
   name: "conn.isAlive"
-  className: "io.metadew.iesi.script.action.ConnIsAlive"
+  className: "io.metadew.iesi.script.action.conn.ConnIsAlive"
   description: "Verify if the connection can be reached"
   parameters:
   - name: "connection"

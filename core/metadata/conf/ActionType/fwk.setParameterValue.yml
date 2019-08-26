@@ -1,7 +1,7 @@
 ---
 data:
   name: "fwk.setParameterValue"
-  className: "io.metadew.iesi.script.action.FwkSetParameterValue"
+  className: "io.metadew.iesi.script.action.fwk.FwkSetParameterValue"
   description: "Set a parameter value as runtime variable"
   parameters:
   - name: "name"

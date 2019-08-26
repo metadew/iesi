@@ -13,6 +13,7 @@ import java.util.List;
 public class MetadataControl {
 
     private DesignMetadataRepository designMetadataRepository;
+    private ExecutionServerMetadataRepository executionServerMetadataRepository;
     private ConnectivityMetadataRepository connectivityMetadataRepository;
     private ControlMetadataRepository controlMetadataRepository;
     private TraceMetadataRepository traceMetadataRepository;
@@ -35,9 +36,10 @@ public class MetadataControl {
 
 
     public void init(DesignMetadataRepository designMetadataRepository, ConnectivityMetadataRepository connectivityMetadataRepository,
-                           ControlMetadataRepository controlMetadataRepository, TraceMetadataRepository traceMetadataRepository,
-                           ResultMetadataRepository resultMetadataRepository, MonitorMetadataRepository monitorMetadataRepository,
-                           LedgerMetadataRepository ledgerMetadataRepository, CatalogMetadataRepository catalogMetadataRepository) {
+                     ControlMetadataRepository controlMetadataRepository, TraceMetadataRepository traceMetadataRepository,
+                     ResultMetadataRepository resultMetadataRepository, MonitorMetadataRepository monitorMetadataRepository,
+                     LedgerMetadataRepository ledgerMetadataRepository, CatalogMetadataRepository catalogMetadataRepository,
+                     ExecutionServerMetadataRepository executionServerMetadataRepository) {
         this.designMetadataRepository = designMetadataRepository;
         this.connectivityMetadataRepository = connectivityMetadataRepository;
         this.controlMetadataRepository = controlMetadataRepository;
@@ -46,6 +48,7 @@ public class MetadataControl {
         this.monitorMetadataRepository = monitorMetadataRepository;
         this.ledgerMetadataRepository = ledgerMetadataRepository;
         this.catalogMetadataRepository = catalogMetadataRepository;
+        this.executionServerMetadataRepository = executionServerMetadataRepository;
         // Check if repositories are correctly set
         if (!isValid()) {
             throw new RuntimeException("framework.metadata.incomplete");
@@ -76,6 +79,8 @@ public class MetadataControl {
             this.traceMetadataRepository = (TraceMetadataRepository) metadataRepository;
         } else if (metadataRepository.getCategory().equalsIgnoreCase("result")) {
             this.resultMetadataRepository = (ResultMetadataRepository) metadataRepository;
+        } else if (metadataRepository.getCategory().equalsIgnoreCase("execution_server")) {
+            this.executionServerMetadataRepository = (ExecutionServerMetadataRepository) metadataRepository;
         } else {
             throw new RuntimeException(MessageFormat.format("No Metadata repository of type {0} can be set", metadataRepository.getCategory()));
         }
@@ -112,6 +117,10 @@ public class MetadataControl {
 
     public ControlMetadataRepository getControlMetadataRepository() {
         return controlMetadataRepository;
+    }
+
+    public ExecutionServerMetadataRepository getExecutionServerMetadataRepository() {
+        return executionServerMetadataRepository;
     }
 
     public boolean isValid() {

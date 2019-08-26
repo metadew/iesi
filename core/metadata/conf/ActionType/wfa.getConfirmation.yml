@@ -1,7 +1,7 @@
 ---
 data:
   name: "wfa.getConfirmation"
-  className: "io.metadew.iesi.script.action.WfaGetConfirmation"
+  className: "io.metadew.iesi.script.action.wfa.WfaGetConfirmation"
   description: "Wait for user confirmation"
   parameters:
   - name: "type"

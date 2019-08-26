@@ -1,7 +1,7 @@
 ---
 data:
   name: "fwk.executeScript"
-  className: "io.metadew.iesi.script.action.FwkExecuteScript"
+  className: "io.metadew.iesi.script.action.fwk.FwkExecuteScript"
   description: "Execute another script"
   parameters:
   - name: "script"

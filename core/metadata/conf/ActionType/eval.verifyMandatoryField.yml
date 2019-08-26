@@ -1,7 +1,7 @@
 ---
 data:
   name: "eval.verifyMandatoryField"
-  className: "io.metadew.iesi.script.action.EvalVerifyMandatoryField"
+  className: "io.metadew.iesi.script.action.eval.EvalVerifyMandatoryField"
   description: "Check if mandatory fields are filled out"
   parameters:
   - name: "database"

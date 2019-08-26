@@ -1,7 +1,7 @@
 ---
 data:
   name: "fwk.executeSuite"
-  className: "io.metadew.iesi.script.action.FwkExecuteSuite"
+  className: "io.metadew.iesi.script.action.fwk.FwkExecuteSuite"
   description: "Execute a test suite of multiple scripts"
   parameters:
   - name: "component"

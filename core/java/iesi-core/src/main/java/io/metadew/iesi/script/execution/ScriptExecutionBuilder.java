@@ -5,6 +5,8 @@ import io.metadew.iesi.script.ScriptExecutionBuildException;
 import io.metadew.iesi.script.operation.ActionSelectOperation;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 public class ScriptExecutionBuilder {
@@ -17,8 +19,8 @@ public class ScriptExecutionBuilder {
     private Long processId;
     private boolean exitOnCompletion = true;
     private ScriptExecution parentScriptExecution;
-    private String paramList = "";
-    private String paramFile = "";
+    private Map<String, String> parameters = new HashMap<>();
+    private Map<String, String> impersonations = new HashMap<>();
     private ActionSelectOperation actionSelectOperation;
     private String environment;
 
@@ -63,13 +65,21 @@ public class ScriptExecutionBuilder {
         return this;
     }
 
-    public ScriptExecutionBuilder paramList(String paramList) {
-        this.paramList = paramList;
+    public ScriptExecutionBuilder parameters(Map<String, String> parameters) {
+        if (this.parameters == null) {
+            this.parameters = parameters;
+        } else {
+            this.parameters.putAll(parameters);
+        }
         return this;
     }
 
-    public ScriptExecutionBuilder paramFile(String paramFile) {
-        this.paramFile = paramFile;
+    public ScriptExecutionBuilder impersonations(Map<String, String> impersonations) {
+        if (this.impersonations == null) {
+            this.impersonations = impersonations;
+        } else {
+            this.impersonations.putAll(impersonations);
+        }
         return this;
     }
 
@@ -92,15 +102,17 @@ public class ScriptExecutionBuilder {
                 ExecutionControl executionControl = new ExecutionControl();
                 return new NonRouteScriptExecution(
                         getScript().orElseThrow(() -> new ScriptExecutionBuildException("No script supplied to script execution builder")),
+                        getEnvironment().orElseThrow(() -> new ScriptExecutionBuildException("No environment supplied to route script execution builder")),
                         executionControl,
                         new ExecutionMetrics(),
-                        executionControl.getNewProcessId(),
+                        executionControl.getNextProcessId(),
                         getExitOnCompletion().orElseThrow(() -> new ScriptExecutionBuildException("No exit on completion flag supplied to script execution builder")),
                         getParentScriptExecution().orElse(null),
-                        getParamList().orElse(""),
-                        getParamFile().orElse(""),
-                        getActionSelectOperation().orElseThrow(() -> new ScriptExecutionBuildException("No action selection supplied to script execution builder")),
-                        new RootStrategy(getEnvironment().orElseThrow(() -> new ScriptExecutionBuildException("No environment supplied to root script execution builder")))
+                        parameters,
+                        impersonations,
+                        //getActionSelectOperation().orElseThrow(() -> new ScriptExecutionBuildException("No action selection supplied to script execution builder")),
+                        getActionSelectOperation().orElse(new ActionSelectOperation("")),
+                        new RootStrategy()
                 );
             } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
                 throw new ScriptExecutionBuildException(e);
@@ -109,13 +121,14 @@ public class ScriptExecutionBuilder {
             ActionSelectOperation actionSelectOperation = new ActionSelectOperation("");
             return new NonRouteScriptExecution(
                     getScript().orElseThrow(() -> new ScriptExecutionBuildException("No script supplied to script execution builder")),
+                    getEnvironment().orElseThrow(() -> new ScriptExecutionBuildException("No environment supplied to route script execution builder")),
                     executionControl,
                     new ExecutionMetrics(),
-                    executionControl.getNewProcessId(),
+                    executionControl.getNextProcessId(),
                     getExitOnCompletion().orElseThrow(() -> new ScriptExecutionBuildException("No exit on completion flag supplied to script execution builder")),
                     getParentScriptExecution().orElse(null),
-                    getParamList().orElse(""),
-                    getParamFile().orElse(""),
+                    parameters,
+                    impersonations,
                     actionSelectOperation,
                     new NonRootStrategy()
             );
@@ -127,15 +140,17 @@ public class ScriptExecutionBuilder {
             ExecutionControl executionControl = root ? new ExecutionControl() : getExecutionControl().orElseThrow(() -> new ScriptExecutionBuildException("No execution control supplied to route script execution builder"));
             return new RouteScriptExecution (
                     getScript().orElseThrow(() -> new ScriptExecutionBuildException("No script supplied to route script execution builder")),
+                    getEnvironment().orElseThrow(() -> new ScriptExecutionBuildException("No environment supplied to route script execution builder")),
                     executionControl,
                     getExecutionMetrics().orElseThrow(() -> new ScriptExecutionBuildException("No execution metrics supplied to route script execution builder")),
-                    executionControl.getNewProcessId(),
+                    executionControl.getNextProcessId(),
                     getExitOnCompletion().orElseThrow(() -> new ScriptExecutionBuildException("No exit on completion flag supplied to route script execution builder")),
                     getParentScriptExecution().orElse(null),
-                    getParamList().orElse(""),
-                    getParamFile().orElse(""),
-                    getActionSelectOperation().orElseThrow(() -> new ScriptExecutionBuildException("No action selection supplied to route script execution builder")),
-                    root ? new RootStrategy(getEnvironment().orElseThrow(() -> new ScriptExecutionBuildException("No environment supplied to root script execution builder"))) : new NonRootStrategy()
+                    parameters,
+                    impersonations,
+                    // getActionSelectOperation().orElseThrow(() -> new ScriptExecutionBuildException("No action selection supplied to route script execution builder")),
+                    getActionSelectOperation().orElse(new ActionSelectOperation("")),
+                    root ? new RootStrategy() : new NonRootStrategy()
             );
         } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
             throw new ScriptExecutionBuildException(e);
@@ -164,14 +179,6 @@ public class ScriptExecutionBuilder {
 
     public Optional<ScriptExecution> getParentScriptExecution() {
         return Optional.ofNullable(parentScriptExecution);
-    }
-
-    public Optional<String> getParamList() {
-        return Optional.ofNullable(paramList);
-    }
-
-    public Optional<String> getParamFile() {
-        return Optional.ofNullable(paramFile);
     }
 
     public Optional<ActionSelectOperation> getActionSelectOperation() {

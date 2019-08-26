@@ -1,7 +1,7 @@
 ---
 data:
   name: "cli.executeCommand"
-  className: "io.metadew.iesi.script.action.CliExecuteCommand"
+  className: "io.metadew.iesi.script.action.cli.CliExecuteCommand"
   description: "Run a Shell Command"
   parameters:
   - name: "path"

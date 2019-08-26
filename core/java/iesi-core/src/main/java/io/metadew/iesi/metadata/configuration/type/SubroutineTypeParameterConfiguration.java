@@ -1,7 +1,7 @@
 package io.metadew.iesi.metadata.configuration.type;
 
-import io.metadew.iesi.metadata.definition.SubroutineType;
-import io.metadew.iesi.metadata.definition.SubroutineTypeParameter;
+import io.metadew.iesi.metadata.definition.subroutine.SubroutineType;
+import io.metadew.iesi.metadata.definition.subroutine.SubroutineTypeParameter;
 
 public class SubroutineTypeParameterConfiguration {
 

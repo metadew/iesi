@@ -1,6 +1,6 @@
 package io.metadew.iesi.connection.database;
 
-import io.metadew.iesi.connection.database.connection.SqliteDatabaseConnection;
+import io.metadew.iesi.connection.database.connection.sqlite.SqliteDatabaseConnection;
 import io.metadew.iesi.metadata.definition.MetadataField;
 
 public class SqliteDatabase extends Database {

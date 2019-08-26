@@ -1,6 +1,6 @@
 package io.metadew.iesi.script.configuration;
 
-import io.metadew.iesi.connection.database.connection.SqliteDatabaseConnection;
+import io.metadew.iesi.connection.database.connection.sqlite.SqliteDatabaseConnection;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.definition.RuntimeVariable;
 

@@ -1,7 +1,7 @@
 package io.metadew.iesi.metadata.configuration.type;
 
-import io.metadew.iesi.metadata.definition.LedgerType;
-import io.metadew.iesi.metadata.definition.LedgerTypeParameter;
+import io.metadew.iesi.metadata.definition.ledger.LedgerType;
+import io.metadew.iesi.metadata.definition.ledger.LedgerTypeParameter;
 
 public class LedgerTypeParameterConfiguration {
 

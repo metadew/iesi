@@ -1,7 +1,7 @@
 ---
 data:
   name: "eval.assertEquals"
-  className: "io.metadew.iesi.script.action.EvalAssertEquals"
+  className: "io.metadew.iesi.script.action.eval.EvalAssertEquals"
   description: "Evaluate if two values are equal"
   parameters:
   - name: "expected"

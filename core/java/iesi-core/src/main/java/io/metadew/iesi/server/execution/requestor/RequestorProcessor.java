@@ -2,9 +2,8 @@ package io.metadew.iesi.server.execution.requestor;
 
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
-import io.metadew.iesi.metadata.configuration.RequestConfiguration;
+import io.metadew.iesi.metadata.configuration.request.RequestConfiguration;
 import io.metadew.iesi.metadata.definition.Request;
-import io.metadew.iesi.runtime.Executor;
 
 import javax.sql.rowset.CachedRowSet;
 import java.util.Optional;
@@ -68,7 +67,8 @@ public class RequestorProcessor {
 
 	public void execute() {
 		// Execution logic
-		Executor.getInstance().execute(this.getRequest().get());
+		// TODO
+		// Executor.getInstance().execute(this.getRequest().get());
 		
 		try {
 			Thread.sleep(5000);

@@ -30,7 +30,5 @@ public class ExecutionServerMetadataRepository extends MetadataRepository {
     }
 
     @Override
-    public void save(DataObject dataObject) {
-        System.out.println("save");
-    }
+    public void save(DataObject dataObject) {}
 }

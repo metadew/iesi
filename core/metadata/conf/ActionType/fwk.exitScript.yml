@@ -1,7 +1,7 @@
 ---
 data:
   name: "fwk.exitScript"
-  className: "io.metadew.iesi.script.action.FwkExitScript"
+  className: "io.metadew.iesi.script.action.fwk.FwkExitScript"
   description: "Exit the script execution"
   parameters:
   - name: "status"

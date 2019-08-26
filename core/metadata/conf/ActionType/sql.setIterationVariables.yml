@@ -1,7 +1,7 @@
 ---
 data:
   name: "sql.setIterationVariables"
-  className: "io.metadew.iesi.script.action.SqlSetIterationVariables"
+  className: "io.metadew.iesi.script.action.sql.SqlSetIterationVariables"
   description: "Retrieve iteration variables using a SQL Statement"
   parameters:
   - name: "list"

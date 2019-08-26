@@ -3,13 +3,18 @@ package io.metadew.iesi.test;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.connection.tools.FolderTools;
+import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
+import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.DataObject;
+import io.metadew.iesi.metadata.definition.execution.ExecutionRequestBuilderException;
+import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequestBuilderException;
 import io.metadew.iesi.test.launch.LaunchArgument;
 import io.metadew.iesi.test.launch.LaunchItem;
 import io.metadew.iesi.test.launch.LaunchItemOperation;
 import io.metadew.iesi.test.launch.Launcher;
 
 import java.io.File;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +28,6 @@ import org.apache.commons.lang3.ArrayUtils;
 
 public class ActionsTest {
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static void main(String[] args) {
 
 		Options options = new Options()
@@ -134,7 +138,7 @@ public class ActionsTest {
 			FileTools.delete(connectionsTestConfDataFolder + File.separator + ".gitkeep");
 
 			// Create repository
-			List<LaunchArgument> metadataCreateArgs = new ArrayList();
+			List<LaunchArgument> metadataCreateArgs = new ArrayList<>();
 			LaunchArgument ini = new LaunchArgument(true, "-ini", cmd.getOptionValue("ini", "iesi-test.ini"));
 			metadataCreateArgs.add(ini);
 			LaunchArgument exit = new LaunchArgument(true, "-exit", "false");
@@ -154,7 +158,7 @@ public class ActionsTest {
 					FolderTools.getFilesInFolder(actionsTestDefDataFolder, "regex", ".+\\.yml"),
 					FolderTools.getFilesInFolder(instructionsTestConfDataFolder, "regex", ".+\\.yml"));
 
-			List<LaunchArgument> inputArgs = new ArrayList();
+			List<LaunchArgument> inputArgs = new ArrayList<>();
 			inputArgs.add(ini);
 			inputArgs.add(exit);
 			LaunchArgument load = new LaunchArgument(false, "-load", "");
@@ -223,7 +227,7 @@ public class ActionsTest {
 
 			// ------------
 
-			List<LaunchArgument> scriptInputArgs = new ArrayList();
+			List<LaunchArgument> scriptInputArgs = new ArrayList<>();
 			scriptInputArgs.add(ini);
 			scriptInputArgs.add(exit);
 			LaunchArgument env = new LaunchArgument(true, "-env", "iesi-test");
@@ -238,6 +242,8 @@ public class ActionsTest {
 				LaunchItem launchItem = objectMapper.convertValue(dataObject.getData(), LaunchItem.class);
 				script = new LaunchArgument(true, "-script", launchItem.getScript());
 				scriptInputArgs.add(script);
+
+
 
 				// Parameter list
 				LaunchArgument paramList = null;
@@ -315,7 +321,7 @@ public class ActionsTest {
 				scriptInputArgs.remove(paramList);
 			}
 
-		} catch (ParseException e) {
+		} catch (ParseException | ExecutionRequestBuilderException | ScriptExecutionRequestBuilderException | MetadataAlreadyExistsException | SQLException | MetadataDoesNotExistException e) {
 			e.printStackTrace();
 			return;
 		}

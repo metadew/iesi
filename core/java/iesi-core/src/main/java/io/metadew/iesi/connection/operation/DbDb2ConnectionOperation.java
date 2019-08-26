@@ -2,7 +2,7 @@ package io.metadew.iesi.connection.operation;
 
 import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.Db2Database;
-import io.metadew.iesi.connection.database.connection.Db2DatabaseConnection;
+import io.metadew.iesi.connection.database.connection.db2.Db2DatabaseConnection;
 import io.metadew.iesi.connection.tools.ConnectionTools;
 import io.metadew.iesi.framework.crypto.FrameworkCrypto;
 import io.metadew.iesi.framework.execution.FrameworkControl;

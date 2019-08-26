@@ -1,7 +1,7 @@
 ---
 data:
   name: "java.parseJar"
-  className: "io.metadew.iesi.script.action.JavaParseJar"
+  className: "io.metadew.iesi.script.action.java.JavaParseJar"
   description: "Parses a Java archive file"
   parameters:
   - name: "path"

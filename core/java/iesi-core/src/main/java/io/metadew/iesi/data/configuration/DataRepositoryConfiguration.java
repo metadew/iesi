@@ -8,13 +8,13 @@
 //import io.metadew.iesi.connection.database.sql.SqlScriptResult;
 //import io.metadew.iesi.connection.operation.ConnectionOperation;
 //import io.metadew.iesi.framework.execution.FrameworkExecution;
-//import io.metadew.iesi.metadata.configuration.ConnectionConfiguration;
-//import io.metadew.iesi.metadata.configuration.RepositoryConfiguration;
-//import io.metadew.iesi.metadata.configuration.RepositoryInstanceConfiguration;
+//import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
+//import io.metadew.iesi.metadata.configuration.repository.RepositoryConfiguration;
+//import io.metadew.iesi.metadata.configuration.repository.RepositoryInstanceConfiguration;
 //import io.metadew.iesi.metadata.definition.connection.Connection;
-//import io.metadew.iesi.metadata.definition.Repository;
-//import io.metadew.iesi.metadata.definition.RepositoryInstance;
-//import io.metadew.iesi.metadata.definition.RepositoryInstanceParameter;
+//import io.metadew.iesi.metadata.definition.repository.Repository;
+//import io.metadew.iesi.metadata.definition.repository.RepositoryInstance;
+//import io.metadew.iesi.metadata.definition.repository.RepositoryInstanceParameter;
 //import io.metadew.iesi.metadata_repository.repository.database.connection.DatabaseConnection;
 //
 //public class DataRepositoryConfiguration {

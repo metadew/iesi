@@ -2,7 +2,7 @@ package io.metadew.iesi.connection.operation;
 
 import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.DrillDatabase;
-import io.metadew.iesi.connection.database.connection.DrillDatabaseConnection;
+import io.metadew.iesi.connection.database.connection.drill.DrillDatabaseConnection;
 import io.metadew.iesi.connection.tools.ConnectionTools;
 import io.metadew.iesi.framework.crypto.FrameworkCrypto;
 import io.metadew.iesi.framework.execution.FrameworkControl;

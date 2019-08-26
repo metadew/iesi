@@ -1,9 +1,9 @@
 package io.metadew.iesi.metadata.repository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.metadew.iesi.metadata.configuration.LedgerConfiguration;
+import io.metadew.iesi.metadata.configuration.ledger.LedgerConfiguration;
 import io.metadew.iesi.metadata.definition.DataObject;
-import io.metadew.iesi.metadata.definition.Ledger;
+import io.metadew.iesi.metadata.definition.ledger.Ledger;
 import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

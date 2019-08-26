@@ -1,11 +1,17 @@
 package io.metadew.iesi.test.launch;
 
+import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
+import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
+import io.metadew.iesi.metadata.definition.execution.ExecutionRequestBuilderException;
+import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequestBuilderException;
+
+import java.sql.SQLException;
 import java.util.List;
 
 public final class Launcher {
 
 	
-	public static void execute(String launcher, List<LaunchArgument> inputArgs) {
+	public static void execute(String launcher, List<LaunchArgument> inputArgs) throws ExecutionRequestBuilderException, ScriptExecutionRequestBuilderException, MetadataAlreadyExistsException, SQLException, MetadataDoesNotExistException {
 		
 		int inputArgsArraySize = 0;
 		for (LaunchArgument launchArgument : inputArgs) {
@@ -15,8 +21,8 @@ public final class Launcher {
 				inputArgsArraySize++;
 			}
 		}
-		
-		String inputArgsArray[] = new String[inputArgsArraySize];
+
+		String[] inputArgsArray = new String[inputArgsArraySize];
 		int k = 0;
 		int i = 0;
 		while (i < inputArgsArraySize) {

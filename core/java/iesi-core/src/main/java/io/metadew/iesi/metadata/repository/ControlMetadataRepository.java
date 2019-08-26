@@ -3,7 +3,7 @@ package io.metadew.iesi.metadata.repository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.metadata.configuration.UserConfiguration;
 import io.metadew.iesi.metadata.definition.DataObject;
-import io.metadew.iesi.metadata.definition.User;
+import io.metadew.iesi.metadata.definition.user.User;
 import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

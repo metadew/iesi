@@ -1,7 +1,7 @@
 ---
 data:
   name: "sql.evaluateResult"
-  className: "io.metadew.iesi.script.action.SqlEvaluateResult"
+  className: "io.metadew.iesi.script.action.sql.SqlEvaluateResult"
   description: "Checks if a SQL query returns a result or not"
   parameters:
   - name: "query"

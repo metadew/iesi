@@ -1,7 +1,7 @@
 ---
 data:
   name: "action.execute"
-  className: "io.metadew.iesi.script.action.ActionExecute"
+  className: "io.metadew.iesi.script.action.action.ActionExecute"
   description: "(Re-)execute an action that is already defined in the script"
   parameters:
   - name: "name"

@@ -137,6 +137,18 @@
       "type" : "string",
       "mandatory" : "N",
       "encrypted" : "N"
+    },{
+      "name" : "type",
+      "description" : "The host name of the server where the database file is located",
+      "type" : "string",
+      "mandatory" : "Y",
+      "encrypted" : "N"
+    },{
+      "name" : "name",
+      "description" : "The host name of the server where the database file is located",
+      "type" : "string",
+      "mandatory" : "N",
+      "encrypted" : "N"
     }, {
       "name" : "port",
       "description" : "The port number for connecting to the host",

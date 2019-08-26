@@ -1,6 +1,6 @@
 package io.metadew.iesi.connection.database;
 
-import io.metadew.iesi.connection.database.connection.OracleDatabaseConnection;
+import io.metadew.iesi.connection.database.connection.oracle.OracleDatabaseConnection;
 import io.metadew.iesi.metadata.definition.MetadataField;
 
 public class OracleDatabase extends SchemaDatabase {

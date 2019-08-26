@@ -1,7 +1,7 @@
 package io.metadew.iesi.metadata.configuration.type;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.metadew.iesi.metadata.definition.DataframeItemType;
+import io.metadew.iesi.metadata.definition.dataframe.DataframeItemType;
 import io.metadew.iesi.metadata.operation.DataObjectOperation;
 import io.metadew.iesi.metadata.operation.TypeConfigurationOperation;
 

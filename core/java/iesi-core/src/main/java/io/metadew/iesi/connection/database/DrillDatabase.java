@@ -1,6 +1,6 @@
 package io.metadew.iesi.connection.database;
 
-import io.metadew.iesi.connection.database.connection.DrillDatabaseConnection;
+import io.metadew.iesi.connection.database.connection.drill.DrillDatabaseConnection;
 import io.metadew.iesi.metadata.definition.MetadataField;
 
 import java.util.Optional;

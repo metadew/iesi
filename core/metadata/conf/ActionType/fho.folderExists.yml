@@ -1,7 +1,7 @@
 ---
 data:
   name: "fho.folderExists"
-  className: "io.metadew.iesi.script.action.FhoFolderExists"
+  className: "io.metadew.iesi.script.action.fho.FhoFolderExists"
   description: "Verify if a folder exists"
   parameters:
   - name: "path"

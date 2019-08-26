@@ -1,6 +1,6 @@
 package io.metadew.iesi.connection.database;
 
-import io.metadew.iesi.connection.database.connection.PrestoDatabaseConnection;
+import io.metadew.iesi.connection.database.connection.presto.PrestoDatabaseConnection;
 import io.metadew.iesi.metadata.definition.MetadataField;
 
 /**

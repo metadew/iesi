@@ -8,6 +8,8 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public final class SQLTools {
 
@@ -32,6 +34,18 @@ public final class SQLTools {
         return "'" + (input ? "Y" : "N") + "'";
     }
 
+    public static String GetStringForSQL(List<String> list) {
+        return list == null || list.isEmpty() ? "null" : "'" + String.join(",", list) + "'";
+    }
+
+    public static String GetStringForSQL(Map<String, String> map) {
+        return map == null || map.isEmpty() ? "null" : "'" + map.entrySet().stream().map(entry -> entry.getKey() + ":" + entry.getValue()).collect(Collectors.joining(",")) + "'";
+    }
+
+    public static String GetStringForSQL(Long _long) {
+        return _long == null ? "null" : _long.toString();
+    }
+
     public static String GetStringForSQL(Timestamp input) {
         if (input == null) {
             return "null";
@@ -47,6 +61,7 @@ public final class SQLTools {
             return "'" + GetCleanString(input.toString()) + "'";
         }
     }
+
     public static String GetStringForSQL(int input) {
         return Integer.toString(input);
     }
@@ -214,5 +229,23 @@ public final class SQLTools {
                 .appendPattern("yyyy-MM-dd[ ]['T']HH:mm:ss")
                 .appendFraction(ChronoField.MICRO_OF_SECOND, 0, 9, true)
                 .toFormatter());
+    }
+
+    public static List<String> getListFromSql(String list) {
+        return list == null ? new ArrayList<>() : Arrays.stream(list.split(",")).collect(Collectors.toList());
+    }
+
+    public static boolean getBooleanFromSql(String bool) {
+        return bool.equalsIgnoreCase("y");
+    }
+
+    public static Map<String, String> getMapFromSql(String map) {
+        return map == null ? new HashMap<>() : Arrays.stream(map.split(",")).collect(Collectors.toMap(s -> s.split(":")[0], s -> {
+            if (s.split(":").length == 2) {
+                return s.split(":")[1];
+            } else {
+                return "";
+            }
+        }));
     }
 }

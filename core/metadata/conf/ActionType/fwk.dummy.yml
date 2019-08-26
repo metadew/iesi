@@ -1,7 +1,7 @@
 ---
 data:
   name: "fwk.dummy"
-  className: "io.metadew.iesi.script.action.FwkDummy"
+  className: "io.metadew.iesi.script.action.fwk.FwkDummy"
   description: "Dummy for adding a placeholder step"
   parameters: []
   status: "stable"

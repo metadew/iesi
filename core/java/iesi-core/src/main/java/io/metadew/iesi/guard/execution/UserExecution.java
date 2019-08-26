@@ -2,7 +2,7 @@ package io.metadew.iesi.guard.execution;
 
 import io.metadew.iesi.framework.crypto.Password;
 import io.metadew.iesi.metadata.configuration.UserConfiguration;
-import io.metadew.iesi.metadata.definition.User;
+import io.metadew.iesi.metadata.definition.user.User;
 import io.metadew.iesi.metadata.execution.MetadataControl;
 
 import java.io.Console;

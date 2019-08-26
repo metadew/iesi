@@ -3,7 +3,7 @@ package io.metadew.iesi.metadata.repository.coordinator.configuration;
 import io.metadew.iesi.common.config.ConfigFile;
 import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.MssqlDatabase;
-import io.metadew.iesi.connection.database.connection.MssqlDatabaseConnection;
+import io.metadew.iesi.connection.database.connection.mssql.MssqlDatabaseConnection;
 import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
 
 import java.util.HashMap;

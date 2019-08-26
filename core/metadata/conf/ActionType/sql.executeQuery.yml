@@ -1,7 +1,7 @@
 ---
 data:
   name: "sql.executeQuery"
-  className: "io.metadew.iesi.script.action.SqlExecuteQuery"
+  className: "io.metadew.iesi.script.action.sql.SqlExecuteQuery"
   description: "Run a SQL query"
   parameters:
   - name: "query"

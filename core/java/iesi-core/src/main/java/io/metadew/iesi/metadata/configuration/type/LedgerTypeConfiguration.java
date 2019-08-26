@@ -2,7 +2,7 @@ package io.metadew.iesi.metadata.configuration.type;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
-import io.metadew.iesi.metadata.definition.LedgerType;
+import io.metadew.iesi.metadata.definition.ledger.LedgerType;
 import io.metadew.iesi.metadata.operation.DataObjectOperation;
 
 import java.io.File;

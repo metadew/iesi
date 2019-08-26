@@ -1,7 +1,7 @@
 ---
 data:
   name: "fho.executeFileTransfer"
-  className: "io.metadew.iesi.script.action.FhoExecuteFileTransfer"
+  className: "io.metadew.iesi.script.action.fho.FhoExecuteFileTransfer"
   description: "Transfer one or more files between locations"
   parameters:
   - name: "sourceFilePath"

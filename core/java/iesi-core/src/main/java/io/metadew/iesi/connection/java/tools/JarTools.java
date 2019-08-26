@@ -1,6 +1,6 @@
 package io.metadew.iesi.connection.java.tools;
 
-import io.metadew.iesi.metadata.definition.*;
+import io.metadew.iesi.metadata.definition.java.*;
 
 import java.io.FileInputStream;
 import java.lang.reflect.Field;

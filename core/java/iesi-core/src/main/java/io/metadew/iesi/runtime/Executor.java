@@ -1,18 +1,10 @@
 package io.metadew.iesi.runtime;
 
-import io.metadew.iesi.framework.execution.FrameworkRuntime;
-import io.metadew.iesi.launch.operation.ScriptLaunchOperation;
-import io.metadew.iesi.metadata.configuration.RequestResultConfiguration;
-import io.metadew.iesi.metadata.definition.Request;
-import io.metadew.iesi.metadata.definition.RequestResult;
-import io.metadew.iesi.metadata.definition.key.RequestResultKey;
-import io.metadew.iesi.runtime.configuration.RequestStatus;
+import io.metadew.iesi.metadata.configuration.request.RequestResultConfiguration;
+import io.metadew.iesi.metadata.definition.execution.AuthenticatedExecutionRequest;
+import io.metadew.iesi.metadata.definition.execution.NonAuthenticatedExecutionRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.time.LocalDateTime;
 
 public class Executor {
 
@@ -35,38 +27,40 @@ public class Executor {
         this.requestResultConfiguration = new RequestResultConfiguration();
     }
 
-    public synchronized void execute(Request request) {
-        try {
-            // TODO: this should be initialized at FWK Instance init
-            // FrameworkRunIdentifier frameworkRunIdentifier = new FrameworkRunIdentifier();
+    public synchronized void execute(NonAuthenticatedExecutionRequest request) {
 
-            RequestResult requestResult = new RequestResult(new RequestResultKey(request.getId()), "-1",
-                    request.getType(), FrameworkRuntime.getInstance().getFrameworkRunId(), request.getName(), request.getScope(), request.getContext(), request.getSpace(), request.getUser(),
-                    RequestStatus.RUNNING.value(), LocalDateTime.parse(request.getTimestamp()), LocalDateTime.now(), null);
-            requestResultConfiguration.insert(requestResult);
+    }
 
-            if (request.getType() != null) {
-                switch (request.getType()) {
-                    case "script":
-                        ScriptLaunchOperation.execute(request);
-                        break;
-                    default:
-                        throw new RuntimeException("Request type is not supported");
-                }
-            } else {
-                throw new RuntimeException("Empty request submitted for execution");
-            }
+    public synchronized void execute(AuthenticatedExecutionRequest request) {
+//        try {
 
-            requestResult.setStatus(RequestStatus.SUCCESS.value());
-            requestResult.setEndTimestamp(LocalDateTime.now());
-            requestResultConfiguration.update(requestResult);
-        } catch (Exception e) {
-            StringWriter stackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(stackTrace));
-
-            LOGGER.warn("exception=" + e.getMessage());
-            LOGGER.warn("stacktrace=" + stackTrace.toString());
-        }
+//            RequestResult requestResult = new RequestResult(new RequestResultKey(request.getId()), "-1",
+//                    request.getType(), FrameworkRuntime.getInstance().getFrameworkRunId(), request.getName(), request.getScope(), request.getContext(), request.getSpace(), request.getUser(),
+//                    RequestStatus.RUNNING.value(), LocalDateTime.parse(request.getTimestamp()), LocalDateTime.now(), null);
+//            requestResultConfiguration.insert(requestResult);
+//
+//            if (request.getType() != null) {
+//                switch (request.getType()) {
+//                    case "script":
+//                        ScriptLaunchOperation.execute(request);
+//                        break;
+//                    default:
+//                        throw new RuntimeException("Request type is not supported");
+//                }
+//            } else {
+//                throw new RuntimeException("Empty request submitted for execution");
+//            }
+//
+//            requestResult.setStatus(RequestStatus.SUCCESS.value());
+//            requestResult.setEndTimestamp(LocalDateTime.now());
+//            requestResultConfiguration.update(requestResult);
+//        } catch (Exception e) {
+//            StringWriter stackTrace = new StringWriter();
+//            e.printStackTrace(new PrintWriter(stackTrace));
+//
+//            LOGGER.warn("exception=" + e.getMessage());
+//            LOGGER.warn("stacktrace=" + stackTrace.toString());
+//        }
     }
 
 }

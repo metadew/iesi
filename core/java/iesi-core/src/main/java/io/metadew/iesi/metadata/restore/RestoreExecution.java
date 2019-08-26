@@ -3,7 +3,6 @@ package io.metadew.iesi.metadata.restore;
 import io.metadew.iesi.connection.FileConnection;
 import io.metadew.iesi.connection.tools.FolderTools;
 import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
-import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.framework.execution.FrameworkExecutionContext;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.definition.Context;

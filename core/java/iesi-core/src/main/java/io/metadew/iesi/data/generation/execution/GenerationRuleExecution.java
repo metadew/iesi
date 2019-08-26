@@ -2,7 +2,7 @@ package io.metadew.iesi.data.generation.execution;
 
 import io.metadew.iesi.framework.configuration.FrameworkConfiguration;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
-import io.metadew.iesi.metadata.definition.GenerationRule;
+import io.metadew.iesi.metadata.definition.generation.GenerationRule;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

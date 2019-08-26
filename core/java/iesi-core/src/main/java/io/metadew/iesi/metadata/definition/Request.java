@@ -22,8 +22,7 @@ public class Request {
 	private List<RequestParameter> parameters = new ArrayList<>();
 
 	// Constructors
-	public Request() {
-	}
+	public Request() {}
 
 	public Request(String id, String type, String timestamp, String name, String description, int amount, String email,
 			String scope, String context, String space, String user, String password, List<RequestParameter> parameters) {
@@ -32,7 +31,7 @@ public class Request {
 		this.timestamp = timestamp;
 		this.name = name;
 		this.description = description;
-		this.setAmount(amount);
+		this.amount =amount;
 		this.email = email;
 		this.scope = scope;
 		this.context = context;
@@ -44,19 +43,19 @@ public class Request {
 
 	public Request(String type, String timestamp, String name, String description, int amount, String email,
 			String scope, String context, String space, String user, String password, List<RequestParameter> parameters) {
-		this.id = IdentifierTools.getRequestIdentifier();
+		this.id = IdentifierTools.getExecutionRequestIdentifier();
 		this.type = type;
 		this.timestamp = timestamp;
 		this.name = name;
 		this.description = description;
-		this.setAmount(amount);
+		this.amount = amount;
 		this.email = email;
 		this.scope = scope;
 		this.context = context;
 		this.space = space;
 		this.user = user;
 		this.password = password;
-		this.setParameters(parameters);
+		this.parameters = parameters;
 	}
 
 	// Getters and Setters

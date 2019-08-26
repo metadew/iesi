@@ -1,6 +1,6 @@
 package io.metadew.iesi.connection.database;
 
-import io.metadew.iesi.connection.database.connection.H2DatabaseConnection;
+import io.metadew.iesi.connection.database.connection.h2.H2DatabaseConnection;
 import io.metadew.iesi.metadata.definition.MetadataField;
 
 /**

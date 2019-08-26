@@ -2,7 +2,7 @@ package io.metadew.iesi.connection.operation;
 
 import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.PrestoDatabase;
-import io.metadew.iesi.connection.database.connection.PrestoDatabaseConnection;
+import io.metadew.iesi.connection.database.connection.presto.PrestoDatabaseConnection;
 import io.metadew.iesi.connection.tools.ConnectionTools;
 import io.metadew.iesi.framework.crypto.FrameworkCrypto;
 import io.metadew.iesi.framework.execution.FrameworkControl;

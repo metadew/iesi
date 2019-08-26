@@ -2,7 +2,7 @@ package io.metadew.iesi.connection.operation;
 
 import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.MssqlDatabase;
-import io.metadew.iesi.connection.database.connection.MssqlDatabaseConnection;
+import io.metadew.iesi.connection.database.connection.mssql.MssqlDatabaseConnection;
 import io.metadew.iesi.connection.tools.ConnectionTools;
 import io.metadew.iesi.framework.crypto.FrameworkCrypto;
 import io.metadew.iesi.framework.execution.FrameworkControl;

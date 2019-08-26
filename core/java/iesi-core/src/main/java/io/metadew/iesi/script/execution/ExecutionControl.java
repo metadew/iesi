@@ -1,6 +1,7 @@
 package io.metadew.iesi.script.execution;
 
 import io.metadew.iesi.common.text.TextTools;
+import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.configuration.FrameworkSettingConfiguration;
 import io.metadew.iesi.framework.configuration.FrameworkStatus;
 import io.metadew.iesi.framework.crypto.FrameworkCrypto;
@@ -38,6 +39,7 @@ import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class ExecutionControl {
 
@@ -51,13 +53,13 @@ public class ExecutionControl {
     private ScriptLog scriptLog;
     private String runId;
     private String envName;
-    private List<Long> processIdList;
     private boolean actionErrorStop = false;
     private boolean scriptExit = false;
     private ScriptDesignTraceService scriptDesignTraceService;
 
     private static final Marker SCRIPTMARKER = MarkerManager.getMarker("SCRIPT");
     private static final Logger LOGGER = LogManager.getLogger();
+    private Long lastProcessId;
 
     // Constructors
     public ExecutionControl() throws ClassNotFoundException, NoSuchMethodException,
@@ -69,13 +71,13 @@ public class ExecutionControl {
         this.scriptDesignTraceService = new ScriptDesignTraceService();
         this.executionLog = new ExecutionLog();
         this.executionTrace = new ExecutionTrace();
-        setRunId(FrameworkRuntime.getInstance().getFrameworkRunId());
+        initializeRunId();
         initializeExecutionRuntime(runId);
-        this.processIdList = new ArrayList<>();
-        this.processIdList.add(-1L);
+        this.lastProcessId = -1L;
     }
 
 
+    @SuppressWarnings("unchecked")
     private void initializeExecutionRuntime(String runId) throws ClassNotFoundException,
             NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         if (FrameworkSettingConfiguration.getInstance().getSettingPath("script.execution.runtime").isPresent() &&
@@ -97,7 +99,7 @@ public class ExecutionControl {
                 .getConnectivityMetadataRepository()
                 .executeQuery("select env_par_nm, env_par_val from "
                         + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("EnvironmentParameters")
-                        + " where env_nm = '" + this.getEnvName() + "' order by env_par_nm asc, env_par_val asc", "writer"));
+                        + " where env_nm = " + SQLTools.GetStringForSQL(this.envName) + " order by env_par_nm asc, env_par_val asc", "reader"));
     }
 
     public void terminate() {
@@ -182,18 +184,23 @@ public class ExecutionControl {
 
     }
 
-    public void logStart(BackupExecution backupExecution) {
-        setRunId(FrameworkRuntime.getInstance().getFrameworkRunId());
-    }
+//    public void logStart(BackupExecution backupExecution) {
+//        initializeRunId();
+//    }
 
     public void logStart(RestoreExecution restoreExecution) {
-        setRunId(FrameworkRuntime.getInstance().getFrameworkRunId());
+        initializeRunId();
     }
 
-    public Long getNewProcessId() {
-        Long processId = FrameworkRuntime.getInstance().getNextProcessId();
-        logMessage(new IESIMessage("exec.processid=" + processId), Level.TRACE);
-        return processId;
+//    public Long getNewProcessId() {
+//        Long processId = FrameworkRuntime.getInstance().getNextProcessId();
+//        logMessage(new IESIMessage("exec.processid=" + processId), Level.TRACE);
+//        return processId;
+//    }
+
+    public Long getNextProcessId() {
+        lastProcessId = lastProcessId + 1;
+        return lastProcessId;
     }
 
     public String logEnd(ScriptExecution scriptExecution) {
@@ -392,8 +399,8 @@ public class ExecutionControl {
         return runId;
     }
 
-    public void setRunId(String runId) {
-        this.runId = runId;
+    public void initializeRunId() {
+        this.runId = UUID.randomUUID().toString();
         ThreadContext.put("runId", runId);
         logMessage(new IESIMessage("exec.runid=" + runId), Level.INFO);
     }
@@ -406,10 +413,6 @@ public class ExecutionControl {
         this.envName = envName;
     }
 
-    public boolean isActionErrorStop() {
-        return actionErrorStop;
-    }
-
     public void setActionErrorStop(boolean actionErrorStop) {
         this.actionErrorStop = actionErrorStop;
     }
@@ -418,44 +421,12 @@ public class ExecutionControl {
         return executionRuntime;
     }
 
-    public void setExecutionRuntime(ExecutionRuntime executionRuntime) {
-        this.executionRuntime = executionRuntime;
-    }
-
-    public List<Long> getProcessIdList() {
-        return processIdList;
-    }
-
-    public void setProcessIdList(List<Long> processIdList) {
-        this.processIdList = processIdList;
-    }
-
     public ExecutionTrace getExecutionTrace() {
         return executionTrace;
     }
 
-    public void setExecutionTrace(ExecutionTrace executionTrace) {
-        this.executionTrace = executionTrace;
-    }
-
     public ScriptLog getScriptLog() {
         return scriptLog;
-    }
-
-    public void setScriptLog(ScriptLog scriptLog) {
-        this.scriptLog = scriptLog;
-    }
-
-    public ExecutionLog getExecutionLog() {
-        return executionLog;
-    }
-
-    public void setExecutionLog(ExecutionLog executionLog) {
-        this.executionLog = executionLog;
-    }
-
-    public boolean isScriptExit() {
-        return scriptExit;
     }
 
     public void setScriptExit(boolean scriptExit) {

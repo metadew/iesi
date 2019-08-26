@@ -4,7 +4,7 @@ import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.data.generation.execution.GenerationRuleExecution;
 import io.metadew.iesi.data.generation.execution.GenerationRuleParameterExecution;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
-import io.metadew.iesi.metadata.definition.GenerationRuleParameter;
+import io.metadew.iesi.metadata.definition.generation.GenerationRuleParameter;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;

@@ -1,7 +1,7 @@
 ---
 data:
   name: "fho.deleteFolder"
-  className: "io.metadew.iesi.script.action.FhoDeleteFolder"
+  className: "io.metadew.iesi.script.action.fho.FhoDeleteFolder"
   description: "Delete one or more folders and all contents"
   parameters:
   - name: "path"

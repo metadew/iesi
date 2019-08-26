@@ -1,7 +1,7 @@
 package io.metadew.iesi.metadata.configuration.type;
 
-import io.metadew.iesi.metadata.definition.GenerationControlRuleType;
-import io.metadew.iesi.metadata.definition.GenerationControlRuleTypeParameter;
+import io.metadew.iesi.metadata.definition.generation.GenerationControlRuleType;
+import io.metadew.iesi.metadata.definition.generation.GenerationControlRuleTypeParameter;
 
 public class GenerationControlRuleTypeParameterConfiguration {
 

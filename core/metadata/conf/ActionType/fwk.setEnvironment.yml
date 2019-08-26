@@ -1,7 +1,7 @@
 ---
 data:
   name: "fwk.setEnvironment"
-  className: "io.metadew.iesi.script.action.FwkSetEnvironment"
+  className: "io.metadew.iesi.script.action.fwk.FwkSetEnvironment"
   description: "Set the environment where the next steps will be executed on"
   parameters:
   - name: "environment"

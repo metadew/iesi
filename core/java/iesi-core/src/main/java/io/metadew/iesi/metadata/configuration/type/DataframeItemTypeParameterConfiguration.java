@@ -1,7 +1,7 @@
 package io.metadew.iesi.metadata.configuration.type;
 
-import io.metadew.iesi.metadata.definition.DataframeItemType;
-import io.metadew.iesi.metadata.definition.DataframeItemTypeParameter;
+import io.metadew.iesi.metadata.definition.dataframe.DataframeItemType;
+import io.metadew.iesi.metadata.definition.dataframe.DataframeItemTypeParameter;
 
 public class DataframeItemTypeParameterConfiguration {
 

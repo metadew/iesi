@@ -1,12 +1,12 @@
 package io.metadew.iesi.data.generation.execution;
 
 import io.metadew.iesi.client.execution.ProgressBar;
-import io.metadew.iesi.connection.database.connection.SqliteDatabaseConnection;
+import io.metadew.iesi.connection.database.connection.sqlite.SqliteDatabaseConnection;
 import io.metadew.iesi.connection.tools.FolderTools;
 import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
-import io.metadew.iesi.metadata.definition.Generation;
-import io.metadew.iesi.metadata.definition.GenerationRule;
+import io.metadew.iesi.metadata.definition.generation.Generation;
+import io.metadew.iesi.metadata.definition.generation.GenerationRule;
 import io.metadew.iesi.script.execution.ExecutionControl;
 
 import java.io.File;

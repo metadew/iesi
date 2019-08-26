@@ -1,7 +1,7 @@
 ---
 data:
   name: "wfa.executeQueryPing"
-  className: "io.metadew.iesi.script.action.WfaExecuteQueryPing"
+  className: "io.metadew.iesi.script.action.wfa.WfaExecuteQueryPing"
   description: "Wait until a SQL query returns a result or not"
   parameters:
   - name: "query"

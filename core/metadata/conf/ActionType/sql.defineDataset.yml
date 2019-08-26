@@ -1,7 +1,7 @@
 ---
 data:
   name: "sql.defineDataset"
-  className: "io.metadew.iesi.script.action.SqlDefineDataset"
+  className: "io.metadew.iesi.script.action.sql.SqlDefineDataset"
   description: "Define a SQL dataset"
   parameters:
   - name: "name"

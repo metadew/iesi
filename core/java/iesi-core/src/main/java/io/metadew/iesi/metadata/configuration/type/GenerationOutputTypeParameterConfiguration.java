@@ -1,7 +1,7 @@
 package io.metadew.iesi.metadata.configuration.type;
 
-import io.metadew.iesi.metadata.definition.GenerationOutputType;
-import io.metadew.iesi.metadata.definition.GenerationOutputTypeParameter;
+import io.metadew.iesi.metadata.definition.generation.GenerationOutputType;
+import io.metadew.iesi.metadata.definition.generation.GenerationOutputTypeParameter;
 
 public class GenerationOutputTypeParameterConfiguration {
 

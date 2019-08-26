@@ -1,7 +1,7 @@
 ---
 data:
   name: "fwk.includeScript"
-  className: "io.metadew.iesi.script.action.FwkIncludeScript"
+  className: "io.metadew.iesi.script.action.fwk.FwkIncludeScript"
   description: "Include the actions of another script and execute as one script"
   parameters:
   - name: "script"

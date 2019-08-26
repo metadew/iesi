@@ -1,7 +1,7 @@
 ---
 data:
   name: "data.outputDataset"
-  className: "io.metadew.iesi.script.action.DataOutputDataset"
+  className: "io.metadew.iesi.script.action.data.DataOutputDataset"
   description: "Prints a dataset for logging and debugging purposes"
   parameters:
   - name: "name"

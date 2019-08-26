@@ -1,7 +1,7 @@
 ---
 data:
   name: "fwk.outputMessage"
-  className: "io.metadew.iesi.script.action.FwkOutputMessage"
+  className: "io.metadew.iesi.script.action.fwk.FwkOutputMessage"
   description: "Prints a message for logging and debugging purposes"
   parameters:
   - name: "message"

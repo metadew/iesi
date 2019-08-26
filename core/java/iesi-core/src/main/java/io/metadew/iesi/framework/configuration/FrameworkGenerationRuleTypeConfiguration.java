@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.metadata.configuration.FrameworkPluginConfiguration;
 import io.metadew.iesi.metadata.definition.DataObject;
-import io.metadew.iesi.metadata.definition.GenerationRuleType;
+import io.metadew.iesi.metadata.definition.generation.GenerationRuleType;
 import io.metadew.iesi.metadata.operation.DataObjectOperation;
 import org.apache.commons.io.FilenameUtils;
 

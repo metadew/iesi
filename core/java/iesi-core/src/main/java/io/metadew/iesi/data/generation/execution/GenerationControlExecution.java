@@ -3,7 +3,7 @@ package io.metadew.iesi.data.generation.execution;
 import io.metadew.iesi.data.generation.output.control.Footer;
 import io.metadew.iesi.data.generation.output.control.Header;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
-import io.metadew.iesi.metadata.definition.GenerationControl;
+import io.metadew.iesi.metadata.definition.generation.GenerationControl;
 import io.metadew.iesi.script.execution.ExecutionControl;
 
 public class GenerationControlExecution {

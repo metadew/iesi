@@ -1,7 +1,7 @@
 ---
 data:
   name: "fho.createFolder"
-  className: "io.metadew.iesi.script.action.FhoCreateFolder"
+  className: "io.metadew.iesi.script.action.fho.FhoCreateFolder"
   description: "Create a folder"
   parameters:
   - name: "path"

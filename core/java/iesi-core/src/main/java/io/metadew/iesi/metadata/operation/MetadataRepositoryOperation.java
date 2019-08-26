@@ -1,6 +1,5 @@
 package io.metadew.iesi.metadata.operation;
 
-import io.metadew.iesi.common.list.ListTools;
 import io.metadew.iesi.common.text.ParsingTools;
 import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
@@ -13,9 +12,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class MetadataRepositoryOperation {
 
@@ -82,7 +79,8 @@ public class MetadataRepositoryOperation {
                 this.loadConfigurationSelection(metadataRepositories, inputFolder, workFolder, archiveFolder, errorFolder,
                         ParsingTools.getRegexFunctionValue(input));
             } else {
-                List<String> fileList = ListTools.convertStringList(input, ",");
+                List<String> fileList = new ArrayList<>(Arrays.asList(input.split(",")));
+                // ListTools.convertStringList(input, ",");
                 for (String file : fileList) {
                     this.loadConfigurationItem(metadataRepositories, inputFolder, workFolder, archiveFolder, errorFolder, file);
                 }

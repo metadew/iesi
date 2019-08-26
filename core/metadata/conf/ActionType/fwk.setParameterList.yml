@@ -1,7 +1,7 @@
 ---
 data:
   name: "fwk.setParameterList"
-  className: "io.metadew.iesi.script.action.FwkSetParameterList"
+  className: "io.metadew.iesi.script.action.fwk.FwkSetParameterList"
   description: "Load a list of parameters as runtime variables"
   parameters:
   - name: "list"

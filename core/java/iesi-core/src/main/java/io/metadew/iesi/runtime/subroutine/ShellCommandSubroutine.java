@@ -1,7 +1,7 @@
 package io.metadew.iesi.runtime.subroutine;
 
-import io.metadew.iesi.metadata.definition.Subroutine;
-import io.metadew.iesi.metadata.definition.SubroutineParameter;
+import io.metadew.iesi.metadata.definition.subroutine.Subroutine;
+import io.metadew.iesi.metadata.definition.subroutine.SubroutineParameter;
 
 public class ShellCommandSubroutine {
 

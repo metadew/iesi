@@ -37,7 +37,6 @@ public final class ProcessIdentifierController {
 		}
 
 		public void run() {
-
 			try {
 				semaphore.acquire();
 				try {

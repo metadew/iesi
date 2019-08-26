@@ -1,20 +1,18 @@
 package io.metadew.iesi.script.operation;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.metadew.iesi.common.json.JsonParsed;
-import io.metadew.iesi.common.json.JsonParsedItem;
 import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.connection.DatabaseConnection;
-import io.metadew.iesi.connection.database.connection.SqliteDatabaseConnection;
+import io.metadew.iesi.connection.database.connection.sqlite.SqliteDatabaseConnection;
 import io.metadew.iesi.connection.operation.ConnectionOperation;
 import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
-import io.metadew.iesi.metadata.configuration.ConnectionConfiguration;
-import io.metadew.iesi.metadata.configuration.RepositoryConfiguration;
-import io.metadew.iesi.metadata.configuration.RepositoryInstanceConfiguration;
-import io.metadew.iesi.metadata.definition.Repository;
-import io.metadew.iesi.metadata.definition.RepositoryInstance;
-import io.metadew.iesi.metadata.definition.RepositoryInstanceParameter;
+import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
+import io.metadew.iesi.metadata.configuration.repository.RepositoryConfiguration;
+import io.metadew.iesi.metadata.configuration.repository.RepositoryInstanceConfiguration;
 import io.metadew.iesi.metadata.definition.connection.Connection;
+import io.metadew.iesi.metadata.definition.repository.Repository;
+import io.metadew.iesi.metadata.definition.repository.RepositoryInstance;
+import io.metadew.iesi.metadata.definition.repository.RepositoryInstanceParameter;
 import io.metadew.iesi.script.execution.ExecutionControl;
 
 import javax.sql.rowset.CachedRowSet;
@@ -44,7 +42,6 @@ public class RepositoryOperation {
     private Database repositoryDatabaseInstance;
 
     // Constructors
-    @SuppressWarnings("unused")
     public RepositoryOperation(ExecutionControl executionControl, String repositoryName,
                                String repositoryInstanceName, String repositoryInstanceLabels) {
         this.setExecutionControl(executionControl);
@@ -156,51 +153,51 @@ public class RepositoryOperation {
         return value;
     }
 
-    public void setDataset(String datasetTableName, JsonParsed jsonParsed) {
-        // Check if table exists
-        String queryTableExists = "select name from sqlite_master where name = '" + datasetTableName + "'";
-        CachedRowSet crs = null;
-        crs = this.getDatasetConnection().executeQuery(queryTableExists);
-        String value = "";
-        boolean tableExists = false;
-        try {
-            while (crs.next()) {
-                value = crs.getString("NAME");
-                if (value.trim().equalsIgnoreCase(datasetTableName)) {
-                    tableExists = true;
-                }
-            }
-            crs.close();
-        } catch (Exception e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-        }
-
-        // Perform necessary initialization actions
-        if (tableExists) {
-            String clean = "delete from " + datasetTableName;
-            this.getDatasetConnection().executeUpdate(clean);
-        } else {
-            String create = "CREATE TABLE " + datasetTableName + " (key TEXT, value TEXT)";
-            this.getDatasetConnection().executeUpdate(create);
-        }
-
-        // Store the data
-        try {
-            for (JsonParsedItem jsonParsedItem : jsonParsed.getJsonParsedItemList()) {
-                String query = "";
-                query = "insert into " + datasetTableName + " (key, value) values ('";
-                query += jsonParsedItem.getPath();
-                query += "','";
-                query += jsonParsedItem.getValue();
-                query += "')";
-                this.getDatasetConnection().executeUpdate(query);
-            }
-        } catch (Exception e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-        }
-    }
+//    public void setDataset(String datasetTableName, JsonParsed jsonParsed) {
+//        // Check if table exists
+//        String queryTableExists = "select name from sqlite_master where name = '" + datasetTableName + "'";
+//        CachedRowSet crs = null;
+//        crs = this.getDatasetConnection().executeQuery(queryTableExists);
+//        String value = "";
+//        boolean tableExists = false;
+//        try {
+//            while (crs.next()) {
+//                value = crs.getString("NAME");
+//                if (value.trim().equalsIgnoreCase(datasetTableName)) {
+//                    tableExists = true;
+//                }
+//            }
+//            crs.close();
+//        } catch (Exception e) {
+//            StringWriter StackTrace = new StringWriter();
+//            e.printStackTrace(new PrintWriter(StackTrace));
+//        }
+//
+//        // Perform necessary initialization actions
+//        if (tableExists) {
+//            String clean = "delete from " + datasetTableName;
+//            this.getDatasetConnection().executeUpdate(clean);
+//        } else {
+//            String create = "CREATE TABLE " + datasetTableName + " (key TEXT, value TEXT)";
+//            this.getDatasetConnection().executeUpdate(create);
+//        }
+//
+//        // Store the data
+//        try {
+//            for (JsonParsedItem jsonParsedItem : jsonParsed.getJsonParsedItemList()) {
+//                String query = "";
+//                query = "insert into " + datasetTableName + " (key, value) values ('";
+//                query += jsonParsedItem.getPath();
+//                query += "','";
+//                query += jsonParsedItem.getValue();
+//                query += "')";
+//                this.getDatasetConnection().executeUpdate(query);
+//            }
+//        } catch (Exception e) {
+//            StringWriter StackTrace = new StringWriter();
+//            e.printStackTrace(new PrintWriter(StackTrace));
+//        }
+//    }
 
     public void setDatasetEntry(String datasetTableName, String key, String value) {
         // Store the data

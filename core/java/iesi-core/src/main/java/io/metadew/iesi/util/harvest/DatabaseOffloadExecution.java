@@ -4,10 +4,7 @@ import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.operation.ConnectionOperation;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
-import io.metadew.iesi.framework.execution.FrameworkExecutionContext;
-import io.metadew.iesi.framework.instance.FrameworkInstance;
-import io.metadew.iesi.metadata.configuration.ConnectionConfiguration;
-import io.metadew.iesi.metadata.definition.Context;
+import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 
 import javax.sql.rowset.CachedRowSet;

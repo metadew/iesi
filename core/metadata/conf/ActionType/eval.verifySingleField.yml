@@ -1,7 +1,7 @@
 ---
 data:
   name: "eval.verifySingleField"
-  className: "io.metadew.iesi.script.action.EvalVerifySingleField"
+  className: "io.metadew.iesi.script.action.eval.EvalVerifySingleField"
   description: "Check a single field against a specific rule"
   parameters:
   - name: "database"

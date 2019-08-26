@@ -1,7 +1,7 @@
 package io.metadew.iesi.metadata.configuration.type;
 
-import io.metadew.iesi.metadata.definition.ComponentType;
-import io.metadew.iesi.metadata.definition.ComponentTypeParameter;
+import io.metadew.iesi.metadata.definition.component.ComponentType;
+import io.metadew.iesi.metadata.definition.component.ComponentTypeParameter;
 
 public class ComponentTypeParameterConfiguration {
 

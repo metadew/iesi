@@ -2,7 +2,7 @@ package io.metadew.iesi.connection.operation;
 
 import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.DremioDatabase;
-import io.metadew.iesi.connection.database.connection.DremioDatabaseConnection;
+import io.metadew.iesi.connection.database.connection.dremio.DremioDatabaseConnection;
 import io.metadew.iesi.connection.tools.ConnectionTools;
 import io.metadew.iesi.framework.crypto.FrameworkCrypto;
 import io.metadew.iesi.framework.execution.FrameworkControl;

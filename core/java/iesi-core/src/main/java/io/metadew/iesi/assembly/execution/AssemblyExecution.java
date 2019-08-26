@@ -6,8 +6,15 @@ import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.connection.tools.FolderTools;
 import io.metadew.iesi.metadata.definition.*;
 import io.metadew.iesi.metadata.definition.action.type.ActionType;
+import io.metadew.iesi.metadata.definition.component.ComponentType;
 import io.metadew.iesi.metadata.definition.connection.ConnectionType;
+import io.metadew.iesi.metadata.definition.dataframe.DataframeItemType;
+import io.metadew.iesi.metadata.definition.dataframe.DataframeType;
+import io.metadew.iesi.metadata.definition.generation.*;
+import io.metadew.iesi.metadata.definition.ledger.LedgerType;
 import io.metadew.iesi.metadata.definition.script.type.ScriptType;
+import io.metadew.iesi.metadata.definition.subroutine.SubroutineType;
+import io.metadew.iesi.metadata.definition.user.UserType;
 import io.metadew.iesi.metadata.operation.DataObjectOperation;
 
 import java.io.BufferedReader;

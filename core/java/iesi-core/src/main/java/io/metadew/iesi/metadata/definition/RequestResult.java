@@ -1,6 +1,5 @@
 package io.metadew.iesi.metadata.definition;
 
-import io.metadew.iesi.framework.execution.FrameworkRuntime;
 import io.metadew.iesi.metadata.definition.key.RequestResultKey;
 
 import java.time.LocalDateTime;

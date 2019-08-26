@@ -38,7 +38,16 @@ public abstract class DatabaseConnection {
 
     public abstract String getDriver();
 
+//    public String prepareQuery(String query) {
+//        return query;
+//    }
+
     public Connection getConnection() throws SQLException {
+        try {
+            Class.forName(getDriver());
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
         return DriverManager.getConnection(connectionURL, userName, userPassword);
     }
 
@@ -74,6 +83,7 @@ public abstract class DatabaseConnection {
         }
         // Remove illegal characters at the end
         query = this.removeIllgegalCharactersForSingleQuery(query);
+        // query = prepareQuery(query);
         LOGGER.info(SQLMARKER, query);
 
         try {
@@ -124,6 +134,7 @@ public abstract class DatabaseConnection {
         }
         CachedRowSet crs = null;
         query = this.removeIllgegalCharactersForSingleQuery(query);
+        // query = prepareQuery(query);
         LOGGER.info(SQLMARKER, query);
 
         try {
@@ -277,6 +288,7 @@ public abstract class DatabaseConnection {
         }
         // Remove illegal characters at the end
         query = this.removeIllgegalCharactersForSingleQuery(query);
+        // query = prepareQuery(query);
         LOGGER.info(SQLMARKER, query);
 
         try {
@@ -317,6 +329,7 @@ public abstract class DatabaseConnection {
             Statement statement = connection.createStatement();
                 for (String query : queries) {
                     query = this.removeIllgegalCharactersForSingleQuery(query);
+                    // query = prepareQuery(query);
                     LOGGER.info(SQLMARKER, query);
                     statement.addBatch(query);
                 }

@@ -1,7 +1,7 @@
 ---
 data:
   name: "wfa.executeFilePing"
-  className: "io.metadew.iesi.script.action.WfaExecuteFilePing"
+  className: "io.metadew.iesi.script.action.wfa.WfaExecuteFilePing"
   description: "Wait until a File Statement returns a result or not"
   parameters:
   - name: "filePath"

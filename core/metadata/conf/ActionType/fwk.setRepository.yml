@@ -1,7 +1,7 @@
 ---
 data:
   name: "fwk.setRepository"
-  className: "io.metadew.iesi.script.action.FwkSetRepository"
+  className: "io.metadew.iesi.script.action.fwk.FwkSetRepository"
   description: "Define a repository that can be used in any next action"
   parameters:
   - name: "name"

@@ -1,7 +1,7 @@
 package io.metadew.iesi.runtime;
 
 import io.metadew.iesi.framework.instance.FrameworkInstance;
-import io.metadew.iesi.metadata.configuration.RequestConfiguration;
+import io.metadew.iesi.metadata.configuration.request.RequestConfiguration;
 import io.metadew.iesi.metadata.definition.Request;
 import io.metadew.iesi.metadata.definition.RequestParameter;
 import io.metadew.iesi.server.execution.tools.ExecutionServerTools;

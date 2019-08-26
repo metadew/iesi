@@ -1,7 +1,7 @@
 ---
 data:
   name: "script.logOutput"
-  className: "io.metadew.iesi.script.action.ScriptLogOutput"
+  className: "io.metadew.iesi.script.action.script.ScriptLogOutput"
   description: "Store an output value as part of the script results"
   parameters:
   - name: "name"

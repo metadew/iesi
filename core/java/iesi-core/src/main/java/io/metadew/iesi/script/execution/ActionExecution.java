@@ -44,7 +44,7 @@ public class ActionExecution {
 
 	// Methods
 	public void initialize() {
-		this.setProcessId(this.getExecutionControl().getNewProcessId());
+		this.setProcessId(this.getExecutionControl().getNextProcessId());
 		this.setInitialized(true);
 		this.setExecuted(false);
 	}

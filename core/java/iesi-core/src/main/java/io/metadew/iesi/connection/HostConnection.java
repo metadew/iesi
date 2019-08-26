@@ -6,7 +6,7 @@ import io.metadew.iesi.connection.host.ShellCommandResult;
 import io.metadew.iesi.connection.host.ShellCommandSettings;
 import io.metadew.iesi.connection.operation.ConnectionOperation;
 import io.metadew.iesi.framework.execution.FrameworkRuntime;
-import io.metadew.iesi.metadata.configuration.ConnectionConfiguration;
+import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import org.apache.commons.io.IOUtils;
 

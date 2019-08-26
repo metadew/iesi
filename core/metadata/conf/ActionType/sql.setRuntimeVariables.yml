@@ -1,7 +1,7 @@
 ---
 data:
   name: "sql.setRuntimeVariables"
-  className: "io.metadew.iesi.script.action.SqlSetRuntimeVariables"
+  className: "io.metadew.iesi.script.action.sql.SqlSetRuntimeVariables"
   description: "Retrieve runtime variables using a SQL Statement"
   parameters:
   - name: "query"

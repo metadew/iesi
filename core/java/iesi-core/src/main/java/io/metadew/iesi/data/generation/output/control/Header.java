@@ -4,7 +4,7 @@ import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.data.generation.execution.GenerationControlExecution;
 import io.metadew.iesi.data.generation.execution.GenerationControlRuleExecution;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
-import io.metadew.iesi.metadata.definition.GenerationControlRule;
+import io.metadew.iesi.metadata.definition.generation.GenerationControlRule;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

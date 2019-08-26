@@ -1,7 +1,7 @@
 ---
 data:
   name: "sql.executeProcedure"
-  className: "io.metadew.iesi.script.action.SqlExecuteProcedure"
+  className: "io.metadew.iesi.script.action.sql.SqlExecuteProcedure"
   description: "Execute a SQL Stored Procedure"
   parameters:
   - name: "procedure"

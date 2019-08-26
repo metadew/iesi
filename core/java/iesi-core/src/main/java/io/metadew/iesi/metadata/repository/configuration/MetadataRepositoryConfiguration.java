@@ -123,6 +123,10 @@ public class MetadataRepositoryConfiguration {
                 metadataRepositories.add(new ResultMetadataRepository(frameworkConfiguration.getFrameworkCode(), name, scope, instanceName, repositoryConfiguration.toRepository(),
                         FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.def"),
                         FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.def")));
+                metadataRepositories.add(new ExecutionServerMetadataRepository(
+                        frameworkConfiguration.getFrameworkCode(), name, scope, instanceName, repositoryConfiguration.toRepository(),
+                        FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.def"),
+                        FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.def")));
                 // metadataRepositories.add(new GeneralMetadataRepository(frameworkConfiguration.getFrameworkCode(), name, scope, instanceName, repositoryConfiguration.toRepository()));
             } else if (category.equalsIgnoreCase("catalog")) {
                 metadataRepositories.add(new CatalogMetadataRepository(frameworkConfiguration.getFrameworkCode(), name, scope, instanceName, repositoryConfiguration.toRepository(),
@@ -146,6 +150,11 @@ public class MetadataRepositoryConfiguration {
                         FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.def")));
             } else if (category.equalsIgnoreCase("result")) {
                 metadataRepositories.add(new ResultMetadataRepository(frameworkConfiguration.getFrameworkCode(), name, scope, instanceName, repositoryConfiguration.toRepository(),
+                        FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.def"),
+                        FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.def")));
+            } else if (category.equalsIgnoreCase("execution_server")) {
+                metadataRepositories.add(new ExecutionServerMetadataRepository(
+                        frameworkConfiguration.getFrameworkCode(), name, scope, instanceName, repositoryConfiguration.toRepository(),
                         FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.def"),
                         FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.def")));
             } else {

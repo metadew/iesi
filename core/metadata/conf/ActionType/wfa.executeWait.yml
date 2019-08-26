@@ -1,7 +1,7 @@
 ---
 data:
   name: "wfa.executeWait"
-  className: "io.metadew.iesi.script.action.WfaExecuteWait"
+  className: "io.metadew.iesi.script.action.wfa.WfaExecuteWait"
   description: "Wait for a defined interval"
   parameters:
   - name: "wait"

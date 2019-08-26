@@ -1,16 +1,16 @@
 package io.metadew.iesi.metadata.repository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.metadew.iesi.metadata.configuration.ComponentConfiguration;
-import io.metadew.iesi.metadata.configuration.GenerationConfiguration;
+import io.metadew.iesi.metadata.configuration.component.ComponentConfiguration;
+import io.metadew.iesi.metadata.configuration.generation.GenerationConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.ComponentAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.ComponentDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.script.ScriptConfiguration;
 import io.metadew.iesi.metadata.configuration.script.exception.ScriptAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.script.exception.ScriptDoesNotExistException;
-import io.metadew.iesi.metadata.definition.Component;
+import io.metadew.iesi.metadata.definition.component.Component;
 import io.metadew.iesi.metadata.definition.DataObject;
-import io.metadew.iesi.metadata.definition.Generation;
+import io.metadew.iesi.metadata.definition.generation.Generation;
 import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.metadata.definition.script.ScriptParameter;

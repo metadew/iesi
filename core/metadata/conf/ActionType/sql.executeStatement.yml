@@ -1,7 +1,7 @@
 ---
 data:
   name: "sql.executeStatement"
-  className: "io.metadew.iesi.script.action.SqlExecuteStatement"
+  className: "io.metadew.iesi.script.action.sql.SqlExecuteStatement"
   description: "Run a SQL statement (not returning any result)"
   parameters:
   - name: "statement"

@@ -1,6 +1,5 @@
 package io.metadew.iesi.data.generation.output;
 
-import io.metadew.iesi.common.list.ListTools;
 import io.metadew.iesi.common.text.ParsingTools;
 import io.metadew.iesi.connection.tools.FolderTools;
 import io.metadew.iesi.connection.tools.OutputTools;
@@ -9,8 +8,8 @@ import io.metadew.iesi.data.generation.execution.GenerationOutputExecution;
 import io.metadew.iesi.data.generation.execution.GenerationOutputParameterExecution;
 import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
-import io.metadew.iesi.metadata.definition.GenerationControl;
-import io.metadew.iesi.metadata.definition.GenerationOutputParameter;
+import io.metadew.iesi.metadata.definition.generation.GenerationControl;
+import io.metadew.iesi.metadata.definition.generation.GenerationOutputParameter;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -115,7 +114,8 @@ public class DelimitedFile {
 			}
 			
 			for (GenerationControl generationControl : this.getGenerationOutputExecution().getGenerationExecution().getGeneration().getControls()) {
-				if (ListTools.inList(controlsList, generationControl.getName().trim().toLowerCase())) {
+				// ListTools.inList(controlsList, generationControl.getName().trim().toLowerCase())
+				if (controlsList.contains(generationControl.getName().trim().toLowerCase())) {
 					GenerationControlExecution generationControlExecution = new GenerationControlExecution(this.getFrameworkExecution(), this.getExecutionControl(), this.getGenerationOutputExecution().getGenerationExecution(), "footer");
 					generationControlExecution.execute(fullFileName);
 				}

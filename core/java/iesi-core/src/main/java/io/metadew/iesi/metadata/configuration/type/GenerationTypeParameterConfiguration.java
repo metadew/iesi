@@ -1,8 +1,8 @@
 package io.metadew.iesi.metadata.configuration.type;
 
 import io.metadew.iesi.framework.instance.FrameworkInstance;
-import io.metadew.iesi.metadata.definition.GenerationType;
-import io.metadew.iesi.metadata.definition.GenerationTypeParameter;
+import io.metadew.iesi.metadata.definition.generation.GenerationType;
+import io.metadew.iesi.metadata.definition.generation.GenerationTypeParameter;
 
 public class GenerationTypeParameterConfiguration {
 

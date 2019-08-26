@@ -1,7 +1,7 @@
 ---
 data:
   name: "ddl.generateFromFile"
-  className: "io.metadew.iesi.script.action.DdlGenerateFromFile"
+  className: "io.metadew.iesi.script.action.ddl.DdlGenerateFromFile"
   description: "Generates a ddl from a framework file structure"
   parameters:
   - name: "inputPath"

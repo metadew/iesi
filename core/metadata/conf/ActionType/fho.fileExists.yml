@@ -1,7 +1,7 @@
 ---
 data:
   name: "fho.fileExists"
-  className: "io.metadew.iesi.script.action.FhoFileExists"
+  className: "io.metadew.iesi.script.action.fho.FhoFileExists"
   description: "Verify if a file exists"
   parameters:
   - name: "path"

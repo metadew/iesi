@@ -1,7 +1,7 @@
 ---
 data:
   name: "fwk.stopIteration"
-  className: "io.metadew.iesi.script.action.FwkStopIteration"
+  className: "io.metadew.iesi.script.action.fwk.FwkStopIteration"
   description: "Stop the iteration block"
   parameters: []
   status: "alpha"

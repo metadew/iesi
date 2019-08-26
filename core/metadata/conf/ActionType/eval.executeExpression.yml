@@ -1,7 +1,7 @@
 ---
 data:
   name: "eval.executeExpression"
-  className: "io.metadew.iesi.script.action.EvalExecuteExpression"
+  className: "io.metadew.iesi.script.action.eval.EvalExecuteExpression"
   description: "Evaluate an expression using scripted syntax"
   parameters:
   - name: "expression"

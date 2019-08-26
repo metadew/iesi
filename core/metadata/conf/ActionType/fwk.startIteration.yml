@@ -1,7 +1,7 @@
 ---
 data:
   name: "fwk.startIteration"
-  className: "io.metadew.iesi.script.action.FwkStartIteration"
+  className: "io.metadew.iesi.script.action.fwk.FwkStartIteration"
   description: "Start an iteration block for the steps"
   parameters: []
   status: "alpha"

@@ -1,7 +1,7 @@
 ---
 data:
   name: "conn.setStageConnection"
-  className: "io.metadew.iesi.script.action.ConnSetStageConnection"
+  className: "io.metadew.iesi.script.action.conn.ConnSetStageConnection"
   description: "Define a stage connection that can be used in any next step"
   parameters:
   - name: "stage"

@@ -1,7 +1,7 @@
 ---
 data:
   name: "data.compareDataset"
-  className: "io.metadew.iesi.script.action.DataCompareDataset"
+  className: "io.metadew.iesi.script.action.data.DataCompareDataset"
   description: "Compare two datasets"
   parameters:
   - name: "leftDataset"

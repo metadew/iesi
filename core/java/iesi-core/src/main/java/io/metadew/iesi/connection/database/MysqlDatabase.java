@@ -1,6 +1,6 @@
 package io.metadew.iesi.connection.database;
 
-import io.metadew.iesi.connection.database.connection.MysqlDatabaseConnection;
+import io.metadew.iesi.connection.database.connection.mysql.MysqlDatabaseConnection;
 import io.metadew.iesi.metadata.definition.MetadataField;
 
 public class MysqlDatabase extends Database {

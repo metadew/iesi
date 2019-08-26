@@ -46,15 +46,15 @@ public class FrameworkRuntime {
 		this.frameworkRunId = runId;
 		ThreadContext.put("fwk.runid", runId);
 		this.runCacheFolderName = FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("run.cache")
-				+ File.separator + this.getFrameworkRunId();
+				+ File.separator + this.frameworkRunId;
 		FolderTools.createFolder(runCacheFolderName);
 
-		this.runSpoolFolderName = this.getRunCacheFolderName() + File.separator + "spool";
+		this.runSpoolFolderName = this.runCacheFolderName + File.separator + "spool";
 		FolderTools.createFolder(runSpoolFolderName);
 
 		this.localHostChallenge = UUID.randomUUID().toString();
-		this.localHostChallengeFileName = FilenameUtils.normalize(runCacheFolderName + File.separator + this.getLocalHostChallenge()  + ".fwk");
-		FileTools.appendToFile(localHostChallengeFileName, "", "localhost.challenge=" + this.getLocalHostChallenge());
+		this.localHostChallengeFileName = FilenameUtils.normalize(runCacheFolderName + File.separator + this.localHostChallenge  + ".fwk");
+		FileTools.appendToFile(localHostChallengeFileName, "", "localhost.challenge=" + this.localHostChallenge);
 
 		// Initialize process id
 		this.processIdFileName = FilenameUtils.normalize(runCacheFolderName + File.separator  + "processId.fwk");
@@ -98,8 +98,8 @@ public class FrameworkRuntime {
 //	}
 	
 	public Long getNextProcessId() {
-		String spoolFileName = this.getRunSpoolFolderName() + File.separator + UUID.randomUUID().toString() + ".fwk";
-		ProcessIdentifierController.getNextProcessId(this.getProcessIdFileName(), spoolFileName);
+		String spoolFileName = runSpoolFolderName + File.separator + UUID.randomUUID().toString() + ".fwk";
+		ProcessIdentifierController.getNextProcessId(processIdFileName, spoolFileName);
 		Long processId = Long.parseLong(PropertiesTools.getProperty(spoolFileName, FrameworkKeywords.PROCESSID.value()));
 		FileTools.delete(spoolFileName);
 		return processId;

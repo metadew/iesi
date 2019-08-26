@@ -3,7 +3,7 @@ package io.metadew.iesi.connection.java.operation;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.connection.java.tools.JarTools;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
-import io.metadew.iesi.metadata.definition.JavaArchive;
+import io.metadew.iesi.metadata.definition.java.JavaArchive;
 
 import java.io.File;
 import java.net.URL;

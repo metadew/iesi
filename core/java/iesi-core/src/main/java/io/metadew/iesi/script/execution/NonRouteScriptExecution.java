@@ -4,10 +4,12 @@ import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.script.operation.ActionSelectOperation;
 import org.apache.logging.log4j.Level;
 
+import java.util.Map;
+
 public class NonRouteScriptExecution extends ScriptExecution {
 
-    public NonRouteScriptExecution(Script script, ExecutionControl executionControl, ExecutionMetrics executionMetrics, Long processId, boolean exitOnCompletion, ScriptExecution parentScriptExecution, String paramList, String paramFile, ActionSelectOperation actionSelectOperation, RootingStrategy rootingStrategy) {
-        super(script, executionControl, executionMetrics, processId, exitOnCompletion, parentScriptExecution, paramList, paramFile, actionSelectOperation, rootingStrategy);
+    public NonRouteScriptExecution(Script script, String environment, ExecutionControl executionControl, ExecutionMetrics executionMetrics, Long processId, boolean exitOnCompletion, ScriptExecution parentScriptExecution, Map<String, String> parameters, Map<String, String> impersonations, ActionSelectOperation actionSelectOperation, RootingStrategy rootingStrategy) {
+        super(script, environment, executionControl, executionMetrics, processId, exitOnCompletion, parentScriptExecution, parameters, impersonations, actionSelectOperation, rootingStrategy);
     }
 
     @Override
@@ -18,19 +20,8 @@ public class NonRouteScriptExecution extends ScriptExecution {
                 Level.INFO);
         this.getExecutionControl().logStart(this);
 
-        /*
-         * Initialize parameters. A parameter file has priority over a parameter list
-         */
-        if (!this.getParamFile().trim().equals("")) {
-            this.getExecutionControl().getExecutionRuntime().loadParamFiles(this, this.getParamFile());
-        }
-        if (!this.getParamList().trim().equals("")) {
-            this.getExecutionControl().getExecutionRuntime().loadParamList(this, this.getParamList());
-        }
-
-        /*
-         * Perform trace of the script design configuration
-         */
+        this.parameters
+                .forEach((parameterName, parameterValue) -> getExecutionControl().getExecutionRuntime().setRuntimeVariable(this, parameterName, parameterValue));
         this.traceDesignMetadata();
     }
 

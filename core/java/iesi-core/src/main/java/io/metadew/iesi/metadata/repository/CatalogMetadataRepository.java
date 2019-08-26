@@ -1,11 +1,11 @@
 package io.metadew.iesi.metadata.repository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.metadew.iesi.metadata.configuration.FeatureConfiguration;
+import io.metadew.iesi.metadata.configuration.feature.FeatureConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.FeatureAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.FeatureDoesNotExistException;
 import io.metadew.iesi.metadata.definition.DataObject;
-import io.metadew.iesi.metadata.definition.Feature;
+import io.metadew.iesi.metadata.definition.feature.Feature;
 import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

@@ -1,7 +1,7 @@
 ---
 data:
   name: "data.setDatasetConnection"
-  className: "io.metadew.iesi.script.action.DataSetDatasetConnection"
+  className: "io.metadew.iesi.script.action.data.DataSetDatasetConnection"
   description: "Define a dataset connection that can be used in any next action"
   parameters:
   - name: "name"

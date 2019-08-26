@@ -1,7 +1,7 @@
 ---
 data:
   name: "fwk.route"
-  className: "io.metadew.iesi.script.action.FwkRoute"
+  className: "io.metadew.iesi.script.action.fwk.FwkRoute"
   description: "Route to one or more specific actions"
   parameters:
   - name: "condition"

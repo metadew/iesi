@@ -3,7 +3,7 @@ package io.metadew.iesi.data.generation.output.control.rule;
 import io.metadew.iesi.data.generation.execution.GenerationControlRuleExecution;
 import io.metadew.iesi.data.generation.execution.GenerationControlRuleParameterExecution;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
-import io.metadew.iesi.metadata.definition.GenerationControlRuleParameter;
+import io.metadew.iesi.metadata.definition.generation.GenerationControlRuleParameter;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;

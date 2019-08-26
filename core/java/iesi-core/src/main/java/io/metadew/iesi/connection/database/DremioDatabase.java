@@ -1,6 +1,6 @@
 package io.metadew.iesi.connection.database;
 
-import io.metadew.iesi.connection.database.connection.DremioDatabaseConnection;
+import io.metadew.iesi.connection.database.connection.dremio.DremioDatabaseConnection;
 import io.metadew.iesi.metadata.definition.MetadataField;
 
 /**

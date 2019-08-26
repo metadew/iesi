@@ -7,7 +7,6 @@ import io.metadew.iesi.framework.configuration.FrameworkSettingConfiguration;
 import io.metadew.iesi.framework.crypto.FrameworkCrypto;
 import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
 import io.metadew.iesi.framework.execution.FrameworkControl;
-import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.framework.execution.FrameworkExecutionContext;
 import io.metadew.iesi.framework.execution.FrameworkRuntime;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
@@ -176,6 +175,9 @@ public class MetadataLauncher {
                     case "trace":
                         metadataRepositories.add(MetadataControl.getInstance().getTraceMetadataRepository());
                         break;
+                    case "execution_server":
+                        metadataRepositories.add(MetadataControl.getInstance().getExecutionServerMetadataRepository());
+                        break;
                     case "general":
                     	metadataRepositories.add(MetadataControl.getInstance().getCatalogMetadataRepository());
                         metadataRepositories.add(MetadataControl.getInstance().getConnectivityMetadataRepository());
@@ -183,6 +185,7 @@ public class MetadataLauncher {
                         metadataRepositories.add(MetadataControl.getInstance().getDesignMetadataRepository());
                         metadataRepositories.add(MetadataControl.getInstance().getResultMetadataRepository());
                         metadataRepositories.add(MetadataControl.getInstance().getTraceMetadataRepository());
+                        metadataRepositories.add(MetadataControl.getInstance().getExecutionServerMetadataRepository());
                         break;
                     default:
                         System.out.println("Unknown Option -type (type) = " + type);

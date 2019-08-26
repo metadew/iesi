@@ -1,8 +1,7 @@
 package io.metadew.iesi.script.operation;
 
-import io.metadew.iesi.common.list.ListTools;
-import io.metadew.iesi.metadata.configuration.SubroutineConfiguration;
-import io.metadew.iesi.metadata.definition.Subroutine;
+import io.metadew.iesi.metadata.configuration.subroutine.SubroutineConfiguration;
+import io.metadew.iesi.metadata.definition.subroutine.Subroutine;
 
 import java.util.ArrayList;
 
@@ -71,7 +70,8 @@ public class SubroutineOperation {
     }
 
     private void validateType() {
-        if (!ListTools.inList(this.getSubroutineTypeList(), this.getType())) {
+        // ListTools.inList(this.getSubroutineTypeList(), this.getType()
+        if (!this.getSubroutineTypeList().contains(this.getType())) {
             throw new RuntimeException("Invalid subrouting type: " + this.getType());
         }
     }

@@ -27,9 +27,9 @@ public class DatabaseOffloadExecution {
         ConnectionOperation connectionOperation = new ConnectionOperation();
         ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
 
-        Connection sourceConnection = connectionConfiguration.getConnection(sourceConnectionName, sourceEnvironmentName).get();
+        Connection sourceConnection = connectionConfiguration.get(sourceConnectionName, sourceEnvironmentName).get();
         Database sourceDatabase = connectionOperation.getDatabase(sourceConnection);
-        Connection targetConnection = connectionConfiguration.getConnection(targetConnectionName, targetEnvironmentName).get();
+        Connection targetConnection = connectionConfiguration.get(targetConnectionName, targetEnvironmentName).get();
         Database targetDatabase = connectionOperation.getDatabase(targetConnection);
 
         CachedRowSet crs = null;

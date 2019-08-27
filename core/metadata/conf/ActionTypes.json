@@ -1,7 +1,7 @@
 [ {
   "data" : {
     "name" : "action.execute",
-    "className" : "io.metadew.iesi.script.action.ActionExecute",
+    "className" : "io.metadew.iesi.script.action.action.ActionExecute",
     "description" : "(Re-)execute an action that is already defined in the script",
     "parameters" : [ {
       "name" : "name",
@@ -18,7 +18,7 @@
 }, {
   "data" : {
     "name" : "cli.executeCommand",
-    "className" : "io.metadew.iesi.script.action.CliExecuteCommand",
+    "className" : "io.metadew.iesi.script.action.cli.CliExecuteCommand",
     "description" : "Run a Shell Command",
     "parameters" : [ {
       "name" : "path",
@@ -75,7 +75,7 @@
 }, {
   "data" : {
     "name" : "conn.isAlive",
-    "className" : "io.metadew.iesi.script.action.ConnIsAlive",
+    "className" : "io.metadew.iesi.script.action.conn.ConnIsAlive",
     "description" : "Verify if the connection can be reached",
     "parameters" : [ {
       "name" : "connection",
@@ -92,7 +92,7 @@
 }, {
   "data" : {
     "name" : "conn.setStageConnection",
-    "className" : "io.metadew.iesi.script.action.ConnSetStageConnection",
+    "className" : "io.metadew.iesi.script.action.conn.ConnSetStageConnection",
     "description" : "Define a stage connection that can be used in any next step",
     "parameters" : [ {
       "name" : "stage",
@@ -117,7 +117,7 @@
 }, {
   "data" : {
     "name" : "data.compareDataset",
-    "className" : "io.metadew.iesi.script.action.DataCompareDataset",
+    "className" : "io.metadew.iesi.script.action.data.DataCompareDataset",
     "description" : "Compare two datasets",
     "parameters" : [ {
       "name" : "leftDataset",
@@ -150,7 +150,7 @@
 }, {
   "data" : {
     "name" : "data.outputDataset",
-    "className" : "io.metadew.iesi.script.action.DataOutputDataset",
+    "className" : "io.metadew.iesi.script.action.data.DataOutputDataset",
     "description" : "Prints a dataset for logging and debugging purposes",
     "parameters" : [ {
       "name" : "name",
@@ -183,7 +183,7 @@
 }, {
   "data" : {
     "name" : "data.setDatasetConnection",
-    "className" : "io.metadew.iesi.script.action.DataSetDatasetConnection",
+    "className" : "io.metadew.iesi.script.action.data.DataSetDatasetConnection",
     "description" : "Define a dataset connection that can be used in any next action",
     "parameters" : [ {
       "name" : "name",
@@ -224,7 +224,7 @@
 }, {
   "data" : {
     "name" : "ddl.generateFromFile",
-    "className" : "io.metadew.iesi.script.action.DdlGenerateFromFile",
+    "className" : "io.metadew.iesi.script.action.ddl.DdlGenerateFromFile",
     "description" : "Generates a ddl from a framework file structure",
     "parameters" : [ {
       "name" : "inputPath",
@@ -273,7 +273,7 @@
 }, {
   "data" : {
     "name" : "eval.assertEquals",
-    "className" : "io.metadew.iesi.script.action.EvalAssertEquals",
+    "className" : "io.metadew.iesi.script.action.eval.EvalAssertEquals",
     "description" : "Evaluate if two values are equal",
     "parameters" : [ {
       "name" : "expected",
@@ -298,7 +298,7 @@
 }, {
   "data" : {
     "name" : "eval.executeExpression",
-    "className" : "io.metadew.iesi.script.action.EvalExecuteExpression",
+    "className" : "io.metadew.iesi.script.action.eval.EvalExecuteExpression",
     "description" : "Evaluate an expression using scripted syntax",
     "parameters" : [ {
       "name" : "expression",
@@ -315,7 +315,7 @@
 }, {
   "data" : {
     "name" : "eval.verifyMandatoryField",
-    "className" : "io.metadew.iesi.script.action.EvalVerifyMandatoryField",
+    "className" : "io.metadew.iesi.script.action.eval.EvalVerifyMandatoryField",
     "description" : "Check if mandatory fields are filled out",
     "parameters" : [ {
       "name" : "database",
@@ -388,7 +388,7 @@
 }, {
   "data" : {
     "name" : "eval.verifySingleField",
-    "className" : "io.metadew.iesi.script.action.EvalVerifySingleField",
+    "className" : "io.metadew.iesi.script.action.eval.EvalVerifySingleField",
     "description" : "Check a single field against a specific rule",
     "parameters" : [ {
       "name" : "database",
@@ -461,7 +461,7 @@
 }, {
   "data" : {
     "name" : "fho.createFolder",
-    "className" : "io.metadew.iesi.script.action.FhoCreateFolder",
+    "className" : "io.metadew.iesi.script.action.fho.FhoCreateFolder",
     "description" : "Create a folder",
     "parameters" : [ {
       "name" : "path",
@@ -494,7 +494,7 @@
 }, {
   "data" : {
     "name" : "fho.deleteFile",
-    "className" : "io.metadew.iesi.script.action.FhoDeleteFile",
+    "className" : "io.metadew.iesi.script.action.fho.FhoDeleteFile",
     "description" : "Delete one or more files in a folder",
     "parameters" : [ {
       "name" : "path",
@@ -527,7 +527,7 @@
 }, {
   "data" : {
     "name" : "fho.deleteFolder",
-    "className" : "io.metadew.iesi.script.action.FhoDeleteFolder",
+    "className" : "io.metadew.iesi.script.action.fho.FhoDeleteFolder",
     "description" : "Delete one or more folders and all contents",
     "parameters" : [ {
       "name" : "path",
@@ -560,7 +560,7 @@
 }, {
   "data" : {
     "name" : "fho.executeFileTransfer",
-    "className" : "io.metadew.iesi.script.action.FhoExecuteFileTransfer",
+    "className" : "io.metadew.iesi.script.action.fho.FhoExecuteFileTransfer",
     "description" : "Transfer one or more files between locations",
     "parameters" : [ {
       "name" : "sourceFilePath",
@@ -617,7 +617,7 @@
 }, {
   "data" : {
     "name" : "fho.fileExists",
-    "className" : "io.metadew.iesi.script.action.FhoFileExists",
+    "className" : "io.metadew.iesi.script.action.fho.FhoFileExists",
     "description" : "Verify if a file exists",
     "parameters" : [ {
       "name" : "path",
@@ -650,7 +650,7 @@
 }, {
   "data" : {
     "name" : "fho.folderExists",
-    "className" : "io.metadew.iesi.script.action.FhoFolderExists",
+    "className" : "io.metadew.iesi.script.action.fho.FhoFolderExists",
     "description" : "Verify if a folder exists",
     "parameters" : [ {
       "name" : "path",
@@ -683,7 +683,7 @@
 }, {
   "data" : {
     "name" : "fwk.dummy",
-    "className" : "io.metadew.iesi.script.action.FwkDummy",
+    "className" : "io.metadew.iesi.script.action.fwk.FwkDummy",
     "description" : "Dummy for adding a placeholder step",
     "parameters" : [ ],
     "status" : "stable"
@@ -692,7 +692,7 @@
 }, {
   "data" : {
     "name" : "fwk.executeScript",
-    "className" : "io.metadew.iesi.script.action.FwkExecuteScript",
+    "className" : "io.metadew.iesi.script.action.fwk.FwkExecuteScript",
     "description" : "Execute another script",
     "parameters" : [ {
       "name" : "script",
@@ -741,7 +741,7 @@
 }, {
   "data" : {
     "name" : "fwk.executeSuite",
-    "className" : "io.metadew.iesi.script.action.FwkExecuteSuite",
+    "className" : "io.metadew.iesi.script.action.fwk.FwkExecuteSuite",
     "description" : "Execute a test suite of multiple scripts",
     "parameters" : [ {
       "name" : "component",
@@ -838,7 +838,7 @@
 }, {
   "data" : {
     "name" : "fwk.exitScript",
-    "className" : "io.metadew.iesi.script.action.FwkExitScript",
+    "className" : "io.metadew.iesi.script.action.fwk.FwkExitScript",
     "description" : "Exit the script execution",
     "parameters" : [ {
       "name" : "status",
@@ -855,7 +855,7 @@
 }, {
   "data" : {
     "name" : "fwk.includeScript",
-    "className" : "io.metadew.iesi.script.action.FwkIncludeScript",
+    "className" : "io.metadew.iesi.script.action.fwk.FwkIncludeScript",
     "description" : "Include the actions of another script and execute as one script",
     "parameters" : [ {
       "name" : "script",
@@ -880,7 +880,7 @@
 }, {
   "data" : {
     "name" : "fwk.outputMessage",
-    "className" : "io.metadew.iesi.script.action.FwkOutputMessage",
+    "className" : "io.metadew.iesi.script.action.fwk.FwkOutputMessage",
     "description" : "Prints a message for logging and debugging purposes",
     "parameters" : [ {
       "name" : "message",
@@ -905,7 +905,7 @@
 }, {
   "data" : {
     "name" : "fwk.route",
-    "className" : "io.metadew.iesi.script.action.FwkRoute",
+    "className" : "io.metadew.iesi.script.action.fwk.FwkRoute",
     "description" : "Route to one or more specific actions",
     "parameters" : [ {
       "name" : "condition",
@@ -930,7 +930,7 @@
 }, {
   "data" : {
     "name" : "fwk.setEnvironment",
-    "className" : "io.metadew.iesi.script.action.FwkSetEnvironment",
+    "className" : "io.metadew.iesi.script.action.fwk.FwkSetEnvironment",
     "description" : "Set the environment where the next steps will be executed on",
     "parameters" : [ {
       "name" : "environment",
@@ -947,7 +947,7 @@
 }, {
   "data" : {
     "name" : "fwk.setIteration",
-    "className" : "io.metadew.iesi.script.action.FwkSetIteration",
+    "className" : "io.metadew.iesi.script.action.fwk.FwkSetIteration",
     "description" : "Define an interation that can be used in any next action",
     "parameters" : [ {
       "name" : "name",
@@ -1028,7 +1028,7 @@
 }, {
   "data" : {
     "name" : "fwk.setParameterFile",
-    "className" : "io.metadew.iesi.script.action.FwkSetParameterFile",
+    "className" : "io.metadew.iesi.script.action.fwk.FwkSetParameterFile",
     "description" : "Load a parameter file as runtime variables",
     "parameters" : [ {
       "name" : "filePath",
@@ -1061,7 +1061,7 @@
 }, {
   "data" : {
     "name" : "fwk.setParameterList",
-    "className" : "io.metadew.iesi.script.action.FwkSetParameterList",
+    "className" : "io.metadew.iesi.script.action.fwk.FwkSetParameterList",
     "description" : "Load a list of parameters as runtime variables",
     "parameters" : [ {
       "name" : "list",
@@ -1078,7 +1078,7 @@
 }, {
   "data" : {
     "name" : "fwk.setParameterValue",
-    "className" : "io.metadew.iesi.script.action.FwkSetParameterValue",
+    "className" : "io.metadew.iesi.script.action.fwk.FwkSetParameterValue",
     "description" : "Set a parameter value as runtime variable",
     "parameters" : [ {
       "name" : "name",
@@ -1103,7 +1103,7 @@
 }, {
   "data" : {
     "name" : "fwk.setRepository",
-    "className" : "io.metadew.iesi.script.action.FwkSetRepository",
+    "className" : "io.metadew.iesi.script.action.fwk.FwkSetRepository",
     "description" : "Define a repository that can be used in any next action",
     "parameters" : [ {
       "name" : "name",
@@ -1144,7 +1144,7 @@
 }, {
   "data" : {
     "name" : "fwk.startIteration",
-    "className" : "io.metadew.iesi.script.action.FwkStartIteration",
+    "className" : "io.metadew.iesi.script.action.fwk.FwkStartIteration",
     "description" : "Start an iteration block for the steps",
     "parameters" : [ ],
     "status" : "alpha"
@@ -1153,7 +1153,7 @@
 }, {
   "data" : {
     "name" : "fwk.stopIteration",
-    "className" : "io.metadew.iesi.script.action.FwkStopIteration",
+    "className" : "io.metadew.iesi.script.action.fwk.FwkStopIteration",
     "description" : "Stop the iteration block",
     "parameters" : [ ],
     "status" : "alpha"
@@ -1219,7 +1219,7 @@
 }, {
   "data" : {
     "name" : "java.parseJar",
-    "className" : "io.metadew.iesi.script.action.JavaParseJar",
+    "className" : "io.metadew.iesi.script.action.java.JavaParseJar",
     "description" : "Parses a Java archive file",
     "parameters" : [ {
       "name" : "path",
@@ -1252,7 +1252,7 @@
 }, {
   "data" : {
     "name" : "mod.soapui",
-    "className" : "io.metadew.iesi.script.action.ModSoapui",
+    "className" : "io.metadew.iesi.script.action.mod.ModSoapui",
     "description" : "Run a SOAP UI test scope",
     "parameters" : [ {
       "name" : "project",
@@ -1285,7 +1285,7 @@
 }, {
   "data" : {
     "name" : "script.logOutput",
-    "className" : "io.metadew.iesi.script.action.ScriptLogOutput",
+    "className" : "io.metadew.iesi.script.action.script.ScriptLogOutput",
     "description" : "Store an output value as part of the script results",
     "parameters" : [ {
       "name" : "name",
@@ -1310,7 +1310,7 @@
 }, {
   "data" : {
     "name" : "sql.defineDataset",
-    "className" : "io.metadew.iesi.script.action.SqlDefineDataset",
+    "className" : "io.metadew.iesi.script.action.sql.SqlDefineDataset",
     "description" : "Define a SQL dataset",
     "parameters" : [ {
       "name" : "name",
@@ -1343,7 +1343,7 @@
 }, {
   "data" : {
     "name" : "sql.evaluateResult",
-    "className" : "io.metadew.iesi.script.action.SqlEvaluateResult",
+    "className" : "io.metadew.iesi.script.action.sql.SqlEvaluateResult",
     "description" : "Checks if a SQL query returns a result or not",
     "parameters" : [ {
       "name" : "query",
@@ -1376,7 +1376,7 @@
 }, {
   "data" : {
     "name" : "sql.executeProcedure",
-    "className" : "io.metadew.iesi.script.action.SqlExecuteProcedure",
+    "className" : "io.metadew.iesi.script.action.sql.SqlExecuteProcedure",
     "description" : "Execute a SQL Stored Procedure",
     "parameters" : [ {
       "name" : "procedure",
@@ -1425,7 +1425,7 @@
 }, {
   "data" : {
     "name" : "sql.executeQuery",
-    "className" : "io.metadew.iesi.script.action.SqlExecuteQuery",
+    "className" : "io.metadew.iesi.script.action.sql.SqlExecuteQuery",
     "description" : "Run a SQL query",
     "parameters" : [ {
       "name" : "query",
@@ -1466,7 +1466,7 @@
 }, {
   "data" : {
     "name" : "sql.executeStatement",
-    "className" : "io.metadew.iesi.script.action.SqlExecuteStatement",
+    "className" : "io.metadew.iesi.script.action.sql.SqlExecuteStatement",
     "description" : "Run a SQL statement (not returning any result)",
     "parameters" : [ {
       "name" : "statement",
@@ -1491,7 +1491,7 @@
 }, {
   "data" : {
     "name" : "sql.setIterationVariables",
-    "className" : "io.metadew.iesi.script.action.SqlSetIterationVariables",
+    "className" : "io.metadew.iesi.script.action.sql.SqlSetIterationVariables",
     "description" : "Retrieve iteration variables using a SQL Statement",
     "parameters" : [ {
       "name" : "list",
@@ -1524,7 +1524,7 @@
 }, {
   "data" : {
     "name" : "sql.setRuntimeVariables",
-    "className" : "io.metadew.iesi.script.action.SqlSetRuntimeVariables",
+    "className" : "io.metadew.iesi.script.action.sql.SqlSetRuntimeVariables",
     "description" : "Retrieve runtime variables using a SQL Statement",
     "parameters" : [ {
       "name" : "query",
@@ -1549,7 +1549,7 @@
 }, {
   "data" : {
     "name" : "wfa.executeFilePing",
-    "className" : "io.metadew.iesi.script.action.WfaExecuteFilePing",
+    "className" : "io.metadew.iesi.script.action.wfa.WfaExecuteFilePing",
     "description" : "Wait until a File Statement returns a result or not",
     "parameters" : [ {
       "name" : "filePath",
@@ -1614,7 +1614,7 @@
 }, {
   "data" : {
     "name" : "wfa.executeQueryPing",
-    "className" : "io.metadew.iesi.script.action.WfaExecuteQueryPing",
+    "className" : "io.metadew.iesi.script.action.wfa.WfaExecuteQueryPing",
     "description" : "Wait until a SQL query returns a result or not",
     "parameters" : [ {
       "name" : "query",
@@ -1671,7 +1671,7 @@
 }, {
   "data" : {
     "name" : "wfa.executeWait",
-    "className" : "io.metadew.iesi.script.action.WfaExecuteWait",
+    "className" : "io.metadew.iesi.script.action.wfa.WfaExecuteWait",
     "description" : "Wait for a defined interval",
     "parameters" : [ {
       "name" : "wait",
@@ -1688,7 +1688,7 @@
 }, {
   "data" : {
     "name" : "wfa.getConfirmation",
-    "className" : "io.metadew.iesi.script.action.WfaGetConfirmation",
+    "className" : "io.metadew.iesi.script.action.wfa.WfaGetConfirmation",
     "description" : "Wait for user confirmation",
     "parameters" : [ {
       "name" : "type",

@@ -168,7 +168,7 @@
       "description" : "String type parameter value",
       "order" : "5",
       "type" : "string",
-      "length" : "5000",
+      "length" : "2000",
       "nullable" : "Y",
       "defaultTimestamp" : ""
     }, {

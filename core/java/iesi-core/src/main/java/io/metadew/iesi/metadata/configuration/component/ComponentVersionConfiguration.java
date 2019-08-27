@@ -11,58 +11,28 @@ import java.util.Optional;
 
 public class ComponentVersionConfiguration {
 
-    private ComponentVersion componentVersion;
-
-    // Constructors
-    public ComponentVersionConfiguration(ComponentVersion componentVersion) {
-        this.setComponentVersion(componentVersion);
-    }
-
-    public ComponentVersionConfiguration() {
-    }
+    public ComponentVersionConfiguration() {}
 
     // Insert
-    public String getInsertStatement(String componentName) {
-        String sql = "";
-
-        sql += "INSERT INTO " + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("ComponentVersions");
-        sql += " (COMP_ID, COMP_VRS_NB, COMP_VRS_DSC) ";
-        sql += "VALUES ";
-        sql += "(";
-        sql += "(" + SQLTools.GetLookupIdStatement(MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("Components"), "COMP_ID", "where COMP_NM = '" + componentName) + "')";
-        sql += ",";
-        sql += SQLTools.GetStringForSQL(this.getComponentVersion().getNumber());
-        sql += ",";
-        sql += SQLTools.GetStringForSQL(this.getComponentVersion().getDescription());
-        sql += ")";
-        sql += ";";
-
-        return sql;
+    public String getInsertStatement(String componentName, long version) {
+        return "INSERT INTO " + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("ComponentVersions") +
+                " (COMP_ID, COMP_VRS_NB, COMP_VRS_DSC) VALUES ((" +
+                SQLTools.GetLookupIdStatement(MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("Components"), "COMP_ID", "where COMP_NM = " + SQLTools.GetStringForSQL(componentName)) + ")" + "," +
+                SQLTools.GetStringForSQL(version) + "," + SQLTools.GetStringForSQL(version) + ");";
     }
 
-    public String getDefaultInsertStatement(String componentName) {
-        String sql = "";
-
-        sql += "INSERT INTO " + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("ComponentVersions");
-        sql += " (COMP_ID, COMP_VRS_NB, COMP_VRS_DSC) ";
-        sql += "VALUES ";
-        sql += "(";
-        sql += "(" + SQLTools.GetLookupIdStatement(MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("Components"), "COMP_ID", "where COMP_NM = '" + componentName) + "')";
-        sql += ",";
-        sql += SQLTools.GetStringForSQL("0");
-        sql += ",";
-        sql += SQLTools.GetStringForSQL("Default componentVersion");
-        sql += ")";
-        sql += ";";
-
-        return sql;
+    public boolean exists(String componentId, long componentVersion) {
+        String queryComponentVersion = "select COMP_ID, COMP_VRS_NB, COMP_VRS_DSC from " + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("ComponentVersions")
+                + " where COMP_ID = " + SQLTools.GetStringForSQL(componentId) + " and COMP_VRS_NB = " + SQLTools.GetStringForSQL(componentVersion);
+        CachedRowSet crsComponentVersion = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(queryComponentVersion, "reader");
+        return crsComponentVersion.size() > 0;
     }
 
 
     public Optional<ComponentVersion> getComponentVersion(String componentId, long componentVersionNumber) {
-        ComponentVersion componentVersion = null;
+        ComponentVersion componentVersion;
         String queryComponentVersion = "select COMP_ID, COMP_VRS_NB, COMP_VRS_DSC from " + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("ComponentVersions")
-                + " where COMP_ID = " + SQLTools.GetStringForSQL(componentId) + " and COMP_VRS_NB = " + componentVersionNumber;
+                + " where COMP_ID = " + SQLTools.GetStringForSQL(componentId) + " and COMP_VRS_NB = " + SQLTools.GetStringForSQL(componentVersionNumber);
         CachedRowSet crsComponentVersion = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(queryComponentVersion, "reader");
         try {
             if (crsComponentVersion.size() == 0) {
@@ -83,20 +53,6 @@ public class ComponentVersionConfiguration {
             return Optional.empty();
         }
         return Optional.of(componentVersion);
-    }
-
-    // Exists
-    public boolean exists() {
-        return true;
-    }
-
-    // Getters and Setters
-    public ComponentVersion getComponentVersion() {
-        return componentVersion;
-    }
-
-    public void setComponentVersion(ComponentVersion componentVersion) {
-        this.componentVersion = componentVersion;
     }
 
 }

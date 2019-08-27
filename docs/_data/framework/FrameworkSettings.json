@@ -99,6 +99,28 @@
   "type" : "FrameworkSetting"
 }, {
   "data" : {
+    "name" : "metadata.repository.h2.type",
+    "path" : "iesi.metadata.repository.h2.type",
+    "label" : "MetadataRepositoryH2Type",
+    "description" : "",
+    "group" : "MetadataRepository",
+    "category" : "Database",
+    "type" : "H2"
+  },
+  "type" : "FrameworkSetting"
+}, {
+  "data" : {
+    "name" : "metadata.repository.h2.name",
+    "path" : "iesi.metadata.repository.h2.name",
+    "label" : "MetadataRepositoryH2Name",
+    "description" : "",
+    "group" : "MetadataRepository",
+    "category" : "Database",
+    "type" : "H2"
+  },
+  "type" : "FrameworkSetting"
+}, {
+  "data" : {
     "name" : "metadata.repository.h2.host",
     "path" : "iesi.metadata.repository.h2.host",
     "label" : "MetadataRepositoryH2Host",
@@ -751,6 +773,17 @@
     "name" : "server.mode",
     "path" : "iesi.server.mode",
     "label" : "ServerMode",
+    "description" : "",
+    "group" : "Framework",
+    "category" : "Server",
+    "type" : ""
+  },
+  "type" : "FrameworkSetting"
+}, {
+  "data" : {
+    "name" : "server.threads",
+    "path" : "iesi.server.threads",
+    "label" : "ServerThreads",
     "description" : "",
     "group" : "Framework",
     "category" : "Server",

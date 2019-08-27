@@ -1,0 +1,46 @@
+---
+data:
+  name: EXE_REQ_AUTH
+  label: AuthenticatedExecutionRequests
+  description: In-process runtime requests for execution
+  type: operational
+  category: execution
+  migrate: Y
+  migrationKey: NA
+  fields:
+  - name: REQUEST_ID
+    description: Unique identifier for the request item
+    order: '1'
+    type: string
+    length: '255'
+    nullable: N
+    defaultTimestamp: ''
+  - name: SPACE_NM
+    description: Unique identifier for the space
+    order: '11'
+    type: string
+    length: '100'
+    nullable: N
+    defaultTimestamp: ''
+  - name: USER_NM
+    description: Unique identifier for the user
+    order: '12'
+    type: string
+    length: '100'
+    nullable: N
+    defaultTimestamp: ''
+  - name: USER_PASSWORD
+    description: User password
+    order: '13'
+    type: string
+    length: '2000'
+    nullable: Y
+    defaultTimestamp: ''
+  - name: LOAD_TMS
+    description: Load timestamp indicating when the record was inserted in the table
+    order: '15'
+    type: timestamp
+    length: '0'
+    nullable: N
+    defaultTimestamp: Y
+type: MetadataTable

@@ -24,17 +24,9 @@
       "nullable" : "N",
       "defaultTimestamp" : ""
     }, {
-      "name" : "SCRIPT_PRC_ID",
-      "description" : "Process number for the script execution",
-      "order" : "3",
-      "type" : "number",
-      "length" : "0",
-      "nullable" : "N",
-      "defaultTimestamp" : ""
-    }, {
       "name" : "ACTION_ID",
       "description" : "Unique identifier for the action design",
-      "order" : "4",
+      "order" : "3",
       "type" : "string",
       "length" : "255",
       "nullable" : "N",
@@ -42,7 +34,7 @@
     }, {
       "name" : "ACTION_NB",
       "description" : "Order number for the action within the script design",
-      "order" : "5",
+      "order" : "4",
       "type" : "number",
       "length" : "0",
       "nullable" : "N",
@@ -50,7 +42,7 @@
     }, {
       "name" : "ACTION_TYP_NM",
       "description" : "Keyword for the action type",
-      "order" : "6",
+      "order" : "5",
       "type" : "string",
       "length" : "100",
       "nullable" : "N",
@@ -58,7 +50,7 @@
     }, {
       "name" : "ACTION_NM",
       "description" : "Unique short name for the action",
-      "order" : "7",
+      "order" : "6",
       "type" : "string",
       "length" : "200",
       "nullable" : "N",
@@ -66,7 +58,7 @@
     }, {
       "name" : "ACTION_DSC",
       "description" : "Description of the action",
-      "order" : "8",
+      "order" : "7",
       "type" : "string",
       "length" : "2000",
       "nullable" : "Y",
@@ -74,7 +66,31 @@
     }, {
       "name" : "COMP_NM",
       "description" : "Unique short name for the applicable component",
+      "order" : "8",
+      "type" : "string",
+      "length" : "200",
+      "nullable" : "Y",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "ITERATION_VAL",
+      "description" : "Value for the applicable iteration",
       "order" : "9",
+      "type" : "string",
+      "length" : "200",
+      "nullable" : "Y",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "CONDITION_VAL",
+      "description" : "Value for the applicable condition",
+      "order" : "10",
+      "type" : "string",
+      "length" : "2000",
+      "nullable" : "Y",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "RETRIES_VAL",
+      "description" : "Value for the number of retries on error",
+      "order" : "11",
       "type" : "string",
       "length" : "200",
       "nullable" : "Y",
@@ -82,7 +98,7 @@
     }, {
       "name" : "EXP_ERR_FL",
       "description" : "Flag indicating if the action is expected to raise an error",
-      "order" : "10",
+      "order" : "12",
       "type" : "flag",
       "length" : "1",
       "nullable" : "N",
@@ -90,7 +106,7 @@
     }, {
       "name" : "STOP_ERR_FL",
       "description" : "Flag indicating if the script needs to stop when this action raises an error",
-      "order" : "11",
+      "order" : "13",
       "type" : "flag",
       "length" : "1",
       "nullable" : "N",
@@ -98,7 +114,7 @@
     }, {
       "name" : "LOAD_TMS",
       "description" : "Load timestamp indicating when the record was inserted in the table",
-      "order" : "12",
+      "order" : "14",
       "type" : "timestamp",
       "length" : "0",
       "nullable" : "N",
@@ -187,22 +203,6 @@
       "name" : "PRC_ID",
       "description" : "Process number for the action execution",
       "order" : "2",
-      "type" : "number",
-      "length" : "0",
-      "nullable" : "N",
-      "defaultTimestamp" : ""
-    }, {
-      "name" : "SCRIPT_ID",
-      "description" : "Unique identifier for the script design",
-      "order" : "3",
-      "type" : "string",
-      "length" : "255",
-      "nullable" : "N",
-      "defaultTimestamp" : ""
-    }, {
-      "name" : "SCRIPT_VRS_NB",
-      "description" : "Unique identifier for the script version",
-      "order" : "4",
       "type" : "number",
       "length" : "0",
       "nullable" : "N",
@@ -309,7 +309,7 @@
 }, {
   "data" : {
     "name" : "TRC_DES_ACTION_PAR",
-    "label" : "ActionDesignParameterTraces",
+    "label" : "ActionParameterDesignTraces",
     "description" : "Trace metadata for action design parameters",
     "type" : "operational",
     "category" : "execution",
@@ -327,22 +327,6 @@
       "name" : "PRC_ID",
       "description" : "Process number for the action execution",
       "order" : "2",
-      "type" : "number",
-      "length" : "0",
-      "nullable" : "N",
-      "defaultTimestamp" : ""
-    }, {
-      "name" : "SCRIPT_ID",
-      "description" : "Unique identifier for the script design",
-      "order" : "3",
-      "type" : "string",
-      "length" : "255",
-      "nullable" : "N",
-      "defaultTimestamp" : ""
-    }, {
-      "name" : "SCRIPT_VRS_NB",
-      "description" : "Unique identifier for the script version",
-      "order" : "4",
       "type" : "number",
       "length" : "0",
       "nullable" : "N",
@@ -461,7 +445,7 @@
 }, {
   "data" : {
     "name" : "TRC_DES_SCRIPT_PAR",
-    "label" : "ScriptDesignParameterTraces",
+    "label" : "ScriptParameterDesignTraces",
     "description" : "Trace metadata for script design parameters",
     "type" : "operational",
     "category" : "execution",
@@ -479,22 +463,6 @@
       "name" : "PRC_ID",
       "description" : "Process number for the script execution",
       "order" : "2",
-      "type" : "number",
-      "length" : "0",
-      "nullable" : "N",
-      "defaultTimestamp" : ""
-    }, {
-      "name" : "SCRIPT_ID",
-      "description" : "Unique identifier for the script design",
-      "order" : "3",
-      "type" : "string",
-      "length" : "255",
-      "nullable" : "N",
-      "defaultTimestamp" : ""
-    }, {
-      "name" : "SCRIPT_VRS_NB",
-      "description" : "Unique identifier for the script version",
-      "order" : "4",
       "type" : "number",
       "length" : "0",
       "nullable" : "N",
@@ -529,7 +497,7 @@
 }, {
   "data" : {
     "name" : "TRC_DES_SCRIPT_VRS",
-    "label" : "ScriptDesignVersionTraces",
+    "label" : "ScriptVersionDesignTraces",
     "description" : "Trace metadata for script design versions",
     "type" : "operational",
     "category" : "execution",
@@ -549,14 +517,6 @@
       "order" : "2",
       "type" : "number",
       "length" : "0",
-      "nullable" : "N",
-      "defaultTimestamp" : ""
-    }, {
-      "name" : "SCRIPT_ID",
-      "description" : "Unique identifier for the script design",
-      "order" : "3",
-      "type" : "string",
-      "length" : "255",
       "nullable" : "N",
       "defaultTimestamp" : ""
     }, {
@@ -636,14 +596,6 @@
       "nullable" : "N",
       "defaultTimestamp" : ""
     }, {
-      "name" : "SCRIPT_VRS_NB",
-      "description" : "Unique identifier for the script version",
-      "order" : "6",
-      "type" : "number",
-      "length" : "0",
-      "nullable" : "N",
-      "defaultTimestamp" : ""
-    }, {
       "name" : "SCRIPT_TYP_NM",
       "description" : "Keyword for the script type",
       "order" : "7",
@@ -696,14 +648,6 @@
       "nullable" : "N",
       "defaultTimestamp" : ""
     }, {
-      "name" : "SCRIPT_ID",
-      "description" : "Unique identifier for the script design",
-      "order" : "3",
-      "type" : "string",
-      "length" : "255",
-      "nullable" : "N",
-      "defaultTimestamp" : ""
-    }, {
       "name" : "SCRIPT_PAR_NM",
       "description" : "Name of the script parameter",
       "order" : "4",
@@ -714,6 +658,58 @@
     }, {
       "name" : "SCRIPT_PAR_VAL",
       "description" : "String type parameter value",
+      "order" : "5",
+      "type" : "string",
+      "length" : "2000",
+      "nullable" : "Y",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "LOAD_TMS",
+      "description" : "Load timestamp indicating when the record was inserted in the table",
+      "order" : "6",
+      "type" : "timestamp",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : "Y"
+    } ]
+  },
+  "type" : "MetadataTable"
+}, {
+  "data" : {
+    "name" : "TRC_SCRIPT_VRS",
+    "label" : "ScriptVersionTraces",
+    "description" : "Trace metadata for script versions",
+    "type" : "operational",
+    "category" : "execution",
+    "migrate" : "Y",
+    "migrationKey" : "NA",
+    "fields" : [ {
+      "name" : "RUN_ID",
+      "description" : "Unique identifier for the script execution",
+      "order" : "1",
+      "type" : "string",
+      "length" : "255",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "PRC_ID",
+      "description" : "Process number for the script execution",
+      "order" : "2",
+      "type" : "number",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "SCRIPT_VRS_NB",
+      "description" : "Unique identifier for the script version",
+      "order" : "4",
+      "type" : "number",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "SCRIPT_VRS_DSC",
+      "description" : "Description of the script version",
       "order" : "5",
       "type" : "string",
       "length" : "2000",

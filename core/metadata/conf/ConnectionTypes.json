@@ -137,15 +137,15 @@
       "type" : "string",
       "mandatory" : "N",
       "encrypted" : "N"
-    },{
+    }, {
       "name" : "type",
-      "description" : "The host name of the server where the database file is located",
+      "description" : "The type of h2 database (embedded/server/memory)",
       "type" : "string",
       "mandatory" : "Y",
       "encrypted" : "N"
-    },{
+    }, {
       "name" : "name",
-      "description" : "The host name of the server where the database file is located",
+      "description" : "The name of the h2 database (memory)",
       "type" : "string",
       "mandatory" : "N",
       "encrypted" : "N"

@@ -32,8 +32,7 @@ public class FrameworkFolderConfiguration {
         this.setSolutionHome(solutionHome);
         this.folderMap = new HashMap<>();
 
-        String initFilePath = solutionHome + File.separator + "sys" + File.separator + "init" + File.separator +
-                "FrameworkFolders.json";
+        String initFilePath = solutionHome + File.separator + "sys" + File.separator + "init" + File.separator + "FrameworkFolders.json";
         DataObjectOperation dataObjectOperation = new DataObjectOperation(initFilePath);
         dataObjectOperation.parseFile();
         ObjectMapper objectMapper = new ObjectMapper();

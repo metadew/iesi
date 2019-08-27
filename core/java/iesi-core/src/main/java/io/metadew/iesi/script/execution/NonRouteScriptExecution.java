@@ -20,8 +20,7 @@ public class NonRouteScriptExecution extends ScriptExecution {
                 Level.INFO);
         this.getExecutionControl().logStart(this);
 
-        this.parameters
-                .forEach((parameterName, parameterValue) -> getExecutionControl().getExecutionRuntime().setRuntimeVariable(this, parameterName, parameterValue));
+        this.parameters.forEach((parameterName, parameterValue) -> getExecutionControl().getExecutionRuntime().setRuntimeVariable(this, parameterName, parameterValue));
         this.traceDesignMetadata();
     }
 

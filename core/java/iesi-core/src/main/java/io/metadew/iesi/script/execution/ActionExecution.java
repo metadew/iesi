@@ -35,62 +35,54 @@ public class ActionExecution {
 	// Constructors
 	public ActionExecution(ExecutionControl executionControl,
 						   ScriptExecution scriptExecution, Action action) {
-		this.setExecutionControl(executionControl);
-		this.setScriptExecution(scriptExecution);
-		this.setAction(action);
+		this.executionControl = executionControl;
+		this.scriptExecution = scriptExecution;
+		this.action = action;
 		this.actionPerformanceLogger = new ActionPerformanceLogger(new ActionPerformanceConfiguration());
 		this.actionTypeConfiguration = new ActionTypeConfiguration();
 	}
 
 	// Methods
 	public void initialize() {
-		this.setProcessId(this.getExecutionControl().getNextProcessId());
-		this.setInitialized(true);
-		this.setExecuted(false);
+		this.processId = executionControl.getNextProcessId();
+		this.initialized = true;
+		this.executed = false;
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings("unchecked")
 	public void execute(IterationInstance iterationInstance) {
-		this.setExecuted(true);
+		this.executed = true;
 
-		this.getExecutionControl().logMessage(this, "action.name=" + this.getAction().getName(), Level.INFO);
-		this.getExecutionControl().logMessage(this, "action.id=" + this.getAction().getId(), Level.DEBUG);
+		executionControl.logMessage(this, "action.name=" + action.getName(), Level.INFO);
+		executionControl.logMessage(this, "action.prcid=" + processId, Level.DEBUG);
 
 		// Log Start
-		this.getExecutionControl().logStart(this);
+		executionControl.logStart(this);
 
 		// Initialize control
-		this.setActionControl(new ActionControl(this.getExecutionControl(), this));
-		this.getActionControl().getActionRuntime().initActionCache(this.getAction().getName(),
-				this.getExecutionControl().getExecutionRuntime().getRunCacheFolderName());
+		this.actionControl = new ActionControl(executionControl, this);
+		actionControl.getActionRuntime().initActionCache(action.getName(), executionControl.getExecutionRuntime().getRunCacheFolderName());
 
 		// Initialize iteration variables
 		if (iterationInstance != null) {
-			this.getActionControl().getActionRuntime().setRuntimeParameter("iteration", "number",
-					String.valueOf(iterationInstance.getIterationNumber()));
-			this.getActionControl().getActionRuntime().setRuntimeParameters("iteration",
-					iterationInstance.getVariableMap());
-			;
+			actionControl.getActionRuntime().setRuntimeParameter("iteration", "number", String.valueOf(iterationInstance.getIterationNumber()));
+			actionControl.getActionRuntime().setRuntimeParameters("iteration", iterationInstance.getVariableMap());
 		}
 
 		try {
 			// Set Attributes
-			if (this.getAction().getComponent() != null
-					&& !this.getAction().getComponent().trim().equalsIgnoreCase("")) {
-				this.setComponentAttributeOperation(new ComponentAttributeOperation(
-						this.getExecutionControl(), this, this.getAction().getComponent().trim()));
+			if (action.getComponent() != null && !action.getComponent().trim().equalsIgnoreCase("")) {
+				this.setComponentAttributeOperation(new ComponentAttributeOperation(executionControl, this, action.getComponent().trim()));
 			}
 
-			String className = actionTypeConfiguration.getActionType(this.getAction().getType()).getClassName();
-			this.getExecutionControl().logMessage(this, "action.type=" + this.getAction().getType(), Level.DEBUG);
+			String className = actionTypeConfiguration.getActionType(action.getType()).getClassName();
+			executionControl.logMessage(this, "action.type=" + action.getType(), Level.DEBUG);
 
 			Class classRef = Class.forName(className);
 
-			Class[] initParams = { ExecutionControl.class, ScriptExecution.class,
-					ActionExecution.class};
+			Class[] initParams = { ExecutionControl.class, ScriptExecution.class, ActionExecution.class};
 			Constructor constructor = classRef.getConstructor(initParams);
-			Object[] initArgs = { this.getExecutionControl(), this.getScriptExecution(),
-					this };
+			Object[] initArgs = { executionControl, this.getScriptExecution(), this };
 			Object instance = constructor.newInstance(initArgs);
 
 			Method prepare = classRef.getDeclaredMethod("prepare");
@@ -98,17 +90,14 @@ public class ActionExecution {
 
 			// Check condition, execute by default
 			boolean conditionResult = true;
-			if (this.getAction().getCondition() != null && !this.getAction().getCondition().isEmpty()
-					&& !this.getAction().getCondition().equalsIgnoreCase("null")) {
-				ConditionOperation conditionOperation = new ConditionOperation(this, this.getAction().getCondition());
+			if (action.getCondition() != null && !action.getCondition().isEmpty() && !action.getCondition().equalsIgnoreCase("null")) {
+				ConditionOperation conditionOperation = new ConditionOperation(this, action.getCondition());
 				try {
 					conditionResult = conditionOperation.evaluateCondition();
 				} catch (Exception exception) {
 					conditionResult = true;
-					this.getExecutionControl().logMessage(this, "action.condition=" + this.getAction().getCondition(),
-							Level.WARN);
-					this.getExecutionControl().logMessage(this, "action.condition.error=" + exception.getMessage(),
-							Level.WARN);
+					executionControl.logMessage(this, "action.condition=" + action.getCondition(), Level.WARN);
+					executionControl.logMessage(this, "action.condition.error=" + exception.getMessage(), Level.WARN);
 				}
 			}
 
@@ -122,20 +111,18 @@ public class ActionExecution {
 				HashMap<String, ActionParameterOperation> actionParameterOperationMap = null;
 				for (Field field : classRef.getDeclaredFields()) {
 					if (field.getName().equalsIgnoreCase("actionParameterOperationMap")) {
-						Method getActionParameterOperationMap = classRef
-								.getDeclaredMethod("getActionParameterOperationMap");
-						actionParameterOperationMap = (HashMap<String, ActionParameterOperation>) getActionParameterOperationMap
-								.invoke(instance);
+						Method getActionParameterOperationMap = classRef.getDeclaredMethod("getActionParameterOperationMap");
+						actionParameterOperationMap = (HashMap<String, ActionParameterOperation>) getActionParameterOperationMap.invoke(instance);
 					}
 				}
 
 				// Store runtime parameters for next action usage
 				// A clone is needed since the iterator through the hashmap will remove the current item to avoid a ConcurrentModificationException
 				HashMap<String, ActionParameterOperation> actionParameterOperationMapClone = (HashMap<String, ActionParameterOperation>) actionParameterOperationMap.clone();
-				this.getActionControl().getActionRuntime().setRuntimeParameters(actionParameterOperationMapClone);
+				actionControl.getActionRuntime().setRuntimeParameters(actionParameterOperationMapClone);
 
 				// Store actionTypeExecution
-				this.setActionTypeExecution(instance);
+				this.actionTypeExecution = instance;
 
 				// Trace function
 				actionParameterOperationMapClone = (HashMap<String, ActionParameterOperation>) actionParameterOperationMap.clone();
@@ -143,54 +130,53 @@ public class ActionExecution {
 				this.traceDesignMetadata(actionParameterOperationMapClone);
 
 				// Evaluate error expected
-				if (this.getActionControl().getExecutionMetrics().getErrorCount() > 0) {
-					if (this.getAction().getErrorExpected()) {
-						this.getActionControl().getExecutionMetrics().resetErrorCount();
-						this.getActionControl().getExecutionMetrics().increaseSuccessCount(1);
-						this.getExecutionControl().logMessage(this, "action.status=ERROR:expected", Level.INFO);
+				if (actionControl.getExecutionMetrics().getErrorCount() > 0) {
+					if (action.getErrorExpected()) {
+						actionControl.getExecutionMetrics().resetErrorCount();
+						actionControl.getExecutionMetrics().increaseSuccessCount(1);
+						executionControl.logMessage(this, "action.status=ERROR:expected", Level.INFO);
 					}
 				} else {
-					if (this.getAction().getErrorExpected()) {
-						this.getActionControl().getExecutionMetrics().resetSuccessCount();
-						this.getActionControl().getExecutionMetrics().increaseErrorCount(1);
-						this.getExecutionControl().logMessage(this, "action.status=SUCCESS:unexpected", Level.INFO);
+					if (action.getErrorExpected()) {
+						actionControl.getExecutionMetrics().resetSuccessCount();
+						actionControl.getExecutionMetrics().increaseErrorCount(1);
+						executionControl.logMessage(this, "action.status=SUCCESS:unexpected", Level.INFO);
 					}
 				}
 
 			} else {
 				// Skip execution
-				this.getActionControl().increaseSkipCount();
+				actionControl.increaseSkipCount();
 				// TODO log output
 			}
 
 		} catch (Exception e) {
 			StringWriter stackTrace = new StringWriter();
 			e.printStackTrace(new PrintWriter(stackTrace));
-			this.getActionControl().increaseErrorCount();
-			this.getExecutionControl().logMessage(this, "action.error=" + e, Level.INFO);
-			this.getExecutionControl().logMessage(this, "action.stacktrace=" + stackTrace, Level.DEBUG);
+			actionControl.increaseErrorCount();
+			executionControl.logMessage(this, "action.error=" + e, Level.INFO);
+			executionControl.logMessage(this, "action.stacktrace=" + stackTrace, Level.DEBUG);
 		} finally {
 			// Log End
-			this.getExecutionControl().logEnd(this, this.getScriptExecution());
+			executionControl.logEnd(this, this.getScriptExecution());
 		}
 
 	}
 
 	public void skip() {
-		this.getExecutionControl().logMessage(this, "action.name=" + this.getAction().getName(), Level.INFO);
-		this.getExecutionControl().logMessage(this, "action.id=" + this.getAction().getId(), Level.DEBUG);
-		this.getExecutionControl().logMessage(this, "action.selection.skip", Level.INFO);
+		executionControl.logMessage(this, "action.name=" + action.getName(), Level.INFO);
+		executionControl.logMessage(this, "action.id=" + action.getId(), Level.DEBUG);
+		executionControl.logMessage(this, "action.selection.skip", Level.INFO);
 
 		// Log Skip
-		this.getExecutionControl().logSkip(this);
+		executionControl.logSkip(this);
 
 		// Trace Design Metadata
 		this.traceDesignMetadata(null);
 	}
 
 	public void traceDesignMetadata(HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
-		this.getExecutionControl().getExecutionTrace().setExecution(this.getScriptExecution(), this,
-				actionParameterOperationMap);
+		executionControl.getExecutionTrace().setExecution(this.getScriptExecution(), this, actionParameterOperationMap);
 	}
 
 	public Action getAction() {

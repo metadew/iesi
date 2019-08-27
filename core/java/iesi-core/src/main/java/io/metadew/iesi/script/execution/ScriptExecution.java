@@ -43,8 +43,8 @@ public abstract class ScriptExecution {
 	}
 
 	public void execute() {
-		executionControl.setEnvName(this.environment);
-		impersonations.forEach((key, value) -> this.executionControl.getExecutionRuntime().getImpersonationOperation().setImpersonation(key, value));
+		executionControl.setEnvName(environment);
+		impersonations.forEach((key, value) -> executionControl.getExecutionRuntime().getImpersonationOperation().setImpersonation(key, value));
 
 		rootingStrategy.prepareExecution(this);
 		prepareExecution();
@@ -138,8 +138,7 @@ public abstract class ScriptExecution {
 
 	private void executeFwkIncludeAction(ActionExecution actionExecution, List<Action> actionsToExecute, int actionIndex) {
 		ObjectMapper objectMapper = new ObjectMapper();
-		FwkIncludeScript fwkIncludeScript = objectMapper
-				.convertValue(actionExecution.getActionTypeExecution(), FwkIncludeScript.class);
+		FwkIncludeScript fwkIncludeScript = objectMapper.convertValue(actionExecution.getActionTypeExecution(), FwkIncludeScript.class);
 		actionsToExecute.addAll(actionIndex, fwkIncludeScript.getScript().getActions());
 	}
 

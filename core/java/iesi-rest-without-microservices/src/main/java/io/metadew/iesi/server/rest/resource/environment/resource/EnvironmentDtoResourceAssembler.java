@@ -1,6 +1,6 @@
 package io.metadew.iesi.server.rest.resource.environment.resource;
 
-import io.metadew.iesi.metadata.definition.Environment;
+import io.metadew.iesi.metadata.definition.environment.Environment;
 import io.metadew.iesi.server.rest.controller.EnvironmentsController;
 import io.metadew.iesi.server.rest.resource.environment.dto.EnvironmentDto;
 import org.modelmapper.ModelMapper;

@@ -1,7 +1,7 @@
 package io.metadew.iesi.server.rest.resource.environment.dto;
 
-import io.metadew.iesi.metadata.definition.Environment;
-import io.metadew.iesi.metadata.definition.EnvironmentParameter;
+import io.metadew.iesi.metadata.definition.environment.Environment;
+import io.metadew.iesi.metadata.definition.environment.EnvironmentParameter;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.hateoas.ResourceSupport;

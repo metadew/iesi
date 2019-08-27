@@ -1,0 +1,276 @@
+2019-08-27 15:44:08,058 INFO  [i.m.i.a.e.AssemblyExecution] - Deleting version home: C:\Users\robbe.berrevoets\IESISandbox\v0.1.1\b5
+2019-08-27 15:44:08,653 INFO  [i.m.i.a.e.AssemblyExecution] - Recreating version home: C:\Users\robbe.berrevoets\IESISandbox\v0.1.1\b5
+2019-08-27 15:44:08,658 INFO  [i.m.i.a.e.AssemblyExecution] - Creating IESI Skeleton at version home: C:\Users\robbe.berrevoets\IESISandbox\v0.1.1\b5
+2019-08-27 15:44:08,698 INFO  [i.m.i.a.e.AssemblyExecution] - Loading licenses into version home: C:\Users\robbe.berrevoets\IESISandbox\v0.1.1\b5
+2019-08-27 15:44:08,771 INFO  [i.m.i.a.e.AssemblyExecution] - Loading dependencies into version home: C:\Users\robbe.berrevoets\IESISandbox\v0.1.1\b5
+2019-08-27 15:44:09,015 INFO  [i.m.i.a.e.AssemblyExecution] - Loading licenses (REST) into version home: C:\Users\robbe.berrevoets\IESISandbox\v0.1.1\b5
+2019-08-27 15:44:09,065 INFO  [i.m.i.a.e.AssemblyExecution] - Loading dependencies (REST) into version home: C:\Users\robbe.berrevoets\IESISandbox\v0.1.1\b5
+2019-08-27 15:44:09,664 INFO  [i.m.i.a.e.AssemblyExecution] - Loading metadata configurations
+2019-08-27 15:44:10,617 INFO  [i.m.i.a.e.AssemblyExecution] - Loading metadata definitions
+2019-08-27 15:44:11,320 INFO  [i.m.i.a.e.AssemblyExecution] - Loading system configurations
+2019-08-27 15:44:11,357 INFO  [i.m.i.a.e.AssemblyExecution] - Loading assets into version home: C:\Users\robbe.berrevoets\IESISandbox\v0.1.1\b5
+2019-08-27 15:44:11,523 INFO  [i.m.i.a.e.AssemblyExecution] - Loading assets (no dist) into version home: C:\Users\robbe.berrevoets\IESISandbox\v0.1.1\b5
+2019-08-27 15:44:11,532 INFO  [i.m.i.a.e.AssemblyExecution] - Initialize configuration into version home: C:\Users\robbe.berrevoets\IESISandbox\v0.1.1\b5
+2019-08-27 15:44:39,067 INFO  [i.m.i.a.e.AssemblyExecution] - Deleting version home: C:\Users\robbe.berrevoets\IESISandbox\v0.1.1\b5
+2019-08-27 15:44:39,689 INFO  [i.m.i.a.e.AssemblyExecution] - Recreating version home: C:\Users\robbe.berrevoets\IESISandbox\v0.1.1\b5
+2019-08-27 15:44:39,693 INFO  [i.m.i.a.e.AssemblyExecution] - Creating IESI Skeleton at version home: C:\Users\robbe.berrevoets\IESISandbox\v0.1.1\b5
+2019-08-27 15:44:39,735 INFO  [i.m.i.a.e.AssemblyExecution] - Loading licenses into version home: C:\Users\robbe.berrevoets\IESISandbox\v0.1.1\b5
+2019-08-27 15:44:39,857 INFO  [i.m.i.a.e.AssemblyExecution] - Loading dependencies into version home: C:\Users\robbe.berrevoets\IESISandbox\v0.1.1\b5
+2019-08-27 15:44:40,316 INFO  [i.m.i.a.e.AssemblyExecution] - Loading metadata configurations
+2019-08-27 15:44:41,611 INFO  [i.m.i.a.e.AssemblyExecution] - Loading metadata definitions
+2019-08-27 15:44:42,572 INFO  [i.m.i.a.e.AssemblyExecution] - Loading system configurations
+2019-08-27 15:44:42,608 INFO  [i.m.i.a.e.AssemblyExecution] - Loading assets into version home: C:\Users\robbe.berrevoets\IESISandbox\v0.1.1\b5
+2019-08-27 15:44:42,884 INFO  [i.m.i.a.e.AssemblyExecution] - Loading assets (no dist) into version home: C:\Users\robbe.berrevoets\IESISandbox\v0.1.1\b5
+2019-08-27 15:44:42,891 INFO  [i.m.i.a.e.AssemblyExecution] - Initialize configuration into version home: C:\Users\robbe.berrevoets\IESISandbox\v0.1.1\b5
+2019-08-27 15:45:50,029 INFO  [i.m.i.a.e.AssemblyExecution] - Deleting version home: C:\Users\robbe.berrevoets\IESISandbox\v0.1.1\b1
+2019-08-27 15:45:50,035 INFO  [i.m.i.a.e.AssemblyExecution] - Recreating version home: C:\Users\robbe.berrevoets\IESISandbox\v0.1.1\b1
+2019-08-27 15:45:50,040 INFO  [i.m.i.a.e.AssemblyExecution] - Creating IESI Skeleton at version home: C:\Users\robbe.berrevoets\IESISandbox\v0.1.1\b1
+2019-08-27 15:45:50,104 INFO  [i.m.i.a.e.AssemblyExecution] - Loading licenses into version home: C:\Users\robbe.berrevoets\IESISandbox\v0.1.1\b1
+2019-08-27 15:45:50,181 INFO  [i.m.i.a.e.AssemblyExecution] - Loading dependencies into version home: C:\Users\robbe.berrevoets\IESISandbox\v0.1.1\b1
+2019-08-27 15:45:50,412 INFO  [i.m.i.a.e.AssemblyExecution] - Loading metadata configurations
+2019-08-27 15:45:51,342 INFO  [i.m.i.a.e.AssemblyExecution] - Loading metadata definitions
+2019-08-27 15:45:52,089 INFO  [i.m.i.a.e.AssemblyExecution] - Loading system configurations
+2019-08-27 15:45:52,193 INFO  [i.m.i.a.e.AssemblyExecution] - Loading assets into version home: C:\Users\robbe.berrevoets\IESISandbox\v0.1.1\b1
+2019-08-27 15:45:52,427 INFO  [i.m.i.a.e.AssemblyExecution] - Loading assets (no dist) into version home: C:\Users\robbe.berrevoets\IESISandbox\v0.1.1\b1
+2019-08-27 15:45:52,439 INFO  [i.m.i.a.e.AssemblyExecution] - Initialize configuration into version home: C:\Users\robbe.berrevoets\IESISandbox\v0.1.1\b1
+2019-08-27 15:46:56,566 INFO  [i.m.i.a.e.AssemblyExecution] - Deleting version home: C:\Users\robbe.berrevoets\IESISandbox\v0.1.1\b1
+2019-08-27 15:46:57,499 INFO  [i.m.i.a.e.AssemblyExecution] - Recreating version home: C:\Users\robbe.berrevoets\IESISandbox\v0.1.1\b1
+2019-08-27 15:46:57,505 INFO  [i.m.i.a.e.AssemblyExecution] - Creating IESI Skeleton at version home: C:\Users\robbe.berrevoets\IESISandbox\v0.1.1\b1
+2019-08-27 15:46:57,600 INFO  [i.m.i.a.e.AssemblyExecution] - Loading licenses into version home: C:\Users\robbe.berrevoets\IESISandbox\v0.1.1\b1
+2019-08-27 15:46:57,695 INFO  [i.m.i.a.e.AssemblyExecution] - Loading dependencies into version home: C:\Users\robbe.berrevoets\IESISandbox\v0.1.1\b1
+2019-08-27 15:46:57,938 INFO  [i.m.i.a.e.AssemblyExecution] - Loading metadata configurations
+2019-08-27 15:46:59,285 INFO  [i.m.i.a.e.AssemblyExecution] - Loading metadata definitions
+2019-08-27 15:47:00,964 INFO  [i.m.i.a.e.AssemblyExecution] - Loading system configurations
+2019-08-27 15:47:01,011 INFO  [i.m.i.a.e.AssemblyExecution] - Loading assets into version home: C:\Users\robbe.berrevoets\IESISandbox\v0.1.1\b1
+2019-08-27 15:47:01,428 INFO  [i.m.i.a.e.AssemblyExecution] - Loading assets (no dist) into version home: C:\Users\robbe.berrevoets\IESISandbox\v0.1.1\b1
+2019-08-27 15:47:01,432 INFO  [i.m.i.a.e.AssemblyExecution] - Initialize configuration into version home: C:\Users\robbe.berrevoets\IESISandbox\v0.1.1\b1
+2019-08-27 16:57:59,556 INFO  [i.m.i.a.e.AssemblyExecution] - Deleting version home: C:\Users\robbe.berrevoets\IESISandbox\v0.1.1\b1
+2019-08-27 16:58:08,294 INFO  [i.m.i.a.e.AssemblyExecution] - Recreating version home: C:\Users\robbe.berrevoets\IESISandbox\v0.1.1\b1
+2019-08-27 16:58:08,297 INFO  [i.m.i.a.e.AssemblyExecution] - Creating IESI Skeleton at version home: C:\Users\robbe.berrevoets\IESISandbox\v0.1.1\b1
+2019-08-27 16:58:08,366 INFO  [i.m.i.a.e.AssemblyExecution] - Loading licenses into version home: C:\Users\robbe.berrevoets\IESISandbox\v0.1.1\b1
+2019-08-27 16:58:08,463 INFO  [i.m.i.a.e.AssemblyExecution] - Loading dependencies into version home: C:\Users\robbe.berrevoets\IESISandbox\v0.1.1\b1
+2019-08-27 16:58:08,745 INFO  [i.m.i.a.e.AssemblyExecution] - Loading metadata configurations
+2019-08-27 16:58:09,771 INFO  [i.m.i.a.e.AssemblyExecution] - Loading metadata definitions
+2019-08-27 16:58:10,587 INFO  [i.m.i.a.e.AssemblyExecution] - Loading system configurations
+2019-08-27 16:58:10,617 INFO  [i.m.i.a.e.AssemblyExecution] - Loading assets into version home: C:\Users\robbe.berrevoets\IESISandbox\v0.1.1\b1
+2019-08-27 16:58:10,844 INFO  [i.m.i.a.e.AssemblyExecution] - Loading assets (no dist) into version home: C:\Users\robbe.berrevoets\IESISandbox\v0.1.1\b1
+2019-08-27 16:58:10,849 INFO  [i.m.i.a.e.AssemblyExecution] - Initialize configuration into version home: C:\Users\robbe.berrevoets\IESISandbox\v0.1.1\b1
+2019-08-27 16:58:21,723 INFO  [i.m.i.a.e.AssemblyExecution] - Deleting version home: C:\Users\robbe.berrevoets\IESISandbox\v0.1.1\b1
+2019-08-27 16:58:22,282 INFO  [i.m.i.a.e.AssemblyExecution] - Recreating version home: C:\Users\robbe.berrevoets\IESISandbox\v0.1.1\b1
+2019-08-27 16:58:22,286 INFO  [i.m.i.a.e.AssemblyExecution] - Creating IESI Skeleton at version home: C:\Users\robbe.berrevoets\IESISandbox\v0.1.1\b1
+2019-08-27 16:58:22,319 INFO  [i.m.i.a.e.AssemblyExecution] - Loading licenses into version home: C:\Users\robbe.berrevoets\IESISandbox\v0.1.1\b1
+2019-08-27 16:58:22,381 INFO  [i.m.i.a.e.AssemblyExecution] - Loading dependencies into version home: C:\Users\robbe.berrevoets\IESISandbox\v0.1.1\b1
+2019-08-27 16:58:22,583 INFO  [i.m.i.a.e.AssemblyExecution] - Loading metadata configurations
+2019-08-27 16:58:23,789 INFO  [i.m.i.a.e.AssemblyExecution] - Loading metadata definitions
+2019-08-27 16:58:25,584 INFO  [i.m.i.a.e.AssemblyExecution] - Loading system configurations
+2019-08-27 16:58:25,642 INFO  [i.m.i.a.e.AssemblyExecution] - Loading assets into version home: C:\Users\robbe.berrevoets\IESISandbox\v0.1.1\b1
+2019-08-27 16:58:26,124 INFO  [i.m.i.a.e.AssemblyExecution] - Loading assets (no dist) into version home: C:\Users\robbe.berrevoets\IESISandbox\v0.1.1\b1
+2019-08-27 16:58:26,128 INFO  [i.m.i.a.e.AssemblyExecution] - Initialize configuration into version home: C:\Users\robbe.berrevoets\IESISandbox\v0.1.1\b1
+2019-08-27 16:59:34,510 INFO  [i.m.i.a.e.AssemblyExecution] - Deleting version home: C:\Users\robbe.berrevoets\IESISandbox\v0.1.1\b1
+2019-08-27 16:59:34,951 INFO  [i.m.i.a.e.AssemblyExecution] - Recreating version home: C:\Users\robbe.berrevoets\IESISandbox\v0.1.1\b1
+2019-08-27 16:59:34,955 INFO  [i.m.i.a.e.AssemblyExecution] - Creating IESI Skeleton at version home: C:\Users\robbe.berrevoets\IESISandbox\v0.1.1\b1
+2019-08-27 16:59:34,994 INFO  [i.m.i.a.e.AssemblyExecution] - Loading licenses into version home: C:\Users\robbe.berrevoets\IESISandbox\v0.1.1\b1
+2019-08-27 16:59:35,145 INFO  [i.m.i.a.e.AssemblyExecution] - Loading dependencies into version home: C:\Users\robbe.berrevoets\IESISandbox\v0.1.1\b1
+2019-08-27 16:59:35,466 INFO  [i.m.i.a.e.AssemblyExecution] - Loading metadata configurations
+2019-08-27 16:59:36,246 INFO  [i.m.i.a.e.AssemblyExecution] - Loading metadata definitions
+2019-08-27 16:59:36,247 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition CAT_ACCESSROLE.yml
+2019-08-27 16:59:36,256 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition CAT_ACCESSVIEW.yml
+2019-08-27 16:59:36,263 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition CAT_ARTEFACT.yml
+2019-08-27 16:59:36,269 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition CAT_BINDING.yml
+2019-08-27 16:59:36,275 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition CAT_BINDING_PAR.yml
+2019-08-27 16:59:36,280 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition CAT_CLASSIF.yml
+2019-08-27 16:59:36,285 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition CAT_CLASSIF_LIST.yml
+2019-08-27 16:59:36,292 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition CAT_CLASSIF_LIST_ITEM.yml
+2019-08-27 16:59:36,297 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition CAT_DATAFRAME.yml
+2019-08-27 16:59:36,304 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition CAT_DATAFRAME_ITEM.yml
+2019-08-27 16:59:36,310 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition CAT_DATAFRAME_ITEM_PAR.yml
+2019-08-27 16:59:36,315 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition CAT_DATAFRAME_PAR.yml
+2019-08-27 16:59:36,323 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition CAT_DATAFRAME_VRS.yml
+2019-08-27 16:59:36,328 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition CAT_DATAVIEW.yml
+2019-08-27 16:59:36,332 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition CAT_DATAVIEW_ITEM.yml
+2019-08-27 16:59:36,339 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition CAT_DATAVIEW_PAR.yml
+2019-08-27 16:59:36,346 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition CAT_DATAVIEW_VRS.yml
+2019-08-27 16:59:36,353 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition CAT_FEATURE.yml
+2019-08-27 16:59:36,358 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition CAT_FEATURE_PAR.yml
+2019-08-27 16:59:36,364 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition CAT_FEATURE_VRS.yml
+2019-08-27 16:59:36,369 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition CAT_SCENARIO.yml
+2019-08-27 16:59:36,374 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition CAT_SCENARIO_PAR.yml
+2019-08-27 16:59:36,379 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition CAT_SCRIPT_EXE.yml
+2019-08-27 16:59:36,385 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition CAT_SPACE.yml
+2019-08-27 16:59:36,392 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition CAT_SPACE_ARTEFACT.yml
+2019-08-27 16:59:36,465 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition CXN_CONN.yml
+2019-08-27 16:59:36,472 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition CXN_CONN_IMP.yml
+2019-08-27 16:59:36,476 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition CXN_CONN_IMP_PAR.yml
+2019-08-27 16:59:36,482 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition CXN_CONN_PAR.yml
+2019-08-27 16:59:36,489 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition CXN_ENV.yml
+2019-08-27 16:59:36,494 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition CXN_ENV_PAR.yml
+2019-08-27 16:59:36,498 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition CXN_REPO.yml
+2019-08-27 16:59:36,506 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition CXN_REPO_INST.yml
+2019-08-27 16:59:36,511 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition CXN_REPO_INST_LBL.yml
+2019-08-27 16:59:36,516 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition CXN_REPO_INST_PAR.yml
+2019-08-27 16:59:36,523 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition CXN_REPO_PAR.yml
+2019-08-27 16:59:36,558 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition CTL_SPACE_USER.yml
+2019-08-27 16:59:36,563 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition CTL_USER.yml
+2019-08-27 16:59:36,590 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition DAT_DST.yml
+2019-08-27 16:59:36,596 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition DAT_DST_INST.yml
+2019-08-27 16:59:36,602 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition DAT_DST_INST_LBL.yml
+2019-08-27 16:59:36,607 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition DAT_DST_INST_PAR.yml
+2019-08-27 16:59:36,611 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition DAT_DST_PAR.yml
+2019-08-27 16:59:36,615 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition DAT_STO_KV.yml
+2019-08-27 16:59:36,630 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition DES_ACTION.yml
+2019-08-27 16:59:36,635 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition DES_ACTION_PAR.yml
+2019-08-27 16:59:36,640 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition DES_COMP.yml
+2019-08-27 16:59:36,646 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition DES_COMP_ATT.yml
+2019-08-27 16:59:36,649 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition DES_COMP_PAR.yml
+2019-08-27 16:59:36,656 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition DES_COMP_VRS.yml
+2019-08-27 16:59:36,661 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition DES_GEN.yml
+2019-08-27 16:59:36,666 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition DES_GEN_CRL.yml
+2019-08-27 16:59:36,672 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition DES_GEN_CRL_PAR.yml
+2019-08-27 16:59:36,680 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition DES_GEN_CTL.yml
+2019-08-27 16:59:36,687 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition DES_GEN_CTL_PAR.yml
+2019-08-27 16:59:36,693 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition DES_GEN_OUT.yml
+2019-08-27 16:59:36,699 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition DES_GEN_OUT_PAR.yml
+2019-08-27 16:59:36,706 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition DES_GEN_PAR.yml
+2019-08-27 16:59:36,712 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition DES_GEN_RULE.yml
+2019-08-27 16:59:36,719 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition DES_GEN_RULE_PAR.yml
+2019-08-27 16:59:36,727 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition DES_SCRIPT.yml
+2019-08-27 16:59:36,731 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition DES_SCRIPT_PAR.yml
+2019-08-27 16:59:36,742 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition DES_SCRIPT_VRS.yml
+2019-08-27 16:59:36,751 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition DES_SRT.yml
+2019-08-27 16:59:36,760 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition DES_SRT_PAR.yml
+2019-08-27 16:59:36,779 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition EXE_CTL.yml
+2019-08-27 16:59:36,785 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition EXE_REQ.yml
+2019-08-27 16:59:36,792 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition EXE_REQ_AUTH.yml
+2019-08-27 16:59:36,797 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition EXE_REQ_NON_AUTH.yml
+2019-08-27 16:59:36,803 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition EXE_REQ_PAR.yml
+2019-08-27 16:59:36,808 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition EXE_SCRIPT_EXEC.yml
+2019-08-27 16:59:36,813 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition EXE_SCRIPT_EXEC_REQ.yml
+2019-08-27 16:59:36,819 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition EXE_SCRPT_FILE_EXEC_REQ.yml
+2019-08-27 16:59:36,825 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition EXE_SCRPT_NAME_EXEC_REQ.yml
+2019-08-27 16:59:36,844 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition LED_LEDGER.yml
+2019-08-27 16:59:36,850 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition LED_LEDGER_ITEM.yml
+2019-08-27 16:59:36,856 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition LED_LEDGER_PAR.yml
+2019-08-27 16:59:36,867 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition RES_ACTION.yml
+2019-08-27 16:59:36,873 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition RES_ACTION_OUT.yml
+2019-08-27 16:59:36,880 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition RES_ACTION_PERF.yml
+2019-08-27 16:59:36,887 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition RES_REQUEST.yml
+2019-08-27 16:59:36,894 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition RES_SCRIPT.yml
+2019-08-27 16:59:36,899 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition RES_SCRIPT_OUT.yml
+2019-08-27 16:59:36,918 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition TRC_ACTION.yml
+2019-08-27 16:59:36,925 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition TRC_ACTION_PAR.yml
+2019-08-27 16:59:36,933 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition TRC_DES_ACTION.yml
+2019-08-27 16:59:36,940 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition TRC_DES_ACTION_PAR.yml
+2019-08-27 16:59:36,945 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition TRC_DES_SCRIPT.yml
+2019-08-27 16:59:36,951 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition TRC_DES_SCRIPT_PAR.yml
+2019-08-27 16:59:36,959 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition TRC_DES_SCRIPT_VRS.yml
+2019-08-27 16:59:36,964 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition TRC_SCRIPT.yml
+2019-08-27 16:59:36,970 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition TRC_SCRIPT_PAR.yml
+2019-08-27 16:59:36,976 INFO  [i.m.i.a.e.AssemblyExecution] - reading metadata definition TRC_SCRIPT_VRS.yml
+2019-08-27 16:59:36,989 INFO  [i.m.i.a.e.AssemblyExecution] - Loading system configurations
+2019-08-27 16:59:37,022 INFO  [i.m.i.a.e.AssemblyExecution] - Loading assets into version home: C:\Users\robbe.berrevoets\IESISandbox\v0.1.1\b1
+2019-08-27 16:59:37,225 INFO  [i.m.i.a.e.AssemblyExecution] - Loading assets (no dist) into version home: C:\Users\robbe.berrevoets\IESISandbox\v0.1.1\b1
+2019-08-27 16:59:37,229 INFO  [i.m.i.a.e.AssemblyExecution] - Initialize configuration into version home: C:\Users\robbe.berrevoets\IESISandbox\v0.1.1\b1
+2019-08-27 17:03:21,294 INFO  [i.m.i.a.e.AssemblyExecution] - Deleting version home: C:\Users\robbe.berrevoets\IESISandbox\v0.1.1\b1
+2019-08-27 17:03:21,712 INFO  [i.m.i.a.e.AssemblyExecution] - Recreating version home: C:\Users\robbe.berrevoets\IESISandbox\v0.1.1\b1
+2019-08-27 17:03:21,716 INFO  [i.m.i.a.e.AssemblyExecution] - Creating IESI Skeleton at version home: C:\Users\robbe.berrevoets\IESISandbox\v0.1.1\b1
+2019-08-27 17:03:21,750 INFO  [i.m.i.a.e.AssemblyExecution] - Loading licenses into version home: C:\Users\robbe.berrevoets\IESISandbox\v0.1.1\b1
+2019-08-27 17:03:21,980 INFO  [i.m.i.a.e.AssemblyExecution] - Loading dependencies into version home: C:\Users\robbe.berrevoets\IESISandbox\v0.1.1\b1
+2019-08-27 17:03:22,703 INFO  [i.m.i.a.e.AssemblyExecution] - Loading metadata configurations
+2019-08-27 17:03:24,851 INFO  [i.m.i.a.e.AssemblyExecution] - Loading metadata definitions
+2019-08-27 17:03:24,853 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition CAT_ACCESSROLE.yml
+2019-08-27 17:03:24,868 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition CAT_ACCESSVIEW.yml
+2019-08-27 17:03:24,881 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition CAT_ARTEFACT.yml
+2019-08-27 17:03:24,893 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition CAT_BINDING.yml
+2019-08-27 17:03:24,906 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition CAT_BINDING_PAR.yml
+2019-08-27 17:03:24,924 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition CAT_CLASSIF.yml
+2019-08-27 17:03:24,939 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition CAT_CLASSIF_LIST.yml
+2019-08-27 17:03:24,952 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition CAT_CLASSIF_LIST_ITEM.yml
+2019-08-27 17:03:24,965 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition CAT_DATAFRAME.yml
+2019-08-27 17:03:24,981 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition CAT_DATAFRAME_ITEM.yml
+2019-08-27 17:03:24,994 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition CAT_DATAFRAME_ITEM_PAR.yml
+2019-08-27 17:03:25,010 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition CAT_DATAFRAME_PAR.yml
+2019-08-27 17:03:25,027 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition CAT_DATAFRAME_VRS.yml
+2019-08-27 17:03:25,041 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition CAT_DATAVIEW.yml
+2019-08-27 17:03:25,055 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition CAT_DATAVIEW_ITEM.yml
+2019-08-27 17:03:25,072 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition CAT_DATAVIEW_PAR.yml
+2019-08-27 17:03:25,087 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition CAT_DATAVIEW_VRS.yml
+2019-08-27 17:03:25,105 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition CAT_FEATURE.yml
+2019-08-27 17:03:25,123 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition CAT_FEATURE_PAR.yml
+2019-08-27 17:03:25,143 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition CAT_FEATURE_VRS.yml
+2019-08-27 17:03:25,162 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition CAT_SCENARIO.yml
+2019-08-27 17:03:25,179 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition CAT_SCENARIO_PAR.yml
+2019-08-27 17:03:25,223 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition CAT_SCRIPT_EXE.yml
+2019-08-27 17:03:25,275 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition CAT_SPACE.yml
+2019-08-27 17:03:25,322 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition CAT_SPACE_ARTEFACT.yml
+2019-08-27 17:03:25,532 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition CXN_CONN.yml
+2019-08-27 17:03:25,543 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition CXN_CONN_IMP.yml
+2019-08-27 17:03:25,555 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition CXN_CONN_IMP_PAR.yml
+2019-08-27 17:03:25,568 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition CXN_CONN_PAR.yml
+2019-08-27 17:03:25,579 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition CXN_ENV.yml
+2019-08-27 17:03:25,592 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition CXN_ENV_PAR.yml
+2019-08-27 17:03:25,605 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition CXN_REPO.yml
+2019-08-27 17:03:25,620 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition CXN_REPO_INST.yml
+2019-08-27 17:03:25,635 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition CXN_REPO_INST_LBL.yml
+2019-08-27 17:03:25,649 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition CXN_REPO_INST_PAR.yml
+2019-08-27 17:03:25,666 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition CXN_REPO_PAR.yml
+2019-08-27 17:03:25,732 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition CTL_SPACE_USER.yml
+2019-08-27 17:03:25,744 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition CTL_USER.yml
+2019-08-27 17:03:25,804 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition DAT_DST.yml
+2019-08-27 17:03:25,817 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition DAT_DST_INST.yml
+2019-08-27 17:03:25,829 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition DAT_DST_INST_LBL.yml
+2019-08-27 17:03:25,845 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition DAT_DST_INST_PAR.yml
+2019-08-27 17:03:25,860 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition DAT_DST_PAR.yml
+2019-08-27 17:03:25,872 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition DAT_STO_KV.yml
+2019-08-27 17:03:25,906 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition DES_ACTION.yml
+2019-08-27 17:03:25,919 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition DES_ACTION_PAR.yml
+2019-08-27 17:03:25,931 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition DES_COMP.yml
+2019-08-27 17:03:25,944 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition DES_COMP_ATT.yml
+2019-08-27 17:03:25,957 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition DES_COMP_PAR.yml
+2019-08-27 17:03:25,970 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition DES_COMP_VRS.yml
+2019-08-27 17:03:25,985 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition DES_GEN.yml
+2019-08-27 17:03:26,007 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition DES_GEN_CRL.yml
+2019-08-27 17:03:26,034 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition DES_GEN_CRL_PAR.yml
+2019-08-27 17:03:26,063 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition DES_GEN_CTL.yml
+2019-08-27 17:03:26,093 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition DES_GEN_CTL_PAR.yml
+2019-08-27 17:03:26,124 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition DES_GEN_OUT.yml
+2019-08-27 17:03:26,153 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition DES_GEN_OUT_PAR.yml
+2019-08-27 17:03:26,183 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition DES_GEN_PAR.yml
+2019-08-27 17:03:26,214 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition DES_GEN_RULE.yml
+2019-08-27 17:03:26,248 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition DES_GEN_RULE_PAR.yml
+2019-08-27 17:03:26,281 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition DES_SCRIPT.yml
+2019-08-27 17:03:26,314 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition DES_SCRIPT_PAR.yml
+2019-08-27 17:03:26,350 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition DES_SCRIPT_VRS.yml
+2019-08-27 17:03:26,384 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition DES_SRT.yml
+2019-08-27 17:03:26,419 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition DES_SRT_PAR.yml
+2019-08-27 17:03:26,474 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition EXE_CTL.yml
+2019-08-27 17:03:26,484 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition EXE_REQ.yml
+2019-08-27 17:03:26,497 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition EXE_REQ_AUTH.yml
+2019-08-27 17:03:26,512 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition EXE_REQ_NON_AUTH.yml
+2019-08-27 17:03:26,525 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition EXE_REQ_PAR.yml
+2019-08-27 17:03:26,538 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition EXE_SCRIPT_EXEC.yml
+2019-08-27 17:03:26,552 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition EXE_SCRIPT_EXEC_REQ.yml
+2019-08-27 17:03:26,568 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition EXE_SCRPT_FILE_EXEC_REQ.yml
+2019-08-27 17:03:26,583 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition EXE_SCRPT_NAME_EXEC_REQ.yml
+2019-08-27 17:03:26,622 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition LED_LEDGER.yml
+2019-08-27 17:03:26,634 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition LED_LEDGER_ITEM.yml
+2019-08-27 17:03:26,647 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition LED_LEDGER_PAR.yml
+2019-08-27 17:03:26,670 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition RES_ACTION.yml
+2019-08-27 17:03:26,681 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition RES_ACTION_OUT.yml
+2019-08-27 17:03:26,694 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition RES_ACTION_PERF.yml
+2019-08-27 17:03:26,707 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition RES_REQUEST.yml
+2019-08-27 17:03:26,725 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition RES_SCRIPT.yml
+2019-08-27 17:03:26,738 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition RES_SCRIPT_OUT.yml
+2019-08-27 17:03:26,763 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition TRC_ACTION.yml
+2019-08-27 17:03:26,785 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition TRC_ACTION_PAR.yml
+2019-08-27 17:03:26,813 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition TRC_DES_ACTION.yml
+2019-08-27 17:03:26,847 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition TRC_DES_ACTION_PAR.yml
+2019-08-27 17:03:26,877 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition TRC_DES_SCRIPT.yml
+2019-08-27 17:03:26,916 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition TRC_DES_SCRIPT_PAR.yml
+2019-08-27 17:03:26,939 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition TRC_DES_SCRIPT_VRS.yml
+2019-08-27 17:03:26,957 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition TRC_SCRIPT.yml
+2019-08-27 17:03:26,974 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition TRC_SCRIPT_PAR.yml
+2019-08-27 17:03:26,992 DEBUG [i.m.i.a.e.AssemblyExecution] - reading metadata definition TRC_SCRIPT_VRS.yml
+2019-08-27 17:03:27,022 INFO  [i.m.i.a.e.AssemblyExecution] - Loading system configurations
+2019-08-27 17:03:27,074 INFO  [i.m.i.a.e.AssemblyExecution] - Loading assets into version home: C:\Users\robbe.berrevoets\IESISandbox\v0.1.1\b1
+2019-08-27 17:03:27,527 INFO  [i.m.i.a.e.AssemblyExecution] - Loading assets (no dist) into version home: C:\Users\robbe.berrevoets\IESISandbox\v0.1.1\b1
+2019-08-27 17:03:27,532 INFO  [i.m.i.a.e.AssemblyExecution] - Initialize configuration into version home: C:\Users\robbe.berrevoets\IESISandbox\v0.1.1\b1

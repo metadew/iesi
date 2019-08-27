@@ -2,13 +2,23 @@ package io.metadew.iesi.server.rest.controller;
 
 import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.launch.operation.ScriptLaunchOperation;
-import io.metadew.iesi.metadata.configuration.exception.ScriptAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.exception.ScriptDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.script.ScriptConfiguration;
+import io.metadew.iesi.metadata.configuration.script.exception.ScriptAlreadyExistsException;
+import io.metadew.iesi.metadata.configuration.script.exception.ScriptDoesNotExistException;
 import io.metadew.iesi.metadata.definition.Request;
 import io.metadew.iesi.metadata.definition.RequestParameter;
+import io.metadew.iesi.metadata.definition.execution.ExecutionRequest;
+import io.metadew.iesi.metadata.definition.execution.ExecutionRequestBuilder;
+import io.metadew.iesi.metadata.definition.execution.ExecutionRequestBuilderException;
+import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequest;
+import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequestBuilder;
+import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequestBuilderException;
 import io.metadew.iesi.metadata.definition.script.Script;
+import io.metadew.iesi.metadata.definition.script.ScriptParameter;
+import io.metadew.iesi.runtime.ExecutorService;
 import io.metadew.iesi.script.ScriptExecutionBuildException;
+import io.metadew.iesi.script.execution.ScriptExecution;
+import io.metadew.iesi.script.execution.ScriptExecutionBuilder;
 import io.metadew.iesi.server.rest.error.DataBadRequestException;
 import io.metadew.iesi.server.rest.error.DataNotFoundException;
 import io.metadew.iesi.server.rest.error.GetListNullProperties;
@@ -30,6 +40,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -42,24 +53,25 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 @RestController
 public class ScriptController {
 
-    private final FrameworkInstance frameworkInstance;
+    private ExecutorService executorService;
     private ScriptConfiguration scriptConfiguration;
 
     private final GetNullProperties getNullProperties;
 
     private final GetListNullProperties getListNullProperties;
 
+
     private final ScriptPagination scriptPagination;
 
     @Autowired
-    ScriptController(ScriptConfiguration scriptConfiguration,
-                     GetNullProperties getNullProperties, ScriptDtoResourceAssembler scriptDtoResourceAssembler, GetListNullProperties getListNullProperties, ScriptPagination scriptPagination, FrameworkInstance frameworkInstance) {
+    ScriptController(ScriptConfiguration scriptConfiguration, GetNullProperties getNullProperties, ScriptDtoResourceAssembler scriptDtoResourceAssembler,
+                     GetListNullProperties getListNullProperties, ScriptPagination scriptPagination, ExecutorService executorService) {
         this.scriptPagination = scriptPagination;
         this.scriptConfiguration = scriptConfiguration;
         this.getListNullProperties = getListNullProperties;
         this.getNullProperties = getNullProperties;
         this.scriptDtoResourceAssembler = scriptDtoResourceAssembler;
-        this.frameworkInstance = frameworkInstance;
+        this.executorService = executorService;
     }
 
     @Autowired
@@ -81,8 +93,13 @@ public class ScriptController {
 
 	@GetMapping("/scripts/{name}")
 	public ResponseEntity<ScriptByNameDto> getByNameScript(@PathVariable String name) {
-		List<Script> script = scriptConfiguration.getByName(name);
-		if (script.isEmpty()) {
+        List<Script> script;
+        try {
+            script = scriptConfiguration.getByName(name);
+        } catch (SQLException e) {
+            throw new DataNotFoundException(name);
+        }
+        if (script.isEmpty()) {
 			throw new DataNotFoundException(name);
 		}
 		return ResponseEntity.ok(scriptByNameGetDtoAssembler
@@ -103,7 +120,7 @@ public class ScriptController {
         try {
             scriptConfiguration.insert(script.convertToEntity());
             return scriptDtoResourceAssembler.toResource(script.convertToEntity());
-        } catch (ScriptAlreadyExistsException e) {
+        } catch (ScriptAlreadyExistsException | SQLException e) {
             e.printStackTrace();
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                     "Script " + script.getName() + " already exists");
@@ -111,22 +128,28 @@ public class ScriptController {
     }
 
     @PostMapping("/scripts/{name}/{version}/execute")
-    public ResponseEntity postExecuteScript (@Valid @RequestBody ScriptExecutionDto scriptExecution, @PathVariable String name, @PathVariable String version){
-        List<RequestParameter> requestParameters = new ArrayList<>();
-		requestParameters.add(new RequestParameter("version", "number", Long.toString(scriptExecution.getVersion())));
-		requestParameters.add(new RequestParameter("paramlist", "list", scriptExecution.getParameters().stream().map(scriptParameter -> scriptParameter.getName() + "=" + scriptParameter.getValue()).collect(Collectors.joining(","))));
-		requestParameters.add(new RequestParameter("mode", "name", "script"));
-		requestParameters.add(new RequestParameter("exit", "flag", Boolean.toString(false)));
-
-		Request request = new Request("script", Long.toString(System.currentTimeMillis()), scriptExecution.getScript(), "", 1, "",scriptExecution.getScript(),scriptExecution.getEnvironment(),"","","",requestParameters);
-		// TODO: FrameworkRunIdentifier
+    public ResponseEntity postExecuteScript (@Valid @RequestBody ScriptExecutionDto scriptExecutionDto, @PathVariable String name, @PathVariable String version){
 		try {
-			ScriptLaunchOperation.execute(request, null);
-		} catch (ScriptExecutionBuildException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-        return ResponseEntity.ok().build();
+            ExecutionRequest executionRequest = new ExecutionRequestBuilder()
+                    .name("on-demand")
+                    .scope("REST")
+                    .context("script")
+                    .build();
+            ScriptExecutionRequest scriptExecutionRequest = new ScriptExecutionRequestBuilder("off")
+                    .scriptName(scriptExecutionDto.getScript())
+                    .scriptVersion(scriptExecutionDto.getVersion())
+                    .environment(scriptExecutionDto.getEnvironment())
+                    .parameters(scriptExecutionDto.getParameters().stream().collect(Collectors.toMap(ScriptParameter::getName, ScriptParameter::getValue)))
+                    .executionRequestKey(executionRequest.getMetadataKey())
+                    .build();
+            executionRequest.setScriptExecutionRequests(Collections.singletonList(scriptExecutionRequest));
+
+            return ResponseEntity.ok().body(executionRequest.getMetadataKey().getId());
+        } catch (ExecutionRequestBuilderException | ScriptExecutionRequestBuilderException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return ResponseEntity.badRequest().build();
+        }
 
     }
 
@@ -141,7 +164,7 @@ public class ScriptController {
                 halMultipleEmbeddedResource.add(linkTo(methodOn(ScriptController.class)
                         .getByNameScript(scriptDto.getName()))
                         .withRel(scriptDto.getName()));
-            } catch (ScriptDoesNotExistException e) {
+            } catch (ScriptDoesNotExistException | SQLException e) {
                 e.printStackTrace();
                 throw new DataNotFoundException(scriptDto.getName());
             }
@@ -162,7 +185,7 @@ public class ScriptController {
         try {
             scriptConfiguration.update(script.convertToEntity());
             return scriptDtoResourceAssembler.toResource(script.convertToEntity());
-        } catch (ScriptDoesNotExistException e) {
+        } catch (ScriptDoesNotExistException | SQLException e) {
             e.printStackTrace();
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
@@ -174,7 +197,7 @@ public class ScriptController {
         try {
             scriptConfiguration.deleteByName(name);
             return ResponseEntity.status(HttpStatus.OK).build();
-        } catch (ScriptDoesNotExistException e) {
+        } catch (ScriptDoesNotExistException | SQLException e) {
             e.printStackTrace();
             throw new DataNotFoundException(name);
         }
@@ -186,7 +209,7 @@ public class ScriptController {
         try {
             scriptConfiguration.delete(script);
             return ResponseEntity.status(HttpStatus.OK).build();
-        } catch (ScriptDoesNotExistException e) {
+        } catch (ScriptDoesNotExistException | SQLException e) {
             throw new DataNotFoundException(name);
         }
     }

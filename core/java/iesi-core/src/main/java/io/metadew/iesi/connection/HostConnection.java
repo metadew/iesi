@@ -287,7 +287,7 @@ public class HostConnection {
                         jumphostConnection = jumphostConnections[i];
                         ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
                         Connection connection = connectionConfiguration
-                                .getConnection(jumphostConnection, shellCommandSettings.getEnvironment()).get();
+                                .get(jumphostConnection, shellCommandSettings.getEnvironment()).get();
                         ConnectionOperation connectionOperation = new ConnectionOperation();
                         hostConnection = connectionOperation.getHostConnection(connection);
                     } else {
@@ -536,7 +536,7 @@ public class HostConnection {
                         jumphostConnection = jumphostConnections[i];
                         ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
                         Connection connection = connectionConfiguration
-                                .getConnection(jumphostConnection, shellCommandSettings.getEnvironment()).get();
+                                .get(jumphostConnection, shellCommandSettings.getEnvironment()).get();
                         ConnectionOperation connectionOperation = new ConnectionOperation();
                         hostConnection = connectionOperation.getHostConnection(connection);
                     } else {
@@ -756,7 +756,7 @@ public class HostConnection {
                         jumphostConnection = jumphostConnections[i];
                         ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
                         Connection connection = connectionConfiguration
-                                .getConnection(jumphostConnection, shellCommandSettings.getEnvironment()).get();
+                                .get(jumphostConnection, shellCommandSettings.getEnvironment()).get();
                         ConnectionOperation connectionOperation = new ConnectionOperation();
                         hostConnection = connectionOperation.getHostConnection(connection);
                     } else {

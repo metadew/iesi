@@ -1,7 +1,12 @@
 package io.metadew.iesi.launch;
 
 import io.metadew.iesi.assembly.execution.AssemblyExecution;
+import io.metadew.iesi.framework.configuration.FrameworkConfiguration;
+import io.metadew.iesi.framework.crypto.FrameworkCrypto;
+import io.metadew.iesi.framework.execution.FrameworkControl;
 import org.apache.commons.cli.*;
+
+import java.io.IOException;
 
 /**
  * The assembly launcher is entry point to launch the assembly of the framework.
@@ -11,143 +16,79 @@ import org.apache.commons.cli.*;
  */
 public class AssemblyLauncher {
 
-    public static void main(String[] args) {
-        // TODO: no FWK instance necessary?
+    public static void main(String[] args) throws IOException, ParseException {
+        Options options = new Options()
+                .addOption(Option.builder("help").desc("print this message").build())
+                .addOption(Option.builder("repository").hasArg().desc("set repository location").required().build())
+                .addOption(Option.builder("development").hasArg().desc("set development location").required().build())
+                .addOption(Option.builder("sandbox").hasArg().desc("set sandbox location").required().build())
+                .addOption(Option.builder("instance").hasArg().desc("provide target instance").required().build())
+                .addOption(Option.builder("version").hasArg().desc("provide target version").required().build())
+                .addOption(Option.builder("configuration").hasArg().desc("provide target configuration").required().build())
+                .addOption(Option.builder("test").desc("test assembly flag").build())
+                .addOption(Option.builder("distribution").desc("distribution flag").build());
 
-        Option oHelp = new Option("help", "print this message");
-        Option oRepository = new Option("repository", true, "set repository location");
-        Option oDevelopment = new Option("development", true, "set development location");
-        Option oSandbox = new Option("sandbox", true, "set sandbox location");
-        Option oInstance = new Option("instance", true, "provide target instance");
-        Option oVersion = new Option("version", true, "provide target version");
-        Option oConfiguration = new Option("configuration", true, "provide target configuration");
-        Option oTestAssembly = new Option("test", "test assembly flag");
-        Option oDistribution = new Option("distribution", "distribution flag");
-
-        // create Options object
-        Options options = new Options();
-        // add options
-        options.addOption(oHelp);
-        options.addOption(oSandbox);
-        options.addOption(oRepository);
-        options.addOption(oDevelopment);
-        options.addOption(oInstance);
-        options.addOption(oVersion);
-        options.addOption(oConfiguration);
-        options.addOption(oTestAssembly);
-        options.addOption(oDistribution);
-
-        // create the parser
         CommandLineParser parser = new DefaultParser();
-        String repository = "";
-        String development = "";
-        String sandbox = "";
-        String instance = "";
-        String version = "";
-        String configuration = "";
-        boolean testAssembly = false;
-        boolean applyConfiguration = false;
-        boolean distribution = false;
-        boolean actionMatch = false;
-        try {
-            // parse the command line arguments
-            CommandLine line = parser.parse(options, args);
+        CommandLine line = parser.parse(options, args);
 
-            if (line.hasOption("help")) {
-                // automatically generate the help statement
-                HelpFormatter formatter = new HelpFormatter();
-                formatter.printHelp("[command]", options);
-                System.exit(0);
-            }
-
-            if (line.hasOption("repository")) {
-                actionMatch = true;
-                writeHeaderMessage();
-                repository = line.getOptionValue("repository");
-                System.out.println("Option -repository (repository) value = " + repository);
-            } else {
-                System.out.println("Option -repository (repository) missing");
-                System.exit(1);
-            }
-
-            // Development
-            if (line.hasOption("development")) {
-                development = line.getOptionValue("development");
-                System.out.println("Option -development (development) value = " + development);
-            } else {
-                System.out.println("Option -development (development) missing");
-                System.exit(1);
-            }
-
-            // Sandbox
-            if (line.hasOption("sandbox")) {
-                sandbox = line.getOptionValue("sandbox");
-                System.out.println("Option -sandbox (sandbox) value = " + sandbox);
-            } else {
-                System.out.println("Option -sandbox (sandbox) missing");
-                System.exit(1);
-            }
-
-            // Instance
-            if (line.hasOption("instance")) {
-                instance = line.getOptionValue("instance");
-                System.out.println("Option -instance (instance) value = " + instance);
-            } else {
-                System.out.println("Option -instance (instance) missing");
-                System.exit(1);
-            }
-
-            // Version
-            if (line.hasOption("version")) {
-                version = line.getOptionValue("version");
-                System.out.println("Option -version (version) value = " + version);
-            } else {
-                System.out.println("Option -version (version) missing");
-                System.exit(1);
-            }
-
-            // Configuration
-            if (line.hasOption("configuration")) {
-                configuration = line.getOptionValue("configuration");
-                applyConfiguration = true;
-                System.out.println("Option -configuration (configuration) value = " + configuration);
-            } else {
-                System.out.println("Option -configuration (configuration) missing");
-                System.exit(1);
-            }
-
-            // test assembly
-            if (line.hasOption("test")) {
-                testAssembly = true;
-                System.out.println("Option -test (test assembly) value = " + testAssembly);
-            } else {
-                testAssembly = false;
-                System.out.println("Option -test (test assembly) value = " + testAssembly);
-            }
-
-            // Distribution
-            if (line.hasOption("distribution")) {
-                distribution = true;
-                System.out.println("Option -distribution (distribution) value = " + distribution);
-            } else {
-                distribution = false;
-                System.out.println("Option -distribution (distribution) value = " + distribution);
-            }
-
-            AssemblyExecution assemblyExecution = new AssemblyExecution(repository, development, sandbox, instance,
-                    version, configuration, applyConfiguration, testAssembly, distribution);
-            assemblyExecution.execute();
-
-        } catch (ParseException e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
-
-        if (actionMatch) {
+        if (line.hasOption("help")) {
+            // automatically generate the help statement
+            HelpFormatter formatter = new HelpFormatter();
+            formatter.printHelp("[command]", options);
             System.exit(0);
-        } else {
-            System.out.println("No valid parameters have been provided, type -help for help.");
         }
+
+        writeHeaderMessage();
+        String repository = line.getOptionValue("repository");
+        System.out.println("Option -repository (repository) value = " + repository);
+
+        String development = line.getOptionValue("development");
+        System.out.println("Option -development (development) value = " + development);
+
+        String sandbox = line.getOptionValue("sandbox");
+        System.out.println("Option -sandbox (sandbox) value = " + sandbox);
+
+        String instance = line.getOptionValue("instance");
+        System.out.println("Option -instance (instance) value = " + instance);
+
+        String version = line.getOptionValue("version");
+        System.out.println("Option -version (version) value = " + version);
+
+        String configuration = line.getOptionValue("configuration");
+        boolean applyConfiguration = true;
+        System.out.println("Option -configuration (configuration) value = " + configuration);
+
+        boolean testAssembly;
+        if (line.hasOption("test")) {
+            testAssembly = true;
+            System.out.println("Option -test (test assembly) value = " + testAssembly);
+        } else {
+            testAssembly = false;
+            System.out.println("Option -test (test assembly) value = " + testAssembly);
+        }
+
+        boolean distribution;
+        if (line.hasOption("distribution")) {
+            distribution = true;
+            System.out.println("Option -distribution (distribution) value = " + distribution);
+        } else {
+            distribution = false;
+            System.out.println("Option -distribution (distribution) value = " + distribution);
+        }
+
+        // FWK init
+
+        FrameworkConfiguration frameworkConfiguration = FrameworkConfiguration.getInstance();
+        frameworkConfiguration.init(repository);
+
+        FrameworkCrypto.getInstance();
+
+        FrameworkControl frameworkControl = FrameworkControl.getInstance();
+        frameworkControl.init("assembly");
+
+        AssemblyExecution assemblyExecution = new AssemblyExecution(repository, development, sandbox, instance,
+                version, configuration, applyConfiguration, testAssembly, distribution);
+        assemblyExecution.execute();
 
     }
 

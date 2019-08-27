@@ -32,7 +32,7 @@ public class ScriptResultConfiguration extends Configuration<ScriptResult, Scrip
 	public Optional<ScriptResult> get(ScriptResultKey scriptResultKey) throws SQLException {
 		String queryScript = "select RUN_ID, PRC_ID, PARENT_PRC_ID, SCRIPT_ID, SCRIPT_NM, SCRIPT_VRS_NB, ENV_NM, ST_NM, " +
 				"STRT_TMS, END_TMS from " + MetadataControl.getInstance().getResultMetadataRepository().getTableNameByLabel("ScriptResults")
-				+ " where RUN_ID = " + SQLTools.GetStringForSQL(scriptResultKey.getRunId()) + " and PARENT_PRC_ID = " + SQLTools.GetStringForSQL(scriptResultKey.getProcessId()) + ";";
+				+ " where RUN_ID = " + SQLTools.GetStringForSQL(scriptResultKey.getRunId()) + " and PRC_ID = " + SQLTools.GetStringForSQL(scriptResultKey.getProcessId()) + ";";
 		CachedRowSet cachedRowSet = MetadataControl.getInstance().getResultMetadataRepository().executeQuery(queryScript, "reader");
 		if (cachedRowSet.size() == 0) {
 			return Optional.empty();

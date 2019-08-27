@@ -13,13 +13,20 @@ import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.sql.SQLException;
 import java.text.MessageFormat;
 
 public class ConnectivityMetadataRepository extends MetadataRepository {
     private static final Logger LOGGER = LogManager.getLogger();
+    private final ConnectionConfiguration connectionConfiguration;
+    private final EnvironmentConfiguration environmentConfiguration;
+    private final ImpersonationConfiguration impersonationConfiguration;
 
     public ConnectivityMetadataRepository(String frameworkCode, String name, String scope, String instanceName, RepositoryCoordinator repositoryCoordinator, String repositoryObjectsPath, String repositoryTablesPath) {
         super(frameworkCode, name, scope, instanceName, repositoryCoordinator, repositoryObjectsPath, repositoryTablesPath);
+        connectionConfiguration = new ConnectionConfiguration();
+        environmentConfiguration = new EnvironmentConfiguration();
+        impersonationConfiguration = new ImpersonationConfiguration();
     }
 
     @Override
@@ -66,24 +73,24 @@ public class ConnectivityMetadataRepository extends MetadataRepository {
     public void save(Connection connection) {
         LOGGER.info(MessageFormat.format("Inserting connection {0}-{1} into connectivity repository",
                 connection.getName(), connection.getEnvironment()));
-        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
         try {
-            connectionConfiguration.insertConnection(connection);
+            connectionConfiguration.insert(connection);
         } catch (ConnectionAlreadyExistsException e1) {
             LOGGER.debug(MessageFormat.format("Connection {0}-{1} already exists in connectivity repository. Updating connection {0}-{1} instead.",
                     connection.getName(), connection.getEnvironment()));
             try {
-                connectionConfiguration.updateConnection(connection);
-            } catch (ConnectionDoesNotExistException | ConnectionAlreadyExistsException e2) {
+                connectionConfiguration.update(connection);
+            } catch (ConnectionDoesNotExistException | ConnectionAlreadyExistsException | SQLException e2) {
                 e2.printStackTrace();
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
     public void save(Environment environment) {
         LOGGER.info(MessageFormat.format("Inserting environment {0} into connectivity repository",
                 environment.getName()));
-        EnvironmentConfiguration environmentConfiguration = new EnvironmentConfiguration();
         try {
             environmentConfiguration.insertEnvironment(environment);
         } catch (EnvironmentAlreadyExistsException e) {
@@ -100,7 +107,6 @@ public class ConnectivityMetadataRepository extends MetadataRepository {
     public void save(Impersonation impersonation) {
         LOGGER.info(MessageFormat.format("Inserting impersonation {0} into connectivity repository",
                 impersonation.getName()));
-        ImpersonationConfiguration impersonationConfiguration = new ImpersonationConfiguration();
         try {
             impersonationConfiguration.insertImpersonation(impersonation);
         } catch (ImpersonationAlreadyExistsException e) {

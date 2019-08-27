@@ -1,6 +1,6 @@
 package io.metadew.iesi.server.rest.error;
 
-import io.metadew.iesi.metadata.definition.ComponentAttribute;
+import io.metadew.iesi.metadata.definition.component.ComponentAttribute;
 import io.metadew.iesi.server.rest.resource.component.dto.ComponentDto;
 import io.metadew.iesi.server.rest.resource.connection.dto.ConnectionDto;
 import io.metadew.iesi.server.rest.resource.environment.dto.EnvironmentDto;

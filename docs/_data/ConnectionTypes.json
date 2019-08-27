@@ -138,6 +138,18 @@
       "mandatory" : "N",
       "encrypted" : "N"
     }, {
+      "name" : "type",
+      "description" : "The type of h2 database (embedded/server/memory)",
+      "type" : "string",
+      "mandatory" : "Y",
+      "encrypted" : "N"
+    }, {
+      "name" : "name",
+      "description" : "The name of the h2 database (memory)",
+      "type" : "string",
+      "mandatory" : "N",
+      "encrypted" : "N"
+    }, {
       "name" : "port",
       "description" : "The port number for connecting to the host",
       "type" : "number",

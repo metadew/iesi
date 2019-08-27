@@ -1,6 +1,6 @@
 package io.metadew.iesi.server.rest.user;
 
-import io.metadew.iesi.metadata.definition.User;
+import io.metadew.iesi.metadata.definition.user.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 

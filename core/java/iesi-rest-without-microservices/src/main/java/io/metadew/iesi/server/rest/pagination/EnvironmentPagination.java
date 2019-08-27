@@ -1,6 +1,6 @@
 package io.metadew.iesi.server.rest.pagination;
 
-import io.metadew.iesi.metadata.definition.Environment;
+import io.metadew.iesi.metadata.definition.environment.Environment;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

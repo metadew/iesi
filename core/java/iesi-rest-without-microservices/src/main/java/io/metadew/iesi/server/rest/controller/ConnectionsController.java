@@ -1,6 +1,6 @@
 package io.metadew.iesi.server.rest.controller;
 
-import io.metadew.iesi.metadata.configuration.ConnectionConfiguration;
+import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.ConnectionAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.ConnectionDoesNotExistException;
 import io.metadew.iesi.metadata.definition.connection.Connection;
@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -62,7 +63,7 @@ public class ConnectionsController {
 
 	@GetMapping("")
 	public HalMultipleEmbeddedResource<ConnectionGlobalDto> getAllConnections(@Valid ConnectionCriteria connectionCriteria) {
-		List<Connection> connections = connectionConfiguration.getConnections();
+		List<Connection> connections = connectionConfiguration.getAll();
 		List<Connection> pagination = connectionPagination.search(connections, connectionCriteria);
 		return new HalMultipleEmbeddedResource<>(pagination.stream()
 				.filter(distinctByKey(Connection::getName))
@@ -72,7 +73,7 @@ public class ConnectionsController {
 
 	@GetMapping("/{name}")
 	public ConnectionByNameDto getByName(@PathVariable String name) {
-		List<Connection> connections = connectionConfiguration.getConnectionByName(name);
+		List<Connection> connections = connectionConfiguration.getByName(name);
 		if (connections.isEmpty()) {
 			throw  new DataNotFoundException(name);
 		}
@@ -82,7 +83,7 @@ public class ConnectionsController {
 	@GetMapping("/{name}/{environment}")
 	public ConnectionDto getByNameandEnvironment(@PathVariable String name,
 																			@PathVariable String environment) {
-		Optional<Connection> connection = connectionConfiguration.getConnection(name, environment);
+		Optional<Connection> connection = connectionConfiguration.get(name, environment);
 		return connection
 				.map(connectionDtoResourceAssembler::toResource)
 				.orElseThrow(() -> new DataNotFoundException(name, environment));
@@ -92,9 +93,9 @@ public class ConnectionsController {
 	public ResponseEntity<ConnectionDto> postAllConnections(@Valid @RequestBody ConnectionDto connectionDto) {
 		getNullProperties.getNullConnection(connectionDto);
 		try {
-			connectionConfiguration.insertConnection(connectionDto.convertToEntity());
+			connectionConfiguration.insert(connectionDto.convertToEntity());
 			return ResponseEntity.ok(connectionDtoResourceAssembler.toResource(connectionDto.convertToEntity()));
-		} catch (ConnectionAlreadyExistsException e) {
+		} catch (ConnectionAlreadyExistsException | SQLException e) {
 					e.printStackTrace();
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND,
 					"Connection " + connectionDto.getName() + " already exists");
@@ -107,7 +108,7 @@ public class ConnectionsController {
 		getListNullProperties.getNullConnection(connectionDtos);
 		for (ConnectionDto connectionDto : connectionDtos) {
 			try {
-				ConnectionDto updatedConnectionDto = convertToDto(connectionConfiguration.updateConnection(connectionDto.convertToEntity()));
+				ConnectionDto updatedConnectionDto = convertToDto(connectionConfiguration.update(connectionDto.convertToEntity()));
 				halMultipleEmbeddedResource.embedResource(updatedConnectionDto);
 				halMultipleEmbeddedResource.add(linkTo(methodOn(ConnectionsController.class)
 						.getByNameandEnvironment(updatedConnectionDto.getName(), updatedConnectionDto.getEnvironment()))
@@ -116,7 +117,7 @@ public class ConnectionsController {
 			} catch (ConnectionDoesNotExistException e) {
 					e.printStackTrace();
 				throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-			} catch (ConnectionAlreadyExistsException e) {
+			} catch (ConnectionAlreadyExistsException | SQLException e) {
 				throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 		}
@@ -133,19 +134,19 @@ public class ConnectionsController {
 			throw new DataNotFoundException(name);
 		}
 		try {
-			return connectionDtoResourceAssembler.toResource(connectionConfiguration.updateConnection(connectionDto.convertToEntity()));
+			return connectionDtoResourceAssembler.toResource(connectionConfiguration.update(connectionDto.convertToEntity()));
 		} catch (ConnectionDoesNotExistException e) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-		} catch (ConnectionAlreadyExistsException e) {
+		} catch (ConnectionAlreadyExistsException | SQLException e) {
 			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
 	@DeleteMapping("")
 	public ResponseEntity<?> deleteAllConnections() {
-		List<Connection> connections = connectionConfiguration.getConnections();
+		List<Connection> connections = connectionConfiguration.getAll();
 		if (!connections.isEmpty()) {
-			connectionConfiguration.deleteAllConnections();
+			connectionConfiguration.deleteAll();
 			return ResponseEntity.status(HttpStatus.OK).build();
 		}
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -153,12 +154,12 @@ public class ConnectionsController {
 
 	@DeleteMapping("/{name}")
 	public ResponseEntity<?> deleteConnections(@PathVariable String name) {
-		List<Connection> connections = connectionConfiguration.getConnectionByName(name);
+		List<Connection> connections = connectionConfiguration.getByName(name);
 		if (connections.isEmpty()) {
 			throw new DataNotFoundException(name);
 		}
 		try {
-			connectionConfiguration.deleteConnectionByName(name);
+			connectionConfiguration.deleteByName(name);
 			return ResponseEntity.status(HttpStatus.OK).build();
 		} catch (ConnectionDoesNotExistException e) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
@@ -169,14 +170,14 @@ public class ConnectionsController {
 	@DeleteMapping("/{name}/{environment}")
 	public ResponseEntity<?> deleteConnectionsandEnvironment(@PathVariable String name,
 			@PathVariable String environment) {
-		Optional<Connection> connections = connectionConfiguration.getConnection(name, environment);
+		Optional<Connection> connections = connectionConfiguration.get(name, environment);
 		if (!connections.isPresent()) {
 			throw new DataNotFoundException(name, environment);
 		}
 		try {
-			connectionConfiguration.deleteConnection(name, environment);
+			connectionConfiguration.delete(name, environment);
 			return ResponseEntity.status(HttpStatus.OK).build();
-		} catch (ConnectionDoesNotExistException e) {
+		} catch (ConnectionDoesNotExistException | SQLException e) {
 			e.printStackTrace();
 			throw new DataNotFoundException(name, environment);
 		}

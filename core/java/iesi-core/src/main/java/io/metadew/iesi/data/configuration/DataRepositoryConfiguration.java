@@ -60,7 +60,7 @@
 //
 //		// Connection
 //		ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(this.getFrameworkExecution());
-//		Connection connection = connectionConfiguration.getConnection(this.getRepositoryInstanceConnectionName(),
+//		Connection connection = connectionConfiguration.get(this.getRepositoryInstanceConnectionName(),
 //				environmentName).get();
 //		ConnectionOperation connectionOperation = new ConnectionOperation(this.getFrameworkExecution());
 //		this.setDatabaseConnection(connectionOperation

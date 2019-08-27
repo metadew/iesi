@@ -1,11 +1,11 @@
 package io.metadew.iesi.server.rest.controller;
 
-import io.metadew.iesi.metadata.configuration.ConnectionConfiguration;
-import io.metadew.iesi.metadata.configuration.EnvironmentConfiguration;
+import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
+import io.metadew.iesi.metadata.configuration.environment.EnvironmentConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.EnvironmentAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.EnvironmentDoesNotExistException;
-import io.metadew.iesi.metadata.definition.Environment;
 import io.metadew.iesi.metadata.definition.connection.Connection;
+import io.metadew.iesi.metadata.definition.environment.Environment;
 import io.metadew.iesi.server.rest.error.DataBadRequestException;
 import io.metadew.iesi.server.rest.error.DataNotFoundException;
 import io.metadew.iesi.server.rest.error.GetListNullProperties;
@@ -134,14 +134,13 @@ public class EnvironmentsController {
 
 	@GetMapping("/environments/{name}/connections")
 	public HalMultipleEmbeddedResource getEnvironmentsConnections(@PathVariable String name) {
-		List<Connection> connections = connectionConfiguration.getConnections();
+		List<Connection> connections = connectionConfiguration.getAll();
 		List<Connection> result = connections.stream().filter(connection -> connection.getEnvironment().equals(name))
 				.collect(Collectors.toList());
 		if (result.isEmpty()) {
 			throw new DataNotFoundException(name);
 		}
-		HalMultipleEmbeddedResource<ConnectionDto> halMultipleEmbeddedResource = new HalMultipleEmbeddedResource<>(result.stream().map(connectionDtoResourceAssembler::toResource).collect(Collectors.toList()));
-		return halMultipleEmbeddedResource;
+		return new HalMultipleEmbeddedResource<>(result.stream().map(connectionDtoResourceAssembler::toResource).collect(Collectors.toList()));
 
 	}
 

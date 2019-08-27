@@ -8,6 +8,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 
 public class ScriptExecutionBuilder {
 
@@ -105,9 +106,9 @@ public class ScriptExecutionBuilder {
                         getEnvironment().orElseThrow(() -> new ScriptExecutionBuildException("No environment supplied to route script execution builder")),
                         executionControl,
                         new ExecutionMetrics(),
-                        executionControl.getNextProcessId(),
+                        -1L,
                         getExitOnCompletion().orElseThrow(() -> new ScriptExecutionBuildException("No exit on completion flag supplied to script execution builder")),
-                        getParentScriptExecution().orElse(null),
+                        null,
                         parameters,
                         impersonations,
                         //getActionSelectOperation().orElseThrow(() -> new ScriptExecutionBuildException("No action selection supplied to script execution builder")),
@@ -124,9 +125,9 @@ public class ScriptExecutionBuilder {
                     getEnvironment().orElseThrow(() -> new ScriptExecutionBuildException("No environment supplied to route script execution builder")),
                     executionControl,
                     new ExecutionMetrics(),
-                    executionControl.getNextProcessId(),
+                    getProcessId().orElseThrow(() -> new ScriptExecutionBuildException("No process id supplied to script execution builder")),
                     getExitOnCompletion().orElseThrow(() -> new ScriptExecutionBuildException("No exit on completion flag supplied to script execution builder")),
-                    getParentScriptExecution().orElse(null),
+                    getParentScriptExecution().orElseThrow(() -> new ScriptExecutionBuildException("no parent script execution provided")),
                     parameters,
                     impersonations,
                     actionSelectOperation,
@@ -143,7 +144,7 @@ public class ScriptExecutionBuilder {
                     getEnvironment().orElseThrow(() -> new ScriptExecutionBuildException("No environment supplied to route script execution builder")),
                     executionControl,
                     getExecutionMetrics().orElseThrow(() -> new ScriptExecutionBuildException("No execution metrics supplied to route script execution builder")),
-                    executionControl.getNextProcessId(),
+                    -1L,
                     getExitOnCompletion().orElseThrow(() -> new ScriptExecutionBuildException("No exit on completion flag supplied to route script execution builder")),
                     getParentScriptExecution().orElse(null),
                     parameters,

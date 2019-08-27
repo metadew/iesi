@@ -4,11 +4,7 @@ import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.MetadataConfiguration;
 import io.metadew.iesi.metadata.configuration.action.ActionConfiguration;
 import io.metadew.iesi.metadata.configuration.action.exception.ActionAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.action.exception.ActionDoesNotExistException;
-import io.metadew.iesi.metadata.configuration.script.exception.ScriptAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.script.exception.ScriptDoesNotExistException;
-import io.metadew.iesi.metadata.configuration.script.exception.ScriptParameterAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.script.exception.ScriptVersionAlreadyExistsException;
+import io.metadew.iesi.metadata.configuration.script.exception.*;
 import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.metadata.definition.script.ScriptParameter;
@@ -45,15 +41,29 @@ public class ScriptConfiguration extends MetadataConfiguration {
         return this.getAll();
     }
 
-    public boolean exists(String scriptName, long versionNumber) {
-        return get(scriptName, versionNumber).isPresent();
+    public boolean exists(String scriptName, long versionNumber) throws SQLException {
+        String query = "SELECT SCRIPT_ID FROM " + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("Scripts") +
+                " WHERE SCRIPT_NM = " + SQLTools.GetStringForSQL(scriptName) + ";";
+        CachedRowSet crsScript = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(query, "reader");
+        if (crsScript.size() == 0) {
+            return false;
+        }
+        crsScript.next();
+        String versionQuery = "SELECT SCRIPT_ID, SCRIPT_VRS_NB FROM " + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("ScriptVersions") +
+                " WHERE SCRIPT_ID = " + SQLTools.GetStringForSQL(crsScript.getString("SCRIPT_ID")) +
+                " AND SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(versionNumber) + ";";
+        CachedRowSet crsVersion = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(versionQuery, "reader");
+        return crsVersion.size() > 0;
     }
 
     public boolean exists(String scriptName) {
-        return getByName(scriptName).isEmpty();
+        String query = "SELECT SCRIPT_ID FROM " + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("Scripts") +
+                " WHERE SCRIPT_NM = " + SQLTools.GetStringForSQL(scriptName) + ";";
+        CachedRowSet crsScript = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(query, "reader");
+        return crsScript.size() > 0;
     }
 
-    public boolean exists(Script script) {
+    public boolean exists(Script script) throws SQLException {
         return exists(script.getName(), script.getVersion().getNumber());
     }
 
@@ -74,7 +84,7 @@ public class ScriptConfiguration extends MetadataConfiguration {
         return scripts;
     }
 
-    public List<Script> getByName(String scriptName) {
+    public List<Script> getByName(String scriptName) throws SQLException {
         LOGGER.trace(MessageFormat.format("Fetching scripts by name ''{0}''", scriptName));
         List<Script> scripts = new ArrayList<>();
         String queryScript = "select SCRIPT_ID from "
@@ -82,32 +92,25 @@ public class ScriptConfiguration extends MetadataConfiguration {
                 " where SCRIPT_NM = "
                 + SQLTools.GetStringForSQL(scriptName) + ";";
         CachedRowSet crsScript = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(queryScript, "reader");
-        try {
-            if (crsScript.size() == 0) {
-                return scripts;
-            } else if (crsScript.size() > 1) {
-                LOGGER.warn(MessageFormat.format("Found multiple implementations for Script {0}. Returning first implementation", scriptName));
-            }
-            crsScript.next();
-            String queryScriptVersions = "select SCRIPT_VRS_NB from "
-                    + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("ScriptVersions") + " where SCRIPT_ID = "
-                    + SQLTools.GetStringForSQL(crsScript.getString("SCRIPT_ID"));
-            CachedRowSet crsScriptVersions = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(queryScriptVersions, "reader");
-            while (crsScriptVersions.next()) {
-                get(scriptName, crsScriptVersions.getLong("SCRIPT_VRS_NB")).ifPresent(scripts::add);
-            }
-            crsScriptVersions.close();
-            crsScript.close();
-        } catch (SQLException e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-
-            System.out.println(StackTrace.toString());
+        if (crsScript.size() == 0) {
+            return scripts;
+        } else if (crsScript.size() > 1) {
+            LOGGER.warn(MessageFormat.format("Found multiple implementations for Script {0}. Returning first implementation", scriptName));
         }
+        crsScript.next();
+        String queryScriptVersions = "select SCRIPT_VRS_NB from "
+                + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("ScriptVersions") + " where SCRIPT_ID = "
+                + SQLTools.GetStringForSQL(crsScript.getString("SCRIPT_ID"));
+        CachedRowSet crsScriptVersions = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(queryScriptVersions, "reader");
+        while (crsScriptVersions.next()) {
+            get(scriptName, crsScriptVersions.getLong("SCRIPT_VRS_NB")).ifPresent(scripts::add);
+        }
+        crsScriptVersions.close();
+        crsScript.close();
         return scripts;
     }
 
-    public void delete(Script script) throws ScriptDoesNotExistException {
+    public void delete(Script script) throws ScriptDoesNotExistException, SQLException {
         LOGGER.trace(MessageFormat.format("Deleting script {0}-{1}.", script.getName(), script.getVersion().getNumber()));
         if (!exists(script)) {
             throw new ScriptDoesNotExistException(
@@ -117,7 +120,7 @@ public class ScriptConfiguration extends MetadataConfiguration {
 
         try {
             scriptVersionConfiguration.delete(script.getId(), script.getVersion().getNumber());
-        } catch (ActionDoesNotExistException e) {
+        } catch (ScriptVersionDoesNotExistException e) {
             LOGGER.warn(e.getMessage() + ". Skipping");
         }
 
@@ -126,13 +129,13 @@ public class ScriptConfiguration extends MetadataConfiguration {
         MetadataControl.getInstance().getDesignMetadataRepository().executeBatch(deleteQuery);
     }
 
-    public void deleteByName(String scriptName) throws ScriptDoesNotExistException {
+    public void deleteByName(String scriptName) throws ScriptDoesNotExistException, SQLException {
         for (Script script : getByName(scriptName)) {
             delete(script);
         }
     }
 
-    public void insert(Script script) throws ScriptAlreadyExistsException {
+    public void insert(Script script) throws ScriptAlreadyExistsException, SQLException {
         LOGGER.trace(MessageFormat.format("Inserting script {0}-{1}.", script.getName(), script.getVersion().getNumber()));
         if (exists(script)) {
             throw new ScriptAlreadyExistsException(MessageFormat.format(
@@ -168,13 +171,13 @@ public class ScriptConfiguration extends MetadataConfiguration {
         MetadataControl.getInstance().getDesignMetadataRepository().executeBatch(insertStatement);
     }
 
-    public void update(Script script) throws ScriptDoesNotExistException {
+    public void update(Script script) throws ScriptDoesNotExistException, SQLException {
         LOGGER.trace(MessageFormat.format("Updating script {0}-{1}.", script.getName(), script.getVersion().getNumber()));
         try {
             delete(script);
             insert(script);
         } catch (ScriptDoesNotExistException e) {
-            LOGGER.warn(MessageFormat.format("Script {0}-{1} is not present in the repository so cannot be updated",script.getName(), script.getVersion().getNumber()));
+            LOGGER.warn(MessageFormat.format("Script {0}-{1} is not present in the repository so cannot be updated", script.getName(), script.getVersion().getNumber()));
             throw e;
         } catch (ScriptAlreadyExistsException e) {
             LOGGER.warn(MessageFormat.format("Script {0}-{1} is not deleted correctly during update. {2}", script.getName(), script.getVersion().getNumber(), e.toString()));
@@ -184,7 +187,7 @@ public class ScriptConfiguration extends MetadataConfiguration {
     private List<String> getInsertStatement(Script script) {
         List<String> queries = new ArrayList<>();
 
-        if (getByName(script.getName()).size() == 0) {
+        if (!exists(script.getName())) {
             String sql = "INSERT INTO " + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("Scripts") +
                     " (SCRIPT_ID, SCRIPT_TYP_NM, SCRIPT_NM, SCRIPT_DSC) VALUES (" +
                     SQLTools.GetStringForSQL(script.getId()) + "," +

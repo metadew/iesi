@@ -11,6 +11,7 @@ import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.datatypes.dataset.KeyValueDataset;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
+import io.metadew.iesi.metadata.configuration.exception.ComponentDoesNotExistException;
 import io.metadew.iesi.metadata.definition.HttpRequestComponent;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.script.execution.ActionExecution;
@@ -92,7 +93,7 @@ public class HttpExecuteRequest {
         this.dataTypeService = new DataTypeService(executionControl.getExecutionRuntime());
     }
 
-    public void prepare() throws URISyntaxException, HttpRequestBuilderException, IOException, SQLException {
+    public void prepare() throws URISyntaxException, HttpRequestBuilderException, IOException, SQLException, ComponentDoesNotExistException {
         // Reset Parameters
         requestTypeActionParameterOperation = new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), typeKey);
@@ -224,7 +225,7 @@ public class HttpExecuteRequest {
             return null;
         } else if (connectionName instanceof Text) {
             ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
-            return proxyConnection = connectionConfiguration.getConnection(((Text) connectionName).getString(), executionControl.getEnvName())
+            return proxyConnection = connectionConfiguration.get(((Text) connectionName).getString(), executionControl.getEnvName())
                     .map(ProxyConnection::from)
                     .orElseThrow(() -> new RuntimeException(MessageFormat.format("Cannot find connection {0}", ((Text) connectionName).getString())));
         } else {

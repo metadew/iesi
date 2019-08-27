@@ -1,6 +1,6 @@
 package io.metadew.iesi.server.rest.resource.impersonation.resource;
 
-import io.metadew.iesi.metadata.definition.Impersonation;
+import io.metadew.iesi.metadata.definition.impersonation.Impersonation;
 import io.metadew.iesi.server.rest.controller.ImpersonationController;
 import io.metadew.iesi.server.rest.resource.impersonation.dto.ImpersonationDto;
 import io.metadew.iesi.server.rest.resource.impersonation.dto.ImpersonationParameterDto;

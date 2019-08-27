@@ -68,7 +68,7 @@ public class ConnIsAlive {
     private boolean execute(String connectionName) {
         // Get Connection
         ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
-        Connection connection = connectionConfiguration.getConnection(connectionName,
+        Connection connection = connectionConfiguration.get(connectionName,
                 this.getExecutionControl().getEnvName()).get();
 
         try {

@@ -4,6 +4,7 @@ import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsExc
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequestBuilderException;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequestBuilderException;
+import org.apache.commons.cli.ParseException;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -11,7 +12,7 @@ import java.util.List;
 public final class Launcher {
 
 	
-	public static void execute(String launcher, List<LaunchArgument> inputArgs) throws ExecutionRequestBuilderException, ScriptExecutionRequestBuilderException, MetadataAlreadyExistsException, SQLException, MetadataDoesNotExistException {
+	public static void execute(String launcher, List<LaunchArgument> inputArgs) throws ExecutionRequestBuilderException, ScriptExecutionRequestBuilderException, MetadataAlreadyExistsException, SQLException, MetadataDoesNotExistException, ParseException {
 		
 		int inputArgsArraySize = 0;
 		for (LaunchArgument launchArgument : inputArgs) {

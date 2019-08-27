@@ -167,7 +167,7 @@ public class FwkExecuteSuite {
 	private boolean execute(String componentName, String suiteName, String suiteVersion, String suiteBuild, String repositoryConnectionName, String repositoryComponentPath, String repositorySuitePath, String repositoryVersionPath, String repositoryBuildPath, String repositoryBuildAsset, String environmentName) {
         // Get Connection
         ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
-        Connection connection = connectionConfiguration.getConnection(repositoryConnectionName,
+        Connection connection = connectionConfiguration.get(repositoryConnectionName,
                 this.getExecutionControl().getEnvName()).get();
 
         // Artifactory

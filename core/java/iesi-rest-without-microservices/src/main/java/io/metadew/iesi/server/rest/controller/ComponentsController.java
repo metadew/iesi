@@ -1,9 +1,9 @@
 package io.metadew.iesi.server.rest.controller;
 
-import io.metadew.iesi.metadata.configuration.ComponentConfiguration;
+import io.metadew.iesi.metadata.configuration.component.ComponentConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.ComponentAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.ComponentDoesNotExistException;
-import io.metadew.iesi.metadata.definition.Component;
+import io.metadew.iesi.metadata.definition.component.Component;
 import io.metadew.iesi.server.rest.error.DataBadRequestException;
 import io.metadew.iesi.server.rest.error.DataNotFoundException;
 import io.metadew.iesi.server.rest.error.GetListNullProperties;
@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -64,7 +65,7 @@ public class ComponentsController {
 
     @GetMapping("/components")
     public HalMultipleEmbeddedResource<ComponentGlobalDto> getAllComponents(@Valid ComponentCriteria componentCriteria) {
-        List<Component> components = componentConfiguration.getComponents();
+        List<Component> components = componentConfiguration.getAll();
         List<Component> pagination = componentPagination.search(components, componentCriteria);
         return new HalMultipleEmbeddedResource<>(pagination.stream()
                 .filter(distinctByKey(Component :: getName))
@@ -75,7 +76,7 @@ public class ComponentsController {
 
     @GetMapping("/components/{name}")
     public ComponentByNameDto getByName(@PathVariable String name) {
-        List<Component> component = componentConfiguration.getComponentsByName(name);
+        List<Component> component = componentConfiguration.getByName(name);
         if (component.isEmpty()) {
             throw new DataNotFoundException(name);
         }
@@ -85,7 +86,7 @@ public class ComponentsController {
     @GetMapping("/components/{name}/{version}")
     public ComponentDto getComponentsAndVersion(@PathVariable String name,
                                                 @PathVariable Long version) {
-        Component component = componentConfiguration.getComponent(name, version).
+        Component component = componentConfiguration.get(name, version).
                 orElseThrow(() -> new DataNotFoundException(name, version));
         return componentDtoResourceAssembler.toResource(component);
     }
@@ -94,9 +95,9 @@ public class ComponentsController {
     public ComponentDto postComponents(@Valid @RequestBody ComponentDto component) {
         getNullProperties.getNullComponent(component);
         try {
-            componentConfiguration.insertComponent(component.convertToEntity());
+            componentConfiguration.insert(component.convertToEntity());
             return componentDtoResourceAssembler.toResource(component.convertToEntity());
-        } catch (ComponentAlreadyExistsException e) {
+        } catch (ComponentAlreadyExistsException | SQLException e) {
             e.printStackTrace();
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                     "Component " + component.getName() + " already exists");
@@ -111,7 +112,7 @@ public class ComponentsController {
         getListNullProperties.getNullComponent(componentDtos);
         for (ComponentDto componentDto : componentDtos) {
             try {
-                componentConfiguration.updateComponent(componentDto.convertToEntity());
+                componentConfiguration.update(componentDto.convertToEntity());
                 halMultipleEmbeddedResource.embedResource(componentDto);
                 halMultipleEmbeddedResource.add(linkTo(methodOn(ComponentsController.class)
                         .getComponentsAndVersion(componentDto.getName(), componentDto.getVersion().getNumber()))
@@ -130,12 +131,12 @@ public class ComponentsController {
                                       @RequestBody ComponentDto component) {
         if (!component.getName().equals(name)) {
             throw new DataBadRequestException(name);
-        } else if (!componentConfiguration.getComponent(name, version).isPresent()) {
+        } else if (!componentConfiguration.get(name, version).isPresent()) {
             throw new DataNotFoundException(name);
         }
         getNullProperties.getNullComponent(component);
         try {
-            componentConfiguration.updateComponent(component.convertToEntity());
+            componentConfiguration.update(component.convertToEntity());
             return componentDtoResourceAssembler.toResource(component.convertToEntity());
         } catch (ComponentDoesNotExistException e) {
             e.printStackTrace();
@@ -146,24 +147,20 @@ public class ComponentsController {
 
     @DeleteMapping("/components")
     public ResponseEntity<?> deleteAllComponents() {
-        List<Component> components = componentConfiguration.getComponents();
-        if (!components.isEmpty()) {
-            componentConfiguration.deleteComponents();
-            return ResponseEntity.status(HttpStatus.OK).build();
-        }
+        componentConfiguration.deleteAll();
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
     @DeleteMapping("/components/{name}")
     public ResponseEntity<?> deleteComponentByName(@PathVariable String name) {
-        List<Component> components = componentConfiguration.getComponentsByName(name);
+        List<Component> components = componentConfiguration.getByName(name);
         if (components.isEmpty()) {
             throw new DataNotFoundException(name);
         }
         try {
-            componentConfiguration.deleteComponentByName(name);
+            componentConfiguration.deleteByName(name);
             return ResponseEntity.status(HttpStatus.OK).build();
-        } catch (ComponentDoesNotExistException e) {
+        } catch (ComponentDoesNotExistException | SQLException e) {
             e.printStackTrace();
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
@@ -171,12 +168,12 @@ public class ComponentsController {
 
     @DeleteMapping("/components/{name}/{version}")
     public ResponseEntity<?> deleteComponentsAndVersion(@PathVariable String name, @PathVariable Long version) {
-        Component component = componentConfiguration.getComponent(name, version)
+        Component component = componentConfiguration.get(name, version)
                 .orElseThrow(() -> new DataNotFoundException(name, version));
         try {
-            componentConfiguration.deleteComponent(component);
+            componentConfiguration.delete(component);
             return ResponseEntity.status(HttpStatus.OK).build();
-        } catch (ComponentDoesNotExistException e) {
+        } catch (ComponentDoesNotExistException | SQLException e) {
             e.printStackTrace();
             throw new DataNotFoundException(name, version);
 

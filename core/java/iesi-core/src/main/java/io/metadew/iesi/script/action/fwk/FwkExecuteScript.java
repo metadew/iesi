@@ -44,30 +44,29 @@ public class FwkExecuteScript {
     private DataTypeService dataTypeService;
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public FwkExecuteScript(ExecutionControl executionControl, ScriptExecution scriptExecution,
-                            ActionExecution actionExecution) {
-        this.setExecutionControl(executionControl);
-        this.setActionExecution(actionExecution);
-        this.setScriptExecution(scriptExecution);
-        this.setActionParameterOperationMap(new HashMap<>());
+    public FwkExecuteScript(ExecutionControl executionControl, ScriptExecution scriptExecution, ActionExecution actionExecution) {
+        this.executionControl = executionControl;
+        this.actionExecution = actionExecution;
+        this.scriptExecution = scriptExecution;
+        this.actionParameterOperationMap = new HashMap<>();
         this.dataTypeService = new DataTypeService(executionControl.getExecutionRuntime());
     }
 
     public void prepare() {
         // Reset Parameters
-        this.setScriptName(new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), "script"));
-        this.setScriptVersion(new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), "version"));
-        this.setEnvironmentName(new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), "environment"));
-        this.setParamList(new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), "paramList"));
-        this.setParamFile(new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), "paramFile"));
+        this.setScriptName(new ActionParameterOperation(executionControl,
+                actionExecution, actionExecution.getAction().getType(), "script"));
+        this.setScriptVersion(new ActionParameterOperation(executionControl,
+                actionExecution, actionExecution.getAction().getType(), "version"));
+        this.setEnvironmentName(new ActionParameterOperation(executionControl,
+                actionExecution, actionExecution.getAction().getType(), "environment"));
+        this.setParamList(new ActionParameterOperation(executionControl,
+                actionExecution, actionExecution.getAction().getType(), "paramList"));
+        this.setParamFile(new ActionParameterOperation(executionControl,
+                actionExecution, actionExecution.getAction().getType(), "paramFile"));
 
         // Get Parameters
-        for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
+        for (ActionParameter actionParameter : actionExecution.getAction().getParameters()) {
             if (actionParameter.getName().equalsIgnoreCase("script")) {
                 this.getScriptName().setInputValue(actionParameter.getValue());
             } else if (actionParameter.getName().equalsIgnoreCase("version")) {
@@ -102,10 +101,10 @@ public class FwkExecuteScript {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
 
-            this.getActionExecution().getActionControl().increaseErrorCount();
+            actionExecution.getActionControl().increaseErrorCount();
 
-            this.getActionExecution().getActionControl().logOutput("exception", e.getMessage());
-            this.getActionExecution().getActionControl().logOutput("stacktrace", StackTrace.toString());
+            actionExecution.getActionControl().logOutput("exception", e.getMessage());
+            actionExecution.getActionControl().logOutput("stacktrace", StackTrace.toString());
 
             return false;
         }
@@ -118,7 +117,7 @@ public class FwkExecuteScript {
         if (parameterList instanceof Text) {
             return Optional.of(parameterList.toString());
         } else {
-            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for parameterList",
+            LOGGER.warn(MessageFormat.format(actionExecution.getAction().getType() + " does not accept {0} as type for parameterList",
                     parameterList.getClass()));
             return Optional.empty();
         }
@@ -146,23 +145,25 @@ public class FwkExecuteScript {
         ScriptExecution subScriptScriptExecution = new ScriptExecutionBuilder(false, false)
                 .script(script)
                 .executionControl(executionControl)
-                .parentScriptExecution(this.scriptExecution)
+                .processId(executionControl.getLastProcessId())
+                .parentScriptExecution(scriptExecution)
                 .exitOnCompletion(false)
                 .parameters(parameters)
+                .environment(executionControl.getEnvName())
                 .build();
 
         subScriptScriptExecution.execute();
 
         if (subScriptScriptExecution.getResult().equalsIgnoreCase(FrameworkStatus.SUCCESS.value())) {
-            this.getActionExecution().getActionControl().increaseSuccessCount();
+            actionExecution.getActionControl().increaseSuccessCount();
         } else if (subScriptScriptExecution.getResult()
                 .equalsIgnoreCase(FrameworkStatus.WARNING.value())) {
-            this.getActionExecution().getActionControl().increaseWarningCount();
+            actionExecution.getActionControl().increaseWarningCount();
         } else if (subScriptScriptExecution.getResult()
                 .equalsIgnoreCase(FrameworkStatus.ERROR.value())) {
-            this.getActionExecution().getActionControl().increaseErrorCount();
+            actionExecution.getActionControl().increaseErrorCount();
         } else {
-            this.getActionExecution().getActionControl().increaseErrorCount();
+            actionExecution.getActionControl().increaseErrorCount();
         }
 
         return true;
@@ -175,12 +176,12 @@ public class FwkExecuteScript {
             if (matcher.find()) {
                 parameterMap.put(matcher.group("parameter"), matcher.group("value"));
             } else {
-                LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " parameter entry ''{0}'' does not follow correct syntax",
+                LOGGER.warn(MessageFormat.format(actionExecution.getAction().getType() + " parameter entry ''{0}'' does not follow correct syntax",
                         parameterEntry));
             }
             return parameterMap;
         } else {
-            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for parameter entry",
+            LOGGER.warn(MessageFormat.format(actionExecution.getAction().getType() + " does not accept {0} as type for parameter entry",
                     parameterEntry.getClass()));
             return parameterMap;
         }

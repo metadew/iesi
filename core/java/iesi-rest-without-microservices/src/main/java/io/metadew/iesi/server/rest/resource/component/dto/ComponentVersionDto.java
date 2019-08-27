@@ -1,6 +1,6 @@
 package io.metadew.iesi.server.rest.resource.component.dto;
 
-import io.metadew.iesi.metadata.definition.ComponentVersion;
+import io.metadew.iesi.metadata.definition.component.ComponentVersion;
 import org.springframework.hateoas.ResourceSupport;
 
 public class ComponentVersionDto extends ResourceSupport {

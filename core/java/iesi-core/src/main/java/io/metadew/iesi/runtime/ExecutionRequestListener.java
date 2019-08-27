@@ -32,11 +32,11 @@ public class ExecutionRequestListener {
 
     public void run() throws SQLException, InterruptedException, MetadataDoesNotExistException {
         while(true) {
-            LOGGER.info("Fetching new Requests");
+            LOGGER.trace("executionrequestlistener=fetching new requests");
             List<ExecutionRequest> executionRequests = executionRequestConfiguration.getAllNew();
-            LOGGER.info("found " + executionRequests.size() + " Requests");
+            LOGGER.trace(MessageFormat.format("fexecutionrequestlistener=found {0} Requests", executionRequests.size()));
             for (ExecutionRequest executionRequest : executionRequests) {
-                LOGGER.info("submitting request " + executionRequest.getMetadataKey().getId());
+                LOGGER.info(MessageFormat.format("executionrequestlistener=submitting request {0} for execution", executionRequest.getMetadataKey().getId()));
                 executionRequest.updateExecutionRequestStatus(ExecutionRequestStatus.SUBMITTED);
                 executionRequestConfiguration.update(executionRequest);
 

@@ -139,7 +139,7 @@ public class FhoDeleteFolder {
         } else {
             ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
             Connection connection = connectionConfiguration
-                    .getConnection(connectionName, this.getExecutionControl().getEnvName())
+                    .get(connectionName, this.getExecutionControl().getEnvName())
                     .get();
             ConnectionOperation connectionOperation = new ConnectionOperation();
             HostConnection hostConnection = connectionOperation.getHostConnection(connection);

@@ -2,11 +2,13 @@ package io.metadew.iesi.script.operation;
 
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.metadata.configuration.component.ComponentConfiguration;
+import io.metadew.iesi.metadata.configuration.exception.ComponentDoesNotExistException;
 import io.metadew.iesi.metadata.definition.component.Component;
 import io.metadew.iesi.metadata.definition.HttpRequestComponent;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 
+import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -28,8 +30,8 @@ public class HttpRequestComponentService {
         this.httpRequestComponentParameterService = new HttpRequestComponentParameterService(executionControl);
     }
 
-    public HttpRequestComponent getHttpRequestComponent(String requestComponentName, ActionExecution actionExecution) {
-        Component request = componentConfiguration.getComponent(requestComponentName)
+    public HttpRequestComponent getHttpRequestComponent(String requestComponentName, ActionExecution actionExecution) throws ComponentDoesNotExistException, SQLException {
+        Component request = componentConfiguration.get(requestComponentName)
                 .orElseThrow(() -> new RuntimeException(MessageFormat.format("component.notfound=no component exists with name {0}.", requestComponentName)));
         return transform(request, actionExecution);
 
@@ -63,7 +65,7 @@ public class HttpRequestComponentService {
 
 
     public HttpRequestComponent getHttpRequestComponent(String requestComponentName, Long requestComponentVersion, ActionExecution actionExecution) {
-        Component request = componentConfiguration.getComponent(requestComponentName, requestComponentVersion)
+        Component request = componentConfiguration.get(requestComponentName, requestComponentVersion)
                 .orElseThrow(() -> new RuntimeException(MessageFormat.format("component.notfound=no component exists with name {0}.", requestComponentName)));
         return transform(request, actionExecution);
     }

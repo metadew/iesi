@@ -19,6 +19,9 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.List;
@@ -26,9 +29,13 @@ import java.util.stream.Collectors;
 
 public class DesignMetadataRepository extends MetadataRepository {
     private static final Logger LOGGER = LogManager.getLogger();
+    private final ScriptConfiguration scriptConfiguration;
+    private final ComponentConfiguration componentConfiguration;
 
     public DesignMetadataRepository(String frameworkCode, String name, String scope, String instanceName, RepositoryCoordinator repositoryCoordinator, String repositoryObjectsPath, String repositoryTablesPath) {
         super(frameworkCode, name, scope, instanceName, repositoryCoordinator, repositoryObjectsPath, repositoryTablesPath);
+        scriptConfiguration = new ScriptConfiguration();
+        componentConfiguration = new ComponentConfiguration();
     }
 
     @Override
@@ -79,32 +86,37 @@ public class DesignMetadataRepository extends MetadataRepository {
             LOGGER.error(MessageFormat.format("Script {0}-{1} cannot be saved as it contains errors", script.getName(), script.getVersion().getNumber()));
             return;
         }
-        ScriptConfiguration scriptConfiguration = new ScriptConfiguration();
         try {
             scriptConfiguration.insert(script);
         } catch (ScriptAlreadyExistsException e) {
             LOGGER.info(MessageFormat.format("Script {0}-{1} already exists in design repository. Updating to new definition", script.getName(), script.getVersion().getNumber()));
             try {
                 scriptConfiguration.update(script);
-            } catch (ScriptDoesNotExistException ex) {
+            } catch (ScriptDoesNotExistException | SQLException ex) {
                 throw new MetadataRepositorySaveException(ex);
 
             }
+        } catch (SQLException e) {
+            StringWriter stackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTrace));
+            LOGGER.warn("exception=" + e);
+            LOGGER.info("exception.stacktrace=" + stackTrace);
         }
     }
 
     public void save(Component component) throws MetadataRepositorySaveException {
         LOGGER.info(MessageFormat.format("Saving component {0} into design repository", component.getName()));
-        ComponentConfiguration componentConfiguration = new ComponentConfiguration();
         try {
-            componentConfiguration.insertComponent(component);
+            componentConfiguration.insert(component);
         } catch (ComponentAlreadyExistsException e) {
             LOGGER.warn(MessageFormat.format("Component {0} already exists in design repository. Updating to new definition", component.getName()), Level.INFO);
             try {
-                componentConfiguration.updateComponent(component);
+                componentConfiguration.update(component);
             } catch (ComponentDoesNotExistException ex) {
                 throw new MetadataRepositorySaveException(ex);
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
     

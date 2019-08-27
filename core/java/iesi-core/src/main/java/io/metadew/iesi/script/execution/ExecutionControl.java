@@ -57,11 +57,13 @@ public class ExecutionControl {
     private boolean scriptExit = false;
     private ScriptDesignTraceService scriptDesignTraceService;
 
-    private static final Marker SCRIPTMARKER = MarkerManager.getMarker("SCRIPT");
-    private static final Logger LOGGER = LogManager.getLogger();
     private Long lastProcessId;
 
+    private static final Marker SCRIPTMARKER = MarkerManager.getMarker("SCRIPT");
+
+    private static final Logger LOGGER = LogManager.getLogger();
     // Constructors
+
     public ExecutionControl() throws ClassNotFoundException, NoSuchMethodException,
             InvocationTargetException, InstantiationException, IllegalAccessException {
         this.scriptResultConfiguration = new ScriptResultConfiguration();
@@ -75,7 +77,6 @@ public class ExecutionControl {
         initializeExecutionRuntime(runId);
         this.lastProcessId = -1L;
     }
-
 
     @SuppressWarnings("unchecked")
     private void initializeExecutionRuntime(String runId) throws ClassNotFoundException,
@@ -109,7 +110,7 @@ public class ExecutionControl {
     // Log start
     public void logStart(ScriptExecution scriptExecution) {
         try {
-            Long parentProcessId = scriptExecution.getParentScriptExecution().map(ScriptExecution::getProcessId).orElse(0L);
+            Long parentProcessId = scriptExecution.getParentScriptExecution().map(ScriptExecution::getProcessId).orElse(-1L);
             ScriptResult scriptResult = new ScriptResult(new ScriptResultKey(runId, scriptExecution.getProcessId()),
                     parentProcessId,
                     scriptExecution.getScript().getId(),
@@ -423,6 +424,10 @@ public class ExecutionControl {
 
     public ExecutionTrace getExecutionTrace() {
         return executionTrace;
+    }
+
+    public Long getLastProcessId() {
+        return lastProcessId;
     }
 
     public ScriptLog getScriptLog() {

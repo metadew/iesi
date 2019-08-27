@@ -1,7 +1,7 @@
 package io.metadew.iesi.server.rest.resource.component.resource;
 
 
-import io.metadew.iesi.metadata.definition.Component;
+import io.metadew.iesi.metadata.definition.component.Component;
 import io.metadew.iesi.server.rest.controller.ComponentsController;
 import io.metadew.iesi.server.rest.resource.component.dto.ComponentByNameDto;
 import org.springframework.hateoas.Link;

@@ -18,7 +18,7 @@ public final class HostConnectionTools {
         } else {
             ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
             Connection connection = connectionConfiguration
-                    .getConnection(connectionName, environmentName).get();
+                    .get(connectionName, environmentName).get();
             ConnectionOperation connectionOperation = new ConnectionOperation();
             HostConnection hostConnection = connectionOperation.getHostConnection(connection);
 

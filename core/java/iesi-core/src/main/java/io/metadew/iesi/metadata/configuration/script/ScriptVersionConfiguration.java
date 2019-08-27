@@ -3,6 +3,7 @@ package io.metadew.iesi.metadata.configuration.script;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.action.exception.ActionDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.script.exception.ScriptVersionAlreadyExistsException;
+import io.metadew.iesi.metadata.configuration.script.exception.ScriptVersionDoesNotExistException;
 import io.metadew.iesi.metadata.definition.script.ScriptVersion;
 import io.metadew.iesi.metadata.execution.MetadataControl;
 import org.apache.logging.log4j.LogManager;
@@ -31,10 +32,10 @@ public class ScriptVersionConfiguration {
         MetadataControl.getInstance().getDesignMetadataRepository().executeUpdate(getInsertStatement(scriptId, scriptVersion));
     }
 
-    public void delete(String scriptId, long scriptVersionNumber) throws ActionDoesNotExistException {
+    public void delete(String scriptId, long scriptVersionNumber) throws ScriptVersionDoesNotExistException {
         LOGGER.trace(MessageFormat.format("Deleting ScriptVersion {0}-{1}.", scriptId, scriptVersionNumber));
         if (!exists(scriptId, scriptVersionNumber)) {
-            throw new ActionDoesNotExistException(MessageFormat.format("ScriptVersion {0}-{1} does not exists", scriptId, scriptVersionNumber));
+            throw new ScriptVersionDoesNotExistException(MessageFormat.format("ScriptVersion {0}-{1} does not exists", scriptId, scriptVersionNumber));
         }
         String deleteStatement = deleteStatement(scriptId, scriptVersionNumber);
         MetadataControl.getInstance().getTraceMetadataRepository().executeUpdate(deleteStatement);

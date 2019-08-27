@@ -1,0 +1,60 @@
+---
+data:
+  name: EXE_SCRPT_EXEC
+  label: ScriptExecutions
+  description: In-process runtime script requests for execution
+  type: operational
+  category: execution
+  migrate: Y
+  migrationKey: NA
+  fields:
+  - name: SCRIPT_EXEC_ID
+    description: Unique identifier for the script request item
+    order: '1'
+    type: string
+    length: '255'
+    nullable: N
+    defaultTimestamp: ''
+  - name: SCRPT_REQUEST_ID
+    description: Unique identifier for the script request item
+    order: '1'
+    type: string
+    length: '255'
+    nullable: N
+    defaultTimestamp: ''
+  - name: RUN_ID
+    description: Unique identifier for the script request item
+    order: '1'
+    type: string
+    length: '255'
+    nullable: N
+    defaultTimestamp: ''
+  - name: ST_NM
+    description: Status
+    order: '10'
+    type: string
+    length: '100'
+    nullable: N
+    defaultTimestamp: ''
+  - name: STRT_TMS
+    description: Load timestamp indicating when the record was inserted in the table
+    order: '15'
+    type: timestamp
+    length: '0'
+    nullable: N
+    defaultTimestamp: N
+  - name: END_TMS
+    description: Load timestamp indicating when the record was inserted in the table
+    order: '15'
+    type: timestamp
+    length: '0'
+    nullable: Y
+    defaultTimestamp: N
+  - name: LOAD_TMS
+    description: Load timestamp indicating when the record was inserted in the table
+    order: '15'
+    type: timestamp
+    length: '0'
+    nullable: N
+    defaultTimestamp: Y
+type: MetadataTable

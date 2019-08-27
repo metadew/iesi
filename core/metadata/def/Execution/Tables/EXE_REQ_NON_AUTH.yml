@@ -1,0 +1,25 @@
+---
+data:
+  name: EXE_REQ_NON_AUTH
+  label: NonAuthenticatedExecutionRequests
+  description: In-process runtime requests for execution
+  type: operational
+  category: execution
+  migrate: Y
+  migrationKey: NA
+  fields:
+  - name: REQUEST_ID
+    description: Unique identifier for the request item
+    order: '1'
+    type: string
+    length: '255'
+    nullable: N
+    defaultTimestamp: ''
+  - name: LOAD_TMS
+    description: Load timestamp indicating when the record was inserted in the table
+    order: '15'
+    type: timestamp
+    length: '0'
+    nullable: N
+    defaultTimestamp: Y
+type: MetadataTable

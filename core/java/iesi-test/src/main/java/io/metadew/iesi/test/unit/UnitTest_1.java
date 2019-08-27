@@ -4,12 +4,13 @@ import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsExc
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequestBuilderException;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequestBuilderException;
+import org.apache.commons.cli.ParseException;
 
 import java.sql.SQLException;
 
 public class UnitTest_1 {
 	
-	public static void main(String[] args) throws ExecutionRequestBuilderException, ScriptExecutionRequestBuilderException, MetadataAlreadyExistsException, SQLException, MetadataDoesNotExistException {
+	public static void main(String[] args) throws ExecutionRequestBuilderException, ScriptExecutionRequestBuilderException, MetadataAlreadyExistsException, SQLException, MetadataDoesNotExistException, ParseException {
 		String[] inputArgs = new String[6];
 		inputArgs[0] = ("-script");
 		inputArgs[1] = ("ut-1");

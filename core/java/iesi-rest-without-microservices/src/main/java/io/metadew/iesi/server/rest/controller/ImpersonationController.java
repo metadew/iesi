@@ -1,10 +1,10 @@
 package io.metadew.iesi.server.rest.controller;
 
 
-import io.metadew.iesi.metadata.configuration.ImpersonationConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.ImpersonationAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.ImpersonationDoesNotExistException;
-import io.metadew.iesi.metadata.definition.Impersonation;
+import io.metadew.iesi.metadata.configuration.impersonation.ImpersonationConfiguration;
+import io.metadew.iesi.metadata.definition.impersonation.Impersonation;
 import io.metadew.iesi.server.rest.error.DataBadRequestException;
 import io.metadew.iesi.server.rest.error.DataNotFoundException;
 import io.metadew.iesi.server.rest.error.GetListNullProperties;

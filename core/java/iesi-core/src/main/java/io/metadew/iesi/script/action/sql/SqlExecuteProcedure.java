@@ -123,7 +123,7 @@ public class SqlExecuteProcedure {
         // Get Connection
         ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
         Connection connection = connectionConfiguration
-                .getConnection(connectionName, this.getExecutionControl().getEnvName()).get();
+                .get(connectionName, this.getExecutionControl().getEnvName()).get();
         ConnectionOperation connectionOperation = new ConnectionOperation();
         Database database = connectionOperation.getDatabase(connection);
 

@@ -35,55 +35,29 @@ import java.util.Map;
  */
 public class ScriptLauncher {
 
-    public static void main(String[] args) throws ScriptExecutionRequestBuilderException, ExecutionRequestBuilderException, MetadataAlreadyExistsException, SQLException, MetadataDoesNotExistException {
+    public static void main(String[] args) throws ScriptExecutionRequestBuilderException, ExecutionRequestBuilderException, MetadataAlreadyExistsException, SQLException, MetadataDoesNotExistException, ParseException {
         ThreadContext.clearAll();
 
-        Option oHelp = new Option("help", "print this message");
-        Option oIni = new Option("ini", true, "define the initialization file");
-        Option oScript = new Option("script", true, "define the script name to execute");
-        Option oVersion = new Option("version", true, "define the version of the script to execute");
-        Option oFile = new Option("file", true, "define the configuration file to execute");
-        Option oEnv = new Option("env", true, "define the environment name where the execution needs to take place");
-        Option oParamList = new Option("paramlist", true, "define a list of parameters to use");
-        // Example: -paramlist var1=value1,var2=value
-        Option oParamFile = new Option("paramfile", true, "define a parameter file to use");
-        // Example: -paramfile C:/dir/file.conf
-        // multiple values are separated by commas: -paramfile
-        // C:/dir/file.conf,C:/dir/file.conf
-        Option oActionSelect = new Option("actions", true, "select actions to execute or not");
-        // Example -actions type=number,mode=include,scope=2-3,6
-        Option oSettings = new Option("settings", true, "set specific setting values");
-        Option oImpersonation = new Option("impersonation", true, "define impersonation name to use");
-        Option oImpersonate = new Option("impersonate", true, "define custom impersonations to use");
-        Option oExit = new Option("exit", true, "define if an explicit exit is required");
-        Option oUser = new Option("user", true, "define the user to log in with");
-        Option oPassword = new Option("password", true, "define the password to log in with");
-
-        // create Options object
-        Options options = new Options();
-        // add options
-        options.addOption(oHelp);
-        options.addOption(oIni);
-        options.addOption(oScript);
-        options.addOption(oVersion);
-        options.addOption(oFile);
-        options.addOption(oEnv);
-        options.addOption(oParamList);
-        options.addOption(oParamFile);
-        options.addOption(oActionSelect);
-        options.addOption(oSettings);
-        options.addOption(oImpersonation);
-        options.addOption(oImpersonate);
-        options.addOption(oExit);
-        options.addOption(oUser);
-        options.addOption(oPassword);
+        Options options = new Options()
+                .addOption(Option.builder("help").desc("print this message").build())
+                .addOption(Option.builder("ini").desc("define the initialization file").hasArg().build())
+                .addOption(Option.builder("script").hasArg().desc("define the script name to execute").build())
+                .addOption(Option.builder("version").hasArg().desc("define the version of the script to execute").build())
+                .addOption(Option.builder("file").hasArg().desc("define the configuration file to execute").build())
+                .addOption(Option.builder("env").hasArg().desc("define the environment name where the execution needs to take place").build())
+                .addOption(Option.builder("paramlist").hasArg().desc("define a list of parameters to use").build())
+                .addOption(Option.builder("actions").hasArg().desc("select actions to execute or not").build())
+                .addOption(Option.builder("settings").hasArg().desc("set specific setting values").build())
+                .addOption(Option.builder("impersonation").hasArg().desc("define impersonation name to use").build())
+                .addOption(Option.builder("exit").hasArg().desc("define if an explicit exit is required").build())
+                .addOption(Option.builder("password").hasArg().desc("define the password to log in with").build())
+                .addOption(Option.builder("user").hasArg().desc("define the user to log in with").build());
 
         // create the parser
         CommandLineParser parser = new DefaultParser();
 
         ExecutionRequestBuilder executionRequestBuilder = new ExecutionRequestBuilder();
         ScriptExecutionRequestBuilder scriptExecutionRequestBuilder = new ScriptExecutionRequestBuilder();
-        try {
             // parse the command line arguments
             CommandLine line = parser.parse(options, args);
 
@@ -200,11 +174,6 @@ public class ScriptLauncher {
                 System.out.println("Option -password (password) value = " + "*****");
                 executionRequestBuilder.password(line.getOptionValue("password"));
             }
-
-        } catch (ParseException e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
 
         // Server mode
         String serverMode = "off";

@@ -1,7 +1,7 @@
 package io.metadew.iesi.server.rest.resource.impersonation.dto;
 
 
-import io.metadew.iesi.metadata.definition.Impersonation;
+import io.metadew.iesi.metadata.definition.impersonation.Impersonation;
 import org.springframework.hateoas.ResourceSupport;
 
 import java.util.List;

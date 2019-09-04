@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.connection.tools.FolderTools;
 import io.metadew.iesi.framework.configuration.FrameworkObjectConfiguration;
 import io.metadew.iesi.metadata.definition.DataObject;
-import io.metadew.iesi.metadata.operation.MetadataRepositoryOperation;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import io.metadew.iesi.metadata.repository.MetadataRepositorySaveException;
 import org.apache.logging.log4j.LogManager;
@@ -14,41 +13,31 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.List;
 
 public class DataObjectConfiguration {
 
     private List<DataObject> dataObjects;
-    private MetadataRepository metadataRepository;
-    private MetadataRepositoryOperation metadataRepositoryOperation;
     private static final Logger LOGGER = LogManager.getLogger();
-    // Constructors
 
-    public DataObjectConfiguration(List<DataObject> dataObjects, MetadataRepository metadataRepository, MetadataRepositoryOperation metadataRepositoryOperation) {
-        this.dataObjects = dataObjects;
-        this.metadataRepository = metadataRepository;
-        this.metadataRepositoryOperation = metadataRepositoryOperation;
-    }
-
-    public DataObjectConfiguration() {
-        this(new ArrayList<>());
-    }
-
-    // TODO: bad!!
     public DataObjectConfiguration(List<DataObject> dataObjects) {
-        this(null, dataObjects);
+        this.dataObjects = dataObjects;
     }
+//
+//    public DataObjectConfiguration() {
+//        this(new ArrayList<>());
+//    }
+//
+//    // TODO: bad!!
+//    public DataObjectConfiguration(List<DataObject> dataObjects) {
+//        this(dataObjects, null);
+//    }
 
-    public DataObjectConfiguration(MetadataRepository metadataRepository, List<DataObject> dataObjects) {
-        this(dataObjects, metadataRepository, new MetadataRepositoryOperation(metadataRepository));
-    }
 
     // Methods
     public DataObject getDataObject(Object object) {
         String type = FrameworkObjectConfiguration.getFrameworkObjectType(object);
-        DataObject dataObject = new DataObject(type, object);
-        return dataObject;
+        return new DataObject(type, object);
     }
 
     public String getDataObjectJSON(Object object) {
@@ -107,10 +96,10 @@ public class DataObjectConfiguration {
         return dataObjectList;
     }
 
-    public void saveToMetadataRepository() {
+    public void saveToMetadataRepository(MetadataRepository metadataRepository) {
         for (DataObject dataObject : dataObjects) {
             try {
-                this.getMetadataRepository().save(dataObject);
+                metadataRepository.save(dataObject);
             } catch (MetadataRepositorySaveException e) {
                 LOGGER.warn(MessageFormat.format("Failed to save {0} to repository", dataObject.getType()));
             } catch (Exception e) {
@@ -119,33 +108,12 @@ public class DataObjectConfiguration {
         }
     }
 
-    @SuppressWarnings("unused")
     private void createFolder(String path, String folderName) {
         FolderTools.createFolder(path + File.separator + folderName);
     }
 
     public List<DataObject> getDataObjects() {
         return dataObjects;
-    }
-
-    public void setDataObjects(List<DataObject> dataObjects) {
-        this.dataObjects = dataObjects;
-    }
-
-    public MetadataRepository getMetadataRepository() {
-        return metadataRepository;
-    }
-
-    public void setMetadataRepository(MetadataRepository metadataRepository) {
-        this.metadataRepository = metadataRepository;
-    }
-
-    public MetadataRepositoryOperation getMetadataRepositoryOperation() {
-        return metadataRepositoryOperation;
-    }
-
-    public void setMetadataRepositoryOperation(MetadataRepositoryOperation metadataRepositoryOperation) {
-        this.metadataRepositoryOperation = metadataRepositoryOperation;
     }
 
 }

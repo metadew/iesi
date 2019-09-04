@@ -46,7 +46,7 @@ public class DataframeConfiguration {
         String queryDataframe = "select DATAFRAME_ID, DATAFRAME_TYP_NM, DATAFRAME_NM, DATAFRAME_DSC from "
                 + MetadataControl.getInstance().getCatalogMetadataRepository().getTableNameByLabel("Dataviews") + " where DATAFRAME_NM = '"
                 + dataframeName + "'";
-        crsDataframe = this.getMetadataRepositoryOperation().getMetadataRepository().executeQuery(queryDataframe, "reader");
+        crsDataframe = MetadataControl.getInstance().getCatalogMetadataRepository().executeQuery(queryDataframe, "reader");
         // Metadew repository change - replicate across
 
         try {
@@ -214,7 +214,7 @@ public class DataframeConfiguration {
                 + MetadataControl.getInstance().getCatalogMetadataRepository().getTableNameByLabel("DataframeVersions") + " a inner join "
                 + MetadataControl.getInstance().getCatalogMetadataRepository().getTableNameByLabel("Dataviews")
                 + " b on a.dataframe_id = b.dataframe_id where b.dataframe_nm = '" + dataframeName + "'";
-        crsDataframeVersion = this.getMetadataRepositoryOperation().getMetadataRepository().executeQuery(queryDataframeVersion, "reader");
+        crsDataframeVersion = MetadataControl.getInstance().getCatalogMetadataRepository().executeQuery(queryDataframeVersion, "reader");
         try {
             while (crsDataframeVersion.next()) {
                 dataframeVersionNumber = crsDataframeVersion.getLong("MAX_VRS_NB");
@@ -243,7 +243,7 @@ public class DataframeConfiguration {
         String queryDataframe = "select DATAFRAME_ID, DATAFRAME_TYP_NM, DATAFRAME_NM, DATAFRAME_DSC from "
                 + MetadataControl.getInstance().getCatalogMetadataRepository().getTableNameByLabel("Dataviews") + " where DATAFRAME_NM = '"
                 + dataframeName + "'";
-        crsDataframe = this.getMetadataRepositoryOperation().getMetadataRepository().executeQuery(queryDataframe, "reader");
+        crsDataframe = MetadataControl.getInstance().getCatalogMetadataRepository().executeQuery(queryDataframe, "reader");
         DataframeItemConfiguration dataframeItemConfiguration = new DataframeItemConfiguration();
         DataframeParameterConfiguration dataframeParameterConfiguration = new DataframeParameterConfiguration();
         DataframeVersionConfiguration dataframeVersionConfiguration = new DataframeVersionConfiguration();
@@ -265,7 +265,7 @@ public class DataframeConfiguration {
                         + " where DATAFRAME_ID = " + dataframe.getId() + " and DATAFRAME_VRS_NB = " + dataframeVersionNumber
                         + " order by DATAFRAME_ITEM_NB asc ";
                 CachedRowSet crsItems = null;
-                crsItems = this.getMetadataRepositoryOperation().getMetadataRepository().executeQuery(queryItems, "reader");
+                crsItems = MetadataControl.getInstance().getCatalogMetadataRepository().executeQuery(queryItems, "reader");
                 while (crsItems.next()) {
                     dataframeItemList.add(dataframeItemConfiguration.getDataframeItem(crsItems.getLong("DATAFRAME_ITEM_ID")));
                 }
@@ -277,7 +277,7 @@ public class DataframeConfiguration {
                 String queryDataframeParameters = "select DATAFRAME_ID, DATAFRAME_VRS_NB, DATAFRAME_PAR_NM from "
                         + MetadataControl.getInstance().getCatalogMetadataRepository().getTableNameByLabel("DataframeParameters")
                         + " where DATAFRAME_ID = " + dataframe.getId() + " and DATAFRAME_VRS_NB = " + dataframeVersionNumber;
-                crsDataframeParameters = this.getMetadataRepositoryOperation().getMetadataRepository()
+                crsDataframeParameters = MetadataControl.getInstance().getCatalogMetadataRepository()
                         .executeQuery(queryDataframeParameters, "reader");
                 List<DataframeParameter> dataframeParameterList = new ArrayList();
                 while (crsDataframeParameters.next()) {
@@ -307,7 +307,7 @@ public class DataframeConfiguration {
         CachedRowSet crs = null;
         String query = "select DATAFRAME_NM, DATAFRAME_DSC from "
                 + MetadataControl.getInstance().getCatalogMetadataRepository().getTableNameByLabel("Dataviews") + " order by DATAFRAME_NM ASC";
-        crs = this.getMetadataRepositoryOperation().getMetadataRepository().executeQuery(query, "reader");
+        crs = MetadataControl.getInstance().getCatalogMetadataRepository().executeQuery(query, "reader");
         DataframeConfiguration dataframeConfiguration = new DataframeConfiguration();
         try {
             String dataframeName = "";

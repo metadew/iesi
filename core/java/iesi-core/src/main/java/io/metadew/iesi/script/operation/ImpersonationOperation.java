@@ -25,8 +25,7 @@ public class ImpersonationOperation {
 
     // Constructors
     public ImpersonationOperation() {
-        // Initialize impersonation
-        this.setImpersonationMap(new HashMap<String, String>());
+        impersonationMap = new HashMap<String, String>();
     }
 
     // Methods
@@ -106,7 +105,7 @@ public class ImpersonationOperation {
         try {
             br = new BufferedReader(new FileReader(file));
 
-            String line = null;
+            String line;
             while ((line = br.readLine()) != null) {
                 String innerpart = line;
                 int delim = innerpart.indexOf(":");
@@ -119,29 +118,19 @@ public class ImpersonationOperation {
                 }
             }
             br.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     public void setImpersonation(String connectionName, String impersonatedConnectionName) {
-        this.getImpersonationMap().put(connectionName, impersonatedConnectionName);
+        impersonationMap.put(connectionName, impersonatedConnectionName);
     }
 
     public String getImpersonatedConnection(String connectionName) {
-        String result = this.getImpersonationMap().get(connectionName);
+        String result = impersonationMap.get(connectionName);
         if (result == null) result = "";
         return result;
-    }
-
-    public HashMap<String, String> getImpersonationMap() {
-        return impersonationMap;
-    }
-
-    public void setImpersonationMap(HashMap<String, String> impersonationMap) {
-        this.impersonationMap = impersonationMap;
     }
 
 }

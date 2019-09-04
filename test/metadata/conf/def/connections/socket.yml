@@ -1,0 +1,12 @@
+---
+type: Connection
+data:
+  name: "socket"
+  type: "socket"
+  description: "socket connection"
+  environment: "iesi-test"
+  parameters:
+  - name: "hostname"
+    value: "localhost"
+  - name: "port"
+    value: "23"

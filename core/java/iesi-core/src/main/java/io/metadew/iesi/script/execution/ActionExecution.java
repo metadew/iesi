@@ -176,7 +176,7 @@ public class ActionExecution {
 	}
 
 	public void traceDesignMetadata(HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
-		executionControl.getExecutionTrace().setExecution(this.getScriptExecution(), this, actionParameterOperationMap);
+		executionControl.getExecutionTrace().setExecution(this, actionParameterOperationMap);
 	}
 
 	public Action getAction() {

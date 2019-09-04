@@ -3,7 +3,6 @@ package io.metadew.iesi.metadata.operation;
 import io.metadew.iesi.common.text.ParsingTools;
 import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
-import io.metadew.iesi.framework.execution.FrameworkLog;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
@@ -16,7 +15,6 @@ import java.util.*;
 
 public class MetadataRepositoryOperation {
 
-    private MetadataRepository metadataRepository;
     private String action;
     private boolean generateDdl;
 
@@ -25,37 +23,35 @@ public class MetadataRepositoryOperation {
 
     // Constructors
 
-    public MetadataRepositoryOperation(MetadataRepository metadataRepository) {
-        this.setMetadataRepository(metadataRepository);
-    }
+    public MetadataRepositoryOperation() {}
 
     // Methods
-    public void cleanAllTables() {
-        LOGGER.info("metadata.clean.start");
-        LOGGER.trace("metadata.clean.query=" + "");
-        this.getMetadataRepository().cleanAllTables();
-        LOGGER.info("metadata.clean.end");
-
-    }
+//    public void cleanAllTables() {
+//        LOGGER.info("metadata.clean.start");
+//        LOGGER.trace("metadata.clean.query=" + "");
+//        this.getMetadataRepository().cleanAllTables();
+//        LOGGER.info("metadata.clean.end");
+//
+//    }
 
     // Drop the metadata data store
-    public void drop() {
-        this.dropAllTables();
-    }
+//    public void drop() {
+//        this.dropAllTables();
+//    }
 
-    public void dropAllTables() {
-        LOGGER.info("metadata.drop.start");
-        this.getMetadataRepository().dropAllTables(FrameworkLog.getInstance());
-        LOGGER.info("metadata.drop.end");
-
-    }
+//    public void dropAllTables() {
+//        LOGGER.info("metadata.drop.start");
+//        this.getMetadataRepository().dropAllTables(FrameworkLog.getInstance());
+//        LOGGER.info("metadata.drop.end");
+//
+//    }
 
     // Create the metadata data store
-    public void create(boolean generateDdl) {
-        this.setAction("create");
-        this.setGenerateDdl(generateDdl);
-        this.getMetadataRepository().createAllTables();
-    }
+//    public void create(boolean generateDdl) {
+//        this.setAction("create");
+//        this.setGenerateDdl(generateDdl);
+//        this.getMetadataRepository().createAllTables();
+//    }
 
     public void loadMetadataRepository(List<MetadataRepository> metadataRepositoryList) {
         this.loadMetadataRepository(metadataRepositoryList, "");
@@ -157,8 +153,8 @@ public class MetadataRepositoryOperation {
         if (!workFile.isDirectory()) {
             try {
                 LOGGER.info("metadata.file=" + file.getName());
-                DataObjectOperation dataObjectOperation = new DataObjectOperation(metadataRepositories, workFile.getAbsolutePath());
-                dataObjectOperation.saveToMetadataRepository();
+                DataObjectOperation dataObjectOperation = new DataObjectOperation(workFile.getAbsolutePath());
+                dataObjectOperation.saveToMetadataRepository(metadataRepositories);
 
                 // Move file to archive folder
                 if (moveToArchiveFolder) {
@@ -185,74 +181,65 @@ public class MetadataRepositoryOperation {
 
     }
 
-    @SuppressWarnings("unused")
-    private void createMetadataRepository(File file, String archiveFolder, String errorFolder, UUID uuid) {
+//    private void createMetadataRepository(File file, String archiveFolder, String errorFolder, UUID uuid) {
+//
+//        boolean moveToArchiveFolder = false;
+//        boolean moveToErrorFolder = false;
+//
+//        if (!archiveFolder.trim().equalsIgnoreCase(""))
+//            moveToArchiveFolder = true;
+//        if (!errorFolder.trim().equalsIgnoreCase(""))
+//            moveToErrorFolder = true;
+//
+//        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+//        SimpleDateFormat timeFormat = new SimpleDateFormat("HHmmss");
+//
+//        if (file.isDirectory()) {
+//            // Ignore
+//        } else {
+//            try {
+//                LOGGER.info("metadata.file=" + file.getName());
+//                DataObjectOperation dataObjectOperation = new DataObjectOperation(this.getMetadataRepository(), file.getAbsolutePath());
+//                dataObjectOperation.saveToMetadataRepository();
+//
+//                // Move file to archive folder
+//                if (moveToArchiveFolder) {
+//                    String archiveFileName = dateFormat.format(new Date()) + "-" + timeFormat.format(new Date()) + "-"
+//                            + uuid + "-" + file.getName();
+//                    FileTools.copyFromFileToFile(file.getAbsolutePath(),
+//                            archiveFolder + File.separator + archiveFileName);
+//                    FileTools.delete(file.getAbsolutePath());
+//                }
+//
+//            } catch (Exception e) {
+//
+//                // Move file to archive folder
+//                if (moveToErrorFolder) {
+//                    String errorFileName = dateFormat.format(new Date()) + "-" + timeFormat.format(new Date()) + "-"
+//                            + uuid + "-" + file.getName();
+//                    FileTools.copyFromFileToFile(file.getAbsolutePath(), errorFolder + File.separator + errorFileName);
+//                    FileTools.delete(file.getAbsolutePath());
+//                }
+//
+//            }
+//        }
+//
+//    }
 
-        boolean moveToArchiveFolder = false;
-        boolean moveToErrorFolder = false;
+//    private void saveMetadataRepositoryDDL(String ddl) {
+//        StringBuilder targetFilePath = new StringBuilder();
+//        targetFilePath.append(FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.out.ddl"));
+//        targetFilePath.append(File.separator);
+//        targetFilePath.append(this.getMetadataRepository().getName());
+//        targetFilePath.append("_");
+//        targetFilePath.append(this.getMetadataRepository().getCategory());
+//        targetFilePath.append("_");
+//        targetFilePath.append("create");
+//        targetFilePath.append(".ddl");
+//        FileTools.delete(targetFilePath.toString());
+//        FileTools.appendToFile(targetFilePath.toString(), "", ddl);
+//    }
 
-        if (!archiveFolder.trim().equalsIgnoreCase(""))
-            moveToArchiveFolder = true;
-        if (!errorFolder.trim().equalsIgnoreCase(""))
-            moveToErrorFolder = true;
-
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
-        SimpleDateFormat timeFormat = new SimpleDateFormat("HHmmss");
-
-        if (file.isDirectory()) {
-            // Ignore
-        } else {
-            try {
-                LOGGER.info("metadata.file=" + file.getName());
-                DataObjectOperation dataObjectOperation = new DataObjectOperation(this.getMetadataRepository(), file.getAbsolutePath());
-                dataObjectOperation.saveToMetadataRepository();
-
-                // Move file to archive folder
-                if (moveToArchiveFolder) {
-                    String archiveFileName = dateFormat.format(new Date()) + "-" + timeFormat.format(new Date()) + "-"
-                            + uuid + "-" + file.getName();
-                    FileTools.copyFromFileToFile(file.getAbsolutePath(),
-                            archiveFolder + File.separator + archiveFileName);
-                    FileTools.delete(file.getAbsolutePath());
-                }
-
-            } catch (Exception e) {
-
-                // Move file to archive folder
-                if (moveToErrorFolder) {
-                    String errorFileName = dateFormat.format(new Date()) + "-" + timeFormat.format(new Date()) + "-"
-                            + uuid + "-" + file.getName();
-                    FileTools.copyFromFileToFile(file.getAbsolutePath(), errorFolder + File.separator + errorFileName);
-                    FileTools.delete(file.getAbsolutePath());
-                }
-
-            }
-        }
-
-    }
-
-    @SuppressWarnings("unused")
-    private void saveMetadataRepositoryDDL(String ddl) {
-        StringBuilder targetFilePath = new StringBuilder();
-        targetFilePath.append(FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.out.ddl"));
-        targetFilePath.append(File.separator);
-        targetFilePath.append(this.getMetadataRepository().getName());
-        targetFilePath.append("_");
-        targetFilePath.append(this.getMetadataRepository().getCategory());
-        targetFilePath.append("_");
-        targetFilePath.append("create");
-        targetFilePath.append(".ddl");
-        FileTools.delete(targetFilePath.toString());
-        FileTools.appendToFile(targetFilePath.toString(), "", ddl);
-    }
-
-    public MetadataRepository getMetadataRepository() {
-        return metadataRepository;
-    }
-
-    public void setMetadataRepository(MetadataRepository metadataRepository) {
-        this.metadataRepository = metadataRepository;
-    }
 
     public String getAction() {
         return action;

@@ -30,7 +30,7 @@ public abstract class Dataset extends DataType {
 
     public Dataset(DataType name, DataType labels, ExecutionRuntime executionRuntime) throws IOException, SQLException {
         this.executionRuntime = executionRuntime;
-        this.dataTypeService = new DataTypeService(executionRuntime);
+        this.dataTypeService = new DataTypeService();
         this.name = convertDatasetName(name);
         this.labels = convertDatasetLabels(labels);
         this.datasetDatabase = initializeDatasetConnection(this.name, this.labels);
@@ -38,7 +38,7 @@ public abstract class Dataset extends DataType {
 
     public Dataset(String name, List<String> labels, ExecutionRuntime executionRuntime) throws IOException, SQLException {
         this.executionRuntime = executionRuntime;
-        this.dataTypeService = new DataTypeService(executionRuntime);
+        this.dataTypeService = new DataTypeService();
         this.name = name;
         this.labels = labels;
         this.datasetDatabase = initializeDatasetConnection(name, labels);
@@ -72,7 +72,7 @@ public abstract class Dataset extends DataType {
     private String convertDatasetName(DataType datasetName) {
         if (datasetName instanceof Text) {
             String variablesResolved = executionRuntime.resolveVariables(datasetName.toString());
-            return executionRuntime.resolveConceptLookup(executionRuntime.getExecutionControl(), variablesResolved, true).getValue();
+            return executionRuntime.resolveConceptLookup(variablesResolved).getValue();
         } else {
             LOGGER.warn(MessageFormat.format("dataset does not accept {0} as type for datasetDatabase name",
                     datasetName.getClass()));
@@ -83,7 +83,7 @@ public abstract class Dataset extends DataType {
     private String convertDatasetLabel(DataType datasetLabel) {
         if (datasetLabel instanceof Text) {
             String variablesResolved = executionRuntime.resolveVariables(datasetLabel.toString());
-            return executionRuntime.resolveConceptLookup(executionRuntime.getExecutionControl(), variablesResolved, true).getValue();
+            return executionRuntime.resolveConceptLookup(variablesResolved).getValue();
         } else {
             LOGGER.warn(MessageFormat.format("dataset does not accept {0} as type for a datasetDatabase label",
                     datasetLabel.getClass()));
@@ -92,7 +92,7 @@ public abstract class Dataset extends DataType {
     }
 
     private Database initializeDatasetConnection(String datasetName, List<String> labels) throws SQLException, IOException {
-        datasetMetadata = new DatasetMetadata(datasetName, executionRuntime);
+        datasetMetadata = new DatasetMetadata(datasetName);
         if (labels.isEmpty()) {
             return null;
         }
@@ -105,13 +105,13 @@ public abstract class Dataset extends DataType {
         return datasetMetadata.getDatasetDatabase(datasetInventoryId);
     }
 
-    protected Database createNewDataset(String datasetName, List<String> labels) throws IOException {
+    protected Database createNewDataset(String datasetName, List<String> labels) throws IOException, SQLException {
         LOGGER.trace(MessageFormat.format("datatype.dataset=initializing new dataset database for ''{0}'' with labels {1}", datasetName, labels.toString()));
         int nextInventoryId = getDatasetMetadata().getLatestInventoryId() + 1;
         String datasetFilename = UUID.randomUUID().toString() + ".db3";
-        setTableName("data");
+        tableName = "data";
         getDatasetMetadata().insertDatasetLabelInformation(nextInventoryId, labels);
-        return createNewDatasetDatabase(datasetName, datasetFilename, "data", nextInventoryId);
+        return createNewDatasetDatabase(datasetName, datasetFilename, tableName, nextInventoryId);
     }
 
 

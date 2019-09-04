@@ -1,22 +1,14 @@
 package io.metadew.iesi.metadata.configuration.environment;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.connection.tools.SQLTools;
-import io.metadew.iesi.framework.configuration.FrameworkObjectConfiguration;
-import io.metadew.iesi.framework.execution.FrameworkControl;
-import io.metadew.iesi.metadata.configuration.DataObjectConfiguration;
 import io.metadew.iesi.metadata.configuration.MetadataConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.EnvironmentAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.EnvironmentDoesNotExistException;
-import io.metadew.iesi.metadata.definition.DataObject;
 import io.metadew.iesi.metadata.definition.environment.Environment;
 import io.metadew.iesi.metadata.definition.environment.EnvironmentParameter;
-import io.metadew.iesi.metadata.definition.ListObject;
 import io.metadew.iesi.metadata.execution.MetadataControl;
 
 import javax.sql.rowset.CachedRowSet;
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.MessageFormat;
@@ -26,16 +18,8 @@ import java.util.Optional;
 
 public class EnvironmentConfiguration extends MetadataConfiguration {
 
-    private Environment environment;
+    public EnvironmentConfiguration() {}
 
-    // Constructors
-    public EnvironmentConfiguration() {
-    }
-
-    public EnvironmentConfiguration(Environment environment) {
-        this.setEnvironment(environment);
-    }
-    
     // Abstract method implementations
 	@Override
     public List<Environment> getAllObjects() {
@@ -183,163 +167,163 @@ public class EnvironmentConfiguration extends MetadataConfiguration {
     }
 
     // Delete
-    public String getDeleteStatement() {
-        String sql = "";
+//    public String getDeleteStatement() {
+//        String sql = "";
+//
+//        sql += "DELETE FROM " + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("Environments");
+//        sql += " WHERE ENV_NM = "
+//                + SQLTools.GetStringForSQL(this.getEnvironment().getName());
+//        sql += ";";
+//        sql += "\n";
+//        sql += "DELETE FROM " + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("EnvironmentParameters");
+//        sql += " WHERE ENV_NM = "
+//                + SQLTools.GetStringForSQL(this.getEnvironment().getName());
+//        sql += ";";
+//        sql += "\n";
+//
+//        return sql;
+//
+//    }
 
-        sql += "DELETE FROM " + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("Environments");
-        sql += " WHERE ENV_NM = "
-                + SQLTools.GetStringForSQL(this.getEnvironment().getName());
-        sql += ";";
-        sql += "\n";
-        sql += "DELETE FROM " + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("EnvironmentParameters");
-        sql += " WHERE ENV_NM = "
-                + SQLTools.GetStringForSQL(this.getEnvironment().getName());
-        sql += ";";
-        sql += "\n";
+//    // Insert
+//    public String getInsertStatement() {
+//        String sql = "";
+//
+//        if (this.exists()) {
+//            sql += this.getDeleteStatement();
+//        }
+//
+//        sql += "INSERT INTO " + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("Environments");
+//        sql += " (ENV_NM, ENV_DSC) ";
+//        sql += "VALUES ";
+//        sql += "(";
+//        sql += SQLTools.GetStringForSQL(this.getEnvironment().getName());
+//        sql += ",";
+//        sql += SQLTools.GetStringForSQL(this.getEnvironment().getDescription());
+//        sql += ")";
+//        sql += ";";
+//
+//        // add Parameters
+//        String sqlParameters = this.getParameterInsertStatements(this.getEnvironment().getName());
+//        if (!sqlParameters.equalsIgnoreCase("")) {
+//            sql += "\n";
+//            sql += sqlParameters;
+//        }
+//
+//        return sql;
+//    }
 
-        return sql;
+//    private String getParameterInsertStatements(Environment environment) {
+//        String result = "";
+//
+//        // Catch null parameters
+//        if (environment.getParameters() == null)
+//            return result;
+//
+//        for (EnvironmentParameter environmentParameter : environment.getParameters()) {
+//            EnvironmentParameterConfiguration environmentParameterConfiguration = new EnvironmentParameterConfiguration();
+//            if (!result.equalsIgnoreCase(""))
+//                result += "\n";
+//            result += environmentParameterConfiguration.getInsertStatement(environment.getName(), environmentParameter);
+//        }
+//
+//        return result;
+//    }
 
-    }
+//
+//    private String getParameterInsertStatements(String environmentName) {
+//        String result = "";
+//
+//        // Catch null parameters
+//        if (this.getEnvironment().getParameters() == null)
+//            return result;
+//
+//        for (EnvironmentParameter environmentParameter : this.getEnvironment().getParameters()) {
+//            EnvironmentParameterConfiguration environmentParameterConfiguration = new EnvironmentParameterConfiguration(environmentParameter);
+//            if (!result.equalsIgnoreCase(""))
+//                result += "\n";
+//            result += environmentParameterConfiguration.getInsertStatement(environmentName);
+//        }
+//
+//        return result;
+//    }
+//
+//    public ListObject getEnvironments() {
+//        List<Environment> environmentList = new ArrayList<>();
+//        CachedRowSet crs = null;
+//        String query = "select ENV_NM from " + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("Environments")
+//                + " order by ENV_NM ASC";
+//        crs = MetadataControl.getInstance().getConnectivityMetadataRepository().executeQuery(query, "reader");
+//        EnvironmentConfiguration environmentConfiguration = new EnvironmentConfiguration();
+//        try {
+//            String environmentName = "";
+//            while (crs.next()) {
+//                environmentName = crs.getString("ENV_NM");
+//                environmentConfiguration.getEnvironment(environmentName).ifPresent(environmentList::add);
+//            }
+//            crs.close();
+//        } catch (Exception e) {
+//            StringWriter StackTrace = new StringWriter();
+//            e.printStackTrace(new PrintWriter(StackTrace));
+//        }
+//
+//        return new ListObject(FrameworkObjectConfiguration.getFrameworkObjectType(new Environment()), environmentList);
+//    }
 
-    // Insert
-    public String getInsertStatement() {
-        String sql = "";
-
-        if (this.exists()) {
-            sql += this.getDeleteStatement();
-        }
-
-        sql += "INSERT INTO " + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("Environments");
-        sql += " (ENV_NM, ENV_DSC) ";
-        sql += "VALUES ";
-        sql += "(";
-        sql += SQLTools.GetStringForSQL(this.getEnvironment().getName());
-        sql += ",";
-        sql += SQLTools.GetStringForSQL(this.getEnvironment().getDescription());
-        sql += ")";
-        sql += ";";
-
-        // add Parameters
-        String sqlParameters = this.getParameterInsertStatements(this.getEnvironment().getName());
-        if (!sqlParameters.equalsIgnoreCase("")) {
-            sql += "\n";
-            sql += sqlParameters;
-        }
-
-        return sql;
-    }
-
-    private String getParameterInsertStatements(Environment environment) {
-        String result = "";
-
-        // Catch null parameters
-        if (environment.getParameters() == null)
-            return result;
-
-        for (EnvironmentParameter environmentParameter : environment.getParameters()) {
-            EnvironmentParameterConfiguration environmentParameterConfiguration = new EnvironmentParameterConfiguration();
-            if (!result.equalsIgnoreCase(""))
-                result += "\n";
-            result += environmentParameterConfiguration.getInsertStatement(environment.getName(), environmentParameter);
-        }
-
-        return result;
-    }
-
-
-    private String getParameterInsertStatements(String environmentName) {
-        String result = "";
-
-        // Catch null parameters
-        if (this.getEnvironment().getParameters() == null)
-            return result;
-
-        for (EnvironmentParameter environmentParameter : this.getEnvironment().getParameters()) {
-            EnvironmentParameterConfiguration environmentParameterConfiguration = new EnvironmentParameterConfiguration(environmentParameter);
-            if (!result.equalsIgnoreCase(""))
-                result += "\n";
-            result += environmentParameterConfiguration.getInsertStatement(environmentName);
-        }
-
-        return result;
-    }
-
-    public ListObject getEnvironments() {
-        List<Environment> environmentList = new ArrayList<>();
-        CachedRowSet crs = null;
-        String query = "select ENV_NM from " + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("Environments")
-                + " order by ENV_NM ASC";
-        crs = MetadataControl.getInstance().getConnectivityMetadataRepository().executeQuery(query, "reader");
-        EnvironmentConfiguration environmentConfiguration = new EnvironmentConfiguration();
-        try {
-            String environmentName = "";
-            while (crs.next()) {
-                environmentName = crs.getString("ENV_NM");
-                environmentConfiguration.getEnvironment(environmentName).ifPresent(environmentList::add);
-            }
-            crs.close();
-        } catch (Exception e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-        }
-
-        return new ListObject(FrameworkObjectConfiguration.getFrameworkObjectType(new Environment()), environmentList);
-    }
-
-    public void createEnvironment(String data) {
-        DataObjectConfiguration dataObjectConfiguration = new DataObjectConfiguration();
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        if (dataObjectConfiguration.isJSONArray(data)) {
-            for (DataObject dataObject : dataObjectConfiguration.getDataArray(data)) {
-
-                Environment environment = objectMapper.convertValue(dataObject.getData(), Environment.class);
-                EnvironmentConfiguration environmentConfiguration = new EnvironmentConfiguration(environment);
-                String output = environmentConfiguration.getInsertStatement();
-
-                InputStream inputStream = FileTools
-                        .convertToInputStream(output, FrameworkControl.getInstance());
-                MetadataControl.getInstance().getConnectivityMetadataRepository().executeScript(inputStream);
-
-            }
-        } else {
-            Environment environment = objectMapper.convertValue(dataObjectConfiguration.getDataObject(data).getData(), Environment.class);
-            EnvironmentConfiguration environmentConfiguration = new EnvironmentConfiguration(environment);
-            String output = environmentConfiguration.getInsertStatement();
-
-            InputStream inputStream = FileTools.convertToInputStream(output,FrameworkControl.getInstance());
-            MetadataControl.getInstance().getConnectivityMetadataRepository().executeScript(inputStream);
-        }
-
-    }
-
-    public void deleteEnvironment(String environmentName) {
-        this.getEnvironment(environmentName).ifPresent(environment -> {
-                    EnvironmentConfiguration environmentConfiguration = new EnvironmentConfiguration(environment);
-                    String output = environmentConfiguration.getDeleteStatement();
-
-                    InputStream inputStream = FileTools
-                            .convertToInputStream(output, FrameworkControl.getInstance());
-                    MetadataControl.getInstance().getConnectivityMetadataRepository().executeScript(inputStream);
-                }
-        );
-
-    }
-
-    public void copyEnvironment(String fromEnvironmentName, String toEnvironmentName) {
-        // TODO: check optional
-        Environment environment = this.getEnvironment(fromEnvironmentName).get();
-
-        // Set new environment name
-        environment.setName(toEnvironmentName);
-
-        EnvironmentConfiguration environmentConfiguration = new EnvironmentConfiguration(environment);
-        String output = environmentConfiguration.getInsertStatement();
-
-        InputStream inputStream = FileTools.convertToInputStream(output,
-                FrameworkControl.getInstance());
-        MetadataControl.getInstance().getConnectivityMetadataRepository().executeScript(inputStream);
-    }
+//    public void createEnvironment(String data) {
+//        DataObjectConfiguration dataObjectConfiguration = new DataObjectConfiguration();
+//        ObjectMapper objectMapper = new ObjectMapper();
+//
+//        if (dataObjectConfiguration.isJSONArray(data)) {
+//            for (DataObject dataObject : dataObjectConfiguration.getDataArray(data)) {
+//
+//                Environment environment = objectMapper.convertValue(dataObject.getData(), Environment.class);
+//                EnvironmentConfiguration environmentConfiguration = new EnvironmentConfiguration(environment);
+//                String output = environmentConfiguration.getInsertStatement();
+//
+//                InputStream inputStream = FileTools
+//                        .convertToInputStream(output, FrameworkControl.getInstance());
+//                MetadataControl.getInstance().getConnectivityMetadataRepository().executeScript(inputStream);
+//
+//            }
+//        } else {
+//            Environment environment = objectMapper.convertValue(dataObjectConfiguration.getDataObject(data).getData(), Environment.class);
+//            EnvironmentConfiguration environmentConfiguration = new EnvironmentConfiguration(environment);
+//            String output = environmentConfiguration.getInsertStatement();
+//
+//            InputStream inputStream = FileTools.convertToInputStream(output,FrameworkControl.getInstance());
+//            MetadataControl.getInstance().getConnectivityMetadataRepository().executeScript(inputStream);
+//        }
+//
+//    }
+//
+//    public void deleteEnvironment(String environmentName) {
+//        this.getEnvironment(environmentName).ifPresent(environment -> {
+//                    EnvironmentConfiguration environmentConfiguration = new EnvironmentConfiguration(environment);
+//                    String output = environmentConfiguration.getDeleteStatement();
+//
+//                    InputStream inputStream = FileTools
+//                            .convertToInputStream(output, FrameworkControl.getInstance());
+//                    MetadataControl.getInstance().getConnectivityMetadataRepository().executeScript(inputStream);
+//                }
+//        );
+//
+//    }
+//
+//    public void copyEnvironment(String fromEnvironmentName, String toEnvironmentName) {
+//        // TODO: check optional
+//        Environment environment = this.getEnvironment(fromEnvironmentName).get();
+//
+//        // Set new environment name
+//        environment.setName(toEnvironmentName);
+//
+//        EnvironmentConfiguration environmentConfiguration = new EnvironmentConfiguration(environment);
+//        String output = environmentConfiguration.getInsertStatement();
+//
+//        InputStream inputStream = FileTools.convertToInputStream(output,
+//                FrameworkControl.getInstance());
+//        MetadataControl.getInstance().getConnectivityMetadataRepository().executeScript(inputStream);
+//    }
 
     // Exists
     public boolean exists() {
@@ -347,13 +331,13 @@ public class EnvironmentConfiguration extends MetadataConfiguration {
     }
 
     // Getters and Setters
-    public Environment getEnvironment() {
-        return environment;
-    }
+//    public Environment getEnvironment() {
+//        return environment;
+//    }
 
-    public void setEnvironment(Environment environment) {
-        this.environment = environment;
-    }
+//    public void setEnvironment(Environment environment) {
+//        this.environment = environment;
+//    }
 
 }
 

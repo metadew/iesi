@@ -19,7 +19,6 @@ public abstract class RepositoryConfiguration {
                 .map(s -> configFile.getProperty(s)
                         .orElse(null))
                 .orElse(null);
-
     }
 
 }

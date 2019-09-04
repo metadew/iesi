@@ -1,0 +1,23 @@
+---
+type: "script"
+data:
+  name: "socket.transmitMessage.1"
+  description: "test TCP socket connection without response"
+  parameters: []
+  actions:
+  - number: 1
+    type: "socket.transmitMessage"
+    name: "Action1"
+    description: "send message"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "socket"
+      value : "socket"
+    - name: "message"
+      value : "test"
+    - name: "protocol"
+      value: "tcp"

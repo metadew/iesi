@@ -49,21 +49,16 @@ public class FwkExecuteScript {
         this.actionExecution = actionExecution;
         this.scriptExecution = scriptExecution;
         this.actionParameterOperationMap = new HashMap<>();
-        this.dataTypeService = new DataTypeService(executionControl.getExecutionRuntime());
+        this.dataTypeService = new DataTypeService();
     }
 
     public void prepare() {
         // Reset Parameters
-        this.setScriptName(new ActionParameterOperation(executionControl,
-                actionExecution, actionExecution.getAction().getType(), "script"));
-        this.setScriptVersion(new ActionParameterOperation(executionControl,
-                actionExecution, actionExecution.getAction().getType(), "version"));
-        this.setEnvironmentName(new ActionParameterOperation(executionControl,
-                actionExecution, actionExecution.getAction().getType(), "environment"));
-        this.setParamList(new ActionParameterOperation(executionControl,
-                actionExecution, actionExecution.getAction().getType(), "paramList"));
-        this.setParamFile(new ActionParameterOperation(executionControl,
-                actionExecution, actionExecution.getAction().getType(), "paramFile"));
+        this.setScriptName(new ActionParameterOperation(executionControl, actionExecution, actionExecution.getAction().getType(), "script"));
+        this.setScriptVersion(new ActionParameterOperation(executionControl, actionExecution, actionExecution.getAction().getType(), "version"));
+        this.setEnvironmentName(new ActionParameterOperation(executionControl, actionExecution, actionExecution.getAction().getType(), "environment"));
+        this.setParamList(new ActionParameterOperation(executionControl, actionExecution, actionExecution.getAction().getType(), "paramList"));
+        this.setParamFile(new ActionParameterOperation(executionControl, actionExecution, actionExecution.getAction().getType(), "paramFile"));
 
         // Get Parameters
         for (ActionParameter actionParameter : actionExecution.getAction().getParameters()) {

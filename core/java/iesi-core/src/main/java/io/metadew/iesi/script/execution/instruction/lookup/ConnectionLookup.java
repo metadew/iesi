@@ -18,9 +18,11 @@ public class ConnectionLookup implements LookupInstruction {
 
     private final Pattern INPUT_PARAMETER_PATTERN = Pattern
             .compile("\\s*\"?(?<" + CONNECTION_NAME_KEY + ">(\\w|\\.)+)\"?\\s*,\\s*(?<" + CONNECTION_PARAMETER_NAME_KEY + ">(\\w|\\.)+)\\s*");
+    private final ConnectionParameterConfiguration connectionParameterConfiguration;
 
     public ConnectionLookup(ExecutionControl executionControl) {
         this.executionControl = executionControl;
+        this.connectionParameterConfiguration = new ConnectionParameterConfiguration();
     }
 
     @Override
@@ -36,7 +38,6 @@ public class ConnectionLookup implements LookupInstruction {
         String connectionName = inputParameterMatcher.group(CONNECTION_NAME_KEY);
         String connectionParameterName = inputParameterMatcher.group(CONNECTION_PARAMETER_NAME_KEY);
 
-        ConnectionParameterConfiguration connectionParameterConfiguration = new ConnectionParameterConfiguration();
         Optional<String> connectionParameterValue = connectionParameterConfiguration.getConnectionParameterValue(connectionName,
                 executionControl.getEnvName(), connectionParameterName);
 

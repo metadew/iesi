@@ -3,39 +3,25 @@ package io.metadew.iesi.metadata.configuration.type;
 import io.metadew.iesi.metadata.definition.action.type.ActionType;
 import io.metadew.iesi.metadata.definition.action.type.ActionTypeParameter;
 
+import java.util.Optional;
+
 public class ActionTypeParameterConfiguration {
 
-    private ActionTypeParameter actionTypeParameter;
-
-    // Constructors
-    public ActionTypeParameterConfiguration(ActionTypeParameter actionTypeParameter) {
-        this.setActionTypeParameter(actionTypeParameter);
-    }
+    private final ActionTypeConfiguration actionTypeConfiguration;
 
     public ActionTypeParameterConfiguration() {
+        actionTypeConfiguration = new ActionTypeConfiguration();
     }
 
     // Get Action Type Parameter
-    public ActionTypeParameter getActionTypeParameter(String actionTypeName, String actionTypeParameterName) {
-        ActionTypeParameter actionTypeParameterResult = null;
-        ActionTypeConfiguration actionTypeConfiguration = new ActionTypeConfiguration();
+    public Optional<ActionTypeParameter> getActionTypeParameter(String actionTypeName, String actionTypeParameterName) {
         ActionType actionType = actionTypeConfiguration.getActionType(actionTypeName);
         for (ActionTypeParameter actionTypeParameter : actionType.getParameters()) {
             if (actionTypeParameter.getName().equalsIgnoreCase(actionTypeParameterName.toLowerCase())) {
-                actionTypeParameterResult = actionTypeParameter;
-                break;
+                return Optional.of(actionTypeParameter);
             }
         }
-        return actionTypeParameterResult;
-    }
-
-    // Getters and Setters
-    public ActionTypeParameter getActionTypeParameter() {
-        return actionTypeParameter;
-    }
-
-    public void setActionTypeParameter(ActionTypeParameter actionTypeParameter) {
-        this.actionTypeParameter = actionTypeParameter;
+        return Optional.empty();
     }
 
 }

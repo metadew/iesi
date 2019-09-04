@@ -1,7 +1,6 @@
 package io.metadew.iesi.script.execution.instruction.lookup;
 
 import io.metadew.iesi.metadata.configuration.environment.EnvironmentParameterConfiguration;
-import io.metadew.iesi.script.execution.ExecutionControl;
 
 import java.text.MessageFormat;
 import java.util.Optional;
@@ -9,7 +8,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class EnvironmentLookup implements LookupInstruction {
-    private final ExecutionControl executionControl;
 
     private final String ENVIRONMENT_NAME_KEY = "name";
 
@@ -17,10 +15,10 @@ public class EnvironmentLookup implements LookupInstruction {
 
     private final Pattern INPUT_PARAMETER_PATTERN = Pattern
             .compile("\\s*\"?(?<" + ENVIRONMENT_NAME_KEY + ">(\\w|\\.)+)\"?\\s*,\\s*(?<" + ENVIRONMENT_PARAMETER_NAME_KEY + ">(\\w|\\.)+)\\s*");
+    private final EnvironmentParameterConfiguration environmentParameterConfiguration;
 
-    public EnvironmentLookup(ExecutionControl executionControl) {
-        this.executionControl = executionControl;
-    }
+    public EnvironmentLookup() {
+        environmentParameterConfiguration = new EnvironmentParameterConfiguration();}
 
     @Override
     public String getKeyword() {
@@ -36,7 +34,6 @@ public class EnvironmentLookup implements LookupInstruction {
         String environmentName = inputParameterMatcher.group(ENVIRONMENT_NAME_KEY);
         String environmentParameterName = inputParameterMatcher.group(ENVIRONMENT_PARAMETER_NAME_KEY);
 
-        EnvironmentParameterConfiguration environmentParameterConfiguration = new EnvironmentParameterConfiguration();
         Optional<String> environmentParameterValue = environmentParameterConfiguration.getEnvironmentParameterValue(environmentName, environmentParameterName);
 
         if (!environmentParameterValue.isPresent()) {

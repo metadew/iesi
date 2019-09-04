@@ -50,7 +50,7 @@ public class FwkSetRepository {
         this.executionControl = executionControl;
         this.actionExecution = actionExecution;
         this.actionParameterOperationMap = new HashMap<>();
-        this.dataTypeService = new DataTypeService(executionControl.getExecutionRuntime());
+        this.dataTypeService = new DataTypeService();
     }
 
     public void prepare() {

@@ -13,6 +13,6 @@ data:
     errorStop: "Y"
     parameters:
     - name: "expected"
-      value : "{{=dataset({{^dataset(datasetLookups, {{^list(dataset)}}}}, item1)}}"
+      value : "{{=dataset({{^dataset(datasetLookups, {{^list(dataset)}})}}, item1)}}"
     - name: "actual"
       value : "value1"

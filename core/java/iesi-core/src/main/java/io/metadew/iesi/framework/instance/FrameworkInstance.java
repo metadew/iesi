@@ -17,7 +17,6 @@ import io.metadew.iesi.metadata.repository.ExecutionServerMetadataRepository;
 import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
 import io.metadew.iesi.runtime.Executor;
 import io.metadew.iesi.runtime.ExecutorService;
-import io.metadew.iesi.runtime.Requestor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,7 +26,6 @@ import java.util.Map;
 public class FrameworkInstance {
 
 	private ExecutionServerMetadataRepository executionServerRepositoryConfiguration;
-	private String executionServerFilePath;
 
 	private static FrameworkInstance INSTANCE;
 
@@ -81,20 +79,19 @@ public class FrameworkInstance {
 //			}
 //		}
 
-		SqliteDatabaseConnection executionServerDatabaseConnection = new SqliteDatabaseConnection(this.getExecutionServerFilePath());
-		SqliteDatabase sqliteDatabase = new SqliteDatabase(executionServerDatabaseConnection);
-		Map<String, Database> databases = new HashMap<>();
-		databases.put("reader", sqliteDatabase);
-		databases.put("writer", sqliteDatabase);
-		databases.put("owner", sqliteDatabase);
-		RepositoryCoordinator repositoryCoordinator = new RepositoryCoordinator(databases);
-		this.executionServerRepositoryConfiguration = new ExecutionServerMetadataRepository(
-				frameworkConfiguration.getFrameworkCode(), null, null, null, repositoryCoordinator,
-				FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.def"),
-				FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.def"));
+//		SqliteDatabaseConnection executionServerDatabaseConnection = new SqliteDatabaseConnection(this.getExecutionServerFilePath());
+//		SqliteDatabase sqliteDatabase = new SqliteDatabase(executionServerDatabaseConnection);
+//		Map<String, Database> databases = new HashMap<>();
+//		databases.put("reader", sqliteDatabase);
+//		databases.put("writer", sqliteDatabase);
+//		databases.put("owner", sqliteDatabase);
+//		RepositoryCoordinator repositoryCoordinator = new RepositoryCoordinator(databases);
+//		this.executionServerRepositoryConfiguration = new ExecutionServerMetadataRepository(
+//				frameworkConfiguration.getFrameworkCode(), null, null, null, repositoryCoordinator,
+//				FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.def"),
+//				FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.def"));
 
 		Executor.getInstance().init();
-		Requestor.getInstance().init();
 
 		FrameworkExecution.getInstance().init(context);
 		// TODO: move Executor (Request to separate module)
@@ -102,11 +99,8 @@ public class FrameworkInstance {
 	}
 
 	// Getters and Setters
-	public ExecutionServerMetadataRepository getExecutionServerRepositoryConfiguration() {
-		return executionServerRepositoryConfiguration;
-	}
+//	public ExecutionServerMetadataRepository getExecutionServerRepositoryConfiguration() {
+//		return executionServerRepositoryConfiguration;
+//	}
 
-	public String getExecutionServerFilePath() {
-		return executionServerFilePath;
-	}
 }

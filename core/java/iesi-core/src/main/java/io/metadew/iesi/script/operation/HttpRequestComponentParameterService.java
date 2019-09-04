@@ -25,7 +25,7 @@ public class HttpRequestComponentParameterService {
 
     public HttpRequestComponentParameterService(ExecutionControl executionControl) {
         this.executionControl = executionControl;
-        this.dataTypeService = new DataTypeService(executionControl.getExecutionRuntime());
+        this.dataTypeService = new DataTypeService();
     }
 
     private DataType getParameterValue(String value, List<ComponentAttribute> componentAttributes, ActionExecution actionExecution) {
@@ -34,8 +34,8 @@ public class HttpRequestComponentParameterService {
         // Resolve concept lookups
         // TODO: newly added variable resolvement, should be
         value = executionControl.getExecutionRuntime().resolveVariables(actionExecution, value);
-        value = this.getExecutionControl().getExecutionRuntime().resolveConceptLookup(executionControl,
-                value, true).getValue();
+        value = this.getExecutionControl().getExecutionRuntime().resolveConceptLookup(
+                value).getValue();
         value = executionControl.getExecutionRuntime().resolveVariables(actionExecution, value);
         // Resolve internal encryption
         value = FrameworkCrypto.getInstance().resolve(value);

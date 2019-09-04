@@ -97,7 +97,9 @@ public class KeyValueDataset extends Dataset {
     protected Database createNewDatasetDatabase(String datasetName, String filename, String tableName, int inventoryId) throws IOException {
         String filepath = FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("data") + File.separator + "datasets"
                 + File.separator + datasetName + File.separator + "data" + File.separator + filename;
-        FileUtils.touch(new File(filepath));
+        File file = new File(filepath);
+        file.setWritable(true, true);
+        FileUtils.touch(file);
         getDatasetMetadata().insertDatasetDatabaseInformation(inventoryId, filename, tableName);
         Database database = new SqliteDatabase(new SqliteDatabaseConnection(filepath));
         String create = "CREATE TABLE " + SQLTools.GetStringForSQLTable(tableName) + " (key TEXT, value TEXT)";

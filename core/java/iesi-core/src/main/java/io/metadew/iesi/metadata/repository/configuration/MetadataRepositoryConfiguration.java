@@ -4,7 +4,6 @@ import io.metadew.iesi.common.config.ConfigFile;
 import io.metadew.iesi.framework.configuration.FrameworkConfiguration;
 import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
 import io.metadew.iesi.framework.configuration.FrameworkSettingConfiguration;
-import io.metadew.iesi.framework.crypto.FrameworkCrypto;
 import io.metadew.iesi.metadata.repository.*;
 import io.metadew.iesi.metadata.repository.coordinator.configuration.RepositoryConfiguration;
 import io.metadew.iesi.metadata.repository.coordinator.configuration.RepositoryConfigurationFactory;
@@ -25,8 +24,8 @@ public class MetadataRepositoryConfiguration {
     private String instanceName;
     private RepositoryConfiguration repositoryConfiguration;
 
-	public MetadataRepositoryConfiguration(ConfigFile configFile, FrameworkSettingConfiguration frameworkSettingConfiguration, FrameworkCrypto frameworkCrypto) {
-		fromConfigFile(configFile, frameworkSettingConfiguration, frameworkCrypto);
+	public MetadataRepositoryConfiguration(ConfigFile configFile) {
+		fromConfigFile(configFile);
 	}
 
     public MetadataRepositoryConfiguration(String name, String type, List<String> categories, String scope,
@@ -63,38 +62,27 @@ public class MetadataRepositoryConfiguration {
         return repositoryConfiguration;
     }
 
-	private void fromConfigFile(ConfigFile configFile, FrameworkSettingConfiguration frameworkSettingConfiguration, FrameworkCrypto frameworkCrypto) {
+	private void fromConfigFile(ConfigFile configFile) {
 		// type
-		if (frameworkSettingConfiguration.getSettingPath("metadata.repository.type").isPresent() &&
-				configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.type").get()).isPresent()) {
-			type = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.type").get()).get();
-		} else {
-			throw new RuntimeException("No type configured for the metadata repository");
-		}
-		// category
-		if (frameworkSettingConfiguration.getSettingPath("metadata.repository.category").isPresent() &&
-				configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.category").get()).isPresent()) {
-			categories = Arrays.stream(configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.category").get()).get().split(","))
-					.map(String::trim)
-					.collect(Collectors.toList());
-		} else {
-			throw new RuntimeException("No category configured for the metadata repository");
-		}
+        getSettingValue(configFile, "metadata.repository.type")
+                .map(value -> type = value)
+                .orElseThrow(() -> new RuntimeException("No type configured for the metadata repository"));
 
-		if (frameworkSettingConfiguration.getSettingPath("metadata.repository.name").isPresent() &&
-				configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.name").get()).isPresent()) {
-			name = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.name").get()).get();
-		}
-		if (frameworkSettingConfiguration.getSettingPath("metadata.repository.scope").isPresent() &&
-				configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.scope").get()).isPresent()) {
-			scope = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.scope").get()).get();
-		}
-		if (frameworkSettingConfiguration.getSettingPath("metadata.repository.instance.name").isPresent() &&
-				configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.instance.name").get()).isPresent()) {
-			instanceName = configFile.getProperty(frameworkSettingConfiguration.getSettingPath("metadata.repository.instance.name").get()).get();
-		}
+		// category
+        getSettingValue(configFile, "metadata.repository.category").map(value -> categories = Arrays.stream(value.split(",")).map(String::trim)
+                .collect(Collectors.toList()))
+                .orElseThrow(() -> new RuntimeException("No category configured for the metadata repository"));
+
+
+        getSettingValue(configFile, "metadata.repository.name")
+                .map(value -> name = value);
+        getSettingValue(configFile, "metadata.repository.scope")
+                .map(value -> scope = value);
+        getSettingValue(configFile, "metadata.repository.instance.name")
+                .map(value -> instanceName = value);
+
 		try {
-		    repositoryConfiguration = new RepositoryConfigurationFactory().createRepositoryConfiguration(configFile, frameworkSettingConfiguration, frameworkCrypto);
+		    repositoryConfiguration = new RepositoryConfigurationFactory().createRepositoryConfiguration(configFile);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -162,5 +150,9 @@ public class MetadataRepositoryConfiguration {
             }
         }
         return metadataRepositories;
+    }
+
+    public Optional<String> getSettingValue(ConfigFile configFile, String settingPath) {
+        return FrameworkSettingConfiguration.getInstance().getSettingPath(settingPath).flatMap(configFile::getProperty);
     }
 }

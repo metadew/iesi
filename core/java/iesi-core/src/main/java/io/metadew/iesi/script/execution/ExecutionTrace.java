@@ -27,7 +27,7 @@ public class ExecutionTrace {
         scriptTraceService.trace(scriptExecution);
     }
 
-    public void setExecution(ScriptExecution scriptExecution, ActionExecution actionExecution, HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
+    public void setExecution(ActionExecution actionExecution, HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
         actionTraceService.trace(actionExecution, actionParameterOperationMap);
     }
 

@@ -22,14 +22,13 @@ public class DataObjectOperation {
 	private List<DataObject> dataObjects;
 	private DataObject dataObject;
 	private DataObjectConfiguration dataObjectConfiguration;
-	private List<MetadataRepository> metadataRepositories;
 
 	// Constructors
 	public DataObjectOperation() {
 	}
 
 	public DataObjectOperation(String inputFile) {
-		this.setInputFile(inputFile);
+		this.inputFile = inputFile;
 		File file = new File(inputFile);
 		if (FileTools.getFileExtension(file).equalsIgnoreCase("json")) {
 			this.parseFile();
@@ -46,41 +45,39 @@ public class DataObjectOperation {
 //		} else {
 //			this.parseYamlFile();
 //		}
-//		this.setDataObjectConfiguration(new DataObjectConfiguration(this.getDataObjects()));
+//		this.setDataObjectConfiguration(new DataObjectConfiguration(dataObjects));
 //	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public DataObjectOperation(MetadataRepository metadataRepositories, String inputFile) {
-		this.setInputFile(inputFile);
-		File file = new File(inputFile);
-		if (FileTools.getFileExtension(file).equalsIgnoreCase("json")) {
-			this.parseFile();
-		} else if (FileTools.getFileExtension(file).equalsIgnoreCase("yml")) {
-			this.parseYamlFile();
-		}
-		this.setMetadataRepositories(new ArrayList());
-		this.getMetadataRepositories().add(metadataRepositories);
-		this.setDataObjectConfiguration(new DataObjectConfiguration(metadataRepositories, this.getDataObjects()));
+//	public DataObjectOperation(MetadataRepository metadataRepositories, String inputFile) {
+//		this.setInputFile(inputFile);
+//		File file = new File(inputFile);
+//		if (FileTools.getFileExtension(file).equalsIgnoreCase("json")) {
+//			this.parseFile();
+//		} else if (FileTools.getFileExtension(file).equalsIgnoreCase("yml")) {
+//			this.parseYamlFile();
+//		}
+//		this.setMetadataRepositories(new ArrayList<>());
+//		this.getMetadataRepositories().add(metadataRepositories);
+//		this.setDataObjectConfiguration(new DataObjectConfiguration(dataObjects, metadataRepositories));
+//
+//	}
 
-	}
-
-	public DataObjectOperation(List<MetadataRepository> metadataRepositoryConfigurationList, String inputFile) {
-		this.setMetadataRepositories(metadataRepositoryConfigurationList);
-		this.setInputFile(inputFile);
-		File file = new File(inputFile);
-		if (FileTools.getFileExtension(file).equalsIgnoreCase("json")) {
-			this.parseFile();
-		} else if (FileTools.getFileExtension(file).equalsIgnoreCase("yml")) {
-			this.parseYamlFile();
-		}
-
-	}
+//	public DataObjectOperation(List<MetadataRepository> metadataRepositoryConfigurationList, String inputFile) {
+//		this.setMetadataRepositories(metadataRepositoryConfigurationList);
+//		this.setInputFile(inputFile);
+//		File file = new File(inputFile);
+//		if (FileTools.getFileExtension(file).equalsIgnoreCase("json")) {
+//			this.parseFile();
+//		} else if (FileTools.getFileExtension(file).equalsIgnoreCase("yml")) {
+//			this.parseYamlFile();
+//		}
+//
+//	}
 
 	// Methods
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void parseFile() {
 		// Define input file
-		File file = new File(this.getInputFile());
+		File file = new File(inputFile);
 		BufferedReader bufferedReader = null;
 		try {
 			bufferedReader = new BufferedReader(new FileReader(file));
@@ -99,13 +96,11 @@ public class DataObjectOperation {
 
 			ObjectMapper objectMapper = new ObjectMapper();
 			if (jsonArray) {
-				this.setDataObjects(objectMapper.readValue(file, new TypeReference<List<DataObject>>() {
-				}));
+				dataObjects = objectMapper.readValue(file, new TypeReference<List<DataObject>>() {});
 			} else {
-				this.setDataObject(objectMapper.readValue(file, new TypeReference<DataObject>() {
-				}));
-				this.setDataObjects(new ArrayList());
-				this.getDataObjects().add(this.getDataObject());
+				dataObject = objectMapper.readValue(file, new TypeReference<DataObject>() {});
+				dataObjects = new ArrayList<>();
+				dataObjects.add(dataObject);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -118,10 +113,9 @@ public class DataObjectOperation {
 		}
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void parseYamlFile() {
 		// Define input file
-		File file = new File(this.getInputFile());
+		File file = new File(inputFile);
 		BufferedReader bufferedReader = null;
 		try {
 			bufferedReader = new BufferedReader(new FileReader(file));
@@ -149,10 +143,10 @@ public class DataObjectOperation {
 			}
 			bufferedReader.close();
 
-			this.setDataObjects(new ArrayList());
+			dataObjects = new ArrayList<>();
 			ObjectMapper objectMapper = new ObjectMapper(new YAMLFactory());
 			if (yamlArray) {
-				// this.setDataObjects(objectMapper.readValue(file, new
+				// dataObjects = objectMapper.readValue(file, new
 				// TypeReference<List<DataObject>>() { }));
 				
 				// Work around for reading arrays immediate if from start
@@ -167,7 +161,7 @@ public class DataObjectOperation {
 						if (dataObjectRead != null) {
 							DataObject dataObject = objectMapper.readValue(dataObjectRead.toString(), new TypeReference<DataObject>() {
 							});
-							this.getDataObjects().add(dataObject);
+							dataObjects.add(dataObject);
 						}
 						dataObjectRead = new StringBuilder();
 						dataObjectRead.append("---");
@@ -180,10 +174,9 @@ public class DataObjectOperation {
 				}
 
 			} else {
-				this.setDataObject(objectMapper.readValue(file, new TypeReference<DataObject>() {
-				}));
-				this.setDataObjects(new ArrayList());
-				this.getDataObjects().add(this.getDataObject());
+				dataObject = objectMapper.readValue(file, new TypeReference<DataObject>() {});
+				dataObjects = new ArrayList<>();
+				dataObjects.add(dataObject);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -197,16 +190,11 @@ public class DataObjectOperation {
 	}
 
 	// TODO remove from this operation - create new one
-	public void saveToMetadataRepository() {
-		for (MetadataRepository metadataRepository : this.getMetadataRepositories()) {
-			this.setDataObjectConfiguration(new DataObjectConfiguration(metadataRepository, this.getDataObjects()));
-			this.getDataObjectConfiguration().saveToMetadataRepository();
+	public void saveToMetadataRepository(List<MetadataRepository> metadataRepositories) {
+		for (MetadataRepository metadataRepository : metadataRepositories) {
+			this.setDataObjectConfiguration(new DataObjectConfiguration(dataObjects));
+			this.getDataObjectConfiguration().saveToMetadataRepository(metadataRepository);
 		}
-	}
-
-	// Getters and Setters
-	public String getInputFile() {
-		return inputFile;
 	}
 
 	public void setInputFile(String inputFile) {
@@ -225,24 +213,8 @@ public class DataObjectOperation {
 		return dataObjects;
 	}
 
-	public void setDataObjects(List<DataObject> dataObjects) {
-		this.dataObjects = dataObjects;
-	}
-
 	public DataObject getDataObject() {
 		return dataObject;
-	}
-
-	public void setDataObject(DataObject dataObject) {
-		this.dataObject = dataObject;
-	}
-
-	public List<MetadataRepository> getMetadataRepositories() {
-		return metadataRepositories;
-	}
-
-	public void setMetadataRepositories(List<MetadataRepository> metadataRepositories) {
-		this.metadataRepositories = metadataRepositories;
 	}
 
 }

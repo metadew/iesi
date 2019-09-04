@@ -13,6 +13,6 @@ data:
     errorStop: "Y"
     parameters:
     - name: "expected"
-      value : "{{=list({{^list(item1, item2}}, 2)}}"
+      value : "{{=list({{^list(item1, item2)}}, 2)}}"
     - name: "actual"
       value : "item2"

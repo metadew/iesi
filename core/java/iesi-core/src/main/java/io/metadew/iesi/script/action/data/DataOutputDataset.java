@@ -20,7 +20,6 @@ import java.util.HashMap;
 /**
  * This action prints a dataset for logging and debugging purposes
  *
- * @author Peter Billen
  */
 public class DataOutputDataset {
 
@@ -34,11 +33,6 @@ public class DataOutputDataset {
     private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
     private static final Logger LOGGER = LogManager.getLogger();
 
-    // Constructors
-    public DataOutputDataset() {
-
-    }
-
     public DataOutputDataset(ExecutionControl executionControl,
                              ScriptExecution scriptExecution, ActionExecution actionExecution) {
         this.init(executionControl, scriptExecution, actionExecution);
@@ -46,22 +40,19 @@ public class DataOutputDataset {
 
     public void init(ExecutionControl executionControl,
                      ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.setExecutionControl(executionControl);
-        this.setActionExecution(actionExecution);
-        this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
+        this.executionControl = executionControl;
+        this.actionExecution = actionExecution;
+        this.actionParameterOperationMap =  new HashMap<>();
     }
 
     public void prepare() {
         // Reset Parameters
-        this.setDatasetName(new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), "name"));
-        this.setDatasetLabels(new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), "labels"));
-        this.setOnScreen(new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), "onScreen"));
+        datasetName = new ActionParameterOperation(executionControl, actionExecution, actionExecution.getAction().getType(), "name");
+        datasetLabels = new ActionParameterOperation(executionControl, actionExecution, actionExecution.getAction().getType(), "labels");
+        onScreen = new ActionParameterOperation(executionControl, actionExecution, actionExecution.getAction().getType(), "onScreen");
 
         // Get Parameters
-        for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
+        for (ActionParameter actionParameter : actionExecution.getAction().getParameters()) {
             if (actionParameter.getName().equalsIgnoreCase("name")) {
                 this.getDatasetName().setInputValue(actionParameter.getValue());
             } else if (actionParameter.getName().equalsIgnoreCase("labels")) {
@@ -72,9 +63,9 @@ public class DataOutputDataset {
         }
 
         // Create parameter list
-        this.getActionParameterOperationMap().put("name", this.getDatasetName());
-        this.getActionParameterOperationMap().put("labels", this.getDatasetLabels());
-        this.getActionParameterOperationMap().put("onScreen", this.getOnScreen());
+        actionParameterOperationMap.put("name", this.getDatasetName());
+        actionParameterOperationMap.put("labels", this.getDatasetLabels());
+        actionParameterOperationMap.put("onScreen", this.getOnScreen());
     }
 
     public boolean execute() {
@@ -86,10 +77,10 @@ public class DataOutputDataset {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
 
-            this.getActionExecution().getActionControl().increaseErrorCount();
+            actionExecution.getActionControl().increaseErrorCount();
 
-            this.getActionExecution().getActionControl().logOutput("exception", e.getMessage());
-            this.getActionExecution().getActionControl().logOutput("stacktrace", StackTrace.toString());
+            actionExecution.getActionControl().logOutput("exception", e.getMessage());
+            actionExecution.getActionControl().logOutput("stacktrace", StackTrace.toString());
 
             return false;
         }
@@ -101,7 +92,7 @@ public class DataOutputDataset {
         dataset.getDataItems()
                 .forEach((key, value) -> LOGGER.info(MessageFormat.format("{0}:{1}", key, value)));
 
-        this.getActionExecution().getActionControl().increaseSuccessCount();
+        actionExecution.getActionControl().increaseSuccessCount();
         return true;
     }
 
@@ -112,7 +103,7 @@ public class DataOutputDataset {
         } else if (onScreen instanceof Text) {
             return onScreen.toString().equalsIgnoreCase("y");
         } else {
-            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() +  " does not accept {0} as type for onScreen",
+            LOGGER.warn(MessageFormat.format(actionExecution.getAction().getType() +  " does not accept {0} as type for onScreen",
                     onScreen.getClass()));
             return false;
         }

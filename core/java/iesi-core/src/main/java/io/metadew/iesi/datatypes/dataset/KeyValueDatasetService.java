@@ -26,12 +26,12 @@ public class KeyValueDatasetService {
     private final DataTypeService dataTypeService;
     private ExecutionRuntime executionRuntime;
 
-    public KeyValueDatasetService(DataTypeService dataTypeService, ExecutionRuntime executionRuntime) {
+    public KeyValueDatasetService(DataTypeService dataTypeService) {
         this.dataTypeService = dataTypeService;
-        this.executionRuntime = executionRuntime;
     }
 
-    private KeyValueDataset getObjectDataset(KeyValueDataset dataset, String keyPrefix) throws IOException, SQLException {
+    private KeyValueDataset getObjectDataset(KeyValueDataset dataset, String keyPrefix, ExecutionRuntime executionRuntime) throws IOException, SQLException {
+        this.executionRuntime = executionRuntime;
         if (keyPrefix != null) {
             List<String> labels = new ArrayList<>(dataset.getLabels());
             labels.add(keyPrefix);
@@ -96,7 +96,7 @@ public class KeyValueDatasetService {
 
     public DataType resolve(KeyValueDataset dataset, String key, ObjectNode jsonNode) throws IOException, SQLException {
         Iterator<Map.Entry<String, JsonNode>> fields = jsonNode.fields();
-        KeyValueDataset objectDataset = getObjectDataset(dataset, key);
+        KeyValueDataset objectDataset = getObjectDataset(dataset, key, executionRuntime);
         while (fields.hasNext()) {
             Map.Entry<String, JsonNode> field = fields.next();
             DataType object = dataTypeService.resolve(objectDataset, field.getKey(), field.getValue());

@@ -7,7 +7,6 @@ import io.metadew.iesi.datatypes.dataset.KeyValueDataset;
 import io.metadew.iesi.datatypes.dataset.KeyValueDatasetService;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.datatypes.text.TextService;
-import io.metadew.iesi.script.execution.ExecutionRuntime;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -32,8 +31,8 @@ public class DataTypeService {
     private TextService textService;
 
 
-    public DataTypeService(ExecutionRuntime executionRuntime) {
-        this.keyValueDatasetService = new KeyValueDatasetService(this, executionRuntime);
+    public DataTypeService() {
+        this.keyValueDatasetService = new KeyValueDatasetService(this);
         this.arrayService = new ArrayService(this);
         this.textService = new TextService();
     }

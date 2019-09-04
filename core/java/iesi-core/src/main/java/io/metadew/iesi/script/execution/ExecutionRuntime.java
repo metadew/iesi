@@ -1,21 +1,19 @@
 package io.metadew.iesi.script.execution;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.connection.tools.FolderTools;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.data.generation.execution.GenerationObjectExecution;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.dataset.KeyValueDataset;
 import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
-import io.metadew.iesi.framework.configuration.FrameworkSettingConfiguration;
 import io.metadew.iesi.framework.execution.FrameworkControl;
 import io.metadew.iesi.framework.execution.IESIMessage;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionParameterConfiguration;
 import io.metadew.iesi.metadata.configuration.environment.EnvironmentParameterConfiguration;
 import io.metadew.iesi.metadata.configuration.script.result.ScriptResultOutputConfiguration;
-import io.metadew.iesi.metadata.definition.component.ComponentAttribute;
 import io.metadew.iesi.metadata.definition.Iteration;
 import io.metadew.iesi.metadata.definition.RuntimeVariable;
+import io.metadew.iesi.metadata.definition.component.ComponentAttribute;
 import io.metadew.iesi.metadata.definition.script.result.ScriptResultOutput;
 import io.metadew.iesi.metadata.definition.script.result.key.ScriptResultOutputKey;
 import io.metadew.iesi.runtime.definition.LookupResult;
@@ -29,7 +27,6 @@ import io.metadew.iesi.script.execution.instruction.variable.VariableInstruction
 import io.metadew.iesi.script.execution.instruction.variable.VariableInstructionRepository;
 import io.metadew.iesi.script.execution.instruction.variable.VariableInstructionTools;
 import io.metadew.iesi.script.operation.*;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -39,7 +36,10 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -47,13 +47,11 @@ import java.util.stream.Collectors;
 
 public class ExecutionRuntime {
 
-    private final ScriptResultOutputConfiguration scriptResultOutputConfiguration;
     private ExecutionControl executionControl;
     private RuntimeVariableConfiguration runtimeVariableConfiguration;
     private IterationVariableConfiguration iterationVariableConfiguration;
     private String runId;
     private String runCacheFolderName;
-    private Level level = Level.TRACE;
 
     //private HashMap<String, StageOperation> stageOperationMap;
     private HashMap<String, RepositoryOperation> repositoryOperationMap;
@@ -74,70 +72,39 @@ public class ExecutionRuntime {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public ExecutionRuntime() {
-        this.scriptResultOutputConfiguration = new ScriptResultOutputConfiguration();
-    }
-
     public ExecutionRuntime(ExecutionControl executionControl, String runId) {
-        this.scriptResultOutputConfiguration = new ScriptResultOutputConfiguration();
-        this.setExecutionControl(executionControl);
-        this.init(runId);
-    }
-
-    public void init(String runId) {
-        this.setRunId(runId);
+        this.executionControl = executionControl;
+        this.runId = runId;
 
         // Create cache folder
-        this.setRunCacheFolderName(FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("run.cache") + File.separator + this.getRunId());
-        FolderTools.createFolder(this.getRunCacheFolderName());
-
-        this.setRuntimeVariableConfiguration(
-                new RuntimeVariableConfiguration(this.getRunCacheFolderName()));
-        this.setIterationVariableConfiguration(
-                new IterationVariableConfiguration(this.getRunCacheFolderName(), true));
-        this.defineLoggingLevel();
+        this.runCacheFolderName = FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("run.cache") + File.separator + runId;
+        FolderTools.createFolder(runCacheFolderName);
+        this.runtimeVariableConfiguration = new RuntimeVariableConfiguration(this.runCacheFolderName);
+        this.iterationVariableConfiguration = new IterationVariableConfiguration(this.runCacheFolderName, true);
 
         // Initialize maps
-        this.setStageOperationMap(new HashMap<String, StageOperation>());
-        this.setRepositoryOperationMap(new HashMap<String, RepositoryOperation>());
-        this.setIterationOperationMap(new HashMap<String, IterationOperation>());
-        this.setExecutionRuntimeExtensionMap(new HashMap<String, ExecutionRuntimeExtension>());
+        stageOperationMap = new HashMap<>();
+        repositoryOperationMap = new HashMap<>();
+        iterationOperationMap = new HashMap<>();
+        executionRuntimeExtensionMap = new HashMap<>();
 
         // Initialize impersonations
-        this.setImpersonationOperation(new ImpersonationOperation());
+        impersonationOperation = new ImpersonationOperation();
 
         // Initialize extensions
 
         // Initialize data instructions
         dataInstructions = DataInstructionRepository.getRepository(new GenerationObjectExecution());
-        variableInstructions = VariableInstructionRepository.getRepository(this.getExecutionControl());
-        lookupInstructions = LookupInstructionRepository.getRepository(getExecutionControl());
+        variableInstructions = VariableInstructionRepository.getRepository(executionControl);
+        lookupInstructions = LookupInstructionRepository.getRepository(executionControl, this);
         datasetMap = new HashMap<>();
     }
 
-    @SuppressWarnings("rawtypes")
-	public void terminate() {
-        // cleanup stage connections if needed
-        ObjectMapper objectMapper = new ObjectMapper();
-        Iterator iterator = this.getStageOperationMap().entrySet().iterator();
-        while (iterator.hasNext()) {
-            Map.Entry pair = (Map.Entry) iterator.next();
-            StageOperation stageOperation = objectMapper.convertValue(pair.getValue(), StageOperation.class);
+    public void terminate() {
+        for (StageOperation stageOperation : stageOperationMap.values()) {
             stageOperation.doCleanup();
-            iterator.remove();
         }
-
-        // remove cache folder
-        //this.getFrameworkExecution().getFrameworkRuntime().terminate();
-    }
-
-    // Methods
-    public void cleanRuntimeVariables() {
-        this.getRuntimeVariableConfiguration().cleanRuntimeVariables(this.getRunId());
-    }
-
-    public void cleanRuntimeVariables(long processId) {
-        this.getRuntimeVariableConfiguration().cleanRuntimeVariables(this.getRunId(), processId);
+        stageOperationMap = new HashMap<>();
     }
 
     public void setRuntimeVariables(ActionExecution actionExecution, ResultSet rs) {
@@ -201,98 +168,33 @@ public class ExecutionRuntime {
 
     // Set runtime variables
     public void setRuntimeVariable(Long processId, String name, String value) {
-        executionControl.logMessage(new IESIMessage("exec.runvar.set=" + name + ":" + value), level);
-        this.getRuntimeVariableConfiguration().setRuntimeVariable(this.getRunId(), processId, name, value);
+        LOGGER.debug(new IESIMessage("exec.runvar.set=" + name + ":" + value));
+        runtimeVariableConfiguration.setRuntimeVariable(runId, processId, name, value);
     }
 
     public void setRuntimeVariable(ActionExecution actionExecution, String name, String value) {
-        executionControl.logMessage(new IESIMessage("exec.runvar.set=" + name + ":" + value), level);
-        this.getRuntimeVariableConfiguration().setRuntimeVariable(this.getRunId(), actionExecution.getProcessId(), name, value);
+        LOGGER.debug(new IESIMessage("exec.runvar.set=" + name + ":" + value));
+        runtimeVariableConfiguration.setRuntimeVariable(runId, actionExecution.getProcessId(), name, value);
     }
 
     public void setRuntimeVariable(ScriptExecution scriptExecution, String name, String value) {
-        executionControl.logMessage(new IESIMessage("exec.runvar.set=" + name + ":" + value), level);
-        this.getRuntimeVariableConfiguration().setRuntimeVariable(this.getRunId(), scriptExecution.getProcessId(), name, value);
+        LOGGER.debug(new IESIMessage("exec.runvar.set=" + name + ":" + value));
+        runtimeVariableConfiguration.setRuntimeVariable(runId, scriptExecution.getProcessId(), name, value);
     }
 
     public RuntimeVariable getRuntimeVariable(String name) {
-        return this.getRuntimeVariableConfiguration().getRuntimeVariable(this.getRunId(), name);
+        return runtimeVariableConfiguration.getRuntimeVariable(runId, name);
     }
 
     public String getRuntimeVariableValue(String name) {
-        return this.getRuntimeVariableConfiguration().getRuntimeVariableValue(this.getRunId(), name);
+        return runtimeVariableConfiguration.getRuntimeVariableValue(runId, name);
     }
 
     // Iteration Variables
     public void setIterationVariables(String listName, ResultSet rs) {
-        this.getIterationVariableConfiguration().setIterationList(this.getRunId(), listName, rs);
+        this.getIterationVariableConfiguration().setIterationList(runId, listName, rs);
     }
 
-    // Load lists
-    public void loadParamList(ScriptExecution scriptExecution, String input) {
-        String[] parts = input.split(",");
-        for (int i = 0; i < parts.length; i++) {
-            String innerpart = parts[i];
-            int delim = innerpart.indexOf("=");
-            if (delim > 0) {
-                String key = innerpart.substring(0, delim);
-                String value = innerpart.substring(delim + 1);
-                this.setRuntimeVariable(scriptExecution, key, value);
-            } else {
-                // Not a valid configuration
-            }
-        }
-    }
-
-    public void loadParamList(ActionExecution actionExecution, String input) {
-        String[] parts = input.split(",");
-        for (int i = 0; i < parts.length; i++) {
-            String innerpart = parts[i];
-            int delim = innerpart.indexOf("=");
-            if (delim > 0) {
-                String key = innerpart.substring(0, delim);
-                String value = innerpart.substring(delim + 1);
-                this.setRuntimeVariable(actionExecution, key, value);
-            } else {
-                // Not a valid configuration
-            }
-        }
-    }
-
-    public void loadParamFiles(ScriptExecution scriptExecution, String files) {
-        String[] parts = files.split(",");
-        for (int i = 0; i < parts.length; i++) {
-            String innerpart = parts[i];
-            this.loadParamFile(scriptExecution, innerpart);
-        }
-    }
-
-    public void loadParamFile(ScriptExecution scriptExecution, String file) {
-        BufferedReader br;
-        try {
-            br = new BufferedReader(new FileReader(file));
-
-            String line = null;
-            while ((line = br.readLine()) != null) {
-                String innerpart = line;
-                int delim = innerpart.indexOf("=");
-                if (delim > 0) {
-                    String key = innerpart.substring(0, delim);
-                    String value = innerpart.substring(delim + 1);
-                    this.setRuntimeVariable(scriptExecution, key, value);
-                } else {
-                    // Not a valid configuration
-                }
-            }
-            br.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    // Resolution
     public String resolveVariables(String input) {
         // Prevent null issues during string operations
         if (input == null) {
@@ -306,7 +208,7 @@ public class ExecutionRuntime {
         // Second level: runtime variables
         result = this.resolveRuntimeVariables(result);
         if (!input.equalsIgnoreCase(result))
-            executionControl.logMessage(new IESIMessage("exec.runvar.resolve=" + input + ":" + result), Level.TRACE);
+            LOGGER.trace(new IESIMessage("exec.runvar.resolve=" + input + ":" + result));
         return result;
     }
 
@@ -321,37 +223,18 @@ public class ExecutionRuntime {
         result = FrameworkControl.getInstance().resolveConfiguration(input);
 
         // Second: Action attributes
-        if (actionExecution != null) {
-            result = this.resolveConfiguration(actionExecution, result);
-        }
+        result = this.resolveConfiguration(actionExecution, result);
 
         // third level: runtime variables
         result = this.resolveRuntimeVariables(result);
         if (!input.equalsIgnoreCase(result))
-            executionControl.logMessage(new IESIMessage("exec.runvar.resolve=" + input + ":" + result), Level.DEBUG);
-        return result;
-    }
-
-    public String resolveVariables(String input, boolean dup) {
-        // Prevent null issues during string operations
-        if (input == null) {
-            input = "";
-        }
-        String result = "";
-
-        // First level: settings
-        result = FrameworkControl.getInstance().resolveConfiguration(input);
-
-        // third level: runtime variables
-        result = this.resolveRuntimeVariables(result);
-        if (!input.equalsIgnoreCase(result))
-            executionControl.logMessage(new IESIMessage("exec.runvar.resolve=" + input + ":" + result), Level.TRACE);
+            LOGGER.debug(new IESIMessage("exec.runvar.resolve=" + input + ":" + result));
         return result;
     }
 
 
     private String resolveRuntimeVariables(String input) {
-        executionControl.logMessage(new IESIMessage(MessageFormat.format("runvar.resolve=resolving {0} for runtime variables", input)), Level.TRACE);
+        LOGGER.trace(new IESIMessage(MessageFormat.format("runvar.resolve=resolving {0} for runtime variables", input)));
         int openPos;
         int closePos;
         String variable_char = "#";
@@ -371,13 +254,12 @@ public class ExecutionRuntime {
             temp = temp.substring(closePos + 1, temp.length());
 
         }
-        executionControl.logMessage(new IESIMessage(MessageFormat.format("runvar.resolve.result=resolved to {0}", input)), Level.TRACE);
+        LOGGER.trace(new IESIMessage(MessageFormat.format("runvar.resolve.result=resolved to {0}", input)));
         return input;
     }
 
 
-    public String resolveActionTypeVariables(String input,
-                                             HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
+    public String resolveActionTypeVariables(String input, HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
         int openPos;
         int closePos;
         String variable_char_open = "[";
@@ -392,30 +274,6 @@ public class ExecutionRuntime {
 
             // Replace
             replaceValue = actionParameterOperationMap.get(midBit).getValue().toString();
-            if (replaceValue != null) {
-                input = input.replace(variable_char_open + midBit + variable_char_close, replaceValue);
-            }
-            temp = temp.substring(closePos + 1, temp.length());
-
-        }
-        return input;
-    }
-
-    public String resolveMapVariables(String input, HashMap<String, String> variableMap) {
-        int openPos;
-        int closePos;
-        String variable_char_open = "[";
-        String variable_char_close = "]";
-        String midBit;
-        String replaceValue;
-        String temp = input;
-        while (temp.indexOf(variable_char_open) > 0 || temp.startsWith(variable_char_open)) {
-            openPos = temp.indexOf(variable_char_open);
-            closePos = temp.indexOf(variable_char_close, openPos + 1);
-            midBit = temp.substring(openPos + 1, closePos);
-
-            // Replace
-            replaceValue = variableMap.get(midBit);
             if (replaceValue != null) {
                 input = input.replace(variable_char_open + midBit + variable_char_close, replaceValue);
             }
@@ -452,8 +310,7 @@ public class ExecutionRuntime {
         return input;
     }
 
-    private HashMap<String, ComponentAttribute> getComponentAttributeHashmap(
-            List<ComponentAttribute> componentAttributeList, String environment) {
+    private HashMap<String, ComponentAttribute> getComponentAttributeHashmap(List<ComponentAttribute> componentAttributeList, String environment) {
         if (componentAttributeList == null) {
             return null;
         }
@@ -468,7 +325,7 @@ public class ExecutionRuntime {
     }
 
     public String resolveConfiguration(ActionExecution actionExecution, String input) {
-        executionControl.logMessage(new IESIMessage(MessageFormat.format("configuration.resolve=resolving {0} for configurations", input)), Level.TRACE);
+        LOGGER.trace(new IESIMessage(MessageFormat.format("configuration.resolve=resolving {0} for configurations", input)));
         int openPos;
         int closePos;
         String variable_char = "#";
@@ -496,7 +353,7 @@ public class ExecutionRuntime {
 
         }
 
-        executionControl.logMessage(new IESIMessage(MessageFormat.format("configuration.resolve.result=resolved to {0}", input)), Level.TRACE);
+        LOGGER.trace(new IESIMessage(MessageFormat.format("configuration.resolve.result=resolved to {0}", input)));
 
         return input;
     }
@@ -506,8 +363,8 @@ public class ExecutionRuntime {
      * Work in progress
      * We will move only here when stable
      */
-    public LookupResult resolveConceptLookup(ExecutionControl executionControl, String input, boolean dup) {
-        executionControl.logMessage(new IESIMessage(MessageFormat.format("concept.lookup.resolve=resolving {0} for concept lookup instructions", input)), Level.TRACE);
+    public LookupResult resolveConceptLookup(String input) {
+        LOGGER.trace(new IESIMessage(MessageFormat.format("concept.lookup.resolve=resolving {0} for concept lookup instructions", input)));
         LookupResult lookupResult = new LookupResult();
         lookupResult.setInputValue(input);
         // TODO: move to Antler
@@ -520,7 +377,7 @@ public class ExecutionRuntime {
         while (input.indexOf(lookupConceptStartKey, lookupConceptStopIndex) != -1) {
             lookupConceptStartIndex = input.indexOf(lookupConceptStartKey, lookupConceptStopIndex);
             if (input.indexOf(lookupConceptStopKey, lookupConceptStartIndex) == -1) {
-                executionControl.logMessage(new IESIMessage(MessageFormat.format("concept.lookup.resolve.error=error during concept lookup resolvement of {0}. Concept lookup instruction not properly closed.", input)), Level.WARN);
+                LOGGER.warn(new IESIMessage(MessageFormat.format("concept.lookup.resolve.error=error during concept lookup resolvement of {0}. Concept lookup instruction not properly closed.", input)));
                 lookupResult.setValue(input);
                 return lookupResult;
             }
@@ -529,56 +386,57 @@ public class ExecutionRuntime {
             while (nextLookupConceptStartIndex > 0 && nextLookupConceptStartIndex < lookupConceptStopIndex) {
                 lookupConceptStopIndex = input.indexOf(lookupConceptStopKey, lookupConceptStopIndex + lookupConceptStopKey.length());
                 if (lookupConceptStopIndex < 0) {
-                    executionControl.logMessage(new IESIMessage(MessageFormat.format("concept.lookup.resolve.error=error during concept lookup resolvement of {0}. Concept lookup instruction not properly closed.", input)), Level.WARN);
+                    LOGGER.warn(new IESIMessage(MessageFormat.format("concept.lookup.resolve.error=error during concept lookup resolvement of {0}. Concept lookup instruction not properly closed.", input)));
                     lookupResult.setValue(input);
                     return lookupResult;
                 }
                 nextLookupConceptStartIndex = input.indexOf(lookupConceptStartKey, nextLookupConceptStartIndex + lookupConceptStartKey.length());
             }
-            String resolvement = executeConceptLookup(executionControl, input.substring(lookupConceptStartIndex, lookupConceptStopIndex + lookupConceptStopKey.length())).getValue();
+
+            String resolvement = executeConceptLookup(input.substring(lookupConceptStartIndex, lookupConceptStopIndex + lookupConceptStopKey.length())).getValue();
             input = input.substring(0, lookupConceptStartIndex) +
                     resolvement +
                     input.substring(lookupConceptStopIndex + lookupConceptStopKey.length());
         }
-        executionControl.logMessage(new IESIMessage(MessageFormat.format("concept.lookup.resolve.result={0}:{1}", lookupResult.getInputValue(), input)), Level.DEBUG);
+        LOGGER.debug(new IESIMessage(MessageFormat.format("concept.lookup.resolve.result={0}:{1}", lookupResult.getInputValue(), input)));
 
         lookupResult.setValue(input);
         return lookupResult;
     }
 
-    public LookupResult executeConceptLookup(ExecutionControl executionControl, String input) {
-        executionControl.logMessage(new IESIMessage(MessageFormat.format("concept.lookup.resolve.instruction=resolving instruction {0}", input)), Level.TRACE);
+    public LookupResult executeConceptLookup(String input) {
+        LOGGER.trace(new IESIMessage(MessageFormat.format("concept.lookup.resolve.instruction=resolving instruction {0}", input)));
         LookupResult lookupResult = new LookupResult();
         String resolvedInput = input;
         Matcher ConceptLookupMatcher = CONCEPT_LOOKUP_PATTERN.matcher(resolvedInput);
 
         if (!ConceptLookupMatcher.find()) {
             lookupResult.setValue(resolvedInput);
-            executionControl.logMessage(new IESIMessage(MessageFormat.format("concept.lookup.resolve.instruction.error=no concept instruction found for {0}", input)), Level.WARN);
+            LOGGER.warn(new IESIMessage(MessageFormat.format("concept.lookup.resolve.instruction.error=no concept instruction found for {0}", input)));
             return lookupResult;
         } else {
             String instructionArgumentsString = ConceptLookupMatcher.group(INSTRUCTION_ARGUMENTS_KEY);
             String instructionType = ConceptLookupMatcher.group(INSTRUCTION_TYPE_KEY);
             String instructionKeyword = ConceptLookupMatcher.group(INSTRUCTION_KEYWORD_KEY).toLowerCase();
 
-            executionControl.logMessage(new IESIMessage(MessageFormat.format("concept.lookup.resolve.instruction=executing instruction of type {0} with keyword {1} and unresolved parameters {2}", instructionType, instructionKeyword, instructionArgumentsString)), Level.DEBUG);
+            LOGGER.debug(new IESIMessage(MessageFormat.format("concept.lookup.resolve.instruction=executing instruction of type {0} with keyword {1} and unresolved parameters {2}", instructionType, instructionKeyword, instructionArgumentsString)));
 
             List<String> instructionArguments = splitInstructionArguments(instructionArgumentsString);
             String instructionArgumentsResolved = instructionArguments.stream()
-                    .map(instructionArgument -> resolveConceptLookup(executionControl, instructionArgument, true).getValue())
+                    .map(instructionArgument -> resolveConceptLookup(instructionArgument).getValue())
                     .collect(Collectors.joining(", "));
 
-            executionControl.logMessage(new IESIMessage(MessageFormat.format("concept.lookup.resolve.instruction.parameters=resolved instructions parameters to {0}", instructionArgumentsString)), Level.DEBUG);
+            LOGGER.debug(new IESIMessage(MessageFormat.format("concept.lookup.resolve.instruction.parameters=resolved instructions parameters to {0}", instructionArgumentsString)));
 
             switch (instructionType) {
                 case "=":
-                    resolvedInput = this.generateLookupInstruction(executionControl, instructionKeyword, instructionArgumentsResolved);
+                    resolvedInput = this.generateLookupInstruction(instructionKeyword, instructionArgumentsResolved);
                     break;
                 case "$":
-                    resolvedInput = this.getVariableInstruction(executionControl, VariableInstructionTools.getSynonymKey(instructionKeyword), instructionArgumentsResolved);
+                    resolvedInput = this.getVariableInstruction(VariableInstructionTools.getSynonymKey(instructionKeyword), instructionArgumentsResolved);
                     break;
                 case "*":
-                    resolvedInput = this.generateDataInstruction(executionControl, instructionKeyword, instructionArgumentsResolved);
+                    resolvedInput = this.generateDataInstruction(instructionKeyword, instructionArgumentsResolved);
                     break;
                 case "!":
                     if (instructionArgumentsResolved.startsWith("\""))
@@ -588,10 +446,10 @@ public class ExecutionRuntime {
                     resolvedInput = instructionArgumentsResolved;
                     break;
                 default:
-                    executionControl.logMessage(new IESIMessage(MessageFormat.format("concept.lookup.resolve.instruction.notfound=no instruction type found for {0}", instructionType)), Level.WARN);
+                    LOGGER.warn(new IESIMessage(MessageFormat.format("concept.lookup.resolve.instruction.notfound=no instruction type found for {0}", instructionType)));
                     resolvedInput = "{{" + instructionType + instructionKeyword + "(" + instructionArgumentsResolved + ")}}";
             }
-            executionControl.logMessage(new IESIMessage(MessageFormat.format("concept.lookup.resolve.instruction.result=resolved {0} to {1}", input, resolvedInput)), Level.TRACE);
+            LOGGER.trace(new IESIMessage(MessageFormat.format("concept.lookup.resolve.instruction.result=resolved {0} to {1}", input, resolvedInput)));
 
             lookupResult.setInputValue(input);
             lookupResult.setType(instructionType);
@@ -610,7 +468,7 @@ public class ExecutionRuntime {
         if (instructionArgumentsString == null) {
             return instructionArguments;
         } else if (instructionArgumentsString.startsWith("(") && instructionArgumentsString.endsWith(")")) {
-            instructionArgumentsString = instructionArgumentsString.substring(1, instructionArgumentsString.length()-1);
+            instructionArgumentsString = instructionArgumentsString.substring(1, instructionArgumentsString.length() - 1);
         }
 
         while (!instructionArgumentsString.isEmpty()) {
@@ -648,7 +506,7 @@ public class ExecutionRuntime {
         return instructionArguments;
     }
 
-    private String generateLookupInstruction(ExecutionControl executionControl, String context, String input) {
+    private String generateLookupInstruction(String context, String input) {
         LookupInstruction lookupInstruction = lookupInstructions.get(context);
         if (lookupInstruction == null) {
             throw new IllegalArgumentException(MessageFormat.format("No lookup instruction named {0} found.", context));
@@ -657,199 +515,7 @@ public class ExecutionRuntime {
         }
     }
 
-    // Get cross concept lookup
-    public LookupResult resolveConceptLookup(ExecutionControl executionControl, String input) {
-        LookupResult lookupResult = new LookupResult();
-        int openPos;
-        int closePos;
-        String variable_char = "{{";
-        String variable_char_close = "}}";
-        String midBit;
-        String replaceValue;
-        String temp = input;
-        while (temp.indexOf(variable_char) > 0 || temp.startsWith(variable_char)) {
-            List<String> items = new ArrayList<>();
-            String tempInstructions = temp;
-            while (tempInstructions.indexOf(variable_char) > 0 || tempInstructions.startsWith(variable_char)) {
-                openPos = tempInstructions.indexOf(variable_char);
-                closePos = tempInstructions.indexOf(variable_char_close);
-                midBit = tempInstructions.substring(openPos + 2, closePos).trim();
-                items.add(midBit);
-                tempInstructions = midBit;
-            }
-
-            // get last value
-            String instruction = items.get(items.size() - 1);
-
-            // check split different types
-            String instructionType = instruction.substring(0, 1).toLowerCase();
-            String instructionOutput = instruction;
-
-            // Lookup
-            if (instructionType.equalsIgnoreCase("=")) {
-                int lookupOpenPos = instruction.indexOf("(");
-                int lookupClosePos = instruction.indexOf(")", lookupOpenPos + 1);
-                String lookupContext = instruction.substring(1, lookupOpenPos).trim().toLowerCase();
-                String lookupScope = instruction.substring(lookupOpenPos + 1, lookupClosePos).trim();
-                if (lookupContext.equalsIgnoreCase("connection") || lookupContext.equalsIgnoreCase("conn")) {
-                    instructionOutput = this.lookupConnectionInstruction(executionControl, lookupScope);
-                } else if (lookupContext.equalsIgnoreCase("environment") || lookupContext.equalsIgnoreCase("env")) {
-                    instructionOutput = this.lookupEnvironmentInstruction(executionControl, lookupScope);
-                } else if (lookupContext.equalsIgnoreCase("dataset") || lookupContext.equalsIgnoreCase("ds")) {
-                    instructionOutput = this.lookupDatasetInstruction(executionControl, lookupScope);
-                } else if (lookupContext.equalsIgnoreCase("file") || lookupContext.equalsIgnoreCase("f")) {
-                    instructionOutput = this.lookupFileInstruction(executionControl, lookupScope);
-                } else if (lookupContext.equalsIgnoreCase("coalesce") || lookupContext.equalsIgnoreCase("ifnull") || lookupContext.equalsIgnoreCase("nvl")) {
-                    instructionOutput = this.lookupCoalesceResult(executionControl, lookupScope);
-                } else if (lookupContext.equalsIgnoreCase("script.output") || lookupContext.equalsIgnoreCase("s.out")) {
-                    instructionOutput = this.lookupScriptResultInstruction(executionControl, lookupScope).orElse(input);
-                }
-                // Variable lookup
-            } else if (instructionType.equalsIgnoreCase("$")) {
-                String lookupContext = VariableInstructionTools.getSynonymKey(instruction.substring(1).trim().toLowerCase());
-                instructionOutput = this.getVariableInstruction(executionControl, lookupContext, "");
-                // Generate data
-            } else if (instructionType.equalsIgnoreCase("*")) {
-                int lookupOpenPos = instruction.indexOf("(");
-                int lookupClosePos = instruction.indexOf(")", lookupOpenPos + 1);
-                String lookupContext = instruction.substring(1, lookupOpenPos).trim().toLowerCase();
-                String lookupScope = instruction.substring(lookupOpenPos + 1, lookupClosePos).trim();
-                instructionOutput = this.generateDataInstruction(executionControl, lookupContext, lookupScope);
-                // run scripts
-            } else if (instructionType.equalsIgnoreCase("!")) {
-                int lookupOpenPos = instruction.indexOf("(");
-                int lookupClosePos = instruction.lastIndexOf(")");
-                String lookupContext = instruction.substring(1, lookupOpenPos).trim().toLowerCase();
-                String lookupScope = instruction.substring(lookupOpenPos + 1, lookupClosePos).trim();
-                lookupResult.setContext(lookupContext);
-                if (lookupScope.startsWith("\"")) lookupScope = lookupScope.substring(1);
-                if (lookupScope.endsWith("\"")) lookupScope = lookupScope.substring(0, lookupScope.length() - 1);
-                instructionOutput = lookupScope;
-                // Verify for javascript / js and jexl / jxl
-            }
-            replaceValue = instructionOutput;
-            // this.decrypt(variable_char + midBit + variable_char_close);
-            if (replaceValue != null) {
-                input = input.replace(variable_char + instruction + variable_char_close, replaceValue);
-            }
-            temp = input;
-        }
-
-        lookupResult.setValue(input);
-        return lookupResult;
-
-    }
-
-    private String lookupConnectionInstruction(ExecutionControl executionControl, String input) {
-        String output = input;
-
-        // Parse input
-        String[] parts = input.split(",");
-        String connectionName = parts[0].trim();
-        String connectionParameterName = parts[1].trim();
-
-        ConnectionParameterConfiguration connectionParameterConfiguration = new ConnectionParameterConfiguration();
-        Optional<String> connectionParameterValue = connectionParameterConfiguration.getConnectionParameterValue(connectionName,
-                executionControl.getEnvName(), connectionParameterName);
-
-        if (connectionParameterValue.isPresent()) {
-            output = connectionParameterValue.get();
-        }
-        return output;
-    }
-
-    private String lookupEnvironmentInstruction(ExecutionControl executionControl, String input) {
-        // Parse input
-        String[] parts = input.split(",");
-        String environmentName = parts[0].trim();
-        String environmentParameterName = parts[1].trim();
-
-        EnvironmentParameterConfiguration environmentParameterConfiguration = new EnvironmentParameterConfiguration();
-
-        return environmentParameterConfiguration.getEnvironmentParameterValue(environmentName, environmentParameterName)
-                .orElse(input);
-    }
-
-
-    private Optional<String> lookupScriptResultInstruction(ExecutionControl executionControl, String input) {
-        // TODO only for root scripts - extend to others
-        try {
-            return scriptResultOutputConfiguration.get(new ScriptResultOutputKey(executionControl.getRunId(), 0L, input))
-                    .map(ScriptResultOutput::getValue);
-        } catch (SQLException e) {
-            StringWriter stackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(stackTrace));
-            LOGGER.warn("exception=" + e.getMessage());
-            LOGGER.info("stacktrace=" + stackTrace.toString());
-            return Optional.empty();
-        }
-    }
-
-	private String lookupDatasetInstruction(ExecutionControl executionControl, String input) {
-        String output = input;
-
-        // Parse input
-        String[] parts = input.split(",");
-        String datasetReferenceName = parts[0].trim();
-        String datasetItem = parts[1].trim();
-
-
-        Optional<KeyValueDataset> dataset = getDataset(datasetReferenceName);
-        String dataItem = dataset
-                .map(dataset1 -> dataset1.getDataItem(datasetItem)
-                        .map(DataType::toString)
-                        .orElse(input))
-                .orElse(input);
-//        DatasetOperation datasetOperation = executionControl.getExecutionRuntime().getDatasetOperation(datasetReferenceName);
-//
-//        if (!datasetItem.equalsIgnoreCase("")) {
-//            Optional<String> dataitem = datasetOperation.getDataItem(datasetItem);
-//            output = dataitem.orElse(input);
-//        }
-
-        return dataItem;
-    }
-
-    private String lookupFileInstruction(ExecutionControl executionControl, String input) {
-        String output = "";
-        File file = new File(input);
-        BufferedReader bufferedReader = null;
-        try {
-            bufferedReader = new BufferedReader(new FileReader(file));
-            String readLine = "";
-            while ((readLine = bufferedReader.readLine()) != null) {
-                output += FrameworkControl.getInstance().resolveConfiguration(readLine);
-                output += "\n";
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                bufferedReader.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        //TODO harmonize for first line input
-        //String output = input.trim();
-        //output = SQLTools.getFirstSQLStmt(input);
-        return output;
-    }
-
-    private String lookupCoalesceResult(ExecutionControl executionControl, String input) {
-        String output = "";
-        String[] parts = input.split(",");
-        for (int i = 0; i < parts.length; i++) {
-            String temp = parts[i].trim();
-            if (!temp.isEmpty()) {
-                output = parts[i];
-                break;
-            }
-        }
-        return output;
-    }
-
-    private String getVariableInstruction(ExecutionControl executionControl, String context, String input) {
+    private String getVariableInstruction(String context, String input) {
         VariableInstruction variableInstruction = this.getVariableInstructions().get(context);
         if (variableInstruction == null) {
             throw new IllegalArgumentException(MessageFormat.format("No variable instruction named {0} found.", context));
@@ -858,7 +524,7 @@ public class ExecutionRuntime {
         }
     }
 
-    private String generateDataInstruction(ExecutionControl executionControl, String context, String input) {
+    private String generateDataInstruction(String context, String input) {
         DataInstruction dataInstruction = dataInstructions.get(context);
         if (dataInstruction == null) {
             throw new IllegalArgumentException(MessageFormat.format("No data instruction named {0} found.", context));
@@ -886,15 +552,15 @@ public class ExecutionRuntime {
     }
 
     // Define logging level
-    private void defineLoggingLevel() {
-        if (FrameworkControl.getInstance()
-                .getProperty(FrameworkSettingConfiguration.getInstance().getSettingPath("commandline.display.runtime.variable").get())
-                .equals("Y")) {
-            this.setLevel(Level.INFO);
-        } else {
-            this.setLevel(Level.TRACE);
-        }
-    }
+//    private void defineLoggingLevel() {
+//        if (FrameworkControl.getInstance()
+//                .getProperty(FrameworkSettingConfiguration.getInstance().getSettingPath("commandline.display.runtime.variable").get())
+//                .equals("Y")) {
+//            this.setLevel(Level.INFO);
+//        } else {
+//            this.setLevel(Level.TRACE);
+//        }
+//    }
 
     // Stage Management
     public void setStage(String stageName, boolean stageCleanup) {
@@ -923,7 +589,6 @@ public class ExecutionRuntime {
     }
 
 
-
     public Optional<KeyValueDataset> getDataset(String referenceName) {
         return Optional.ofNullable(datasetMap.get(referenceName));
     }
@@ -934,138 +599,44 @@ public class ExecutionRuntime {
         this.getIterationOperationMap().put(iteration.getName(), iterationOperation);
     }
 
-    public void setIterationOperation(IterationOperation iterationOperation) {
-        this.getIterationOperationMap().put(iterationOperation.getIteration().getName(), iterationOperation);
-    }
-
     public IterationOperation getIterationOperation(String iterationName) {
         return this.getIterationOperationMap().get(iterationName);
     }
 
     // Execution Runtime Extension Management
-    public void setExecutionRuntimeExtension(ExecutionRuntimeExtension executionRuntimeExtension) {
-        this.getExecutionRuntimeExtensionMap().put(executionRuntimeExtension.getExecutionRuntimeExtensionName(),
-                executionRuntimeExtension);
-    }
-
-    public ExecutionRuntimeExtension getExecutionRuntimeExtension(String executionRuntimeExtensionName) {
-        return this.getExecutionRuntimeExtensionMap().get(executionRuntimeExtensionName);
-    }
-
-    public boolean executionRuntimeExtensionExists(String executionRuntimeExtensionName) {
-        ExecutionRuntimeExtension executionRuntimeExtension = this.getExecutionRuntimeExtensionMap()
-                .get(executionRuntimeExtensionName);
-        if (executionRuntimeExtension != null) {
-            // Value exists
-            return true;
-        } else {
-            // Check if only the key exists
-            if (this.getExecutionRuntimeExtensionMap().containsKey(executionRuntimeExtensionName)) {
-                // Only key exists with null value
-                return true;
-            } else {
-                // No key and no value exist
-                return false;
-            }
-        }
-    }
-
-    // Impersonations
-    public void setImpersonationName(String impersonationName) {
-        this.getImpersonationOperation().setImpersonation(impersonationName);
-    }
-
-    public void setImpersonationCustom(String impersonationCustom) {
-        this.getImpersonationOperation().setImpersonationCustom(impersonationCustom);
-    }
-
-    public RuntimeVariableConfiguration getRuntimeVariableConfiguration() {
-        return runtimeVariableConfiguration;
-    }
-
-    public void setRuntimeVariableConfiguration(RuntimeVariableConfiguration runtimeVariableConfiguration) {
-        this.runtimeVariableConfiguration = runtimeVariableConfiguration;
-    }
 
     public String getRunId() {
         return runId;
-    }
-
-    public void setRunId(String runId) {
-        this.runId = runId;
-    }
-
-    public Level getLevel() {
-        return level;
-    }
-
-    public void setLevel(Level level) {
-        this.level = level;
     }
 
     public HashMap<String, StageOperation> getStageOperationMap() {
         return stageOperationMap;
     }
 
-    public void setStageOperationMap(HashMap<String, StageOperation> stageOperationMap) {
-        this.stageOperationMap = stageOperationMap;
-    }
-
     public ImpersonationOperation getImpersonationOperation() {
         return impersonationOperation;
-    }
-
-    public void setImpersonationOperation(ImpersonationOperation impersonationOperation) {
-        this.impersonationOperation = impersonationOperation;
-    }
-
-    public HashMap<String, ExecutionRuntimeExtension> getExecutionRuntimeExtensionMap() {
-        return executionRuntimeExtensionMap;
-    }
-
-    public void setExecutionRuntimeExtensionMap(
-            HashMap<String, ExecutionRuntimeExtension> executionRuntimeExtensionMap) {
-        this.executionRuntimeExtensionMap = executionRuntimeExtensionMap;
     }
 
     public String getRunCacheFolderName() {
         return runCacheFolderName;
     }
 
-    public void setRunCacheFolderName(String runCacheFolderName) {
-        this.runCacheFolderName = runCacheFolderName;
-    }
 
     public HashMap<String, IterationOperation> getIterationOperationMap() {
         return iterationOperationMap;
     }
 
-    public void setIterationOperationMap(HashMap<String, IterationOperation> iterationOperationMap) {
-        this.iterationOperationMap = iterationOperationMap;
-    }
 
     public IterationVariableConfiguration getIterationVariableConfiguration() {
         return iterationVariableConfiguration;
-    }
-
-    public void setIterationVariableConfiguration(IterationVariableConfiguration iterationVariableConfiguration) {
-        this.iterationVariableConfiguration = iterationVariableConfiguration;
     }
 
     public HashMap<String, RepositoryOperation> getRepositoryOperationMap() {
         return repositoryOperationMap;
     }
 
-    public void setRepositoryOperationMap(HashMap<String, RepositoryOperation> repositoryOperationMap) {
-        this.repositoryOperationMap = repositoryOperationMap;
-    }
-
     public HashMap<String, VariableInstruction> getVariableInstructions() {
         return variableInstructions;
-    }
-
-    public void setVariableInstructions(HashMap<String, VariableInstruction> variableInstructions) {
-        this.variableInstructions = variableInstructions;
     }
 
     public ExecutionControl getExecutionControl() {

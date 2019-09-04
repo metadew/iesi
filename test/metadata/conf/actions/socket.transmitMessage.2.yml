@@ -1,0 +1,55 @@
+---
+type: "script"
+data:
+  name: "socket.transmitMessage.2"
+  description: "test TCP socket connection without response"
+  parameters: []
+  actions:
+  - number: 1
+    type: "data.setDatasetConnection"
+    name: "Action1"
+    description: "send message"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "name"
+      value : "socket"
+    - name: "dataset"
+      value : "socket"
+    - name: "labels"
+      value: "output"
+  - number: 2
+    type: "socket.transmitMessage"
+    name: "Action2"
+    description: "send message"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "socket"
+      value : "socket"
+    - name: "message"
+      value : "test2"
+    - name: "protocol"
+      value: "tcp"
+    - name: "output"
+      value: "socket"
+  - number: 3
+    type: "fwk.outputMessage"
+    name: "Action3"
+    description: "send message"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "onScreen"
+      value : "Y"
+    - name: "message"
+      value : "{{=dataset(socket, response)}}"

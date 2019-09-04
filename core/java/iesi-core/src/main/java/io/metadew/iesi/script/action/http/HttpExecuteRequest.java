@@ -54,13 +54,6 @@ public class HttpExecuteRequest {
     private final String setDatasetKey = "setDataset";
     private final String expectedStatusCodesKey = "expectedStatusCodes";
 
-    private ActionParameterOperation requestTypeActionParameterOperation;
-    private ActionParameterOperation requestNameActionParameterOperation;
-    private ActionParameterOperation setRuntimeVariablesActionParameterOperation;
-    private ActionParameterOperation requestBodyActionParameterOperation;
-    private ActionParameterOperation proxyActionParameterOperation;
-    private ActionParameterOperation setDatasetActionParameterOperation;
-    private ActionParameterOperation expectedStatusCodesActionParameterOperation;
     private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
 
     private HttpRequest httpRequest;
@@ -90,29 +83,21 @@ public class HttpExecuteRequest {
         this.actionParameterOperationMap = new HashMap<>();
         this.httpRequestComponentService = new HttpRequestComponentService(executionControl);
         this.httpRequestService = new HttpRequestService();
-        this.dataTypeService = new DataTypeService(executionControl.getExecutionRuntime());
+        this.dataTypeService = new DataTypeService();
     }
 
     public void prepare() throws URISyntaxException, HttpRequestBuilderException, IOException, SQLException, ComponentDoesNotExistException {
         // Reset Parameters
-        requestTypeActionParameterOperation = new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), typeKey);
-        requestNameActionParameterOperation = new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), requestKey);
-        requestBodyActionParameterOperation = new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), bodyKey);
-        setRuntimeVariablesActionParameterOperation = new ActionParameterOperation(
-                this.getExecutionControl(), this.getActionExecution(), this.getActionExecution().getAction().getType(),
-                setRuntimeVariablesKey);
-        setDatasetActionParameterOperation = new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), setDatasetKey);
-        expectedStatusCodesActionParameterOperation = new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), expectedStatusCodesKey);
-        proxyActionParameterOperation = new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), proxyKey);
+        ActionParameterOperation requestTypeActionParameterOperation = new ActionParameterOperation(executionControl, actionExecution, actionExecution.getAction().getType(), typeKey);
+        ActionParameterOperation requestNameActionParameterOperation = new ActionParameterOperation(executionControl, actionExecution, actionExecution.getAction().getType(), requestKey);
+        ActionParameterOperation requestBodyActionParameterOperation = new ActionParameterOperation(executionControl, actionExecution, actionExecution.getAction().getType(), bodyKey);
+        ActionParameterOperation setRuntimeVariablesActionParameterOperation = new ActionParameterOperation(executionControl, actionExecution, actionExecution.getAction().getType(), setRuntimeVariablesKey);
+        ActionParameterOperation setDatasetActionParameterOperation = new ActionParameterOperation(executionControl, actionExecution, actionExecution.getAction().getType(), setDatasetKey);
+        ActionParameterOperation expectedStatusCodesActionParameterOperation = new ActionParameterOperation(executionControl, actionExecution, actionExecution.getAction().getType(), expectedStatusCodesKey);
+        ActionParameterOperation proxyActionParameterOperation = new ActionParameterOperation(executionControl, actionExecution, actionExecution.getAction().getType(), proxyKey);
 
         // Get Parameters
-        for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
+        for (ActionParameter actionParameter : actionExecution.getAction().getParameters()) {
             if (actionParameter.getName().equalsIgnoreCase(requestKey)) {
                 requestNameActionParameterOperation.setInputValue(actionParameter.getValue());
             } else if (actionParameter.getName().equalsIgnoreCase(typeKey)) {
@@ -131,13 +116,13 @@ public class HttpExecuteRequest {
         }
 
         // Create parameter list
-        this.getActionParameterOperationMap().put(requestKey, requestNameActionParameterOperation);
-        this.getActionParameterOperationMap().put(typeKey, requestTypeActionParameterOperation);
-        this.getActionParameterOperationMap().put(bodyKey, requestBodyActionParameterOperation);
-        this.getActionParameterOperationMap().put(setRuntimeVariablesKey, setRuntimeVariablesActionParameterOperation);
-        this.getActionParameterOperationMap().put(setDatasetKey, setDatasetActionParameterOperation);
-        this.getActionParameterOperationMap().put(expectedStatusCodesKey, expectedStatusCodesActionParameterOperation);
-        this.getActionParameterOperationMap().put(proxyKey, proxyActionParameterOperation);
+        actionParameterOperationMap.put(requestKey, requestNameActionParameterOperation);
+        actionParameterOperationMap.put(typeKey, requestTypeActionParameterOperation);
+        actionParameterOperationMap.put(bodyKey, requestBodyActionParameterOperation);
+        actionParameterOperationMap.put(setRuntimeVariablesKey, setRuntimeVariablesActionParameterOperation);
+        actionParameterOperationMap.put(setDatasetKey, setDatasetActionParameterOperation);
+        actionParameterOperationMap.put(expectedStatusCodesKey, expectedStatusCodesActionParameterOperation);
+        actionParameterOperationMap.put(proxyKey, proxyActionParameterOperation);
 
         HttpRequestComponent httpRequestComponent = httpRequestComponentService.getHttpRequestComponent(convertHttpRequestName(requestNameActionParameterOperation.getValue()), actionExecution);
         HttpRequestBuilder httpRequestBuilder = new HttpRequestBuilder()
@@ -182,10 +167,10 @@ public class HttpExecuteRequest {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
 
-            this.getActionExecution().getActionControl().increaseErrorCount();
+            actionExecution.getActionControl().increaseErrorCount();
 
-            this.getActionExecution().getActionControl().logOutput("exception", e.getMessage());
-            this.getActionExecution().getActionControl().logOutput("stacktrace", StackTrace.toString());
+            actionExecution.getActionControl().logOutput("exception", e.getMessage());
+            actionExecution.getActionControl().logOutput("stacktrace", StackTrace.toString());
 
             return false;
         }
@@ -204,7 +189,7 @@ public class HttpExecuteRequest {
                     .map(this::convertExpectedStatusCode)
                     .collect(Collectors.toList());
         } else {
-            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for expectedStatusCode",
+            LOGGER.warn(MessageFormat.format(actionExecution.getAction().getType() + " does not accept {0} as type for expectedStatusCode",
                     expectedStatusCodes.getClass()));
             return null;
         }
@@ -214,7 +199,7 @@ public class HttpExecuteRequest {
         if (expectedStatusCode instanceof Text) {
             return expectedStatusCode.toString();
         } else {
-            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for expectedStatusCode",
+            LOGGER.warn(MessageFormat.format(actionExecution.getAction().getType() + " does not accept {0} as type for expectedStatusCode",
                     expectedStatusCode.getClass()));
             return expectedStatusCode.toString();
         }
@@ -235,10 +220,10 @@ public class HttpExecuteRequest {
     }
 
     private void outputResponse(HttpResponse httpResponse) {
-        //this.getActionExecution().getActionControl().logOutput("response", httpResponse.getResponse().toString());
-        this.getActionExecution().getActionControl().logOutput("status", httpResponse.getStatusLine().toString());
-        this.getActionExecution().getActionControl().logOutput("status.code", String.valueOf(httpResponse.getStatusLine().getStatusCode()));
-        this.getActionExecution().getActionControl().logOutput("body", httpResponse.getEntityString().orElse("<empty>"));
+        //actionExecution.getActionControl().logOutput("response", httpResponse.getResponse().toString());
+        actionExecution.getActionControl().logOutput("status", httpResponse.getStatusLine().toString());
+        actionExecution.getActionControl().logOutput("status.code", String.valueOf(httpResponse.getStatusLine().getStatusCode()));
+        actionExecution.getActionControl().logOutput("body", httpResponse.getEntityString().orElse("<empty>"));
         int headerCounter = 1;
         for (Header header : httpResponse.getHeaders()) {
             actionExecution.getActionControl().logOutput("header." + headerCounter, header.getName() + ":" + header.getValue());
@@ -254,7 +239,7 @@ public class HttpExecuteRequest {
             return executionControl.getExecutionRuntime().getDataset(((Text) outputDatasetReferenceName).getString())
                 .orElseThrow(() -> new RuntimeException(MessageFormat.format("No dataset found with name ''{0}''", ((Text) outputDatasetReferenceName).getString())));
         } else {
-            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for OutputDatasetReferenceName",
+            LOGGER.warn(MessageFormat.format(actionExecution.getAction().getType() + " does not accept {0} as type for OutputDatasetReferenceName",
                     outputDatasetReferenceName.getClass()));
             throw new RuntimeException(MessageFormat.format("Output dataset does not allow type ''{0}''", outputDatasetReferenceName.getClass()));
         }
@@ -267,7 +252,7 @@ public class HttpExecuteRequest {
         if (setRuntimeVariables instanceof Text) {
             return setRuntimeVariables.toString().equalsIgnoreCase("y");
         } else {
-            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for setRuntimeVariablesActionParameterOperation",
+            LOGGER.warn(MessageFormat.format(actionExecution.getAction().getType() + " does not accept {0} as type for setRuntimeVariablesActionParameterOperation",
                     setRuntimeVariables.getClass()));
             return false;
         }
@@ -280,7 +265,7 @@ public class HttpExecuteRequest {
         if (httpRequestBody instanceof Text) {
             return Optional.of(httpRequestBody.toString());
         } else {
-            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for request body",
+            LOGGER.warn(MessageFormat.format(actionExecution.getAction().getType() + " does not accept {0} as type for request body",
                     httpRequestBody.getClass()));
             return Optional.of(httpRequestBody.toString());
         }
@@ -290,7 +275,7 @@ public class HttpExecuteRequest {
         if (httpRequestType instanceof Text) {
             return httpRequestType.toString();
         } else {
-            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for request type",
+            LOGGER.warn(MessageFormat.format(actionExecution.getAction().getType() + " does not accept {0} as type for request type",
                     httpRequestType.getClass()));
             return httpRequestType.toString();
         }
@@ -300,7 +285,7 @@ public class HttpExecuteRequest {
         if (httpRequestName instanceof Text) {
             return ((Text) httpRequestName).getString();
         } else {
-            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for request name",
+            LOGGER.warn(MessageFormat.format(actionExecution.getAction().getType() + " does not accept {0} as type for request name",
                     httpRequestName.getClass()));
             return httpRequestName.toString();
         }
@@ -322,15 +307,15 @@ public class HttpExecuteRequest {
 
     private void checkStatusCodeDefault(HttpResponse httpResponse) {
         if (SUCCESS_STATUS_CODE.matcher(Integer.toString(httpResponse.getStatusLine().getStatusCode())).find()) {
-            this.getActionExecution().getActionControl().increaseSuccessCount();
+            actionExecution.getActionControl().increaseSuccessCount();
         } else if (INFORMATION_STATUS_CODE.matcher(Integer.toString(httpResponse.getStatusLine().getStatusCode())).find()) {
-            this.getActionExecution().getActionControl().increaseSuccessCount();
+            actionExecution.getActionControl().increaseSuccessCount();
         } else if (REDIRECT_STATUS_CODE.matcher(Integer.toString(httpResponse.getStatusLine().getStatusCode())).find()) {
-            this.getActionExecution().getActionControl().increaseSuccessCount();
+            actionExecution.getActionControl().increaseSuccessCount();
         } else {
             LOGGER.warn((MessageFormat.format("Status code of response {0} is not member of success status codes (1XX, 2XX, 3XX).",
                     httpResponse.getStatusLine().getStatusCode())));
-            this.getActionExecution().getActionControl().increaseErrorCount();
+            actionExecution.getActionControl().increaseErrorCount();
         }
     }
 
@@ -340,10 +325,10 @@ public class HttpExecuteRequest {
                 .filter(header -> header.getName().equals(HttpHeaders.CONTENT_TYPE))
                 .collect(Collectors.toList());
         if (contentTypeHeaders.size() > 1) {
-            this.getActionExecution().getActionControl().logWarning("content-type",
+            actionExecution.getActionControl().logWarning("content-type",
                     MessageFormat.format("Http response contains multiple headers ({0}) defining the content type", contentTypeHeaders.size()));
         } else if (contentTypeHeaders.size() == 0) {
-            this.getActionExecution().getActionControl().logWarning("content-type", "Http response contains no header defining the content type. Assuming text/plain");
+            actionExecution.getActionControl().logWarning("content-type", "Http response contains no header defining the content type. Assuming text/plain");
             writeTextPlainResponseToOutputDataset(httpResponse);
         }
 
@@ -352,7 +337,7 @@ public class HttpExecuteRequest {
         } else if (contentTypeHeaders.stream().anyMatch(header -> header.getValue().contains(ContentType.TEXT_PLAIN.getMimeType()))) {
             writeTextPlainResponseToOutputDataset(httpResponse);
         } else {
-            this.getActionExecution().getActionControl().logWarning("content-type", "Http response contains unsupported content-type header. Response will be written to dataset as plain text.");
+            actionExecution.getActionControl().logWarning("content-type", "Http response contains unsupported content-type header. Response will be written to dataset as plain text.");
             writeTextPlainResponseToOutputDataset(httpResponse);
         }
     }
@@ -385,15 +370,15 @@ public class HttpExecuteRequest {
                     } catch (IOException | SQLException e) {
                         StringWriter StackTrace = new StringWriter();
                         e.printStackTrace(new PrintWriter(StackTrace));
-                        this.getActionExecution().getActionControl().logOutput("json.exception", e.getMessage());
-                        this.getActionExecution().getActionControl().logOutput("json.stacktrace", StackTrace.toString());
+                        actionExecution.getActionControl().logOutput("json.exception", e.getMessage());
+                        actionExecution.getActionControl().logOutput("json.stacktrace", StackTrace.toString());
                     }
                 });
             } catch (Exception e) {
                 StringWriter StackTrace = new StringWriter();
                 e.printStackTrace(new PrintWriter(StackTrace));
-                this.getActionExecution().getActionControl().logOutput("json.exception", e.getMessage());
-                this.getActionExecution().getActionControl().logOutput("json.stacktrace", StackTrace.toString());
+                actionExecution.getActionControl().logOutput("json.exception", e.getMessage());
+                actionExecution.getActionControl().logOutput("json.stacktrace", StackTrace.toString());
             }
         }
     }
@@ -422,8 +407,8 @@ public class HttpExecuteRequest {
                     }
                 }
             } catch (Exception e) {
-                this.getActionExecution().getActionControl().increaseWarningCount();
-                this.getExecutionControl().logExecutionOutput(this.getActionExecution(), "SET_RUN_VAR", e.getMessage());
+                actionExecution.getActionControl().increaseWarningCount();
+                executionControl.logExecutionOutput(actionExecution, "SET_RUN_VAR", e.getMessage());
             }
         }
     }

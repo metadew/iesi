@@ -14,8 +14,7 @@ public class TypeConfigurationOperation {
 
     public static String getTypeConfigurationFile(String dataObjectType, String typeName) {
         String configurationObject = dataObjectType + File.separator + typeName + ".json";
-        String conf = FrameworkFolderConfiguration.getInstance()
-                .getFolderAbsolutePath("metadata.conf") + File.separator + configurationObject;
+        String conf = FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.conf") + File.separator + configurationObject;
 
         if (!FileTools.exists(conf)) {
             FrameworkPluginOperation frameworkPluginOperation = new FrameworkPluginOperation();

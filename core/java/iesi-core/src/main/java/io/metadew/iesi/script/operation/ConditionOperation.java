@@ -116,7 +116,7 @@ public class ConditionOperation {
 
         // Cross concept lookup
         LookupResult lookupResult = this.getExecutionControl().getExecutionRuntime()
-                .resolveConceptLookup(this.getExecutionControl(), this.getValue(), true);
+                .resolveConceptLookup(this.getValue());
         this.setValue(lookupResult.getValue());
         this.setSyntax(lookupResult.getContext());
     }

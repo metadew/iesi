@@ -39,7 +39,7 @@ public class FwkSetParameterList {
         this.setExecutionControl(executionControl);
         this.setActionExecution(actionExecution);
         this.setActionParameterOperationMap(new HashMap<>());
-        this.dataTypeService = new DataTypeService(executionControl.getExecutionRuntime());
+        this.dataTypeService = new DataTypeService();
     }
 
     public void prepare() {

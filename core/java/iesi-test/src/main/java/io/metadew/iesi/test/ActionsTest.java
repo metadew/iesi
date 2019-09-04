@@ -14,6 +14,7 @@ import io.metadew.iesi.test.launch.LaunchItemOperation;
 import io.metadew.iesi.test.launch.Launcher;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,27 +50,24 @@ public class ActionsTest {
 			String instance = cmd.getOptionValue("instance");
 			String version = cmd.getOptionValue("version");
 
-			String repositoryHome = repository;
-			@SuppressWarnings("unused")
-			String sandboxHome = sandbox;
 			String instanceHome = sandbox + File.separator + instance;
 			String versionHome = instanceHome + File.separator + version;
 
-			String testDataHome = repositoryHome + File.separator + "test" + File.separator + "data";
-			String testDockerHome = repositoryHome + File.separator + "test" + File.separator + "docker";
-			String testFwkConfigurationHome = repositoryHome + File.separator + "test" + File.separator + "metadata"
+			String testDataHome = repository + File.separator + "test" + File.separator + "data";
+			String testDockerHome = repository + File.separator + "test" + File.separator + "docker";
+			String testFwkConfigurationHome = repository + File.separator + "test" + File.separator + "metadata"
 					+ File.separator + "conf" + File.separator + "fwk";
-			String testLaunchConfigurationHome = repositoryHome + File.separator + "test" + File.separator + "metadata"
+			String testLaunchConfigurationHome = repository + File.separator + "test" + File.separator + "metadata"
 					+ File.separator + "conf" + File.separator + "launch";
-			String testSetupConfigurationHome = repositoryHome + File.separator + "test" + File.separator + "metadata"
+			String testSetupConfigurationHome = repository + File.separator + "test" + File.separator + "metadata"
 					+ File.separator + "conf" + File.separator + "setup";
-			String testDefConfigurationHome = repositoryHome + File.separator + "test" + File.separator + "metadata"
+			String testDefConfigurationHome = repository + File.separator + "test" + File.separator + "metadata"
 					+ File.separator + "conf" + File.separator + "def";
-			String actionsTestConfigurationHome = repositoryHome + File.separator + "test" + File.separator + "metadata"
+			String actionsTestConfigurationHome = repository + File.separator + "test" + File.separator + "metadata"
 					+ File.separator + "conf" + File.separator + "actions";
-			String instructionsTestConfigurationHome = repositoryHome + File.separator + "test" + File.separator
+			String instructionsTestConfigurationHome = repository + File.separator + "test" + File.separator
 					+ "metadata" + File.separator + "conf" + File.separator + "instructions";
-			String connectionsTestConfigurationHome = repositoryHome + File.separator + "test" + File.separator
+			String connectionsTestConfigurationHome = repository + File.separator + "test" + File.separator
 					+ "metadata" + File.separator + "conf" + File.separator + "connections";
 
 			String versionHomeConfFolder = versionHome + File.separator + "conf";
@@ -232,7 +230,7 @@ public class ActionsTest {
 			scriptInputArgs.add(exit);
 			LaunchArgument env = new LaunchArgument(true, "-env", "iesi-test");
 			scriptInputArgs.add(env);
-			LaunchArgument script = null;
+			LaunchArgument script;
 			ObjectMapper objectMapper = new ObjectMapper();
 
 			// Run initializations
@@ -321,9 +319,8 @@ public class ActionsTest {
 				scriptInputArgs.remove(paramList);
 			}
 
-		} catch (ParseException | ExecutionRequestBuilderException | ScriptExecutionRequestBuilderException | MetadataAlreadyExistsException | SQLException | MetadataDoesNotExistException e) {
+		} catch (ParseException | ExecutionRequestBuilderException | ScriptExecutionRequestBuilderException | MetadataAlreadyExistsException | SQLException | MetadataDoesNotExistException | InstantiationException | InvocationTargetException | NoSuchMethodException | IllegalAccessException | ClassNotFoundException e) {
 			e.printStackTrace();
-			return;
 		}
 
 		System.exit(0);

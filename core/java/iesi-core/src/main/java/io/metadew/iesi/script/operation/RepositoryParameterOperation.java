@@ -40,7 +40,7 @@ public class RepositoryParameterOperation {
     }
 
     public void setValue(String value) {
-        this.value = this.getExecutionControl().getExecutionRuntime().resolveVariables(value, true);
+        this.value = this.getExecutionControl().getExecutionRuntime().resolveVariables(value);
     }
 
     public String getInputValue() {
@@ -56,7 +56,7 @@ public class RepositoryParameterOperation {
 
         // Cross concept lookup
         LookupResult lookupResult = this.getExecutionControl().getExecutionRuntime()
-                .resolveConceptLookup(this.getExecutionControl(), this.getValue(), true);
+                .resolveConceptLookup(this.getValue());
         this.setValue(lookupResult.getValue());
 
         // Resolve internal encryption

@@ -21,103 +21,111 @@ import java.util.Optional;
 
 public class ScriptResultConfiguration extends Configuration<ScriptResult, ScriptResultKey> {
 
-	private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
 
-	// Constructors
-	public ScriptResultConfiguration(){
-		super();
-	}
+    // Constructors
+    public ScriptResultConfiguration() {
+        super();
+    }
 
-	@Override
-	public Optional<ScriptResult> get(ScriptResultKey scriptResultKey) throws SQLException {
-		String queryScript = "select RUN_ID, PRC_ID, PARENT_PRC_ID, SCRIPT_ID, SCRIPT_NM, SCRIPT_VRS_NB, ENV_NM, ST_NM, " +
-				"STRT_TMS, END_TMS from " + MetadataControl.getInstance().getResultMetadataRepository().getTableNameByLabel("ScriptResults")
-				+ " where RUN_ID = " + SQLTools.GetStringForSQL(scriptResultKey.getRunId()) + " and PRC_ID = " + SQLTools.GetStringForSQL(scriptResultKey.getProcessId()) + ";";
-		CachedRowSet cachedRowSet = MetadataControl.getInstance().getResultMetadataRepository().executeQuery(queryScript, "reader");
-		if (cachedRowSet.size() == 0) {
-			return Optional.empty();
-		} else if (cachedRowSet.size() > 1) {
-			LOGGER.warn(MessageFormat.format("Found multiple implementations for ScriptResult {0}. Returning first implementation", scriptResultKey.toString()));
-		}
-		cachedRowSet.next();
-		return Optional.of(new ScriptResult(scriptResultKey,
-				cachedRowSet.getLong("PARENT_PRC_ID"),
-				cachedRowSet.getString("SCRIPT_ID"),
-				cachedRowSet.getString("SCRIPT_NM"),
-				cachedRowSet.getLong("SCRIPT_VRS_NB"),
-				cachedRowSet.getString("ENV_NM"),
-				cachedRowSet.getString("ST_NM"),
-				SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("STRT_TMS")),
-				SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("END_TMS"))
-				));
-	}
+    @Override
+    public Optional<ScriptResult> get(ScriptResultKey scriptResultKey) {
+        try {
+            String queryScript = "select RUN_ID, PRC_ID, PARENT_PRC_ID, SCRIPT_ID, SCRIPT_NM, SCRIPT_VRS_NB, ENV_NM, ST_NM, " +
+                    "STRT_TMS, END_TMS from " + MetadataControl.getInstance().getResultMetadataRepository().getTableNameByLabel("ScriptResults")
+                    + " where RUN_ID = " + SQLTools.GetStringForSQL(scriptResultKey.getRunId()) + " and PRC_ID = " + SQLTools.GetStringForSQL(scriptResultKey.getProcessId()) + ";";
+            CachedRowSet cachedRowSet = MetadataControl.getInstance().getResultMetadataRepository().executeQuery(queryScript, "reader");
+            if (cachedRowSet.size() == 0) {
+                return Optional.empty();
+            } else if (cachedRowSet.size() > 1) {
+                LOGGER.warn(MessageFormat.format("Found multiple implementations for ScriptResult {0}. Returning first implementation", scriptResultKey.toString()));
+            }
+            cachedRowSet.next();
+            return Optional.of(new ScriptResult(scriptResultKey,
+                    cachedRowSet.getLong("PARENT_PRC_ID"),
+                    cachedRowSet.getString("SCRIPT_ID"),
+                    cachedRowSet.getString("SCRIPT_NM"),
+                    cachedRowSet.getLong("SCRIPT_VRS_NB"),
+                    cachedRowSet.getString("ENV_NM"),
+                    cachedRowSet.getString("ST_NM"),
+                    SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("STRT_TMS")),
+                    SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("END_TMS"))
+            ));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-	@Override
-	public List<ScriptResult> getAll() throws SQLException {
-		List<ScriptResult> scriptResults = new ArrayList<>();
-		String query = "select RUN_ID, PRC_ID, PARENT_PRC_ID, SCRIPT_ID, SCRIPT_NM, SCRIPT_VRS_NB, ENV_NM, ST_NM, " +
-				"STRT_TMS, END_TMS from " + MetadataControl.getInstance().getResultMetadataRepository().getTableNameByLabel("ScriptResults") + ";";
-		CachedRowSet cachedRowSet = getMetadataControl().getResultMetadataRepository().executeQuery(query, "reader");
-		while (cachedRowSet.next()) {
-			scriptResults.add(new ScriptResult(new ScriptResultKey(
-					cachedRowSet.getString("RUN_ID"),
-					cachedRowSet.getLong("PRC_ID")),
-					cachedRowSet.getLong("PARENT_PRC_ID"),
-					cachedRowSet.getString("SCRIPT_ID"),
-					cachedRowSet.getString("SCRIPT_NM"),
-					cachedRowSet.getLong("SCRIPT_VRS_NB"),
-					cachedRowSet.getString("ENV_NM"),
-					cachedRowSet.getString("ST_NM"),
-					SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("STRT_TMS")),
-					SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("END_TMS"))));
-		}
-		return scriptResults;
-	}
+    @Override
+    public List<ScriptResult> getAll() {
+        try {
+            List<ScriptResult> scriptResults = new ArrayList<>();
+            String query = "select RUN_ID, PRC_ID, PARENT_PRC_ID, SCRIPT_ID, SCRIPT_NM, SCRIPT_VRS_NB, ENV_NM, ST_NM, " +
+                    "STRT_TMS, END_TMS from " + MetadataControl.getInstance().getResultMetadataRepository().getTableNameByLabel("ScriptResults") + ";";
+            CachedRowSet cachedRowSet = getMetadataControl().getResultMetadataRepository().executeQuery(query, "reader");
+            while (cachedRowSet.next()) {
+                scriptResults.add(new ScriptResult(new ScriptResultKey(
+                        cachedRowSet.getString("RUN_ID"),
+                        cachedRowSet.getLong("PRC_ID")),
+                        cachedRowSet.getLong("PARENT_PRC_ID"),
+                        cachedRowSet.getString("SCRIPT_ID"),
+                        cachedRowSet.getString("SCRIPT_NM"),
+                        cachedRowSet.getLong("SCRIPT_VRS_NB"),
+                        cachedRowSet.getString("ENV_NM"),
+                        cachedRowSet.getString("ST_NM"),
+                        SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("STRT_TMS")),
+                        SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("END_TMS"))));
+            }
+            return scriptResults;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-	@Override
-	public void delete(ScriptResultKey scriptResultKey) throws MetadataDoesNotExistException, SQLException {
-		LOGGER.trace(MessageFormat.format("Deleting ScriptResult {0}.", scriptResultKey.toString()));
-		if (!exists(scriptResultKey)) {
-			throw new ScriptResultDoesNotExistException(MessageFormat.format(
-					"ScriptResult {0} does not exists", scriptResultKey.toString()));
-		}
-		String deleteStatement = deleteStatement(scriptResultKey);
-		getMetadataControl().getResultMetadataRepository().executeUpdate(deleteStatement);
-	}
+    @Override
+    public void delete(ScriptResultKey scriptResultKey) throws MetadataDoesNotExistException {
+        LOGGER.trace(MessageFormat.format("Deleting ScriptResult {0}.", scriptResultKey.toString()));
+        if (!exists(scriptResultKey)) {
+            throw new ScriptResultDoesNotExistException(MessageFormat.format(
+                    "ScriptResult {0} does not exists", scriptResultKey.toString()));
+        }
+        String deleteStatement = deleteStatement(scriptResultKey);
+        getMetadataControl().getResultMetadataRepository().executeUpdate(deleteStatement);
+    }
 
-	private String deleteStatement(ScriptResultKey scriptResultKey) {
-		return "DELETE FROM " + getMetadataControl().getResultMetadataRepository().getTableNameByLabel("ScriptResults") +
-				" WHERE " +
-				" RUN_ID = " + SQLTools.GetStringForSQL(scriptResultKey.getRunId()) + " AND " +
-				" PRC_ID = "  + SQLTools.GetStringForSQL(scriptResultKey.getProcessId()) + ";";
-	}
+    private String deleteStatement(ScriptResultKey scriptResultKey) {
+        return "DELETE FROM " + getMetadataControl().getResultMetadataRepository().getTableNameByLabel("ScriptResults") +
+                " WHERE " +
+                " RUN_ID = " + SQLTools.GetStringForSQL(scriptResultKey.getRunId()) + " AND " +
+                " PRC_ID = " + SQLTools.GetStringForSQL(scriptResultKey.getProcessId()) + ";";
+    }
 
-	@Override
-	public void insert(ScriptResult scriptResult) throws MetadataAlreadyExistsException, SQLException {
-		LOGGER.trace(MessageFormat.format("Inserting ScriptResult {0}.", scriptResult.getMetadataKey().toString()));
-		if (exists(scriptResult.getMetadataKey())) {
-			throw new ScriptResultAlreadyExistsException(MessageFormat.format(
-					"ScriptResult {0} already exists", scriptResult.getMetadataKey().toString()));
-		}
-		String insertStatement = insertStatement(scriptResult);
-		getMetadataControl().getResultMetadataRepository().executeUpdate(insertStatement);
-	}
+    @Override
+    public void insert(ScriptResult scriptResult) throws MetadataAlreadyExistsException {
+        LOGGER.trace(MessageFormat.format("Inserting ScriptResult {0}.", scriptResult.getMetadataKey().toString()));
+        if (exists(scriptResult.getMetadataKey())) {
+            throw new ScriptResultAlreadyExistsException(MessageFormat.format(
+                    "ScriptResult {0} already exists", scriptResult.getMetadataKey().toString()));
+        }
+        String insertStatement = insertStatement(scriptResult);
+        getMetadataControl().getResultMetadataRepository().executeUpdate(insertStatement);
+    }
 
-	private String insertStatement(ScriptResult scriptResult) {
-		return "INSERT INTO "
-				+ MetadataControl.getInstance().getResultMetadataRepository().getTableNameByLabel("ScriptResults")
-				+ " (RUN_ID, PRC_ID, PARENT_PRC_ID, SCRIPT_ID, SCRIPT_NM, SCRIPT_VRS_NB, ENV_NM, ST_NM, STRT_TMS, END_TMS) VALUES ("
-				+ SQLTools.GetStringForSQL(scriptResult.getMetadataKey().getRunId()) + "," +
-				SQLTools.GetStringForSQL(scriptResult.getMetadataKey().getProcessId()) + "," +
-				SQLTools.GetStringForSQL(scriptResult.getParentProcessId()) + "," +
-				SQLTools.GetStringForSQL(scriptResult.getScriptId()) + "," +
-				SQLTools.GetStringForSQL(scriptResult.getScriptName()) + "," +
-				SQLTools.GetStringForSQL(scriptResult.getScriptVersion()) + "," +
-				SQLTools.GetStringForSQL(scriptResult.getEnvironment()) + "," +
-				SQLTools.GetStringForSQL(scriptResult.getStatus()) + "," +
-				SQLTools.GetStringForSQL(scriptResult.getStartTimestamp()) + "," +
-				SQLTools.GetStringForSQL(scriptResult.getEndTimestamp()) + ");";
-	}
+    private String insertStatement(ScriptResult scriptResult) {
+        return "INSERT INTO "
+                + MetadataControl.getInstance().getResultMetadataRepository().getTableNameByLabel("ScriptResults")
+                + " (RUN_ID, PRC_ID, PARENT_PRC_ID, SCRIPT_ID, SCRIPT_NM, SCRIPT_VRS_NB, ENV_NM, ST_NM, STRT_TMS, END_TMS) VALUES ("
+                + SQLTools.GetStringForSQL(scriptResult.getMetadataKey().getRunId()) + "," +
+                SQLTools.GetStringForSQL(scriptResult.getMetadataKey().getProcessId()) + "," +
+                SQLTools.GetStringForSQL(scriptResult.getParentProcessId()) + "," +
+                SQLTools.GetStringForSQL(scriptResult.getScriptId()) + "," +
+                SQLTools.GetStringForSQL(scriptResult.getScriptName()) + "," +
+                SQLTools.GetStringForSQL(scriptResult.getScriptVersion()) + "," +
+                SQLTools.GetStringForSQL(scriptResult.getEnvironment()) + "," +
+                SQLTools.GetStringForSQL(scriptResult.getStatus()) + "," +
+                SQLTools.GetStringForSQL(scriptResult.getStartTimestamp()) + "," +
+                SQLTools.GetStringForSQL(scriptResult.getEndTimestamp()) + ");";
+    }
 
 //	public ScriptResult getScript(String runId) {
 //		ScriptResult scriptResult = new ScriptResult();

@@ -9,6 +9,7 @@ import io.metadew.iesi.connection.database.connection.h2.H2MemoryDatabaseConnect
 import io.metadew.iesi.connection.database.connection.h2.H2ServerDatabaseConnection;
 import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
 
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -51,33 +52,32 @@ public class H2RepositoryConfiguration extends RepositoryConfiguration {
     }
 
     @Override
-    public RepositoryCoordinator toRepository() {
+    public RepositoryCoordinator toRepository()  {
+
         Map<String, Database> databases = new HashMap<>();
         if (getUser().isPresent()) {
-            getUser().ifPresent(owner -> {
-                H2DatabaseConnection h2DatabaseConnection = getH2DataBaseConnection(owner, getUserPassword().orElse(""));
+            H2DatabaseConnection h2DatabaseConnection = getH2DataBaseConnection(getUser().get(), getUserPassword().orElse(""));
+            getSchema().ifPresent(h2DatabaseConnection::setSchema);
+            H2Database h2Database = new H2Database(h2DatabaseConnection, getSchema().orElse(""));
+            databases.put("owner", h2Database);
+            databases.put("writer", h2Database);
+            databases.put("reader", h2Database);
+        }
+        if (getWriter().isPresent()) {
+            H2DatabaseConnection h2DatabaseConnection = getH2DataBaseConnection(getWriter().get(), getWriterPassword().orElse(""));
+            getSchema().ifPresent(h2DatabaseConnection::setSchema);
+            H2Database h2Database = new H2Database(h2DatabaseConnection, getSchema().orElse(""));
+            databases.put("writer", h2Database);
+            databases.put("reader", h2Database);
+        }
+        if (getReader().isPresent()) {
+                H2DatabaseConnection h2DatabaseConnection = getH2DataBaseConnection(getReader().get(), getReaderPassword().orElse(""));
                 getSchema().ifPresent(h2DatabaseConnection::setSchema);
                 H2Database h2Database = new H2Database(h2DatabaseConnection, getSchema().orElse(""));
-                databases.put("owner", h2Database);
-                databases.put("writer", h2Database);
                 databases.put("reader", h2Database);
-            });
+        }
 
-            getWriter().ifPresent(writer -> {
-                H2DatabaseConnection h2DatabaseConnection = getH2DataBaseConnection(writer, getUserPassword().orElse(""));
-                getSchema().ifPresent(h2DatabaseConnection::setSchema);
-                H2Database h2Database = new H2Database(h2DatabaseConnection, getSchema().orElse(""));
-                databases.put("writer", h2Database);
-                databases.put("reader", h2Database);
-            });
-
-            getReader().ifPresent(reader -> {
-                H2DatabaseConnection h2DatabaseConnection = getH2DataBaseConnection(reader, getUserPassword().orElse(""));
-                getSchema().ifPresent(h2DatabaseConnection::setSchema);
-                H2Database h2Database = new H2Database(h2DatabaseConnection, getSchema().orElse(""));
-                databases.put("reader", h2Database);
-            });
-        } else {
+        if (!getUser().isPresent() && !getWriter().isPresent() && !getReader().isPresent()) {
             H2DatabaseConnection h2DatabaseConnection = getH2DataBaseConnection("","");
             getSchema().ifPresent(h2DatabaseConnection::setSchema);
             H2Database h2Database = new H2Database(h2DatabaseConnection, getSchema().orElse(""));

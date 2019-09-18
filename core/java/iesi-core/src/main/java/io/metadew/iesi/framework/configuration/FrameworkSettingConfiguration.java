@@ -15,7 +15,6 @@ public class FrameworkSettingConfiguration {
     private String solutionHome;
     private Map<String, String> settingMap;
 
-
     private static FrameworkSettingConfiguration INSTANCE;
 
     public synchronized static FrameworkSettingConfiguration getInstance() {
@@ -35,7 +34,7 @@ public class FrameworkSettingConfiguration {
     public void init(String solutionHome) {
         this.solutionHome = solutionHome;
         this.settingMap = new HashMap<>();
-        String initFilePath = this.getSolutionHome() + File.separator + "sys" + File.separator + "init" + File.separator +
+        String initFilePath = this.solutionHome + File.separator + "sys" + File.separator + "init" + File.separator +
                 "FrameworkSettings.json";
         DataObjectOperation dataObjectOperation = new DataObjectOperation(initFilePath);
         dataObjectOperation.parseFile();
@@ -55,23 +54,7 @@ public class FrameworkSettingConfiguration {
      * @return: Optional of the value if key is present in the settings map. If no value or an empty value is present an Optional empty is returned
      */
     public Optional<String> getSettingPath(String key) {
-        return Optional.ofNullable(this.getSettingMap().get(key)).filter(s -> !s.isEmpty());
-    }
-
-    public String getSolutionHome() {
-        return solutionHome;
-    }
-
-    public void setSolutionHome(String solutionHome) {
-        this.solutionHome = solutionHome;
-    }
-
-    public Map<String, String> getSettingMap() {
-        return settingMap;
-    }
-
-    public void setSettingMap(HashMap<String, String> settingMap) {
-        this.settingMap = settingMap;
+        return Optional.ofNullable(settingMap.get(key)).filter(s -> !s.isEmpty());
     }
 
 

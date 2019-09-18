@@ -31,46 +31,54 @@ public class ScriptExecutionConfiguration extends Configuration<ScriptExecution,
 
 
     @Override
-    public Optional<ScriptExecution> get(ScriptExecutionKey scriptExecutionRequestKey) throws SQLException {
-        String query = "SELECT SCRIPT_EXEC_ID, SCRPT_REQUEST_ID, RUN_ID, ST_NM, STRT_TMS, END_TMS " +
-                "FROM " + getMetadataControl().getExecutionServerMetadataRepository().getTableNameByLabel("ScriptExecutions") +
-                " WHERE SCRIPT_EXEC_ID = " + SQLTools.GetStringForSQL(scriptExecutionRequestKey.getId()) + ";";
+    public Optional<ScriptExecution> get(ScriptExecutionKey scriptExecutionRequestKey) {
+        try {
+            String query = "SELECT SCRIPT_EXEC_ID, SCRPT_REQUEST_ID, RUN_ID, ST_NM, STRT_TMS, END_TMS " +
+                    "FROM " + getMetadataControl().getExecutionServerMetadataRepository().getTableNameByLabel("ScriptExecutions") +
+                    " WHERE SCRIPT_EXEC_ID = " + SQLTools.GetStringForSQL(scriptExecutionRequestKey.getId()) + ";";
 
-        CachedRowSet cachedRowSet = getMetadataControl().getExecutionServerMetadataRepository().executeQuery(query, "reader");
-        if (cachedRowSet.size() == 0) {
-            return Optional.empty();
-        } else if (cachedRowSet.size() > 1) {
-            LOGGER.warn(MessageFormat.format("Found multiple implementations for ScriptExecution {0}. Returning first implementation", scriptExecutionRequestKey.toString()));
-        }
-        cachedRowSet.next();
-        return Optional.of(new ScriptExecution(scriptExecutionRequestKey,
-                new ScriptExecutionRequestKey(cachedRowSet.getString("SCRPT_REQUEST_ID")),
-                cachedRowSet.getString("RUN_ID"),
-                ScriptExecutionStatus.valueOf(cachedRowSet.getString("ST_NM")),
-                SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("STRT_TMS")),
-                SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("END_TMS"))));
-    }
-
-    @Override
-    public List<ScriptExecution> getAll() throws SQLException {
-        List<ScriptExecution> scriptExecutions = new ArrayList<>();
-        String query = "SELECT SCRIPT_EXEC_ID, SCRPT_REQUEST_ID, RUN_ID, ST_NM, STRT_TMS, END_TMS FROM " + getMetadataControl().getExecutionServerMetadataRepository().getTableNameByLabel("ScriptExecutions") + ";";
-
-        CachedRowSet cachedRowSet = getMetadataControl().getExecutionServerMetadataRepository().executeQuery(query, "reader");
-        while (cachedRowSet.next()) {
-            scriptExecutions.add(new ScriptExecution(new ScriptExecutionKey(
-                    cachedRowSet.getString("SCRIPT_EXEC_ID")),
+            CachedRowSet cachedRowSet = getMetadataControl().getExecutionServerMetadataRepository().executeQuery(query, "reader");
+            if (cachedRowSet.size() == 0) {
+                return Optional.empty();
+            } else if (cachedRowSet.size() > 1) {
+                LOGGER.warn(MessageFormat.format("Found multiple implementations for ScriptExecution {0}. Returning first implementation", scriptExecutionRequestKey.toString()));
+            }
+            cachedRowSet.next();
+            return Optional.of(new ScriptExecution(scriptExecutionRequestKey,
                     new ScriptExecutionRequestKey(cachedRowSet.getString("SCRPT_REQUEST_ID")),
                     cachedRowSet.getString("RUN_ID"),
                     ScriptExecutionStatus.valueOf(cachedRowSet.getString("ST_NM")),
                     SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("STRT_TMS")),
                     SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("END_TMS"))));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
-        return scriptExecutions;
     }
 
     @Override
-    public void delete(ScriptExecutionKey scriptExecutionKey) throws MetadataDoesNotExistException, SQLException {
+    public List<ScriptExecution> getAll() {
+        try {
+            List<ScriptExecution> scriptExecutions = new ArrayList<>();
+            String query = "SELECT SCRIPT_EXEC_ID, SCRPT_REQUEST_ID, RUN_ID, ST_NM, STRT_TMS, END_TMS FROM " + getMetadataControl().getExecutionServerMetadataRepository().getTableNameByLabel("ScriptExecutions") + ";";
+
+            CachedRowSet cachedRowSet = getMetadataControl().getExecutionServerMetadataRepository().executeQuery(query, "reader");
+            while (cachedRowSet.next()) {
+                scriptExecutions.add(new ScriptExecution(new ScriptExecutionKey(
+                        cachedRowSet.getString("SCRIPT_EXEC_ID")),
+                        new ScriptExecutionRequestKey(cachedRowSet.getString("SCRPT_REQUEST_ID")),
+                        cachedRowSet.getString("RUN_ID"),
+                        ScriptExecutionStatus.valueOf(cachedRowSet.getString("ST_NM")),
+                        SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("STRT_TMS")),
+                        SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("END_TMS"))));
+            }
+            return scriptExecutions;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void delete(ScriptExecutionKey scriptExecutionKey) throws MetadataDoesNotExistException {
         LOGGER.trace(MessageFormat.format("Deleting ScriptExecution {0}.", scriptExecutionKey.toString()));
         if (!exists(scriptExecutionKey)) {
             throw new ScriptExecutionRequestDoesNotExistException(MessageFormat.format(
@@ -89,7 +97,7 @@ public class ScriptExecutionConfiguration extends Configuration<ScriptExecution,
     }
 
     @Override
-    public void insert(ScriptExecution scriptExecutionRequest) throws MetadataAlreadyExistsException, SQLException {
+    public void insert(ScriptExecution scriptExecutionRequest) throws MetadataAlreadyExistsException {
         LOGGER.trace(MessageFormat.format("Inserting ScriptExecution {0}.", scriptExecutionRequest.toString()));
         if (exists(scriptExecutionRequest.getMetadataKey())) {
             throw new ScriptExecutionRequestAlreadyExistsException(MessageFormat.format(
@@ -110,26 +118,30 @@ public class ScriptExecutionConfiguration extends Configuration<ScriptExecution,
                 SQLTools.GetStringForSQL(scriptExecution.getEndTimestamp()) + ");";
     }
 
-    public List<ScriptExecution> getByScriptExecutionRequest(ScriptExecutionRequestKey scriptExecutionRequestKey) throws SQLException {
-        List<ScriptExecution> scriptExecutions = new ArrayList<>();
-        String query = "SELECT SCRIPT_EXEC_ID, SCRPT_REQUEST_ID, RUN_ID, ST_NM, STRT_TMS, END_TMS FROM " +
-                getMetadataControl().getExecutionServerMetadataRepository().getTableNameByLabel("ScriptExecutions") +
-                " WHERE SCRPT_REQUEST_ID = " + SQLTools.GetStringForSQL(scriptExecutionRequestKey.getId()) + ";";
+    public List<ScriptExecution> getByScriptExecutionRequest(ScriptExecutionRequestKey scriptExecutionRequestKey) {
+        try {
+            List<ScriptExecution> scriptExecutions = new ArrayList<>();
+            String query = "SELECT SCRIPT_EXEC_ID, SCRPT_REQUEST_ID, RUN_ID, ST_NM, STRT_TMS, END_TMS FROM " +
+                    getMetadataControl().getExecutionServerMetadataRepository().getTableNameByLabel("ScriptExecutions") +
+                    " WHERE SCRPT_REQUEST_ID = " + SQLTools.GetStringForSQL(scriptExecutionRequestKey.getId()) + ";";
 
-        CachedRowSet cachedRowSet = getMetadataControl().getExecutionServerMetadataRepository().executeQuery(query, "reader");
-        while (cachedRowSet.next()) {
-            scriptExecutions.add(new ScriptExecution(new ScriptExecutionKey(
-                    cachedRowSet.getString("SCRIPT_EXEC_ID")),
-                    scriptExecutionRequestKey,
-                    cachedRowSet.getString("RUN_ID"),
-                    ScriptExecutionStatus.valueOf(cachedRowSet.getString("ST_NM")),
-                    SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("STRT_TMS")),
-                    SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("END_TMS"))));
+            CachedRowSet cachedRowSet = getMetadataControl().getExecutionServerMetadataRepository().executeQuery(query, "reader");
+            while (cachedRowSet.next()) {
+                scriptExecutions.add(new ScriptExecution(new ScriptExecutionKey(
+                        cachedRowSet.getString("SCRIPT_EXEC_ID")),
+                        scriptExecutionRequestKey,
+                        cachedRowSet.getString("RUN_ID"),
+                        ScriptExecutionStatus.valueOf(cachedRowSet.getString("ST_NM")),
+                        SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("STRT_TMS")),
+                        SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("END_TMS"))));
+            }
+            return scriptExecutions;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
-        return scriptExecutions;
     }
 
-    public void deleteByScriptExecutionRequestKey(ScriptExecutionRequestKey scriptExecutionRequestKey) throws MetadataDoesNotExistException, SQLException {
+    public void deleteByScriptExecutionRequestKey(ScriptExecutionRequestKey scriptExecutionRequestKey) {
         LOGGER.trace(MessageFormat.format("Deleting ScriptExecution by ExecutionKey {0}.", scriptExecutionRequestKey.toString()));
         List<String> deleteStatement = deleteStatement(scriptExecutionRequestKey);
         getMetadataControl().getExecutionServerMetadataRepository().executeBatch(deleteStatement);

@@ -12,6 +12,7 @@ import io.metadew.iesi.script.operation.RouteOperation;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.sql.SQLException;
 import java.util.*;
 public class FwkRoute {
 
@@ -46,7 +47,7 @@ public class FwkRoute {
         this.setRouteOperationMap(new HashMap<String, RouteOperation>());
     }
 
-    public void prepare() {
+    public void prepare()  {
         // Reset Parameters
         this.setDestination(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "destination"));

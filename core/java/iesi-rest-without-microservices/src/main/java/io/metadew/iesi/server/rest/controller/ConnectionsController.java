@@ -62,7 +62,7 @@ public class ConnectionsController {
 	private ConnectionGlobalDtoResourceAssembler connectionGlobalDtoResourceAssembler;
 
 	@GetMapping("")
-	public HalMultipleEmbeddedResource<ConnectionGlobalDto> getAllConnections(@Valid ConnectionCriteria connectionCriteria) {
+	public HalMultipleEmbeddedResource<ConnectionGlobalDto> getAll(@Valid ConnectionCriteria connectionCriteria) {
 		List<Connection> connections = connectionConfiguration.getAll();
 		List<Connection> pagination = connectionPagination.search(connections, connectionCriteria);
 		return new HalMultipleEmbeddedResource<>(pagination.stream()
@@ -81,8 +81,7 @@ public class ConnectionsController {
 	}
 
 	@GetMapping("/{name}/{environment}")
-	public ConnectionDto getByNameandEnvironment(@PathVariable String name,
-																			@PathVariable String environment) {
+	public ConnectionDto get(@PathVariable String name, @PathVariable String environment) {
 		Optional<Connection> connection = connectionConfiguration.get(name, environment);
 		return connection
 				.map(connectionDtoResourceAssembler::toResource)
@@ -90,7 +89,7 @@ public class ConnectionsController {
 	}
 
 	@PostMapping("")
-	public ResponseEntity<ConnectionDto> postAllConnections(@Valid @RequestBody ConnectionDto connectionDto) {
+	public ResponseEntity<ConnectionDto> post(@Valid @RequestBody ConnectionDto connectionDto) {
 		getNullProperties.getNullConnection(connectionDto);
 		try {
 			connectionConfiguration.insert(connectionDto.convertToEntity());
@@ -103,7 +102,7 @@ public class ConnectionsController {
 	}
 
 	@PutMapping("")
-	public HalMultipleEmbeddedResource<ConnectionDto> putAllConnections(@Valid @RequestBody List<ConnectionDto> connectionDtos) {
+	public HalMultipleEmbeddedResource<ConnectionDto> putAll(@Valid @RequestBody List<ConnectionDto> connectionDtos) {
 		HalMultipleEmbeddedResource<ConnectionDto> halMultipleEmbeddedResource = new HalMultipleEmbeddedResource<>();
 		getListNullProperties.getNullConnection(connectionDtos);
 		for (ConnectionDto connectionDto : connectionDtos) {
@@ -111,7 +110,7 @@ public class ConnectionsController {
 				ConnectionDto updatedConnectionDto = convertToDto(connectionConfiguration.update(connectionDto.convertToEntity()));
 				halMultipleEmbeddedResource.embedResource(updatedConnectionDto);
 				halMultipleEmbeddedResource.add(linkTo(methodOn(ConnectionsController.class)
-						.getByNameandEnvironment(updatedConnectionDto.getName(), updatedConnectionDto.getEnvironment()))
+						.get(updatedConnectionDto.getName(), updatedConnectionDto.getEnvironment()))
 						.withRel(updatedConnectionDto.getName() + ":" + updatedConnectionDto.getEnvironment()));
 
 			} catch (ConnectionDoesNotExistException e) {
@@ -125,8 +124,7 @@ public class ConnectionsController {
 	}
 
 	@PutMapping("/{name}/{environment}")
-	public ConnectionDto putConnections(@PathVariable String name,
-																   @PathVariable String environment, @RequestBody ConnectionDto connectionDto) {
+	public ConnectionDto put(@PathVariable String name, @PathVariable String environment, @RequestBody ConnectionDto connectionDto) {
 		getNullProperties.getNullConnection(connectionDto);
 		if (!connectionDto.getName().equals(name) || !connectionDto.getEnvironment().equals(environment)) {
 			throw new DataBadRequestException(name);
@@ -143,7 +141,7 @@ public class ConnectionsController {
 	}
 
 	@DeleteMapping("")
-	public ResponseEntity<?> deleteAllConnections() {
+	public ResponseEntity<?> deleteAll() {
 		List<Connection> connections = connectionConfiguration.getAll();
 		if (!connections.isEmpty()) {
 			connectionConfiguration.deleteAll();
@@ -153,7 +151,7 @@ public class ConnectionsController {
 	}
 
 	@DeleteMapping("/{name}")
-	public ResponseEntity<?> deleteConnections(@PathVariable String name) {
+	public ResponseEntity<?> deleteByName(@PathVariable String name) {
 		List<Connection> connections = connectionConfiguration.getByName(name);
 		if (connections.isEmpty()) {
 			throw new DataNotFoundException(name);
@@ -168,8 +166,7 @@ public class ConnectionsController {
 	}
 
 	@DeleteMapping("/{name}/{environment}")
-	public ResponseEntity<?> deleteConnectionsandEnvironment(@PathVariable String name,
-			@PathVariable String environment) {
+	public ResponseEntity<?> delete(@PathVariable String name, @PathVariable String environment) {
 		Optional<Connection> connections = connectionConfiguration.get(name, environment);
 		if (!connections.isPresent()) {
 			throw new DataNotFoundException(name, environment);

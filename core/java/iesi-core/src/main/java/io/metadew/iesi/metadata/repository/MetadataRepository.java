@@ -1,44 +1,50 @@
 package io.metadew.iesi.metadata.repository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.metadew.iesi.framework.execution.FrameworkLog;
+import io.metadew.iesi.framework.configuration.FrameworkConfiguration;
+import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
 import io.metadew.iesi.metadata.definition.DataObject;
 import io.metadew.iesi.metadata.definition.MetadataObject;
 import io.metadew.iesi.metadata.definition.MetadataTable;
 import io.metadew.iesi.metadata.operation.DataObjectOperation;
 import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.File;
 import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 public abstract class MetadataRepository {
 
-	String frameworkCode;
+	// TODO: propagate SQLExcpetion
+	private final static Logger LOGGER = LogManager.getLogger();
+	private final String tablePrefix;
+
 	RepositoryCoordinator repositoryCoordinator;
 	String name;
 	String scope;
-	String instanceName;
 	private List<MetadataObject> metadataObjects;
 	private List<MetadataTable> metadataTables;
 
-	public MetadataRepository(String frameworkCode, String name, String scope, String instanceName,
-			RepositoryCoordinator repositoryCoordinator, String repositoryObjectsPath, String repositoryTablePath) {
-		this.frameworkCode = frameworkCode;
+	public MetadataRepository(String name, String scope, String instanceName,
+							  RepositoryCoordinator repositoryCoordinator) {
+		this.tablePrefix = FrameworkConfiguration.getInstance().getFrameworkCode().toUpperCase() + "_" + (instanceName != null ? instanceName + "_" : "");
 		this.name = name;
 		this.scope = scope;
-		this.instanceName = instanceName;
 		this.repositoryCoordinator = repositoryCoordinator;
 		metadataObjects = new ArrayList<>();
 		metadataTables = new ArrayList<>();
 
 		DataObjectOperation dataObjectOperation = new DataObjectOperation();
-		dataObjectOperation.setInputFile(repositoryObjectsPath + File.separator + getObjectDefinitionFileName());
+		dataObjectOperation.setInputFile(FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.def") + File.separator + getObjectDefinitionFileName());
 		dataObjectOperation.parseFile();
 		ObjectMapper objectMapper = new ObjectMapper();
 		//
@@ -49,14 +55,13 @@ public abstract class MetadataRepository {
 		}
 
 		dataObjectOperation = new DataObjectOperation();
-		dataObjectOperation.setInputFile(repositoryTablePath + File.separator + getDefinitionFileName());
+		dataObjectOperation.setInputFile(FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.def") + File.separator + getDefinitionFileName());
 		dataObjectOperation.parseFile();
 		//
 		for (DataObject dataObject : dataObjectOperation.getDataObjects()) {
 			if (dataObject.getType().equalsIgnoreCase("metadatatable")) {
 				MetadataTable metadataTable = objectMapper.convertValue(dataObject.getData(), MetadataTable.class);
-				// TODO: add prefix to MetadataTable definitions
-				metadataTable.setName(getTableNamePrefix() + metadataTable.getName());
+				metadataTable.setName(getTablePrefix() + metadataTable.getName());
 				metadataTables.add(metadataTable);
 			}
 		}
@@ -71,18 +76,8 @@ public abstract class MetadataRepository {
 
 	public abstract String getCategoryPrefix();
 
-	public String getTableNamePrefix() {
-		String frameworkCodeString = getFrameworkCode()
-				.map(frameworkCode -> frameworkCode.toUpperCase() + "_")
-				.orElse("");
-		String instanceNameString = getInstanceName()
-				.map(instanceName -> instanceName.toUpperCase() + "_")
-				.orElse("");
-		return frameworkCodeString + instanceNameString;
-	}
-
-	public Optional<String> getFrameworkCode() {
-		return Optional.ofNullable(frameworkCode);
+	public String getTablePrefix() {
+		return tablePrefix;
 	}
 
 	private void dropTable(MetadataTable metadataTable) {
@@ -101,18 +96,12 @@ public abstract class MetadataRepository {
 		metadataTables.forEach(this::cleanTable);
 	}
 
-	public void dropAllTables(FrameworkLog frameworkLog) {
-		metadataTables.forEach(this::dropTable);
-	}
-
 	// TODO: remove because security danger: query can target objects outside of
-	// repository responsibilities
 	public CachedRowSet executeQuery(String query, String logonType) {
 		return repositoryCoordinator.executeQuery(query, logonType);
 	}
 
 	// TODO: remove because security danger: query can target objects outside of
-	// repository responsibilities
 	public void executeUpdate(String query) {
 		repositoryCoordinator.executeUpdate(query);
 	}
@@ -122,13 +111,11 @@ public abstract class MetadataRepository {
 	}
 
 	// TODO: remove because security danger: query can target objects outside of
-	// repository responsibilities
 	public void executeScript(String fileName, String logonType) {
 		repositoryCoordinator.executeScript(fileName, logonType);
 	}
 
 	// TODO: remove because security danger: query can target objects outside of
-	// repository responsibilities
 	public void executeScript(InputStream inputStream, String logonType) {
 		repositoryCoordinator.executeScript(inputStream, logonType);
 	}
@@ -164,26 +151,9 @@ public abstract class MetadataRepository {
 						MessageFormat.format("No label {0} found for metadata repository {1}", label, getCategory())));
 	}
 
-	public String getName() {
-		return name;
-	}
-
-	public List<MetadataTable> getMetadataTables() {
-		return metadataTables;
-	}
-
-	public List<MetadataObject> getMetadataObjects() {
-		return metadataObjects;
-	}
-
-	public RepositoryCoordinator getRepository() {
-		return repositoryCoordinator;
-	}
-
-	private Optional<String> getInstanceName() {
-		return Optional.ofNullable(instanceName);
-	}
-
 	public abstract void save(DataObject dataObject) throws MetadataRepositorySaveException;
 
+	public void shutdown() {
+		repositoryCoordinator.shutdown();
+	}
 }

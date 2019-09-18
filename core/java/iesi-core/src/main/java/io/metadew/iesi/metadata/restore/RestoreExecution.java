@@ -11,6 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.InvocationTargetException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +23,7 @@ public class RestoreExecution {
 
 	// Constructors
 	public RestoreExecution() throws ClassNotFoundException, NoSuchMethodException, InstantiationException,
-			IllegalAccessException, InvocationTargetException {
+			IllegalAccessException, InvocationTargetException, SQLException {
 		//TODO:
 		// Create the framework instance
 		FrameworkInstance.getInstance().init(new FrameworkInitializationFile(), new FrameworkExecutionContext(new Context("restore", "")));

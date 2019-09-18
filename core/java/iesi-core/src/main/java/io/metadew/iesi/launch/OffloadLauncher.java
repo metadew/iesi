@@ -172,6 +172,7 @@ public class OffloadLauncher {
                         targetEnvironmentName, sqlStatement, name, cleanPrevious);
 
             }
+            FrameworkInstance.getInstance().shutdown();
 
             if (actionMatch) {
                 System.exit(0);

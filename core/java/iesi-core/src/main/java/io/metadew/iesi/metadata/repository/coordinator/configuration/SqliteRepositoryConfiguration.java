@@ -6,6 +6,7 @@ import io.metadew.iesi.connection.database.SqliteDatabase;
 import io.metadew.iesi.connection.database.connection.sqlite.SqliteDatabaseConnection;
 import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
 
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -27,7 +28,7 @@ public class SqliteRepositoryConfiguration extends RepositoryConfiguration {
     }
 
     @Override
-    public RepositoryCoordinator toRepository() {
+    public RepositoryCoordinator toRepository()  {
         Map<String, Database> databases = new HashMap<>();
         String actualJdbcConnectionString = "";
         if (getJdbcConnectionString().isPresent()) {

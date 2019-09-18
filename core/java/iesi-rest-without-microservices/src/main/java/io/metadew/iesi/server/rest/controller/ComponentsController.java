@@ -34,6 +34,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 @RestController
+@RequestMapping("/components")
 public class ComponentsController {
 
     private ComponentConfiguration componentConfiguration;
@@ -63,8 +64,8 @@ public class ComponentsController {
     }
 
 
-    @GetMapping("/components")
-    public HalMultipleEmbeddedResource<ComponentGlobalDto> getAllComponents(@Valid ComponentCriteria componentCriteria) {
+    @GetMapping("")
+    public HalMultipleEmbeddedResource<ComponentGlobalDto> getAll(@Valid ComponentCriteria componentCriteria) {
         List<Component> components = componentConfiguration.getAll();
         List<Component> pagination = componentPagination.search(components, componentCriteria);
         return new HalMultipleEmbeddedResource<>(pagination.stream()
@@ -74,7 +75,7 @@ public class ComponentsController {
     }
 
 
-    @GetMapping("/components/{name}")
+    @GetMapping("/{name}")
     public ComponentByNameDto getByName(@PathVariable String name) {
         List<Component> component = componentConfiguration.getByName(name);
         if (component.isEmpty()) {
@@ -83,16 +84,15 @@ public class ComponentsController {
         return componentGetByNameGetDtoAssembler.toResource(component);
     }
 
-    @GetMapping("/components/{name}/{version}")
-    public ComponentDto getComponentsAndVersion(@PathVariable String name,
-                                                @PathVariable Long version) {
+    @GetMapping("/{name}/{version}")
+    public ComponentDto get(@PathVariable String name, @PathVariable Long version) {
         Component component = componentConfiguration.get(name, version).
                 orElseThrow(() -> new DataNotFoundException(name, version));
         return componentDtoResourceAssembler.toResource(component);
     }
 
-    @PostMapping("/components")
-    public ComponentDto postComponents(@Valid @RequestBody ComponentDto component) {
+    @PostMapping("/")
+    public ComponentDto post(@Valid @RequestBody ComponentDto component) {
         getNullProperties.getNullComponent(component);
         try {
             componentConfiguration.insert(component.convertToEntity());
@@ -106,8 +106,8 @@ public class ComponentsController {
     }
 
 
-    @PutMapping("/components")
-    public HalMultipleEmbeddedResource<ComponentDto> putAllConnections(@Valid @RequestBody List<ComponentDto> componentDtos) {
+    @PutMapping("/")
+    public HalMultipleEmbeddedResource<ComponentDto> putAll(@Valid @RequestBody List<ComponentDto> componentDtos) {
         HalMultipleEmbeddedResource<ComponentDto> halMultipleEmbeddedResource = new HalMultipleEmbeddedResource<>();
         getListNullProperties.getNullComponent(componentDtos);
         for (ComponentDto componentDto : componentDtos) {
@@ -115,9 +115,9 @@ public class ComponentsController {
                 componentConfiguration.update(componentDto.convertToEntity());
                 halMultipleEmbeddedResource.embedResource(componentDto);
                 halMultipleEmbeddedResource.add(linkTo(methodOn(ComponentsController.class)
-                        .getComponentsAndVersion(componentDto.getName(), componentDto.getVersion().getNumber()))
+                        .get(componentDto.getName(), componentDto.getVersion().getNumber()))
                         .withRel(componentDto.getName() + ":" + componentDto.getVersion().getNumber()));
-            } catch (ComponentDoesNotExistException e) {
+            } catch (ComponentDoesNotExistException | SQLException e) {
                 e.printStackTrace();
                 throw new DataNotFoundException(componentDto.getName());
             }
@@ -126,9 +126,8 @@ public class ComponentsController {
         return halMultipleEmbeddedResource;
     }
 
-    @PutMapping("/components/{name}/{version}")
-    public ComponentDto putComponents(@PathVariable String name, @PathVariable Long version,
-                                      @RequestBody ComponentDto component) {
+    @PutMapping("/{name}/{version}")
+    public ComponentDto put(@PathVariable String name, @PathVariable Long version, @RequestBody ComponentDto component) {
         if (!component.getName().equals(name)) {
             throw new DataBadRequestException(name);
         } else if (!componentConfiguration.get(name, version).isPresent()) {
@@ -138,21 +137,21 @@ public class ComponentsController {
         try {
             componentConfiguration.update(component.convertToEntity());
             return componentDtoResourceAssembler.toResource(component.convertToEntity());
-        } catch (ComponentDoesNotExistException e) {
+        } catch (ComponentDoesNotExistException | SQLException e) {
             e.printStackTrace();
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
 
     }
 
-    @DeleteMapping("/components")
-    public ResponseEntity<?> deleteAllComponents() {
+    @DeleteMapping("/")
+    public ResponseEntity<?> deleteAll() {
         componentConfiguration.deleteAll();
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
-    @DeleteMapping("/components/{name}")
-    public ResponseEntity<?> deleteComponentByName(@PathVariable String name) {
+    @DeleteMapping("/{name}")
+    public ResponseEntity<?> deleteByName(@PathVariable String name) {
         List<Component> components = componentConfiguration.getByName(name);
         if (components.isEmpty()) {
             throw new DataNotFoundException(name);
@@ -166,8 +165,8 @@ public class ComponentsController {
         }
     }
 
-    @DeleteMapping("/components/{name}/{version}")
-    public ResponseEntity<?> deleteComponentsAndVersion(@PathVariable String name, @PathVariable Long version) {
+    @DeleteMapping("/{name}/{version}")
+    public ResponseEntity<?> deleteC(@PathVariable String name, @PathVariable Long version) {
         Component component = componentConfiguration.get(name, version)
                 .orElseThrow(() -> new DataNotFoundException(name, version));
         try {

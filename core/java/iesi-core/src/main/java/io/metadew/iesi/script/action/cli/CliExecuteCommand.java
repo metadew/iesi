@@ -19,6 +19,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.HashMap;
 
@@ -78,27 +79,27 @@ public class CliExecuteCommand {
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
             if (actionParameter.getName().equalsIgnoreCase("path")) {
-                this.getShellPath().setInputValue(actionParameter.getValue());
+                shellPath.setInputValue(actionParameter.getValue());
             } else if (actionParameter.getName().equalsIgnoreCase("command")) {
-                this.getShellCommand().setInputValue(actionParameter.getValue());
+                shellCommand.setInputValue(actionParameter.getValue());
             } else if (actionParameter.getName().equalsIgnoreCase("setruntimevariables")) {
-                this.getSetRunVar().setInputValue(actionParameter.getValue());
+                setRunVar.setInputValue(actionParameter.getValue());
             } else if (actionParameter.getName().equalsIgnoreCase("setruntimevariablesprefix")) {
-                this.getSetRunVarPrefix().setInputValue(actionParameter.getValue());
+                setRunVarPrefix.setInputValue(actionParameter.getValue());
             } else if (actionParameter.getName().equalsIgnoreCase("setruntimevariablesmode")) {
-                this.getSetRunVarMode().setInputValue(actionParameter.getValue());
+                setRunVarMode.setInputValue(actionParameter.getValue());
             } else if (actionParameter.getName().equalsIgnoreCase("connection")) {
-                this.getConnectionName().setInputValue(actionParameter.getValue());
+                connectionName.setInputValue(actionParameter.getValue());
             }
         }
 
         // Create parameter list
-        this.getActionParameterOperationMap().put("path", this.getShellPath());
-        this.getActionParameterOperationMap().put("command", this.getShellCommand());
+        this.getActionParameterOperationMap().put("path", shellPath);
+        this.getActionParameterOperationMap().put("command", shellCommand);
         this.getActionParameterOperationMap().put("setRuntimeVariables", this.getSetRunVar());
         this.getActionParameterOperationMap().put("setRuntimeVariablesPrefix", this.getSetRunVarPrefix());
         this.getActionParameterOperationMap().put("setRuntimeVariablesMode", this.getSetRunVarMode());
-        this.getActionParameterOperationMap().put("connection", this.getConnectionName());
+        this.getActionParameterOperationMap().put("connection", connectionName);
     }
 
     // Methods
@@ -125,7 +126,7 @@ public class CliExecuteCommand {
 
     }
 
-    private boolean executeCommand(String shellPath, String shellCommand, boolean settingRuntimeVariables, String settingRuntimeVariablesPrefix, String settingRuntimeVariablesMode, String connectionName) {
+    private boolean executeCommand(String shellPath, String shellCommand, boolean settingRuntimeVariables, String settingRuntimeVariablesPrefix, String settingRuntimeVariablesMode, String connectionName) throws SQLException {
         // Get Connection
         boolean isOnLocalhost = HostConnectionTools.isOnLocalhost(
                 connectionName, this.getExecutionControl().getEnvName());
@@ -160,8 +161,7 @@ public class CliExecuteCommand {
 
         // Set runtime variables
         if (settingRuntimeVariables) {
-            this.getExecutionControl().getExecutionRuntime()
-                    .setRuntimeVariables(this.getActionExecution(), shellCommandResult.getRuntimeVariablesOutput());
+            this.getExecutionControl().getExecutionRuntime().setRuntimeVariables(this.getActionExecution(), shellCommandResult.getRuntimeVariablesOutput());
         }
 
         if (shellCommandResult.getReturnCode() == 0) {

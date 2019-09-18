@@ -4,6 +4,8 @@ import io.metadew.iesi.framework.crypto.FrameworkCrypto;
 import io.metadew.iesi.runtime.definition.LookupResult;
 import io.metadew.iesi.script.execution.ExecutionControl;
 
+import java.sql.SQLException;
+
 public class RepositoryParameterOperation {
 
     private ExecutionControl executionControl;
@@ -19,7 +21,7 @@ public class RepositoryParameterOperation {
     }
 
     public RepositoryParameterOperation(ExecutionControl executionControl,
-                                        String name, String value) {
+                                        String name, String value)  {
         this.setExecutionControl(executionControl);
         this.setName(name);
 
@@ -39,7 +41,7 @@ public class RepositoryParameterOperation {
         return value;
     }
 
-    public void setValue(String value) {
+    public void setValue(String value)  {
         this.value = this.getExecutionControl().getExecutionRuntime().resolveVariables(value);
     }
 
@@ -47,7 +49,7 @@ public class RepositoryParameterOperation {
         return inputValue;
     }
 
-    public void setInputValue(String inputValue) {
+    public void setInputValue(String inputValue)  {
         this.inputValue = inputValue;
         this.setValue(inputValue);
 

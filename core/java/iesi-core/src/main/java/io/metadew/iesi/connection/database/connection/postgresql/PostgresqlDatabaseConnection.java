@@ -25,22 +25,22 @@ public class PostgresqlDatabaseConnection extends DatabaseConnection {
         super(type, getConnectionUrl(hostName, portNumber, databaseName), userName, userPassword);
     }
 
-	public static String getConnectionUrl(String hostName, int portNumber, String databaseName) {
-		StringBuilder connectionUrl = new StringBuilder();
-		connectionUrl.append("jdbc:postgresql://");
-		connectionUrl.append(hostName);
-		if (portNumber > 0) {
-			connectionUrl.append(":");
-			connectionUrl.append(portNumber);
-		}
+    public static String getConnectionUrl(String hostName, int portNumber, String databaseName) {
+        StringBuilder connectionUrl = new StringBuilder();
+        connectionUrl.append("jdbc:postgresql://");
+        connectionUrl.append(hostName);
+        if (portNumber > 0) {
+            connectionUrl.append(":");
+            connectionUrl.append(portNumber);
+        }
 
-		if (!databaseName.isEmpty()) {
-			connectionUrl.append("/");
-			connectionUrl.append(databaseName);
-		}
+        if (!databaseName.isEmpty()) {
+            connectionUrl.append("/");
+            connectionUrl.append(databaseName);
+        }
 
-		return connectionUrl.toString();
-	}
+        return connectionUrl.toString();
+    }
 
     @Override
     public String getDriver() {
@@ -55,12 +55,16 @@ public class PostgresqlDatabaseConnection extends DatabaseConnection {
         this.schema = schema;
     }
 
-    public Connection getConnection() throws SQLException {
-        Connection connection = super.getConnection();
-        Optional<String> schema = getSchema();
-        if (schema.isPresent()) {
-            connection.setSchema(schema.get());
+    public Connection getConnection() {
+        try {
+            Connection connection = super.getConnection();
+            Optional<String> schema = getSchema();
+            if (schema.isPresent()) {
+                connection.setSchema(schema.get());
+            }
+            return connection;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
-        return connection;
     }
 }

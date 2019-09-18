@@ -14,6 +14,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.InvocationTargetException;
+import java.sql.SQLException;
 
 /**
  * The generation launcher is entry point to launch all data generation scripts.
@@ -23,7 +24,7 @@ import java.lang.reflect.InvocationTargetException;
 public class GenerationLauncher {
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	public static void main(String[] args) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+	public static void main(String[] args) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, SQLException {
 		
 		Option oHelp = new Option("help", "print this message");
 		Option oIni = new Option("ini", true, "define the initialization file");
@@ -172,5 +173,6 @@ public class GenerationLauncher {
 
 		// Execute the generation
 		eoGeneration.execute(outputName);
+		FrameworkInstance.getInstance().shutdown();
 	}
 }

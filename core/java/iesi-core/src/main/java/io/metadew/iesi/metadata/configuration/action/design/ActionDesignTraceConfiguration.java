@@ -28,44 +28,22 @@ public class ActionDesignTraceConfiguration extends Configuration<ActionDesignTr
 
 
     @Override
-    public Optional<ActionDesignTrace> get(ActionDesignTraceKey actionDesignTraceKey) throws SQLException {
-        String query = "SELECT ACTION_NB, ACTION_TYP_NM, ACTION_NM, ACTION_DSC, COMP_NM, ITERATION_VAL, CONDITION_VAL, RETRIES_VAL, EXP_ERR_FL, STOP_ERR_FL FROM " +
-                getMetadataControl().getTraceMetadataRepository().getTableNameByLabel("ActionDesignTraces") +
-                " WHERE " +
-                " RUN_ID = " + SQLTools.GetStringForSQL(actionDesignTraceKey.getRunId()) + " AND " +
-                " PRC_ID = "  + SQLTools.GetStringForSQL(actionDesignTraceKey.getProcessId()) + " AND " +
-                " ACTION_ID = " + SQLTools.GetStringForSQL(actionDesignTraceKey.getActionId()) + ";";
-        CachedRowSet cachedRowSet = getMetadataControl().getTraceMetadataRepository().executeQuery(query, "reader");
-        if (cachedRowSet.size() == 0) {
-            return Optional.empty();
-        } else if (cachedRowSet.size() > 1) {
-            LOGGER.info(MessageFormat.format("Found multiple implementations for ActionDesignTrace {0}. Returning first implementation", actionDesignTraceKey.toString()));
-        }
-        cachedRowSet.next();
-        return Optional.of(new ActionDesignTrace(actionDesignTraceKey,
-                cachedRowSet.getLong("ACTION_NB"),
-                cachedRowSet.getString("ACTION_TYP_NM"),
-                cachedRowSet.getString("ACTION_NM"),
-                cachedRowSet.getString("ACTION_DSC"),
-                cachedRowSet.getString("COMP_NM"),
-                cachedRowSet.getString("ITERATION_VAL"),
-                cachedRowSet.getString("CONDITION_VAL"),
-                cachedRowSet.getInt("RETRIES_VAL"),
-                cachedRowSet.getString("EXP_ERR_FL"),
-                cachedRowSet.getString("STOP_ERR_FL")));
-    }
-
-    @Override
-    public List<ActionDesignTrace> getAll() throws SQLException {
-        List<ActionDesignTrace> actionDesignTraces = new ArrayList<>();
-        String query = "SELECT RUN_ID, PRC_ID, ACTION_ID, ACTION_NB, ACTION_TYP_NM, ACTION_NM, ACTION_DSC, COMP_NM, ITERATION_VAL, CONDITION_VAL, RETRIES_VAL, EXP_ERR_FL, STOP_ERR_FL FROM " +
-                getMetadataControl().getTraceMetadataRepository().getTableNameByLabel("ActionDesignTraces") + ";";
-        CachedRowSet cachedRowSet = getMetadataControl().getTraceMetadataRepository().executeQuery(query, "reader");
-        while (cachedRowSet.next()) {
-            actionDesignTraces.add(new ActionDesignTrace(new ActionDesignTraceKey(
-                    cachedRowSet.getString("RUN_ID"),
-                    cachedRowSet.getLong("PRC_ID"),
-                    cachedRowSet.getString("ACTION_ID")),
+    public Optional<ActionDesignTrace> get(ActionDesignTraceKey actionDesignTraceKey) {
+        try {
+            String query = "SELECT ACTION_NB, ACTION_TYP_NM, ACTION_NM, ACTION_DSC, COMP_NM, ITERATION_VAL, CONDITION_VAL, RETRIES_VAL, EXP_ERR_FL, STOP_ERR_FL FROM " +
+                    getMetadataControl().getTraceMetadataRepository().getTableNameByLabel("ActionDesignTraces") +
+                    " WHERE " +
+                    " RUN_ID = " + SQLTools.GetStringForSQL(actionDesignTraceKey.getRunId()) + " AND " +
+                    " PRC_ID = " + SQLTools.GetStringForSQL(actionDesignTraceKey.getProcessId()) + " AND " +
+                    " ACTION_ID = " + SQLTools.GetStringForSQL(actionDesignTraceKey.getActionId()) + ";";
+            CachedRowSet cachedRowSet = getMetadataControl().getTraceMetadataRepository().executeQuery(query, "reader");
+            if (cachedRowSet.size() == 0) {
+                return Optional.empty();
+            } else if (cachedRowSet.size() > 1) {
+                LOGGER.info(MessageFormat.format("Found multiple implementations for ActionDesignTrace {0}. Returning first implementation", actionDesignTraceKey.toString()));
+            }
+            cachedRowSet.next();
+            return Optional.of(new ActionDesignTrace(actionDesignTraceKey,
                     cachedRowSet.getLong("ACTION_NB"),
                     cachedRowSet.getString("ACTION_TYP_NM"),
                     cachedRowSet.getString("ACTION_NM"),
@@ -76,12 +54,42 @@ public class ActionDesignTraceConfiguration extends Configuration<ActionDesignTr
                     cachedRowSet.getInt("RETRIES_VAL"),
                     cachedRowSet.getString("EXP_ERR_FL"),
                     cachedRowSet.getString("STOP_ERR_FL")));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
-        return actionDesignTraces;
     }
 
     @Override
-    public void delete(ActionDesignTraceKey actionDesignTraceKey) throws MetadataDoesNotExistException, SQLException {
+    public List<ActionDesignTrace> getAll() {
+        try {
+            List<ActionDesignTrace> actionDesignTraces = new ArrayList<>();
+            String query = "SELECT RUN_ID, PRC_ID, ACTION_ID, ACTION_NB, ACTION_TYP_NM, ACTION_NM, ACTION_DSC, COMP_NM, ITERATION_VAL, CONDITION_VAL, RETRIES_VAL, EXP_ERR_FL, STOP_ERR_FL FROM " +
+                    getMetadataControl().getTraceMetadataRepository().getTableNameByLabel("ActionDesignTraces") + ";";
+            CachedRowSet cachedRowSet = getMetadataControl().getTraceMetadataRepository().executeQuery(query, "reader");
+            while (cachedRowSet.next()) {
+                actionDesignTraces.add(new ActionDesignTrace(new ActionDesignTraceKey(
+                        cachedRowSet.getString("RUN_ID"),
+                        cachedRowSet.getLong("PRC_ID"),
+                        cachedRowSet.getString("ACTION_ID")),
+                        cachedRowSet.getLong("ACTION_NB"),
+                        cachedRowSet.getString("ACTION_TYP_NM"),
+                        cachedRowSet.getString("ACTION_NM"),
+                        cachedRowSet.getString("ACTION_DSC"),
+                        cachedRowSet.getString("COMP_NM"),
+                        cachedRowSet.getString("ITERATION_VAL"),
+                        cachedRowSet.getString("CONDITION_VAL"),
+                        cachedRowSet.getInt("RETRIES_VAL"),
+                        cachedRowSet.getString("EXP_ERR_FL"),
+                        cachedRowSet.getString("STOP_ERR_FL")));
+            }
+            return actionDesignTraces;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void delete(ActionDesignTraceKey actionDesignTraceKey) throws MetadataDoesNotExistException {
         LOGGER.trace(MessageFormat.format("Deleting ActionDesignTrace {0}.", actionDesignTraceKey.toString()));
         if (!exists(actionDesignTraceKey)) {
             throw new ActionDesignTraceDoesNotExistException(MessageFormat.format(
@@ -95,12 +103,12 @@ public class ActionDesignTraceConfiguration extends Configuration<ActionDesignTr
         return "DELETE FROM " + getMetadataControl().getTraceMetadataRepository().getTableNameByLabel("ActionDesignTraces") +
                 " WHERE " +
                 " RUN_ID = " + SQLTools.GetStringForSQL(actionDesignTraceKey.getRunId()) + " AND " +
-                " PRC_ID = "  + SQLTools.GetStringForSQL(actionDesignTraceKey.getProcessId()) + " AND " +
+                " PRC_ID = " + SQLTools.GetStringForSQL(actionDesignTraceKey.getProcessId()) + " AND " +
                 " ACTION_ID = " + SQLTools.GetStringForSQL(actionDesignTraceKey.getActionId()) + ";";
     }
 
     @Override
-    public void insert(ActionDesignTrace actionDesignTrace) throws MetadataAlreadyExistsException, SQLException {
+    public void insert(ActionDesignTrace actionDesignTrace) throws MetadataAlreadyExistsException {
         LOGGER.trace(MessageFormat.format("Inserting ActionDesignTrace {0}.", actionDesignTrace.toString()));
         if (exists(actionDesignTrace.getMetadataKey())) {
             throw new ActionDesignTraceAlreadyExistsException(MessageFormat.format(
@@ -109,6 +117,7 @@ public class ActionDesignTraceConfiguration extends Configuration<ActionDesignTr
         String insertStatement = insertStatement(actionDesignTrace);
         getMetadataControl().getTraceMetadataRepository().executeUpdate(insertStatement);
     }
+
     private String insertStatement(ActionDesignTrace actionDesignTrace) {
         return "INSERT INTO " + getMetadataControl().getTraceMetadataRepository().getTableNameByLabel("ActionDesignTraces") +
                 " (RUN_ID, PRC_ID, ACTION_ID, ACTION_NB, ACTION_TYP_NM, ACTION_NM," +

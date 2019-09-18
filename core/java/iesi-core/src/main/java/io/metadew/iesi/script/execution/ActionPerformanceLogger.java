@@ -21,7 +21,7 @@ public class ActionPerformanceLogger {
         try {
             configuration.insert(new ActionPerformance(new ActionPerformanceKey(actionExecution.getExecutionControl().getRunId(), actionExecution.getProcessId(), actionExecution.getAction().getId(), scope),
                     actionExecution.getExecutionControl().getEnvName(), startTimestamp, endTimestalmp, (double) Duration.between(startTimestamp, endTimestalmp).toMillis()));
-        } catch (SQLException | ActionPerformanceAlreadyExistsException e) {
+        } catch (ActionPerformanceAlreadyExistsException e) {
             e.printStackTrace();
         }
     }

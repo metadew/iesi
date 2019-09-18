@@ -4,6 +4,8 @@ import io.metadew.iesi.common.config.ConfigFile;
 import io.metadew.iesi.framework.configuration.FrameworkSettingConfiguration;
 import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
 
+import java.sql.SQLException;
+
 public abstract class RepositoryConfiguration {
 	
     RepositoryConfiguration(ConfigFile configFile) {

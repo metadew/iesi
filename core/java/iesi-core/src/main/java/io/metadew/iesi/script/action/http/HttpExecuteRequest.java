@@ -144,7 +144,7 @@ public class HttpExecuteRequest {
         if (getOutputDataset().isPresent()) {
             List<String> labels = new ArrayList<>(outputDataset.getLabels());
             labels.add("typed");
-            rawOutputDataset = new KeyValueDataset(outputDataset.getName(), labels, executionControl.getExecutionRuntime());
+            rawOutputDataset = new KeyValueDataset(outputDataset.getName(), labels);
         }
 
     }

@@ -33,86 +33,35 @@ public class ScriptExecutionRequestConfiguration extends Configuration<ScriptExe
 
 
     @Override
-    public Optional<ScriptExecutionRequest> get(ScriptExecutionRequestKey scriptExecutionRequestKey) throws SQLException {
-        String query = "SELECT SCRIPT_EXEC_REQ.SCRPT_REQUEST_ID, SCRIPT_EXEC_REQ.EXEC_REQUEST_ID, SCRIPT_EXEC_REQ.EXIT, SCRIPT_EXEC_REQ.IMPERSONATION, " +
-                "SCRIPT_EXEC_REQ.ENVIRONMENT, SCRIPT_EXEC_REQ.PARAMETERS, SCRIPT_EXEC_REQ.IMPERSONATIONS, SCRIPT_EXEC_REQ.ST_NM, " +
-                "SCRIPT_FILE_EXEC_REQ.SCRPT_FILENAME, " +
-                "SCRIPT_NAME_EXEC_REQ.SCRPT_NAME, SCRIPT_NAME_EXEC_REQ.SCRPT_VRS, " +
-                // Replace with case in case of Spring
-                // "CASE WHEN AUTH_EXECUTION_REQUEST.REQUEST_ID IS NOT NULL THEN 1 " +
-                // "WHEN NON_AUTH_EXECUTION_REQUEST.REQUEST_ID IS NOT NULL THEN 2 " +
-                // "WHEN EXECUTION_REQUEST.REQUEST_ID IS NOT NULL THEN 0 " +
-                // "END AS clazz " +
-                "SCRIPT_FILE_EXEC_REQ.SCRPT_REQUEST_ID AS FILE, " +
-                "SCRIPT_NAME_EXEC_REQ.SCRPT_REQUEST_ID AS NAME " +
-                "FROM " + getMetadataControl().getExecutionServerMetadataRepository().getTableNameByLabel("ScriptExecutionRequests") + " SCRIPT_EXEC_REQ " +
-                "LEFT OUTER JOIN " + getMetadataControl().getExecutionServerMetadataRepository().getTableNameByLabel("ScriptFileExecutionRequests") + " SCRIPT_FILE_EXEC_REQ " +
-                "ON SCRIPT_EXEC_REQ.SCRPT_REQUEST_ID = SCRIPT_FILE_EXEC_REQ.SCRPT_REQUEST_ID AND SCRIPT_EXEC_REQ.EXEC_REQUEST_ID = SCRIPT_FILE_EXEC_REQ.EXEC_REQUEST_ID " +
-                "LEFT OUTER JOIN " + getMetadataControl().getExecutionServerMetadataRepository().getTableNameByLabel("ScriptNameExecutionRequests") + " SCRIPT_NAME_EXEC_REQ " +
-                "ON SCRIPT_EXEC_REQ.SCRPT_REQUEST_ID = SCRIPT_NAME_EXEC_REQ.SCRPT_REQUEST_ID AND SCRIPT_EXEC_REQ.EXEC_REQUEST_ID = SCRIPT_NAME_EXEC_REQ.EXEC_REQUEST_ID " +
-                "WHERE SCRIPT_EXEC_REQ.SCRPT_REQUEST_ID = " + SQLTools.GetStringForSQL(scriptExecutionRequestKey.getId()) + ";";
+    public Optional<ScriptExecutionRequest> get(ScriptExecutionRequestKey scriptExecutionRequestKey) {
+        try {
+            String query = "SELECT SCRIPT_EXEC_REQ.SCRPT_REQUEST_ID, SCRIPT_EXEC_REQ.EXEC_REQUEST_ID, SCRIPT_EXEC_REQ.EXIT, SCRIPT_EXEC_REQ.IMPERSONATION, " +
+                    "SCRIPT_EXEC_REQ.ENVIRONMENT, SCRIPT_EXEC_REQ.PARAMETERS, SCRIPT_EXEC_REQ.IMPERSONATIONS, SCRIPT_EXEC_REQ.ST_NM, " +
+                    "SCRIPT_FILE_EXEC_REQ.SCRPT_FILENAME, " +
+                    "SCRIPT_NAME_EXEC_REQ.SCRPT_NAME, SCRIPT_NAME_EXEC_REQ.SCRPT_VRS, " +
+                    // Replace with case in case of Spring
+                    // "CASE WHEN AUTH_EXECUTION_REQUEST.REQUEST_ID IS NOT NULL THEN 1 " +
+                    // "WHEN NON_AUTH_EXECUTION_REQUEST.REQUEST_ID IS NOT NULL THEN 2 " +
+                    // "WHEN EXECUTION_REQUEST.REQUEST_ID IS NOT NULL THEN 0 " +
+                    // "END AS clazz " +
+                    "SCRIPT_FILE_EXEC_REQ.SCRPT_REQUEST_ID AS FILE, " +
+                    "SCRIPT_NAME_EXEC_REQ.SCRPT_REQUEST_ID AS NAME " +
+                    "FROM " + getMetadataControl().getExecutionServerMetadataRepository().getTableNameByLabel("ScriptExecutionRequests") + " SCRIPT_EXEC_REQ " +
+                    "LEFT OUTER JOIN " + getMetadataControl().getExecutionServerMetadataRepository().getTableNameByLabel("ScriptFileExecutionRequests") + " SCRIPT_FILE_EXEC_REQ " +
+                    "ON SCRIPT_EXEC_REQ.SCRPT_REQUEST_ID = SCRIPT_FILE_EXEC_REQ.SCRPT_REQUEST_ID AND SCRIPT_EXEC_REQ.EXEC_REQUEST_ID = SCRIPT_FILE_EXEC_REQ.EXEC_REQUEST_ID " +
+                    "LEFT OUTER JOIN " + getMetadataControl().getExecutionServerMetadataRepository().getTableNameByLabel("ScriptNameExecutionRequests") + " SCRIPT_NAME_EXEC_REQ " +
+                    "ON SCRIPT_EXEC_REQ.SCRPT_REQUEST_ID = SCRIPT_NAME_EXEC_REQ.SCRPT_REQUEST_ID AND SCRIPT_EXEC_REQ.EXEC_REQUEST_ID = SCRIPT_NAME_EXEC_REQ.EXEC_REQUEST_ID " +
+                    "WHERE SCRIPT_EXEC_REQ.SCRPT_REQUEST_ID = " + SQLTools.GetStringForSQL(scriptExecutionRequestKey.getId()) + ";";
 
-        CachedRowSet cachedRowSet = getMetadataControl().getExecutionServerMetadataRepository().executeQuery(query, "reader");
-        if (cachedRowSet.size() == 0) {
-            return Optional.empty();
-        } else if (cachedRowSet.size() > 1) {
-            LOGGER.warn(MessageFormat.format("Found multiple implementations for ScriptExecutionRequest {0}. Returning first implementation", scriptExecutionRequestKey.toString()));
-        }
-        cachedRowSet.next();
-        if (cachedRowSet.getString("FILE") != null) {
-            return Optional.of(new ScriptFileExecutionRequest(scriptExecutionRequestKey,
-                    new ExecutionRequestKey(cachedRowSet.getString("EXEC_REQUEST_ID")),
-                    cachedRowSet.getString("SCRPT_FILENAME"),
-                    cachedRowSet.getString("ENVIRONMENT"),
-                    new ArrayList<>(),
-                    SQLTools.getBooleanFromSql(cachedRowSet.getString("EXIT")),
-                    cachedRowSet.getString("IMPERSONATION"),
-                    SQLTools.getMapFromSql(cachedRowSet.getString("IMPERSONATIONS")),
-                    SQLTools.getMapFromSql(cachedRowSet.getString("PARAMETERS")), ScriptExecutionRequestStatus.valueOf(cachedRowSet.getString("ST_NM"))));
-        } else if (cachedRowSet.getString("NAME") != null) {
-            return Optional.of(new ScriptNameExecutionRequest(scriptExecutionRequestKey,
-                    new ExecutionRequestKey(cachedRowSet.getString("EXEC_REQUEST_ID")),
-                    cachedRowSet.getString("SCRPT_NAME"),
-                    cachedRowSet.getLong("SCRPT_VRS"),
-                    cachedRowSet.getString("ENVIRONMENT"),
-                    new ArrayList<>(),
-                    SQLTools.getBooleanFromSql(cachedRowSet.getString("EXIT")),
-                    cachedRowSet.getString("IMPERSONATION"),
-                    SQLTools.getMapFromSql(cachedRowSet.getString("IMPERSONATIONS")),
-                    SQLTools.getMapFromSql(cachedRowSet.getString("PARAMETERS")), ScriptExecutionRequestStatus.valueOf(cachedRowSet.getString("ST_NM"))));
-        } else {
-            LOGGER.warn(MessageFormat.format("ScriptExecutionRequest {0} does not have a certain class", scriptExecutionRequestKey.toString()));
-            return Optional.empty();
-
-        }
-    }
-
-    @Override
-    public List<ScriptExecutionRequest> getAll() throws SQLException {
-        List<ScriptExecutionRequest> scriptExecutionRequests = new ArrayList<>();
-        String query = "SELECT SCRIPT_EXEC_REQ.SCRPT_REQUEST_ID, SCRIPT_EXEC_REQ.EXEC_REQUEST_ID, SCRIPT_EXEC_REQ.EXIT, SCRIPT_EXEC_REQ.IMPERSONATION, " +
-                "SCRIPT_EXEC_REQ.ENVIRONMENT, SCRIPT_EXEC_REQ.PARAMETERS, SCRIPT_EXEC_REQ.IMPERSONATIONS, SCRIPT_EXEC_REQ.ST_NM, SCRIPT_EXEC_REQ.ST_NM, " +
-                "SCRIPT_FILE_EXEC_REQ.SCRPT_FILENAME, " +
-                "SCRIPT_NAME_EXEC_REQ.SCRPT_NAME, SCRIPT_NAME_EXEC_REQ.SCRPT_VRS, " +
-                // Replace with case in case of Spring
-                // "CASE WHEN AUTH_EXECUTION_REQUEST.REQUEST_ID IS NOT NULL THEN 1 " +
-                // "WHEN NON_AUTH_EXECUTION_REQUEST.REQUEST_ID IS NOT NULL THEN 2 " +
-                // "WHEN EXECUTION_REQUEST.REQUEST_ID IS NOT NULL THEN 0 " +
-                // "END AS clazz " +
-                "SCRIPT_FILE_EXEC_REQ.SCRPT_REQUEST_ID AS FILE, " +
-                "SCRIPT_NAME_EXEC_REQ.SCRPT_REQUEST_ID AS NAME " +
-                "FROM " + getMetadataControl().getExecutionServerMetadataRepository().getTableNameByLabel("ScriptExecutionRequests") + " SCRIPT_EXEC_REQ " +
-                "LEFT OUTER JOIN " + getMetadataControl().getExecutionServerMetadataRepository().getTableNameByLabel("ScriptFileExecutionRequests") + " SCRIPT_FILE_EXEC_REQ " +
-                "ON SCRIPT_EXEC_REQ.SCRPT_REQUEST_ID = SCRIPT_FILE_EXEC_REQ.SCRPT_REQUEST_ID AND SCRIPT_EXEC_REQ.EXEC_REQUEST_ID = SCRIPT_FILE_EXEC_REQ.EXEC_REQUEST_ID " +
-                "LEFT OUTER JOIN " + getMetadataControl().getExecutionServerMetadataRepository().getTableNameByLabel("ScriptNameExecutionRequests") + " SCRIPT_NAME_EXEC_REQ " +
-                "ON SCRIPT_EXEC_REQ.SCRPT_REQUEST_ID = SCRIPT_NAME_EXEC_REQ.SCRPT_REQUEST_ID AND SCRIPT_EXEC_REQ.EXEC_REQUEST_ID = SCRIPT_NAME_EXEC_REQ.EXEC_REQUEST_ID " + ";";
-
-        CachedRowSet cachedRowSet = getMetadataControl().getExecutionServerMetadataRepository().executeQuery(query, "reader");
-        while (cachedRowSet.next()) {
+            CachedRowSet cachedRowSet = getMetadataControl().getExecutionServerMetadataRepository().executeQuery(query, "reader");
+            if (cachedRowSet.size() == 0) {
+                return Optional.empty();
+            } else if (cachedRowSet.size() > 1) {
+                LOGGER.warn(MessageFormat.format("Found multiple implementations for ScriptExecutionRequest {0}. Returning first implementation", scriptExecutionRequestKey.toString()));
+            }
+            cachedRowSet.next();
             if (cachedRowSet.getString("FILE") != null) {
-                scriptExecutionRequests.add(new ScriptFileExecutionRequest(
-                        new ScriptExecutionRequestKey(cachedRowSet.getString("SCRPT_REQUEST_ID")
-                        ),
+                return Optional.of(new ScriptFileExecutionRequest(scriptExecutionRequestKey,
                         new ExecutionRequestKey(cachedRowSet.getString("EXEC_REQUEST_ID")),
                         cachedRowSet.getString("SCRPT_FILENAME"),
                         cachedRowSet.getString("ENVIRONMENT"),
@@ -122,9 +71,7 @@ public class ScriptExecutionRequestConfiguration extends Configuration<ScriptExe
                         SQLTools.getMapFromSql(cachedRowSet.getString("IMPERSONATIONS")),
                         SQLTools.getMapFromSql(cachedRowSet.getString("PARAMETERS")), ScriptExecutionRequestStatus.valueOf(cachedRowSet.getString("ST_NM"))));
             } else if (cachedRowSet.getString("NAME") != null) {
-                scriptExecutionRequests.add(new ScriptNameExecutionRequest(
-                        new ScriptExecutionRequestKey(cachedRowSet.getString("SCRPT_REQUEST_ID")
-                        ),
+                return Optional.of(new ScriptNameExecutionRequest(scriptExecutionRequestKey,
                         new ExecutionRequestKey(cachedRowSet.getString("EXEC_REQUEST_ID")),
                         cachedRowSet.getString("SCRPT_NAME"),
                         cachedRowSet.getLong("SCRPT_VRS"),
@@ -135,15 +82,76 @@ public class ScriptExecutionRequestConfiguration extends Configuration<ScriptExe
                         SQLTools.getMapFromSql(cachedRowSet.getString("IMPERSONATIONS")),
                         SQLTools.getMapFromSql(cachedRowSet.getString("PARAMETERS")), ScriptExecutionRequestStatus.valueOf(cachedRowSet.getString("ST_NM"))));
             } else {
-                LOGGER.warn(MessageFormat.format("ScriptExecutionRequest {0} does not have a certain class", cachedRowSet.getString("SCRPT_REQUEST_ID")));
+                LOGGER.warn(MessageFormat.format("ScriptExecutionRequest {0} does not have a certain class", scriptExecutionRequestKey.toString()));
+                return Optional.empty();
 
             }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
-        return scriptExecutionRequests;
     }
 
     @Override
-    public void delete(ScriptExecutionRequestKey scriptExecutionRequestKey) throws MetadataDoesNotExistException, SQLException {
+    public List<ScriptExecutionRequest> getAll() {
+        try {
+            List<ScriptExecutionRequest> scriptExecutionRequests = new ArrayList<>();
+            String query = "SELECT SCRIPT_EXEC_REQ.SCRPT_REQUEST_ID, SCRIPT_EXEC_REQ.EXEC_REQUEST_ID, SCRIPT_EXEC_REQ.EXIT, SCRIPT_EXEC_REQ.IMPERSONATION, " +
+                    "SCRIPT_EXEC_REQ.ENVIRONMENT, SCRIPT_EXEC_REQ.PARAMETERS, SCRIPT_EXEC_REQ.IMPERSONATIONS, SCRIPT_EXEC_REQ.ST_NM, SCRIPT_EXEC_REQ.ST_NM, " +
+                    "SCRIPT_FILE_EXEC_REQ.SCRPT_FILENAME, " +
+                    "SCRIPT_NAME_EXEC_REQ.SCRPT_NAME, SCRIPT_NAME_EXEC_REQ.SCRPT_VRS, " +
+                    // Replace with case in case of Spring
+                    // "CASE WHEN AUTH_EXECUTION_REQUEST.REQUEST_ID IS NOT NULL THEN 1 " +
+                    // "WHEN NON_AUTH_EXECUTION_REQUEST.REQUEST_ID IS NOT NULL THEN 2 " +
+                    // "WHEN EXECUTION_REQUEST.REQUEST_ID IS NOT NULL THEN 0 " +
+                    // "END AS clazz " +
+                    "SCRIPT_FILE_EXEC_REQ.SCRPT_REQUEST_ID AS FILE, " +
+                    "SCRIPT_NAME_EXEC_REQ.SCRPT_REQUEST_ID AS NAME " +
+                    "FROM " + getMetadataControl().getExecutionServerMetadataRepository().getTableNameByLabel("ScriptExecutionRequests") + " SCRIPT_EXEC_REQ " +
+                    "LEFT OUTER JOIN " + getMetadataControl().getExecutionServerMetadataRepository().getTableNameByLabel("ScriptFileExecutionRequests") + " SCRIPT_FILE_EXEC_REQ " +
+                    "ON SCRIPT_EXEC_REQ.SCRPT_REQUEST_ID = SCRIPT_FILE_EXEC_REQ.SCRPT_REQUEST_ID AND SCRIPT_EXEC_REQ.EXEC_REQUEST_ID = SCRIPT_FILE_EXEC_REQ.EXEC_REQUEST_ID " +
+                    "LEFT OUTER JOIN " + getMetadataControl().getExecutionServerMetadataRepository().getTableNameByLabel("ScriptNameExecutionRequests") + " SCRIPT_NAME_EXEC_REQ " +
+                    "ON SCRIPT_EXEC_REQ.SCRPT_REQUEST_ID = SCRIPT_NAME_EXEC_REQ.SCRPT_REQUEST_ID AND SCRIPT_EXEC_REQ.EXEC_REQUEST_ID = SCRIPT_NAME_EXEC_REQ.EXEC_REQUEST_ID " + ";";
+
+            CachedRowSet cachedRowSet = getMetadataControl().getExecutionServerMetadataRepository().executeQuery(query, "reader");
+            while (cachedRowSet.next()) {
+                if (cachedRowSet.getString("FILE") != null) {
+                    scriptExecutionRequests.add(new ScriptFileExecutionRequest(
+                            new ScriptExecutionRequestKey(cachedRowSet.getString("SCRPT_REQUEST_ID")
+                            ),
+                            new ExecutionRequestKey(cachedRowSet.getString("EXEC_REQUEST_ID")),
+                            cachedRowSet.getString("SCRPT_FILENAME"),
+                            cachedRowSet.getString("ENVIRONMENT"),
+                            new ArrayList<>(),
+                            SQLTools.getBooleanFromSql(cachedRowSet.getString("EXIT")),
+                            cachedRowSet.getString("IMPERSONATION"),
+                            SQLTools.getMapFromSql(cachedRowSet.getString("IMPERSONATIONS")),
+                            SQLTools.getMapFromSql(cachedRowSet.getString("PARAMETERS")), ScriptExecutionRequestStatus.valueOf(cachedRowSet.getString("ST_NM"))));
+                } else if (cachedRowSet.getString("NAME") != null) {
+                    scriptExecutionRequests.add(new ScriptNameExecutionRequest(
+                            new ScriptExecutionRequestKey(cachedRowSet.getString("SCRPT_REQUEST_ID")
+                            ),
+                            new ExecutionRequestKey(cachedRowSet.getString("EXEC_REQUEST_ID")),
+                            cachedRowSet.getString("SCRPT_NAME"),
+                            cachedRowSet.getLong("SCRPT_VRS"),
+                            cachedRowSet.getString("ENVIRONMENT"),
+                            new ArrayList<>(),
+                            SQLTools.getBooleanFromSql(cachedRowSet.getString("EXIT")),
+                            cachedRowSet.getString("IMPERSONATION"),
+                            SQLTools.getMapFromSql(cachedRowSet.getString("IMPERSONATIONS")),
+                            SQLTools.getMapFromSql(cachedRowSet.getString("PARAMETERS")), ScriptExecutionRequestStatus.valueOf(cachedRowSet.getString("ST_NM"))));
+                } else {
+                    LOGGER.warn(MessageFormat.format("ScriptExecutionRequest {0} does not have a certain class", cachedRowSet.getString("SCRPT_REQUEST_ID")));
+
+                }
+            }
+            return scriptExecutionRequests;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void delete(ScriptExecutionRequestKey scriptExecutionRequestKey) throws MetadataDoesNotExistException {
         LOGGER.trace(MessageFormat.format("Deleting ScriptExecutionRequest {0}.", scriptExecutionRequestKey.toString()));
         if (!exists(scriptExecutionRequestKey)) {
             throw new ScriptExecutionRequestDoesNotExistException(MessageFormat.format(
@@ -168,7 +176,7 @@ public class ScriptExecutionRequestConfiguration extends Configuration<ScriptExe
     }
 
     @Override
-    public void insert(ScriptExecutionRequest scriptExecutionRequest) throws MetadataAlreadyExistsException, SQLException {
+    public void insert(ScriptExecutionRequest scriptExecutionRequest) throws MetadataAlreadyExistsException {
         LOGGER.trace(MessageFormat.format("Inserting ScriptExecutionRequest {0}.", scriptExecutionRequest.toString()));
         if (exists(scriptExecutionRequest.getMetadataKey())) {
             throw new ScriptExecutionRequestAlreadyExistsException(MessageFormat.format(
@@ -221,61 +229,65 @@ public class ScriptExecutionRequestConfiguration extends Configuration<ScriptExe
         return queries;
     }
 
-    public List<ScriptExecutionRequest> getByExecutionRequest(ExecutionRequestKey executionRequestKey) throws SQLException {
-        List<ScriptExecutionRequest> scriptExecutionRequests = new ArrayList<>();
-        String query = "SELECT SCRIPT_EXEC_REQ.SCRPT_REQUEST_ID, SCRIPT_EXEC_REQ.EXEC_REQUEST_ID, SCRIPT_EXEC_REQ.EXIT, SCRIPT_EXEC_REQ.IMPERSONATION, " +
-                "SCRIPT_EXEC_REQ.ENVIRONMENT, SCRIPT_EXEC_REQ.PARAMETERS, SCRIPT_EXEC_REQ.IMPERSONATIONS, SCRIPT_EXEC_REQ.ST_NM, " +
-                "SCRIPT_FILE_EXEC_REQ.SCRPT_FILENAME, " +
-                "SCRIPT_NAME_EXEC_REQ.SCRPT_NAME, SCRIPT_NAME_EXEC_REQ.SCRPT_VRS, " +
-                // Replace with case in case of Spring
-                // "CASE WHEN AUTH_EXECUTION_REQUEST.REQUEST_ID IS NOT NULL THEN 1 " +
-                // "WHEN NON_AUTH_EXECUTION_REQUEST.REQUEST_ID IS NOT NULL THEN 2 " +
-                // "WHEN EXECUTION_REQUEST.REQUEST_ID IS NOT NULL THEN 0 " +
-                // "END AS clazz " +
-                "SCRIPT_FILE_EXEC_REQ.SCRPT_REQUEST_ID AS FILE, " +
-                "SCRIPT_NAME_EXEC_REQ.SCRPT_REQUEST_ID AS NAME " +
-                "FROM " + getMetadataControl().getExecutionServerMetadataRepository().getTableNameByLabel("ScriptExecutionRequests") + " SCRIPT_EXEC_REQ " +
-                "LEFT OUTER JOIN " + getMetadataControl().getExecutionServerMetadataRepository().getTableNameByLabel("ScriptFileExecutionRequests") + " SCRIPT_FILE_EXEC_REQ " +
-                "ON SCRIPT_EXEC_REQ.SCRPT_REQUEST_ID = SCRIPT_FILE_EXEC_REQ.SCRPT_REQUEST_ID AND SCRIPT_EXEC_REQ.EXEC_REQUEST_ID = SCRIPT_FILE_EXEC_REQ.EXEC_REQUEST_ID " +
-                "LEFT OUTER JOIN " + getMetadataControl().getExecutionServerMetadataRepository().getTableNameByLabel("ScriptNameExecutionRequests") + " SCRIPT_NAME_EXEC_REQ " +
-                "ON SCRIPT_EXEC_REQ.SCRPT_REQUEST_ID = SCRIPT_NAME_EXEC_REQ.SCRPT_REQUEST_ID AND SCRIPT_EXEC_REQ.EXEC_REQUEST_ID = SCRIPT_NAME_EXEC_REQ.EXEC_REQUEST_ID " +
-                "WHERE SCRIPT_EXEC_REQ.EXEC_REQUEST_ID = " + SQLTools.GetStringForSQL(executionRequestKey.getId()) +";";
+    public List<ScriptExecutionRequest> getByExecutionRequest(ExecutionRequestKey executionRequestKey) {
+        try {
+            List<ScriptExecutionRequest> scriptExecutionRequests = new ArrayList<>();
+            String query = "SELECT SCRIPT_EXEC_REQ.SCRPT_REQUEST_ID, SCRIPT_EXEC_REQ.EXEC_REQUEST_ID, SCRIPT_EXEC_REQ.EXIT, SCRIPT_EXEC_REQ.IMPERSONATION, " +
+                    "SCRIPT_EXEC_REQ.ENVIRONMENT, SCRIPT_EXEC_REQ.PARAMETERS, SCRIPT_EXEC_REQ.IMPERSONATIONS, SCRIPT_EXEC_REQ.ST_NM, " +
+                    "SCRIPT_FILE_EXEC_REQ.SCRPT_FILENAME, " +
+                    "SCRIPT_NAME_EXEC_REQ.SCRPT_NAME, SCRIPT_NAME_EXEC_REQ.SCRPT_VRS, " +
+                    // Replace with case in case of Spring
+                    // "CASE WHEN AUTH_EXECUTION_REQUEST.REQUEST_ID IS NOT NULL THEN 1 " +
+                    // "WHEN NON_AUTH_EXECUTION_REQUEST.REQUEST_ID IS NOT NULL THEN 2 " +
+                    // "WHEN EXECUTION_REQUEST.REQUEST_ID IS NOT NULL THEN 0 " +
+                    // "END AS clazz " +
+                    "SCRIPT_FILE_EXEC_REQ.SCRPT_REQUEST_ID AS FILE, " +
+                    "SCRIPT_NAME_EXEC_REQ.SCRPT_REQUEST_ID AS NAME " +
+                    "FROM " + getMetadataControl().getExecutionServerMetadataRepository().getTableNameByLabel("ScriptExecutionRequests") + " SCRIPT_EXEC_REQ " +
+                    "LEFT OUTER JOIN " + getMetadataControl().getExecutionServerMetadataRepository().getTableNameByLabel("ScriptFileExecutionRequests") + " SCRIPT_FILE_EXEC_REQ " +
+                    "ON SCRIPT_EXEC_REQ.SCRPT_REQUEST_ID = SCRIPT_FILE_EXEC_REQ.SCRPT_REQUEST_ID AND SCRIPT_EXEC_REQ.EXEC_REQUEST_ID = SCRIPT_FILE_EXEC_REQ.EXEC_REQUEST_ID " +
+                    "LEFT OUTER JOIN " + getMetadataControl().getExecutionServerMetadataRepository().getTableNameByLabel("ScriptNameExecutionRequests") + " SCRIPT_NAME_EXEC_REQ " +
+                    "ON SCRIPT_EXEC_REQ.SCRPT_REQUEST_ID = SCRIPT_NAME_EXEC_REQ.SCRPT_REQUEST_ID AND SCRIPT_EXEC_REQ.EXEC_REQUEST_ID = SCRIPT_NAME_EXEC_REQ.EXEC_REQUEST_ID " +
+                    "WHERE SCRIPT_EXEC_REQ.EXEC_REQUEST_ID = " + SQLTools.GetStringForSQL(executionRequestKey.getId()) + ";";
 
-        CachedRowSet cachedRowSet = getMetadataControl().getExecutionServerMetadataRepository().executeQuery(query, "reader");
-        while (cachedRowSet.next()) {
-            if (cachedRowSet.getString("FILE") != null) {
-                scriptExecutionRequests.add(new ScriptFileExecutionRequest(
-                        new ScriptExecutionRequestKey(cachedRowSet.getString("SCRPT_REQUEST_ID")
-                        ),
-                        executionRequestKey,
-                        cachedRowSet.getString("SCRPT_FILENAME"),
-                        cachedRowSet.getString("ENVIRONMENT"),
-                        new ArrayList<>(),
-                        SQLTools.getBooleanFromSql(cachedRowSet.getString("EXIT")),
-                        cachedRowSet.getString("IMPERSONATION"),
-                        SQLTools.getMapFromSql(cachedRowSet.getString("IMPERSONATIONS")),
-                        SQLTools.getMapFromSql(cachedRowSet.getString("PARAMETERS")), ScriptExecutionRequestStatus.valueOf(cachedRowSet.getString("ST_NM"))));
-            } else if (cachedRowSet.getString("NAME") != null) {
-                scriptExecutionRequests.add(new ScriptNameExecutionRequest(
-                        new ScriptExecutionRequestKey(cachedRowSet.getString("SCRPT_REQUEST_ID")),
-                        executionRequestKey,
-                        cachedRowSet.getString("SCRPT_NAME"),
-                        cachedRowSet.getLong("SCRPT_VRS"),
-                        cachedRowSet.getString("ENVIRONMENT"),
-                        new ArrayList<>(),
-                        SQLTools.getBooleanFromSql(cachedRowSet.getString("EXIT")),
-                        cachedRowSet.getString("IMPERSONATION"),
-                        SQLTools.getMapFromSql(cachedRowSet.getString("IMPERSONATIONS")),
-                        SQLTools.getMapFromSql(cachedRowSet.getString("PARAMETERS")), ScriptExecutionRequestStatus.valueOf(cachedRowSet.getString("ST_NM"))));
-            } else {
-                LOGGER.warn(MessageFormat.format("ScriptExecutionRequest {0} does not have a certain class", cachedRowSet.getString("SCRPT_REQUEST_ID")));
+            CachedRowSet cachedRowSet = getMetadataControl().getExecutionServerMetadataRepository().executeQuery(query, "reader");
+            while (cachedRowSet.next()) {
+                if (cachedRowSet.getString("FILE") != null) {
+                    scriptExecutionRequests.add(new ScriptFileExecutionRequest(
+                            new ScriptExecutionRequestKey(cachedRowSet.getString("SCRPT_REQUEST_ID")
+                            ),
+                            executionRequestKey,
+                            cachedRowSet.getString("SCRPT_FILENAME"),
+                            cachedRowSet.getString("ENVIRONMENT"),
+                            new ArrayList<>(),
+                            SQLTools.getBooleanFromSql(cachedRowSet.getString("EXIT")),
+                            cachedRowSet.getString("IMPERSONATION"),
+                            SQLTools.getMapFromSql(cachedRowSet.getString("IMPERSONATIONS")),
+                            SQLTools.getMapFromSql(cachedRowSet.getString("PARAMETERS")), ScriptExecutionRequestStatus.valueOf(cachedRowSet.getString("ST_NM"))));
+                } else if (cachedRowSet.getString("NAME") != null) {
+                    scriptExecutionRequests.add(new ScriptNameExecutionRequest(
+                            new ScriptExecutionRequestKey(cachedRowSet.getString("SCRPT_REQUEST_ID")),
+                            executionRequestKey,
+                            cachedRowSet.getString("SCRPT_NAME"),
+                            cachedRowSet.getLong("SCRPT_VRS"),
+                            cachedRowSet.getString("ENVIRONMENT"),
+                            new ArrayList<>(),
+                            SQLTools.getBooleanFromSql(cachedRowSet.getString("EXIT")),
+                            cachedRowSet.getString("IMPERSONATION"),
+                            SQLTools.getMapFromSql(cachedRowSet.getString("IMPERSONATIONS")),
+                            SQLTools.getMapFromSql(cachedRowSet.getString("PARAMETERS")), ScriptExecutionRequestStatus.valueOf(cachedRowSet.getString("ST_NM"))));
+                } else {
+                    LOGGER.warn(MessageFormat.format("ScriptExecutionRequest {0} does not have a certain class", cachedRowSet.getString("SCRPT_REQUEST_ID")));
 
+                }
             }
+            return scriptExecutionRequests;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
-        return scriptExecutionRequests;
     }
 
-    public void deleteByExecutionKey(ExecutionRequestKey executionRequestKey) throws MetadataDoesNotExistException, SQLException {
+    public void deleteByExecutionKey(ExecutionRequestKey executionRequestKey) {
         LOGGER.trace(MessageFormat.format("Deleting ScriptExecutionRequest by ExecutionKey {0}.", executionRequestKey.toString()));
         List<String> deleteStatement = deleteStatement(executionRequestKey);
         getMetadataControl().getExecutionServerMetadataRepository().executeBatch(deleteStatement);

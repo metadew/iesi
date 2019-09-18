@@ -41,19 +41,23 @@ public class ScriptConfiguration extends MetadataConfiguration {
         return this.getAll();
     }
 
-    public boolean exists(String scriptName, long versionNumber) throws SQLException {
-        String query = "SELECT SCRIPT_ID FROM " + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("Scripts") +
-                " WHERE SCRIPT_NM = " + SQLTools.GetStringForSQL(scriptName) + ";";
-        CachedRowSet crsScript = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(query, "reader");
-        if (crsScript.size() == 0) {
-            return false;
+    public boolean exists(String scriptName, long versionNumber) {
+        try {
+            String query = "SELECT SCRIPT_ID FROM " + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("Scripts") +
+                    " WHERE SCRIPT_NM = " + SQLTools.GetStringForSQL(scriptName) + ";";
+            CachedRowSet crsScript = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(query, "reader");
+            if (crsScript.size() == 0) {
+                return false;
+            }
+            crsScript.next();
+            String scriptId = crsScript.getString("SCRIPT_ID");
+
+            // Get the version
+            Optional<ScriptVersion> scriptVersion = scriptVersionConfiguration.getScriptVersion(scriptId, versionNumber);
+            return scriptVersion.isPresent();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
-        crsScript.next();
-        String versionQuery = "SELECT SCRIPT_ID, SCRIPT_VRS_NB FROM " + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("ScriptVersions") +
-                " WHERE SCRIPT_ID = " + SQLTools.GetStringForSQL(crsScript.getString("SCRIPT_ID")) +
-                " AND SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(versionNumber) + ";";
-        CachedRowSet crsVersion = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(versionQuery, "reader");
-        return crsVersion.size() > 0;
     }
 
     public boolean exists(String scriptName) {
@@ -63,7 +67,7 @@ public class ScriptConfiguration extends MetadataConfiguration {
         return crsScript.size() > 0;
     }
 
-    public boolean exists(Script script) throws SQLException {
+    public boolean exists(Script script) {
         return exists(script.getName(), script.getVersion().getNumber());
     }
 
@@ -78,36 +82,42 @@ public class ScriptConfiguration extends MetadataConfiguration {
                 scripts.addAll(getByName(crsScript.getString("SCRIPT_NM")));
             }
         } catch (SQLException e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
+            StringWriter stackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTrace));
+            LOGGER.warn("exeption=" + e.getMessage());
+            LOGGER.info("exception.stacktrace=" + stackTrace.toString());
         }
         return scripts;
     }
 
-    public List<Script> getByName(String scriptName) throws SQLException {
-        LOGGER.trace(MessageFormat.format("Fetching scripts by name ''{0}''", scriptName));
-        List<Script> scripts = new ArrayList<>();
-        String queryScript = "select SCRIPT_ID from "
-                + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("Scripts") +
-                " where SCRIPT_NM = "
-                + SQLTools.GetStringForSQL(scriptName) + ";";
-        CachedRowSet crsScript = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(queryScript, "reader");
-        if (crsScript.size() == 0) {
+    public List<Script> getByName(String scriptName) {
+        try {
+            LOGGER.trace(MessageFormat.format("Fetching scripts by name ''{0}''", scriptName));
+            List<Script> scripts = new ArrayList<>();
+            String queryScript = "select SCRIPT_ID from "
+                    + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("Scripts") +
+                    " where SCRIPT_NM = "
+                    + SQLTools.GetStringForSQL(scriptName) + ";";
+            CachedRowSet crsScript = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(queryScript, "reader");
+            if (crsScript.size() == 0) {
+                return scripts;
+            } else if (crsScript.size() > 1) {
+                LOGGER.warn(MessageFormat.format("Found multiple implementations for Script {0}. Returning first implementation", scriptName));
+            }
+            crsScript.next();
+            String queryScriptVersions = "select SCRIPT_VRS_NB from "
+                    + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("ScriptVersions") + " where SCRIPT_ID = "
+                    + SQLTools.GetStringForSQL(crsScript.getString("SCRIPT_ID"));
+            CachedRowSet crsScriptVersions = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(queryScriptVersions, "reader");
+            while (crsScriptVersions.next()) {
+                get(scriptName, crsScriptVersions.getLong("SCRIPT_VRS_NB")).ifPresent(scripts::add);
+            }
+            crsScriptVersions.close();
+            crsScript.close();
             return scripts;
-        } else if (crsScript.size() > 1) {
-            LOGGER.warn(MessageFormat.format("Found multiple implementations for Script {0}. Returning first implementation", scriptName));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
-        crsScript.next();
-        String queryScriptVersions = "select SCRIPT_VRS_NB from "
-                + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("ScriptVersions") + " where SCRIPT_ID = "
-                + SQLTools.GetStringForSQL(crsScript.getString("SCRIPT_ID"));
-        CachedRowSet crsScriptVersions = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(queryScriptVersions, "reader");
-        while (crsScriptVersions.next()) {
-            get(scriptName, crsScriptVersions.getLong("SCRIPT_VRS_NB")).ifPresent(scripts::add);
-        }
-        crsScriptVersions.close();
-        crsScript.close();
-        return scripts;
     }
 
     public void delete(Script script) throws ScriptDoesNotExistException, SQLException {
@@ -207,7 +217,7 @@ public class ScriptConfiguration extends MetadataConfiguration {
                 " WHERE SCRIPT_ID = " + SQLTools.GetStringForSQL(script.getId()) + " AND SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(script.getVersion().getNumber()) + ";");
 
         // delete script info if last version
-        String countQuery = "SELECT COUNT(DISTINCT SCRIPT_VRS_NB ) AS total_versions FROM "
+        String countQuery = "SELECT COUNT(DISTINCT SCRIPT_VRS_NB) AS total_versions FROM "
                 + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("ScriptVersions")
                 + " WHERE SCRIPT_ID = " + SQLTools.GetStringForSQL(script.getId()) + " AND "
                 + " SCRIPT_VRS_NB != " + SQLTools.GetStringForSQL(script.getVersion().getNumber()) + ";";
@@ -219,7 +229,10 @@ public class ScriptConfiguration extends MetadataConfiguration {
                         " WHERE SCRIPT_ID = " + SQLTools.GetStringForSQL(script.getId()) + ";");
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            StringWriter stackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTrace));
+            LOGGER.warn("exeption=" + e.getMessage());
+            LOGGER.info("exception.stacktrace=" + stackTrace.toString());
         }
 
         return queries;

@@ -25,7 +25,7 @@ public class ConnectionDtoResourceAssembler extends ResourceAssemblerSupport<Con
     @Override
     public ConnectionDto toResource(Connection connection) {
         ConnectionDto connectionDto = convertToDto(connection);
-        Link selfLink = linkTo(methodOn(ConnectionsController.class).getByNameandEnvironment(connection.getName(), connection.getEnvironment()))
+        Link selfLink = linkTo(methodOn(ConnectionsController.class).get(connection.getName(), connection.getEnvironment()))
                 .withSelfRel();
         connectionDto.add(selfLink);
         Link environmentLink = linkTo(methodOn(EnvironmentsController.class).getByName(connection.getEnvironment()))

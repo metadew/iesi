@@ -3,6 +3,8 @@ package io.metadew.iesi.connection.database;
 import io.metadew.iesi.connection.database.connection.sqlite.SqliteDatabaseConnection;
 import io.metadew.iesi.metadata.definition.MetadataField;
 
+import java.sql.SQLException;
+
 public class SqliteDatabase extends Database {
 
     public SqliteDatabase(SqliteDatabaseConnection databaseConnection) {

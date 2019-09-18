@@ -9,7 +9,6 @@ import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
 import io.metadew.iesi.metadata.execution.MetadataControl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.sqlite.SQLiteJDBCLoader;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
@@ -19,7 +18,6 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class ConnectionConfiguration extends MetadataConfiguration {
 
@@ -75,19 +73,49 @@ public class ConnectionConfiguration extends MetadataConfiguration {
             }
             crs.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+            StringWriter stackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTrace));
+            LOGGER.warn("exeption=" + e.getMessage());
+            LOGGER.info("exception.stacktrace=" + stackTrace.toString());
         }
         return connections;
     }
 
     public List<Connection> getByName(String connectionName) {
-        return getAll().stream()
-                .filter(connection -> connection.getName().equals(connectionName))
-                .collect(Collectors.toList());
+        List<Connection> connections = new ArrayList<>();
+        CachedRowSet crsConnection;
+        String queryConnection = "select CONN_NM, CONN_TYP_NM, CONN_DSC from " + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("Connections")
+                + " where CONN_NM = " + SQLTools.GetStringForSQL(connectionName) + ";";
+        crsConnection = MetadataControl.getInstance().getConnectivityMetadataRepository().executeQuery(queryConnection, "reader");
+
+        try {
+            crsConnection.next();
+            if (crsConnection.size() == 0) {
+                return connections;
+            } else if (crsConnection.size() > 1) {
+                LOGGER.warn(MessageFormat.format("Found multiple implementations for Connection {0}. Returning first implementation", connectionName));
+            }
+
+            // Get parameters
+            String queryConnectionParameters = "select DISTINCT ENV_NM from "
+                    + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("ConnectionParameters")
+                    + " where CONN_NM = " + SQLTools.GetStringForSQL(connectionName) + ";";
+            CachedRowSet crsConnectionEnvironments = MetadataControl.getInstance().getConnectivityMetadataRepository().executeQuery(queryConnectionParameters, "reader");
+            while (crsConnectionEnvironments.next()) {
+                get(connectionName, crsConnectionEnvironments.getString("ENV_NM")).ifPresent(connections::add);
+            }
+        } catch (SQLException e) {
+            StringWriter stackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTrace));
+            LOGGER.warn("exeption=" + e.getMessage());
+            LOGGER.info("exception.stacktrace=" + stackTrace.toString());
+        }
+        return connections;
     }
 
     public List<Connection> getByEnvironment(String environmentName) {
         List<Connection> connections = new ArrayList<>();
+
         String connectionsByEnvironmentQuery = "select distinct CONN_NM from "
                 + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("ConnectionParameters")
                 + " where ENV_NM = " + SQLTools.GetStringForSQL(environmentName) + ";";
@@ -112,10 +140,10 @@ public class ConnectionConfiguration extends MetadataConfiguration {
             if (crsConnection.size() == 0) {
                 return Optional.empty();
             } else if (crsConnection.size() > 1) {
-                LOGGER.warn(MessageFormat.format("Found multiple implementations for connection {0}. Returning first implementation", connectionName));
+                LOGGER.warn(MessageFormat.format("Found multiple implementations for Connection {0}. Returning first implementation", connectionName));
             }
             crsConnection.next();
-
+            // TODO: if no parameters are found for environment_name, it does not exist?!
             // Get parameters
             String queryConnectionParameters = "select CONN_NM, ENV_NM, CONN_PAR_NM, CONN_PAR_VAL from "
                     + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("ConnectionParameters")
@@ -123,13 +151,11 @@ public class ConnectionConfiguration extends MetadataConfiguration {
             CachedRowSet crsConnectionParameters = MetadataControl.getInstance().getConnectivityMetadataRepository().executeQuery(queryConnectionParameters, "reader");
             List<ConnectionParameter> connectionParameters = new ArrayList<>();
             boolean containsParameters = false;
-            // TODO: if no parameters are found for environment_name, it does not exist?!
             while (crsConnectionParameters.next()) {
                 containsParameters = true;
                 connectionParameters.add(connectionParameterConfiguration.getConnectionParameter(connectionName, environmentName, crsConnectionParameters.getString("CONN_PAR_NM")));
             }
             crsConnectionParameters.close();
-
             if (containsParameters) {
                 Connection connection = new Connection(connectionName,
                         crsConnection.getString("CONN_TYP_NM"),
@@ -143,13 +169,15 @@ public class ConnectionConfiguration extends MetadataConfiguration {
                 return Optional.empty();
             }
         } catch (SQLException e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-            return Optional.empty();
+            StringWriter stackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTrace));
+            LOGGER.warn("exeption=" + e.getMessage());
+            LOGGER.info("exception.stacktrace=" + stackTrace.toString());
         }
+        return Optional.empty();
     }
 
-    public boolean exists(Connection connection) throws SQLException {
+    public boolean exists(Connection connection) {
         return exists(connection.getName(), connection.getEnvironment());
     }
 
@@ -161,24 +189,28 @@ public class ConnectionConfiguration extends MetadataConfiguration {
         return crsConnection.size() > 0;
     }
 
-    public boolean exists(String connectionName, String environmentName) throws SQLException {
-        CachedRowSet crsConnection;
-        String queryConnection = "select CONN_NM, CONN_TYP_NM, CONN_DSC from " + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("Connections")
-                + " where CONN_NM = " + SQLTools.GetStringForSQL(connectionName) + ";";
-        crsConnection = MetadataControl.getInstance().getConnectivityMetadataRepository().executeQuery(queryConnection, "reader");
-        if (crsConnection.size() == 0) {
-            return false;
-        } else if (crsConnection.size() > 1) {
-            LOGGER.warn(MessageFormat.format("Found multiple implementations for connection {0}. Returning first implementation", connectionName));
-        }
-        crsConnection.next();
+    public boolean exists(String connectionName, String environmentName) {
+        try {
+            CachedRowSet crsConnection;
+            String queryConnection = "select CONN_NM, CONN_TYP_NM, CONN_DSC from " + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("Connections")
+                    + " where CONN_NM = " + SQLTools.GetStringForSQL(connectionName) + ";";
+            crsConnection = MetadataControl.getInstance().getConnectivityMetadataRepository().executeQuery(queryConnection, "reader");
+            if (crsConnection.size() == 0) {
+                return false;
+            } else if (crsConnection.size() > 1) {
+                LOGGER.warn(MessageFormat.format("Found multiple implementations for connection {0}. Returning first implementation", connectionName));
+            }
+            crsConnection.next();
 
-        // Get parameters
-        String queryConnectionParameters = "select CONN_NM, ENV_NM, CONN_PAR_NM, CONN_PAR_VAL from "
-                + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("ConnectionParameters")
-                + " where CONN_NM = " + SQLTools.GetStringForSQL(connectionName) + " and ENV_NM = " + SQLTools.GetStringForSQL(environmentName) + ";";
-        CachedRowSet crsConnectionParameters = MetadataControl.getInstance().getConnectivityMetadataRepository().executeQuery(queryConnectionParameters, "reader");
-        return crsConnectionParameters.size() > 0;
+            // Get parameters
+            String queryConnectionParameters = "select CONN_NM, ENV_NM, CONN_PAR_NM, CONN_PAR_VAL from "
+                    + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("ConnectionParameters")
+                    + " where CONN_NM = " + SQLTools.GetStringForSQL(connectionName) + " and ENV_NM = " + SQLTools.GetStringForSQL(environmentName) + ";";
+            CachedRowSet crsConnectionParameters = MetadataControl.getInstance().getConnectivityMetadataRepository().executeQuery(queryConnectionParameters, "reader");
+            return crsConnectionParameters.size() > 0;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void delete(String name, String environment) throws ConnectionDoesNotExistException, SQLException {
@@ -192,12 +224,6 @@ public class ConnectionConfiguration extends MetadataConfiguration {
         }
         List<String> deleteQuery = getDeleteQuery(name, environment);
         MetadataControl.getInstance().getConnectivityMetadataRepository().executeBatch(deleteQuery);
-
-
-        delete(get(name, environment)
-                .orElseThrow(() -> new ConnectionDoesNotExistException(
-                        MessageFormat.format("Connection {0}-{1} is not present in the repository so cannot be updated",
-                                name, environment))));
     }
 
 
@@ -205,25 +231,29 @@ public class ConnectionConfiguration extends MetadataConfiguration {
         delete(connection.getName(), connection.getEnvironment());
     }
 
-    public List<String> getDeleteQuery(String name, String environment) throws SQLException {
-        List<String> queries = new ArrayList<>();
+    public List<String> getDeleteQuery(String name, String environment) {
+        try {
+            List<String> queries = new ArrayList<>();
 
-        queries.add("DELETE FROM " + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("ConnectionParameters") +
-                " WHERE CONN_NM = " + SQLTools.GetStringForSQL(name)
-                + "AND ENV_NM = " + SQLTools.GetStringForSQL(environment) + ";");
+            queries.add("DELETE FROM " + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("ConnectionParameters") +
+                    " WHERE CONN_NM = " + SQLTools.GetStringForSQL(name)
+                    + "AND ENV_NM = " + SQLTools.GetStringForSQL(environment) + ";");
 
-        // If this was the last remaining connection with name CONN_NM, remove entirely from connections
-        String countQuery = "SELECT COUNT(DISTINCT ENV_NM ) AS total_environments FROM "
-                + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("ConnectionParameters")
-                + " WHERE ENV_NM != " + SQLTools.GetStringForSQL(environment) + ";";
-        CachedRowSet crs = MetadataControl.getInstance().getConnectivityMetadataRepository().executeQuery(countQuery, "reader");
+            // If this was the last remaining connection with name CONN_NM, remove entirely from connections
+            String countQuery = "SELECT COUNT(DISTINCT ENV_NM ) AS total_environments FROM "
+                    + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("ConnectionParameters")
+                    + " WHERE ENV_NM != " + SQLTools.GetStringForSQL(environment) + ";";
+            CachedRowSet crs = MetadataControl.getInstance().getConnectivityMetadataRepository().executeQuery(countQuery, "reader");
 
-        if (crs.next() && Integer.parseInt(crs.getString("total_environments")) == 0) {
-            queries.add("DELETE FROM " + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("Connections") +
-                    " WHERE CONN_NM = " + SQLTools.GetStringForSQL(name) + ";");
+            if (crs.next() && Integer.parseInt(crs.getString("total_environments")) == 0) {
+                queries.add("DELETE FROM " + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("Connections") +
+                        " WHERE CONN_NM = " + SQLTools.GetStringForSQL(name) + ";");
+            }
+
+            return queries;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
-
-        return queries;
     }
 
     public void deleteByName(String connectionName) throws ConnectionDoesNotExistException {
@@ -278,7 +308,7 @@ public class ConnectionConfiguration extends MetadataConfiguration {
 
     private List<String> getInsertQuery(Connection connection) {
         List<String> queries = new ArrayList<>();
-        if (getByName(connection.getName()).size() == 0) {
+        if (!exists(connection.getName())) {
             queries.add("INSERT INTO " + MetadataControl.getInstance().getConnectivityMetadataRepository()
                     .getTableNameByLabel("Connections") + " (CONN_NM, CONN_TYP_NM, CONN_DSC) VALUES (" +
                     SQLTools.GetStringForSQL(connection.getName()) + "," +
@@ -309,4 +339,5 @@ public class ConnectionConfiguration extends MetadataConfiguration {
             throw e;
         }
     }
+
 }

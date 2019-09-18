@@ -29,50 +29,58 @@ public class ActionResultConfiguration extends Configuration<ActionResult, Actio
     }
 
     @Override
-    public Optional<ActionResult> get(ActionResultKey actionResultKey) throws SQLException {
-        String query = "select RUN_ID, PRC_ID, SCRIPT_PRC_ID, ACTION_ID, ACTION_NM, ENV_NM, ST_NM, STRT_TMS, END_TMS from "
-                + MetadataControl.getInstance().getResultMetadataRepository().getTableNameByLabel("ActionResults")
-                + " where RUN_ID = " + SQLTools.GetStringForSQL(actionResultKey.getRunId()) + " and SCRIPT_PRC_ID = " + SQLTools.GetStringForSQL(actionResultKey.getProcessId())
-                + " and ACTION_ID = " + SQLTools.GetStringForSQL(actionResultKey.getActionId()) + ";";
-        CachedRowSet cachedRowSet = MetadataControl.getInstance().getResultMetadataRepository().executeQuery(query, "reader");
-        if (cachedRowSet.size() == 0) {
-            return Optional.empty();
-        } else if (cachedRowSet.size() > 1) {
-            LOGGER.warn(MessageFormat.format("Found multiple implementations for ActionResult {0}. Returning first implementation", actionResultKey.toString()));
-        }
-        cachedRowSet.next();
-        return Optional.of(new ActionResult(actionResultKey,
-                cachedRowSet.getLong("SCRIPT_PRC_ID"),
-                cachedRowSet.getString("ACTION_NM"),
-                cachedRowSet.getString("ENV_NM"),
-                cachedRowSet.getString("ST_NM"),
-                SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("STRT_TMS")),
-                SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("END_TMS"))));
-    }
-
-    @Override
-    public List<ActionResult> getAll() throws SQLException {
-        List<ActionResult> scriptResults = new ArrayList<>();
-        String query = "select RUN_ID, PRC_ID, SCRIPT_PRC_ID, ACTION_ID, ACTION_NM, ENV_NM, ST_NM, STRT_TMS, END_TMS from "
-                + MetadataControl.getInstance().getResultMetadataRepository().getTableNameByLabel("ActionResults") + ";";
-        CachedRowSet cachedRowSet = getMetadataControl().getResultMetadataRepository().executeQuery(query, "reader");
-        while (cachedRowSet.next()) {
-            scriptResults.add(new ActionResult(new ActionResultKey(
-                    cachedRowSet.getString("RUN_ID"),
-                    cachedRowSet.getLong("SCRIPT_PRC_ID"),
-                    cachedRowSet.getString("ACTION_ID")),
+    public Optional<ActionResult> get(ActionResultKey actionResultKey) {
+        try {
+            String query = "select RUN_ID, PRC_ID, SCRIPT_PRC_ID, ACTION_ID, ACTION_NM, ENV_NM, ST_NM, STRT_TMS, END_TMS from "
+                    + MetadataControl.getInstance().getResultMetadataRepository().getTableNameByLabel("ActionResults")
+                    + " where RUN_ID = " + SQLTools.GetStringForSQL(actionResultKey.getRunId()) + " and PRC_ID = " + SQLTools.GetStringForSQL(actionResultKey.getProcessId())
+                    + " and ACTION_ID = " + SQLTools.GetStringForSQL(actionResultKey.getActionId()) + ";";
+            CachedRowSet cachedRowSet = MetadataControl.getInstance().getResultMetadataRepository().executeQuery(query, "reader");
+            if (cachedRowSet.size() == 0) {
+                return Optional.empty();
+            } else if (cachedRowSet.size() > 1) {
+                LOGGER.warn(MessageFormat.format("Found multiple implementations for ActionResult {0}. Returning first implementation", actionResultKey.toString()));
+            }
+            cachedRowSet.next();
+            return Optional.of(new ActionResult(actionResultKey,
                     cachedRowSet.getLong("SCRIPT_PRC_ID"),
                     cachedRowSet.getString("ACTION_NM"),
                     cachedRowSet.getString("ENV_NM"),
                     cachedRowSet.getString("ST_NM"),
                     SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("STRT_TMS")),
                     SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("END_TMS"))));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
-        return scriptResults;
     }
 
     @Override
-    public void delete(ActionResultKey actionResultKey) throws MetadataDoesNotExistException, SQLException {
+    public List<ActionResult> getAll() {
+        try {
+            List<ActionResult> scriptResults = new ArrayList<>();
+            String query = "select RUN_ID, PRC_ID, SCRIPT_PRC_ID, ACTION_ID, ACTION_NM, ENV_NM, ST_NM, STRT_TMS, END_TMS from "
+                    + MetadataControl.getInstance().getResultMetadataRepository().getTableNameByLabel("ActionResults") + ";";
+            CachedRowSet cachedRowSet = getMetadataControl().getResultMetadataRepository().executeQuery(query, "reader");
+            while (cachedRowSet.next()) {
+                scriptResults.add(new ActionResult(new ActionResultKey(
+                        cachedRowSet.getString("RUN_ID"),
+                        cachedRowSet.getLong("PRC_ID"),
+                        cachedRowSet.getString("ACTION_ID")),
+                        cachedRowSet.getLong("SCRIPT_PRC_ID"),
+                        cachedRowSet.getString("ACTION_NM"),
+                        cachedRowSet.getString("ENV_NM"),
+                        cachedRowSet.getString("ST_NM"),
+                        SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("STRT_TMS")),
+                        SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("END_TMS"))));
+            }
+            return scriptResults;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void delete(ActionResultKey actionResultKey) throws MetadataDoesNotExistException {
         LOGGER.trace(MessageFormat.format("Deleting ActionResult {0}.", actionResultKey.toString()));
         if (!exists(actionResultKey)) {
             throw new ActionResultDoesNotExistException(MessageFormat.format(
@@ -87,12 +95,12 @@ public class ActionResultConfiguration extends Configuration<ActionResult, Actio
                 " WHERE " +
                 " RUN_ID = " + SQLTools.GetStringForSQL(actionResultKey.getRunId()) + " AND " +
                 " ACTION_ID = " + SQLTools.GetStringForSQL(actionResultKey.getActionId()) + " AND " +
-                " PRC_ID = "  + SQLTools.GetStringForSQL(actionResultKey.getProcessId()) + ";";
+                " PRC_ID = " + SQLTools.GetStringForSQL(actionResultKey.getProcessId()) + ";";
     }
 
     @Override
-    public void insert(ActionResult actionResult) throws MetadataAlreadyExistsException, SQLException {
-        LOGGER.trace(MessageFormat.format("Inserting ActionResult {0}.", actionResult.getMetadataKey().toString()));
+    public void insert(ActionResult actionResult) throws MetadataAlreadyExistsException {
+        LOGGER.trace(MessageFormat.format("Inserting ActionResult {0}.", actionResult.toString()));
         if (exists(actionResult.getMetadataKey())) {
             throw new ActionResultAlreadyExistsException(MessageFormat.format(
                     "ActionResult {0} already exists", actionResult.getMetadataKey().toString()));

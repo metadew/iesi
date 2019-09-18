@@ -6,6 +6,7 @@ import io.metadew.iesi.connection.database.OracleDatabase;
 import io.metadew.iesi.connection.database.connection.oracle.OracleDatabaseConnection;
 import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
 
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -58,29 +59,28 @@ public class OracleRepositoryConfiguration extends RepositoryConfiguration {
         }
 
         final String finalJdbcConnectionString = actualJdbcConnectionString;
-        getUser().ifPresent(owner -> {
-            OracleDatabaseConnection oracleDatabaseConnection = new OracleDatabaseConnection(finalJdbcConnectionString, owner, getUserPassword().orElse(""));
+        if (getUser().isPresent()) {
+                    OracleDatabaseConnection oracleDatabaseConnection = new OracleDatabaseConnection(finalJdbcConnectionString, getUser().get(), getUserPassword().orElse(""));
+                    getSchema().ifPresent(oracleDatabaseConnection::setSchema);
+                    OracleDatabase oracleDatabase = new OracleDatabase(oracleDatabaseConnection, getSchema().orElse(""));
+                    databases.put("owner", oracleDatabase);
+                    databases.put("writer", oracleDatabase);
+                    databases.put("reader", oracleDatabase);
+                }
+        if (getWriter().isPresent()) {
+            OracleDatabaseConnection oracleDatabaseConnection = new OracleDatabaseConnection(finalJdbcConnectionString, getWriter().get(), getWriterPassword().orElse(""));
             getSchema().ifPresent(oracleDatabaseConnection::setSchema);
             OracleDatabase oracleDatabase = new OracleDatabase(oracleDatabaseConnection, getSchema().orElse(""));
-            databases.put("owner", oracleDatabase);
             databases.put("writer", oracleDatabase);
             databases.put("reader", oracleDatabase);
-        });
+        }
 
-        getWriter().ifPresent(writer -> {
-            OracleDatabaseConnection oracleDatabaseConnection = new OracleDatabaseConnection(finalJdbcConnectionString, writer, getWriterPassword().orElse(""));
-            getSchema().ifPresent(oracleDatabaseConnection::setSchema);
-            OracleDatabase oracleDatabase = new OracleDatabase(oracleDatabaseConnection, getSchema().orElse(""));
-            databases.put("writer", oracleDatabase);
-            databases.put("reader", oracleDatabase);
-        });
-
-        getReader().ifPresent(reader -> {
-            OracleDatabaseConnection oracleDatabaseConnection = new OracleDatabaseConnection(finalJdbcConnectionString, reader, getReaderPassword().orElse(""));
-            getSchema().ifPresent(oracleDatabaseConnection::setSchema);
-            OracleDatabase oracleDatabase = new OracleDatabase(oracleDatabaseConnection, getSchema().orElse(""));
-            databases.put("reader", oracleDatabase);
-        });
+        if(getReader().isPresent()) {
+                OracleDatabaseConnection oracleDatabaseConnection = new OracleDatabaseConnection(finalJdbcConnectionString, getReader().get(), getReaderPassword().orElse(""));
+                getSchema().ifPresent(oracleDatabaseConnection::setSchema);
+                OracleDatabase oracleDatabase = new OracleDatabase(oracleDatabaseConnection, getSchema().orElse(""));
+                databases.put("reader", oracleDatabase);
+        }
 
         return new RepositoryCoordinator(databases);
     }

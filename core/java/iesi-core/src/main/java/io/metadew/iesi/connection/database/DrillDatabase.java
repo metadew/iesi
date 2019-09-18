@@ -3,7 +3,7 @@ package io.metadew.iesi.connection.database;
 import io.metadew.iesi.connection.database.connection.drill.DrillDatabaseConnection;
 import io.metadew.iesi.metadata.definition.MetadataField;
 
-import java.util.Optional;
+import java.sql.SQLException;
 
 /**
  * Database object for Apache Drill
@@ -11,13 +11,10 @@ import java.util.Optional;
  * @author peter.billen
  *
  */
-public class DrillDatabase extends Database {
-
-    String schema;
+public class DrillDatabase extends SchemaDatabase {
 
     public DrillDatabase(DrillDatabaseConnection databaseConnection, String schema) {
-        super(databaseConnection);
-        this.schema = schema;
+        super(databaseConnection, schema);
     }
 
     @Override
@@ -67,10 +64,6 @@ public class DrillDatabase extends Database {
             fieldQuery.append(" NOT NULL");
         }
         return fieldQuery.toString();
-    }
-
-    public Optional<String> getSchema() {
-        return Optional.ofNullable(schema);
     }
 
 }

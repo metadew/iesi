@@ -15,6 +15,7 @@ import io.metadew.iesi.metadata.definition.execution.ExecutionRequestBuilderExce
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequestStatus;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequestBuilder;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequestBuilderException;
+import io.metadew.iesi.metadata.repository.MetadataRepository;
 import io.metadew.iesi.runtime.ExecutorService;
 import io.metadew.iesi.script.operation.ImpersonationService;
 import org.apache.commons.cli.*;
@@ -211,6 +212,8 @@ public class ScriptLauncher {
         } else {
             throw new RuntimeException("unknown setting for " + FrameworkSettingConfiguration.getInstance().getSettingPath("server.mode").get());
         }
+
+        FrameworkInstance.getInstance().shutdown();
     }
 
     // TODO: move to service, see fwk execute script

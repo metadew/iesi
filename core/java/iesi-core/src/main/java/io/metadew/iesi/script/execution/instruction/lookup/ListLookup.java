@@ -36,6 +36,8 @@ public class ListLookup implements LookupInstruction {
 //        if (!inputParameterMatcher.find()) {
 //            throw new IllegalArgumentException(MessageFormat.format("Illegal arguments provided to list lookup: {0}", parameters));
 //        }
+        LOGGER.debug(MessageFormat.format("fetching element {0} of list {1}", arguments[1], arguments[0]));
+
         Array array = getArray(dataTypeService.resolve(arguments[0]));
         int arrayElementIndex = getIndex(dataTypeService.resolve(arguments[1])) - 1;
 //        Array array = getArray(dataTypeService.resolve(inputParameterMatcher.group(ARRAY_KEY)));
@@ -56,7 +58,7 @@ public class ListLookup implements LookupInstruction {
         if (array instanceof Array) {
             return (Array) array;
         } else {
-            throw new IllegalArgumentException(MessageFormat.format("Dataset cannot be of type {0}", array.getClass()));
+            throw new IllegalArgumentException(MessageFormat.format("list cannot be of type {0}", array.getClass()));
         }
     }
 

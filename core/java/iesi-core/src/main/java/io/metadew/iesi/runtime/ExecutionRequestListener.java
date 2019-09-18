@@ -30,7 +30,7 @@ public class ExecutionRequestListener {
         executor = Executors.newFixedThreadPool(threadSize);
     }
 
-    public void run() throws SQLException, InterruptedException, MetadataDoesNotExistException {
+    public void run() throws InterruptedException, MetadataDoesNotExistException {
         while(true) {
             LOGGER.trace("executionrequestlistener=fetching new requests");
             List<ExecutionRequest> executionRequests = executionRequestConfiguration.getAllNew();

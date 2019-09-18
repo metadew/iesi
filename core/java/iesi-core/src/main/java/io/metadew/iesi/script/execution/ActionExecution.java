@@ -8,6 +8,8 @@ import io.metadew.iesi.script.operation.ActionParameterOperation;
 import io.metadew.iesi.script.operation.ComponentAttributeOperation;
 import io.metadew.iesi.script.operation.ConditionOperation;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -19,6 +21,7 @@ import java.util.HashMap;
 
 public class ActionExecution {
 
+	private final static Logger LOGGER = LogManager.getLogger();
 	private final ActionPerformanceLogger actionPerformanceLogger;
 	private final ActionTypeConfiguration actionTypeConfiguration;
 	private ExecutionControl executionControl;
@@ -53,8 +56,8 @@ public class ActionExecution {
 	public void execute(IterationInstance iterationInstance) {
 		this.executed = true;
 
-		executionControl.logMessage(this, "action.name=" + action.getName(), Level.INFO);
-		executionControl.logMessage(this, "action.prcid=" + processId, Level.DEBUG);
+		LOGGER.info("action.name=" + action.getName());
+		LOGGER.debug("action.prcid=" + processId);
 
 		// Log Start
 		executionControl.logStart(this);
@@ -76,13 +79,13 @@ public class ActionExecution {
 			}
 
 			String className = actionTypeConfiguration.getActionType(action.getType()).getClassName();
-			executionControl.logMessage(this, "action.type=" + action.getType(), Level.DEBUG);
+			LOGGER.debug("action.type=" + action.getType());
 
 			Class classRef = Class.forName(className);
 
 			Class[] initParams = { ExecutionControl.class, ScriptExecution.class, ActionExecution.class};
 			Constructor constructor = classRef.getConstructor(initParams);
-			Object[] initArgs = { executionControl, this.getScriptExecution(), this };
+			Object[] initArgs = { executionControl, scriptExecution, this };
 			Object instance = constructor.newInstance(initArgs);
 
 			Method prepare = classRef.getDeclaredMethod("prepare");
@@ -96,8 +99,8 @@ public class ActionExecution {
 					conditionResult = conditionOperation.evaluateCondition();
 				} catch (Exception exception) {
 					conditionResult = true;
-					executionControl.logMessage(this, "action.condition=" + action.getCondition(), Level.WARN);
-					executionControl.logMessage(this, "action.condition.error=" + exception.getMessage(), Level.WARN);
+					LOGGER.warn("action.condition=" + action.getCondition());
+					LOGGER.warn("action.condition.error=" + exception.getMessage());
 				}
 			}
 
@@ -134,13 +137,13 @@ public class ActionExecution {
 					if (action.getErrorExpected()) {
 						actionControl.getExecutionMetrics().resetErrorCount();
 						actionControl.getExecutionMetrics().increaseSuccessCount(1);
-						executionControl.logMessage(this, "action.status=ERROR:expected", Level.INFO);
+						LOGGER.info("action.status=ERROR:expected");
 					}
 				} else {
 					if (action.getErrorExpected()) {
 						actionControl.getExecutionMetrics().resetSuccessCount();
 						actionControl.getExecutionMetrics().increaseErrorCount(1);
-						executionControl.logMessage(this, "action.status=SUCCESS:unexpected", Level.INFO);
+						LOGGER.info("action.status=SUCCESS:unexpected");
 					}
 				}
 
@@ -154,19 +157,17 @@ public class ActionExecution {
 			StringWriter stackTrace = new StringWriter();
 			e.printStackTrace(new PrintWriter(stackTrace));
 			actionControl.increaseErrorCount();
-			executionControl.logMessage(this, "action.error=" + e, Level.INFO);
-			executionControl.logMessage(this, "action.stacktrace=" + stackTrace, Level.DEBUG);
-		} finally {
-			// Log End
-			executionControl.logEnd(this, this.getScriptExecution());
+			LOGGER.info("action.error=" + e);
+			LOGGER.debug("action.stacktrace=" + stackTrace);
 		}
+		executionControl.logEnd(this, scriptExecution);
 
 	}
 
 	public void skip() {
-		executionControl.logMessage(this, "action.name=" + action.getName(), Level.INFO);
-		executionControl.logMessage(this, "action.id=" + action.getId(), Level.DEBUG);
-		executionControl.logMessage(this, "action.selection.skip", Level.INFO);
+		LOGGER.info("action.name=" + action.getName());
+		LOGGER.debug("action.id=" + action.getId());
+		LOGGER.info("action.selection.skip");
 
 		// Log Skip
 		executionControl.logSkip(this);

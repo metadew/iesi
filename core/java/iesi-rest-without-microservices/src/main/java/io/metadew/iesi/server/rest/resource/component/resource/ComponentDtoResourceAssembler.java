@@ -24,7 +24,7 @@ public class ComponentDtoResourceAssembler extends ResourceAssemblerSupport<Comp
     @Override
     public ComponentDto toResource(Component component) {
         ComponentDto componentDto = convertToDto(component);
-        Link selfLink = linkTo(methodOn(ComponentsController.class).getComponentsAndVersion(component.getName(),
+        Link selfLink = linkTo(methodOn(ComponentsController.class).get(component.getName(),
                 component.getVersion().getNumber()))
                 .withRel("component:" + componentDto.getName() +"-"+ componentDto.getVersion().getNumber());
         componentDto.add(selfLink);

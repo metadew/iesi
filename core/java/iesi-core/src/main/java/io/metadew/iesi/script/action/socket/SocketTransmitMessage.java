@@ -18,6 +18,8 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.nio.charset.Charset;
+import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -47,7 +49,7 @@ public class SocketTransmitMessage {
         this.actionParameterOperationMap = new HashMap<>();
     }
 
-    public void prepare() {
+    public void prepare()  {
         // Reset Parameters
         ActionParameterOperation socketActionParameterOperation = new ActionParameterOperation(executionControl, actionExecution, actionExecution.getAction().getType(), socketKey);
         ActionParameterOperation messageActionParameterOperation = new ActionParameterOperation(executionControl, actionExecution, actionExecution.getAction().getType(), messageKey);
@@ -116,13 +118,14 @@ public class SocketTransmitMessage {
     private void sendUDPMessage() throws IOException {
         InetSocketAddress socketAddress = new InetSocketAddress(socket.getHostName(), socket.getPort());
         DatagramSocket datagramSocket = new DatagramSocket(socketAddress);
-        DatagramPacket datagramPacketToSend = new DatagramPacket(message.getBytes(), message.getBytes().length);
+        DatagramPacket datagramPacketToSend = new DatagramPacket(message.getBytes(Charset.forName(socket.getEncoding())),
+                message.getBytes(Charset.forName(socket.getEncoding())).length);
         datagramSocket.send(datagramPacketToSend);
         if (getOutputDataset().isPresent()) {
                 byte[] buffer = new byte[65508];
                 DatagramPacket datagramPacketToReceive = new DatagramPacket(buffer, buffer.length);
                 datagramSocket.receive(datagramPacketToReceive);
-                outputDataset.setDataItem("response", new Text(new String(datagramPacketToReceive.getData(), 0, datagramPacketToReceive.getLength())));
+                outputDataset.setDataItem("response", new Text(new String(datagramPacketToReceive.getData(), 0, datagramPacketToReceive.getLength(), Charset.forName(socket.getEncoding()))));
         }
     }
 
@@ -130,14 +133,15 @@ public class SocketTransmitMessage {
         Socket tcpSocket = new Socket(socket.getHostName(), socket.getPort());
         DataOutputStream dOut = new DataOutputStream(tcpSocket.getOutputStream());
         DataInputStream dIn = new DataInputStream(tcpSocket.getInputStream());
-        dOut.writeUTF(message);
+        dOut.write(message.getBytes(Charset.forName(socket.getEncoding())));
         dOut.flush();
         if (getOutputDataset().isPresent()) {
             LocalDateTime endDateTime = LocalDateTime.now().plus(1000, ChronoUnit.MILLIS);
             while (LocalDateTime.now().isBefore(endDateTime)) {
                 if (dIn.available() > 0) {
-                    String response = dIn.readUTF();
-                    outputDataset.setDataItem("response", new Text(response));
+                    byte[] bytes = new byte[dIn.available()];
+                    int bytesRead = dIn.read(bytes);
+                    outputDataset.setDataItem("response", new Text(new String(bytes, 0, bytesRead, Charset.forName(socket.getEncoding()))));
                     break;
                 }
             }

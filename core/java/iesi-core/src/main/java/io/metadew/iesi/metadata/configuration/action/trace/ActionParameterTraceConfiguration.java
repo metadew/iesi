@@ -17,6 +17,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class ActionParameterTraceConfiguration extends Configuration<ActionParameterTrace, ActionParameterTraceKey> {
 
@@ -28,43 +29,51 @@ public class ActionParameterTraceConfiguration extends Configuration<ActionParam
     }
 
     @Override
-    public Optional<ActionParameterTrace> get(ActionParameterTraceKey actionParameterTraceKey) throws SQLException {
-        String query = "SELECT ACTION_PAR_VAL FROM " +
-                getMetadataControl().getTraceMetadataRepository().getTableNameByLabel("ActionParameterTraces") +
-                " WHERE " +
-                " RUN_ID = " + SQLTools.GetStringForSQL(actionParameterTraceKey.getRunId()) + " AND " +
-                " PRC_ID = "  + SQLTools.GetStringForSQL(actionParameterTraceKey.getProcessId()) + " AND " +
-                " ACTION_ID = " + SQLTools.GetStringForSQL(actionParameterTraceKey.getActionId()) + " AND " +
-                " ACTION_PAR_NM = " + SQLTools.GetStringForSQL(actionParameterTraceKey.getName()) + ";";
-        CachedRowSet cachedRowSet = getMetadataControl().getTraceMetadataRepository().executeQuery(query, "reader");
-        if (cachedRowSet.size() == 0) {
-            return Optional.empty();
-        } else if (cachedRowSet.size() > 1) {
-            LOGGER.warn(MessageFormat.format("Found multiple implementations for ActionParameterTrace {0}. Returning first implementation", actionParameterTraceKey.toString()));
+    public Optional<ActionParameterTrace> get(ActionParameterTraceKey actionParameterTraceKey) {
+        try {
+            String query = "SELECT ACTION_PAR_VAL FROM " +
+                    getMetadataControl().getTraceMetadataRepository().getTableNameByLabel("ActionParameterTraces") +
+                    " WHERE " +
+                    " RUN_ID = " + SQLTools.GetStringForSQL(actionParameterTraceKey.getRunId()) + " AND " +
+                    " PRC_ID = " + SQLTools.GetStringForSQL(actionParameterTraceKey.getProcessId()) + " AND " +
+                    " ACTION_ID = " + SQLTools.GetStringForSQL(actionParameterTraceKey.getActionId()) + " AND " +
+                    " ACTION_PAR_NM = " + SQLTools.GetStringForSQL(actionParameterTraceKey.getName()) + ";";
+            CachedRowSet cachedRowSet = getMetadataControl().getTraceMetadataRepository().executeQuery(query, "reader");
+            if (cachedRowSet.size() == 0) {
+                return Optional.empty();
+            } else if (cachedRowSet.size() > 1) {
+                LOGGER.warn(MessageFormat.format("Found multiple implementations for ActionParameterTrace {0}. Returning first implementation", actionParameterTraceKey.toString()));
+            }
+            cachedRowSet.next();
+            return Optional.of(new ActionParameterTrace(actionParameterTraceKey, cachedRowSet.getString("ACTION_PAR_VAL")));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
-        cachedRowSet.next();
-        return Optional.of(new ActionParameterTrace(actionParameterTraceKey, cachedRowSet.getString("ACTION_PAR_VAL")));
     }
 
     @Override
-    public List<ActionParameterTrace> getAll() throws SQLException {
-        List<ActionParameterTrace> actionParameterTraces = new ArrayList<>();
-        String query = "SELECT RUN_ID, PRC_ID, ACTION_ID, ACTION_PAR_NM, ACTION_PAR_VAL FROM " +
-                getMetadataControl().getTraceMetadataRepository().getTableNameByLabel("ActionParameterTraces") + ";";
-        CachedRowSet cachedRowSet = getMetadataControl().getTraceMetadataRepository().executeQuery(query, "reader");
-        while (cachedRowSet.next()) {
-            actionParameterTraces.add(new ActionParameterTrace(new ActionParameterTraceKey(
-                    cachedRowSet.getString("RUN_ID"),
-                    cachedRowSet.getLong("PRC_ID"),
-                    cachedRowSet.getString("ACTION_ID"),
-                    cachedRowSet.getString("ACTION_PAR_NM")),
-                    cachedRowSet.getString("ACTION_PAR_VAL")));
+    public List<ActionParameterTrace> getAll() {
+        try {
+            List<ActionParameterTrace> actionParameterTraces = new ArrayList<>();
+            String query = "SELECT RUN_ID, PRC_ID, ACTION_ID, ACTION_PAR_NM, ACTION_PAR_VAL FROM " +
+                    getMetadataControl().getTraceMetadataRepository().getTableNameByLabel("ActionParameterTraces") + ";";
+            CachedRowSet cachedRowSet = getMetadataControl().getTraceMetadataRepository().executeQuery(query, "reader");
+            while (cachedRowSet.next()) {
+                actionParameterTraces.add(new ActionParameterTrace(new ActionParameterTraceKey(
+                        cachedRowSet.getString("RUN_ID"),
+                        cachedRowSet.getLong("PRC_ID"),
+                        cachedRowSet.getString("ACTION_ID"),
+                        cachedRowSet.getString("ACTION_PAR_NM")),
+                        cachedRowSet.getString("ACTION_PAR_VAL")));
+            }
+            return actionParameterTraces;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
-        return actionParameterTraces;
     }
 
     @Override
-    public void delete(ActionParameterTraceKey actionParameterTraceKey) throws MetadataDoesNotExistException, SQLException {
+    public void delete(ActionParameterTraceKey actionParameterTraceKey) throws MetadataDoesNotExistException {
         LOGGER.trace(MessageFormat.format("Deleting ActionParameterTrace {0}.", actionParameterTraceKey.toString()));
         if (!exists(actionParameterTraceKey)) {
             throw new ActionParameterTraceDoesNotExistException(MessageFormat.format(
@@ -79,13 +88,13 @@ public class ActionParameterTraceConfiguration extends Configuration<ActionParam
         return "DELETE FROM " + getMetadataControl().getTraceMetadataRepository().getTableNameByLabel("ActionParameterTraces") +
                 " WHERE " +
                 " RUN_ID = " + SQLTools.GetStringForSQL(actionParameterTraceKey.getRunId()) + " AND " +
-                " PRC_ID = "  + SQLTools.GetStringForSQL(actionParameterTraceKey.getProcessId()) + " AND " +
+                " PRC_ID = " + SQLTools.GetStringForSQL(actionParameterTraceKey.getProcessId()) + " AND " +
                 " ACTION_ID = " + SQLTools.GetStringForSQL(actionParameterTraceKey.getActionId()) + " AND " +
                 " ACTION_PAR_NM = " + SQLTools.GetStringForSQL(actionParameterTraceKey.getName()) + ";";
     }
 
     @Override
-    public void insert(ActionParameterTrace actionParameterTrace) throws MetadataAlreadyExistsException, SQLException {
+    public void insert(ActionParameterTrace actionParameterTrace) throws MetadataAlreadyExistsException {
         LOGGER.trace(MessageFormat.format("Inserting ActionParameterTrace {0}.", actionParameterTrace.getMetadataKey().toString()));
         if (exists(actionParameterTrace.getMetadataKey())) {
             throw new ActionParameterTraceAlreadyExistsException(MessageFormat.format(
@@ -93,6 +102,19 @@ public class ActionParameterTraceConfiguration extends Configuration<ActionParam
         }
         String insertStatement = insertStatement(actionParameterTrace);
         getMetadataControl().getTraceMetadataRepository().executeUpdate(insertStatement);
+    }
+
+    public void insert(List<ActionParameterTrace> actionParameterTraces) throws MetadataAlreadyExistsException {
+        LOGGER.trace(MessageFormat.format("Inserting ActionParameterTraces {0}.", actionParameterTraces.stream().map(ActionParameterTrace::getMetadataKey).collect(Collectors.toList()).toString()));
+        List<String> insertQueries = new ArrayList<>();
+        for (ActionParameterTrace actionParameterTrace : actionParameterTraces) {
+            if (exists(actionParameterTrace.getMetadataKey())) {
+                LOGGER.info(MessageFormat.format("ActionParameterTrace {0} already exists. Skipping", actionParameterTrace.getMetadataKey().toString()));
+            } else {
+                insertQueries.add(insertStatement(actionParameterTrace));
+            }
+        }
+        getMetadataControl().getTraceMetadataRepository().executeBatch(insertQueries);
     }
 
     private String insertStatement(ActionParameterTrace actionParameterTrace) {

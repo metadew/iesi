@@ -43,7 +43,6 @@ public class ScriptDesignTraceService {
 
         try {
             scriptDesignTraceConfiguration.insert(new ScriptDesignTrace(runId, processId, parentProcessId, script));
-
             scriptVersionDesignTraceConfiguration.insert(new ScriptVersionDesignTrace(runId, processId, script.getVersion()));
 
             for (ScriptParameter scriptParameter : script.getParameters()) {
@@ -53,7 +52,7 @@ public class ScriptDesignTraceService {
             for (Action action : script.getActions()) {
                 actionDesignTraceService.trace(runId, processId, action);
             }
-        } catch (MetadataAlreadyExistsException | SQLException e) {
+        } catch (MetadataAlreadyExistsException e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
 

@@ -42,7 +42,7 @@ public class ScriptTraceService {
                 scriptParameterTraceConfiguration.insert(new ScriptParameterTrace(runId, processId, scriptParameter));
             }
 
-        } catch (MetadataAlreadyExistsException | SQLException e) {
+        } catch (MetadataAlreadyExistsException e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
 

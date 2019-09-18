@@ -27,7 +27,8 @@ public class ScriptParameterDesignTraceConfiguration extends Configuration<Scrip
     }
 
     @Override
-    public Optional<ScriptParameterDesignTrace> get(ScriptParameterDesignTraceKey scriptParameterDesignTraceKey) throws SQLException {
+    public Optional<ScriptParameterDesignTrace> get(ScriptParameterDesignTraceKey scriptParameterDesignTraceKey) {
+        try {
         String query = "SELECT SCRIPT_PAR_VAL FROM " +
                 getMetadataControl().getTraceMetadataRepository().getTableNameByLabel("ScriptParameterDesignTraces") +
                 " WHERE " +
@@ -42,10 +43,14 @@ public class ScriptParameterDesignTraceConfiguration extends Configuration<Scrip
         cachedRowSet.next();
         return Optional.of(new ScriptParameterDesignTrace(scriptParameterDesignTraceKey,
                 cachedRowSet.getString("SCRIPT_PAR_VAL")));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
-    public List<ScriptParameterDesignTrace> getAll() throws SQLException {
+    public List<ScriptParameterDesignTrace> getAll() {
+        try {
         List<ScriptParameterDesignTrace> scriptParameterDesignTraces = new ArrayList<>();
         String query = "SELECT RUN_ID, PRC_ID, SCRIPT_PAR_NM, SCRIPT_PAR_VAL FROM " +
                 getMetadataControl().getTraceMetadataRepository().getTableNameByLabel("ScriptParameterDesignTraces") + ";";
@@ -58,10 +63,13 @@ public class ScriptParameterDesignTraceConfiguration extends Configuration<Scrip
                     cachedRowSet.getString("SCRIPT_PAR_VAL")));
         }
         return scriptParameterDesignTraces;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
-    public void delete(ScriptParameterDesignTraceKey scriptParameterDesignTraceKey) throws MetadataDoesNotExistException, SQLException {
+    public void delete(ScriptParameterDesignTraceKey scriptParameterDesignTraceKey) throws MetadataDoesNotExistException {
         LOGGER.trace(MessageFormat.format("Deleting ActionTrace {0}.", scriptParameterDesignTraceKey.toString()));
         if (!exists(scriptParameterDesignTraceKey)) {
             throw new ScriptParameterDesignTraceDoesNotExistException(MessageFormat.format(
@@ -69,6 +77,16 @@ public class ScriptParameterDesignTraceConfiguration extends Configuration<Scrip
         }
         String deleteStatement = deleteStatement(scriptParameterDesignTraceKey);
         getMetadataControl().getTraceMetadataRepository().executeUpdate(deleteStatement);
+    }
+
+    public boolean exists(ScriptParameterDesignTraceKey scriptParameterDesignTraceKey) {
+        String query = "SELECT * FROM " +
+                getMetadataControl().getTraceMetadataRepository().getTableNameByLabel("ScriptParameterDesignTraces") +
+                " WHERE " +
+                " RUN_ID = " + SQLTools.GetStringForSQL(scriptParameterDesignTraceKey.getRunId()) + " AND " +
+                " PRC_ID = "  + SQLTools.GetStringForSQL(scriptParameterDesignTraceKey.getProcessId()) + ";";
+        CachedRowSet cachedRowSet = getMetadataControl().getTraceMetadataRepository().executeQuery(query, "reader");
+        return cachedRowSet.size() >= 1;
     }
 
     private String deleteStatement(ScriptParameterDesignTraceKey scriptParameterDesignTraceKey) {
@@ -80,7 +98,7 @@ public class ScriptParameterDesignTraceConfiguration extends Configuration<Scrip
     }
 
     @Override
-    public void insert(ScriptParameterDesignTrace scriptParameterDesignTrace) throws MetadataAlreadyExistsException, SQLException {
+    public void insert(ScriptParameterDesignTrace scriptParameterDesignTrace) throws MetadataAlreadyExistsException {
         LOGGER.trace(MessageFormat.format("Inserting ScriptParameterDesignTrace {0}.", scriptParameterDesignTrace.toString()));
         if (exists(scriptParameterDesignTrace.getMetadataKey())) {
             throw new ScriptParameterDesignTraceAlreadyExistsException(MessageFormat.format(

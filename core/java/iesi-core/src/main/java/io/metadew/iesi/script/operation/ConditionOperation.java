@@ -11,6 +11,7 @@ import org.apache.commons.jexl2.MapContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
+import java.sql.SQLException;
 
 /**
  * Operation to manage the conditions that have been defined in the script
@@ -37,13 +38,13 @@ public class ConditionOperation {
 
     }
 
-    public ConditionOperation(ActionExecution actionExecution, String inputValue) {
+    public ConditionOperation(ActionExecution actionExecution, String inputValue)  {
         this.setActionExecution(actionExecution);
         this.setExecutionControl(actionExecution.getExecutionControl());
         this.setInputValue(inputValue);
     }
 
-    public ConditionOperation(ExecutionControl executionControl, String inputValue) {
+    public ConditionOperation(ExecutionControl executionControl, String inputValue)  {
         this.setExecutionControl(executionControl);
         this.setInputValue(inputValue);
     }
@@ -110,7 +111,7 @@ public class ConditionOperation {
         return inputValue;
     }
 
-    public void setInputValue(String inputValue) {
+    public void setInputValue(String inputValue)  {
         this.inputValue = inputValue;
         this.setValue(inputValue);
 
@@ -125,9 +126,8 @@ public class ConditionOperation {
         return value;
     }
 
-    public void setValue(String value) {
-        this.value = this.getExecutionControl().getExecutionRuntime()
-                .resolveVariables(this.getActionExecution(), value);
+    public void setValue(String value)  {
+        this.value = this.getExecutionControl().getExecutionRuntime().resolveVariables(this.getActionExecution(), value);
     }
 
     public ActionExecution getActionExecution() {

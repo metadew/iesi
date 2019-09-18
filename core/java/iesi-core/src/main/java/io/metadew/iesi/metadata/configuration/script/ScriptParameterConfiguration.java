@@ -49,17 +49,21 @@ public class ScriptParameterConfiguration {
     }
 
 
-    public Optional<ScriptParameter> getScriptParameter(String scriptId, long scriptVersionNumber, String scriptParameterName) throws SQLException {
-        String queryScriptParameter = "select SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_PAR_NM, SCRIPT_PAR_VAL from " + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("ScriptParameters")
-                + " where SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptId) + " and SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(scriptVersionNumber) + " and SCRIPT_PAR_NM = " + SQLTools.GetStringForSQL(scriptParameterName) + ";";
-        CachedRowSet cachedRowSet = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(queryScriptParameter, "reader");
-        if (cachedRowSet.size() == 0) {
-            return Optional.empty();
-        } else if (cachedRowSet.size() > 1) {
-            LOGGER.info(MessageFormat.format("Found multiple implementations for ScriptParameter {0}-{1}-{2}. Returning first implementation", scriptId, scriptVersionNumber, scriptParameterName));
+    public Optional<ScriptParameter> getScriptParameter(String scriptId, long scriptVersionNumber, String scriptParameterName) {
+        try {
+            String queryScriptParameter = "select SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_PAR_NM, SCRIPT_PAR_VAL from " + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("ScriptParameters")
+                    + " where SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptId) + " and SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(scriptVersionNumber) + " and SCRIPT_PAR_NM = " + SQLTools.GetStringForSQL(scriptParameterName) + ";";
+            CachedRowSet cachedRowSet = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(queryScriptParameter, "reader");
+            if (cachedRowSet.size() == 0) {
+                return Optional.empty();
+            } else if (cachedRowSet.size() > 1) {
+                LOGGER.info(MessageFormat.format("Found multiple implementations for ScriptParameter {0}-{1}-{2}. Returning first implementation", scriptId, scriptVersionNumber, scriptParameterName));
+            }
+            cachedRowSet.next();
+            return Optional.of(new ScriptParameter(scriptParameterName, cachedRowSet.getString("ACTION_PAR_VAL")));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
-        cachedRowSet.next();
-        return Optional.of(new ScriptParameter(scriptParameterName, cachedRowSet.getString("ACTION_PAR_VAL")));
     }
 
 }

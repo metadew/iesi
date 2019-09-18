@@ -31,19 +31,11 @@ public class ScriptOutputLookup implements LookupInstruction {
 
     @Override
     public String generateOutput(String parameters) {
-        try {
-            Optional<ScriptResultOutput> scriptResultOutput = scriptResultOutputConfiguration.get(new ScriptResultOutputKey(executionControl.getRunId(), 0L, parameters.trim()));
-            if (!scriptResultOutput.isPresent()) {
-                throw new IllegalArgumentException(MessageFormat.format("No script output parameter {0} found for run id {1}", parameters.trim(), executionControl.getRunId()));
-            } else {
-                return scriptResultOutput.get().getValue();
-            }
-        } catch (SQLException e) {
-            StringWriter stackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(stackTrace));
-            LOGGER.warn("exception=" + e.getMessage());
-            LOGGER.info("stacktrace=" + stackTrace.toString());
+        Optional<ScriptResultOutput> scriptResultOutput = scriptResultOutputConfiguration.get(new ScriptResultOutputKey(executionControl.getRunId(), -1L, parameters.trim()));
+        if (!scriptResultOutput.isPresent()) {
             throw new IllegalArgumentException(MessageFormat.format("No script output parameter {0} found for run id {1}", parameters.trim(), executionControl.getRunId()));
+        } else {
+            return scriptResultOutput.get().getValue();
         }
     }
 }

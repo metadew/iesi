@@ -28,7 +28,7 @@ public class ImpersonatonDtoResourceAssembler  extends ResourceAssemblerSupport<
     @Override
     public ImpersonationDto toResource(Impersonation impersonation) {
         ImpersonationDto impersonationDto = convertToDto(impersonation);
-        Link selfLink = linkTo(methodOn(ImpersonationController.class).getByName(impersonationDto.getName()))
+        Link selfLink = linkTo(methodOn(ImpersonationController.class).get(impersonationDto.getName()))
                 .withSelfRel();
         impersonationDto.add(selfLink);
         return impersonationDto;

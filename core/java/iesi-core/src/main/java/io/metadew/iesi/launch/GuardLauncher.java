@@ -7,6 +7,8 @@ import io.metadew.iesi.guard.execution.GuardExecution;
 import io.metadew.iesi.metadata.definition.Context;
 import org.apache.commons.cli.*;
 
+import java.sql.SQLException;
+
 /**
  * The guard launcher is entry point to launch all access control actions.
  *
@@ -14,7 +16,7 @@ import org.apache.commons.cli.*;
  */
 public class GuardLauncher {
 
-    public static void main(String[] args) {
+    public static void main(String[] args)  {
 
         Option oHelp = new Option("help", "print this message");
         Option oUser = new Option("user", true, "define the user name");
@@ -93,6 +95,7 @@ public class GuardLauncher {
                 }
 
             }
+            FrameworkInstance.getInstance().shutdown();
         } catch (ParseException e) {
             e.printStackTrace();
             System.exit(1);

@@ -19,21 +19,17 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 @Component
 public class ScriptDtoResourceAssembler extends ResourceAssemblerSupport<Script, ScriptDto> {
 
-    private final ModelMapper modelMapper;
-
     public ScriptDtoResourceAssembler() {
         super(ScriptController.class, ScriptDto.class);
-        this.modelMapper = new ModelMapper();
     }
 
     @Override
     public ScriptDto toResource(Script script) {
         ScriptDto scriptByNameDto = convertToDto(script);
-        Link selfLink = linkTo(methodOn(ScriptController.class).getScriptsAndVersion(script.getName(),
-                script.getVersion().getNumber()))
+        Link selfLink = linkTo(methodOn(ScriptController.class).get(script.getName(), script.getVersion().getNumber()))
                 .withRel("script:" + scriptByNameDto.getName() + "-" + scriptByNameDto.getVersion().getNumber());
         scriptByNameDto.add(selfLink);
-        Link versionLink = linkTo(methodOn(ScriptController.class).getByNameScript(script.getName()))
+        Link versionLink = linkTo(methodOn(ScriptController.class).executeScript(null, scriptByNameDto.getName(), scriptByNameDto.getVersion().getNumber()))
                 .withRel("script");
         scriptByNameDto.add(versionLink);
         return scriptByNameDto;

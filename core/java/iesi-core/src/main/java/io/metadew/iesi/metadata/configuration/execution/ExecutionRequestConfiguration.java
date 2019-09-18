@@ -37,7 +37,8 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
 
 
     @Override
-    public Optional<ExecutionRequest> get(ExecutionRequestKey executionRequestKey) throws SQLException {
+    public Optional<ExecutionRequest> get(ExecutionRequestKey executionRequestKey)  {
+        try {
         String query = "SELECT EXECUTION_REQUEST.REQUEST_ID, EXECUTION_REQUEST.REQUEST_TMS, EXECUTION_REQUEST.REQUEST_NM, " +
                 "EXECUTION_REQUEST.REQUEST_DSC, EXECUTION_REQUEST.NOTIF_EMAIL, EXECUTION_REQUEST.SCOPE_NM, EXECUTION_REQUEST.CONTEXT_NM, EXECUTION_REQUEST.ST_NM, " +
                 "AUTH_EXECUTION_REQUEST.SPACE_NM, AUTH_EXECUTION_REQUEST.USER_NM, AUTH_EXECUTION_REQUEST.USER_PASSWORD, " +
@@ -116,10 +117,14 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
 //                LOGGER.warn(MessageFormat.format("ExecutionRequest {0} does not have a certain class", executionRequestKey.toString()));
 //                return Optional.empty();
 //        }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
-    public List<ExecutionRequest> getAll() throws SQLException {
+    public List<ExecutionRequest> getAll()  {
+        try {
         List<ExecutionRequest> executionRequests = new ArrayList<>();
         String query = "SELECT EXECUTION_REQUEST.REQUEST_ID, EXECUTION_REQUEST.REQUEST_TMS, EXECUTION_REQUEST.REQUEST_NM, " +
                 "EXECUTION_REQUEST.REQUEST_DSC, EXECUTION_REQUEST.NOTIF_EMAIL, EXECUTION_REQUEST.SCOPE_NM, EXECUTION_REQUEST.CONTEXT_NM, EXECUTION_REQUEST.ST_NM, " +
@@ -192,9 +197,13 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
 //                    LOGGER.warn(MessageFormat.format("ExecutionRequest {0} does not have a certain class", cachedRowSet.getString("REQUEST_ID")));
         }
         return executionRequests;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public List<ExecutionRequest> getAllNew() throws SQLException {
+    public List<ExecutionRequest> getAllNew()  {
+        try {
         List<ExecutionRequest> executionRequests = new ArrayList<>();
         String query = "SELECT EXECUTION_REQUEST.REQUEST_ID, EXECUTION_REQUEST.REQUEST_TMS, EXECUTION_REQUEST.REQUEST_NM, " +
                 "EXECUTION_REQUEST.REQUEST_DSC, EXECUTION_REQUEST.NOTIF_EMAIL, EXECUTION_REQUEST.SCOPE_NM, EXECUTION_REQUEST.CONTEXT_NM, EXECUTION_REQUEST.ST_NM, " +
@@ -268,10 +277,13 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
 //                    LOGGER.warn(MessageFormat.format("ExecutionRequest {0} does not have a certain class", cachedRowSet.getString("REQUEST_ID")));
         }
         return executionRequests;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
-    public void delete(ExecutionRequestKey executionRequestKey) throws MetadataDoesNotExistException, SQLException {
+    public void delete(ExecutionRequestKey executionRequestKey) throws MetadataDoesNotExistException {
         LOGGER.trace(MessageFormat.format("Deleting ExecutionRequest {0}.", executionRequestKey.toString()));
         if (!exists(executionRequestKey)) {
             throw new ExecutionRequestDoesNotExistException(MessageFormat.format(
@@ -297,7 +309,7 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
     }
 
     @Override
-    public void insert(ExecutionRequest executionRequest) throws MetadataAlreadyExistsException, SQLException {
+    public void insert(ExecutionRequest executionRequest) throws MetadataAlreadyExistsException {
         LOGGER.trace(MessageFormat.format("Inserting ExecutionRequest {0}.", executionRequest.toString()));
         if (exists(executionRequest.getMetadataKey())) {
             throw new ExecutionRequestAlreadyExistsException(MessageFormat.format(

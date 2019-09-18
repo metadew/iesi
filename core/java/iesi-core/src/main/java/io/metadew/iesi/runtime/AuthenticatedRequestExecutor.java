@@ -71,7 +71,7 @@ public class AuthenticatedRequestExecutor implements RequestExecutor<Authenticat
             executionRequest.updateExecutionRequestStatus(ExecutionRequestStatus.COMPLETED);
             executionRequestConfiguration.update(executionRequest);
 
-        } catch (SQLException | MetadataDoesNotExistException e) {
+        } catch (MetadataDoesNotExistException e) {
             e.printStackTrace();
         }
 
@@ -105,7 +105,7 @@ public class AuthenticatedRequestExecutor implements RequestExecutor<Authenticat
 //        LOGGER.warn("stacktrace=" + stackTrace.toString());
     }
 
-    private void checkUserAccess(AuthenticatedExecutionRequest executionRequest) throws SQLException, MetadataDoesNotExistException {
+    private void checkUserAccess(AuthenticatedExecutionRequest executionRequest) throws MetadataDoesNotExistException {
         UserAccess userAccess = userAccessConfiguration.doUserLogin(executionRequest.getUser(), executionRequest.getPassword());
 
         if (userAccess.isException()) {

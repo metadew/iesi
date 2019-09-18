@@ -40,7 +40,7 @@
 //        String schemaName = "";
 //        // MetadataControl.getInstance().getDesignMetadataRepository().getRepository().getDatabases().get("reader");
 //        //		.getMetadataTableConfiguration().getSchemaPrefix();
-//        String tableNamePrefix = MetadataControl.getInstance().getDesignMetadataRepository().getTableNamePrefix();
+//        String tableNamePrefix = MetadataControl.getInstance().getDesignMetadataRepository().getTablePrefix();
 //        String tableName = schemaName + tableNamePrefix + metadataTable.getName();
 //        DataTable dataTable = new DataTable();
 //        // Setting the table name without instance

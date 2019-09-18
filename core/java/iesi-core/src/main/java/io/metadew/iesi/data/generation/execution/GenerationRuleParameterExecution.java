@@ -7,6 +7,8 @@ import io.metadew.iesi.script.execution.ExecutionControl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.sql.SQLException;
+
 
 public class GenerationRuleParameterExecution {
 
@@ -59,7 +61,7 @@ public class GenerationRuleParameterExecution {
         return value;
     }
 
-    public void setValue(String value) {
+    public void setValue(String value)  {
         this.value = this.getExecutionControl().getExecutionRuntime().resolveVariables(value);
     }
 
@@ -75,7 +77,7 @@ public class GenerationRuleParameterExecution {
         return inputValue;
     }
 
-    public void setInputValue(String inputValue) {
+    public void setInputValue(String inputValue)  {
         this.inputValue = inputValue;
         this.setValue(inputValue);
 

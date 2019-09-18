@@ -32,8 +32,8 @@ public class DesignMetadataRepository extends MetadataRepository {
     private final ScriptConfiguration scriptConfiguration;
     private final ComponentConfiguration componentConfiguration;
 
-    public DesignMetadataRepository(String frameworkCode, String name, String scope, String instanceName, RepositoryCoordinator repositoryCoordinator, String repositoryObjectsPath, String repositoryTablesPath) {
-        super(frameworkCode, name, scope, instanceName, repositoryCoordinator, repositoryObjectsPath, repositoryTablesPath);
+    public DesignMetadataRepository(String name, String scope, String instanceName, RepositoryCoordinator repositoryCoordinator) {
+        super(name, scope, instanceName, repositoryCoordinator);
         scriptConfiguration = new ScriptConfiguration();
         componentConfiguration = new ComponentConfiguration();
     }
@@ -112,7 +112,7 @@ public class DesignMetadataRepository extends MetadataRepository {
             LOGGER.warn(MessageFormat.format("Component {0} already exists in design repository. Updating to new definition", component.getName()), Level.INFO);
             try {
                 componentConfiguration.update(component);
-            } catch (ComponentDoesNotExistException ex) {
+            } catch (ComponentDoesNotExistException | SQLException ex) {
                 throw new MetadataRepositorySaveException(ex);
             }
         } catch (SQLException e) {

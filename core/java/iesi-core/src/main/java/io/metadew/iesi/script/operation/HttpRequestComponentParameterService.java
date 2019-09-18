@@ -9,6 +9,7 @@ import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import org.apache.logging.log4j.Level;
 
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +29,7 @@ public class HttpRequestComponentParameterService {
         this.dataTypeService = new DataTypeService();
     }
 
-    private DataType getParameterValue(String value, List<ComponentAttribute> componentAttributes, ActionExecution actionExecution) {
+    private DataType getParameterValue(String value, List<ComponentAttribute> componentAttributes, ActionExecution actionExecution)  {
         // Resolve attributes
         value = executionControl.getExecutionRuntime().resolveComponentTypeVariables(value, componentAttributes, executionControl.getEnvName());
         // Resolve concept lookups
@@ -42,7 +43,7 @@ public class HttpRequestComponentParameterService {
         return dataTypeService.resolve(value);
     }
 
-    public DataType getParameterValue(ComponentParameter componentParameter, List<ComponentAttribute> componentAttributes, ActionExecution actionExecution) {
+    public DataType getParameterValue(ComponentParameter componentParameter, List<ComponentAttribute> componentAttributes, ActionExecution actionExecution)  {
         executionControl.logMessage(actionExecution, "component.param " + componentParameter.getName() + ": " + componentParameter.getValue(), Level.DEBUG);
         return getParameterValue(componentParameter.getValue(), componentAttributes, actionExecution);
     }
@@ -55,7 +56,7 @@ public class HttpRequestComponentParameterService {
         return componentParameter.getName().startsWith("queryparam");
     }
 
-    public Map<String, DataType> getHeader(ComponentParameter componentParameter, List<ComponentAttribute> componentAttributes, ActionExecution actionExecution) {
+    public Map<String, DataType> getHeader(ComponentParameter componentParameter, List<ComponentAttribute> componentAttributes, ActionExecution actionExecution)  {
         Map<String, DataType> header = new HashMap<>();
         if (isHeader(componentParameter)) {
             header.put(componentParameter.getValue().split(",")[0],
@@ -66,7 +67,7 @@ public class HttpRequestComponentParameterService {
         }
     }
 
-    public Map<String, DataType> getQueryParameter(ComponentParameter componentParameter, List<ComponentAttribute> componentAttributes, ActionExecution actionExecution) {
+    public Map<String, DataType> getQueryParameter(ComponentParameter componentParameter, List<ComponentAttribute> componentAttributes, ActionExecution actionExecution)  {
         Map<String, DataType> header = new HashMap<>();
         if (isQueryParameter(componentParameter)) {
             header.put(componentParameter.getValue().split(",")[0],

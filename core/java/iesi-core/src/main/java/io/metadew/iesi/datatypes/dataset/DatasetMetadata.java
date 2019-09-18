@@ -21,7 +21,7 @@ public class DatasetMetadata {
 
     private final Database database;
     private final String datasetName;
-    
+
     private static final Logger LOGGER = LogManager.getLogger();
 
     public DatasetMetadata(String datasetName) {
@@ -30,91 +30,109 @@ public class DatasetMetadata {
                 + File.separator + datasetName + File.separator + "metadata" + File.separator + "metadata.db3"));
     }
 
-    public Optional<Long> getId(List<String> labels) throws SQLException {
-        String query = "SELECT DATASET_INV_ID FROM CFG_DATASET_LBL WHERE DATASET_LBL_VAL in (" + labels.stream().map(SQLTools::GetStringForSQL).collect(Collectors.joining(",")) +
-                ") GROUP BY DATASET_INV_ID HAVING COUNT(DISTINCT DATASET_LBL_VAL) = " + labels.size() + ";";
-        CachedRowSet cachedRowSet = database.executeQuery(query);
-        if (cachedRowSet.size() == 0) {
-            return Optional.empty();
-        } else if (cachedRowSet.size() > 1) {
-            LOGGER.trace(new IESIMessage(MessageFormat.format("Found multiple dataset ids ({0}) for labels {1}-{2}. Returning first occurence",
-                    cachedRowSet.size(), datasetName, String.join(", ", labels))));
-        }
-        cachedRowSet.next();
-        long datasetInventoryId = cachedRowSet.getLong("DATASET_INV_ID");
-        LOGGER.trace(new IESIMessage(MessageFormat.format("Found dataset id {0} for labels {1}-{2}.", Long.toString(datasetInventoryId), datasetName, String.join(", ", labels))));
+    public Optional<Long> getId(List<String> labels) {
+        try {
+            String query = "SELECT DATASET_INV_ID FROM CFG_DATASET_LBL WHERE DATASET_LBL_VAL in (" + labels.stream().map(SQLTools::GetStringForSQL).collect(Collectors.joining(",")) +
+                    ") GROUP BY DATASET_INV_ID HAVING COUNT(DISTINCT DATASET_LBL_VAL) = " + labels.size() + ";";
+            CachedRowSet cachedRowSet = database.executeQuery(query);
+            if (cachedRowSet.size() == 0) {
+                return Optional.empty();
+            } else if (cachedRowSet.size() > 1) {
+                LOGGER.trace(new IESIMessage(MessageFormat.format("Found multiple dataset ids ({0}) for labels {1}-{2}. Returning first occurence",
+                        cachedRowSet.size(), datasetName, String.join(", ", labels))));
+            }
+            cachedRowSet.next();
+            long datasetInventoryId = cachedRowSet.getLong("DATASET_INV_ID");
+            LOGGER.trace(new IESIMessage(MessageFormat.format("Found dataset id {0} for labels {1}-{2}.", Long.toString(datasetInventoryId), datasetName, String.join(", ", labels))));
 
-        return Optional.of(datasetInventoryId);
+            return Optional.of(datasetInventoryId);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public Database getDatasetDatabase(long id) throws SQLException {
-        String query = "select DATASET_FILE_NM, DATASET_TABLE_NM from CFG_DATASET_INV where DATASET_INV_ID = " + id;
-        CachedRowSet cachedRowSetFileTable = database.executeQuery(query);
+    public Database getDatasetDatabase(long id) {
+        try {
+            String query = "select DATASET_FILE_NM, DATASET_TABLE_NM from CFG_DATASET_INV where DATASET_INV_ID = " + id;
+            CachedRowSet cachedRowSetFileTable = database.executeQuery(query);
 
 
-        if (cachedRowSetFileTable.size() == 0) {
-            throw new RuntimeException(MessageFormat.format("dataset id {0} is does not have an implementation. " +
-                    "Please implement this dataset", datasetName));
-        } else if (cachedRowSetFileTable.size() > 1) {
-            LOGGER.warn(new IESIMessage(MessageFormat.format("Found more than implementation for dataset id {0}. " +
-                    "Returning first occurrence.", id)));
+            if (cachedRowSetFileTable.size() == 0) {
+                throw new RuntimeException(MessageFormat.format("dataset id {0} is does not have an implementation. " +
+                        "Please implement this dataset", datasetName));
+            } else if (cachedRowSetFileTable.size() > 1) {
+                LOGGER.warn(new IESIMessage(MessageFormat.format("Found more than implementation for dataset id {0}. " +
+                        "Returning first occurrence.", id)));
+            }
+            cachedRowSetFileTable.next();
+            Database database = new SqliteDatabase(new SqliteDatabaseConnection(FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("data") + File.separator + "datasets"
+                    + File.separator + datasetName + File.separator + "data" + File.separator + cachedRowSetFileTable.getString("DATASET_FILE_NM")));
+            cachedRowSetFileTable.close();
+            return database;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
-        cachedRowSetFileTable.next();
-        Database database = new SqliteDatabase(new SqliteDatabaseConnection(FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("data") + File.separator + "datasets"
-                + File.separator + datasetName + File.separator + "data" + File.separator + cachedRowSetFileTable.getString("DATASET_FILE_NM")));
-        cachedRowSetFileTable.close();
-        return database;
     }
 
-    public String getTableName(long id) throws SQLException {
-        String query = "select DATASET_FILE_NM, DATASET_TABLE_NM from CFG_DATASET_INV where DATASET_INV_ID = " + id;
-        CachedRowSet cachedRowSetFileTable = database.executeQuery(query);
+    public String getTableName(long id) {
+        try {
+            String query = "select DATASET_FILE_NM, DATASET_TABLE_NM from CFG_DATASET_INV where DATASET_INV_ID = " + id;
+            CachedRowSet cachedRowSetFileTable = database.executeQuery(query);
 
 
-        if (cachedRowSetFileTable.size() == 0) {
-            throw new RuntimeException(MessageFormat.format("dataset id {0} is does not have an implementation. " +
-                    "Please implement this dataset", datasetName));
-        } else if (cachedRowSetFileTable.size() > 1) {
+            if (cachedRowSetFileTable.size() == 0) {
+                throw new RuntimeException(MessageFormat.format("dataset id {0} is does not have an implementation. " +
+                        "Please implement this dataset", datasetName));
+            } else if (cachedRowSetFileTable.size() > 1) {
 
-            LOGGER.warn(new IESIMessage(MessageFormat.format("Found more than implementation for dataset id {0}. " +
-                    "Returning first occurrence.", id)));
+                LOGGER.warn(new IESIMessage(MessageFormat.format("Found more than implementation for dataset id {0}. " +
+                        "Returning first occurrence.", id)));
 
+            }
+            cachedRowSetFileTable.next();
+            String tableName = cachedRowSetFileTable.getString("DATASET_TABLE_NM");
+            cachedRowSetFileTable.close();
+            return tableName;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
-        cachedRowSetFileTable.next();
-        String tableName = cachedRowSetFileTable.getString("DATASET_TABLE_NM");
-        cachedRowSetFileTable.close();
-        return tableName;
     }
 
     protected void insertDatasetLabelInformation(int datasetInventoryId, List<String> labels) {
         String labelQuery = "insert into CFG_DATASET_LBL (DATASET_INV_ID, DATASET_LBL_VAL) VALUES ("
                 + SQLTools.GetStringForSQL(datasetInventoryId) + ", {0})";
-        labels.forEach(label -> database.executeUpdate(MessageFormat.format(labelQuery, SQLTools.GetStringForSQL(label))));
+        labels.forEach(label -> {
+            database.executeUpdate(MessageFormat.format(labelQuery, SQLTools.GetStringForSQL(label)));
+        });
     }
 
-    protected int getLatestInventoryId() throws SQLException {
-        String latestInventoryIdQuery = "select max(DATASET_INV_ID) as LATEST_INVENTORY_ID from CFG_DATASET_INV";
-        CachedRowSet cachedRowSet = database.executeQuery(latestInventoryIdQuery);
-        int inventoryId;
-        if (cachedRowSet.size() == 0) {
-            inventoryId = 0;
-        } else {
-            cachedRowSet.next();
-            inventoryId  = cachedRowSet.getInt("LATEST_INVENTORY_ID");
+    protected int getLatestInventoryId() {
+        try {
+            String latestInventoryIdQuery = "select max(DATASET_INV_ID) as LATEST_INVENTORY_ID from CFG_DATASET_INV";
+            CachedRowSet cachedRowSet = database.executeQuery(latestInventoryIdQuery);
+            int inventoryId;
+            if (cachedRowSet.size() == 0) {
+                inventoryId = 0;
+            } else {
+                cachedRowSet.next();
+                inventoryId = cachedRowSet.getInt("LATEST_INVENTORY_ID");
+            }
+            cachedRowSet.close();
+            int inventoryIdLbl;
+            // TODO: robustness to lbl
+            String latestInventoryIdQueryLbl = "select max(DATASET_INV_ID) as LATEST_INVENTORY_ID from CFG_DATASET_LBL";
+            CachedRowSet cachedRowSetLbl = database.executeQuery(latestInventoryIdQueryLbl);
+            if (cachedRowSetLbl.size() == 0) {
+                inventoryIdLbl = 0;
+            } else {
+                cachedRowSetLbl.next();
+                inventoryIdLbl = cachedRowSetLbl.getInt("LATEST_INVENTORY_ID");
+            }
+            cachedRowSetLbl.close();
+            return Math.max(inventoryId, inventoryIdLbl);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
-        cachedRowSet.close();
-        int inventoryIdLbl;
-        // TODO: robustness to lbl
-        String latestInventoryIdQueryLbl = "select max(DATASET_INV_ID) as LATEST_INVENTORY_ID from CFG_DATASET_LBL";
-        CachedRowSet cachedRowSetLbl = database.executeQuery(latestInventoryIdQueryLbl);
-        if (cachedRowSetLbl.size() == 0) {
-            inventoryIdLbl = 0;
-        } else {
-            cachedRowSetLbl.next();
-            inventoryIdLbl = cachedRowSetLbl.getInt("LATEST_INVENTORY_ID");
-        }
-        cachedRowSetLbl.close();
-        return Math.max(inventoryId, inventoryIdLbl);
     }
 
     public void insertDatasetDatabaseInformation(int inventoryId, String filename, String tableName) {

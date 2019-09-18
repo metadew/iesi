@@ -51,7 +51,7 @@ public class ImpersonationController {
 
 
 	@GetMapping("")
-	public HalMultipleEmbeddedResource<ImpersonationDto> getAllImpersonations(@Valid ImpersonationCriteria impersonationCriteria) {
+	public HalMultipleEmbeddedResource<ImpersonationDto> getAll(@Valid ImpersonationCriteria impersonationCriteria) {
 		List<Impersonation> impersonations = impersonationConfiguration.getAllImpersonations();
 		List<Impersonation> pagination = impersonationPagination.search(impersonations, impersonationCriteria);
 		return new HalMultipleEmbeddedResource<ImpersonationDto>(pagination.stream()
@@ -61,7 +61,7 @@ public class ImpersonationController {
 	}
 
 	@GetMapping("/{name}")
-	public ImpersonationDto getByName(@PathVariable String name) {
+	public ImpersonationDto get(@PathVariable String name) {
 
 		return impersonationConfiguration.getImpersonation(name)
 				.map(impersonation -> impersonatonDtoResourceAssembler.toResource(impersonation))
@@ -69,7 +69,7 @@ public class ImpersonationController {
 	}
 
 	@PostMapping("")
-	public ImpersonationDto postAllImpersonations(@Valid @RequestBody ImpersonationDto impersonationDto) {
+	public ImpersonationDto post(@Valid @RequestBody ImpersonationDto impersonationDto) {
 		getNullProperties.getNullImpersonation(impersonationDto);
 		try {
 			impersonationConfiguration.insertImpersonation(impersonationDto.convertToEntity());
@@ -81,7 +81,7 @@ public class ImpersonationController {
 		}
 	}
 	@PutMapping("")
-	public HalMultipleEmbeddedResource<ImpersonationDto> putAllConnections(@Valid @RequestBody List<ImpersonationDto> impersonationDtos) {
+	public HalMultipleEmbeddedResource<ImpersonationDto> putAll(@Valid @RequestBody List<ImpersonationDto> impersonationDtos) {
 		HalMultipleEmbeddedResource<ImpersonationDto> halMultipleEmbeddedResource = new HalMultipleEmbeddedResource<>();
 		getListNullProperties.getNullImpersonation(impersonationDtos);
 		for (ImpersonationDto impersonationDto : impersonationDtos) {
@@ -89,7 +89,7 @@ public class ImpersonationController {
 				impersonationConfiguration.updateImpersonation(impersonationDto.convertToEntity());
 				halMultipleEmbeddedResource.embedResource(impersonationDto);
 				halMultipleEmbeddedResource.add(linkTo(methodOn(ImpersonationController.class)
-						.getByName(impersonationDto.getName()))
+						.get(impersonationDto.getName()))
 						.withRel(impersonationDto.getName()));
 			} catch (ImpersonationDoesNotExistException e) {
 				e.printStackTrace();
@@ -101,7 +101,7 @@ public class ImpersonationController {
 	}
 
 	@PutMapping("/{name}")
-	public ImpersonationDto putImpersonations(@PathVariable String name,
+	public ImpersonationDto put(@PathVariable String name,
 											  @RequestBody ImpersonationDto impersonation) {
  		getNullProperties.getNullImpersonation(impersonation);
 		if (!impersonation.getName().equals(name)) {
@@ -120,7 +120,7 @@ public class ImpersonationController {
 	}
 
 	@DeleteMapping("")
-	public ResponseEntity<?> deleteAllImpersonation() {
+	public ResponseEntity<?> deleteAll() {
 		List<Impersonation> impersonation = impersonationConfiguration.getAllImpersonations();
 		if (!impersonation.isEmpty()) {
 			impersonationConfiguration.deleteAllImpersonations();
@@ -130,7 +130,7 @@ public class ImpersonationController {
 	}
 
 	@DeleteMapping("/{name}")
-	public ResponseEntity<?> deleteByNameImpersonation(@PathVariable String name) {
+	public ResponseEntity<?> delete(@PathVariable String name) {
 		Optional<Impersonation> impersonation = impersonationConfiguration.getImpersonation(name);
 		if (impersonation.isPresent()) {
 			impersonationConfiguration.deleteImpersonation(name);

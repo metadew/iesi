@@ -19,59 +19,33 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.SQLException;
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class ActionTraceService {
 
+    private final ActionParameterTraceService actionParameterTraceService;
     private ActionTraceConfiguration actionTraceConfiguration;
-    private ActionParameterTraceConfiguration actionParameterTraceConfiguration;
     private static final Logger LOGGER = LogManager.getLogger();
 
     public ActionTraceService() {
         this.actionTraceConfiguration = new ActionTraceConfiguration();
-        this.actionParameterTraceConfiguration = new ActionParameterTraceConfiguration();
+        this.actionParameterTraceService = new ActionParameterTraceService();
     }
 
-    public void trace(ActionExecution actionExecution, Map<String, ActionParameterOperation> actionParameterOperationMap) {
+    public void trace(ActionExecution actionExecution, Map<String, DataType> actionParameterMap) {
         try {
             actionTraceConfiguration.insert(new ActionTrace(actionExecution.getExecutionControl().getRunId(), actionExecution.getProcessId(), actionExecution.getAction()));
-            for (Map.Entry<String, ActionParameterOperation> actionParameterOperationEntry : actionParameterOperationMap.entrySet()) {
-                if (actionParameterOperationEntry.getValue() == null) continue;
-                trace(actionExecution, actionParameterOperationEntry.getKey(), actionParameterOperationEntry.getValue().getValue());
-            }
+            actionParameterTraceService.trace(actionExecution, actionParameterMap);
 
-        } catch (MetadataAlreadyExistsException | SQLException e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-
+        } catch (MetadataAlreadyExistsException e) {
+            StringWriter stackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTrace));
             LOGGER.warn("exception=" + e.getMessage());
-            LOGGER.info("stacktrace" + StackTrace.toString());
+            LOGGER.info("stacktrace" + stackTrace.toString());
         }
     }
 
-    public void trace(ActionExecution actionExecution, String key, DataType value) {
-        try {
-            if (value == null) {
-                actionParameterTraceConfiguration.insert(new ActionParameterTrace(new ActionParameterTraceKey(actionExecution.getExecutionControl().getRunId(), actionExecution.getProcessId(), actionExecution.getAction().getId(), key), "null"));
 
-            } else if (value instanceof Text) {
-                actionParameterTraceConfiguration.insert(new ActionParameterTrace(new ActionParameterTraceKey(actionExecution.getExecutionControl().getRunId(), actionExecution.getProcessId(), actionExecution.getAction().getId(), key), ((Text) value).getString()));
-            } else if (value instanceof Array) {
-                int counter = 0;
-                for (DataType element : ((Array) value).getList()) {
-                    trace(actionExecution, key + counter, element);
-                    counter++;
-                }
-            } else if (value instanceof Dataset) {
-                for (Map.Entry<String, DataType> datasetItem : ((Dataset) value).getDataItems().entrySet()) {
-                    trace(actionExecution, key + datasetItem.getKey(), datasetItem.getValue());
-                }
-            } else {
-                LOGGER.warn(MessageFormat.format("DataType ''{0}'' is unknown to trace", value.getClass()));
-            }
-
-        } catch (MetadataAlreadyExistsException | SQLException e) {
-            e.printStackTrace();
-        }
-    }
 }

@@ -3,19 +3,12 @@ package io.metadew.iesi.script.execution;
 import io.metadew.iesi.connection.tools.FolderTools;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.data.generation.execution.GenerationObjectExecution;
-import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.dataset.KeyValueDataset;
 import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
 import io.metadew.iesi.framework.execution.FrameworkControl;
 import io.metadew.iesi.framework.execution.IESIMessage;
-import io.metadew.iesi.metadata.configuration.connection.ConnectionParameterConfiguration;
-import io.metadew.iesi.metadata.configuration.environment.EnvironmentParameterConfiguration;
-import io.metadew.iesi.metadata.configuration.script.result.ScriptResultOutputConfiguration;
 import io.metadew.iesi.metadata.definition.Iteration;
-import io.metadew.iesi.metadata.definition.RuntimeVariable;
 import io.metadew.iesi.metadata.definition.component.ComponentAttribute;
-import io.metadew.iesi.metadata.definition.script.result.ScriptResultOutput;
-import io.metadew.iesi.metadata.definition.script.result.key.ScriptResultOutputKey;
 import io.metadew.iesi.runtime.definition.LookupResult;
 import io.metadew.iesi.script.configuration.IterationVariableConfiguration;
 import io.metadew.iesi.script.configuration.RuntimeVariableConfiguration;
@@ -68,11 +61,11 @@ public class ExecutionRuntime {
     private final String INSTRUCTION_KEYWORD_KEY = "instructionKeyword";
     private final String INSTRUCTION_ARGUMENTS_KEY = "instructionArguments";
     private final Pattern CONCEPT_LOOKUP_PATTERN = Pattern
-            .compile("\\s*\\{\\{(?<" + INSTRUCTION_TYPE_KEY + ">[\\*=\\$!])(?<" + INSTRUCTION_KEYWORD_KEY + ">[\\w\\.]+)(?<" + INSTRUCTION_ARGUMENTS_KEY + ">\\(.*\\))?\\}\\}\\s*");
+            .compile("\\s*\\{\\{(?<" + INSTRUCTION_TYPE_KEY + ">[\\^\\*=\\$!])(?<" + INSTRUCTION_KEYWORD_KEY + ">[\\w\\.]+)(?<" + INSTRUCTION_ARGUMENTS_KEY + ">\\(.*\\))?\\}\\}\\s*");
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public ExecutionRuntime(ExecutionControl executionControl, String runId) {
+    public ExecutionRuntime(ExecutionControl executionControl, String runId)  {
         this.executionControl = executionControl;
         this.runId = runId;
 
@@ -127,7 +120,7 @@ public class ExecutionRuntime {
         }
     }
 
-    public void setRuntimeVariables(ActionExecution actionExecution, String input) {
+    public void setRuntimeVariables(ActionExecution actionExecution, String input)  {
         String[] lines = input.split("\n");
         for (int i = 0; i < lines.length; i++) {
             String line = lines[i];
@@ -167,12 +160,12 @@ public class ExecutionRuntime {
     }
 
     // Set runtime variables
-    public void setRuntimeVariable(Long processId, String name, String value) {
+    public void setRuntimeVariable(Long processId, String name, String value)  {
         LOGGER.debug(new IESIMessage("exec.runvar.set=" + name + ":" + value));
         runtimeVariableConfiguration.setRuntimeVariable(runId, processId, name, value);
     }
 
-    public void setRuntimeVariable(ActionExecution actionExecution, String name, String value) {
+    public void setRuntimeVariable(ActionExecution actionExecution, String name, String value)  {
         LOGGER.debug(new IESIMessage("exec.runvar.set=" + name + ":" + value));
         runtimeVariableConfiguration.setRuntimeVariable(runId, actionExecution.getProcessId(), name, value);
     }
@@ -182,20 +175,16 @@ public class ExecutionRuntime {
         runtimeVariableConfiguration.setRuntimeVariable(runId, scriptExecution.getProcessId(), name, value);
     }
 
-    public RuntimeVariable getRuntimeVariable(String name) {
-        return runtimeVariableConfiguration.getRuntimeVariable(runId, name);
-    }
-
-    public String getRuntimeVariableValue(String name) {
+    public Optional<String> getRuntimeVariableValue(String name) {
         return runtimeVariableConfiguration.getRuntimeVariableValue(runId, name);
     }
 
     // Iteration Variables
-    public void setIterationVariables(String listName, ResultSet rs) {
+    public void setIterationVariables(String listName, ResultSet rs)  {
         this.getIterationVariableConfiguration().setIterationList(runId, listName, rs);
     }
 
-    public String resolveVariables(String input) {
+    public String resolveVariables(String input)  {
         // Prevent null issues during string operations
         if (input == null) {
             input = "";
@@ -247,7 +236,7 @@ public class ExecutionRuntime {
             midBit = temp.substring(openPos + 1, closePos);
 
             // Replace
-            replaceValue = this.getRuntimeVariableValue(midBit);
+            replaceValue = this.getRuntimeVariableValue(midBit).orElse("");
             if (replaceValue != null) {
                 input = input.replaceAll(variable_char + midBit + variable_char, replaceValue);
             }
@@ -426,7 +415,7 @@ public class ExecutionRuntime {
                     .map(instructionArgument -> resolveConceptLookup(instructionArgument).getValue())
                     .collect(Collectors.joining(", "));
 
-            LOGGER.debug(new IESIMessage(MessageFormat.format("concept.lookup.resolve.instruction.parameters=resolved instructions parameters to {0}", instructionArgumentsString)));
+            LOGGER.debug(new IESIMessage(MessageFormat.format("concept.lookup.resolve.instruction.parameters=resolved instructions parameters to {0}", instructionArgumentsResolved)));
 
             switch (instructionType) {
                 case "=":
@@ -444,6 +433,8 @@ public class ExecutionRuntime {
                     if (instructionArgumentsResolved.endsWith("\""))
                         instructionArgumentsResolved = instructionArgumentsString.substring(0, instructionArgumentsResolved.length() - 1);
                     resolvedInput = instructionArgumentsResolved;
+                    break;
+                case "^":
                     break;
                 default:
                     LOGGER.warn(new IESIMessage(MessageFormat.format("concept.lookup.resolve.instruction.notfound=no instruction type found for {0}", instructionType)));
@@ -577,7 +568,7 @@ public class ExecutionRuntime {
     }
 
     // Repository Management
-    public void setRepository(ExecutionControl executionControl, String repositoryReferenceName, String repositoryName, String repositoryInstanceName, String repositoryInstanceLabels) {
+    public void setRepository(ExecutionControl executionControl, String repositoryReferenceName, String repositoryName, String repositoryInstanceName, String repositoryInstanceLabels)  {
         RepositoryOperation repositoryOperation = new RepositoryOperation(executionControl, repositoryName,
                 repositoryInstanceName, repositoryInstanceLabels);
         this.getRepositoryOperationMap().put(repositoryReferenceName, repositoryOperation);
@@ -585,7 +576,7 @@ public class ExecutionRuntime {
 
     public void setKeyValueDataset(String referenceName, String datasetName, List<String> datasetLabels) throws IOException, SQLException {
         datasetMap.put(referenceName,
-                new KeyValueDataset(datasetName, datasetLabels, this));
+                new KeyValueDataset(datasetName, datasetLabels));
     }
 
 

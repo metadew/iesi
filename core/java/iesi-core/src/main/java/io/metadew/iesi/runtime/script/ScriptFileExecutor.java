@@ -42,7 +42,7 @@ public class ScriptFileExecutor implements ScriptExecutor<ScriptFileExecutionReq
     }
 
     @Override
-    public void execute(ScriptFileExecutionRequest scriptExecutionRequest) throws ScriptDoesNotExistException, ScriptExecutionBuildException, MetadataAlreadyExistsException, SQLException {
+    public void execute(ScriptFileExecutionRequest scriptExecutionRequest) throws ScriptDoesNotExistException, ScriptExecutionBuildException, MetadataAlreadyExistsException {
 
         File file = new File(scriptExecutionRequest.getFileName());
         Script script = null;

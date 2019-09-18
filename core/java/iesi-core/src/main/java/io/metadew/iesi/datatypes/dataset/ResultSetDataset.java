@@ -13,11 +13,11 @@ import java.util.Optional;
 public class ResultSetDataset extends Dataset {
 
     public ResultSetDataset(DataType name, DataType labels, ExecutionRuntime executionRuntime) throws IOException, SQLException {
-        super(name, labels, executionRuntime);
+        super(name, labels);
     }
 
     public ResultSetDataset(String name, List<String> labels, ExecutionRuntime executionRuntime) throws IOException, SQLException {
-        super(name, labels,  executionRuntime);
+        super(name, labels);
     }
 
     @Override

@@ -6,6 +6,7 @@ import io.metadew.iesi.connection.database.PostgresqlDatabase;
 import io.metadew.iesi.connection.database.connection.postgresql.PostgresqlDatabaseConnection;
 import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
 
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -45,7 +46,7 @@ public class PostgresqlRepositoryConfiguration extends RepositoryConfiguration {
     }
 
     @Override
-    public RepositoryCoordinator toRepository() {
+    public RepositoryCoordinator toRepository()  {
         Map<String, Database> databases = new HashMap<>();
         String actualJdbcConnectionString = "";
         if (getJdbcConnectionString().isPresent()) {
@@ -55,30 +56,27 @@ public class PostgresqlRepositoryConfiguration extends RepositoryConfiguration {
         }
 
         final String finalJdbcConnectionString = actualJdbcConnectionString;
-        getUser().ifPresent(owner -> {
-            PostgresqlDatabaseConnection postgresqlDatabaseConnection = new PostgresqlDatabaseConnection(finalJdbcConnectionString, owner, getWriterPassword().orElse(""));
+        if (getUser().isPresent()) {
+                PostgresqlDatabaseConnection postgresqlDatabaseConnection = new PostgresqlDatabaseConnection(finalJdbcConnectionString, getUser().get(), getWriterPassword().orElse(""));
+                getSchema().ifPresent(postgresqlDatabaseConnection::setSchema);
+                PostgresqlDatabase postgresqlDatabase = new PostgresqlDatabase(postgresqlDatabaseConnection, getSchema().orElse(""));
+                databases.put("owner", postgresqlDatabase);
+                databases.put("writer", postgresqlDatabase);
+                databases.put("reader", postgresqlDatabase);
+        }
+        if (getWriter().isPresent()) {
+            PostgresqlDatabaseConnection postgresqlDatabaseConnection = new PostgresqlDatabaseConnection(finalJdbcConnectionString, getWriter().get(), getWriterPassword().orElse(""));
             getSchema().ifPresent(postgresqlDatabaseConnection::setSchema);
             PostgresqlDatabase postgresqlDatabase = new PostgresqlDatabase(postgresqlDatabaseConnection, getSchema().orElse(""));
-            databases.put("owner", postgresqlDatabase);
             databases.put("writer", postgresqlDatabase);
             databases.put("reader", postgresqlDatabase);
-        });
-
-        getWriter().ifPresent(writer -> {
-            PostgresqlDatabaseConnection postgresqlDatabaseConnection = new PostgresqlDatabaseConnection(finalJdbcConnectionString, writer, getWriterPassword().orElse(""));
-            getSchema().ifPresent(postgresqlDatabaseConnection::setSchema);
-            PostgresqlDatabase postgresqlDatabase = new PostgresqlDatabase(postgresqlDatabaseConnection, getSchema().orElse(""));
-            databases.put("writer", postgresqlDatabase);
-            databases.put("reader", postgresqlDatabase);
-        });
-
-        getReader().ifPresent(reader -> {
-            PostgresqlDatabaseConnection postgresqlDatabaseConnection = new PostgresqlDatabaseConnection(finalJdbcConnectionString, reader, getReaderPassword().orElse(""));
-            getSchema().ifPresent(postgresqlDatabaseConnection::setSchema);
-            PostgresqlDatabase postgresqlDatabase = new PostgresqlDatabase(postgresqlDatabaseConnection, getSchema().orElse(""));
-            databases.put("reader", postgresqlDatabase);
-        });
-
+        }
+         if (getReader().isPresent()) {
+             PostgresqlDatabaseConnection postgresqlDatabaseConnection = new PostgresqlDatabaseConnection(finalJdbcConnectionString, getReader().get(), getReaderPassword().orElse(""));
+             getSchema().ifPresent(postgresqlDatabaseConnection::setSchema);
+             PostgresqlDatabase postgresqlDatabase = new PostgresqlDatabase(postgresqlDatabaseConnection, getSchema().orElse(""));
+             databases.put("reader", postgresqlDatabase);
+         }
         return new RepositoryCoordinator(databases);
     }
 

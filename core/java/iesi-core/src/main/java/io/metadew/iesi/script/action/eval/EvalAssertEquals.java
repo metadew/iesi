@@ -12,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.HashMap;
 
@@ -26,57 +27,47 @@ public class EvalAssertEquals {
     private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
     private static final Logger LOGGER = LogManager.getLogger();
 
-    // Constructors
-    public EvalAssertEquals() {
-
-    }
-
     public EvalAssertEquals(ExecutionControl executionControl,
                             ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.init(executionControl, scriptExecution, actionExecution);
+        this.executionControl = executionControl;
+        this.actionExecution = actionExecution;
+        this.actionParameterOperationMap = new HashMap<>();
     }
 
-    public void init(ExecutionControl executionControl,
-                     ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.setExecutionControl(executionControl);
-        this.setActionExecution(actionExecution);
-        this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
-    }
-
-    public void prepare() {
+    public void prepare()  {
         // Reset Parameters
-        this.setExpectedValue(new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), "expected"));
-        this.setActualValue(new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), "actual"));
+        this.expectedValue = new ActionParameterOperation(executionControl,
+                actionExecution, actionExecution.getAction().getType(), "expected");
+        this.actualValue = new ActionParameterOperation(executionControl,
+                actionExecution, actionExecution.getAction().getType(), "actual");
 
         // Get Parameters
-        for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
+        for (ActionParameter actionParameter : actionExecution.getAction().getParameters()) {
             if (actionParameter.getName().equalsIgnoreCase("expected")) {
-                this.getExpectedValue().setInputValue(actionParameter.getValue());
+                expectedValue.setInputValue(actionParameter.getValue());
             } else if (actionParameter.getName().equalsIgnoreCase("actual")) {
-                this.getActualValue().setInputValue(actionParameter.getValue());
+                actualValue.setInputValue(actionParameter.getValue());
             }
         }
 
         // Create parameter list
-        this.getActionParameterOperationMap().put("expected", this.getExpectedValue());
-        this.getActionParameterOperationMap().put("actual", this.getActualValue());
+        actionParameterOperationMap.put("expected", expectedValue);
+        actionParameterOperationMap.put("actual", actualValue);
     }
 
     public boolean execute() {
         try {
-            String expectedValue = convertExpectedValue(getExpectedValue().getValue());
-            String actualValue = convertActualValue(getActualValue().getValue());
-            return compare(expectedValue, actualValue);
+            String expected = convertExpectedValue(expectedValue.getValue());
+            String actual = convertActualValue(actualValue.getValue());
+            return compare(expected, actual);
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
 
-            this.getActionExecution().getActionControl().increaseErrorCount();
+            actionExecution.getActionControl().increaseErrorCount();
 
-            this.getActionExecution().getActionControl().logOutput("exception", e.getMessage());
-            this.getActionExecution().getActionControl().logOutput("stacktrace", StackTrace.toString());
+            actionExecution.getActionControl().logOutput("exception", e.getMessage());
+            actionExecution.getActionControl().logOutput("stacktrace", StackTrace.toString());
 
             return false;
         }
@@ -97,7 +88,7 @@ public class EvalAssertEquals {
         if (actualValue instanceof Text) {
             return actualValue.toString();
         } else {
-            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for actualValue",
+            LOGGER.warn(MessageFormat.format(actionExecution.getAction().getType() + " does not accept {0} as type for actualValue",
                     actualValue.getClass()));
             return actualValue.toString();
         }
@@ -107,7 +98,7 @@ public class EvalAssertEquals {
         if (expectedValue instanceof Text) {
             return expectedValue.toString();
         } else {
-            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for expectedValue",
+            LOGGER.warn(MessageFormat.format(actionExecution.getAction().getType() + " does not accept {0} as type for expectedValue",
                     expectedValue.getClass()));
             return expectedValue.toString();
         }

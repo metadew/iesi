@@ -4,7 +4,7 @@ import io.metadew.iesi.connection.database.connection.mariadb.MariadbDatabaseCon
 import io.metadew.iesi.metadata.definition.MetadataField;
 import io.metadew.iesi.metadata.definition.MetadataTable;
 
-import java.util.List;
+import java.sql.SQLException;
 
 public class MariadbDatabase extends Database {
 
@@ -40,11 +40,6 @@ public class MariadbDatabase extends Database {
 
     @Override
     public String toQueryString(MetadataField field) {
-        return null;
-    }
-
-    @Override
-    public List<String> getAllTables(String pattern) {
         return null;
     }
 

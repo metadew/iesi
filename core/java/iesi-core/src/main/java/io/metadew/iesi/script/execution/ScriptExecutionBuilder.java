@@ -5,6 +5,7 @@ import io.metadew.iesi.script.ScriptExecutionBuildException;
 import io.metadew.iesi.script.operation.ActionSelectOperation;
 
 import java.lang.reflect.InvocationTargetException;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -115,7 +116,7 @@ public class ScriptExecutionBuilder {
                         getActionSelectOperation().orElse(new ActionSelectOperation("")),
                         new RootStrategy()
                 );
-            } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
+            } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException | SQLException e) {
                 throw new ScriptExecutionBuildException(e);
             }
         } else {
@@ -153,7 +154,7 @@ public class ScriptExecutionBuilder {
                     getActionSelectOperation().orElse(new ActionSelectOperation("")),
                     root ? new RootStrategy() : new NonRootStrategy()
             );
-        } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
+        } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException | SQLException e) {
             throw new ScriptExecutionBuildException(e);
         }
     }

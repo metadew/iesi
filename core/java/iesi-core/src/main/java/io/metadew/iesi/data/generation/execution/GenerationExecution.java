@@ -9,6 +9,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.InvocationTargetException;
+import java.sql.SQLException;
 
 public class GenerationExecution {
 
@@ -25,7 +26,7 @@ public class GenerationExecution {
 
 	// Constructors
 	public GenerationExecution(FrameworkExecution frameworkExecution, Generation generation) throws ClassNotFoundException,
-			NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
+			NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException, SQLException {
 		this.setGeneration(generation);
 		this.setFrameworkExecution(frameworkExecution);
 		this.setExecutionControl(new ExecutionControl());

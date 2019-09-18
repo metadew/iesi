@@ -11,5 +11,5 @@ import java.sql.SQLException;
 public interface ScriptExecutor <T extends ScriptExecutionRequest> {
 
     public Class<T> appliesTo();
-    public void execute(T scriptExecutionRequest) throws MetadataDoesNotExistException, ScriptExecutionBuildException, SQLException, MetadataAlreadyExistsException;
+    public void execute(T scriptExecutionRequest) throws MetadataDoesNotExistException, ScriptExecutionBuildException, MetadataAlreadyExistsException;
 }

@@ -60,7 +60,7 @@ public class PrestoDatabaseConnection extends DatabaseConnection {
         return Optional.ofNullable(schema);
     }
 
-    public Connection getConnection() throws SQLException {
+    public Connection getConnection() {
         Connection connection = super.getConnection();
         return connection;
     }

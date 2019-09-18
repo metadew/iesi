@@ -12,6 +12,7 @@ import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import org.apache.logging.log4j.Level;
 
+import java.sql.SQLException;
 import java.text.MessageFormat;
 
 /**
@@ -43,7 +44,7 @@ public class ActionParameterOperation {
     }
 
     public ActionParameterOperation(ExecutionControl executionControl,
-                                    String actionTypeName, String name, String value) {
+                                    String actionTypeName, String name, String value)  {
         actionTypeParameterConfiguration = new ActionTypeParameterConfiguration();
         this.executionControl = executionControl;
         this.name = name;

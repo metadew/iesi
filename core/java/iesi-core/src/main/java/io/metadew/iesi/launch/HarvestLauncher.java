@@ -7,6 +7,8 @@ import io.metadew.iesi.metadata.definition.Context;
 import io.metadew.iesi.util.harvest.DatabaseHarvestExecution;
 import org.apache.commons.cli.*;
 
+import java.sql.SQLException;
+
 /**
  * The harvest launcher is entry point to launch the data harvesting utility.
  *
@@ -14,7 +16,7 @@ import org.apache.commons.cli.*;
  */
 public class HarvestLauncher {
 
-    public static void main(String[] args) {
+    public static void main(String[] args)  {
 
         Option oHelp = new Option("help", "print this message");
         Option oDatabase = new Option("database", "Get data from a database");
@@ -140,6 +142,7 @@ public class HarvestLauncher {
 
             }
 
+            FrameworkInstance.getInstance().shutdown();
             if (actionMatch) {
                 System.exit(0);
             } else {

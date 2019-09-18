@@ -11,6 +11,7 @@ import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
 import io.metadew.iesi.metadata.definition.connection.ConnectionType;
 import io.metadew.iesi.metadata.definition.connection.ConnectionTypeParameter;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +24,7 @@ public class DbDb2ConnectionOperation {
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public Database getDatabase(Connection connection) {
+    public Database getDatabase(Connection connection)  {
         this.setMissingMandatoryFieldsList(new ArrayList());
 
         Database database = null;

@@ -37,7 +37,7 @@ public class NonAuthenticatedRequestExecutor implements RequestExecutor<NonAuthe
         for (ScriptExecutionRequest scriptExecutionRequest : executionRequest.getScriptExecutionRequests()) {
             try {
                 ScriptExecutorService.getInstance().execute(scriptExecutionRequest);
-            } catch (ScriptExecutionBuildException | MetadataAlreadyExistsException | SQLException | MetadataDoesNotExistException e) {
+            } catch (ScriptExecutionBuildException | MetadataAlreadyExistsException | MetadataDoesNotExistException e) {
                 e.printStackTrace();
             }
         }

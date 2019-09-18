@@ -27,7 +27,7 @@ public class ScriptGlobalDtoResourceAssembler extends ResourceAssemblerSupport<L
     public ScriptGlobalDto toResource(List<Script> scripts) {
         ScriptGlobalDto scriptGlobalDto = convertToDto(scripts);
         scriptGlobalDto.add(linkTo(methodOn(ScriptController.class)
-                .getByNameScript(scriptGlobalDto.getName()))
+                .getByName(scriptGlobalDto.getName()))
                 .withSelfRel());
         return scriptGlobalDto;
     }

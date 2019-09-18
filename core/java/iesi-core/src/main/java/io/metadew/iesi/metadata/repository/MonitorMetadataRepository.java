@@ -5,8 +5,8 @@ import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
 
 public class MonitorMetadataRepository extends MetadataRepository {
 
-    public MonitorMetadataRepository(String frameworkCode, String name, String scope, String instanceName, RepositoryCoordinator repositoryCoordinator, String repositoryObjectsPath, String repositoryTablesPath) {
-        super(frameworkCode, name, scope, instanceName, repositoryCoordinator, repositoryObjectsPath, repositoryTablesPath);
+    public MonitorMetadataRepository(String name, String scope, String instanceName, RepositoryCoordinator repositoryCoordinator) {
+        super(name, scope, instanceName, repositoryCoordinator);
     }
 
     @Override

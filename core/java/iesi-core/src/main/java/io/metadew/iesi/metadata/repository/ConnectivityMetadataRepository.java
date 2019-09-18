@@ -13,6 +13,8 @@ import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.sql.SQLException;
 import java.text.MessageFormat;
 
@@ -22,8 +24,8 @@ public class ConnectivityMetadataRepository extends MetadataRepository {
     private final EnvironmentConfiguration environmentConfiguration;
     private final ImpersonationConfiguration impersonationConfiguration;
 
-    public ConnectivityMetadataRepository(String frameworkCode, String name, String scope, String instanceName, RepositoryCoordinator repositoryCoordinator, String repositoryObjectsPath, String repositoryTablesPath) {
-        super(frameworkCode, name, scope, instanceName, repositoryCoordinator, repositoryObjectsPath, repositoryTablesPath);
+    public ConnectivityMetadataRepository(String name, String scope, String instanceName, RepositoryCoordinator repositoryCoordinator) {
+        super(name, scope, instanceName, repositoryCoordinator);
         connectionConfiguration = new ConnectionConfiguration();
         environmentConfiguration = new EnvironmentConfiguration();
         impersonationConfiguration = new ImpersonationConfiguration();
@@ -76,12 +78,15 @@ public class ConnectivityMetadataRepository extends MetadataRepository {
         try {
             connectionConfiguration.insert(connection);
         } catch (ConnectionAlreadyExistsException e1) {
-            LOGGER.debug(MessageFormat.format("Connection {0}-{1} already exists in connectivity repository. Updating connection {0}-{1} instead.",
+            LOGGER.info(MessageFormat.format("Connection {0}-{1} already exists in connectivity repository. Updating connection {0}-{1} instead.",
                     connection.getName(), connection.getEnvironment()));
             try {
                 connectionConfiguration.update(connection);
             } catch (ConnectionDoesNotExistException | ConnectionAlreadyExistsException | SQLException e2) {
-                e2.printStackTrace();
+                StringWriter stackTrace = new StringWriter();
+                e2.printStackTrace(new PrintWriter(stackTrace));
+                LOGGER.warn("exeption=" + e2.getMessage());
+                LOGGER.info("exception.stacktrace=" + stackTrace.toString());
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -94,12 +99,15 @@ public class ConnectivityMetadataRepository extends MetadataRepository {
         try {
             environmentConfiguration.insertEnvironment(environment);
         } catch (EnvironmentAlreadyExistsException e) {
-            LOGGER.debug(MessageFormat.format("Environment {0} already exists in connectivity repository. Updating connection {0} instead.",
+            LOGGER.info(MessageFormat.format("Environment {0} already exists in connectivity repository. Updating connection {0} instead.",
                     environment.getName()));
             try {
                 environmentConfiguration.updateEnvironment(environment);
             } catch (EnvironmentDoesNotExistException e1) {
-                e1.printStackTrace();
+                StringWriter stackTrace = new StringWriter();
+                e1.printStackTrace(new PrintWriter(stackTrace));
+                LOGGER.warn("exeption=" + e1.getMessage());
+                LOGGER.info("exception.stacktrace=" + stackTrace.toString());
             }
         }
     }
@@ -110,12 +118,15 @@ public class ConnectivityMetadataRepository extends MetadataRepository {
         try {
             impersonationConfiguration.insertImpersonation(impersonation);
         } catch (ImpersonationAlreadyExistsException e) {
-            LOGGER.debug(MessageFormat.format("Impersonation {0} already exists in connectivity repository. Updating impersonation {0} instead.",
+            LOGGER.info(MessageFormat.format("Impersonation {0} already exists in connectivity repository. Updating impersonation {0} instead.",
                     impersonation.getName()));
             try {
                 impersonationConfiguration.updateImpersonation(impersonation);
             } catch (ImpersonationDoesNotExistException e1) {
-                e1.printStackTrace();
+                StringWriter stackTrace = new StringWriter();
+                e1.printStackTrace(new PrintWriter(stackTrace));
+                LOGGER.warn("exeption=" + e1.getMessage());
+                LOGGER.info("exception.stacktrace=" + stackTrace.toString());
             }
         }
     }

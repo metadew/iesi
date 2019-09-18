@@ -42,7 +42,7 @@ public class ScriptNameExecutor implements ScriptExecutor<ScriptNameExecutionReq
     }
 
     @Override
-    public void execute(ScriptNameExecutionRequest scriptExecutionRequest) throws MetadataDoesNotExistException, ScriptExecutionBuildException, MetadataAlreadyExistsException, SQLException {
+    public void execute(ScriptNameExecutionRequest scriptExecutionRequest) throws MetadataDoesNotExistException, ScriptExecutionBuildException, MetadataAlreadyExistsException {
 
         Script script = scriptExecutionRequest.getScriptVersion()
                 .map(scriptVersion -> scriptConfiguration.get(scriptExecutionRequest.getScriptName(), scriptVersion))

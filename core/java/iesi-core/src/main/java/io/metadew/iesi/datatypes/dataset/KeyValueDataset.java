@@ -6,7 +6,6 @@ import io.metadew.iesi.connection.database.connection.sqlite.SqliteDatabaseConne
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
-import io.metadew.iesi.script.execution.ExecutionRuntime;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,12 +26,12 @@ public class KeyValueDataset extends Dataset {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public KeyValueDataset(DataType name, DataType labels, ExecutionRuntime executionRuntime) throws IOException, SQLException {
-        super(name, labels, executionRuntime);
+    public KeyValueDataset(DataType name, DataType labels) throws IOException, SQLException {
+        super(name, labels);
     }
 
-    public KeyValueDataset(String name, List<String> labels, ExecutionRuntime executionRuntime) throws IOException, SQLException {
-        super(name, labels, executionRuntime);
+    public KeyValueDataset(String name, List<String> labels) throws IOException, SQLException {
+        super(name, labels);
         LOGGER.trace("datatype.dataset.keyvalue=creating dataset with " + name + " and " + labels.toString());
     }
 
@@ -41,8 +40,8 @@ public class KeyValueDataset extends Dataset {
         query = "select key, value from " + SQLTools.GetStringForSQLTable(getTableName()) + ";";
 
         Map<String, DataType> dataItems = new HashMap<>();
-        CachedRowSet crs = getDatasetDatabase().executeQuery(query);
         try {
+            CachedRowSet crs = getDatasetDatabase().executeQuery(query);
             while (crs.next()) {
                 dataItems.put(crs.getString("key"), dataTypeService.resolve(crs.getString("value")));
             }
@@ -59,8 +58,8 @@ public class KeyValueDataset extends Dataset {
 
     public Optional<DataType> getDataItem(String dataItem) {
         String query = "select value from " + SQLTools.GetStringForSQLTable(getTableName()) + " where key = " + SQLTools.GetStringForSQL(dataItem) + ";";
-        CachedRowSet crs = getDatasetDatabase().executeQuery(query);
         try {
+            CachedRowSet crs = getDatasetDatabase().executeQuery(query);
             if (crs.size() == 0) {
                 return Optional.empty();
             } else if (crs.size() > 1) {
@@ -110,8 +109,8 @@ public class KeyValueDataset extends Dataset {
     public void clean() {
         // Check if table exists
         String queryTableExists = "select name from sqlite_master where name = " + SQLTools.GetStringForSQLTable(getTableName()) + ";";
-        CachedRowSet crs = getDatasetDatabase().executeQuery(queryTableExists);
         try {
+            CachedRowSet crs = getDatasetDatabase().executeQuery(queryTableExists);
             if (crs.size() >= 1) {
                 crs.next();
 //                if (crs.getString("NAME").equalsIgnoreCase(getTableName())) {

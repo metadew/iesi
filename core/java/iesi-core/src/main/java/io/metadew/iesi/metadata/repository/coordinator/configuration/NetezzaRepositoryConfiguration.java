@@ -6,6 +6,7 @@ import io.metadew.iesi.connection.database.NetezzaDatabase;
 import io.metadew.iesi.connection.database.connection.netezza.NetezzaDatabaseConnection;
 import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
 
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -29,53 +30,55 @@ public class NetezzaRepositoryConfiguration extends RepositoryConfiguration {
 
     @Override
     void fromConfigFile(ConfigFile configFile) {
-    	host= getSettingValue(configFile, "metadata.repository.netezza.host");
-    	port= getSettingValue(configFile, "metadata.repository.netezza.port");
-    	name= getSettingValue(configFile, "metadata.repository.netezza.name");
-    	schema = getSettingValue(configFile, "metadata.repository.netezza.schema");
-    	schemaUser = getSettingValue(configFile, "metadata.repository.netezza.schema.user");
-    	schemaUserPassword = getSettingValue(configFile, "metadata.repository.netezza.schema.password");
-    	writerUser = getSettingValue(configFile, "metadata.repository.netezza.writer");
-    	writerUserPassword = getSettingValue(configFile, "metadata.repository.netezza.writer.password");
-    	readerUser = getSettingValue(configFile, "metadata.repository.netezza.reader");
-    	readerUserPassword = getSettingValue(configFile, "metadata.repository.netezza.reader.password");
-    	jdbcConnectionString = getSettingValue(configFile, "metadata.repository.connection.string");
+        host = getSettingValue(configFile, "metadata.repository.netezza.host");
+        port = getSettingValue(configFile, "metadata.repository.netezza.port");
+        name = getSettingValue(configFile, "metadata.repository.netezza.name");
+        schema = getSettingValue(configFile, "metadata.repository.netezza.schema");
+        schemaUser = getSettingValue(configFile, "metadata.repository.netezza.schema.user");
+        schemaUserPassword = getSettingValue(configFile, "metadata.repository.netezza.schema.password");
+        writerUser = getSettingValue(configFile, "metadata.repository.netezza.writer");
+        writerUserPassword = getSettingValue(configFile, "metadata.repository.netezza.writer.password");
+        readerUser = getSettingValue(configFile, "metadata.repository.netezza.reader");
+        readerUserPassword = getSettingValue(configFile, "metadata.repository.netezza.reader.password");
+        jdbcConnectionString = getSettingValue(configFile, "metadata.repository.connection.string");
     }
 
     @Override
-    public RepositoryCoordinator toRepository() {
+    public RepositoryCoordinator toRepository()  {
         Map<String, Database> databases = new HashMap<>();
-        String actualJdbcConnectionString = "";
+        String actualJdbcConnectionString;
         if (getJdbcConnectionString().isPresent()) {
-        	actualJdbcConnectionString = getJdbcConnectionString().get();
+            actualJdbcConnectionString = getJdbcConnectionString().get();
         } else {
-        	actualJdbcConnectionString = NetezzaDatabaseConnection.getConnectionUrl(getHost().orElse(""), Integer.parseInt(getPort().orElse("0")), getName().orElse(""));
+            actualJdbcConnectionString = NetezzaDatabaseConnection.getConnectionUrl(getHost().orElse(""), Integer.parseInt(getPort().orElse("0")), getName().orElse(""));
         }
 
         final String finalJdbcConnectionString = actualJdbcConnectionString;
-        getUser().ifPresent(owner -> {
-            NetezzaDatabaseConnection netezzaDatabaseConnection = new NetezzaDatabaseConnection(finalJdbcConnectionString, owner, getUserPassword().orElse(""));
+
+
+        if (getUser().isPresent()) {
+            NetezzaDatabaseConnection netezzaDatabaseConnection = new NetezzaDatabaseConnection(finalJdbcConnectionString, getUser().get(), getUserPassword().orElse(""));
             getSchema().ifPresent(netezzaDatabaseConnection::setSchema);
             NetezzaDatabase netezzaDatabase = new NetezzaDatabase(netezzaDatabaseConnection, getSchema().orElse(""));
             databases.put("owner", netezzaDatabase);
             databases.put("writer", netezzaDatabase);
             databases.put("reader", netezzaDatabase);
-        });
+        }
 
-        getWriter().ifPresent(writer -> {
-            NetezzaDatabaseConnection netezzaDatabaseConnection = new NetezzaDatabaseConnection(finalJdbcConnectionString, writer, getWriterPassword().orElse(""));
+        if (getWriter().isPresent()) {
+            NetezzaDatabaseConnection netezzaDatabaseConnection = new NetezzaDatabaseConnection(finalJdbcConnectionString, getWriter().get(), getWriterPassword().orElse(""));
             getSchema().ifPresent(netezzaDatabaseConnection::setSchema);
             NetezzaDatabase netezzaDatabase = new NetezzaDatabase(netezzaDatabaseConnection, getSchema().orElse(""));
             databases.put("writer", netezzaDatabase);
             databases.put("reader", netezzaDatabase);
-        });
+        }
 
-        getReader().ifPresent(reader -> {
-            NetezzaDatabaseConnection netezzaDatabaseConnection = new NetezzaDatabaseConnection(finalJdbcConnectionString, reader, getReaderPassword().orElse(""));
+        if (getReader().isPresent()) {
+            NetezzaDatabaseConnection netezzaDatabaseConnection = new NetezzaDatabaseConnection(finalJdbcConnectionString, getReader().get(), getReaderPassword().orElse(""));
             getSchema().ifPresent(netezzaDatabaseConnection::setSchema);
             NetezzaDatabase netezzaDatabase = new NetezzaDatabase(netezzaDatabaseConnection, getSchema().orElse(""));
             databases.put("reader", netezzaDatabase);
-        });
+        }
 
         return new RepositoryCoordinator(databases);
     }

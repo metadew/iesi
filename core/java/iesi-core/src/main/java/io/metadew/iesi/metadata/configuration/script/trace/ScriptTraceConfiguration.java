@@ -20,92 +20,101 @@ import java.util.Optional;
 
 public class ScriptTraceConfiguration extends Configuration<ScriptTrace, ScriptTraceKey> {
 
-	private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
 
-	// Constructors
-	public ScriptTraceConfiguration() {
-		super();
-	}
+    // Constructors
+    public ScriptTraceConfiguration() {
+        super();
+    }
 
-	@Override
-	public Optional<ScriptTrace> get(ScriptTraceKey scriptTraceKey) throws SQLException {
-		String query = "SELECT PARENT_PRC_ID, SCRIPT_TYP_NM, SCRIPT_NM, SCRIPT_DSC FROM " +
-				getMetadataControl().getTraceMetadataRepository().getTableNameByLabel("ScriptTraces") +
-				" WHERE " +
-				" RUN_ID = " + SQLTools.GetStringForSQL(scriptTraceKey.getRunId()) + " AND " +
-				" PRC_ID = "  + SQLTools.GetStringForSQL(scriptTraceKey.getProcessId()) + ";";
-		CachedRowSet cachedRowSet = getMetadataControl().getTraceMetadataRepository().executeQuery(query, "reader");
-		if (cachedRowSet.size() == 0) {
-			return Optional.empty();
-		} else if (cachedRowSet.size() > 1) {
-			LOGGER.warn(MessageFormat.format("Found multiple implementations for ActionParameter {0}. Returning first implementation", scriptTraceKey.toString()));
-		}
-		cachedRowSet.next();
-		return Optional.of(new ScriptTrace(scriptTraceKey,
-				cachedRowSet.getString("SCRIPT_ID"),
-				cachedRowSet.getLong("PARENT_PRC_ID"),
-				cachedRowSet.getString("SCRIPT_TYP_NM"),
-				cachedRowSet.getString("SCRIPT_NM"),
-				cachedRowSet.getString("SCRIPT_DSC")));
-	}
+    @Override
+    public Optional<ScriptTrace> get(ScriptTraceKey scriptTraceKey) {
+        try {
+            String query = "SELECT PARENT_PRC_ID, SCRIPT_TYP_NM, SCRIPT_NM, SCRIPT_DSC FROM " +
+                    getMetadataControl().getTraceMetadataRepository().getTableNameByLabel("ScriptTraces") +
+                    " WHERE " +
+                    " RUN_ID = " + SQLTools.GetStringForSQL(scriptTraceKey.getRunId()) + " AND " +
+                    " PRC_ID = " + SQLTools.GetStringForSQL(scriptTraceKey.getProcessId()) + ";";
+            CachedRowSet cachedRowSet = getMetadataControl().getTraceMetadataRepository().executeQuery(query, "reader");
+            if (cachedRowSet.size() == 0) {
+                return Optional.empty();
+            } else if (cachedRowSet.size() > 1) {
+                LOGGER.warn(MessageFormat.format("Found multiple implementations for ActionParameter {0}. Returning first implementation", scriptTraceKey.toString()));
+            }
+            cachedRowSet.next();
+            return Optional.of(new ScriptTrace(scriptTraceKey,
+                    cachedRowSet.getString("SCRIPT_ID"),
+                    cachedRowSet.getLong("PARENT_PRC_ID"),
+                    cachedRowSet.getString("SCRIPT_TYP_NM"),
+                    cachedRowSet.getString("SCRIPT_NM"),
+                    cachedRowSet.getString("SCRIPT_DSC")));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-	@Override
-	public List<ScriptTrace> getAll() throws SQLException {
-		List<ScriptTrace> scriptTraces = new ArrayList<>();
-		String query = "SELECT RUN_ID, PRC_ID, PARENT_PRC_ID, SCRIPT_ID, SCRIPT_TYP_NM, SCRIPT_NM, SCRIPT_DSC FROM " +
-				getMetadataControl().getTraceMetadataRepository().getTableNameByLabel("ScriptTraces") + ";";
-		CachedRowSet cachedRowSet = getMetadataControl().getTraceMetadataRepository().executeQuery(query, "reader");
-		while (cachedRowSet.next()) {
-			scriptTraces.add(new ScriptTrace(new ScriptTraceKey(
-					cachedRowSet.getString("RUN_ID"),
-					cachedRowSet.getLong("PRC_ID")),
-					cachedRowSet.getString("SCRIPT_ID"),
-					cachedRowSet.getLong("PARENT_PRC_ID"),
-					cachedRowSet.getString("SCRIPT_TYP_NM"),
-					cachedRowSet.getString("SCRIPT_NM"),
-					cachedRowSet.getString("SCRIPT_DSC")));
-		}
-		return scriptTraces;
-	}
+    @Override
+    public List<ScriptTrace> getAll() {
+        try {
+            List<ScriptTrace> scriptTraces = new ArrayList<>();
+            String query = "SELECT RUN_ID, PRC_ID, PARENT_PRC_ID, SCRIPT_ID, SCRIPT_TYP_NM, SCRIPT_NM, SCRIPT_DSC FROM " +
+                    getMetadataControl().getTraceMetadataRepository().getTableNameByLabel("ScriptTraces") + ";";
+            CachedRowSet cachedRowSet = getMetadataControl().getTraceMetadataRepository().executeQuery(query, "reader");
+            while (cachedRowSet.next()) {
+                scriptTraces.add(new ScriptTrace(new ScriptTraceKey(
+                        cachedRowSet.getString("RUN_ID"),
+                        cachedRowSet.getLong("PRC_ID")),
+                        cachedRowSet.getString("SCRIPT_ID"),
+                        cachedRowSet.getLong("PARENT_PRC_ID"),
+                        cachedRowSet.getString("SCRIPT_TYP_NM"),
+                        cachedRowSet.getString("SCRIPT_NM"),
+                        cachedRowSet.getString("SCRIPT_DSC")));
 
-	@Override
-	public void delete(ScriptTraceKey scriptTraceKey) throws MetadataDoesNotExistException, SQLException {
-		LOGGER.trace(MessageFormat.format("Deleting ActionTrace {0}.", scriptTraceKey.toString()));
-		if (!exists(scriptTraceKey)) {
-			throw new ScriptTraceDoesNotExistException(MessageFormat.format(
-					"ScriptTrace {0} does not exists", scriptTraceKey.toString()));
-		}
-		String deleteStatement = deleteStatement(scriptTraceKey);
-		getMetadataControl().getTraceMetadataRepository().executeUpdate(deleteStatement);
-	}
+            }
+            return scriptTraces;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-	private String deleteStatement(ScriptTraceKey scriptTraceKey) {
-		return "DELETE FROM " + getMetadataControl().getTraceMetadataRepository().getTableNameByLabel("ScriptTraces") +
-				" WHERE " +
-				" RUN_ID = " + SQLTools.GetStringForSQL(scriptTraceKey.getRunId()) + " AND " +
-				" PRC_ID = "  + SQLTools.GetStringForSQL(scriptTraceKey.getProcessId()) + ";";
-	}
+    @Override
+    public void delete(ScriptTraceKey scriptTraceKey) throws MetadataDoesNotExistException {
+        LOGGER.trace(MessageFormat.format("Deleting ActionTrace {0}.", scriptTraceKey.toString()));
+        if (!exists(scriptTraceKey)) {
+            throw new ScriptTraceDoesNotExistException(MessageFormat.format(
+                    "ScriptTrace {0} does not exists", scriptTraceKey.toString()));
+        }
+        String deleteStatement = deleteStatement(scriptTraceKey);
+        getMetadataControl().getTraceMetadataRepository().executeUpdate(deleteStatement);
+    }
 
-	@Override
-	public void insert(ScriptTrace scriptTrace) throws MetadataAlreadyExistsException, SQLException {
-		LOGGER.trace(MessageFormat.format("Inserting ScriptTrace {0}.", scriptTrace.getMetadataKey().toString()));
-		if (exists(scriptTrace.getMetadataKey())) {
-			throw new ScriptTraceAlreadyExistsException(MessageFormat.format(
-					"ScriptTrace {0} already exists", scriptTrace.getMetadataKey().toString()));
-		}
-		String insertStatement = insertStatement(scriptTrace);
-		getMetadataControl().getTraceMetadataRepository().executeUpdate(insertStatement);
-	}
+    private String deleteStatement(ScriptTraceKey scriptTraceKey) {
+        return "DELETE FROM " + getMetadataControl().getTraceMetadataRepository().getTableNameByLabel("ScriptTraces") +
+                " WHERE " +
+                " RUN_ID = " + SQLTools.GetStringForSQL(scriptTraceKey.getRunId()) + " AND " +
+                " PRC_ID = " + SQLTools.GetStringForSQL(scriptTraceKey.getProcessId()) + ";";
+    }
 
-	private String insertStatement(ScriptTrace scriptTrace) {
-		return "INSERT INTO " + getMetadataControl().getTraceMetadataRepository().getTableNameByLabel("ScriptTraces") +
-				" (RUN_ID, PRC_ID, PARENT_PRC_ID, SCRIPT_ID, SCRIPT_TYP_NM, SCRIPT_NM, SCRIPT_DSC) VALUES (" +
-				SQLTools.GetStringForSQL(scriptTrace.getMetadataKey().getRunId()) + "," +
-				SQLTools.GetStringForSQL(scriptTrace.getMetadataKey().getProcessId()) + "," +
-				SQLTools.GetStringForSQL(scriptTrace.getParentProcessId()) + "," +
-				SQLTools.GetStringForSQL(scriptTrace.getScriptId()) + "," +
-				SQLTools.GetStringForSQL(scriptTrace.getScriptType()) + "," +
-				SQLTools.GetStringForSQL(scriptTrace.getScriptName()) + "," +
-				SQLTools.GetStringForSQL(scriptTrace.getScriptDescription()) + ");";
-	}
+    @Override
+    public void insert(ScriptTrace scriptTrace) throws MetadataAlreadyExistsException {
+        LOGGER.trace(MessageFormat.format("Inserting ScriptTrace {0}.", scriptTrace.getMetadataKey().toString()));
+        if (exists(scriptTrace.getMetadataKey())) {
+            throw new ScriptTraceAlreadyExistsException(MessageFormat.format(
+                    "ScriptTrace {0} already exists", scriptTrace.getMetadataKey().toString()));
+        }
+        String insertStatement = insertStatement(scriptTrace);
+        getMetadataControl().getTraceMetadataRepository().executeUpdate(insertStatement);
+    }
+
+    private String insertStatement(ScriptTrace scriptTrace) {
+        return "INSERT INTO " + getMetadataControl().getTraceMetadataRepository().getTableNameByLabel("ScriptTraces") +
+                " (RUN_ID, PRC_ID, PARENT_PRC_ID, SCRIPT_ID, SCRIPT_TYP_NM, SCRIPT_NM, SCRIPT_DSC) VALUES (" +
+                SQLTools.GetStringForSQL(scriptTrace.getMetadataKey().getRunId()) + "," +
+                SQLTools.GetStringForSQL(scriptTrace.getMetadataKey().getProcessId()) + "," +
+                SQLTools.GetStringForSQL(scriptTrace.getParentProcessId()) + "," +
+                SQLTools.GetStringForSQL(scriptTrace.getScriptId()) + "," +
+                SQLTools.GetStringForSQL(scriptTrace.getScriptType()) + "," +
+                SQLTools.GetStringForSQL(scriptTrace.getScriptName()) + "," +
+                SQLTools.GetStringForSQL(scriptTrace.getScriptDescription()) + ");";
+    }
 }

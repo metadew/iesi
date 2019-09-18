@@ -65,7 +65,7 @@ public class ExecutionControl {
     // Constructors
 
     public ExecutionControl() throws ClassNotFoundException, NoSuchMethodException,
-            InvocationTargetException, InstantiationException, IllegalAccessException {
+            InvocationTargetException, InstantiationException, IllegalAccessException, SQLException {
         this.scriptResultConfiguration = new ScriptResultConfiguration();
         this.actionResultConfiguration = new ActionResultConfiguration();
         this.actionResultOutputConfiguration = new ActionResultOutputConfiguration();
@@ -80,7 +80,7 @@ public class ExecutionControl {
 
     @SuppressWarnings("unchecked")
     private void initializeExecutionRuntime(String runId) throws ClassNotFoundException,
-            NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+            NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, SQLException {
         if (FrameworkSettingConfiguration.getInstance().getSettingPath("script.execution.runtime").isPresent() &&
                 !FrameworkControl.getInstance().getProperty(FrameworkSettingConfiguration.getInstance().getSettingPath("script.execution.runtime").get()).isEmpty()) {
             Class classRef = Class.forName(FrameworkControl.getInstance().getProperty(FrameworkSettingConfiguration.getInstance().getSettingPath("script.execution.runtime").get()));
@@ -130,7 +130,7 @@ public class ExecutionControl {
 
             // Trace the design of the script
             scriptDesignTraceService.trace(scriptExecution);
-        } catch (MetadataAlreadyExistsException | SQLException e) {
+        } catch (MetadataAlreadyExistsException e) {
             StringWriter stackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(stackTrace));
             LOGGER.warn("exception=" + e.getMessage());
@@ -152,7 +152,7 @@ public class ExecutionControl {
                     null
             );
             actionResultConfiguration.insert(actionResult);
-        } catch (MetadataAlreadyExistsException | SQLException e) {
+        } catch (MetadataAlreadyExistsException e) {
             StringWriter stackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(stackTrace));
             LOGGER.warn("exception=" + e.getMessage());
@@ -176,7 +176,7 @@ public class ExecutionControl {
             actionResultConfiguration.insert(actionResult);
 
             this.logMessage(actionExecution, "action.status=" + FrameworkStatus.SKIPPED.value(), Level.INFO);
-        } catch (MetadataAlreadyExistsException | SQLException e) {
+        } catch (MetadataAlreadyExistsException e) {
             StringWriter stackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(stackTrace));
             LOGGER.warn("exception=" + e.getMessage());
@@ -225,7 +225,7 @@ public class ExecutionControl {
             // return
             return status;
 
-        } catch (SQLException | MetadataDoesNotExistException e) {
+        } catch (MetadataDoesNotExistException e) {
             StringWriter stackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(stackTrace));
             LOGGER.warn("exception=" + e.getMessage());
@@ -236,7 +236,7 @@ public class ExecutionControl {
 
     public void logEnd(ActionExecution actionExecution, ScriptExecution scriptExecution) {
         try {
-            ActionResult actionResult = actionResultConfiguration.get(new ActionResultKey(runId, scriptExecution.getProcessId(), actionExecution.getAction().getId()))
+            ActionResult actionResult = actionResultConfiguration.get(new ActionResultKey(runId, actionExecution.getProcessId(), actionExecution.getAction().getId()))
                     .orElseThrow(() -> new ScriptResultDoesNotExistException(MessageFormat.format("ActionResult {0} does not exist, cannot log ending of execution", new ScriptResultKey(runId, scriptExecution.getProcessId()).toString())));
 
             String status = getStatus(actionExecution, scriptExecution);
@@ -244,7 +244,7 @@ public class ExecutionControl {
             actionResult.setEndTimestamp(LocalDateTime.now());
             actionResultConfiguration.update(actionResult);
 
-        } catch (SQLException | MetadataDoesNotExistException e) {
+        } catch (MetadataDoesNotExistException e) {
             StringWriter stackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(stackTrace));
             LOGGER.warn("exception=" + e.getMessage());
@@ -330,7 +330,7 @@ public class ExecutionControl {
         try {
             ScriptResultOutput scriptResultOutput = new ScriptResultOutput(new ScriptResultOutputKey(runId, scriptExecution.getProcessId(), outputName), scriptExecution.getScript().getId(), outputValue);
             scriptResultOutputConfiguration.insert(scriptResultOutput);
-        } catch (MetadataAlreadyExistsException | SQLException e) {
+        } catch (MetadataAlreadyExistsException e) {
             StringWriter stackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(stackTrace));
             LOGGER.warn("exception=" + e.getMessage());
@@ -358,7 +358,7 @@ public class ExecutionControl {
                     outputValue);
             actionResultOutputConfiguration.insert(actionResultOutput);
 
-        } catch (SQLException | MetadataAlreadyExistsException e) {
+        } catch (MetadataAlreadyExistsException e) {
             StringWriter stackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(stackTrace));
             LOGGER.warn("exception=" + e.getMessage());

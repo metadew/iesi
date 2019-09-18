@@ -15,18 +15,10 @@ public abstract class SchemaDatabase extends Database {
         this.schema = schema;
     }
    
-    // TODO:
     public String getCreateStatement(MetadataTable table) {
         StringBuilder createQuery = new StringBuilder();
-        //StringBuilder fieldComments = new StringBuilder();
-
         // add schema to table name
-        String tableName = null;
-        if (getSchema().get().isEmpty()) {
-        	tableName = table.getName();
-        } else {
-        	tableName = getSchema().map(schema -> schema + ".").orElse("") + table.getName();
-        }
+        String tableName = getSchema().map(schema -> schema + "." + table.getName()).orElse(table.getName());
 
         createQuery.append("CREATE TABLE ").append(tableName).append("\n(\n");
         int counter = 1;
@@ -67,11 +59,11 @@ public abstract class SchemaDatabase extends Database {
     }
 
     public String getDeleteStatement(MetadataTable table) {
-        return "delete from " + getSchema().map(schema -> schema + ".").orElse("") + table.getName();
+        return "delete from " + getSchema().map(schema -> schema + "." + table.getName()).orElse(table.getName()) + ";";
     }
 
     public String getDropStatement(MetadataTable table) {
-        return "drop table " + getSchema().map(schema -> schema + ".").orElse("") + table.getName() + ";";
+        return "drop table " + getSchema().map(schema -> schema + "." + table.getName()).orElse(table.getName()) + ";";
     }
 
     public Optional<String> getSchema() {

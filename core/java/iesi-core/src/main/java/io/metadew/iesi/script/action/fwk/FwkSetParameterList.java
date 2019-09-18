@@ -14,6 +14,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -42,16 +43,15 @@ public class FwkSetParameterList {
         this.dataTypeService = new DataTypeService();
     }
 
-    public void prepare() {
+    public void prepare()  {
         // Reset Parameters
         this.setParameterList(new ActionParameterOperation(this.getExecutionControl(), this.getActionExecution(),
                 this.getActionExecution().getAction().getType(), "list"));
 
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-            if (actionParameter.getName().equalsIgnoreCase("list")) {
+            if (actionParameter.getName().equalsIgnoreCase("list"))
                 this.getParameterList().setInputValue(actionParameter.getValue());
-            }
         }
 
         //Create parameter list
@@ -61,7 +61,9 @@ public class FwkSetParameterList {
     public boolean execute() {
         try {
             Map<String, String> list = convertList(getParameterList().getValue());
-            list.forEach((name, value) -> executionControl.getExecutionRuntime().setRuntimeVariable(actionExecution, name, value));
+            for (Map.Entry<String, String> parameter : list.entrySet()) {
+                executionControl.getExecutionRuntime().setRuntimeVariable(actionExecution, parameter.getKey(), parameter.getValue());
+            }
             return true;
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();

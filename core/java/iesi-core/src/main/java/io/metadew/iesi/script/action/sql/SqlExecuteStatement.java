@@ -20,6 +20,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.HashMap;
 
@@ -51,7 +52,7 @@ public class SqlExecuteStatement {
         this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
     }
 
-    public void prepare() {
+    public void prepare()  {
         // Set Parameters
         this.setSqlStatement(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "statement"));
@@ -93,7 +94,7 @@ public class SqlExecuteStatement {
 
     }
 
-    private boolean execute(String sqlStatement, String connectionName) {
+    private boolean execute(String sqlStatement, String connectionName)  {
         // Get Connection
         ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
         Connection connection = connectionConfiguration

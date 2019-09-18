@@ -13,6 +13,8 @@ import org.apache.logging.log4j.Logger;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ActionDesignTraceService {
 
@@ -30,9 +32,11 @@ public class ActionDesignTraceService {
     public void trace(String runId, Long processId, Action action) {
         try {
             actionDesignTraceConfiguration.insert(new ActionDesignTrace(runId, processId, action));
+            List<ActionParameterDesignTrace> actionParameterDesignTraces = new ArrayList<>();
             for (ActionParameter actionParameter : action.getParameters()) {
-                actionParameterDesignTraceConfiguration.insert(new ActionParameterDesignTrace(runId, processId, action.getId(), actionParameter));
+                actionParameterDesignTraces.add(new ActionParameterDesignTrace(runId, processId, action.getId(), actionParameter));
             }
+            actionParameterDesignTraceConfiguration.insert(actionParameterDesignTraces);
         } catch (MetadataAlreadyExistsException | SQLException e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));

@@ -12,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.HashMap;
 
@@ -42,7 +43,7 @@ public class FwkSetParameterValue {
         this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
     }
 
-    public void prepare() {
+    public void prepare()  {
         // Reset Parameters
         this.setOperationName(new ActionParameterOperation(this.getExecutionControl(), this.getActionExecution(),
                 this.getActionExecution().getAction().getType(), "name"));
@@ -82,7 +83,7 @@ public class FwkSetParameterValue {
 
     }
 
-    private boolean setParameter(String name, String value) {
+    private boolean setParameter(String name, String value)  {
         this.getExecutionControl().getExecutionRuntime().setRuntimeVariable(actionExecution, name, value);
         this.getActionExecution().getActionControl().increaseSuccessCount();
         return true;

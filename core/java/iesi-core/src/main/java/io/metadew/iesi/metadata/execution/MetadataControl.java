@@ -3,6 +3,7 @@ package io.metadew.iesi.metadata.execution;
 import io.metadew.iesi.metadata.repository.*;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -121,6 +122,20 @@ public class MetadataControl {
 
     public ExecutionServerMetadataRepository getExecutionServerMetadataRepository() {
         return executionServerMetadataRepository;
+    }
+
+    public List<MetadataRepository> getMetadataRepositories() {
+        List<MetadataRepository> metadataRepositories = new ArrayList<>();
+        metadataRepositories.add(catalogMetadataRepository);
+        metadataRepositories.add(connectivityMetadataRepository);
+        metadataRepositories.add(traceMetadataRepository);
+        metadataRepositories.add(resultMetadataRepository);
+        metadataRepositories.add(designMetadataRepository);
+        metadataRepositories.add(monitorMetadataRepository);
+        metadataRepositories.add(ledgerMetadataRepository);
+        metadataRepositories.add(controlMetadataRepository);
+        metadataRepositories.add(executionServerMetadataRepository);
+        return metadataRepositories;
     }
 
     public boolean isValid() {

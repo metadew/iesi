@@ -4,6 +4,8 @@ import io.metadew.iesi.script.configuration.IterationConfiguration;
 import io.metadew.iesi.script.configuration.IterationInstance;
 import io.metadew.iesi.script.operation.IterationOperation;
 
+import java.sql.SQLException;
+
 public class IterationExecution {
 
     private ExecutionControl executionControl;
@@ -23,7 +25,7 @@ public class IterationExecution {
 
     // Methods
     public void initialize(ExecutionControl executionControl,
-                           ActionExecution actionExecution, String iterationName) {
+                           ActionExecution actionExecution, String iterationName)  {
         this.setExecutionControl(executionControl);
         this.setActionExecution(actionExecution);
         this.setIterationName(iterationName);
@@ -57,7 +59,7 @@ public class IterationExecution {
         }
     }
 
-    public boolean hasNext() {
+    public boolean hasNext()  {
         this.iterationNumber++;
         if (this.isIterationOff()) {
             if (this.getIterationNumber() == 1) {

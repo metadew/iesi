@@ -1,7 +1,6 @@
 package io.metadew.iesi.launch;
 
 import io.metadew.iesi.common.config.ConfigFile;
-import io.metadew.iesi.framework.configuration.FrameworkConfiguration;
 import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
 import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
 import io.metadew.iesi.framework.execution.FrameworkControl;
@@ -20,6 +19,7 @@ import org.apache.logging.log4j.ThreadContext;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
+import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +32,7 @@ import java.util.List;
  */
 public class MetadataLauncher {
 
-    public static void main(String[] args) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, ParseException {
+    public static void main(String[] args) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, ParseException, SQLException {
         ThreadContext.clearAll();
 
         Options options = new Options().addOption(new Option("help", "print this message"))
@@ -95,8 +95,7 @@ public class MetadataLauncher {
             ConfigFile configFile = FrameworkControl.getInstance().getConfigFile("keyvalue",
                     FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("conf") + File.separator + config);
 
-            metadataRepositories = new MetadataRepositoryConfiguration(configFile)
-                    .toMetadataRepositories(FrameworkConfiguration.getInstance());
+            metadataRepositories = new MetadataRepositoryConfiguration(configFile).toMetadataRepositories();
 
             // metadataRepositories.addAll(metadataRepositories);
 
@@ -247,6 +246,7 @@ public class MetadataLauncher {
 
         System.out.println();
         System.out.println("metadata.launcher.end");
+        FrameworkInstance.getInstance().shutdown();
         endLauncher(0, exit);
     }
 

@@ -1,6 +1,8 @@
 package io.metadew.iesi.metadata.definition;
 
 import io.metadew.iesi.metadata.definition.key.MetadataKey;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -10,6 +12,8 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 public abstract class Metadata<T extends MetadataKey> {
+
+    private static final Logger LOGGER = LogManager.getLogger();
 
     private final T metadataKey;
 
@@ -25,8 +29,9 @@ public abstract class Metadata<T extends MetadataKey> {
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("{");
-        Field[] fields = this.getClass().getFields();
-        Method[] methods = getClass().getMethods();
+        Field[] fields = this.getClass().getDeclaredFields();
+        Method[] methods = this.getClass().getMethods();
+        stringBuilder.append("key: ").append(getMetadataKey().toString()).append(", ");
 
         //print field names paired with their values
         stringBuilder.append(Arrays.stream(fields).map(field -> {

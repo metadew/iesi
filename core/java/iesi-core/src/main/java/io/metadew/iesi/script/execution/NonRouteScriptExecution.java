@@ -4,6 +4,7 @@ import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.script.operation.ActionSelectOperation;
 import org.apache.logging.log4j.Level;
 
+import java.sql.SQLException;
 import java.util.Map;
 
 public class NonRouteScriptExecution extends ScriptExecution {
@@ -20,7 +21,10 @@ public class NonRouteScriptExecution extends ScriptExecution {
                 Level.INFO);
         this.getExecutionControl().logStart(this);
 
-        this.parameters.forEach((parameterName, parameterValue) -> getExecutionControl().getExecutionRuntime().setRuntimeVariable(this, parameterName, parameterValue));
+        for (Map.Entry<String, String> parameter : parameters.entrySet()) {
+            getExecutionControl().getExecutionRuntime().setRuntimeVariable(this, parameter.getKey(), parameter.getValue());
+        }
+
         this.traceDesignMetadata();
     }
 

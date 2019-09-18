@@ -1,5 +1,6 @@
 package io.metadew.iesi.script.configuration;
 
+import io.metadew.iesi.connection.database.SqliteDatabase;
 import io.metadew.iesi.connection.database.connection.sqlite.SqliteDatabaseConnection;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.definition.RuntimeVariable;
@@ -16,52 +17,46 @@ import java.sql.SQLException;
 
 public class IterationConfiguration {
 
-    private ExecutionControl executionControl;
-    private String runCacheFolderName;
+    private final SqliteDatabase sqliteDatabase;
+    private final String runCacheFolderName;
+    private final ExecutionControl executionControl;
     private String runCacheFileName = "iterationExecutions.db3";
-    private String runCacheFilePath;
-    private SqliteDatabaseConnection sqliteDatabaseConnection;
     private String PRC_ITERATION_EXEC = "PRC_ITERATION_EXEC";
 
     // Constructors
-    public IterationConfiguration(String runCacheFolderName,
-                                  ExecutionControl executionControl) {
-        this.setExecutionControl(executionControl);
-
-        // Define path
-        this.setRunCacheFolderName(runCacheFolderName);
-        this.setRunCacheFilePath(this.getRunCacheFolderName() + File.separator + this.getRunCacheFileName());
-
+    public IterationConfiguration(String runCacheFolderName, ExecutionControl executionControl)  {
+        this.executionControl = executionControl;
+        this.runCacheFolderName = runCacheFolderName;
         // Create database
-        this.setSqliteDatabaseConnection(new SqliteDatabaseConnection(this.getRunCacheFilePath()));
-        this.createIterationExecTable();
+        this.sqliteDatabase = new SqliteDatabase(new SqliteDatabaseConnection(runCacheFolderName + File.separator + runCacheFileName));
+        createIterationExecTable();
 
     }
 
-    private void createIterationExecTable() {
-        String query = "CREATE TABLE " + this.getPRC_ITERATION_EXEC() + " (" + "RUN_ID TEXT NOT NULL,"
+    private void createIterationExecTable()  {
+        String query = "CREATE TABLE " + PRC_ITERATION_EXEC + " (" + "RUN_ID TEXT NOT NULL,"
                 + "PRC_ID NUMERIC NOT NULL," + "LIST_ID NUMERIC NOT NULL," + "LIST_NM TEXT NOT NULL,"
                 + "SET_ID NUMERIC NOT NULL," + "SET_NM TEXT NOT NULL," + "ORDER_NB NUMERIC NOT NULL,"
                 + "VAR_NM TEXT NOT NULL," + "VAR_VAL TEXT" + ")";
-        this.getSqliteDatabaseConnection().executeUpdate(query);
+        sqliteDatabase.executeUpdate(query);
     }
 
     // Methods
-    public void cleanIterationVariables(String runId) {
-        String query = "delete from " + this.getPRC_ITERATION_EXEC() + " where RUN_ID = '" + runId + "'";
-        this.getSqliteDatabaseConnection().executeUpdate(query);
+    public void cleanIterationVariables(String runId)  {
+        String query = "delete from " + PRC_ITERATION_EXEC + " where RUN_ID = " + SQLTools.GetStringForSQL(runId) + "";
+        sqliteDatabase.executeUpdate(query);
     }
 
-    public void cleanIterationVariables(String runId, long processId) {
-        String query = "delete from " + this.getPRC_ITERATION_EXEC() + " where RUN_ID = '" + runId + "' and PRC_ID = "
+    public void cleanIterationVariables(String runId, long processId)  {
+        String query = "delete from " + PRC_ITERATION_EXEC + " where RUN_ID = " + SQLTools.GetStringForSQL(runId) + " and PRC_ID = "
                 + processId;
-        this.getSqliteDatabaseConnection().executeUpdate(query);
+        sqliteDatabase.executeUpdate(query);
     }
 
-    public void cleanIterationVariables(String runId, String iterationList) {
-        String query = "delete from " + this.getPRC_ITERATION_EXEC() + " where RUN_ID = '" + runId + "' and LIST_NM = '"
-                + iterationList + "'";
-        this.getSqliteDatabaseConnection().executeUpdate(query);
+    public void cleanIterationVariables(String runId, String iterationList)  {
+        String query = "delete from " + PRC_ITERATION_EXEC + " where RUN_ID = " + SQLTools.GetStringForSQL(runId) + " and LIST_NM = "
+                + SQLTools.GetStringForSQL(iterationList) + ";";
+        sqliteDatabase.executeUpdate(query);
     }
 
     public void setIterationList(String runId, String iterationList, ResultSet resultSet) {
@@ -94,11 +89,11 @@ public class IterationConfiguration {
 
     }
 
-    public void setIterationValues(String runId, String iterationList, String values) {
-        this.cleanIterationVariables(runId, iterationList);
+    public void setIterationValues(String runId, String iterationList, String values)  {
+        cleanIterationVariables(runId, iterationList);
 
         // Iterate over the iteration sets
-        String setName = "";
+        String setName;
         int setNumber = 0;
 
         String[] parts = values.split(",");
@@ -110,11 +105,11 @@ public class IterationConfiguration {
         }
     }
 
-    public void setIterationFor(String runId, String iterationList, String from, String to, String step) {
-        this.cleanIterationVariables(runId, iterationList);
+    public void setIterationFor(String runId, String iterationList, String from, String to, String step)  {
+        cleanIterationVariables(runId, iterationList);
 
         // Iterate over the iteration sets
-        String setName = "";
+        String setName ;
         int setNumber = 0;
 
         // Parse for values
@@ -148,16 +143,15 @@ public class IterationConfiguration {
     }
 
     // Type: list
-    public void setIterationList(String runId, String iterationList, String inputList) {
-        this.cleanIterationVariables(runId, iterationList);
+    public void setIterationList(String runId, String iterationList, String inputList)  {
+        cleanIterationVariables(runId, iterationList);
 
         // Get iteration variable configuration
-        IterationVariableConfiguration iterationVariableConfiguration = new IterationVariableConfiguration(
-                this.getRunCacheFolderName(), false);
+        IterationVariableConfiguration iterationVariableConfiguration = new IterationVariableConfiguration(runCacheFolderName, false);
         CachedRowSet crs = iterationVariableConfiguration.getIterationList(runId, inputList);
 
         // Iterate over the iteration sets
-        String setName = "";
+        String setName;
         int setNumber = 0;
 
         try {
@@ -175,56 +169,26 @@ public class IterationConfiguration {
     }
 
     public void setIterationVariable(String runId, int listId, String listName, int setId, String setName, int order,
-                                     String name, String value) {
-        String query = "";
-        query = "INSERT INTO " + this.getPRC_ITERATION_EXEC();
-        query = query + "(run_id, prc_id, list_id, list_nm, set_id, set_nm, order_nb, var_nm, var_val)";
-        query = query + " VALUES (";
-        query += SQLTools.GetStringForSQL(runId);
-        query += ",";
-        query += SQLTools.GetStringForSQL(-1);
-        query += ",";
-        query += SQLTools.GetStringForSQL(listId);
-        query += ",";
-        query += SQLTools.GetStringForSQL(listName);
-        query += ",";
-        query += SQLTools.GetStringForSQL(setId);
-        query += ",";
-        query += SQLTools.GetStringForSQL(setName);
-        query += ",";
-        query += SQLTools.GetStringForSQL(order);
-        query += ",";
-        query += SQLTools.GetStringForSQL(name);
-        query += ",";
-        query += SQLTools.GetStringForSQL(value);
-        query += ")";
-        this.getSqliteDatabaseConnection().executeUpdate(query);
+                                     String name, String value)  {
+        String query = "INSERT INTO " + PRC_ITERATION_EXEC
+                + "(run_id, prc_id, list_id, list_nm, set_id, set_nm, order_nb, var_nm, var_val) VALUES ("
+                + SQLTools.GetStringForSQL(runId) + ","
+                + SQLTools.GetStringForSQL(-1) + ","
+                + SQLTools.GetStringForSQL(listId) + ","
+                + SQLTools.GetStringForSQL(listName) + ","
+                + SQLTools.GetStringForSQL(setId) + ","
+                + SQLTools.GetStringForSQL(setName) + ","
+                + SQLTools.GetStringForSQL(order) + ","
+                + SQLTools.GetStringForSQL(name) + ","
+                + SQLTools.GetStringForSQL(value) + ");";
+        sqliteDatabase.executeUpdate(query);
 
     }
 
-    public String getRuntimeVariableValue(String runId, String name) {
-        CachedRowSet crs = null;
-        String query = "select VAR_VAL from " + this.getPRC_ITERATION_EXEC() + " where run_id = '" + runId
-                + "' and var_nm = '" + name + "'";
-        crs = this.getSqliteDatabaseConnection().executeQuery(query);
-        String value = "";
-        try {
-            while (crs.next()) {
-                value = crs.getString("VAR_VAL");
-            }
-            crs.close();
-        } catch (SQLException e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-        }
-        return value;
-    }
-
-    public IterationInstance hasNext(String runId, long orderNumber) {
-        CachedRowSet crs = null;
+    public IterationInstance hasNext(String runId, long orderNumber)  {
         String query = "select run_id, prc_id, list_id, list_nm, set_id, set_nm, order_nb, var_nm, var_val from "
-                + this.getPRC_ITERATION_EXEC() + " where run_id = '" + runId + "' and order_nb = " + orderNumber;
-        crs = this.getSqliteDatabaseConnection().executeQuery(query);
+                + PRC_ITERATION_EXEC + " where run_id = " + SQLTools.GetStringForSQL(runId) + " and order_nb = " + SQLTools.GetStringForSQL(orderNumber);
+        CachedRowSet crs = sqliteDatabase.executeQuery(query);
         IterationInstance iterationInstance = new IterationInstance();
         try {
             while (crs.next()) {
@@ -239,11 +203,11 @@ public class IterationConfiguration {
         return iterationInstance;
     }
 
-    public IterationInstance hasNext(String runId, String condition) {
+    public IterationInstance hasNext(String runId, String condition)  {
         IterationInstance iterationInstance = new IterationInstance();
 
         boolean conditionResult = true;
-        ConditionOperation conditionOperation = new ConditionOperation(this.getExecutionControl(), condition);
+        ConditionOperation conditionOperation = new ConditionOperation(executionControl, condition);
         try {
             conditionResult = conditionOperation.evaluateCondition();
         } catch (Exception exception) {
@@ -258,12 +222,11 @@ public class IterationConfiguration {
         return iterationInstance;
     }
 
-    public IterationInstance hasNextListItem(String runId, String listName, long orderNumber) {
-        CachedRowSet crs = null;
+    public IterationInstance hasNextListItem(String runId, String listName, long orderNumber)  {
         String query = "select run_id, prc_id, list_id, list_nm, set_id, set_nm, order_nb, var_nm, var_val from "
-                + this.getPRC_ITERATION_EXEC() + " where run_id = '" + runId + "' and list_nm = '" + listName
-                + "' and order_nb = " + orderNumber;
-        crs = this.getSqliteDatabaseConnection().executeQuery(query);
+                + PRC_ITERATION_EXEC + " where run_id = " + SQLTools.GetStringForSQL(runId) + " and list_nm = " + SQLTools.GetStringForSQL(listName)
+                + " and order_nb = " + SQLTools.GetStringForSQL(orderNumber) + ";";
+        CachedRowSet crs = sqliteDatabase.executeQuery(query);
         IterationInstance iterationInstance = new IterationInstance();
         int items = 0;
         try {
@@ -281,77 +244,6 @@ public class IterationConfiguration {
             e.printStackTrace(new PrintWriter(StackTrace));
         }
         return iterationInstance;
-    }
-
-    public RuntimeVariable getRuntimeVariable(String runId, String name) {
-        RuntimeVariable runtimeVariable = new RuntimeVariable();
-        runtimeVariable.setName(name);
-
-        CachedRowSet crs = null;
-        String query = "select VAR_VAL from " + this.getPRC_ITERATION_EXEC() + " where run_id = '" + runId
-                + "' and var_nm = '" + name + "'";
-        crs = this.getSqliteDatabaseConnection().executeQuery(query);
-        String value = "";
-        try {
-            while (crs.next()) {
-                value = crs.getString("VAR_VAL");
-            }
-            crs.close();
-        } catch (SQLException e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-        }
-
-        runtimeVariable.setValue(value);
-        return runtimeVariable;
-    }
-
-    public String getRunCacheFileName() {
-        return runCacheFileName;
-    }
-
-    public void setRunCacheFileName(String runCacheFileName) {
-        this.runCacheFileName = runCacheFileName;
-    }
-
-    public String getRunCacheFolderName() {
-        return runCacheFolderName;
-    }
-
-    public void setRunCacheFolderName(String runCacheFolderName) {
-        this.runCacheFolderName = runCacheFolderName;
-    }
-
-    public String getRunCacheFilePath() {
-        return runCacheFilePath;
-    }
-
-    public void setRunCacheFilePath(String runCacheFilePath) {
-        this.runCacheFilePath = runCacheFilePath;
-    }
-
-    public SqliteDatabaseConnection getSqliteDatabaseConnection() {
-        return sqliteDatabaseConnection;
-    }
-
-    public void setSqliteDatabaseConnection(SqliteDatabaseConnection sqliteDatabaseConnection) {
-        this.sqliteDatabaseConnection = sqliteDatabaseConnection;
-    }
-
-    public String getPRC_ITERATION_EXEC() {
-        return PRC_ITERATION_EXEC;
-    }
-
-    public void setPRC_ITERATION_EXEC(String pRC_ITERATION_EXEC) {
-        PRC_ITERATION_EXEC = pRC_ITERATION_EXEC;
-    }
-
-    public ExecutionControl getExecutionControl() {
-        return executionControl;
-    }
-
-    public void setExecutionControl(ExecutionControl executionControl) {
-        this.executionControl = executionControl;
     }
 
 }

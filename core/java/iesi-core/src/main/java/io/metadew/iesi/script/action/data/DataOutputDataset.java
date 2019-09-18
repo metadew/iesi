@@ -14,6 +14,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.HashMap;
 
@@ -70,7 +71,7 @@ public class DataOutputDataset {
 
     public boolean execute() {
         try {
-            Dataset dataset = new KeyValueDataset(getDatasetName().getValue(), getDatasetLabels().getValue(), executionControl.getExecutionRuntime());
+            Dataset dataset = new KeyValueDataset(getDatasetName().getValue(), getDatasetLabels().getValue());
             boolean onScreen = convertOnScreen(getOnScreen().getValue());
             return outputDataset(dataset, onScreen);
         } catch (Exception e) {

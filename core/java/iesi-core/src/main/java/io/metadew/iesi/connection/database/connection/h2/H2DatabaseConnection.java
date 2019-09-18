@@ -66,15 +66,19 @@ public class H2DatabaseConnection extends DatabaseConnection {
         return Optional.ofNullable(schema);
     }
 
-    public Connection getConnection() throws SQLException {
-        Connection connection = super.getConnection();
+    public Connection getConnection() {
+        try {
+            Connection connection = super.getConnection();
 
-        Optional<String> schema = getSchema();
-        if (schema.isPresent()) {
-            connection.createStatement().execute("SET SCHEMA " + schema.get());
-            // TODO test the set schema call
-            //connection.setSchema(schema.get());
+            Optional<String> schema = getSchema();
+            if (schema.isPresent()) {
+                connection.createStatement().execute("SET SCHEMA " + schema.get());
+                // TODO test the set schema call
+                //connection.setSchema(schema.get());
+            }
+            return connection;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
-        return connection;
     }
 }

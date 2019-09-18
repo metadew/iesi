@@ -116,8 +116,7 @@ public class ScriptExecutionRequestBuilder {
         verifyMandatoryNameArguments();
         return new ScriptNameExecutionRequest(
                 getScriptExecutionRequestKey()
-                        .orElse(new ScriptExecutionRequestKey(IdentifierTools.getScriptExecutionRequestIdentifier()
-                        )),
+                        .orElse(new ScriptExecutionRequestKey(IdentifierTools.getScriptExecutionRequestIdentifier())),
                 executionRequestKey,
                 scriptName,
                 scriptVersion,

@@ -27,42 +27,50 @@ public class ScriptVersionDesignTraceConfiguration extends Configuration<ScriptV
     }
 
     @Override
-    public Optional<ScriptVersionDesignTrace> get(ScriptVersionDesignTraceKey scriptVersionDesignTraceKey) throws SQLException {
-        String query = "SELECT SCRIPT_VRS_NB, SCRIPT_VRS_DSC FROM " +
-                getMetadataControl().getTraceMetadataRepository().getTableNameByLabel("ScriptVersionDesignTraces") +
-                " WHERE " +
-                " RUN_ID = " + SQLTools.GetStringForSQL(scriptVersionDesignTraceKey.getRunId()) + " AND " +
-                " PRC_ID = "  + SQLTools.GetStringForSQL(scriptVersionDesignTraceKey.getProcessId()) + ";";
-        CachedRowSet cachedRowSet = getMetadataControl().getTraceMetadataRepository().executeQuery(query, "reader");
-        if (cachedRowSet.size() == 0) {
-            return Optional.empty();
-        } else if (cachedRowSet.size() > 1) {
-            LOGGER.warn(MessageFormat.format("Found multiple implementations for ScriptVersionDesignTrace {0}. Returning first implementation", scriptVersionDesignTraceKey.toString()));
-        }
-        cachedRowSet.next();
-        return Optional.of(new ScriptVersionDesignTrace(scriptVersionDesignTraceKey,
-                cachedRowSet.getLong("SCRIPT_VRS_NB"),
-                cachedRowSet.getString("SCRIPT_VRS_DSC")));
-    }
-
-    @Override
-    public List<ScriptVersionDesignTrace> getAll() throws SQLException {
-        List<ScriptVersionDesignTrace> scriptVersionDesignTraces = new ArrayList<>();
-        String query = "SELECT RUN_ID, PRC_ID, SCRIPT_VRS_NB, SCRIPT_VRS_DSC FROM " +
-                getMetadataControl().getTraceMetadataRepository().getTableNameByLabel("ScriptVersionDesignTraces") + ";";
-        CachedRowSet cachedRowSet = getMetadataControl().getTraceMetadataRepository().executeQuery(query, "reader");
-        while (cachedRowSet.next()) {
-            scriptVersionDesignTraces.add(new ScriptVersionDesignTrace(new ScriptVersionDesignTraceKey(
-                    cachedRowSet.getString("RUN_ID"),
-                    cachedRowSet.getLong("PRC_ID")),
+    public Optional<ScriptVersionDesignTrace> get(ScriptVersionDesignTraceKey scriptVersionDesignTraceKey) {
+        try {
+            String query = "SELECT SCRIPT_VRS_NB, SCRIPT_VRS_DSC FROM " +
+                    getMetadataControl().getTraceMetadataRepository().getTableNameByLabel("ScriptVersionDesignTraces") +
+                    " WHERE " +
+                    " RUN_ID = " + SQLTools.GetStringForSQL(scriptVersionDesignTraceKey.getRunId()) + " AND " +
+                    " PRC_ID = " + SQLTools.GetStringForSQL(scriptVersionDesignTraceKey.getProcessId()) + ";";
+            CachedRowSet cachedRowSet = getMetadataControl().getTraceMetadataRepository().executeQuery(query, "reader");
+            if (cachedRowSet.size() == 0) {
+                return Optional.empty();
+            } else if (cachedRowSet.size() > 1) {
+                LOGGER.warn(MessageFormat.format("Found multiple implementations for ScriptVersionDesignTrace {0}. Returning first implementation", scriptVersionDesignTraceKey.toString()));
+            }
+            cachedRowSet.next();
+            return Optional.of(new ScriptVersionDesignTrace(scriptVersionDesignTraceKey,
                     cachedRowSet.getLong("SCRIPT_VRS_NB"),
                     cachedRowSet.getString("SCRIPT_VRS_DSC")));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
-        return scriptVersionDesignTraces;
     }
 
     @Override
-    public void delete(ScriptVersionDesignTraceKey scriptVersionDesignTraceKey) throws MetadataDoesNotExistException, SQLException {
+    public List<ScriptVersionDesignTrace> getAll() {
+        try {
+            List<ScriptVersionDesignTrace> scriptVersionDesignTraces = new ArrayList<>();
+            String query = "SELECT RUN_ID, PRC_ID, SCRIPT_VRS_NB, SCRIPT_VRS_DSC FROM " +
+                    getMetadataControl().getTraceMetadataRepository().getTableNameByLabel("ScriptVersionDesignTraces") + ";";
+            CachedRowSet cachedRowSet = getMetadataControl().getTraceMetadataRepository().executeQuery(query, "reader");
+            while (cachedRowSet.next()) {
+                scriptVersionDesignTraces.add(new ScriptVersionDesignTrace(new ScriptVersionDesignTraceKey(
+                        cachedRowSet.getString("RUN_ID"),
+                        cachedRowSet.getLong("PRC_ID")),
+                        cachedRowSet.getLong("SCRIPT_VRS_NB"),
+                        cachedRowSet.getString("SCRIPT_VRS_DSC")));
+            }
+            return scriptVersionDesignTraces;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void delete(ScriptVersionDesignTraceKey scriptVersionDesignTraceKey) throws MetadataDoesNotExistException {
         LOGGER.trace(MessageFormat.format("Deleting ScriptVersionDesignTrace {0}.", scriptVersionDesignTraceKey.toString()));
         if (!exists(scriptVersionDesignTraceKey)) {
             throw new ScriptVersionDesignTraceDoesNotExistException(MessageFormat.format(
@@ -76,11 +84,21 @@ public class ScriptVersionDesignTraceConfiguration extends Configuration<ScriptV
         return "DELETE FROM " + getMetadataControl().getTraceMetadataRepository().getTableNameByLabel("ScriptVersionDesignTraces") +
                 " WHERE " +
                 " RUN_ID = " + SQLTools.GetStringForSQL(scriptVersionDesignTraceKey.getRunId()) + " AND " +
-                " PRC_ID = "  + SQLTools.GetStringForSQL(scriptVersionDesignTraceKey.getProcessId()) + ";";
+                " PRC_ID = " + SQLTools.GetStringForSQL(scriptVersionDesignTraceKey.getProcessId()) + ";";
+    }
+
+    public boolean exists(ScriptVersionDesignTraceKey scriptVersionDesignTraceKey) {
+        String query = "SELECT SCRIPT_VRS_NB, SCRIPT_VRS_DSC FROM " +
+                getMetadataControl().getTraceMetadataRepository().getTableNameByLabel("ScriptVersionDesignTraces") +
+                " WHERE " +
+                " RUN_ID = " + SQLTools.GetStringForSQL(scriptVersionDesignTraceKey.getRunId()) + " AND " +
+                " PRC_ID = " + SQLTools.GetStringForSQL(scriptVersionDesignTraceKey.getProcessId()) + ";";
+        CachedRowSet cachedRowSet = getMetadataControl().getTraceMetadataRepository().executeQuery(query, "reader");
+        return cachedRowSet.size() >= 1;
     }
 
     @Override
-    public void insert(ScriptVersionDesignTrace scriptVersionDesignTrace) throws MetadataAlreadyExistsException, SQLException {
+    public void insert(ScriptVersionDesignTrace scriptVersionDesignTrace) throws MetadataAlreadyExistsException {
         LOGGER.trace(MessageFormat.format("Inserting ScriptVersionDesignTrace {0}.", scriptVersionDesignTrace.toString()));
         if (exists(scriptVersionDesignTrace.getMetadataKey())) {
             throw new ScriptVersionDesignTraceAlreadyExistsException(MessageFormat.format(

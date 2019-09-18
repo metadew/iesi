@@ -10,7 +10,7 @@ import io.metadew.iesi.metadata.definition.MetadataField;
  */
 public class DremioDatabase extends SchemaDatabase {
 
-    public DremioDatabase(DremioDatabaseConnection databaseConnection, String schema) {
+    public DremioDatabase(DremioDatabaseConnection databaseConnection, String schema)  {
         super(databaseConnection, schema);
     }
 

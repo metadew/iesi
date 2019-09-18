@@ -41,7 +41,7 @@ public class ScriptExecutorService {
     }
 
     @SuppressWarnings("unchecked")
-    public void execute(ScriptExecutionRequest scriptExecutionRequest) throws SQLException, MetadataDoesNotExistException, MetadataAlreadyExistsException, ScriptExecutionBuildException {
+    public void execute(ScriptExecutionRequest scriptExecutionRequest) throws MetadataDoesNotExistException, MetadataAlreadyExistsException, ScriptExecutionBuildException {
         ScriptExecutor scriptExecutor = scriptExecutorMap.get(scriptExecutionRequest.getClass());
 
         scriptExecutionRequest.updateScriptExecutionRequestStatus(ScriptExecutionRequestStatus.SUBMITTED);

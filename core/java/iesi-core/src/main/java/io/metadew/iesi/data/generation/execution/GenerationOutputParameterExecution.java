@@ -7,6 +7,8 @@ import io.metadew.iesi.script.execution.ExecutionControl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.sql.SQLException;
+
 public class GenerationOutputParameterExecution {
 
     private FrameworkExecution frameworkExecution;
@@ -29,7 +31,7 @@ public class GenerationOutputParameterExecution {
     }
 
     public GenerationOutputParameterExecution(FrameworkExecution frameworkExecution, ExecutionControl executionControl, String generationOutputTypeName, String name,
-                                              String value) {
+                                              String value)  {
         this.setFrameworkExecution(frameworkExecution);
         this.setExecutionControl(executionControl);
         this.setGenerationOutputTypeName(generationOutputTypeName);
@@ -58,7 +60,7 @@ public class GenerationOutputParameterExecution {
         return value;
     }
 
-    public void setValue(String value) {
+    public void setValue(String value)  {
         this.value = this.getExecutionControl().getExecutionRuntime().resolveVariables(value);
     }
 

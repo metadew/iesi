@@ -19,6 +19,7 @@ import javax.sql.rowset.CachedRowSet;
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.sql.SQLException;
 import java.util.UUID;
 
 /**
@@ -43,7 +44,7 @@ public class RepositoryOperation {
 
     // Constructors
     public RepositoryOperation(ExecutionControl executionControl, String repositoryName,
-                               String repositoryInstanceName, String repositoryInstanceLabels) {
+                               String repositoryInstanceName, String repositoryInstanceLabels)  {
         this.setExecutionControl(executionControl);
         this.setRepositoryName(repositoryName);
         this.setRepositoryInstanceName(repositoryInstanceName);
@@ -63,8 +64,7 @@ public class RepositoryOperation {
 
         // Get Connection
         ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
-        Connection connection = connectionConfiguration.get(this.getRepositoryInstanceConnectionName().getValue(),
-                this.getExecutionControl().getEnvName()).get();
+        Connection connection = connectionConfiguration.get(this.getRepositoryInstanceConnectionName().getValue(),this.getExecutionControl().getEnvName()).get();
         ConnectionOperation connectionOperation = new ConnectionOperation();
         this.setRepositoryDatabaseInstance(connectionOperation
                 .getDatabase(connection));

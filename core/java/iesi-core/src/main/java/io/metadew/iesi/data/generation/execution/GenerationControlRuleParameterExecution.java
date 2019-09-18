@@ -8,6 +8,8 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.sql.SQLException;
+
 public class GenerationControlRuleParameterExecution {
 
     private FrameworkExecution frameworkExecution;
@@ -30,7 +32,7 @@ public class GenerationControlRuleParameterExecution {
     }
 
     public GenerationControlRuleParameterExecution(FrameworkExecution frameworkExecution, ExecutionControl executionControl, String generationControlRuleTypeName, String name,
-                                                   String value) {
+                                                   String value)  {
         this.setFrameworkExecution(frameworkExecution);
         this.setExecutionControl(executionControl);
         this.setGenerationControlRuleTypeName(generationControlRuleTypeName);
@@ -59,7 +61,7 @@ public class GenerationControlRuleParameterExecution {
         return value;
     }
 
-    public void setValue(String value) {
+    public void setValue(String value)  {
         this.value = this.getExecutionControl().getExecutionRuntime().resolveVariables(value);
     }
 
@@ -67,7 +69,7 @@ public class GenerationControlRuleParameterExecution {
         return inputValue;
     }
 
-    public void setInputValue(String inputValue) {
+    public void setInputValue(String inputValue)  {
         this.inputValue = inputValue;
         this.setValue(inputValue);
 

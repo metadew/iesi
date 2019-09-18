@@ -27,7 +27,7 @@ public  class EnvironmentDtoResourceAssembler extends ResourceAssemblerSupport<E
         Link selfLink = linkTo(methodOn(EnvironmentsController.class).getByName(environmentDto.getName()))
                 .withSelfRel();
         environmentDto.add(selfLink);
-        Link connectionsLink = linkTo(methodOn(EnvironmentsController.class).getEnvironmentsConnections(environmentDto.getName()))
+        Link connectionsLink = linkTo(methodOn(EnvironmentsController.class).getConnections(environmentDto.getName()))
                 .withRel("connections");
         environmentDto.add(connectionsLink);
         return environmentDto;

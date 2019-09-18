@@ -244,6 +244,7 @@ public final class FolderTools {
             try {
                 Files.createDirectories(path);
             } catch (Exception e) {
+                e.printStackTrace();
                 throw new RuntimeException("folder.create.error");
             }
         } else {

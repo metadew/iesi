@@ -23,44 +23,54 @@ public class ScriptResultOutputConfiguration extends Configuration<ScriptResultO
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public ScriptResultOutputConfiguration() {super();}
-
-    @Override
-    public Optional<ScriptResultOutput> get(ScriptResultOutputKey scriptResultOutputKey) throws SQLException {
-        String query = "select RUN_ID, PRC_ID, SCRIPT_ID, OUT_NM, OUT_VAL from " + MetadataControl.getInstance().getResultMetadataRepository().getTableNameByLabel("ScriptResultOutputs")
-                + " where RUN_ID = " + SQLTools.GetStringForSQL(scriptResultOutputKey.getRunId())
-                + " and OUT_NM = " + SQLTools.GetStringForSQL(scriptResultOutputKey.getOutputName())
-                + " and PRC_ID = " + scriptResultOutputKey.getProcessId() + ";";
-        CachedRowSet cachedRowSet = MetadataControl.getInstance().getResultMetadataRepository().executeQuery(query, "reader");
-        if (cachedRowSet.size() == 0) {
-            return Optional.empty();
-        } else if (cachedRowSet.size() > 1) {
-            LOGGER.warn(MessageFormat.format("Found multiple implementations for ScriptResultOutput {0}. Returning first implementation", scriptResultOutputKey.toString()));
-        }
-        cachedRowSet.next();
-        return Optional.of(new ScriptResultOutput(scriptResultOutputKey,
-                cachedRowSet.getString("SCRIPT_ID"),
-                cachedRowSet.getString("OUT_VAL")));
+    public ScriptResultOutputConfiguration() {
+        super();
     }
 
     @Override
-    public List<ScriptResultOutput> getAll() throws SQLException {
-        List<ScriptResultOutput> scriptResultOutputs = new ArrayList<>();
-        String query = "select RUN_ID, PRC_ID, SCRIPT_ID, OUT_NM, OUT_VAL from " + MetadataControl.getInstance().getResultMetadataRepository().getTableNameByLabel("ScriptResultOutputs") + ";";
-        CachedRowSet cachedRowSet = getMetadataControl().getResultMetadataRepository().executeQuery(query, "reader");
-        while (cachedRowSet.next()) {
-            scriptResultOutputs.add(new ScriptResultOutput(new ScriptResultOutputKey(
-                    cachedRowSet.getString("RUN_ID"),
-                    cachedRowSet.getLong("PRC_ID"),
-                    cachedRowSet.getString("OUT_NM")),
+    public Optional<ScriptResultOutput> get(ScriptResultOutputKey scriptResultOutputKey) {
+        try {
+            String query = "select RUN_ID, PRC_ID, SCRIPT_ID, OUT_NM, OUT_VAL from " + MetadataControl.getInstance().getResultMetadataRepository().getTableNameByLabel("ScriptResultOutputs")
+                    + " where RUN_ID = " + SQLTools.GetStringForSQL(scriptResultOutputKey.getRunId())
+                    + " and OUT_NM = " + SQLTools.GetStringForSQL(scriptResultOutputKey.getOutputName())
+                    + " and PRC_ID = " + scriptResultOutputKey.getProcessId() + ";";
+            CachedRowSet cachedRowSet = MetadataControl.getInstance().getResultMetadataRepository().executeQuery(query, "reader");
+            if (cachedRowSet.size() == 0) {
+                return Optional.empty();
+            } else if (cachedRowSet.size() > 1) {
+                LOGGER.warn(MessageFormat.format("Found multiple implementations for ScriptResultOutput {0}. Returning first implementation", scriptResultOutputKey.toString()));
+            }
+            cachedRowSet.next();
+            return Optional.of(new ScriptResultOutput(scriptResultOutputKey,
                     cachedRowSet.getString("SCRIPT_ID"),
                     cachedRowSet.getString("OUT_VAL")));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
-        return scriptResultOutputs;
     }
 
     @Override
-    public void delete(ScriptResultOutputKey scriptResultOutputKey) throws MetadataDoesNotExistException, SQLException {
+    public List<ScriptResultOutput> getAll() {
+        try {
+            List<ScriptResultOutput> scriptResultOutputs = new ArrayList<>();
+            String query = "select RUN_ID, PRC_ID, SCRIPT_ID, OUT_NM, OUT_VAL from " + MetadataControl.getInstance().getResultMetadataRepository().getTableNameByLabel("ScriptResultOutputs") + ";";
+            CachedRowSet cachedRowSet = getMetadataControl().getResultMetadataRepository().executeQuery(query, "reader");
+            while (cachedRowSet.next()) {
+                scriptResultOutputs.add(new ScriptResultOutput(new ScriptResultOutputKey(
+                        cachedRowSet.getString("RUN_ID"),
+                        cachedRowSet.getLong("PRC_ID"),
+                        cachedRowSet.getString("OUT_NM")),
+                        cachedRowSet.getString("SCRIPT_ID"),
+                        cachedRowSet.getString("OUT_VAL")));
+            }
+            return scriptResultOutputs;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void delete(ScriptResultOutputKey scriptResultOutputKey) throws MetadataDoesNotExistException {
         LOGGER.trace(MessageFormat.format("Deleting ScriptResultOutput {0}.", scriptResultOutputKey.toString()));
         if (!exists(scriptResultOutputKey)) {
             throw new ScriptResultOutputDoesNotExistException(MessageFormat.format(
@@ -75,11 +85,11 @@ public class ScriptResultOutputConfiguration extends Configuration<ScriptResultO
                 " WHERE " +
                 " RUN_ID = " + SQLTools.GetStringForSQL(scriptResultOutputKey.getRunId()) + " AND " +
                 " OUT_NM = " + SQLTools.GetStringForSQL(scriptResultOutputKey.getOutputName()) + " AND " +
-                " PRC_ID = "  + SQLTools.GetStringForSQL(scriptResultOutputKey.getProcessId()) + ";";
+                " PRC_ID = " + SQLTools.GetStringForSQL(scriptResultOutputKey.getProcessId()) + ";";
     }
 
     @Override
-    public void insert(ScriptResultOutput scriptResultOutput) throws MetadataAlreadyExistsException, SQLException {
+    public void insert(ScriptResultOutput scriptResultOutput) throws MetadataAlreadyExistsException {
         LOGGER.trace(MessageFormat.format("Inserting ScriptResultOutput {0}.", scriptResultOutput.getMetadataKey().toString()));
         if (exists(scriptResultOutput.getMetadataKey())) {
             throw new ScriptResultOutputAlreadyExistsException(MessageFormat.format(

@@ -66,7 +66,7 @@ public class RestoreTableOperation {
             sql = "";
             sql += "INSERT INTO "
                     // + MetadataControl.getInstance().getDesignMetadataRepository().getMetadataTableConfiguration().getSchemaPrefix()
-                    + MetadataControl.getInstance().getDesignMetadataRepository().getTableNamePrefix()
+                    + MetadataControl.getInstance().getDesignMetadataRepository().getTablePrefix()
                     + this.getDataTable().getName();
             sql += " (";
             sql += sqlFields;

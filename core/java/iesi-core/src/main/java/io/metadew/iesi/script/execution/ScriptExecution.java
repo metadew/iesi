@@ -8,6 +8,7 @@ import io.metadew.iesi.script.operation.ActionSelectOperation;
 import io.metadew.iesi.script.operation.RouteOperation;
 import org.apache.logging.log4j.Level;
 
+import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -130,7 +131,7 @@ public abstract class ScriptExecution {
 
 	protected abstract void endExecution();
 
-	protected abstract void prepareExecution();
+	protected abstract void prepareExecution() ;
 
 	public RootingStrategy getRootingStrategy() {
 		return rootingStrategy;

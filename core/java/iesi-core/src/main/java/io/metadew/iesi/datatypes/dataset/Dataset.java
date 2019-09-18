@@ -5,7 +5,6 @@ import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeService;
 import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.datatypes.text.Text;
-import io.metadew.iesi.script.execution.ExecutionRuntime;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -17,7 +16,6 @@ import java.util.stream.Collectors;
 
 public abstract class Dataset extends DataType {
 
-    private ExecutionRuntime executionRuntime;
     private String name;
     private List<String> labels;
 
@@ -28,16 +26,14 @@ public abstract class Dataset extends DataType {
 
     private final static Logger LOGGER = LogManager.getLogger();
 
-    public Dataset(DataType name, DataType labels, ExecutionRuntime executionRuntime) throws IOException, SQLException {
-        this.executionRuntime = executionRuntime;
+    public Dataset(DataType name, DataType labels) throws IOException {
         this.dataTypeService = new DataTypeService();
         this.name = convertDatasetName(name);
         this.labels = convertDatasetLabels(labels);
         this.datasetDatabase = initializeDatasetConnection(this.name, this.labels);
     }
 
-    public Dataset(String name, List<String> labels, ExecutionRuntime executionRuntime) throws IOException, SQLException {
-        this.executionRuntime = executionRuntime;
+    public Dataset(String name, List<String> labels) throws IOException {
         this.dataTypeService = new DataTypeService();
         this.name = name;
         this.labels = labels;
@@ -71,8 +67,9 @@ public abstract class Dataset extends DataType {
 
     private String convertDatasetName(DataType datasetName) {
         if (datasetName instanceof Text) {
-            String variablesResolved = executionRuntime.resolveVariables(datasetName.toString());
-            return executionRuntime.resolveConceptLookup(variablesResolved).getValue();
+            // String variablesResolved = executionRuntime.resolveVariables(datasetName.toString());
+            // return executionRuntime.resolveConceptLookup(variablesResolved).getValue();
+            return ((Text) datasetName).getString();
         } else {
             LOGGER.warn(MessageFormat.format("dataset does not accept {0} as type for datasetDatabase name",
                     datasetName.getClass()));
@@ -82,8 +79,9 @@ public abstract class Dataset extends DataType {
 
     private String convertDatasetLabel(DataType datasetLabel) {
         if (datasetLabel instanceof Text) {
-            String variablesResolved = executionRuntime.resolveVariables(datasetLabel.toString());
-            return executionRuntime.resolveConceptLookup(variablesResolved).getValue();
+            // String variablesResolved = executionRuntime.resolveVariables(datasetLabel.toString());
+            // return executionRuntime.resolveConceptLookup(variablesResolved).getValue();
+            return ((Text) datasetLabel).getString();
         } else {
             LOGGER.warn(MessageFormat.format("dataset does not accept {0} as type for a datasetDatabase label",
                     datasetLabel.getClass()));
@@ -91,7 +89,7 @@ public abstract class Dataset extends DataType {
         }
     }
 
-    private Database initializeDatasetConnection(String datasetName, List<String> labels) throws SQLException, IOException {
+    private Database initializeDatasetConnection(String datasetName, List<String> labels) throws IOException {
         datasetMetadata = new DatasetMetadata(datasetName);
         if (labels.isEmpty()) {
             return null;
@@ -105,7 +103,7 @@ public abstract class Dataset extends DataType {
         return datasetMetadata.getDatasetDatabase(datasetInventoryId);
     }
 
-    protected Database createNewDataset(String datasetName, List<String> labels) throws IOException, SQLException {
+    protected Database createNewDataset(String datasetName, List<String> labels) throws IOException {
         LOGGER.trace(MessageFormat.format("datatype.dataset=initializing new dataset database for ''{0}'' with labels {1}", datasetName, labels.toString()));
         int nextInventoryId = getDatasetMetadata().getLatestInventoryId() + 1;
         String datasetFilename = UUID.randomUUID().toString() + ".db3";
@@ -133,10 +131,6 @@ public abstract class Dataset extends DataType {
 
     public DatasetMetadata getDatasetMetadata() {
         return datasetMetadata;
-    }
-
-    public ExecutionRuntime getExecutionRuntime() {
-        return executionRuntime;
     }
 
 

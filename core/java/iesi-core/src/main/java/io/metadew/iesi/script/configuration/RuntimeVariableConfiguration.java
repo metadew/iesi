@@ -1,180 +1,99 @@
 package io.metadew.iesi.script.configuration;
 
+import io.metadew.iesi.connection.database.SqliteDatabase;
 import io.metadew.iesi.connection.database.connection.sqlite.SqliteDatabaseConnection;
 import io.metadew.iesi.connection.tools.SQLTools;
-import io.metadew.iesi.metadata.definition.RuntimeVariable;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.File;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.sql.SQLException;
+import java.text.MessageFormat;
+import java.util.Optional;
 
 public class RuntimeVariableConfiguration {
 
-    private RuntimeVariable runtimeVariable;
-    private String runCacheFolderName;
+    private final static Logger LOGGER = LogManager.getLogger();
+    private final SqliteDatabase sqliteDatabase;
     private String runCacheFileName = "runtimeVariables.db3";
-    private String runCacheFilePath;
-    private SqliteDatabaseConnection sqliteDatabaseConnection;
     private String PRC_RUN_VAR = "PRC_RUN_VAR";
 
     // Constructors
-    public RuntimeVariableConfiguration(String runCacheFolderName) {
-        // Define path
-        this.setRunCacheFolderName(runCacheFolderName);
-        this.setRunCacheFilePath(this.getRunCacheFolderName() + File.separator + this.getRunCacheFileName());
+    public RuntimeVariableConfiguration(String runCacheFolderName)  {
 
         // Create database
-        this.setSqliteDatabaseConnection(new SqliteDatabaseConnection(this.getRunCacheFilePath()));
-        this.createRunVarTable();
+        sqliteDatabase = new SqliteDatabase(new SqliteDatabaseConnection(runCacheFolderName + File.separator + runCacheFileName));
+        createRunVarTable();
 
     }
 
-    private void createRunVarTable() {
-        String query = "CREATE TABLE " + this.getPRC_RUN_VAR() + " (" +
+    private void createRunVarTable()  {
+        String query = "CREATE TABLE " + PRC_RUN_VAR + " (" +
                 "RUN_ID TEXT NOT NULL," +
                 "PRC_ID NUMERIC NOT NULL," +
                 "VAR_NM TEXT NOT NULL," +
                 "VAR_VAL TEXT" +
                 ")";
-        this.getSqliteDatabaseConnection().executeUpdate(query);
+        sqliteDatabase.executeUpdate(query);
     }
 
     // Methods
-    public void cleanRuntimeVariables(String runId) {
-        String query = "delete from " + this.getPRC_RUN_VAR()
-                + " where RUN_ID = '" + runId + "'";
-        this.getSqliteDatabaseConnection().executeUpdate(query);
+    public void cleanRuntimeVariables(String runId)  {
+        String query = "delete from " + PRC_RUN_VAR
+                + " where RUN_ID = " + SQLTools.GetStringForSQL(runId) + ";";
+        sqliteDatabase.executeUpdate(query);
     }
 
     public void cleanRuntimeVariables(String runId, long processId) {
-        String query = "delete from " + this.getPRC_RUN_VAR()
-                + " where RUN_ID = '" + runId + "' and PRC_ID = " + processId;
-        this.getSqliteDatabaseConnection().executeUpdate(query);
+        String query = "delete from " + PRC_RUN_VAR
+                + " where RUN_ID = " + SQLTools.GetStringForSQL(runId)
+                + " and PRC_ID = " + SQLTools.GetStringForSQL(processId) + ";";
+        sqliteDatabase.executeUpdate(query);
     }
 
     public void setRuntimeVariable(String runId, Long processId, String name, String value) {
         // Verify if variable already exists
-        String query = "";
-
-        query = "select run_id, prc_id, var_nm, var_val from "
-                + this.getPRC_RUN_VAR() + " where run_id = '"
-                + runId + "' and prc_id = " + processId + " and var_nm = '" + name + "'";
-        CachedRowSet crs = null;
-        crs = this.getSqliteDatabaseConnection().executeQuery(query);
+        String query = "select run_id, prc_id, var_nm, var_val from " + PRC_RUN_VAR
+                + " where run_id = " + SQLTools.GetStringForSQL(runId)
+                + " and prc_id = " + SQLTools.GetStringForSQL(processId)
+                + " and var_nm = " + SQLTools.GetStringForSQL(name) + ";";
+        CachedRowSet crs = sqliteDatabase.executeQuery(query);
 
         // if so, the previous values will be deleted
-        if (SQLTools.getRowCount(crs) > 0) {
-            query = "delete from " + this.getPRC_RUN_VAR()
-                    + " where run_id = '" + runId + "' and prc_id = " + processId + " and var_nm = '" + name + "'";
-            this.getSqliteDatabaseConnection().executeUpdate(query);
+        if (crs.size() > 0) {
+            String deleteQuery = "delete from " + PRC_RUN_VAR
+                    + " where run_id = " + SQLTools.GetStringForSQL(runId) + " and prc_id = " + SQLTools.GetStringForSQL(processId) + " and var_nm = " + SQLTools.GetStringForSQL(name) + ";";
+            sqliteDatabase.executeUpdate(deleteQuery);
         }
 
         // DtNow, new values can be stored
-        query = "";
-        query = "INSERT INTO " + this.getPRC_RUN_VAR();
-        query = query + "(run_id, prc_id, var_nm, var_val)";
-        query = query + " VALUES (";
-        query += SQLTools.GetStringForSQL(runId);
-        query += ",";
-        query += SQLTools.GetStringForSQL(processId);
-        query += ",";
-        query += SQLTools.GetStringForSQL(name);
-        query += ",";
-        query += SQLTools.GetStringForSQL(value);
-        query += ")";
-        this.getSqliteDatabaseConnection().executeUpdate(query);
+        String inserQuery = "INSERT INTO " + PRC_RUN_VAR + "(run_id, prc_id, var_nm, var_val) VALUES ("
+                + SQLTools.GetStringForSQL(runId) + ","
+                + SQLTools.GetStringForSQL(processId) + ","
+                + SQLTools.GetStringForSQL(name) + ","
+                + SQLTools.GetStringForSQL(value) + ");";
+        sqliteDatabase.executeUpdate(inserQuery);
     }
 
-    public String getRuntimeVariableValue(String runId, String name) {
-        CachedRowSet crs = null;
-        String query = "select VAR_VAL from " + this.getPRC_RUN_VAR()
-                + " where run_id = '" + runId + "' and var_nm = '" + name + "'";
-        crs = this.getSqliteDatabaseConnection().executeQuery(query);
-        String value = "";
+    public Optional<String> getRuntimeVariableValue(String runId, String name) {
         try {
-            while (crs.next()) {
-                value = crs.getString("VAR_VAL");
+            String query = "select VAR_VAL from " + PRC_RUN_VAR
+                    + " where run_id = " + SQLTools.GetStringForSQL(runId) + " and var_nm = " + SQLTools.GetStringForSQL(name) + ";";
+            CachedRowSet crs = sqliteDatabase.executeQuery(query);
+            if (crs.size() == 0) {
+                return Optional.empty();
             }
-            crs.close();
-        } catch (SQLException e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-        }
-        return value;
-    }
-
-    public RuntimeVariable getRuntimeVariable(String runId, String name) {
-        RuntimeVariable runtimeVariable = new RuntimeVariable();
-        runtimeVariable.setName(name);
-
-        CachedRowSet crs = null;
-        String query = "select VAR_VAL from " + this.getPRC_RUN_VAR()
-                + " where run_id = '" + runId + "' and var_nm = '" + name + "'";
-        crs = this.getSqliteDatabaseConnection().executeQuery(query);
-        String value = "";
-        try {
-            while (crs.next()) {
-                value = crs.getString("VAR_VAL");
+            if (crs.size() > 1) {
+                LOGGER.warn(MessageFormat.format("Found multiple implementations for RuntimeVariable {0}-{1}. Returning first implementation", runId, name));
             }
+            crs.next();
+            String value = crs.getString("VAR_VAL");
             crs.close();
+            return Optional.of(value);
         } catch (SQLException e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
+            throw new RuntimeException(e);
         }
-
-        runtimeVariable.setValue(value);
-        return runtimeVariable;
-    }
-
-    // Getters and Setters
-    public RuntimeVariable getRuntimeVariable() {
-        return runtimeVariable;
-    }
-
-    public void setRuntimeVariable(RuntimeVariable runtimeVariable) {
-        this.runtimeVariable = runtimeVariable;
-    }
-
-    public String getRunCacheFileName() {
-        return runCacheFileName;
-    }
-
-    public void setRunCacheFileName(String runCacheFileName) {
-        this.runCacheFileName = runCacheFileName;
-    }
-
-    public String getRunCacheFolderName() {
-        return runCacheFolderName;
-    }
-
-    public void setRunCacheFolderName(String runCacheFolderName) {
-        this.runCacheFolderName = runCacheFolderName;
-    }
-
-    public String getRunCacheFilePath() {
-        return runCacheFilePath;
-    }
-
-    public void setRunCacheFilePath(String runCacheFilePath) {
-        this.runCacheFilePath = runCacheFilePath;
-    }
-
-    public SqliteDatabaseConnection getSqliteDatabaseConnection() {
-        return sqliteDatabaseConnection;
-    }
-
-    public void setSqliteDatabaseConnection(SqliteDatabaseConnection sqliteDatabaseConnection) {
-        this.sqliteDatabaseConnection = sqliteDatabaseConnection;
-    }
-
-    public void setPRC_RUN_VAR(String pRC_RUN_VAR) {
-        PRC_RUN_VAR = pRC_RUN_VAR;
-    }
-
-    public String getPRC_RUN_VAR() {
-        return PRC_RUN_VAR;
     }
 
 }

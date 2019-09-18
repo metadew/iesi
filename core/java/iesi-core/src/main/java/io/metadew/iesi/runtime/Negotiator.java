@@ -13,6 +13,7 @@ import io.metadew.iesi.script.execution.ScriptExecutionBuilder;
 import io.metadew.iesi.script.operation.ActionSelectOperation;
 
 import java.lang.reflect.InvocationTargetException;
+import java.sql.SQLException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -50,7 +51,7 @@ public class Negotiator {
                 try {
                     TimeUnit.SECONDS.sleep(1);
                     runScript();
-                } catch (InterruptedException | ClassNotFoundException | NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException | ScriptExecutionBuildException e) {
+                } catch (InterruptedException | ClassNotFoundException | NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException | ScriptExecutionBuildException | SQLException e) {
                     throw new IllegalStateException(e);
                 }
                 return "Result of the asynchronous computation";
@@ -72,7 +73,7 @@ public class Negotiator {
     }
 
     public void runScript() throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException,
-            InstantiationException, IllegalAccessException, ScriptExecutionBuildException {
+            InstantiationException, IllegalAccessException, ScriptExecutionBuildException, SQLException {
         // Create the framework instance
         FrameworkInstance.getInstance().init(new FrameworkInitializationFile(), new FrameworkExecutionContext(new Context("negotiator", "")));
 

@@ -27,7 +27,7 @@ public class ConnectionByNameDtoResourceAssembler extends ResourceAssemblerSuppo
     public ConnectionByNameDto toResource(List<Connection> connections) {
         ConnectionByNameDto connectionByNameDto = convertToDto(connections);
         for (String environment : connectionByNameDto.getEnvironments()) {
-            connectionByNameDto.add(linkTo(methodOn(ConnectionsController.class).getByNameandEnvironment(connectionByNameDto.getName(), environment))
+            connectionByNameDto.add(linkTo(methodOn(ConnectionsController.class).get(connectionByNameDto.getName(), environment))
                     .withRel("connection:"+connectionByNameDto.getName()+"-"+environment));
         }
         return connectionByNameDto;

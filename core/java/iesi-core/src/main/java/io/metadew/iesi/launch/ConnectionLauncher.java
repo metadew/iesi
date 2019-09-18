@@ -102,7 +102,7 @@ public class ConnectionLauncher {
             if (database == null) {
                 throw new RuntimeException("Error establishing DB connection");
             }
-            
+
             String sqlStatement = "";
             // Run the action
             // Make sure the SQL statement is ended with a ;
@@ -122,7 +122,7 @@ public class ConnectionLauncher {
                 //this.getActionExecution().getActionControl().logOutput("err.out", sqlScriptResult.getErrorOutput());
                 throw new RuntimeException("Error execting SQL query");
             }
- 
+
             writeFooterMessage();
 
 
@@ -134,9 +134,7 @@ public class ConnectionLauncher {
                 System.out.println("No valid arguments have been provided, type -help for help.");
             }
 
-        } catch (
-
-                ParseException e) {
+        } catch (ParseException e) {
             e.printStackTrace();
             endLauncher(1, true);
         }
@@ -148,6 +146,7 @@ public class ConnectionLauncher {
         if (exit) {
             System.exit(status);
         }
+        FrameworkInstance.getInstance().shutdown();
     }
 
     private static void writeHeaderMessage() {

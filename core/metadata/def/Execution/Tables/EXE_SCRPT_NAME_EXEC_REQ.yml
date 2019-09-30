@@ -1,6 +1,6 @@
 ---
 data:
-  name: EXE_SCRPT_NAME_EXEC_REQ
+  name: EXE_SCRPT_NM_EXEC_REQ
   label: ScriptNameExecutionRequests
   description: In-process runtime script requests for execution
   type: operational

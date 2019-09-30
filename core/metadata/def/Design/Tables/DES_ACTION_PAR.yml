@@ -40,7 +40,7 @@ data:
     description: "String type parameter value"
     order: "5"
     type: "string"
-    length: "2000"
+    length: "4000"
     nullable: "Y"
     defaultTimestamp: ""
   - name: "LOAD_TMS"

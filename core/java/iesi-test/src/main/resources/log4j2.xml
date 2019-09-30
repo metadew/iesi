@@ -6,6 +6,24 @@
                 <Pattern>%d %-5p [%c{1.}] - %m%n</Pattern>
             </PatternLayout>
         </File>
+        <Routing name="elasticSearchFileBeat">
+            <Routes pattern="$${marker:}">
+                <Route key="${marker:}">
+                    <File fileName="${ctx:location}/filebeat.log" name="script" append="true">
+                        <PatternLayout>
+                            <Pattern>%d %-5p [%c{1.}] - %m%n</Pattern>
+                        </PatternLayout>
+                    </File>
+                </Route>
+                <Route>
+                    <File fileName="${ctx:location}/filebeat/${marker:}.log" name="filebeat-${marker:}" append="false">
+                        <PatternLayout>
+                            <Pattern>%d %-5p [%c{1.}] - %m%n</Pattern>
+                        </PatternLayout>
+                    </File>
+                </Route>
+            </Routes>
+        </Routing>
         <Routing name="scriptExecution">
             <Routes pattern="$${ctx:runId}">
                 <Route key="${ctx:runId}">
@@ -67,6 +85,10 @@
     <Loggers>
         <Logger name="io.metadew.iesi" additivity="false" level="all">
             <AppenderRef ref="STDOUT" level="info" />
+            <AppenderRef ref="default" level="all" />
+        </Logger>
+        <Logger name="io.metadew.iesi.connection.elasticsearch.filebeat" additivity="false" level="all">
+            <AppenderRef ref="elasticSearchFileBeat" level="info" />
             <AppenderRef ref="default" level="all" />
         </Logger>
         <Logger name="io.metadew.iesi.connection.database.connection" additivity="false">

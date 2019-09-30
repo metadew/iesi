@@ -4,6 +4,7 @@ import io.metadew.iesi.common.config.ConfigFile;
 import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.NetezzaDatabase;
 import io.metadew.iesi.connection.database.connection.netezza.NetezzaDatabaseConnection;
+import io.metadew.iesi.framework.crypto.FrameworkCrypto;
 import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
 
 import java.sql.SQLException;
@@ -57,7 +58,7 @@ public class NetezzaRepositoryConfiguration extends RepositoryConfiguration {
 
 
         if (getUser().isPresent()) {
-            NetezzaDatabaseConnection netezzaDatabaseConnection = new NetezzaDatabaseConnection(finalJdbcConnectionString, getUser().get(), getUserPassword().orElse(""));
+            NetezzaDatabaseConnection netezzaDatabaseConnection = new NetezzaDatabaseConnection(finalJdbcConnectionString, getUser().get(), FrameworkCrypto.getInstance().decrypt(getUserPassword().orElse("")));
             getSchema().ifPresent(netezzaDatabaseConnection::setSchema);
             NetezzaDatabase netezzaDatabase = new NetezzaDatabase(netezzaDatabaseConnection, getSchema().orElse(""));
             databases.put("owner", netezzaDatabase);
@@ -66,7 +67,7 @@ public class NetezzaRepositoryConfiguration extends RepositoryConfiguration {
         }
 
         if (getWriter().isPresent()) {
-            NetezzaDatabaseConnection netezzaDatabaseConnection = new NetezzaDatabaseConnection(finalJdbcConnectionString, getWriter().get(), getWriterPassword().orElse(""));
+            NetezzaDatabaseConnection netezzaDatabaseConnection = new NetezzaDatabaseConnection(finalJdbcConnectionString, getWriter().get(), FrameworkCrypto.getInstance().decrypt(getWriterPassword().orElse("")));
             getSchema().ifPresent(netezzaDatabaseConnection::setSchema);
             NetezzaDatabase netezzaDatabase = new NetezzaDatabase(netezzaDatabaseConnection, getSchema().orElse(""));
             databases.put("writer", netezzaDatabase);
@@ -74,7 +75,7 @@ public class NetezzaRepositoryConfiguration extends RepositoryConfiguration {
         }
 
         if (getReader().isPresent()) {
-            NetezzaDatabaseConnection netezzaDatabaseConnection = new NetezzaDatabaseConnection(finalJdbcConnectionString, getReader().get(), getReaderPassword().orElse(""));
+            NetezzaDatabaseConnection netezzaDatabaseConnection = new NetezzaDatabaseConnection(finalJdbcConnectionString, getReader().get(), FrameworkCrypto.getInstance().decrypt(getReaderPassword().orElse("")));
             getSchema().ifPresent(netezzaDatabaseConnection::setSchema);
             NetezzaDatabase netezzaDatabase = new NetezzaDatabase(netezzaDatabaseConnection, getSchema().orElse(""));
             databases.put("reader", netezzaDatabase);

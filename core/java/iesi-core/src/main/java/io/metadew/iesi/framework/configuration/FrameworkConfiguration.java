@@ -7,6 +7,7 @@ import org.apache.logging.log4j.ThreadContext;
 import java.io.File;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class FrameworkConfiguration {
 
@@ -41,12 +42,17 @@ public class FrameworkConfiguration {
 		this.frameworkCode = FrameworkSettings.IDENTIFIER.value();
 		ThreadContext.put("fwk.code", frameworkCode);
 		String configurationFile = FrameworkSettings.IDENTIFIER.value() + "-home.conf";
-		if (FileTools.exists(configurationFile)) {
+		if (System.getProperty(frameworkCode + ".home") != null) {
+			this.frameworkHome = System.getProperty(frameworkCode  + ".home");
+		} else if (getClass().getResource(FrameworkSettings.IDENTIFIER.value() + "-home.conf") != null) {
+			KeyValueConfigFile home = new KeyValueConfigFile(getClass().getResource(FrameworkSettings.IDENTIFIER.value() + "-home.conf").getFile());
+			this.frameworkHome = home.getProperties().getProperty(frameworkCode  + ".home");
+		} else if (FileTools.exists(configurationFile)) {
 			KeyValueConfigFile home = new KeyValueConfigFile(configurationFile);
 			this.frameworkHome = home.getProperties().getProperty(frameworkCode  + ".home");
 		} else {
-			Path path = FileSystems.getDefault().getPath(".").toAbsolutePath();
-			throw new RuntimeException(configurationFile + " not found at " + path.getRoot());
+			Path path = Paths.get(".").toAbsolutePath();
+			throw new RuntimeException(frameworkCode  + ".home not found as System property or " + frameworkCode + "-home.conf not found at " + path.getRoot() + " or on classpath");
 		}
 
 		FrameworkFolderConfiguration folderConfiguration = FrameworkFolderConfiguration.getInstance();

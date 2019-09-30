@@ -58,7 +58,7 @@ public class ConnIsAlive {
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
             if (actionParameter.getName().equalsIgnoreCase("connection")) {
-                this.getConnectionName().setInputValue(actionParameter.getValue());
+                this.getConnectionName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }
 

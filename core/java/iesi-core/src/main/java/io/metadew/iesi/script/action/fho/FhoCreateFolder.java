@@ -72,11 +72,11 @@ public class FhoCreateFolder {
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
             if (actionParameter.getName().equalsIgnoreCase("path")) {
-                this.getFolderPath().setInputValue(actionParameter.getValue());
+                this.getFolderPath().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase("folder")) {
-                this.getFolderName().setInputValue(actionParameter.getValue());
+                this.getFolderName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase("connection")) {
-                this.getConnectionName().setInputValue(actionParameter.getValue());
+                this.getConnectionName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }
 

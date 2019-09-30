@@ -66,11 +66,11 @@ public class DataCompareDataset {
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
             if (actionParameter.getName().equalsIgnoreCase("leftdataset")) {
-                this.getLeftDatasetName().setInputValue(actionParameter.getValue());
+                this.getLeftDatasetName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase("rightdataset")) {
-                this.getRightDatasetName().setInputValue(actionParameter.getValue());
+                this.getRightDatasetName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase("mapping")) {
-                this.getMappingName().setInputValue(actionParameter.getValue());
+                this.getMappingName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }
 
@@ -113,8 +113,8 @@ public class DataCompareDataset {
         Mapping mapping = mappingConfiguration.getMapping(mappingName);
         for (Transformation transformation : mapping.getTransformations()) {
 
-            Optional<DataType> leftFieldValue = leftDataset.getDataItem(transformation.getLeftField());
-            Optional<DataType> rightFieldValue = rightDataset.getDataItem(transformation.getRightField());
+            Optional<DataType> leftFieldValue = leftDataset.getDataItem(transformation.getLeftField(), executionControl.getExecutionRuntime());
+            Optional<DataType> rightFieldValue = rightDataset.getDataItem(transformation.getRightField(), executionControl.getExecutionRuntime());
             if (!leftFieldValue.isPresent()) {
                 this.getActionExecution().getActionControl().logWarning("field.left",
                         MessageFormat.format("cannot find value for {0} in dataset {1}.", transformation.getLeftField(), leftDatasetName));

@@ -62,112 +62,63 @@ public abstract class DatabaseConnection {
         return input;
     }
 
-    public CachedRowSet executeQuery(String query) {
-        try {
-            Connection connection = getConnection();
-            CachedRowSet cachedRowSet = executeQuery(query, connection);
-            connection.close();
-            return cachedRowSet;
-        } catch (SQLException e) {
-            throw new RuntimeException(e.getMessage());
-        }
+    public CachedRowSet executeQuery(String query) throws SQLException {
+        Connection connection = getConnection();
+        CachedRowSet cachedRowSet = executeQuery(query, connection);
+        connection.close();
+        return cachedRowSet;
     }
 
-    public CachedRowSet executeQuery(String query, Connection connection) {
-        try {
-            CachedRowSet crs = null;
-            if (connection == null) {
-                System.out.println("Connection lost");
-                return crs;
-            }
-            // Remove illegal characters at the end
-            query = this.removeIllgegalCharactersForSingleQuery(query);
-            Statement statement = connection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-            ResultSet resultSet = statement.executeQuery(query);
-            crs = RowSetProvider.newFactory().createCachedRowSet();
-            crs.populate(resultSet);
-            resultSet.close();
-            statement.close();
-
-            return crs;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public CachedRowSet executeQueryLimitRows(String query, int limit) {
-        try {
-            Connection connection = getConnection();
-            CachedRowSet cachedRowSet = executeQueryLimitRows(query, limit, connection);
-            connection.close();
-            return cachedRowSet;
-        } catch (SQLException e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-            System.out.println("Connection Failed");
-            throw new RuntimeException(e.getMessage());
-        }
-    }
-
-    public CachedRowSet executeQueryLimitRows(String query, int limit, Connection connection) {
+    public CachedRowSet executeQuery(String query, Connection connection) throws SQLException {
         // Remove illegal characters at the end
-        if (connection == null) {
-            System.out.println("Connection lost");
-            return null;
-        }
-        CachedRowSet crs = null;
         query = this.removeIllgegalCharactersForSingleQuery(query);
-        // query = prepareQuery(query);
-        LOGGER.info(SQLMARKER, query);
-
-        try {
-            Statement statement = connection.createStatement(ResultSet.TYPE_FORWARD_ONLY,
-                    ResultSet.CONCUR_READ_ONLY);
-            statement.setMaxRows(limit);
-
-            try {
-                ResultSet rs = statement.executeQuery(query);
-                crs = RowSetProvider.newFactory().createCachedRowSet();
-                crs.populate(rs);
-                rs.close();
-            } catch (Exception e) {
-                StringWriter StackTrace = new StringWriter();
-                e.printStackTrace(new PrintWriter(StackTrace));
-                System.out.println("Query Actions Failed");
-                throw new RuntimeException(e.getMessage());
-            }
-
-            statement.close();
-
-        } catch (SQLException e) {
-            StringWriter stackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(stackTrace));
-            LOGGER.info("exception=" + e);
-            LOGGER.debug("exception.stacktrace=" + stackTrace);
-        }
+        Statement statement = connection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+        LOGGER.info(connectionURL + ":" + query);
+        ResultSet resultSet = statement.executeQuery(query);
+        CachedRowSet crs = RowSetProvider.newFactory().createCachedRowSet();
+        crs.populate(resultSet);
+        resultSet.close();
+        statement.close();
 
         return crs;
     }
 
-    public CachedRowSet executeProcedure(String sqlProcedure, String sqlParameters) {
-        try {
-            Connection connection = getConnection();
-            CachedRowSet cachedRowSet = executeProcedure(sqlProcedure, sqlParameters, connection);
-            connection.close();
-            return cachedRowSet;
-        } catch (SQLException e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-            System.out.println("Connection Failed");
-            throw new RuntimeException(e.getMessage());
-        }
+    public CachedRowSet executeQueryLimitRows(String query, int limit) throws SQLException {
+        Connection connection = getConnection();
+        CachedRowSet cachedRowSet = executeQueryLimitRows(query, limit, connection);
+        connection.close();
+        return cachedRowSet;
     }
 
-    public CachedRowSet executeProcedure(String sqlProcedure, String sqlParameters, Connection connection) {
-        if (connection == null) {
-            System.out.println("Connection lost");
-            return null;
-        }
+    public CachedRowSet executeQueryLimitRows(String query, int limit, Connection connection) throws SQLException {
+        // Remove illegal characters at the end
+        query = this.removeIllgegalCharactersForSingleQuery(query);
+        // query = prepareQuery(query);
+
+        Statement statement = connection.createStatement(ResultSet.TYPE_FORWARD_ONLY,
+                ResultSet.CONCUR_READ_ONLY);
+        statement.setMaxRows(limit);
+
+        LOGGER.info(connectionURL + ":" + query);
+        ResultSet rs = statement.executeQuery(query);
+        CachedRowSet crs = RowSetProvider.newFactory().createCachedRowSet();
+        crs.populate(rs);
+        rs.close();
+
+        statement.close();
+
+        return crs;
+
+    }
+
+    public CachedRowSet executeProcedure(String sqlProcedure, String sqlParameters) throws SQLException {
+        Connection connection = getConnection();
+        CachedRowSet cachedRowSet = executeProcedure(sqlProcedure, sqlParameters, connection);
+        connection.close();
+        return cachedRowSet;
+    }
+
+    public CachedRowSet executeProcedure(String sqlProcedure, String sqlParameters, Connection connection) throws SQLException {
         StringBuilder sqlProcedureStatement = new StringBuilder();
         sqlProcedureStatement.append("EXEC ");
         sqlProcedureStatement.append(sqlProcedure);
@@ -203,141 +154,71 @@ public abstract class DatabaseConnection {
 
         CachedRowSet crs = null;
 
-        try {
-            PreparedStatement preparedStatement = connection.prepareStatement(sqlProcedureStatement.toString());
-            preparedStatement.setEscapeProcessing(true);
-            preparedStatement.setQueryTimeout(600);
+        PreparedStatement preparedStatement = connection.prepareStatement(sqlProcedureStatement.toString());
+        preparedStatement.setEscapeProcessing(true);
+        preparedStatement.setQueryTimeout(600);
 
-            if (!sqlParameterValues.isEmpty()) {
-                String[] parameterValues = sqlParameterValues.split(",");
-                for (int i = 0; i < parameterValues.length; i++) {
-                    preparedStatement.setString(i + 1, parameterValues[i]);
-                }
-            }
-
-            try {
-                ResultSet rs = preparedStatement.executeQuery();
-                crs = RowSetProvider.newFactory().createCachedRowSet();
-                crs.populate(rs);
-                rs.close();
-            } catch (Exception e) {
-                StringWriter stackTrace = new StringWriter();
-                e.printStackTrace(new PrintWriter(stackTrace));
-                LOGGER.info("exception=" + e);
-                LOGGER.debug("exception.stacktrace=" + stackTrace);
-                throw new RuntimeException(e.getMessage());
-            }
-
-            preparedStatement.close();
-
-        } catch (SQLException e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-            System.out.println("database actions Failed");
-            System.out.println(e.getMessage());
-        } finally {
-            // Close the connection
-            try {
-                connection.close();
-            } catch (SQLException e) {
-                StringWriter StackTrace = new StringWriter();
-                e.printStackTrace(new PrintWriter(StackTrace));
-                System.out.println("Connection Close Failed");
-                throw new RuntimeException(e.getMessage());
+        if (!sqlParameterValues.isEmpty()) {
+            String[] parameterValues = sqlParameterValues.split(",");
+            for (int i = 0; i < parameterValues.length; i++) {
+                preparedStatement.setString(i + 1, parameterValues[i]);
             }
         }
+
+        ResultSet rs = preparedStatement.executeQuery();
+        crs = RowSetProvider.newFactory().createCachedRowSet();
+        crs.populate(rs);
+        rs.close();
+
+        preparedStatement.close();
+
 
         return crs;
     }
 
-    public void executeUpdate(String query) {
-        try {
+    public void executeUpdate(String query) throws SQLException {
             Connection connection = getConnection();
             executeUpdate(query, connection);
             connection.close();
-        } catch (SQLException e) {
-            StringWriter stackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(stackTrace));
-            LOGGER.info("exception=" + e);
-            LOGGER.debug("exception.stacktrace=" + stackTrace);
-            throw new RuntimeException(e.getMessage());
-        }
     }
 
-    public void executeUpdate(String query, Connection connection) {
-        try {
-            if (connection == null) {
-                System.out.println("Connection lost");
-                return;
-            }
-            // Remove illegal characters at the end
+    public void executeUpdate(String query, Connection connection) throws SQLException {
+        // Remove illegal characters at the end
+        query = this.removeIllgegalCharactersForSingleQuery(query);
+        // query = prepareQuery(query);
+        LOGGER.info(connectionURL + ":" + query);
+
+        Statement statement = connection.createStatement();
+        statement.executeUpdate(query);
+        statement.close();
+    }
+
+    public void executeBatch(List<String> queries) throws SQLException {
+        Connection connection = getConnection();
+        executeBatch(queries, connection);
+        connection.close();
+    }
+
+    public void executeBatch(List<String> queries, Connection connection) throws SQLException {
+        Statement statement = connection.createStatement();
+        for (String query : queries) {
             query = this.removeIllgegalCharactersForSingleQuery(query);
             // query = prepareQuery(query);
-            LOGGER.info(SQLMARKER, query);
-
-            Statement statement = connection.createStatement();
-            statement.executeUpdate(query);
-            statement.close();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+            LOGGER.info(connectionURL + ":" + query);
+            statement.addBatch(query);
         }
+        statement.executeBatch();
+        statement.close();
     }
 
-    public void executeBatch(List<String> queries) {
-        try {
-            Connection connection = getConnection();
-            executeBatch(queries, connection);
-            connection.close();
-        } catch (SQLException e) {
-            StringWriter stackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(stackTrace));
-            LOGGER.info("exception=" + e);
-            LOGGER.debug("exception.stacktrace=" + stackTrace);
-            throw new RuntimeException(e.getMessage());
-        }
+    public SqlScriptResult executeScript(String fileName) throws SQLException, IOException {
+        Connection connection = getConnection();
+        SqlScriptResult sqlScriptResult = executeScript(fileName, connection);
+        connection.close();
+        return sqlScriptResult;
     }
 
-    public void executeBatch(List<String> queries, Connection connection) {
-        try {
-            if (connection == null) {
-                System.out.println("Connection lost");
-                return;
-            }
-
-            Statement statement = connection.createStatement();
-            for (String query : queries) {
-                query = this.removeIllgegalCharactersForSingleQuery(query);
-                // query = prepareQuery(query);
-                LOGGER.info(SQLMARKER, query);
-                statement.addBatch(query);
-            }
-            statement.executeBatch();
-            statement.close();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public SqlScriptResult executeScript(String fileName) {
-        try {
-            Connection connection = getConnection();
-            SqlScriptResult sqlScriptResult = executeScript(fileName, connection);
-            connection.close();
-            return sqlScriptResult;
-        } catch (SQLException e) {
-            StringWriter stackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(stackTrace));
-            LOGGER.info("exception=" + e);
-            LOGGER.debug("exception.stacktrace=" + stackTrace);
-            throw new RuntimeException(e.getMessage());
-        }
-    }
-
-    public SqlScriptResult executeScript(String fileName, Connection connection) {
-        if (connection == null) {
-            System.out.println("Connection lost");
-            return null;
-        }
+    public SqlScriptResult executeScript(String fileName, Connection connection) throws IOException, SQLException {
         SqlScriptResult dcSQLScriptResult;
 
         //
@@ -345,79 +226,38 @@ public abstract class DatabaseConnection {
 
         InputStreamReader reader;
 
-        try {
-            reader = new InputStreamReader(new FileInputStream(fileName));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e.getMessage());
-        }
+        reader = new InputStreamReader(new FileInputStream(fileName));
 
-        try {
-            dcSQLScriptResult = scriptRunner.runScript(reader);
-        } catch (IOException | SQLException e) {
-            throw new RuntimeException(e.getMessage());
-        }
+        dcSQLScriptResult = scriptRunner.runScript(reader);
 
         return dcSQLScriptResult;
     }
 
-    public SqlScriptResult executeScript(InputStream inputStream) {
-        try {
-            Connection connection = getConnection();
-            SqlScriptResult sqlScriptResult = executeScript(inputStream, connection);
-            connection.close();
-            return sqlScriptResult;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+    public SqlScriptResult executeScript(InputStream inputStream) throws SQLException, IOException {
+        Connection connection = getConnection();
+        SqlScriptResult sqlScriptResult = executeScript(inputStream, connection);
+        connection.close();
+        return sqlScriptResult;
     }
 
-    public SqlScriptResult executeScript(InputStream inputStream, Connection connection) {
-        if (connection == null) {
-            System.out.println("Connection lost");
-            return null;
-        }
+    public SqlScriptResult executeScript(InputStream inputStream, Connection connection) throws IOException, SQLException {
         SqlScriptResult sqlScriptResult;
 
-        try {
-            //
-            ScriptRunner scriptRunner = new ScriptRunner(connection, false, false);
+        //
+        ScriptRunner scriptRunner = new ScriptRunner(connection, false, false);
 
-            InputStreamReader reader;
+        InputStreamReader reader;
 
-            try {
-                reader = new InputStreamReader(inputStream);
-            } catch (Exception e) {
-                e.printStackTrace();
-                throw new RuntimeException(e.getMessage());
-            }
+        reader = new InputStreamReader(inputStream);
 
-            try {
-                sqlScriptResult = scriptRunner.runScript(reader);
-            } catch (IOException e) {
-                e.printStackTrace();
-                throw new RuntimeException(e.getMessage());
-            }
+        sqlScriptResult = scriptRunner.runScript(reader);
 
-        } catch (SQLException e) {
-            StringWriter stackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(stackTrace));
-            LOGGER.info("exception=" + e);
-            LOGGER.debug("exception.stacktrace=" + stackTrace);
-            throw new RuntimeException(e.getMessage());
-        }
         return sqlScriptResult;
     }
 
     @Deprecated
-    public PreparedStatement createPreparedStatement(Connection connection, String sqlStatement) {
-        PreparedStatement preparedStatement = null;
-        try {
-            preparedStatement = connection.prepareStatement(sqlStatement);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return preparedStatement;
+    public PreparedStatement createPreparedStatement(Connection connection, String sqlStatement) throws SQLException {
+        return connection.prepareStatement(sqlStatement);
     }
 
     public String getType() {
@@ -428,4 +268,7 @@ public abstract class DatabaseConnection {
         this.type = type;
     }
 
+    public String getConnectionURL() {
+        return connectionURL;
+    }
 }

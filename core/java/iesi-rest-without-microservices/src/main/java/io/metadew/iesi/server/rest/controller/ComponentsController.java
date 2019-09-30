@@ -38,28 +38,19 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 public class ComponentsController {
 
     private ComponentConfiguration componentConfiguration;
-
     private final ComponentPagination componentPagination;
-
-    private final GetNullProperties getNullProperties;
-
-    private final GetListNullProperties getListNullProperties;
-
-    @Autowired
     private ComponentGetByNameDtoAssembler componentGetByNameGetDtoAssembler;
-
-    @Autowired
     private ComponentGlobalDtoResourceAssembler componentGlobalDtoResourceAssembler;
-
-    @Autowired
     private ComponentDtoResourceAssembler componentDtoResourceAssembler;
 
     @Autowired
-    ComponentsController(GetNullProperties getNullProperties, GetListNullProperties getListNullProperties, ComponentConfiguration componentConfiguration, ComponentGlobalDtoResourceAssembler componentGlobalDtoResourceAssembler, ComponentPagination componentPagination) {
+    ComponentsController(ComponentConfiguration componentConfiguration, ComponentGlobalDtoResourceAssembler componentGlobalDtoResourceAssembler,
+                         ComponentPagination componentPagination, ComponentGetByNameDtoAssembler componentGetByNameGetDtoAssembler,
+                         ComponentDtoResourceAssembler componentDtoResourceAssembler) {
         this.componentConfiguration = componentConfiguration;
         this.componentPagination = componentPagination;
-        this.getListNullProperties = getListNullProperties;
-        this.getNullProperties = getNullProperties;
+        this.componentDtoResourceAssembler = componentDtoResourceAssembler;
+        this.componentGetByNameGetDtoAssembler = componentGetByNameGetDtoAssembler;
         this.componentGlobalDtoResourceAssembler = componentGlobalDtoResourceAssembler;
     }
 
@@ -93,7 +84,6 @@ public class ComponentsController {
 
     @PostMapping("/")
     public ComponentDto post(@Valid @RequestBody ComponentDto component) {
-        getNullProperties.getNullComponent(component);
         try {
             componentConfiguration.insert(component.convertToEntity());
             return componentDtoResourceAssembler.toResource(component.convertToEntity());
@@ -109,7 +99,6 @@ public class ComponentsController {
     @PutMapping("/")
     public HalMultipleEmbeddedResource<ComponentDto> putAll(@Valid @RequestBody List<ComponentDto> componentDtos) {
         HalMultipleEmbeddedResource<ComponentDto> halMultipleEmbeddedResource = new HalMultipleEmbeddedResource<>();
-        getListNullProperties.getNullComponent(componentDtos);
         for (ComponentDto componentDto : componentDtos) {
             try {
                 componentConfiguration.update(componentDto.convertToEntity());
@@ -133,7 +122,6 @@ public class ComponentsController {
         } else if (!componentConfiguration.get(name, version).isPresent()) {
             throw new DataNotFoundException(name);
         }
-        getNullProperties.getNullComponent(component);
         try {
             componentConfiguration.update(component.convertToEntity());
             return componentDtoResourceAssembler.toResource(component.convertToEntity());

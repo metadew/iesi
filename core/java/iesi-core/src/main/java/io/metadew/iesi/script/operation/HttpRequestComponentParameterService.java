@@ -40,7 +40,7 @@ public class HttpRequestComponentParameterService {
         value = executionControl.getExecutionRuntime().resolveVariables(actionExecution, value);
         // Resolve internal encryption
         value = FrameworkCrypto.getInstance().resolve(value);
-        return dataTypeService.resolve(value);
+        return dataTypeService.resolve(value, executionControl.getExecutionRuntime());
     }
 
     public DataType getParameterValue(ComponentParameter componentParameter, List<ComponentAttribute> componentAttributes, ActionExecution actionExecution)  {

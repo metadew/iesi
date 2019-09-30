@@ -40,26 +40,22 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 public class ConnectionsController {
 
 	private ConnectionConfiguration connectionConfiguration;
-	private final GetListNullProperties getListNullProperties;
-	private final GetNullProperties getNullProperties;
 	private ConnectionPagination connectionPagination;
+	private ConnectionDtoResourceAssembler connectionDtoResourceAssembler;
+	private ConnectionByNameDtoResourceAssembler connectionByNameDtoResourceAssembler;
+	private ConnectionGlobalDtoResourceAssembler connectionGlobalDtoResourceAssembler;
 
 	@Autowired
-	ConnectionsController(ConnectionConfiguration connectionConfiguration,ConnectionPagination connectionPagination,GetNullProperties getNullProperties,GetListNullProperties getListNullProperties) {
+	ConnectionsController(ConnectionConfiguration connectionConfiguration, ConnectionPagination connectionPagination,
+						  ConnectionDtoResourceAssembler connectionDtoResourceAssembler, ConnectionByNameDtoResourceAssembler connectionByNameDtoResourceAssembler,
+						  ConnectionGlobalDtoResourceAssembler connectionGlobalDtoResourceAssembler) {
 		this.connectionConfiguration = connectionConfiguration;
-		this.getListNullProperties = getListNullProperties;
-		this.getNullProperties = getNullProperties;
 		this.connectionPagination = connectionPagination;
+		this.connectionDtoResourceAssembler = connectionDtoResourceAssembler;
+		this.connectionByNameDtoResourceAssembler = connectionByNameDtoResourceAssembler;
+		this.connectionGlobalDtoResourceAssembler = connectionGlobalDtoResourceAssembler;
 	}
 
-	@Autowired
-	private ConnectionDtoResourceAssembler connectionDtoResourceAssembler;
-
-	@Autowired
-	private ConnectionByNameDtoResourceAssembler connectionByNameDtoResourceAssembler;
-
-	@Autowired
-	private ConnectionGlobalDtoResourceAssembler connectionGlobalDtoResourceAssembler;
 
 	@GetMapping("")
 	public HalMultipleEmbeddedResource<ConnectionGlobalDto> getAll(@Valid ConnectionCriteria connectionCriteria) {
@@ -90,7 +86,6 @@ public class ConnectionsController {
 
 	@PostMapping("")
 	public ResponseEntity<ConnectionDto> post(@Valid @RequestBody ConnectionDto connectionDto) {
-		getNullProperties.getNullConnection(connectionDto);
 		try {
 			connectionConfiguration.insert(connectionDto.convertToEntity());
 			return ResponseEntity.ok(connectionDtoResourceAssembler.toResource(connectionDto.convertToEntity()));
@@ -104,7 +99,6 @@ public class ConnectionsController {
 	@PutMapping("")
 	public HalMultipleEmbeddedResource<ConnectionDto> putAll(@Valid @RequestBody List<ConnectionDto> connectionDtos) {
 		HalMultipleEmbeddedResource<ConnectionDto> halMultipleEmbeddedResource = new HalMultipleEmbeddedResource<>();
-		getListNullProperties.getNullConnection(connectionDtos);
 		for (ConnectionDto connectionDto : connectionDtos) {
 			try {
 				ConnectionDto updatedConnectionDto = convertToDto(connectionConfiguration.update(connectionDto.convertToEntity()));
@@ -125,7 +119,6 @@ public class ConnectionsController {
 
 	@PutMapping("/{name}/{environment}")
 	public ConnectionDto put(@PathVariable String name, @PathVariable String environment, @RequestBody ConnectionDto connectionDto) {
-		getNullProperties.getNullConnection(connectionDto);
 		if (!connectionDto.getName().equals(name) || !connectionDto.getEnvironment().equals(environment)) {
 			throw new DataBadRequestException(name);
 		} else if (connectionDto.getName() == null){

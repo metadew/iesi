@@ -58,7 +58,7 @@ public class FwkRoute {
                 ActionParameterOperation condition = new ActionParameterOperation(this.getExecutionControl(),
                         this.getActionExecution(), this.getActionExecution().getAction().getType(), "condition");
 
-                condition.setInputValue(actionParameter.getValue());
+                condition.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
 
                 int id = 0;
                 int delim = actionParameter.getName().indexOf(".");
@@ -77,7 +77,7 @@ public class FwkRoute {
                 ActionParameterOperation destination = new ActionParameterOperation(this.getExecutionControl(),
                         this.getActionExecution(), this.getActionExecution().getAction().getType(), "destination");
 
-                destination.setInputValue(actionParameter.getValue());
+                destination.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
 
                 int id = 0;
                 int delim = actionParameter.getName().indexOf(".");

@@ -61,11 +61,11 @@ public class SqlDefineDataset {
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
             if (actionParameter.getName().equalsIgnoreCase("name")) {
-                this.getReferenceName().setInputValue(actionParameter.getValue());
+                this.getReferenceName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase("statement")) {
-                this.getSqlStatement().setInputValue(actionParameter.getValue());
+                this.getSqlStatement().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase("identifier")) {
-                this.getSqlIdentifier().setInputValue(actionParameter.getValue());
+                this.getSqlIdentifier().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }
 

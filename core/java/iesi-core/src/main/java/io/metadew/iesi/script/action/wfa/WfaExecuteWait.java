@@ -54,7 +54,7 @@ public class WfaExecuteWait {
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
             if (actionParameter.getName().equalsIgnoreCase("wait")) {
-                this.getWaitInterval().setInputValue(actionParameter.getValue());
+                this.getWaitInterval().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }
         this.getActionParameterOperationMap().put("wait", this.getWaitInterval());

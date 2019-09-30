@@ -58,7 +58,7 @@ public class FwkExitScript {
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
             if (actionParameter.getName().equalsIgnoreCase("status")) {
-                this.getStatus().setInputValue(actionParameter.getValue());
+                this.getStatus().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }
 
@@ -71,7 +71,7 @@ public class FwkExitScript {
             Optional<String> status = convertStatus(getStatus().getValue());
             // Verify if the status is empty
             if (status.map(status1 -> status1.trim().isEmpty()).orElse(false)) {
-                this.getStatus().setInputValue(FrameworkStatus.SUCCESS.value());
+                this.getStatus().setInputValue(FrameworkStatus.SUCCESS.value(), executionControl.getExecutionRuntime());
             }
             return true;
         } catch (Exception e) {

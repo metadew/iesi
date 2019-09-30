@@ -14,7 +14,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.HashMap;
 
@@ -55,11 +54,11 @@ public class DataOutputDataset {
         // Get Parameters
         for (ActionParameter actionParameter : actionExecution.getAction().getParameters()) {
             if (actionParameter.getName().equalsIgnoreCase("name")) {
-                this.getDatasetName().setInputValue(actionParameter.getValue());
+                this.getDatasetName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase("labels")) {
-                this.getDatasetLabels().setInputValue(actionParameter.getValue());
+                this.getDatasetLabels().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase("onScreen")) {
-                this.getOnScreen().setInputValue(actionParameter.getValue());
+                this.getOnScreen().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }
 
@@ -71,7 +70,7 @@ public class DataOutputDataset {
 
     public boolean execute() {
         try {
-            Dataset dataset = new KeyValueDataset(getDatasetName().getValue(), getDatasetLabels().getValue());
+            Dataset dataset = new KeyValueDataset(getDatasetName().getValue(), getDatasetLabels().getValue(), executionControl.getExecutionRuntime());
             boolean onScreen = convertOnScreen(getOnScreen().getValue());
             return outputDataset(dataset, onScreen);
         } catch (Exception e) {
@@ -90,7 +89,7 @@ public class DataOutputDataset {
 
     private boolean outputDataset(Dataset dataset, boolean onScreen) {
         // TODO: loop over all dataset item and print them
-        dataset.getDataItems()
+        dataset.getDataItems(executionControl.getExecutionRuntime())
                 .forEach((key, value) -> LOGGER.info(MessageFormat.format("{0}:{1}", key, value)));
 
         actionExecution.getActionControl().increaseSuccessCount();

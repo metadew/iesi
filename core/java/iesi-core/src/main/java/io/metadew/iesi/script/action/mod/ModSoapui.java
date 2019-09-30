@@ -62,11 +62,11 @@ public class ModSoapui {
 		// Get Parameters
 		for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
 			if (actionParameter.getName().equalsIgnoreCase("project")) {
-				this.getProject().setInputValue(actionParameter.getValue());
+				this.getProject().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
 			} else if (actionParameter.getName().equalsIgnoreCase("suite")) {
-				this.getTestSuite().setInputValue(actionParameter.getValue());
+				this.getTestSuite().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
 			} else if (actionParameter.getName().equalsIgnoreCase("case")) {
-				this.getTestCase().setInputValue(actionParameter.getValue());
+				this.getTestCase().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
 			}
 		}
 

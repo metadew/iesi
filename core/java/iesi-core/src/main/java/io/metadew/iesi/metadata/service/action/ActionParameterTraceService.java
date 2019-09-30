@@ -75,7 +75,7 @@ public class ActionParameterTraceService {
                 counter++;
             }
         } else if (value instanceof Dataset) {
-            for (Map.Entry<String, DataType> datasetItem : ((Dataset) value).getDataItems().entrySet()) {
+            for (Map.Entry<String, DataType> datasetItem : ((Dataset) value).getDataItems(actionExecution.getExecutionControl().getExecutionRuntime()).entrySet()) {
                 actionParameterTraces.addAll(getActionParameterTraces(actionExecution, key + datasetItem.getKey(), datasetItem.getValue()));
             }
         } else {

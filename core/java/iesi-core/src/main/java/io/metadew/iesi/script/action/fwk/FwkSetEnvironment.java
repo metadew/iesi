@@ -50,7 +50,7 @@ public class FwkSetEnvironment {
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
             if (actionParameter.getName().equalsIgnoreCase("environment")) {
-                this.getEnvironmentName().setInputValue(actionParameter.getValue());
+                this.getEnvironmentName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }
 

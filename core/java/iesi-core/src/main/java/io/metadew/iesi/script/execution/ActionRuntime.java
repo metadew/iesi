@@ -24,10 +24,9 @@ public class ActionRuntime {
 
     // Methods
     public void initActionCache(String actionName, String runCacheFolderName) {
-        this.setRunCacheFolderName(runCacheFolderName + File.separator + this.getProcessId());
-        FolderTools.createFolder(this.getRunCacheFolderName());
-        this.setRuntimeActionCacheConfiguration(
-                new RuntimeActionCacheConfiguration(this.getRunCacheFolderName()));
+        this.runCacheFolderName = runCacheFolderName + File.separator + processId;
+        FolderTools.createFolder(this.runCacheFolderName);
+        this.runtimeActionCacheConfiguration = new RuntimeActionCacheConfiguration(this.runCacheFolderName);
     }
 
     @SuppressWarnings("rawtypes")
@@ -43,7 +42,7 @@ public class ActionRuntime {
             if (actionParameterOperation == null || actionParameterOperation.getValue() == null)
                 continue;
 
-            this.getRuntimeActionCacheConfiguration().setRuntimeCache(this.getRunId(), "param",
+            this.getRuntimeActionCacheConfiguration().setRuntimeCache(this.getRunId(), this.processId,  "param",
                     actionParameterOperation.getName(), actionParameterOperation.getValue().toString());
             iterator.remove(); // avoids a ConcurrentModificationException
         }
@@ -56,7 +55,7 @@ public class ActionRuntime {
         while (iterator.hasNext()) {
             Map.Entry pair = (Map.Entry) iterator.next();
 
-            this.getRuntimeActionCacheConfiguration().setRuntimeCache(this.getRunId(), type, pair.getKey().toString(),
+            this.getRuntimeActionCacheConfiguration().setRuntimeCache(this.getRunId(), this.processId, type, pair.getKey().toString(),
                     pair.getValue().toString());
             iterator.remove(); // avoids a ConcurrentModificationException
         }
@@ -64,7 +63,7 @@ public class ActionRuntime {
     }
 
     public void setRuntimeParameter(String type, String name, String value) {
-        this.getRuntimeActionCacheConfiguration().setRuntimeCache(this.getRunId(), type, name, value);
+        this.getRuntimeActionCacheConfiguration().setRuntimeCache(this.getRunId(), this.processId, type, name, value);
     }
 
     // Parameter resolution
@@ -97,7 +96,7 @@ public class ActionRuntime {
             int cacheTypePos = cacheItem.indexOf(".");
             String cacheType = cacheItem.substring(0, cacheTypePos).trim().toLowerCase();
             String cacheName = cacheItem.substring(cacheTypePos + 1).trim();
-            replaceValue = this.getRuntimeActionCacheConfiguration().getRuntimeCacheValue(this.getRunId(), cacheType,
+            replaceValue = this.getRuntimeActionCacheConfiguration().getRuntimeCacheValue(this.getRunId(), this.processId, cacheType,
                     cacheName);
 
             // this.decrypt(variable_char + midBit + variable_char_close);

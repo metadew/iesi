@@ -5,6 +5,7 @@ import io.metadew.iesi.datatypes.DataTypeService;
 import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.framework.execution.IESIMessage;
+import io.metadew.iesi.script.execution.ExecutionRuntime;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -22,9 +23,11 @@ public class ListLookup implements LookupInstruction {
     private final DataTypeService dataTypeService;
 
     private static final Logger LOGGER = LogManager.getLogger();
+    private final ExecutionRuntime executionRuntime;
 
-    public ListLookup() {
+    public ListLookup(ExecutionRuntime executionRuntime) {
         this.dataTypeService = new DataTypeService();
+        this.executionRuntime = executionRuntime;
     }
 
     @Override
@@ -38,8 +41,8 @@ public class ListLookup implements LookupInstruction {
 //        }
         LOGGER.debug(MessageFormat.format("fetching element {0} of list {1}", arguments[1], arguments[0]));
 
-        Array array = getArray(dataTypeService.resolve(arguments[0]));
-        int arrayElementIndex = getIndex(dataTypeService.resolve(arguments[1])) - 1;
+        Array array = getArray(dataTypeService.resolve(arguments[0], executionRuntime));
+        int arrayElementIndex = getIndex(dataTypeService.resolve(arguments[1], executionRuntime)) - 1;
 //        Array array = getArray(dataTypeService.resolve(inputParameterMatcher.group(ARRAY_KEY)));
 //        int arrayElementIndex = Integer.parseInt(inputParameterMatcher.group(ELEMENT_KEY)) - 1;
 

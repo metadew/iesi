@@ -34,27 +34,23 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 public class ImpersonationController {
 
 	private ImpersonationConfiguration impersonationConfiguration;
-	private final GetListNullProperties getListNullProperties;
-	private final GetNullProperties getNullProperties;
 	private final ImpersonationPagination impersonationPagination;
+	private ImpersonatonDtoResourceAssembler impersonatonDtoResourceAssembler;
 
 	@Autowired
-	ImpersonationController(ImpersonationConfiguration impersonationConfiguration, ImpersonationPagination impersonationPagination, GetNullProperties getNullProperties,
-							GetListNullProperties getListNullProperties			) {
+	ImpersonationController(ImpersonationConfiguration impersonationConfiguration, ImpersonationPagination impersonationPagination,
+							ImpersonatonDtoResourceAssembler impersonatonDtoResourceAssembler) {
 		this.impersonationConfiguration = impersonationConfiguration;
-		this.getListNullProperties = getListNullProperties;
-		this.getNullProperties = getNullProperties;
 		this.impersonationPagination = impersonationPagination;
+		this.impersonatonDtoResourceAssembler = impersonatonDtoResourceAssembler;
 	}
-	@Autowired
-	private ImpersonatonDtoResourceAssembler impersonatonDtoResourceAssembler ;
 
 
 	@GetMapping("")
 	public HalMultipleEmbeddedResource<ImpersonationDto> getAll(@Valid ImpersonationCriteria impersonationCriteria) {
 		List<Impersonation> impersonations = impersonationConfiguration.getAllImpersonations();
 		List<Impersonation> pagination = impersonationPagination.search(impersonations, impersonationCriteria);
-		return new HalMultipleEmbeddedResource<ImpersonationDto>(pagination.stream()
+		return new HalMultipleEmbeddedResource<>(pagination.stream()
 				.filter(distinctByKey(Impersonation::getName))
 				.map(impersonation -> impersonatonDtoResourceAssembler.toResource(impersonation))
 				.collect(Collectors.toList()));
@@ -70,7 +66,6 @@ public class ImpersonationController {
 
 	@PostMapping("")
 	public ImpersonationDto post(@Valid @RequestBody ImpersonationDto impersonationDto) {
-		getNullProperties.getNullImpersonation(impersonationDto);
 		try {
 			impersonationConfiguration.insertImpersonation(impersonationDto.convertToEntity());
 			return impersonatonDtoResourceAssembler.toResource(impersonationDto.convertToEntity());
@@ -83,7 +78,6 @@ public class ImpersonationController {
 	@PutMapping("")
 	public HalMultipleEmbeddedResource<ImpersonationDto> putAll(@Valid @RequestBody List<ImpersonationDto> impersonationDtos) {
 		HalMultipleEmbeddedResource<ImpersonationDto> halMultipleEmbeddedResource = new HalMultipleEmbeddedResource<>();
-		getListNullProperties.getNullImpersonation(impersonationDtos);
 		for (ImpersonationDto impersonationDto : impersonationDtos) {
 			try {
 				impersonationConfiguration.updateImpersonation(impersonationDto.convertToEntity());
@@ -103,7 +97,6 @@ public class ImpersonationController {
 	@PutMapping("/{name}")
 	public ImpersonationDto put(@PathVariable String name,
 											  @RequestBody ImpersonationDto impersonation) {
- 		getNullProperties.getNullImpersonation(impersonation);
 		if (!impersonation.getName().equals(name)) {
 			throw new DataNotFoundException(name);
 		} else if (impersonation.getName() == null) {

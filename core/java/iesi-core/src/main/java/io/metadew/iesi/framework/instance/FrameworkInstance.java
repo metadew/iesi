@@ -48,7 +48,7 @@ public class FrameworkInstance {
         FrameworkConfiguration frameworkConfiguration = FrameworkConfiguration.getInstance();
         frameworkConfiguration.init();
 
-        FrameworkCrypto frameworkCrypto = FrameworkCrypto.getInstance();
+        FrameworkCrypto.getInstance();
 
         // Set appropriate initialization file
         if (frameworkInitializationFile.getName().trim().isEmpty()) {
@@ -57,7 +57,7 @@ public class FrameworkInstance {
 
         // Prepare configuration and shared Metadata
         FrameworkControl frameworkControl = FrameworkControl.getInstance();
-        frameworkControl.init(frameworkConfiguration, logonType, frameworkInitializationFile, frameworkCrypto);
+        frameworkControl.init(logonType, frameworkInitializationFile);
 
         FrameworkActionTypeConfiguration.getInstance().setActionTypesFromPlugins(frameworkControl.getFrameworkPluginConfigurationList());
         List<MetadataRepository> metadataRepositories = new ArrayList<>();

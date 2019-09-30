@@ -1,6 +1,6 @@
 package io.metadew.iesi.script.execution.instruction.data.oltb.olua;
 
-public class OltbHeader {
+public class TransportHeader {
 
     private final String transportHeaderCode;
     private final String transportVersion;
@@ -13,12 +13,11 @@ public class OltbHeader {
     private final String messageNumberDestinyIndentity;
 
 
-    private OltbHeader(String transportHeaderCode, String transportVersion, String transportRetryCount, String transportRejectCode, String transportServiceCode, String transportOriginIndentity, String transportDestinyIndentity, String messageLengthDestinyIndentity, String messageNumberDestinyIndentity) {
+    private TransportHeader(String transportHeaderCode, String transportVersion, String transportRetryCount, String transportRejectCode, String transportServiceCode, String transportOriginIndentity, String transportDestinyIndentity, String messageLengthDestinyIndentity, String messageNumberDestinyIndentity) {
         this.transportHeaderCode = transportHeaderCode;
         this.transportVersion = transportVersion;
         this.transportRetryCount = transportRetryCount;
         this.transportRejectCode = transportRejectCode;
-
         this.transportServiceCode = transportServiceCode;
         this.transportOriginIndentity = transportOriginIndentity;
         this.transportDestinyIndentity = transportDestinyIndentity;

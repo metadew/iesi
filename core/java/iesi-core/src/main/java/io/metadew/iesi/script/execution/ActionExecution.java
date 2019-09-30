@@ -156,9 +156,9 @@ public class ActionExecution {
 		} catch (Exception e) {
 			StringWriter stackTrace = new StringWriter();
 			e.printStackTrace(new PrintWriter(stackTrace));
-			actionControl.increaseErrorCount();
 			LOGGER.info("action.error=" + e);
 			LOGGER.debug("action.stacktrace=" + stackTrace);
+			actionControl.increaseErrorCount();
 		}
 		executionControl.logEnd(this, scriptExecution);
 

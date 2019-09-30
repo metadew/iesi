@@ -75,17 +75,17 @@ public class FhoExecuteFileTransfer {
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
             if (actionParameter.getName().equalsIgnoreCase("sourcefilepath")) {
-                this.getSourceFilePath().setInputValue(actionParameter.getValue());
+                this.getSourceFilePath().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase("sourcefilename")) {
-                this.getSourceFileName().setInputValue(actionParameter.getValue());
+                this.getSourceFileName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase("sourceconnection")) {
-                this.getSourceConnectionName().setInputValue(actionParameter.getValue());
+                this.getSourceConnectionName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase("targetfilepath")) {
-                this.getTargetFilePath().setInputValue(actionParameter.getValue());
+                this.getTargetFilePath().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase("targetfilename")) {
-                this.getTargetFileName().setInputValue(actionParameter.getValue());
+                this.getTargetFileName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase("targetconnection")) {
-                this.getTargetConnectionName().setInputValue(actionParameter.getValue());
+                this.getTargetConnectionName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }
 

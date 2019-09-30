@@ -71,15 +71,15 @@ public class DdlGenerateFromFile {
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
             if (actionParameter.getName().equalsIgnoreCase("inputPath")) {
-                this.getInputPath().setInputValue(actionParameter.getValue());
+                this.getInputPath().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase("inputFile")) {
-                this.getInputFile().setInputValue(actionParameter.getValue());
+                this.getInputFile().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase("type")) {
-                this.getOutputType().setInputValue(actionParameter.getValue());
+                this.getOutputType().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase("outputPath")) {
-                this.getOutputPath().setInputValue(actionParameter.getValue());
+                this.getOutputPath().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase("outputFile")) {
-                this.getOutputFile().setInputValue(actionParameter.getValue());
+                this.getOutputFile().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }
 

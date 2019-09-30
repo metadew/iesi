@@ -30,7 +30,7 @@ public class LookupInstructionRepository {
         DatasetLookup datasetLookup = new DatasetLookup(executionRuntime);
         lookupInstructions.put(datasetLookup.getKeyword(), datasetLookup);
         // list
-        ListLookup listLookup = new ListLookup();
+        ListLookup listLookup = new ListLookup(executionRuntime);
         lookupInstructions.put(listLookup.getKeyword(), listLookup);
 
         return lookupInstructions;

@@ -79,17 +79,17 @@ public class CliExecuteCommand {
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
             if (actionParameter.getName().equalsIgnoreCase("path")) {
-                shellPath.setInputValue(actionParameter.getValue());
+                shellPath.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase("command")) {
-                shellCommand.setInputValue(actionParameter.getValue());
+                shellCommand.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase("setruntimevariables")) {
-                setRunVar.setInputValue(actionParameter.getValue());
+                setRunVar.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase("setruntimevariablesprefix")) {
-                setRunVarPrefix.setInputValue(actionParameter.getValue());
+                setRunVarPrefix.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase("setruntimevariablesmode")) {
-                setRunVarMode.setInputValue(actionParameter.getValue());
+                setRunVarMode.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase("connection")) {
-                connectionName.setInputValue(actionParameter.getValue());
+                connectionName.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }
 

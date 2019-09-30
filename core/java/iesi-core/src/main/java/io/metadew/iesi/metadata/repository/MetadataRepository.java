@@ -61,7 +61,7 @@ public abstract class MetadataRepository {
 		for (DataObject dataObject : dataObjectOperation.getDataObjects()) {
 			if (dataObject.getType().equalsIgnoreCase("metadatatable")) {
 				MetadataTable metadataTable = objectMapper.convertValue(dataObject.getData(), MetadataTable.class);
-				metadataTable.setName(getTablePrefix() + metadataTable.getName());
+				metadataTable.setName(tablePrefix + metadataTable.getName());
 				metadataTables.add(metadataTable);
 			}
 		}
@@ -144,11 +144,11 @@ public abstract class MetadataRepository {
 	}
 
 	public String getTableNameByLabel(String label) {
-		return metadataTables.stream().filter(metadataTable -> metadataTable.getLabel().equalsIgnoreCase(label))
+		return metadataTables.stream()
+				.filter(metadataTable -> metadataTable.getLabel().equalsIgnoreCase(label))
 				.findFirst()
 				.map(MetadataTable::getName)
-				.orElseThrow(() -> new RuntimeException(
-						MessageFormat.format("No label {0} found for metadata repository {1}", label, getCategory())));
+				.orElseThrow(() -> new RuntimeException(MessageFormat.format("No label {0} found for metadata repository {1}", label, getCategory())));
 	}
 
 	public abstract void save(DataObject dataObject) throws MetadataRepositorySaveException;

@@ -4,6 +4,7 @@ import io.metadew.iesi.common.config.ConfigFile;
 import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.PostgresqlDatabase;
 import io.metadew.iesi.connection.database.connection.postgresql.PostgresqlDatabaseConnection;
+import io.metadew.iesi.framework.crypto.FrameworkCrypto;
 import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
 
 import java.sql.SQLException;
@@ -57,7 +58,7 @@ public class PostgresqlRepositoryConfiguration extends RepositoryConfiguration {
 
         final String finalJdbcConnectionString = actualJdbcConnectionString;
         if (getUser().isPresent()) {
-                PostgresqlDatabaseConnection postgresqlDatabaseConnection = new PostgresqlDatabaseConnection(finalJdbcConnectionString, getUser().get(), getWriterPassword().orElse(""));
+                PostgresqlDatabaseConnection postgresqlDatabaseConnection = new PostgresqlDatabaseConnection(finalJdbcConnectionString, getUser().get(), FrameworkCrypto.getInstance().decrypt(getWriterPassword().orElse("")));
                 getSchema().ifPresent(postgresqlDatabaseConnection::setSchema);
                 PostgresqlDatabase postgresqlDatabase = new PostgresqlDatabase(postgresqlDatabaseConnection, getSchema().orElse(""));
                 databases.put("owner", postgresqlDatabase);
@@ -65,14 +66,14 @@ public class PostgresqlRepositoryConfiguration extends RepositoryConfiguration {
                 databases.put("reader", postgresqlDatabase);
         }
         if (getWriter().isPresent()) {
-            PostgresqlDatabaseConnection postgresqlDatabaseConnection = new PostgresqlDatabaseConnection(finalJdbcConnectionString, getWriter().get(), getWriterPassword().orElse(""));
+            PostgresqlDatabaseConnection postgresqlDatabaseConnection = new PostgresqlDatabaseConnection(finalJdbcConnectionString, getWriter().get(), FrameworkCrypto.getInstance().decrypt(getWriterPassword().orElse("")));
             getSchema().ifPresent(postgresqlDatabaseConnection::setSchema);
             PostgresqlDatabase postgresqlDatabase = new PostgresqlDatabase(postgresqlDatabaseConnection, getSchema().orElse(""));
             databases.put("writer", postgresqlDatabase);
             databases.put("reader", postgresqlDatabase);
         }
          if (getReader().isPresent()) {
-             PostgresqlDatabaseConnection postgresqlDatabaseConnection = new PostgresqlDatabaseConnection(finalJdbcConnectionString, getReader().get(), getReaderPassword().orElse(""));
+             PostgresqlDatabaseConnection postgresqlDatabaseConnection = new PostgresqlDatabaseConnection(finalJdbcConnectionString, getReader().get(), FrameworkCrypto.getInstance().decrypt(getReaderPassword().orElse("")));
              getSchema().ifPresent(postgresqlDatabaseConnection::setSchema);
              PostgresqlDatabase postgresqlDatabase = new PostgresqlDatabase(postgresqlDatabaseConnection, getSchema().orElse(""));
              databases.put("reader", postgresqlDatabase);

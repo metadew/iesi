@@ -13,11 +13,11 @@ import java.util.Optional;
 public class ResultSetDataset extends Dataset {
 
     public ResultSetDataset(DataType name, DataType labels, ExecutionRuntime executionRuntime) throws IOException, SQLException {
-        super(name, labels);
+        super(name, labels, executionRuntime);
     }
 
     public ResultSetDataset(String name, List<String> labels, ExecutionRuntime executionRuntime) throws IOException, SQLException {
-        super(name, labels);
+        super(name, labels, executionRuntime);
     }
 
     @Override
@@ -31,12 +31,12 @@ public class ResultSetDataset extends Dataset {
     }
 
     @Override
-    public Optional<DataType> getDataItem(String dataItem) {
+    public Optional<DataType> getDataItem(String dataItem, ExecutionRuntime executionRuntime) {
         return Optional.empty();
     }
 
     @Override
-    public Map<String, DataType> getDataItems() {
+    public Map<String, DataType> getDataItems(ExecutionRuntime executionRuntime) {
         return null;
     }
 

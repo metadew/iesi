@@ -568,7 +568,7 @@ public class ExecutionRuntime {
     }
 
     // Repository Management
-    public void setRepository(ExecutionControl executionControl, String repositoryReferenceName, String repositoryName, String repositoryInstanceName, String repositoryInstanceLabels)  {
+    public void setRepository(ExecutionControl executionControl, String repositoryReferenceName, String repositoryName, String repositoryInstanceName, String repositoryInstanceLabels) throws SQLException {
         RepositoryOperation repositoryOperation = new RepositoryOperation(executionControl, repositoryName,
                 repositoryInstanceName, repositoryInstanceLabels);
         this.getRepositoryOperationMap().put(repositoryReferenceName, repositoryOperation);
@@ -576,7 +576,7 @@ public class ExecutionRuntime {
 
     public void setKeyValueDataset(String referenceName, String datasetName, List<String> datasetLabels) throws IOException, SQLException {
         datasetMap.put(referenceName,
-                new KeyValueDataset(datasetName, datasetLabels));
+                new KeyValueDataset(datasetName, datasetLabels, this));
     }
 
 

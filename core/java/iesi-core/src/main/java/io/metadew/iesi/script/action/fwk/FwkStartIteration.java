@@ -52,19 +52,19 @@ public class FwkStartIteration {
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
             if (actionParameter.getName().equalsIgnoreCase("type_nm")) {
-                this.getTypeName().setInputValue(actionParameter.getValue());
+                this.getTypeName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase("list_nm")) {
-                this.getListName().setInputValue(actionParameter.getValue());
+                this.getListName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase("list_val")) {
-                this.getListValues().setInputValue(actionParameter.getValue());
+                this.getListValues().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase("number_from")) {
-                this.getNumberFrom().setInputValue(actionParameter.getValue());
+                this.getNumberFrom().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase("number_to")) {
-                this.getNumberTo().setInputValue(actionParameter.getValue());
+                this.getNumberTo().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase("number_action")) {
-                this.getNumberAction().setInputValue(actionParameter.getValue());
+                this.getNumberAction().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase("break_on_error")) {
-                this.getBreakOnError().setInputValue(actionParameter.getValue());
+                this.getBreakOnError().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }
 

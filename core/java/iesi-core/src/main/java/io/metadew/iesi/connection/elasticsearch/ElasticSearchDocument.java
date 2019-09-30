@@ -1,4 +1,4 @@
-package io.metadew.iesi.connection.database.connection.elasticsearch;
+package io.metadew.iesi.connection.elasticsearch;
 
 import org.apache.logging.log4j.Marker;
 

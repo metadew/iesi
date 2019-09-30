@@ -34,7 +34,7 @@ public class FwkStopIteration {
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
             if (actionParameter.getName().equalsIgnoreCase("start_action_nm")) {
-                this.getStartActionName().setInputValue(actionParameter.getValue());
+                this.getStartActionName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }
 

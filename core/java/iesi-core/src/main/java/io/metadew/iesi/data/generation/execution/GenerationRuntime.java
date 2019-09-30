@@ -1,6 +1,7 @@
 package io.metadew.iesi.data.generation.execution;
 
 import io.metadew.iesi.client.execution.ProgressBar;
+import io.metadew.iesi.connection.database.SqliteDatabase;
 import io.metadew.iesi.connection.database.connection.sqlite.SqliteDatabaseConnection;
 import io.metadew.iesi.connection.tools.FolderTools;
 import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
@@ -15,7 +16,7 @@ import java.io.File;
 public class GenerationRuntime {
 
 	private FrameworkExecution frameworkExecution;
-	private SqliteDatabaseConnection temporaryDatabaseConnection;
+	private SqliteDatabase temporaryDatabaseConnection;
 	private GenerationObjectExecution generationObjectExecution;
 	private ExecutionControl executionControl;
 	private String fieldListSelect;
@@ -39,7 +40,7 @@ public class GenerationRuntime {
 		FolderTools.createFolder(temporaryDatabaseFolder);
 		String temporaryDatabaseFile = "genTempDb" + ".db3";
 		SqliteDatabaseConnection sqliteDatabaseConnection = new SqliteDatabaseConnection(temporaryDatabaseFolder + File.separator + temporaryDatabaseFile);
-		this.setTemporaryDatabaseConnection(sqliteDatabaseConnection);
+		this.setTemporaryDatabaseConnection(new SqliteDatabase(sqliteDatabaseConnection));
 		
 		// Optimize journalling
 		//this.getTemporaryDatabaseConnection().executeUpdate("PRAGMA journal_mode=WAL;");
@@ -175,11 +176,11 @@ public class GenerationRuntime {
         this.frameworkExecution = frameworkExecution;
     }
 
-	public SqliteDatabaseConnection getTemporaryDatabaseConnection() {
+	public SqliteDatabase getTemporaryDatabaseConnection() {
 		return temporaryDatabaseConnection;
 	}
 
-	public void setTemporaryDatabaseConnection(SqliteDatabaseConnection temporaryDatabaseConnection) {
+	public void setTemporaryDatabaseConnection(SqliteDatabase temporaryDatabaseConnection) {
 		this.temporaryDatabaseConnection = temporaryDatabaseConnection;
 	}
 

@@ -44,9 +44,9 @@ public class EvalAssertEquals {
         // Get Parameters
         for (ActionParameter actionParameter : actionExecution.getAction().getParameters()) {
             if (actionParameter.getName().equalsIgnoreCase("expected")) {
-                expectedValue.setInputValue(actionParameter.getValue());
+                expectedValue.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase("actual")) {
-                actualValue.setInputValue(actionParameter.getValue());
+                actualValue.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }
 

@@ -9,7 +9,6 @@ import org.apache.logging.log4j.Logger;
 import javax.sql.rowset.CachedRowSet;
 import java.io.File;
 import java.sql.SQLException;
-import java.text.MessageFormat;
 import java.util.Optional;
 
 public class RuntimeVariableConfiguration {
@@ -20,7 +19,7 @@ public class RuntimeVariableConfiguration {
     private String PRC_RUN_VAR = "PRC_RUN_VAR";
 
     // Constructors
-    public RuntimeVariableConfiguration(String runCacheFolderName)  {
+    public RuntimeVariableConfiguration(String runCacheFolderName) {
 
         // Create database
         sqliteDatabase = new SqliteDatabase(new SqliteDatabaseConnection(runCacheFolderName + File.separator + runCacheFileName));
@@ -28,7 +27,7 @@ public class RuntimeVariableConfiguration {
 
     }
 
-    private void createRunVarTable()  {
+    private void createRunVarTable() {
         String query = "CREATE TABLE " + PRC_RUN_VAR + " (" +
                 "RUN_ID TEXT NOT NULL," +
                 "PRC_ID NUMERIC NOT NULL," +
@@ -39,7 +38,7 @@ public class RuntimeVariableConfiguration {
     }
 
     // Methods
-    public void cleanRuntimeVariables(String runId)  {
+    public void cleanRuntimeVariables(String runId) {
         String query = "delete from " + PRC_RUN_VAR
                 + " where RUN_ID = " + SQLTools.GetStringForSQL(runId) + ";";
         sqliteDatabase.executeUpdate(query);
@@ -53,18 +52,23 @@ public class RuntimeVariableConfiguration {
     }
 
     public void setRuntimeVariable(String runId, Long processId, String name, String value) {
-        // Verify if variable already exists
-        String query = "select run_id, prc_id, var_nm, var_val from " + PRC_RUN_VAR
-                + " where run_id = " + SQLTools.GetStringForSQL(runId)
-                + " and prc_id = " + SQLTools.GetStringForSQL(processId)
-                + " and var_nm = " + SQLTools.GetStringForSQL(name) + ";";
-        CachedRowSet crs = sqliteDatabase.executeQuery(query);
+        try {
+            // Verify if variable already exists
+            String query = "select run_id, prc_id, var_nm, var_val from " + PRC_RUN_VAR
+                    + " where run_id = " + SQLTools.GetStringForSQL(runId)
+                    + " and prc_id = " + SQLTools.GetStringForSQL(processId)
+                    + " and var_nm = " + SQLTools.GetStringForSQL(name) + ";";
+            CachedRowSet crs = sqliteDatabase.executeQuery(query);
 
-        // if so, the previous values will be deleted
-        if (crs.size() > 0) {
-            String deleteQuery = "delete from " + PRC_RUN_VAR
-                    + " where run_id = " + SQLTools.GetStringForSQL(runId) + " and prc_id = " + SQLTools.GetStringForSQL(processId) + " and var_nm = " + SQLTools.GetStringForSQL(name) + ";";
-            sqliteDatabase.executeUpdate(deleteQuery);
+            // if so, the previous values will be deleted
+            if (crs.size() > 0) {
+                String deleteQuery = "delete from " + PRC_RUN_VAR
+                        + " where run_id = " + SQLTools.GetStringForSQL(runId) + " and prc_id = " + SQLTools.GetStringForSQL(processId) + " and var_nm = " + SQLTools.GetStringForSQL(name) + ";";
+                sqliteDatabase.executeUpdate(deleteQuery);
+            }
+            crs.close();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
 
         // DtNow, new values can be stored
@@ -79,14 +83,14 @@ public class RuntimeVariableConfiguration {
     public Optional<String> getRuntimeVariableValue(String runId, String name) {
         try {
             String query = "select VAR_VAL from " + PRC_RUN_VAR
-                    + " where run_id = " + SQLTools.GetStringForSQL(runId) + " and var_nm = " + SQLTools.GetStringForSQL(name) + ";";
+                    + " where run_id = " + SQLTools.GetStringForSQL(runId) + " and var_nm = " + SQLTools.GetStringForSQL(name) + " ORDER BY prc_id DESC;";
             CachedRowSet crs = sqliteDatabase.executeQuery(query);
             if (crs.size() == 0) {
                 return Optional.empty();
             }
-            if (crs.size() > 1) {
-                LOGGER.warn(MessageFormat.format("Found multiple implementations for RuntimeVariable {0}-{1}. Returning first implementation", runId, name));
-            }
+            // if (crs.size() > 1) {
+            //    LOGGER.warn(MessageFormat.format("Found multiple implementations for RuntimeVariable {0}-{1}. Returning first implementation", runId, name));
+            //}
             crs.next();
             String value = crs.getString("VAR_VAL");
             crs.close();

@@ -59,11 +59,11 @@ public class WfaGetConfirmation {
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
             if (actionParameter.getName().equalsIgnoreCase("type")) {
-                this.getConfirmationType().setInputValue(actionParameter.getValue());
+                this.getConfirmationType().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase("question")) {
-                this.getConfirmationQuestion().setInputValue(actionParameter.getValue());
+                this.getConfirmationQuestion().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase("timeout")) {
-                this.getTimeoutInterval().setInputValue(actionParameter.getValue());
+                this.getTimeoutInterval().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }
 

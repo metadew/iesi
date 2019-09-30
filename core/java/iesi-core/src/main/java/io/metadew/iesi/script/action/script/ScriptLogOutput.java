@@ -53,9 +53,9 @@ public class ScriptLogOutput {
         // Get Parameters
         for (ActionParameter actionParameter : actionExecution.getAction().getParameters()) {
             if (actionParameter.getName().equalsIgnoreCase("name")) {
-                outputName.setInputValue(actionParameter.getValue());
+                outputName.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase("value")) {
-                outputValue.setInputValue(actionParameter.getValue());
+                outputValue.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }
 

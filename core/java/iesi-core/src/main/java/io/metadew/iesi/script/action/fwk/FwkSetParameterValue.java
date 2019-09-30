@@ -53,9 +53,9 @@ public class FwkSetParameterValue {
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
             if (actionParameter.getName().equalsIgnoreCase("name")) {
-                this.getOperationName().setInputValue(actionParameter.getValue());
+                this.getOperationName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase("value")) {
-                this.getOperationValue().setInputValue(actionParameter.getValue());
+                this.getOperationValue().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }
 

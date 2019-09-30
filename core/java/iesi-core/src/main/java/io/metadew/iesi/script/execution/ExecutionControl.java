@@ -1,6 +1,7 @@
 package io.metadew.iesi.script.execution;
 
 import io.metadew.iesi.common.text.TextTools;
+import io.metadew.iesi.connection.elasticsearch.filebeat.DelimitedFileBeatElasticSearchConnection;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.configuration.FrameworkSettingConfiguration;
 import io.metadew.iesi.framework.configuration.FrameworkStatus;
@@ -22,6 +23,7 @@ import io.metadew.iesi.metadata.definition.action.result.key.ActionResultKey;
 import io.metadew.iesi.metadata.definition.action.result.key.ActionResultOutputKey;
 import io.metadew.iesi.metadata.definition.script.ScriptLog;
 import io.metadew.iesi.metadata.definition.script.result.ScriptResult;
+import io.metadew.iesi.metadata.definition.script.result.ScriptResultElasticSearch;
 import io.metadew.iesi.metadata.definition.script.result.ScriptResultOutput;
 import io.metadew.iesi.metadata.definition.script.result.key.ScriptResultKey;
 import io.metadew.iesi.metadata.definition.script.result.key.ScriptResultOutputKey;
@@ -47,6 +49,7 @@ public class ExecutionControl {
     private final ActionResultConfiguration actionResultConfiguration;
     private final ActionResultOutputConfiguration actionResultOutputConfiguration;
     private final ScriptResultOutputConfiguration scriptResultOutputConfiguration;
+    private final DelimitedFileBeatElasticSearchConnection elasticSearchConnection;
     private ExecutionRuntime executionRuntime;
     private ExecutionLog executionLog;
     private ExecutionTrace executionTrace;
@@ -76,6 +79,7 @@ public class ExecutionControl {
         initializeRunId();
         initializeExecutionRuntime(runId);
         this.lastProcessId = -1L;
+        this.elasticSearchConnection = new DelimitedFileBeatElasticSearchConnection();
     }
 
     @SuppressWarnings("unchecked")
@@ -221,6 +225,7 @@ public class ExecutionControl {
             scriptLog.setEnd(LocalDateTime.now());
             scriptLog.setStatus(status);
             executionLog.setLog(this.getScriptLog());
+            elasticSearchConnection.ingest(new ScriptResultElasticSearch(scriptResult));
 
             // return
             return status;

@@ -91,21 +91,21 @@ public class EvalVerifySingleField {
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
             if (actionParameter.getName().equalsIgnoreCase("database")) {
-                this.getDatabaseName().setInputValue(actionParameter.getValue());
+                this.getDatabaseName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase("schema")) {
-                this.getSchemaName().setInputValue(actionParameter.getValue());
+                this.getSchemaName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase("table")) {
-                this.getTableName().setInputValue(actionParameter.getValue());
+                this.getTableName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase("field")) {
-                this.getFieldName().setInputValue(actionParameter.getValue());
+                this.getFieldName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase("check")) {
-                this.getCheckName().setInputValue(actionParameter.getValue());
+                this.getCheckName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase("operator")) {
-                this.getCheckOperatorName().setInputValue(actionParameter.getValue());
+                this.getCheckOperatorName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase("value")) {
-                this.getCheckValue().setInputValue(actionParameter.getValue());
+                this.getCheckValue().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase("connection")) {
-                this.getConnectionName().setInputValue(actionParameter.getValue());
+                this.getConnectionName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }
 

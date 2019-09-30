@@ -5,6 +5,8 @@ import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeService;
 import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.datatypes.text.Text;
+import io.metadew.iesi.script.execution.ActionExecution;
+import io.metadew.iesi.script.execution.ExecutionRuntime;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -26,17 +28,21 @@ public abstract class Dataset extends DataType {
 
     private final static Logger LOGGER = LogManager.getLogger();
 
-    public Dataset(DataType name, DataType labels) throws IOException {
+    public Dataset(DataType name, DataType labels, ExecutionRuntime executionRuntime) throws IOException {
         this.dataTypeService = new DataTypeService();
-        this.name = convertDatasetName(name);
-        this.labels = convertDatasetLabels(labels);
+        this.name = convertDatasetName(name, executionRuntime);
+        this.labels = convertDatasetLabels(labels, executionRuntime);
         this.datasetDatabase = initializeDatasetConnection(this.name, this.labels);
     }
 
-    public Dataset(String name, List<String> labels) throws IOException {
+    public Dataset(String name, List<String> labels, ExecutionRuntime executionRuntime) throws IOException {
         this.dataTypeService = new DataTypeService();
         this.name = name;
         this.labels = labels;
+        name = executionRuntime.resolveVariables(name);
+        labels = labels.stream()
+                .map(executionRuntime::resolveVariables)
+                .collect(Collectors.toList());
         this.datasetDatabase = initializeDatasetConnection(name, labels);
     }
 
@@ -44,15 +50,15 @@ public abstract class Dataset extends DataType {
 
     protected abstract Database createNewDatasetDatabase(String datasetName, String filename, String tableName, int inventoryId) throws IOException;
 
-    public abstract Optional<DataType> getDataItem(String dataItem);
-    public abstract Map<String, DataType> getDataItems();
+    public abstract Optional<DataType> getDataItem(String dataItem, ExecutionRuntime executionRuntime);
+    public abstract Map<String, DataType> getDataItems(ExecutionRuntime executionRuntime);
     public abstract void setDataItem(String key, DataType value);
 
-    private List<String> convertDatasetLabels(DataType datasetLabels) {
+    private List<String> convertDatasetLabels(DataType datasetLabels, ExecutionRuntime executionRuntime) {
         List<String> labels = new ArrayList<>();
         if (datasetLabels instanceof Text) {
             Arrays.stream(datasetLabels.toString().split(","))
-                    .forEach(datasetLabel -> labels.add(convertDatasetLabel(dataTypeService.resolve(datasetLabel.trim()))));
+                    .forEach(datasetLabel -> labels.add(convertDatasetLabel(dataTypeService.resolve(datasetLabel.trim(), executionRuntime))));
             return labels;
         } else if (datasetLabels instanceof Array) {
             ((Array) datasetLabels).getList()
@@ -65,7 +71,7 @@ public abstract class Dataset extends DataType {
         }
     }
 
-    private String convertDatasetName(DataType datasetName) {
+    private String convertDatasetName(DataType datasetName, ExecutionRuntime executionRuntime) {
         if (datasetName instanceof Text) {
             // String variablesResolved = executionRuntime.resolveVariables(datasetName.toString());
             // return executionRuntime.resolveConceptLookup(variablesResolved).getValue();

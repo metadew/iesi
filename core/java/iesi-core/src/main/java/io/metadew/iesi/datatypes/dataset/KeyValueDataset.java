@@ -6,6 +6,8 @@ import io.metadew.iesi.connection.database.connection.sqlite.SqliteDatabaseConne
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
+import io.metadew.iesi.script.execution.ActionExecution;
+import io.metadew.iesi.script.execution.ExecutionRuntime;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -26,16 +28,16 @@ public class KeyValueDataset extends Dataset {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public KeyValueDataset(DataType name, DataType labels) throws IOException, SQLException {
-        super(name, labels);
+    public KeyValueDataset(DataType name, DataType labels, ExecutionRuntime executionRuntime) throws IOException {
+        super(name, labels, executionRuntime);
     }
 
-    public KeyValueDataset(String name, List<String> labels) throws IOException, SQLException {
-        super(name, labels);
+    public KeyValueDataset(String name, List<String> labels, ExecutionRuntime executionRuntime) throws IOException {
+        super(name, labels, executionRuntime);
         LOGGER.trace("datatype.dataset.keyvalue=creating dataset with " + name + " and " + labels.toString());
     }
 
-    public Map<String, DataType> getDataItems() {
+    public Map<String, DataType> getDataItems(ExecutionRuntime executionRuntime) {
         String query;
         query = "select key, value from " + SQLTools.GetStringForSQLTable(getTableName()) + ";";
 
@@ -43,10 +45,10 @@ public class KeyValueDataset extends Dataset {
         try {
             CachedRowSet crs = getDatasetDatabase().executeQuery(query);
             while (crs.next()) {
-                dataItems.put(crs.getString("key"), dataTypeService.resolve(crs.getString("value")));
+                dataItems.put(crs.getString("key"), dataTypeService.resolve(crs.getString("value"), executionRuntime));
             }
             crs.close();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             StringWriter stackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(stackTrace));
 
@@ -56,7 +58,7 @@ public class KeyValueDataset extends Dataset {
         return dataItems;
     }
 
-    public Optional<DataType> getDataItem(String dataItem) {
+    public Optional<DataType> getDataItem(String dataItem, ExecutionRuntime executionRuntime) {
         String query = "select value from " + SQLTools.GetStringForSQLTable(getTableName()) + " where key = " + SQLTools.GetStringForSQL(dataItem) + ";";
         try {
             CachedRowSet crs = getDatasetDatabase().executeQuery(query);
@@ -66,10 +68,10 @@ public class KeyValueDataset extends Dataset {
                 LOGGER.warn(MessageFormat.format("Dataset contains multiple items with key ''{0}''. Returning first value", dataItem));
             }
             crs.next();
-            DataType value = dataTypeService.resolve(crs.getString("VALUE"));
+            DataType value = dataTypeService.resolve(crs.getString("VALUE"), executionRuntime);
             crs.close();
             return Optional.of(value);
-        } catch (Exception e) {
+        } catch (SQLException e) {
             StringWriter stackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(stackTrace));
             LOGGER.info("exception=" + e);
@@ -139,10 +141,9 @@ public class KeyValueDataset extends Dataset {
         return "{{^dataset(" + getNameAsDataType().toString() + ", " + getLabelsAsDataType().toString() + ")}}";
     }
 
-    @Override
-    public boolean equals(Object obj) {
+    public boolean equals(Object obj, ExecutionRuntime executionRuntime) {
         if (obj instanceof KeyValueDataset) {
-            return getDataItems().equals(((KeyValueDataset) obj).getDataItems());
+            return getDataItems(executionRuntime).equals(((KeyValueDataset) obj).getDataItems(executionRuntime));
         } else {
             return false;
         }

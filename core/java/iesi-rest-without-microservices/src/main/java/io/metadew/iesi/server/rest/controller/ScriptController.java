@@ -13,11 +13,8 @@ import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionReque
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequestBuilderException;
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.metadata.definition.script.ScriptParameter;
-import io.metadew.iesi.runtime.ExecutionRequestListener;
-import io.metadew.iesi.runtime.ExecutorService;
 import io.metadew.iesi.server.rest.error.DataBadRequestException;
 import io.metadew.iesi.server.rest.error.DataNotFoundException;
-import io.metadew.iesi.server.rest.error.GetNullProperties;
 import io.metadew.iesi.server.rest.pagination.ScriptCriteria;
 import io.metadew.iesi.server.rest.pagination.ScriptPagination;
 import io.metadew.iesi.server.rest.resource.HalMultipleEmbeddedResource;
@@ -50,7 +47,6 @@ public class ScriptController {
 
     private ExecutionRequestConfiguration executionRequestConfiguration;
     private ScriptConfiguration scriptConfiguration;
-    private final GetNullProperties getNullProperties;
     private ScriptByNameDtoAssembler scriptByNameGetDtoAssembler;
     private ScriptDtoResourceAssembler scriptDtoResourceAssembler;
     private ScriptGlobalDtoResourceAssembler scriptGlobalDtoResourceAssembler;
@@ -60,17 +56,17 @@ public class ScriptController {
     private final ScriptPagination scriptPagination;
 
     @Autowired
-    ScriptController(ScriptConfiguration scriptConfiguration, GetNullProperties getNullProperties, ScriptDtoResourceAssembler scriptDtoResourceAssembler,
+    ScriptController(ScriptConfiguration scriptConfiguration, ScriptDtoResourceAssembler scriptDtoResourceAssembler,
                      ScriptGlobalDtoResourceAssembler scriptGlobalDtoResourceAssembler, ScriptByNameDtoAssembler scriptByNameGetDtoAssembler,
                      ScriptPagination scriptPagination, ExecutionRequestConfiguration executionRequestConfiguration) {
         this.scriptPagination = scriptPagination;
         this.scriptConfiguration = scriptConfiguration;
-        this.getNullProperties = getNullProperties;
         this.scriptDtoResourceAssembler = scriptDtoResourceAssembler;
         this.scriptGlobalDtoResourceAssembler = scriptGlobalDtoResourceAssembler;
         this.scriptByNameGetDtoAssembler = scriptByNameGetDtoAssembler;
         this.executionRequestConfiguration = executionRequestConfiguration;
     }
+
     @GetMapping("")
     public HalMultipleEmbeddedResource<ScriptGlobalDto> getAll(@Valid ScriptCriteria scriptCriteria) {
         List<Script> scripts = scriptConfiguration.getAll();
@@ -84,11 +80,7 @@ public class ScriptController {
 	@GetMapping("/{name}")
 	public ResponseEntity<ScriptByNameDto> getByName(@PathVariable String name) {
         List<Script> script;
-        try {
-            script = scriptConfiguration.getByName(name);
-        } catch (SQLException e) {
-            throw new DataNotFoundException(name);
-        }
+        script = scriptConfiguration.getByName(name);
         if (script.isEmpty()) {
 			throw new DataNotFoundException(name);
 		}
@@ -105,7 +97,6 @@ public class ScriptController {
 
     @PostMapping("/")
     public ScriptDto post(@Valid @RequestBody ScriptDto script) {
-		getNullProperties.getNullScript(script);
         try {
             scriptConfiguration.insert(script.convertToEntity());
             return scriptDtoResourceAssembler.toResource(script.convertToEntity());
@@ -135,7 +126,7 @@ public class ScriptController {
             executionRequestConfiguration.insert(executionRequest);
 
             return ResponseEntity.ok().body(scriptExecutionRequest.getMetadataKey().getId());
-        } catch (ScriptExecutionRequestBuilderException | ExecutionRequestBuilderException | MetadataAlreadyExistsException | SQLException e) {
+        } catch (ScriptExecutionRequestBuilderException | ExecutionRequestBuilderException | MetadataAlreadyExistsException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
             return ResponseEntity.badRequest().build();
@@ -146,7 +137,6 @@ public class ScriptController {
     @PutMapping("")
     public HalMultipleEmbeddedResource<ScriptDto> putAll(@Valid @RequestBody List<ScriptDto> scriptDtos) {
         HalMultipleEmbeddedResource<ScriptDto> halMultipleEmbeddedResource = new HalMultipleEmbeddedResource<>();
-//		getListNullProperties.getNullScript(scriptDtos);
         for (ScriptDto scriptDto : scriptDtos) {
             try {
                 scriptConfiguration.update(scriptDto.convertToEntity());

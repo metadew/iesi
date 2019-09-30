@@ -49,8 +49,8 @@ public class DatasetLookup implements LookupInstruction {
 
 
         String[] arguments = splitInput(parameters);
-        Dataset dataset = getDataset(dataTypeService.resolve(arguments[0].trim()));
-        Optional<DataType> dataItem = dataset.getDataItem(arguments[1].trim());
+        Dataset dataset = getDataset(dataTypeService.resolve(arguments[0].trim(), executionRuntime));
+        Optional<DataType> dataItem = dataset.getDataItem(arguments[1].trim(), executionRuntime);
 
         if (!dataItem.isPresent()) {
             throw new IllegalArgumentException(MessageFormat.format("No dataset item {0} is attached to dataset {1}", arguments[1], dataset.toString()));

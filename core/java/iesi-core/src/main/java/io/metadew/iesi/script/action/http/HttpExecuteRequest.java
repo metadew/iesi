@@ -99,19 +99,19 @@ public class HttpExecuteRequest {
         // Get Parameters
         for (ActionParameter actionParameter : actionExecution.getAction().getParameters()) {
             if (actionParameter.getName().equalsIgnoreCase(requestKey)) {
-                requestNameActionParameterOperation.setInputValue(actionParameter.getValue());
+                requestNameActionParameterOperation.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase(typeKey)) {
-                requestTypeActionParameterOperation.setInputValue(actionParameter.getValue());
+                requestTypeActionParameterOperation.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase(bodyKey)) {
-                requestBodyActionParameterOperation.setInputValue(actionParameter.getValue());
+                requestBodyActionParameterOperation.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase(setRuntimeVariablesKey)) {
-                setRuntimeVariablesActionParameterOperation.setInputValue(actionParameter.getValue());
+                setRuntimeVariablesActionParameterOperation.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase(setDatasetKey)) {
-                setDatasetActionParameterOperation.setInputValue(actionParameter.getValue());
+                setDatasetActionParameterOperation.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase(expectedStatusCodesKey)) {
-                expectedStatusCodesActionParameterOperation.setInputValue(actionParameter.getValue());
+                expectedStatusCodesActionParameterOperation.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase(proxyKey)) {
-                proxyActionParameterOperation.setInputValue(actionParameter.getValue());
+                proxyActionParameterOperation.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }
 
@@ -144,7 +144,7 @@ public class HttpExecuteRequest {
         if (getOutputDataset().isPresent()) {
             List<String> labels = new ArrayList<>(outputDataset.getLabels());
             labels.add("typed");
-            rawOutputDataset = new KeyValueDataset(outputDataset.getName(), labels);
+            rawOutputDataset = new KeyValueDataset(outputDataset.getName(), labels, executionControl.getExecutionRuntime());
         }
 
     }
@@ -366,7 +366,7 @@ public class HttpExecuteRequest {
                 getRawOutputDataset().ifPresent(dataset -> {
                     dataset.clean();
                     try {
-                        dataTypeService.getKeyValueDatasetService().write(dataset, (ObjectNode) jsonNode);
+                        dataTypeService.getKeyValueDatasetService().write(dataset, (ObjectNode) jsonNode, executionControl.getExecutionRuntime());
                     } catch (IOException | SQLException e) {
                         StringWriter StackTrace = new StringWriter();
                         e.printStackTrace(new PrintWriter(StackTrace));

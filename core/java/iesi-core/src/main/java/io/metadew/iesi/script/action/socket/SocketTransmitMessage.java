@@ -59,13 +59,13 @@ public class SocketTransmitMessage {
         // Get Parameters
         for (ActionParameter actionParameter : actionExecution.getAction().getParameters()) {
             if (actionParameter.getName().equalsIgnoreCase(messageKey)) {
-                messageActionParameterOperation.setInputValue(actionParameter.getValue());
+                messageActionParameterOperation.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase(socketKey)) {
-                socketActionParameterOperation.setInputValue(actionParameter.getValue());
+                socketActionParameterOperation.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase(protocolKey)) {
-                protocolActionParameterOperation.setInputValue(actionParameter.getValue());
+                protocolActionParameterOperation.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase(outputKey)) {
-                outputActionParameterOperation.setInputValue(actionParameter.getValue());
+                outputActionParameterOperation.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }
 

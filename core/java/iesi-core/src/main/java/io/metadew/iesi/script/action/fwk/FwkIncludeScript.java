@@ -67,9 +67,9 @@ public class FwkIncludeScript {
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
             if (actionParameter.getName().equalsIgnoreCase("script")) {
-                this.getScriptName().setInputValue(actionParameter.getValue());
+                this.getScriptName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase("version")) {
-                this.getScriptVersion().setInputValue(actionParameter.getValue());
+                this.getScriptVersion().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }
 

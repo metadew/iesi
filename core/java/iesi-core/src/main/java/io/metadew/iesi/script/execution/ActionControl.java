@@ -1,8 +1,11 @@
 package io.metadew.iesi.script.execution;
 
-import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class ActionControl {
+    
+    private static final Logger LOGGER = LogManager.getLogger();
 
     private ExecutionControl executionControl;
     private ActionExecution actionExecution;
@@ -10,35 +13,35 @@ public class ActionControl {
     private ActionRuntime actionRuntime;
 
     public ActionControl(ExecutionControl executionControl, ActionExecution actionExecution) {
-        this.setExecutionControl(executionControl);
-        this.setActionExecution(actionExecution);
-        this.setActionRuntime(new ActionRuntime(this.getExecutionControl().getRunId(), this.getActionExecution().getProcessId()));
-        this.setExecutionMetrics(new ExecutionMetrics());
+        this.executionControl = executionControl;
+        this.actionExecution = actionExecution;
+        this.actionRuntime = new ActionRuntime(executionControl.getRunId(), actionExecution.getProcessId());
+        this.executionMetrics = new ExecutionMetrics();
     }
 
     // Methods
     public void logOutput(String name, String value) {
         // Cache output
-        this.getActionExecution().getActionControl().getActionRuntime().getRuntimeActionCacheConfiguration()
-                .setRuntimeCache(this.getExecutionControl().getRunId(), "out", name, value);
-        this.getExecutionControl().logMessage(this.getActionExecution(), "action.output=" + name + ":" + value, Level.DEBUG);
-        this.getExecutionControl().logExecutionOutput(this.getActionExecution(), name, value);
+        this.actionRuntime.getRuntimeActionCacheConfiguration()
+                .setRuntimeCache(executionControl.getRunId(), actionExecution.getProcessId(), "out", name, value);
+        LOGGER.debug("action.output=" + name + ":" + value);
+        executionControl.logExecutionOutput(actionExecution, name, value);
     }
 
     public void logError(String name, String value) {
         // Cache output
-        this.getActionExecution().getActionControl().getActionRuntime().getRuntimeActionCacheConfiguration()
-                .setRuntimeCache(this.getExecutionControl().getRunId(), "err", name, value);
-        this.getExecutionControl().logMessage(this.getActionExecution(), "action.error=" + name + ":" + value, Level.DEBUG);
-        this.getExecutionControl().logExecutionOutput(this.getActionExecution(), name, value);
+        this.actionRuntime.getRuntimeActionCacheConfiguration()
+                .setRuntimeCache(executionControl.getRunId(),  actionExecution.getProcessId(), "err", name, value);
+        LOGGER.debug("action.error=" + name + ":" + value);
+        executionControl.logExecutionOutput(actionExecution, name, value);
     }
 
     public void logWarning(String name, String value) {
         // Cache output
-        this.getActionExecution().getActionControl().getActionRuntime().getRuntimeActionCacheConfiguration()
-                .setRuntimeCache(this.getExecutionControl().getRunId(), "warn", name, value);
-        this.getExecutionControl().logMessage(this.getActionExecution(), "action.warning=" + name + ":" + value, Level.DEBUG);
-        this.getExecutionControl().logExecutionOutput(this.getActionExecution(), name, value);
+        this.actionRuntime.getRuntimeActionCacheConfiguration()
+                .setRuntimeCache(executionControl.getRunId(),  actionExecution.getProcessId(), "warn", name, value);
+        LOGGER.debug("action.warning=" + name + ":" + value);
+        executionControl.logExecutionOutput(actionExecution, name, value);
     }
 
     // Metrics
@@ -47,9 +50,9 @@ public class ActionControl {
     }
 
     public void increaseSuccessCount(long increase) {
-        this.getActionExecution().getActionControl().getActionRuntime().getRuntimeActionCacheConfiguration()
-                .setRuntimeCache(this.getExecutionControl().getRunId(), "sys", "rc", "0");
-        this.getExecutionMetrics().increaseSuccessCount(increase);
+        this.actionRuntime.getRuntimeActionCacheConfiguration()
+                .setRuntimeCache(executionControl.getRunId(),  actionExecution.getProcessId(), "sys", "rc", "0");
+        executionMetrics.increaseSuccessCount(increase);
     }
 
     public void increaseWarningCount() {
@@ -57,9 +60,8 @@ public class ActionControl {
     }
 
     public void increaseWarningCount(long increase) {
-        this.getActionExecution().getActionControl().getActionRuntime().getRuntimeActionCacheConfiguration()
-                .setRuntimeCache(this.getExecutionControl().getRunId(), "sys", "rc", "2");
-        this.getExecutionMetrics().increaseWarningCount(increase);
+        this.actionRuntime.getRuntimeActionCacheConfiguration() .setRuntimeCache(executionControl.getRunId(),  actionExecution.getProcessId(), "sys", "rc", "2");
+        executionMetrics.increaseWarningCount(increase);
     }
 
     public void increaseErrorCount() {
@@ -67,9 +69,8 @@ public class ActionControl {
     }
 
     public void increaseErrorCount(long increase) {
-        this.getActionExecution().getActionControl().getActionRuntime().getRuntimeActionCacheConfiguration()
-                .setRuntimeCache(this.getExecutionControl().getRunId(), "sys", "rc", "1");
-        this.getExecutionMetrics().increaseErrorCount(increase);
+        this.actionRuntime.getRuntimeActionCacheConfiguration().setRuntimeCache(executionControl.getRunId(),  actionExecution.getProcessId(), "sys", "rc", "1");
+        executionMetrics.increaseErrorCount(increase);
     }
 
     public void increaseSkipCount() {
@@ -77,9 +78,9 @@ public class ActionControl {
     }
 
     public void increaseSkipCount(long increase) {
-        this.getActionExecution().getActionControl().getActionRuntime().getRuntimeActionCacheConfiguration()
-                .setRuntimeCache(this.getExecutionControl().getRunId(), "sys", "rc", "3");
-        this.getExecutionMetrics().increaseSkipCount(increase);
+        this.actionRuntime.getRuntimeActionCacheConfiguration()
+                .setRuntimeCache(executionControl.getRunId(),  actionExecution.getProcessId(), "sys", "rc", "3");
+        executionMetrics.increaseSkipCount(increase);
     }
 
     // Getters and Setters
@@ -87,32 +88,8 @@ public class ActionControl {
         return actionRuntime;
     }
 
-    public void setActionRuntime(ActionRuntime actionRuntime) {
-        this.actionRuntime = actionRuntime;
-    }
-
-    public ExecutionControl getExecutionControl() {
-        return executionControl;
-    }
-
-    public void setExecutionControl(ExecutionControl executionControl) {
-        this.executionControl = executionControl;
-    }
-
     public ExecutionMetrics getExecutionMetrics() {
         return executionMetrics;
-    }
-
-    public void setExecutionMetrics(ExecutionMetrics executionMetrics) {
-        this.executionMetrics = executionMetrics;
-    }
-
-    public ActionExecution getActionExecution() {
-        return actionExecution;
-    }
-
-    public void setActionExecution(ActionExecution actionExecution) {
-        this.actionExecution = actionExecution;
     }
 
 }

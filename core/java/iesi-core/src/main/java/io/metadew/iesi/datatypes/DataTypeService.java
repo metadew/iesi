@@ -7,6 +7,7 @@ import io.metadew.iesi.datatypes.dataset.KeyValueDataset;
 import io.metadew.iesi.datatypes.dataset.KeyValueDatasetService;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.datatypes.text.TextService;
+import io.metadew.iesi.script.execution.ExecutionRuntime;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -40,27 +41,28 @@ public class DataTypeService {
     /*
         In case of multiple dataset types (keyvalue, resultset..) --> proposition dataset.kv and dataset.rs as keys
     */
-    public DataType resolve(String input) {
+    public DataType resolve(String input, ExecutionRuntime executionRuntime) {
+        LOGGER.trace(MessageFormat.format("resolving {0} for datatype", input));
         if (input.startsWith(DatatypeStartCharacters) && input.endsWith(DatatypeStopCharacters)) {
             Matcher matcher = DatatypePattern.matcher(input.substring(DatatypeStartCharacters.length(), input.length() - DatatypeStopCharacters.length()));
             if (matcher.find()) {
                 switch (matcher.group("datatype")) {
                     case "list":
-                        return arrayService.resolve(matcher.group("arguments"));
+                        return arrayService.resolve(matcher.group("arguments"), executionRuntime);
                     case "dataset":
                         try {
-                            return keyValueDatasetService.resolve(matcher.group("arguments"));
-                        } catch (IOException | SQLException e) {
+                            return keyValueDatasetService.resolve(matcher.group("arguments"), executionRuntime);
+                        } catch (IOException e) {
                             throw new RuntimeException(e);
                         }
                     default:
                         throw new RuntimeException(MessageFormat.format("Input ''{0}'' does not have a correct datatype", input));
                 }
             } else {
-                return new Text(input);
+                return textService.resolve(input, executionRuntime);
             }
         } else {
-            return new Text(input);
+            return textService.resolve(input, executionRuntime);
         }
     }
 
@@ -109,15 +111,15 @@ public class DataTypeService {
         return instructionArguments;
     }
 
-    public DataType resolve(KeyValueDataset rootDataset, String key, JsonNode jsonNode) throws IOException, SQLException {
+    public DataType resolve(KeyValueDataset rootDataset, String key, JsonNode jsonNode, ExecutionRuntime executionRuntime) throws IOException, SQLException {
         if (jsonNode.getNodeType().equals(JsonNodeType.ARRAY)) {
-            return arrayService.resolve(rootDataset, key, (ArrayNode) jsonNode);
+            return arrayService.resolve(rootDataset, key, (ArrayNode) jsonNode, executionRuntime);
         } else if (jsonNode.getNodeType().equals(JsonNodeType.NULL)) {
             return textService.resolve((NullNode) jsonNode);
         } else if (jsonNode.isValueNode()) {
             return textService.resolve((ValueNode) jsonNode);
         } if (jsonNode.getNodeType().equals(JsonNodeType.OBJECT)) {
-            return keyValueDatasetService.resolve(rootDataset, key, (ObjectNode) jsonNode);
+            return keyValueDatasetService.resolve(rootDataset, key, (ObjectNode) jsonNode, executionRuntime);
         } else {
             LOGGER.warn(MessageFormat.format("dataset.json.unknownnode=cannot decipher json node of type {0}", jsonNode.getNodeType().toString()));
         }

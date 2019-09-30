@@ -35,37 +35,24 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 public class EnvironmentsController {
 
     private EnvironmentConfiguration environmentConfiguration;
-
     private ConnectionConfiguration connectionConfiguration;
-
-    private final GetNullProperties getNullProperties;
-
-    private final GetListNullProperties getListNullProperties;
-
-    private final EnvironmentPagination environmentPagination;
-
-    @Autowired
     private EnvironmentDtoResourceAssembler environmentDtoResourceAssembler;
-
-    @Autowired
     private ConnectionDtoResourceAssembler connectionDtoResourceAssembler;
 
     @Autowired
-    EnvironmentsController(EnvironmentConfiguration environmentConfiguration, GetNullProperties getNullProperties, GetListNullProperties getListNullProperties, ConnectionConfiguration connectionConfiguration,
-                           EnvironmentPagination environmentPagination) {
+    EnvironmentsController(EnvironmentConfiguration environmentConfiguration, ConnectionConfiguration connectionConfiguration,
+                           EnvironmentDtoResourceAssembler environmentDtoResourceAssembler, ConnectionDtoResourceAssembler connectionDtoResourceAssembler) {
         this.environmentConfiguration = environmentConfiguration;
         this.connectionConfiguration = connectionConfiguration;
-        this.environmentPagination = environmentPagination;
-        this.getListNullProperties = getListNullProperties;
-        this.getNullProperties = getNullProperties;
+        this.environmentDtoResourceAssembler = environmentDtoResourceAssembler;
+        this.connectionDtoResourceAssembler = connectionDtoResourceAssembler;
     }
 
     @GetMapping("")
     public HalMultipleEmbeddedResource<EnvironmentDto> getAll(@Valid EnvironmentCriteria environmentCriteria) {
         List<Environment> environments = environmentConfiguration.getAllEnvironments();
-        List<Environment> pagination = environmentPagination.search(environments, environmentCriteria);
         return new HalMultipleEmbeddedResource<EnvironmentDto>(
-                pagination.stream().filter(distinctByKey(Environment::getName))
+                environments.stream().filter(distinctByKey(Environment::getName))
                         .map(environment -> environmentDtoResourceAssembler.toResource(environment))
                         .collect(Collectors.toList()));
     }
@@ -80,7 +67,6 @@ public class EnvironmentsController {
     //
     @PostMapping("")
     public EnvironmentDto post(@Valid @RequestBody EnvironmentDto environment) {
-        getNullProperties.getNullEnvironment(environment);
         try {
             // TODO: make insert return environment
             environmentConfiguration.insertEnvironment(environment.convertToEntity());
@@ -95,7 +81,6 @@ public class EnvironmentsController {
     @PutMapping("")
     public HalMultipleEmbeddedResource<EnvironmentDto> putAll(@Valid @RequestBody List<EnvironmentDto> environmentDtos) {
         HalMultipleEmbeddedResource<EnvironmentDto> halMultipleEmbeddedResource = new HalMultipleEmbeddedResource<>();
-        getListNullProperties.getNullEnvironment(environmentDtos);
         for (EnvironmentDto environmentDto : environmentDtos) {
             try {
                 environmentConfiguration.updateEnvironment(environmentDto.convertToEntity());
@@ -114,7 +99,6 @@ public class EnvironmentsController {
 
     @PutMapping("/{name}")
     public EnvironmentDto put(@PathVariable String name, @RequestBody EnvironmentDto environment) {
-        getNullProperties.getNullEnvironment(environment);
         if (!environment.getName().equals(name)) {
             throw new DataBadRequestException(name);
         } else if (environment.getName() == null) {

@@ -77,23 +77,23 @@ public class FwkSetIteration {
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
             if (actionParameter.getName().equalsIgnoreCase("name")) {
-                this.getIterationName().setInputValue(actionParameter.getValue());
+                this.getIterationName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase("type")) {
-                this.getIterationType().setInputValue(actionParameter.getValue());
+                this.getIterationType().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase("list")) {
-                this.getIterationList().setInputValue(actionParameter.getValue());
+                this.getIterationList().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase("values")) {
-                this.getIterationValues().setInputValue(actionParameter.getValue());
+                this.getIterationValues().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase("from")) {
-                this.getIterationFrom().setInputValue(actionParameter.getValue());
+                this.getIterationFrom().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase("to")) {
-                this.getIterationTo().setInputValue(actionParameter.getValue());
+                this.getIterationTo().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase("step")) {
-                this.getIterationStep().setInputValue(actionParameter.getValue());
+                this.getIterationStep().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase("condition")) {
-                this.getIterationCondition().setInputValue(actionParameter.getValue());
+                this.getIterationCondition().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase("interrupt")) {
-                this.getIterationInterrupt().setInputValue(actionParameter.getValue());
+                this.getIterationInterrupt().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }
 

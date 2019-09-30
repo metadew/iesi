@@ -2,7 +2,7 @@
 <Configuration status="WARN">
     <Appenders>
         <Console name="STDOUT" target="SYSTEM_OUT">
-            <PatternLayout pattern="%d %-5p [%c{1.}] - %m%n" />
+            <PatternLayout pattern="%d %-5p [%c{1.}] - %m%n" />i
         </Console>
     </Appenders>
     <Loggers>

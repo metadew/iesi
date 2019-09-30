@@ -44,14 +44,15 @@ public class ScriptExecutionRequestConfiguration extends Configuration<ScriptExe
                     // "WHEN NON_AUTH_EXECUTION_REQUEST.REQUEST_ID IS NOT NULL THEN 2 " +
                     // "WHEN EXECUTION_REQUEST.REQUEST_ID IS NOT NULL THEN 0 " +
                     // "END AS clazz " +
-                    "SCRIPT_FILE_EXEC_REQ.SCRPT_REQUEST_ID AS FILE, " +
-                    "SCRIPT_NAME_EXEC_REQ.SCRPT_REQUEST_ID AS NAME " +
+                    "SCRIPT_FILE_EXEC_REQ.SCRPT_REQUEST_ID AS FILE_REQ, " +
+                    "SCRIPT_NAME_EXEC_REQ.SCRPT_REQUEST_ID AS NAME_REQ " +
                     "FROM " + getMetadataControl().getExecutionServerMetadataRepository().getTableNameByLabel("ScriptExecutionRequests") + " SCRIPT_EXEC_REQ " +
                     "LEFT OUTER JOIN " + getMetadataControl().getExecutionServerMetadataRepository().getTableNameByLabel("ScriptFileExecutionRequests") + " SCRIPT_FILE_EXEC_REQ " +
                     "ON SCRIPT_EXEC_REQ.SCRPT_REQUEST_ID = SCRIPT_FILE_EXEC_REQ.SCRPT_REQUEST_ID AND SCRIPT_EXEC_REQ.EXEC_REQUEST_ID = SCRIPT_FILE_EXEC_REQ.EXEC_REQUEST_ID " +
                     "LEFT OUTER JOIN " + getMetadataControl().getExecutionServerMetadataRepository().getTableNameByLabel("ScriptNameExecutionRequests") + " SCRIPT_NAME_EXEC_REQ " +
                     "ON SCRIPT_EXEC_REQ.SCRPT_REQUEST_ID = SCRIPT_NAME_EXEC_REQ.SCRPT_REQUEST_ID AND SCRIPT_EXEC_REQ.EXEC_REQUEST_ID = SCRIPT_NAME_EXEC_REQ.EXEC_REQUEST_ID " +
                     "WHERE SCRIPT_EXEC_REQ.SCRPT_REQUEST_ID = " + SQLTools.GetStringForSQL(scriptExecutionRequestKey.getId()) + ";";
+            LOGGER.info(query);
 
             CachedRowSet cachedRowSet = getMetadataControl().getExecutionServerMetadataRepository().executeQuery(query, "reader");
             if (cachedRowSet.size() == 0) {
@@ -60,7 +61,7 @@ public class ScriptExecutionRequestConfiguration extends Configuration<ScriptExe
                 LOGGER.warn(MessageFormat.format("Found multiple implementations for ScriptExecutionRequest {0}. Returning first implementation", scriptExecutionRequestKey.toString()));
             }
             cachedRowSet.next();
-            if (cachedRowSet.getString("FILE") != null) {
+            if (cachedRowSet.getString("FILE_REQ") != null) {
                 return Optional.of(new ScriptFileExecutionRequest(scriptExecutionRequestKey,
                         new ExecutionRequestKey(cachedRowSet.getString("EXEC_REQUEST_ID")),
                         cachedRowSet.getString("SCRPT_FILENAME"),
@@ -70,7 +71,7 @@ public class ScriptExecutionRequestConfiguration extends Configuration<ScriptExe
                         cachedRowSet.getString("IMPERSONATION"),
                         SQLTools.getMapFromSql(cachedRowSet.getString("IMPERSONATIONS")),
                         SQLTools.getMapFromSql(cachedRowSet.getString("PARAMETERS")), ScriptExecutionRequestStatus.valueOf(cachedRowSet.getString("ST_NM"))));
-            } else if (cachedRowSet.getString("NAME") != null) {
+            } else if (cachedRowSet.getString("NAME_REQ") != null) {
                 return Optional.of(new ScriptNameExecutionRequest(scriptExecutionRequestKey,
                         new ExecutionRequestKey(cachedRowSet.getString("EXEC_REQUEST_ID")),
                         cachedRowSet.getString("SCRPT_NAME"),
@@ -104,8 +105,8 @@ public class ScriptExecutionRequestConfiguration extends Configuration<ScriptExe
                     // "WHEN NON_AUTH_EXECUTION_REQUEST.REQUEST_ID IS NOT NULL THEN 2 " +
                     // "WHEN EXECUTION_REQUEST.REQUEST_ID IS NOT NULL THEN 0 " +
                     // "END AS clazz " +
-                    "SCRIPT_FILE_EXEC_REQ.SCRPT_REQUEST_ID AS FILE, " +
-                    "SCRIPT_NAME_EXEC_REQ.SCRPT_REQUEST_ID AS NAME " +
+                    "SCRIPT_FILE_EXEC_REQ.SCRPT_REQUEST_ID AS FILE_REQ, " +
+                    "SCRIPT_NAME_EXEC_REQ.SCRPT_REQUEST_ID AS NAME_REQ " +
                     "FROM " + getMetadataControl().getExecutionServerMetadataRepository().getTableNameByLabel("ScriptExecutionRequests") + " SCRIPT_EXEC_REQ " +
                     "LEFT OUTER JOIN " + getMetadataControl().getExecutionServerMetadataRepository().getTableNameByLabel("ScriptFileExecutionRequests") + " SCRIPT_FILE_EXEC_REQ " +
                     "ON SCRIPT_EXEC_REQ.SCRPT_REQUEST_ID = SCRIPT_FILE_EXEC_REQ.SCRPT_REQUEST_ID AND SCRIPT_EXEC_REQ.EXEC_REQUEST_ID = SCRIPT_FILE_EXEC_REQ.EXEC_REQUEST_ID " +
@@ -114,7 +115,7 @@ public class ScriptExecutionRequestConfiguration extends Configuration<ScriptExe
 
             CachedRowSet cachedRowSet = getMetadataControl().getExecutionServerMetadataRepository().executeQuery(query, "reader");
             while (cachedRowSet.next()) {
-                if (cachedRowSet.getString("FILE") != null) {
+                if (cachedRowSet.getString("FILE_REQ") != null) {
                     scriptExecutionRequests.add(new ScriptFileExecutionRequest(
                             new ScriptExecutionRequestKey(cachedRowSet.getString("SCRPT_REQUEST_ID")
                             ),
@@ -126,7 +127,7 @@ public class ScriptExecutionRequestConfiguration extends Configuration<ScriptExe
                             cachedRowSet.getString("IMPERSONATION"),
                             SQLTools.getMapFromSql(cachedRowSet.getString("IMPERSONATIONS")),
                             SQLTools.getMapFromSql(cachedRowSet.getString("PARAMETERS")), ScriptExecutionRequestStatus.valueOf(cachedRowSet.getString("ST_NM"))));
-                } else if (cachedRowSet.getString("NAME") != null) {
+                } else if (cachedRowSet.getString("NAME_REQ") != null) {
                     scriptExecutionRequests.add(new ScriptNameExecutionRequest(
                             new ScriptExecutionRequestKey(cachedRowSet.getString("SCRPT_REQUEST_ID")
                             ),
@@ -241,8 +242,8 @@ public class ScriptExecutionRequestConfiguration extends Configuration<ScriptExe
                     // "WHEN NON_AUTH_EXECUTION_REQUEST.REQUEST_ID IS NOT NULL THEN 2 " +
                     // "WHEN EXECUTION_REQUEST.REQUEST_ID IS NOT NULL THEN 0 " +
                     // "END AS clazz " +
-                    "SCRIPT_FILE_EXEC_REQ.SCRPT_REQUEST_ID AS FILE, " +
-                    "SCRIPT_NAME_EXEC_REQ.SCRPT_REQUEST_ID AS NAME " +
+                    "SCRIPT_FILE_EXEC_REQ.SCRPT_REQUEST_ID AS FILE_REQ, " +
+                    "SCRIPT_NAME_EXEC_REQ.SCRPT_REQUEST_ID AS NAME_REQ " +
                     "FROM " + getMetadataControl().getExecutionServerMetadataRepository().getTableNameByLabel("ScriptExecutionRequests") + " SCRIPT_EXEC_REQ " +
                     "LEFT OUTER JOIN " + getMetadataControl().getExecutionServerMetadataRepository().getTableNameByLabel("ScriptFileExecutionRequests") + " SCRIPT_FILE_EXEC_REQ " +
                     "ON SCRIPT_EXEC_REQ.SCRPT_REQUEST_ID = SCRIPT_FILE_EXEC_REQ.SCRPT_REQUEST_ID AND SCRIPT_EXEC_REQ.EXEC_REQUEST_ID = SCRIPT_FILE_EXEC_REQ.EXEC_REQUEST_ID " +
@@ -252,7 +253,7 @@ public class ScriptExecutionRequestConfiguration extends Configuration<ScriptExe
 
             CachedRowSet cachedRowSet = getMetadataControl().getExecutionServerMetadataRepository().executeQuery(query, "reader");
             while (cachedRowSet.next()) {
-                if (cachedRowSet.getString("FILE") != null) {
+                if (cachedRowSet.getString("FILE_REQ") != null) {
                     scriptExecutionRequests.add(new ScriptFileExecutionRequest(
                             new ScriptExecutionRequestKey(cachedRowSet.getString("SCRPT_REQUEST_ID")
                             ),
@@ -264,7 +265,7 @@ public class ScriptExecutionRequestConfiguration extends Configuration<ScriptExe
                             cachedRowSet.getString("IMPERSONATION"),
                             SQLTools.getMapFromSql(cachedRowSet.getString("IMPERSONATIONS")),
                             SQLTools.getMapFromSql(cachedRowSet.getString("PARAMETERS")), ScriptExecutionRequestStatus.valueOf(cachedRowSet.getString("ST_NM"))));
-                } else if (cachedRowSet.getString("NAME") != null) {
+                } else if (cachedRowSet.getString("NAME_REQ") != null) {
                     scriptExecutionRequests.add(new ScriptNameExecutionRequest(
                             new ScriptExecutionRequestKey(cachedRowSet.getString("SCRPT_REQUEST_ID")),
                             executionRequestKey,

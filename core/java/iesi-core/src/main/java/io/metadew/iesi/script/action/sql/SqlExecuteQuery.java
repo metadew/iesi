@@ -70,13 +70,13 @@ public class SqlExecuteQuery {
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
             if (actionParameter.getName().equalsIgnoreCase("query")) {
-                this.getSqlQuery().setInputValue(actionParameter.getValue());
+                this.getSqlQuery().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase("connection")) {
-                this.getConnectionName().setInputValue(actionParameter.getValue());
+                this.getConnectionName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase("outputdataset")) {
-                this.getOutputDataset().setInputValue(actionParameter.getValue());
+                this.getOutputDataset().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase("appendoutput")) {
-                this.getAppendOutput().setInputValue(actionParameter.getValue());
+                this.getAppendOutput().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }
 

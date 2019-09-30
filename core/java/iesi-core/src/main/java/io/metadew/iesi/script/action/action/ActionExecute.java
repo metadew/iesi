@@ -61,7 +61,7 @@ public class ActionExecute {
 		// Get Parameters
 		for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
 			if (actionParameter.getName().equalsIgnoreCase("name")) {
-				this.getName().setInputValue(actionParameter.getValue());
+				this.getName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
 			}
 		}
 

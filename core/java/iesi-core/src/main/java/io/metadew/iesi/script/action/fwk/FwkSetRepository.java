@@ -70,13 +70,13 @@ public class FwkSetRepository {
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
             if (actionParameter.getName().equalsIgnoreCase("repository")) {
-                this.getRepositoryName().setInputValue(actionParameter.getValue());
+                this.getRepositoryName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase("name")) {
-                this.getRepositoryReferenceName().setInputValue(actionParameter.getValue());
+                this.getRepositoryReferenceName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase("instance")) {
-                this.getRepositoryInstanceName().setInputValue(actionParameter.getValue());
+                this.getRepositoryInstanceName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase("labels")) {
-                this.getRepositoryInstanceLabels().setInputValue(actionParameter.getValue());
+                this.getRepositoryInstanceLabels().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }
 
@@ -140,7 +140,7 @@ public class FwkSetRepository {
         List<String> labels = new ArrayList<>();
         if (repositoryLabels instanceof Text) {
             Arrays.stream(repositoryLabels.toString().split(","))
-                    .forEach(repositoryLabel -> labels.add(convertRepositoryInstanceLabel(dataTypeService.resolve(repositoryLabel.trim()))));
+                    .forEach(repositoryLabel -> labels.add(convertRepositoryInstanceLabel(dataTypeService.resolve(repositoryLabel.trim(), executionControl.getExecutionRuntime()))));
             return labels;
         } else if (repositoryLabels instanceof Array) {
             ((Array) repositoryLabels).getList()

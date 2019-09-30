@@ -44,7 +44,7 @@ public class RepositoryOperation {
 
     // Constructors
     public RepositoryOperation(ExecutionControl executionControl, String repositoryName,
-                               String repositoryInstanceName, String repositoryInstanceLabels)  {
+                               String repositoryInstanceName, String repositoryInstanceLabels) throws SQLException {
         this.setExecutionControl(executionControl);
         this.setRepositoryName(repositoryName);
         this.setRepositoryInstanceName(repositoryInstanceName);
@@ -124,7 +124,7 @@ public class RepositoryOperation {
         this.setDatasetConnection(objectMapper.convertValue(dcSQLiteConnection, DatabaseConnection.class));
     }
 
-    public String getDataItem(String datasetItem) {
+    public String getDataItem(String datasetItem) throws SQLException {
         CachedRowSet crs = null;
         String query = "";
         if (!datasetItem.trim().equalsIgnoreCase("")) {
@@ -215,7 +215,7 @@ public class RepositoryOperation {
         }
     }
 
-    public void resetDataset(String datasetTableName) {
+    public void resetDataset(String datasetTableName) throws SQLException {
         // Check if table exists
         String queryTableExists = "select name from sqlite_master where name = '" + datasetTableName + "'";
         CachedRowSet crs = null;

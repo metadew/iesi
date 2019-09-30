@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeService;
 import io.metadew.iesi.datatypes.text.Text;
+import io.metadew.iesi.script.execution.ExecutionRuntime;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -28,11 +29,11 @@ public class KeyValueDatasetService {
         this.dataTypeService = dataTypeService;
     }
 
-    private KeyValueDataset getObjectDataset(KeyValueDataset dataset, String keyPrefix) throws IOException, SQLException {
+    private KeyValueDataset getObjectDataset(KeyValueDataset dataset, String keyPrefix, ExecutionRuntime executionRuntime) throws IOException {
         if (keyPrefix != null) {
             List<String> labels = new ArrayList<>(dataset.getLabels());
             labels.add(keyPrefix);
-            return new KeyValueDataset(dataset.getName(), labels);
+            return new KeyValueDataset(dataset.getName(), labels, executionRuntime);
         } else {
             return dataset;
         }
@@ -74,29 +75,31 @@ public class KeyValueDatasetService {
         }
     }
 
-    public Dataset resolve(String arguments) throws IOException, SQLException {
+    public Dataset resolve(String arguments, ExecutionRuntime executionRuntime) throws IOException {
+        LOGGER.trace(MessageFormat.format("resolving {0} for Dataset", arguments));
+        arguments = executionRuntime.resolveVariables(arguments);
         List<String> splittedArguments = dataTypeService.splitInstructionArguments(arguments);
         if (splittedArguments.size() == 2) {
             List<DataType> resolvedArguments = splittedArguments.stream()
-                    .map(argument -> dataTypeService.resolve(argument))
+                    .map(argument -> dataTypeService.resolve(argument, executionRuntime))
                     .collect(Collectors.toList());
-            return new KeyValueDataset(resolvedArguments.get(0), resolvedArguments.get(1));
+            return new KeyValueDataset(resolvedArguments.get(0), resolvedArguments.get(1), executionRuntime);
         } else {
             throw new RuntimeException(MessageFormat.format("Cannot create dataset with arguments ''{0}''", splittedArguments.toString()));
         }
     }
 
 
-    public void write(KeyValueDataset dataset, ObjectNode jsonNode) throws IOException, SQLException {
-        dataTypeService.resolve(dataset, null, jsonNode);
+    public void write(KeyValueDataset dataset, ObjectNode jsonNode, ExecutionRuntime executionRuntime) throws IOException, SQLException {
+        dataTypeService.resolve(dataset, null, jsonNode, executionRuntime);
     }
 
-    public DataType resolve(KeyValueDataset dataset, String key, ObjectNode jsonNode) throws IOException, SQLException {
+    public DataType resolve(KeyValueDataset dataset, String key, ObjectNode jsonNode, ExecutionRuntime executionRuntime) throws IOException, SQLException {
         Iterator<Map.Entry<String, JsonNode>> fields = jsonNode.fields();
-        KeyValueDataset objectDataset = getObjectDataset(dataset, key);
+        KeyValueDataset objectDataset = getObjectDataset(dataset, key, executionRuntime);
         while (fields.hasNext()) {
             Map.Entry<String, JsonNode> field = fields.next();
-            DataType object = dataTypeService.resolve(objectDataset, field.getKey(), field.getValue());
+            DataType object = dataTypeService.resolve(objectDataset, field.getKey(), field.getValue(), executionRuntime);
             objectDataset.setDataItem(field.getKey(), object);
         }
         return objectDataset;

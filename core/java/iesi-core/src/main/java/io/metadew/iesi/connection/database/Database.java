@@ -8,6 +8,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.sql.rowset.CachedRowSet;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -37,8 +38,17 @@ public abstract class Database {
             connectionPool.add(databaseConnection.getConnection());
         }
     }
+    public Database(DatabaseConnection databaseConnection, int initialPoolSize, int maximalPoolSize) {
+        this.databaseConnection = databaseConnection;
+        this.initialPoolSize = initialPoolSize;
+        this.maximalPoolSize = maximalPoolSize;
+        connectionPool = new ArrayList<>(initialPoolSize);
+        for (int i = 0; i < initialPoolSize; i++) {
+            connectionPool.add(databaseConnection.getConnection());
+        }
+    }
 
-    public Connection getConnection() {
+    public synchronized Connection getConnection() {
         if (connectionPool.isEmpty()) {
             if (usedConnections.size() < maximalPoolSize) {
                 connectionPool.add(databaseConnection.getConnection());
@@ -95,8 +105,10 @@ public abstract class Database {
         } catch (SQLException e) {
             StringWriter stackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(stackTrace));
-            LOGGER.info("exception=" + e);
-            LOGGER.debug("exception.stacktrace=" + stackTrace);
+            LOGGER.info("sql.exception=" + e);
+            LOGGER.debug("sql.exception.stacktrace=" + stackTrace);
+            LOGGER.debug("sql.exception.db=" + databaseConnection.getConnectionURL());
+            LOGGER.debug("sql.exception.query=" + query);
             releaseConnection(connection);
             throw new RuntimeException(e);
         }
@@ -114,6 +126,8 @@ public abstract class Database {
             e.printStackTrace(new PrintWriter(stackTrace));
             LOGGER.info("exception=" + e);
             LOGGER.debug("exception.stacktrace=" + stackTrace);
+            LOGGER.debug("sql.exception.db=" + databaseConnection.getConnectionURL());
+            LOGGER.debug("sql.exception.query=" + query);
             releaseConnection(connection);
             throw new RuntimeException(e);
         }
@@ -130,29 +144,39 @@ public abstract class Database {
             e.printStackTrace(new PrintWriter(stackTrace));
             LOGGER.info("exception=" + e);
             LOGGER.debug("exception.stacktrace=" + stackTrace);
+            LOGGER.debug("exception.sql=" + databaseConnection.getConnectionURL());
             releaseConnection(connection);
             throw new RuntimeException(e);
         }
     }
 
     public CachedRowSet executeQuery(String query, Connection connection) {
-        return this.databaseConnection.executeQuery(query, connection);
-    }
-
-    public CachedRowSet executeQueryLimitRows(String query, int limit) {
         try {
-            Connection connection = getConnection();
-            CachedRowSet cachedRowSet = databaseConnection.executeQueryLimitRows(query, limit, connection);
-            connection.commit();
-            releaseConnection(connection);
-            return cachedRowSet;
+            return this.databaseConnection.executeQuery(query, connection);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
+    public CachedRowSet executeQueryLimitRows(String query, int limit) {
+        Connection connection = getConnection();
+        try {
+            CachedRowSet cachedRowSet = databaseConnection.executeQueryLimitRows(query, limit, connection);
+            connection.commit();
+            releaseConnection(connection);
+            return cachedRowSet;
+        } catch (SQLException e) {
+            releaseConnection(connection);
+            throw new RuntimeException(e);
+        }
+    }
+
     public CachedRowSet executeQueryLimitRows(String query, int limit, Connection connection) {
-        return this.databaseConnection.executeQueryLimitRows(query, limit, connection);
+        try {
+            return this.databaseConnection.executeQueryLimitRows(query, limit, connection);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public SqlScriptResult executeScript(String filename) {
@@ -162,7 +186,7 @@ public abstract class Database {
             connection.commit();
             releaseConnection(connection);
             return sqlScriptResult;
-        } catch (SQLException e) {
+        } catch (SQLException | IOException e) {
             StringWriter stackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(stackTrace));
             LOGGER.info("exception=" + e);
@@ -173,33 +197,43 @@ public abstract class Database {
     }
 
     public SqlScriptResult executeScript(String filename, Connection connection) {
-        return this.databaseConnection.executeScript(filename, connection);
+        try {
+            return this.databaseConnection.executeScript(filename, connection);
+        } catch (IOException | SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public SqlScriptResult executeScript(InputStream inputStream) {
+        Connection connection = getConnection();
         try {
-            Connection connection = getConnection();
             SqlScriptResult sqlScriptResult = databaseConnection.executeScript(inputStream, connection);
             connection.commit();
             releaseConnection(connection);
             return sqlScriptResult;
-        } catch (SQLException e) {
+        } catch (SQLException | IOException e) {
+            releaseConnection(connection);
             throw new RuntimeException(e);
         }
     }
 
     public SqlScriptResult executeScript(InputStream inputStream, Connection connection) {
-        return this.databaseConnection.executeScript(inputStream, connection);
+        try {
+            return this.databaseConnection.executeScript(inputStream, connection);
+        } catch (IOException | SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public CachedRowSet executeProcedure(String sqlProcedure, String sqlParameters) {
+        Connection connection = getConnection();
         try {
-            Connection connection = getConnection();
             CachedRowSet cachedRowSet = databaseConnection.executeProcedure(sqlProcedure, sqlParameters, connection);
             connection.commit();
             releaseConnection(connection);
             return cachedRowSet;
         } catch (SQLException e) {
+            releaseConnection(connection);
             throw new RuntimeException(e);
         }
     }
@@ -317,5 +351,9 @@ public abstract class Database {
     public abstract boolean addComments();
 
     public abstract String toQueryString(MetadataField field);
+
+    protected DatabaseConnection getDatabaseConnection() {
+        return databaseConnection;
+    }
 
 }

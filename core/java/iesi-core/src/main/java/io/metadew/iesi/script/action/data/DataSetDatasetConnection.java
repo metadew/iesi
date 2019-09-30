@@ -69,18 +69,18 @@ public class DataSetDatasetConnection {
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
             if (actionParameter.getName().equalsIgnoreCase("name")) {
-                this.getReferenceName().setInputValue(actionParameter.getValue());
+                this.getReferenceName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase("type")) {
-                this.getDatasetType().setInputValue(actionParameter.getValue());
+                this.getDatasetType().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase("dataset")) {
-                this.getDatasetName().setInputValue(actionParameter.getValue());
+                this.getDatasetName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase("labels")) {
-                this.getDatasetLabels().setInputValue(actionParameter.getValue());
+                this.getDatasetLabels().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }
 
         // Default values
-        if (this.getDatasetLabels().getValue() == null) this.getDatasetLabels().setInputValue("");
+        if (this.getDatasetLabels().getValue() == null) this.getDatasetLabels().setInputValue("", executionControl.getExecutionRuntime());
         
         // Create parameter list
         this.getActionParameterOperationMap().put("name", this.getReferenceName());
@@ -135,7 +135,7 @@ public class DataSetDatasetConnection {
         List<String> labels = new ArrayList<>();
         if (datasetLabels instanceof Text) {
             Arrays.stream(datasetLabels.toString().split(","))
-                    .forEach(datasetLabel -> labels.add(convertDatasetLabel(dataTypeService.resolve(datasetLabel.trim()))));
+                    .forEach(datasetLabel -> labels.add(convertDatasetLabel(dataTypeService.resolve(datasetLabel.trim(), executionControl.getExecutionRuntime()))));
             return labels;
         } else if (datasetLabels instanceof Array) {
             ((Array) datasetLabels).getList()

@@ -64,15 +64,15 @@ public class FwkExecuteScript {
         // Get Parameters
         for (ActionParameter actionParameter : actionExecution.getAction().getParameters()) {
             if (actionParameter.getName().equalsIgnoreCase("script")) {
-                this.getScriptName().setInputValue(actionParameter.getValue());
+                this.getScriptName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase("version")) {
-                this.getScriptVersion().setInputValue(actionParameter.getValue());
+                this.getScriptVersion().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase("environment")) {
-                this.getEnvironmentName().setInputValue(actionParameter.getValue());
+                this.getEnvironmentName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase("paramlist")) {
-                this.getParamList().setInputValue(actionParameter.getValue());
+                this.getParamList().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase("paramfile")) {
-                this.getParamFile().setInputValue(actionParameter.getValue());
+                this.getParamFile().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }
 
@@ -191,7 +191,7 @@ public class FwkExecuteScript {
         Map<String, String> parameterMap = new HashMap<>();
         if (list instanceof Text) {
             Arrays.stream(list.toString().split(","))
-                    .forEach(parameterEntry -> parameterMap.putAll(convertParameterEntry(dataTypeService.resolve(parameterEntry))));
+                    .forEach(parameterEntry -> parameterMap.putAll(convertParameterEntry(dataTypeService.resolve(parameterEntry, executionControl.getExecutionRuntime()))));
             return Optional.of(parameterMap);
         } else if (list instanceof Array) {
             for (DataType parameterEntry : ((Array) list).getList()) {

@@ -1,8 +1,9 @@
-package io.metadew.iesi.connection.database.connection.elasticsearch;
+package io.metadew.iesi.connection.elasticsearch.filebeat;
 
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import io.metadew.iesi.connection.elasticsearch.ElasticSearchDocument;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -30,7 +31,6 @@ public class DelimitedFileBeatElasticSearchConnection extends FileBeatElasitcSea
         this.delimiter = delimiter;
         this.quoteCharacter = quoteCharacter;
     }
-
 
     @Override
     public void ingest(ElasticSearchDocument o) {

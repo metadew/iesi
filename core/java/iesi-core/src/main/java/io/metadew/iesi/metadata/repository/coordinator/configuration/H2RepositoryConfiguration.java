@@ -7,6 +7,7 @@ import io.metadew.iesi.connection.database.connection.h2.H2DatabaseConnection;
 import io.metadew.iesi.connection.database.connection.h2.H2EmbeddedDatabaseConnection;
 import io.metadew.iesi.connection.database.connection.h2.H2MemoryDatabaseConnection;
 import io.metadew.iesi.connection.database.connection.h2.H2ServerDatabaseConnection;
+import io.metadew.iesi.framework.crypto.FrameworkCrypto;
 import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
 
 import java.sql.SQLException;
@@ -56,7 +57,7 @@ public class H2RepositoryConfiguration extends RepositoryConfiguration {
 
         Map<String, Database> databases = new HashMap<>();
         if (getUser().isPresent()) {
-            H2DatabaseConnection h2DatabaseConnection = getH2DataBaseConnection(getUser().get(), getUserPassword().orElse(""));
+            H2DatabaseConnection h2DatabaseConnection = getH2DataBaseConnection(getUser().get(), FrameworkCrypto.getInstance().decrypt(getUserPassword().orElse("")));
             getSchema().ifPresent(h2DatabaseConnection::setSchema);
             H2Database h2Database = new H2Database(h2DatabaseConnection, getSchema().orElse(""));
             databases.put("owner", h2Database);
@@ -64,14 +65,14 @@ public class H2RepositoryConfiguration extends RepositoryConfiguration {
             databases.put("reader", h2Database);
         }
         if (getWriter().isPresent()) {
-            H2DatabaseConnection h2DatabaseConnection = getH2DataBaseConnection(getWriter().get(), getWriterPassword().orElse(""));
+            H2DatabaseConnection h2DatabaseConnection = getH2DataBaseConnection(getWriter().get(), FrameworkCrypto.getInstance().decrypt(getWriterPassword().orElse("")));
             getSchema().ifPresent(h2DatabaseConnection::setSchema);
             H2Database h2Database = new H2Database(h2DatabaseConnection, getSchema().orElse(""));
             databases.put("writer", h2Database);
             databases.put("reader", h2Database);
         }
         if (getReader().isPresent()) {
-                H2DatabaseConnection h2DatabaseConnection = getH2DataBaseConnection(getReader().get(), getReaderPassword().orElse(""));
+                H2DatabaseConnection h2DatabaseConnection = getH2DataBaseConnection(getReader().get(), FrameworkCrypto.getInstance().decrypt(getReaderPassword().orElse("")));
                 getSchema().ifPresent(h2DatabaseConnection::setSchema);
                 H2Database h2Database = new H2Database(h2DatabaseConnection, getSchema().orElse(""));
                 databases.put("reader", h2Database);

@@ -3,7 +3,6 @@ package io.metadew.iesi.framework.execution;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.common.config.*;
 import io.metadew.iesi.framework.configuration.FrameworkConfiguration;
-import io.metadew.iesi.framework.crypto.FrameworkCrypto;
 import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
 import io.metadew.iesi.metadata.configuration.FrameworkPluginConfiguration;
 import io.metadew.iesi.metadata.repository.configuration.MetadataRepositoryConfiguration;
@@ -42,17 +41,16 @@ public class FrameworkControl {
 		this.logonType = logonType;
 	}
 
-	public void init(FrameworkConfiguration frameworkConfiguration, String logonType,
-							FrameworkInitializationFile frameworkInitializationFile, FrameworkCrypto frameworkCrypto) {
+	public void init(String logonType, FrameworkInitializationFile frameworkInitializationFile) {
 		this.logonType = logonType;
 		this.properties = new Properties();
 		this.metadataRepositoryConfigurations = new ArrayList<>();
 		this.frameworkPluginConfigurationList = new ArrayList<>();
 		try {
 
-			properties.put(frameworkConfiguration.getFrameworkCode() + ".home",
-					frameworkConfiguration.getFrameworkHome());
-			readSettingFiles(frameworkConfiguration, frameworkInitializationFile.getName(), frameworkCrypto);
+			properties.put(FrameworkConfiguration.getInstance().getFrameworkCode() + ".home",
+					FrameworkConfiguration.getInstance().getFrameworkHome());
+			readSettingFiles(frameworkInitializationFile.getName());
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -71,11 +69,10 @@ public class FrameworkControl {
 	}
 
 	// Methods
-	private void readSettingFiles(FrameworkConfiguration frameworkConfiguration, String initializationFile, FrameworkCrypto frameworkCrypto) {
+	private void readSettingFiles(String initializationFile) {
 		try {
-			File file = new File(this.resolveConfiguration("#" + frameworkConfiguration.getFrameworkCode()
+			File file = new File(this.resolveConfiguration("#" + FrameworkConfiguration.getInstance().getFrameworkCode()
 					+ ".home#/conf/" + initializationFile));
-			@SuppressWarnings("resource")
 			BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
 			String readLine = "";
 			

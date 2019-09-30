@@ -24,7 +24,7 @@ public class KeyValueConfigFile extends ConfigFile {
                     if (delim > 0) {
                         String key = innerpart.substring(0, delim);
                         String value = innerpart.substring(delim + 1);
-                        this.setProperty(key, frameworkControl.resolveConfiguration(value));
+                        this.setProperty(key, FrameworkControl.getInstance().resolveConfiguration(value));
                     } else {
                         throw new RuntimeException("Not a valid configuration file");
                     }
@@ -37,9 +37,35 @@ public class KeyValueConfigFile extends ConfigFile {
     }
 
     public KeyValueConfigFile(String fileName) {
+        this(new File(FilenameUtils.normalize(fileName)));
+//        super();
+//        try {
+//            File file = new File(FilenameUtils.normalize(fileName));
+//            BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
+//            String readLine = "";
+//            while ((readLine = bufferedReader.readLine()) != null) {
+//                String innerpart = readLine.trim();
+//                int delim = innerpart.indexOf("=");
+//                if (!innerpart.startsWith("#") && !innerpart.equalsIgnoreCase("")) {
+//                    if (delim > 0) {
+//                        String key = innerpart.substring(0, delim);
+//                        String value = innerpart.substring(delim + 1);
+//                        this.setProperty(key, value);
+//                    } else {
+//                        throw new RuntimeException("Not a valid configuration file");
+//                    }
+//                }
+//            }
+//        } catch (
+//
+//                Exception e) {
+//            e.printStackTrace();
+//        }
+    }
+
+    public KeyValueConfigFile(File file) {
         super();
         try {
-            File file = new File(FilenameUtils.normalize(fileName));
             BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
             String readLine = "";
             while ((readLine = bufferedReader.readLine()) != null) {

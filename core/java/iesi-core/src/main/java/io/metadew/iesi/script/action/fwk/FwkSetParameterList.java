@@ -51,7 +51,7 @@ public class FwkSetParameterList {
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
             if (actionParameter.getName().equalsIgnoreCase("list"))
-                this.getParameterList().setInputValue(actionParameter.getValue());
+                this.getParameterList().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
         }
 
         //Create parameter list
@@ -83,7 +83,7 @@ public class FwkSetParameterList {
         Map<String, String> parameterMap = new HashMap<>();
         if (list instanceof Text) {
             Arrays.stream(list.toString().split(","))
-                    .forEach(parameterEntry -> parameterMap.putAll(convertParameterEntry(dataTypeService.resolve(parameterEntry))));
+                    .forEach(parameterEntry -> parameterMap.putAll(convertParameterEntry(dataTypeService.resolve(parameterEntry, executionControl.getExecutionRuntime()))));
             return parameterMap;
         } else if (list instanceof Array) {
             for (DataType parameterEntry : ((Array) list).getList()) {

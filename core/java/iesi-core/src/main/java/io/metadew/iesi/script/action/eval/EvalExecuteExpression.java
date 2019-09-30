@@ -54,7 +54,7 @@ public class EvalExecuteExpression {
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
             if (actionParameter.getName().equalsIgnoreCase("expression")) {
-                this.getEvaluationExpression().setInputValue(actionParameter.getValue());
+                this.getEvaluationExpression().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }
 

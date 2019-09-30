@@ -1,5 +1,6 @@
-package io.metadew.iesi.connection.database.connection.elasticsearch;
+package io.metadew.iesi.connection.elasticsearch.filebeat;
 
-public abstract class FileBeatElasitcSearchConnection extends ElasticSearchConnection{
+import io.metadew.iesi.connection.elasticsearch.ElasticSearchConnection;
+public abstract class FileBeatElasitcSearchConnection extends ElasticSearchConnection {
 
 }

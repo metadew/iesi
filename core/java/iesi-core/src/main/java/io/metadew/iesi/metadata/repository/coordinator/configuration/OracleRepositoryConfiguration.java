@@ -4,14 +4,19 @@ import io.metadew.iesi.common.config.ConfigFile;
 import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.OracleDatabase;
 import io.metadew.iesi.connection.database.connection.oracle.OracleDatabaseConnection;
+import io.metadew.iesi.framework.crypto.FrameworkCrypto;
 import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
 public class OracleRepositoryConfiguration extends RepositoryConfiguration {
+
+    private final static Logger LOGGER = LogManager.getLogger();
+
     private String jdbcConnectionString;
     private String host;
     private String port;
@@ -39,8 +44,8 @@ public class OracleRepositoryConfiguration extends RepositoryConfiguration {
     	tnsAlias = getSettingValue(configFile, "metadata.repository.oracle.tnsalias");
     	schema = getSettingValue(configFile, "metadata.repository.oracle.schema");
     	name = getSettingValue(configFile, "metadata.repository.oracle.name");
-    	schemaUser = getSettingValue(configFile, "metadata.repository.oracle.schema");
-    	schemaUserPassword = getSettingValue(configFile, "metadata.repository.oracle.schema.password");
+    	schemaUser = getSettingValue(configFile, "metadata.repository.oracle.schema.user");
+    	schemaUserPassword = getSettingValue(configFile, "metadata.repository.oracle.schema.user.password");
     	writerUser = getSettingValue(configFile, "metadata.repository.oracle.writer");
     	writerUserPassword = getSettingValue(configFile, "metadata.repository.oracle.writer.password");
     	readerUser = getSettingValue(configFile, "metadata.repository.oracle.reader");
@@ -60,7 +65,7 @@ public class OracleRepositoryConfiguration extends RepositoryConfiguration {
 
         final String finalJdbcConnectionString = actualJdbcConnectionString;
         if (getUser().isPresent()) {
-                    OracleDatabaseConnection oracleDatabaseConnection = new OracleDatabaseConnection(finalJdbcConnectionString, getUser().get(), getUserPassword().orElse(""));
+                    OracleDatabaseConnection oracleDatabaseConnection = new OracleDatabaseConnection(finalJdbcConnectionString, getUser().get(), FrameworkCrypto.getInstance().decrypt(getUserPassword().orElse("")));
                     getSchema().ifPresent(oracleDatabaseConnection::setSchema);
                     OracleDatabase oracleDatabase = new OracleDatabase(oracleDatabaseConnection, getSchema().orElse(""));
                     databases.put("owner", oracleDatabase);
@@ -68,7 +73,7 @@ public class OracleRepositoryConfiguration extends RepositoryConfiguration {
                     databases.put("reader", oracleDatabase);
                 }
         if (getWriter().isPresent()) {
-            OracleDatabaseConnection oracleDatabaseConnection = new OracleDatabaseConnection(finalJdbcConnectionString, getWriter().get(), getWriterPassword().orElse(""));
+            OracleDatabaseConnection oracleDatabaseConnection = new OracleDatabaseConnection(finalJdbcConnectionString, getWriter().get(), FrameworkCrypto.getInstance().decrypt(getWriterPassword().orElse("")));
             getSchema().ifPresent(oracleDatabaseConnection::setSchema);
             OracleDatabase oracleDatabase = new OracleDatabase(oracleDatabaseConnection, getSchema().orElse(""));
             databases.put("writer", oracleDatabase);
@@ -76,7 +81,7 @@ public class OracleRepositoryConfiguration extends RepositoryConfiguration {
         }
 
         if(getReader().isPresent()) {
-                OracleDatabaseConnection oracleDatabaseConnection = new OracleDatabaseConnection(finalJdbcConnectionString, getReader().get(), getReaderPassword().orElse(""));
+                OracleDatabaseConnection oracleDatabaseConnection = new OracleDatabaseConnection(finalJdbcConnectionString, getReader().get(), FrameworkCrypto.getInstance().decrypt(getReaderPassword().orElse("")));
                 getSchema().ifPresent(oracleDatabaseConnection::setSchema);
                 OracleDatabase oracleDatabase = new OracleDatabase(oracleDatabaseConnection, getSchema().orElse(""));
                 databases.put("reader", oracleDatabase);

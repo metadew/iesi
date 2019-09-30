@@ -1,19 +1,16 @@
 package io.metadew.iesi.server.rest.configuration;
 
 import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
-import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.framework.execution.FrameworkExecutionContext;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.UserConfiguration;
 import io.metadew.iesi.metadata.configuration.component.ComponentConfiguration;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.configuration.environment.EnvironmentConfiguration;
-import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.execution.ExecutionRequestConfiguration;
 import io.metadew.iesi.metadata.configuration.impersonation.ImpersonationConfiguration;
 import io.metadew.iesi.metadata.configuration.script.ScriptConfiguration;
 import io.metadew.iesi.metadata.definition.Context;
-import io.metadew.iesi.runtime.ExecutionRequestListener;
 import io.metadew.iesi.runtime.ExecutorService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -38,7 +35,7 @@ public class IesiConfiguration {
     }
 
     @Bean FrameworkInitializationFile frameworkInitializationFile() {
-        return new FrameworkInitializationFile();
+        return new FrameworkInitializationFile(System.getProperty("iesi.ini", "iesi-conf.ini"));
     }
 
     @Bean

@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.node.*;
 import io.metadew.iesi.datatypes.array.ArrayService;
 import io.metadew.iesi.datatypes.dataset.KeyValueDataset;
 import io.metadew.iesi.datatypes.dataset.KeyValueDatasetService;
-import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.datatypes.text.TextService;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 import org.apache.logging.log4j.LogManager;

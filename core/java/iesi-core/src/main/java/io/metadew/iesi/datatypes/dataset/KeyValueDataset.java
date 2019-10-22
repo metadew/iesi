@@ -5,8 +5,8 @@ import io.metadew.iesi.connection.database.SqliteDatabase;
 import io.metadew.iesi.connection.database.connection.sqlite.SqliteDatabaseConnection;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.datatypes.DataType;
+import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
-import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
@@ -96,6 +96,7 @@ public class KeyValueDataset extends Dataset {
 
 
     protected Database createNewDatasetDatabase(String datasetName, String filename, String tableName, int inventoryId) throws IOException {
+        LOGGER.debug(MessageFormat.format("creating dataset {0} for {1} at {2} table {3}", inventoryId, datasetName, filename, tableName));
         String filepath = FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("data") + File.separator + "datasets"
                 + File.separator + datasetName + File.separator + "data" + File.separator + filename;
         File file = new File(filepath);
@@ -108,7 +109,22 @@ public class KeyValueDataset extends Dataset {
         return database;
     }
 
-    public void clean() {
+    public void clean(DataType dataType, ExecutionRuntime executionRuntime) {
+        if (dataType instanceof Array) {
+            for (DataType element : ((Array) dataType).getList()) {
+                clean(element, executionRuntime);
+            }
+        } else if (dataType instanceof Dataset) {
+            ((Dataset) dataType).clean(executionRuntime);
+        }
+    }
+
+    public void clean(ExecutionRuntime executionRuntime) {
+        LOGGER.debug(MessageFormat.format("cleaning dataset {0}:{1}", getName(), String.join("-", getLabels())));
+        for (DataType dataType : getDataItems(executionRuntime).values()) {
+            clean(dataType, executionRuntime);
+        }
+
         // Check if table exists
         String queryTableExists = "select name from sqlite_master where name = " + SQLTools.GetStringForSQLTable(getTableName()) + ";";
         try {

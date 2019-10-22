@@ -5,9 +5,9 @@ import io.metadew.iesi.datatypes.dataset.Dataset;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.mapping.MappingConfiguration;
-import io.metadew.iesi.metadata.definition.mapping.Mapping;
 import io.metadew.iesi.metadata.definition.Transformation;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
+import io.metadew.iesi.metadata.definition.mapping.Mapping;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
@@ -17,7 +17,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Optional;

@@ -10,6 +10,7 @@ import io.metadew.iesi.metadata.definition.execution.script.ScriptExecution;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionStatus;
 import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionKey;
 import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionRequestKey;
+import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -23,21 +24,29 @@ import java.util.Optional;
 public class ScriptExecutionConfiguration extends Configuration<ScriptExecution, ScriptExecutionKey> {
 
     private static final Logger LOGGER = LogManager.getLogger();
+    private static ScriptExecutionConfiguration INSTANCE;
 
-    // Constructors
-    public ScriptExecutionConfiguration() {
-        super();
+    public synchronized static ScriptExecutionConfiguration getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new ScriptExecutionConfiguration();
+        }
+        return INSTANCE;
     }
 
+    private ScriptExecutionConfiguration() {}
+
+    public void init(MetadataRepository metadataRepository) {
+        setMetadataRepository(metadataRepository);
+    }
 
     @Override
     public Optional<ScriptExecution> get(ScriptExecutionKey scriptExecutionRequestKey) {
         try {
             String query = "SELECT SCRIPT_EXEC_ID, SCRPT_REQUEST_ID, RUN_ID, ST_NM, STRT_TMS, END_TMS " +
-                    "FROM " + getMetadataControl().getExecutionServerMetadataRepository().getTableNameByLabel("ScriptExecutions") +
+                    "FROM " + getMetadataRepository().getTableNameByLabel("ScriptExecutions") +
                     " WHERE SCRIPT_EXEC_ID = " + SQLTools.GetStringForSQL(scriptExecutionRequestKey.getId()) + ";";
 
-            CachedRowSet cachedRowSet = getMetadataControl().getExecutionServerMetadataRepository().executeQuery(query, "reader");
+            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
             if (cachedRowSet.size() == 0) {
                 return Optional.empty();
             } else if (cachedRowSet.size() > 1) {
@@ -59,9 +68,9 @@ public class ScriptExecutionConfiguration extends Configuration<ScriptExecution,
     public List<ScriptExecution> getAll() {
         try {
             List<ScriptExecution> scriptExecutions = new ArrayList<>();
-            String query = "SELECT SCRIPT_EXEC_ID, SCRPT_REQUEST_ID, RUN_ID, ST_NM, STRT_TMS, END_TMS FROM " + getMetadataControl().getExecutionServerMetadataRepository().getTableNameByLabel("ScriptExecutions") + ";";
+            String query = "SELECT SCRIPT_EXEC_ID, SCRPT_REQUEST_ID, RUN_ID, ST_NM, STRT_TMS, END_TMS FROM " + getMetadataRepository().getTableNameByLabel("ScriptExecutions") + ";";
 
-            CachedRowSet cachedRowSet = getMetadataControl().getExecutionServerMetadataRepository().executeQuery(query, "reader");
+            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
             while (cachedRowSet.next()) {
                 scriptExecutions.add(new ScriptExecution(new ScriptExecutionKey(
                         cachedRowSet.getString("SCRIPT_EXEC_ID")),
@@ -85,12 +94,12 @@ public class ScriptExecutionConfiguration extends Configuration<ScriptExecution,
                     "ScriptExecution {0} does not exists", scriptExecutionKey.toString()));
         }
         List<String> deleteStatement = deleteStatement(scriptExecutionKey);
-        getMetadataControl().getExecutionServerMetadataRepository().executeBatch(deleteStatement);
+        getMetadataRepository().executeBatch(deleteStatement);
     }
 
     private List<String> deleteStatement(ScriptExecutionKey scriptExecutionKey) {
         List<String> queries = new ArrayList<>();
-        queries.add("DELETE FROM " + getMetadataControl().getExecutionServerMetadataRepository().getTableNameByLabel("ScriptExecutions") +
+        queries.add("DELETE FROM " + getMetadataRepository().getTableNameByLabel("ScriptExecutions") +
                 " WHERE " +
                 " SCRIPT_EXEC_ID = " + SQLTools.GetStringForSQL(scriptExecutionKey.getId()) + ";");
         return queries;
@@ -104,11 +113,11 @@ public class ScriptExecutionConfiguration extends Configuration<ScriptExecution,
                     "ScriptExecution {0} already exists", scriptExecutionRequest.getMetadataKey().toString()));
         }
         String insertStatement = insertStatement(scriptExecutionRequest);
-        getMetadataControl().getExecutionServerMetadataRepository().executeUpdate(insertStatement);
+        getMetadataRepository().executeUpdate(insertStatement);
     }
 
     private String insertStatement(ScriptExecution scriptExecution) {
-        return "INSERT INTO " + getMetadataControl().getExecutionServerMetadataRepository().getTableNameByLabel("ScriptExecutions") +
+        return "INSERT INTO " + getMetadataRepository().getTableNameByLabel("ScriptExecutions") +
                 " (SCRIPT_EXEC_ID, SCRPT_REQUEST_ID, RUN_ID, ST_NM, STRT_TMS, END_TMS) VALUES (" +
                 SQLTools.GetStringForSQL(scriptExecution.getMetadataKey().getId()) + "," +
                 SQLTools.GetStringForSQL(scriptExecution.getScriptExecutionRequestKey().getId()) + ", " +
@@ -122,10 +131,10 @@ public class ScriptExecutionConfiguration extends Configuration<ScriptExecution,
         try {
             List<ScriptExecution> scriptExecutions = new ArrayList<>();
             String query = "SELECT SCRIPT_EXEC_ID, SCRPT_REQUEST_ID, RUN_ID, ST_NM, STRT_TMS, END_TMS FROM " +
-                    getMetadataControl().getExecutionServerMetadataRepository().getTableNameByLabel("ScriptExecutions") +
+                    getMetadataRepository().getTableNameByLabel("ScriptExecutions") +
                     " WHERE SCRPT_REQUEST_ID = " + SQLTools.GetStringForSQL(scriptExecutionRequestKey.getId()) + ";";
 
-            CachedRowSet cachedRowSet = getMetadataControl().getExecutionServerMetadataRepository().executeQuery(query, "reader");
+            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
             while (cachedRowSet.next()) {
                 scriptExecutions.add(new ScriptExecution(new ScriptExecutionKey(
                         cachedRowSet.getString("SCRIPT_EXEC_ID")),
@@ -144,13 +153,33 @@ public class ScriptExecutionConfiguration extends Configuration<ScriptExecution,
     public void deleteByScriptExecutionRequestKey(ScriptExecutionRequestKey scriptExecutionRequestKey) {
         LOGGER.trace(MessageFormat.format("Deleting ScriptExecution by ExecutionKey {0}.", scriptExecutionRequestKey.toString()));
         List<String> deleteStatement = deleteStatement(scriptExecutionRequestKey);
-        getMetadataControl().getExecutionServerMetadataRepository().executeBatch(deleteStatement);
+        getMetadataRepository().executeBatch(deleteStatement);
     }
 
     private List<String> deleteStatement(ScriptExecutionRequestKey scriptExecutionRequestKey) {
         List<String> queries = new ArrayList<>();
-        queries.add("DELETE FROM " + getMetadataControl().getExecutionServerMetadataRepository().getTableNameByLabel("ScriptExecutions") +
+        queries.add("DELETE FROM " + getMetadataRepository().getTableNameByLabel("ScriptExecutions") +
                 " WHERE SCRPT_REQUEST_ID = " + SQLTools.GetStringForSQL(scriptExecutionRequestKey.getId()) + ";");
         return queries;
+    }
+
+    @Override
+    public void update(ScriptExecution scriptExecution) throws ScriptExecutionRequestDoesNotExistException {
+        if (!exists(scriptExecution.getMetadataKey())) {
+            throw new ScriptExecutionRequestDoesNotExistException(MessageFormat.format(
+                    "ScriptExecution {0} already exists", scriptExecution.getMetadataKey().toString()));
+        }
+        String updateStatement = updateStatement(scriptExecution);
+        getMetadataRepository().executeUpdate(updateStatement);
+    }
+
+    public String updateStatement(ScriptExecution scriptExecution) {
+        return "UPDATE " + getMetadataRepository().getTableNameByLabel("ScriptExecutions") + " SET " +
+                "SCRPT_REQUEST_ID= " + SQLTools.GetStringForSQL(scriptExecution.getScriptExecutionRequestKey().getId()) + ", " +
+                "RUN_ID=" + SQLTools.GetStringForSQL(scriptExecution.getRunId()) + ", " +
+                "ST_NM=" + SQLTools.GetStringForSQL(scriptExecution.getScriptExecutionStatus().value()) + ", " +
+                "STRT_TMS=" + SQLTools.GetStringForSQL(scriptExecution.getStartTimestamp()) + ", " +
+                "END_TMS=" + SQLTools.GetStringForSQL(scriptExecution.getEndTimestamp()) +
+                " WHERE SCRIPT_EXEC_ID = " + SQLTools.GetStringForSQL(scriptExecution.getMetadataKey().getId()) + ";";
     }
 }

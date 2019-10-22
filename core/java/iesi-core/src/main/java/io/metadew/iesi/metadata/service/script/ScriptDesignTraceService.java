@@ -17,20 +17,13 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.sql.SQLException;
 
 public class ScriptDesignTraceService {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private ScriptDesignTraceConfiguration scriptDesignTraceConfiguration;
-    private ScriptVersionDesignTraceConfiguration scriptVersionDesignTraceConfiguration;
-    private ScriptParameterDesignTraceConfiguration scriptParameterDesignTraceConfiguration;
     private ActionDesignTraceService actionDesignTraceService;
 
     public ScriptDesignTraceService() {
-        this.scriptDesignTraceConfiguration = new ScriptDesignTraceConfiguration();
-        this.scriptVersionDesignTraceConfiguration = new ScriptVersionDesignTraceConfiguration();
-        this.scriptParameterDesignTraceConfiguration = new ScriptParameterDesignTraceConfiguration();
         this.actionDesignTraceService = new ActionDesignTraceService();
     }
 
@@ -42,11 +35,11 @@ public class ScriptDesignTraceService {
         Script script = scriptExecution.getScript();
 
         try {
-            scriptDesignTraceConfiguration.insert(new ScriptDesignTrace(runId, processId, parentProcessId, script));
-            scriptVersionDesignTraceConfiguration.insert(new ScriptVersionDesignTrace(runId, processId, script.getVersion()));
+            ScriptDesignTraceConfiguration.getInstance().insert(new ScriptDesignTrace(runId, processId, parentProcessId, script));
+            ScriptVersionDesignTraceConfiguration.getInstance().insert(new ScriptVersionDesignTrace(runId, processId, script.getVersion()));
 
             for (ScriptParameter scriptParameter : script.getParameters()) {
-                scriptParameterDesignTraceConfiguration.insert(new ScriptParameterDesignTrace(runId, processId, scriptParameter));
+                ScriptParameterDesignTraceConfiguration.getInstance().insert(new ScriptParameterDesignTrace(runId, processId, scriptParameter));
             }
 
             for (Action action : script.getActions()) {

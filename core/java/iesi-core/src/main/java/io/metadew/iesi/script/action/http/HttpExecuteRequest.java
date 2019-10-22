@@ -344,11 +344,11 @@ public class HttpExecuteRequest {
 
     private void writeTextPlainResponseToOutputDataset(HttpResponse httpResponse) {
         getOutputDataset().ifPresent(dataset -> {
-            dataset.clean();
+            dataset.clean(getExecutionControl().getExecutionRuntime());
             dataset.setDataItem("response", new Text(httpResponse.getEntityString().orElse("")));
         });
         getRawOutputDataset().ifPresent(dataset -> {
-            dataset.clean();
+            dataset.clean(getExecutionControl().getExecutionRuntime());
             dataset.setDataItem("response", new Text(httpResponse.getEntityString().orElse("")));
         });
     }
@@ -360,11 +360,11 @@ public class HttpExecuteRequest {
                 setRuntimeVariable(jsonNode, setRuntimeVariables);
                 // TODO: flip raw/normal if ready to migrate
                 getOutputDataset().ifPresent(dataset -> {
-                    dataset.clean();
+                    dataset.clean(getExecutionControl().getExecutionRuntime());
                     dataTypeService.getKeyValueDatasetService().writeRawJSON(dataset, jsonNode);
                 });
                 getRawOutputDataset().ifPresent(dataset -> {
-                    dataset.clean();
+                    dataset.clean(getExecutionControl().getExecutionRuntime());
                     try {
                         dataTypeService.getKeyValueDatasetService().write(dataset, (ObjectNode) jsonNode, executionControl.getExecutionRuntime());
                     } catch (IOException | SQLException e) {

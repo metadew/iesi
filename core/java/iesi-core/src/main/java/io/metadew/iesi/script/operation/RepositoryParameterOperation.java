@@ -4,8 +4,6 @@ import io.metadew.iesi.framework.crypto.FrameworkCrypto;
 import io.metadew.iesi.runtime.definition.LookupResult;
 import io.metadew.iesi.script.execution.ExecutionControl;
 
-import java.sql.SQLException;
-
 public class RepositoryParameterOperation {
 
     private ExecutionControl executionControl;

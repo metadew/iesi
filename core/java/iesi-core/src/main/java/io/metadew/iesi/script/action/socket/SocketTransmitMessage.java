@@ -19,7 +19,6 @@ import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.charset.Charset;
-import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -122,6 +121,7 @@ public class SocketTransmitMessage {
                 message.getBytes(Charset.forName(socket.getEncoding())).length);
         datagramSocket.send(datagramPacketToSend);
         if (getOutputDataset().isPresent()) {
+                outputDataset.clean(executionControl.getExecutionRuntime());
                 byte[] buffer = new byte[65508];
                 DatagramPacket datagramPacketToReceive = new DatagramPacket(buffer, buffer.length);
                 datagramSocket.receive(datagramPacketToReceive);
@@ -136,7 +136,8 @@ public class SocketTransmitMessage {
         dOut.write(message.getBytes(Charset.forName(socket.getEncoding())));
         dOut.flush();
         if (getOutputDataset().isPresent()) {
-            LocalDateTime endDateTime = LocalDateTime.now().plus(1000, ChronoUnit.MILLIS);
+            outputDataset.clean(executionControl.getExecutionRuntime());
+            LocalDateTime endDateTime = LocalDateTime.now().plus(2, ChronoUnit.SECONDS);
             while (LocalDateTime.now().isBefore(endDateTime)) {
                 if (dIn.available() > 0) {
                     byte[] bytes = new byte[dIn.available()];

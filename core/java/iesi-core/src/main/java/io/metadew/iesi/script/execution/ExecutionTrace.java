@@ -4,7 +4,6 @@ import io.metadew.iesi.metadata.service.action.ActionTraceService;
 import io.metadew.iesi.metadata.service.script.ScriptTraceService;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 
-import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;

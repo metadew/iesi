@@ -6,8 +6,10 @@ import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsExc
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.script.design.exception.ScriptDesignTraceAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.script.design.exception.ScriptDesignTraceDoesNotExistException;
+import io.metadew.iesi.metadata.configuration.script.result.ScriptResultOutputConfiguration;
 import io.metadew.iesi.metadata.definition.script.design.ScriptDesignTrace;
 import io.metadew.iesi.metadata.definition.script.design.key.ScriptDesignTraceKey;
+import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -21,22 +23,31 @@ import java.util.Optional;
 public class ScriptDesignTraceConfiguration extends Configuration<ScriptDesignTrace, ScriptDesignTraceKey> {
 
     private static final Logger LOGGER = LogManager.getLogger();
+    private static ScriptDesignTraceConfiguration INSTANCE;
 
-    // Constructors
-    public ScriptDesignTraceConfiguration() {
-        super();
+    public synchronized static ScriptDesignTraceConfiguration getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new ScriptDesignTraceConfiguration();
+        }
+        return INSTANCE;
     }
 
+    private ScriptDesignTraceConfiguration() {
+    }
+
+    public void init(MetadataRepository metadataRepository) {
+        setMetadataRepository(metadataRepository);
+    }
 
     @Override
     public Optional<ScriptDesignTrace> get(ScriptDesignTraceKey scriptDesignTraceKey) {
         try {
             String query = "SELECT SCRIPT_ID, PARENT_PRC_ID, SCRIPT_TYP_NM, SCRIPT_NM, SCRIPT_DSC FROM " +
-                    getMetadataControl().getTraceMetadataRepository().getTableNameByLabel("ScriptDesignTraces") +
+                    getMetadataRepository().getTableNameByLabel("ScriptDesignTraces") +
                     " WHERE " +
                     " RUN_ID = " + SQLTools.GetStringForSQL(scriptDesignTraceKey.getRunId()) + " AND " +
                     " PRC_ID = " + SQLTools.GetStringForSQL(scriptDesignTraceKey.getProcessId()) + ";";
-            CachedRowSet cachedRowSet = getMetadataControl().getTraceMetadataRepository().executeQuery(query, "reader");
+            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
             if (cachedRowSet.size() == 0) {
                 return Optional.empty();
             } else if (cachedRowSet.size() > 1) {
@@ -59,8 +70,8 @@ public class ScriptDesignTraceConfiguration extends Configuration<ScriptDesignTr
         try {
             List<ScriptDesignTrace> scriptDesignTraces = new ArrayList<>();
             String query = "SELECT RUN_ID, PRC_ID, PARENT_PRC_ID, SCRIPT_ID, SCRIPT_TYP_NM, SCRIPT_NM, SCRIPT_DSC FROM " +
-                    getMetadataControl().getTraceMetadataRepository().getTableNameByLabel("ScriptDesignTraces") + ";";
-            CachedRowSet cachedRowSet = getMetadataControl().getTraceMetadataRepository().executeQuery(query, "reader");
+                    getMetadataRepository().getTableNameByLabel("ScriptDesignTraces") + ";";
+            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
             while (cachedRowSet.next()) {
                 scriptDesignTraces.add(new ScriptDesignTrace(new ScriptDesignTraceKey(
                         cachedRowSet.getString("RUN_ID"),
@@ -85,11 +96,11 @@ public class ScriptDesignTraceConfiguration extends Configuration<ScriptDesignTr
                     "ScriptTrace {0} does not exists", scriptDesignTraceKey.toString()));
         }
         String deleteStatement = deleteStatement(scriptDesignTraceKey);
-        getMetadataControl().getTraceMetadataRepository().executeUpdate(deleteStatement);
+        getMetadataRepository().executeUpdate(deleteStatement);
     }
 
     private String deleteStatement(ScriptDesignTraceKey scriptDesignTraceKey) {
-        return "DELETE FROM " + getMetadataControl().getTraceMetadataRepository().getTableNameByLabel("ScriptDesignTraces") +
+        return "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ScriptDesignTraces") +
                 " WHERE " +
                 " RUN_ID = " + SQLTools.GetStringForSQL(scriptDesignTraceKey.getRunId()) + " AND " +
                 " PRC_ID = " + SQLTools.GetStringForSQL(scriptDesignTraceKey.getProcessId()) + ";";
@@ -103,21 +114,21 @@ public class ScriptDesignTraceConfiguration extends Configuration<ScriptDesignTr
                     "ActionParameterTrace {0} already exists", scriptDesignTrace.getMetadataKey().toString()));
         }
         String insertStatement = insertStatement(scriptDesignTrace);
-        getMetadataControl().getTraceMetadataRepository().executeUpdate(insertStatement);
+        getMetadataRepository().executeUpdate(insertStatement);
     }
 
     public boolean exists(ScriptDesignTraceKey scriptDesignTraceKey) {
         String query = "SELECT * FROM " +
-                getMetadataControl().getTraceMetadataRepository().getTableNameByLabel("ScriptDesignTraces") +
+                getMetadataRepository().getTableNameByLabel("ScriptDesignTraces") +
                 " WHERE " +
                 " RUN_ID = " + SQLTools.GetStringForSQL(scriptDesignTraceKey.getRunId()) + " AND " +
                 " PRC_ID = " + SQLTools.GetStringForSQL(scriptDesignTraceKey.getProcessId()) + ";";
-        CachedRowSet cachedRowSet = getMetadataControl().getTraceMetadataRepository().executeQuery(query, "reader");
+        CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
         return cachedRowSet.size() >= 1;
     }
 
     private String insertStatement(ScriptDesignTrace scriptDesignTrace) {
-        return "INSERT INTO " + getMetadataControl().getTraceMetadataRepository().getTableNameByLabel("ScriptDesignTraces") +
+        return "INSERT INTO " + getMetadataRepository().getTableNameByLabel("ScriptDesignTraces") +
                 " (RUN_ID, PRC_ID, PARENT_PRC_ID, SCRIPT_ID, SCRIPT_TYP_NM, SCRIPT_NM, SCRIPT_DSC) VALUES (" +
                 SQLTools.GetStringForSQL(scriptDesignTrace.getMetadataKey().getRunId()) + "," +
                 SQLTools.GetStringForSQL(scriptDesignTrace.getMetadataKey().getProcessId()) + "," +

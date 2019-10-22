@@ -6,7 +6,6 @@ import io.metadew.iesi.connection.database.SqliteDatabase;
 import io.metadew.iesi.connection.database.connection.sqlite.SqliteDatabaseConnection;
 import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
 
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;

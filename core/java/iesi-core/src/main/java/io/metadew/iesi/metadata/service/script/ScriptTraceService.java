@@ -14,32 +14,22 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.sql.SQLException;
 
 public class ScriptTraceService {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private ScriptTraceConfiguration scriptTraceConfiguration;
-    private ScriptVersionTraceConfiguration scriptVersionTraceConfiguration;
-    private ScriptParameterTraceConfiguration scriptParameterTraceConfiguration;
-
-
-    public ScriptTraceService() {
-        this.scriptTraceConfiguration = new ScriptTraceConfiguration();
-        this.scriptVersionTraceConfiguration = new ScriptVersionTraceConfiguration();
-        this.scriptParameterTraceConfiguration = new ScriptParameterTraceConfiguration();
-    }
+    public ScriptTraceService() {}
 
     public void trace(ScriptExecution scriptExecution) {
         try {
             String runId = scriptExecution.getExecutionControl().getRunId();
             Long processId = scriptExecution.getProcessId();
-            scriptTraceConfiguration.insert(new ScriptTrace(runId, processId,
+            ScriptTraceConfiguration.getInstance().insert(new ScriptTrace(runId, processId,
                     scriptExecution.getParentScriptExecution().map(ScriptExecution::getProcessId).orElse(0L),
                     scriptExecution.getScript()));
-            scriptVersionTraceConfiguration.insert(new ScriptVersionTrace(runId, processId, scriptExecution.getScript().getVersion()));
+            ScriptVersionTraceConfiguration.getInstance().insert(new ScriptVersionTrace(runId, processId, scriptExecution.getScript().getVersion()));
             for (ScriptParameter scriptParameter : scriptExecution.getScript().getParameters()) {
-                scriptParameterTraceConfiguration.insert(new ScriptParameterTrace(runId, processId, scriptParameter));
+                ScriptParameterTraceConfiguration.getInstance().insert(new ScriptParameterTrace(runId, processId, scriptParameter));
             }
 
         } catch (MetadataAlreadyExistsException e) {

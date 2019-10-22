@@ -3,7 +3,6 @@ package io.metadew.iesi.connection.database.connection.dremio;
 import io.metadew.iesi.connection.database.connection.DatabaseConnection;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.Optional;
 
 /**

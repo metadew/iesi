@@ -8,23 +8,25 @@ import io.metadew.iesi.guard.definition.UserAccess;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.execution.ExecutionRequestConfiguration;
+import io.metadew.iesi.metadata.configuration.execution.script.ScriptExecutionRequestConfiguration;
 import io.metadew.iesi.metadata.configuration.script.exception.ScriptDoesNotExistException;
 import io.metadew.iesi.metadata.definition.execution.AuthenticatedExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequestStatus;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequest;
+import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequestStatus;
 import io.metadew.iesi.runtime.script.ScriptExecutorService;
 import io.metadew.iesi.script.ScriptExecutionBuildException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.sql.SQLException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 public class AuthenticatedRequestExecutor implements RequestExecutor<AuthenticatedExecutionRequest> {
 
     private static final Logger LOGGER = LogManager.getLogger();
     private final UserAccessConfiguration userAccessConfiguration;
     private final Boolean authenticationEnabled;
-    private final ExecutionRequestConfiguration executionRequestConfiguration;
 
     private static AuthenticatedRequestExecutor INSTANCE;
 
@@ -40,7 +42,6 @@ public class AuthenticatedRequestExecutor implements RequestExecutor<Authenticat
         this.authenticationEnabled = FrameworkSettingConfiguration.getInstance().getSettingPath("guard.authenticate")
                 .map(settingPath -> FrameworkControl.getInstance().getProperty(settingPath).equalsIgnoreCase("y"))
                 .orElse(false);
-        executionRequestConfiguration = new ExecutionRequestConfiguration();
     }
 
     @Override
@@ -57,22 +58,32 @@ public class AuthenticatedRequestExecutor implements RequestExecutor<Authenticat
                 LOGGER.info("authentication.disabled:access automatically granted");
             }
             executionRequest.updateExecutionRequestStatus(ExecutionRequestStatus.ACCEPTED);
-            executionRequestConfiguration.update(executionRequest);
+            ExecutionRequestConfiguration.getInstance().update(executionRequest);
 
             for (ScriptExecutionRequest scriptExecutionRequest : executionRequest.getScriptExecutionRequests()) {
                 try {
                     ScriptExecutorService.getInstance().execute(scriptExecutionRequest);
-                } catch (ScriptExecutionBuildException | ScriptDoesNotExistException | MetadataAlreadyExistsException e) {
-                    // TODO log
-                    e.printStackTrace();
+                } catch (ScriptExecutionBuildException | MetadataAlreadyExistsException | MetadataDoesNotExistException e) {
+                    LOGGER.info("script execution " + scriptExecutionRequest.toString() + " of " + executionRequest.toString() + "pre-maturely ended due to " + e.toString());
+
+                    scriptExecutionRequest.updateScriptExecutionRequestStatus(ScriptExecutionRequestStatus.DECLINED);
+                    ScriptExecutionRequestConfiguration.getInstance().update(scriptExecutionRequest);
+
+                    StringWriter stackTrace = new StringWriter();
+                    e.printStackTrace(new PrintWriter(stackTrace));
+                    LOGGER.info("exception=" + e);
+                    LOGGER.debug("exception.stacktrace=" + stackTrace.toString());
                 }
             }
 
             executionRequest.updateExecutionRequestStatus(ExecutionRequestStatus.COMPLETED);
-            executionRequestConfiguration.update(executionRequest);
+            ExecutionRequestConfiguration.getInstance().update(executionRequest);
 
         } catch (MetadataDoesNotExistException e) {
-            e.printStackTrace();
+            StringWriter stackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTrace));
+            LOGGER.info("exception=" + e);
+            LOGGER.debug("exception.stacktrace=" + stackTrace.toString());
         }
 
 
@@ -112,7 +123,7 @@ public class AuthenticatedRequestExecutor implements RequestExecutor<Authenticat
             LOGGER.info(new IESIMessage("guard.user.exception=" + userAccess.getExceptionMessage()));
             LOGGER.info(new IESIMessage("guard.user.denied"));
             executionRequest.updateExecutionRequestStatus(ExecutionRequestStatus.ACCEPTED);
-            executionRequestConfiguration.update(executionRequest);
+            ExecutionRequestConfiguration.getInstance().update(executionRequest);
             throw new RuntimeException("guard.user.denied");
         }
     }

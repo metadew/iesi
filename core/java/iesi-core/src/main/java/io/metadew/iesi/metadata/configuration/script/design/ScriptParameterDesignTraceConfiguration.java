@@ -2,12 +2,14 @@ package io.metadew.iesi.metadata.configuration.script.design;
 
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
+import io.metadew.iesi.metadata.configuration.action.result.ActionResultConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.script.design.exception.ScriptParameterDesignTraceAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.script.design.exception.ScriptParameterDesignTraceDoesNotExistException;
 import io.metadew.iesi.metadata.definition.script.design.ScriptParameterDesignTrace;
 import io.metadew.iesi.metadata.definition.script.design.key.ScriptParameterDesignTraceKey;
+import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -21,20 +23,31 @@ import java.util.Optional;
 public class ScriptParameterDesignTraceConfiguration extends Configuration<ScriptParameterDesignTrace, ScriptParameterDesignTraceKey> {
 
     private static final Logger LOGGER = LogManager.getLogger();
+    private static ScriptParameterDesignTraceConfiguration INSTANCE;
 
-    public ScriptParameterDesignTraceConfiguration() {
-        super();
+    public synchronized static ScriptParameterDesignTraceConfiguration getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new ScriptParameterDesignTraceConfiguration();
+        }
+        return INSTANCE;
+    }
+
+    private ScriptParameterDesignTraceConfiguration() {
+    }
+
+    public void init(MetadataRepository metadataRepository) {
+        setMetadataRepository(metadataRepository);
     }
 
     @Override
     public Optional<ScriptParameterDesignTrace> get(ScriptParameterDesignTraceKey scriptParameterDesignTraceKey) {
         try {
         String query = "SELECT SCRIPT_PAR_VAL FROM " +
-                getMetadataControl().getTraceMetadataRepository().getTableNameByLabel("ScriptParameterDesignTraces") +
+                getMetadataRepository().getTableNameByLabel("ScriptParameterDesignTraces") +
                 " WHERE " +
                 " RUN_ID = " + SQLTools.GetStringForSQL(scriptParameterDesignTraceKey.getRunId()) + " AND " +
                 " PRC_ID = "  + SQLTools.GetStringForSQL(scriptParameterDesignTraceKey.getProcessId()) + ";";
-        CachedRowSet cachedRowSet = getMetadataControl().getTraceMetadataRepository().executeQuery(query, "reader");
+        CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
         if (cachedRowSet.size() == 0) {
             return Optional.empty();
         } else if (cachedRowSet.size() > 1) {
@@ -53,8 +66,8 @@ public class ScriptParameterDesignTraceConfiguration extends Configuration<Scrip
         try {
         List<ScriptParameterDesignTrace> scriptParameterDesignTraces = new ArrayList<>();
         String query = "SELECT RUN_ID, PRC_ID, SCRIPT_PAR_NM, SCRIPT_PAR_VAL FROM " +
-                getMetadataControl().getTraceMetadataRepository().getTableNameByLabel("ScriptParameterDesignTraces") + ";";
-        CachedRowSet cachedRowSet = getMetadataControl().getTraceMetadataRepository().executeQuery(query, "reader");
+                getMetadataRepository().getTableNameByLabel("ScriptParameterDesignTraces") + ";";
+        CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
         while (cachedRowSet.next()) {
             scriptParameterDesignTraces.add(new ScriptParameterDesignTrace(new ScriptParameterDesignTraceKey(
                     cachedRowSet.getString("RUN_ID"),
@@ -76,21 +89,21 @@ public class ScriptParameterDesignTraceConfiguration extends Configuration<Scrip
                     "ScriptParameterDesignTrace {0} does not exists", scriptParameterDesignTraceKey.toString()));
         }
         String deleteStatement = deleteStatement(scriptParameterDesignTraceKey);
-        getMetadataControl().getTraceMetadataRepository().executeUpdate(deleteStatement);
+        getMetadataRepository().executeUpdate(deleteStatement);
     }
 
     public boolean exists(ScriptParameterDesignTraceKey scriptParameterDesignTraceKey) {
         String query = "SELECT * FROM " +
-                getMetadataControl().getTraceMetadataRepository().getTableNameByLabel("ScriptParameterDesignTraces") +
+                getMetadataRepository().getTableNameByLabel("ScriptParameterDesignTraces") +
                 " WHERE " +
                 " RUN_ID = " + SQLTools.GetStringForSQL(scriptParameterDesignTraceKey.getRunId()) + " AND " +
                 " PRC_ID = "  + SQLTools.GetStringForSQL(scriptParameterDesignTraceKey.getProcessId()) + ";";
-        CachedRowSet cachedRowSet = getMetadataControl().getTraceMetadataRepository().executeQuery(query, "reader");
+        CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
         return cachedRowSet.size() >= 1;
     }
 
     private String deleteStatement(ScriptParameterDesignTraceKey scriptParameterDesignTraceKey) {
-        return "DELETE FROM " + getMetadataControl().getTraceMetadataRepository().getTableNameByLabel("ScriptParameterDesignTraces") +
+        return "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ScriptParameterDesignTraces") +
                 " WHERE " +
                 " RUN_ID = " + SQLTools.GetStringForSQL(scriptParameterDesignTraceKey.getRunId()) + " AND " +
                 " PRC_ID = "  + SQLTools.GetStringForSQL(scriptParameterDesignTraceKey.getProcessId()) + " AND " +
@@ -105,11 +118,11 @@ public class ScriptParameterDesignTraceConfiguration extends Configuration<Scrip
                     "ScriptParameterDesignTrace {0} already exists", scriptParameterDesignTrace.getMetadataKey().toString()));
         }
         String insertStatement = insertStatement(scriptParameterDesignTrace);
-        getMetadataControl().getTraceMetadataRepository().executeUpdate(insertStatement);
+        getMetadataRepository().executeUpdate(insertStatement);
     }
 
     private String insertStatement(ScriptParameterDesignTrace scriptParameterDesignTrace) {
-        return "INSERT INTO " + getMetadataControl().getTraceMetadataRepository().getTableNameByLabel("ScriptParameterDesignTraces") +
+        return "INSERT INTO " + getMetadataRepository().getTableNameByLabel("ScriptParameterDesignTraces") +
                 " (RUN_ID, PRC_ID, SCRIPT_PAR_NM, SCRIPT_PAR_VAL) VALUES (" +
                 SQLTools.GetStringForSQL(scriptParameterDesignTrace.getMetadataKey().getRunId()) + "," +
                 SQLTools.GetStringForSQL(scriptParameterDesignTrace.getMetadataKey().getProcessId()) + "," +

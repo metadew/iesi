@@ -3,7 +3,6 @@ package io.metadew.iesi.connection.network;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
 
-import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 
 public class SocketConnection {

@@ -1,6 +1,0 @@
-/bin/
-/target/
-/assembly/run/log/*.log
-.classpath
-*.conf
-*.cmd

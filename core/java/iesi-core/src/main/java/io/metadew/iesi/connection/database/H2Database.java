@@ -3,8 +3,6 @@ package io.metadew.iesi.connection.database;
 import io.metadew.iesi.connection.database.connection.h2.H2DatabaseConnection;
 import io.metadew.iesi.metadata.definition.MetadataField;
 
-import java.sql.SQLException;
-
 /**
  * Database object for H2 databases
  *
@@ -12,9 +10,12 @@ import java.sql.SQLException;
  */
 public class H2Database extends SchemaDatabase {
 
-
     public H2Database(H2DatabaseConnection databaseConnection, String schema) {
         super(databaseConnection, schema);
+    }
+
+    public H2Database(H2DatabaseConnection databaseConnection) {
+        super(databaseConnection);
     }
 
     @Override
@@ -68,6 +69,11 @@ public class H2Database extends SchemaDatabase {
             fieldQuery.append(" NOT NULL");
         }
         return fieldQuery.toString();
+    }
+
+    public void shutdown() {
+        executeUpdate("drop all objects delete files");
+        super.shutdown();
     }
 
 }

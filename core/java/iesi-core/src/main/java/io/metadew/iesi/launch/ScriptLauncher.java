@@ -15,7 +15,6 @@ import io.metadew.iesi.metadata.definition.execution.ExecutionRequestBuilderExce
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequestStatus;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequestBuilder;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequestBuilderException;
-import io.metadew.iesi.metadata.repository.MetadataRepository;
 import io.metadew.iesi.runtime.ExecutorService;
 import io.metadew.iesi.script.operation.ImpersonationService;
 import org.apache.commons.cli.*;
@@ -188,7 +187,6 @@ public class ScriptLauncher {
             System.out.println("Setting framework.server.mode=off (setting.notfound)");
         }
 
-
         executionRequestBuilder.name("scriptLauncher");
         executionRequestBuilder.scope("execution_request");
         executionRequestBuilder.context("on_demand");
@@ -201,11 +199,11 @@ public class ScriptLauncher {
         System.out.println("script.launcher.start");
         System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 
-        new ExecutionRequestConfiguration().insert(executionRequest);
+        ExecutionRequestConfiguration.getInstance().insert(executionRequest);
 
         if (serverMode.equalsIgnoreCase("off")) {
             executionRequest.updateExecutionRequestStatus(ExecutionRequestStatus.SUBMITTED);
-            new ExecutionRequestConfiguration().update(executionRequest);
+            ExecutionRequestConfiguration.getInstance().update(executionRequest);
             ExecutorService.getInstance().execute(executionRequest);
         } else if (serverMode.equalsIgnoreCase("standalone")) {
             System.out.println("RequestID="+executionRequest.getMetadataKey().getId());

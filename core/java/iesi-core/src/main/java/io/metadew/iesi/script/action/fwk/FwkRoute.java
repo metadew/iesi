@@ -12,7 +12,6 @@ import io.metadew.iesi.script.operation.RouteOperation;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.sql.SQLException;
 import java.util.*;
 public class FwkRoute {
 

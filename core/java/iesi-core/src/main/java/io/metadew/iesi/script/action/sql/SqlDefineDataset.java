@@ -2,9 +2,9 @@ package io.metadew.iesi.script.action.sql;
 
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.text.Text;
+import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.dataset.Dataset;
 import io.metadew.iesi.metadata.definition.dataset.DatasetParameter;
-import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
@@ -14,7 +14,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;

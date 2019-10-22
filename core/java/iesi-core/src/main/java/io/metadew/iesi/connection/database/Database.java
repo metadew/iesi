@@ -8,7 +8,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.sql.rowset.CachedRowSet;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -28,6 +27,7 @@ public abstract class Database {
     private int maximalPoolSize;
     private List<Connection> connectionPool;
     private List<Connection> usedConnections = new ArrayList<>();
+    private final Object connectionPoolLock = new Object();
 
     public Database(DatabaseConnection databaseConnection) {
         this.databaseConnection = databaseConnection;
@@ -38,6 +38,7 @@ public abstract class Database {
             connectionPool.add(databaseConnection.getConnection());
         }
     }
+
     public Database(DatabaseConnection databaseConnection, int initialPoolSize, int maximalPoolSize) {
         this.databaseConnection = databaseConnection;
         this.initialPoolSize = initialPoolSize;
@@ -48,29 +49,38 @@ public abstract class Database {
         }
     }
 
-    public synchronized Connection getConnection() {
-        if (connectionPool.isEmpty()) {
-            if (usedConnections.size() < maximalPoolSize) {
-                connectionPool.add(databaseConnection.getConnection());
-            } else {
-                throw new RuntimeException("Maximum pool size reached, no available connections!");
+    public Connection getConnection() {
+        synchronized (this.connectionPoolLock) {
+            if (connectionPool.isEmpty()) {
+                if (usedConnections.size() < maximalPoolSize) {
+                    connectionPool.add(databaseConnection.getConnection());
+                } else {
+                    throw new RuntimeException("Maximum pool size reached, no available connections!");
+                }
             }
+            Connection connection = connectionPool.remove(connectionPool.size() - 1);
+            usedConnections.add(connection);
+            return connection;
         }
-        Connection connection = connectionPool.remove(connectionPool.size() - 1);
-        usedConnections.add(connection);
-        return connection;
     }
 
     public boolean releaseConnection(Connection connection) {
-        try {
-            if (connectionPool.size() > initialPoolSize) {
-                connection.close();
-            } else {
-                connectionPool.add(connection);
+        synchronized (this.connectionPoolLock) {
+            try {
+                if (connectionPool.size() > initialPoolSize) {
+                    connection.close();
+                } else {
+                    connectionPool.add(connection);
+                }
+                return usedConnections.remove(connection);
+            } catch (SQLException e) {
+                StringWriter stackTrace = new StringWriter();
+                e.printStackTrace(new PrintWriter(stackTrace));
+                LOGGER.info("exception=" + e);
+                LOGGER.debug("exception.stacktrace=" + stackTrace.toString());
+                LOGGER.debug("sql.exception.db=" + databaseConnection.getConnectionURL());
+                throw new RuntimeException(e);
             }
-            return usedConnections.remove(connection);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
     }
 
@@ -84,6 +94,11 @@ public abstract class Database {
             }
             connectionPool.clear();
         } catch (SQLException e) {
+            StringWriter stackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTrace));
+            LOGGER.info("exception=" + e);
+            LOGGER.debug("exception.stacktrace=" + stackTrace.toString());
+            LOGGER.debug("sql.exception.db=" + databaseConnection.getConnectionURL());
             throw new RuntimeException(e);
         }
     }
@@ -102,11 +117,11 @@ public abstract class Database {
             this.databaseConnection.executeUpdate(query, connection);
             connection.commit();
             releaseConnection(connection);
-        } catch (SQLException e) {
+        } catch (Exception e) {
             StringWriter stackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(stackTrace));
             LOGGER.info("sql.exception=" + e);
-            LOGGER.debug("sql.exception.stacktrace=" + stackTrace);
+            LOGGER.debug("sql.exception.stacktrace=" + stackTrace.toString());
             LOGGER.debug("sql.exception.db=" + databaseConnection.getConnectionURL());
             LOGGER.debug("sql.exception.query=" + query);
             releaseConnection(connection);
@@ -117,15 +132,15 @@ public abstract class Database {
     public CachedRowSet executeQuery(String query) {
         Connection connection = getConnection();
         try {
-            CachedRowSet cachedRowSet = this.databaseConnection.executeQuery(query, connection);
+            CachedRowSet cachedRowSet = databaseConnection.executeQuery(query, connection);
             connection.commit();
             releaseConnection(connection);
             return cachedRowSet;
-        } catch (SQLException e) {
+        } catch (Exception e) {
             StringWriter stackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(stackTrace));
             LOGGER.info("exception=" + e);
-            LOGGER.debug("exception.stacktrace=" + stackTrace);
+            LOGGER.debug("exception.stacktrace=" + stackTrace.toString());
             LOGGER.debug("sql.exception.db=" + databaseConnection.getConnectionURL());
             LOGGER.debug("sql.exception.query=" + query);
             releaseConnection(connection);
@@ -139,11 +154,11 @@ public abstract class Database {
             databaseConnection.executeBatch(queries, connection);
             connection.commit();
             releaseConnection(connection);
-        } catch (SQLException e) {
+        } catch (Exception e) {
             StringWriter stackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(stackTrace));
             LOGGER.info("exception=" + e);
-            LOGGER.debug("exception.stacktrace=" + stackTrace);
+            LOGGER.debug("exception.stacktrace=" + stackTrace.toString());
             LOGGER.debug("exception.sql=" + databaseConnection.getConnectionURL());
             releaseConnection(connection);
             throw new RuntimeException(e);
@@ -153,7 +168,13 @@ public abstract class Database {
     public CachedRowSet executeQuery(String query, Connection connection) {
         try {
             return this.databaseConnection.executeQuery(query, connection);
-        } catch (SQLException e) {
+        } catch (Exception e) {
+            StringWriter stackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTrace));
+            LOGGER.info("exception=" + e);
+            LOGGER.debug("exception.stacktrace=" + stackTrace.toString());
+            LOGGER.debug("sql.exception.db=" + databaseConnection.getConnectionURL());
+            LOGGER.debug("sql.exception.query=" + query);
             throw new RuntimeException(e);
         }
     }
@@ -165,7 +186,13 @@ public abstract class Database {
             connection.commit();
             releaseConnection(connection);
             return cachedRowSet;
-        } catch (SQLException e) {
+        } catch (Exception e) {
+            StringWriter stackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTrace));
+            LOGGER.info("exception=" + e);
+            LOGGER.debug("exception.stacktrace=" + stackTrace.toString());
+            LOGGER.debug("sql.exception.db=" + databaseConnection.getConnectionURL());
+            LOGGER.debug("sql.exception.query=" + query);
             releaseConnection(connection);
             throw new RuntimeException(e);
         }
@@ -174,7 +201,13 @@ public abstract class Database {
     public CachedRowSet executeQueryLimitRows(String query, int limit, Connection connection) {
         try {
             return this.databaseConnection.executeQueryLimitRows(query, limit, connection);
-        } catch (SQLException e) {
+        } catch (Exception e) {
+            StringWriter stackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTrace));
+            LOGGER.info("exception=" + e);
+            LOGGER.debug("exception.stacktrace=" + stackTrace.toString());
+            LOGGER.debug("sql.exception.db=" + databaseConnection.getConnectionURL());
+            LOGGER.debug("sql.exception.query=" + query);
             throw new RuntimeException(e);
         }
     }
@@ -186,11 +219,12 @@ public abstract class Database {
             connection.commit();
             releaseConnection(connection);
             return sqlScriptResult;
-        } catch (SQLException | IOException e) {
+        } catch (Exception e) {
             StringWriter stackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(stackTrace));
             LOGGER.info("exception=" + e);
-            LOGGER.debug("exception.stacktrace=" + stackTrace);
+            LOGGER.debug("exception.stacktrace=" + stackTrace.toString());
+            LOGGER.debug("sql.exception.db=" + databaseConnection.getConnectionURL());
             releaseConnection(connection);
             throw new RuntimeException(e);
         }
@@ -199,7 +233,12 @@ public abstract class Database {
     public SqlScriptResult executeScript(String filename, Connection connection) {
         try {
             return this.databaseConnection.executeScript(filename, connection);
-        } catch (IOException | SQLException e) {
+        } catch (Exception e) {
+            StringWriter stackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTrace));
+            LOGGER.info("exception=" + e);
+            LOGGER.debug("exception.stacktrace=" + stackTrace.toString());
+            LOGGER.debug("sql.exception.db=" + databaseConnection.getConnectionURL());
             throw new RuntimeException(e);
         }
     }
@@ -211,7 +250,12 @@ public abstract class Database {
             connection.commit();
             releaseConnection(connection);
             return sqlScriptResult;
-        } catch (SQLException | IOException e) {
+        } catch (Exception e) {
+            StringWriter stackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTrace));
+            LOGGER.info("exception=" + e);
+            LOGGER.debug("exception.stacktrace=" + stackTrace.toString());
+            LOGGER.debug("sql.exception.db=" + databaseConnection.getConnectionURL());
             releaseConnection(connection);
             throw new RuntimeException(e);
         }
@@ -220,7 +264,12 @@ public abstract class Database {
     public SqlScriptResult executeScript(InputStream inputStream, Connection connection) {
         try {
             return this.databaseConnection.executeScript(inputStream, connection);
-        } catch (IOException | SQLException e) {
+        } catch (Exception e) {
+            StringWriter stackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTrace));
+            LOGGER.info("exception=" + e);
+            LOGGER.debug("exception.stacktrace=" + stackTrace.toString());
+            LOGGER.debug("sql.exception.db=" + databaseConnection.getConnectionURL());
             throw new RuntimeException(e);
         }
     }
@@ -232,7 +281,12 @@ public abstract class Database {
             connection.commit();
             releaseConnection(connection);
             return cachedRowSet;
-        } catch (SQLException e) {
+        } catch (Exception e) {
+            StringWriter stackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTrace));
+            LOGGER.info("exception=" + e);
+            LOGGER.debug("exception.stacktrace=" + stackTrace.toString());
+            LOGGER.debug("sql.exception.db=" + databaseConnection.getConnectionURL());
             releaseConnection(connection);
             throw new RuntimeException(e);
         }
@@ -242,7 +296,6 @@ public abstract class Database {
     public String getCreateStatement(MetadataTable table, String tableNamePrefix) {
         StringBuilder createQuery = new StringBuilder();
         // StringBuilder fieldComments = new StringBuilder();
-
         String tableName = tableNamePrefix + table.getName();
 
         createQuery.append("CREATE TABLE ").append(tableName).append("\n(\n");

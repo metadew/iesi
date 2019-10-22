@@ -10,7 +10,7 @@ public enum ExecutionRequestStatus {
     KILLED("KILLED"),
     UNKNOWN("UNKNOWN");
 
-    private String value;
+    private final String value;
 
     ExecutionRequestStatus(String value) {
         this.value = value;

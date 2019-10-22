@@ -25,11 +25,10 @@ public class ActionRuntime {
     // Methods
     public void initActionCache(String actionName, String runCacheFolderName) {
         this.runCacheFolderName = runCacheFolderName + File.separator + processId;
-        FolderTools.createFolder(this.runCacheFolderName);
+        // FolderTools.createFolder(this.runCacheFolderName);
         this.runtimeActionCacheConfiguration = new RuntimeActionCacheConfiguration(this.runCacheFolderName);
     }
 
-    @SuppressWarnings("rawtypes")
     public void setRuntimeParameters(HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
         Iterator iterator = actionParameterOperationMap.entrySet().iterator();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -49,7 +48,6 @@ public class ActionRuntime {
 
     }
 
-    @SuppressWarnings("rawtypes")
     public void setRuntimeParameters(String type, HashMap<String, String> variableMap) {
         Iterator iterator = variableMap.entrySet().iterator();
         while (iterator.hasNext()) {

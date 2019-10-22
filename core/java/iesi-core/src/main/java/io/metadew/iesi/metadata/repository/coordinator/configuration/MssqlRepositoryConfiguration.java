@@ -7,7 +7,6 @@ import io.metadew.iesi.connection.database.connection.mssql.MssqlDatabaseConnect
 import io.metadew.iesi.framework.crypto.FrameworkCrypto;
 import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
 
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;

@@ -1212,6 +1212,14 @@
       "encrypted" : "N",
       "subroutine" : "",
       "impersonate" : "N"
+    }, {
+      "name" : "proxy",
+      "description" : "proxy",
+      "type" : "string",
+      "mandatory" : "N",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
     } ],
     "status" : "stable"
   },
@@ -1298,6 +1306,47 @@
     }, {
       "name" : "value",
       "description" : "Value for the output",
+      "type" : "string",
+      "mandatory" : "N",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
+    } ],
+    "status" : "stable"
+  },
+  "type" : "ActionType"
+}, {
+  "data" : {
+    "name" : "socket.transmitMessage",
+    "className" : "io.metadew.iesi.script.action.socket.SocketTransmitMessage",
+    "description" : "Execute a socket message transfer",
+    "parameters" : [ {
+      "name" : "socket",
+      "description" : "Name of socket connection",
+      "type" : "string",
+      "mandatory" : "Y",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
+    }, {
+      "name" : "message",
+      "description" : "Message to transmit",
+      "type" : "string",
+      "mandatory" : "Y",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
+    }, {
+      "name" : "protocol",
+      "description" : "What protocol to use (TCP/UDP)",
+      "type" : "string",
+      "mandatory" : "Y",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
+    }, {
+      "name" : "output",
+      "description" : "Reference name of the output dataset",
       "type" : "string",
       "mandatory" : "N",
       "encrypted" : "N",

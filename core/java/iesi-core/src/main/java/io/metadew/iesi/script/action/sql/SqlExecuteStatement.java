@@ -1,12 +1,9 @@
 package io.metadew.iesi.script.action.sql;
 
 import io.metadew.iesi.connection.database.Database;
-import io.metadew.iesi.connection.database.sql.SqlScriptResult;
 import io.metadew.iesi.connection.operation.ConnectionOperation;
-import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.text.Text;
-import io.metadew.iesi.framework.execution.FrameworkControl;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.connection.Connection;
@@ -17,10 +14,8 @@ import io.metadew.iesi.script.operation.ActionParameterOperation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.HashMap;
 
@@ -35,32 +30,22 @@ public class SqlExecuteStatement {
     private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
     private static final Logger LOGGER = LogManager.getLogger();
 
-    // Constructors
-    public SqlExecuteStatement() {
-
-    }
-
     public SqlExecuteStatement(ExecutionControl executionControl,
                                ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.init(executionControl, scriptExecution, actionExecution);
-    }
-
-    public void init(ExecutionControl executionControl,
-                     ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.setExecutionControl(executionControl);
-        this.setActionExecution(actionExecution);
-        this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
+        this.executionControl = executionControl;
+        this.actionExecution = actionExecution;
+        this.actionParameterOperationMap = new HashMap<>();
     }
 
     public void prepare()  {
         // Set Parameters
-        this.setSqlStatement(new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), "statement"));
-        this.setConnectionName(new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), "connection"));
+        this.sqlStatement = new ActionParameterOperation(executionControl,
+                actionExecution, actionExecution.getAction().getType(), "statement");
+        this.connectionName = new ActionParameterOperation(executionControl,
+                actionExecution, actionExecution.getAction().getType(), "connection");
 
         // Get Parameters
-        for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
+        for (ActionParameter actionParameter : actionExecution.getAction().getParameters()) {
             if (actionParameter.getName().equalsIgnoreCase("statement")) {
                 this.getSqlStatement().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase("connection")) {
@@ -69,8 +54,8 @@ public class SqlExecuteStatement {
         }
 
         // Create parameter list
-        this.getActionParameterOperationMap().put("statement", this.getSqlStatement());
-        this.getActionParameterOperationMap().put("connection", this.getConnectionName());
+        actionParameterOperationMap.put("statement", this.getSqlStatement());
+        actionParameterOperationMap.put("connection", this.getConnectionName());
     }
 
     public boolean execute() {
@@ -81,13 +66,15 @@ public class SqlExecuteStatement {
 
 
         } catch (Exception e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
+            StringWriter stackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTrace));
+            LOGGER.warn("exception=" + e);
+            LOGGER.info("exception.stacktrace=" + stackTrace.toString());
 
-            this.getActionExecution().getActionControl().increaseErrorCount();
+            actionExecution.getActionControl().increaseErrorCount();
 
-            this.getActionExecution().getActionControl().logOutput("exception", e.getMessage());
-            this.getActionExecution().getActionControl().logOutput("stacktrace", StackTrace.toString());
+            actionExecution.getActionControl().logOutput("exception", e.getMessage());
+            actionExecution.getActionControl().logOutput("stacktrace", stackTrace.toString());
 
             return false;
         }
@@ -97,8 +84,8 @@ public class SqlExecuteStatement {
     private boolean execute(String sqlStatement, String connectionName)  {
         // Get Connection
         ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
-        Connection connection = connectionConfiguration
-                .get(connectionName, this.getExecutionControl().getEnvName()).get();
+        Connection connection = connectionConfiguration.get(connectionName, executionControl.getEnvName())
+                .orElseThrow(() -> new RuntimeException("Cannot find connection " + connectionName));
         ConnectionOperation connectionOperation = new ConnectionOperation();
         Database database = connectionOperation.getDatabase(connection);
 
@@ -112,20 +99,17 @@ public class SqlExecuteStatement {
             sqlStatement = sqlStatement + ";";
         }
 
-        SqlScriptResult sqlScriptResult;
-        InputStream inputStream = FileTools.convertToInputStream(sqlStatement,
-                FrameworkControl.getInstance());
-        sqlScriptResult = database.executeScript(inputStream);
+        database.executeUpdate(sqlStatement);
 
         // Evaluate result
-        this.getActionExecution().getActionControl().logOutput("sys.out", sqlScriptResult.getSystemOutput());
+//        actionExecution.getActionControl().logOutput("sys.out", sqlScriptResult.getSystemOutput());
+//
+//        if (sqlScriptResult.getReturnCode() != 0) {
+//            actionExecution.getActionControl().logOutput("err.out", sqlScriptResult.getErrorOutput());
+//            throw new RuntimeException("Error executing SQL query");
+//        }
 
-        if (sqlScriptResult.getReturnCode() != 0) {
-            this.getActionExecution().getActionControl().logOutput("err.out", sqlScriptResult.getErrorOutput());
-            throw new RuntimeException("Error execting SQL query");
-        }
-
-        this.getActionExecution().getActionControl().increaseSuccessCount();
+        actionExecution.getActionControl().increaseSuccessCount();
         return true;
     }
 
@@ -133,7 +117,7 @@ public class SqlExecuteStatement {
         if (sqlStatement instanceof Text) {
             return sqlStatement.toString();
         } else {
-            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for sql statement",
+            LOGGER.warn(MessageFormat.format(actionExecution.getAction().getType() + " does not accept {0} as type for sql statement",
                     sqlStatement.getClass()));
             return sqlStatement.toString();
         }
@@ -144,7 +128,7 @@ public class SqlExecuteStatement {
         if (connectionName instanceof Text) {
             return connectionName.toString();
         } else {
-            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for connection name",
+            LOGGER.warn(MessageFormat.format(actionExecution.getAction().getType() + " does not accept {0} as type for connection name",
                     connectionName.getClass()));
             return connectionName.toString();
         }
@@ -183,7 +167,7 @@ public class SqlExecuteStatement {
     }
 
     public ActionParameterOperation getActionParameterOperation(String key) {
-        return this.getActionParameterOperationMap().get(key);
+        return actionParameterOperationMap.get(key);
     }
 
     public ActionParameterOperation getSqlStatement() {

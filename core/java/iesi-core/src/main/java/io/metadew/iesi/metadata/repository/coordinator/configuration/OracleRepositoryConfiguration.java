@@ -56,7 +56,7 @@ public class OracleRepositoryConfiguration extends RepositoryConfiguration {
     @Override
     public RepositoryCoordinator toRepository() {
         Map<String, Database> databases = new HashMap<>();
-        String actualJdbcConnectionString = "";
+        String actualJdbcConnectionString;
         if (getJdbcConnectionString().isPresent()) {
         	actualJdbcConnectionString = getJdbcConnectionString().get();
         } else {

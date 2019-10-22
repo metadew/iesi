@@ -1,9 +1,9 @@
 package io.metadew.iesi.metadata.repository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.metadew.iesi.metadata.configuration.feature.FeatureConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.FeatureAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.FeatureDoesNotExistException;
+import io.metadew.iesi.metadata.configuration.feature.FeatureConfiguration;
 import io.metadew.iesi.metadata.definition.DataObject;
 import io.metadew.iesi.metadata.definition.feature.Feature;
 import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;

@@ -1,6 +1,12 @@
 package io.metadew.iesi.metadata.repository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.metadew.iesi.metadata.configuration.action.performance.ActionPerformanceConfiguration;
+import io.metadew.iesi.metadata.configuration.action.result.ActionResultConfiguration;
+import io.metadew.iesi.metadata.configuration.action.result.ActionResultOutputConfiguration;
+import io.metadew.iesi.metadata.configuration.request.RequestResultConfiguration;
+import io.metadew.iesi.metadata.configuration.script.result.ScriptResultConfiguration;
+import io.metadew.iesi.metadata.configuration.script.result.ScriptResultOutputConfiguration;
 import io.metadew.iesi.metadata.definition.DataObject;
 import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
 import org.apache.logging.log4j.LogManager;
@@ -13,6 +19,12 @@ public class ResultMetadataRepository extends MetadataRepository {
 
     public ResultMetadataRepository(String name, String scope, String instanceName, RepositoryCoordinator repositoryCoordinator) {
         super(name, scope, instanceName, repositoryCoordinator);
+        ScriptResultConfiguration.getInstance().init(this);
+        ActionResultConfiguration.getInstance().init(this);
+        ActionResultOutputConfiguration.getInstance().init(this);
+        ScriptResultOutputConfiguration.getInstance().init(this);
+        ActionPerformanceConfiguration.getInstance().init(this);
+        RequestResultConfiguration.getInstance().init(this);
     }
 
     @Override

@@ -4,8 +4,6 @@ import io.metadew.iesi.connection.database.connection.mariadb.MariadbDatabaseCon
 import io.metadew.iesi.metadata.definition.MetadataField;
 import io.metadew.iesi.metadata.definition.MetadataTable;
 
-import java.sql.SQLException;
-
 public class MariadbDatabase extends Database {
 
 

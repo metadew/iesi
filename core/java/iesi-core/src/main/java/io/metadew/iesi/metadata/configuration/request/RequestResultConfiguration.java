@@ -4,8 +4,10 @@ import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.exception.RequestResultAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.RequestResultDoesNotExistException;
+import io.metadew.iesi.metadata.configuration.script.design.ScriptDesignTraceConfiguration;
 import io.metadew.iesi.metadata.definition.RequestResult;
 import io.metadew.iesi.metadata.definition.key.RequestResultKey;
+import io.metadew.iesi.metadata.repository.MetadataRepository;
 
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
@@ -16,18 +18,29 @@ import java.util.List;
 import java.util.Optional;
 
 public class RequestResultConfiguration extends Configuration<RequestResult, RequestResultKey> {
+    private static RequestResultConfiguration INSTANCE;
 
-    public RequestResultConfiguration() {
-        super();
+    public synchronized static RequestResultConfiguration getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new RequestResultConfiguration();
+        }
+        return INSTANCE;
+    }
+
+    private RequestResultConfiguration() {
+    }
+
+    public void init(MetadataRepository metadataRepository) {
+        setMetadataRepository(metadataRepository);
     }
 
     @Override
     public Optional<RequestResult> get(RequestResultKey key) {
         try {
             String query = "select REQUEST_ID, PARENT_REQUEST_ID, RUN_ID, ORIGIN_NM, REQUEST_NM, SCOPE_NM, CONTEXT_NM, SPACE_NM, USER_NM, REQUEST_TMS, ST_NM, STRT_TMS, END_TMS from "
-                    + getMetadataControl().getResultMetadataRepository().getTableNameByLabel("RequestResults") + " where "
+                    + getMetadataRepository().getTableNameByLabel("RequestResults") + " where "
                     + "REQUEST_ID = " + SQLTools.GetStringForSQL(key.getRequestId()) + ";";
-            CachedRowSet cachedRowSet = getMetadataControl().getResultMetadataRepository().executeQuery(query, "reader");
+            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
             if (cachedRowSet.size() == 0) {
                 return Optional.empty();
             } else if (cachedRowSet.size() > 1) {
@@ -53,8 +66,8 @@ public class RequestResultConfiguration extends Configuration<RequestResult, Req
         try {
             List<RequestResult> requestResults = new ArrayList<>();
             String query = "select REQUEST_ID, PARENT_REQUEST_ID, RUN_ID, ORIGIN_NM, REQUEST_NM, SCOPE_NM, CONTEXT_NM, SPACE_NM, USER_NM, REQUEST_TMS, ST_NM, STRT_TMS, END_TMS from "
-                    + getMetadataControl().getResultMetadataRepository().getTableNameByLabel("RequestResults") + ";";
-            CachedRowSet cachedRowSet = getMetadataControl().getResultMetadataRepository().executeQuery(query, "reader");
+                    + getMetadataRepository().getTableNameByLabel("RequestResults") + ";";
+            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
             while (cachedRowSet.next()) {
                 requestResults.add(new RequestResult(new RequestResultKey(
                         cachedRowSet.getString("REQUEST_ID")),
@@ -84,9 +97,9 @@ public class RequestResultConfiguration extends Configuration<RequestResult, Req
                     MessageFormat.format("Request Result {0} does not exist", key.getRequestId()));
         }
         String query = "delete from "
-                + getMetadataControl().getResultMetadataRepository().getTableNameByLabel("RequestResults") + " where "
+                + getMetadataRepository().getTableNameByLabel("RequestResults") + " where "
                 + "REQUEST_ID = " + SQLTools.GetStringForSQL(key.getRequestId()) + ";";
-        getMetadataControl().getResultMetadataRepository().executeUpdate(query);
+        getMetadataRepository().executeUpdate(query);
     }
 
     @Override
@@ -96,7 +109,7 @@ public class RequestResultConfiguration extends Configuration<RequestResult, Req
                     requestResult.getMetadataKey().getRequestId()));
         }
         String query = "insert into "
-                + getMetadataControl().getResultMetadataRepository().getTableNameByLabel("RequestResults")
+                + getMetadataRepository().getTableNameByLabel("RequestResults")
                 + " (REQUEST_ID, PARENT_REQUEST_ID, RUN_ID, ORIGIN_NM, REQUEST_NM, SCOPE_NM, CONTEXT_NM, SPACE_NM, USER_NM, REQUEST_TMS, ST_NM, STRT_TMS, END_TMS) values ("
                 + SQLTools.GetStringForSQL(requestResult.getMetadataKey().getRequestId()) + ", "
                 + SQLTools.GetStringForSQL(requestResult.getParentRequestId() == null ? "-1" : requestResult.getParentRequestId()) + ", "
@@ -112,6 +125,6 @@ public class RequestResultConfiguration extends Configuration<RequestResult, Req
                 + SQLTools.GetStringForSQL(requestResult.getStartTimestamp() == null ? null : requestResult.getStartTimestamp()) + ", "
                 + SQLTools.GetStringForSQL(requestResult.getEndTimestamp() == null ? null : requestResult.getEndTimestamp())
                 + ");";
-        getMetadataControl().getResultMetadataRepository().executeUpdate(query);
+        getMetadataRepository().executeUpdate(query);
     }
 }

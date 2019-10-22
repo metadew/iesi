@@ -5,7 +5,6 @@ import io.metadew.iesi.connection.tools.FileTools;
 import org.apache.logging.log4j.ThreadContext;
 
 import java.io.File;
-import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 

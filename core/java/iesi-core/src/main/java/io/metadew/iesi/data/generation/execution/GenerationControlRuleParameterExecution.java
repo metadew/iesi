@@ -8,8 +8,6 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.sql.SQLException;
-
 public class GenerationControlRuleParameterExecution {
 
     private FrameworkExecution frameworkExecution;

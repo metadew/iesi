@@ -21,7 +21,7 @@ public class ResultSetDataset extends Dataset {
     }
 
     @Override
-    public void clean() {
+    public void clean(ExecutionRuntime executionRuntime) {
 
     }
 

@@ -7,8 +7,6 @@ import io.metadew.iesi.script.execution.ExecutionControl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.sql.SQLException;
-
 public class GenerationOutputParameterExecution {
 
     private FrameworkExecution frameworkExecution;

@@ -4,7 +4,6 @@ import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.script.operation.ActionSelectOperation;
 import org.apache.logging.log4j.Level;
 
-import java.sql.SQLException;
 import java.util.Map;
 
 public class NonRouteScriptExecution extends ScriptExecution {

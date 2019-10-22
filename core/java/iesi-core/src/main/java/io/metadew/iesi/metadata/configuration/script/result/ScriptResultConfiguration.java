@@ -4,11 +4,13 @@ import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
+import io.metadew.iesi.metadata.configuration.execution.script.ScriptExecutionConfiguration;
 import io.metadew.iesi.metadata.configuration.script.result.exception.ScriptResultAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.script.result.exception.ScriptResultDoesNotExistException;
 import io.metadew.iesi.metadata.definition.script.result.ScriptResult;
 import io.metadew.iesi.metadata.definition.script.result.key.ScriptResultKey;
 import io.metadew.iesi.metadata.execution.MetadataControl;
+import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -22,19 +24,27 @@ import java.util.Optional;
 public class ScriptResultConfiguration extends Configuration<ScriptResult, ScriptResultKey> {
 
     private static final Logger LOGGER = LogManager.getLogger();
+    private static ScriptResultConfiguration INSTANCE;
 
-    // Constructors
-    public ScriptResultConfiguration() {
-        super();
+    public synchronized static ScriptResultConfiguration getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new ScriptResultConfiguration();
+        }
+        return INSTANCE;
     }
 
+    private ScriptResultConfiguration() {}
+
+    public void init(MetadataRepository metadataRepository) {
+        setMetadataRepository(metadataRepository);
+    }
     @Override
     public Optional<ScriptResult> get(ScriptResultKey scriptResultKey) {
         try {
             String queryScript = "select RUN_ID, PRC_ID, PARENT_PRC_ID, SCRIPT_ID, SCRIPT_NM, SCRIPT_VRS_NB, ENV_NM, ST_NM, " +
-                    "STRT_TMS, END_TMS from " + MetadataControl.getInstance().getResultMetadataRepository().getTableNameByLabel("ScriptResults")
+                    "STRT_TMS, END_TMS from " + getMetadataRepository().getTableNameByLabel("ScriptResults")
                     + " where RUN_ID = " + SQLTools.GetStringForSQL(scriptResultKey.getRunId()) + " and PRC_ID = " + SQLTools.GetStringForSQL(scriptResultKey.getProcessId()) + ";";
-            CachedRowSet cachedRowSet = MetadataControl.getInstance().getResultMetadataRepository().executeQuery(queryScript, "reader");
+            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(queryScript, "reader");
             if (cachedRowSet.size() == 0) {
                 return Optional.empty();
             } else if (cachedRowSet.size() > 1) {
@@ -61,8 +71,8 @@ public class ScriptResultConfiguration extends Configuration<ScriptResult, Scrip
         try {
             List<ScriptResult> scriptResults = new ArrayList<>();
             String query = "select RUN_ID, PRC_ID, PARENT_PRC_ID, SCRIPT_ID, SCRIPT_NM, SCRIPT_VRS_NB, ENV_NM, ST_NM, " +
-                    "STRT_TMS, END_TMS from " + MetadataControl.getInstance().getResultMetadataRepository().getTableNameByLabel("ScriptResults") + ";";
-            CachedRowSet cachedRowSet = getMetadataControl().getResultMetadataRepository().executeQuery(query, "reader");
+                    "STRT_TMS, END_TMS from " + getMetadataRepository().getTableNameByLabel("ScriptResults") + ";";
+            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
             while (cachedRowSet.next()) {
                 scriptResults.add(new ScriptResult(new ScriptResultKey(
                         cachedRowSet.getString("RUN_ID"),
@@ -90,11 +100,11 @@ public class ScriptResultConfiguration extends Configuration<ScriptResult, Scrip
                     "ScriptResult {0} does not exists", scriptResultKey.toString()));
         }
         String deleteStatement = deleteStatement(scriptResultKey);
-        getMetadataControl().getResultMetadataRepository().executeUpdate(deleteStatement);
+        getMetadataRepository().executeUpdate(deleteStatement);
     }
 
     private String deleteStatement(ScriptResultKey scriptResultKey) {
-        return "DELETE FROM " + getMetadataControl().getResultMetadataRepository().getTableNameByLabel("ScriptResults") +
+        return "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ScriptResults") +
                 " WHERE " +
                 " RUN_ID = " + SQLTools.GetStringForSQL(scriptResultKey.getRunId()) + " AND " +
                 " PRC_ID = " + SQLTools.GetStringForSQL(scriptResultKey.getProcessId()) + ";";
@@ -108,12 +118,12 @@ public class ScriptResultConfiguration extends Configuration<ScriptResult, Scrip
                     "ScriptResult {0} already exists", scriptResult.getMetadataKey().toString()));
         }
         String insertStatement = insertStatement(scriptResult);
-        getMetadataControl().getResultMetadataRepository().executeUpdate(insertStatement);
+        getMetadataRepository().executeUpdate(insertStatement);
     }
 
     private String insertStatement(ScriptResult scriptResult) {
         return "INSERT INTO "
-                + MetadataControl.getInstance().getResultMetadataRepository().getTableNameByLabel("ScriptResults")
+                + getMetadataRepository().getTableNameByLabel("ScriptResults")
                 + " (RUN_ID, PRC_ID, PARENT_PRC_ID, SCRIPT_ID, SCRIPT_NM, SCRIPT_VRS_NB, ENV_NM, ST_NM, STRT_TMS, END_TMS) VALUES ("
                 + SQLTools.GetStringForSQL(scriptResult.getMetadataKey().getRunId()) + "," +
                 SQLTools.GetStringForSQL(scriptResult.getMetadataKey().getProcessId()) + "," +
@@ -130,10 +140,10 @@ public class ScriptResultConfiguration extends Configuration<ScriptResult, Scrip
 //	public ScriptResult getScript(String runId) {
 //		ScriptResult scriptResult = new ScriptResult();
 //		String queryScript = "select RUN_ID, PRC_ID, PARENT_PRC_ID, SCRIPT_ID, SCRIPT_NM, SCRIPT_VRS_NB, ENV_NM, ST_NM, STRT_TMS, END_TMS from "
-//				+ MetadataControl.getInstance().getResultMetadataRepository()
+//				+ getMetadataRepository()
 //						.getTableNameByLabel("ScriptResults")
 //				+ " where RUN_ID = '" + runId + "' and PARENT_PRC_ID = 0";
-//		CachedRowSet crsScriptResult = MetadataControl.getInstance().getResultMetadataRepository()
+//		CachedRowSet crsScriptResult = getMetadataRepository()
 //				.executeQuery(queryScript, "reader");
 //		try {
 //			while (crsScriptResult.next()) {
@@ -169,10 +179,10 @@ public class ScriptResultConfiguration extends Configuration<ScriptResult, Scrip
 //	public List<ScriptResult> getChildScripts(String runId) {
 //		List<ScriptResult> scriptResults = new ArrayList<>();
 //		String queryScript = "select RUN_ID, PRC_ID, PARENT_PRC_ID, SCRIPT_ID, SCRIPT_NM, SCRIPT_VRS_NB, ENV_NM, ST_NM, STRT_TMS, END_TMS from "
-//				+ MetadataControl.getInstance().getResultMetadataRepository()
+//				+ getMetadataRepository()
 //						.getTableNameByLabel("ScriptResults")
 //				+ " where RUN_ID = '" + runId + "' and PARENT_PRC_ID > 0";
-//		CachedRowSet crsScriptResult = MetadataControl.getInstance().getResultMetadataRepository()
+//		CachedRowSet crsScriptResult = getMetadataRepository()
 //				.executeQuery(queryScript, "reader");
 //		try {
 //			while (crsScriptResult.next()) {

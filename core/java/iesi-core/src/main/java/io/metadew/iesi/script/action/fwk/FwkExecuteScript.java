@@ -121,8 +121,8 @@ public class FwkExecuteScript {
 
     private boolean executeScript(String scriptName, Optional<Long> scriptVersion, Optional<String> environmentName, Optional<String> parameterList, Optional<String> parameterFileName) throws ScriptExecutionBuildException, SQLException {
         // Check on Running a script in a loop
-        if (this.getScriptExecution().getScript().getName().equalsIgnoreCase(scriptName)) {
-            throw new RuntimeException("Not allowed to run the script recursively");
+        if (scriptExecution.getScript().getName().equals(scriptName)) {
+            throw new RuntimeException(MessageFormat.format("Not allowed to run the script recursively. Attempting to run {0} in {1}", scriptName, scriptExecution.getScript().getName()));
         }
 
         ScriptConfiguration scriptConfiguration = new ScriptConfiguration();

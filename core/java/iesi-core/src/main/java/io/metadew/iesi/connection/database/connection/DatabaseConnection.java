@@ -22,7 +22,6 @@ import java.util.List;
 public abstract class DatabaseConnection {
 
     private static Logger LOGGER = LogManager.getLogger();
-    private static final Marker SQLMARKER = MarkerManager.getMarker("SQL");
 
     private String type;
     private String connectionURL;
@@ -49,6 +48,10 @@ public abstract class DatabaseConnection {
             connection.setAutoCommit(false);
             return connection;
         } catch (ClassNotFoundException | SQLException e) {
+            StringWriter stackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTrace));
+            LOGGER.info("exception=" + e);
+            LOGGER.debug("exception.stacktrace=" + stackTrace.toString());
             throw new RuntimeException(e);
         }
     }
@@ -242,16 +245,10 @@ public abstract class DatabaseConnection {
 
     public SqlScriptResult executeScript(InputStream inputStream, Connection connection) throws IOException, SQLException {
         SqlScriptResult sqlScriptResult;
-
-        //
         ScriptRunner scriptRunner = new ScriptRunner(connection, false, false);
-
         InputStreamReader reader;
-
         reader = new InputStreamReader(inputStream);
-
         sqlScriptResult = scriptRunner.runScript(reader);
-
         return sqlScriptResult;
     }
 

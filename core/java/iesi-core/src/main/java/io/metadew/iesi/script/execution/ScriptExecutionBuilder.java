@@ -9,7 +9,6 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
 
 public class ScriptExecutionBuilder {
 

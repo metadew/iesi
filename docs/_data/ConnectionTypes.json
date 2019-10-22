@@ -695,4 +695,23 @@
     } ]
   },
   "type" : "ConnectionType"
+}, {
+  "data" : {
+    "name" : "socket",
+    "description" : "socket Connection",
+    "parameters" : [ {
+      "name" : "hostname",
+      "description" : "The host name",
+      "type" : "string",
+      "mandatory" : "Y",
+      "encrypted" : "N"
+    }, {
+      "name" : "port",
+      "description" : "The port number",
+      "type" : "string",
+      "mandatory" : "Y",
+      "encrypted" : "N"
+    } ]
+  },
+  "type" : "ConnectionType"
 } ]

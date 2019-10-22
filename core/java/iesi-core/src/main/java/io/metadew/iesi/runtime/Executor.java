@@ -1,6 +1,5 @@
 package io.metadew.iesi.runtime;
 
-import io.metadew.iesi.metadata.configuration.request.RequestResultConfiguration;
 import io.metadew.iesi.metadata.definition.execution.AuthenticatedExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.NonAuthenticatedExecutionRequest;
 import org.apache.logging.log4j.LogManager;
@@ -11,7 +10,6 @@ public class Executor {
     private static Executor INSTANCE;
 
     private static final Logger LOGGER = LogManager.getLogger();
-    private RequestResultConfiguration requestResultConfiguration;
 
     private Executor() {
     }
@@ -23,12 +21,7 @@ public class Executor {
         return INSTANCE;
     }
 
-    public void init() {
-        this.requestResultConfiguration = new RequestResultConfiguration();
-    }
-
     public synchronized void execute(NonAuthenticatedExecutionRequest request) {
-
     }
 
     public synchronized void execute(AuthenticatedExecutionRequest request) {

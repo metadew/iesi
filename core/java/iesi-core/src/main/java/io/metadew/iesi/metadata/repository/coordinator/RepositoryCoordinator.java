@@ -6,7 +6,6 @@ import io.metadew.iesi.metadata.definition.MetadataTable;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.InputStream;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
@@ -24,22 +23,19 @@ public class RepositoryCoordinator {
 
     public CachedRowSet executeQuery(String query, String logonType) {
         CachedRowSet crs;
-        try {
-            crs = this.databases.get(logonType).executeQuery(query);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        crs = this.databases.get(logonType).executeQuery(query);
         return crs;
     }
 
-    public void executeUpdate(String query)  {
+    public void executeUpdate(String query) {
         this.databases.get("writer").executeUpdate(query);
     }
-    public void executeBatch(List<String> queries)  {
+
+    public void executeBatch(List<String> queries) {
         this.databases.get("writer").executeBatch(queries);
     }
 
-    public void executeScript(String fileName, String logonType)  {
+    public void executeScript(String fileName, String logonType) {
         SqlScriptResult dcSQLScriptResult = this.databases.get(logonType).executeScript(fileName);
 
         if (dcSQLScriptResult.getReturnCode() != 0) {
@@ -47,7 +43,7 @@ public class RepositoryCoordinator {
         }
     }
 
-    public void executeScript(InputStream inputStream, String logonType)  {
+    public void executeScript(InputStream inputStream, String logonType) {
         SqlScriptResult dcSQLScriptResult = this.databases.get(logonType).executeScript(inputStream);
 
         if (dcSQLScriptResult.getReturnCode() != 0) {
@@ -55,15 +51,15 @@ public class RepositoryCoordinator {
         }
     }
 
-    public void cleanTable(MetadataTable table)  {
+    public void cleanTable(MetadataTable table) {
         this.databases.get("writer").cleanTable(table);
     }
 
-    public void dropTable(MetadataTable table)  {
+    public void dropTable(MetadataTable table) {
         this.databases.get("owner").dropTable(table);
     }
 
-    public void createTable(MetadataTable table)  {
+    public void createTable(MetadataTable table) {
         this.databases.get("owner").createTable(table);
     }
 

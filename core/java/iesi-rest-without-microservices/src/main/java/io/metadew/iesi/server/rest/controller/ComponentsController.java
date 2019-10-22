@@ -6,8 +6,6 @@ import io.metadew.iesi.metadata.configuration.exception.ComponentDoesNotExistExc
 import io.metadew.iesi.metadata.definition.component.Component;
 import io.metadew.iesi.server.rest.error.DataBadRequestException;
 import io.metadew.iesi.server.rest.error.DataNotFoundException;
-import io.metadew.iesi.server.rest.error.GetListNullProperties;
-import io.metadew.iesi.server.rest.error.GetNullProperties;
 import io.metadew.iesi.server.rest.pagination.ComponentCriteria;
 import io.metadew.iesi.server.rest.pagination.ComponentPagination;
 import io.metadew.iesi.server.rest.resource.HalMultipleEmbeddedResource;
@@ -154,7 +152,7 @@ public class ComponentsController {
     }
 
     @DeleteMapping("/{name}/{version}")
-    public ResponseEntity<?> deleteC(@PathVariable String name, @PathVariable Long version) {
+    public ResponseEntity<?> delete(@PathVariable String name, @PathVariable Long version) {
         Component component = componentConfiguration.get(name, version)
                 .orElseThrow(() -> new DataNotFoundException(name, version));
         try {

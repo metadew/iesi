@@ -77,7 +77,6 @@ public class AssemblyLauncher {
         }
 
         // FWK init
-
         FrameworkConfiguration frameworkConfiguration = FrameworkConfiguration.getInstance();
         frameworkConfiguration.init(repository);
 

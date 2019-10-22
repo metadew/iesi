@@ -4,10 +4,12 @@ import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
+import io.metadew.iesi.metadata.configuration.script.design.ScriptDesignTraceConfiguration;
 import io.metadew.iesi.metadata.configuration.script.trace.exception.ScriptTraceAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.script.trace.exception.ScriptTraceDoesNotExistException;
 import io.metadew.iesi.metadata.definition.script.trace.ScriptTrace;
 import io.metadew.iesi.metadata.definition.script.trace.key.ScriptTraceKey;
+import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -21,21 +23,31 @@ import java.util.Optional;
 public class ScriptTraceConfiguration extends Configuration<ScriptTrace, ScriptTraceKey> {
 
     private static final Logger LOGGER = LogManager.getLogger();
+    private static ScriptTraceConfiguration INSTANCE;
 
-    // Constructors
-    public ScriptTraceConfiguration() {
-        super();
+    public synchronized static ScriptTraceConfiguration getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new ScriptTraceConfiguration();
+        }
+        return INSTANCE;
+    }
+
+    private ScriptTraceConfiguration() {
+    }
+
+    public void init(MetadataRepository metadataRepository) {
+        setMetadataRepository(metadataRepository);
     }
 
     @Override
     public Optional<ScriptTrace> get(ScriptTraceKey scriptTraceKey) {
         try {
             String query = "SELECT PARENT_PRC_ID, SCRIPT_TYP_NM, SCRIPT_NM, SCRIPT_DSC FROM " +
-                    getMetadataControl().getTraceMetadataRepository().getTableNameByLabel("ScriptTraces") +
+                    getMetadataRepository().getTableNameByLabel("ScriptTraces") +
                     " WHERE " +
                     " RUN_ID = " + SQLTools.GetStringForSQL(scriptTraceKey.getRunId()) + " AND " +
                     " PRC_ID = " + SQLTools.GetStringForSQL(scriptTraceKey.getProcessId()) + ";";
-            CachedRowSet cachedRowSet = getMetadataControl().getTraceMetadataRepository().executeQuery(query, "reader");
+            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
             if (cachedRowSet.size() == 0) {
                 return Optional.empty();
             } else if (cachedRowSet.size() > 1) {
@@ -58,8 +70,8 @@ public class ScriptTraceConfiguration extends Configuration<ScriptTrace, ScriptT
         try {
             List<ScriptTrace> scriptTraces = new ArrayList<>();
             String query = "SELECT RUN_ID, PRC_ID, PARENT_PRC_ID, SCRIPT_ID, SCRIPT_TYP_NM, SCRIPT_NM, SCRIPT_DSC FROM " +
-                    getMetadataControl().getTraceMetadataRepository().getTableNameByLabel("ScriptTraces") + ";";
-            CachedRowSet cachedRowSet = getMetadataControl().getTraceMetadataRepository().executeQuery(query, "reader");
+                    getMetadataRepository().getTableNameByLabel("ScriptTraces") + ";";
+            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
             while (cachedRowSet.next()) {
                 scriptTraces.add(new ScriptTrace(new ScriptTraceKey(
                         cachedRowSet.getString("RUN_ID"),
@@ -85,11 +97,11 @@ public class ScriptTraceConfiguration extends Configuration<ScriptTrace, ScriptT
                     "ScriptTrace {0} does not exists", scriptTraceKey.toString()));
         }
         String deleteStatement = deleteStatement(scriptTraceKey);
-        getMetadataControl().getTraceMetadataRepository().executeUpdate(deleteStatement);
+        getMetadataRepository().executeUpdate(deleteStatement);
     }
 
     private String deleteStatement(ScriptTraceKey scriptTraceKey) {
-        return "DELETE FROM " + getMetadataControl().getTraceMetadataRepository().getTableNameByLabel("ScriptTraces") +
+        return "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ScriptTraces") +
                 " WHERE " +
                 " RUN_ID = " + SQLTools.GetStringForSQL(scriptTraceKey.getRunId()) + " AND " +
                 " PRC_ID = " + SQLTools.GetStringForSQL(scriptTraceKey.getProcessId()) + ";";
@@ -103,11 +115,11 @@ public class ScriptTraceConfiguration extends Configuration<ScriptTrace, ScriptT
                     "ScriptTrace {0} already exists", scriptTrace.getMetadataKey().toString()));
         }
         String insertStatement = insertStatement(scriptTrace);
-        getMetadataControl().getTraceMetadataRepository().executeUpdate(insertStatement);
+        getMetadataRepository().executeUpdate(insertStatement);
     }
 
     private String insertStatement(ScriptTrace scriptTrace) {
-        return "INSERT INTO " + getMetadataControl().getTraceMetadataRepository().getTableNameByLabel("ScriptTraces") +
+        return "INSERT INTO " + getMetadataRepository().getTableNameByLabel("ScriptTraces") +
                 " (RUN_ID, PRC_ID, PARENT_PRC_ID, SCRIPT_ID, SCRIPT_TYP_NM, SCRIPT_NM, SCRIPT_DSC) VALUES (" +
                 SQLTools.GetStringForSQL(scriptTrace.getMetadataKey().getRunId()) + "," +
                 SQLTools.GetStringForSQL(scriptTrace.getMetadataKey().getProcessId()) + "," +

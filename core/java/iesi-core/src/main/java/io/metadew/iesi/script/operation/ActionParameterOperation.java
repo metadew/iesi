@@ -13,7 +13,6 @@ import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 import org.apache.logging.log4j.Level;
 
-import java.sql.SQLException;
 import java.text.MessageFormat;
 
 /**

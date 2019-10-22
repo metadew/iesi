@@ -7,8 +7,6 @@ import io.metadew.iesi.guard.execution.GuardExecution;
 import io.metadew.iesi.metadata.definition.Context;
 import org.apache.commons.cli.*;
 
-import java.sql.SQLException;
-
 /**
  * The guard launcher is entry point to launch all access control actions.
  *

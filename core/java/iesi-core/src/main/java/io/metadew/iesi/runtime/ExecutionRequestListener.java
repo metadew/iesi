@@ -9,7 +9,6 @@ import io.metadew.iesi.metadata.definition.execution.ExecutionRequestStatus;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -19,10 +18,8 @@ public class ExecutionRequestListener {
 
     private static final Logger LOGGER = LogManager.getLogger();
     private final ExecutorService executor;
-    private final ExecutionRequestConfiguration executionRequestConfiguration;
 
     public ExecutionRequestListener() {
-        executionRequestConfiguration = new ExecutionRequestConfiguration();
         int threadSize = FrameworkSettingConfiguration.getInstance().getSettingPath("server.threads")
                 .map(settingPath -> Integer.parseInt(FrameworkControl.getInstance().getProperty(settingPath)))
                 .orElse(4);
@@ -33,12 +30,12 @@ public class ExecutionRequestListener {
     public void run() throws InterruptedException, MetadataDoesNotExistException {
         while(true) {
             LOGGER.trace("executionrequestlistener=fetching new requests");
-            List<ExecutionRequest> executionRequests = executionRequestConfiguration.getAllNew();
-            LOGGER.trace(MessageFormat.format("fexecutionrequestlistener=found {0} Requests", executionRequests.size()));
+            List<ExecutionRequest> executionRequests = ExecutionRequestConfiguration.getInstance().getAllNew();
+            LOGGER.trace(MessageFormat.format("executionrequestlistener=found {0} Requests", executionRequests.size()));
             for (ExecutionRequest executionRequest : executionRequests) {
                 LOGGER.info(MessageFormat.format("executionrequestlistener=submitting request {0} for execution", executionRequest.getMetadataKey().getId()));
                 executionRequest.updateExecutionRequestStatus(ExecutionRequestStatus.SUBMITTED);
-                executionRequestConfiguration.update(executionRequest);
+                ExecutionRequestConfiguration.getInstance().update(executionRequest);
 
                 executor.submit(new ExecutionRequestTask(executionRequest));
             }

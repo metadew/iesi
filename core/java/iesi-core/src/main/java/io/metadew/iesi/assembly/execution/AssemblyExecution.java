@@ -20,10 +20,20 @@ import io.metadew.iesi.metadata.operation.DataObjectOperation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.*;
+import java.awt.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 public class AssemblyExecution {
 
@@ -70,12 +80,11 @@ public class AssemblyExecution {
         loadLicenses(versionHome);
         loadMavenDependencies(versionHome);
 
-//        loadRestLicenses(versionHome);
-//        loadRestDependencies(versionHome);
+        loadRestLicenses(versionHome);
+        loadRestDependencies(versionHome);
 
         loadMetadataConfiguration();
         loadMetadataDefinitions();
-
 
         loadSystemConfigurations();
         loadAssets(versionHome);
@@ -96,6 +105,7 @@ public class AssemblyExecution {
 
 
         initConfiguration(versionHome);
+        initFramework(versionHome);
         // create folder
         /*
          * String metadataDefHome = versionHome + File.separator + "metadata" +
@@ -130,6 +140,10 @@ public class AssemblyExecution {
          * this.getAssemblyContext().getConfigTools());
          * executionServerRepositoryConnection.executeScript(inputStream); }
          */
+    }
+
+    private void initFramework(String versionHome) {
+
     }
 
     private void initConfiguration(String versionHome) throws JsonProcessingException {
@@ -281,7 +295,9 @@ public class AssemblyExecution {
             sourcePath = sourcePath.replace("#GIT_DEV#", development);
             String targetPath = versionHome + parts[2] + File.separator + parts[0];
             try {
-                FileTools.copyFromFileToFile(sourcePath, targetPath);
+                LOGGER.debug("Copying " + sourcePath + " to " + targetPath);
+                Files.copy(Paths.get(sourcePath), Paths.get(targetPath));
+                //FileTools.copyFromFileToFile(sourcePath, targetPath);
             } catch (Exception e ) {
                 LOGGER.info("skipping " + sourcePath);
             }
@@ -394,11 +410,16 @@ public class AssemblyExecution {
         }
     }
 
-    private void loadRestDependencies(String versionHome) {
+    private void loadRestDependencies(String versionHome) throws IOException {
         LOGGER.info(MessageFormat.format("Loading dependencies (REST) into version home: {0}", versionHome));
-        String mavenDependenciesSource = repository + File.separator + "core" + File.separator + "java" + File.separator + "iesi-rest-without-microservices" + File.separator + "target" + File.separator + "dependencies";
-        String mavenDependenciesTarget = versionHome + File.separator + "lib";
-        FolderTools.copyFromFolderToFolder(mavenDependenciesSource, mavenDependenciesTarget, true);
+        String mavenDependenciesSource = repository + File.separator + "core" + File.separator + "java" + File.separator + "iesi-rest-without-microservices" + File.separator + "target";
+        String mavenDependenciesTarget = versionHome + File.separator + "rest";
+        Path restJar = Files.walk(Paths.get(mavenDependenciesSource), 1)
+                .filter(path -> path.getFileName().toString().endsWith("jar"))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Could not find REST jar"));
+        Files.copy(restJar, Paths.get(mavenDependenciesTarget).resolve(restJar.getFileName()), REPLACE_EXISTING);
+        // FolderTools.copyFromFolderToFolder(mavenDependenciesSource, mavenDependenciesTarget, true);
     }
 
     private void loadRestLicenses(String versionHome) {
@@ -409,7 +430,7 @@ public class AssemblyExecution {
     }
 
     private void loadMavenDependencies(String versionHome) {
-        LOGGER.info(MessageFormat.format("Loading dependencies into version home: {0}", versionHome));
+        LOGGER.info(MessageFormat.format("Loading rest into version home: {0}", versionHome));
         // Load maven dependencies
         String mavenDependenciesSource = repository + File.separator + "core" + File.separator + "java" + File.separator + "iesi-core" + File.separator + "target" + File.separator + "dependencies";
         String mavenDependenciesTarget = versionHome + File.separator + "lib";
@@ -442,9 +463,14 @@ public class AssemblyExecution {
         FolderTools.createFolder(versionHome);
     }
 
-    private void deleteVersionDirectory(String versionHome) {
-        LOGGER.info(MessageFormat.format("Deleting version home: {0}", versionHome));
-        FolderTools.deleteFolder(versionHome, true);
+    private void deleteVersionDirectory(String versionHome) throws IOException {
+        if (Files.exists(Paths.get(versionHome))) {
+            LOGGER.info(MessageFormat.format("Deleting version home: {0}", versionHome));
+            Files.walk(Paths.get(versionHome))
+                    .sorted(Comparator.reverseOrder())
+                    .map(Path::toFile)
+                    .forEach(File::delete);
+        }
     }
 
 

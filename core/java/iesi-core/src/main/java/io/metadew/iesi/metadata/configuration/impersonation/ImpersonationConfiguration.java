@@ -7,9 +7,9 @@ import io.metadew.iesi.framework.execution.FrameworkControl;
 import io.metadew.iesi.metadata.configuration.MetadataConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.ImpersonationAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.ImpersonationDoesNotExistException;
+import io.metadew.iesi.metadata.definition.ListObject;
 import io.metadew.iesi.metadata.definition.impersonation.Impersonation;
 import io.metadew.iesi.metadata.definition.impersonation.ImpersonationParameter;
-import io.metadew.iesi.metadata.definition.ListObject;
 import io.metadew.iesi.metadata.execution.MetadataControl;
 
 import javax.sql.rowset.CachedRowSet;

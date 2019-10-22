@@ -8,7 +8,7 @@ import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsExc
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.action.result.ActionResult;
 import io.metadew.iesi.metadata.definition.action.result.key.ActionResultKey;
-import io.metadew.iesi.metadata.execution.MetadataControl;
+import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -22,20 +22,30 @@ import java.util.Optional;
 public class ActionResultConfiguration extends Configuration<ActionResult, ActionResultKey> {
 
     private static final Logger LOGGER = LogManager.getLogger();
+    private static ActionResultConfiguration INSTANCE;
 
-    // Constructors
-    public ActionResultConfiguration() {
-        super();
+    public synchronized static ActionResultConfiguration getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new ActionResultConfiguration();
+        }
+        return INSTANCE;
+    }
+
+    private ActionResultConfiguration() {
+    }
+
+    public void init(MetadataRepository metadataRepository) {
+        setMetadataRepository(metadataRepository);
     }
 
     @Override
     public Optional<ActionResult> get(ActionResultKey actionResultKey) {
         try {
             String query = "select RUN_ID, PRC_ID, SCRIPT_PRC_ID, ACTION_ID, ACTION_NM, ENV_NM, ST_NM, STRT_TMS, END_TMS from "
-                    + MetadataControl.getInstance().getResultMetadataRepository().getTableNameByLabel("ActionResults")
+                    + getMetadataRepository().getTableNameByLabel("ActionResults")
                     + " where RUN_ID = " + SQLTools.GetStringForSQL(actionResultKey.getRunId()) + " and PRC_ID = " + SQLTools.GetStringForSQL(actionResultKey.getProcessId())
                     + " and ACTION_ID = " + SQLTools.GetStringForSQL(actionResultKey.getActionId()) + ";";
-            CachedRowSet cachedRowSet = MetadataControl.getInstance().getResultMetadataRepository().executeQuery(query, "reader");
+            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
             if (cachedRowSet.size() == 0) {
                 return Optional.empty();
             } else if (cachedRowSet.size() > 1) {
@@ -59,8 +69,8 @@ public class ActionResultConfiguration extends Configuration<ActionResult, Actio
         try {
             List<ActionResult> scriptResults = new ArrayList<>();
             String query = "select RUN_ID, PRC_ID, SCRIPT_PRC_ID, ACTION_ID, ACTION_NM, ENV_NM, ST_NM, STRT_TMS, END_TMS from "
-                    + MetadataControl.getInstance().getResultMetadataRepository().getTableNameByLabel("ActionResults") + ";";
-            CachedRowSet cachedRowSet = getMetadataControl().getResultMetadataRepository().executeQuery(query, "reader");
+                    + getMetadataRepository().getTableNameByLabel("ActionResults") + ";";
+            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
             while (cachedRowSet.next()) {
                 scriptResults.add(new ActionResult(new ActionResultKey(
                         cachedRowSet.getString("RUN_ID"),
@@ -87,11 +97,11 @@ public class ActionResultConfiguration extends Configuration<ActionResult, Actio
                     "ActionResult {0} does not exists", actionResultKey.toString()));
         }
         String deleteStatement = deleteStatement(actionResultKey);
-        getMetadataControl().getResultMetadataRepository().executeUpdate(deleteStatement);
+        getMetadataRepository().executeUpdate(deleteStatement);
     }
 
     private String deleteStatement(ActionResultKey actionResultKey) {
-        return "DELETE FROM " + getMetadataControl().getResultMetadataRepository().getTableNameByLabel("ActionResults") +
+        return "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ActionResults") +
                 " WHERE " +
                 " RUN_ID = " + SQLTools.GetStringForSQL(actionResultKey.getRunId()) + " AND " +
                 " ACTION_ID = " + SQLTools.GetStringForSQL(actionResultKey.getActionId()) + " AND " +
@@ -106,12 +116,12 @@ public class ActionResultConfiguration extends Configuration<ActionResult, Actio
                     "ActionResult {0} already exists", actionResult.getMetadataKey().toString()));
         }
         String insertStatement = insertStatement(actionResult);
-        getMetadataControl().getResultMetadataRepository().executeUpdate(insertStatement);
+        getMetadataRepository().executeUpdate(insertStatement);
     }
 
     private String insertStatement(ActionResult actionResult) {
         return "INSERT INTO "
-                + MetadataControl.getInstance().getResultMetadataRepository().getTableNameByLabel("ActionResults")
+                + getMetadataRepository().getTableNameByLabel("ActionResults")
                 + " (RUN_ID, PRC_ID, SCRIPT_PRC_ID, ACTION_ID, ACTION_NM, ENV_NM, ST_NM, STRT_TMS, END_TMS) VALUES ("
                 + SQLTools.GetStringForSQL(actionResult.getMetadataKey().getRunId()) + ","
                 + SQLTools.GetStringForSQL(actionResult.getMetadataKey().getProcessId()) + ","
@@ -127,10 +137,10 @@ public class ActionResultConfiguration extends Configuration<ActionResult, Actio
 //    public List<ActionResult> getActions(String runId) {
 //        List<ActionResult> actionResults = new ArrayList<>();
 //        String query = "select RUN_ID, PRC_ID, SCRIPT_PRC_ID, ACTION_ID, ACTION_NM, ENV_NM, ST_NM, STRT_TMS, END_TMS from "
-//                + MetadataControl.getInstance().getResultMetadataRepository()
+//                + getMetadataRepository()
 //                .getTableNameByLabel("ActionResults")
 //                + " where RUN_ID = '" + runId + "' order by PRC_ID asc, STRT_TMS asc";
-//        CachedRowSet crsActionResults = MetadataControl.getInstance().getResultMetadataRepository()
+//        CachedRowSet crsActionResults = getMetadataRepository()
 //                .executeQuery(query, "reader");
 //        try {
 //            while (crsActionResults.next()) {
@@ -163,10 +173,10 @@ public class ActionResultConfiguration extends Configuration<ActionResult, Actio
 //    public List<ActionResult> getActions(String runId, Long scriptProcessId) {
 //        List<ActionResult> actionResults = new ArrayList<>();
 //        String query = "select RUN_ID, PRC_ID, SCRIPT_PRC_ID, ACTION_ID, ACTION_NM, ENV_NM, ST_NM, STRT_TMS, END_TMS from "
-//                + MetadataControl.getInstance().getResultMetadataRepository()
+//                + getMetadataRepository()
 //                .getTableNameByLabel("ActionResults")
 //                + " where RUN_ID = '" + runId + "' and SCRIPT_PRC_ID = " + scriptProcessId + " order by PRC_ID asc, STRT_TMS asc";
-//        CachedRowSet crsActionResults = MetadataControl.getInstance().getResultMetadataRepository()
+//        CachedRowSet crsActionResults = getMetadataRepository()
 //                .executeQuery(query, "reader");
 //        try {
 //            while (crsActionResults.next()) {

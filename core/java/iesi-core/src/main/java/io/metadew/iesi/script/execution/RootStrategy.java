@@ -39,6 +39,7 @@ public class RootStrategy implements RootingStrategy {
         if (scriptExecution.isExitOnCompletion()) {
             scriptExecution.getExecutionControl().endExecution();
         }
+        scriptExecution.getExecutionControl().getExecutionRuntime().getRuntimeVariableConfiguration().shutdown();
     }
 
     @Override

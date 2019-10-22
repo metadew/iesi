@@ -11,7 +11,6 @@ import org.apache.commons.jexl2.MapContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
-import java.sql.SQLException;
 
 /**
  * Operation to manage the conditions that have been defined in the script

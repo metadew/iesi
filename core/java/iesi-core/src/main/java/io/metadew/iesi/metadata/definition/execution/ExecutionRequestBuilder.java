@@ -92,7 +92,7 @@ public class ExecutionRequestBuilder {
                 scope,
                 context,
                 ExecutionRequestStatus.NEW,
-                getscriptExecutionRequests().orElse(new ArrayList<>()));
+                getScriptExecutionRequests().orElse(new ArrayList<>()));
     }
 
     private AuthenticatedExecutionRequest buildAuthenticatedExecutionRequest() throws ExecutionRequestBuilderException {
@@ -106,9 +106,10 @@ public class ExecutionRequestBuilder {
                 scope,
                 context,
                 ExecutionRequestStatus.NEW,
-                getscriptExecutionRequests().orElse(new ArrayList<>()),
+                getScriptExecutionRequests().orElse(new ArrayList<>()),
+                space,
                 user,
-                space, password);
+                password);
     }
 
     private void verifyMandatoryAuthenticationArguments() throws ExecutionRequestBuilderException {
@@ -123,7 +124,7 @@ public class ExecutionRequestBuilder {
         }
     }
 
-    private Optional<List<ScriptExecutionRequest>> getscriptExecutionRequests() {
+    private Optional<List<ScriptExecutionRequest>> getScriptExecutionRequests() {
         return Optional.ofNullable(scriptExecutionRequests);
     }
 

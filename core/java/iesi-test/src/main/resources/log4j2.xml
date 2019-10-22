@@ -91,7 +91,7 @@
             <AppenderRef ref="elasticSearchFileBeat" level="info" />
             <AppenderRef ref="default" level="all" />
         </Logger>
-        <Logger name="io.metadew.iesi.connection.database.connection" additivity="false">
+        <Logger name="io.metadew.iesi.connection.database" additivity="false">
             <AppenderRef ref="queries" level="all" />
         </Logger>
         <Logger name="io.metadew.iesi.script" additivity="false">

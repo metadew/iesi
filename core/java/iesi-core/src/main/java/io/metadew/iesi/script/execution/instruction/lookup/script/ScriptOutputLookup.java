@@ -8,20 +8,15 @@ import io.metadew.iesi.script.execution.instruction.lookup.LookupInstruction;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.Optional;
 
 public class ScriptOutputLookup implements LookupInstruction {
     private final ExecutionControl executionControl;
     private static final Logger LOGGER = LogManager.getLogger();
-    private final ScriptResultOutputConfiguration scriptResultOutputConfiguration;
 
     public ScriptOutputLookup(ExecutionControl executionControl) {
         this.executionControl = executionControl;
-        this.scriptResultOutputConfiguration = new ScriptResultOutputConfiguration();
     }
 
     @Override
@@ -31,7 +26,7 @@ public class ScriptOutputLookup implements LookupInstruction {
 
     @Override
     public String generateOutput(String parameters) {
-        Optional<ScriptResultOutput> scriptResultOutput = scriptResultOutputConfiguration.get(new ScriptResultOutputKey(executionControl.getRunId(), -1L, parameters.trim()));
+        Optional<ScriptResultOutput> scriptResultOutput = ScriptResultOutputConfiguration.getInstance().get(new ScriptResultOutputKey(executionControl.getRunId(), -1L, parameters.trim()));
         if (!scriptResultOutput.isPresent()) {
             throw new IllegalArgumentException(MessageFormat.format("No script output parameter {0} found for run id {1}", parameters.trim(), executionControl.getRunId()));
         } else {

@@ -1,7 +1,7 @@
 package io.metadew.iesi.script.operation;
 
-import io.metadew.iesi.metadata.configuration.impersonation.ImpersonationConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.ImpersonationDoesNotExistException;
+import io.metadew.iesi.metadata.configuration.impersonation.ImpersonationConfiguration;
 import io.metadew.iesi.metadata.definition.impersonation.Impersonation;
 
 import java.io.BufferedReader;

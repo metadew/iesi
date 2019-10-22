@@ -7,7 +7,6 @@ import io.metadew.iesi.script.configuration.IterationInstance;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 import io.metadew.iesi.script.operation.ComponentAttributeOperation;
 import io.metadew.iesi.script.operation.ConditionOperation;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -41,7 +40,7 @@ public class ActionExecution {
 		this.executionControl = executionControl;
 		this.scriptExecution = scriptExecution;
 		this.action = action;
-		this.actionPerformanceLogger = new ActionPerformanceLogger(new ActionPerformanceConfiguration());
+		this.actionPerformanceLogger = new ActionPerformanceLogger();
 		this.actionTypeConfiguration = new ActionTypeConfiguration();
 	}
 
@@ -160,8 +159,8 @@ public class ActionExecution {
 			LOGGER.debug("action.stacktrace=" + stackTrace);
 			actionControl.increaseErrorCount();
 		}
+		actionControl.getActionRuntime().getRuntimeActionCacheConfiguration().shutdown();
 		executionControl.logEnd(this, scriptExecution);
-
 	}
 
 	public void skip() {

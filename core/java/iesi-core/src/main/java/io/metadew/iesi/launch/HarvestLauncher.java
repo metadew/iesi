@@ -7,8 +7,6 @@ import io.metadew.iesi.metadata.definition.Context;
 import io.metadew.iesi.util.harvest.DatabaseHarvestExecution;
 import org.apache.commons.cli.*;
 
-import java.sql.SQLException;
-
 /**
  * The harvest launcher is entry point to launch the data harvesting utility.
  *

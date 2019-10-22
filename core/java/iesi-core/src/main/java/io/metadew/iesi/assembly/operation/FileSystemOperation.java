@@ -13,7 +13,6 @@ public class FileSystemOperation {
 
     }
 
-    @SuppressWarnings("resource")
     public void createSolutionStructure(String configurationFilePath, String targetFolderPath) {
         try {
             File file = new File(configurationFilePath);

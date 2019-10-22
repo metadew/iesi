@@ -83,7 +83,7 @@ public class IesiConfiguration {
     @Bean
     @DependsOn("frameworkInstance")
     public ExecutionRequestConfiguration executionRequestConfiguration() {
-        return new ExecutionRequestConfiguration();
+        return ExecutionRequestConfiguration.getInstance();
     }
 
 }

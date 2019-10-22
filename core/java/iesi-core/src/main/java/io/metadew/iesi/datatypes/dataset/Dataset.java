@@ -5,18 +5,17 @@ import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeService;
 import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.datatypes.text.Text;
-import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public abstract class Dataset extends DataType {
+    private final Object newDatasetLock = 0;
 
     private String name;
     private List<String> labels;
@@ -46,12 +45,14 @@ public abstract class Dataset extends DataType {
         this.datasetDatabase = initializeDatasetConnection(name, labels);
     }
 
-    public abstract void clean();
+    public abstract void clean(ExecutionRuntime executionRuntime);
 
     protected abstract Database createNewDatasetDatabase(String datasetName, String filename, String tableName, int inventoryId) throws IOException;
 
     public abstract Optional<DataType> getDataItem(String dataItem, ExecutionRuntime executionRuntime);
+
     public abstract Map<String, DataType> getDataItems(ExecutionRuntime executionRuntime);
+
     public abstract void setDataItem(String key, DataType value);
 
     private List<String> convertDatasetLabels(DataType datasetLabels, ExecutionRuntime executionRuntime) {
@@ -109,13 +110,17 @@ public abstract class Dataset extends DataType {
         return datasetMetadata.getDatasetDatabase(datasetInventoryId);
     }
 
-    protected Database createNewDataset(String datasetName, List<String> labels) throws IOException {
-        LOGGER.trace(MessageFormat.format("datatype.dataset=initializing new dataset database for ''{0}'' with labels {1}", datasetName, labels.toString()));
-        int nextInventoryId = getDatasetMetadata().getLatestInventoryId() + 1;
-        String datasetFilename = UUID.randomUUID().toString() + ".db3";
-        tableName = "data";
-        getDatasetMetadata().insertDatasetLabelInformation(nextInventoryId, labels);
-        return createNewDatasetDatabase(datasetName, datasetFilename, tableName, nextInventoryId);
+    public Database createNewDataset(String datasetName, List<String> labels) throws IOException {
+        Database dataset;
+        synchronized (this.newDatasetLock) {
+            LOGGER.trace(MessageFormat.format("datatype.dataset=initializing new dataset database for ''{0}'' with labels {1}", datasetName, labels.toString()));
+            int nextInventoryId = datasetMetadata.getLatestInventoryId() + 1;
+            String datasetFilename = UUID.randomUUID().toString() + ".db3";
+            tableName = "data";
+            datasetMetadata.insertDatasetLabelInformation(nextInventoryId, labels);
+            dataset = createNewDatasetDatabase(datasetName, datasetFilename, tableName, nextInventoryId);
+        }
+        return dataset;
     }
 
 

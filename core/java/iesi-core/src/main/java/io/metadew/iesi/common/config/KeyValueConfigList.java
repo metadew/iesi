@@ -4,7 +4,7 @@ import io.metadew.iesi.framework.execution.FrameworkControl;
 
 public class KeyValueConfigList extends ConfigFile {
 
-    public KeyValueConfigList(FrameworkControl frameworkControl, String input) {
+    public KeyValueConfigList(String input) {
         super();
         try {
             String[] parts = input.split(",");
@@ -14,7 +14,7 @@ public class KeyValueConfigList extends ConfigFile {
                 if (delim > 0) {
                     String key = innerpart.substring(0, delim);
                     String value = innerpart.substring(delim + 1);
-                    this.setProperty(key, frameworkControl.resolveConfiguration(value));
+                    this.setProperty(key, FrameworkControl.getInstance().resolveConfiguration(value));
                 } else {
                     // Not a valid configuration
                 }

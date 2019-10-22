@@ -71,7 +71,7 @@ public class ExecutionRuntime {
 
         // Create cache folder
         this.runCacheFolderName = FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("run.cache") + File.separator + runId;
-        FolderTools.createFolder(runCacheFolderName);
+        // FolderTools.createFolder(runCacheFolderName);
         this.runtimeVariableConfiguration = new RuntimeVariableConfiguration(this.runCacheFolderName);
         this.iterationVariableConfiguration = new IterationVariableConfiguration(this.runCacheFolderName, true);
 
@@ -637,5 +637,11 @@ public class ExecutionRuntime {
     public void setExecutionControl(ExecutionControl executionControl) {
         this.executionControl = executionControl;
     }
+
+
+    public RuntimeVariableConfiguration getRuntimeVariableConfiguration() {
+        return runtimeVariableConfiguration;
+    }
+
 
 }

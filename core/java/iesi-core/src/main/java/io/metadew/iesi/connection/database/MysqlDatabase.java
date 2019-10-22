@@ -3,8 +3,6 @@ package io.metadew.iesi.connection.database;
 import io.metadew.iesi.connection.database.connection.mysql.MysqlDatabaseConnection;
 import io.metadew.iesi.metadata.definition.MetadataField;
 
-import java.sql.SQLException;
-
 public class MysqlDatabase extends Database {
 
 

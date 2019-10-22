@@ -10,7 +10,6 @@ public class ConfigFile {
     private String filePath;
 
     public ConfigFile() {
-
         this.properties = new Properties();
     }
 

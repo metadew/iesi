@@ -6,8 +6,6 @@ import io.metadew.iesi.metadata.configuration.exception.ConnectionDoesNotExistEx
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.server.rest.error.DataBadRequestException;
 import io.metadew.iesi.server.rest.error.DataNotFoundException;
-import io.metadew.iesi.server.rest.error.GetListNullProperties;
-import io.metadew.iesi.server.rest.error.GetNullProperties;
 import io.metadew.iesi.server.rest.pagination.ConnectionCriteria;
 import io.metadew.iesi.server.rest.pagination.ConnectionPagination;
 import io.metadew.iesi.server.rest.resource.HalMultipleEmbeddedResource;

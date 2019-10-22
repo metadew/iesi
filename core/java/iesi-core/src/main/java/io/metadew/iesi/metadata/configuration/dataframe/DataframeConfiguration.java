@@ -2,7 +2,7 @@ package io.metadew.iesi.metadata.configuration.dataframe;
 
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.configuration.FrameworkObjectConfiguration;
-import io.metadew.iesi.metadata.definition.*;
+import io.metadew.iesi.metadata.definition.ListObject;
 import io.metadew.iesi.metadata.definition.dataframe.Dataframe;
 import io.metadew.iesi.metadata.definition.dataframe.DataframeItem;
 import io.metadew.iesi.metadata.definition.dataframe.DataframeParameter;

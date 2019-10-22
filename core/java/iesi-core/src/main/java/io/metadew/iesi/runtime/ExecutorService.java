@@ -1,6 +1,5 @@
 package io.metadew.iesi.runtime;
 
-import io.metadew.iesi.metadata.configuration.execution.ExecutionRequestConfiguration;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -11,7 +10,6 @@ import java.util.Map;
 
 public class ExecutorService {
 
-    private final ExecutionRequestConfiguration executionRequestConfiguration;
     private Map<Class<? extends ExecutionRequest>, RequestExecutor> requestExecutorMap;
 
     private static final Logger LOGGER = LogManager.getLogger();
@@ -31,7 +29,6 @@ public class ExecutorService {
 
         requestExecutorMap.put(authenticatedRequestExecutor.appliesTo(), authenticatedRequestExecutor);
         requestExecutorMap.put(nonAuthenticatedRequestExecutor.appliesTo(), nonAuthenticatedRequestExecutor);
-        executionRequestConfiguration = new ExecutionRequestConfiguration();
     }
 
     @SuppressWarnings("unchecked")

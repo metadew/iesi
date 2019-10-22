@@ -8,11 +8,24 @@ import java.util.Optional;
 
 public abstract class SchemaDatabase extends Database {
 
-    private final String schema;
+    private String schema;
 
     public SchemaDatabase(DatabaseConnection databaseConnection, String schema) {
         super(databaseConnection);
         this.schema = schema;
+    }
+
+    public SchemaDatabase(DatabaseConnection databaseConnection) {
+        super(databaseConnection);
+    }
+
+    public SchemaDatabase(DatabaseConnection databaseConnection, int initialPoolSize, int maximalPoolSize,  String schema) {
+        super(databaseConnection, initialPoolSize, maximalPoolSize);
+        this.schema = schema;
+    }
+
+    public SchemaDatabase(DatabaseConnection databaseConnection, int initialPoolSize, int maximalPoolSize) {
+        super(databaseConnection, initialPoolSize, maximalPoolSize);
     }
    
     public String getCreateStatement(MetadataTable table) {

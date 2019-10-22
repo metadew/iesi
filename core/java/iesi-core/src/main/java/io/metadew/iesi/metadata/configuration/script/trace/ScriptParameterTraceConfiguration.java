@@ -4,10 +4,12 @@ import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
+import io.metadew.iesi.metadata.configuration.script.design.ScriptDesignTraceConfiguration;
 import io.metadew.iesi.metadata.configuration.script.trace.exception.ScriptParameterTraceAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.script.trace.exception.ScriptParameterTraceDoesNotExistException;
 import io.metadew.iesi.metadata.definition.script.trace.ScriptParameterTrace;
 import io.metadew.iesi.metadata.definition.script.trace.key.ScriptParameterTraceKey;
+import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -21,20 +23,32 @@ import java.util.Optional;
 public class ScriptParameterTraceConfiguration extends Configuration<ScriptParameterTrace, ScriptParameterTraceKey> {
 
     private static final Logger LOGGER = LogManager.getLogger();
+    private static ScriptParameterTraceConfiguration INSTANCE;
 
-    public ScriptParameterTraceConfiguration() {
-        super();
+    public synchronized static ScriptParameterTraceConfiguration getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new ScriptParameterTraceConfiguration();
+        }
+        return INSTANCE;
     }
+
+    private ScriptParameterTraceConfiguration() {
+    }
+
+    public void init(MetadataRepository metadataRepository) {
+        setMetadataRepository(metadataRepository);
+    }
+
 
     @Override
     public Optional<ScriptParameterTrace> get(ScriptParameterTraceKey scriptParameterTraceKey) {
         try {String query = "SELECT SCRIPT_VRS_NB, SCRIPT_PAR_VAL FROM " +
-                getMetadataControl().getTraceMetadataRepository().getTableNameByLabel("ScriptParameterTraces") +
+                getMetadataRepository().getTableNameByLabel("ScriptParameterTraces") +
                 " WHERE " +
                 " RUN_ID = " + SQLTools.GetStringForSQL(scriptParameterTraceKey.getRunId()) + " AND " +
                 " PRC_ID = " + SQLTools.GetStringForSQL(scriptParameterTraceKey.getProcessId()) + " AND " +
                 " SCRIPT_PAR_NM = " + SQLTools.GetStringForSQL(scriptParameterTraceKey.getScriptParameterName()) + ";";
-        CachedRowSet cachedRowSet = getMetadataControl().getTraceMetadataRepository().executeQuery(query, "reader");
+        CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
         if (cachedRowSet.size() == 0) {
             return Optional.empty();
         } else if (cachedRowSet.size() > 1) {
@@ -53,8 +67,8 @@ public class ScriptParameterTraceConfiguration extends Configuration<ScriptParam
         try {
             List<ScriptParameterTrace> scriptParameterTraces = new ArrayList<>();
             String query = "SELECT RUN_ID, PRC_ID, SCRIPT_PAR_NM, SCRIPT_PAR_VAL FROM " +
-                    getMetadataControl().getTraceMetadataRepository().getTableNameByLabel("ScriptParameterTraces") + ";";
-            CachedRowSet cachedRowSet = getMetadataControl().getTraceMetadataRepository().executeQuery(query, "reader");
+                    getMetadataRepository().getTableNameByLabel("ScriptParameterTraces") + ";";
+            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
             while (cachedRowSet.next()) {
                 scriptParameterTraces.add(new ScriptParameterTrace(new ScriptParameterTraceKey(
                         cachedRowSet.getString("RUN_ID"),
@@ -76,11 +90,11 @@ public class ScriptParameterTraceConfiguration extends Configuration<ScriptParam
                     "ScriptParameterTrace {0} does not exists", scriptParameterTraceKey.toString()));
         }
         String deleteStatement = deleteStatement(scriptParameterTraceKey);
-        getMetadataControl().getTraceMetadataRepository().executeUpdate(deleteStatement);
+        getMetadataRepository().executeUpdate(deleteStatement);
     }
 
     private String deleteStatement(ScriptParameterTraceKey scriptParameterTraceKey) {
-        return "DELETE FROM " + getMetadataControl().getTraceMetadataRepository().getTableNameByLabel("ScriptParameterTraces") +
+        return "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ScriptParameterTraces") +
                 " WHERE " +
                 " RUN_ID = " + SQLTools.GetStringForSQL(scriptParameterTraceKey.getRunId()) + " AND " +
                 " PRC_ID = " + SQLTools.GetStringForSQL(scriptParameterTraceKey.getProcessId()) + " AND " +
@@ -95,11 +109,11 @@ public class ScriptParameterTraceConfiguration extends Configuration<ScriptParam
                     "ScriptParameterTrace {0} already exists", scriptParameterTrace.getMetadataKey().toString()));
         }
         String insertStatement = insertStatement(scriptParameterTrace);
-        getMetadataControl().getTraceMetadataRepository().executeUpdate(insertStatement);
+        getMetadataRepository().executeUpdate(insertStatement);
     }
 
     private String insertStatement(ScriptParameterTrace scriptParameterTrace) {
-        return "INSERT INTO " + getMetadataControl().getTraceMetadataRepository().getTableNameByLabel("ScriptParameterTraces") +
+        return "INSERT INTO " + getMetadataRepository().getTableNameByLabel("ScriptParameterTraces") +
                 " (RUN_ID, PRC_ID, SCRIPT_PAR_NM, SCRIPT_PAR_VAL) VALUES (" +
                 SQLTools.GetStringForSQL(scriptParameterTrace.getMetadataKey().getRunId()) + "," +
                 SQLTools.GetStringForSQL(scriptParameterTrace.getMetadataKey().getProcessId()) + "," +

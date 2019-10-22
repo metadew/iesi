@@ -8,7 +8,6 @@ import io.metadew.iesi.script.operation.ActionSelectOperation;
 import io.metadew.iesi.script.operation.RouteOperation;
 import org.apache.logging.log4j.Level;
 
-import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.*;
 

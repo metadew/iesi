@@ -7,7 +7,6 @@ import io.metadew.iesi.script.operation.ActionParameterOperation;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.sql.SQLException;
 import java.util.HashMap;
 
 public class FwkStopIteration {

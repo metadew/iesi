@@ -17,7 +17,6 @@ import org.apache.logging.log4j.Logger;
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.HashMap;
 
@@ -33,72 +32,59 @@ public class SqlSetRuntimeVariables {
     private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
     private static final Logger LOGGER = LogManager.getLogger();
 
-    // Constructors
-    public SqlSetRuntimeVariables() {
-
-    }
-
     public SqlSetRuntimeVariables(ExecutionControl executionControl, ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.init(executionControl, scriptExecution, actionExecution);
-    }
-
-    public void init(ExecutionControl executionControl, ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.setExecutionControl(executionControl);
-        this.setActionExecution(actionExecution);
-        this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
+        this.executionControl = executionControl;
+        this.actionExecution = actionExecution;
+        this.actionParameterOperationMap = new HashMap<>();
     }
 
     public void prepare() {
         // Reset Parameters
-        this.setSqlQuery(new ActionParameterOperation(this.getExecutionControl(), this.getActionExecution(),
-                this.getActionExecution().getAction().getType(), "query"));
-        this.setConnectionName(new ActionParameterOperation(this.getExecutionControl(), this.getActionExecution(),
-                this.getActionExecution().getAction().getType(), "connection"));
+        this.sqlQuery = new ActionParameterOperation(executionControl, actionExecution, actionExecution.getAction().getType(), "query");
+        this.connectionName = new ActionParameterOperation(this.executionControl, actionExecution, actionExecution.getAction().getType(), "connection");
 
         // Get Parameters
-        for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
+        for (ActionParameter actionParameter : actionExecution.getAction().getParameters()) {
             if (actionParameter.getName().equalsIgnoreCase("query")) {
-                this.getSqlQuery().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                sqlQuery.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase("connection")) {
-                this.getConnectionName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                connectionName.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }
 
         //Create parameter list
-        this.getActionParameterOperationMap().put("query", this.getSqlQuery());
-        this.getActionParameterOperationMap().put("connection", this.getConnectionName());
+        actionParameterOperationMap.put("query", sqlQuery);
+        actionParameterOperationMap.put("connection", connectionName);
     }
 
 
     public boolean execute() {
         try {
-            String query = convertQuery(getSqlQuery().getValue());
-            String connectionName = convertConnectionName(getConnectionName().getValue());
+            String query = convertQuery(sqlQuery.getValue());
+            String connectionName = convertConnectionName(this.connectionName.getValue());
             // Get Connection
             ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
             Connection connection = connectionConfiguration.get(connectionName,
-                    this.getExecutionControl().getEnvName()).get();
+                    this.executionControl.getEnvName())
+                    .orElseThrow(() -> new RuntimeException("Could not find connection " + connectionName));
             ConnectionOperation connectionOperation = new ConnectionOperation();
             Database database = connectionOperation.getDatabase(connection);
-            
+
             // Run the action
             CachedRowSet sqlResultSet = database.executeQuery(query);
-            try {
-                this.getExecutionControl().getExecutionRuntime().setRuntimeVariables(actionExecution, sqlResultSet);
-                this.getActionExecution().getActionControl().increaseSuccessCount();
-            } catch (Exception e) {
-                throw new RuntimeException("Issue setting runtime variables: " + e, e);
-            }
-
+            this.executionControl.getExecutionRuntime().setRuntimeVariables(actionExecution, sqlResultSet);
+            actionExecution.getActionControl().increaseSuccessCount();
             return true;
         } catch (Exception e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
+            StringWriter stackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTrace));
+            LOGGER.warn("exception=" + e);
+            LOGGER.info("exception.stacktrace=" + stackTrace.toString());
 
-            this.getActionExecution().getActionControl().increaseErrorCount();
+            actionExecution.getActionControl().increaseErrorCount();
 
-            this.getActionExecution().getActionControl().logOutput("exception", e.getMessage());
-            this.getActionExecution().getActionControl().logOutput("stacktrace", StackTrace.toString());
+            actionExecution.getActionControl().logOutput("exception", e.getMessage());
+            actionExecution.getActionControl().logOutput("stacktrace", stackTrace.toString());
 
             return false;
         }
@@ -109,7 +95,7 @@ public class SqlSetRuntimeVariables {
         if (connectionName instanceof Text) {
             return connectionName.toString();
         } else {
-            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for connection name",
+            LOGGER.warn(MessageFormat.format(actionExecution.getAction().getType() + " does not accept {0} as type for connection name",
                     connectionName.getClass()));
             return connectionName.toString();
         }
@@ -119,50 +105,13 @@ public class SqlSetRuntimeVariables {
         if (query instanceof Text) {
             return query.toString();
         } else {
-            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for query",
+            LOGGER.warn(MessageFormat.format(actionExecution.getAction().getType() + " does not accept {0} as type for query",
                     query.getClass()));
             return query.toString();
         }
     }
 
-    public ExecutionControl getExecutionControl() {
-        return executionControl;
-    }
-
-    public void setExecutionControl(ExecutionControl executionControl) {
-        this.executionControl = executionControl;
-    }
-
-    public ActionExecution getActionExecution() {
-        return actionExecution;
-    }
-
-    public void setActionExecution(ActionExecution actionExecution) {
-        this.actionExecution = actionExecution;
-    }
-
-    public ActionParameterOperation getConnectionName() {
-        return connectionName;
-    }
-
-    public void setConnectionName(ActionParameterOperation connectionName) {
-        this.connectionName = connectionName;
-    }
-
     public HashMap<String, ActionParameterOperation> getActionParameterOperationMap() {
         return actionParameterOperationMap;
     }
-
-    public void setActionParameterOperationMap(HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
-        this.actionParameterOperationMap = actionParameterOperationMap;
-    }
-
-    public ActionParameterOperation getSqlQuery() {
-        return sqlQuery;
-    }
-
-    public void setSqlQuery(ActionParameterOperation sqlQuery) {
-        this.sqlQuery = sqlQuery;
-    }
-
 }

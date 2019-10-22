@@ -7,8 +7,6 @@ import io.metadew.iesi.metadata.configuration.impersonation.ImpersonationConfigu
 import io.metadew.iesi.metadata.definition.impersonation.Impersonation;
 import io.metadew.iesi.server.rest.error.DataBadRequestException;
 import io.metadew.iesi.server.rest.error.DataNotFoundException;
-import io.metadew.iesi.server.rest.error.GetListNullProperties;
-import io.metadew.iesi.server.rest.error.GetNullProperties;
 import io.metadew.iesi.server.rest.pagination.ImpersonationCriteria;
 import io.metadew.iesi.server.rest.pagination.ImpersonationPagination;
 import io.metadew.iesi.server.rest.resource.HalMultipleEmbeddedResource;

@@ -13,6 +13,7 @@ import io.metadew.iesi.metadata.definition.execution.ExecutionRequestStatus;
 import io.metadew.iesi.metadata.definition.execution.NonAuthenticatedExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequest;
+import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -26,70 +27,79 @@ import java.util.Optional;
 public class ExecutionRequestConfiguration extends Configuration<ExecutionRequest, ExecutionRequestKey> {
 
     private static final Logger LOGGER = LogManager.getLogger();
-    private final ScriptExecutionRequestConfiguration scriptExecutionRequestConfiguration;
+
+    private static ExecutionRequestConfiguration INSTANCE;
+
+    public synchronized static ExecutionRequestConfiguration getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new ExecutionRequestConfiguration();
+        }
+        return INSTANCE;
+    }
+
+    private ExecutionRequestConfiguration() {
+    }
 
     // Constructors
-    public ExecutionRequestConfiguration() {
-        super();
-        this.scriptExecutionRequestConfiguration = new ScriptExecutionRequestConfiguration();
+    public void init(MetadataRepository metadataRepository) {
+        setMetadataRepository(metadataRepository);
     }
 
 
-
     @Override
-    public Optional<ExecutionRequest> get(ExecutionRequestKey executionRequestKey)  {
+    public Optional<ExecutionRequest> get(ExecutionRequestKey executionRequestKey) {
         try {
-        String query = "SELECT EXECUTION_REQUEST.REQUEST_ID, EXECUTION_REQUEST.REQUEST_TMS, EXECUTION_REQUEST.REQUEST_NM, " +
-                "EXECUTION_REQUEST.REQUEST_DSC, EXECUTION_REQUEST.NOTIF_EMAIL, EXECUTION_REQUEST.SCOPE_NM, EXECUTION_REQUEST.CONTEXT_NM, EXECUTION_REQUEST.ST_NM, " +
-                "AUTH_EXECUTION_REQUEST.SPACE_NM, AUTH_EXECUTION_REQUEST.USER_NM, AUTH_EXECUTION_REQUEST.USER_PASSWORD, " +
-                // Replace with case in case of Spring
-                // "CASE WHEN AUTH_EXECUTION_REQUEST.REQUEST_ID IS NOT NULL THEN 1 " +
-                // "WHEN NON_AUTH_EXECUTION_REQUEST.REQUEST_ID IS NOT NULL THEN 2 " +
-                // "WHEN EXECUTION_REQUEST.REQUEST_ID IS NOT NULL THEN 0 " +
-                // "END AS clazz " +
-                "AUTH_EXECUTION_REQUEST.REQUEST_ID AS AUTH, " +
-                "NON_AUTH_EXECUTION_REQUEST.REQUEST_ID AS NON_AUTH " +
-                "FROM " + getMetadataControl().getExecutionServerMetadataRepository().getTableNameByLabel("ExecutionRequests") + " EXECUTION_REQUEST " +
-                "LEFT OUTER JOIN " + getMetadataControl().getExecutionServerMetadataRepository().getTableNameByLabel("AuthenticatedExecutionRequests") + " AUTH_EXECUTION_REQUEST " +
-                "ON EXECUTION_REQUEST.REQUEST_ID = AUTH_EXECUTION_REQUEST.REQUEST_ID " +
-                "LEFT OUTER JOIN " + getMetadataControl().getExecutionServerMetadataRepository().getTableNameByLabel("NonAuthenticatedExecutionRequests") + " NON_AUTH_EXECUTION_REQUEST " +
-                "ON EXECUTION_REQUEST.REQUEST_ID = NON_AUTH_EXECUTION_REQUEST.REQUEST_ID " +
-                "WHERE EXECUTION_REQUEST.REQUEST_ID = " + SQLTools.GetStringForSQL(executionRequestKey.getId()) + ";";
+            String query = "SELECT EXECUTION_REQUEST.REQUEST_ID, EXECUTION_REQUEST.REQUEST_TMS, EXECUTION_REQUEST.REQUEST_NM, " +
+                    "EXECUTION_REQUEST.REQUEST_DSC, EXECUTION_REQUEST.NOTIF_EMAIL, EXECUTION_REQUEST.SCOPE_NM, EXECUTION_REQUEST.CONTEXT_NM, EXECUTION_REQUEST.ST_NM, " +
+                    "AUTH_EXECUTION_REQUEST.SPACE_NM, AUTH_EXECUTION_REQUEST.USER_NM, AUTH_EXECUTION_REQUEST.USER_PASSWORD, " +
+                    // Replace with case in case of Spring
+                    // "CASE WHEN AUTH_EXECUTION_REQUEST.REQUEST_ID IS NOT NULL THEN 1 " +
+                    // "WHEN NON_AUTH_EXECUTION_REQUEST.REQUEST_ID IS NOT NULL THEN 2 " +
+                    // "WHEN EXECUTION_REQUEST.REQUEST_ID IS NOT NULL THEN 0 " +
+                    // "END AS clazz " +
+                    "AUTH_EXECUTION_REQUEST.REQUEST_ID AS AUTH, " +
+                    "NON_AUTH_EXECUTION_REQUEST.REQUEST_ID AS NON_AUTH " +
+                    "FROM " + getMetadataRepository().getTableNameByLabel("ExecutionRequests") + " EXECUTION_REQUEST " +
+                    "LEFT OUTER JOIN " + getMetadataRepository().getTableNameByLabel("AuthenticatedExecutionRequests") + " AUTH_EXECUTION_REQUEST " +
+                    "ON EXECUTION_REQUEST.REQUEST_ID = AUTH_EXECUTION_REQUEST.REQUEST_ID " +
+                    "LEFT OUTER JOIN " + getMetadataRepository().getTableNameByLabel("NonAuthenticatedExecutionRequests") + " NON_AUTH_EXECUTION_REQUEST " +
+                    "ON EXECUTION_REQUEST.REQUEST_ID = NON_AUTH_EXECUTION_REQUEST.REQUEST_ID " +
+                    "WHERE EXECUTION_REQUEST.REQUEST_ID = " + SQLTools.GetStringForSQL(executionRequestKey.getId()) + ";";
 
-        CachedRowSet cachedRowSet = getMetadataControl().getExecutionServerMetadataRepository().executeQuery(query, "reader");
-        if (cachedRowSet.size() == 0) {
-            return Optional.empty();
-        } else if (cachedRowSet.size() > 1) {
-            LOGGER.warn(MessageFormat.format("Found multiple implementations for ExecutionRequest {0}. Returning first implementation", executionRequestKey.toString()));
-        }
-        cachedRowSet.next();
-        if (cachedRowSet.getString("AUTH") != null) {
-            return Optional.of(new AuthenticatedExecutionRequest(executionRequestKey,
-                    SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("REQUEST_TMS")),
-                    cachedRowSet.getString("REQUEST_NM"),
-                    cachedRowSet.getString("REQUEST_DSC"),
-                    cachedRowSet.getString("NOTIF_EMAIL"),
-                    cachedRowSet.getString("SCOPE_NM"),
-                    cachedRowSet.getString("CONTEXT_NM"),
-                    ExecutionRequestStatus.valueOf(cachedRowSet.getString("ST_NM")),
-                    scriptExecutionRequestConfiguration.getByExecutionRequest(executionRequestKey),
-                    cachedRowSet.getString("SPACE_NM"),
-                    cachedRowSet.getString("USER_NM"), cachedRowSet.getString("USER_PASSWORD")));
-        } else if (cachedRowSet.getString("NON_AUTH") != null) {
-            return Optional.of(new NonAuthenticatedExecutionRequest(executionRequestKey,
-                    SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("REQUEST_TMS")),
-                    cachedRowSet.getString("REQUEST_NM"),
-                    cachedRowSet.getString("REQUEST_DSC"),
-                    cachedRowSet.getString("NOTIF_EMAIL"),
-                    cachedRowSet.getString("SCOPE_NM"),
-                    cachedRowSet.getString("CONTEXT_NM"),
-                    ExecutionRequestStatus.valueOf(cachedRowSet.getString("ST_NM")),
-                    scriptExecutionRequestConfiguration.getByExecutionRequest(executionRequestKey)));
-        } else {
-            LOGGER.warn(MessageFormat.format("ExecutionRequest {0} does not have a certain class", executionRequestKey.toString()));
-            return Optional.empty();
+            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
+            if (cachedRowSet.size() == 0) {
+                return Optional.empty();
+            } else if (cachedRowSet.size() > 1) {
+                LOGGER.warn(MessageFormat.format("Found multiple implementations for ExecutionRequest {0}. Returning first implementation", executionRequestKey.toString()));
+            }
+            cachedRowSet.next();
+            if (cachedRowSet.getString("AUTH") != null) {
+                return Optional.of(new AuthenticatedExecutionRequest(executionRequestKey,
+                        SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("REQUEST_TMS")),
+                        cachedRowSet.getString("REQUEST_NM"),
+                        cachedRowSet.getString("REQUEST_DSC"),
+                        cachedRowSet.getString("NOTIF_EMAIL"),
+                        cachedRowSet.getString("SCOPE_NM"),
+                        cachedRowSet.getString("CONTEXT_NM"),
+                        ExecutionRequestStatus.valueOf(cachedRowSet.getString("ST_NM")),
+                        ScriptExecutionRequestConfiguration.getInstance().getByExecutionRequest(executionRequestKey),
+                        cachedRowSet.getString("SPACE_NM"),
+                        cachedRowSet.getString("USER_NM"), cachedRowSet.getString("USER_PASSWORD")));
+            } else if (cachedRowSet.getString("NON_AUTH") != null) {
+                return Optional.of(new NonAuthenticatedExecutionRequest(executionRequestKey,
+                        SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("REQUEST_TMS")),
+                        cachedRowSet.getString("REQUEST_NM"),
+                        cachedRowSet.getString("REQUEST_DSC"),
+                        cachedRowSet.getString("NOTIF_EMAIL"),
+                        cachedRowSet.getString("SCOPE_NM"),
+                        cachedRowSet.getString("CONTEXT_NM"),
+                        ExecutionRequestStatus.valueOf(cachedRowSet.getString("ST_NM")),
+                        ScriptExecutionRequestConfiguration.getInstance().getByExecutionRequest(executionRequestKey)));
+            } else {
+                LOGGER.warn(MessageFormat.format("ExecutionRequest {0} does not have a certain class", executionRequestKey.toString()));
+                return Optional.empty();
 
-        }
+            }
 
 //        switch (cachedRowSet.getInt("clazz")) {
 //            case 1:
@@ -123,54 +133,54 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
     }
 
     @Override
-    public List<ExecutionRequest> getAll()  {
+    public List<ExecutionRequest> getAll() {
         try {
-        List<ExecutionRequest> executionRequests = new ArrayList<>();
-        String query = "SELECT EXECUTION_REQUEST.REQUEST_ID, EXECUTION_REQUEST.REQUEST_TMS, EXECUTION_REQUEST.REQUEST_NM, " +
-                "EXECUTION_REQUEST.REQUEST_DSC, EXECUTION_REQUEST.NOTIF_EMAIL, EXECUTION_REQUEST.SCOPE_NM, EXECUTION_REQUEST.CONTEXT_NM, EXECUTION_REQUEST.ST_NM, " +
-                "AUTH_EXECUTION_REQUEST.SPACE_NM, AUTH_EXECUTION_REQUEST.USER_NM, AUTH_EXECUTION_REQUEST.USER_PASSWORD, " +
-                // Replace with case in case of Spring
-                // "CASE WHEN AUTH_EXECUTION_REQUEST.REQUEST_ID IS NOT NULL THEN 1 " +
-                // "WHEN NON_AUTH_EXECUTION_REQUEST.REQUEST_ID IS NOT NULL THEN 2 " +
-                // "WHEN EXECUTION_REQUEST.REQUEST_ID IS NOT NULL THEN 0 " +
-                // "END AS clazz " +
-                "AUTH_EXECUTION_REQUEST.REQUEST_ID AS AUTH, " +
-                "NON_AUTH_EXECUTION_REQUEST.REQUEST_ID AS NON_AUTH " +
-                "FROM " + getMetadataControl().getExecutionServerMetadataRepository().getTableNameByLabel("ExecutionRequests") + " EXECUTION_REQUEST " +
-                "LEFT OUTER JOIN " + getMetadataControl().getExecutionServerMetadataRepository().getTableNameByLabel("AuthenticatedExecutionRequests") + " AUTH_EXECUTION_REQUEST " +
-                "ON EXECUTION_REQUEST.REQUEST_ID = AUTH_EXECUTION_REQUEST.REQUEST_ID " +
-                "LEFT OUTER JOIN " + getMetadataControl().getExecutionServerMetadataRepository().getTableNameByLabel("NonAuthenticatedExecutionRequests") + " NON_AUTH_EXECUTION_REQUEST " +
-                "ON EXECUTION_REQUEST.REQUEST_ID = NON_AUTH_EXECUTION_REQUEST.REQUEST_ID;";
+            List<ExecutionRequest> executionRequests = new ArrayList<>();
+            String query = "SELECT EXECUTION_REQUEST.REQUEST_ID, EXECUTION_REQUEST.REQUEST_TMS, EXECUTION_REQUEST.REQUEST_NM, " +
+                    "EXECUTION_REQUEST.REQUEST_DSC, EXECUTION_REQUEST.NOTIF_EMAIL, EXECUTION_REQUEST.SCOPE_NM, EXECUTION_REQUEST.CONTEXT_NM, EXECUTION_REQUEST.ST_NM, " +
+                    "AUTH_EXECUTION_REQUEST.SPACE_NM, AUTH_EXECUTION_REQUEST.USER_NM, AUTH_EXECUTION_REQUEST.USER_PASSWORD, " +
+                    // Replace with case in case of Spring
+                    // "CASE WHEN AUTH_EXECUTION_REQUEST.REQUEST_ID IS NOT NULL THEN 1 " +
+                    // "WHEN NON_AUTH_EXECUTION_REQUEST.REQUEST_ID IS NOT NULL THEN 2 " +
+                    // "WHEN EXECUTION_REQUEST.REQUEST_ID IS NOT NULL THEN 0 " +
+                    // "END AS clazz " +
+                    "AUTH_EXECUTION_REQUEST.REQUEST_ID AS AUTH, " +
+                    "NON_AUTH_EXECUTION_REQUEST.REQUEST_ID AS NON_AUTH " +
+                    "FROM " + getMetadataRepository().getTableNameByLabel("ExecutionRequests") + " EXECUTION_REQUEST " +
+                    "LEFT OUTER JOIN " + getMetadataRepository().getTableNameByLabel("AuthenticatedExecutionRequests") + " AUTH_EXECUTION_REQUEST " +
+                    "ON EXECUTION_REQUEST.REQUEST_ID = AUTH_EXECUTION_REQUEST.REQUEST_ID " +
+                    "LEFT OUTER JOIN " + getMetadataRepository().getTableNameByLabel("NonAuthenticatedExecutionRequests") + " NON_AUTH_EXECUTION_REQUEST " +
+                    "ON EXECUTION_REQUEST.REQUEST_ID = NON_AUTH_EXECUTION_REQUEST.REQUEST_ID;";
 
-        CachedRowSet cachedRowSet = getMetadataControl().getExecutionServerMetadataRepository().executeQuery(query, "reader");
-        while(cachedRowSet.next()) {
+            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
+            while (cachedRowSet.next()) {
 
-            if (cachedRowSet.getString("AUTH") != null) {
-                executionRequests.add(new AuthenticatedExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID")),
-                        SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("REQUEST_TMS")),
-                        cachedRowSet.getString("REQUEST_NM"),
-                        cachedRowSet.getString("REQUEST_DSC"),
-                        cachedRowSet.getString("NOTIF_EMAIL"),
-                        cachedRowSet.getString("SCOPE_NM"),
-                        cachedRowSet.getString("CONTEXT_NM"),
-                        ExecutionRequestStatus.valueOf(cachedRowSet.getString("ST_NM")),
-                        scriptExecutionRequestConfiguration.getByExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID"))),
-                        cachedRowSet.getString("SPACE_NM"),
-                        cachedRowSet.getString("USER_NM"), cachedRowSet.getString("USER_PASSWORD")));
-            } else if (cachedRowSet.getString("NON_AUTH") != null) {
-                executionRequests.add(new NonAuthenticatedExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID")),
-                        SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("REQUEST_TMS")),
-                        cachedRowSet.getString("REQUEST_NM"),
-                        cachedRowSet.getString("REQUEST_DSC"),
-                        cachedRowSet.getString("NOTIF_EMAIL"),
-                        cachedRowSet.getString("SCOPE_NM"),
-                        cachedRowSet.getString("CONTEXT_NM"),
-                        ExecutionRequestStatus.valueOf(cachedRowSet.getString("ST_NM")),
-                        scriptExecutionRequestConfiguration.getByExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID")))));
-            } else {
-                LOGGER.warn(MessageFormat.format("ExecutionRequest {0} does not have a certain class", cachedRowSet.getString("REQUEST_ID")));
+                if (cachedRowSet.getString("AUTH") != null) {
+                    executionRequests.add(new AuthenticatedExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID")),
+                            SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("REQUEST_TMS")),
+                            cachedRowSet.getString("REQUEST_NM"),
+                            cachedRowSet.getString("REQUEST_DSC"),
+                            cachedRowSet.getString("NOTIF_EMAIL"),
+                            cachedRowSet.getString("SCOPE_NM"),
+                            cachedRowSet.getString("CONTEXT_NM"),
+                            ExecutionRequestStatus.valueOf(cachedRowSet.getString("ST_NM")),
+                            ScriptExecutionRequestConfiguration.getInstance().getByExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID"))),
+                            cachedRowSet.getString("SPACE_NM"),
+                            cachedRowSet.getString("USER_NM"), cachedRowSet.getString("USER_PASSWORD")));
+                } else if (cachedRowSet.getString("NON_AUTH") != null) {
+                    executionRequests.add(new NonAuthenticatedExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID")),
+                            SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("REQUEST_TMS")),
+                            cachedRowSet.getString("REQUEST_NM"),
+                            cachedRowSet.getString("REQUEST_DSC"),
+                            cachedRowSet.getString("NOTIF_EMAIL"),
+                            cachedRowSet.getString("SCOPE_NM"),
+                            cachedRowSet.getString("CONTEXT_NM"),
+                            ExecutionRequestStatus.valueOf(cachedRowSet.getString("ST_NM")),
+                            ScriptExecutionRequestConfiguration.getInstance().getByExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID")))));
+                } else {
+                    LOGGER.warn(MessageFormat.format("ExecutionRequest {0} does not have a certain class", cachedRowSet.getString("REQUEST_ID")));
 
-            }
+                }
 //            switch (cachedRowSet.getInt("clazz")) {
 //                case 1:
 //                    executionRequests.add(new AuthenticatedExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID")),
@@ -195,62 +205,62 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
 //                            new ArrayList<>()));
 //                default:
 //                    LOGGER.warn(MessageFormat.format("ExecutionRequest {0} does not have a certain class", cachedRowSet.getString("REQUEST_ID")));
-        }
-        return executionRequests;
+            }
+            return executionRequests;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public List<ExecutionRequest> getAllNew()  {
+    public List<ExecutionRequest> getAllNew() {
         try {
-        List<ExecutionRequest> executionRequests = new ArrayList<>();
-        String query = "SELECT EXECUTION_REQUEST.REQUEST_ID, EXECUTION_REQUEST.REQUEST_TMS, EXECUTION_REQUEST.REQUEST_NM, " +
-                "EXECUTION_REQUEST.REQUEST_DSC, EXECUTION_REQUEST.NOTIF_EMAIL, EXECUTION_REQUEST.SCOPE_NM, EXECUTION_REQUEST.CONTEXT_NM, EXECUTION_REQUEST.ST_NM, " +
-                "AUTH_EXECUTION_REQUEST.SPACE_NM, AUTH_EXECUTION_REQUEST.USER_NM, AUTH_EXECUTION_REQUEST.USER_PASSWORD, " +
-                // Replace with case in case of Spring
-                // "CASE WHEN AUTH_EXECUTION_REQUEST.REQUEST_ID IS NOT NULL THEN 1 " +
-                // "WHEN NON_AUTH_EXECUTION_REQUEST.REQUEST_ID IS NOT NULL THEN 2 " +
-                // "WHEN EXECUTION_REQUEST.REQUEST_ID IS NOT NULL THEN 0 " +
-                // "END AS clazz " +
-                "AUTH_EXECUTION_REQUEST.REQUEST_ID AS AUTH, " +
-                "NON_AUTH_EXECUTION_REQUEST.REQUEST_ID AS NON_AUTH " +
-                "FROM " + getMetadataControl().getExecutionServerMetadataRepository().getTableNameByLabel("ExecutionRequests") + " EXECUTION_REQUEST " +
-                "LEFT OUTER JOIN " + getMetadataControl().getExecutionServerMetadataRepository().getTableNameByLabel("AuthenticatedExecutionRequests") + " AUTH_EXECUTION_REQUEST " +
-                "ON EXECUTION_REQUEST.REQUEST_ID = AUTH_EXECUTION_REQUEST.REQUEST_ID " +
-                "LEFT OUTER JOIN " + getMetadataControl().getExecutionServerMetadataRepository().getTableNameByLabel("NonAuthenticatedExecutionRequests") + " NON_AUTH_EXECUTION_REQUEST " +
-                "ON EXECUTION_REQUEST.REQUEST_ID = NON_AUTH_EXECUTION_REQUEST.REQUEST_ID " +
-                "WHERE ST_NM = " + SQLTools.GetStringForSQL(ExecutionRequestStatus.NEW.value()) + ";";
+            List<ExecutionRequest> executionRequests = new ArrayList<>();
+            String query = "SELECT EXECUTION_REQUEST.REQUEST_ID, EXECUTION_REQUEST.REQUEST_TMS, EXECUTION_REQUEST.REQUEST_NM, " +
+                    "EXECUTION_REQUEST.REQUEST_DSC, EXECUTION_REQUEST.NOTIF_EMAIL, EXECUTION_REQUEST.SCOPE_NM, EXECUTION_REQUEST.CONTEXT_NM, EXECUTION_REQUEST.ST_NM, " +
+                    "AUTH_EXECUTION_REQUEST.SPACE_NM, AUTH_EXECUTION_REQUEST.USER_NM, AUTH_EXECUTION_REQUEST.USER_PASSWORD, " +
+                    // Replace with case in case of Spring
+                    // "CASE WHEN AUTH_EXECUTION_REQUEST.REQUEST_ID IS NOT NULL THEN 1 " +
+                    // "WHEN NON_AUTH_EXECUTION_REQUEST.REQUEST_ID IS NOT NULL THEN 2 " +
+                    // "WHEN EXECUTION_REQUEST.REQUEST_ID IS NOT NULL THEN 0 " +
+                    // "END AS clazz " +
+                    "AUTH_EXECUTION_REQUEST.REQUEST_ID AS AUTH, " +
+                    "NON_AUTH_EXECUTION_REQUEST.REQUEST_ID AS NON_AUTH " +
+                    "FROM " + getMetadataRepository().getTableNameByLabel("ExecutionRequests") + " EXECUTION_REQUEST " +
+                    "LEFT OUTER JOIN " + getMetadataRepository().getTableNameByLabel("AuthenticatedExecutionRequests") + " AUTH_EXECUTION_REQUEST " +
+                    "ON EXECUTION_REQUEST.REQUEST_ID = AUTH_EXECUTION_REQUEST.REQUEST_ID " +
+                    "LEFT OUTER JOIN " + getMetadataRepository().getTableNameByLabel("NonAuthenticatedExecutionRequests") + " NON_AUTH_EXECUTION_REQUEST " +
+                    "ON EXECUTION_REQUEST.REQUEST_ID = NON_AUTH_EXECUTION_REQUEST.REQUEST_ID " +
+                    "WHERE ST_NM = " + SQLTools.GetStringForSQL(ExecutionRequestStatus.NEW.value()) + ";";
 
-        CachedRowSet cachedRowSet = getMetadataControl().getExecutionServerMetadataRepository().executeQuery(query, "reader");
-        while(cachedRowSet.next()) {
+            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
+            while (cachedRowSet.next()) {
 
-            if (cachedRowSet.getString("AUTH") != null) {
-                executionRequests.add(new AuthenticatedExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID")),
-                        SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("REQUEST_TMS")),
-                        cachedRowSet.getString("REQUEST_NM"),
-                        cachedRowSet.getString("REQUEST_DSC"),
-                        cachedRowSet.getString("NOTIF_EMAIL"),
-                        cachedRowSet.getString("SCOPE_NM"),
-                        cachedRowSet.getString("CONTEXT_NM"),
-                        ExecutionRequestStatus.valueOf(cachedRowSet.getString("ST_NM")),
-                        scriptExecutionRequestConfiguration.getByExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID"))),
-                        cachedRowSet.getString("SPACE_NM"),
-                        cachedRowSet.getString("USER_NM"), cachedRowSet.getString("USER_PASSWORD")));
-            } else if (cachedRowSet.getString("NON_AUTH") != null) {
-                executionRequests.add(new NonAuthenticatedExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID")),
-                        SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("REQUEST_TMS")),
-                        cachedRowSet.getString("REQUEST_NM"),
-                        cachedRowSet.getString("REQUEST_DSC"),
-                        cachedRowSet.getString("NOTIF_EMAIL"),
-                        cachedRowSet.getString("SCOPE_NM"),
-                        cachedRowSet.getString("CONTEXT_NM"),
-                        ExecutionRequestStatus.valueOf(cachedRowSet.getString("ST_NM")),
-                        scriptExecutionRequestConfiguration.getByExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID")))));
-            } else {
-                LOGGER.warn(MessageFormat.format("ExecutionRequest {0} does not have a certain class", cachedRowSet.getString("REQUEST_ID")));
+                if (cachedRowSet.getString("AUTH") != null) {
+                    executionRequests.add(new AuthenticatedExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID")),
+                            SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("REQUEST_TMS")),
+                            cachedRowSet.getString("REQUEST_NM"),
+                            cachedRowSet.getString("REQUEST_DSC"),
+                            cachedRowSet.getString("NOTIF_EMAIL"),
+                            cachedRowSet.getString("SCOPE_NM"),
+                            cachedRowSet.getString("CONTEXT_NM"),
+                            ExecutionRequestStatus.valueOf(cachedRowSet.getString("ST_NM")),
+                            ScriptExecutionRequestConfiguration.getInstance().getByExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID"))),
+                            cachedRowSet.getString("SPACE_NM"),
+                            cachedRowSet.getString("USER_NM"), cachedRowSet.getString("USER_PASSWORD")));
+                } else if (cachedRowSet.getString("NON_AUTH") != null) {
+                    executionRequests.add(new NonAuthenticatedExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID")),
+                            SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("REQUEST_TMS")),
+                            cachedRowSet.getString("REQUEST_NM"),
+                            cachedRowSet.getString("REQUEST_DSC"),
+                            cachedRowSet.getString("NOTIF_EMAIL"),
+                            cachedRowSet.getString("SCOPE_NM"),
+                            cachedRowSet.getString("CONTEXT_NM"),
+                            ExecutionRequestStatus.valueOf(cachedRowSet.getString("ST_NM")),
+                            ScriptExecutionRequestConfiguration.getInstance().getByExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID")))));
+                } else {
+                    LOGGER.warn(MessageFormat.format("ExecutionRequest {0} does not have a certain class", cachedRowSet.getString("REQUEST_ID")));
 
-            }
+                }
 //            switch (cachedRowSet.getInt("clazz")) {
 //                case 1:
 //                    executionRequests.add(new AuthenticatedExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID")),
@@ -275,8 +285,8 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
 //                            new ArrayList<>()));
 //                default:
 //                    LOGGER.warn(MessageFormat.format("ExecutionRequest {0} does not have a certain class", cachedRowSet.getString("REQUEST_ID")));
-        }
-        return executionRequests;
+            }
+            return executionRequests;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -289,20 +299,20 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
             throw new ExecutionRequestDoesNotExistException(MessageFormat.format(
                     "ExecutionRequest {0} does not exists", executionRequestKey.toString()));
         }
-        scriptExecutionRequestConfiguration.deleteByExecutionKey(executionRequestKey);
+        ScriptExecutionRequestConfiguration.getInstance().deleteByExecutionKey(executionRequestKey);
         List<String> deleteStatement = deleteStatement(executionRequestKey);
-        getMetadataControl().getExecutionServerMetadataRepository().executeBatch(deleteStatement);
+        getMetadataRepository().executeBatch(deleteStatement);
     }
 
     private List<String> deleteStatement(ExecutionRequestKey executionRequestKey) {
         List<String> queries = new ArrayList<>();
-        queries.add("DELETE FROM " + getMetadataControl().getExecutionServerMetadataRepository().getTableNameByLabel("ExecutionRequests") +
+        queries.add("DELETE FROM " + getMetadataRepository().getTableNameByLabel("ExecutionRequests") +
                 " WHERE " +
                 " REQUEST_ID = " + SQLTools.GetStringForSQL(executionRequestKey.getId()) + ";");
-        queries.add("DELETE FROM " + getMetadataControl().getExecutionServerMetadataRepository().getTableNameByLabel("AuthenticatedExecutionRequests") +
+        queries.add("DELETE FROM " + getMetadataRepository().getTableNameByLabel("AuthenticatedExecutionRequests") +
                 " WHERE " +
                 " REQUEST_ID = " + SQLTools.GetStringForSQL(executionRequestKey.getId()) + ";");
-        queries.add("DELETE FROM " + getMetadataControl().getExecutionServerMetadataRepository().getTableNameByLabel("NonAuthenticatedExecutionRequests") +
+        queries.add("DELETE FROM " + getMetadataRepository().getTableNameByLabel("NonAuthenticatedExecutionRequests") +
                 " WHERE " +
                 " REQUEST_ID = " + SQLTools.GetStringForSQL(executionRequestKey.getId()) + ";");
         return queries;
@@ -316,27 +326,26 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
                     "ExecutionRequest {0} already exists", executionRequest.getMetadataKey().toString()));
         }
         for (ScriptExecutionRequest scriptExecutionRequest : executionRequest.getScriptExecutionRequests()) {
-            scriptExecutionRequestConfiguration.insert(scriptExecutionRequest);
+            ScriptExecutionRequestConfiguration.getInstance().insert(scriptExecutionRequest);
         }
         List<String> insertStatement = insertStatement(executionRequest);
-        getMetadataControl().getExecutionServerMetadataRepository().executeBatch(insertStatement);
+        getMetadataRepository().executeBatch(insertStatement);
     }
 
     private List<String> insertStatement(ExecutionRequest executionRequest) {
         List<String> queries = new ArrayList<>();
+        queries.add("INSERT INTO " + getMetadataRepository().getTableNameByLabel("ExecutionRequests") +
+                " (REQUEST_ID, REQUEST_TMS, REQUEST_NM, REQUEST_DSC, NOTIF_EMAIL, SCOPE_NM, CONTEXT_NM, ST_NM) VALUES (" +
+                SQLTools.GetStringForSQL(executionRequest.getMetadataKey().getId()) + "," +
+                SQLTools.GetStringForSQL(executionRequest.getRequestTimestamp()) + "," +
+                SQLTools.GetStringForSQL(executionRequest.getName()) + "," +
+                SQLTools.GetStringForSQL(executionRequest.getDescription()) + "," +
+                SQLTools.GetStringForSQL(executionRequest.getEmail()) + "," +
+                SQLTools.GetStringForSQL(executionRequest.getScope()) + "," +
+                SQLTools.GetStringForSQL(executionRequest.getContext()) + "," +
+                SQLTools.GetStringForSQL(executionRequest.getExecutionRequestStatus().value()) + ");");
         if (executionRequest instanceof AuthenticatedExecutionRequest) {
-
-            queries.add("INSERT INTO " + getMetadataControl().getExecutionServerMetadataRepository().getTableNameByLabel("ExecutionRequests") +
-                    " (REQUEST_ID, REQUEST_TMS, REQUEST_NM, REQUEST_DSC, NOTIF_EMAIL, SCOPE_NM, CONTEXT_NM, ST_NM) VALUES (" +
-                    SQLTools.GetStringForSQL(executionRequest.getMetadataKey().getId()) + "," +
-                    SQLTools.GetStringForSQL(executionRequest.getRequestTimestamp()) + "," +
-                    SQLTools.GetStringForSQL(executionRequest.getName()) + "," +
-                    SQLTools.GetStringForSQL(executionRequest.getDescription()) + "," +
-                    SQLTools.GetStringForSQL(executionRequest.getEmail()) + "," +
-                    SQLTools.GetStringForSQL(executionRequest.getScope()) + "," +
-                    SQLTools.GetStringForSQL(executionRequest.getContext()) + "," +
-                    SQLTools.GetStringForSQL(executionRequest.getExecutionRequestStatus().value()) + ");");
-            queries.add("INSERT INTO " + getMetadataControl().getExecutionServerMetadataRepository().getTableNameByLabel("AuthenticationExecutionRequests") +
+            queries.add("INSERT INTO " + getMetadataRepository().getTableNameByLabel("AuthenticatedExecutionRequests") +
                     " (REQUEST_ID, SPACE_NM, USER_NM, USER_PASSWORD) VALUES (" +
                     SQLTools.GetStringForSQL(executionRequest.getMetadataKey().getId()) + "," +
                     SQLTools.GetStringForSQL(((AuthenticatedExecutionRequest) executionRequest).getSpace()) + "," +
@@ -344,22 +353,56 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
                     SQLTools.GetStringForSQL(((AuthenticatedExecutionRequest) executionRequest).getPassword()) + ");");
             return queries;
         } else if (executionRequest instanceof NonAuthenticatedExecutionRequest) {
-            queries.add("INSERT INTO " + getMetadataControl().getExecutionServerMetadataRepository().getTableNameByLabel("ExecutionRequests") +
-                    " (REQUEST_ID, REQUEST_TMS, REQUEST_NM, REQUEST_DSC, NOTIF_EMAIL, SCOPE_NM, CONTEXT_NM, ST_NM) VALUES (" +
-                    SQLTools.GetStringForSQL(executionRequest.getMetadataKey().getId()) + "," +
-                    SQLTools.GetStringForSQL(executionRequest.getRequestTimestamp()) + "," +
-                    SQLTools.GetStringForSQL(executionRequest.getName()) + "," +
-                    SQLTools.GetStringForSQL(executionRequest.getDescription()) + "," +
-                    SQLTools.GetStringForSQL(executionRequest.getEmail()) + "," +
-                    SQLTools.GetStringForSQL(executionRequest.getScope()) + "," +
-                    SQLTools.GetStringForSQL(executionRequest.getContext()) + "," +
-                    SQLTools.GetStringForSQL(executionRequest.getExecutionRequestStatus().value()) + ");");
-            queries.add("INSERT INTO " + getMetadataControl().getExecutionServerMetadataRepository().getTableNameByLabel("NonAuthenticatedExecutionRequests") +
+            queries.add("INSERT INTO " + getMetadataRepository().getTableNameByLabel("NonAuthenticatedExecutionRequests") +
                     " (REQUEST_ID) VALUES (" +
                     SQLTools.GetStringForSQL(executionRequest.getMetadataKey().getId()) + ");");
             return queries;
         } else {
             LOGGER.warn(MessageFormat.format("ExecutionRequest {0} does not have a certain class", executionRequest.toString()));
+        }
+        for (ScriptExecutionRequest scriptExecutionRequest : executionRequest.getScriptExecutionRequests()) {
+            queries.addAll(ScriptExecutionRequestConfiguration.getInstance().insertStatement(scriptExecutionRequest));
+        }
+        return queries;
+    }
+
+    @Override
+    public void update(ExecutionRequest executionRequest) throws ExecutionRequestDoesNotExistException {
+        if (!exists(executionRequest.getMetadataKey())) {
+            throw new ExecutionRequestDoesNotExistException(MessageFormat.format(
+                    "ExecutionRequest {0} already exists", executionRequest.getMetadataKey().toString()));
+        }
+        List<String> updateStatement = updateStatement(executionRequest);
+        getMetadataRepository().executeBatch(updateStatement);
+    }
+
+    private List<String> updateStatement(ExecutionRequest executionRequest) {
+        List<String> queries = new ArrayList<>();
+        queries.add("UPDATE " + getMetadataRepository().getTableNameByLabel("ExecutionRequests") + " SET " +
+                "REQUEST_TMS=" + SQLTools.GetStringForSQL(executionRequest.getRequestTimestamp()) + "," +
+                "REQUEST_NM=" + SQLTools.GetStringForSQL(executionRequest.getName()) + "," +
+                "REQUEST_DSC=" + SQLTools.GetStringForSQL(executionRequest.getDescription()) + "," +
+                "NOTIF_EMAIL=" + SQLTools.GetStringForSQL(executionRequest.getEmail()) + "," +
+                "SCOPE_NM=" + SQLTools.GetStringForSQL(executionRequest.getScope()) + "," +
+                "CONTEXT_NM=" + SQLTools.GetStringForSQL(executionRequest.getContext()) + "," +
+                "ST_NM=" + SQLTools.GetStringForSQL(executionRequest.getExecutionRequestStatus().value()) +
+                " WHERE " +
+                "REQUEST_ID =" + SQLTools.GetStringForSQL(executionRequest.getMetadataKey().getId()) + ";");
+        if (executionRequest instanceof AuthenticatedExecutionRequest) {
+            queries.add("UPDATE " + getMetadataRepository().getTableNameByLabel("AuthenticatedExecutionRequests") + " SET " +
+                    "SPACE_NM=" + SQLTools.GetStringForSQL(((AuthenticatedExecutionRequest) executionRequest).getSpace()) + "," +
+                    "USER_NM=" + SQLTools.GetStringForSQL(((AuthenticatedExecutionRequest) executionRequest).getUser()) + "," +
+                    "USER_PASSWORD=" + SQLTools.GetStringForSQL(((AuthenticatedExecutionRequest) executionRequest).getPassword())  +
+                    " WHERE " +
+                    "REQUEST_ID =" + SQLTools.GetStringForSQL(executionRequest.getMetadataKey().getId()) + ";");
+            return queries;
+        } else if (executionRequest instanceof NonAuthenticatedExecutionRequest) {
+            return queries;
+        } else {
+            LOGGER.warn(MessageFormat.format("ExecutionRequest {0} does not have a certain class", executionRequest.toString()));
+        }
+        for (ScriptExecutionRequest scriptExecutionRequest : executionRequest.getScriptExecutionRequests()) {
+            queries.addAll(ScriptExecutionRequestConfiguration.getInstance().updateStatement(scriptExecutionRequest));
         }
         return queries;
     }

@@ -42,5 +42,5 @@ class DelimitedFileBeatElasticSearchConnectionTest {
         NestedTestObject nestedTestObject = new NestedTestObject(new TestObject("a", "b", "c", "d"), "a", "b", "c");
         assertEquals("'a' 'b' 'c' 'd' 'a' 'b' 'c'", delimitedFileBeatElasticSearchConnection.toString(nestedTestObject));
     }
-    
+
 }

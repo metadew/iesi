@@ -8,10 +8,10 @@ cd !SCRIPT_DIR!
 
 call iesi-setenv.cmd
 
-call set LIB_DIR="%CD%\..\lib"
+call set LIB_DIR="%CD%\..\rest"
 
-cd !LIB_DIR!
+cd %LIB_DIR%
 
-java "-Dloader.path=." -jar .\%IESI_REST_JAR%
+java -Dlog4j.configurationFile=log4j2.xml -jar iesi-rest-0.0.1-SNAPSHOT.jar %*
 
 cd !CURRENT_DIR!

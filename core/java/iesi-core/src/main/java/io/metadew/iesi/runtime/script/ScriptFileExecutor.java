@@ -15,13 +15,10 @@ import io.metadew.iesi.script.operation.JsonInputOperation;
 import io.metadew.iesi.script.operation.YamlInputOperation;
 
 import java.io.File;
-import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 
 public class ScriptFileExecutor implements ScriptExecutor<ScriptFileExecutionRequest> {
-
-    private final ScriptExecutionConfiguration scriptExecutionConfiguration;
 
     private static ScriptFileExecutor INSTANCE;
 
@@ -33,7 +30,6 @@ public class ScriptFileExecutor implements ScriptExecutor<ScriptFileExecutionReq
     }
 
     private ScriptFileExecutor() {
-        scriptExecutionConfiguration = new ScriptExecutionConfiguration();
     }
 
     @Override
@@ -67,11 +63,11 @@ public class ScriptFileExecutor implements ScriptExecutor<ScriptFileExecutionReq
                 .build();
 
         io.metadew.iesi.metadata.definition.execution.script.ScriptExecution scriptExecution1 = new io.metadew.iesi.metadata.definition.execution.script.ScriptExecution(new ScriptExecutionKey(), scriptExecutionRequest.getMetadataKey(), scriptExecution.getExecutionControl().getRunId(), ScriptExecutionStatus.RUNNING, LocalDateTime.now(), null);
-        scriptExecutionConfiguration.insert(scriptExecution1);
+        ScriptExecutionConfiguration.getInstance().insert(scriptExecution1);
 
         scriptExecution.execute();
 
         scriptExecution1.updateScriptExecutionStatus(ScriptExecutionStatus.COMPLETED);
-        scriptExecutionConfiguration.insert(scriptExecution1);
+        ScriptExecutionConfiguration.getInstance().insert(scriptExecution1);
     }
 }

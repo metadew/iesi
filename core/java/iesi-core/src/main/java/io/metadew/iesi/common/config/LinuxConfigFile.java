@@ -8,7 +8,7 @@ import java.io.FileReader;
 
 public class LinuxConfigFile extends ConfigFile {
 
-    public LinuxConfigFile(FrameworkControl frameworkControl, String fileName) {
+    public LinuxConfigFile(String fileName) {
         super();
         try {
             File file = new File(fileName);
@@ -22,7 +22,7 @@ public class LinuxConfigFile extends ConfigFile {
                     if (delim > 0) {
                         String key = innerpart.substring(0, delim);
                         String value = innerpart.substring(delim + 1);
-                        this.setProperty(key, frameworkControl.resolveConfiguration(value));
+                        this.setProperty(key, FrameworkControl.getInstance().resolveConfiguration(value));
                     } else {
                         // Not a valid configuration
                     }

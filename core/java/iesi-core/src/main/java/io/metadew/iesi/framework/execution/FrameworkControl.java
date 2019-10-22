@@ -74,7 +74,7 @@ public class FrameworkControl {
 			File file = new File(this.resolveConfiguration("#" + FrameworkConfiguration.getInstance().getFrameworkCode()
 					+ ".home#/conf/" + initializationFile));
 			BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
-			String readLine = "";
+			String readLine;
 			
 			while ((readLine = bufferedReader.readLine()) != null) {
 				String innerpart = readLine.trim();
@@ -85,17 +85,15 @@ public class FrameworkControl {
 				String value = parts[2];
 				value = this.resolveConfiguration(value);
 				
-				ObjectMapper objectMapper = new ObjectMapper();
-				ConfigFile configFile = null;
+				ConfigFile configFile;
 				if (key.equalsIgnoreCase("linux")) {
-					LinuxConfigFile linuxConfigFile = new LinuxConfigFile(this, value);
-					configFile = objectMapper.convertValue(linuxConfigFile, ConfigFile.class);
+					configFile = new LinuxConfigFile(value);
 				} else if (key.equalsIgnoreCase("windows")) {
-					WindowsConfigFile windowsConfigFile = new WindowsConfigFile(this, value);
-					configFile = objectMapper.convertValue(windowsConfigFile, ConfigFile.class);
+					configFile = new WindowsConfigFile(value);
 				} else if (key.equalsIgnoreCase("keyvalue")) {
-					KeyValueConfigFile keyValueConfigFile = new KeyValueConfigFile(this, value);
-					configFile = objectMapper.convertValue(keyValueConfigFile, ConfigFile.class);
+					configFile = new KeyValueConfigFile(value);
+				} else {
+					continue;
 				}
 
 				if (type.trim().equalsIgnoreCase("repository")) {
@@ -116,7 +114,7 @@ public class FrameworkControl {
 	}
 
 	public void setSettingsList(String input) {
-		KeyValueConfigList keyValueConfigList = new KeyValueConfigList(this, input);
+		KeyValueConfigList keyValueConfigList = new KeyValueConfigList(input);
 		this.getProperties().putAll(keyValueConfigList.getProperties());
 	}
 
@@ -152,7 +150,7 @@ public class FrameworkControl {
 
 	public void addKeyValueConfigFile(String path) {
 		try {
-			KeyValueConfigFile keyValueConfigFile = new KeyValueConfigFile(this, path);
+			KeyValueConfigFile keyValueConfigFile = new KeyValueConfigFile(path);
 			this.getProperties().putAll(keyValueConfigFile.getProperties());
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -175,13 +173,13 @@ public class FrameworkControl {
 		ObjectMapper objectMapper = new ObjectMapper();
 		ConfigFile configFile = null;
 		if (type.equalsIgnoreCase("linux")) {
-			LinuxConfigFile linuxConfigFile = new LinuxConfigFile(this, filePath);
+			LinuxConfigFile linuxConfigFile = new LinuxConfigFile(filePath);
 			configFile = objectMapper.convertValue(linuxConfigFile, ConfigFile.class);
 		} else if (type.equalsIgnoreCase("windows")) {
-			WindowsConfigFile windowsConfigFile = new WindowsConfigFile(this, filePath);
+			WindowsConfigFile windowsConfigFile = new WindowsConfigFile(filePath);
 			configFile = objectMapper.convertValue(windowsConfigFile, ConfigFile.class);
 		} else if (type.equalsIgnoreCase("keyvalue")) {
-			KeyValueConfigFile keyValueConfigFile = new KeyValueConfigFile(this, filePath);
+			KeyValueConfigFile keyValueConfigFile = new KeyValueConfigFile(filePath);
 			configFile = objectMapper.convertValue(keyValueConfigFile, ConfigFile.class);
 		}
 

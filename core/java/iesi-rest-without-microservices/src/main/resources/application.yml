@@ -1,5 +1,4 @@
 server:
-  port: 8080
   servlet:
     context-path: /api
 
@@ -8,7 +7,7 @@ spring:
     active: http
   datasource:
     url: jdbc:h2:~/token
-    schema: classpath:/schema.sql
+    schema: classpath:schema.sql
     data: classpath:data.sql
 
 management:

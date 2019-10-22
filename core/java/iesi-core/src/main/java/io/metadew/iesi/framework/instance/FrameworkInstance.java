@@ -90,7 +90,6 @@ public class FrameworkInstance {
 //				FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.def"),
 //				FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.def"));
 
-        Executor.getInstance().init();
 
         FrameworkExecution.getInstance().init(context);
         // TODO: move Executor (Request to separate module)

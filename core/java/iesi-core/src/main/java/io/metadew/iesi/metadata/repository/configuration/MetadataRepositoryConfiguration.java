@@ -6,7 +6,6 @@ import io.metadew.iesi.metadata.repository.*;
 import io.metadew.iesi.metadata.repository.coordinator.configuration.RepositoryConfiguration;
 import io.metadew.iesi.metadata.repository.coordinator.configuration.RepositoryConfigurationFactory;
 
-import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;

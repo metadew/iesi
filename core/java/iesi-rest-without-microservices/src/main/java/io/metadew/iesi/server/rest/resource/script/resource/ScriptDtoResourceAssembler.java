@@ -6,7 +6,6 @@ import io.metadew.iesi.server.rest.controller.ScriptController;
 import io.metadew.iesi.server.rest.resource.script.dto.ScriptActionDto;
 import io.metadew.iesi.server.rest.resource.script.dto.ScriptDto;
 import io.metadew.iesi.server.rest.resource.script.dto.ScriptVersionDto;
-import org.modelmapper.ModelMapper;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
 import org.springframework.stereotype.Component;

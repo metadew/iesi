@@ -14,21 +14,15 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class ActionParameterTraceService {
-
-
     private static final Logger LOGGER = LogManager.getLogger();
-    private final ActionParameterTraceConfiguration actionParameterTraceConfiguration;
 
-    public ActionParameterTraceService() {
-        this.actionParameterTraceConfiguration = new ActionParameterTraceConfiguration();
-    }
+    public ActionParameterTraceService() {}
 
     public void trace(ActionExecution actionExecution, Map<String, DataType> actionParameterMap) {
         trace(actionExecution, "", actionParameterMap);
@@ -41,7 +35,7 @@ public class ActionParameterTraceService {
             // trace(actionExecution, prefix + actionParameterEntry.getKey(), actionParameterEntry.getValue());
         }
         try {
-            actionParameterTraceConfiguration.insert(actionParameterTraces);
+            ActionParameterTraceConfiguration.getInstance().insert(actionParameterTraces);
         } catch (MetadataAlreadyExistsException e) {
             StringWriter stackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(stackTrace));
@@ -53,7 +47,7 @@ public class ActionParameterTraceService {
     public void trace(ActionExecution actionExecution, String key, DataType value) {
         List<ActionParameterTrace> actionParameterTraces = getActionParameterTraces(actionExecution, key, value);
         try {
-            actionParameterTraceConfiguration.insert(actionParameterTraces);
+            ActionParameterTraceConfiguration.getInstance().insert(actionParameterTraces);
         } catch (MetadataAlreadyExistsException e) {
             StringWriter stackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(stackTrace));

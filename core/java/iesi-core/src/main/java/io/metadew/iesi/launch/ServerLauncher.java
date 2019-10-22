@@ -9,11 +9,9 @@ import io.metadew.iesi.runtime.ExecutionRequestListener;
 import org.apache.commons.cli.*;
 import org.apache.logging.log4j.ThreadContext;
 
-import java.sql.SQLException;
-
 public class ServerLauncher {
 
-    public static void main(String[] args) throws ParseException, SQLException, InterruptedException, MetadataDoesNotExistException {
+    public static void main(String[] args) throws ParseException, InterruptedException, MetadataDoesNotExistException {
         ThreadContext.clearAll();
         Options options = new Options()
                 .addOption(Option.builder("help")

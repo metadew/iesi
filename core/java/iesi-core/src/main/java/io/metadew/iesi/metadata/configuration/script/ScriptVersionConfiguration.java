@@ -1,7 +1,6 @@
 package io.metadew.iesi.metadata.configuration.script;
 
 import io.metadew.iesi.connection.tools.SQLTools;
-import io.metadew.iesi.metadata.configuration.action.exception.ActionDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.script.exception.ScriptVersionAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.script.exception.ScriptVersionDoesNotExistException;
 import io.metadew.iesi.metadata.definition.script.ScriptVersion;

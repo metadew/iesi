@@ -1,59 +1,56 @@
 package io.metadew.iesi.server.rest.configuration;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 
-
-@ConfigurationProperties("security")
+@Configuration
+@ConfigurationProperties(prefix = "security.jwt")
 public class SecurityPropertiesServer {
 
-    private JwtProperties jwt;
+    private Resource keyStore;
+    private String keyStorePassword;
+    private String keyPairAlias;
+    private String keyPairPassword;
+    private String heyStoreType;
 
-    public JwtProperties getJwt() {
-        return jwt;
+    public Resource getKeyStore() {
+        return keyStore;
     }
 
-    public void setJwt(JwtProperties jwt) {
-        this.jwt = jwt;
+    public void setKeyStore(Resource keyStore) {
+        this.keyStore = keyStore;
     }
 
-    public static class JwtProperties {
+    public String getKeyStorePassword() {
+        return keyStorePassword;
+    }
 
-        private Resource keyStore;
-        private String keyStorePassword;
-        private String keyPairAlias;
-        private String keyPairPassword;
+    public void setKeyStorePassword(String keyStorePassword) {
+        this.keyStorePassword = keyStorePassword;
+    }
 
-        public Resource getKeyStore() {
-            return keyStore;
-        }
+    public String getKeyPairAlias() {
+        return keyPairAlias;
+    }
 
-        public void setKeyStore(Resource keyStore) {
-            this.keyStore = keyStore;
-        }
+    public void setKeyPairAlias(String keyPairAlias) {
+        this.keyPairAlias = keyPairAlias;
+    }
 
-        public String getKeyStorePassword() {
-            return keyStorePassword;
-        }
+    public String getKeyPairPassword() {
+        return keyPairPassword;
+    }
 
-        public void setKeyStorePassword(String keyStorePassword) {
-            this.keyStorePassword = keyStorePassword;
-        }
+    public void setKeyPairPassword(String keyPairPassword) {
+        this.keyPairPassword = keyPairPassword;
+    }
 
-        public String getKeyPairAlias() {
-            return keyPairAlias;
-        }
+    public String getHeyStoreType() {
+        return heyStoreType;
+    }
 
-        public void setKeyPairAlias(String keyPairAlias) {
-            this.keyPairAlias = keyPairAlias;
-        }
-
-        public String getKeyPairPassword() {
-            return keyPairPassword;
-        }
-
-        public void setKeyPairPassword(String keyPairPassword) {
-            this.keyPairPassword = keyPairPassword;
-        }
+    public void setHeyStoreType(String heyStoreType) {
+        this.heyStoreType = heyStoreType;
     }
 }

@@ -1,0 +1,20 @@
+---
+type: Script
+data:
+  type: "script"
+  name: "data.setDatasetConnection.7"
+  description: "test data.setDatasetConnection, create a new dataset"
+  actions:
+  - number: 1
+    type: "data.setDatasetConnection"
+    name: "set expected dataset connection"
+    description: "default"
+    errorExpected: "N"
+    errorStop: "Y"
+    parameters:
+    - name: "name"
+      value : "actual"
+    - name: "dataset"
+      value : "setDatasetConnection"
+    - name: "labels"
+      value : "test1, test2, {{$run.id}})"

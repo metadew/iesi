@@ -504,28 +504,6 @@
     "type" : "Oracle"
   },
   "type" : "FrameworkSetting"
-},{
-  "data" : {
-    "name" : "metadata.repository.oracle.schema.user",
-    "path" : "iesi.metadata.repository.oracle.schema.user",
-    "label" : "MetadataRepositoryOracleLogonUser",
-    "description" : "",
-    "group" : "MetadataRepository",
-    "category" : "Database",
-    "type" : "Oracle"
-  },
-  "type" : "FrameworkSetting"
-}, {
-  "data" : {
-    "name" : "metadata.repository.oracle.schema.user.password",
-    "path" : "iesi.metadata.repository.oracle.schema.user.password",
-    "label" : "MetadataRepositoryOracleLogonUserPassword",
-    "description" : "",
-    "group" : "MetadataRepository",
-    "category" : "Database",
-    "type" : "Oracle"
-  },
-  "type" : "FrameworkSetting"
 }, {
   "data" : {
     "name" : "metadata.repository.oracle.writer",

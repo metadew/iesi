@@ -1,9 +1,9 @@
 package io.metadew.iesi.connection.elasticsearch.filebeat;
 
+import io.metadew.iesi.connection.elasticsearch.ElasticSearchDocument;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import io.metadew.iesi.connection.elasticsearch.ElasticSearchDocument;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;

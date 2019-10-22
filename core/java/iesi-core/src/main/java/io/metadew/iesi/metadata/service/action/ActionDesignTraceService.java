@@ -19,24 +19,20 @@ import java.util.List;
 public class ActionDesignTraceService {
 
 
-    private ActionDesignTraceConfiguration actionDesignTraceConfiguration;
-    private ActionParameterDesignTraceConfiguration actionParameterDesignTraceConfiguration;
     private static final Logger LOGGER = LogManager.getLogger();
 
 
     public ActionDesignTraceService() {
-        this.actionDesignTraceConfiguration = new ActionDesignTraceConfiguration();
-        this.actionParameterDesignTraceConfiguration = new ActionParameterDesignTraceConfiguration();
     }
 
     public void trace(String runId, Long processId, Action action) {
         try {
-            actionDesignTraceConfiguration.insert(new ActionDesignTrace(runId, processId, action));
+            ActionDesignTraceConfiguration.getInstance().insert(new ActionDesignTrace(runId, processId, action));
             List<ActionParameterDesignTrace> actionParameterDesignTraces = new ArrayList<>();
             for (ActionParameter actionParameter : action.getParameters()) {
                 actionParameterDesignTraces.add(new ActionParameterDesignTrace(runId, processId, action.getId(), actionParameter));
             }
-            actionParameterDesignTraceConfiguration.insert(actionParameterDesignTraces);
+            ActionParameterDesignTraceConfiguration.getInstance().insert(actionParameterDesignTraces);
         } catch (MetadataAlreadyExistsException | SQLException e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));

@@ -2,8 +2,6 @@ package io.metadew.iesi.connection.database.connection.sqlite;
 
 import io.metadew.iesi.connection.database.connection.DatabaseConnection;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

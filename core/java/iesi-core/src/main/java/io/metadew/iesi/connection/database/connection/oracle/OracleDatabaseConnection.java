@@ -1,7 +1,11 @@
 package io.metadew.iesi.connection.database.connection.oracle;
 
 import io.metadew.iesi.connection.database.connection.DatabaseConnection;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Optional;
@@ -13,6 +17,7 @@ import java.util.Optional;
  */
 public class OracleDatabaseConnection extends DatabaseConnection {
 
+    private static Logger LOGGER = LogManager.getLogger();
     private static String type = "oracle";
     private String schema;
 
@@ -79,6 +84,10 @@ public class OracleDatabaseConnection extends DatabaseConnection {
             connection.createStatement().execute("alter session set nls_timestamp_format='YYYY-MM-DD\"T\" HH24:MI:SS:FF'");
             return connection;
         } catch (SQLException e) {
+            StringWriter stackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTrace));
+            LOGGER.info("exception=" + e);
+            LOGGER.debug("exception.stacktrace=" + stackTrace.toString());
             throw new RuntimeException(e);
         }
     }

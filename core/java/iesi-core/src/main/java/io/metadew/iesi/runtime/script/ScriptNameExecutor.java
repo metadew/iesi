@@ -3,7 +3,6 @@ package io.metadew.iesi.runtime.script;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.execution.script.ScriptExecutionConfiguration;
-import io.metadew.iesi.metadata.configuration.execution.script.ScriptExecutionRequestConfiguration;
 import io.metadew.iesi.metadata.configuration.script.ScriptConfiguration;
 import io.metadew.iesi.metadata.configuration.script.exception.ScriptDoesNotExistException;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionStatus;
@@ -13,15 +12,17 @@ import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.script.ScriptExecutionBuildException;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.execution.ScriptExecutionBuilder;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import java.sql.SQLException;
+import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 
 public class ScriptNameExecutor implements ScriptExecutor<ScriptNameExecutionRequest> {
     private final ScriptConfiguration scriptConfiguration;
-    private final ScriptExecutionConfiguration scriptExecutionConfiguration;
 
+    private static final Logger LOGGER = LogManager.getLogger();
     private static ScriptNameExecutor INSTANCE;
 
     public synchronized static ScriptNameExecutor getInstance() {
@@ -33,7 +34,6 @@ public class ScriptNameExecutor implements ScriptExecutor<ScriptNameExecutionReq
 
     private ScriptNameExecutor() {
         scriptConfiguration = new ScriptConfiguration();
-        scriptExecutionConfiguration = new ScriptExecutionConfiguration();
     }
 
     @Override
@@ -47,8 +47,10 @@ public class ScriptNameExecutor implements ScriptExecutor<ScriptNameExecutionReq
         Script script = scriptExecutionRequest.getScriptVersion()
                 .map(scriptVersion -> scriptConfiguration.get(scriptExecutionRequest.getScriptName(), scriptVersion))
                 .orElse(scriptConfiguration.get(scriptExecutionRequest.getScriptName()))
-                .orElseThrow(() -> new ScriptDoesNotExistException(""));
+                .orElseThrow(() -> new ScriptDoesNotExistException(MessageFormat.format("Script {0}:{1} does not exist", scriptExecutionRequest.getScriptName(), scriptExecutionRequest.getScriptVersion().map(Object::toString).orElse("latest"))));
+
         // TODO: ActionSelection?
+
         ScriptExecution scriptExecution = new ScriptExecutionBuilder(true, false)
                 .script(script)
                 .exitOnCompletion(scriptExecutionRequest.isExit())
@@ -59,13 +61,12 @@ public class ScriptNameExecutor implements ScriptExecutor<ScriptNameExecutionReq
                 .build();
 
         io.metadew.iesi.metadata.definition.execution.script.ScriptExecution scriptExecution1 = new io.metadew.iesi.metadata.definition.execution.script.ScriptExecution(new ScriptExecutionKey(), scriptExecutionRequest.getMetadataKey(), scriptExecution.getExecutionControl().getRunId(), ScriptExecutionStatus.RUNNING, LocalDateTime.now(), null);
-        scriptExecutionConfiguration.insert(scriptExecution1);
+        ScriptExecutionConfiguration.getInstance().insert(scriptExecution1);
 
         scriptExecution.execute();
 
         scriptExecution1.updateScriptExecutionStatus(ScriptExecutionStatus.COMPLETED);
         scriptExecution1.setEndTimestamp(LocalDateTime.now());
-
-        scriptExecutionConfiguration.update(scriptExecution1);
+        ScriptExecutionConfiguration.getInstance().update(scriptExecution1);
     }
 }

@@ -4,8 +4,6 @@ import io.metadew.iesi.script.configuration.IterationConfiguration;
 import io.metadew.iesi.script.configuration.IterationInstance;
 import io.metadew.iesi.script.operation.IterationOperation;
 
-import java.sql.SQLException;
-
 public class IterationExecution {
 
     private ExecutionControl executionControl;

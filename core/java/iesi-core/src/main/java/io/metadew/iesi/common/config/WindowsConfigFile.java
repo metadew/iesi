@@ -8,7 +8,7 @@ import java.io.FileReader;
 
 public class WindowsConfigFile extends ConfigFile {
 
-    public WindowsConfigFile(FrameworkControl frameworkControl, String fileName) {
+    public WindowsConfigFile(String fileName) {
         super();
         try {
             File file = new File(fileName);
@@ -22,7 +22,7 @@ public class WindowsConfigFile extends ConfigFile {
                     if (delim > 0) {
                         String key = innerpart.substring(0, delim);
                         String value = innerpart.substring(delim + 1);
-                        this.setProperty(key, frameworkControl.resolveConfiguration(value));
+                        this.setProperty(key, FrameworkControl.getInstance().resolveConfiguration(value));
                     } else {
                         // Not a valid configuration
                     }

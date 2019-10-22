@@ -7,7 +7,7 @@ data:
   actions:
   - number: 1
     type: "sql.executeStatement"
-    name: "action1"
+    name: "run statement"
     description: "run a sql select statement"
     component: ""
     condition: ""

@@ -17,7 +17,6 @@ import org.apache.logging.log4j.Logger;
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.HashMap;
 

@@ -4,15 +4,13 @@ script_dir=`dirname $0`
 
 cd $script_dir
 script_dir=$(pwd)
-lib_dir=$script_dir/../lib
+lib_dir=$script_dir/../rest
 
 #Environment Settings
 . iesi-setenv.sh
 
-classpath="*"
-
 cd $lib_dir
 
-java "-Dloader.path=." -jar ./$IESI_REST_JAR
+java -Dlog4j.configurationFile=log4j2.xml -jar iesi-rest-0.0.1-SNAPSHOT.jar
 
 cd $current_dir

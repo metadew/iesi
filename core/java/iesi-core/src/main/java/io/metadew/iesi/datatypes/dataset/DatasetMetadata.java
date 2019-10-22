@@ -11,6 +11,8 @@ import org.apache.logging.log4j.Logger;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.List;
@@ -101,14 +103,13 @@ public class DatasetMetadata {
     protected void insertDatasetLabelInformation(int datasetInventoryId, List<String> labels) {
         String labelQuery = "insert into CFG_DATASET_LBL (DATASET_INV_ID, DATASET_LBL_VAL) VALUES ("
                 + SQLTools.GetStringForSQL(datasetInventoryId) + ", {0})";
-        labels.forEach(label -> {
-            database.executeUpdate(MessageFormat.format(labelQuery, SQLTools.GetStringForSQL(label)));
-        });
+        labels.forEach(label -> database.executeUpdate(MessageFormat.format(labelQuery, SQLTools.GetStringForSQL(label))));
     }
 
-    protected int getLatestInventoryId() {
+    protected synchronized int getLatestInventoryId() {
         try {
-            String latestInventoryIdQuery = "select max(DATASET_INV_ID) as LATEST_INVENTORY_ID from CFG_DATASET_INV";
+            String latestInventoryIdQuery = "select max(DATASET_INV_ID) as LATEST_INVENTORY_ID from (SELECT DATASET_INV_ID FROM CFG_DATASET_INV " +
+                    "UNION ALL SELECT DATASET_INV_ID FROM CFG_DATASET_LBL);";
             CachedRowSet cachedRowSet = database.executeQuery(latestInventoryIdQuery);
             int inventoryId;
             if (cachedRowSet.size() == 0) {
@@ -118,19 +119,24 @@ public class DatasetMetadata {
                 inventoryId = cachedRowSet.getInt("LATEST_INVENTORY_ID");
             }
             cachedRowSet.close();
-            int inventoryIdLbl;
-            // TODO: robustness to lbl
-            String latestInventoryIdQueryLbl = "select max(DATASET_INV_ID) as LATEST_INVENTORY_ID from CFG_DATASET_LBL";
-            CachedRowSet cachedRowSetLbl = database.executeQuery(latestInventoryIdQueryLbl);
-            if (cachedRowSetLbl.size() == 0) {
-                inventoryIdLbl = 0;
-            } else {
-                cachedRowSetLbl.next();
-                inventoryIdLbl = cachedRowSetLbl.getInt("LATEST_INVENTORY_ID");
-            }
-            cachedRowSetLbl.close();
-            return Math.max(inventoryId, inventoryIdLbl);
+            return inventoryId;
+//            int inventoryIdLbl;
+//            // TODO: robustness to lbl
+//            String latestInventoryIdQueryLbl = "select max(DATASET_INV_ID) as LATEST_INVENTORY_ID from CFG_DATASET_LBL";
+//            CachedRowSet cachedRowSetLbl = database.executeQuery(latestInventoryIdQueryLbl);
+//            if (cachedRowSetLbl.size() == 0) {
+//                inventoryIdLbl = 0;
+//            } else {
+//                cachedRowSetLbl.next();
+//                inventoryIdLbl = cachedRowSetLbl.getInt("LATEST_INVENTORY_ID");
+//            }
+//            cachedRowSetLbl.close();
+//            return Math.max(inventoryId, inventoryIdLbl);
         } catch (SQLException e) {
+            StringWriter stackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTrace));
+            LOGGER.info("exception=" + e);
+            LOGGER.debug("exception.stacktrace=" + stackTrace.toString());
             throw new RuntimeException(e);
         }
     }

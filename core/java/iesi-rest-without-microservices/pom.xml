@@ -13,7 +13,7 @@
     <packaging>${packaging.type}</packaging>
     <groupId>io.metadew.iesi</groupId>
     <artifactId>iesi-rest</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.1.0</version>
     <name>IesiRestApplicationWithoutMicroServices</name>
     <description>IESI REST API</description>
 

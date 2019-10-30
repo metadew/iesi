@@ -33,10 +33,6 @@ public class ScriptDto extends ResourceSupport {
                 actions.stream().map(ScriptActionDto::convertToEntity).collect(Collectors.toList()));
     }
 
-    public static ScriptDto convertToDto(Script script) {
-        return new ScriptDto(script.getType(), script.getName(), script.getDescription(), ScriptVersionDto.convertToDto(script.getVersion()), script.getParameters(), script.getActions().stream().map(ScriptActionDto::convertToDto).collect(Collectors.toList()));
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

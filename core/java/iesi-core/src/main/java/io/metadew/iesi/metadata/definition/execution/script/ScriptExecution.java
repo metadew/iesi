@@ -1,5 +1,6 @@
 package io.metadew.iesi.metadata.definition.execution.script;
 
+import io.metadew.iesi.framework.configuration.ScriptRunStatus;
 import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionKey;
 import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionRequestKey;
@@ -8,28 +9,28 @@ import java.time.LocalDateTime;
 
 public class ScriptExecution extends Metadata<ScriptExecutionKey> {
 
-    private ScriptExecutionStatus scriptExecutionStatus;
+    private ScriptRunStatus scriptRunStatus;
     private String runId;
     private LocalDateTime startTimestamp;
     private LocalDateTime endTimestamp;
     private ScriptExecutionRequestKey scriptExecutionRequestKey;
 
-    public ScriptExecution(ScriptExecutionKey scriptExecutionKey, ScriptExecutionRequestKey scriptExecutionRequestKey, String runId, ScriptExecutionStatus scriptExecutionStatus, LocalDateTime startTimestamp,
+    public ScriptExecution(ScriptExecutionKey scriptExecutionKey, ScriptExecutionRequestKey scriptExecutionRequestKey, String runId, ScriptRunStatus scriptRunStatus, LocalDateTime startTimestamp,
                            LocalDateTime endTimestamp) {
         super(scriptExecutionKey);
         this.scriptExecutionRequestKey = scriptExecutionRequestKey;
         this.runId = runId;
-        this.scriptExecutionStatus = scriptExecutionStatus;
+        this.scriptRunStatus = scriptRunStatus;
         this.startTimestamp = startTimestamp;
         this.endTimestamp = endTimestamp;
     }
 
-    public ScriptExecutionStatus getScriptExecutionStatus() {
-        return scriptExecutionStatus;
+    public ScriptRunStatus getScriptRunStatus() {
+        return scriptRunStatus;
     }
 
-    public void updateScriptExecutionStatus(ScriptExecutionStatus scriptExecutionStatus) {
-        this.scriptExecutionStatus = scriptExecutionStatus;
+    public void updateScriptRunStatus(ScriptRunStatus scriptExecutionStatus) {
+        this.scriptRunStatus = scriptExecutionStatus;
     }
 
     public LocalDateTime getStartTimestamp() {

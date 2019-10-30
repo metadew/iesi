@@ -8,6 +8,7 @@ import io.metadew.iesi.metadata.configuration.component.ComponentConfiguration;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.configuration.environment.EnvironmentConfiguration;
 import io.metadew.iesi.metadata.configuration.execution.ExecutionRequestConfiguration;
+import io.metadew.iesi.metadata.configuration.execution.script.ScriptExecutionConfiguration;
 import io.metadew.iesi.metadata.configuration.impersonation.ImpersonationConfiguration;
 import io.metadew.iesi.metadata.configuration.script.ScriptConfiguration;
 import io.metadew.iesi.metadata.definition.Context;
@@ -66,6 +67,12 @@ public class IesiConfiguration {
     @DependsOn("frameworkInstance")
     public ScriptConfiguration scriptConfiguration() {
         return new ScriptConfiguration();
+    }
+    @Bean
+
+    @DependsOn("frameworkInstance")
+    public ScriptExecutionConfiguration scriptExecutionConfiguration() {
+        return ScriptExecutionConfiguration.getInstance();
     }
 
     @Bean

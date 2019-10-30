@@ -4,7 +4,6 @@ import io.metadew.iesi.metadata.definition.component.Component;
 import io.metadew.iesi.server.rest.controller.ComponentsController;
 import io.metadew.iesi.server.rest.resource.component.dto.ComponentDto;
 import io.metadew.iesi.server.rest.resource.component.dto.ComponentVersionDto;
-import org.modelmapper.ModelMapper;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
 
@@ -14,11 +13,8 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 @org.springframework.stereotype.Component
 public class ComponentDtoResourceAssembler extends ResourceAssemblerSupport<Component, ComponentDto> {
 
-    private final ModelMapper modelMapper;
-
     public ComponentDtoResourceAssembler() {
         super(ComponentsController.class, ComponentDto.class);
-        this.modelMapper = new ModelMapper();
     }
 
     @Override
@@ -37,6 +33,6 @@ public class ComponentDtoResourceAssembler extends ResourceAssemblerSupport<Comp
 
     private ComponentDto convertToDto(Component component) {
         return new ComponentDto(component.getType(), component.getName(), component.getDescription(),
-                ComponentVersionDto.convertToDto(component.getVersion()), component.getParameters(), component.getAttributes());
+                new ComponentVersionDto(component.getVersion().getNumber(), component.getVersion().getDescription()), component.getParameters(), component.getAttributes());
     }
 }

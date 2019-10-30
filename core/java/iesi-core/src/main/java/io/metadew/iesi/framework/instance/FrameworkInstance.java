@@ -12,7 +12,6 @@ import io.metadew.iesi.metadata.execution.MetadataControl;
 import io.metadew.iesi.metadata.repository.ExecutionServerMetadataRepository;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import io.metadew.iesi.metadata.repository.configuration.MetadataRepositoryConfiguration;
-import io.metadew.iesi.runtime.Executor;
 import io.metadew.iesi.runtime.ExecutorService;
 
 import java.util.ArrayList;

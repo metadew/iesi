@@ -48,8 +48,7 @@ public class FrameworkControl {
 		this.frameworkPluginConfigurationList = new ArrayList<>();
 		try {
 
-			properties.put(FrameworkConfiguration.getInstance().getFrameworkCode() + ".home",
-					FrameworkConfiguration.getInstance().getFrameworkHome());
+			properties.put(FrameworkConfiguration.getInstance().getFrameworkCode() + ".home", FrameworkConfiguration.getInstance().getFrameworkHome());
 			readSettingFiles(frameworkInitializationFile.getName());
 
 		} catch (Exception e) {

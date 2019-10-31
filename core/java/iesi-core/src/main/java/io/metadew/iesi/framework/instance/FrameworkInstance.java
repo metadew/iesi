@@ -42,6 +42,36 @@ public class FrameworkInstance {
         init("write", frameworkInitializationFile, context);
     }
 
+    public void init(FrameworkInitializationFile frameworkInitializationFile, FrameworkExecutionContext context, String frameworkHome) {
+        // Get the framework configuration
+        FrameworkConfiguration frameworkConfiguration = FrameworkConfiguration.getInstance();
+        frameworkConfiguration.init(frameworkHome);
+
+        FrameworkCrypto.getInstance();
+
+        // Set appropriate initialization file
+        if (frameworkInitializationFile.getName().trim().isEmpty()) {
+            frameworkInitializationFile = new FrameworkInitializationFile(frameworkConfiguration.getFrameworkCode() + "-conf.ini");
+        }
+
+        // Prepare configuration and shared Metadata
+        FrameworkControl frameworkControl = FrameworkControl.getInstance();
+        frameworkControl.init("write", frameworkInitializationFile);
+
+        FrameworkActionTypeConfiguration.getInstance().setActionTypesFromPlugins(frameworkControl.getFrameworkPluginConfigurationList());
+        List<MetadataRepository> metadataRepositories = new ArrayList<>();
+
+        for (MetadataRepositoryConfiguration metadataRepositoryConfiguration : frameworkControl.getMetadataRepositoryConfigurations()) {
+            metadataRepositories.addAll(metadataRepositoryConfiguration.toMetadataRepositories());
+
+        }
+        MetadataControl.getInstance().init(metadataRepositories);
+
+        FrameworkExecution.getInstance().init(context);
+        // TODO: move Executor (Request to separate module)
+        ExecutorService.getInstance();
+    }
+
     public void init(String logonType, FrameworkInitializationFile frameworkInitializationFile, FrameworkExecutionContext context) {
         // Get the framework configuration
         FrameworkConfiguration frameworkConfiguration = FrameworkConfiguration.getInstance();

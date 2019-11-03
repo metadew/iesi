@@ -144,7 +144,7 @@ public class ExecutionControl {
                     LocalDateTime.now(),
                     null
             );
-            ActionResultConfiguration.getInstance().getInstance().insert(actionResult);
+            ActionResultConfiguration.getInstance().insert(actionResult);
         } catch (MetadataAlreadyExistsException e) {
             StringWriter stackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(stackTrace));
@@ -166,7 +166,7 @@ public class ExecutionControl {
                     null,
                     null
             );
-            ActionResultConfiguration.getInstance().getInstance().insert(actionResult);
+            ActionResultConfiguration.getInstance().insert(actionResult);
 
             this.logMessage(actionExecution, "action.status=" + ScriptRunStatus.SKIPPED.value(), Level.INFO);
         } catch (MetadataAlreadyExistsException e) {
@@ -291,7 +291,6 @@ public class ExecutionControl {
             status = ScriptRunStatus.STOPPED.value();
         } else if (scriptExit) {
             status = ScriptRunStatus.STOPPED.value();
-            // TODO: get status from input parameters in action
         } else if (scriptExecution.getExecutionMetrics().getSuccessCount() == 0
                 && scriptExecution.getExecutionMetrics().getWarningCount() == 0
                 && scriptExecution.getExecutionMetrics().getErrorCount() > 0) {

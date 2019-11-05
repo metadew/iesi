@@ -9,7 +9,7 @@ Both companies have a separate database: Company A DB and Company B DB. After th
 This is illustrated in the figure below. The new database shouldn't contain any duplicates. 
 These duplicates are customers who were a customer of both company A and company B before the merger. 
 
-![ETL flow illustration](../../images/ETL_flow_illustration.png)
+![ETL flow illustration](../../../docs/images/demos/ETL_flow_illustration.png)
 
 ## Getting Started
 
@@ -48,9 +48,11 @@ We first have to make sure that the configurations are right. In conf/iesi-repos
 
 2. under: # SQLITE
 
-* iesi.metadata.repository.sqlite.file=#iesi.home#/target.db3
+* iesi.metadata.repository.sqlite.file=#iesi.home#/data/demo3/target.db3
 
-After the changes save the file. The rest can be left open.
+* \#iesi.home# refers to the home directory of iesi
+
+After the changes save the file. The rest can be left blank.
 
 Next, the configuration repository will need to be created. Open a command window or shell: 
 
@@ -63,6 +65,10 @@ for linux:
 
 for windows:
 > bin/iesi-metadata.cmd -create -type general
+
+The screen shows the following output:
+
+![config create result](../../../docs/images/demos/conf_create_result.png)
 
 Look [here](https://metadew.github.io/iesi/pages/operate/operate.html) for more info about the command.
 
@@ -85,6 +91,11 @@ Next, we will load the lab environment configuration file into the configuration
 * Load the configuration file via the <code>bin/iesi-metadata.sh</code> (or <code>iesi-metadata.cmd</code> on Windows) command
 
 <code>bin/iesi-metadata.sh -load -type general </code>
+
+The screen shows the following output:
+
+![environment loaded result](../../../docs/images/demos/environment_loaded.png)
+
 
 ### Connections
 
@@ -112,7 +123,31 @@ To execute a script we run the following command:
 * Navigate to the <code>bin</code> folder
 * Execute the script via the <code>bin/iesi-launch.sh</code> (or <code>bin/iesi-launch.cmd</code> on Windows) command providing the script and environment option: execute a script on a given environment.
 
-<code>bin/iesi-launch.sh -script helloworld -env tutorial</code>
+<code>bin/iesi-launch.sh -script etl.flow.testing -env lab</code>
+
+The output should be the following:
+
+![script executed succes result](../../../docs/images/demos/script_executed_succes.png)
+
+Now we'll execute the same script but we'll leave duplicates in Target DB:
+
+<code>bin/iesi-launch.sh -script etl.flow.testing -env lab -paramlist duplicates_activated=true</code>
+
+* -paramlist makes it possible to add values to parameters defined in the script
+* duplicates activated makes it possible to add duplicates to the Target DB when it's equal to true
+
+Executing the script with the new command gives the following output:
+
+ ![script executed error result](../../../docs/images/demos/script_executed_failure.png)
+ 
+ As you can see the action which checks if the database contains duplicates gives an error.
+ Also the script status returns a warning, meaning that not all the actions where executed succesful.
+ 
+I hope you enjoyed this tutorial. For more information about the IESI framework checkout the official page:
+
+https://metadew.github.io/iesi/index.html  
+
+
 
 
 

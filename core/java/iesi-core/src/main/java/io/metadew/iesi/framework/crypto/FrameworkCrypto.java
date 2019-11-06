@@ -72,7 +72,6 @@ public class FrameworkCrypto {
 			if (!input.substring(input.length() - 1).equalsIgnoreCase(")")) {
 				throw new RuntimeException("Encrypted password not set correctly");
 			}
-
 			try {
 				output = this.getAesGcmEncrypt().decrypt(input.substring(4, input.length() - 1));
 			} catch (Exception e) {

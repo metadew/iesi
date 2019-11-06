@@ -4,13 +4,10 @@ import io.metadew.iesi.connection.database.TeradataDatabase;
 import io.metadew.iesi.connection.database.connection.TeradataDatabaseConnection;
 import io.metadew.iesi.framework.crypto.FrameworkCrypto;
 import io.metadew.iesi.framework.execution.FrameworkControl;
-import io.metadew.iesi.metadata.configuration.action.trace.ActionTraceConfiguration;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.util.List;
 
 public class DbTeradataConnectionService {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -34,16 +31,16 @@ public class DbTeradataConnectionService {
 
         for (ConnectionParameter connectionParameter : connection.getParameters()) {
             if (connectionParameter.getName().equalsIgnoreCase("host")) {
-                hostName = FrameworkCrypto.getInstance().decrypt(
+                hostName = FrameworkCrypto.getInstance().decryptIfNeeded(
                         FrameworkControl.getInstance().resolveConfiguration(connectionParameter.getValue()));
             } else if (connectionParameter.getName().equalsIgnoreCase("database")) {
-                databaseName = FrameworkCrypto.getInstance().decrypt(
+                databaseName = FrameworkCrypto.getInstance().decryptIfNeeded(
                         FrameworkControl.getInstance().resolveConfiguration(connectionParameter.getValue()));
             } else if (connectionParameter.getName().equalsIgnoreCase("user")) {
-                userName = FrameworkCrypto.getInstance().decrypt(
+                userName = FrameworkCrypto.getInstance().decryptIfNeeded(
                         FrameworkControl.getInstance().resolveConfiguration(connectionParameter.getValue()));
             } else if (connectionParameter.getName().equalsIgnoreCase("password")) {
-                userPassword = FrameworkCrypto.getInstance().decrypt(
+                userPassword = FrameworkCrypto.getInstance().decryptIfNeeded(
                         FrameworkControl.getInstance().resolveConfiguration(connectionParameter.getValue()));
             }
         }

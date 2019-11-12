@@ -19,7 +19,7 @@
 
     <properties>
         <java.version>1.8</java.version>
-        <start-class>io.metadew.iesi.server.rest.IesiRestApplicationWithoutMicroservices</start-class>
+        <start-class>io.metadew.iesi.server.rest.Application</start-class>
         <packaging.type>jar</packaging.type>
     </properties>
 
@@ -29,14 +29,16 @@
             <id>war</id>
             <properties>
                 <packaging.type>war</packaging.type>
+                <start-class>io.metadew.iesi.server.rest.ApplicationWar</start-class>
+<!--                <tomcat.version>9.0.27</tomcat.version>-->
             </properties>
-            <dependencies>
-                <dependency>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-starter-tomcat</artifactId>
-                    <scope>provided</scope>
-                </dependency>
-            </dependencies>
+<!--            <dependencies>-->
+<!--            <dependency>-->
+<!--                <groupId>org.springframework.boot</groupId>-->
+<!--                <artifactId>spring-boot-starter-tomcat</artifactId>-->
+<!--                <scope>provided</scope>-->
+<!--            </dependency>-->
+<!--        </dependencies>-->
         </profile>
         <profile>
             <id>report</id>
@@ -105,6 +107,16 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-tomcat</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -187,6 +199,16 @@
             <groupId>org.modelmapper</groupId>
             <artifactId>modelmapper</artifactId>
             <version>2.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.oracle</groupId>
+            <artifactId>ucp</artifactId>
+            <version>11.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.oracle</groupId>
+            <artifactId>ojdbc6</artifactId>
+            <version>11.2</version>
         </dependency>
     </dependencies>
 

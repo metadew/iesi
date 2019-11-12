@@ -9,17 +9,16 @@ import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.framework.execution.FrameworkExecutionContext;
 import io.metadew.iesi.metadata.definition.Context;
 import io.metadew.iesi.metadata.execution.MetadataControl;
-import io.metadew.iesi.metadata.repository.ExecutionServerMetadataRepository;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import io.metadew.iesi.metadata.repository.configuration.MetadataRepositoryConfiguration;
 import io.metadew.iesi.runtime.ExecutorService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class FrameworkInstance {
-
-    private ExecutionServerMetadataRepository executionServerRepositoryConfiguration;
 
     private static FrameworkInstance INSTANCE;
 
@@ -133,9 +132,5 @@ public class FrameworkInstance {
         }
     }
 
-    // Getters and Setters
-//	public ExecutionServerMetadataRepository getExecutionServerRepositoryConfiguration() {
-//		return executionServerRepositoryConfiguration;
-//	}
 
 }

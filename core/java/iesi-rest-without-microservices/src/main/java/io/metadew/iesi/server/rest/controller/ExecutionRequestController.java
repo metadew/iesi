@@ -53,7 +53,7 @@ public class ExecutionRequestController {
                 .orElseThrow(() -> new RuntimeException(MessageFormat.format("Cannot find ExecutionRequest {0}", id)));
     }
 
-    @PostMapping("/")
+    @PostMapping("")
     public ExecutionRequestDto post(@RequestBody ExecutionRequestDto executionRequestDto) {
         try {
             ExecutionRequest executionRequest = executionRequestDto.convertToNewEntity();
@@ -93,7 +93,7 @@ public class ExecutionRequestController {
         }
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteByName(@PathVariable String id) {
         try {
             executionRequestConfiguration.delete(new ExecutionRequestKey(id));

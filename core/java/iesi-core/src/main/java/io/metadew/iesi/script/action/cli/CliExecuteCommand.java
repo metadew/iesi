@@ -40,6 +40,7 @@ public class CliExecuteCommand {
     private ActionParameterOperation setRunVarPrefix;
     private ActionParameterOperation setRunVarMode;
     private ActionParameterOperation connectionName;
+    private ActionParameterOperation systemOutputName;
     private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -73,6 +74,8 @@ public class CliExecuteCommand {
                 "setRuntimeVariablesPrefix"));
         this.setSetRunVarMode(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "setRuntimeVariablesMode"));
+        this.setSystemOutputName(new ActionParameterOperation(this.getExecutionControl(),
+                this.getActionExecution(), this.getActionExecution().getAction().getType(), "sysOutput"));
         this.setConnectionName(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "connection"));
 
@@ -88,6 +91,8 @@ public class CliExecuteCommand {
                 setRunVarPrefix.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase("setruntimevariablesmode")) {
                 setRunVarMode.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+            } else if (actionParameter.getName().equalsIgnoreCase("sysOutput")) {
+                systemOutputName.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase("connection")) {
                 connectionName.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
@@ -99,6 +104,7 @@ public class CliExecuteCommand {
         this.getActionParameterOperationMap().put("setRuntimeVariables", this.getSetRunVar());
         this.getActionParameterOperationMap().put("setRuntimeVariablesPrefix", this.getSetRunVarPrefix());
         this.getActionParameterOperationMap().put("setRuntimeVariablesMode", this.getSetRunVarMode());
+        this.getActionParameterOperationMap().put("sysOutput", this.getSystemOutputName());
         this.getActionParameterOperationMap().put("connection", connectionName);
     }
 
@@ -130,6 +136,7 @@ public class CliExecuteCommand {
         // Get Connection
         boolean isOnLocalhost = HostConnectionTools.isOnLocalhost(
                 connectionName, this.getExecutionControl().getEnvName());
+        String sysOutputParName;
 
         HostConnection hostConnection;
         if (connectionName.isEmpty() || connectionName.equalsIgnoreCase("localhost")) {
@@ -169,6 +176,11 @@ public class CliExecuteCommand {
         } else {
             this.getActionExecution().getActionControl().increaseErrorCount();
         }
+
+        sysOutputParName = convertName(getSystemOutputName().getValue());
+
+        this.getExecutionControl().getExecutionRuntime().setRuntimeVariable(actionExecution,
+                sysOutputParName, shellCommandResult.getSystemOutput());
 
         this.getActionExecution().getActionControl().logOutput("rc",
                 Integer.toString(shellCommandResult.getReturnCode()));
@@ -252,6 +264,16 @@ public class CliExecuteCommand {
         }
     }
 
+    private String convertName(DataType name) {
+        if (name instanceof Text) {
+            return name.toString();
+        } else {
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for name",
+                    name.getClass()));
+            return name.toString();
+        }
+    }
+
     public ExecutionControl getExecutionControl() {
         return executionControl;
     }
@@ -306,6 +328,14 @@ public class CliExecuteCommand {
 
     public void setSetRunVarMode(ActionParameterOperation setRunVarMode) {
         this.setRunVarMode = setRunVarMode;
+    }
+
+    public ActionParameterOperation getSystemOutputName() {
+        return systemOutputName;
+    }
+
+    public void setSystemOutputName(ActionParameterOperation systemOutputName) {
+        this.systemOutputName = systemOutputName;
     }
 
     public ActionParameterOperation getConnectionName() {

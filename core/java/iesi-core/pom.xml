@@ -178,9 +178,7 @@
         <dependency>
             <groupId>nl.flotsam</groupId>
             <artifactId>xeger</artifactId>
-            <scope>system</scope>
             <version>1.0</version>
-            <systemPath>${basedir}\src\lib\nl.flotsam.xeger-1.0.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>com.mockrunner</groupId>
@@ -190,30 +188,22 @@
         <dependency>
             <groupId>artifactory-java-client</groupId>
             <artifactId>api</artifactId>
-            <scope>system</scope>
             <version>2.6.0</version>
-            <systemPath>${basedir}\src\lib\artifactory-java-client.api-2.6.0.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>artifactory-java-client</groupId>
             <artifactId>httpClient</artifactId>
-            <scope>system</scope>
             <version>2.6.0</version>
-            <systemPath>${basedir}\src\lib\artifactory-java-client.httpClient-2.6.0.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>artifactory-java-client</groupId>
             <artifactId>services</artifactId>
-            <scope>system</scope>
             <version>2.6.0</version>
-            <systemPath>${basedir}\src\lib\artifactory-java-client.services-2.6.0.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>artifactory-java-client</groupId>
             <artifactId>ning-services</artifactId>
-            <scope>system</scope>
             <version>2.5.1</version>
-            <systemPath>${basedir}\src\lib\artifactory-java-client.ning-services-2.5.1.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>org.json</groupId>

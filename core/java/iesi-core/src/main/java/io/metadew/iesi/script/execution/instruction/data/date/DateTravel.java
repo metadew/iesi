@@ -52,7 +52,7 @@ public class DateTravel implements DataInstruction {
     }
 
     private LocalDate travel(LocalDate startDate, int quantity, ChronoUnit chronoUnit, String workdayFlag) {
-        int loopAmount = quantity/Math.abs(quantity);
+        int loopAmount = Integer.signum(quantity);
         LocalDate endDateNotChecked = startDate.plus(quantity, chronoUnit);
         // always return true so when there is no condition given, then there won't be one checked
         Predicate<DayOfWeek> condition;
@@ -68,7 +68,7 @@ public class DateTravel implements DataInstruction {
                 throw new IllegalArgumentException(MessageFormat.format("Date travel does not work with condition {0}", workdayFlag));
         }
 
-        return findNextDay(endDateNotChecked, loopAmount, condition);
+        return findCorrectDay(endDateNotChecked, loopAmount, condition);
     }
 
     private ChronoUnit resolveTravelUnit(String representation) {
@@ -84,7 +84,10 @@ public class DateTravel implements DataInstruction {
         }
     }
 
-    private LocalDate findNextDay(LocalDate currentDate, int loopAmount, Predicate<DayOfWeek> condition){
+    private LocalDate findCorrectDay(LocalDate currentDate, int loopAmount, Predicate<DayOfWeek> condition){
+        if (loopAmount == 0){
+            return currentDate;
+        }
         while (condition!=null && !condition.test(currentDate.getDayOfWeek())){
             currentDate = currentDate.plus(loopAmount, ChronoUnit.DAYS);
         }

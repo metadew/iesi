@@ -23,8 +23,6 @@ public class DateTravel implements DataInstruction {
 
     private final String WORKDAY_FLAG_KEY ="WorkdayFlag";
 
-    private final String Regex = "[nN]?[wW]";
-
     private final Pattern INPUT_PARAMETER_PATTERN = Pattern.compile("\\s*\"?(?<" + ORIGINAL_DATE_KEY + ">\\d{8})\"?\\s*,\\s*\"(?<"
             + DATE_TRAVEL_UNIT_KEY + ">\\w*)\"\\s*,\\s*(?<" + DATE_TRAVEL_QUANTITY_KEY + ">\\-?\\d+)" +
             "(\\s*,\\s*(?<" + WORKDAY_FLAG_KEY + ">([nN]?[wW])))?");

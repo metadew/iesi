@@ -33,6 +33,12 @@ class DateTravelTest {
     }
 
     @Test
+    void generateOutputDayBack() {
+        DateTravel dateTravel = new DateTravel();
+        assertEquals("01052000", dateTravel.generateOutput("11052000, \"day\", -10"));
+    }
+
+    @Test
     void generateOutputDayOverflow() {
         DateTravel dateTravel = new DateTravel();
         assertEquals("01062000", dateTravel.generateOutput("01052000, \"day\", 31"));
@@ -49,4 +55,35 @@ class DateTravelTest {
         DateTravel dateTravel = new DateTravel();
         assertThrows(IllegalArgumentException.class, () -> dateTravel.generateOutput("test, test, test"));
     }
+
+    @Test
+    void generateOutputWorkingDayForward() {
+        DateTravel dateTravel = new DateTravel();
+        assertEquals("18112019", dateTravel.generateOutput("16112019, \"day\", 1, w"));
+    }
+
+    @Test
+    void generateOutputWorkingDayBackward() {
+        DateTravel dateTravel = new DateTravel();
+        assertEquals("15112019", dateTravel.generateOutput("18112019, \"day\", -2, W"));
+    }
+
+    @Test
+    void generateOutputWeekendDayForward() {
+        DateTravel dateTravel = new DateTravel();
+        assertEquals("23112019", dateTravel.generateOutput("18112019, \"day\", 3, NW"));
+    }
+
+    @Test
+    void generateOutputWeekendDayBackward() {
+        DateTravel dateTravel = new DateTravel();
+        assertEquals("10112019", dateTravel.generateOutput("18112019, \"day\", -3, nW"));
+    }
+
+    @Test
+    void generateOutPutWeekendDayForwardYear(){
+        DateTravel dateTravel = new DateTravel();
+        assertEquals("23112019", dateTravel.generateOutput("19112018, \"year\", 1, NW"));
+    }
+
 }

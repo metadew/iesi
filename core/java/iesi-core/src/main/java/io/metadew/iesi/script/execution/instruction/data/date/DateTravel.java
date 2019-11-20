@@ -25,7 +25,7 @@ public class DateTravel implements DataInstruction {
 
     private final Pattern INPUT_PARAMETER_PATTERN = Pattern.compile("\\s*\"?(?<" + ORIGINAL_DATE_KEY + ">\\d{8})\"?\\s*,\\s*\"(?<"
             + DATE_TRAVEL_UNIT_KEY + ">\\w*)\"\\s*,\\s*(?<" + DATE_TRAVEL_QUANTITY_KEY + ">\\-?\\d+)" +
-            "(\\s*,\\s*(?<" + WORKDAY_FLAG_KEY + ">([nN]?[wW])))?");
+            "(\\s*,\\s*(?<" + WORKDAY_FLAG_KEY + ">\\w*))?");
 
     private final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("ddMMyyyy");
 
@@ -55,7 +55,7 @@ public class DateTravel implements DataInstruction {
         int loopAmount = Integer.signum(quantity);
         LocalDate endDateNotChecked = startDate.plus(quantity, chronoUnit);
         // always return true so when there is no condition given, then there won't be one checked
-        Predicate<DayOfWeek> condition;
+        Predicate<LocalDate> condition;
 
         switch (workdayFlag.toLowerCase()){
             case "w":
@@ -84,18 +84,19 @@ public class DateTravel implements DataInstruction {
         }
     }
 
-    private LocalDate findCorrectDay(LocalDate currentDate, int loopAmount, Predicate<DayOfWeek> condition){
+    private LocalDate findCorrectDay(LocalDate currentDate, int loopAmount, Predicate<LocalDate> condition){
         if (loopAmount == 0){
             return currentDate;
         }
-        while (condition!=null && !condition.test(currentDate.getDayOfWeek())){
+        while (condition!=null && !condition.test(currentDate)){
             currentDate = currentDate.plus(loopAmount, ChronoUnit.DAYS);
         }
         return currentDate;
     }
 
-    private Boolean isWeekendDay(DayOfWeek day){
-        return day == DayOfWeek.SATURDAY || day == DayOfWeek.SUNDAY;
+    private Boolean isWeekendDay(LocalDate day){
+        DayOfWeek dayName = day.getDayOfWeek();
+        return dayName == DayOfWeek.SATURDAY || dayName == DayOfWeek.SUNDAY;
     }
 
     @Override

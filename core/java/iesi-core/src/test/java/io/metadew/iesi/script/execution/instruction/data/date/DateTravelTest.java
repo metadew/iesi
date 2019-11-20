@@ -86,4 +86,10 @@ class DateTravelTest {
         assertEquals("23112019", dateTravel.generateOutput("19112018, \"year\", 1, NW"));
     }
 
+    @Test
+    void generateOutputIllegalArgument() {
+        DateTravel dateTravel = new DateTravel();
+        assertThrows(IllegalArgumentException.class, () -> dateTravel.generateOutput("19112018, \"day\", 31, illegal"));
+    }
+
 }

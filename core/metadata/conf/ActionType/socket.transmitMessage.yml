@@ -32,5 +32,12 @@ data:
     encrypted: N
     subroutine: ''
     impersonate: N
+  - name: timeout
+    description: timeout value to wait for response
+    type: string
+    mandatory: N
+    encrypted: N
+    subroutine: ''
+    impersonate: N
   status: stable
 type: ActionType

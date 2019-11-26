@@ -21,7 +21,7 @@ public class ExponentiationTest {
     @Test
     void exponentiateIntWithDouble() {
         Exponentiation exponentiation = new Exponentiation();
-        assertEquals("25.0", exponentiation.generateOutput("5, 2.O"));
+        assertEquals("25.0", exponentiation.generateOutput("5, 2.0"));
     }
 
     @Test

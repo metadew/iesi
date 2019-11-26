@@ -1,6 +1,5 @@
 package io.metadew.iesi.script.execution.instruction.data.math;
 
-import io.metadew.iesi.script.execution.instruction.data.date.DateTravel;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -29,5 +28,11 @@ public class AdditionTest {
     void illegalInput() {
         Addition addition = new Addition();
         assertThrows(IllegalArgumentException.class, () -> addition.generateOutput("illegal, 5.0"));
+    }
+
+    @Test
+    void emptyInput(){
+        Addition addition = new Addition();
+        assertThrows(IllegalArgumentException.class, () -> addition.generateOutput(""));
     }
 }

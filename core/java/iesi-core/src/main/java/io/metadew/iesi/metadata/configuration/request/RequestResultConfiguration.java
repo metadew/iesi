@@ -4,7 +4,6 @@ import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.exception.RequestResultAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.RequestResultDoesNotExistException;
-import io.metadew.iesi.metadata.configuration.script.design.ScriptDesignTraceConfiguration;
 import io.metadew.iesi.metadata.definition.RequestResult;
 import io.metadew.iesi.metadata.definition.key.RequestResultKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;

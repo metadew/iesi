@@ -1,7 +1,6 @@
 package io.metadew.iesi.script.execution;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.metadew.iesi.connection.tools.FolderTools;
 import io.metadew.iesi.script.configuration.RuntimeActionCacheConfiguration;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 import io.metadew.iesi.script.operation.RouteOperation;

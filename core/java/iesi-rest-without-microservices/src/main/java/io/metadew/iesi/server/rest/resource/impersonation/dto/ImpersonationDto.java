@@ -23,10 +23,6 @@ public class ImpersonationDto extends ResourceSupport {
         return new Impersonation(name, description, parameters.stream().map(ImpersonationParameterDto::convertToEntity).collect(Collectors.toList()));
     }
 
-    public static ImpersonationDto convertToDto(Impersonation impersonation) {
-        return new ImpersonationDto(impersonation.getName(), impersonation.getDescription(), impersonation.getParameters().stream().map(ImpersonationParameterDto::convertToDto).collect(Collectors.toList()));
-    }
-
     public String getName() {
         return name;
     }

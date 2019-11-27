@@ -1,7 +1,6 @@
 package io.metadew.iesi.script.configuration;
 
 import io.metadew.iesi.connection.database.H2Database;
-import io.metadew.iesi.connection.database.connection.h2.H2EmbeddedDatabaseConnection;
 import io.metadew.iesi.connection.database.connection.h2.H2MemoryDatabaseConnection;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.definition.RuntimeActionCache;

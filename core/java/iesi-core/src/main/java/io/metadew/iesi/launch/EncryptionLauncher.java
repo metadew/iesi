@@ -1,5 +1,6 @@
 package io.metadew.iesi.launch;
 
+import io.metadew.iesi.framework.configuration.FrameworkConfiguration;
 import io.metadew.iesi.framework.crypto.FrameworkCrypto;
 
 import java.awt.*;
@@ -29,7 +30,7 @@ public class EncryptionLauncher {
         char[] passwordArray = console.readPassword("Enter the password to encrypt: ");
 
         String input = new String(passwordArray);
-
+        FrameworkConfiguration.getInstance().init();
         FrameworkCrypto frameworkCrypto = FrameworkCrypto.getInstance();
 
         String output = "";

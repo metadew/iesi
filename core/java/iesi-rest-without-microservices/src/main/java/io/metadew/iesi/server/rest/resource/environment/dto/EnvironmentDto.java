@@ -24,10 +24,6 @@ public class EnvironmentDto extends ResourceSupport {
         return new Environment(name, description, parameters);
     }
 
-    public static EnvironmentDto convertToDto(Environment environment) {
-        return new EnvironmentDto(environment.getName(), environment.getDescription(), environment.getParameters());
-    }
-
     public String getName() {
         return name;
     }

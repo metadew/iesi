@@ -2,7 +2,7 @@ package io.metadew.iesi.script.action.fwk;
 
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.text.Text;
-import io.metadew.iesi.framework.configuration.FrameworkStatus;
+import io.metadew.iesi.framework.configuration.ScriptRunStatus;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
@@ -70,7 +70,7 @@ public class FwkExitScript {
             Optional<String> status = convertStatus(getStatus().getValue());
             // Verify if the status is empty
             if (status.map(status1 -> status1.trim().isEmpty()).orElse(false)) {
-                this.getStatus().setInputValue(FrameworkStatus.SUCCESS.value(), executionControl.getExecutionRuntime());
+                this.getStatus().setInputValue(ScriptRunStatus.SUCCESS.value(), executionControl.getExecutionRuntime());
             }
             return true;
         } catch (Exception e) {

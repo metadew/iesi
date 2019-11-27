@@ -1,21 +1,21 @@
 package io.metadew.iesi.framework.configuration;
 
-public enum FrameworkStatus {
+public enum ScriptRunStatus {
     NEW("NEW"),
     RUNNING("RUNNING"),
     SUCCESS("SUCCESS"),
     WARNING("WARNING"),
     ERROR("ERROR"),
     STOPPED("STOPPED"),
-    ABORRTED("ABORTED"),
+    ABORTED("ABORTED"),
     SKIPPED("SKIPPED"),
     CANCELLED("CANCELLED"),
     KILLED("KILLED"),
-    UNKOWN("UNKNOWN");
+    UNKNOWN("UNKNOWN");
 
     private String value;
 
-    FrameworkStatus(String value) {
+    ScriptRunStatus(String value) {
         this.value = value;
     }
 

@@ -1,6 +1,7 @@
 package io.metadew.iesi.server.rest.resource.impersonation.resource;
 
 import io.metadew.iesi.metadata.definition.impersonation.Impersonation;
+import io.metadew.iesi.metadata.definition.impersonation.ImpersonationParameter;
 import io.metadew.iesi.server.rest.controller.ImpersonationController;
 import io.metadew.iesi.server.rest.resource.impersonation.dto.ImpersonationDto;
 import io.metadew.iesi.server.rest.resource.impersonation.dto.ImpersonationParameterDto;
@@ -38,7 +39,11 @@ public class ImpersonatonDtoResourceAssembler  extends ResourceAssemblerSupport<
         if (impersonation == null) {
             throw new IllegalArgumentException("Impersonations have to be non empty");
         }
+        return new ImpersonationDto(impersonation.getName(), impersonation.getDescription(), impersonation.getParameters().stream().map(this::convertToDto).collect(Collectors.toList()));
+    }
 
-        return new ImpersonationDto(impersonation.getName(), impersonation.getDescription(), impersonation.getParameters().stream().map(ImpersonationParameterDto::convertToDto).collect(Collectors.toList()));
+    private ImpersonationParameterDto convertToDto(ImpersonationParameter impersonationParameter) {
+        return new ImpersonationParameterDto(impersonationParameter.getConnection(), impersonationParameter.getImpersonatedConnection(),
+                impersonationParameter.getDescription());
     }
 }

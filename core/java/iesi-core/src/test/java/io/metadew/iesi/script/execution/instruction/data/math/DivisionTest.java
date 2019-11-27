@@ -15,7 +15,7 @@ public class DivisionTest {
     @Test
     void divideInts() {
         Division division = new Division();
-        assertEquals("3", division.generateOutput("7, 2"));
+        assertEquals("3.5", division.generateOutput("7, 2"));
     }
 
     @Test

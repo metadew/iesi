@@ -26,7 +26,7 @@ public abstract class AbstractOperationTwoArg implements DataInstruction {
         }
     }
 
-    private String handleOperationAsStrings(String operator1, String operator2){
+    String handleOperationAsStrings(String operator1, String operator2){
         boolean containsDouble = false;
         if (operator1.contains(".") || operator2.contains(".")){
             containsDouble = true;

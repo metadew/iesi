@@ -6,6 +6,7 @@ import org.apache.commons.io.FilenameUtils;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 
 public class KeyValueConfigFile extends ConfigFile {
 
@@ -29,9 +30,8 @@ public class KeyValueConfigFile extends ConfigFile {
                     }
                 }
             }
-
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -54,8 +54,8 @@ public class KeyValueConfigFile extends ConfigFile {
                     }
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 }

@@ -1,13 +1,13 @@
 package io.metadew.iesi.metadata.configuration.execution.script;
 
 import io.metadew.iesi.connection.tools.SQLTools;
+import io.metadew.iesi.framework.configuration.ScriptRunStatus;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.execution.script.exception.ScriptExecutionRequestAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.execution.script.exception.ScriptExecutionRequestDoesNotExistException;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecution;
-import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionStatus;
 import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionKey;
 import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionRequestKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
@@ -56,7 +56,7 @@ public class ScriptExecutionConfiguration extends Configuration<ScriptExecution,
             return Optional.of(new ScriptExecution(scriptExecutionRequestKey,
                     new ScriptExecutionRequestKey(cachedRowSet.getString("SCRPT_REQUEST_ID")),
                     cachedRowSet.getString("RUN_ID"),
-                    ScriptExecutionStatus.valueOf(cachedRowSet.getString("ST_NM")),
+                    ScriptRunStatus.valueOf(cachedRowSet.getString("ST_NM")),
                     SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("STRT_TMS")),
                     SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("END_TMS"))));
         } catch (SQLException e) {
@@ -76,7 +76,7 @@ public class ScriptExecutionConfiguration extends Configuration<ScriptExecution,
                         cachedRowSet.getString("SCRIPT_EXEC_ID")),
                         new ScriptExecutionRequestKey(cachedRowSet.getString("SCRPT_REQUEST_ID")),
                         cachedRowSet.getString("RUN_ID"),
-                        ScriptExecutionStatus.valueOf(cachedRowSet.getString("ST_NM")),
+                        ScriptRunStatus.valueOf(cachedRowSet.getString("ST_NM")),
                         SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("STRT_TMS")),
                         SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("END_TMS"))));
             }
@@ -122,7 +122,7 @@ public class ScriptExecutionConfiguration extends Configuration<ScriptExecution,
                 SQLTools.GetStringForSQL(scriptExecution.getMetadataKey().getId()) + "," +
                 SQLTools.GetStringForSQL(scriptExecution.getScriptExecutionRequestKey().getId()) + ", " +
                 SQLTools.GetStringForSQL(scriptExecution.getRunId()) + ", " +
-                SQLTools.GetStringForSQL(scriptExecution.getScriptExecutionStatus().value()) + ", " +
+                SQLTools.GetStringForSQL(scriptExecution.getScriptRunStatus().value()) + ", " +
                 SQLTools.GetStringForSQL(scriptExecution.getStartTimestamp()) + ", " +
                 SQLTools.GetStringForSQL(scriptExecution.getEndTimestamp()) + ");";
     }
@@ -140,7 +140,7 @@ public class ScriptExecutionConfiguration extends Configuration<ScriptExecution,
                         cachedRowSet.getString("SCRIPT_EXEC_ID")),
                         scriptExecutionRequestKey,
                         cachedRowSet.getString("RUN_ID"),
-                        ScriptExecutionStatus.valueOf(cachedRowSet.getString("ST_NM")),
+                        ScriptRunStatus.valueOf(cachedRowSet.getString("ST_NM")),
                         SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("STRT_TMS")),
                         SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("END_TMS"))));
             }
@@ -177,7 +177,7 @@ public class ScriptExecutionConfiguration extends Configuration<ScriptExecution,
         return "UPDATE " + getMetadataRepository().getTableNameByLabel("ScriptExecutions") + " SET " +
                 "SCRPT_REQUEST_ID= " + SQLTools.GetStringForSQL(scriptExecution.getScriptExecutionRequestKey().getId()) + ", " +
                 "RUN_ID=" + SQLTools.GetStringForSQL(scriptExecution.getRunId()) + ", " +
-                "ST_NM=" + SQLTools.GetStringForSQL(scriptExecution.getScriptExecutionStatus().value()) + ", " +
+                "ST_NM=" + SQLTools.GetStringForSQL(scriptExecution.getScriptRunStatus().value()) + ", " +
                 "STRT_TMS=" + SQLTools.GetStringForSQL(scriptExecution.getStartTimestamp()) + ", " +
                 "END_TMS=" + SQLTools.GetStringForSQL(scriptExecution.getEndTimestamp()) +
                 " WHERE SCRIPT_EXEC_ID = " + SQLTools.GetStringForSQL(scriptExecution.getMetadataKey().getId()) + ";";

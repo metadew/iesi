@@ -47,11 +47,6 @@ public class FrameworkFolderConfiguration {
         ThreadContext.put("location", getFolderAbsolutePath("logs"));
     }
 
-    public void init(String solutionHome, Map<String, FrameworkFolder> folderMap) {
-        this.solutionHome = solutionHome;
-        this.folderMap = folderMap;
-    }
-
 //    private void initalizeValues() {
 //        this.folderMap = new HashMap<>();
 //

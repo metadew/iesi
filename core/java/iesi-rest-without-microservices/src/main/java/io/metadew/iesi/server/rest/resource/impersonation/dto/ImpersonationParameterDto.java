@@ -22,11 +22,6 @@ public class ImpersonationParameterDto extends ResourceSupport {
         return new ImpersonationParameter(connection, impersonation, description);
     }
 
-    public static ImpersonationParameterDto convertToDto(ImpersonationParameter impersonationParameter) {
-        return new ImpersonationParameterDto(impersonationParameter.getConnection(), impersonationParameter.getImpersonatedConnection(),
-                impersonationParameter.getDescription());
-    }
-
     public String getConnection() {
         return connection;
     }

@@ -29,9 +29,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static io.metadew.iesi.server.rest.helper.Filter.distinctByKey;
-import static io.metadew.iesi.server.rest.resource.connection.dto.ConnectionDto.convertToDto;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping("/connections")
@@ -99,12 +96,9 @@ public class ConnectionsController {
 		HalMultipleEmbeddedResource<ConnectionDto> halMultipleEmbeddedResource = new HalMultipleEmbeddedResource<>();
 		for (ConnectionDto connectionDto : connectionDtos) {
 			try {
-				ConnectionDto updatedConnectionDto = convertToDto(connectionConfiguration.update(connectionDto.convertToEntity()));
+				Connection updatedConnection = connectionConfiguration.update(connectionDto.convertToEntity());
+				ConnectionDto updatedConnectionDto = connectionDtoResourceAssembler.toResource(updatedConnection);
 				halMultipleEmbeddedResource.embedResource(updatedConnectionDto);
-				halMultipleEmbeddedResource.add(linkTo(methodOn(ConnectionsController.class)
-						.get(updatedConnectionDto.getName(), updatedConnectionDto.getEnvironment()))
-						.withRel(updatedConnectionDto.getName() + ":" + updatedConnectionDto.getEnvironment()));
-
 			} catch (ConnectionDoesNotExistException e) {
 					e.printStackTrace();
 				throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());

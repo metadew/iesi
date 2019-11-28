@@ -43,11 +43,6 @@ public class ScriptActionDto extends ResourceSupport {
 
     }
 
-    public static ScriptActionDto convertToDto(Action action){
-        return new ScriptActionDto(action.getNumber(),action.getName(),action.getType(), action.getDescription(),action.getComponent(), action.getCondition(), action.getIteration(), action.getErrorExpected(),action.getErrorStop(),action.getRetries(),action.getParameters());
-    }
-
-
     public long getNumber() {
         return number;
     }

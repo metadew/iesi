@@ -11,7 +11,7 @@ import org.apache.logging.log4j.ThreadContext;
 
 public class ServerLauncher {
 
-    public static void main(String[] args) throws ParseException, InterruptedException, MetadataDoesNotExistException {
+    public static void main(String[] args) throws ParseException {
         ThreadContext.clearAll();
         Options options = new Options()
                 .addOption(Option.builder("help")
@@ -38,8 +38,18 @@ public class ServerLauncher {
             FrameworkInstance.getInstance().init(new FrameworkInitializationFile(),
                     new FrameworkExecutionContext(new Context("server", "")));
         }
-
-        ExecutionRequestListener requestListener = new ExecutionRequestListener();
-        requestListener.run();
+        FrameworkInstance frameworkInstance = FrameworkInstance.getInstance();
+        ExecutionRequestListener executionRequestListener= new ExecutionRequestListener();
+        final Thread mainThread = Thread.currentThread();
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            try {
+                executionRequestListener.shutdown();
+                frameworkInstance.shutdown();
+                mainThread.join(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }));
+        new Thread(executionRequestListener).start();
     }
 }

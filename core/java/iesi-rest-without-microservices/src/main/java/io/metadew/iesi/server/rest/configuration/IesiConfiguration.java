@@ -8,10 +8,12 @@ import io.metadew.iesi.metadata.configuration.component.ComponentConfiguration;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.configuration.environment.EnvironmentConfiguration;
 import io.metadew.iesi.metadata.configuration.execution.ExecutionRequestConfiguration;
+import io.metadew.iesi.metadata.configuration.execution.script.ScriptExecutionConfiguration;
 import io.metadew.iesi.metadata.configuration.impersonation.ImpersonationConfiguration;
 import io.metadew.iesi.metadata.configuration.script.ScriptConfiguration;
 import io.metadew.iesi.metadata.definition.Context;
 import io.metadew.iesi.runtime.ExecutorService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
@@ -22,10 +24,13 @@ import java.sql.SQLException;
 @Configuration
 public class IesiConfiguration {
 
+    @Value("${iesi.home}")
+    private String frameworkHome;
+
     @Bean
     @Order(0)
     public FrameworkInstance frameworkInstance(FrameworkInitializationFile frameworkInitializationFile, FrameworkExecutionContext frameworkExecutionContext) throws SQLException {
-        FrameworkInstance.getInstance().init(frameworkInitializationFile, frameworkExecutionContext);
+        FrameworkInstance.getInstance().init(frameworkInitializationFile, frameworkExecutionContext, frameworkHome);
         return FrameworkInstance.getInstance();
     }
 
@@ -66,6 +71,12 @@ public class IesiConfiguration {
     @DependsOn("frameworkInstance")
     public ScriptConfiguration scriptConfiguration() {
         return new ScriptConfiguration();
+    }
+    @Bean
+
+    @DependsOn("frameworkInstance")
+    public ScriptExecutionConfiguration scriptExecutionConfiguration() {
+        return ScriptExecutionConfiguration.getInstance();
     }
 
     @Bean

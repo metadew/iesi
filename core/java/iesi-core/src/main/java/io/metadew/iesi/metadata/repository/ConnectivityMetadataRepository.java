@@ -77,19 +77,17 @@ public class ConnectivityMetadataRepository extends MetadataRepository {
                 connection.getName(), connection.getEnvironment()));
         try {
             connectionConfiguration.insert(connection);
-        } catch (ConnectionAlreadyExistsException e1) {
+        } catch (MetadataAlreadyExistsException e1) {
             LOGGER.info(MessageFormat.format("Connection {0}-{1} already exists in connectivity repository. Updating connection {0}-{1} instead.",
                     connection.getName(), connection.getEnvironment()));
             try {
                 connectionConfiguration.update(connection);
-            } catch (ConnectionDoesNotExistException | ConnectionAlreadyExistsException | SQLException e2) {
+            } catch (MetadataDoesNotExistException e2) {
                 StringWriter stackTrace = new StringWriter();
                 e2.printStackTrace(new PrintWriter(stackTrace));
                 LOGGER.warn("exeption=" + e2.getMessage());
                 LOGGER.info("exception.stacktrace=" + stackTrace.toString());
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
     }
 

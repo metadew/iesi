@@ -1,36 +1,30 @@
 package io.metadew.iesi.metadata.definition.connection;
 
 
-public class ConnectionParameter {
+import io.metadew.iesi.metadata.definition.Metadata;
+import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
+import io.metadew.iesi.metadata.definition.connection.key.ConnectionParameterKey;
 
-    private String name;
+public class ConnectionParameter extends Metadata<ConnectionParameterKey> {
+
     private String value;
 
-    //Constructors
-    public ConnectionParameter() {
-
-    }
-
-    public ConnectionParameter(String name, String value) {
-        this.name = name;
+    public ConnectionParameter(ConnectionParameterKey connectionParameterKey, String value) {
+        super(connectionParameterKey);
         this.value = value;
     }
 
-    //Getters and Setters
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+    public ConnectionParameter(String connectionName, String environmentName, String name, String value) {
+        super(new ConnectionParameterKey(connectionName, environmentName, name));
+        this.value = value;
     }
 
     public String getValue() {
         return value;
     }
 
-    public void setValue(String value) {
-        this.value = value;
+    public String getName(){
+        return getMetadataKey().getConnectionName();
     }
 
 }

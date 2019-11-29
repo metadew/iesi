@@ -1,27 +1,37 @@
 package io.metadew.iesi.metadata.definition.connection;
 
+import io.metadew.iesi.metadata.definition.Metadata;
+import io.metadew.iesi.metadata.definition.action.result.ActionResult;
+import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class Connection {
+public class Connection extends Metadata<ConnectionKey> {
 
     private String name;
     private String type;
     private String description;
     private String environment;
-    private List<ConnectionParameter> parameters = new ArrayList<>();
-
-    // Constructors
-    public Connection() {
-
-    }
+    List<ConnectionParameter> parameters;
 
     public Connection(String name, String type, String description, String environment, List<ConnectionParameter> parameters) {
-        this.name = name;
+        super(new ConnectionKey(name, environment));
         this.type = type;
         this.description = description;
-        this.environment = environment;
         this.parameters = parameters;
+    }
+
+    // Constructors
+    public Connection(ConnectionKey connectionKey, String type, String description, List<ConnectionParameter> parameters) {
+        super(connectionKey);
+        this.type = type;
+        this.description = description;
+        this.parameters = parameters;
+    }
+
+    public List<ConnectionParameter> getParameters() {
+        return parameters;
     }
 
     // Getters and Setters
@@ -55,14 +65,6 @@ public class Connection {
 
     public void setEnvironment(String environment) {
         this.environment = environment;
-    }
-
-    public List<ConnectionParameter> getParameters() {
-        return parameters;
-    }
-
-    public void setParameters(List<ConnectionParameter> parameters) {
-        this.parameters = parameters;
     }
 
 	public boolean isEmpty() {

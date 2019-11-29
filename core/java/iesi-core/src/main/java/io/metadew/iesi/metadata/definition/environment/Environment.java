@@ -1,31 +1,31 @@
 package io.metadew.iesi.metadata.definition.environment;
 
+import io.metadew.iesi.metadata.definition.Metadata;
+import io.metadew.iesi.metadata.definition.environment.key.EnvironmentKey;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class Environment {
+public class Environment extends Metadata<EnvironmentKey> {
 
-    private String name;
     private String description;
-    private List<EnvironmentParameter> parameters = new ArrayList<>();
+    private List<EnvironmentParameter> parameters;
 
     public Environment(String name, String description, List<EnvironmentParameter> parameters) {
-        this.name = name;
+        super(new EnvironmentKey(name));
         this.description = description;
         this.parameters = parameters;
     }
 
-    public Environment() {
-		// TODO Auto-generated constructor stub
-	}
+    public Environment(EnvironmentKey environmentKey,String description, List<EnvironmentParameter> parameters) {
+        super(environmentKey);
+        this.description = description;
+        this.parameters = parameters;
+    }
 
 	//Getters and Setters
     public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+        return getMetadataKey().getName();
     }
 
     public String getDescription() {
@@ -45,7 +45,7 @@ public class Environment {
     }
 
 	public boolean isEmpty() {
-		return (this.name == null || this.name.isEmpty()) ;
+		return (getName()== null || getName().isEmpty()) ;
 	}
 
 }

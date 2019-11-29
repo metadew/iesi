@@ -1,12 +1,18 @@
 package io.metadew.iesi.metadata.configuration.environment;
 
 import io.metadew.iesi.connection.tools.SQLTools;
+import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.MetadataConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.EnvironmentAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.EnvironmentDoesNotExistException;
+import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
+import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.environment.Environment;
 import io.metadew.iesi.metadata.definition.environment.EnvironmentParameter;
+import io.metadew.iesi.metadata.definition.environment.key.EnvironmentKey;
 import io.metadew.iesi.metadata.execution.MetadataControl;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
@@ -16,14 +22,49 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class EnvironmentConfiguration extends MetadataConfiguration {
+public class EnvironmentConfiguration extends Configuration<Environment, EnvironmentKey> {
+
+    private static EnvironmentConfiguration INSTANCE;
+    private static final Logger LOGGER = LogManager.getLogger();
+
+    public synchronized static EnvironmentConfiguration getInstance(){
+        if (INSTANCE == null) {
+            INSTANCE = new EnvironmentConfiguration();
+        }
+        return INSTANCE;
+    }
 
     public EnvironmentConfiguration() {}
 
-    // Abstract method implementations
-	@Override
-    public List<Environment> getAllObjects() {
-    	return this.getAllEnvironments();
+    @Override
+    public Optional<Environment> get(EnvironmentKey metadataKey) {
+        return getEnvironment(metadataKey.getName());
+    }
+
+    @Override
+    public List<Environment> getAll() {
+        return getAllEnvironments();
+    }
+
+    @Override
+    public void delete(EnvironmentKey metadataKey) throws MetadataDoesNotExistException {
+        LOGGER.trace(MessageFormat.format("Deleting Connection {0}.", metadataKey.toString()));
+        if (!exists(metadataKey)) {
+            throw new MetadataDoesNotExistException("Environment", metadataKey);
+        }
+        List<String> deleteStatements = getDeleteStatement(metadataKey.getName());
+        getMetadataRepository().executeBatch(deleteStatements);
+    }
+
+    @Override
+    public void insert(Environment metadata) throws MetadataAlreadyExistsException {
+        // frameworkInstance.getFrameworkLog().log(MessageFormat.format("Inserting connection {0}-{1}.", connection.getScriptName(), connection.getEnvironment()), Level.TRACE);
+        LOGGER.trace(MessageFormat.format("Inserting Connection {0}.", metadata.getMetadataKey().toString()));
+        if (exists(metadata.getMetadataKey())) {
+            throw new MetadataAlreadyExistsException("Environment", metadata.getMetadataKey());
+        }
+        List<String> insertQuery = getInsertStatement(metadata);
+        getMetadataRepository().executeBatch(insertQuery);
     }
     
     // Methods
@@ -149,7 +190,7 @@ public class EnvironmentConfiguration extends MetadataConfiguration {
 
 
         for(EnvironmentParameter environmentParameter : environment.getParameters()) {
-            queries.add(environmentParameterConfiguration.getInsertStatement(environment.getName(), environmentParameter));
+            queries.add(environmentParameterConfiguration.getInsertStatement(environmentParameter));
         }
         return queries;
     }

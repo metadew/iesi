@@ -4,7 +4,7 @@ import io.metadew.iesi.common.text.TextTools;
 import io.metadew.iesi.connection.elasticsearch.filebeat.DelimitedFileBeatElasticSearchConnection;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.configuration.FrameworkSettingConfiguration;
-import io.metadew.iesi.framework.configuration.FrameworkStatus;
+import io.metadew.iesi.framework.configuration.ScriptRunStatus;
 import io.metadew.iesi.framework.crypto.FrameworkCrypto;
 import io.metadew.iesi.framework.execution.FrameworkControl;
 import io.metadew.iesi.framework.execution.IESIMessage;
@@ -144,7 +144,7 @@ public class ExecutionControl {
                     LocalDateTime.now(),
                     null
             );
-            ActionResultConfiguration.getInstance().getInstance().insert(actionResult);
+            ActionResultConfiguration.getInstance().insert(actionResult);
         } catch (MetadataAlreadyExistsException e) {
             StringWriter stackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(stackTrace));
@@ -166,9 +166,9 @@ public class ExecutionControl {
                     null,
                     null
             );
-            ActionResultConfiguration.getInstance().getInstance().insert(actionResult);
+            ActionResultConfiguration.getInstance().insert(actionResult);
 
-            this.logMessage(actionExecution, "action.status=" + FrameworkStatus.SKIPPED.value(), Level.INFO);
+            this.logMessage(actionExecution, "action.status=" + ScriptRunStatus.SKIPPED.value(), Level.INFO);
         } catch (MetadataAlreadyExistsException e) {
             StringWriter stackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(stackTrace));
@@ -228,7 +228,7 @@ public class ExecutionControl {
             LOGGER.warn("exception=" + e.getMessage());
             LOGGER.info("stacktrace=" + stackTrace.toString());
 
-            return FrameworkStatus.UNKOWN.value();
+            return ScriptRunStatus.UNKNOWN.value();
         }
     }
 
@@ -264,17 +264,17 @@ public class ExecutionControl {
         if (actionExecution.getActionControl().getExecutionMetrics().getSkipCount() == 0) {
 
             if (actionExecution.getActionControl().getExecutionMetrics().getErrorCount() > 0) {
-                status = FrameworkStatus.ERROR.value();
+                status = ScriptRunStatus.ERROR.value();
                 scriptExecution.getExecutionMetrics().increaseErrorCount(1);
             } else if (actionExecution.getActionControl().getExecutionMetrics().getWarningCount() > 0) {
-                status = FrameworkStatus.WARNING.value();
+                status = ScriptRunStatus.WARNING.value();
                 scriptExecution.getExecutionMetrics().increaseWarningCount(1);
             } else {
-                status = FrameworkStatus.SUCCESS.value();
+                status = ScriptRunStatus.SUCCESS.value();
                 scriptExecution.getExecutionMetrics().increaseSuccessCount(1);
             }
         } else {
-            status = FrameworkStatus.SKIPPED.value();
+            status = ScriptRunStatus.SKIPPED.value();
             scriptExecution.getExecutionMetrics().increaseSkipCount(1);
         }
 
@@ -288,20 +288,19 @@ public class ExecutionControl {
         String status;
 
         if (actionErrorStop) {
-            status = FrameworkStatus.STOPPED.value();
+            status = ScriptRunStatus.STOPPED.value();
         } else if (scriptExit) {
-            status = FrameworkStatus.STOPPED.value();
-            // TODO: get status from input parameters in action
+            status = ScriptRunStatus.STOPPED.value();
         } else if (scriptExecution.getExecutionMetrics().getSuccessCount() == 0
                 && scriptExecution.getExecutionMetrics().getWarningCount() == 0
                 && scriptExecution.getExecutionMetrics().getErrorCount() > 0) {
-            status = FrameworkStatus.ERROR.value();
+            status = ScriptRunStatus.ERROR.value();
         } else if (scriptExecution.getExecutionMetrics().getSuccessCount() > 0
                 && scriptExecution.getExecutionMetrics().getWarningCount() == 0
                 && scriptExecution.getExecutionMetrics().getErrorCount() == 0) {
-            status = FrameworkStatus.SUCCESS.value();
+            status = ScriptRunStatus.SUCCESS.value();
         } else {
-            status = FrameworkStatus.WARNING.value();
+            status = ScriptRunStatus.WARNING.value();
         }
 
         logMessage(scriptExecution, "script.status=" + status, Level.INFO);

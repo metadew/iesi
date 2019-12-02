@@ -469,7 +469,9 @@ public class ConnectionOperation {
 			} else if (connection.getType().equalsIgnoreCase("db.drill")) {
 				DbDrillConnectionOperation dbDrillConnectionOperation = new DbDrillConnectionOperation();
 				database = dbDrillConnectionOperation.getDatabase(connection);
-			} else {
+			} else if (connection.getType().equalsIgnoreCase("db.teradata")) {
+				database = DbTeradataConnectionService.getInstance().getDatabase(connection);
+			}  else {
 				String message = "Database type is not (yet) supported: " + connection.getType();
 				throw new RuntimeException(message);
 			}

@@ -13,7 +13,7 @@ data:
     errorStop: "Y"
     parameters: 
     - name: "path"
-      value: "#iesi.home#/data/demo3/ETL"
+      value: "#iesi.home#/data/demo3/"
     - name: "command"
       value: "etl.cmd -sourceA #iesi.home#/data/demo3/company_a.db3 -sourceB #iesi.home#/data/demo3/company_b.db3 -target #iesi.home#/data/demo3/target.db3 -duplicates #duplicates_activated#"
     - name: "connection"

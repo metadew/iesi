@@ -25,7 +25,7 @@ public class ConfigFile {
         if (properties.getProperty(key, "").isEmpty()) {
             return Optional.empty();
         } else {
-            return Optional.ofNullable(this.properties.getProperty(key));
+            return Optional.ofNullable(properties.getProperty(key));
         }
     }
 

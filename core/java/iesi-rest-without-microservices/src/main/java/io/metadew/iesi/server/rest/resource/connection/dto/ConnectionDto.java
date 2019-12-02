@@ -31,10 +31,6 @@ public class ConnectionDto extends ResourceSupport {
         return new Connection(name, type, description, environment, parameters);
     }
 
-    public static ConnectionDto convertToDto(Connection connection) {
-        return new ConnectionDto(connection.getName(), connection.getType(), connection.getDescription(), connection.getEnvironment(), connection.getParameters());
-    }
-
     public String getName() {
         return name;
     }

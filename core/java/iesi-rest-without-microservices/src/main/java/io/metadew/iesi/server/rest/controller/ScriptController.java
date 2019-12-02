@@ -15,7 +15,6 @@ import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.metadata.definition.script.ScriptParameter;
 import io.metadew.iesi.server.rest.error.DataBadRequestException;
 import io.metadew.iesi.server.rest.error.DataNotFoundException;
-import io.metadew.iesi.server.rest.pagination.ScriptCriteria;
 import io.metadew.iesi.server.rest.pagination.ScriptPagination;
 import io.metadew.iesi.server.rest.resource.HalMultipleEmbeddedResource;
 import io.metadew.iesi.server.rest.resource.script.dto.ScriptByNameDto;
@@ -51,15 +50,10 @@ public class ScriptController {
     private ScriptDtoResourceAssembler scriptDtoResourceAssembler;
     private ScriptGlobalDtoResourceAssembler scriptGlobalDtoResourceAssembler;
 
-
-
-    private final ScriptPagination scriptPagination;
-
     @Autowired
     ScriptController(ScriptConfiguration scriptConfiguration, ScriptDtoResourceAssembler scriptDtoResourceAssembler,
                      ScriptGlobalDtoResourceAssembler scriptGlobalDtoResourceAssembler, ScriptByNameDtoAssembler scriptByNameGetDtoAssembler,
                      ScriptPagination scriptPagination, ExecutionRequestConfiguration executionRequestConfiguration) {
-        this.scriptPagination = scriptPagination;
         this.scriptConfiguration = scriptConfiguration;
         this.scriptDtoResourceAssembler = scriptDtoResourceAssembler;
         this.scriptGlobalDtoResourceAssembler = scriptGlobalDtoResourceAssembler;
@@ -68,10 +62,9 @@ public class ScriptController {
     }
 
     @GetMapping("")
-    public HalMultipleEmbeddedResource<ScriptGlobalDto> getAll(@Valid ScriptCriteria scriptCriteria) {
+    public HalMultipleEmbeddedResource<ScriptGlobalDto> getAll() {
         List<Script> scripts = scriptConfiguration.getAll();
-        List<Script> pagination = scriptPagination.search(scripts, scriptCriteria);
-        return new HalMultipleEmbeddedResource<>(pagination.stream()
+        return new HalMultipleEmbeddedResource<>(scripts.stream()
                 .filter(distinctByKey(Script :: getName))
                 .map(script -> scriptGlobalDtoResourceAssembler.toResource(Collections.singletonList(script)))
                 .collect(Collectors.toList()));

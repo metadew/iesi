@@ -58,8 +58,8 @@ public class HttpRequestComponentParameterService {
     public Map<String, DataType> getHeader(ComponentParameter componentParameter, List<ComponentAttribute> componentAttributes, ActionExecution actionExecution)  {
         Map<String, DataType> header = new HashMap<>();
         if (isHeader(componentParameter)) {
-            header.put(componentParameter.getValue().split(",")[0],
-                    getParameterValue(componentParameter.getValue().split(",")[1], componentAttributes, actionExecution));
+            header.put(componentParameter.getValue().split(",", 2)[0],
+                    getParameterValue(componentParameter.getValue().split(",", 2)[1], componentAttributes, actionExecution));
             return header;
         } else {
             throw new RuntimeException();
@@ -69,8 +69,8 @@ public class HttpRequestComponentParameterService {
     public Map<String, DataType> getQueryParameter(ComponentParameter componentParameter, List<ComponentAttribute> componentAttributes, ActionExecution actionExecution)  {
         Map<String, DataType> header = new HashMap<>();
         if (isQueryParameter(componentParameter)) {
-            header.put(componentParameter.getValue().split(",")[0],
-                    getParameterValue(componentParameter.getValue().split(",")[1], componentAttributes, actionExecution));
+            header.put(componentParameter.getValue().split(",", 2)[0],
+                    getParameterValue(componentParameter.getValue().split(",", 2)[1], componentAttributes, actionExecution));
             return header;
         } else {
             throw new RuntimeException();

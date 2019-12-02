@@ -1,6 +1,7 @@
 package io.metadew.iesi.server.rest.resource.script.resource;
 
 
+import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.server.rest.controller.ScriptController;
 import io.metadew.iesi.server.rest.resource.script.dto.ScriptActionDto;
@@ -37,6 +38,12 @@ public class ScriptDtoResourceAssembler extends ResourceAssemblerSupport<Script,
     private ScriptDto convertToDto(Script script) {
         return new ScriptDto(script.getName(), script.getType(), script.getDescription(),
                 ScriptVersionDto.convertToDto(script.getVersion()), script.getParameters(),
-                script.getActions().stream().map(ScriptActionDto :: convertToDto).collect(Collectors.toList()));
+                script.getActions().stream().map(this::convertToDto).collect(Collectors.toList()));
     }
+
+
+    private ScriptActionDto convertToDto(Action action){
+        return new ScriptActionDto(action.getNumber(),action.getName(),action.getType(), action.getDescription(),action.getComponent(), action.getCondition(), action.getIteration(), action.getErrorExpected(),action.getErrorStop(),action.getRetries(),action.getParameters());
+    }
+
 }

@@ -11,6 +11,6 @@ lib_dir=$script_dir/../rest
 
 cd $lib_dir
 
-java -Dlog4j.configurationFile=log4j2.xml -jar iesi-rest-0.0.1-SNAPSHOT.jar
+java -Dlog4j.configurationFile=log4j2.xml -jar iesi-rest-0.1.0.jar
 
 cd $current_dir

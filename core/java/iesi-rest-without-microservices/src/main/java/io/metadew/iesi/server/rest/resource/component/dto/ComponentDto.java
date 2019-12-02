@@ -8,7 +8,6 @@ import org.springframework.hateoas.ResourceSupport;
 import java.util.List;
 import java.util.Objects;
 
-
 public class ComponentDto extends ResourceSupport {
 
     private String type;
@@ -19,7 +18,6 @@ public class ComponentDto extends ResourceSupport {
     private List<ComponentAttribute> attributes;
 
     public ComponentDto() {}
-
 
     public ComponentDto(String type, String name, String description, ComponentVersionDto version,
                         List<ComponentParameter> parameters, List<ComponentAttribute> attributes) {
@@ -54,11 +52,6 @@ public class ComponentDto extends ResourceSupport {
     public Component convertToEntity() {
         return new Component(
                 type, name, description, version.convertToEntity(), parameters, attributes);
-    }
-
-    public static ComponentDto convertToDto(Component component) {
-        return new ComponentDto(component.getType(), component.getName(), component.getDescription(),
-                ComponentVersionDto.convertToDto(component.getVersion()), component.getParameters(), component.getAttributes());
     }
 
     public String getType() {

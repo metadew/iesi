@@ -1,6 +1,6 @@
 package io.metadew.iesi.script.execution;
 
-import io.metadew.iesi.connection.tools.FolderTools;
+import io.metadew.iesi.connection.r.RWorkspace;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.data.generation.execution.GenerationObjectExecution;
 import io.metadew.iesi.datatypes.dataset.KeyValueDataset;
@@ -50,6 +50,7 @@ public class ExecutionRuntime {
     private HashMap<String, RepositoryOperation> repositoryOperationMap;
     private HashMap<String, StageOperation> stageOperationMap;
     private HashMap<String, KeyValueDataset> datasetMap;
+    private HashMap<String, RWorkspace> RWorkspaceMap;
     private HashMap<String, IterationOperation> iterationOperationMap;
     private HashMap<String, ExecutionRuntimeExtension> executionRuntimeExtensionMap;
     private ImpersonationOperation impersonationOperation;
@@ -91,6 +92,7 @@ public class ExecutionRuntime {
         variableInstructions = VariableInstructionRepository.getRepository(executionControl);
         lookupInstructions = LookupInstructionRepository.getRepository(executionControl, this);
         datasetMap = new HashMap<>();
+        RWorkspaceMap = new HashMap<>();
     }
 
     public void terminate() {
@@ -579,9 +581,16 @@ public class ExecutionRuntime {
                 new KeyValueDataset(datasetName, datasetLabels, this));
     }
 
-
     public Optional<KeyValueDataset> getDataset(String referenceName) {
         return Optional.ofNullable(datasetMap.get(referenceName));
+    }
+
+    public void setRWorkspace(String referenceName, RWorkspace rWorkspace) {
+        RWorkspaceMap.put(referenceName, rWorkspace);
+    }
+
+    public Optional<RWorkspace> getRWorkspace(String referenceName) {
+        return Optional.ofNullable(RWorkspaceMap.get(referenceName));
     }
 
     // Iteration Management

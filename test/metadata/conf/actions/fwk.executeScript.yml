@@ -1,0 +1,41 @@
+---
+type: Script
+data:
+  type: "script"
+  name: "fwk.executeScript"
+  description: "Executes a script in a script"
+  actions:
+  - number: 1
+    type: "fwk.setIteration"
+    name: "Action1"
+    description: "Define the iteration"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "name"
+      value: "Iteration1"
+    - name: "type"
+      value: "for"
+    - name: "from"
+      value: "1"
+    - name: "to"
+      value: "3"
+  - number: 2
+    type: "fwk.executeScript"
+    name: "shell execution and wait"
+    description: "Execute latest version of script"
+    component: ""
+    condition: ""
+    iteration: "Iteration1"
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "script"
+      value : "cli.executeCommand"
+    - name: "version"
+      value : "0"
+  
+    

@@ -46,13 +46,13 @@ public class HttpExecuteRequest {
     private ExecutionControl executionControl;
     private DataTypeService dataTypeService;
     // Parameters
-    private final String typeKey = "type";
-    private final String requestKey = "request";
-    private final String bodyKey = "body";
-    private final String proxyKey = "proxy";
-    private final String setRuntimeVariablesKey = "setRuntimeVariables";
-    private final String setDatasetKey = "setDataset";
-    private final String expectedStatusCodesKey = "expectedStatusCodes";
+    private static final String typeKey = "type";
+    private static final String requestKey = "request";
+    private static final String bodyKey = "body";
+    private static final String proxyKey = "proxy";
+    private static final String setRuntimeVariablesKey = "setRuntimeVariables";
+    private static final String setDatasetKey = "setDataset";
+    private static final String expectedStatusCodesKey = "expectedStatusCodes";
 
     private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
 

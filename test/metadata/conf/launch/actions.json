@@ -405,4 +405,20 @@
 		"description": "test fwk.outputMessage with a variable concept lookup as message",
 		"parameterList": ""
 	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "fwk.executeScript",
+		"description": "test fwk.executeScript",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "cli.executeCommand",
+		"description": "test cli.executeCommand",
+		"parameterList": ""
+	}
 }]

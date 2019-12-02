@@ -40,7 +40,7 @@ data:
     encrypted: "N"
     subroutine: ""
     impersonate: "N"
-  - name: "sysOutput"
+  - name: "output"
     description: "Will be used to store the system output"
     type: "string"
     mandatory: "N"

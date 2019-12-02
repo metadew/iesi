@@ -60,13 +60,14 @@
       "encrypted" : "N",
       "subroutine" : "",
       "impersonate" : "N"
-	}, {
-      "name" : "sysOutput",
+    }, {
+      "name" : "output",
       "description" : "Will be used to store the system output",
       "type" : "string",
       "mandatory" : "N",
       "encrypted" : "N",
       "subroutine" : "",
+      "impersonate" : "N"
     }, {
       "name" : "connection",
       "description" : "Connection where to run the shell command",

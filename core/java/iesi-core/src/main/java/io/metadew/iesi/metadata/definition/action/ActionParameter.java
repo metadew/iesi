@@ -1,28 +1,18 @@
 package io.metadew.iesi.metadata.definition.action;
 
-public class ActionParameter {
+import io.metadew.iesi.metadata.definition.Metadata;
+import io.metadew.iesi.metadata.definition.action.key.ActionParameterKey;
 
-    private String name;
+public class ActionParameter extends Metadata<ActionParameterKey> {
+
     private String value;
 
-    // Constructors
-    public ActionParameter() {
-
-    }
-
-    public ActionParameter(String name, String value) {
-        this.name = name;
+    public ActionParameter(ActionParameterKey actionParameterKey, String value) {
+        super(actionParameterKey);
         this.value = value;
     }
 
-    // Getters and Setters
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
+    public String getName() {return this.getMetadataKey().getActionName();}
 
     public String getValue() {
         return value;

@@ -6,6 +6,8 @@ import io.metadew.iesi.metadata.configuration.action.exception.ActionDoesNotExis
 import io.metadew.iesi.metadata.configuration.action.exception.ActionParameterAlreadyExistsException;
 import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
+import io.metadew.iesi.metadata.definition.action.key.ActionKey;
+import io.metadew.iesi.metadata.definition.action.key.ActionParameterKey;
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.metadata.execution.MetadataControl;
 import org.apache.logging.log4j.LogManager;
@@ -54,10 +56,12 @@ public class ActionConfiguration {
             CachedRowSet crsActionParameters = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(queryActionParameters, "reader");
             List<ActionParameter> actionParameters = new ArrayList<>();
             while (crsActionParameters.next()) {
-                actionParameters.add(new ActionParameter(crsActionParameters.getString("ACTION_PAR_NM"),
+                ActionParameterKey actionParameterKey = new ActionParameterKey(scriptId, scriptVersionNumber, actionId, crsActionParameters.getString("ACTION_PAR_NM"));
+                actionParameters.add(new ActionParameter(actionParameterKey,
                         crsActionParameters.getString("ACTION_PAR_VAL")));
             }
-            Action action = new Action(actionId,
+            ActionKey actionKey = new ActionKey(scriptId, scriptVersionNumber, actionId);
+            Action action = new Action(actionKey,
                     crsAction.getLong("ACTION_NB"),
                     crsAction.getString("ACTION_TYP_NM"),
                     crsAction.getString("ACTION_NM"),

@@ -3,6 +3,8 @@ package io.metadew.iesi.metadata.configuration.action;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.action.exception.ActionParameterAlreadyExistsException;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
+import io.metadew.iesi.metadata.definition.action.key.ActionKey;
+import io.metadew.iesi.metadata.definition.action.key.ActionParameterKey;
 import io.metadew.iesi.metadata.execution.MetadataControl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -33,7 +35,6 @@ public class ActionParameterConfiguration {
 
     public Optional<ActionParameter> get(String scriptId, long scriptVersionNumber, String actionId, String actionParameterName) {
         try {
-            ActionParameter actionParameter = new ActionParameter();
             String queryActionParameter = "select SCRIPT_ID, SCRIPT_VRS_NB, ACTION_ID, ACTION_PAR_NM, ACTION_PAR_VAL from "
                     + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("ActionParameters")
                     + " where SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptId) + " and SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(scriptVersionNumber)
@@ -43,10 +44,11 @@ public class ActionParameterConfiguration {
             if (cachedRowSet.size() == 0) {
                 return Optional.empty();
             } else if (cachedRowSet.size() > 1) {
-                LOGGER.info(MessageFormat.format("Found multiple implementations for ActionParameter {0}-{1}-{2}-{4}. Returning first implementation", scriptId, scriptVersionNumber, actionId, actionParameter.getName()));
+                LOGGER.info(MessageFormat.format("Found multiple implementations for ActionParameter {0}-{1}-{2}-{4}. Returning first implementation", scriptId, scriptVersionNumber, actionId, actionParameterName));
             }
             cachedRowSet.next();
-            return Optional.of(new ActionParameter(actionParameterName, cachedRowSet.getString("ACTION_PAR_VAL")));
+            ActionParameterKey actionParameterKey = new ActionParameterKey(scriptId, scriptVersionNumber, actionId, actionParameterName);
+            return Optional.of(new ActionParameter(actionParameterKey, cachedRowSet.getString("ACTION_PAR_VAL")));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

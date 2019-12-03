@@ -1,29 +1,27 @@
 package io.metadew.iesi.metadata.definition.script;
 
+import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.action.Action;
+import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Script {
+public class Script extends Metadata<ScriptKey> {
 
-    private String id;
-    private String type = "script";
+    private String type;
     private String name;
     private String description;
     // Set a default script version if not provided
-    private ScriptVersion version = new ScriptVersion();
-    private List<ScriptParameter> parameters = new ArrayList<>();
-    private List<Action> actions = new ArrayList<>();
+    private ScriptVersion version;
+    private List<ScriptParameter> parameters;
+    private List<Action> actions;
 
-    // Constructors
-    public Script() {
-    }
 
     public Script(String id, String type, String name, String description, ScriptVersion version,
                   List<ScriptParameter> parameters, List<Action> actions) {
-        this.id = id;
+        super(new ScriptKey(id, version.getNumber()));
         this.type = type;
         this.name = name;
         this.description = description;
@@ -31,9 +29,9 @@ public class Script {
         this.parameters = parameters;
         this.actions = actions;
     }
-    public Script(String type, String name, String description, ScriptVersion version,
+    public Script(ScriptKey scriptKey, String type, String name, String description, ScriptVersion version,
                   List<ScriptParameter> parameters, List<Action> actions) {
-        this.id = IdentifierTools.getScriptIdentifier(name);
+        super(scriptKey);
         this.type = type;
         this.name = name;
         this.description = description;
@@ -92,12 +90,7 @@ public class Script {
     }
 
     public String getId() {
-        if (id == null) this.id = IdentifierTools.getScriptIdentifier(this.getName());
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
+        return getMetadataKey().getScriptId();
     }
 
     public boolean isEmpty() {

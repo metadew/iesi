@@ -1,9 +1,13 @@
 package io.metadew.iesi.metadata.configuration.script;
 
 import io.metadew.iesi.connection.tools.SQLTools;
+import io.metadew.iesi.metadata.configuration.Configuration;
+import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
+import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.script.exception.ScriptVersionAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.script.exception.ScriptVersionDoesNotExistException;
 import io.metadew.iesi.metadata.definition.script.ScriptVersion;
+import io.metadew.iesi.metadata.definition.script.key.ScriptVersionKey;
 import io.metadew.iesi.metadata.execution.MetadataControl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -11,15 +15,66 @@ import org.apache.logging.log4j.Logger;
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.sql.SQLException;
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
-public class ScriptVersionConfiguration {
+public class ScriptVersionConfiguration extends Configuration<ScriptVersion, ScriptVersionKey> {
 
+    private static ScriptVersionConfiguration INSTANCE;
     private static final Logger LOGGER = LogManager.getLogger();
 
+    public synchronized static ScriptVersionConfiguration getInstance(){
+        if (INSTANCE == null) {
+            INSTANCE = new ScriptVersionConfiguration();
+        }
+        return INSTANCE;
+    }
 
     public ScriptVersionConfiguration() {
+    }
+
+    @Override
+    public Optional<ScriptVersion> get(ScriptVersionKey metadataKey) {
+        return getScriptVersion(metadataKey.getScriptId(), metadataKey.getVersionNumber());
+    }
+
+    @Override
+    public List<ScriptVersion> getAll() {
+        List<ScriptVersion> scriptVersions = new ArrayList<>();
+        String query = "select * from " + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("ScriptVersions")
+                + " order by SCRIPT_ID";
+        CachedRowSet crs = MetadataControl.getInstance().getConnectivityMetadataRepository().executeQuery(query, "reader");
+        try {
+            while (crs.next()) {
+                ScriptVersionKey scriptVersionKey = new ScriptVersionKey(
+                        crs.getString("SCRIPT_ID"),
+                        crs.getLong("SCRIPT_VRS_NB"));
+                scriptVersions.add(new ScriptVersion(
+                        scriptVersionKey,
+                        crs.getString("SCRIPT_VRS_DSC")));
+
+            }
+            crs.close();
+        } catch (SQLException e) {
+            StringWriter stackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTrace));
+            LOGGER.warn("exeption=" + e.getMessage());
+            LOGGER.info("exception.stacktrace=" + stackTrace.toString());
+        }
+        return scriptVersions;
+    }
+
+    @Override
+    public void delete(ScriptVersionKey metadataKey) throws MetadataDoesNotExistException {
+        delete(metadataKey.getScriptId(), metadataKey.getVersionNumber());
+    }
+
+    @Override
+    public void insert(ScriptVersion metadata) throws MetadataAlreadyExistsException {
+        insert(metadata.getMetadataKey().getScriptId(), metadata);
     }
 
     public void insert(String scriptId, ScriptVersion scriptVersion) throws ScriptVersionAlreadyExistsException {

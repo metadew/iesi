@@ -1,14 +1,18 @@
 package io.metadew.iesi.metadata.configuration.script;
 
 import io.metadew.iesi.connection.tools.SQLTools;
+import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.MetadataConfiguration;
 import io.metadew.iesi.metadata.configuration.action.ActionConfiguration;
 import io.metadew.iesi.metadata.configuration.action.exception.ActionAlreadyExistsException;
+import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.script.exception.*;
 import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.metadata.definition.script.ScriptParameter;
 import io.metadew.iesi.metadata.definition.script.ScriptVersion;
+import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
+import io.metadew.iesi.metadata.definition.script.key.ScriptParameterKey;
 import io.metadew.iesi.metadata.execution.MetadataControl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -22,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class ScriptConfiguration extends MetadataConfiguration {
+public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
 
     private final ActionConfiguration actionConfiguration;
     private final ScriptVersionConfiguration scriptVersionConfiguration;
@@ -37,8 +41,8 @@ public class ScriptConfiguration extends MetadataConfiguration {
     }
 
     @Override
-    public List<Script> getAllObjects() {
-        return this.getAll();
+    public Optional<Script> get(ScriptKey metadataKey) {
+        return get(metadataKey.getScriptId(), metadataKey.getScriptVersionNumber());
     }
 
     public boolean exists(String scriptName, long versionNumber) {
@@ -71,6 +75,7 @@ public class ScriptConfiguration extends MetadataConfiguration {
         return exists(script.getName(), script.getVersion().getNumber());
     }
 
+    @Override
     public List<Script> getAll() {
         List<Script> scripts = new ArrayList<>();
         String queryScript = "select SCRIPT_ID, SCRIPT_NM from "
@@ -90,7 +95,27 @@ public class ScriptConfiguration extends MetadataConfiguration {
         return scripts;
     }
 
-    public List<Script> getByName(String scriptName) {
+    @Override
+    public void delete(ScriptKey metadataKey) throws MetadataDoesNotExistException {
+        LOGGER.trace(MessageFormat.format("Deleting script {0}-{1}.", metadataKey.toString()));
+        if (!exists(metadataKey.getScriptId(), metadataKey.getScriptVersionNumber())) {
+            throw new ScriptDoesNotExistException(
+                    MessageFormat.format("Script {0}-{1} is not present in the repository so cannot be deleted",
+                            metadataKey.toString()));
+        }
+
+        try {
+            scriptVersionConfiguration.delete(metadataKey.getScriptId(), metadataKey.getScriptVersionNumber());
+        } catch (ScriptVersionDoesNotExistException e) {
+            LOGGER.warn(e.getMessage() + ". Skipping");
+        }
+
+        actionConfiguration.deleteActionsFromScript(metadataKey.getScriptId(), metadataKey.getScriptVersionNumber());
+        List<String> deleteQuery = getDeleteStatement(metadataKey.getScriptId(), metadataKey.getScriptVersionNumber());
+        MetadataControl.getInstance().getDesignMetadataRepository().executeBatch(deleteQuery);
+    }
+
+    private List<Script> getByName(String scriptName) {
         try {
             LOGGER.trace(MessageFormat.format("Fetching scripts by name ''{0}''", scriptName));
             List<Script> scripts = new ArrayList<>();
@@ -120,7 +145,7 @@ public class ScriptConfiguration extends MetadataConfiguration {
         }
     }
 
-    public void delete(Script script) throws ScriptDoesNotExistException, SQLException {
+    public void delete(Script script) throws ScriptDoesNotExistException {
         LOGGER.trace(MessageFormat.format("Deleting script {0}-{1}.", script.getName(), script.getVersion().getNumber()));
         if (!exists(script)) {
             throw new ScriptDoesNotExistException(
@@ -135,7 +160,7 @@ public class ScriptConfiguration extends MetadataConfiguration {
         }
 
         actionConfiguration.deleteActionsFromScript(script.getId(), script.getVersion().getNumber());
-        List<String> deleteQuery = getDeleteStatement(script);
+        List<String> deleteQuery = getDeleteStatement(script.getId(), script.getVersion().getNumber());
         MetadataControl.getInstance().getDesignMetadataRepository().executeBatch(deleteQuery);
     }
 
@@ -145,7 +170,7 @@ public class ScriptConfiguration extends MetadataConfiguration {
         }
     }
 
-    public void insert(Script script) throws ScriptAlreadyExistsException, SQLException {
+    public void insert(Script script) throws ScriptAlreadyExistsException {
         LOGGER.trace(MessageFormat.format("Inserting script {0}-{1}.", script.getName(), script.getVersion().getNumber()));
         if (exists(script)) {
             throw new ScriptAlreadyExistsException(MessageFormat.format(
@@ -181,7 +206,7 @@ public class ScriptConfiguration extends MetadataConfiguration {
         MetadataControl.getInstance().getDesignMetadataRepository().executeBatch(insertStatement);
     }
 
-    public void update(Script script) throws ScriptDoesNotExistException, SQLException {
+    public void update(Script script) throws ScriptDoesNotExistException{
         LOGGER.trace(MessageFormat.format("Updating script {0}-{1}.", script.getName(), script.getVersion().getNumber()));
         try {
             delete(script);
@@ -209,24 +234,24 @@ public class ScriptConfiguration extends MetadataConfiguration {
         return queries;
     }
 
-    private List<String> getDeleteStatement(Script script) {
+    private List<String> getDeleteStatement(String scriptId, Long scriptVersionNumber) {
         List<String> queries = new ArrayList<>();
 
         // delete parameters
         queries.add("DELETE FROM " + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("ScriptParameters") +
-                " WHERE SCRIPT_ID = " + SQLTools.GetStringForSQL(script.getId()) + " AND SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(script.getVersion().getNumber()) + ";");
+                " WHERE SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptId) + " AND SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(scriptVersionNumber) + ";");
 
         // delete script info if last version
         String countQuery = "SELECT COUNT(DISTINCT SCRIPT_VRS_NB) AS total_versions FROM "
                 + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("ScriptVersions")
-                + " WHERE SCRIPT_ID = " + SQLTools.GetStringForSQL(script.getId()) + " AND "
-                + " SCRIPT_VRS_NB != " + SQLTools.GetStringForSQL(script.getVersion().getNumber()) + ";";
+                + " WHERE SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptId) + " AND "
+                + " SCRIPT_VRS_NB != " + SQLTools.GetStringForSQL(scriptVersionNumber) + ";";
         CachedRowSet crs = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(countQuery, "reader");
 
         try {
             if (crs.next() && Integer.parseInt(crs.getString("total_versions")) == 0) {
                 queries.add("DELETE FROM " + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("Scripts") +
-                        " WHERE SCRIPT_ID = " + SQLTools.GetStringForSQL(script.getId()) + ";");
+                        " WHERE SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptId) + ";");
             }
         } catch (SQLException e) {
             StringWriter stackTrace = new StringWriter();
@@ -322,7 +347,9 @@ public class ScriptConfiguration extends MetadataConfiguration {
                     .executeQuery(queryScriptParameters, "reader");
             List<ScriptParameter> scriptParameters = new ArrayList<>();
             while (crsScriptParameters.next()) {
-                scriptParameters.add(new ScriptParameter(crsScriptParameters.getString("SCRIPT_PAR_NM"),
+                ScriptParameterKey scriptParameterKey = new ScriptParameterKey(scriptId, scriptVersion.get().getNumber(),
+                        crsScriptParameters.getString("SCRIPT_PAR_NM"));
+                scriptParameters.add(new ScriptParameter(scriptParameterKey,
                         crsScriptParameters.getString("SCRIPT_PAR_VAL")));
             }
             crsScriptParameters.close();

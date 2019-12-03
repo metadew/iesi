@@ -71,7 +71,7 @@ public class ConnectionConfiguration extends Configuration<Connection, Connectio
         List<ConnectionParameter> connectionParameters = new ArrayList<>();
         try {
             String query = "select CONN_PAR_NM, CONN_PAR_VAL  from " +
-                    MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("ConnectionParameter") +
+                    MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("ConnectionParameters") +
                     " WHERE " +
                     " CONN_NM  = " + connectionKey.getName() + " AND " +
                     " ENV_NM = " + connectionKey.getEnvironment() + ";";
@@ -80,6 +80,7 @@ public class ConnectionConfiguration extends Configuration<Connection, Connectio
                 ConnectionParameter connectionParameter =
                         new ConnectionParameter(connectionKey.getName(), connectionKey.getEnvironment(),
                                 crsConnectionParameters.getString("CONN_PAR_NM"), crsConnectionParameters.getString("CONN_PAR_VAL"));
+                connectionParameters.add(connectionParameter);
             }
             crsConnectionParameters.close();
         } catch (SQLException e) {

@@ -1,33 +1,125 @@
 package io.metadew.iesi.metadata.configuration.action;
 
 import io.metadew.iesi.connection.tools.SQLTools;
+import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.action.exception.ActionAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.action.exception.ActionDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.action.exception.ActionParameterAlreadyExistsException;
+import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
+import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.action.key.ActionKey;
 import io.metadew.iesi.metadata.definition.action.key.ActionParameterKey;
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.metadata.execution.MetadataControl;
+import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class ActionConfiguration {
+public class ActionConfiguration extends Configuration<Action, ActionKey> {
 
     private final ActionParameterConfiguration actionParameterConfiguration;
     private final static Logger LOGGER = LogManager.getLogger();
+    private static ActionConfiguration INSTANCE;
+
+    public synchronized static ActionConfiguration getInstance(){
+        if(INSTANCE == null){
+            INSTANCE = new ActionConfiguration();
+        }
+        return INSTANCE;
+    }
 
     public ActionConfiguration() {
-    	this.actionParameterConfiguration = new ActionParameterConfiguration();
+        this.actionParameterConfiguration = new ActionParameterConfiguration();
+    }
+
+    public void init(MetadataRepository metadataRepository){
+        setMetadataRepository(metadataRepository);
+    }
+
+    @Override
+    public Optional<Action> get(ActionKey metadataKey) {
+        return get(metadataKey.getScriptId(), metadataKey.getScriptVersionNumber(), metadataKey.getActionId());
+    }
+
+    @Override
+    public List<Action> getAll() {
+        List<Action> actions = new ArrayList<>();
+        String query = "select * from " + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("Actions")
+                + " order by ACTION_NM ASC";
+        CachedRowSet crs = MetadataControl.getInstance().getConnectivityMetadataRepository().executeQuery(query, "reader");
+        try {
+            while (crs.next()) {
+                ActionKey actionKey = new ActionKey(crs.getString("SCRIPT_ID"), crs.getLong("SCRIPT_VRS_NB"),
+                        crs.getString("ACTION_ID"));
+                List<ActionParameter> actionParameters = getAllLinkedActionParameters(actionKey);
+                actions.add(new Action(actionKey,
+                        crs.getLong("ACTION_NB"),
+                        crs.getString("ACTION_TYP_NM"),
+                        crs.getString("ACTION_NM"),
+                        crs.getString("ACTION_DSC"),
+                        crs.getString("COMP_NM"),
+                        crs.getString("CONDITION_VAL"),
+                        crs.getString("ITERATION_VAL"),
+                        crs.getString("EXP_ERR_FL"),
+                        crs.getString("STOP_ERR_FL"),
+                        crs.getString("RETRIES_VAL"),
+                        actionParameters
+                ));
+            }
+            crs.close();
+        } catch (SQLException e) {
+            StringWriter stackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTrace));
+            LOGGER.warn("exeption=" + e.getMessage());
+            LOGGER.info("exception.stacktrace=" + stackTrace.toString());
+        }
+        return actions;
+    }
+
+    private List<ActionParameter> getAllLinkedActionParameters(ActionKey actionKey){
+        List<ActionParameter> actionParameters = new ArrayList<>();
+        try {
+            String query = "select ACTION_PAR_NM, ACTION_PAR_VAL  from " +
+                    MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("ActionParameters") +
+                    " WHERE " +
+                    " SCRIPT_ID  = " + actionKey.getScriptId() + " AND " +
+                    " SCRIPT_VRS_NB  = " + actionKey.getScriptVersionNumber() + " AND " +
+                    " ACTION_ID = " + actionKey.getActionId() + ";";
+            CachedRowSet crsActionParameters = getMetadataRepository().executeQuery(query, "reader");
+            while (crsActionParameters.next()) {
+                ActionParameterKey actionParameterKey = new ActionParameterKey(actionKey.getScriptId(), actionKey.getScriptVersionNumber(),
+                        actionKey.getActionId(), crsActionParameters.getString("ACTION_PAR_NM"));
+                ActionParameter actionParameter =
+                        new ActionParameter(actionParameterKey, crsActionParameters.getString("ACTION_PAR_VAL"));
+                actionParameters.add(actionParameter);
+            }
+            crsActionParameters.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return actionParameters;
+    }
+
+    @Override
+    public void delete(ActionKey metadataKey) throws MetadataDoesNotExistException {
+        delete(metadataKey.getScriptId(), metadataKey.getScriptVersionNumber(), metadataKey.getActionId());
+    }
+
+    @Override
+    public void insert(Action metadata) throws MetadataAlreadyExistsException {
+        ActionKey actionKey = metadata.getMetadataKey();
+        insert(actionKey.getScriptId(), actionKey.getScriptVersionNumber(), metadata);
     }
 
 

@@ -1,16 +1,37 @@
 package io.metadew.iesi.metadata.configuration.impersonation;
 
 import io.metadew.iesi.connection.tools.SQLTools;
+import io.metadew.iesi.metadata.configuration.Configuration;
+import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
+import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.impersonation.ImpersonationParameter;
+import io.metadew.iesi.metadata.definition.impersonation.key.ImpersonationParameterKey;
 import io.metadew.iesi.metadata.execution.MetadataControl;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.sql.SQLException;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
-public class ImpersonationParameterConfiguration {
+public class ImpersonationParameterConfiguration extends Configuration<ImpersonationParameter, ImpersonationParameterKey> {
 
     private ImpersonationParameter impersonationParameter;
+
+    private static final Logger LOGGER = LogManager.getLogger();
+    private static ImpersonationParameterConfiguration INSTANCE;
+
+    public synchronized static ImpersonationParameterConfiguration getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new ImpersonationParameterConfiguration();
+        }
+        return INSTANCE;
+    }
 
     // Constructors
     public ImpersonationParameterConfiguration(ImpersonationParameter impersonationParameter) {
@@ -18,6 +39,58 @@ public class ImpersonationParameterConfiguration {
     }
 
     public ImpersonationParameterConfiguration() {
+    }
+
+    @Override
+    public Optional<ImpersonationParameter> get(ImpersonationParameterKey metadataKey) {
+        return getImpersonationParameter(metadataKey.getImpersonationName(), metadataKey.getImpersonationParameterName());
+    }
+
+    @Override
+    public List<ImpersonationParameter> getAll() {
+        try {
+            List<ImpersonationParameter> impersonationParameters = new ArrayList<>();
+            String query = "select RUN_ID, PRC_ID, ACTION_ID, OUT_NM, OUT_VAL from "
+                    + getMetadataRepository().getTableNameByLabel("ActionResultOutputs") + ";";
+            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
+            while (cachedRowSet.next()) {
+                impersonationParameters.add(new ImpersonationParameter(new ImpersonationParameterKey(
+                        cachedRowSet.getString("IMP_NM"),
+                        cachedRowSet.getString("CONN_NM")),
+                        cachedRowSet.getString("CONN_IMP_NM"),
+                        cachedRowSet.getString("CONN_IMP_DSC")));
+            }
+            return impersonationParameters;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void delete(ImpersonationParameterKey metadataKey) throws MetadataDoesNotExistException {
+        LOGGER.trace(MessageFormat.format("Deleting ActionResultOutput {0}.", metadataKey.toString()));
+        if (!exists(metadataKey)) {
+            throw new MetadataDoesNotExistException("ImpersonationParameter", metadataKey);
+        }
+        String deleteStatement = deleteStatement(metadataKey);
+        getMetadataRepository().executeUpdate(deleteStatement);
+    }
+
+    private String deleteStatement(ImpersonationParameterKey metadataKey) {
+        return "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ImpersonationParameters") +
+                " WHERE " +
+                " IMP_NM = " + SQLTools.GetStringForSQL(metadataKey.getImpersonationName()) + " AND " +
+                " CONN_NM = " + SQLTools.GetStringForSQL(metadataKey.getImpersonationParameterName()) + ";";
+    }
+
+    @Override
+    public void insert(ImpersonationParameter metadata) throws MetadataAlreadyExistsException {
+        LOGGER.trace(MessageFormat.format("Inserting ImpersonationParameter {0}.", metadata.getMetadataKey().toString()));
+        if (exists(metadata.getMetadataKey())) {
+            throw new MetadataAlreadyExistsException("ImpersonationParameter", metadata.getMetadataKey());
+        }
+        String insertStatement = getInsertStatement(metadata.getMetadataKey().getImpersonationName(), metadata);
+        getMetadataRepository().executeUpdate(insertStatement);
     }
 
     public String getInsertStatement(String impersonationName, ImpersonationParameter impersonationParameter) {
@@ -50,24 +123,24 @@ public class ImpersonationParameterConfiguration {
         return sql;
     }
 
-    public ImpersonationParameter getImpersonationParameter(String impersonationName, String impersonationParameterName) {
-        ImpersonationParameter impersonationParameter = new ImpersonationParameter();
-        CachedRowSet crsImpersonationParameter = null;
-        String queryImpersonationParameter = "select IMP_NM, CONN_NM, CONN_IMP_NM, CONN_IMP_DSC from " + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("ImpersonationParameters")
-                + " where IMP_NM = '" + impersonationName + "' and CONN_NM = '" + impersonationParameterName + "'";
-        crsImpersonationParameter = MetadataControl.getInstance().getConnectivityMetadataRepository().executeQuery(queryImpersonationParameter, "reader");
+    Optional<ImpersonationParameter> getImpersonationParameter(String impersonationName, String impersonationParameterName) {
         try {
-            while (crsImpersonationParameter.next()) {
-                impersonationParameter.setConnection(impersonationParameterName);
-                impersonationParameter.setImpersonatedConnection(crsImpersonationParameter.getString("CONN_IMP_NM"));
-                impersonationParameter.setDescription(crsImpersonationParameter.getString("CONN_IMP_DSC"));
+            String queryImpersonationParameter = "select IMP_NM, CONN_NM, CONN_IMP_NM, CONN_IMP_DSC from " + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("ImpersonationParameters")
+                    + " where IMP_NM = '" + impersonationName + "' and CONN_NM = '" + impersonationParameterName + "'";
+            CachedRowSet crsImpersonationParameter = MetadataControl.getInstance().getConnectivityMetadataRepository().executeQuery(queryImpersonationParameter, "reader");
+            ImpersonationParameterKey impersonationParameterKey = new ImpersonationParameterKey(impersonationName, impersonationParameterName);
+            if (crsImpersonationParameter.size() == 0) {
+                return Optional.empty();
+            } else if (crsImpersonationParameter.size() > 1) {
+                LOGGER.warn(MessageFormat.format("Found multiple implementations for ActionResultOutput {0}. Returning first implementation", impersonationParameterKey.toString()));
             }
-            crsImpersonationParameter.close();
-        } catch (Exception e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
+            crsImpersonationParameter.next();
+            return Optional.of(new ImpersonationParameter(impersonationParameterKey,
+                    crsImpersonationParameter.getString("CONN_IMP_NM"),
+                    crsImpersonationParameter.getString("CONN_IMP_DSC")));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
-        return impersonationParameter;
     }
 
 

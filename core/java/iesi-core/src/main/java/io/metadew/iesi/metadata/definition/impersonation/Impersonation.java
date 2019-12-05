@@ -1,31 +1,26 @@
 package io.metadew.iesi.metadata.definition.impersonation;
 
+import io.metadew.iesi.metadata.definition.Metadata;
+import io.metadew.iesi.metadata.definition.impersonation.key.ImpersonationKey;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class Impersonation {
+public class Impersonation extends Metadata<ImpersonationKey> {
 
-    private String name;
     private String description;
     private List<ImpersonationParameter> parameters = new ArrayList<>();
 
-    //Constructors
-    public Impersonation() {
-    }
 
     public Impersonation(String name, String description, List<ImpersonationParameter> parameters) {
-        this.name = name;
+        super(new ImpersonationKey(name));
         this.description = description;
         this.parameters = parameters;
     }
 
     //Getters and Setters
     public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+        return getMetadataKey().getName();
     }
 
     public String getDescription() {

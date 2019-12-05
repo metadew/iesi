@@ -48,7 +48,7 @@ public class EnvironmentConfiguration extends Configuration<Environment, Environ
 
     @Override
     public void delete(EnvironmentKey metadataKey) throws MetadataDoesNotExistException {
-        LOGGER.trace(MessageFormat.format("Deleting Connection {0}.", metadataKey.toString()));
+        LOGGER.trace(MessageFormat.format("Deleting Environment {0}.", metadataKey.toString()));
         if (!exists(metadataKey)) {
             throw new MetadataDoesNotExistException("Environment", metadataKey);
         }
@@ -58,8 +58,7 @@ public class EnvironmentConfiguration extends Configuration<Environment, Environ
 
     @Override
     public void insert(Environment metadata) throws MetadataAlreadyExistsException {
-        // frameworkInstance.getFrameworkLog().log(MessageFormat.format("Inserting connection {0}-{1}.", connection.getScriptName(), connection.getEnvironment()), Level.TRACE);
-        LOGGER.trace(MessageFormat.format("Inserting Connection {0}.", metadata.getMetadataKey().toString()));
+        LOGGER.trace(MessageFormat.format("Inserting Environment {0}.", metadata.getMetadataKey().toString()));
         if (exists(metadata.getMetadataKey())) {
             throw new MetadataAlreadyExistsException("Environment", metadata.getMetadataKey());
         }

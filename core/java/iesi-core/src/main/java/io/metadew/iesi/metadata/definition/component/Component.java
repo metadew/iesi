@@ -1,13 +1,14 @@
 package io.metadew.iesi.metadata.definition.component;
 
+import io.metadew.iesi.metadata.definition.Metadata;
+import io.metadew.iesi.metadata.definition.component.key.ComponentKey;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Component {
+public class Component extends Metadata<ComponentKey> {
 
-    private String id;
     private String type;
     private String name;
     private String description;
@@ -15,14 +16,9 @@ public class Component {
     private List<ComponentParameter> parameters = new ArrayList<>();
     private List<ComponentAttribute> attributes = new ArrayList<>();
 
-    //Constructors
-    public Component() {
-
-    }
-
-    public Component(String id, String type, String name, String description, ComponentVersion version,
+    public Component(ComponentKey componentKey, String type, String name, String description, ComponentVersion version,
                      List<ComponentParameter> parameters, List<ComponentAttribute> attributes) {
-        this.id = id;
+        super(componentKey);
         this.type = type;
         this.name = name;
         this.description = description;
@@ -31,9 +27,9 @@ public class Component {
         this.attributes = attributes;
     }
 
-    public Component(String type, String name, String description, ComponentVersion version,
+    public Component(String id, String type, String name, String description, ComponentVersion version,
                      List<ComponentParameter> parameters, List<ComponentAttribute> attributes) {
-        this.id = IdentifierTools.getComponentIdentifier(name);
+        super(new ComponentKey(id));
         this.type = type;
         this.name = name;
         this.description = description;
@@ -52,12 +48,7 @@ public class Component {
     }
 
     public String getId() {
-        if (id == null) this.id = IdentifierTools.getComponentIdentifier(this.getName());
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
+        return getMetadataKey().getId();
     }
 
     public String getType() {

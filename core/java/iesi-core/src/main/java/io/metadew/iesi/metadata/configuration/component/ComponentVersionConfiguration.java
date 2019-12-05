@@ -1,7 +1,11 @@
 package io.metadew.iesi.metadata.configuration.component;
 
 import io.metadew.iesi.connection.tools.SQLTools;
+import io.metadew.iesi.metadata.configuration.Configuration;
+import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
+import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.component.ComponentVersion;
+import io.metadew.iesi.metadata.definition.component.key.ComponentVersionKey;
 import io.metadew.iesi.metadata.execution.MetadataControl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -9,17 +13,99 @@ import org.apache.logging.log4j.Logger;
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.sql.SQLException;
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
-public class ComponentVersionConfiguration {
+public class ComponentVersionConfiguration extends Configuration<ComponentVersion, ComponentVersionKey> {
 
-    private final static Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
+    private static ComponentVersionConfiguration INSTANCE;
+
+    public synchronized static ComponentVersionConfiguration getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new ComponentVersionConfiguration();
+        }
+        return INSTANCE;
+    }
 
     public ComponentVersionConfiguration() {}
 
+    @Override
+    public Optional<ComponentVersion> get(ComponentVersionKey metadataKey) {
+        return getComponentVersion(metadataKey.getComponentId(), metadataKey.getComponentVersionNumber());
+    }
 
-    public Optional<ComponentVersion> getComponentVersion(String componentId, long componentVersionNumber) {
+    @Override
+    public List<ComponentVersion> getAll() {
+        try {
+            List<ComponentVersion> componentVersions= new ArrayList<>();
+            String query = "select * from "
+                    + getMetadataRepository().getTableNameByLabel("ComponentVersions") + ";";
+            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
+            while (cachedRowSet.next()) {
+                ComponentVersionKey componentVersionKey = new ComponentVersionKey(
+                        cachedRowSet.getString("COMP_ID"),
+                        cachedRowSet.getLong("COMP_VRS_NB"));
+                componentVersions.add(new ComponentVersion(
+                        componentVersionKey,
+                        cachedRowSet.getString("COMP_VRS_DSC")));
+            }
+            return componentVersions;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void delete(ComponentVersionKey metadataKey) throws MetadataDoesNotExistException {
+        LOGGER.trace(MessageFormat.format("Deleting ComponentVersion {0}.", metadataKey.toString()));
+        if (!exists(metadataKey)) {
+            throw new MetadataDoesNotExistException("ComponentVersion", metadataKey);
+        }
+        String deleteStatement = deleteStatement(metadataKey);
+        getMetadataRepository().executeUpdate(deleteStatement);
+    }
+
+    private String deleteStatement(ComponentVersionKey componentVersionKey){
+        return "DELETE FROM " + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("ComponentVersions") +
+                " WHERE COMP_ID = " +
+                SQLTools.GetStringForSQL(componentVersionKey.getComponentId()) +
+                "AND WHERE COMP_VRS_NB = " +
+                SQLTools.GetStringForSQL(componentVersionKey.getComponentVersionNumber()) + ";";
+    }
+
+    @Override
+    public void insert(ComponentVersion metadata) throws MetadataAlreadyExistsException {
+        LOGGER.trace(MessageFormat.format("Inserting ComponentVersion {0}.", metadata.getMetadataKey().toString()));
+        if (exists(metadata.getMetadataKey())) {
+            throw new MetadataAlreadyExistsException("ComponentVersion", metadata.getMetadataKey());
+        }
+        String insertQuery = getInsertStatement(metadata);
+        getMetadataRepository().executeUpdate(insertQuery);
+    }
+
+    // Insert
+    public String getInsertStatement(ComponentVersion componentVersion) {
+        String sql = "";
+
+        sql += "INSERT INTO " + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("ComponentVersions");
+        sql += " (COMP_ID, COMP_VRS_NB) ";
+        sql += "VALUES ";
+        sql += "(";
+        sql += SQLTools.GetStringForSQL(componentVersion.getMetadataKey().getComponentId());
+        sql += ",";
+        sql += SQLTools.GetStringForSQL(componentVersion.getMetadataKey().getComponentVersionNumber());
+        sql += ")";
+        sql += ";";
+
+        return sql;
+    }
+
+
+    Optional<ComponentVersion> getComponentVersion(String componentId, long componentVersionNumber) {
         String queryComponentVersion = "select COMP_ID, COMP_VRS_NB, COMP_VRS_DSC from " + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("ComponentVersions")
                 + " where COMP_ID = " + SQLTools.GetStringForSQL(componentId) + " and COMP_VRS_NB = " + SQLTools.GetStringForSQL(componentVersionNumber);
         CachedRowSet crsComponentVersion = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(queryComponentVersion, "reader");
@@ -30,7 +116,8 @@ public class ComponentVersionConfiguration {
                 LOGGER.warn(MessageFormat.format("component.version=found multiple descriptions for component id {0} version {1}. " + "Returning first implementation.", componentId, componentVersionNumber));
             }
             crsComponentVersion.next();
-            ComponentVersion componentVersion = new ComponentVersion(componentVersionNumber, crsComponentVersion.getString("COMP_VRS_DSC"));
+            ComponentVersionKey componentVersionKey = new ComponentVersionKey(componentId, componentVersionNumber);
+            ComponentVersion componentVersion = new ComponentVersion(componentVersionKey, crsComponentVersion.getString("COMP_VRS_DSC"));
             crsComponentVersion.close();
             return Optional.of(componentVersion);
         } catch (Exception e) {

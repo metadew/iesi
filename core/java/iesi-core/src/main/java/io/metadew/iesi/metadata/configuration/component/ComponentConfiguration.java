@@ -1,13 +1,18 @@
 package io.metadew.iesi.metadata.configuration.component;
 
 import io.metadew.iesi.connection.tools.SQLTools;
+import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.MetadataConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.ComponentAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.ComponentDoesNotExistException;
+import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.component.Component;
 import io.metadew.iesi.metadata.definition.component.ComponentAttribute;
 import io.metadew.iesi.metadata.definition.component.ComponentParameter;
 import io.metadew.iesi.metadata.definition.component.ComponentVersion;
+import io.metadew.iesi.metadata.definition.component.key.ComponentAttributeKey;
+import io.metadew.iesi.metadata.definition.component.key.ComponentKey;
+import io.metadew.iesi.metadata.definition.component.key.ComponentParameterKey;
 import io.metadew.iesi.metadata.execution.MetadataControl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,10 +26,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class ComponentConfiguration extends MetadataConfiguration {
+public class ComponentConfiguration extends Configuration<Component, ComponentKey> {
 
-    private final static Logger LOGGER = LogManager.getLogger();
     private final ComponentVersionConfiguration componentVersionConfiguration;
+
+    private static final Logger LOGGER = LogManager.getLogger();
+    private static ComponentConfiguration INSTANCE;
+
+    public synchronized static ComponentConfiguration getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new ComponentConfiguration();
+        }
+        return INSTANCE;
+    }
 
     // Constructors
     public ComponentConfiguration() {
@@ -32,11 +46,36 @@ public class ComponentConfiguration extends MetadataConfiguration {
     }
 
     @Override
-    public List<Component> getAllObjects() {
-        return this.getAll();
+    public Optional<Component> get(ComponentKey metadataKey) {
+        String queryComponent = "select COMP_ID, COMP_TYP_NM, COMP_NM, COMP_DSC from "
+                + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("Components")
+                + " where COMP_ID = "
+                + SQLTools.GetStringForSQL(metadataKey.getId());
+        CachedRowSet crsComponent = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(queryComponent, "reader");
+        try {
+            if (crsComponent.size() == 0) {
+                return Optional.empty();
+            } else if (crsComponent.size() > 1) {
+                LOGGER.warn(MessageFormat.format("component.version=found multiple implementations for component {0}. Returning first implementation.",
+                        metadataKey.toString()));
+            }
+            crsComponent.next();
+            //TODO check if this is ok
+            return Optional.of(new Component(
+                    metadataKey,
+                    crsComponent.getString("COMP_TYP_NM"),
+                    crsComponent.getString("COMP_NM"),
+                    crsComponent.getString("COMP_DSC"),
+                    null,
+                    new ArrayList<ComponentParameter>(),
+                    new ArrayList<ComponentAttribute>()
+            ));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-
+    @Override
     public List<Component> getAll() {
         List<Component> components = new ArrayList<>();
         String queryComponent = "select COMP_NM from "
@@ -53,6 +92,22 @@ public class ComponentConfiguration extends MetadataConfiguration {
             LOGGER.info("exception.stacktrace=" + stackTrace.toString());
         }
         return components;
+    }
+
+    @Override
+    public void delete(ComponentKey metadataKey) throws MetadataDoesNotExistException {
+        LOGGER.trace(MessageFormat.format("Deleting Component {0}.", metadataKey.toString()));
+        if (!exists(metadataKey)) {
+            throw new MetadataDoesNotExistException("Component", metadataKey);
+        }
+        String deleteStatement = getDeleteStatement(metadataKey);
+        getMetadataRepository().executeUpdate(deleteStatement);
+    }
+
+    private String getDeleteStatement(ComponentKey metadataKey){
+        return "DELETE FROM " + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("Component") +
+                " WHERE COMP_ID = " +
+                SQLTools.GetStringForSQL(metadataKey.getId()) + ";";
     }
 
     public List<Component> getByName(String componentName) {
@@ -116,7 +171,11 @@ public class ComponentConfiguration extends MetadataConfiguration {
             CachedRowSet crsComponentParameters = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(queryComponentParameters, "reader");
             List<ComponentParameter> componentParameters = new ArrayList<>();
             while (crsComponentParameters.next()) {
-                componentParameters.add(new ComponentParameter(crsComponentParameters.getString("COMP_PAR_NM"),
+                ComponentParameterKey componentParameterKey = new ComponentParameterKey(
+                        componentId,
+                        versionNumber,
+                        crsComponentParameters.getString("COMP_PAR_NM"));
+                componentParameters.add(new ComponentParameter(componentParameterKey,
                         crsComponentParameters.getString("COMP_PAR_VAL")));
             }
 
@@ -127,8 +186,12 @@ public class ComponentConfiguration extends MetadataConfiguration {
             CachedRowSet crsComponentAttributes = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(queryComponentAttributes, "reader");
             List<ComponentAttribute> componentAttributes = new ArrayList<>();
             while (crsComponentAttributes.next()) {
-                componentAttributes.add(new ComponentAttribute(crsComponentAttributes.getString("ENV_NM"),
-                        crsComponentAttributes.getString("COMP_ATT_NM"),
+                ComponentAttributeKey componentAttributeKey = new ComponentAttributeKey(
+                        componentId,
+                        versionNumber,
+                        crsComponentAttributes.getString("COMP_ATT_NM"));
+                componentAttributes.add(new ComponentAttribute(componentAttributeKey,
+                        crsComponentAttributes.getString("ENV_NM"),
                         crsComponentAttributes.getString("COMP_ATT_VAL")));
             }
             String componentType = crsComponent.getString("COMP_TYP_NM");
@@ -232,7 +295,7 @@ public class ComponentConfiguration extends MetadataConfiguration {
         return queries;
     }
 
-    public void insert(Component component) throws ComponentAlreadyExistsException, SQLException {
+    public void insert(Component component) throws ComponentAlreadyExistsException {
         // TODO handle component ID
         // TODO fix logging
         //frameworkExecution.getFrameworkLog().log(MessageFormat.format("Inserting component {0}-{1}.", component.getName(), component.getVersion().getNumber()), Level.TRACE);
@@ -305,11 +368,11 @@ public class ComponentConfiguration extends MetadataConfiguration {
         return crsComponent.size() != 0;
     }
 
-    public void update(Component component) throws ComponentDoesNotExistException, SQLException {
+    public void update(Component component) throws MetadataDoesNotExistException{
         //TODO fix logggin
         //frameworkExecution.getFrameworkLog().log(MessageFormat.format("Updating component {0}-{1}.", component.getName(), component.getVersion().getNumber()), Level.TRACE);
         try {
-            delete(component);
+            delete(new ComponentKey(component.getId()));
             insert(component);
         } catch (ComponentDoesNotExistException e) {
             //TODO fix logging

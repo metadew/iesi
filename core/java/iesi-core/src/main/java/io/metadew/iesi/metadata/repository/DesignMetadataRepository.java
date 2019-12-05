@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.metadata.configuration.component.ComponentConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.ComponentAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.ComponentDoesNotExistException;
+import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.generation.GenerationConfiguration;
 import io.metadew.iesi.metadata.configuration.script.ScriptConfiguration;
 import io.metadew.iesi.metadata.configuration.script.exception.ScriptAlreadyExistsException;
@@ -92,15 +93,10 @@ public class DesignMetadataRepository extends MetadataRepository {
             LOGGER.info(MessageFormat.format("Script {0}-{1} already exists in design repository. Updating to new definition", script.getName(), script.getVersion().getNumber()));
             try {
                 scriptConfiguration.update(script);
-            } catch (ScriptDoesNotExistException | SQLException ex) {
+            } catch (ScriptDoesNotExistException ex) {
                 throw new MetadataRepositorySaveException(ex);
 
             }
-        } catch (SQLException e) {
-            StringWriter stackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(stackTrace));
-            LOGGER.warn("exception=" + e);
-            LOGGER.info("exception.stacktrace=" + stackTrace);
         }
     }
 
@@ -112,11 +108,9 @@ public class DesignMetadataRepository extends MetadataRepository {
             LOGGER.warn(MessageFormat.format("Component {0} already exists in design repository. Updating to new definition", component.getName()), Level.INFO);
             try {
                 componentConfiguration.update(component);
-            } catch (ComponentDoesNotExistException | SQLException ex) {
+            } catch (MetadataDoesNotExistException ex) {
                 throw new MetadataRepositorySaveException(ex);
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
     }
     

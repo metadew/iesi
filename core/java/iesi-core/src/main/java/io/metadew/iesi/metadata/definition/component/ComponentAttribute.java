@@ -1,30 +1,25 @@
 package io.metadew.iesi.metadata.definition.component;
 
 
-public class ComponentAttribute {
+import io.metadew.iesi.metadata.definition.Metadata;
+import io.metadew.iesi.metadata.definition.component.key.ComponentAttributeKey;
+import io.metadew.iesi.metadata.definition.key.MetadataKey;
 
-    private String name;
+public class ComponentAttribute extends Metadata<ComponentAttributeKey> {
+
     private String environment;
     private String value;
 
-    //Constructors
-    public ComponentAttribute() {
 
-    }
-
-    public ComponentAttribute(String environment, String name, String value) {
-        this.name = name;
+    public ComponentAttribute(ComponentAttributeKey componentAttributeKey, String environment, String value) {
+        super(componentAttributeKey);
         this.environment = environment;
         this.value = value;
     }
 
     //Getters and Setters
     public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+        return getMetadataKey().getComponentAttributeName();
     }
 
     public String getValue() {

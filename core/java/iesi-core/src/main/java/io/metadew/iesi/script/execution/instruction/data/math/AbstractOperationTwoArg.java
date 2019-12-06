@@ -6,7 +6,7 @@ import java.text.MessageFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public abstract class AbstractOperationTwoArg implements DataInstruction {
+public abstract class BinaryArithmeticOperation implements DataInstruction {
 
     private final String FIRSTOPERATOR = "FirstOperator";
     private final String SECONDOPERATOR = "SecondOperator";

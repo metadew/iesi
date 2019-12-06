@@ -19,6 +19,6 @@ public class Division extends AbstractOperationTwoArg {
 
     @Override
     public String getKeyword() {
-        return "math.division";
+        return "math.divide";
     }
 }

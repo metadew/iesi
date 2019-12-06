@@ -21,7 +21,7 @@ public class Script extends Metadata<ScriptKey> {
 
     public Script(String id, String type, String name, String description, ScriptVersion version,
                   List<ScriptParameter> parameters, List<Action> actions) {
-        super(new ScriptKey(id, version.getNumber()));
+        super(new ScriptKey(id));
         this.type = type;
         this.name = name;
         this.description = description;

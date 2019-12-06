@@ -42,7 +42,12 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
 
     @Override
     public Optional<Script> get(ScriptKey metadataKey) {
-        return get(metadataKey.getScriptId(), metadataKey.getScriptVersionNumber());
+        // had to change this to only get the script, because the script doesn't have version as id
+        // return get(metadataKey.getScriptId(), metadataKey.getScriptVersionNumber());
+
+        return get(metadataKey.getScriptId());
+
+
     }
 
     public boolean exists(String scriptName, long versionNumber) {
@@ -98,21 +103,22 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
     @Override
     public void delete(ScriptKey metadataKey) throws MetadataDoesNotExistException {
         LOGGER.trace(MessageFormat.format("Deleting script {0}-{1}.", metadataKey.toString()));
-        if (!exists(metadataKey.getScriptId(), metadataKey.getScriptVersionNumber())) {
+        if (!exists(metadataKey)) {
             throw new ScriptDoesNotExistException(
                     MessageFormat.format("Script {0}-{1} is not present in the repository so cannot be deleted",
                             metadataKey.toString()));
         }
-
-        try {
-            scriptVersionConfiguration.delete(metadataKey.getScriptId(), metadataKey.getScriptVersionNumber());
-        } catch (ScriptVersionDoesNotExistException e) {
-            LOGGER.warn(e.getMessage() + ". Skipping");
+        Optional<Long> versionOptional = getLatestVersionById(metadataKey.getScriptId());
+        if (versionOptional.isPresent()) {
+            try {
+                scriptVersionConfiguration.delete(metadataKey.getScriptId(), versionOptional.get());
+                actionConfiguration.deleteActionsFromScript(metadataKey.getScriptId(), versionOptional.get());
+                List<String> deleteQuery = getDeleteStatement(metadataKey.getScriptId(), versionOptional.get());
+                MetadataControl.getInstance().getDesignMetadataRepository().executeBatch(deleteQuery);
+            } catch (ScriptVersionDoesNotExistException e) {
+                LOGGER.warn(e.getMessage() + ". Skipping");
+            }
         }
-
-        actionConfiguration.deleteActionsFromScript(metadataKey.getScriptId(), metadataKey.getScriptVersionNumber());
-        List<String> deleteQuery = getDeleteStatement(metadataKey.getScriptId(), metadataKey.getScriptVersionNumber());
-        MetadataControl.getInstance().getDesignMetadataRepository().executeBatch(deleteQuery);
     }
 
     private List<Script> getByName(String scriptName) {
@@ -291,29 +297,54 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
         }
     }
 
-    public Optional<Script> get(String scriptName) {
-        Optional<Long> latestVersion = getLatestVersion(scriptName);
+    private Optional<Long> getLatestVersionById(String scriptId) {
+        LOGGER.trace(MessageFormat.format("Fetching latest version for script {0}.", scriptId));
+        String queryScriptVersion = "select max(SCRIPT_VRS_NB) as \"MAX_VRS_NB\" from "
+                + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("ScriptVersions") +
+                " where script_id = " + scriptId + ";";
+        CachedRowSet crsScriptVersion = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(queryScriptVersion, "reader");
+        try {
+            if (crsScriptVersion.size() == 0) {
+                crsScriptVersion.close();
+                return Optional.empty();
+            } else {
+                crsScriptVersion.next();
+                long latestScriptVersion = crsScriptVersion.getLong("MAX_VRS_NB");
+                crsScriptVersion.close();
+                return Optional.of(latestScriptVersion);
+            }
+        } catch (Exception e) {
+            StringWriter StackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(StackTrace));
+            LOGGER.info("exception=" + e);
+            LOGGER.info("exception.stacktrace=" + StackTrace);
+
+            return Optional.empty();
+        }
+    }
+
+    public Optional<Script> get(String scriptId) {
+        Optional<Long> latestVersion = getLatestVersionById(scriptId);
         if (latestVersion.isPresent()) {
-            return get(scriptName, latestVersion.get());
+            return get(scriptId, latestVersion.get());
         } else {
             return Optional.empty();
         }
     }
 
-    public Optional<Script> get(String scriptName, long versionNumber) {
-        LOGGER.trace(MessageFormat.format("Fetching script {0}-{1}.", scriptName, versionNumber));
+    public Optional<Script> get(String scriptId, long versionNumber) {
+        LOGGER.trace(MessageFormat.format("Fetching script {0}-{1}.", scriptId, versionNumber));
         String queryScript = "select SCRIPT_ID, SCRIPT_TYP_NM, SCRIPT_NM, SCRIPT_DSC from "
-                + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("Scripts") + " where SCRIPT_NM = '"
-                + scriptName + "'";
+                + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("Scripts") + " where SCRIPT_ID = '"
+                + scriptId + "'";
         CachedRowSet crsScript = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(queryScript, "reader");
         try {
             if (crsScript.size() == 0) {
                 return Optional.empty();
             } else if (crsScript.size() > 1) {
-                LOGGER.warn(MessageFormat.format("Found multiple implementations for script {0}-{1}. Returning first implementation", scriptName, versionNumber));
+                LOGGER.warn(MessageFormat.format("Found multiple implementations for script {0}-{1}. Returning first implementation", scriptId, versionNumber));
             }
             crsScript.next();
-            String scriptId = crsScript.getString("SCRIPT_ID");
 
             // Get the version
             Optional<ScriptVersion> scriptVersion = scriptVersionConfiguration.getScriptVersion(scriptId, versionNumber);
@@ -334,7 +365,7 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
                 if (action.isPresent()) {
                     actions.add(action.get());
                 } else {
-                    LOGGER.debug(MessageFormat.format("Cannot retrieve action {0} for script {1}-{2}.", crsActions.getString("ACTION_ID"), scriptName, versionNumber));
+                    LOGGER.debug(MessageFormat.format("Cannot retrieve action {0} for script {1}-{2}.", crsActions.getString("ACTION_ID"), scriptId, versionNumber));
                 }
             }
             crsActions.close();
@@ -353,7 +384,7 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
                         crsScriptParameters.getString("SCRIPT_PAR_VAL")));
             }
             crsScriptParameters.close();
-            Script script = new Script(scriptId, crsScript.getString("SCRIPT_TYP_NM"), scriptName, crsScript.getString("SCRIPT_DSC"),
+            Script script = new Script(scriptId, crsScript.getString("SCRIPT_TYP_NM"), crsScript.getString("SCRIPT_NM"), crsScript.getString("SCRIPT_DSC"),
                     scriptVersion.get(), scriptParameters, actions);
             crsScript.close();
             return Optional.of(script);

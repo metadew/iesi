@@ -108,7 +108,7 @@ public class FwkRoute {
             // Prepare script
             String scriptId = this.getScriptExecution().getScript().getId();
             Long versionNumber = this.getScriptExecution().getScript().getVersion().getNumber();
-            ScriptKey scriptKey = new ScriptKey(scriptId, versionNumber);
+            ScriptKey scriptKey = new ScriptKey(scriptId);
             String scriptType = this.getScriptExecution().getScript().getType();
             String scriptName = this.getScriptExecution().getScript().getName();
             String scriptDescription = this.getScriptExecution().getScript().getDescription();

@@ -27,19 +27,16 @@ public abstract class BinaryArithmeticOperation implements DataInstruction {
     }
 
     String handleOperationAsStrings(String operator1, String operator2){
-        boolean containsDouble = false;
-        if (operator1.contains(".") || operator2.contains(".")){
-            containsDouble = true;
-        }
         Double operator1Double = Double.valueOf(operator1);
         Double operator2Double = Double.valueOf(operator2);
         Double result = executeOperation(operator1Double, operator2Double);
 
-        if (!containsDouble){
+        if (!(operator1.contains(".") || operator2.contains("."))){
             return Integer.toString((int) executeOperation(operator1Double, operator2Double).doubleValue());
         }
         return result.toString();
     }
+
 
     abstract Double executeOperation(Double operator1, Double operator2);
 }

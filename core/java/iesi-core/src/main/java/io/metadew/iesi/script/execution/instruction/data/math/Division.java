@@ -1,6 +1,6 @@
 package io.metadew.iesi.script.execution.instruction.data.math;
 
-public class Division extends AbstractOperationTwoArg {
+public class Division extends BinaryArithmeticOperation {
 
     @Override
     Double executeOperation(Double operator1, Double operator2) {

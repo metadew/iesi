@@ -1,6 +1,6 @@
 package io.metadew.iesi.script.execution.instruction.data.math;
 
-public class Addition extends AbstractOperationTwoArg {
+public class Addition extends BinaryArithmeticOperation {
     @Override
     Double executeOperation(Double operator1, Double operator2) {
         return operator1+operator2;

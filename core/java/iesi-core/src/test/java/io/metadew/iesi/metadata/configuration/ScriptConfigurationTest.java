@@ -1,120 +1,73 @@
 package io.metadew.iesi.metadata.configuration;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.metadew.iesi.connection.database.Database;
-import io.metadew.iesi.connection.database.H2Database;
-import io.metadew.iesi.connection.database.connection.h2.H2MemoryDatabaseConnection;
-import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
-import io.metadew.iesi.framework.definition.FrameworkFolder;
 import io.metadew.iesi.metadata.configuration.script.ScriptConfiguration;
-import io.metadew.iesi.metadata.definition.DataObject;
-import io.metadew.iesi.metadata.definition.MetadataObject;
-import io.metadew.iesi.metadata.definition.MetadataTable;
+import io.metadew.iesi.metadata.configuration.script.exception.ScriptAlreadyExistsException;
+import io.metadew.iesi.metadata.definition.action.Action;
+import io.metadew.iesi.metadata.definition.action.key.ActionKey;
+import io.metadew.iesi.metadata.definition.script.Script;
+import io.metadew.iesi.metadata.definition.script.ScriptParameter;
+import io.metadew.iesi.metadata.definition.script.ScriptVersion;
+import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
+import io.metadew.iesi.metadata.definition.script.key.ScriptVersionKey;
 import io.metadew.iesi.metadata.execution.MetadataControl;
-import io.metadew.iesi.metadata.operation.DataObjectOperation;
 import io.metadew.iesi.metadata.repository.*;
-import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
+
+import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertFalse;
 
 
-
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.File;
 import java.sql.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ScriptConfigurationTest {
-    RepositoryCoordinator repositoryCoordinator;
-    private static final String DB_DRIVER = "org.h2.Driver";
-    private static final String DB_CONNECTION = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1";
-    private static final String DB_USER = "";
-    private static final String DB_PASSWORD = "";
-    H2MemoryDatabaseConnection memoryDatabaseConnection =
-            new H2MemoryDatabaseConnection("test", "", "");
-    H2Database database = new H2Database(memoryDatabaseConnection);
-    Map<String, Database> databases = new HashMap<>();
-    ScriptConfiguration scriptConfiguration;
-    List<MetadataObject> metadataObjects = new ArrayList<>();
-    List<MetadataTable> metadataTables = new ArrayList<>();
 
-    ConnectivityMetadataRepository connectivityMetadataRepository = new ConnectivityMetadataRepository(
-            "design",
-            "instanceName", repositoryCoordinator
-    );
-    ControlMetadataRepository controlMetadataRepository = new ControlMetadataRepository(
-            "design",
-            "instanceName", repositoryCoordinator
-    );
-    TraceMetadataRepository traceMetadataRepository = new TraceMetadataRepository(
-            "design",
-            "instanceName", repositoryCoordinator
-    );
-    ResultMetadataRepository resultMetadataRepository = new ResultMetadataRepository(
-            "design",
-            "instanceName", repositoryCoordinator
-    );
-    CatalogMetadataRepository catalogMetadataRepository = new CatalogMetadataRepository(
-            "design",
-            "instanceName", repositoryCoordinator
-    );
-
-    List<MetadataRepository> repositoriesList = Arrays.asList(connectivityMetadataRepository, controlMetadataRepository,
-            traceMetadataRepository, resultMetadataRepository,
-            catalogMetadataRepository);
-    List<MetadataRepository> repositories = new ArrayList<>(repositoriesList);
-
-
-
+    public static final int VERSION_NUMBER = 1;
+    private ScriptConfiguration scriptConfiguration = new ScriptConfiguration();
+    ConfigurationTestSetup configurationTestSetup = new ConfigurationTestSetup();
 
     @Before
     public void setup() throws SQLException {
 
-        databases.put("reader", database);
-        databases.put("owner", database);
-        databases.put("writer", database);
-        RepositoryCoordinator repositoryCoordinator = new RepositoryCoordinator(databases);
-        scriptConfiguration = new ScriptConfiguration();
+        configurationTestSetup.executeSetup("DesignObjects.json", "DesignTables.json");
 
+        configurationTestSetup.getDesignMetadataRepository().setMetadataObjects(
+                configurationTestSetup.getMetadataObjects()
+        );
+        configurationTestSetup.getDesignMetadataRepository().setMetadataTables(
+                configurationTestSetup.getMetadataTables()
+        );
+        configurationTestSetup.getDesignMetadataRepository().createAllTables();
 
-        DataObjectOperation dataObjectOperation = new DataObjectOperation(
-                "C:\\Users\\thomas.vandendijk\\Documents\\belfius\\iesi_code\\iesi\\core\\metadata\\def\\DesignObjects.json");
-        dataObjectOperation.parseFile();
-        ObjectMapper objectMapper = new ObjectMapper();
+        scriptConfiguration.setMetadataRepository(configurationTestSetup.getDesignMetadataRepository());
+    }
 
-        for (DataObject dataObject : dataObjectOperation.getDataObjects()) {
-            if (dataObject.getType().equalsIgnoreCase("metadataobject")) {
-                metadataObjects.add(objectMapper.convertValue(dataObject.getData(), MetadataObject.class));
-            }
-        }
-
-        dataObjectOperation = new DataObjectOperation("C:\\Users\\thomas.vandendijk\\Documents\\belfius\\iesi_code\\iesi\\core\\metadata\\def\\DesignTables.json");
-        dataObjectOperation.parseFile();
-        //
-        for (DataObject dataObject : dataObjectOperation.getDataObjects()) {
-            if (dataObject.getType().equalsIgnoreCase("metadatatable")) {
-                MetadataTable metadataTable = objectMapper.convertValue(dataObject.getData(), MetadataTable.class);
-                metadataTable.setName("" + metadataTable.getName());
-                metadataTables.add(metadataTable);
-            }
-        }
-
-        DesignMetadataRepository designMetadataRepository = new DesignMetadataRepository("design",
-                "test", repositoryCoordinator);
-        designMetadataRepository.setMetadataObjects(metadataObjects);
-        designMetadataRepository.setMetadataTables(metadataTables);
-        designMetadataRepository.createAllTables();
-
-        repositories.add(designMetadataRepository);
-
-        MetadataControl metadataControl = MetadataControl.getInstance();
-        metadataControl.init(repositories);
-
-        scriptConfiguration.setMetadataRepository(designMetadataRepository);
+    @After
+    public void clearDatabase(){
+        configurationTestSetup.getDesignMetadataRepository().dropAllTables();
     }
 
     @Test
-    public void scriptNotExists(){
-        assertFalse(scriptConfiguration.exists("testScript", 1));
+    public void scriptNotExistsTest() {
+        assertFalse(scriptConfiguration.exists("testScript", VERSION_NUMBER));
     }
-}
+
+    @Test
+    public void scriptExistsTest() throws ScriptAlreadyExistsException{
+        List<Action> actions = new ArrayList<>();
+        actions.add(new Action(new ActionKey("1", 1, "1"), 1, "fwk.dummy",
+                "dummy", "dummy", "", "", "", "", "",
+                "0", new ArrayList<>()));
+        ScriptVersion scriptVersion = new ScriptVersion(new ScriptVersionKey("1", 1),
+                "version of script");
+        Script script = new Script(new ScriptKey("1"), "script", "testScriptExist",
+                "script for testing", scriptVersion,
+                new ArrayList<ScriptParameter>(), actions);
+        scriptConfiguration.insert(script);
+        assertTrue(scriptConfiguration.exists("testScriptExist", 1));
+        }
+
+    }

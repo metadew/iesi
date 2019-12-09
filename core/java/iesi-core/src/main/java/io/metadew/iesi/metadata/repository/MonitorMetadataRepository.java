@@ -9,6 +9,10 @@ public class MonitorMetadataRepository extends MetadataRepository {
         super(name, scope, instanceName, repositoryCoordinator);
     }
 
+    public MonitorMetadataRepository(String name, String instanceName, RepositoryCoordinator repositoryCoordinator) {
+        super(name, instanceName, repositoryCoordinator);
+    }
+
     @Override
     public String getDefinitionFileName() {
         return null;

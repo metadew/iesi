@@ -68,6 +68,7 @@ public class MetadataControl {
     }
 
     private void setMetadataRepository(MetadataRepository metadataRepository) {
+        String category = metadataRepository.getCategory();
         if (metadataRepository.getCategory().equalsIgnoreCase("connectivity")) {
             this.connectivityMetadataRepository = (ConnectivityMetadataRepository) metadataRepository;
         } else if (metadataRepository.getCategory().equalsIgnoreCase("catalog")) {

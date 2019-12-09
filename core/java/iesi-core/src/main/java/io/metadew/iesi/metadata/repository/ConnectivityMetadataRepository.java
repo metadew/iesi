@@ -31,6 +31,13 @@ public class ConnectivityMetadataRepository extends MetadataRepository {
         impersonationConfiguration = new ImpersonationConfiguration();
     }
 
+    public ConnectivityMetadataRepository(String name, String instanceName, RepositoryCoordinator repositoryCoordinator) {
+        super(name, instanceName, repositoryCoordinator);
+        connectionConfiguration = new ConnectionConfiguration();
+        environmentConfiguration = new EnvironmentConfiguration();
+        impersonationConfiguration = new ImpersonationConfiguration();
+    }
+
     @Override
     public String getDefinitionFileName() {
         return "ConnectivityTables.json";

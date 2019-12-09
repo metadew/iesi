@@ -15,6 +15,10 @@ public class ExecutionServerMetadataRepository extends MetadataRepository {
         ScriptExecutionConfiguration.getInstance().init(this);
     }
 
+    public ExecutionServerMetadataRepository(String name, String instanceName, RepositoryCoordinator repositoryCoordinator) {
+        super(name, instanceName, repositoryCoordinator);
+    }
+
     @Override
     public String getDefinitionFileName() {
         return "ExecutionTables.json";

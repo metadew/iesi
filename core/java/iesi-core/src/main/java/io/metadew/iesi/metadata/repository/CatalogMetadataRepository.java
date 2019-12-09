@@ -19,6 +19,10 @@ public class CatalogMetadataRepository extends MetadataRepository {
         super(name, scope, instanceName, repositoryCoordinator);
     }
 
+    public CatalogMetadataRepository(String name, String instanceName, RepositoryCoordinator repositoryCoordinator) {
+        super(name, instanceName, repositoryCoordinator);
+    }
+
     @Override
     public String getDefinitionFileName() {
         return "CatalogTables.json";

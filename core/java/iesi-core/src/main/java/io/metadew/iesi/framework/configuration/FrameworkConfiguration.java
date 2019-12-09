@@ -10,7 +10,7 @@ import java.nio.file.Paths;
 
 public class FrameworkConfiguration {
 
-	private String frameworkCode;
+	private String frameworkCode="";
 	private String frameworkHome;
 
 	private FrameworkGenerationRuleTypeConfiguration generationRuleTypeConfiguration;

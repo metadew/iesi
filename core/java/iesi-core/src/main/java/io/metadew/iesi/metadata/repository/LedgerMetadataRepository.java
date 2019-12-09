@@ -17,6 +17,10 @@ public class LedgerMetadataRepository extends MetadataRepository {
         super(name, scope, instanceName, repositoryCoordinator);
     }
 
+    public LedgerMetadataRepository(String name, String instanceName, RepositoryCoordinator repositoryCoordinator) {
+        super(name, instanceName, repositoryCoordinator);
+    }
+
     @Override
     public String getDefinitionFileName() {
         return null;

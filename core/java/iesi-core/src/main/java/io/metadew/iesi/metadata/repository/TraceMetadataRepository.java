@@ -35,6 +35,12 @@ public class TraceMetadataRepository extends MetadataRepository {
         ActionParameterTraceConfiguration.getInstance().init(this);
     }
 
+    public TraceMetadataRepository(String name, String instanceName, RepositoryCoordinator repositoryCoordinator){
+        super(name, instanceName, repositoryCoordinator);
+    }
+
+
+
     @Override
     public String getDefinitionFileName() {
         return "TraceTables.json";

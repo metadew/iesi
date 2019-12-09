@@ -3,6 +3,7 @@ package io.metadew.iesi.metadata.repository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.framework.configuration.FrameworkConfiguration;
 import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
+import io.metadew.iesi.framework.definition.Framework;
 import io.metadew.iesi.metadata.definition.DataObject;
 import io.metadew.iesi.metadata.definition.MetadataObject;
 import io.metadew.iesi.metadata.definition.MetadataTable;
@@ -41,7 +42,8 @@ public abstract class MetadataRepository {
 		metadataTables = new ArrayList<>();
 
 		DataObjectOperation dataObjectOperation = new DataObjectOperation();
-		dataObjectOperation.setInputFile(FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.def") + File.separator + getObjectDefinitionFileName());
+		dataObjectOperation.setInputFile(FrameworkFolderConfiguration.getInstance().
+				getFolderAbsolutePath("metadata.def") + File.separator + getObjectDefinitionFileName());
 		dataObjectOperation.parseFile();
 		ObjectMapper objectMapper = new ObjectMapper();
 		//
@@ -62,7 +64,22 @@ public abstract class MetadataRepository {
 				metadataTables.add(metadataTable);
 			}
 		}
+	}
 
+	// Constructor for testing
+	public MetadataRepository(String name, String scope ,RepositoryCoordinator repositoryCoordinator){
+		this.name = name;
+		this.scope = scope;
+		this.repositoryCoordinator = repositoryCoordinator;
+		this.tablePrefix = "test";
+	}
+
+	public void setMetadataObjects(List<MetadataObject> metadataObjects) {
+		this.metadataObjects = metadataObjects;
+	}
+
+	public void setMetadataTables(List<MetadataTable> metadataTables) {
+		this.metadataTables = metadataTables;
 	}
 
 	public abstract String getDefinitionFileName();

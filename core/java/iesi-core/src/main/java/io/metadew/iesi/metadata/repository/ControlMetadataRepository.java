@@ -17,6 +17,10 @@ public class ControlMetadataRepository extends MetadataRepository {
         super(name, scope, instanceName, repositoryCoordinator);
     }
 
+    public ControlMetadataRepository(String name, String instanceName, RepositoryCoordinator repositoryCoordinator) {
+        super(name, instanceName, repositoryCoordinator);
+    }
+
     @Override
     public String getDefinitionFileName() {
         return "ControlTables.json";

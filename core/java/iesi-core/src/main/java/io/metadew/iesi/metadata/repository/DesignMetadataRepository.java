@@ -39,6 +39,13 @@ public class DesignMetadataRepository extends MetadataRepository {
         componentConfiguration = new ComponentConfiguration();
     }
 
+    public DesignMetadataRepository(String name, String scope, RepositoryCoordinator repositoryCoordinator) {
+        super(name, scope, repositoryCoordinator);
+        scriptConfiguration = new ScriptConfiguration();
+        componentConfiguration = new ComponentConfiguration();
+    }
+
+
     @Override
     public String getDefinitionFileName() {
         return "DesignTables.json";

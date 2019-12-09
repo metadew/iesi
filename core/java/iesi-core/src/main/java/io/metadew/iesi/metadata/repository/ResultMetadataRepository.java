@@ -27,6 +27,10 @@ public class ResultMetadataRepository extends MetadataRepository {
         RequestResultConfiguration.getInstance().init(this);
     }
 
+    public ResultMetadataRepository(String name, String instanceName, RepositoryCoordinator repositoryCoordinator) {
+        super(name, instanceName, repositoryCoordinator);
+    }
+
     @Override
     public String getDefinitionFileName() {
         return "ResultTables.json";

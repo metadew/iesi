@@ -21,17 +21,15 @@ import java.util.stream.Collectors;
 public class HttpRequestComponentService {
 
     private HttpRequestComponentParameterService httpRequestComponentParameterService;
-    private ComponentConfiguration componentConfiguration;
     private ExecutionControl executionControl;
 
     public HttpRequestComponentService(ExecutionControl executionControl) {
         this.executionControl = executionControl;
-        this.componentConfiguration = new ComponentConfiguration();
         this.httpRequestComponentParameterService = new HttpRequestComponentParameterService(executionControl);
     }
 
     public HttpRequestComponent getHttpRequestComponent(String requestComponentName, ActionExecution actionExecution) throws ComponentDoesNotExistException, SQLException {
-        Component request = componentConfiguration.get(requestComponentName)
+        Component request = ComponentConfiguration.getInstance().get(requestComponentName)
                 .orElseThrow(() -> new RuntimeException(MessageFormat.format("component.notfound=no component exists with name {0}.", requestComponentName)));
         return transform(request, actionExecution);
 
@@ -65,7 +63,7 @@ public class HttpRequestComponentService {
 
 
     public HttpRequestComponent getHttpRequestComponent(String requestComponentName, Long requestComponentVersion, ActionExecution actionExecution) {
-        Component request = componentConfiguration.get(requestComponentName, requestComponentVersion)
+        Component request = ComponentConfiguration.getInstance().get(requestComponentName, requestComponentVersion)
                 .orElseThrow(() -> new RuntimeException(MessageFormat.format("component.notfound=no component exists with name {0}.", requestComponentName)));
         return transform(request, actionExecution);
     }

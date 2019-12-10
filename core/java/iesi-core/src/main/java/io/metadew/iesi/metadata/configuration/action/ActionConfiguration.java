@@ -28,23 +28,22 @@ import java.util.Optional;
 
 public class ActionConfiguration extends Configuration<Action, ActionKey> {
 
-    private final ActionParameterConfiguration actionParameterConfiguration;
     private final static Logger LOGGER = LogManager.getLogger();
     private static ActionConfiguration INSTANCE;
 
     public synchronized static ActionConfiguration getInstance(){
-        if(INSTANCE == null){
+        if (INSTANCE == null){
             INSTANCE = new ActionConfiguration();
         }
         return INSTANCE;
     }
 
-    public ActionConfiguration() {
-        this.actionParameterConfiguration = new ActionParameterConfiguration();
+    private ActionConfiguration() {
     }
 
     public void init(MetadataRepository metadataRepository){
         setMetadataRepository(metadataRepository);
+        ActionParameterConfiguration.getInstance().init(metadataRepository);
     }
 
     @Override
@@ -130,10 +129,10 @@ public class ActionConfiguration extends Configuration<Action, ActionKey> {
     public Optional<Action> get(String scriptId, long scriptVersionNumber, String actionId) {
     	LOGGER.trace(MessageFormat.format("Fetching action {0}.", actionId));
         String queryAction = "select SCRIPT_ID, SCRIPT_VRS_NB, ACTION_ID, ACTION_NB, ACTION_TYP_NM, ACTION_NM, ACTION_DSC, COMP_NM, ITERATION_VAL, CONDITION_VAL, EXP_ERR_FL, STOP_ERR_FL, RETRIES_VAL from "
-                + MetadataControl.getInstance().getDesignMetadataRepository()
+                + getMetadataRepository()
                 .getTableNameByLabel("Actions")
                 + " where ACTION_ID = " + SQLTools.GetStringForSQL(actionId) + " AND SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptId) + " AND SCRIPT_VRS_NB = '" + scriptVersionNumber + "'";
-        CachedRowSet crsAction = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(queryAction, "reader");
+        CachedRowSet crsAction = getMetadataRepository().executeQuery(queryAction, "reader");
         try {
             if (crsAction.size() == 0) {
                 return Optional.empty();
@@ -143,9 +142,9 @@ public class ActionConfiguration extends Configuration<Action, ActionKey> {
             crsAction.next();
             // Get parameters
             String queryActionParameters = "select ACTION_ID, ACTION_PAR_NM, ACTION_PAR_VAL from "
-                    + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("ActionParameters")
+                    + getMetadataRepository().getTableNameByLabel("ActionParameters")
                     + " where ACTION_ID = " + SQLTools.GetStringForSQL(actionId) + " AND SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptId) + " AND SCRIPT_VRS_NB = '" + scriptVersionNumber + "'";
-            CachedRowSet crsActionParameters = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(queryActionParameters, "reader");
+            CachedRowSet crsActionParameters = getMetadataRepository().executeQuery(queryActionParameters, "reader");
             List<ActionParameter> actionParameters = new ArrayList<>();
             while (crsActionParameters.next()) {
                 ActionParameterKey actionParameterKey = new ActionParameterKey(scriptId, scriptVersionNumber, actionId, crsActionParameters.getString("ACTION_PAR_NM"));
@@ -181,7 +180,7 @@ public class ActionConfiguration extends Configuration<Action, ActionKey> {
 
     public List<String> getInsertStatement(String scriptId, long scriptVersionNumber, Action action) {
         List<String> queries = new ArrayList<>();
-        queries.add("INSERT INTO " + MetadataControl.getInstance().getDesignMetadataRepository()
+        queries.add("INSERT INTO " + getMetadataRepository()
                 .getTableNameByLabel("Actions") +
                 " (SCRIPT_ID, SCRIPT_VRS_NB, ACTION_ID, ACTION_NB, ACTION_TYP_NM, ACTION_NM, ACTION_DSC, COMP_NM, ITERATION_VAL, CONDITION_VAL, RETRIES_VAL, EXP_ERR_FL, STOP_ERR_FL) VALUES (" +
                 SQLTools.GetStringForSQL(scriptId) + "," +
@@ -198,7 +197,7 @@ public class ActionConfiguration extends Configuration<Action, ActionKey> {
                 SQLTools.GetStringForSQL(action.getErrorExpected()) + "," +
                 SQLTools.GetStringForSQL(action.getErrorStop()) + ");");
         for (ActionParameter actionParameter : action.getParameters()) {
-            queries.add(actionParameterConfiguration.getInsertStatement(scriptId, scriptVersionNumber, action.getId(), actionParameter));
+            queries.add(ActionParameterConfiguration.getInstance().getInsertStatement(scriptId, scriptVersionNumber, action.getId(), actionParameter));
         }
         return queries;
     }
@@ -211,12 +210,12 @@ public class ActionConfiguration extends Configuration<Action, ActionKey> {
         }
         for (ActionParameter actionParameter : action.getParameters()) {
             try {
-                actionParameterConfiguration.insert(scriptId, scriptVersionNumber, action.getId(), actionParameter);
+                ActionParameterConfiguration.getInstance().insert(scriptId, scriptVersionNumber, action.getId(), actionParameter);
             } catch (ActionParameterAlreadyExistsException e) {
                 LOGGER.warn(e.getMessage() + ". Skipping");
             }
         }
-        String query = "INSERT INTO " + MetadataControl.getInstance().getDesignMetadataRepository()
+        String query = "INSERT INTO " + getMetadataRepository()
                 .getTableNameByLabel("Actions") +
                 " (SCRIPT_ID, SCRIPT_VRS_NB, ACTION_ID, ACTION_NB, ACTION_TYP_NM, ACTION_NM, ACTION_DSC, COMP_NM, ITERATION_VAL, CONDITION_VAL, RETRIES_VAL, EXP_ERR_FL, STOP_ERR_FL) VALUES (" +
                 SQLTools.GetStringForSQL(scriptId) + "," +
@@ -232,24 +231,24 @@ public class ActionConfiguration extends Configuration<Action, ActionKey> {
                 SQLTools.GetStringForSQL(action.getRetries()) + "," +
                 SQLTools.GetStringForSQL(action.getErrorExpected()) + "," +
                 SQLTools.GetStringForSQL(action.getErrorStop()) + ");";
-        MetadataControl.getInstance().getDesignMetadataRepository().executeUpdate(query);
+        getMetadataRepository().executeUpdate(query);
     }
 
     public boolean exists(String scriptId, long scriptVersionNumber, Action action) {
         String query = "select SCRIPT_ID, SCRIPT_VRS_NB, ACTION_ID from "
-                + MetadataControl.getInstance().getDesignMetadataRepository()
+                + getMetadataRepository()
                 .getTableNameByLabel("Actions")
                 + " where ACTION_ID = " + SQLTools.GetStringForSQL(action.getId()) + " AND SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptId) + " AND SCRIPT_VRS_NB = '" + scriptVersionNumber + "'";
-        CachedRowSet cachedRowSet = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(query, "reader");
+        CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
         return cachedRowSet.size() >= 1;
     }
 
     public boolean exists(String scriptId, long scriptVersionNumber, String actionId) {
         String query = "select SCRIPT_ID, SCRIPT_VRS_NB, ACTION_ID from "
-                + MetadataControl.getInstance().getDesignMetadataRepository()
+                + getMetadataRepository()
                 .getTableNameByLabel("Actions")
                 + " where ACTION_ID = " + SQLTools.GetStringForSQL(actionId) + " AND SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptId) + " AND SCRIPT_VRS_NB = '" + scriptVersionNumber + "'";
-        CachedRowSet cachedRowSet = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(query, "reader");
+        CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
         return cachedRowSet.size() >= 1;
     }
 
@@ -264,11 +263,11 @@ public class ActionConfiguration extends Configuration<Action, ActionKey> {
 
     private List<String> deleteStatement(String scriptId, long scriptVersionNumber, String actionId) {
         List<String> queries = new ArrayList<>();
-        queries.add("DELETE FROM " + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("Actions") +
+        queries.add("DELETE FROM " + getMetadataRepository().getTableNameByLabel("Actions") +
                 " WHERE SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptId) +
                 " AND SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(scriptVersionNumber) +
                 " AND ACTION_ID = " + SQLTools.GetStringForSQL(actionId) + ";");
-        queries.add("DELETE FROM " + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("ActionParameters") +
+        queries.add("DELETE FROM " + getMetadataRepository().getTableNameByLabel("ActionParameters") +
                 " WHERE SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptId) +
                 " AND SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(scriptVersionNumber) +
                 " AND ACTION_ID = " + SQLTools.GetStringForSQL(actionId) + ";");
@@ -277,10 +276,10 @@ public class ActionConfiguration extends Configuration<Action, ActionKey> {
 
     public void deleteActionsFromScript(String scriptId, long scriptVersionNumber) {
         List<String> queries = new ArrayList<>();
-        queries.add("DELETE FROM " + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("Actions") +
+        queries.add("DELETE FROM " + getMetadataRepository().getTableNameByLabel("Actions") +
                 " WHERE SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptId) +
                 " AND SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(scriptVersionNumber) + ";");
-        queries.add("DELETE FROM " + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("ActionParameters") +
+        queries.add("DELETE FROM " + getMetadataRepository().getTableNameByLabel("ActionParameters") +
                 " WHERE SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptId) +
                 " AND SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(scriptVersionNumber) + ";");
         MetadataControl.getInstance().getTraceMetadataRepository().executeBatch(queries);

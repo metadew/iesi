@@ -1,0 +1,155 @@
+[ {
+  "data" : {
+    "name" : "Accessrole",
+    "label" : "Accessroles",
+    "description" : "Design metadata for accessroles",
+    "type" : "design",
+    "category" : "access",
+    "migrate" : "Y",
+    "migrationKey" : "NA"
+  },
+  "type" : "MetadataObject"
+}, {
+  "data" : {
+    "name" : "Accessview",
+    "label" : "Accessviews",
+    "description" : "Design metadata for accessviews",
+    "type" : "design",
+    "category" : "access",
+    "migrate" : "Y",
+    "migrationKey" : "NA"
+  },
+  "type" : "MetadataObject"
+}, {
+  "data" : {
+    "name" : "Artefact",
+    "label" : "Artefacts",
+    "description" : "Design metadata for artefacts",
+    "type" : "design",
+    "category" : "artefact",
+    "migrate" : "Y",
+    "migrationKey" : "NA"
+  },
+  "type" : "MetadataObject"
+}, {
+  "data" : {
+    "name" : "Classification",
+    "label" : "Classifications",
+    "description" : "Design metadata for classifications",
+    "type" : "design",
+    "category" : "artefact",
+    "migrate" : "Y",
+    "migrationKey" : "NA"
+  },
+  "type" : "MetadataObject"
+}, {
+  "data" : {
+    "name" : "ClassificationList",
+    "label" : "ClassificationLists",
+    "description" : "Design metadata for classification lists",
+    "type" : "design",
+    "category" : "artefact",
+    "migrate" : "Y",
+    "migrationKey" : "NA"
+  },
+  "type" : "MetadataObject"
+}, {
+  "data" : {
+    "name" : "ClassificationListItem",
+    "label" : "ClassificationListItems",
+    "description" : "Design metadata for classification list items",
+    "type" : "design",
+    "category" : "artefact",
+    "migrate" : "Y",
+    "migrationKey" : "NA"
+  },
+  "type" : "MetadataObject"
+}, {
+  "data" : {
+    "name" : "Dataview",
+    "label" : "Dataviews",
+    "description" : "Design metadata for dataviews",
+    "type" : "design",
+    "category" : "access",
+    "migrate" : "Y",
+    "migrationKey" : "NA"
+  },
+  "type" : "MetadataObject"
+}, {
+  "data" : {
+    "name" : "Feature",
+    "label" : "Features",
+    "description" : "Design metadata for features",
+    "type" : "design",
+    "category" : "feature",
+    "migrate" : "Y",
+    "migrationKey" : "NA"
+  },
+  "type" : "MetadataObject"
+}, {
+  "data" : {
+    "name" : "FeatureParameter",
+    "label" : "FeatureParameters",
+    "description" : "Design metadata for feature parameters",
+    "type" : "design",
+    "category" : "feature",
+    "migrate" : "Y",
+    "migrationKey" : "NA"
+  },
+  "type" : "MetadataObject"
+}, {
+  "data" : {
+    "name" : "FeatureVersion",
+    "label" : "FeatureVersions",
+    "description" : "Design metadata for feature versions",
+    "type" : "design",
+    "category" : "feature",
+    "migrate" : "Y",
+    "migrationKey" : "NA"
+  },
+  "type" : "MetadataObject"
+}, {
+  "data" : {
+    "name" : "Scenario",
+    "label" : "Scenarios",
+    "description" : "Design metadata for scenarios",
+    "type" : "design",
+    "category" : "feature",
+    "migrate" : "Y",
+    "migrationKey" : "NA"
+  },
+  "type" : "MetadataObject"
+}, {
+  "data" : {
+    "name" : "ScenarioParameter",
+    "label" : "ScenarioParameters",
+    "description" : "Design metadata for scenario parameters",
+    "type" : "design",
+    "category" : "feature",
+    "migrate" : "Y",
+    "migrationKey" : "NA"
+  },
+  "type" : "MetadataObject"
+}, {
+  "data" : {
+    "name" : "ScriptExecution",
+    "label" : "ScriptExecutions",
+    "description" : "Catalog metadata for script executions",
+    "type" : "Cataog",
+    "category" : "script",
+    "migrate" : "Y",
+    "migrationKey" : "NA"
+  },
+  "type" : "MetadataObject"
+}, {
+  "data" : {
+    "name" : "Space",
+    "label" : "Spaces",
+    "description" : "Design metadata for spaces",
+    "type" : "catalog",
+    "category" : "space",
+    "migrate" : "Y",
+    "migrationKey" : "NA"
+  },
+  "type" : "MetadataObject"
+} ]

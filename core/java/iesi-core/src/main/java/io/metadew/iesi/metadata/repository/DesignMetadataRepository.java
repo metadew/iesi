@@ -10,6 +10,8 @@ import io.metadew.iesi.metadata.configuration.script.ScriptConfiguration;
 import io.metadew.iesi.metadata.configuration.script.exception.ScriptAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.script.exception.ScriptDoesNotExistException;
 import io.metadew.iesi.metadata.definition.DataObject;
+import io.metadew.iesi.metadata.definition.MetadataObject;
+import io.metadew.iesi.metadata.definition.MetadataTable;
 import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.component.Component;
 import io.metadew.iesi.metadata.definition.generation.Generation;
@@ -30,21 +32,25 @@ import java.util.stream.Collectors;
 
 public class DesignMetadataRepository extends MetadataRepository {
     private static final Logger LOGGER = LogManager.getLogger();
-    private final ScriptConfiguration scriptConfiguration;
-    private final ComponentConfiguration componentConfiguration;
 
     public DesignMetadataRepository(String name, String scope, String instanceName, RepositoryCoordinator repositoryCoordinator) {
         super(name, scope, instanceName, repositoryCoordinator);
-        scriptConfiguration = new ScriptConfiguration();
-        componentConfiguration = new ComponentConfiguration();
+        ScriptConfiguration.getInstance().init(this);
+        ComponentConfiguration.getInstance().init(this);
     }
 
     public DesignMetadataRepository(String name, String scope, RepositoryCoordinator repositoryCoordinator) {
         super(name, scope, repositoryCoordinator);
-        scriptConfiguration = new ScriptConfiguration();
-        componentConfiguration = new ComponentConfiguration();
+        ScriptConfiguration.getInstance().init(this);
+        ComponentConfiguration.getInstance().init(this);
     }
 
+    public DesignMetadataRepository(String tablePrefix, RepositoryCoordinator repositoryCoordinator, String name, String scope,
+                                    List<MetadataObject> metadataObjects, List<MetadataTable> metadataTables) {
+        super(tablePrefix, repositoryCoordinator, name, scope, metadataObjects, metadataTables);
+        ScriptConfiguration.getInstance().init(this);
+        ComponentConfiguration.getInstance().init(this);
+    }
 
     @Override
     public String getDefinitionFileName() {
@@ -95,11 +101,11 @@ public class DesignMetadataRepository extends MetadataRepository {
             return;
         }
         try {
-            scriptConfiguration.insert(script);
+            ScriptConfiguration.getInstance().insert(script);
         } catch (ScriptAlreadyExistsException e) {
             LOGGER.info(MessageFormat.format("Script {0}-{1} already exists in design repository. Updating to new definition", script.getName(), script.getVersion().getNumber()));
             try {
-                scriptConfiguration.update(script);
+                ScriptConfiguration.getInstance().update(script);
             } catch (ScriptDoesNotExistException ex) {
                 throw new MetadataRepositorySaveException(ex);
 
@@ -110,11 +116,11 @@ public class DesignMetadataRepository extends MetadataRepository {
     public void save(Component component) throws MetadataRepositorySaveException {
         LOGGER.info(MessageFormat.format("Saving component {0} into design repository", component.getName()));
         try {
-            componentConfiguration.insert(component);
+            ComponentConfiguration.getInstance().insert(component);
         } catch (ComponentAlreadyExistsException e) {
             LOGGER.warn(MessageFormat.format("Component {0} already exists in design repository. Updating to new definition", component.getName()), Level.INFO);
             try {
-                componentConfiguration.update(component);
+                ComponentConfiguration.getInstance().update(component);
             } catch (MetadataDoesNotExistException ex) {
                 throw new MetadataRepositorySaveException(ex);
             }

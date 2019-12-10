@@ -125,12 +125,11 @@ public class FwkExecuteScript {
             throw new RuntimeException(MessageFormat.format("Not allowed to run the script recursively. Attempting to run {0} in {1}", scriptName, scriptExecution.getScript().getName()));
         }
 
-        ScriptConfiguration scriptConfiguration = new ScriptConfiguration();
-        // Script script = scriptConfiguration.get(this.getScriptName().getValue());
+        // Script script = ScriptConfiguration.getInstance().get(this.getScriptName().getValue());
         Script script = scriptVersion
-                .map(version -> scriptConfiguration.get(scriptName, version)
+                .map(version -> ScriptConfiguration.getInstance().get(scriptName, version)
                         .orElseThrow(() -> new RuntimeException(MessageFormat.format("No implementation for script {0}-{1} found", scriptName, version))))
-                .orElse(scriptConfiguration.get(scriptName)
+                .orElse(ScriptConfiguration.getInstance().get(scriptName)
                         .orElseThrow(() -> new RuntimeException(MessageFormat.format("No implementation for script {0} found", scriptName))));
 
         Map<String, String> parameters = new HashMap<>();

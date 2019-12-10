@@ -12,11 +12,14 @@ import io.metadew.iesi.metadata.configuration.script.trace.ScriptParameterTraceC
 import io.metadew.iesi.metadata.configuration.script.trace.ScriptTraceConfiguration;
 import io.metadew.iesi.metadata.configuration.script.trace.ScriptVersionTraceConfiguration;
 import io.metadew.iesi.metadata.definition.DataObject;
+import io.metadew.iesi.metadata.definition.MetadataObject;
+import io.metadew.iesi.metadata.definition.MetadataTable;
 import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
+import java.util.List;
 
 public class TraceMetadataRepository extends MetadataRepository {
 
@@ -39,7 +42,20 @@ public class TraceMetadataRepository extends MetadataRepository {
         super(name, instanceName, repositoryCoordinator);
     }
 
-
+    public TraceMetadataRepository(String tablePrefix, RepositoryCoordinator repositoryCoordinator, String name, String scope,
+                                   List<MetadataObject> metadataObjects, List<MetadataTable> metadataTables) {
+        super(tablePrefix, repositoryCoordinator, name, scope, metadataObjects, metadataTables);
+        ScriptDesignTraceConfiguration.getInstance().init(this);
+        ScriptVersionDesignTraceConfiguration.getInstance().init(this);
+        ScriptParameterDesignTraceConfiguration.getInstance().init(this);
+        ActionTraceConfiguration.getInstance().init(this);
+        ScriptTraceConfiguration.getInstance().init(this);
+        ScriptVersionTraceConfiguration.getInstance().init(this);
+        ScriptParameterTraceConfiguration.getInstance().init(this);
+        ActionDesignTraceConfiguration.getInstance().init(this);
+        ActionParameterDesignTraceConfiguration.getInstance().init(this);
+        ActionParameterTraceConfiguration.getInstance().init(this);
+    }
 
     @Override
     public String getDefinitionFileName() {

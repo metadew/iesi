@@ -1,0 +1,509 @@
+[ {
+  "data" : {
+    "name" : "CXN_CONN",
+    "label" : "Connections",
+    "description" : "Design metadata for connections",
+    "type" : "design",
+    "category" : "connectivity",
+    "migrate" : "Y",
+    "migrationKey" : "NA",
+    "fields" : [ {
+      "name" : "CONN_NM",
+      "description" : "Unique short name for the connection",
+      "order" : "1",
+      "type" : "string",
+      "length" : "100",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "CONN_TYP_NM",
+      "description" : "Keyword for the connection type",
+      "order" : "2",
+      "type" : "string",
+      "length" : "100",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "CONN_DSC",
+      "description" : "Description for the connection",
+      "order" : "3",
+      "type" : "string",
+      "length" : "2000",
+      "nullable" : "Y",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "LOAD_TMS",
+      "description" : "Load timestamp indicating when the record was inserted in the table",
+      "order" : "4",
+      "type" : "timestamp",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : "Y"
+    } ]
+  },
+  "type" : "MetadataTable"
+}, {
+  "data" : {
+    "name" : "CXN_CONN_IMP",
+    "label" : "Impersonations",
+    "description" : "Design metadata for connection impersonations",
+    "type" : "design",
+    "category" : "connectivity",
+    "migrate" : "Y",
+    "migrationKey" : "NA",
+    "fields" : [ {
+      "name" : "IMP_NM",
+      "description" : "Unique short name for the impersonation",
+      "order" : "1",
+      "type" : "string",
+      "length" : "100",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "IMP_DSC",
+      "description" : "Description for the impersonation",
+      "order" : "2",
+      "type" : "string",
+      "length" : "2000",
+      "nullable" : "Y",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "LOAD_TMS",
+      "description" : "Load timestamp indicating when the record was inserted in the table",
+      "order" : "3",
+      "type" : "timestamp",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : "Y"
+    } ]
+  },
+  "type" : "MetadataTable"
+}, {
+  "data" : {
+    "name" : "CXN_CONN_IMP_PAR",
+    "label" : "ImpersonationParameters",
+    "description" : "Design metadata for connection impersonation parameters",
+    "type" : "design",
+    "category" : "connectivity",
+    "migrate" : "Y",
+    "migrationKey" : "NA",
+    "fields" : [ {
+      "name" : "IMP_NM",
+      "description" : "Unique short name for the impersonation",
+      "order" : "1",
+      "type" : "string",
+      "length" : "100",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "CONN_NM",
+      "description" : "Unique short name for the connection",
+      "order" : "2",
+      "type" : "string",
+      "length" : "100",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "CONN_IMP_NM",
+      "description" : "Unique short name for the connection that is impersonated",
+      "order" : "3",
+      "type" : "string",
+      "length" : "100",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "CONN_IMP_DSC",
+      "description" : "Description for the connection impersonation",
+      "order" : "4",
+      "type" : "string",
+      "length" : "2000",
+      "nullable" : "Y",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "LOAD_TMS",
+      "description" : "Load timestamp indicating when the record was inserted in the table",
+      "order" : "5",
+      "type" : "timestamp",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : "Y"
+    } ]
+  },
+  "type" : "MetadataTable"
+}, {
+  "data" : {
+    "name" : "CXN_CONN_PAR",
+    "label" : "ConnectionParameters",
+    "description" : "Design metadata for connection parameters",
+    "type" : "design",
+    "category" : "connectivity",
+    "migrate" : "Y",
+    "migrationKey" : "NA",
+    "fields" : [ {
+      "name" : "CONN_NM",
+      "description" : "Unique short name for the connection",
+      "order" : "1",
+      "type" : "string",
+      "length" : "100",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "ENV_NM",
+      "description" : "Short name for the envioronment",
+      "order" : "2",
+      "type" : "string",
+      "length" : "100",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "CONN_PAR_NM",
+      "description" : "Name of the connection parameter",
+      "order" : "3",
+      "type" : "string",
+      "length" : "100",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "CONN_PAR_VAL",
+      "description" : "String type parameter value",
+      "order" : "4",
+      "type" : "string",
+      "length" : "2000",
+      "nullable" : "Y",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "LOAD_TMS",
+      "description" : "Load timestamp indicating when the record was inserted in the table",
+      "order" : "5",
+      "type" : "timestamp",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : "Y"
+    } ]
+  },
+  "type" : "MetadataTable"
+}, {
+  "data" : {
+    "name" : "CXN_ENV",
+    "label" : "Environments",
+    "description" : "Design metadata for environments",
+    "type" : "design",
+    "category" : "connectivity",
+    "migrate" : "Y",
+    "migrationKey" : "NA",
+    "fields" : [ {
+      "name" : "ENV_NM",
+      "description" : "Unique short name for the envioronment",
+      "order" : "1",
+      "type" : "string",
+      "length" : "100",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "ENV_DSC",
+      "description" : "Environment description",
+      "order" : "2",
+      "type" : "string",
+      "length" : "2000",
+      "nullable" : "Y",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "LOAD_TMS",
+      "description" : "Load timestamp indicating when the record was inserted in the table",
+      "order" : "3",
+      "type" : "timestamp",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : "Y"
+    } ]
+  },
+  "type" : "MetadataTable"
+}, {
+  "data" : {
+    "name" : "CXN_ENV_PAR",
+    "label" : "EnvironmentParameters",
+    "description" : "Design metadata for environment parameters",
+    "type" : "design",
+    "category" : "connectivity",
+    "migrate" : "Y",
+    "migrationKey" : "NA",
+    "fields" : [ {
+      "name" : "ENV_NM",
+      "description" : "Unique short name for the envioronment",
+      "order" : "1",
+      "type" : "string",
+      "length" : "100",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "ENV_PAR_NM",
+      "description" : "Name of the environment parameter",
+      "order" : "2",
+      "type" : "string",
+      "length" : "100",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "ENV_PAR_VAL",
+      "description" : "Environment parameter value",
+      "order" : "3",
+      "type" : "string",
+      "length" : "2000",
+      "nullable" : "Y",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "LOAD_TMS",
+      "description" : "Load timestamp indicating when the record was inserted in the table",
+      "order" : "5",
+      "type" : "timestamp",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : "Y"
+    } ]
+  },
+  "type" : "MetadataTable"
+}, {
+  "data" : {
+    "name" : "CXN_REPO",
+    "label" : "Repositories",
+    "description" : "Design metadata for repositories",
+    "type" : "design",
+    "category" : "connectivity",
+    "migrate" : "Y",
+    "migrationKey" : "NA",
+    "fields" : [ {
+      "name" : "REPO_ID",
+      "description" : "Unique identifier for the repository",
+      "order" : "1",
+      "type" : "number",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "REPO_NM",
+      "description" : "Unique short name for the repository",
+      "order" : "2",
+      "type" : "string",
+      "length" : "100",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "REPO_TYP_NM",
+      "description" : "Keyword for the repository type",
+      "order" : "3",
+      "type" : "string",
+      "length" : "100",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "REPO_DSC",
+      "description" : "Description for the repository",
+      "order" : "4",
+      "type" : "string",
+      "length" : "2000",
+      "nullable" : "Y",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "LOAD_TMS",
+      "description" : "Load timestamp indicating when the record was inserted in the table",
+      "order" : "5",
+      "type" : "timestamp",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : "Y"
+    } ]
+  },
+  "type" : "MetadataTable"
+}, {
+  "data" : {
+    "name" : "CXN_REPO_INST",
+    "label" : "RepositoryInstances",
+    "description" : "Design metadata for repository instances",
+    "type" : "design",
+    "category" : "connectivity",
+    "migrate" : "Y",
+    "migrationKey" : "NA",
+    "fields" : [ {
+      "name" : "REPO_ID",
+      "description" : "Unique identifier for the repository",
+      "order" : "1",
+      "type" : "number",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "REPO_INST_ID",
+      "description" : "Unique identifier for the instance",
+      "order" : "2",
+      "type" : "number",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "REPO_INST_NM",
+      "description" : "Unique short name for the repository instance",
+      "order" : "3",
+      "type" : "string",
+      "length" : "100",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "REPO_INST_DSC",
+      "description" : "Description for the repository instance",
+      "order" : "4",
+      "type" : "string",
+      "length" : "2000",
+      "nullable" : "Y",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "LOAD_TMS",
+      "description" : "Load timestamp indicating when the record was inserted in the table",
+      "order" : "5",
+      "type" : "timestamp",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : "Y"
+    } ]
+  },
+  "type" : "MetadataTable"
+}, {
+  "data" : {
+    "name" : "CXN_REPO_INST_LBL",
+    "label" : "RepositoryInstanceLabels",
+    "description" : "Design metadata for repository instance labels",
+    "type" : "design",
+    "category" : "connectivity",
+    "migrate" : "Y",
+    "migrationKey" : "NA",
+    "fields" : [ {
+      "name" : "REPO_ID",
+      "description" : "Unique identifier for the repository",
+      "order" : "1",
+      "type" : "number",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "REPO_INST_ID",
+      "description" : "Unique identifier for the instance",
+      "order" : "2",
+      "type" : "number",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "REPO_INST_LBL_VAL",
+      "description" : "Value of the label",
+      "order" : "3",
+      "type" : "string",
+      "length" : "2000",
+      "nullable" : "Y",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "LOAD_TMS",
+      "description" : "Load timestamp indicating when the record was inserted in the table",
+      "order" : "4",
+      "type" : "timestamp",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : "Y"
+    } ]
+  },
+  "type" : "MetadataTable"
+}, {
+  "data" : {
+    "name" : "CXN_REPO_INST_PAR",
+    "label" : "RepositoryInstanceParameters",
+    "description" : "Design metadata for repository instance parameters",
+    "type" : "design",
+    "category" : "connectivity",
+    "migrate" : "Y",
+    "migrationKey" : "NA",
+    "fields" : [ {
+      "name" : "REPO_ID",
+      "description" : "Unique identifier for the repository",
+      "order" : "1",
+      "type" : "number",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "REPO_INST_ID",
+      "description" : "Unique identifier for the instance",
+      "order" : "2",
+      "type" : "number",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "REPO_INST_PAR_NM",
+      "description" : "Name of the parameter",
+      "order" : "2",
+      "type" : "string",
+      "length" : "100",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "REPO_INST_PAR_VAL",
+      "description" : "Value of the parameter",
+      "order" : "3",
+      "type" : "string",
+      "length" : "2000",
+      "nullable" : "Y",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "LOAD_TMS",
+      "description" : "Load timestamp indicating when the record was inserted in the table",
+      "order" : "4",
+      "type" : "timestamp",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : "Y"
+    } ]
+  },
+  "type" : "MetadataTable"
+}, {
+  "data" : {
+    "name" : "CXN_REPO_PAR",
+    "label" : "RepositoryParameters",
+    "description" : "Design metadata for repository paramters",
+    "type" : "design",
+    "category" : "connectivity",
+    "migrate" : "Y",
+    "migrationKey" : "NA",
+    "fields" : [ {
+      "name" : "REPO_ID",
+      "description" : "Unique identifier for the repository",
+      "order" : "1",
+      "type" : "number",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "REPO_PAR_NM",
+      "description" : "Name of the parameter",
+      "order" : "2",
+      "type" : "string",
+      "length" : "100",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "REPO_PAR_VAL",
+      "description" : "Value of the parameter",
+      "order" : "3",
+      "type" : "string",
+      "length" : "2000",
+      "nullable" : "Y",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "LOAD_TMS",
+      "description" : "Load timestamp indicating when the record was inserted in the table",
+      "order" : "4",
+      "type" : "timestamp",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : "Y"
+    } ]
+  },
+  "type" : "MetadataTable"
+} ]

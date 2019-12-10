@@ -1,0 +1,12 @@
+[ {
+  "data" : {
+    "name" : "Trace",
+    "label" : "Traces",
+    "description" : "Trace metadata for scripts",
+    "type" : "trace",
+    "category" : "execution",
+    "migrate" : "Y",
+    "migrationKey" : "B001"
+  },
+  "type" : "MetadataObject"
+} ]

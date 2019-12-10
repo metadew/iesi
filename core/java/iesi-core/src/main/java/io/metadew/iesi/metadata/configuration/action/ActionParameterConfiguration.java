@@ -9,6 +9,7 @@ import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.action.key.ActionKey;
 import io.metadew.iesi.metadata.definition.action.key.ActionParameterKey;
 import io.metadew.iesi.metadata.execution.MetadataControl;
+import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -27,14 +28,16 @@ public class ActionParameterConfiguration extends Configuration<ActionParameter,
     private static ActionParameterConfiguration INSTANCE;
 
     public synchronized static ActionParameterConfiguration getInstance(){
-        if(INSTANCE == null){
+        if (INSTANCE == null){
             INSTANCE = new ActionParameterConfiguration();
         }
         return INSTANCE;
     }
 
+    private ActionParameterConfiguration() {    }
 
-    public ActionParameterConfiguration() {
+    public void init(MetadataRepository metadataRepository) {
+        setMetadataRepository(metadataRepository);
     }
 
     @Override
@@ -79,7 +82,7 @@ public class ActionParameterConfiguration extends Configuration<ActionParameter,
     }
 
     public String deleteStatement(ActionParameterKey metadataKey){
-        return "DELETE FROM " + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("ActionParameters") +
+        return "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ActionParameters") +
                 " WHERE SCRIPT_ID = " + SQLTools.GetStringForSQL(metadataKey.getScriptId()) +
                 " AND SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(metadataKey.getScriptVersionNumber()) +
                 " AND ACTION_ID = " + SQLTools.GetStringForSQL(metadataKey.getActionId()) +
@@ -94,7 +97,7 @@ public class ActionParameterConfiguration extends Configuration<ActionParameter,
     }
 
     public String getInsertStatement(String scriptId, long scriptVersionNumber, String actionId, ActionParameter actionParameter) {
-        return "INSERT INTO " + MetadataControl.getInstance().getDesignMetadataRepository()
+        return "INSERT INTO " + getMetadataRepository()
                 .getTableNameByLabel("ActionParameters") +
                 " (SCRIPT_ID, SCRIPT_VRS_NB, ACTION_ID, ACTION_PAR_NM, ACTION_PAR_VAL) VALUES (" +
                 SQLTools.GetStringForSQL(scriptId) + "," +
@@ -107,10 +110,10 @@ public class ActionParameterConfiguration extends Configuration<ActionParameter,
     public Optional<ActionParameter> get(String scriptId, long scriptVersionNumber, String actionId, String actionParameterName) {
         try {
             String queryActionParameter = "select SCRIPT_ID, SCRIPT_VRS_NB, ACTION_ID, ACTION_PAR_NM, ACTION_PAR_VAL from "
-                    + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("ActionParameters")
+                    + getMetadataRepository().getTableNameByLabel("ActionParameters")
                     + " where SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptId) + " and SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(scriptVersionNumber)
                     + " AND ACTION_ID = " + SQLTools.GetStringForSQL(actionId) + " and ACTION_PAR_NM = " + SQLTools.GetStringForSQL(actionParameterName) + ";";
-            CachedRowSet cachedRowSet = MetadataControl.getInstance().getDesignMetadataRepository()
+            CachedRowSet cachedRowSet = getMetadataRepository()
                     .executeQuery(queryActionParameter, "reader");
             if (cachedRowSet.size() == 0) {
                 return Optional.empty();
@@ -132,7 +135,7 @@ public class ActionParameterConfiguration extends Configuration<ActionParameter,
                 throw new ActionParameterAlreadyExistsException(MessageFormat.format(
                         "ActionParameter {0}-{1}-{2}-{3} already exists", scriptId, scriptVersionNumber, actionId, actionParameter.getName()));
             }
-            String insertQuery = "INSERT INTO " + MetadataControl.getInstance().getDesignMetadataRepository()
+            String insertQuery = "INSERT INTO " + getMetadataRepository()
                     .getTableNameByLabel("ActionParameters") +
                     " (SCRIPT_ID, SCRIPT_VRS_NB, ACTION_ID, ACTION_PAR_NM, ACTION_PAR_VAL) VALUES (" +
                     SQLTools.GetStringForSQL(scriptId) + "," +
@@ -140,15 +143,15 @@ public class ActionParameterConfiguration extends Configuration<ActionParameter,
                     SQLTools.GetStringForSQL(actionId) + "," +
                     SQLTools.GetStringForSQL(actionParameter.getName()) + "," +
                     SQLTools.GetStringForSQL(actionParameter.getValue()) + ");";
-            MetadataControl.getInstance().getDesignMetadataRepository().executeUpdate(insertQuery);
+            getMetadataRepository().executeUpdate(insertQuery);
     }
 
     private boolean exists(String scriptId, long scriptVersionNumber, String actionId, ActionParameter actionParameter) {
         String query = "select SCRIPT_ID, SCRIPT_VRS_NB, ACTION_ID, ACTION_PAR_NM, ACTION_PAR_VAL from "
-                + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("ActionParameters")
+                + getMetadataRepository().getTableNameByLabel("ActionParameters")
                 + " where SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptId) + " and SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(scriptVersionNumber)
                 + " AND ACTION_ID = " + SQLTools.GetStringForSQL(actionId) + " and ACTION_PAR_NM = " + SQLTools.GetStringForSQL(actionParameter.getName()) + ";";
-        CachedRowSet cachedRowSet = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(query, "reader");
+        CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
         return cachedRowSet.size() >= 1;
     }
 

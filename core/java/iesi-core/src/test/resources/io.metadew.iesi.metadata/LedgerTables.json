@@ -1,0 +1,141 @@
+[ {
+  "data" : {
+    "name" : "LED_LEDGER",
+    "label" : "Ledgers",
+    "description" : "Control metadata for ledgers",
+    "type" : "operational",
+    "category" : "control",
+    "migrate" : "Y",
+    "migrationKey" : "A044",
+    "fields" : [ {
+      "name" : "LEDGER_ID",
+      "description" : "Unique identifier for the ledger",
+      "order" : "1",
+      "type" : "number",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "LEDGER_TYP_NM",
+      "description" : "Keyword for the ledger type",
+      "order" : "2",
+      "type" : "string",
+      "length" : "100",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "LEDGER_NM",
+      "description" : "Unique short name for the ledger",
+      "order" : "3",
+      "type" : "string",
+      "length" : "200",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "LEDGER_DSC",
+      "description" : "Description of the ledger",
+      "order" : "4",
+      "type" : "string",
+      "length" : "2000",
+      "nullable" : "Y",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "LOAD_TMS",
+      "description" : "Load timestamp indicating when the record was inserted in the table",
+      "order" : "5",
+      "type" : "timestamp",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : "Y"
+    } ]
+  },
+  "type" : "MetadataTable"
+}, {
+  "data" : {
+    "name" : "LED_LEDGER_ITEM",
+    "label" : "LedgerItems",
+    "description" : "Control metadata for ledger items",
+    "type" : "operational",
+    "category" : "control",
+    "migrate" : "Y",
+    "migrationKey" : "A046",
+    "fields" : [ {
+      "name" : "LEDGER_ID",
+      "description" : "Unique identifier for the ledger",
+      "order" : "1",
+      "type" : "number",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "ITEM_NM",
+      "description" : "Name of the ledger item",
+      "order" : "2",
+      "type" : "string",
+      "length" : "100",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "ITEM_VAL",
+      "description" : "String type item value",
+      "order" : "3",
+      "type" : "string",
+      "length" : "2000",
+      "nullable" : "Y",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "LOAD_TMS",
+      "description" : "Load timestamp indicating when the record was inserted in the table",
+      "order" : "4",
+      "type" : "timestamp",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : "Y"
+    } ]
+  },
+  "type" : "MetadataTable"
+}, {
+  "data" : {
+    "name" : "LED_LEDGER_PAR",
+    "label" : "LedgerParameters",
+    "description" : "Control metadata for ledger parameters",
+    "type" : "operational",
+    "category" : "control",
+    "migrate" : "Y",
+    "migrationKey" : "A045",
+    "fields" : [ {
+      "name" : "LEDGER_ID",
+      "description" : "Unique identifier for the ledger",
+      "order" : "1",
+      "type" : "number",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "LEDGER_PAR_NM",
+      "description" : "Name of the ledger parameter",
+      "order" : "2",
+      "type" : "string",
+      "length" : "100",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "LEDGER_PAR_VAL",
+      "description" : "String type parameter value",
+      "order" : "3",
+      "type" : "string",
+      "length" : "2000",
+      "nullable" : "Y",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "LOAD_TMS",
+      "description" : "Load timestamp indicating when the record was inserted in the table",
+      "order" : "4",
+      "type" : "timestamp",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : "Y"
+    } ]
+  },
+  "type" : "MetadataTable"
+} ]

@@ -6,6 +6,8 @@ import io.metadew.iesi.metadata.configuration.environment.EnvironmentConfigurati
 import io.metadew.iesi.metadata.configuration.exception.*;
 import io.metadew.iesi.metadata.configuration.impersonation.ImpersonationConfiguration;
 import io.metadew.iesi.metadata.definition.DataObject;
+import io.metadew.iesi.metadata.definition.MetadataObject;
+import io.metadew.iesi.metadata.definition.MetadataTable;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.environment.Environment;
 import io.metadew.iesi.metadata.definition.impersonation.Impersonation;
@@ -17,6 +19,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.SQLException;
 import java.text.MessageFormat;
+import java.util.List;
 
 public class ConnectivityMetadataRepository extends MetadataRepository {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -33,6 +36,14 @@ public class ConnectivityMetadataRepository extends MetadataRepository {
 
     public ConnectivityMetadataRepository(String name, String instanceName, RepositoryCoordinator repositoryCoordinator) {
         super(name, instanceName, repositoryCoordinator);
+        connectionConfiguration = new ConnectionConfiguration();
+        environmentConfiguration = new EnvironmentConfiguration();
+        impersonationConfiguration = new ImpersonationConfiguration();
+    }
+
+    public ConnectivityMetadataRepository(String tablePrefix, RepositoryCoordinator repositoryCoordinator, String name, String scope,
+                                          List<MetadataObject> metadataObjects, List<MetadataTable> metadataTables) {
+        super(tablePrefix, repositoryCoordinator, name, scope, metadataObjects, metadataTables);
         connectionConfiguration = new ConnectionConfiguration();
         environmentConfiguration = new EnvironmentConfiguration();
         impersonationConfiguration = new ImpersonationConfiguration();

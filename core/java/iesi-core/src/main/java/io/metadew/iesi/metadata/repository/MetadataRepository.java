@@ -26,9 +26,9 @@ public abstract class MetadataRepository {
 	private final static Logger LOGGER = LogManager.getLogger();
 	private final String tablePrefix;
 
-	RepositoryCoordinator repositoryCoordinator;
-	String name;
-	String scope;
+	private RepositoryCoordinator repositoryCoordinator;
+	private String name;
+	private String scope;
 	private List<MetadataObject> metadataObjects;
 	private List<MetadataTable> metadataTables;
 
@@ -72,6 +72,16 @@ public abstract class MetadataRepository {
 		this.scope = scope;
 		this.repositoryCoordinator = repositoryCoordinator;
 		this.tablePrefix = "test";
+	}
+
+	public MetadataRepository(String tablePrefix, RepositoryCoordinator repositoryCoordinator, String name, String scope,
+							  List<MetadataObject> metadataObjects, List<MetadataTable> metadataTables) {
+		this.tablePrefix = tablePrefix;
+		this.repositoryCoordinator = repositoryCoordinator;
+		this.name = name;
+		this.scope = scope;
+		this.metadataObjects = metadataObjects;
+		this.metadataTables = metadataTables;
 	}
 
 	public void setMetadataObjects(List<MetadataObject> metadataObjects) {

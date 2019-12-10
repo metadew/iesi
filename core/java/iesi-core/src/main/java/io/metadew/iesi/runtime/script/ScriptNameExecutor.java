@@ -20,7 +20,6 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 
 public class ScriptNameExecutor implements ScriptExecutor<ScriptNameExecutionRequest> {
-    private final ScriptConfiguration scriptConfiguration;
 
     private static final Logger LOGGER = LogManager.getLogger();
     private static ScriptNameExecutor INSTANCE;
@@ -32,9 +31,7 @@ public class ScriptNameExecutor implements ScriptExecutor<ScriptNameExecutionReq
         return INSTANCE;
     }
 
-    private ScriptNameExecutor() {
-        scriptConfiguration = new ScriptConfiguration();
-    }
+    private ScriptNameExecutor() {}
 
     @Override
     public Class<ScriptNameExecutionRequest> appliesTo() {
@@ -45,8 +42,8 @@ public class ScriptNameExecutor implements ScriptExecutor<ScriptNameExecutionReq
     public void execute(ScriptNameExecutionRequest scriptExecutionRequest) throws MetadataDoesNotExistException, ScriptExecutionBuildException, MetadataAlreadyExistsException {
 
         Script script = scriptExecutionRequest.getScriptVersion()
-                .map(scriptVersion -> scriptConfiguration.get(scriptExecutionRequest.getScriptName(), scriptVersion))
-                .orElse(scriptConfiguration.get(scriptExecutionRequest.getScriptName()))
+                .map(scriptVersion -> ScriptConfiguration.getInstance().get(scriptExecutionRequest.getScriptName(), scriptVersion))
+                .orElse(ScriptConfiguration.getInstance().get(scriptExecutionRequest.getScriptName()))
                 .orElseThrow(() -> new ScriptDoesNotExistException(MessageFormat.format("Script {0}:{1} does not exist", scriptExecutionRequest.getScriptName(), scriptExecutionRequest.getScriptVersion().map(Object::toString).orElse("latest"))));
 
         // TODO: ActionSelection?

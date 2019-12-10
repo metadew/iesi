@@ -1,0 +1,1189 @@
+[ {
+  "data" : {
+    "name" : "DES_ACTION",
+    "label" : "Actions",
+    "description" : "Design metadata for actions",
+    "type" : "design",
+    "category" : "execution",
+    "migrate" : "Y",
+    "migrationKey" : "A055",
+    "fields" : [ {
+      "name" : "SCRIPT_ID",
+      "description" : "Unique identifier for the script design",
+      "order" : "1",
+      "type" : "string",
+      "length" : "255",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "SCRIPT_VRS_NB",
+      "description" : "Unique identifier for the script version",
+      "order" : "2",
+      "type" : "number",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "ACTION_ID",
+      "description" : "Unique identifier for the action design",
+      "order" : "3",
+      "type" : "string",
+      "length" : "255",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "ACTION_NB",
+      "description" : "Order number for the action within the script design",
+      "order" : "4",
+      "type" : "number",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "ACTION_TYP_NM",
+      "description" : "Keyword for the action type",
+      "order" : "5",
+      "type" : "string",
+      "length" : "100",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "ACTION_NM",
+      "description" : "Unique short name for the action",
+      "order" : "6",
+      "type" : "string",
+      "length" : "200",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "ACTION_DSC",
+      "description" : "Description of the action",
+      "order" : "7",
+      "type" : "string",
+      "length" : "2000",
+      "nullable" : "Y",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "COMP_NM",
+      "description" : "Unique short name for the applicable component",
+      "order" : "8",
+      "type" : "string",
+      "length" : "200",
+      "nullable" : "Y",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "ITERATION_VAL",
+      "description" : "Value for the applicable iteration",
+      "order" : "9",
+      "type" : "string",
+      "length" : "200",
+      "nullable" : "Y",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "CONDITION_VAL",
+      "description" : "Value for the applicable condition",
+      "order" : "10",
+      "type" : "string",
+      "length" : "2000",
+      "nullable" : "Y",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "RETRIES_VAL",
+      "description" : "Value for the number of retries on error",
+      "order" : "11",
+      "type" : "string",
+      "length" : "200",
+      "nullable" : "Y",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "EXP_ERR_FL",
+      "description" : "Flag indicating if the action is expected to raise an error",
+      "order" : "12",
+      "type" : "flag",
+      "length" : "1",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "STOP_ERR_FL",
+      "description" : "Flag indicating if the script needs to stop when this action raises an error",
+      "order" : "13",
+      "type" : "flag",
+      "length" : "1",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "LOAD_TMS",
+      "description" : "Load timestamp indicating when the record was inserted in the table",
+      "order" : "14",
+      "type" : "timestamp",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : "Y"
+    } ]
+  },
+  "type" : "MetadataTable"
+}, {
+  "data" : {
+    "name" : "DES_ACTION_PAR",
+    "label" : "ActionParameters",
+    "description" : "Design metadata for action parameters",
+    "type" : "design",
+    "category" : "execution",
+    "migrate" : "Y",
+    "migrationKey" : "A056",
+    "fields" : [ {
+      "name" : "SCRIPT_ID",
+      "description" : "Unique identifier for the script design",
+      "order" : "1",
+      "type" : "string",
+      "length" : "255",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "SCRIPT_VRS_NB",
+      "description" : "Unique identifier for the script version",
+      "order" : "2",
+      "type" : "number",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "ACTION_ID",
+      "description" : "Unique identifier for the action design",
+      "order" : "3",
+      "type" : "string",
+      "length" : "255",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "ACTION_PAR_NM",
+      "description" : "Name of the action parameter",
+      "order" : "4",
+      "type" : "string",
+      "length" : "100",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "ACTION_PAR_VAL",
+      "description" : "String type parameter value",
+      "order" : "5",
+      "type" : "string",
+      "length" : "4000",
+      "nullable" : "Y",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "LOAD_TMS",
+      "description" : "Load timestamp indicating when the record was inserted in the table",
+      "order" : "6",
+      "type" : "timestamp",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : "Y"
+    } ]
+  },
+  "type" : "MetadataTable"
+}, {
+  "data" : {
+    "name" : "DES_COMP",
+    "label" : "Components",
+    "description" : "Design metadata for components",
+    "type" : "design",
+    "category" : "structure",
+    "migrate" : "Y",
+    "migrationKey" : "A005",
+    "fields" : [ {
+      "name" : "COMP_ID",
+      "description" : "Unique identifier for the component",
+      "order" : "1",
+      "type" : "string",
+      "length" : "255",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "COMP_TYP_NM",
+      "description" : "Keyword for the component type",
+      "order" : "2",
+      "type" : "string",
+      "length" : "100",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "COMP_NM",
+      "description" : "Unique short name for the component",
+      "order" : "3",
+      "type" : "string",
+      "length" : "200",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "COMP_DSC",
+      "description" : "Description of the component",
+      "order" : "4",
+      "type" : "string",
+      "length" : "2000",
+      "nullable" : "Y",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "LOAD_TMS",
+      "description" : "Load timestamp indicating when the record was inserted in the table",
+      "order" : "5",
+      "type" : "timestamp",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : "Y"
+    } ]
+  },
+  "type" : "MetadataTable"
+}, {
+  "data" : {
+    "name" : "DES_COMP_ATT",
+    "label" : "ComponentAttributes",
+    "description" : "Design metadata for component attributes",
+    "type" : "design",
+    "category" : "structure",
+    "migrate" : "Y",
+    "migrationKey" : "A006",
+    "fields" : [ {
+      "name" : "COMP_ID",
+      "description" : "Unique identifier for the component",
+      "order" : "1",
+      "type" : "string",
+      "length" : "255",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "COMP_VRS_NB",
+      "description" : "Unique identifier for the script version",
+      "order" : "2",
+      "type" : "number",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "ENV_NM",
+      "description" : "Short name for the envioronment",
+      "order" : "3",
+      "type" : "string",
+      "length" : "100",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "COMP_ATT_NM",
+      "description" : "Name of the attribute",
+      "order" : "4",
+      "type" : "string",
+      "length" : "100",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "COMP_ATT_VAL",
+      "description" : "String type attribute value",
+      "order" : "5",
+      "type" : "string",
+      "length" : "2000",
+      "nullable" : "Y",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "LOAD_TMS",
+      "description" : "Load timestamp indicating when the record was inserted in the table",
+      "order" : "6",
+      "type" : "timestamp",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : "Y"
+    } ]
+  },
+  "type" : "MetadataTable"
+}, {
+  "data" : {
+    "name" : "DES_COMP_PAR",
+    "label" : "ComponentParameters",
+    "description" : "Design metadata for component parameters",
+    "type" : "design",
+    "category" : "structure",
+    "migrate" : "Y",
+    "migrationKey" : "A007",
+    "fields" : [ {
+      "name" : "COMP_ID",
+      "description" : "Unique identifier for the component",
+      "order" : "1",
+      "type" : "string",
+      "length" : "255",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "COMP_VRS_NB",
+      "description" : "Unique identifier for the script version",
+      "order" : "2",
+      "type" : "number",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "COMP_PAR_NM",
+      "description" : "Name of the component parameter",
+      "order" : "3",
+      "type" : "string",
+      "length" : "100",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "COMP_PAR_VAL",
+      "description" : "String type parameter value",
+      "order" : "4",
+      "type" : "string",
+      "length" : "2000",
+      "nullable" : "Y",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "LOAD_TMS",
+      "description" : "Load timestamp indicating when the record was inserted in the table",
+      "order" : "5",
+      "type" : "timestamp",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : "Y"
+    } ]
+  },
+  "type" : "MetadataTable"
+}, {
+  "data" : {
+    "name" : "DES_COMP_VRS",
+    "label" : "ComponentVersions",
+    "description" : "Design metadata for component versions",
+    "type" : "design",
+    "category" : "structure",
+    "migrate" : "Y",
+    "migrationKey" : "A010",
+    "fields" : [ {
+      "name" : "COMP_ID",
+      "description" : "Unique identifier for the component",
+      "order" : "1",
+      "type" : "string",
+      "length" : "255",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "COMP_VRS_NB",
+      "description" : "Unique identifier for the script version",
+      "order" : "2",
+      "type" : "number",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "COMP_VRS_DSC",
+      "description" : "Description of the version",
+      "order" : "3",
+      "type" : "string",
+      "length" : "2000",
+      "nullable" : "Y",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "LOAD_TMS",
+      "description" : "Load timestamp indicating when the record was inserted in the table",
+      "order" : "4",
+      "type" : "timestamp",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : "Y"
+    } ]
+  },
+  "type" : "MetadataTable"
+}, {
+  "data" : {
+    "name" : "DES_GEN",
+    "label" : "Generations",
+    "description" : "Design metadata for data generations",
+    "type" : "design",
+    "category" : "generation",
+    "migrate" : "Y",
+    "migrationKey" : "A024",
+    "fields" : [ {
+      "name" : "GEN_ID",
+      "description" : "Unique identifier for the generation design",
+      "order" : "1",
+      "type" : "number",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "GEN_TYP_NM",
+      "description" : "Keyword for the generation type",
+      "order" : "2",
+      "type" : "string",
+      "length" : "100",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "GEN_NM",
+      "description" : "Unique short name for the generator",
+      "order" : "3",
+      "type" : "string",
+      "length" : "200",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "GEN_DSC",
+      "description" : "Description of the generator",
+      "order" : "4",
+      "type" : "string",
+      "length" : "2000",
+      "nullable" : "Y",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "LOAD_TMS",
+      "description" : "Load timestamp indicating when the record was inserted in the table",
+      "order" : "5",
+      "type" : "timestamp",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : "Y"
+    } ]
+  },
+  "type" : "MetadataTable"
+}, {
+  "data" : {
+    "name" : "DES_GEN_CRL",
+    "label" : "GenerationControlRules",
+    "description" : "Design metadata for data generation control rules",
+    "type" : "design",
+    "category" : "generation",
+    "migrate" : "Y",
+    "migrationKey" : "A025",
+    "fields" : [ {
+      "name" : "GEN_CTL_ID",
+      "description" : "Unique identifier for the generation control design",
+      "order" : "1",
+      "type" : "number",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "GEN_CTL_RULE_ID",
+      "description" : "Unique identifier for the control rule design",
+      "order" : "2",
+      "type" : "number",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "GEN_CTL_RULE_NB",
+      "description" : "Order number for the rule within the generation control design",
+      "order" : "3",
+      "type" : "number",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "GEN_CTL_RULE_TYP_NM",
+      "description" : "Keyword for the control rule type",
+      "order" : "4",
+      "type" : "string",
+      "length" : "100",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "GEN_CTL_RULE_NM",
+      "description" : "Unique short name for the control rule",
+      "order" : "5",
+      "type" : "string",
+      "length" : "200",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "GEN_CTL_RULE_DSC",
+      "description" : "Description of the control rule",
+      "order" : "6",
+      "type" : "string",
+      "length" : "2000",
+      "nullable" : "Y",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "LOAD_TMS",
+      "description" : "Load timestamp indicating when the record was inserted in the table",
+      "order" : "7",
+      "type" : "timestamp",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : "Y"
+    } ]
+  },
+  "type" : "MetadataTable"
+}, {
+  "data" : {
+    "name" : "DES_GEN_CRL_PAR",
+    "label" : "GenerationControlRuleParameters",
+    "description" : "Design metadata for data generation control rule parameters",
+    "type" : "design",
+    "category" : "generation",
+    "migrate" : "Y",
+    "migrationKey" : "A026",
+    "fields" : [ {
+      "name" : "GEN_CTL_RULE_ID",
+      "description" : "Unique identifier for the control rule design",
+      "order" : "1",
+      "type" : "number",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "GEN_CTL_RULE_PAR_NM",
+      "description" : "Name of the control rule parameter",
+      "order" : "2",
+      "type" : "string",
+      "length" : "100",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "GEN_CTL_RULE_PAR_VAL",
+      "description" : "String type parameter value",
+      "order" : "3",
+      "type" : "string",
+      "length" : "2000",
+      "nullable" : "Y",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "LOAD_TMS",
+      "description" : "Load timestamp indicating when the record was inserted in the table",
+      "order" : "4",
+      "type" : "timestamp",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : "Y"
+    } ]
+  },
+  "type" : "MetadataTable"
+}, {
+  "data" : {
+    "name" : "DES_GEN_CTL",
+    "label" : "GenerationControls",
+    "description" : "Design metadata for data generation control",
+    "type" : "design",
+    "category" : "generation",
+    "migrate" : "Y",
+    "migrationKey" : "A029",
+    "fields" : [ {
+      "name" : "GEN_ID",
+      "description" : "Unique identifier for the generation design",
+      "order" : "1",
+      "type" : "number",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "GEN_CTL_ID",
+      "description" : "Unique identifier for the generation control design",
+      "order" : "2",
+      "type" : "number",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "GEN_CTL_NM",
+      "description" : "Unique short name for the generator control",
+      "order" : "3",
+      "type" : "string",
+      "length" : "200",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "GEN_CTL_TYP_NM",
+      "description" : "Keyword for the generation control type",
+      "order" : "4",
+      "type" : "string",
+      "length" : "100",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "GEN_CTL_DSC",
+      "description" : "Description of the generator control",
+      "order" : "5",
+      "type" : "string",
+      "length" : "2000",
+      "nullable" : "Y",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "LOAD_TMS",
+      "description" : "Load timestamp indicating when the record was inserted in the table",
+      "order" : "6",
+      "type" : "timestamp",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : "Y"
+    } ]
+  },
+  "type" : "MetadataTable"
+}, {
+  "data" : {
+    "name" : "DES_GEN_CTL_PAR",
+    "label" : "GenerationControlParameters",
+    "description" : "Design metadata for data generation control parameters",
+    "type" : "design",
+    "category" : "generation",
+    "migrate" : "Y",
+    "migrationKey" : "A030",
+    "fields" : [ {
+      "name" : "GEN_CTL_ID",
+      "description" : "Unique identifier for the generation control design",
+      "order" : "1",
+      "type" : "number",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "GEN_CTL_PAR_NM",
+      "description" : "Name of the generation control parameter",
+      "order" : "2",
+      "type" : "string",
+      "length" : "100",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "GEN_CTL_PAR_VAL",
+      "description" : "String type parameter value",
+      "order" : "3",
+      "type" : "string",
+      "length" : "2000",
+      "nullable" : "Y",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "LOAD_TMS",
+      "description" : "Load timestamp indicating when the record was inserted in the table",
+      "order" : "4",
+      "type" : "timestamp",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : "Y"
+    } ]
+  },
+  "type" : "MetadataTable"
+}, {
+  "data" : {
+    "name" : "DES_GEN_OUT",
+    "label" : "GenerationOutputs",
+    "description" : "Design metadata for data generation output",
+    "type" : "design",
+    "category" : "generation",
+    "migrate" : "Y",
+    "migrationKey" : "A033",
+    "fields" : [ {
+      "name" : "GEN_ID",
+      "description" : "Unique identifier for the generation design",
+      "order" : "1",
+      "type" : "number",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "GEN_OUT_ID",
+      "description" : "Unique identifier for the generation output design",
+      "order" : "2",
+      "type" : "number",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "GEN_OUT_NM",
+      "description" : "Unique short name for the generator output",
+      "order" : "3",
+      "type" : "string",
+      "length" : "200",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "GEN_OUT_TYP_NM",
+      "description" : "Keyword for the generation output type",
+      "order" : "4",
+      "type" : "string",
+      "length" : "100",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "GEN_OUT_DSC",
+      "description" : "Description of the generator output",
+      "order" : "5",
+      "type" : "string",
+      "length" : "2000",
+      "nullable" : "Y",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "LOAD_TMS",
+      "description" : "Load timestamp indicating when the record was inserted in the table",
+      "order" : "6",
+      "type" : "timestamp",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : "Y"
+    } ]
+  },
+  "type" : "MetadataTable"
+}, {
+  "data" : {
+    "name" : "DES_GEN_OUT_PAR",
+    "label" : "GenerationOutputParameters",
+    "description" : "Design metadata for data generation output parameters",
+    "type" : "design",
+    "category" : "generation",
+    "migrate" : "Y",
+    "migrationKey" : "A034",
+    "fields" : [ {
+      "name" : "GEN_OUT_ID",
+      "description" : "Unique identifier for the generation output design",
+      "order" : "1",
+      "type" : "number",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "GEN_OUT_PAR_NM",
+      "description" : "Name of the generation output parameter",
+      "order" : "2",
+      "type" : "string",
+      "length" : "100",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "GEN_OUT_PAR_VAL",
+      "description" : "String type parameter value",
+      "order" : "3",
+      "type" : "string",
+      "length" : "2000",
+      "nullable" : "Y",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "LOAD_TMS",
+      "description" : "Load timestamp indicating when the record was inserted in the table",
+      "order" : "4",
+      "type" : "timestamp",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : "Y"
+    } ]
+  },
+  "type" : "MetadataTable"
+}, {
+  "data" : {
+    "name" : "DES_GEN_PAR",
+    "label" : "GenerationParameters",
+    "description" : "Design metadata for data generation parameters",
+    "type" : "design",
+    "category" : "generation",
+    "migrate" : "Y",
+    "migrationKey" : "A037",
+    "fields" : [ {
+      "name" : "GEN_ID",
+      "description" : "Unique identifier for the generation design",
+      "order" : "1",
+      "type" : "number",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "GEN_PAR_NM",
+      "description" : "Name of the generation parameter",
+      "order" : "2",
+      "type" : "string",
+      "length" : "100",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "GEN_PAR_VAL",
+      "description" : "String type parameter value",
+      "order" : "3",
+      "type" : "string",
+      "length" : "2000",
+      "nullable" : "Y",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "LOAD_TMS",
+      "description" : "Load timestamp indicating when the record was inserted in the table",
+      "order" : "4",
+      "type" : "timestamp",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : "Y"
+    } ]
+  },
+  "type" : "MetadataTable"
+}, {
+  "data" : {
+    "name" : "DES_GEN_RULE",
+    "label" : "GenerationRules",
+    "description" : "Design metadata for data generation rules",
+    "type" : "design",
+    "category" : "generation",
+    "migrate" : "Y",
+    "migrationKey" : "A038",
+    "fields" : [ {
+      "name" : "GEN_ID",
+      "description" : "Unique identifier for the generation design",
+      "order" : "1",
+      "type" : "number",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "GEN_RULE_ID",
+      "description" : "Unique identifier for the rule design",
+      "order" : "2",
+      "type" : "number",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "GEN_RULE_NB",
+      "description" : "Order number for the rule within the generation design",
+      "order" : "3",
+      "type" : "number",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "GEN_RULE_TYP_NM",
+      "description" : "Keyword for the rule type",
+      "order" : "4",
+      "type" : "string",
+      "length" : "100",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "FIELD_NM",
+      "description" : "Unique short name for the field",
+      "order" : "5",
+      "type" : "string",
+      "length" : "200",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "GEN_RULE_DSC",
+      "description" : "Description of the rule",
+      "order" : "6",
+      "type" : "string",
+      "length" : "2000",
+      "nullable" : "Y",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "BLANK_INJ_FL",
+      "description" : "Flag indicating if blank injection is required",
+      "order" : "7",
+      "type" : "flag",
+      "length" : "1",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "BLANK_INJ_UNIT",
+      "description" : "Keyword for the blank injection unit",
+      "order" : "8",
+      "type" : "string",
+      "length" : "20",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "BLANK_INJ_MEAS",
+      "description" : "Measure for the amount of blanks to inject",
+      "order" : "9",
+      "type" : "number",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "BLANK_INJ_VAL",
+      "description" : "Value to use as blank",
+      "order" : "10",
+      "type" : "string",
+      "length" : "20",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "LOAD_TMS",
+      "description" : "Load timestamp indicating when the record was inserted in the table",
+      "order" : "11",
+      "type" : "timestamp",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : "Y"
+    } ]
+  },
+  "type" : "MetadataTable"
+}, {
+  "data" : {
+    "name" : "DES_GEN_RULE_PAR",
+    "label" : "GenerationRuleParameters",
+    "description" : "Design metadata for data generation rule parameters",
+    "type" : "design",
+    "category" : "generation",
+    "migrate" : "Y",
+    "migrationKey" : "A039",
+    "fields" : [ {
+      "name" : "GEN_RULE_ID",
+      "description" : "Unique identifier for the rule design",
+      "order" : "1",
+      "type" : "number",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "GEN_RULE_PAR_NM",
+      "description" : "Name of the rule parameter",
+      "order" : "2",
+      "type" : "string",
+      "length" : "100",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "GEN_RULE_PAR_VAL",
+      "description" : "String type parameter value",
+      "order" : "3",
+      "type" : "string",
+      "length" : "2000",
+      "nullable" : "Y",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "LOAD_TMS",
+      "description" : "Load timestamp indicating when the record was inserted in the table",
+      "order" : "4",
+      "type" : "timestamp",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : "Y"
+    } ]
+  },
+  "type" : "MetadataTable"
+}, {
+  "data" : {
+    "name" : "DES_SCRIPT",
+    "label" : "Scripts",
+    "description" : "Design metadata for scripts",
+    "type" : "design",
+    "category" : "execution",
+    "migrate" : "Y",
+    "migrationKey" : "A001",
+    "fields" : [ {
+      "name" : "SCRIPT_ID",
+      "description" : "Unique identifier for the script design",
+      "order" : "1",
+      "type" : "string",
+      "length" : "255",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "SCRIPT_TYP_NM",
+      "description" : "Keyword for the script type",
+      "order" : "2",
+      "type" : "string",
+      "length" : "100",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "SCRIPT_NM",
+      "description" : "Unique short name for the script",
+      "order" : "3",
+      "type" : "string",
+      "length" : "200",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "SCRIPT_DSC",
+      "description" : "Description of the script",
+      "order" : "4",
+      "type" : "string",
+      "length" : "2000",
+      "nullable" : "Y",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "LOAD_TMS",
+      "description" : "Load timestamp indicating when the record was inserted in the table",
+      "order" : "5",
+      "type" : "timestamp",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : "Y"
+    } ]
+  },
+  "type" : "MetadataTable"
+}, {
+  "data" : {
+    "name" : "DES_SCRIPT_PAR",
+    "label" : "ScriptParameters",
+    "description" : "Design metadata for script parameters",
+    "type" : "design",
+    "category" : "execution",
+    "migrate" : "Y",
+    "migrationKey" : "A002",
+    "fields" : [ {
+      "name" : "SCRIPT_ID",
+      "description" : "Unique identifier for the script design",
+      "order" : "1",
+      "type" : "string",
+      "length" : "255",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "SCRIPT_VRS_NB",
+      "description" : "Unique identifier for the script version",
+      "order" : "2",
+      "type" : "number",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "SCRIPT_PAR_NM",
+      "description" : "Name of the script parameter",
+      "order" : "3",
+      "type" : "string",
+      "length" : "100",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "SCRIPT_PAR_VAL",
+      "description" : "String type parameter value",
+      "order" : "4",
+      "type" : "string",
+      "length" : "2000",
+      "nullable" : "Y",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "LOAD_TMS",
+      "description" : "Load timestamp indicating when the record was inserted in the table",
+      "order" : "5",
+      "type" : "timestamp",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : "Y"
+    } ]
+  },
+  "type" : "MetadataTable"
+}, {
+  "data" : {
+    "name" : "DES_SCRIPT_VRS",
+    "label" : "ScriptVersions",
+    "description" : "Design metadata for script versions",
+    "type" : "design",
+    "category" : "execution",
+    "migrate" : "Y",
+    "migrationKey" : "A001",
+    "fields" : [ {
+      "name" : "SCRIPT_ID",
+      "description" : "Unique identifier for the script design",
+      "order" : "1",
+      "type" : "string",
+      "length" : "255",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "SCRIPT_VRS_NB",
+      "description" : "Unique identifier for the script version",
+      "order" : "2",
+      "type" : "number",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "SCRIPT_VRS_DSC",
+      "description" : "Description of the script version",
+      "order" : "3",
+      "type" : "string",
+      "length" : "2000",
+      "nullable" : "Y",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "LOAD_TMS",
+      "description" : "Load timestamp indicating when the record was inserted in the table",
+      "order" : "4",
+      "type" : "timestamp",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : "Y"
+    } ]
+  },
+  "type" : "MetadataTable"
+}, {
+  "data" : {
+    "name" : "DES_SRT",
+    "label" : "Subroutines",
+    "description" : "Design metadata for subroutines",
+    "type" : "design",
+    "category" : "reference",
+    "migrate" : "Y",
+    "migrationKey" : "A051",
+    "fields" : [ {
+      "name" : "SRT_NM",
+      "description" : "Unique short name for the subroutine",
+      "order" : "1",
+      "type" : "string",
+      "length" : "100",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "SRT_DSC",
+      "description" : "Description of the subroutine",
+      "order" : "2",
+      "type" : "string",
+      "length" : "2000",
+      "nullable" : "Y",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "SRT_TYP_NM",
+      "description" : "Keyword for the subroutine type",
+      "order" : "3",
+      "type" : "string",
+      "length" : "100",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "LOAD_TMS",
+      "description" : "Load timestamp indicating when the record was inserted in the table",
+      "order" : "4",
+      "type" : "timestamp",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : "Y"
+    } ]
+  },
+  "type" : "MetadataTable"
+}, {
+  "data" : {
+    "name" : "DES_SRT_PAR",
+    "label" : "SubroutineParameters",
+    "description" : "Design metadata for subroutine parameters",
+    "type" : "design",
+    "category" : "reference",
+    "migrate" : "Y",
+    "migrationKey" : "A052",
+    "fields" : [ {
+      "name" : "SRT_NM",
+      "description" : "Unique short name for the subroutine",
+      "order" : "1",
+      "type" : "string",
+      "length" : "100",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "SRT_PAR_NM",
+      "description" : "Name of the subroutine parameter",
+      "order" : "2",
+      "type" : "string",
+      "length" : "100",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "SRT_PAR_VAL",
+      "description" : "String type parameter value",
+      "order" : "3",
+      "type" : "string",
+      "length" : "2000",
+      "nullable" : "Y",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "LOAD_TMS",
+      "description" : "Load timestamp indicating when the record was inserted in the table",
+      "order" : "4",
+      "type" : "timestamp",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : "Y"
+    } ]
+  },
+  "type" : "MetadataTable"
+} ]

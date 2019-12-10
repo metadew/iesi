@@ -14,6 +14,7 @@ import io.metadew.iesi.metadata.definition.component.key.ComponentAttributeKey;
 import io.metadew.iesi.metadata.definition.component.key.ComponentKey;
 import io.metadew.iesi.metadata.definition.component.key.ComponentParameterKey;
 import io.metadew.iesi.metadata.execution.MetadataControl;
+import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -28,8 +29,6 @@ import java.util.Optional;
 
 public class ComponentConfiguration extends Configuration<Component, ComponentKey> {
 
-    private final ComponentVersionConfiguration componentVersionConfiguration;
-
     private static final Logger LOGGER = LogManager.getLogger();
     private static ComponentConfiguration INSTANCE;
 
@@ -41,8 +40,13 @@ public class ComponentConfiguration extends Configuration<Component, ComponentKe
     }
 
     // Constructors
-    public ComponentConfiguration() {
-        componentVersionConfiguration = new ComponentVersionConfiguration();
+    private ComponentConfiguration() {
+    }
+
+
+    public void init(MetadataRepository metadataRepository) {
+        setMetadataRepository(metadataRepository);
+        ComponentVersionConfiguration.getInstance().init(metadataRepository);
     }
 
     @Override
@@ -67,8 +71,8 @@ public class ComponentConfiguration extends Configuration<Component, ComponentKe
                     crsComponent.getString("COMP_NM"),
                     crsComponent.getString("COMP_DSC"),
                     null,
-                    new ArrayList<ComponentParameter>(),
-                    new ArrayList<ComponentAttribute>()
+                    new ArrayList<>(),
+                    new ArrayList<>()
             ));
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -159,7 +163,7 @@ public class ComponentConfiguration extends Configuration<Component, ComponentKe
             String componentId = crsComponent.getString("COMP_ID");
 
             // get version
-            Optional<ComponentVersion> componentVersion = componentVersionConfiguration.getComponentVersion(componentId, versionNumber);
+            Optional<ComponentVersion> componentVersion = ComponentVersionConfiguration.getInstance().getComponentVersion(componentId, versionNumber);
             if (!componentVersion.isPresent()) {
                 return Optional.empty();
             }
@@ -225,8 +229,7 @@ public class ComponentConfiguration extends Configuration<Component, ComponentKe
         String componentId = crsComponent.getString("COMP_ID");
 
         // get version
-        ComponentVersionConfiguration componentVersionConfiguration = new ComponentVersionConfiguration();
-        Optional<ComponentVersion> componentVersion = componentVersionConfiguration.getComponentVersion(componentId, component.getVersion().getNumber());
+        Optional<ComponentVersion> componentVersion = ComponentVersionConfiguration.getInstance().getComponentVersion(componentId, component.getVersion().getNumber());
         return componentVersion.isPresent();
         } catch (SQLException e) {
             throw new RuntimeException(e);

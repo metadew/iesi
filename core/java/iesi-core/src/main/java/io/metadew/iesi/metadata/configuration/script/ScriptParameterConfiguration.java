@@ -48,9 +48,9 @@ public class ScriptParameterConfiguration extends Configuration<ScriptParameter,
     @Override
     public List<ScriptParameter> getAll() {
         List<ScriptParameter> scriptParameters = new ArrayList<>();
-        String query = "select * from " + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("ScriptParameters")
+        String query = "select * from " + getMetadataRepository().getTableNameByLabel("ScriptParameters")
                 + " order by SCRIPT_ID ASC";
-        CachedRowSet crs = MetadataControl.getInstance().getConnectivityMetadataRepository().executeQuery(query, "reader");
+        CachedRowSet crs = getMetadataRepository().executeQuery(query, "reader");
         try {
             while (crs.next()) {
                 ScriptParameterKey scriptParameterKey = new ScriptParameterKey(
@@ -138,7 +138,7 @@ public class ScriptParameterConfiguration extends Configuration<ScriptParameter,
             }
             cachedRowSet.next();
             ScriptParameterKey scriptParameterKey = new ScriptParameterKey(scriptId, scriptVersionNumber, scriptParameterName);
-            return Optional.of(new ScriptParameter(scriptParameterKey, cachedRowSet.getString("ACTION_PAR_VAL")));
+            return Optional.of(new ScriptParameter(scriptParameterKey, cachedRowSet.getString("SCRIPT_PAR_VAL")));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

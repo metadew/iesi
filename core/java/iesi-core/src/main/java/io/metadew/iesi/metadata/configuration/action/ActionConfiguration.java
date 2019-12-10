@@ -258,7 +258,7 @@ public class ActionConfiguration extends Configuration<Action, ActionKey> {
             throw new ActionDoesNotExistException(MessageFormat.format("Action {0}-{1}-{2} does not exists", scriptId, scriptVersionNumber, actionId));
         }
         List<String> deleteStatement = deleteStatement(scriptId, scriptVersionNumber, actionId);
-        MetadataControl.getInstance().getTraceMetadataRepository().executeBatch(deleteStatement);
+        getMetadataRepository().executeBatch(deleteStatement);
     }
 
     private List<String> deleteStatement(String scriptId, long scriptVersionNumber, String actionId) {
@@ -282,7 +282,7 @@ public class ActionConfiguration extends Configuration<Action, ActionKey> {
         queries.add("DELETE FROM " + getMetadataRepository().getTableNameByLabel("ActionParameters") +
                 " WHERE SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptId) +
                 " AND SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(scriptVersionNumber) + ";");
-        MetadataControl.getInstance().getTraceMetadataRepository().executeBatch(queries);
+        getMetadataRepository().executeBatch(queries);
     }
 
 }

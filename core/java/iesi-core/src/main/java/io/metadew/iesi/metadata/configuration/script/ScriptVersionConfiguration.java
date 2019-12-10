@@ -51,9 +51,9 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
     @Override
     public List<ScriptVersion> getAll() {
         List<ScriptVersion> scriptVersions = new ArrayList<>();
-        String query = "select * from " + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("ScriptVersions")
+        String query = "select * from " + getMetadataRepository().getTableNameByLabel("ScriptVersions")
                 + " order by SCRIPT_ID";
-        CachedRowSet crs = MetadataControl.getInstance().getConnectivityMetadataRepository().executeQuery(query, "reader");
+        CachedRowSet crs = getMetadataRepository().executeQuery(query, "reader");
         try {
             while (crs.next()) {
                 ScriptVersionKey scriptVersionKey = new ScriptVersionKey(
@@ -129,7 +129,7 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
             throw new ScriptVersionDoesNotExistException(MessageFormat.format("ScriptVersion {0}-{1} does not exists", scriptId, scriptVersionNumber));
         }
         String deleteStatement = deleteStatement(scriptId, scriptVersionNumber);
-        MetadataControl.getInstance().getTraceMetadataRepository().executeUpdate(deleteStatement);
+        getMetadataRepository().executeUpdate(deleteStatement);
     }
 
     private String deleteStatement(String scriptId, long scriptVersionNumber) {

@@ -47,6 +47,8 @@ public class ComponentConfiguration extends Configuration<Component, ComponentKe
     public void init(MetadataRepository metadataRepository) {
         setMetadataRepository(metadataRepository);
         ComponentVersionConfiguration.getInstance().init(metadataRepository);
+        ComponentParameterConfiguration.getInstance().init(metadataRepository);
+        ComponentAttributeConfiguration.getInstance().init(metadataRepository);
     }
 
     @Override

@@ -7,6 +7,7 @@ import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistExce
 import io.metadew.iesi.metadata.definition.impersonation.ImpersonationParameter;
 import io.metadew.iesi.metadata.definition.impersonation.key.ImpersonationParameterKey;
 import io.metadew.iesi.metadata.execution.MetadataControl;
+import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -33,12 +34,11 @@ public class ImpersonationParameterConfiguration extends Configuration<Impersona
         return INSTANCE;
     }
 
-    // Constructors
-    public ImpersonationParameterConfiguration(ImpersonationParameter impersonationParameter) {
-        this.setImpersonationParameter(impersonationParameter);
+    public void init(MetadataRepository metadataRepository){
+        setMetadataRepository(metadataRepository);
     }
 
-    public ImpersonationParameterConfiguration() {
+    private ImpersonationParameterConfiguration() {
     }
 
     @Override

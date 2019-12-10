@@ -16,7 +16,7 @@ public class ImpersonationService {
     private final ImpersonationConfiguration impersonationConfiguration;
 
     public ImpersonationService() {
-        this.impersonationConfiguration = new ImpersonationConfiguration();
+        this.impersonationConfiguration = ImpersonationConfiguration.getInstance();
     }
 
     public Map<String, String> getImpersontations(String impersonationName) throws ImpersonationDoesNotExistException {

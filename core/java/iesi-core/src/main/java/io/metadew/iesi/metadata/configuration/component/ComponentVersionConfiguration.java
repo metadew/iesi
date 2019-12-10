@@ -36,6 +36,7 @@ public class ComponentVersionConfiguration extends Configuration<ComponentVersio
 
     public void init(MetadataRepository metadataRepository) {
         setMetadataRepository(metadataRepository);
+        ComponentBuildConfiguration.getInstance().init(metadataRepository);
     }
 
     @Override

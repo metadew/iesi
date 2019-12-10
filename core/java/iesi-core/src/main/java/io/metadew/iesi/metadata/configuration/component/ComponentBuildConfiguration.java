@@ -9,6 +9,7 @@ import io.metadew.iesi.metadata.definition.component.ComponentParameter;
 import io.metadew.iesi.metadata.definition.component.key.ComponentBuildKey;
 import io.metadew.iesi.metadata.definition.component.key.ComponentParameterKey;
 import io.metadew.iesi.metadata.execution.MetadataControl;
+import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -35,12 +36,11 @@ public class ComponentBuildConfiguration extends Configuration<ComponentBuild, C
         return INSTANCE;
     }
 
-    // Constructors
-    public ComponentBuildConfiguration(ComponentBuild componentBuild) {
-        this.setComponentBuild(componentBuild);
+    private ComponentBuildConfiguration() {
     }
 
-    public ComponentBuildConfiguration() {
+    public void init(MetadataRepository metadataRepository){
+        setMetadataRepository(metadataRepository);
     }
 
     @Override

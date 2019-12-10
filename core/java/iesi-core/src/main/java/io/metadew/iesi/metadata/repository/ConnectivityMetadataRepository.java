@@ -29,23 +29,23 @@ public class ConnectivityMetadataRepository extends MetadataRepository {
     public ConnectivityMetadataRepository(String name, String scope, String instanceName, RepositoryCoordinator repositoryCoordinator) {
         super(name, scope, instanceName, repositoryCoordinator);
         ConnectionConfiguration.getInstance().init(this);
-        environmentConfiguration = new EnvironmentConfiguration();
-        impersonationConfiguration = new ImpersonationConfiguration();
+        environmentConfiguration = EnvironmentConfiguration.getInstance();
+        impersonationConfiguration = ImpersonationConfiguration.getInstance();
     }
 
     public ConnectivityMetadataRepository(String name, String instanceName, RepositoryCoordinator repositoryCoordinator) {
         super(name, instanceName, repositoryCoordinator);
         ConnectionConfiguration.getInstance().init(this);
-        environmentConfiguration = new EnvironmentConfiguration();
-        impersonationConfiguration = new ImpersonationConfiguration();
+        environmentConfiguration = EnvironmentConfiguration.getInstance();
+        impersonationConfiguration = ImpersonationConfiguration.getInstance();
     }
 
     public ConnectivityMetadataRepository(String tablePrefix, RepositoryCoordinator repositoryCoordinator, String name, String scope,
                                           List<MetadataObject> metadataObjects, List<MetadataTable> metadataTables) {
         super(tablePrefix, repositoryCoordinator, name, scope, metadataObjects, metadataTables);
         ConnectionConfiguration.getInstance().init(this);
-        environmentConfiguration = new EnvironmentConfiguration();
-        impersonationConfiguration = new ImpersonationConfiguration();
+        environmentConfiguration = EnvironmentConfiguration.getInstance();
+        impersonationConfiguration = ImpersonationConfiguration.getInstance();
     }
 
     @Override

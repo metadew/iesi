@@ -18,7 +18,7 @@ public class EnvironmentLookup implements LookupInstruction {
     private final EnvironmentParameterConfiguration environmentParameterConfiguration;
 
     public EnvironmentLookup() {
-        environmentParameterConfiguration = new EnvironmentParameterConfiguration();}
+        environmentParameterConfiguration = EnvironmentParameterConfiguration.getInstance();}
 
     @Override
     public String getKeyword() {

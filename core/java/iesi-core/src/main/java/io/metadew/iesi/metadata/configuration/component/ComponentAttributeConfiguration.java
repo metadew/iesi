@@ -9,6 +9,7 @@ import io.metadew.iesi.metadata.definition.component.ComponentAttribute;
 import io.metadew.iesi.metadata.definition.component.ComponentVersion;
 import io.metadew.iesi.metadata.definition.component.key.ComponentAttributeKey;
 import io.metadew.iesi.metadata.execution.MetadataControl;
+import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -43,7 +44,11 @@ public class ComponentAttributeConfiguration extends Configuration<ComponentAttr
         this.setComponentAttribute(componentAttribute);
     }
 
-    public ComponentAttributeConfiguration() {
+    private ComponentAttributeConfiguration() {
+    }
+
+    public void init(MetadataRepository metadataRepository){
+        setMetadataRepository(metadataRepository);
     }
 
     @Override

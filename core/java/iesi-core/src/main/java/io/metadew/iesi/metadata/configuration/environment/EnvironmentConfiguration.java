@@ -11,6 +11,7 @@ import io.metadew.iesi.metadata.definition.environment.Environment;
 import io.metadew.iesi.metadata.definition.environment.EnvironmentParameter;
 import io.metadew.iesi.metadata.definition.environment.key.EnvironmentKey;
 import io.metadew.iesi.metadata.execution.MetadataControl;
+import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -34,7 +35,12 @@ public class EnvironmentConfiguration extends Configuration<Environment, Environ
         return INSTANCE;
     }
 
-    public EnvironmentConfiguration() {}
+    private EnvironmentConfiguration() {}
+
+    public void init(MetadataRepository metadataRepository){
+        setMetadataRepository(metadataRepository);
+        EnvironmentParameterConfiguration.getInstance().init(metadataRepository);
+    }
 
     @Override
     public Optional<Environment> get(EnvironmentKey metadataKey) {
@@ -73,7 +79,7 @@ public class EnvironmentConfiguration extends Configuration<Environment, Environ
                 + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("Environments") + " where ENV_NM = '"
                 + environmentName + "'";
         CachedRowSet crsEnvironment = MetadataControl.getInstance().getConnectivityMetadataRepository().executeQuery(queryEnvironment, "reader");
-        EnvironmentParameterConfiguration environmentParameterConfiguration = new EnvironmentParameterConfiguration();
+        EnvironmentParameterConfiguration environmentParameterConfiguration = EnvironmentParameterConfiguration.getInstance();
         try {
             while (crsEnvironment.next()) {
                 // Get parameters
@@ -180,7 +186,7 @@ public class EnvironmentConfiguration extends Configuration<Environment, Environ
     }
 
     public List<String> getInsertStatement(Environment environment) {
-        EnvironmentParameterConfiguration environmentParameterConfiguration = new EnvironmentParameterConfiguration();
+        EnvironmentParameterConfiguration environmentParameterConfiguration = EnvironmentParameterConfiguration.getInstance();
         List<String> queries = new ArrayList<>();
         queries.add("INSERT INTO " + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("Environments") +
                 " (ENV_NM, ENV_DSC) VALUES (" +

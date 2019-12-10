@@ -8,6 +8,7 @@ import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistExce
 import io.metadew.iesi.metadata.definition.environment.EnvironmentParameter;
 import io.metadew.iesi.metadata.definition.environment.key.EnvironmentParameterKey;
 import io.metadew.iesi.metadata.execution.MetadataControl;
+import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -34,14 +35,12 @@ public class EnvironmentParameterConfiguration extends Configuration<Environment
         return INSTANCE;
     }
 
-    // Constructors
-    public EnvironmentParameterConfiguration(EnvironmentParameter environmentParameter) {
-        this.setEnvironmentParameter(environmentParameter);
+    private EnvironmentParameterConfiguration() {
     }
 
-    public EnvironmentParameterConfiguration() {
+    public void init(MetadataRepository metadataRepository){
+        setMetadataRepository(metadataRepository);
     }
-
 
 
     @Override

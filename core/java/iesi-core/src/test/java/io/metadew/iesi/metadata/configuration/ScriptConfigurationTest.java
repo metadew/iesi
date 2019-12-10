@@ -27,22 +27,11 @@ public class ScriptConfigurationTest {
     @Before
     public void setup() {
         this.designMetadataRepository = RepositoryTestSetup.getDesignMetadataRepository();
-//        configurationTestSetup.executeSetup("DesignObjects.json", "DesignTables.json");
-//
-//        configurationTestSetup.getDesignMetadataRepository().setMetadataObjects(
-//                configurationTestSetup.getMetadataObjects()
-//        );
-//        configurationTestSetup.getDesignMetadataRepository().setMetadataTables(
-//                configurationTestSetup.getMetadataTables()
-//        );
-//        configurationTestSetup.getDesignMetadataRepository().createAllTables();
-//        scriptConfiguration.setMetadataRepository(configurationTestSetup.getDesignMetadataRepository());
     }
 
     @After
     public void clearDatabase() {
         designMetadataRepository.cleanAllTables();
-        // configurationTestSetup.getDesignMetadataRepository().dropAllTables();
     }
 
     @Test

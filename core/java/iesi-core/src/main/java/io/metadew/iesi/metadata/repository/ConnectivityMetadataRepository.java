@@ -23,20 +23,19 @@ import java.util.List;
 
 public class ConnectivityMetadataRepository extends MetadataRepository {
     private static final Logger LOGGER = LogManager.getLogger();
-    private final ConnectionConfiguration connectionConfiguration;
     private final EnvironmentConfiguration environmentConfiguration;
     private final ImpersonationConfiguration impersonationConfiguration;
 
     public ConnectivityMetadataRepository(String name, String scope, String instanceName, RepositoryCoordinator repositoryCoordinator) {
         super(name, scope, instanceName, repositoryCoordinator);
-        connectionConfiguration = new ConnectionConfiguration();
+        ConnectionConfiguration.getInstance().init(this);
         environmentConfiguration = new EnvironmentConfiguration();
         impersonationConfiguration = new ImpersonationConfiguration();
     }
 
     public ConnectivityMetadataRepository(String name, String instanceName, RepositoryCoordinator repositoryCoordinator) {
         super(name, instanceName, repositoryCoordinator);
-        connectionConfiguration = new ConnectionConfiguration();
+        ConnectionConfiguration.getInstance().init(this);
         environmentConfiguration = new EnvironmentConfiguration();
         impersonationConfiguration = new ImpersonationConfiguration();
     }
@@ -44,7 +43,7 @@ public class ConnectivityMetadataRepository extends MetadataRepository {
     public ConnectivityMetadataRepository(String tablePrefix, RepositoryCoordinator repositoryCoordinator, String name, String scope,
                                           List<MetadataObject> metadataObjects, List<MetadataTable> metadataTables) {
         super(tablePrefix, repositoryCoordinator, name, scope, metadataObjects, metadataTables);
-        connectionConfiguration = new ConnectionConfiguration();
+        ConnectionConfiguration.getInstance().init(this);
         environmentConfiguration = new EnvironmentConfiguration();
         impersonationConfiguration = new ImpersonationConfiguration();
     }
@@ -94,12 +93,12 @@ public class ConnectivityMetadataRepository extends MetadataRepository {
         LOGGER.info(MessageFormat.format("Inserting connection {0}-{1} into connectivity repository",
                 connection.getName(), connection.getEnvironment()));
         try {
-            connectionConfiguration.insert(connection);
+            ConnectionConfiguration.getInstance().insert(connection);
         } catch (MetadataAlreadyExistsException e1) {
             LOGGER.info(MessageFormat.format("Connection {0}-{1} already exists in connectivity repository. Updating connection {0}-{1} instead.",
                     connection.getName(), connection.getEnvironment()));
             try {
-                connectionConfiguration.update(connection);
+                ConnectionConfiguration.getInstance().update(connection);
             } catch (MetadataDoesNotExistException e2) {
                 StringWriter stackTrace = new StringWriter();
                 e2.printStackTrace(new PrintWriter(stackTrace));

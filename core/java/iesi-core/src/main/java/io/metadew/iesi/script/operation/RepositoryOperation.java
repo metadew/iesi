@@ -63,8 +63,7 @@ public class RepositoryOperation {
         }
 
         // Get Connection
-        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
-        Connection connection = connectionConfiguration.get(this.getRepositoryInstanceConnectionName().getValue(),this.getExecutionControl().getEnvName()).get();
+        Connection connection = ConnectionConfiguration.getInstance().get(this.getRepositoryInstanceConnectionName().getValue(),this.getExecutionControl().getEnvName()).get();
         ConnectionOperation connectionOperation = new ConnectionOperation();
         this.setRepositoryDatabaseInstance(connectionOperation
                 .getDatabase(connection));

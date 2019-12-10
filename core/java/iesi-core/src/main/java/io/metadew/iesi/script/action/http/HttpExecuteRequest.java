@@ -209,8 +209,7 @@ public class HttpExecuteRequest {
         if (connectionName == null) {
             return null;
         } else if (connectionName instanceof Text) {
-            ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
-            return proxyConnection = connectionConfiguration.get(((Text) connectionName).getString(), executionControl.getEnvName())
+            return proxyConnection = ConnectionConfiguration.getInstance().get(((Text) connectionName).getString(), executionControl.getEnvName())
                     .map(ProxyConnection::from)
                     .orElseThrow(() -> new RuntimeException(MessageFormat.format("Cannot find connection {0}", ((Text) connectionName).getString())));
         } else {

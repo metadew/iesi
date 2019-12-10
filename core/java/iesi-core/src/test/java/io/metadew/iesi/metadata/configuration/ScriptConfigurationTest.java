@@ -40,7 +40,7 @@ public class ScriptConfigurationTest {
     }
 
     @After
-    public void clearDatabase(){
+    public void clearDatabase() {
         designMetadataRepository.cleanAllTables();
         // configurationTestSetup.getDesignMetadataRepository().dropAllTables();
     }
@@ -51,7 +51,7 @@ public class ScriptConfigurationTest {
     }
 
     @Test
-    public void scriptExistsTest() throws ScriptAlreadyExistsException{
+    public void scriptExistsTest() throws ScriptAlreadyExistsException {
         List<Action> actions = new ArrayList<>();
         actions.add(new Action(new ActionKey("1", 1, "1"), 1, "fwk.dummy",
                 "dummy", "dummy", "", "", "", "", "",
@@ -63,6 +63,6 @@ public class ScriptConfigurationTest {
                 new ArrayList<>(), actions);
         ScriptConfiguration.getInstance().insert(script);
         assertTrue(ScriptConfiguration.getInstance().exists("testScriptExist", 1));
-        }
-
     }
+
+}

@@ -34,9 +34,10 @@ public class RepositoryTestSetup {
     }
 
     public static ConnectivityMetadataRepository getConnectivityMetadataRepository() {
-        // return new ConnectivityMetadataRepository("", getRepositoryCoordinator(), "", "",
-        //        getMetadataObjects(CONNECTIVITY_OBJECTS), getMetadataTables(CONNECTIVITY_TABLES));
-        return null;
+        ConnectivityMetadataRepository connectivityMetadataRepository = new ConnectivityMetadataRepository("", getRepositoryCoordinator(), "", "",
+                getMetadataObjects(CONNECTIVITY_OBJECTS), getMetadataTables(CONNECTIVITY_TABLES));
+        connectivityMetadataRepository.createAllTables();
+        return connectivityMetadataRepository;
     }
 
     private static List<MetadataTable> getMetadataTables(String tableDefinitions) {

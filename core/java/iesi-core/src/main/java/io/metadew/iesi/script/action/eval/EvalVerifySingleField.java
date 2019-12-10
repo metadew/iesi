@@ -148,8 +148,7 @@ public class EvalVerifySingleField {
 
     private boolean verifySingleField(String databaseName, String schemaName, String tableName, String fieldName, String checkName, String checkName1, String checkValue, String checkOperatorName, String connectionName) throws SQLException {
         // Get Connection
-        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
-        Connection connection = connectionConfiguration.get(connectionName, this.getExecutionControl().getEnvName()).get();
+        Connection connection = ConnectionConfiguration.getInstance().get(connectionName, this.getExecutionControl().getEnvName()).get();
         ConnectionOperation connectionOperation = new ConnectionOperation();
         Database database = connectionOperation.getDatabase(connection);
 

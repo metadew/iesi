@@ -285,8 +285,7 @@ public class HostConnection {
                     HostConnection hostConnection = null;
                     if (i < jumphostConnections.length) {
                         jumphostConnection = jumphostConnections[i];
-                        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
-                        Connection connection = connectionConfiguration
+                        Connection connection = ConnectionConfiguration.getInstance()
                                 .get(jumphostConnection, shellCommandSettings.getEnvironment()).get();
                         ConnectionOperation connectionOperation = new ConnectionOperation();
                         hostConnection = connectionOperation.getHostConnection(connection);
@@ -534,8 +533,7 @@ public class HostConnection {
                     HostConnection hostConnection = null;
                     if (i < jumphostConnections.length) {
                         jumphostConnection = jumphostConnections[i];
-                        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
-                        Connection connection = connectionConfiguration
+                        Connection connection = ConnectionConfiguration.getInstance()
                                 .get(jumphostConnection, shellCommandSettings.getEnvironment()).get();
                         ConnectionOperation connectionOperation = new ConnectionOperation();
                         hostConnection = connectionOperation.getHostConnection(connection);
@@ -754,8 +752,7 @@ public class HostConnection {
                     HostConnection hostConnection = null;
                     if (i < jumphostConnections.length) {
                         jumphostConnection = jumphostConnections[i];
-                        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
-                        Connection connection = connectionConfiguration
+                        Connection connection = ConnectionConfiguration.getInstance()
                                 .get(jumphostConnection, shellCommandSettings.getEnvironment()).get();
                         ConnectionOperation connectionOperation = new ConnectionOperation();
                         hostConnection = connectionOperation.getHostConnection(connection);

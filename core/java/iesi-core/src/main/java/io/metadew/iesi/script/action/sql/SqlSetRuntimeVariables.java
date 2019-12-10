@@ -63,8 +63,7 @@ public class SqlSetRuntimeVariables {
             String query = convertQuery(sqlQuery.getValue());
             String connectionName = convertConnectionName(this.connectionName.getValue());
             // Get Connection
-            ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
-            Connection connection = connectionConfiguration.get(connectionName,
+            Connection connection = ConnectionConfiguration.getInstance().get(connectionName,
                     this.executionControl.getEnvName())
                     .orElseThrow(() -> new RuntimeException("Could not find connection " + connectionName));
             ConnectionOperation connectionOperation = new ConnectionOperation();

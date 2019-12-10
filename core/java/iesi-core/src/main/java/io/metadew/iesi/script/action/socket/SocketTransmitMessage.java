@@ -153,8 +153,7 @@ public class SocketTransmitMessage {
 
     private SocketConnection convertSocket(DataType socket) {
         if (socket instanceof Text) {
-            ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
-            return connectionConfiguration.get(((Text) socket).getString(), executionControl.getEnvName())
+            return ConnectionConfiguration.getInstance().get(((Text) socket).getString(), executionControl.getEnvName())
                     .map(SocketConnection::from)
                     .orElseThrow(() -> new RuntimeException(MessageFormat.format("Cannot find connection {0}", ((Text) socket).getString())));
         } else {

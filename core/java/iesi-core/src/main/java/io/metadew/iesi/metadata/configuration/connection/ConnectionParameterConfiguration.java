@@ -7,6 +7,7 @@ import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistExce
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionParameterKey;
 import io.metadew.iesi.metadata.execution.MetadataControl;
+import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -33,8 +34,14 @@ public class ConnectionParameterConfiguration extends Configuration<ConnectionPa
         return INSTANCE;
     }
 
-    public ConnectionParameterConfiguration() {
+    private ConnectionParameterConfiguration() {    }
+
+
+    public void init(MetadataRepository metadataRepository) {
+        setMetadataRepository(metadataRepository);
     }
+
+
 
     @Override
     public Optional<ConnectionParameter> get(ConnectionParameterKey metadataKey) {

@@ -121,8 +121,7 @@ public class SqlExecuteProcedure {
     private boolean execute(String sqlProcedure, String connectionName, String sqlParameters, String outputDatasetReferenceName, boolean appendOutput) throws SQLException {
 
         // Get Connection
-        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
-        Connection connection = connectionConfiguration
+        Connection connection = ConnectionConfiguration.getInstance()
                 .get(connectionName, this.getExecutionControl().getEnvName()).get();
         ConnectionOperation connectionOperation = new ConnectionOperation();
         Database database = connectionOperation.getDatabase(connection);

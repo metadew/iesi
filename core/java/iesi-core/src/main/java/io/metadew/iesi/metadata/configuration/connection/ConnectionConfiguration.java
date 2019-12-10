@@ -2,7 +2,6 @@ package io.metadew.iesi.metadata.configuration.connection;
 
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
-import io.metadew.iesi.metadata.configuration.MetadataConfiguration;
 import io.metadew.iesi.metadata.configuration.connection.exception.ConnectionAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.connection.exception.ConnectionDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
@@ -10,7 +9,7 @@ import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistExce
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
-import io.metadew.iesi.metadata.execution.MetadataControl;
+import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -25,7 +24,6 @@ import java.util.Optional;
 
 public class ConnectionConfiguration extends Configuration<Connection, ConnectionKey> {
 
-    private final ConnectionParameterConfiguration connectionParameterConfiguration;
     private static ConnectionConfiguration INSTANCE;
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -36,15 +34,20 @@ public class ConnectionConfiguration extends Configuration<Connection, Connectio
         return INSTANCE;
     }
 
-    public ConnectionConfiguration() {
-        this.connectionParameterConfiguration = new ConnectionParameterConfiguration();
+    private ConnectionConfiguration() {
+    }
+
+
+    public void init(MetadataRepository metadataRepository) {
+        setMetadataRepository(metadataRepository);
+        ConnectionParameterConfiguration.getInstance().init(metadataRepository);
     }
 
     @Override
     public Optional<Connection> get(ConnectionKey metadataKey) {
         try {
             String query = "select CONN_NM, CONN_TYP_NM, CONN_DSC, ENV_NM from " +
-                    MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("Connections") +
+                    getMetadataRepository().getTableNameByLabel("Connections") +
                     " WHERE " +
                     " CONN_NM  = " + metadataKey.getName() + " AND " +
                     " ENV_NM = " + metadataKey.getEnvironment() + ";";
@@ -71,7 +74,7 @@ public class ConnectionConfiguration extends Configuration<Connection, Connectio
         List<ConnectionParameter> connectionParameters = new ArrayList<>();
         try {
             String query = "select CONN_PAR_NM, CONN_PAR_VAL  from " +
-                    MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("ConnectionParameters") +
+                    getMetadataRepository().getTableNameByLabel("ConnectionParameters") +
                     " WHERE " +
                     " CONN_NM  = " + connectionKey.getName() + " AND " +
                     " ENV_NM = " + connectionKey.getEnvironment() + ";";
@@ -92,9 +95,9 @@ public class ConnectionConfiguration extends Configuration<Connection, Connectio
     @Override
     public List<Connection> getAll() {
         List<Connection> connections = new ArrayList<>();
-        String query = "select * from " + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("Connections")
+        String query = "select * from " + getMetadataRepository().getTableNameByLabel("Connections")
                 + " order by CONN_NM ASC";
-        CachedRowSet crs = MetadataControl.getInstance().getConnectivityMetadataRepository().executeQuery(query, "reader");
+        CachedRowSet crs = getMetadataRepository().executeQuery(query, "reader");
         try {
             while (crs.next()) {
                 ConnectionKey connectionKey = new ConnectionKey(crs.getString("CONN_NM"), crs.getString("ENV_NM"));
@@ -130,18 +133,18 @@ public class ConnectionConfiguration extends Configuration<Connection, Connectio
         try {
             List<String> queries = new ArrayList<>();
 
-            queries.add("DELETE FROM " + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("ConnectionParameters") +
+            queries.add("DELETE FROM " + getMetadataRepository().getTableNameByLabel("ConnectionParameters") +
                     " WHERE CONN_NM = " + SQLTools.GetStringForSQL(name)
                     + "AND ENV_NM = " + SQLTools.GetStringForSQL(environment) + ";");
 
             // If this was the last remaining connection with name CONN_NM, remove entirely from connections
             String countQuery = "SELECT COUNT(DISTINCT ENV_NM ) AS total_environments FROM "
-                    + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("ConnectionParameters")
+                    + getMetadataRepository().getTableNameByLabel("ConnectionParameters")
                     + " WHERE ENV_NM != " + SQLTools.GetStringForSQL(environment) + ";";
-            CachedRowSet crs = MetadataControl.getInstance().getConnectivityMetadataRepository().executeQuery(countQuery, "reader");
+            CachedRowSet crs = getMetadataRepository().executeQuery(countQuery, "reader");
 
             if (crs.next() && Integer.parseInt(crs.getString("total_environments")) == 0) {
-                queries.add("DELETE FROM " + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("Connections") +
+                queries.add("DELETE FROM " + getMetadataRepository().getTableNameByLabel("Connections") +
                         " WHERE CONN_NM = " + SQLTools.GetStringForSQL(name) + ";");
             }
 
@@ -178,7 +181,7 @@ public class ConnectionConfiguration extends Configuration<Connection, Connectio
             queries.add(insertStatement(connection));
         }
         for (ConnectionParameter connectionParameter : connection.getParameters()) {
-            queries.add(connectionParameterConfiguration.getInsertStatement(connection.getName(), connection.getEnvironment(), connectionParameter));
+            queries.add(ConnectionParameterConfiguration.getInstance().getInsertStatement(connection.getName(), connection.getEnvironment(), connectionParameter));
         }
 
         return queries;

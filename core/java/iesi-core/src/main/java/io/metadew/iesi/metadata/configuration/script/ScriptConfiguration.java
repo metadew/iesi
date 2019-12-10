@@ -93,13 +93,21 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
     @Override
     public List<Script> getAll() {
         List<Script> scripts = new ArrayList<>();
-        String queryScript = "select SCRIPT_ID, SCRIPT_NM from "
-                + getMetadataRepository().getTableNameByLabel("Scripts");
+        String queryScript = "select * from "
+                + getMetadataRepository().getTableNameByLabel("Scripts")
+                + " order by SCRIPT_NM ASC";
         CachedRowSet crsScript = getMetadataRepository().executeQuery(queryScript, "reader");
 
         try {
             while (crsScript.next()) {
-                scripts.addAll(getByName(crsScript.getString("SCRIPT_NM")));
+                String scriptId = crsScript.getString("SCRIPT_ID");
+                List<ScriptVersion> scriptVersions = ScriptVersionConfiguration.getInstance().getAllVersionsOfScript(scriptId);
+                for (ScriptVersion scriptVersion : scriptVersions){
+                    Optional<Script> currentScriptOpt = createScript(crsScript, scriptVersion.getNumber());
+                    currentScriptOpt.ifPresent(scripts::add);
+                }
+
+
             }
         } catch (SQLException e) {
             StringWriter stackTrace = new StringWriter();
@@ -108,6 +116,55 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
             LOGGER.info("exception.stacktrace=" + stackTrace.toString());
         }
         return scripts;
+    }
+
+    private Optional<Script> createScript(CachedRowSet crsScript, long versionNumber){
+        try {
+            String scriptId = crsScript.getString("SCRIPT_ID");
+            // Get the version
+            Optional<ScriptVersion> scriptVersion = ScriptVersionConfiguration.getInstance().getScriptVersion(scriptId, versionNumber);
+            if (!scriptVersion.isPresent()) {
+                return Optional.empty();
+            }
+
+            // Get the actions
+            List<Action> actions = new ArrayList<>();
+            String queryActions = "select SCRIPT_ID, SCRIPT_VRS_NB, ACTION_ID, ACTION_NB from "
+                    + getMetadataRepository().getTableNameByLabel("Actions")
+                    + " where SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptId) + " and SCRIPT_VRS_NB = " + versionNumber
+                    + " order by ACTION_NB asc ";
+            CachedRowSet crsActions = getMetadataRepository().executeQuery(queryActions, "reader");
+
+            while (crsActions.next()) {
+                Optional<Action> action = ActionConfiguration.getInstance().get(scriptId, scriptVersion.get().getNumber(), crsActions.getString("ACTION_ID"));
+                if (action.isPresent()) {
+                    actions.add(action.get());
+                } else {
+                    LOGGER.debug(MessageFormat.format("Cannot retrieve action {0} for script {1}-{2}.", crsActions.getString("ACTION_ID"), scriptId, versionNumber));
+                }
+            }
+            crsActions.close();
+
+            // Get parameters
+            String queryScriptParameters = "select SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_PAR_NM, SCRIPT_PAR_VAL from "
+                    + getMetadataRepository().getTableNameByLabel("ScriptParameters")
+                    + " where SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptId) + " and SCRIPT_VRS_NB = " + versionNumber;
+            CachedRowSet crsScriptParameters = getMetadataRepository()
+                    .executeQuery(queryScriptParameters, "reader");
+            List<ScriptParameter> scriptParameters = new ArrayList<>();
+            while (crsScriptParameters.next()) {
+                ScriptParameterKey scriptParameterKey = new ScriptParameterKey(scriptId, scriptVersion.get().getNumber(),
+                        crsScriptParameters.getString("SCRIPT_PAR_NM"));
+                scriptParameters.add(new ScriptParameter(scriptParameterKey,
+                        crsScriptParameters.getString("SCRIPT_PAR_VAL")));
+            }
+            crsScriptParameters.close();
+            Script script = new Script(scriptId, crsScript.getString("SCRIPT_TYP_NM"), crsScript.getString("SCRIPT_NM"), crsScript.getString("SCRIPT_DSC"),
+                    scriptVersion.get(), scriptParameters, actions);
+            return Optional.of(script);
+        }catch(SQLException e){
+            return Optional.empty();
+        }
     }
 
     @Override

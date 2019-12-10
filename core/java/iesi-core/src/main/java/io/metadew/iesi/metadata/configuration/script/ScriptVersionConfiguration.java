@@ -1,11 +1,13 @@
 package io.metadew.iesi.metadata.configuration.script;
 
 import io.metadew.iesi.connection.tools.SQLTools;
+import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.script.exception.ScriptVersionAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.script.exception.ScriptVersionDoesNotExistException;
+import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.metadata.definition.script.ScriptVersion;
 import io.metadew.iesi.metadata.definition.script.key.ScriptVersionKey;
 import io.metadew.iesi.metadata.execution.MetadataControl;
@@ -80,6 +82,36 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
     @Override
     public void insert(ScriptVersion metadata) throws MetadataAlreadyExistsException {
         insert(metadata.getMetadataKey().getScriptId(), metadata);
+    }
+
+    public List<ScriptVersion> getAllVersionsOfScript(String scriptId){
+        List<ScriptVersion> scriptVersions = new ArrayList<>();
+        String queryVersionScript = "select * from "
+                + getMetadataRepository().getTableNameByLabel("ScriptVersions")
+                + " WHERE SCRIPT_ID = " + scriptId;
+        CachedRowSet crsVersionScript = getMetadataRepository().executeQuery(queryVersionScript, "reader");
+        try{
+            while (crsVersionScript.next()){
+                Optional<ScriptVersion> scriptVersionOpt = createScriptVersion(crsVersionScript);
+                scriptVersionOpt.ifPresent(scriptVersions::add);
+            }
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+        return scriptVersions;
+
+    }
+
+    private Optional<ScriptVersion> createScriptVersion(CachedRowSet crsVersionScript){
+        try{
+            ScriptVersion scriptVersion = new ScriptVersion(
+                    crsVersionScript.getString("SCRIPT_ID"),
+                    crsVersionScript.getLong("SCRIPT_VRS_NB"),
+                    crsVersionScript.getString("SCRIPT_VRS_DSC"));
+            return Optional.of(scriptVersion);
+        }catch(SQLException e){
+            return Optional.empty();
+        }
     }
 
     public void insert(String scriptId, ScriptVersion scriptVersion) throws ScriptVersionAlreadyExistsException {

@@ -49,15 +49,15 @@ public class ActionParameterConfiguration extends Configuration<ActionParameter,
     @Override
     public List<ActionParameter> getAll() {
         List<ActionParameter> actionParameters = new ArrayList<>();
-        String query = "select * from " + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("ActionParameters")
+        String query = "select * from " + getMetadataRepository().getTableNameByLabel("ActionParameters")
                 + " order by ACTION_ID ASC";
-        CachedRowSet crs = MetadataControl.getInstance().getConnectivityMetadataRepository().executeQuery(query, "reader");
+        CachedRowSet crs = getMetadataRepository().executeQuery(query, "reader");
         try {
             while (crs.next()) {
                 ActionParameterKey actionParameterKey = new ActionParameterKey(
                         crs.getString("SCRIPT_ID"),
                         crs.getLong("SCRIPT_VRS_NB"),
-                        crs.getString("ACTION_NM"),
+                        crs.getString("ACTION_ID"),
                         crs.getString("ACTION_PAR_NM"));
                 actionParameters.add(new ActionParameter(actionParameterKey, crs.getString("ACTION_PAR_VAL")));
             }

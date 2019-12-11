@@ -8,9 +8,9 @@ public class ActionParameterKey extends MetadataKey {
     private String scriptId;
     private long scriptVersionNumber;
 
-    public ActionParameterKey(String scriptId, long scriptVersionNumber, String actionId, String actionName) {
+    public ActionParameterKey(String scriptId, long scriptVersionNumber, String actionId, String actionParameterName) {
         this.actionId = actionId;
-        this.actionName = actionName;
+        this.actionName = actionParameterName;
         this.scriptId = scriptId;
         this.scriptVersionNumber = scriptVersionNumber;
     }

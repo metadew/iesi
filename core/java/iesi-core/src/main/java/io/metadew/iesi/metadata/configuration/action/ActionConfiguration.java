@@ -54,9 +54,9 @@ public class ActionConfiguration extends Configuration<Action, ActionKey> {
     @Override
     public List<Action> getAll() {
         List<Action> actions = new ArrayList<>();
-        String query = "select * from " + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("Actions")
+        String query = "select * from " + getMetadataRepository().getTableNameByLabel("Actions")
                 + " order by ACTION_NM ASC";
-        CachedRowSet crs = MetadataControl.getInstance().getConnectivityMetadataRepository().executeQuery(query, "reader");
+        CachedRowSet crs = getMetadataRepository().executeQuery(query, "reader");
         try {
             while (crs.next()) {
                 ActionKey actionKey = new ActionKey(crs.getString("SCRIPT_ID"), crs.getLong("SCRIPT_VRS_NB"),
@@ -89,12 +89,12 @@ public class ActionConfiguration extends Configuration<Action, ActionKey> {
     private List<ActionParameter> getAllLinkedActionParameters(ActionKey actionKey){
         List<ActionParameter> actionParameters = new ArrayList<>();
         try {
-            String query = "select ACTION_PAR_NM, ACTION_PAR_VAL  from " +
-                    MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("ActionParameters") +
-                    " WHERE " +
-                    " SCRIPT_ID  = " + actionKey.getScriptId() + " AND " +
-                    " SCRIPT_VRS_NB  = " + actionKey.getScriptVersionNumber() + " AND " +
-                    " ACTION_ID = " + actionKey.getActionId() + ";";
+            String query = "select ACTION_PAR_NM, ACTION_PAR_VAL from " +
+                    getMetadataRepository().getTableNameByLabel("ActionParameters") +
+                    " WHERE" +
+                    " SCRIPT_ID  = " + SQLTools.GetStringForSQL(actionKey.getScriptId()) + " AND" +
+                    " SCRIPT_VRS_NB  = " + actionKey.getScriptVersionNumber() + " AND" +
+                    " ACTION_ID = " + SQLTools.GetStringForSQL(actionKey.getActionId()) + ";";
             CachedRowSet crsActionParameters = getMetadataRepository().executeQuery(query, "reader");
             while (crsActionParameters.next()) {
                 ActionParameterKey actionParameterKey = new ActionParameterKey(actionKey.getScriptId(), actionKey.getScriptVersionNumber(),

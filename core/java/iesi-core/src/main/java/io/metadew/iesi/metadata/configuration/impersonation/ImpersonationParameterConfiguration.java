@@ -50,8 +50,8 @@ public class ImpersonationParameterConfiguration extends Configuration<Impersona
     public List<ImpersonationParameter> getAll() {
         try {
             List<ImpersonationParameter> impersonationParameters = new ArrayList<>();
-            String query = "select RUN_ID, PRC_ID, ACTION_ID, OUT_NM, OUT_VAL from "
-                    + getMetadataRepository().getTableNameByLabel("ActionResultOutputs") + ";";
+            String query = "select IMP_NM, CONN_NM, CONN_IMP_NM, CONN_IMP_DSC from "
+                    + getMetadataRepository().getTableNameByLabel("ImpersonationParameters") + ";";
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
             while (cachedRowSet.next()) {
                 impersonationParameters.add(new ImpersonationParameter(new ImpersonationParameterKey(
@@ -94,19 +94,20 @@ public class ImpersonationParameterConfiguration extends Configuration<Impersona
     }
 
     public String getInsertStatement(String impersonationName, ImpersonationParameter impersonationParameter) {
-        return "INSERT INTO " + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("ImpersonationParameters") +
+        String query =  "INSERT INTO " + getMetadataRepository().getTableNameByLabel("ImpersonationParameters") +
                 " (IMP_NM, CONN_NM, CONN_IMP_NM, CONN_IMP_DSC) VALUES (" +
                 SQLTools.GetStringForSQL(impersonationName) + "," +
                 SQLTools.GetStringForSQL(impersonationParameter.getConnection()) + "," +
                 SQLTools.GetStringForSQL(impersonationParameter.getImpersonatedConnection()) +  "," +
                 SQLTools.GetStringForSQL(impersonationParameter.getDescription()) + ");";
+        return query;
     }
 
     // Insert
     public String getInsertStatement(String impersonationName) {
         String sql = "";
 
-        sql += "INSERT INTO " + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("ImpersonationParameters");
+        sql += "INSERT INTO " + getMetadataRepository().getTableNameByLabel("ImpersonationParameters");
         sql += " (IMP_NM, CONN_NM, CONN_IMP_NM, CONN_IMP_DSC) ";
         sql += "VALUES ";
         sql += "(";
@@ -125,9 +126,9 @@ public class ImpersonationParameterConfiguration extends Configuration<Impersona
 
     Optional<ImpersonationParameter> getImpersonationParameter(String impersonationName, String impersonationParameterName) {
         try {
-            String queryImpersonationParameter = "select IMP_NM, CONN_NM, CONN_IMP_NM, CONN_IMP_DSC from " + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("ImpersonationParameters")
+            String queryImpersonationParameter = "select IMP_NM, CONN_NM, CONN_IMP_NM, CONN_IMP_DSC from " + getMetadataRepository().getTableNameByLabel("ImpersonationParameters")
                     + " where IMP_NM = '" + impersonationName + "' and CONN_NM = '" + impersonationParameterName + "'";
-            CachedRowSet crsImpersonationParameter = MetadataControl.getInstance().getConnectivityMetadataRepository().executeQuery(queryImpersonationParameter, "reader");
+            CachedRowSet crsImpersonationParameter = getMetadataRepository().executeQuery(queryImpersonationParameter, "reader");
             ImpersonationParameterKey impersonationParameterKey = new ImpersonationParameterKey(impersonationName, impersonationParameterName);
             if (crsImpersonationParameter.size() == 0) {
                 return Optional.empty();

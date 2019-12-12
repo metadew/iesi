@@ -127,7 +127,7 @@ public class ScriptConfigurationTest {
         assertEquals(checkScript.get().getDescription(), newDescription);
     }
 
-    public Script createScript(){
+    private Script createScript(){
         List<Action> actions = new ArrayList<>();
         actions.add(new Action(new ActionKey("2", 1, "1"), 1, "fwk.dummy",
                 "dummy", "dummy", "", "", "", "", "",

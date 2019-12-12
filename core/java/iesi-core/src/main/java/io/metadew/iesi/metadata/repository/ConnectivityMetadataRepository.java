@@ -23,29 +23,27 @@ import java.util.List;
 
 public class ConnectivityMetadataRepository extends MetadataRepository {
     private static final Logger LOGGER = LogManager.getLogger();
-    private final EnvironmentConfiguration environmentConfiguration;
-    private final ImpersonationConfiguration impersonationConfiguration;
 
     public ConnectivityMetadataRepository(String name, String scope, String instanceName, RepositoryCoordinator repositoryCoordinator) {
         super(name, scope, instanceName, repositoryCoordinator);
         ConnectionConfiguration.getInstance().init(this);
-        environmentConfiguration = EnvironmentConfiguration.getInstance();
-        impersonationConfiguration = ImpersonationConfiguration.getInstance();
+        EnvironmentConfiguration.getInstance().init(this);
+        ImpersonationConfiguration.getInstance().init(this);
     }
 
     public ConnectivityMetadataRepository(String name, String instanceName, RepositoryCoordinator repositoryCoordinator) {
         super(name, instanceName, repositoryCoordinator);
         ConnectionConfiguration.getInstance().init(this);
-        environmentConfiguration = EnvironmentConfiguration.getInstance();
-        impersonationConfiguration = ImpersonationConfiguration.getInstance();
+        EnvironmentConfiguration.getInstance().init(this);
+        ImpersonationConfiguration.getInstance().init(this);
     }
 
     public ConnectivityMetadataRepository(String tablePrefix, RepositoryCoordinator repositoryCoordinator, String name, String scope,
                                           List<MetadataObject> metadataObjects, List<MetadataTable> metadataTables) {
         super(tablePrefix, repositoryCoordinator, name, scope, metadataObjects, metadataTables);
         ConnectionConfiguration.getInstance().init(this);
-        environmentConfiguration = EnvironmentConfiguration.getInstance();
-        impersonationConfiguration = ImpersonationConfiguration.getInstance();
+        EnvironmentConfiguration.getInstance().init(this);
+        ImpersonationConfiguration.getInstance().init(this);
     }
 
     @Override
@@ -112,12 +110,12 @@ public class ConnectivityMetadataRepository extends MetadataRepository {
         LOGGER.info(MessageFormat.format("Inserting environment {0} into connectivity repository",
                 environment.getName()));
         try {
-            environmentConfiguration.insertEnvironment(environment);
+            EnvironmentConfiguration.getInstance().insertEnvironment(environment);
         } catch (EnvironmentAlreadyExistsException e) {
             LOGGER.info(MessageFormat.format("Environment {0} already exists in connectivity repository. Updating connection {0} instead.",
                     environment.getName()));
             try {
-                environmentConfiguration.updateEnvironment(environment);
+                EnvironmentConfiguration.getInstance().updateEnvironment(environment);
             } catch (EnvironmentDoesNotExistException e1) {
                 StringWriter stackTrace = new StringWriter();
                 e1.printStackTrace(new PrintWriter(stackTrace));
@@ -131,12 +129,12 @@ public class ConnectivityMetadataRepository extends MetadataRepository {
         LOGGER.info(MessageFormat.format("Inserting impersonation {0} into connectivity repository",
                 impersonation.getName()));
         try {
-            impersonationConfiguration.insertImpersonation(impersonation);
+            ImpersonationConfiguration.getInstance().insertImpersonation(impersonation);
         } catch (ImpersonationAlreadyExistsException e) {
             LOGGER.info(MessageFormat.format("Impersonation {0} already exists in connectivity repository. Updating impersonation {0} instead.",
                     impersonation.getName()));
             try {
-                impersonationConfiguration.updateImpersonation(impersonation);
+                ImpersonationConfiguration.getInstance().updateImpersonation(impersonation);
             } catch (ImpersonationDoesNotExistException e1) {
                 StringWriter stackTrace = new StringWriter();
                 e1.printStackTrace(new PrintWriter(stackTrace));

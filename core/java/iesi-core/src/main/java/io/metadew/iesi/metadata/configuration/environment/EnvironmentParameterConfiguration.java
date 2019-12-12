@@ -46,10 +46,10 @@ public class EnvironmentParameterConfiguration extends Configuration<Environment
     @Override
     public Optional<EnvironmentParameter> get(EnvironmentParameterKey metadataKey) {
         String queryEnvironmentParameter = "select ENV_NM, ENV_PAR_NM, ENV_PAR_VAL from "
-                + MetadataControl.getInstance().getConnectivityMetadataRepository()
+                + getMetadataRepository()
                 .getTableNameByLabel("EnvironmentParameters")
                 + " where ENV_NM = '" + metadataKey.getEnvironmentName() + "' and ENV_PAR_NM = '" + metadataKey.getParameterName() + "'";
-        CachedRowSet crsEnvironmentParameter = MetadataControl.getInstance().getConnectivityMetadataRepository()
+        CachedRowSet crsEnvironmentParameter = getMetadataRepository()
                 .executeQuery(queryEnvironmentParameter, "reader");
         try {
             if (crsEnvironmentParameter.size() == 0) {
@@ -71,9 +71,9 @@ public class EnvironmentParameterConfiguration extends Configuration<Environment
     @Override
     public List<EnvironmentParameter> getAll() {
         List<EnvironmentParameter> environmentParameters = new ArrayList<>();
-        String query = "select * from " + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("EnvironmentParameters")
+        String query = "select * from " + getMetadataRepository().getTableNameByLabel("EnvironmentParameters")
                 + " order by ENV_NM ASC";
-        CachedRowSet crs = MetadataControl.getInstance().getConnectivityMetadataRepository().executeQuery(query, "reader");
+        CachedRowSet crs = getMetadataRepository().executeQuery(query, "reader");
         try {
             while (crs.next()) {
                 environmentParameters.add(new EnvironmentParameter(
@@ -120,7 +120,7 @@ public class EnvironmentParameterConfiguration extends Configuration<Environment
     }
 
     public String getInsertStatement(EnvironmentParameter environmentParameter) {
-        return "INSERT INTO " + MetadataControl.getInstance().getConnectivityMetadataRepository()
+        return "INSERT INTO " + getMetadataRepository()
                 .getTableNameByLabel("EnvironmentParameters") + " (ENV_NM, ENV_PAR_NM, ENV_PAR_VAL) VALUES (" +
                 SQLTools.GetStringForSQL(environmentParameter.getMetadataKey().getEnvironmentName()) + "," +
                 SQLTools.GetStringForSQL(environmentParameter.getName()) + "," +

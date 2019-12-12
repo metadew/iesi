@@ -33,7 +33,7 @@ public class ActionConfigurationTest {
         this.designMetadataRepository = RepositoryTestSetup.getDesignMetadataRepository();
         ActionParameterKey actionParameterKey = new ActionParameterKey("1", 1,
                 "1", "firstParameter");
-        ActionParameter actionParameter = new ActionParameter(actionParameterKey, "parameter value");
+        actionParameter = new ActionParameter(actionParameterKey, "parameter value");
         List<ActionParameter> actionParameters = new ArrayList<>();
         actionParameters.add(actionParameter);
         actionKey = new ActionKey("1", 1, "1");
@@ -123,7 +123,7 @@ public class ActionConfigurationTest {
         assertTrue(checkScript.isPresent() && checkScript.get().getDescription().equals(newDescription));
     }
 
-    public Action createAction(){
+    private Action createAction(){
         ActionKey newActionKey = new ActionKey("scriptIdNb", 3, "actionId");
         return new Action(newActionKey, 1, "fwk.dummy",
                 "dummy", "dummy", "", "", "", "", "",

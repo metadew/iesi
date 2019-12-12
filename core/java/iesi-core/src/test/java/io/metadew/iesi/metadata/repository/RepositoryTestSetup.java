@@ -23,8 +23,8 @@ public class RepositoryTestSetup {
     private static final String DB_PASSWORD = "";
     private static final String DESIGN_TABLES = "io.metadew.iesi.metadata/DesignTables.json";
     private static final String DESIGN_OBJECTS = "io.metadew.iesi.metadata/DesignObjects.json";
-    private static final String CONNECTIVITY_TABLES = "io.metadew.iesi.metadata/DesignObjects.json";
-    private static final String CONNECTIVITY_OBJECTS = "io.metadew.iesi.metadata/DesignTables.json";
+    private static final String CONNECTIVITY_TABLES = "io.metadew.iesi.metadata/ConnectivityTables.json";
+    private static final String CONNECTIVITY_OBJECTS = "io.metadew.iesi.metadata/ConnectivityObjects.json";
 
     public static DesignMetadataRepository getDesignMetadataRepository() {
         DesignMetadataRepository designMetadataRepository = new DesignMetadataRepository("", getRepositoryCoordinator(), "", "",

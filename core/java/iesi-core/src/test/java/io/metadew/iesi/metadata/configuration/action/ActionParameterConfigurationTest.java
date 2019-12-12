@@ -111,7 +111,7 @@ public class ActionParameterConfigurationTest {
         assertTrue(checkScript.isPresent() && checkScript.get().getValue().equals(newValue));
     }
 
-    public ActionParameter createActionParameter(){
+    private ActionParameter createActionParameter(){
         ActionParameterKey newActionParameterKey = new ActionParameterKey("scriptIdNb", 3,
                 "actionId", "newParameter");
         return new ActionParameter(newActionParameterKey, "new parameter description");

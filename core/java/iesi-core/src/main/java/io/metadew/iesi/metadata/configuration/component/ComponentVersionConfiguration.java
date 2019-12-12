@@ -76,10 +76,10 @@ public class ComponentVersionConfiguration extends Configuration<ComponentVersio
     }
 
     private String deleteStatement(ComponentVersionKey componentVersionKey){
-        return "DELETE FROM " + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("ComponentVersions") +
+        return "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ComponentVersions") +
                 " WHERE COMP_ID = " +
                 SQLTools.GetStringForSQL(componentVersionKey.getComponentId()) +
-                "AND WHERE COMP_VRS_NB = " +
+                " AND COMP_VRS_NB = " +
                 SQLTools.GetStringForSQL(componentVersionKey.getComponentVersionNumber()) + ";";
     }
 
@@ -97,13 +97,15 @@ public class ComponentVersionConfiguration extends Configuration<ComponentVersio
     public String getInsertStatement(ComponentVersion componentVersion) {
         String sql = "";
 
-        sql += "INSERT INTO " + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("ComponentVersions");
-        sql += " (COMP_ID, COMP_VRS_NB) ";
+        sql += "INSERT INTO " + getMetadataRepository().getTableNameByLabel("ComponentVersions");
+        sql += " (COMP_ID, COMP_VRS_NB, COMP_VRS_DSC) ";
         sql += "VALUES ";
         sql += "(";
         sql += SQLTools.GetStringForSQL(componentVersion.getMetadataKey().getComponentId());
         sql += ",";
         sql += SQLTools.GetStringForSQL(componentVersion.getMetadataKey().getComponentVersionNumber());
+        sql += ",";
+        sql += SQLTools.GetStringForSQL(componentVersion.getDescription());
         sql += ")";
         sql += ";";
 
@@ -112,9 +114,9 @@ public class ComponentVersionConfiguration extends Configuration<ComponentVersio
 
 
     Optional<ComponentVersion> getComponentVersion(String componentId, long componentVersionNumber) {
-        String queryComponentVersion = "select COMP_ID, COMP_VRS_NB, COMP_VRS_DSC from " + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("ComponentVersions")
+        String queryComponentVersion = "select COMP_ID, COMP_VRS_NB, COMP_VRS_DSC from " + getMetadataRepository().getTableNameByLabel("ComponentVersions")
                 + " where COMP_ID = " + SQLTools.GetStringForSQL(componentId) + " and COMP_VRS_NB = " + SQLTools.GetStringForSQL(componentVersionNumber);
-        CachedRowSet crsComponentVersion = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(queryComponentVersion, "reader");
+        CachedRowSet crsComponentVersion = getMetadataRepository().executeQuery(queryComponentVersion, "reader");
         try {
             if (crsComponentVersion.size() == 0) {
                 return Optional.empty();
@@ -123,7 +125,8 @@ public class ComponentVersionConfiguration extends Configuration<ComponentVersio
             }
             crsComponentVersion.next();
             ComponentVersionKey componentVersionKey = new ComponentVersionKey(componentId, componentVersionNumber);
-            ComponentVersion componentVersion = new ComponentVersion(componentVersionKey, crsComponentVersion.getString("COMP_VRS_DSC"));
+            String description = crsComponentVersion.getString("COMP_VRS_DSC");
+            ComponentVersion componentVersion = new ComponentVersion(componentVersionKey, description);
             crsComponentVersion.close();
             return Optional.of(componentVersion);
         } catch (Exception e) {

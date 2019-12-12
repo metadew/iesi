@@ -53,7 +53,7 @@ public class ComponentParameterConfiguration extends Configuration<ComponentPara
     public List<ComponentParameter> getAll() {
         try {
             List<ComponentParameter> componentParameters = new ArrayList<>();
-            String query = "select RUN_ID, PRC_ID, ACTION_ID, OUT_NM, OUT_VAL from "
+            String query = "select COMP_ID, COMP_VRS_NB, COMP_PAR_NM, COMP_PAR_VAL from "
                     + getMetadataRepository().getTableNameByLabel("ComponentParameters") + ";";
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
             while (cachedRowSet.next()) {
@@ -82,12 +82,12 @@ public class ComponentParameterConfiguration extends Configuration<ComponentPara
     }
 
     private String deleteStatement(ComponentParameterKey componentParameterKey){
-        return "DELETE FROM " + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("ComponentParameters") +
+        return "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ComponentParameters") +
                 " WHERE COMP_ID = " +
                 SQLTools.GetStringForSQL(componentParameterKey.getComponentId()) +
-                "AND WHERE COMP_VRS_NB = " +
+                "AND COMP_VRS_NB = " +
                 SQLTools.GetStringForSQL(componentParameterKey.getComponentVersionNb()) +
-                "AND WHERE COMP_PAR_NM = " +
+                "AND COMP_PAR_NM = " +
                 SQLTools.GetStringForSQL(componentParameterKey.getComponentParameterName()) + ";";
     }
 
@@ -105,7 +105,7 @@ public class ComponentParameterConfiguration extends Configuration<ComponentPara
     public String getInsertStatement(ComponentParameter componentParameter) {
         String sql = "";
 
-        sql += "INSERT INTO " + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("ComponentParameters");
+        sql += "INSERT INTO " + getMetadataRepository().getTableNameByLabel("ComponentParameters");
         sql += " (COMP_ID, COMP_VRS_NB, COMP_PAR_NM, COMP_PAR_VAL) ";
         sql += "VALUES ";
         sql += "(";
@@ -124,9 +124,9 @@ public class ComponentParameterConfiguration extends Configuration<ComponentPara
 
     private Optional<ComponentParameter> getComponentParameter(String componentId, String componentParameterName, long componentVersionNumber) {
         CachedRowSet crsComponentParameter = null;
-        String queryComponentParameter = "select COMP_ID, COMP_PAR_NM, COMP_PAR_VAL from " + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("ComponentParameters")
+        String queryComponentParameter = "select COMP_ID, COMP_PAR_NM, COMP_PAR_VAL from " + getMetadataRepository().getTableNameByLabel("ComponentParameters")
                 + " where COMP_ID = " + SQLTools.GetStringForSQL(componentId) + " and COMP_PAR_NM = '" + componentParameterName + "'" + " and COMP_VRS_NB = " + componentVersionNumber;
-        crsComponentParameter = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(queryComponentParameter, "reader");
+        crsComponentParameter = getMetadataRepository().executeQuery(queryComponentParameter, "reader");
         try {
             if (crsComponentParameter.size()==0){
                 return Optional.empty();

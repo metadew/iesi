@@ -392,6 +392,58 @@
   "type" : "MetadataTable"
 }, {
   "data" : {
+    "name" : "DES_COMP_BLD",
+    "label" : "ComponentVersionBuilds",
+    "description" : "Design metadata for component versionbuilds",
+    "type" : "design",
+    "category" : "structure",
+    "migrate" : "Y",
+    "migrationKey" : "A011",
+    "fields" : [ {
+      "name" : "COMP_ID",
+      "description" : "Unique identifier for the component",
+      "order" : "1",
+      "type" : "string",
+      "length" : "255",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "COMP_VRS_NB",
+      "description" : "Unique identifier for the script version",
+      "order" : "2",
+      "type" : "number",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "COMP_BLD_NM",
+      "description" : "Name of the version build",
+      "order" : "3",
+      "type" : "string",
+      "length" : "255",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "COMP_BLD_DSC",
+      "description" : "Description of the version build",
+      "order" : "4",
+      "type" : "string",
+      "length" : "2000",
+      "nullable" : "Y",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "LOAD_TMS",
+      "description" : "Load timestamp indicating when the record was inserted in the table",
+      "order" : "5",
+      "type" : "timestamp",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : "Y"
+    } ]
+  },
+  "type" : "MetadataTable"
+}, {
+  "data" : {
     "name" : "DES_GEN",
     "label" : "Generations",
     "description" : "Design metadata for data generations",

@@ -82,12 +82,12 @@ public class ComponentBuildConfiguration extends Configuration<ComponentBuild, C
     }
 
     private String deleteStatement(ComponentBuildKey componentBuildKey){
-        return "DELETE FROM " + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("ComponentVersionBuilds") +
+        return "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ComponentVersionBuilds") +
                 " WHERE COMP_ID = " +
                 SQLTools.GetStringForSQL(componentBuildKey.getComponentId()) +
-                "AND WHERE COMP_VRS_NB = " +
+                "AND COMP_VRS_NB = " +
                 SQLTools.GetStringForSQL(componentBuildKey.getComponentVersionNb()) +
-                "AND WHERE COMP_BLD_NM = " +
+                "AND COMP_BLD_NM = " +
                 SQLTools.GetStringForSQL(componentBuildKey.getComponentBuildName()) + ";";
     }
 
@@ -106,7 +106,7 @@ public class ComponentBuildConfiguration extends Configuration<ComponentBuild, C
         String sql = "";
         ComponentBuildKey componentBuildKey = componentBuild.getMetadataKey();
 
-        sql += "INSERT INTO " + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("ComponentVersionBuilds");
+        sql += "INSERT INTO " + getMetadataRepository().getTableNameByLabel("ComponentVersionBuilds");
         sql += " (COMP_ID, COMP_VRS_NB, COMP_BLD_NM, COMP_BLD_DSC) ";
         sql += "VALUES ";
         sql += "(";
@@ -123,10 +123,12 @@ public class ComponentBuildConfiguration extends Configuration<ComponentBuild, C
         return sql;
     }
 
-    public Optional<ComponentBuild> getComponentBuild(String componentId, long componentVersionName, String componentBuildName) {
-        String queryComponentBuild = "select COMP_ID, COMP_VRS_NB, COMP_BLD_NM, COMP_BLD_DSC from " + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("ComponentVersionBuilds")
-                + " where COMP_ID = " + SQLTools.GetStringForSQL(componentId) + " and COMP_VRS_NM = '" + componentVersionName + "'" + " and COMP_BLD_NM = '" + componentBuildName + "'";
-        CachedRowSet crsComponentBuild = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(queryComponentBuild, "reader");
+    public Optional<ComponentBuild> getComponentBuild(String componentId, long componentVersionNb, String componentBuildName) {
+        String queryComponentBuild = "select COMP_ID, COMP_VRS_NB, COMP_BLD_NM, COMP_BLD_DSC from " + getMetadataRepository().getTableNameByLabel("ComponentVersionBuilds")
+                + " where COMP_ID = " + SQLTools.GetStringForSQL(componentId) + " and COMP_VRS_NB = "
+                + SQLTools.GetStringForSQL(componentVersionNb) + " and COMP_BLD_NM = "
+                + SQLTools.GetStringForSQL(componentBuildName) + ";";
+        CachedRowSet crsComponentBuild = getMetadataRepository().executeQuery(queryComponentBuild, "reader");
         try {
             if (crsComponentBuild.size()==0){
                 return Optional.empty();

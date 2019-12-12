@@ -89,6 +89,7 @@ public class ActionParameterConfigurationTest {
         assertEquals(actionParameter.getMetadataKey().getScriptId(), newActionParameter.get().getMetadataKey().getScriptId());
         assertEquals(actionParameter.getMetadataKey().getScriptVersionNumber(), newActionParameter.get().getMetadataKey().getScriptVersionNumber());
         assertEquals(actionParameter.getMetadataKey().getActionId(), newActionParameter.get().getMetadataKey().getActionId());
+        assertEquals(actionParameter.getMetadataKey().getActionName(), newActionParameter.get().getMetadataKey().getActionName());
     }
 
     @Test

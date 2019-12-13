@@ -18,8 +18,8 @@ public class ImpersonationParameterDto extends ResourceSupport {
         this.description = description;
         this.impersonation = impersonation;
     }
-    public ImpersonationParameter convertToEntity() {
-        return new ImpersonationParameter(connection, impersonation, description);
+    public ImpersonationParameter convertToEntity(String impersonationName) {
+        return new ImpersonationParameter(impersonationName, connection, impersonation, description);
     }
 
     public String getConnection() {

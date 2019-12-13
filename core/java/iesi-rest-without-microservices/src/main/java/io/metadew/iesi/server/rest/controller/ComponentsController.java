@@ -3,6 +3,7 @@ package io.metadew.iesi.server.rest.controller;
 import io.metadew.iesi.metadata.configuration.component.ComponentConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.ComponentAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.ComponentDoesNotExistException;
+import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.component.Component;
 import io.metadew.iesi.server.rest.error.DataBadRequestException;
 import io.metadew.iesi.server.rest.error.DataNotFoundException;
@@ -85,7 +86,7 @@ public class ComponentsController {
         try {
             componentConfiguration.insert(component.convertToEntity());
             return componentDtoResourceAssembler.toResource(component.convertToEntity());
-        } catch (ComponentAlreadyExistsException | SQLException e) {
+        } catch (ComponentAlreadyExistsException e) {
             e.printStackTrace();
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                     "Component " + component.getName() + " already exists");
@@ -104,8 +105,7 @@ public class ComponentsController {
                 halMultipleEmbeddedResource.add(linkTo(methodOn(ComponentsController.class)
                         .get(componentDto.getName(), componentDto.getVersion().getNumber()))
                         .withRel(componentDto.getName() + ":" + componentDto.getVersion().getNumber()));
-            } catch (ComponentDoesNotExistException | SQLException e) {
-                e.printStackTrace();
+            } catch (MetadataDoesNotExistException e) {
                 throw new DataNotFoundException(componentDto.getName());
             }
         }
@@ -123,8 +123,7 @@ public class ComponentsController {
         try {
             componentConfiguration.update(component.convertToEntity());
             return componentDtoResourceAssembler.toResource(component.convertToEntity());
-        } catch (ComponentDoesNotExistException | SQLException e) {
-            e.printStackTrace();
+        } catch (MetadataDoesNotExistException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
 

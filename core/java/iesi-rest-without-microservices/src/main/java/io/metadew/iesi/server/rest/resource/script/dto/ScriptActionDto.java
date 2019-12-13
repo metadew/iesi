@@ -2,6 +2,8 @@ package io.metadew.iesi.server.rest.resource.script.dto;
 
 import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
+import io.metadew.iesi.metadata.definition.action.key.ActionKey;
+import io.metadew.iesi.metadata.tools.IdentifierTools;
 import org.springframework.hateoas.ResourceSupport;
 
 import java.util.List;
@@ -38,8 +40,10 @@ public class ScriptActionDto extends ResourceSupport {
         this.iteration = iteration;
     }
 
-    public Action convertToEntity(){
-        return new Action(number, type, name, description, component, condition, iteration, errorExpected, errorStop, retries, parameters);
+    public Action convertToEntity(String scriptName, long version){
+        return new Action(new ActionKey(scriptName, version, IdentifierTools.getActionIdentifier(name)),
+                number, type, this.name, description, component, condition, iteration, errorExpected ? "y" : "n",
+                errorStop ? "y" : "n", Integer.toString(retries), parameters);
 
     }
 

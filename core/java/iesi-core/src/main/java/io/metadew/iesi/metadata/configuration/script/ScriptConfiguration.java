@@ -185,7 +185,7 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
         }
     }
 
-    private List<Script> getByName(String scriptName) {
+    public List<Script> getByName(String scriptName) {
         try {
             LOGGER.trace(MessageFormat.format("Fetching scripts by name ''{0}''", scriptName));
             List<Script> scripts = new ArrayList<>();

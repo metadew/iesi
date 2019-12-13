@@ -2,6 +2,7 @@ package io.metadew.iesi.server.rest.resource.script.dto;
 
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.metadata.definition.script.ScriptParameter;
+import io.metadew.iesi.metadata.tools.IdentifierTools;
 import org.springframework.hateoas.ResourceSupport;
 
 import java.util.List;
@@ -29,8 +30,8 @@ public class ScriptDto extends ResourceSupport {
     }
 
     public Script convertToEntity() {
-        return new Script(type, name, description,  version.convertToEntity(), parameters,
-                actions.stream().map(ScriptActionDto::convertToEntity).collect(Collectors.toList()));
+        return new Script(IdentifierTools.getScriptIdentifier(name), type, name, description,  version.convertToEntity(), parameters,
+                actions.stream().map(action -> action.convertToEntity(name, version.getNumber())).collect(Collectors.toList()));
     }
 
     @Override

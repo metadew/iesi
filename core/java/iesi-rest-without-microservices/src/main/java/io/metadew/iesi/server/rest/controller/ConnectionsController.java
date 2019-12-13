@@ -3,7 +3,10 @@ package io.metadew.iesi.server.rest.controller;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.ConnectionAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.ConnectionDoesNotExistException;
+import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
+import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.connection.Connection;
+import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.server.rest.error.DataBadRequestException;
 import io.metadew.iesi.server.rest.error.DataNotFoundException;
 import io.metadew.iesi.server.rest.pagination.ConnectionCriteria;
@@ -84,7 +87,7 @@ public class ConnectionsController {
 		try {
 			connectionConfiguration.insert(connectionDto.convertToEntity());
 			return ResponseEntity.ok(connectionDtoResourceAssembler.toResource(connectionDto.convertToEntity()));
-		} catch (ConnectionAlreadyExistsException | SQLException e) {
+		} catch (MetadataAlreadyExistsException e) {
 					e.printStackTrace();
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND,
 					"Connection " + connectionDto.getName() + " already exists");
@@ -96,13 +99,10 @@ public class ConnectionsController {
 		HalMultipleEmbeddedResource<ConnectionDto> halMultipleEmbeddedResource = new HalMultipleEmbeddedResource<>();
 		for (ConnectionDto connectionDto : connectionDtos) {
 			try {
-				Connection updatedConnection = connectionConfiguration.update(connectionDto.convertToEntity());
-				ConnectionDto updatedConnectionDto = connectionDtoResourceAssembler.toResource(updatedConnection);
+				connectionConfiguration.update(connectionDto.convertToEntity());
+				ConnectionDto updatedConnectionDto = connectionDtoResourceAssembler.toResource(connectionDto.convertToEntity());
 				halMultipleEmbeddedResource.embedResource(updatedConnectionDto);
-			} catch (ConnectionDoesNotExistException e) {
-					e.printStackTrace();
-				throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-			} catch (ConnectionAlreadyExistsException | SQLException e) {
+			} catch (MetadataDoesNotExistException e) {
 				throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 		}
@@ -117,10 +117,9 @@ public class ConnectionsController {
 			throw new DataNotFoundException(name);
 		}
 		try {
-			return connectionDtoResourceAssembler.toResource(connectionConfiguration.update(connectionDto.convertToEntity()));
-		} catch (ConnectionDoesNotExistException e) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-		} catch (ConnectionAlreadyExistsException | SQLException e) {
+			connectionConfiguration.update(connectionDto.convertToEntity());
+			return connectionDtoResourceAssembler.toResource(connectionDto.convertToEntity());
+		} catch (MetadataDoesNotExistException e) {
 			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -144,10 +143,9 @@ public class ConnectionsController {
 		try {
 			connectionConfiguration.deleteByName(name);
 			return ResponseEntity.status(HttpStatus.OK).build();
-		} catch (ConnectionDoesNotExistException e) {
+		} catch (io.metadew.iesi.metadata.configuration.connection.exception.ConnectionDoesNotExistException e) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
 		}
-
 	}
 
 	@DeleteMapping("/{name}/{environment}")
@@ -157,10 +155,9 @@ public class ConnectionsController {
 			throw new DataNotFoundException(name, environment);
 		}
 		try {
-			connectionConfiguration.delete(name, environment);
+			connectionConfiguration.delete(new ConnectionKey(name, environment));
 			return ResponseEntity.status(HttpStatus.OK).build();
-		} catch (ConnectionDoesNotExistException | SQLException e) {
-			e.printStackTrace();
+		} catch (MetadataDoesNotExistException e) {
 			throw new DataNotFoundException(name, environment);
 		}
 

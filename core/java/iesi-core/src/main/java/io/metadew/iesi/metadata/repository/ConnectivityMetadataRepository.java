@@ -6,6 +6,7 @@ import io.metadew.iesi.metadata.configuration.environment.EnvironmentConfigurati
 import io.metadew.iesi.metadata.configuration.exception.*;
 import io.metadew.iesi.metadata.configuration.impersonation.ImpersonationConfiguration;
 import io.metadew.iesi.metadata.definition.DataObject;
+import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.MetadataObject;
 import io.metadew.iesi.metadata.definition.MetadataTable;
 import io.metadew.iesi.metadata.definition.connection.Connection;
@@ -71,7 +72,7 @@ public class ConnectivityMetadataRepository extends MetadataRepository {
         // TODO: insert should be handled on database level as insert can differ from database type/dialect? JDBC Dialect/Spring
         ObjectMapper objectMapper = new ObjectMapper();
         if (dataObject.getType().equalsIgnoreCase("connection")) {
-            Connection connection = objectMapper.convertValue(dataObject.getData(), Connection.class);
+            Connection connection = (Connection) objectMapper.convertValue(dataObject, Metadata.class);
             save(connection);
         } else if (dataObject.getType().equalsIgnoreCase("environment")) {
             Environment environment = objectMapper.convertValue(dataObject.getData(), Environment.class);

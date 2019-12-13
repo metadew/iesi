@@ -93,7 +93,7 @@ public class ScriptController {
         try {
             scriptConfiguration.insert(script.convertToEntity());
             return scriptDtoResourceAssembler.toResource(script.convertToEntity());
-        } catch (ScriptAlreadyExistsException | SQLException e) {
+        } catch (ScriptAlreadyExistsException e) {
             e.printStackTrace();
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                     "Script " + script.getName() + " already exists");
@@ -137,7 +137,7 @@ public class ScriptController {
                 halMultipleEmbeddedResource.add(linkTo(methodOn(ScriptController.class)
                         .getByName(scriptDto.getName()))
                         .withRel(scriptDto.getName()));
-            } catch (ScriptDoesNotExistException | SQLException e) {
+            } catch (ScriptDoesNotExistException e) {
                 e.printStackTrace();
                 throw new DataNotFoundException(scriptDto.getName());
             }
@@ -158,7 +158,7 @@ public class ScriptController {
         try {
             scriptConfiguration.update(script.convertToEntity());
             return scriptDtoResourceAssembler.toResource(script.convertToEntity());
-        } catch (ScriptDoesNotExistException | SQLException e) {
+        } catch (ScriptDoesNotExistException e) {
             e.printStackTrace();
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
@@ -182,7 +182,7 @@ public class ScriptController {
         try {
             scriptConfiguration.delete(script);
             return ResponseEntity.status(HttpStatus.OK).build();
-        } catch (ScriptDoesNotExistException | SQLException e) {
+        } catch (ScriptDoesNotExistException e) {
             throw new DataNotFoundException(name);
         }
     }

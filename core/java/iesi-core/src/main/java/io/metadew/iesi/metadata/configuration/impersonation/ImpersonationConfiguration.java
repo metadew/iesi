@@ -163,15 +163,19 @@ public class ImpersonationConfiguration extends Configuration<Impersonation, Imp
     }
 
     public void deleteImpersonation(Impersonation impersonation) throws ImpersonationDoesNotExistException {
+        deleteImpersonation(impersonation.getMetadataKey());
+    }
+
+    public void deleteImpersonation(ImpersonationKey impersonationKey) throws ImpersonationDoesNotExistException {
         //TODO fix logging
     	//frameworkExecution.getFrameworkLog().log(MessageFormat.format("Deleting impersonation {0}.", impersonation.getScriptName()), Level.TRACE);
-        if (!exists(impersonation)) {
+        if (!exists(impersonationKey)) {
             throw new ImpersonationDoesNotExistException(
                     MessageFormat.format("Impersonation {0} is not present in the repository so cannot be updated",
-                            impersonation.getName()));
+                            impersonationKey.getName()));
 
         }
-        List<String> query = getDeleteStatement(impersonation.getName());
+        List<String> query = getDeleteStatement(impersonationKey.getName());
         getMetadataRepository().executeBatch(query);
     }
 

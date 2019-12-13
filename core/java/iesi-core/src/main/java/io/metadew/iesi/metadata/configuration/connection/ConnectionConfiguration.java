@@ -17,6 +17,7 @@ import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.SQLException;
+import java.sql.SQLType;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,11 +47,10 @@ public class ConnectionConfiguration extends Configuration<Connection, Connectio
     @Override
     public Optional<Connection> get(ConnectionKey metadataKey) {
         try {
-            String query = "select CONN_NM, CONN_TYP_NM, CONN_DSC, ENV_NM from " +
+            String query = "select CONN_NM, CONN_TYP_NM, CONN_DSC from " +
                     getMetadataRepository().getTableNameByLabel("Connections") +
                     " WHERE " +
-                    " CONN_NM  = " + metadataKey.getName() + " AND " +
-                    " ENV_NM = " + metadataKey.getEnvironment() + ";";
+                    " CONN_NM  = " + SQLTools.GetStringForSQL(metadataKey.getName()) + ";";
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
             if (cachedRowSet.size() == 0) {
                 return Optional.empty();
@@ -59,7 +59,11 @@ public class ConnectionConfiguration extends Configuration<Connection, Connectio
             }
             cachedRowSet.next();
             List<ConnectionParameter> connectionParameters = getAllLinkedConnectionParameters(metadataKey);
-            return Optional.of(new Connection(metadataKey, cachedRowSet.getString("CONN_TYP_NM"), cachedRowSet.getString("CONN_DSC"), connectionParameters));
+            if (connectionParameters.isEmpty()) {
+                return Optional.empty();
+            } else {
+                return Optional.of(new Connection(metadataKey, cachedRowSet.getString("CONN_TYP_NM"), cachedRowSet.getString("CONN_DSC"), connectionParameters));
+            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -73,11 +77,11 @@ public class ConnectionConfiguration extends Configuration<Connection, Connectio
     private List<ConnectionParameter> getAllLinkedConnectionParameters(ConnectionKey connectionKey) {
         List<ConnectionParameter> connectionParameters = new ArrayList<>();
         try {
-            String query = "select CONN_PAR_NM, CONN_PAR_VAL  from " +
+            String query = "select CONN_PAR_NM, CONN_PAR_VAL from " +
                     getMetadataRepository().getTableNameByLabel("ConnectionParameters") +
                     " WHERE " +
-                    " CONN_NM  = " + connectionKey.getName() + " AND " +
-                    " ENV_NM = " + connectionKey.getEnvironment() + ";";
+                    " CONN_NM  = " + SQLTools.GetStringForSQL(connectionKey.getName()) + " AND " +
+                    " ENV_NM = " + SQLTools.GetStringForSQL(connectionKey.getEnvironment()) + ";";
             CachedRowSet crsConnectionParameters = getMetadataRepository().executeQuery(query, "reader");
             while (crsConnectionParameters.next()) {
                 ConnectionParameter connectionParameter =
@@ -168,11 +172,10 @@ public class ConnectionConfiguration extends Configuration<Connection, Connectio
 
     public String insertStatement(Connection connection) {
         return "INSERT INTO " + getMetadataRepository().getTableNameByLabel("Connections") +
-                " (CONN_NM, CONN_TYP_NM, CONN_DSC, ENV_NM) VALUES (" +
+                " (CONN_NM, CONN_TYP_NM, CONN_DSC) VALUES (" +
                 SQLTools.GetStringForSQL(connection.getMetadataKey().getName()) + "," +
-                SQLTools.GetStringForSQL(connection.getMetadataKey().getEnvironment()) + "," +
                 SQLTools.GetStringForSQL(connection.getType()) + "," +
-                SQLTools.GetStringForSQL(connection.getDescription()) + ";";
+                SQLTools.GetStringForSQL(connection.getDescription()) + ");";
     }
 
     private List<String> getInsertQuery(Connection connection) {
@@ -187,4 +190,97 @@ public class ConnectionConfiguration extends Configuration<Connection, Connectio
         return queries;
     }
 
+    public List<Connection> getByName(String connectionName) {
+        List<Connection> connections = new ArrayList<>();
+        CachedRowSet crsConnection;
+        String queryConnection = "select CONN_NM, CONN_TYP_NM, CONN_DSC from " + getMetadataRepository().getTableNameByLabel("Connections")
+                + " where CONN_NM = " + SQLTools.GetStringForSQL(connectionName) + ";";
+        crsConnection = getMetadataRepository().executeQuery(queryConnection, "reader");
+
+        try {
+            crsConnection.next();
+            if (crsConnection.size() == 0) {
+                return connections;
+            } else if (crsConnection.size() > 1) {
+                LOGGER.warn(MessageFormat.format("Found multiple implementations for Connection {0}. Returning first implementation", connectionName));
+            }
+
+            // Get parameters
+            String queryConnectionParameters = "select DISTINCT ENV_NM from "
+                    + getMetadataRepository().getTableNameByLabel("ConnectionParameters")
+                    + " where CONN_NM = " + SQLTools.GetStringForSQL(connectionName) + ";";
+            CachedRowSet crsConnectionEnvironments = getMetadataRepository().executeQuery(queryConnectionParameters, "reader");
+            while (crsConnectionEnvironments.next()) {
+                get(connectionName, crsConnectionEnvironments.getString("ENV_NM")).ifPresent(connections::add);
+            }
+        } catch (SQLException e) {
+            StringWriter stackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTrace));
+            LOGGER.warn("exeption=" + e.getMessage());
+            LOGGER.info("exception.stacktrace=" + stackTrace.toString());
+        }
+        return connections;
+    }
+
+    public List<Connection> getByEnvironment(String environmentName) {
+        List<Connection> connections = new ArrayList<>();
+
+        String connectionsByEnvironmentQuery = "select distinct CONN_NM from "
+                + getMetadataRepository().getTableNameByLabel("ConnectionParameters")
+                + " where ENV_NM = " + SQLTools.GetStringForSQL(environmentName) + ";";
+        CachedRowSet connectionsByEnvironment = getMetadataRepository().executeQuery(connectionsByEnvironmentQuery, "reader");
+        try {
+            while (connectionsByEnvironment.next()) {
+                get(connectionsByEnvironment.getString("CONN_NM"), environmentName).ifPresent(connections::add);
+            }
+            connectionsByEnvironment.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return connections;
+    }
+
+    public void deleteAll() {
+        List<String> query = getDeleteAllStatement();
+        getMetadataRepository().executeBatch(query);
+    }
+
+    private List<String> getDeleteAllStatement() {
+        List<String> queries = new ArrayList<>();
+        queries.add("DELETE FROM " + getMetadataRepository().getTableNameByLabel("Connections") + ";");
+        queries.add("DELETE FROM " + getMetadataRepository().getTableNameByLabel("ConnectionParameters") + ";");
+        return queries;
+    }
+
+    public void deleteByName(String connectionName) throws ConnectionDoesNotExistException {
+        // TODO fix logging
+        //frameworkExecution.getFrameworkLog().log(MessageFormat.format("Deleting connection {0}.", connectionName), Level.TRACE);
+        if (!exists(connectionName)) {
+            throw new ConnectionDoesNotExistException(
+                    MessageFormat.format("Connection {0} is not present in the repository so cannot be updated",
+                            connectionName));
+
+        }
+        List<String> deleteQuery = getDeleteByNameQuery(connectionName);
+        getMetadataRepository().executeBatch(deleteQuery);
+    }
+
+    public List<String> getDeleteByNameQuery(String connectionName) {
+        List<String> queries = new ArrayList<>();
+        queries.add("DELETE FROM " + getMetadataRepository().getTableNameByLabel("Connections") +
+                " WHERE CONN_NM = "
+                + SQLTools.GetStringForSQL(connectionName) + ";");
+        queries.add("DELETE FROM " + getMetadataRepository().getTableNameByLabel("ConnectionParameters") +
+                " WHERE CONN_NM = "
+                + SQLTools.GetStringForSQL(connectionName) + ";");
+        return queries;
+    }
+
+    public boolean exists(String connectionName) {
+        CachedRowSet crsConnection;
+        String queryConnection = "select CONN_NM, CONN_TYP_NM, CONN_DSC from " + getMetadataRepository().getTableNameByLabel("Connections")
+                + " where CONN_NM = " + SQLTools.GetStringForSQL(connectionName) + ";";
+        crsConnection = getMetadataRepository().executeQuery(queryConnection, "reader");
+        return crsConnection.size() > 0;
+    }
 }

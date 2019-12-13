@@ -31,8 +31,8 @@ public class ScriptConfigurationTest {
 
     private DesignMetadataRepository designMetadataRepository;
     private Script script;
-    ScriptVersion scriptVersion;
-    List<Action> actions;
+    private ScriptVersion scriptVersion;
+    private List<Action> actions;
 
     @Before
     public void setup() {

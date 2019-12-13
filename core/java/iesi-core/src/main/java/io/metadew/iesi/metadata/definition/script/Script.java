@@ -11,7 +11,6 @@ public class Script extends Metadata<ScriptKey> {
     private String type;
     private String name;
     private String description;
-    // Set a default script version if not provided
     private ScriptVersion version;
     private List<ScriptParameter> parameters;
     private List<Action> actions;

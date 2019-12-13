@@ -4,7 +4,6 @@ import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.action.performance.exception.ActionPerformanceAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.action.performance.exception.ActionPerformanceDoesNotExistException;
-import io.metadew.iesi.metadata.configuration.script.design.ScriptDesignTraceConfiguration;
 import io.metadew.iesi.metadata.definition.action.performance.ActionPerformance;
 import io.metadew.iesi.metadata.definition.action.performance.key.ActionPerformanceKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;

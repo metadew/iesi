@@ -3,7 +3,6 @@ package io.metadew.iesi.metadata.definition.environment;
 import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.environment.key.EnvironmentKey;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Environment extends Metadata<EnvironmentKey> {

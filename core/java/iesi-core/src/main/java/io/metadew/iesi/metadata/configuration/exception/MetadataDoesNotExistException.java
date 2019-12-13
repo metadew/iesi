@@ -1,6 +1,5 @@
 package io.metadew.iesi.metadata.configuration.exception;
 
-import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.key.MetadataKey;
 
 import java.text.MessageFormat;

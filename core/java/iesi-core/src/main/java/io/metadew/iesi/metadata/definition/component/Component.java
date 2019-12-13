@@ -2,7 +2,6 @@ package io.metadew.iesi.metadata.definition.component;
 
 import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.component.key.ComponentKey;
-import io.metadew.iesi.metadata.tools.IdentifierTools;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -3,9 +3,7 @@ package io.metadew.iesi.metadata.definition.script;
 import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
-import io.metadew.iesi.metadata.tools.IdentifierTools;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Script extends Metadata<ScriptKey> {

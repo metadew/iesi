@@ -2,7 +2,6 @@ package io.metadew.iesi.metadata.definition.connection;
 
 
 import io.metadew.iesi.metadata.definition.Metadata;
-import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionParameterKey;
 
 public class ConnectionParameter extends Metadata<ConnectionParameterKey> {

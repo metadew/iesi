@@ -3,7 +3,6 @@ package io.metadew.iesi.metadata.repository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.metadata.configuration.component.ComponentConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.ComponentAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.exception.ComponentDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.generation.GenerationConfiguration;
 import io.metadew.iesi.metadata.configuration.script.ScriptConfiguration;
@@ -22,9 +21,6 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.List;

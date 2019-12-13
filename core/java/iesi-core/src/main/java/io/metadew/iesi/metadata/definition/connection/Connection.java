@@ -1,10 +1,8 @@
 package io.metadew.iesi.metadata.definition.connection;
 
 import io.metadew.iesi.metadata.definition.Metadata;
-import io.metadew.iesi.metadata.definition.action.result.ActionResult;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Connection extends Metadata<ConnectionKey> {

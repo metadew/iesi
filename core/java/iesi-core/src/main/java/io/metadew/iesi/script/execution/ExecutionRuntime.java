@@ -1,6 +1,5 @@
 package io.metadew.iesi.script.execution;
 
-import io.metadew.iesi.connection.tools.FolderTools;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.data.generation.execution.GenerationObjectExecution;
 import io.metadew.iesi.datatypes.dataset.KeyValueDataset;

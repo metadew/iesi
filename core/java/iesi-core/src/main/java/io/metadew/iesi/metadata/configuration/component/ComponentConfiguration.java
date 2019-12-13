@@ -2,7 +2,6 @@ package io.metadew.iesi.metadata.configuration.component;
 
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
-import io.metadew.iesi.metadata.configuration.MetadataConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.ComponentAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.ComponentDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
@@ -13,7 +12,6 @@ import io.metadew.iesi.metadata.definition.component.ComponentVersion;
 import io.metadew.iesi.metadata.definition.component.key.ComponentAttributeKey;
 import io.metadew.iesi.metadata.definition.component.key.ComponentKey;
 import io.metadew.iesi.metadata.definition.component.key.ComponentParameterKey;
-import io.metadew.iesi.metadata.execution.MetadataControl;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

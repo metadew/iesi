@@ -3,7 +3,6 @@ package io.metadew.iesi.metadata.definition.component;
 
 import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.component.key.ComponentAttributeKey;
-import io.metadew.iesi.metadata.definition.key.MetadataKey;
 
 public class ComponentAttribute extends Metadata<ComponentAttributeKey> {
 

@@ -1,11 +1,8 @@
 package io.metadew.iesi.metadata.configuration.impersonation;
 
-import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.configuration.FrameworkObjectConfiguration;
-import io.metadew.iesi.framework.execution.FrameworkControl;
 import io.metadew.iesi.metadata.configuration.Configuration;
-import io.metadew.iesi.metadata.configuration.MetadataConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.ImpersonationAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.ImpersonationDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
@@ -15,13 +12,11 @@ import io.metadew.iesi.metadata.definition.impersonation.Impersonation;
 import io.metadew.iesi.metadata.definition.impersonation.ImpersonationParameter;
 import io.metadew.iesi.metadata.definition.impersonation.key.ImpersonationKey;
 import io.metadew.iesi.metadata.definition.impersonation.key.ImpersonationParameterKey;
-import io.metadew.iesi.metadata.execution.MetadataControl;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.sql.rowset.CachedRowSet;
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.SQLException;

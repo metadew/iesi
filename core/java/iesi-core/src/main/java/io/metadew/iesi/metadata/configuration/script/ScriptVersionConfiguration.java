@@ -1,16 +1,13 @@
 package io.metadew.iesi.metadata.configuration.script;
 
 import io.metadew.iesi.connection.tools.SQLTools;
-import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.script.exception.ScriptVersionAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.script.exception.ScriptVersionDoesNotExistException;
-import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.metadata.definition.script.ScriptVersion;
 import io.metadew.iesi.metadata.definition.script.key.ScriptVersionKey;
-import io.metadew.iesi.metadata.execution.MetadataControl;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

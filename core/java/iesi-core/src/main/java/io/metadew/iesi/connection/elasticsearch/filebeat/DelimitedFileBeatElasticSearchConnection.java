@@ -9,6 +9,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
@@ -73,6 +75,10 @@ public class DelimitedFileBeatElasticSearchConnection extends FileBeatElasitcSea
 
     public String toString(String string) {
         return quoteCharacter + string + quoteCharacter;
+    }
+
+    public String toString(LocalDateTime dateTime) {
+        return quoteCharacter + dateTime.format(DateTimeFormatter.BASIC_ISO_DATE) + quoteCharacter;
     }
 
     private boolean isGetter(Method method, String fieldName) {

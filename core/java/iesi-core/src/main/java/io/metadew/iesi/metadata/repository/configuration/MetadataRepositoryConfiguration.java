@@ -64,13 +64,14 @@ public class MetadataRepositoryConfiguration {
         // type
         getSettingValue(configFile, "metadata.repository.type")
                 .map(value -> type = value)
-                .orElseThrow(() -> new RuntimeException("No type configured for the metadata repository"));
+                .orElseThrow(() -> new RuntimeException(MessageFormat.format("No type configured for the metadata repository defined at {0} only {1}",
+                        configFile.getFilePath(), configFile.getProperties().toString())));
 
         // category
         getSettingValue(configFile, "metadata.repository.category").map(value -> categories = Arrays.stream(value.split(",")).map(String::trim)
                 .collect(Collectors.toList()))
-                .orElseThrow(() -> new RuntimeException("No category configured for the metadata repository"));
-
+                .orElseThrow(() -> new RuntimeException(MessageFormat.format("No category configured for the metadata repository defined at {0} only {1}",
+                        configFile.getFilePath(), configFile.getProperties().toString())));
 
         getSettingValue(configFile, "metadata.repository.name").map(value -> name = value);
         getSettingValue(configFile, "metadata.repository.scope").map(value -> scope = value);

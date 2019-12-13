@@ -4,7 +4,7 @@ import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeService;
 import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.datatypes.text.Text;
-import io.metadew.iesi.framework.configuration.FrameworkStatus;
+import io.metadew.iesi.framework.configuration.ScriptRunStatus;
 import io.metadew.iesi.metadata.configuration.script.ScriptConfiguration;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.script.Script;
@@ -149,13 +149,13 @@ public class FwkExecuteScript {
 
         subScriptScriptExecution.execute();
 
-        if (subScriptScriptExecution.getResult().equalsIgnoreCase(FrameworkStatus.SUCCESS.value())) {
+        if (subScriptScriptExecution.getResult().equalsIgnoreCase(ScriptRunStatus.SUCCESS.value())) {
             actionExecution.getActionControl().increaseSuccessCount();
         } else if (subScriptScriptExecution.getResult()
-                .equalsIgnoreCase(FrameworkStatus.WARNING.value())) {
+                .equalsIgnoreCase(ScriptRunStatus.WARNING.value())) {
             actionExecution.getActionControl().increaseWarningCount();
         } else if (subScriptScriptExecution.getResult()
-                .equalsIgnoreCase(FrameworkStatus.ERROR.value())) {
+                .equalsIgnoreCase(ScriptRunStatus.ERROR.value())) {
             actionExecution.getActionControl().increaseErrorCount();
         } else {
             actionExecution.getActionControl().increaseErrorCount();

@@ -61,6 +61,14 @@
       "subroutine" : "",
       "impersonate" : "N"
     }, {
+      "name" : "output",
+      "description" : "Will be used to store the system output",
+      "type" : "string",
+      "mandatory" : "N",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
+    }, {
       "name" : "connection",
       "description" : "Connection where to run the shell command",
       "type" : "string",
@@ -1347,6 +1355,14 @@
     }, {
       "name" : "output",
       "description" : "Reference name of the output dataset",
+      "type" : "string",
+      "mandatory" : "N",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
+    }, {
+      "name" : "timeout",
+      "description" : "timeout value to wait for response",
       "type" : "string",
       "mandatory" : "N",
       "encrypted" : "N",

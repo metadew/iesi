@@ -30,8 +30,8 @@ public class NumberBetween implements DataInstruction {
         if (!inputParameterMatcher.find()) {
             throw new IllegalArgumentException(MessageFormat.format("Illegal arguments provided to " + this.getKeyword() + ": {0}", parameters));
         } else {
-            Double lowerBound = Double.parseDouble(inputParameterMatcher.group(LOWER_BOUND_KEY));
-            Double upperBound = Double.parseDouble(inputParameterMatcher.group(UPPER_BOUND_KEY));
+            double lowerBound = Double.parseDouble(inputParameterMatcher.group(LOWER_BOUND_KEY));
+            double upperBound = Double.parseDouble(inputParameterMatcher.group(UPPER_BOUND_KEY));
             return Double.toString(generationObjectExecution.getNumber().between(lowerBound, upperBound));
         }
     }

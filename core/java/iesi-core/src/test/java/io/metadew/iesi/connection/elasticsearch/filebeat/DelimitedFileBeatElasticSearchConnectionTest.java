@@ -2,7 +2,6 @@ package io.metadew.iesi.connection.elasticsearch.filebeat;
 
 import io.metadew.iesi.connection.elasticsearch.NestedTestObject;
 import io.metadew.iesi.connection.elasticsearch.TestObject;
-import io.metadew.iesi.connection.elasticsearch.filebeat.DelimitedFileBeatElasticSearchConnection;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

@@ -11,7 +11,6 @@ public class ComponentVersionDto extends ResourceSupport {
     public ComponentVersionDto() {
     }
 
-
     public ComponentVersionDto(long number, String description) {
         super();
         this.number = number;
@@ -21,10 +20,6 @@ public class ComponentVersionDto extends ResourceSupport {
     public ComponentVersion convertToEntity() {
         return new ComponentVersion(
                 number, description);
-    }
-
-    public static ComponentVersionDto convertToDto(ComponentVersion componentVersion) {
-        return new ComponentVersionDto(componentVersion.getNumber(), componentVersion.getDescription());
     }
 
     public long getNumber() {

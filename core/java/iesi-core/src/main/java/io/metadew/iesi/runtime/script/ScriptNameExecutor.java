@@ -1,14 +1,16 @@
 package io.metadew.iesi.runtime.script;
 
+import io.metadew.iesi.framework.configuration.ScriptRunStatus;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.execution.script.ScriptExecutionConfiguration;
 import io.metadew.iesi.metadata.configuration.script.ScriptConfiguration;
 import io.metadew.iesi.metadata.configuration.script.exception.ScriptDoesNotExistException;
-import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionStatus;
+import io.metadew.iesi.metadata.configuration.script.result.ScriptResultConfiguration;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptNameExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionKey;
 import io.metadew.iesi.metadata.definition.script.Script;
+import io.metadew.iesi.metadata.definition.script.result.key.ScriptResultKey;
 import io.metadew.iesi.script.ScriptExecutionBuildException;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.execution.ScriptExecutionBuilder;
@@ -57,12 +59,16 @@ public class ScriptNameExecutor implements ScriptExecutor<ScriptNameExecutionReq
                 .environment(scriptExecutionRequest.getEnvironment())
                 .build();
 
-        io.metadew.iesi.metadata.definition.execution.script.ScriptExecution scriptExecution1 = new io.metadew.iesi.metadata.definition.execution.script.ScriptExecution(new ScriptExecutionKey(), scriptExecutionRequest.getMetadataKey(), scriptExecution.getExecutionControl().getRunId(), ScriptExecutionStatus.RUNNING, LocalDateTime.now(), null);
+        io.metadew.iesi.metadata.definition.execution.script.ScriptExecution scriptExecution1 =
+                new io.metadew.iesi.metadata.definition.execution.script.ScriptExecution(new ScriptExecutionKey(),
+                        scriptExecutionRequest.getMetadataKey(), scriptExecution.getExecutionControl().getRunId(),
+                        ScriptRunStatus.RUNNING, LocalDateTime.now(), null);
         ScriptExecutionConfiguration.getInstance().insert(scriptExecution1);
 
         scriptExecution.execute();
-
-        scriptExecution1.updateScriptExecutionStatus(ScriptExecutionStatus.COMPLETED);
+        scriptExecution1.updateScriptRunStatus(ScriptResultConfiguration.getInstance().get(new ScriptResultKey(scriptExecution1.getRunId(), -1L))
+                .map(scriptResult -> ScriptRunStatus.valueOf(scriptResult.getStatus()))
+                .orElseThrow(() -> new RuntimeException("Cannot find result of run id: " + scriptExecution1.getRunId())));
         scriptExecution1.setEndTimestamp(LocalDateTime.now());
         ScriptExecutionConfiguration.getInstance().update(scriptExecution1);
     }

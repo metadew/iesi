@@ -1,0 +1,40 @@
+---
+type: Script
+data:
+  type: "script"
+  name: "cli.executeCommand"
+  description: "Prints a random output"
+  actions:
+  - number: 1
+    type: "cli.executeCommand"
+    name: "time"
+    description: "Execute latest version of script"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    parameters: 
+    - name: "path"
+      value: "#iesi.home#"
+    - name: "command"
+      value: "echo %time%"
+    - name: "connection"
+      value: "localhost"
+    - name: "output"
+      value: "current_time"
+  - number: 2
+    type: "fwk.outputMessage"
+    name: "example1"
+    description: "Free text on screen"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "message"
+      value : "#current_time#"
+    - name: "onScreen"
+      value: "Y"

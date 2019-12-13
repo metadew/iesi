@@ -43,6 +43,8 @@ public class FrameworkConfiguration {
 		String configurationFile = FrameworkSettings.IDENTIFIER.value() + "-home.conf";
 		if (System.getProperty(frameworkCode + ".home") != null) {
 			this.frameworkHome = System.getProperty(frameworkCode  + ".home");
+		} else if (getClass().getResource(frameworkCode + ".home") != null) {
+			this.frameworkHome = getClass().getResource(frameworkCode  + ".home").getFile();
 		} else if (getClass().getResource(FrameworkSettings.IDENTIFIER.value() + "-home.conf") != null) {
 			KeyValueConfigFile home = new KeyValueConfigFile(getClass().getResource(FrameworkSettings.IDENTIFIER.value() + "-home.conf").getFile());
 			this.frameworkHome = home.getProperties().getProperty(frameworkCode  + ".home");
@@ -53,7 +55,12 @@ public class FrameworkConfiguration {
 			Path path = Paths.get(".").toAbsolutePath();
 			throw new RuntimeException(frameworkCode  + ".home not found as System property or " + frameworkCode + "-home.conf not found at " + path.getRoot() + " or on classpath");
 		}
+		init(frameworkHome);
+	}
 
+	public void init(String frameworkHome) {
+		this.frameworkCode = FrameworkSettings.IDENTIFIER.value();
+		this.frameworkHome = frameworkHome;
 		FrameworkFolderConfiguration folderConfiguration = FrameworkFolderConfiguration.getInstance();
 		folderConfiguration.init(frameworkHome);
 
@@ -66,7 +73,7 @@ public class FrameworkConfiguration {
 		this.generationRuleTypeConfiguration = new FrameworkGenerationRuleTypeConfiguration(folderConfiguration);
 	}
 
-	public void init(String repositoryHome) {
+	public void initAssembly(String repositoryHome) {
 		// TODO: add core substring in assembly context in order to start the framework with custom iesi home
 		//  for testing purposes
 		this.frameworkCode = FrameworkSettings.IDENTIFIER.value();

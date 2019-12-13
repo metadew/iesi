@@ -4,6 +4,9 @@ import io.metadew.iesi.connection.network.SocketConnection;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.dataset.Dataset;
 import io.metadew.iesi.datatypes.text.Text;
+import io.metadew.iesi.framework.configuration.FrameworkSettingConfiguration;
+import io.metadew.iesi.framework.definition.FrameworkSetting;
+import io.metadew.iesi.framework.execution.FrameworkControl;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.script.execution.ActionExecution;
@@ -32,6 +35,7 @@ public class SocketTransmitMessage {
     private static final String messageKey = "message";
     private static final String protocolKey = "protocol";
     private static final String outputKey = "output";
+    private static final String timeoutKey = "timeout";
 
     private final ExecutionControl executionControl;
     private final ActionExecution actionExecution;
@@ -40,6 +44,7 @@ public class SocketTransmitMessage {
     private String protocol;
     private SocketConnection socket;
     private Dataset outputDataset;
+    private Integer timeout;
 
     public SocketTransmitMessage(ExecutionControl executionControl,
                                  ScriptExecution scriptExecution, ActionExecution actionExecution) {
@@ -54,6 +59,7 @@ public class SocketTransmitMessage {
         ActionParameterOperation messageActionParameterOperation = new ActionParameterOperation(executionControl, actionExecution, actionExecution.getAction().getType(), messageKey);
         ActionParameterOperation protocolActionParameterOperation = new ActionParameterOperation(executionControl, actionExecution, actionExecution.getAction().getType(), protocolKey);
         ActionParameterOperation outputActionParameterOperation = new ActionParameterOperation(executionControl, actionExecution, actionExecution.getAction().getType(), outputKey);
+        ActionParameterOperation timeoutActionParameterOperation = new ActionParameterOperation(executionControl, actionExecution, actionExecution.getAction().getType(), timeoutKey);
 
         // Get Parameters
         for (ActionParameter actionParameter : actionExecution.getAction().getParameters()) {
@@ -65,6 +71,8 @@ public class SocketTransmitMessage {
                 protocolActionParameterOperation.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getName().equalsIgnoreCase(outputKey)) {
                 outputActionParameterOperation.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+            } else if (actionParameter.getName().equalsIgnoreCase(timeoutKey)) {
+                timeoutActionParameterOperation.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }
 
@@ -73,11 +81,29 @@ public class SocketTransmitMessage {
         actionParameterOperationMap.put(messageKey, socketActionParameterOperation);
         actionParameterOperationMap.put(protocolKey, protocolActionParameterOperation);
         actionParameterOperationMap.put(outputKey, outputActionParameterOperation);
+        actionParameterOperationMap.put(timeoutKey, timeoutActionParameterOperation);
 
         this.message = convertMessage(messageActionParameterOperation.getValue());
         this.protocol = convertProtocol(protocolActionParameterOperation.getValue());
         this.socket = convertSocket(socketActionParameterOperation.getValue());
         this.outputDataset = convertOutputDataset(outputActionParameterOperation.getValue());
+        this.timeout = convertTimeout(timeoutActionParameterOperation.getValue());
+    }
+
+    private Integer convertTimeout(DataType timeout) {
+        if (timeout == null) {
+            return null;
+        } else if (timeout instanceof Text) {
+            try {
+                return Integer.parseInt(((Text) timeout).getString());
+            } catch (NumberFormatException e) {
+                throw new RuntimeException(MessageFormat.format("timeout not defined as an integer: ''{0}''", ((Text) timeout).getString()));
+            }
+        } else {
+            LOGGER.warn(MessageFormat.format(actionExecution.getAction().getType() + " does not accept {0} as type for timeout",
+                    timeout.getClass()));
+            throw new RuntimeException(MessageFormat.format("timeout does not allow type ''{0}''", timeout.getClass()));
+        }
     }
 
     private Dataset convertOutputDataset(DataType dataset) {
@@ -137,7 +163,17 @@ public class SocketTransmitMessage {
         dOut.flush();
         if (getOutputDataset().isPresent()) {
             outputDataset.clean(executionControl.getExecutionRuntime());
-            LocalDateTime endDateTime = LocalDateTime.now().plus(2, ChronoUnit.SECONDS);
+            LocalDateTime endDateTime;
+            if (timeout == null) {
+                endDateTime = LocalDateTime.now().plus(
+                        FrameworkSettingConfiguration.getInstance().getSettingPath("socket.timeout.default")
+                                .map(settingPath -> FrameworkControl.getInstance().getProperty(settingPath))
+                                .map(Integer::parseInt)
+                                .orElseThrow(() -> new RuntimeException("No value set for socket.timeout.default")),
+                        ChronoUnit.SECONDS);
+            } else {
+                endDateTime = LocalDateTime.now().plus(timeout, ChronoUnit.SECONDS);
+            }
             while (LocalDateTime.now().isBefore(endDateTime)) {
                 if (dIn.available() > 0) {
                     byte[] bytes = new byte[dIn.available()];

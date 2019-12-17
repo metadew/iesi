@@ -17,7 +17,6 @@ import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.SQLException;
-import java.sql.SQLType;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -70,8 +69,7 @@ public class ConnectionConfiguration extends Configuration<Connection, Connectio
     }
 
     public Optional<Connection> get(String connectionName, String environmentName){
-        ConnectionKey connectionKey = new ConnectionKey(connectionName, environmentName);
-        return get(connectionKey);
+        return get(new ConnectionKey(connectionName, environmentName));
     }
 
     private List<ConnectionParameter> getAllLinkedConnectionParameters(ConnectionKey connectionKey) {
@@ -91,7 +89,7 @@ public class ConnectionConfiguration extends Configuration<Connection, Connectio
             }
             crsConnectionParameters.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
         return connectionParameters;
     }

@@ -23,7 +23,7 @@ public class ConnectionParameter extends Metadata<ConnectionParameterKey> {
     }
 
     public String getName(){
-        return getMetadataKey().getConnectionName();
+        return getMetadataKey().getParameterName();
     }
 
 }

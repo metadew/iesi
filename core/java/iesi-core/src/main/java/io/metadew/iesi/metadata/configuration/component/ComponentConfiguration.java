@@ -64,7 +64,6 @@ public class ComponentConfiguration extends Configuration<Component, ComponentKe
                         metadataKey.toString()));
             }
             crsComponent.next();
-            //TODO check if this is ok
             return Optional.of(new Component(
                     metadataKey,
                     crsComponent.getString("COMP_TYP_NM"),

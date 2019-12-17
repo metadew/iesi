@@ -9,6 +9,7 @@ import io.metadew.iesi.metadata.configuration.script.ScriptConfiguration;
 import io.metadew.iesi.metadata.configuration.script.exception.ScriptAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.script.exception.ScriptDoesNotExistException;
 import io.metadew.iesi.metadata.definition.DataObject;
+import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.MetadataObject;
 import io.metadew.iesi.metadata.definition.MetadataTable;
 import io.metadew.iesi.metadata.definition.action.Action;
@@ -74,13 +75,13 @@ public class DesignMetadataRepository extends MetadataRepository {
         // TODO: insert should be handled on database level as insert can differ from database type/dialect? JDBC Dialect/Spring
         ObjectMapper objectMapper = new ObjectMapper();
         if (dataObject.getType().equalsIgnoreCase("script")) {
-            Script script = objectMapper.convertValue(dataObject.getData(), Script.class);
+            Script script = (Script) objectMapper.convertValue(dataObject, Metadata.class);
             save(script);
         } else if (dataObject.getType().equalsIgnoreCase("component")) {
-            Component component = objectMapper.convertValue(dataObject.getData(), Component.class);
+            Component component = (Component) objectMapper.convertValue(dataObject, Metadata.class);
             save(component);
         } else if (dataObject.getType().equalsIgnoreCase("generation")) {
-            Generation generation= objectMapper.convertValue(dataObject.getData(), Generation.class);
+            Generation generation= objectMapper.convertValue(dataObject, Generation.class);
             save(generation);
         } else if (dataObject.getType().equalsIgnoreCase("subroutine")) {
             System.out.println("subroutine");

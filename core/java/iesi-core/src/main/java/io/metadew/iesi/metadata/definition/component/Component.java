@@ -1,11 +1,16 @@
 package io.metadew.iesi.metadata.definition.component;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.component.key.ComponentKey;
+import io.metadew.iesi.metadata.definition.script.ScriptJsonComponent;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@JsonDeserialize(using = ComponentJsonComponent.Deserializer.class)
+@JsonSerialize(using = ComponentJsonComponent.Serializer.class)
 public class Component extends Metadata<ComponentKey> {
 
     private String type;

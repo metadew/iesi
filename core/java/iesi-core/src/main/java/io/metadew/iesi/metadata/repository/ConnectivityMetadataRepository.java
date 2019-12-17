@@ -75,10 +75,10 @@ public class ConnectivityMetadataRepository extends MetadataRepository {
             Connection connection = (Connection) objectMapper.convertValue(dataObject, Metadata.class);
             save(connection);
         } else if (dataObject.getType().equalsIgnoreCase("environment")) {
-            Environment environment = objectMapper.convertValue(dataObject.getData(), Environment.class);
+            Environment environment = (Environment) objectMapper.convertValue(dataObject, Metadata.class);
             save(environment);
         } else if (dataObject.getType().equalsIgnoreCase("impersonation")) {
-            Impersonation impersonation = objectMapper.convertValue(dataObject.getData(), Impersonation.class);
+            Impersonation impersonation = (Impersonation) objectMapper.convertValue(dataObject, Metadata.class);
             save(impersonation);
         } else if (dataObject.getType().equalsIgnoreCase("repository")) {
             // TODO

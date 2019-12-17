@@ -1,11 +1,15 @@
 package io.metadew.iesi.metadata.definition.script;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 
 import java.util.List;
 
+@JsonDeserialize(using = ScriptJsonComponent.Deserializer.class)
+@JsonSerialize(using = ScriptJsonComponent.Serializer.class)
 public class Script extends Metadata<ScriptKey> {
 
     private String type;

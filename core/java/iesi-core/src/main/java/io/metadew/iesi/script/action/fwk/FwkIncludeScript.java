@@ -5,6 +5,7 @@ import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.script.ScriptConfiguration;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.script.Script;
+import io.metadew.iesi.metadata.tools.IdentifierTools;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
@@ -97,7 +98,7 @@ public class FwkIncludeScript {
 
     private boolean includeScript(String scriptName, Optional<Long> scriptVersion) {
         Script script = scriptVersion
-                .map(scriptVersion1 -> ScriptConfiguration.getInstance().get(scriptName, scriptVersion1))
+                .map(scriptVersion1 -> ScriptConfiguration.getInstance().get(IdentifierTools.getScriptIdentifier(scriptName), scriptVersion1))
                 .orElse(ScriptConfiguration.getInstance().get(scriptName)).get();
         setScript(script);
         this.getActionExecution().getActionControl().increaseSuccessCount();

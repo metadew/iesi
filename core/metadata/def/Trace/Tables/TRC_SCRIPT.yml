@@ -49,7 +49,7 @@ data:
       order: '7'
       type: string
       length: '100'
-      nullable: N
+      nullable: Y
       defaultTimestamp: ''
     - name: SCRIPT_DSC
       description: Description of the script

@@ -10,6 +10,7 @@ import io.metadew.iesi.metadata.definition.component.Component;
 import io.metadew.iesi.metadata.definition.component.ComponentJsonComponent;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.ConnectionJsonComponent;
+import io.metadew.iesi.metadata.definition.environment.Environment;
 import io.metadew.iesi.metadata.definition.environment.EnvironmentJsonComponent;
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.metadata.definition.script.ScriptJsonComponent;
@@ -48,7 +49,7 @@ public class MetadataJsonComponent {
             } else if (type.equalsIgnoreCase(ComponentJsonComponent.Field.TYPE.value())) {
                 return jsonParser.getCodec().treeToValue(data, Component.class);
             } else if (type.equalsIgnoreCase(EnvironmentJsonComponent.Field.TYPE.value())) {
-                return jsonParser.getCodec().treeToValue(data, Component.class);
+                return jsonParser.getCodec().treeToValue(data, Environment.class);
             } else {
                 throw JsonMappingException.from(jsonParser, MessageFormat.format("Cannot deserialize Metadata object of type {0}", type));
             }

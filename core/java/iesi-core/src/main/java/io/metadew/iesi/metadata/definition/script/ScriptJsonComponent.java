@@ -11,12 +11,9 @@ import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.action.ActionParameterJsonComponent;
 import io.metadew.iesi.metadata.definition.action.key.ActionKey;
 import io.metadew.iesi.metadata.definition.action.key.ActionParameterKey;
-import io.metadew.iesi.metadata.definition.connection.Connection;
-import io.metadew.iesi.metadata.definition.connection.ConnectionJsonComponent;
-import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
-import io.metadew.iesi.metadata.definition.connection.ConnectionParameterJsonComponent;
 import io.metadew.iesi.metadata.definition.script.key.ScriptParameterKey;
 import io.metadew.iesi.metadata.definition.script.key.ScriptVersionKey;
+import io.metadew.iesi.metadata.tools.IdentifierTools;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -36,7 +33,6 @@ public class ScriptJsonComponent {
         VALUE_KEY("value");
 
 
-
         private final String label;
 
         Field(String label) {
@@ -52,34 +48,43 @@ public class ScriptJsonComponent {
         @Override
         public Script deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
             JsonNode node = jsonParser.getCodec().readTree(jsonParser);
-            String scriptId = node.get(ScriptJsonComponent.Field.ID_KEY.value()).asText();
+            String scriptId = IdentifierTools.getScriptIdentifier(node.get(Field.NAME_KEY.value()).asText());
+            ScriptVersion scriptVersion;
 
             JsonNode versionNode = node.get(Field.VERSION_KEY.value());
-            long versionNumber = versionNode.get(ScriptVersionJsonComponent.Field.NUMBER_KEY.value()).asLong();
+            long versionNumber;
+            if (versionNode != null) {
+                versionNumber = versionNode.get(ScriptVersionJsonComponent.Field.NUMBER_KEY.value()).asLong();
+                scriptVersion = new ScriptVersion(
+                        new ScriptVersionKey(
+                                scriptId, versionNumber
+                        ), versionNode.get(ScriptVersionJsonComponent.Field.DESCRIPTION_KEY.value()).asText()
+                );
+            } else {
+                versionNumber = 0L;
+                scriptVersion = new ScriptVersion(new ScriptVersionKey(scriptId, versionNumber), "default version");
+            }
 
             //version
-            ScriptVersion scriptVersion = new ScriptVersion(
-                    new ScriptVersionKey(
-                            scriptId, versionNumber
-                    ), versionNode.get(ScriptVersionJsonComponent.Field.DESCRIPTION_KEY.value()).asText()
-            );
 
             //script parameters
             List<ScriptParameter> scriptParameters = new ArrayList<>();
-            for (JsonNode scriptParameterNode : node.get(ScriptJsonComponent.Field.PARAMETERS_KEY.value())) {
-                scriptParameters.add(new ScriptParameter(new ScriptParameterKey(scriptId, versionNumber,
-                        scriptParameterNode.get(ScriptParameterJsonComponent.Field.PARAMETER_NAME_KEY.value()).asText()),
-                        scriptParameterNode.get(ScriptParameterJsonComponent.Field.PARAMETER_VALUE_KEY.value()).asText()));
+            if (node.get(ScriptJsonComponent.Field.PARAMETERS_KEY.value()) != null) {
+                for (JsonNode scriptParameterNode : node.get(ScriptJsonComponent.Field.PARAMETERS_KEY.value())) {
+                    scriptParameters.add(new ScriptParameter(new ScriptParameterKey(scriptId, versionNumber,
+                            scriptParameterNode.get(ScriptParameterJsonComponent.Field.PARAMETER_NAME_KEY.value()).asText()),
+                            scriptParameterNode.get(ScriptParameterJsonComponent.Field.PARAMETER_VALUE_KEY.value()).asText()));
+                }
             }
 
             //script actions
             List<Action> scriptActions = new ArrayList<>();
-            for (JsonNode scriptActionNode : node.get(ActionJsonComponent.Field.PARAMETERS_KEY.value())) {
-                String action_id = scriptActionNode.get(ActionJsonComponent.Field.ID_KEY.value()).asText();
+            for (JsonNode scriptActionNode : node.get(Field.ACTIONS_KEY.value())) {
+                String action_id = IdentifierTools.getActionIdentifier(scriptActionNode.get(ActionJsonComponent.Field.NAME_KEY.value()).asText());
 
                 // action parameters
                 List<ActionParameter> actionParameters = new ArrayList<>();
-                for (JsonNode scriptActionParNode : scriptActionNode.get(Field.PARAMETERS_KEY.value())) {
+                for (JsonNode scriptActionParNode : scriptActionNode.get(ActionJsonComponent.Field.PARAMETERS_KEY.value())) {
                     actionParameters.add(new ActionParameter(
                             new ActionParameterKey(
                                     action_id, versionNumber, scriptId,
@@ -90,26 +95,25 @@ public class ScriptJsonComponent {
                 }
 
                 scriptActions.add(new Action(new ActionKey(
-                                action_id,
-                                versionNumber,
-                                scriptId),
-                                scriptActionNode.get(ActionJsonComponent.Field.NUMBER_KEY.value()).asLong(),
-                                scriptActionNode.get(ActionJsonComponent.Field.TYPE_KEY.value()).asText(),
-                                scriptActionNode.get(ActionJsonComponent.Field.NAME_KEY.value()).asText(),
-                                scriptActionNode.get(ActionJsonComponent.Field.DESCRIPTION_KEY.value()).asText(),
-                                scriptActionNode.get(ActionJsonComponent.Field.COMPONENT_KEY.value()).asText(),
-                                scriptActionNode.get(ActionJsonComponent.Field.CONDITION_KEY.value()).asText(),
-                                scriptActionNode.get(ActionJsonComponent.Field.ITERATION_KEY.value()).asText(),
-                                scriptActionNode.get(ActionJsonComponent.Field.ERROR_EXPECTED_KEY.value()).asText(),
-                                scriptActionNode.get(ActionJsonComponent.Field.ERROR_STOP_KEY.value()).asText(),
-                                scriptActionNode.get(ActionJsonComponent.Field.RETRIES_KEY.value()).asText(),
-                                actionParameters));
+                        action_id,
+                        versionNumber,
+                        scriptId),
+                        scriptActionNode.get(ActionJsonComponent.Field.NUMBER_KEY.value()).asLong(),
+                        scriptActionNode.get(ActionJsonComponent.Field.TYPE_KEY.value()).asText(),
+                        scriptActionNode.get(ActionJsonComponent.Field.NAME_KEY.value()).asText(),
+                        scriptActionNode.get(ActionJsonComponent.Field.DESCRIPTION_KEY.value()).asText(),
+                        scriptActionNode.get(ActionJsonComponent.Field.COMPONENT_KEY.value()) == null ? "" : scriptActionNode.get(ActionJsonComponent.Field.COMPONENT_KEY.value()).asText(),
+                        scriptActionNode.get(ActionJsonComponent.Field.CONDITION_KEY.value()) == null ? "" : scriptActionNode.get(ActionJsonComponent.Field.CONDITION_KEY.value()).asText(),
+                        scriptActionNode.get(ActionJsonComponent.Field.ITERATION_KEY.value()) == null ? "" : scriptActionNode.get(ActionJsonComponent.Field.ITERATION_KEY.value()).asText(),
+                        scriptActionNode.get(ActionJsonComponent.Field.ERROR_EXPECTED_KEY.value()).asText(),
+                        scriptActionNode.get(ActionJsonComponent.Field.ERROR_STOP_KEY.value()).asText(),
+                        scriptActionNode.get(ActionJsonComponent.Field.RETRIES_KEY.value()) == null ? "0" : scriptActionNode.get(ActionJsonComponent.Field.RETRIES_KEY.value()).asText(),
+                        actionParameters));
             }
 
             return new Script(scriptId,
-                    node.get(Field.TYPE_KEY.value()).asText(),
                     node.get(Field.NAME_KEY.value()).asText(),
-                    node.get(ConnectionJsonComponent.Field.DESCRIPTION_KEY.value()).asText(),
+                    node.get(Field.DESCRIPTION_KEY.value()).asText(),
                     scriptVersion,
                     scriptParameters,
                     scriptActions);
@@ -125,7 +129,6 @@ public class ScriptJsonComponent {
             jsonGenerator.writeObjectFieldStart(MetadataJsonComponent.Field.DATA_KEY.value());
 
             jsonGenerator.writeStringField(Field.ID_KEY.value(), script.getId());
-            jsonGenerator.writeStringField(Field.TYPE_KEY.value(), script.getType());
             jsonGenerator.writeStringField(Field.NAME_KEY.value(), script.getName());
             jsonGenerator.writeStringField(Field.DESCRIPTION_KEY.value(), script.getDescription());
 
@@ -164,7 +167,7 @@ public class ScriptJsonComponent {
                 jsonGenerator.writeNumberField(ActionJsonComponent.Field.RETRIES_KEY.value(), scriptAction.getRetries());
 
                 // write action parameters
-                for (ActionParameter actionParameter : scriptAction.getParameters()){
+                for (ActionParameter actionParameter : scriptAction.getParameters()) {
                     jsonGenerator.writeStringField(ActionParameterJsonComponent.Field.PARAMETER_NAME_KEY.value(), actionParameter.getName());
                     jsonGenerator.writeStringField(ActionParameterJsonComponent.Field.PARAMETER_VALUE_KEY.value(), actionParameter.getValue());
                     jsonGenerator.writeEndObject();

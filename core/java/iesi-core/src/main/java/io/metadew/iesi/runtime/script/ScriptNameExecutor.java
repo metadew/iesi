@@ -11,6 +11,7 @@ import io.metadew.iesi.metadata.definition.execution.script.ScriptNameExecutionR
 import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionKey;
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.metadata.definition.script.result.key.ScriptResultKey;
+import io.metadew.iesi.metadata.tools.IdentifierTools;
 import io.metadew.iesi.script.ScriptExecutionBuildException;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.execution.ScriptExecutionBuilder;
@@ -44,8 +45,8 @@ public class ScriptNameExecutor implements ScriptExecutor<ScriptNameExecutionReq
     public void execute(ScriptNameExecutionRequest scriptExecutionRequest) throws MetadataDoesNotExistException, ScriptExecutionBuildException, MetadataAlreadyExistsException {
 
         Script script = scriptExecutionRequest.getScriptVersion()
-                .map(scriptVersion -> ScriptConfiguration.getInstance().get(scriptExecutionRequest.getScriptName(), scriptVersion))
-                .orElse(ScriptConfiguration.getInstance().get(scriptExecutionRequest.getScriptName()))
+                .map(scriptVersion -> ScriptConfiguration.getInstance().get(IdentifierTools.getScriptIdentifier(scriptExecutionRequest.getScriptName()), scriptVersion))
+                .orElse(ScriptConfiguration.getInstance().get(IdentifierTools.getScriptIdentifier(scriptExecutionRequest.getScriptName())))
                 .orElseThrow(() -> new ScriptDoesNotExistException(MessageFormat.format("Script {0}:{1} does not exist", scriptExecutionRequest.getScriptName(), scriptExecutionRequest.getScriptVersion().map(Object::toString).orElse("latest"))));
 
         // TODO: ActionSelection?

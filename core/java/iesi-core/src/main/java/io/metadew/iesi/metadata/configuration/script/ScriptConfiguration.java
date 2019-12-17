@@ -156,7 +156,7 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
                         crsScriptParameters.getString("SCRIPT_PAR_VAL")));
             }
             crsScriptParameters.close();
-            Script script = new Script(scriptId, crsScript.getString("SCRIPT_TYP_NM"), crsScript.getString("SCRIPT_NM"), crsScript.getString("SCRIPT_DSC"),
+            Script script = new Script(scriptId, crsScript.getString("SCRIPT_NM"), crsScript.getString("SCRIPT_DSC"),
                     scriptVersion.get(), scriptParameters, actions);
             return Optional.of(script);
         }catch(SQLException e){
@@ -294,9 +294,8 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
 
         if (!exists(script.getName())) {
             String sql = "INSERT INTO " + getMetadataRepository().getTableNameByLabel("Scripts") +
-                    " (SCRIPT_ID, SCRIPT_TYP_NM, SCRIPT_NM, SCRIPT_DSC) VALUES (" +
+                    " (SCRIPT_ID, SCRIPT_NM, SCRIPT_DSC) VALUES (" +
                     SQLTools.GetStringForSQL(script.getId()) + "," +
-                    SQLTools.GetStringForSQL(script.getType() == null ? "script" : script.getType()) + "," +
                     SQLTools.GetStringForSQL(script.getName()) + "," +
                     SQLTools.GetStringForSQL(script.getDescription()) + ");";
             queries.add(sql);
@@ -339,7 +338,7 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
         String queryScriptVersion = "select max(SCRIPT_VRS_NB) as \"MAX_VRS_NB\" from "
                 + getMetadataRepository().getTableNameByLabel("ScriptVersions") + " a inner join "
                 + getMetadataRepository().getTableNameByLabel("Scripts")
-                + " b on a.script_id = b.script_id where b.script_nm = '" + scriptName + "'";
+                + " b on a.script_id = b.script_id where b.script_nm = " + SQLTools.GetStringForSQL(scriptName) + ";";
         CachedRowSet crsScriptVersion = getMetadataRepository().executeQuery(queryScriptVersion, "reader");
         try {
             if (crsScriptVersion.size() == 0) {
@@ -365,7 +364,7 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
         LOGGER.trace(MessageFormat.format("Fetching latest version for script {0}.", scriptId));
         String queryScriptVersion = "select max(SCRIPT_VRS_NB) as \"MAX_VRS_NB\" from "
                 + getMetadataRepository().getTableNameByLabel("ScriptVersions") +
-                " where script_id = " + scriptId + ";";
+                " where script_id = " + SQLTools.GetStringForSQL(scriptId) + ";";
         CachedRowSet crsScriptVersion = getMetadataRepository().executeQuery(queryScriptVersion, "reader");
         try {
             if (crsScriptVersion.size() == 0) {
@@ -398,9 +397,9 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
 
     public Optional<Script> get(String scriptId, long versionNumber) {
         LOGGER.trace(MessageFormat.format("Fetching script {0}-{1}.", scriptId, versionNumber));
-        String queryScript = "select SCRIPT_ID, SCRIPT_TYP_NM, SCRIPT_NM, SCRIPT_DSC from "
-                + getMetadataRepository().getTableNameByLabel("Scripts") + " where SCRIPT_ID = '"
-                + scriptId + "'";
+        String queryScript = "select SCRIPT_ID, SCRIPT_NM, SCRIPT_DSC from "
+                + getMetadataRepository().getTableNameByLabel("Scripts") + " where SCRIPT_ID = "
+                + SQLTools.GetStringForSQL(scriptId) + ";";
         CachedRowSet crsScript = getMetadataRepository().executeQuery(queryScript, "reader");
         try {
             if (crsScript.size() == 0) {
@@ -420,7 +419,7 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
             List<Action> actions = new ArrayList<>();
             String queryActions = "select SCRIPT_ID, SCRIPT_VRS_NB, ACTION_ID, ACTION_NB from "
                     + getMetadataRepository().getTableNameByLabel("Actions")
-                    + " where SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptId) + " and SCRIPT_VRS_NB = " + versionNumber
+                    + " where SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptId) + " and SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(versionNumber)
                     + " order by ACTION_NB asc ";
             CachedRowSet crsActions = getMetadataRepository().executeQuery(queryActions, "reader");
 
@@ -437,7 +436,7 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
             // Get parameters
             String queryScriptParameters = "select SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_PAR_NM, SCRIPT_PAR_VAL from "
                     + getMetadataRepository().getTableNameByLabel("ScriptParameters")
-                    + " where SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptId) + " and SCRIPT_VRS_NB = " + versionNumber;
+                    + " where SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptId) + " and SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(versionNumber);
             CachedRowSet crsScriptParameters = getMetadataRepository()
                     .executeQuery(queryScriptParameters, "reader");
             List<ScriptParameter> scriptParameters = new ArrayList<>();
@@ -448,7 +447,7 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
                         crsScriptParameters.getString("SCRIPT_PAR_VAL")));
             }
             crsScriptParameters.close();
-            Script script = new Script(scriptId, crsScript.getString("SCRIPT_TYP_NM"), crsScript.getString("SCRIPT_NM"), crsScript.getString("SCRIPT_DSC"),
+            Script script = new Script(scriptId, crsScript.getString("SCRIPT_NM"), crsScript.getString("SCRIPT_DSC"),
                     scriptVersion.get(), scriptParameters, actions);
             crsScript.close();
             return Optional.of(script);

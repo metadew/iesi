@@ -1,8 +1,6 @@
 package io.metadew.iesi.metadata.configuration.script;
 
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
-import io.metadew.iesi.metadata.configuration.script.ScriptConfiguration;
-import io.metadew.iesi.metadata.configuration.script.ScriptVersionConfiguration;
 import io.metadew.iesi.metadata.configuration.script.exception.ScriptAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.script.exception.ScriptDoesNotExistException;
 import io.metadew.iesi.metadata.definition.action.Action;
@@ -17,7 +15,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -44,7 +41,7 @@ public class ScriptConfigurationTest {
                 "0", new ArrayList<>()));
         scriptVersion = new ScriptVersion(new ScriptVersionKey("1", 1),
                 "version of script");
-        script = new Script(new ScriptKey("1"), "script", "testScriptExist",
+        script = new Script(new ScriptKey("1"), "testScriptExist",
                 "script for testing", scriptVersion,
                 new ArrayList<>(), actions);
         try{
@@ -134,7 +131,7 @@ public class ScriptConfigurationTest {
                 "0", new ArrayList<>()));
         ScriptVersion scriptVersion = new ScriptVersion(new ScriptVersionKey("2", 1),
                 "version of script");
-        Script script = new Script(new ScriptKey("2"), "script", "testScriptInsert",
+        Script script = new Script(new ScriptKey("2"), "testScriptInsert",
                 "script for testing", scriptVersion,
                 new ArrayList<>(), actions);
         return script;

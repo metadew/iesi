@@ -41,7 +41,7 @@ public class ScriptTraceConfiguration extends Configuration<ScriptTrace, ScriptT
     @Override
     public Optional<ScriptTrace> get(ScriptTraceKey scriptTraceKey) {
         try {
-            String query = "SELECT PARENT_PRC_ID, SCRIPT_TYP_NM, SCRIPT_NM, SCRIPT_DSC FROM " +
+            String query = "SELECT PARENT_PRC_ID, SCRIPT_NM, SCRIPT_DSC FROM " +
                     getMetadataRepository().getTableNameByLabel("ScriptTraces") +
                     " WHERE " +
                     " RUN_ID = " + SQLTools.GetStringForSQL(scriptTraceKey.getRunId()) + " AND " +
@@ -56,7 +56,6 @@ public class ScriptTraceConfiguration extends Configuration<ScriptTrace, ScriptT
             return Optional.of(new ScriptTrace(scriptTraceKey,
                     cachedRowSet.getString("SCRIPT_ID"),
                     cachedRowSet.getLong("PARENT_PRC_ID"),
-                    cachedRowSet.getString("SCRIPT_TYP_NM"),
                     cachedRowSet.getString("SCRIPT_NM"),
                     cachedRowSet.getString("SCRIPT_DSC")));
         } catch (SQLException e) {
@@ -68,7 +67,7 @@ public class ScriptTraceConfiguration extends Configuration<ScriptTrace, ScriptT
     public List<ScriptTrace> getAll() {
         try {
             List<ScriptTrace> scriptTraces = new ArrayList<>();
-            String query = "SELECT RUN_ID, PRC_ID, PARENT_PRC_ID, SCRIPT_ID, SCRIPT_TYP_NM, SCRIPT_NM, SCRIPT_DSC FROM " +
+            String query = "SELECT RUN_ID, PRC_ID, PARENT_PRC_ID, SCRIPT_ID, SCRIPT_NM, SCRIPT_DSC FROM " +
                     getMetadataRepository().getTableNameByLabel("ScriptTraces") + ";";
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
             while (cachedRowSet.next()) {
@@ -77,7 +76,6 @@ public class ScriptTraceConfiguration extends Configuration<ScriptTrace, ScriptT
                         cachedRowSet.getLong("PRC_ID")),
                         cachedRowSet.getString("SCRIPT_ID"),
                         cachedRowSet.getLong("PARENT_PRC_ID"),
-                        cachedRowSet.getString("SCRIPT_TYP_NM"),
                         cachedRowSet.getString("SCRIPT_NM"),
                         cachedRowSet.getString("SCRIPT_DSC")));
 
@@ -119,12 +117,11 @@ public class ScriptTraceConfiguration extends Configuration<ScriptTrace, ScriptT
 
     private String insertStatement(ScriptTrace scriptTrace) {
         return "INSERT INTO " + getMetadataRepository().getTableNameByLabel("ScriptTraces") +
-                " (RUN_ID, PRC_ID, PARENT_PRC_ID, SCRIPT_ID, SCRIPT_TYP_NM, SCRIPT_NM, SCRIPT_DSC) VALUES (" +
+                " (RUN_ID, PRC_ID, PARENT_PRC_ID, SCRIPT_ID, SCRIPT_NM, SCRIPT_DSC) VALUES (" +
                 SQLTools.GetStringForSQL(scriptTrace.getMetadataKey().getRunId()) + "," +
                 SQLTools.GetStringForSQL(scriptTrace.getMetadataKey().getProcessId()) + "," +
                 SQLTools.GetStringForSQL(scriptTrace.getParentProcessId()) + "," +
                 SQLTools.GetStringForSQL(scriptTrace.getScriptId()) + "," +
-                SQLTools.GetStringForSQL(scriptTrace.getScriptType()) + "," +
                 SQLTools.GetStringForSQL(scriptTrace.getScriptName()) + "," +
                 SQLTools.GetStringForSQL(scriptTrace.getScriptDescription()) + ");";
     }

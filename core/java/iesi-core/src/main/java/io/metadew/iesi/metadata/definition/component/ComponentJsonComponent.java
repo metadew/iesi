@@ -9,6 +9,7 @@ import io.metadew.iesi.metadata.definition.component.key.ComponentAttributeKey;
 import io.metadew.iesi.metadata.definition.component.key.ComponentBuildKey;
 import io.metadew.iesi.metadata.definition.component.key.ComponentParameterKey;
 import io.metadew.iesi.metadata.definition.component.key.ComponentVersionKey;
+import io.metadew.iesi.metadata.tools.IdentifierTools;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -41,7 +42,7 @@ public class ComponentJsonComponent {
         @Override
         public Component deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
             JsonNode node = jsonParser.getCodec().readTree(jsonParser);
-            String componentId = node.get(Field.ID_KEY.value()).asText();
+            String componentId = IdentifierTools.getComponentIdentifier(node.get(Field.NAME_KEY.value()).asText());
 
             JsonNode versionNode = node.get(Field.VERSION_KEY.value());
             long versionNumber = versionNode.get(ComponentVersionJsonComponent.Field.NUMBER_KEY.value()).asLong();

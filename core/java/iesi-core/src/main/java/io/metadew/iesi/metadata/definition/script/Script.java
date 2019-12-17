@@ -12,7 +12,6 @@ import java.util.List;
 @JsonSerialize(using = ScriptJsonComponent.Serializer.class)
 public class Script extends Metadata<ScriptKey> {
 
-    private String type;
     private String name;
     private String description;
     private ScriptVersion version;
@@ -20,20 +19,18 @@ public class Script extends Metadata<ScriptKey> {
     private List<Action> actions;
 
 
-    public Script(String id, String type, String name, String description, ScriptVersion version,
+    public Script(String id, String name, String description, ScriptVersion version,
                   List<ScriptParameter> parameters, List<Action> actions) {
         super(new ScriptKey(id));
-        this.type = type;
         this.name = name;
         this.description = description;
         this.version = version;
         this.parameters = parameters;
         this.actions = actions;
     }
-    public Script(ScriptKey scriptKey, String type, String name, String description, ScriptVersion version,
+    public Script(ScriptKey scriptKey, String name, String description, ScriptVersion version,
                   List<ScriptParameter> parameters, List<Action> actions) {
         super(scriptKey);
-        this.type = type;
         this.name = name;
         this.description = description;
         this.version = version;
@@ -72,14 +69,6 @@ public class Script extends Metadata<ScriptKey> {
 
     public void setParameters(List<ScriptParameter> parameters) {
         this.parameters = parameters;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
     }
 
     public ScriptVersion getVersion() {

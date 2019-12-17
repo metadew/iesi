@@ -22,6 +22,10 @@ public class ConnectionParameter extends Metadata<ConnectionParameterKey> {
         return value;
     }
 
+    public void setValue(String value) {
+        this.value = value;
+    }
+
     public String getName(){
         return getMetadataKey().getParameterName();
     }

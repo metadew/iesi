@@ -94,16 +94,37 @@ public class ConnectionConfiguration extends Configuration<Connection, Connectio
         return connectionParameters;
     }
 
+    private List<ConnectionParameter> getAllLinkedConnectionParametersByName(ConnectionKey connectionKey) {
+        List<ConnectionParameter> connectionParameters = new ArrayList<>();
+        try {
+            String query = "select CONN_PAR_NM, CONN_PAR_VAL from " +
+                    getMetadataRepository().getTableNameByLabel("ConnectionParameters") +
+                    " WHERE " +
+                    " CONN_NM  = " + SQLTools.GetStringForSQL(connectionKey.getName()) + ";";
+            CachedRowSet crsConnectionParameters = getMetadataRepository().executeQuery(query, "reader");
+            while (crsConnectionParameters.next()) {
+                ConnectionParameter connectionParameter =
+                        new ConnectionParameter(connectionKey.getName(), connectionKey.getEnvironment(),
+                                crsConnectionParameters.getString("CONN_PAR_NM"), crsConnectionParameters.getString("CONN_PAR_VAL"));
+                connectionParameters.add(connectionParameter);
+            }
+            crsConnectionParameters.close();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return connectionParameters;
+    }
+
     @Override
     public List<Connection> getAll() {
         List<Connection> connections = new ArrayList<>();
-        String query = "select * from " + getMetadataRepository().getTableNameByLabel("Connections")
+        String query = "select CONN_NM, CONN_TYP_NM, CONN_DSC from " + getMetadataRepository().getTableNameByLabel("Connections")
                 + " order by CONN_NM ASC";
         CachedRowSet crs = getMetadataRepository().executeQuery(query, "reader");
         try {
             while (crs.next()) {
-                ConnectionKey connectionKey = new ConnectionKey(crs.getString("CONN_NM"), crs.getString("ENV_NM"));
-                List<ConnectionParameter> connectionParameters = getAllLinkedConnectionParameters(connectionKey);
+                ConnectionKey connectionKey = new ConnectionKey(crs.getString("CONN_NM"), "");
+                List<ConnectionParameter> connectionParameters = getAllLinkedConnectionParametersByName(connectionKey);
                 connections.add(new Connection(
                         connectionKey,
                         crs.getString("CONN_TYP_NM"),

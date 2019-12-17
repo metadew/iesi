@@ -43,6 +43,10 @@ public class Connection extends Metadata<ConnectionKey> {
         return description;
     }
 
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public String getType() {
         return type;
     }

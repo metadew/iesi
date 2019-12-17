@@ -47,11 +47,11 @@ public class ConnectionParameterConfiguration extends Configuration<ConnectionPa
     public Optional<ConnectionParameter> get(ConnectionParameterKey metadataKey) {
         try{
             String query = "select CONN_NM, CONN_PAR_NM, CONN_PAR_VAL, ENV_NM from " +
-                    MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("Connections") +
+                    getMetadataRepository().getTableNameByLabel("ConnectionParameters") +
                     " WHERE " +
-                    " CONN_NM  = " + metadataKey.getConnectionName() + " AND " +
-                    " ENV_NM  = " + metadataKey.getEnvironment() + " AND " +
-                    " CONN_PAR_NM = " + metadataKey.getParameterName() + ";";
+                    " CONN_NM  = " + SQLTools.GetStringForSQL(metadataKey.getConnectionName()) + " AND " +
+                    " ENV_NM  = " + SQLTools.GetStringForSQL(metadataKey.getEnvironment()) + " AND " +
+                    " CONN_PAR_NM = " + SQLTools.GetStringForSQL(metadataKey.getParameterName()) + ";";
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
             if (cachedRowSet.size() == 0) {
                 return Optional.empty();
@@ -68,9 +68,9 @@ public class ConnectionParameterConfiguration extends Configuration<ConnectionPa
     @Override
     public List<ConnectionParameter> getAll() {
         List<ConnectionParameter> connectionParameters = new ArrayList<>();
-        String query = "select * from " + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("ConnectionParameters")
+        String query = "select * from " + getMetadataRepository().getTableNameByLabel("ConnectionParameters")
                 + " order by CONN_NM ASC";
-        CachedRowSet crs = MetadataControl.getInstance().getConnectivityMetadataRepository().executeQuery(query, "reader");
+        CachedRowSet crs = getMetadataRepository().executeQuery(query, "reader");
         try {
             while (crs.next()) {
                 connectionParameters.add(new ConnectionParameter(
@@ -119,7 +119,7 @@ public class ConnectionParameterConfiguration extends Configuration<ConnectionPa
     }
 
     public String insertStatement(ConnectionParameter metadata){
-        return "INSERT INTO " + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("ConnectionParameters") +
+        return "INSERT INTO " + getMetadataRepository().getTableNameByLabel("ConnectionParameters") +
                 " (CONN_NM, ENV_NM, CONN_PAR_NM, CONN_PAR_VAL) VALUES (" +
                 SQLTools.GetStringForSQL(metadata.getMetadataKey().getConnectionName()) + "," +
                 SQLTools.GetStringForSQL(metadata.getMetadataKey().getEnvironment())+ "," +
@@ -131,7 +131,7 @@ public class ConnectionParameterConfiguration extends Configuration<ConnectionPa
     public String getInsertStatement(String connectionName, String environmentName) {
         String sql = "";
 
-        sql += "INSERT INTO " + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("ConnectionParameters");
+        sql += "INSERT INTO " + getMetadataRepository().getTableNameByLabel("ConnectionParameters");
         sql += " (CONN_NM, ENV_NM, CONN_PAR_NM, CONN_PAR_VAL) ";
         sql += "VALUES ";
         sql += "(";
@@ -149,7 +149,7 @@ public class ConnectionParameterConfiguration extends Configuration<ConnectionPa
     }
 
     public String getInsertStatement(String connectionName, String environmentName, ConnectionParameter connectionParameter) {
-        return "INSERT INTO " + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("ConnectionParameters") +
+        return "INSERT INTO " + getMetadataRepository().getTableNameByLabel("ConnectionParameters") +
                 " (CONN_NM, ENV_NM, CONN_PAR_NM, CONN_PAR_VAL) VALUES (" +
                 SQLTools.GetStringForSQL(connectionName) + "," +
                 SQLTools.GetStringForSQL(environmentName)+ "," +

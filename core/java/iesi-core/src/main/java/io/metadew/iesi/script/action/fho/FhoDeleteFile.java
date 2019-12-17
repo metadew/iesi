@@ -139,9 +139,9 @@ public class FhoDeleteFile {
                 }
             }
         } else {
-            ConnectionKey connectionKey = new ConnectionKey(connectionName, this.getExecutionControl().getEnvName());
+            ConnectionKey connectionKey = new ConnectionKey(connectionName);
             Connection connection = ConnectionConfiguration.getInstance()
-                    .get(connectionKey)
+                    .get(connectionKey, this.getExecutionControl().getEnvName())
                     .get();
             ConnectionOperation connectionOperation = new ConnectionOperation();
             HostConnection hostConnection = connectionOperation.getHostConnection(connection);

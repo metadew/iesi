@@ -36,9 +36,9 @@ public class ConnectionConfigurationTest {
         connectionParameter = new ConnectionParameter(connectionParameterKey, "parameter value");
         List<ConnectionParameter> connectionParameters = new ArrayList<>();
         connectionParameters.add(connectionParameter);
-        connectionKey = new ConnectionKey("connection", "test");
-        connection = new Connection(connectionKey, "connection type", "connection used for testing", 
-                connectionParameters);
+        connectionKey = new ConnectionKey("connection");
+        connection = new Connection(connectionKey, "connection type", "connection used for testing",
+                "test", connectionParameters);
         try{
             ConnectionConfiguration.getInstance().insert(connection);
         }catch(MetadataAlreadyExistsException ignored){
@@ -56,7 +56,7 @@ public class ConnectionConfigurationTest {
 
     @Test
     public void connectionNotExistsTest() {
-        ConnectionKey nonExistConnectionKey = new ConnectionKey("non_existing connection", "test");
+        ConnectionKey nonExistConnectionKey = new ConnectionKey("non_existing connection");
         assertFalse(ConnectionConfiguration.getInstance().exists(nonExistConnectionKey));
     }
 
@@ -105,7 +105,7 @@ public class ConnectionConfigurationTest {
 
     @Test
     public void connectionGetNotExistsTest(){
-        ConnectionKey connectionParameterKey = new ConnectionKey("not exist", "test");
+        ConnectionKey connectionParameterKey = new ConnectionKey("not exist");
         assertFalse(ConnectionConfiguration.getInstance().exists(connectionParameterKey));
         assertFalse(ConnectionConfiguration.getInstance().get(connectionParameterKey).isPresent());
     }
@@ -121,8 +121,8 @@ public class ConnectionConfigurationTest {
     }
 
     private Connection createConnection(){
-        ConnectionKey newConnectionKey = new ConnectionKey("new connectionkey", "test");
+        ConnectionKey newConnectionKey = new ConnectionKey("new connectionkey");
         return new Connection(newConnectionKey, "connection type", "created connection",
-                new ArrayList<>());
+                "test", new ArrayList<>());
     }
 }

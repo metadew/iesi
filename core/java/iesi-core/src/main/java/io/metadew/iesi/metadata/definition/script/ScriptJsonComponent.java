@@ -124,7 +124,7 @@ public class ScriptJsonComponent {
 
             jsonGenerator.writeObjectFieldStart(MetadataJsonComponent.Field.DATA_KEY.value());
 
-            jsonGenerator.writeStringField(Field.ID_KEY.value(), script.getName());
+            jsonGenerator.writeStringField(Field.ID_KEY.value(), script.getId());
             jsonGenerator.writeStringField(Field.TYPE_KEY.value(), script.getType());
             jsonGenerator.writeStringField(Field.NAME_KEY.value(), script.getName());
             jsonGenerator.writeStringField(Field.DESCRIPTION_KEY.value(), script.getDescription());
@@ -145,6 +145,7 @@ public class ScriptJsonComponent {
                 jsonGenerator.writeStringField(ScriptParameterJsonComponent.Field.PARAMETER_VALUE_KEY.value(), scriptParameter.getValue());
                 jsonGenerator.writeEndObject();
             }
+            jsonGenerator.writeEndArray();
 
             // write actions
             jsonGenerator.writeArrayFieldStart(Field.ACTIONS_KEY.value());

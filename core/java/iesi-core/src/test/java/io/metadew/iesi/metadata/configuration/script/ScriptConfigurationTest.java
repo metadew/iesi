@@ -41,7 +41,7 @@ public class ScriptConfigurationTest {
                 "0", new ArrayList<>()));
         scriptVersion = new ScriptVersion(new ScriptVersionKey("1", 1),
                 "version of script");
-        script = new Script(new ScriptKey("1"), "testScriptExist",
+        script = new Script(new ScriptKey("1", 1), "testScriptExist",
                 "script for testing", scriptVersion,
                 new ArrayList<>(), actions);
         try{
@@ -109,7 +109,7 @@ public class ScriptConfigurationTest {
 
     @Test
     public void scriptGetNotExistsTest(){
-        ScriptKey scriptKey = new ScriptKey("3");
+        ScriptKey scriptKey = new ScriptKey("3", 1);
         assertFalse(ScriptConfiguration.getInstance().exists(scriptKey));
         assertFalse(ScriptConfiguration.getInstance().get(scriptKey).isPresent());
     }
@@ -131,7 +131,7 @@ public class ScriptConfigurationTest {
                 "0", new ArrayList<>()));
         ScriptVersion scriptVersion = new ScriptVersion(new ScriptVersionKey("2", 1),
                 "version of script");
-        Script script = new Script(new ScriptKey("2"), "testScriptInsert",
+        Script script = new Script(new ScriptKey("2", 1), "testScriptInsert",
                 "script for testing", scriptVersion,
                 new ArrayList<>(), actions);
         return script;

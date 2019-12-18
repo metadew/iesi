@@ -12,6 +12,7 @@ import io.metadew.iesi.metadata.definition.script.ScriptParameter;
 import io.metadew.iesi.metadata.definition.script.ScriptVersion;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.metadata.definition.script.key.ScriptParameterKey;
+import io.metadew.iesi.metadata.definition.script.key.ScriptVersionKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -52,7 +53,7 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
         // had to change this to only get the script, because the script doesn't have version as id
         // return get(metadataKey.getScriptId(), metadataKey.getScriptVersionNumber());
 
-        return get(metadataKey.getScriptId());
+        return get(metadataKey.getScriptId(), metadataKey.getScriptVersion());
 
 
     }
@@ -89,6 +90,8 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
 
     @Override
     public List<Script> getAll() {
+        // TODO add cascading
+
         List<Script> scripts = new ArrayList<>();
         String queryScript = "select * from "
                 + getMetadataRepository().getTableNameByLabel("Scripts")
@@ -103,9 +106,8 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
                     Optional<Script> currentScriptOpt = createScript(crsScript, scriptVersion.getNumber());
                     currentScriptOpt.ifPresent(scripts::add);
                 }
-
-
             }
+
         } catch (SQLException e) {
             StringWriter stackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(stackTrace));
@@ -172,16 +174,14 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
                     MessageFormat.format("Script {0}-{1} is not present in the repository so cannot be deleted",
                             metadataKey.toString()));
         }
-        Optional<Long> versionOptional = getLatestVersionById(metadataKey.getScriptId());
-        if (versionOptional.isPresent()) {
-            try {
-                ScriptVersionConfiguration.getInstance().delete(metadataKey.getScriptId(), versionOptional.get());
-                ActionConfiguration.getInstance().deleteActionsFromScript(metadataKey.getScriptId(), versionOptional.get());
-                List<String> deleteQuery = getDeleteStatement(metadataKey.getScriptId(), versionOptional.get());
-                getMetadataRepository().executeBatch(deleteQuery);
-            } catch (ScriptVersionDoesNotExistException e) {
-                LOGGER.warn(e.getMessage() + ". Skipping");
-            }
+        ScriptVersionKey scriptVersionKey = new ScriptVersionKey(metadataKey.getScriptId(), metadataKey.getScriptVersion());
+        try {
+            ScriptVersionConfiguration.getInstance().delete(scriptVersionKey);
+            ActionConfiguration.getInstance().deleteActionsFromScript(metadataKey.getScriptId(), metadataKey.getScriptVersion());
+            List<String> deleteQuery = getDeleteStatement(metadataKey.getScriptId(), metadataKey.getScriptVersion());
+            getMetadataRepository().executeBatch(deleteQuery);
+        } catch (ScriptVersionDoesNotExistException e) {
+            LOGGER.warn(e.getMessage() + ". Skipping");
         }
     }
 
@@ -294,9 +294,10 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
 
         if (!exists(script.getName())) {
             String sql = "INSERT INTO " + getMetadataRepository().getTableNameByLabel("Scripts") +
-                    " (SCRIPT_ID, SCRIPT_NM, SCRIPT_DSC) VALUES (" +
+                    " (SCRIPT_ID, SCRIPT_NM, SCRIPT_TYP_NM, SCRIPT_DSC) VALUES (" +
                     SQLTools.GetStringForSQL(script.getId()) + "," +
                     SQLTools.GetStringForSQL(script.getName()) + "," +
+                    SQLTools.GetStringForSQL("script") + "," +
                     SQLTools.GetStringForSQL(script.getDescription()) + ");";
             queries.add(sql);
         }

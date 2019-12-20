@@ -36,7 +36,7 @@ public class ScriptDtoResourceAssembler extends ResourceAssemblerSupport<Script,
     }
 
     private ScriptDto convertToDto(Script script) {
-        return new ScriptDto(script.getName(), script.getType(), script.getDescription(),
+        return new ScriptDto(script.getName(), script.getDescription(),
                 ScriptVersionDto.convertToDto(script.getVersion()), script.getParameters(),
                 script.getActions().stream().map(this::convertToDto).collect(Collectors.toList()));
     }

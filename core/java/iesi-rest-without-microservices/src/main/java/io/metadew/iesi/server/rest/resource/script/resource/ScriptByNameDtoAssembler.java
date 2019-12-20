@@ -35,7 +35,7 @@ public class ScriptByNameDtoAssembler extends ResourceAssemblerSupport<List<Scri
     }
 
     private ScriptByNameDto convertToDto(List<Script> scripts) {
-        return new ScriptByNameDto(scripts.get(0).getName(), scripts.get(0).getType(), scripts.get(0).getDescription(),
+        return new ScriptByNameDto(scripts.get(0).getName(), scripts.get(0).getDescription(),
                 scripts.stream().map(script -> script.getVersion().getNumber()).collect(Collectors.toList()));
     }
 }

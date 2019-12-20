@@ -109,7 +109,6 @@ public class ComponentConfiguration extends Configuration<Component, ComponentKe
             crsComponentParameters.close();
             crsComponentAttributes.close();
             return Optional.of(new Component(componentId,
-                    versionNumber,
                     componentType,
                     componentName,
                     componentDescription,
@@ -273,7 +272,6 @@ public class ComponentConfiguration extends Configuration<Component, ComponentKe
             crsComponentParameters.close();
             crsComponentAttributes.close();
             return Optional.of(new Component(componentId,
-                    versionNumber,
                     componentType,
                     componentName,
                     componentDescription,

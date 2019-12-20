@@ -7,25 +7,15 @@ import java.util.List;
 public class ScriptByNameDto extends ResourceSupport {
 
     private String name;
-    private String type;
     private String description;
     private List<Long> versions;
 
     public ScriptByNameDto() {}
 
-    public ScriptByNameDto(String name, String type, String description, List<Long> versions) {
+    public ScriptByNameDto(String name, String description, List<Long> versions) {
         this.name = name;
-        this.type = type;
         this.description = description;
         this.versions = versions;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
     }
 
     public String getDescription() {

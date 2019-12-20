@@ -30,9 +30,9 @@ public class Component extends Metadata<ComponentKey> {
         this.attributes = attributes;
     }
 
-    public Component(String id, long versionNumber, String type, String name, String description, ComponentVersion version,
+    public Component(String id, String type, String name, String description, ComponentVersion version,
                      List<ComponentParameter> parameters, List<ComponentAttribute> attributes) {
-        super(new ComponentKey(id, versionNumber));
+        super(new ComponentKey(id, version.getNumber()));
         this.type = type;
         this.name = name;
         this.description = description;

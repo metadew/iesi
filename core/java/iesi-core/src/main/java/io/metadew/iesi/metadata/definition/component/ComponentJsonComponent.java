@@ -76,6 +76,7 @@ public class ComponentJsonComponent {
 
             return new Component(
                     componentId,
+                    versionNumber,
                     node.get(Field.COMPONENT_TYPE_KEY.value()).asText(),
                     node.get(Field.NAME_KEY.value()).asText(),
                     node.get(Field.DESCRIPTION_KEY.value()).asText(),

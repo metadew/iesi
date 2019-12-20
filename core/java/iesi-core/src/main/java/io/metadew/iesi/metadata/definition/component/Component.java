@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.component.key.ComponentKey;
-import io.metadew.iesi.metadata.definition.script.ScriptJsonComponent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,9 +30,9 @@ public class Component extends Metadata<ComponentKey> {
         this.attributes = attributes;
     }
 
-    public Component(String id, String type, String name, String description, ComponentVersion version,
+    public Component(String id, long versionNumber, String type, String name, String description, ComponentVersion version,
                      List<ComponentParameter> parameters, List<ComponentAttribute> attributes) {
-        super(new ComponentKey(id));
+        super(new ComponentKey(id, versionNumber));
         this.type = type;
         this.name = name;
         this.description = description;
@@ -96,7 +95,7 @@ public class Component extends Metadata<ComponentKey> {
     }
 
 	public boolean isEmpty() {
-		return (this.name == null || this.name.isEmpty()) ;
+		return (getName() == null || getName().isEmpty()) ;
 	}
 
 }

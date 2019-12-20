@@ -54,7 +54,7 @@ public class ComponentConfigurationTest {
         componentAttributes.add(componentAttribute);
         componentVersion = new ComponentVersion(new ComponentVersionKey("1", 1),
                 "version of component");
-        component = new Component(new ComponentKey("1"), "component", "testComponentExist",
+        component = new Component(new ComponentKey("1", 1), "component", "testComponentExist",
                 "component for testing", componentVersion,
                 componentParameters, componentAttributes);
         try{
@@ -73,7 +73,7 @@ public class ComponentConfigurationTest {
 
     @Test
     public void componentNotExistsTest() {
-        ComponentKey nonExistComponentKey = new ComponentKey("non_exist");
+        ComponentKey nonExistComponentKey = new ComponentKey("non_exist", 1);
         assertFalse(ComponentConfiguration.getInstance().exists(nonExistComponentKey));
     }
 
@@ -121,7 +121,7 @@ public class ComponentConfigurationTest {
 
     @Test
     public void componentGetNotExistsTest(){
-        ComponentKey componentKey = new ComponentKey("3");
+        ComponentKey componentKey = new ComponentKey("3", 1);
         assertFalse(ComponentConfiguration.getInstance().exists(componentKey));
         assertFalse(ComponentConfiguration.getInstance().get(componentKey).isPresent());
     }
@@ -151,7 +151,7 @@ public class ComponentConfigurationTest {
         attributes.add(attribute);
         ComponentVersion version = new ComponentVersion(new ComponentVersionKey("1", 1),
                 "version of component");
-        Component newComponent = new Component(new ComponentKey(componentId), "component", "new component",
+        Component newComponent = new Component(new ComponentKey(componentId, 1), "component", "new component",
                 "component for testing", version,
                 parameters, attributes);
         return newComponent;

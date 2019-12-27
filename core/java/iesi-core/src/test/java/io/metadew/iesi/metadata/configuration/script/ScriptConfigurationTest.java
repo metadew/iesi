@@ -4,7 +4,9 @@ import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistExce
 import io.metadew.iesi.metadata.configuration.script.exception.ScriptAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.script.exception.ScriptDoesNotExistException;
 import io.metadew.iesi.metadata.definition.action.Action;
+import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.action.key.ActionKey;
+import io.metadew.iesi.metadata.definition.action.key.ActionParameterKey;
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.metadata.definition.script.ScriptVersion;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
@@ -122,6 +124,100 @@ public class ScriptConfigurationTest {
         ScriptConfiguration.getInstance().update(scriptUpdate);
         Optional<Script> checkScript = ScriptConfiguration.getInstance().get(scriptUpdate.getMetadataKey());
         assertEquals(checkScript.get().getDescription(), newDescription);
+    }
+
+
+    @Test
+    public void insertScriptMultipleActionsTest() throws ScriptAlreadyExistsException {
+        // setup
+        Script scriptMultipleActions = createScript();
+        Action action1 = new Action(new ActionKey("1", 1, "1"), 1, "fwk.dummy",
+                "dummy", "dummy", "", "", "", "", "",
+                "0", new ArrayList<>());
+        Action action2 = new Action(new ActionKey("1", 1, "2"), 2, "fwk.dummy",
+                "dummy", "dummy", "", "", "", "", "",
+                "0", new ArrayList<>());
+        List<Action> multipleActions = new ArrayList<>();
+        multipleActions.add(action1);
+        multipleActions.add(action2);
+        scriptMultipleActions.setActions(multipleActions);
+
+        // insert
+        int nbBefore = ScriptConfiguration.getInstance().getAll().size();
+        ScriptConfiguration.getInstance().insert(scriptMultipleActions);
+        int nbAfter = ScriptConfiguration.getInstance().getAll().size();
+
+        assertEquals(nbBefore, nbAfter - 1);
+    }
+
+    @Test
+    public void retrieveMultipleActionsTest() throws ScriptAlreadyExistsException {
+        // setup
+        Script scriptMultipleActions = createScript();
+        Action action1 = new Action(new ActionKey("1", 1, "1"), 1, "fwk.dummy",
+                "dummy", "dummy", "", "", "", "", "",
+                "0", new ArrayList<>());
+        Action action2 = new Action(new ActionKey("1", 1, "2"), 2, "fwk.dummy",
+                "dummy", "dummy", "", "", "", "", "",
+                "0", new ArrayList<>());
+        List<Action> multipleActions = new ArrayList<>();
+        multipleActions.add(action1);
+        multipleActions.add(action2);
+        scriptMultipleActions.setActions(multipleActions);
+
+        // insert
+        ScriptConfiguration.getInstance().insert(scriptMultipleActions);
+
+        // retrieve
+        Optional<Script> newScript = ScriptConfiguration.getInstance().get(scriptMultipleActions.getMetadataKey());
+        assertEquals(newScript.get().getActions().size(), 2);
+    }
+
+    @Test
+    public void updateMultipleActionParametersTest() throws ScriptAlreadyExistsException {
+        // setup
+        //action 1
+        ActionParameterKey actionParameterKey = new ActionParameterKey("1", 1,
+                "1", "firstParameter");
+        ActionParameter actionParameter = new ActionParameter(actionParameterKey, "parameter value");
+        ActionParameterKey actionParameterKey2 = new ActionParameterKey("1", 1,
+                "1", "secondParameter");
+        ActionParameter actionParameter2 = new ActionParameter(actionParameterKey2, "parameter value2");
+        List<ActionParameter> actionParameters = new ArrayList<>();
+        actionParameters.add(actionParameter);
+        actionParameters.add(actionParameter2);
+        Action action1 = new Action(new ActionKey("1", 1, "1"), 1, "fwk.dummy",
+                "dummy", "dummy", "", "", "", "", "",
+                "0", actionParameters);
+
+        // action 2
+        ActionParameterKey actionParameterKey3 = new ActionParameterKey("1", 1,
+                "2", "thirdParameter");
+        ActionParameter actionParameter3 = new ActionParameter(actionParameterKey, "parameter value");
+        ActionParameterKey actionParameterKey4 = new ActionParameterKey("1", 1,
+                "1", "fourthParameter");
+        ActionParameter actionParameter4 = new ActionParameter(actionParameterKey2, "parameter value2");
+        List<ActionParameter> actionParameters2 = new ArrayList<>();
+        actionParameters2.add(actionParameter3);
+        actionParameters2.add(actionParameter4);
+        Action action2 = new Action(new ActionKey("1", 1, "2"), 2, "fwk.dummy",
+                "dummy", "dummy", "", "", "", "", "",
+                "0", actionParameters2);
+        List<Action> multipleActions = new ArrayList<>();
+        multipleActions.add(action1);
+        multipleActions.add(action2);
+
+        Script newScript = createScript();
+        newScript.setActions(multipleActions);
+
+        // insert
+        ScriptConfiguration.getInstance().insert(newScript);
+
+        // retrieve
+        Optional<Script> retrievedScript = ScriptConfiguration.getInstance().get(newScript.getMetadataKey());
+        List<ActionParameter> retrievedActionParameters = retrievedScript.get().getActions().get(0).getParameters();
+        assertEquals(retrievedActionParameters.get(0).getValue(), actionParameter.getValue());
+        assertEquals(retrievedScript.get().getActions().get(0).getParameters().size(), 2);
     }
 
     private Script createScript(){

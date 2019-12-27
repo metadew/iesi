@@ -73,7 +73,7 @@ public class ScriptConfigurationTest {
     }
 
     @Test
-    public void scriptExistsTest() throws ScriptAlreadyExistsException {
+    public void scriptExistsTest() {
         assertTrue(ScriptConfiguration.getInstance().exists("testScriptExist", 1));
     }
 

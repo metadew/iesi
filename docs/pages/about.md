@@ -22,9 +22,10 @@ Feel free to get in touch via our [Github](https://github.com/metadew/iesi) or o
 |Name|Organization|
 |---|---|
 |Robbe Berrevoets|Accenture|
-|Peter Billen|Accenture|
+
 
 # Past committers
 
+* Peter Billen
 * Jonas Joostens
 * Sam Roose

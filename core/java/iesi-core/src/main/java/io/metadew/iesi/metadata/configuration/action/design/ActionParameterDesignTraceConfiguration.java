@@ -2,8 +2,6 @@ package io.metadew.iesi.metadata.configuration.action.design;
 
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
-import io.metadew.iesi.metadata.configuration.action.design.exception.ActionParameterDesignTraceAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.action.design.exception.ActionParameterDesignTraceDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.action.design.ActionParameterDesignTrace;
@@ -86,10 +84,6 @@ public class ActionParameterDesignTraceConfiguration extends Configuration<Actio
     @Override
     public void delete(ActionParameterDesignTraceKey actionParameterDesignTraceKey) throws MetadataDoesNotExistException {
         LOGGER.trace(MessageFormat.format("Deleting ActionParameterDesignTrace {0}.", actionParameterDesignTraceKey.toString()));
-        if (!exists(actionParameterDesignTraceKey)) {
-            throw new ActionParameterDesignTraceDoesNotExistException(MessageFormat.format(
-                    "ActionParameterTrace {0} does not exists", actionParameterDesignTraceKey.toString()));
-        }
         String deleteStatement = deleteStatement(actionParameterDesignTraceKey);
         getMetadataRepository().executeUpdate(deleteStatement);
     }
@@ -106,10 +100,6 @@ public class ActionParameterDesignTraceConfiguration extends Configuration<Actio
     @Override
     public void insert(ActionParameterDesignTrace actionParameterDesignTrace) throws MetadataAlreadyExistsException {
         LOGGER.trace(MessageFormat.format("Inserting ActionParameterDesignTrace {0}.", actionParameterDesignTrace.toString()));
-        if (exists(actionParameterDesignTrace.getMetadataKey())) {
-            throw new ActionParameterDesignTraceAlreadyExistsException(MessageFormat.format(
-                    "ActionParameterTrace {0} already exists", actionParameterDesignTrace.getMetadataKey().toString()));
-        }
         String insertStatement = insertStatement(actionParameterDesignTrace);
         getMetadataRepository().executeUpdate(insertStatement);
     }
@@ -119,11 +109,7 @@ public class ActionParameterDesignTraceConfiguration extends Configuration<Actio
         LOGGER.trace(MessageFormat.format("Inserting ActionParameterDesignTraces {0}.", actionParameterDesignTraces.stream().map(ActionParameterDesignTrace::getMetadataKey).collect(Collectors.toList()).toString()));
         List<String> insertQueries = new ArrayList<>();
         for (ActionParameterDesignTrace actionParameterDesignTrace : actionParameterDesignTraces) {
-            if (exists(actionParameterDesignTrace.getMetadataKey())) {
-                LOGGER.info(MessageFormat.format("ActionParameterDesignTrace {0} already exists. Skipping", actionParameterDesignTrace.getMetadataKey().toString()));
-            } else {
-                insertQueries.add(insertStatement(actionParameterDesignTrace));
-            }
+            insertQueries.add(insertStatement(actionParameterDesignTrace));
         }
         getMetadataRepository().executeBatch(insertQueries);
     }
@@ -136,5 +122,21 @@ public class ActionParameterDesignTraceConfiguration extends Configuration<Actio
                 SQLTools.GetStringForSQL(actionParameterDesignTrace.getMetadataKey().getActionId()) + "," +
                 SQLTools.GetStringForSQL(actionParameterDesignTrace.getMetadataKey().getName()) + "," +
                 SQLTools.GetStringForSQL(actionParameterDesignTrace.getValue()) + ");";
+    }
+
+    @Override
+    public void update(ActionParameterDesignTrace actionParameterDesignTrace) {
+        LOGGER.trace(MessageFormat.format("Updating ActionParameterDesignTrace {0}.", actionParameterDesignTrace.getMetadataKey().toString()));
+        String updateStatement = updateStatement(actionParameterDesignTrace);
+        getMetadataRepository().executeUpdate(updateStatement);
+    }
+
+    private String updateStatement(ActionParameterDesignTrace actionParameterDesignTrace) {
+        return "UPDATE " + getMetadataRepository().getTableNameByLabel("ActionParameterDesignTraces") +
+                " SET ACTION_PAR_VAL = " + SQLTools.GetStringForSQL(actionParameterDesignTrace.getValue()) +
+                " WHERE RUN_ID = " + SQLTools.GetStringForSQL(actionParameterDesignTrace.getMetadataKey().getRunId()) +
+                " AND PRC_ID = " + SQLTools.GetStringForSQL(actionParameterDesignTrace.getMetadataKey().getProcessId()) +
+                " AND ACTION_ID = " + SQLTools.GetStringForSQL(actionParameterDesignTrace.getMetadataKey().getActionId()) +
+                " AND ACTION_PAR_NM = " + SQLTools.GetStringForSQL(actionParameterDesignTrace.getMetadataKey().getName()) + ";";
     }
 }

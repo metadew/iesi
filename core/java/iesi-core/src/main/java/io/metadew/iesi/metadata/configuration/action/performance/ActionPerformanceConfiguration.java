@@ -19,7 +19,6 @@ import java.util.Optional;
 
 public class ActionPerformanceConfiguration extends Configuration<ActionPerformance, ActionPerformanceKey> {
 
-
     private static final Logger LOGGER = LogManager.getLogger();
     private static ActionPerformanceConfiguration INSTANCE;
 
@@ -92,10 +91,6 @@ public class ActionPerformanceConfiguration extends Configuration<ActionPerforma
 
     @Override
     public void delete(ActionPerformanceKey key) throws ActionPerformanceDoesNotExistException {
-        if (!exists(key)) {
-            throw new ActionPerformanceDoesNotExistException(MessageFormat.format("Action Performance {0}-{1}-{2}-{3} does not exist",
-                    key.getRunId(), key.getProcedureId(), key.getActionId(), key.getScope()));
-        }
         String queryAction = "delete from "
                 + getMetadataRepository().getTableNameByLabel("ActionResultPerformances") + " where " +
                 "RUN_ID = " + SQLTools.GetStringForSQL(key.getRunId()) + " AND " +
@@ -107,22 +102,34 @@ public class ActionPerformanceConfiguration extends Configuration<ActionPerforma
 
     @Override
     public void insert(ActionPerformance actionPerformance) throws ActionPerformanceAlreadyExistsException {
-        if (exists(actionPerformance.getMetadataKey())) {
-            throw new ActionPerformanceAlreadyExistsException(MessageFormat.format("Action Performance {0}-{1}-{2}-{3} already exists",
-                    actionPerformance.getMetadataKey().getRunId(), actionPerformance.getMetadataKey().getProcedureId(),
-                    actionPerformance.getMetadataKey().getActionId(), actionPerformance.getMetadataKey().getScope()));
-        }
         String queryAction = "insert into "
                 + getMetadataRepository().getTableNameByLabel("ActionResultPerformances") +
                 " (RUN_ID, PRC_ID, ACTION_ID, SCOPE_NM, CONTEXT_NM, STRT_TMS, END_TMS, DURATION_VAL) values (" +
                 SQLTools.GetStringForSQL(actionPerformance.getMetadataKey().getRunId()) + ", " +
-                actionPerformance.getMetadataKey().getProcedureId() + ", " +
+                SQLTools.GetStringForSQL(actionPerformance.getMetadataKey().getProcedureId()) + ", " +
                 SQLTools.GetStringForSQL(actionPerformance.getMetadataKey().getActionId()) + ", " +
                 SQLTools.GetStringForSQL(actionPerformance.getMetadataKey().getScope()) + ", " +
                 SQLTools.GetStringForSQL(actionPerformance.getContext()) + ", " +
                 SQLTools.GetStringForSQL(actionPerformance.getStartTimestamp()) + ", " +
                 SQLTools.GetStringForSQL(actionPerformance.getEndTimestamp()) + ", " +
-                actionPerformance.getDuration() + ");";
+                SQLTools.GetStringForSQL(actionPerformance.getDuration()) + ");";
+        getMetadataRepository().executeUpdate(queryAction);
+    }
+
+    @Override
+    public void update(ActionPerformance actionPerformance) {
+        String queryAction = "UPDATE " + getMetadataRepository().getTableNameByLabel("ActionResultPerformances") +
+                " SET " +
+                "CONTEXT_NM = " + SQLTools.GetStringForSQL(actionPerformance.getContext()) + ", " +
+                "STRT_TMS = " + SQLTools.GetStringForSQL(actionPerformance.getStartTimestamp()) + ", " +
+                "END_TMS = " + SQLTools.GetStringForSQL(actionPerformance.getEndTimestamp()) + ", " +
+                "DURATION_VAL = " + SQLTools.GetStringForSQL(actionPerformance.getDuration()) +
+                " WHERE RUN_ID = " + SQLTools.GetStringForSQL(actionPerformance.getMetadataKey().getRunId()) +
+                " AND PRC_ID = " + SQLTools.GetStringForSQL(actionPerformance.getMetadataKey().getProcedureId()) +
+                " ACTION_ID = " + SQLTools.GetStringForSQL(actionPerformance.getMetadataKey().getActionId()) +
+                " AND SCOPE_NM =" + SQLTools.GetStringForSQL(actionPerformance.getMetadataKey().getScope()) + ";";
+
+
         getMetadataRepository().executeUpdate(queryAction);
     }
 }

@@ -2,8 +2,6 @@ package io.metadew.iesi.metadata.configuration.action.result;
 
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
-import io.metadew.iesi.metadata.configuration.action.result.exception.ActionResultOutputAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.action.result.exception.ActionResultOutputDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.action.result.ActionResultOutput;
@@ -84,10 +82,6 @@ public class ActionResultOutputConfiguration extends Configuration<ActionResultO
     @Override
     public void delete(ActionResultOutputKey actionResultOutputKey) throws MetadataDoesNotExistException {
         LOGGER.trace(MessageFormat.format("Deleting ActionResultOutput {0}.", actionResultOutputKey.toString()));
-        if (!exists(actionResultOutputKey)) {
-            throw new ActionResultOutputDoesNotExistException(MessageFormat.format(
-                    "ActionResultOutput {0} does not exists", actionResultOutputKey.toString()));
-        }
         String deleteStatement = deleteStatement(actionResultOutputKey);
         getMetadataRepository().executeUpdate(deleteStatement);
     }
@@ -104,10 +98,6 @@ public class ActionResultOutputConfiguration extends Configuration<ActionResultO
     @Override
     public void insert(ActionResultOutput actionResultOutput) throws MetadataAlreadyExistsException {
         LOGGER.trace(MessageFormat.format("Inserting ActionResultOutput {0}.", actionResultOutput.getMetadataKey().toString()));
-        if (exists(actionResultOutput.getMetadataKey())) {
-            throw new ActionResultOutputAlreadyExistsException(MessageFormat.format(
-                    "ActionResult {0} already exists", actionResultOutput.getMetadataKey().toString()));
-        }
         String insertStatement = insertStatement(actionResultOutput);
         getMetadataRepository().executeUpdate(insertStatement);
     }
@@ -121,6 +111,22 @@ public class ActionResultOutputConfiguration extends Configuration<ActionResultO
                 + SQLTools.GetStringForSQL(actionResultOutput.getMetadataKey().getActionId()) + ","
                 + SQLTools.GetStringForSQL(actionResultOutput.getMetadataKey().getOutputName()) + ","
                 + SQLTools.GetStringForSQL(actionResultOutput.getValue()) + ");";
+    }
+
+    @Override
+    public void update(ActionResultOutput actionResultOutput) {
+        LOGGER.trace(MessageFormat.format("Updating ActionResultOutput {0}.", actionResultOutput.getMetadataKey().toString()));
+        String updateStatement = updateStatement(actionResultOutput);
+        getMetadataRepository().executeUpdate(updateStatement);
+    }
+
+    private String updateStatement(ActionResultOutput actionResultOutput) {
+        return "UPDATE " + getMetadataRepository().getTableNameByLabel("ActionResultOutputs") +
+                " SET ACTION_ID = " + SQLTools.GetStringForSQL(actionResultOutput.getMetadataKey().getActionId()) + ", " +
+                "OUT_VAL = " + SQLTools.GetStringForSQL(actionResultOutput.getValue()) +
+                "WHERE RUN_ID = " + SQLTools.GetStringForSQL(actionResultOutput.getMetadataKey().getRunId()) +
+                " AND PRC_ID = " + SQLTools.GetStringForSQL(actionResultOutput.getMetadataKey().getProcessId()) +
+                " AND OUT_NM = " + SQLTools.GetStringForSQL(actionResultOutput.getMetadataKey().getOutputName()) + ";";
     }
 
 }

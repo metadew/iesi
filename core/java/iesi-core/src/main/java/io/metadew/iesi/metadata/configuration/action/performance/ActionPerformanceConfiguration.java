@@ -44,7 +44,6 @@ public class ActionPerformanceConfiguration extends Configuration<ActionPerforma
                     + getMetadataRepository().getTableNameByLabel("ActionResultPerformances") + " where " +
                     "RUN_ID = " + SQLTools.GetStringForSQL(key.getRunId()) + " AND " +
                     "PRC_ID = " + key.getProcedureId() + " AND " +
-                    "ACTION_ID = " + SQLTools.GetStringForSQL(key.getActionId()) + " AND " +
                     "SCOPE_NM = " + SQLTools.GetStringForSQL(key.getScope()) + ";";
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(queryAction, "reader");
             if (cachedRowSet.size() == 0) {
@@ -55,9 +54,9 @@ public class ActionPerformanceConfiguration extends Configuration<ActionPerforma
             cachedRowSet.next();
             return Optional.of(new ActionPerformance(new ActionPerformanceKey(cachedRowSet.getString("RUN_ID"),
                     cachedRowSet.getLong("PRC_ID"),
-                    cachedRowSet.getString("ACTION_ID"),
                     cachedRowSet.getString("SCOPE_NM")),
                     cachedRowSet.getString("CONTEXT_NM"),
+                    cachedRowSet.getString("ACTION_ID"),
                     cachedRowSet.getTimestamp("STRT_TMS").toLocalDateTime(),
                     cachedRowSet.getTimestamp("END_TMS").toLocalDateTime(),
                     cachedRowSet.getDouble("DURATION_VAL")));
@@ -76,9 +75,9 @@ public class ActionPerformanceConfiguration extends Configuration<ActionPerforma
             while (cachedRowSet.next()) {
                 actionPerformances.add(new ActionPerformance(new ActionPerformanceKey(cachedRowSet.getString("RUN_ID"),
                         cachedRowSet.getLong("PRC_ID"),
-                        cachedRowSet.getString("ACTION_ID"),
                         cachedRowSet.getString("SCOPE_NM")),
                         cachedRowSet.getString("CONTEXT_NM"),
+                        cachedRowSet.getString("ACTION_ID"),
                         cachedRowSet.getTimestamp("STRT_TMS").toLocalDateTime(),
                         cachedRowSet.getTimestamp("END_TMS").toLocalDateTime(),
                         cachedRowSet.getDouble("DURATION_VAL")));
@@ -94,8 +93,7 @@ public class ActionPerformanceConfiguration extends Configuration<ActionPerforma
         String queryAction = "delete from "
                 + getMetadataRepository().getTableNameByLabel("ActionResultPerformances") + " where " +
                 "RUN_ID = " + SQLTools.GetStringForSQL(key.getRunId()) + " AND " +
-                "PRC_ID = " + key.getProcedureId() + " AND " +
-                "ACTION_ID = " + SQLTools.GetStringForSQL(key.getActionId()) + " AND " +
+                "PRC_ID = " + SQLTools.GetStringForSQL(key.getProcedureId()) + " AND " +
                 "SCOPE_NM = " + SQLTools.GetStringForSQL(key.getScope()) + ";";
         getMetadataRepository().executeUpdate(queryAction);
     }
@@ -107,7 +105,7 @@ public class ActionPerformanceConfiguration extends Configuration<ActionPerforma
                 " (RUN_ID, PRC_ID, ACTION_ID, SCOPE_NM, CONTEXT_NM, STRT_TMS, END_TMS, DURATION_VAL) values (" +
                 SQLTools.GetStringForSQL(actionPerformance.getMetadataKey().getRunId()) + ", " +
                 SQLTools.GetStringForSQL(actionPerformance.getMetadataKey().getProcedureId()) + ", " +
-                SQLTools.GetStringForSQL(actionPerformance.getMetadataKey().getActionId()) + ", " +
+                SQLTools.GetStringForSQL(actionPerformance.getActionId()) + ", " +
                 SQLTools.GetStringForSQL(actionPerformance.getMetadataKey().getScope()) + ", " +
                 SQLTools.GetStringForSQL(actionPerformance.getContext()) + ", " +
                 SQLTools.GetStringForSQL(actionPerformance.getStartTimestamp()) + ", " +
@@ -126,7 +124,7 @@ public class ActionPerformanceConfiguration extends Configuration<ActionPerforma
                 "DURATION_VAL = " + SQLTools.GetStringForSQL(actionPerformance.getDuration()) +
                 " WHERE RUN_ID = " + SQLTools.GetStringForSQL(actionPerformance.getMetadataKey().getRunId()) +
                 " AND PRC_ID = " + SQLTools.GetStringForSQL(actionPerformance.getMetadataKey().getProcedureId()) +
-                " ACTION_ID = " + SQLTools.GetStringForSQL(actionPerformance.getMetadataKey().getActionId()) +
+                " ACTION_ID = " + SQLTools.GetStringForSQL(actionPerformance.getActionId()) +
                 " AND SCOPE_NM =" + SQLTools.GetStringForSQL(actionPerformance.getMetadataKey().getScope()) + ";";
 
 

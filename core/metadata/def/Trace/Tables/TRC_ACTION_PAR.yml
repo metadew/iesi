@@ -16,6 +16,7 @@ data:
       length: '255'
       nullable: N
       defaultTimestamp: ''
+      primaryKey: true
     - name: PRC_ID
       description: Process number for the action execution
       order: '2'
@@ -23,6 +24,7 @@ data:
       length: '0'
       nullable: N
       defaultTimestamp: ''
+      primaryKey: true
     - name: ACTION_ID
       description: Unique identifier for the action design
       order: '3'
@@ -37,6 +39,7 @@ data:
       length: '100'
       nullable: N
       defaultTimestamp: ''
+      primaryKey: true
     - name: ACTION_PAR_VAL
       description: String type parameter value
       order: '5'

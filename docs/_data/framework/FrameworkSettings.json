@@ -781,8 +781,19 @@
   "type" : "FrameworkSetting"
 }, {
   "data" : {
-    "name" : "server.threads",
-    "path" : "iesi.server.threads",
+    "name" : "server.threads.quantity",
+    "path" : "iesi.server.threads.quantity",
+    "label" : "ServerThreads",
+    "description" : "",
+    "group" : "Framework",
+    "category" : "Server",
+    "type" : ""
+  },
+  "type" : "FrameworkSetting"
+}, {
+  "data" : {
+    "name" : "server.threads.timeout",
+    "path" : "iesi.server.threads.timeout",
     "label" : "ServerThreads",
     "description" : "",
     "group" : "Framework",

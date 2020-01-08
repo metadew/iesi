@@ -17,13 +17,13 @@ import org.apache.logging.log4j.ThreadContext;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 public class ExecutionRequestListener implements Runnable {
 
     private static final Logger LOGGER = LogManager.getLogger();
     private final ExecutorService executor;
+    private final Thread executionRequestMonitorThread;
     private boolean keepRunning = true;
 
     public ExecutionRequestListener() {
@@ -32,6 +32,8 @@ public class ExecutionRequestListener implements Runnable {
                 .orElse(4);
         LOGGER.info(MessageFormat.format("starting listener with thread pool size {0}", threadSize));
         executor = Executors.newFixedThreadPool(threadSize);
+        executionRequestMonitorThread = new Thread(ExecutionRequestMonitor.getInstance());
+        executionRequestMonitorThread.start();
     }
 
     public void run() {
@@ -65,6 +67,7 @@ public class ExecutionRequestListener implements Runnable {
             LOGGER.info("Forcing execution listener shutdown...");
             executor.shutdownNow();
         }
+        executionRequestMonitorThread.join(2000);
         LOGGER.info("Execution listener shutdown");
         Thread mainThread = Thread.currentThread();
         mainThread.join(2000);

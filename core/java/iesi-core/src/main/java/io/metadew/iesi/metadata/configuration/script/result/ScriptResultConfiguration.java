@@ -146,7 +146,7 @@ public class ScriptResultConfiguration extends Configuration<ScriptResult, Scrip
                 "ST_NM = " + SQLTools.GetStringForSQL(scriptResult.getStatus()) + "," +
                 "STRT_TMS = " + SQLTools.GetStringForSQL(scriptResult.getStartTimestamp()) + "," +
                 "END_TMS = " + SQLTools.GetStringForSQL(scriptResult.getEndTimestamp()) +
-                "WHERE " +
+                " WHERE " +
                 "RUN_ID = " + SQLTools.GetStringForSQL(scriptResult.getMetadataKey().getRunId()) +
                 " AND PRC_ID = " + SQLTools.GetStringForSQL(scriptResult.getMetadataKey().getProcessId()) + ";";
 

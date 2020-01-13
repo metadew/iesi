@@ -121,7 +121,7 @@ public class ScriptParameterTraceConfiguration extends Configuration<ScriptParam
         return "UPDATE " + getMetadataRepository().getTableNameByLabel("ScriptParameterTraces") +
                 " SET SCRIPT_PAR_VAL = " + SQLTools.GetStringForSQL(scriptParameterTrace.getScriptParameterValue()) +
                 " WHERE RUN_ID = " + SQLTools.GetStringForSQL(scriptParameterTrace.getMetadataKey().getRunId()) +
-                "AND PRC_ID = " + SQLTools.GetStringForSQL(scriptParameterTrace.getMetadataKey().getProcessId()) +
+                " AND PRC_ID = " + SQLTools.GetStringForSQL(scriptParameterTrace.getMetadataKey().getProcessId()) +
                 " AND SCRIPT_PAR_NM = " + SQLTools.GetStringForSQL(scriptParameterTrace.getMetadataKey().getScriptParameterName()) + ";";
     }
 }

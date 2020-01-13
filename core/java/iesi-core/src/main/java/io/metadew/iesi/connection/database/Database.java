@@ -15,6 +15,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public abstract class Database {
 
@@ -379,12 +381,24 @@ public abstract class Database {
              */
             counter++;
         }
+        getPrimaryKeyConstraints(table).ifPresent(primaryKeysConstraint -> createQuery.append(",\n").append(primaryKeysConstraint));
 
         createQuery.append("\n);\n");
         createQuery.append(createQueryExtras());
         // createQuery.append(fieldComments).append("\n\n");
 
         return createQuery.toString();
+    }
+
+    Optional<String> getPrimaryKeyConstraints(MetadataTable metadataTable) {
+        List<MetadataField> primaryKeyMetadataFields = metadataTable.getFields().stream()
+                .filter(MetadataField::isPrimaryKey)
+                .collect(Collectors.toList());
+        if (primaryKeyMetadataFields.isEmpty()) {
+            return Optional.empty();
+        } else {
+            return Optional.of("CONSTRAINT pk_" + metadataTable.getName() + " PRIMARY KEY (" + primaryKeyMetadataFields.stream().map(MetadataField::getName).collect(Collectors.joining(", ")) + ")");
+        }
     }
 
     public void dropTable(MetadataTable table) {

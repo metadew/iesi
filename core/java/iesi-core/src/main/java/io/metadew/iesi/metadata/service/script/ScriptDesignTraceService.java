@@ -42,9 +42,6 @@ public class ScriptDesignTraceService {
                 ScriptParameterDesignTraceConfiguration.getInstance().insert(new ScriptParameterDesignTrace(runId, processId, scriptParameter));
             }
 
-//            for (Action action : script.getActions()) {
-//                actionDesignTraceService.trace(runId, processId, action);
-//            }
         } catch (MetadataAlreadyExistsException e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));

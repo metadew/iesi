@@ -131,6 +131,6 @@ public class ScriptParameterDesignTraceConfiguration extends Configuration<Scrip
                 " SET SCRIPT_PAR_VAL = " + SQLTools.GetStringForSQL(scriptParameterDesignTrace.getScriptParameterValue()) +
                 " WHERE RUN_ID = " + SQLTools.GetStringForSQL(scriptParameterDesignTrace.getMetadataKey().getRunId()) +
                 " AND PRC_ID = " + SQLTools.GetStringForSQL(scriptParameterDesignTrace.getMetadataKey().getProcessId()) +
-                "AND SCRIPT_PAR_NM = " + SQLTools.GetStringForSQL(scriptParameterDesignTrace.getMetadataKey().getScriptParameterName()) + ";";
+                " AND SCRIPT_PAR_NM = " + SQLTools.GetStringForSQL(scriptParameterDesignTrace.getMetadataKey().getScriptParameterName()) + ";";
     }
 }

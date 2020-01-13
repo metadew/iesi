@@ -124,7 +124,7 @@ public class ActionResultOutputConfiguration extends Configuration<ActionResultO
         return "UPDATE " + getMetadataRepository().getTableNameByLabel("ActionResultOutputs") +
                 " SET ACTION_ID = " + SQLTools.GetStringForSQL(actionResultOutput.getMetadataKey().getActionId()) + ", " +
                 "OUT_VAL = " + SQLTools.GetStringForSQL(actionResultOutput.getValue()) +
-                "WHERE RUN_ID = " + SQLTools.GetStringForSQL(actionResultOutput.getMetadataKey().getRunId()) +
+                " WHERE RUN_ID = " + SQLTools.GetStringForSQL(actionResultOutput.getMetadataKey().getRunId()) +
                 " AND PRC_ID = " + SQLTools.GetStringForSQL(actionResultOutput.getMetadataKey().getProcessId()) +
                 " AND OUT_NM = " + SQLTools.GetStringForSQL(actionResultOutput.getMetadataKey().getOutputName()) + ";";
     }

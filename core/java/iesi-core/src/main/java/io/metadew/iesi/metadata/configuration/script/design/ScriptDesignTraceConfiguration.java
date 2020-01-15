@@ -136,7 +136,6 @@ public class ScriptDesignTraceConfiguration extends Configuration<ScriptDesignTr
         return "UPDATE " + getMetadataRepository().getTableNameByLabel("ScriptDesignTraces") +
                 " SET PARENT_PRC_ID = " + SQLTools.GetStringForSQL(scriptDesignTrace.getParentProcessId()) + "," +
                 "SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptDesignTrace.getScriptId()) + "," +
-                "SCRIPT_TYP_NM = " + SQLTools.GetStringForSQL(scriptDesignTrace.getScriptType()) + "," +
                 "SCRIPT_NM = " + SQLTools.GetStringForSQL(scriptDesignTrace.getScriptName()) + "," +
                 "SCRIPT_DSC = " + SQLTools.GetStringForSQL(scriptDesignTrace.getScriptDescription()) +
                 " WHERE RUN_ID = " + SQLTools.GetStringForSQL(scriptDesignTrace.getMetadataKey().getRunId()) +

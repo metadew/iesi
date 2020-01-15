@@ -127,7 +127,6 @@ public class ScriptTraceConfiguration extends Configuration<ScriptTrace, ScriptT
         return "UPDATE " + getMetadataRepository().getTableNameByLabel("ScriptTraces") +
                 " SET PARENT_PRC_ID = " + SQLTools.GetStringForSQL(scriptTrace.getParentProcessId()) + "," +
                 "SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptTrace.getScriptId()) + "," +
-                "SCRIPT_TYP_NM = " + SQLTools.GetStringForSQL(scriptTrace.getScriptType()) + "," +
                 "SCRIPT_NM = " + SQLTools.GetStringForSQL(scriptTrace.getScriptName()) + "," +
                 "SCRIPT_DSC = " + SQLTools.GetStringForSQL(scriptTrace.getScriptDescription()) +
                 " WHERE RUN_ID = " + SQLTools.GetStringForSQL(scriptTrace.getMetadataKey().getRunId()) +

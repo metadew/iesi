@@ -4,8 +4,6 @@ import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
-import io.metadew.iesi.metadata.configuration.script.trace.exception.ScriptTraceAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.script.trace.exception.ScriptTraceDoesNotExistException;
 import io.metadew.iesi.metadata.definition.script.trace.ScriptTrace;
 import io.metadew.iesi.metadata.definition.script.trace.key.ScriptTraceKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
@@ -89,10 +87,6 @@ public class ScriptTraceConfiguration extends Configuration<ScriptTrace, ScriptT
     @Override
     public void delete(ScriptTraceKey scriptTraceKey) throws MetadataDoesNotExistException {
         LOGGER.trace(MessageFormat.format("Deleting ActionTrace {0}.", scriptTraceKey.toString()));
-        if (!exists(scriptTraceKey)) {
-            throw new ScriptTraceDoesNotExistException(MessageFormat.format(
-                    "ScriptTrace {0} does not exists", scriptTraceKey.toString()));
-        }
         String deleteStatement = deleteStatement(scriptTraceKey);
         getMetadataRepository().executeUpdate(deleteStatement);
     }
@@ -107,10 +101,6 @@ public class ScriptTraceConfiguration extends Configuration<ScriptTrace, ScriptT
     @Override
     public void insert(ScriptTrace scriptTrace) throws MetadataAlreadyExistsException {
         LOGGER.trace(MessageFormat.format("Inserting ScriptTrace {0}.", scriptTrace.getMetadataKey().toString()));
-        if (exists(scriptTrace.getMetadataKey())) {
-            throw new ScriptTraceAlreadyExistsException(MessageFormat.format(
-                    "ScriptTrace {0} already exists", scriptTrace.getMetadataKey().toString()));
-        }
         String insertStatement = insertStatement(scriptTrace);
         getMetadataRepository().executeUpdate(insertStatement);
     }
@@ -124,5 +114,23 @@ public class ScriptTraceConfiguration extends Configuration<ScriptTrace, ScriptT
                 SQLTools.GetStringForSQL(scriptTrace.getScriptId()) + "," +
                 SQLTools.GetStringForSQL(scriptTrace.getScriptName()) + "," +
                 SQLTools.GetStringForSQL(scriptTrace.getScriptDescription()) + ");";
+    }
+
+    @Override
+    public void update(ScriptTrace scriptTrace) {
+        LOGGER.trace(MessageFormat.format("Updating ScriptTrace {0}.", scriptTrace.toString()));
+        String updateStatement = updateStatement(scriptTrace);
+        getMetadataRepository().executeUpdate(updateStatement);
+    }
+
+    private String updateStatement(ScriptTrace scriptTrace) {
+        return "UPDATE " + getMetadataRepository().getTableNameByLabel("ScriptTraces") +
+                " SET PARENT_PRC_ID = " + SQLTools.GetStringForSQL(scriptTrace.getParentProcessId()) + "," +
+                "SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptTrace.getScriptId()) + "," +
+                "SCRIPT_TYP_NM = " + SQLTools.GetStringForSQL(scriptTrace.getScriptType()) + "," +
+                "SCRIPT_NM = " + SQLTools.GetStringForSQL(scriptTrace.getScriptName()) + "," +
+                "SCRIPT_DSC = " + SQLTools.GetStringForSQL(scriptTrace.getScriptDescription()) +
+                " WHERE RUN_ID = " + SQLTools.GetStringForSQL(scriptTrace.getMetadataKey().getRunId()) +
+                " AND PRC_ID = " + SQLTools.GetStringForSQL(scriptTrace.getMetadataKey().getProcessId()) + ";";
     }
 }

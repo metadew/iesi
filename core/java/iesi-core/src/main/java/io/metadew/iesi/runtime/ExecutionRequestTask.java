@@ -26,6 +26,7 @@ public class ExecutionRequestTask implements Runnable {
         ThreadContext.put("fwk.runid", FrameworkRuntime.getInstance().getFrameworkRunId());
         ThreadContext.put("fwk.code", FrameworkConfiguration.getInstance().getFrameworkCode());
         LOGGER.info("running " + executionRequest.getMetadataKey().getId());
-        ExecutorService.getInstance().execute(executionRequest);
+        ExecutionRequestMonitor.getInstance().monitor(executionRequest.getMetadataKey(), Thread.currentThread());
+        ExecutionRequestExecutorService.getInstance().execute(executionRequest);
     }
 }

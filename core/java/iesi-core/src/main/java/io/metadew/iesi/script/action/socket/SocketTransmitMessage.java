@@ -5,7 +5,6 @@ import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.dataset.Dataset;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.framework.configuration.FrameworkSettingConfiguration;
-import io.metadew.iesi.framework.definition.FrameworkSetting;
 import io.metadew.iesi.framework.execution.FrameworkControl;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;

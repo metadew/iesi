@@ -12,7 +12,7 @@ import io.metadew.iesi.metadata.configuration.execution.script.ScriptExecutionCo
 import io.metadew.iesi.metadata.configuration.impersonation.ImpersonationConfiguration;
 import io.metadew.iesi.metadata.configuration.script.ScriptConfiguration;
 import io.metadew.iesi.metadata.definition.Context;
-import io.metadew.iesi.runtime.ExecutorService;
+import io.metadew.iesi.runtime.ExecutionRequestExecutorService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -45,8 +45,8 @@ public class IesiConfiguration {
 
     @Bean
     @DependsOn("frameworkInstance")
-    ExecutorService executorService() {
-        return ExecutorService.getInstance();
+    ExecutionRequestExecutorService executorService() {
+        return ExecutionRequestExecutorService.getInstance();
     }
 
     @Bean

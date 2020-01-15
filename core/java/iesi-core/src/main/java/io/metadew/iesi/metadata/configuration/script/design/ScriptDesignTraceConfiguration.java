@@ -4,8 +4,6 @@ import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
-import io.metadew.iesi.metadata.configuration.script.design.exception.ScriptDesignTraceAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.script.design.exception.ScriptDesignTraceDoesNotExistException;
 import io.metadew.iesi.metadata.definition.script.design.ScriptDesignTrace;
 import io.metadew.iesi.metadata.definition.script.design.key.ScriptDesignTraceKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
@@ -88,10 +86,6 @@ public class ScriptDesignTraceConfiguration extends Configuration<ScriptDesignTr
     @Override
     public void delete(ScriptDesignTraceKey scriptDesignTraceKey) throws MetadataDoesNotExistException {
         LOGGER.trace(MessageFormat.format("Deleting ScriptDesignTrace {0}.", scriptDesignTraceKey.toString()));
-        if (!exists(scriptDesignTraceKey)) {
-            throw new ScriptDesignTraceDoesNotExistException(MessageFormat.format(
-                    "ScriptTrace {0} does not exists", scriptDesignTraceKey.toString()));
-        }
         String deleteStatement = deleteStatement(scriptDesignTraceKey);
         getMetadataRepository().executeUpdate(deleteStatement);
     }
@@ -106,10 +100,6 @@ public class ScriptDesignTraceConfiguration extends Configuration<ScriptDesignTr
     @Override
     public void insert(ScriptDesignTrace scriptDesignTrace) throws MetadataAlreadyExistsException {
         LOGGER.trace(MessageFormat.format("Inserting ScriptDesignParameterTrace {0}.", scriptDesignTrace.toString()));
-        if (exists(scriptDesignTrace.getMetadataKey())) {
-            throw new ScriptDesignTraceAlreadyExistsException(MessageFormat.format(
-                    "ActionParameterTrace {0} already exists", scriptDesignTrace.getMetadataKey().toString()));
-        }
         String insertStatement = insertStatement(scriptDesignTrace);
         getMetadataRepository().executeUpdate(insertStatement);
     }
@@ -133,5 +123,23 @@ public class ScriptDesignTraceConfiguration extends Configuration<ScriptDesignTr
                 SQLTools.GetStringForSQL(scriptDesignTrace.getScriptId()) + "," +
                 SQLTools.GetStringForSQL(scriptDesignTrace.getScriptName()) + "," +
                 SQLTools.GetStringForSQL(scriptDesignTrace.getScriptDescription()) + ");";
+    }
+
+    @Override
+    public void update(ScriptDesignTrace scriptDesignTrace) {
+        LOGGER.trace(MessageFormat.format("Updating ScriptDesignParameterTrace {0}.", scriptDesignTrace.toString()));
+        String updateStatement = updateStatement(scriptDesignTrace);
+        getMetadataRepository().executeUpdate(updateStatement);
+    }
+
+    private String updateStatement(ScriptDesignTrace scriptDesignTrace) {
+        return "UPDATE " + getMetadataRepository().getTableNameByLabel("ScriptDesignTraces") +
+                " SET PARENT_PRC_ID = " + SQLTools.GetStringForSQL(scriptDesignTrace.getParentProcessId()) + "," +
+                "SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptDesignTrace.getScriptId()) + "," +
+                "SCRIPT_TYP_NM = " + SQLTools.GetStringForSQL(scriptDesignTrace.getScriptType()) + "," +
+                "SCRIPT_NM = " + SQLTools.GetStringForSQL(scriptDesignTrace.getScriptName()) + "," +
+                "SCRIPT_DSC = " + SQLTools.GetStringForSQL(scriptDesignTrace.getScriptDescription()) +
+                " WHERE RUN_ID = " + SQLTools.GetStringForSQL(scriptDesignTrace.getMetadataKey().getRunId()) +
+                " AND PRC_ID = " + SQLTools.GetStringForSQL(scriptDesignTrace.getMetadataKey().getProcessId()) + ";";
     }
 }

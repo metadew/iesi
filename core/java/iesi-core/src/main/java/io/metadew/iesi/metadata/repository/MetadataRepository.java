@@ -177,7 +177,7 @@ public abstract class MetadataRepository {
 	public abstract void save(DataObject dataObject) throws MetadataRepositorySaveException;
 
 	public void shutdown() {
-		LOGGER.info("shutting down metadata repository " + getCategory());
+		LOGGER.debug("shutting down metadata repository " + getCategory());
 		repositoryCoordinator.shutdown();
 	}
 }

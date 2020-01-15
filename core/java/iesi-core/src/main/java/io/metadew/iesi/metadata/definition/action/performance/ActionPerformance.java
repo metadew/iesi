@@ -7,24 +7,19 @@ import java.time.LocalDateTime;
 
 public class ActionPerformance extends Metadata<ActionPerformanceKey> {
 
-    private ActionPerformanceKey actionPerformanceKey;
-
     private String context;
+    private String actionId;
     private LocalDateTime startTimestamp;
     private LocalDateTime endTimestamp;
     private Double duration;
 
-    public ActionPerformance(ActionPerformanceKey actionPerformanceKey, String context, LocalDateTime startTimestamp, LocalDateTime stopTimestamp, Double duration) {
+    public ActionPerformance(ActionPerformanceKey actionPerformanceKey, String context, String actionId, LocalDateTime startTimestamp, LocalDateTime stopTimestamp, Double duration) {
         super(actionPerformanceKey);
-        this.actionPerformanceKey = actionPerformanceKey;
         this.context = context;
+        this.actionId = actionId;
         this.startTimestamp = startTimestamp;
         this.endTimestamp = stopTimestamp;
         this.duration = duration;
-    }
-
-    public ActionPerformanceKey getActionPerformanceKey() {
-        return actionPerformanceKey;
     }
 
     public String getContext() {
@@ -42,4 +37,9 @@ public class ActionPerformance extends Metadata<ActionPerformanceKey> {
     public Double getDuration() {
         return duration;
     }
+
+    public String getActionId() {
+        return actionId;
+    }
+
 }

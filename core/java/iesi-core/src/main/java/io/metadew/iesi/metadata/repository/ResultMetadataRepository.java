@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.metadata.configuration.action.performance.ActionPerformanceConfiguration;
 import io.metadew.iesi.metadata.configuration.action.result.ActionResultConfiguration;
 import io.metadew.iesi.metadata.configuration.action.result.ActionResultOutputConfiguration;
-import io.metadew.iesi.metadata.configuration.request.RequestResultConfiguration;
 import io.metadew.iesi.metadata.configuration.script.result.ScriptResultConfiguration;
 import io.metadew.iesi.metadata.configuration.script.result.ScriptResultOutputConfiguration;
 import io.metadew.iesi.metadata.definition.DataObject;
@@ -27,7 +26,6 @@ public class ResultMetadataRepository extends MetadataRepository {
         ActionResultOutputConfiguration.getInstance().init(this);
         ScriptResultOutputConfiguration.getInstance().init(this);
         ActionPerformanceConfiguration.getInstance().init(this);
-        RequestResultConfiguration.getInstance().init(this);
     }
 
     public ResultMetadataRepository(String name, String instanceName, RepositoryCoordinator repositoryCoordinator) {

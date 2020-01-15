@@ -29,13 +29,13 @@ public class TraceMetadataRepository extends MetadataRepository {
         ScriptDesignTraceConfiguration.getInstance().init(this);
         ScriptVersionDesignTraceConfiguration.getInstance().init(this);
         ScriptParameterDesignTraceConfiguration.getInstance().init(this);
-        ActionTraceConfiguration.getInstance().init(this);
         ScriptTraceConfiguration.getInstance().init(this);
         ScriptVersionTraceConfiguration.getInstance().init(this);
         ScriptParameterTraceConfiguration.getInstance().init(this);
+        ActionTraceConfiguration.getInstance().init(this);
+        ActionParameterTraceConfiguration.getInstance().init(this);
         ActionDesignTraceConfiguration.getInstance().init(this);
         ActionParameterDesignTraceConfiguration.getInstance().init(this);
-        ActionParameterTraceConfiguration.getInstance().init(this);
     }
 
     public TraceMetadataRepository(String name, String instanceName, RepositoryCoordinator repositoryCoordinator){

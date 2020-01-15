@@ -9,7 +9,6 @@ import io.metadew.iesi.framework.execution.FrameworkControl;
 import io.metadew.iesi.framework.execution.IESIMessage;
 import io.metadew.iesi.metadata.definition.Iteration;
 import io.metadew.iesi.metadata.definition.component.ComponentAttribute;
-import io.metadew.iesi.runtime.definition.LookupResult;
 import io.metadew.iesi.script.configuration.IterationVariableConfiguration;
 import io.metadew.iesi.script.configuration.RuntimeVariableConfiguration;
 import io.metadew.iesi.script.execution.instruction.data.DataInstruction;

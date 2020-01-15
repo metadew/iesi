@@ -65,6 +65,7 @@ public abstract class SchemaDatabase extends Database {
             counter++;
         }
 
+        getPrimaryKeyConstraints(table).ifPresent(primaryKeysConstraint -> createQuery.append(",\n").append(primaryKeysConstraint));
         createQuery.append("\n)").append(createQueryExtras()).append(";");
         //createQuery.append(fieldComments).append("\n\n");
 

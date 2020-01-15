@@ -2,8 +2,6 @@ package io.metadew.iesi.script.execution;
 
 import io.metadew.iesi.metadata.configuration.type.ActionTypeConfiguration;
 import io.metadew.iesi.metadata.definition.action.Action;
-import io.metadew.iesi.metadata.definition.action.design.ActionDesignTrace;
-import io.metadew.iesi.metadata.service.action.ActionDesignTraceService;
 import io.metadew.iesi.script.configuration.IterationInstance;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 import io.metadew.iesi.script.operation.ComponentAttributeOperation;

@@ -8,24 +8,24 @@ import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ExecutorService {
+public class ExecutionRequestExecutorService {
 
-    private Map<Class<? extends ExecutionRequest>, RequestExecutor> requestExecutorMap;
+    private Map<Class<? extends ExecutionRequest>, ExecutionRequestExecutor> requestExecutorMap;
 
     private static final Logger LOGGER = LogManager.getLogger();
-    private static ExecutorService INSTANCE;
+    private static ExecutionRequestExecutorService INSTANCE;
 
-    public synchronized static ExecutorService getInstance() {
+    public synchronized static ExecutionRequestExecutorService getInstance() {
         if (INSTANCE == null) {
-            INSTANCE = new ExecutorService();
+            INSTANCE = new ExecutionRequestExecutorService();
         }
         return INSTANCE;
     }
 
-    private ExecutorService() {
+    private ExecutionRequestExecutorService() {
         requestExecutorMap = new HashMap<>();
-        AuthenticatedRequestExecutor authenticatedRequestExecutor = AuthenticatedRequestExecutor.getInstance();
-        NonAuthenticatedRequestExecutor nonAuthenticatedRequestExecutor = NonAuthenticatedRequestExecutor.getInstance();
+        AuthenticatedExecutionRequestExecutor authenticatedRequestExecutor = AuthenticatedExecutionRequestExecutor.getInstance();
+        NonAuthenticatedExecutionRequestExecutor nonAuthenticatedRequestExecutor = NonAuthenticatedExecutionRequestExecutor.getInstance();
 
         requestExecutorMap.put(authenticatedRequestExecutor.appliesTo(), authenticatedRequestExecutor);
         requestExecutorMap.put(nonAuthenticatedRequestExecutor.appliesTo(), nonAuthenticatedRequestExecutor);
@@ -33,12 +33,12 @@ public class ExecutorService {
 
     @SuppressWarnings("unchecked")
     public void execute(ExecutionRequest executionRequest) {
-        RequestExecutor requestExecutor = requestExecutorMap.get(executionRequest.getClass());
-        if (requestExecutor == null) {
+        ExecutionRequestExecutor executionRequestExecutor = requestExecutorMap.get(executionRequest.getClass());
+        if (executionRequestExecutor == null) {
             LOGGER.error(MessageFormat.format("No Executor found for request type {0}", executionRequest.getClass()));
         } else {
             LOGGER.info(MessageFormat.format("Executing request {0}", executionRequest.getMetadataKey().getId()));
-            requestExecutor.execute(executionRequest);
+            executionRequestExecutor.execute(executionRequest);
         }
     }
 

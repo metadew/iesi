@@ -21,22 +21,22 @@ import org.apache.logging.log4j.Logger;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-public class AuthenticatedRequestExecutor implements RequestExecutor<AuthenticatedExecutionRequest> {
+public class AuthenticatedExecutionRequestExecutor implements ExecutionRequestExecutor<AuthenticatedExecutionRequest> {
 
     private static final Logger LOGGER = LogManager.getLogger();
     private final UserAccessConfiguration userAccessConfiguration;
     private final Boolean authenticationEnabled;
 
-    private static AuthenticatedRequestExecutor INSTANCE;
+    private static AuthenticatedExecutionRequestExecutor INSTANCE;
 
-    public synchronized static AuthenticatedRequestExecutor getInstance() {
+    public synchronized static AuthenticatedExecutionRequestExecutor getInstance() {
         if (INSTANCE == null) {
-            INSTANCE = new AuthenticatedRequestExecutor();
+            INSTANCE = new AuthenticatedExecutionRequestExecutor();
         }
         return INSTANCE;
     }
 
-    private AuthenticatedRequestExecutor() {
+    private AuthenticatedExecutionRequestExecutor() {
         this.userAccessConfiguration = new UserAccessConfiguration();
         this.authenticationEnabled = FrameworkSettingConfiguration.getInstance().getSettingPath("guard.authenticate")
                 .map(settingPath -> FrameworkControl.getInstance().getProperty(settingPath).equalsIgnoreCase("y"))

@@ -1,8 +1,8 @@
 package io.metadew.iesi.script.operation;
 
-import io.metadew.iesi.runtime.definition.LookupResult;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
+import io.metadew.iesi.script.execution.LookupResult;
 import org.apache.commons.jexl2.Expression;
 import org.apache.commons.jexl2.JexlContext;
 import org.apache.commons.jexl2.JexlEngine;

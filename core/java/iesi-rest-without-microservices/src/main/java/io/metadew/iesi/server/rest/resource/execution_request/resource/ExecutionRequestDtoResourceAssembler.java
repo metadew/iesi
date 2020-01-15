@@ -3,7 +3,6 @@ package io.metadew.iesi.server.rest.resource.execution_request.resource;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.NonAuthenticatedExecutionRequest;
 import io.metadew.iesi.server.rest.controller.ExecutionRequestController;
-import io.metadew.iesi.server.rest.controller.ScriptController;
 import io.metadew.iesi.server.rest.resource.execution_request.dto.ExecutionRequestDto;
 import io.metadew.iesi.server.rest.resource.script_execution_request.resource.ScriptExecutionRequestDtoResourceAssembler;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -4,13 +4,11 @@ import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsExc
 import io.metadew.iesi.metadata.configuration.script.design.ScriptDesignTraceConfiguration;
 import io.metadew.iesi.metadata.configuration.script.design.ScriptParameterDesignTraceConfiguration;
 import io.metadew.iesi.metadata.configuration.script.design.ScriptVersionDesignTraceConfiguration;
-import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.metadata.definition.script.ScriptParameter;
 import io.metadew.iesi.metadata.definition.script.design.ScriptDesignTrace;
 import io.metadew.iesi.metadata.definition.script.design.ScriptParameterDesignTrace;
 import io.metadew.iesi.metadata.definition.script.design.ScriptVersionDesignTrace;
-import io.metadew.iesi.metadata.service.action.ActionDesignTraceService;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,10 +19,7 @@ import java.io.StringWriter;
 public class ScriptDesignTraceService {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private ActionDesignTraceService actionDesignTraceService;
-
     public ScriptDesignTraceService() {
-        this.actionDesignTraceService = new ActionDesignTraceService();
     }
 
     public void trace(ScriptExecution scriptExecution) {

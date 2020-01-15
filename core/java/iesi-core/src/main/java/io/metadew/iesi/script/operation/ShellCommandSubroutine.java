@@ -1,28 +1,28 @@
-package io.metadew.iesi.runtime.subroutine;
+package io.metadew.iesi.script.operation;
 
 import io.metadew.iesi.metadata.definition.subroutine.Subroutine;
 import io.metadew.iesi.metadata.definition.subroutine.SubroutineParameter;
 
-public class SqlStatementSubroutine {
+public class ShellCommandSubroutine {
 
     private Subroutine subroutine;
 
     // Constructors
-    public SqlStatementSubroutine(Subroutine subroutine) {
+    public ShellCommandSubroutine(Subroutine subroutine) {
         this.setSubroutine(subroutine);
     }
 
     // Methods
     public String getValue() {
-        String sqlStatement = "";
+        String shellCommand = "";
 
         // Get Parameters
         for (SubroutineParameter subroutineParameter : this.getSubroutine().getParameters()) {
-            if (subroutineParameter.getName().equalsIgnoreCase("query")) {
-                sqlStatement = subroutineParameter.getValue();
+            if (subroutineParameter.getName().equalsIgnoreCase("command")) {
+                shellCommand = subroutineParameter.getValue();
             }
         }
-        return sqlStatement;
+        return shellCommand;
     }
 
     // Getters and Setters

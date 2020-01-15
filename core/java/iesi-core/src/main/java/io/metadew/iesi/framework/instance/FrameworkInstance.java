@@ -11,7 +11,7 @@ import io.metadew.iesi.metadata.definition.Context;
 import io.metadew.iesi.metadata.execution.MetadataControl;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import io.metadew.iesi.metadata.repository.configuration.MetadataRepositoryConfiguration;
-import io.metadew.iesi.runtime.ExecutorService;
+import io.metadew.iesi.runtime.ExecutionRequestExecutorService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,7 +66,7 @@ public class FrameworkInstance {
 
         FrameworkExecution.getInstance().init(context);
         // TODO: move Executor (Request to separate module)
-        ExecutorService.getInstance();
+        ExecutionRequestExecutorService.getInstance();
     }
 
     public void init(String logonType, FrameworkInitializationFile frameworkInitializationFile, FrameworkExecutionContext context) {
@@ -119,7 +119,7 @@ public class FrameworkInstance {
 
         FrameworkExecution.getInstance().init(context);
         // TODO: move Executor (Request to separate module)
-        ExecutorService.getInstance();
+        ExecutionRequestExecutorService.getInstance();
     }
 
     public void shutdown() {

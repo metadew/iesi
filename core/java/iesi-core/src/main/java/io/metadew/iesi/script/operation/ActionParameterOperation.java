@@ -6,8 +6,6 @@ import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.framework.crypto.FrameworkCrypto;
 import io.metadew.iesi.metadata.configuration.type.ActionTypeParameterConfiguration;
 import io.metadew.iesi.metadata.definition.action.type.ActionTypeParameter;
-import io.metadew.iesi.runtime.subroutine.ShellCommandSubroutine;
-import io.metadew.iesi.runtime.subroutine.SqlStatementSubroutine;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ExecutionRuntime;

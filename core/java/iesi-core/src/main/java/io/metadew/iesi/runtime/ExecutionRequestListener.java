@@ -18,7 +18,6 @@ import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.List;
 import java.util.Queue;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.*;
 
 public class ExecutionRequestListener implements Runnable {
@@ -26,7 +25,6 @@ public class ExecutionRequestListener implements Runnable {
     private static final Logger LOGGER = LogManager.getLogger();
     private Queue<ExecutionRequest> executionRequestsQueue;
     private final ExecutorService executor;
-    private final Thread executionRequestMonitorThread;
     private boolean keepRunning = true;
 
     public ExecutionRequestListener() {
@@ -39,9 +37,7 @@ public class ExecutionRequestListener implements Runnable {
                 0L, TimeUnit.MILLISECONDS,
                 new EmptyQueue());
         executionRequestsQueue = new LinkedBlockingQueue<>();
-        // executor = Executors.newFixedThreadPool(threadSize);
-        executionRequestMonitorThread = new Thread(ExecutionRequestMonitor.getInstance());
-        executionRequestMonitorThread.start();
+        new Thread(ExecutionRequestMonitor.getInstance()).start();
     }
 
     public void run() {
@@ -94,7 +90,7 @@ public class ExecutionRequestListener implements Runnable {
             LOGGER.info("Forcing execution listener shutdown...");
             executor.shutdownNow();
         }
-        executionRequestMonitorThread.join(2000);
+        ExecutionRequestMonitor.getInstance().shutdown();
         LOGGER.info("Execution listener shutdown");
         Thread mainThread = Thread.currentThread();
         mainThread.join(2000);

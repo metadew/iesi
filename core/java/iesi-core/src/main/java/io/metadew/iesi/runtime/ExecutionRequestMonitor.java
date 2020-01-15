@@ -5,6 +5,7 @@ import io.metadew.iesi.framework.execution.FrameworkControl;
 import io.metadew.iesi.metadata.configuration.execution.ExecutionRequestConfiguration;
 import io.metadew.iesi.metadata.configuration.execution.exception.ExecutionRequestDoesNotExistException;
 import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
+import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequestStatus;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -20,6 +21,7 @@ public class ExecutionRequestMonitor implements Runnable {
     private static final Logger LOGGER = LogManager.getLogger();
     private final Long timeout;
     private Map<ExecutionRequestKey, ThreadTimeCombination> executionRequestThreadMap;
+    private boolean keepRunning = true;
 
     private static ExecutionRequestMonitor INSTANCE;
 
@@ -37,6 +39,17 @@ public class ExecutionRequestMonitor implements Runnable {
         this.executionRequestThreadMap = new ConcurrentHashMap<>();
     }
 
+    @Override
+    public void run() {
+        while (keepRunning) {
+            checkExecutionRequests();
+            try {
+                Thread.sleep(10000);
+            } catch (InterruptedException ignored) {
+            }
+        }
+    }
+
     public void monitor(ExecutionRequestKey executionRequestKey, Thread task) {
         LOGGER.debug(MessageFormat.format("executionrequestmonitor=monitoring execution request {0}", executionRequestKey.toString()));
         if (!ExecutionRequestConfiguration.getInstance().exists(executionRequestKey)) {
@@ -44,17 +57,6 @@ public class ExecutionRequestMonitor implements Runnable {
         } else {
             synchronized (executionRequestThreadMap) {
                 executionRequestThreadMap.put(executionRequestKey, new ThreadTimeCombination(task, LocalDateTime.now()));
-            }
-        }
-    }
-
-    @Override
-    public void run() {
-        while (true) {
-            checkExecutionRequests();
-            try {
-                Thread.sleep(10000);
-            } catch (InterruptedException ignored) {
             }
         }
     }
@@ -69,18 +71,12 @@ public class ExecutionRequestMonitor implements Runnable {
                             executionRequestThreadEntry.getValue().thread.interrupt();
                             executionRequestThreadEntry.getValue().thread.join(5000);
                             ExecutionRequestConfiguration.getInstance().get(executionRequestThreadEntry.getKey())
-                                    .ifPresent(executionRequest -> executionRequest.getScriptExecutionRequests()
-                                            .forEach(scriptExecutionRequest -> {
-                                                if (scriptExecutionRequest.getScriptExecutionRequestStatus().equals(ScriptExecutionRequestStatus.NEW) ||
-                                                        scriptExecutionRequest.getScriptExecutionRequestStatus().equals(ScriptExecutionRequestStatus.ACCEPTED) ||
-                                                        scriptExecutionRequest.getScriptExecutionRequestStatus().equals(ScriptExecutionRequestStatus.SUBMITTED)) {
-                                                    scriptExecutionRequest.updateScriptExecutionRequestStatus(ScriptExecutionRequestStatus.ABORTED);
-                                                }
-                                                try {
-                                                    ExecutionRequestConfiguration.getInstance().update(executionRequest);
-                                                } catch (ExecutionRequestDoesNotExistException ignored) {
-                                                }
-                                            }));
+                                    .ifPresent(executionRequest -> {
+                                        executionRequest.getScriptExecutionRequests().forEach(this::markAborted);
+                                        try {
+                                            ExecutionRequestConfiguration.getInstance().update(executionRequest);
+                                        } catch (ExecutionRequestDoesNotExistException ignored) {}
+                                    });
                             executionRequestThreadMap.remove(executionRequestThreadEntry.getKey());
                         } catch (InterruptedException e) {
                             LOGGER.warn(MessageFormat.format("executionrequestmonitor=unable to close blocking Execution Request {}", executionRequestThreadEntry.getKey().toString()));
@@ -94,6 +90,22 @@ public class ExecutionRequestMonitor implements Runnable {
         }
     }
 
+    private void markAborted(ScriptExecutionRequest scriptExecutionRequest) {
+        if (scriptExecutionRequest.getScriptExecutionRequestStatus().equals(ScriptExecutionRequestStatus.NEW) ||
+                scriptExecutionRequest.getScriptExecutionRequestStatus().equals(ScriptExecutionRequestStatus.ACCEPTED) ||
+                scriptExecutionRequest.getScriptExecutionRequestStatus().equals(ScriptExecutionRequestStatus.SUBMITTED)) {
+            scriptExecutionRequest.updateScriptExecutionRequestStatus(ScriptExecutionRequestStatus.ABORTED);
+        }
+    }
+
+    public void shutdown() throws InterruptedException {
+        keepRunning = false;
+        LOGGER.info("shutting down execution request execution monitor...");
+        Thread mainThread = Thread.currentThread();
+        mainThread.join(2000);
+        LOGGER.info("Execution request execution monitor shutdown");
+    }
+
     private static class ThreadTimeCombination {
         private final Thread thread;
         private final LocalDateTime startTimestamp;
@@ -102,6 +114,5 @@ public class ExecutionRequestMonitor implements Runnable {
             this.thread = thread;
             this.startTimestamp = startTimestamp;
         }
-
     }
 }

@@ -11,20 +11,20 @@ import io.metadew.iesi.script.ScriptExecutionBuildException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class NonAuthenticatedRequestExecutor implements RequestExecutor<NonAuthenticatedExecutionRequest> {
+public class NonAuthenticatedExecutionRequestExecutor implements ExecutionRequestExecutor<NonAuthenticatedExecutionRequest> {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private static NonAuthenticatedRequestExecutor INSTANCE;
+    private static NonAuthenticatedExecutionRequestExecutor INSTANCE;
 
-    public synchronized static NonAuthenticatedRequestExecutor getInstance() {
+    public synchronized static NonAuthenticatedExecutionRequestExecutor getInstance() {
         if (INSTANCE == null) {
-            INSTANCE = new NonAuthenticatedRequestExecutor();
+            INSTANCE = new NonAuthenticatedExecutionRequestExecutor();
         }
         return INSTANCE;
     }
 
-    private NonAuthenticatedRequestExecutor() {}
+    private NonAuthenticatedExecutionRequestExecutor() {}
 
     @Override
     public Class<NonAuthenticatedExecutionRequest> appliesTo() {

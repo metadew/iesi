@@ -3,7 +3,7 @@ server:
     context-path: /api
 
 iesi:
-  home: /TST/GETA/app
+  home: .
 
 spring:
   profiles:

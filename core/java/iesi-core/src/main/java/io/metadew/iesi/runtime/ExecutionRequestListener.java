@@ -74,7 +74,7 @@ public class ExecutionRequestListener implements Runnable {
     private void pollNewRequests() throws ExecutionRequestDoesNotExistException {
         LOGGER.trace("executionrequestlistener=fetching new requests");
         List<ExecutionRequest> executionRequests = ExecutionRequestConfiguration.getInstance().getAllNew();
-        LOGGER.trace(MessageFormat.format("executionrequestlistener=found {0} Requests", executionRequests.size()));
+        LOGGER.trace(MessageFormat.format("executionrequestlistener=found {0} new execution requests", executionRequests.size()));
         for (ExecutionRequest executionRequest : executionRequests) {
             LOGGER.info(MessageFormat.format("executionrequestlistener=submitting request {0} for execution", executionRequest.getMetadataKey().getId()));
             executionRequest.updateExecutionRequestStatus(ExecutionRequestStatus.SUBMITTED);
@@ -85,13 +85,13 @@ public class ExecutionRequestListener implements Runnable {
 
     public void shutdown() throws InterruptedException {
         keepRunning = false;
-        LOGGER.info("shutting down execution listener...");
+        LOGGER.info("executionrequestlistener=shutting down execution request listener...");
         if (!executor.awaitTermination(5, TimeUnit.SECONDS))  {
-            LOGGER.info("Forcing execution listener shutdown...");
+            LOGGER.info("executionrequestlistener=forcing execution request listener shutdown...");
             executor.shutdownNow();
         }
         ExecutionRequestMonitor.getInstance().shutdown();
-        LOGGER.info("Execution listener shutdown");
+        LOGGER.info("executionrequestlistener=execution request listener shutdown");
         Thread mainThread = Thread.currentThread();
         mainThread.join(2000);
     }

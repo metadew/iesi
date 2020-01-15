@@ -4,7 +4,6 @@ import io.metadew.iesi.metadata.definition.execution.*;
 import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequestBuilderException;
-import io.metadew.iesi.metadata.definition.execution.script.ScriptNameExecutionRequest;
 import io.metadew.iesi.server.rest.resource.Dto;
 import io.metadew.iesi.server.rest.resource.script_execution_request.dto.ScriptExecutionRequestDto;
 import lombok.*;

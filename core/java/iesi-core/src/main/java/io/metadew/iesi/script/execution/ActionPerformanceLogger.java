@@ -15,8 +15,8 @@ public class ActionPerformanceLogger {
 
     public void log(ActionExecution actionExecution, String scope, LocalDateTime startTimestamp, LocalDateTime endTimestalmp) {
         try {
-            ActionPerformanceConfiguration.getInstance().insert(new ActionPerformance(new ActionPerformanceKey(actionExecution.getExecutionControl().getRunId(), actionExecution.getProcessId(), actionExecution.getAction().getId(), scope),
-                    actionExecution.getExecutionControl().getEnvName(), startTimestamp, endTimestalmp, (double) Duration.between(startTimestamp, endTimestalmp).toMillis()));
+            ActionPerformanceConfiguration.getInstance().insert(new ActionPerformance(new ActionPerformanceKey(actionExecution.getExecutionControl().getRunId(), actionExecution.getProcessId(), scope),
+                    actionExecution.getExecutionControl().getEnvName(), actionExecution.getAction().getId(), startTimestamp, endTimestalmp, (double) Duration.between(startTimestamp, endTimestalmp).toMillis()));
         } catch (ActionPerformanceAlreadyExistsException e) {
             e.printStackTrace();
         }

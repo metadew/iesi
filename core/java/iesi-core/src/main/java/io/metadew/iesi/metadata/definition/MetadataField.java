@@ -11,10 +11,22 @@ public class MetadataField {
     private int length;
     private String nullable = "Y";
     private String defaultTimestamp = "N";
+    private boolean primaryKey = false;
 
     //Constructors
     public MetadataField() {
 
+    }
+
+    public MetadataField(String name, String description, int order, String type, int length, String nullable, String defaultTimestamp, boolean primaryKey) {
+        this.name = name;
+        this.description = description;
+        this.order = order;
+        this.type = type;
+        this.length = length;
+        this.nullable = nullable;
+        this.defaultTimestamp = defaultTimestamp;
+        this.primaryKey = primaryKey;
     }
 
     //Getters and Setters
@@ -75,4 +87,11 @@ public class MetadataField {
     }
 
 
+    public boolean isPrimaryKey() {
+        return primaryKey;
+    }
+
+    public void setPrimaryKey(boolean primaryKey) {
+        this.primaryKey = primaryKey;
+    }
 }

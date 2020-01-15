@@ -28,6 +28,7 @@ import io.metadew.iesi.metadata.definition.script.result.key.ScriptResultKey;
 import io.metadew.iesi.metadata.definition.script.result.key.ScriptResultOutputKey;
 import io.metadew.iesi.metadata.execution.MetadataControl;
 import io.metadew.iesi.metadata.restore.RestoreExecution;
+import io.metadew.iesi.metadata.service.action.ActionDesignTraceService;
 import io.metadew.iesi.metadata.service.script.ScriptDesignTraceService;
 import org.apache.logging.log4j.*;
 
@@ -43,6 +44,7 @@ import java.util.UUID;
 public class ExecutionControl {
 
     private final DelimitedFileBeatElasticSearchConnection elasticSearchConnection;
+    private final ActionDesignTraceService actionDesignTraceService;
     private ExecutionRuntime executionRuntime;
     private ExecutionLog executionLog;
     private ExecutionTrace executionTrace;
@@ -63,6 +65,7 @@ public class ExecutionControl {
     public ExecutionControl() throws ClassNotFoundException, NoSuchMethodException,
             InvocationTargetException, InstantiationException, IllegalAccessException, SQLException {
         this.scriptDesignTraceService = new ScriptDesignTraceService();
+        this.actionDesignTraceService = new ActionDesignTraceService();
         this.executionLog = new ExecutionLog();
         this.executionTrace = new ExecutionTrace();
         initializeRunId();
@@ -133,6 +136,7 @@ public class ExecutionControl {
 
     public void logStart(ActionExecution actionExecution) {
         try {
+            actionDesignTraceService.trace(runId, actionExecution.getProcessId(), actionExecution.getAction());
             ActionResult actionResult = new ActionResult(
                     runId,
                     actionExecution.getProcessId(),

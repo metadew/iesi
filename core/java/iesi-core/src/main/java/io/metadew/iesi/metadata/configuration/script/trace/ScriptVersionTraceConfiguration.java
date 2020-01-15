@@ -4,8 +4,6 @@ import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
-import io.metadew.iesi.metadata.configuration.script.trace.exception.ScriptVersionTraceAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.script.trace.exception.ScriptVersionTraceDoesNotExistException;
 import io.metadew.iesi.metadata.definition.script.trace.ScriptVersionTrace;
 import io.metadew.iesi.metadata.definition.script.trace.key.ScriptVersionTraceKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
@@ -84,10 +82,6 @@ public class ScriptVersionTraceConfiguration extends Configuration<ScriptVersion
     @Override
     public void delete(ScriptVersionTraceKey scriptVersionTraceKey) throws MetadataDoesNotExistException {
         LOGGER.trace(MessageFormat.format("Deleting ScriptVersionTrace {0}.", scriptVersionTraceKey.toString()));
-        if (!exists(scriptVersionTraceKey)) {
-            throw new ScriptVersionTraceDoesNotExistException(MessageFormat.format(
-                    "ScriptVersionTrace {0} does not exists", scriptVersionTraceKey.toString()));
-        }
         String deleteStatement = deleteStatement(scriptVersionTraceKey);
         getMetadataRepository().executeUpdate(deleteStatement);
     }
@@ -102,10 +96,6 @@ public class ScriptVersionTraceConfiguration extends Configuration<ScriptVersion
     @Override
     public void insert(ScriptVersionTrace scriptVersionTrace) throws MetadataAlreadyExistsException {
         LOGGER.trace(MessageFormat.format("Inserting scriptVersionTrace {0}.", scriptVersionTrace.getMetadataKey().toString()));
-        if (exists(scriptVersionTrace.getMetadataKey())) {
-            throw new ScriptVersionTraceAlreadyExistsException(MessageFormat.format(
-                    "ScriptVersionTrace {0} already exists", scriptVersionTrace.getMetadataKey().toString()));
-        }
         String insertStatement = insertStatement(scriptVersionTrace);
         getMetadataRepository().executeUpdate(insertStatement);
     }
@@ -117,5 +107,20 @@ public class ScriptVersionTraceConfiguration extends Configuration<ScriptVersion
                 SQLTools.GetStringForSQL(scriptVersionTrace.getMetadataKey().getProcessId()) + "," +
                 SQLTools.GetStringForSQL(scriptVersionTrace.getScriptVersionNumber()) + "," +
                 SQLTools.GetStringForSQL(scriptVersionTrace.getScriptVersionDescription()) + ");";
+    }
+
+    @Override
+    public void update(ScriptVersionTrace scriptVersionTrace) {
+        LOGGER.trace(MessageFormat.format("Updating ScriptVersionTrace {0}.", scriptVersionTrace.toString()));
+        String updateStatement = updateStatement(scriptVersionTrace);
+        getMetadataRepository().executeUpdate(updateStatement);
+    }
+
+    private String updateStatement(ScriptVersionTrace scriptVersionTrace) {
+        return "UPDATE " + getMetadataRepository().getTableNameByLabel("ScriptVersionTraces") +
+                " SET SCRIPT_VRS_DSC = " + SQLTools.GetStringForSQL(scriptVersionTrace.getScriptVersionDescription()) + ", " +
+                "SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(scriptVersionTrace.getScriptVersionNumber()) +
+                " WHERE RUN_ID = " + SQLTools.GetStringForSQL(scriptVersionTrace.getMetadataKey().getRunId()) +
+                " AND PRC_ID = " + SQLTools.GetStringForSQL(scriptVersionTrace.getMetadataKey().getProcessId()) + ";";
     }
 }

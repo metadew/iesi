@@ -46,6 +46,10 @@ public final class SQLTools {
         return _long == null ? "null" : _long.toString();
     }
 
+    public static String GetStringForSQL(Double _double) {
+        return _double == null ? "null" : _double.toString();
+    }
+
     public static String GetStringForSQL(Timestamp input) {
         if (input == null) {
             return "null";

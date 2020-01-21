@@ -105,7 +105,127 @@
 {
 	"type": "LaunchItem",
 	"data": {
-		"script": "instruction.date.travel.1",
+		"script": "instruction.date.travel.7",
+		"description": "test date travel - one day in the past",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "instruction.date.travel.8",
+		"description": "test date travel - one day in the past",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "instruction.date.travel.9",
+		"description": "test date travel - one day in the past",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "instruction.date.travel.10",
+		"description": "test date travel - one day in the past",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "instruction.date.travel.11",
+		"description": "test date travel - one day in the past",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "instruction.date.travel.12",
+		"description": "test date travel - one day in the past",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "instruction.date.travel.13",
+		"description": "test date travel - one day in the past",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "instruction.date.travel.14",
+		"description": "test date travel - one year in the future",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "instruction.date.travel.15",
+		"description": "test date travel - one day in the past",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "instruction.date.travel.16",
+		"description": "test date travel - one year in the future",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "instruction.date.travel.17",
+		"description": "test date travel - one day in the past",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "instruction.date.travel.18",
+		"description": "test date travel - one year in the future",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "instruction.date.travel.19",
+		"description": "test date travel - one day in the past",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "instruction.date.travel.20",
+		"description": "test date travel - one year in the future",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "instruction.date.travel.21",
+		"description": "test date travel - one day in the past",
+		"parameterList": ""
+	}
+},
+{
+	"type": "LaunchItem",
+	"data": {
+		"script": "instruction.date.travel.22",
 		"description": "test date travel - one year in the future",
 		"parameterList": ""
 	}

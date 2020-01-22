@@ -87,7 +87,7 @@ public class ScriptJsonComponent {
                 for (JsonNode scriptActionParNode : scriptActionNode.get(ActionJsonComponent.Field.PARAMETERS_KEY.value())) {
                     actionParameters.add(new ActionParameter(
                             new ActionParameterKey(
-                                    action_id, versionNumber, scriptId,
+                                    scriptId, versionNumber, action_id,
                                     scriptActionParNode.get(ActionParameterJsonComponent.Field.PARAMETER_NAME_KEY.value()).asText()
                             ),
                             scriptActionParNode.get(ActionParameterJsonComponent.Field.PARAMETER_VALUE_KEY.value()).asText()
@@ -95,9 +95,9 @@ public class ScriptJsonComponent {
                 }
 
                 scriptActions.add(new Action(new ActionKey(
-                        action_id,
+                        scriptId,
                         versionNumber,
-                        scriptId),
+                        action_id),
                         scriptActionNode.get(ActionJsonComponent.Field.NUMBER_KEY.value()).asLong(),
                         scriptActionNode.get(ActionJsonComponent.Field.TYPE_KEY.value()).asText(),
                         scriptActionNode.get(ActionJsonComponent.Field.NAME_KEY.value()).asText(),

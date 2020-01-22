@@ -1,7 +1,9 @@
 package io.metadew.iesi.metadata.definition.action.key;
 
 import io.metadew.iesi.metadata.definition.key.MetadataKey;
+import lombok.EqualsAndHashCode;
 
+@EqualsAndHashCode(callSuper = false)
 public class ActionKey extends MetadataKey {
     private String actionId;
     private String scriptId;

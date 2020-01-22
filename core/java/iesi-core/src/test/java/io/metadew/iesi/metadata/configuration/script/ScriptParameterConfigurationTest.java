@@ -17,20 +17,18 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class ScriptParameterConfigurationTest {
     private DesignMetadataRepository designMetadataRepository;
-    ScriptParameter scriptParameter;
+    private ScriptParameter scriptParameter1;
+    private ScriptParameter scriptParameter2;
 
     @Before
     public void setup() {
-        this.designMetadataRepository = RepositoryTestSetup.getDesignMetadataRepository();
-
-        scriptParameter = new ScriptParameter(new ScriptParameterKey("1", 1,
-                "parameter"),
-                "Parameter of script");
-        try{
-            ScriptParameterConfiguration.getInstance().insert(scriptParameter);
-        }catch(MetadataAlreadyExistsException ignored){
-            // if script already is in database do nothing
-        }
+        designMetadataRepository = RepositoryTestSetup.getDesignMetadataRepository();
+        scriptParameter1 = new ScriptParameterBuilder("1", 1, "parameter1")
+                .value("parameter value")
+                .build();
+        scriptParameter2 = new ScriptParameterBuilder("1", 1, "parameter2")
+                .value("parameter value")
+                .build();
     }
 
     @After
@@ -41,71 +39,74 @@ public class ScriptParameterConfigurationTest {
     }
 
     @Test
-    public void scriptParameterNotExistTest(){
-        ScriptParameterKey scriptParameterKey = new ScriptParameterKey("non", 1,
-                "parameter");
-        assertFalse(ScriptParameterConfiguration.getInstance().exists(scriptParameterKey));
+    public void scriptParameterNotExistTest() throws MetadataAlreadyExistsException {
+        assertFalse(ScriptParameterConfiguration.getInstance().exists(scriptParameter1.getMetadataKey()));
     }
 
     @Test
-    public void scriptParameterExistsTest(){
-        assertTrue(ScriptParameterConfiguration.getInstance().exists(scriptParameter.getMetadataKey()));
+    public void scriptParameterExistsTest() throws MetadataAlreadyExistsException {
+        ScriptParameterConfiguration.getInstance().insert(scriptParameter1);
+        assertTrue(ScriptParameterConfiguration.getInstance().exists(scriptParameter1.getMetadataKey()));
     }
 
     @Test
     public void scriptParameterInsertTest() throws MetadataAlreadyExistsException {
-        int nbBefore = ScriptParameterConfiguration.getInstance().getAll().size();
-        ScriptParameter scriptParameter = createScriptParameter();
-        ScriptParameterConfiguration.getInstance().insert(scriptParameter);
-        int nbAfter = ScriptParameterConfiguration.getInstance().getAll().size();
-        assertEquals(nbBefore, nbAfter - 1);
+        assertEquals(0, ScriptParameterConfiguration.getInstance().getAll().size());
+
+        ScriptParameterConfiguration.getInstance().insert(scriptParameter1);
+
+        assertEquals(1, ScriptParameterConfiguration.getInstance().getAll().size());
+        assertTrue(ScriptParameterConfiguration.getInstance().get(scriptParameter1.getMetadataKey()).isPresent());
+        assertEquals(scriptParameter1, ScriptParameterConfiguration.getInstance().get(scriptParameter1.getMetadataKey()).get());
     }
 
     @Test
-    public void scriptParameterInsertAlreadyExistsTest() {
-        assertThrows(MetadataAlreadyExistsException.class,() -> ScriptParameterConfiguration.getInstance().insert(scriptParameter));
+    public void scriptParameterInsertAlreadyExistsTest() throws MetadataAlreadyExistsException {
+        ScriptParameterConfiguration.getInstance().insert(scriptParameter1);
+        assertThrows(MetadataAlreadyExistsException.class, () -> ScriptParameterConfiguration.getInstance().insert(scriptParameter1));
     }
 
     @Test
-    public void scriptParameterDeleteTest() throws MetadataDoesNotExistException {
-        ScriptParameterConfiguration.getInstance().delete(scriptParameter.getMetadataKey());
+    public void scriptParameterDeleteTest() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
+        ScriptParameterConfiguration.getInstance().insert(scriptParameter1);
+        assertEquals(1, ScriptParameterConfiguration.getInstance().getAll().size());
+
+        ScriptParameterConfiguration.getInstance().delete(scriptParameter1.getMetadataKey());
+        assertEquals(0, ScriptParameterConfiguration.getInstance().getAll().size());
+        assertFalse(ScriptParameterConfiguration.getInstance().get(scriptParameter1.getMetadataKey()).isPresent());
     }
 
     @Test
     public void scriptParameterDeleteDoesNotExistTest() throws MetadataDoesNotExistException {
-        ScriptParameter deleteScriptParameter = createScriptParameter();
-        assertThrows(MetadataDoesNotExistException.class,() -> ScriptParameterConfiguration.getInstance().delete(deleteScriptParameter.getMetadataKey()));
+        assertThrows(MetadataDoesNotExistException.class, () -> ScriptParameterConfiguration.getInstance().delete(scriptParameter1.getMetadataKey()));
     }
 
     @Test
-    public void scriptParameterGetTest() {
-        Optional<ScriptParameter> newScriptParameter = ScriptParameterConfiguration.getInstance().get(scriptParameter.getMetadataKey());
-        assertTrue(newScriptParameter.isPresent());
-        assertEquals(scriptParameter.getMetadataKey().getScriptId(), newScriptParameter.get().getMetadataKey().getScriptId());
-        assertEquals(scriptParameter.getMetadataKey().getScriptVersionNumber(), newScriptParameter.get().getMetadataKey().getScriptVersionNumber());
-        assertEquals(scriptParameter.getMetadataKey().getParameterName(), newScriptParameter.get().getMetadataKey().getParameterName());
+    public void scriptParameterGetTest() throws MetadataAlreadyExistsException {
+        ScriptParameterConfiguration.getInstance().insert(scriptParameter1);
+
+        assertTrue(ScriptParameterConfiguration.getInstance().get(scriptParameter1.getMetadataKey()).isPresent());
+        assertEquals(scriptParameter1, ScriptParameterConfiguration.getInstance().get(scriptParameter1.getMetadataKey()).get());
     }
 
     @Test
-    public void scriptParameterGetNotExistsTest(){
-        ScriptParameterKey scriptParameterKey = new ScriptParameterKey("3", 1,
-                "par");
-        assertFalse(ScriptParameterConfiguration.getInstance().exists(scriptParameterKey));
-        assertFalse(ScriptParameterConfiguration.getInstance().get(scriptParameterKey).isPresent());
+    public void scriptParameterGetNotExistsTest() {
+        assertFalse(ScriptParameterConfiguration.getInstance().exists(scriptParameter1));
+        assertFalse(ScriptParameterConfiguration.getInstance().get(scriptParameter1.getMetadataKey()).isPresent());
     }
 
     @Test
-    public void scriptParameterUpdateTest() throws MetadataDoesNotExistException {
-        ScriptParameter scriptParameterUpdate = scriptParameter;
-        String newValue = "new value";
-        scriptParameterUpdate.setValue(newValue);
-        ScriptParameterConfiguration.getInstance().update(scriptParameterUpdate);
-        Optional<ScriptParameter> checkScriptParameter = ScriptParameterConfiguration.getInstance().get(scriptParameterUpdate.getMetadataKey());
-        assertEquals(checkScriptParameter.get().getValue(), newValue);
+    public void scriptParameterUpdateTest() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
+        ScriptParameterConfiguration.getInstance().insert(scriptParameter1);
+
+        Optional<ScriptParameter> fetchedScriptParameter = ScriptParameterConfiguration.getInstance().get(scriptParameter1.getMetadataKey());
+        assertEquals("parameter value", fetchedScriptParameter.get().getValue());
+
+        scriptParameter1.setValue("new value");
+        ScriptParameterConfiguration.getInstance().update(scriptParameter1);
+
+        fetchedScriptParameter = ScriptParameterConfiguration.getInstance().get(scriptParameter1.getMetadataKey());
+        assertEquals(fetchedScriptParameter.get().getValue(), "new value");
     }
 
-    private ScriptParameter createScriptParameter(){
-        return new ScriptParameter(new ScriptParameterKey("2", 1, "new"),
-                "created with function");
-    }
 }

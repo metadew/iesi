@@ -2,6 +2,7 @@ package io.metadew.iesi.metadata.definition;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.metadew.iesi.metadata.definition.key.MetadataKey;
+import lombok.EqualsAndHashCode;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -13,6 +14,7 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 @JsonDeserialize(using = MetadataJsonComponent.Deserializer.class)
+@EqualsAndHashCode
 public abstract class Metadata<T extends MetadataKey> {
 
     private static final Logger LOGGER = LogManager.getLogger();

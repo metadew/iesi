@@ -12,9 +12,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
@@ -23,30 +24,41 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class ActionConfigurationTest {
 
-    ActionParameter actionParameter;
-    Action action;
-    ActionKey actionKey;
-    DesignMetadataRepository designMetadataRepository;
+    private DesignMetadataRepository designMetadataRepository;
+    private ActionParameter actionParameter11;
+    private ActionParameter actionParameter12;
+    private Action action1;
+    private Action action2;
+    private List<Action> actions;
+    private ActionParameter actionParameter21;
+    private ActionParameter actionParameter22;
 
     @Before
     public void setup() {
-        this.designMetadataRepository = RepositoryTestSetup.getDesignMetadataRepository();
-        ActionParameterKey actionParameterKey = new ActionParameterKey("1", 1,
-                "1", "firstParameter");
-        actionParameter = new ActionParameter(actionParameterKey, "parameter value");
-        List<ActionParameter> actionParameters = new ArrayList<>();
-        actionParameters.add(actionParameter);
-        actionKey = new ActionKey("1", 1, "1");
-        action = new Action(actionKey, 1, "fwk.dummy",
-                "dummy", "dummy", "", "", "", "", "",
-                "0", actionParameters);
-        try{
-            ActionConfiguration.getInstance().insert(action);
-        }catch(MetadataAlreadyExistsException ignored){
-            // if script already is in database do nothing
-        }
+        designMetadataRepository = RepositoryTestSetup.getDesignMetadataRepository();
+//        actionParameter11 = new ActionParameter(new ActionParameterKey("1", 1, "1", "firstParameter"), "first parameter value");
+//        actionParameter12 = new ActionParameter(new ActionParameterKey("1", 1, "1", "secondParameter"), "second parameter value");
+//        actionParameter21 = new ActionParameter(new ActionParameterKey("1", 1, "1", "firstParameter"), "first parameter value");
+//        actionParameter22 = new ActionParameter(new ActionParameterKey("1", 1, "1", "secondParameter"), "second parameter value");
+//        actionParameters1 = Stream.of(actionParameter11, actionParameter12).collect(Collectors.toList());
+//        actionParameters2 = Stream.of(actionParameter11, actionParameter12).collect(Collectors.toList());
+//        action1 = new Action(new ActionKey("1", 1, "1"), 1, "fwk.dummy",
+//                "dummy", "dummy", "", "", "", "", "",
+//                "0", actionParameters1);
+//        action2 = new Action(new ActionKey("1", 1, "2"), 2, "fwk.dummy",
+//                "dummy", "dummy", "", "", "", "", "",
+//                "0", actionParameters2);
 
-
+        action1 = new ActionBuilder("1", 1, "1")
+                .numberOfParameters(2)
+                .build();
+        action2 = new ActionBuilder("1", 1, "2")
+                .numberOfParameters(2)
+                .build();
+        actionParameter11 = action1.getParameters().get(0);
+        actionParameter12 = action1.getParameters().get(1);
+        actionParameter21 = action2.getParameters().get(0);
+        actionParameter22 = action2.getParameters().get(1);
     }
 
     @After
@@ -63,70 +75,219 @@ public class ActionConfigurationTest {
     }
 
     @Test
-    public void actionParameterExistsTest(){
-        assertTrue(ActionParameterConfiguration.getInstance().exists(actionParameter.getMetadataKey()));
+    public void actionExistsOnlyTest() throws MetadataAlreadyExistsException {
+        ActionConfiguration.getInstance().insert(action1);
+        assertTrue(ActionConfiguration.getInstance().exists(action1.getMetadataKey()));
+        assertTrue(ActionParameterConfiguration.getInstance().exists(actionParameter11.getMetadataKey()));
+        assertTrue(ActionParameterConfiguration.getInstance().exists(actionParameter12.getMetadataKey()));
     }
 
     @Test
-    public void actionExistsTest(){
-        assertTrue(ActionConfiguration.getInstance().exists(action.getMetadataKey()));
+    public void actionExistsTest() throws MetadataAlreadyExistsException {
+        ActionConfiguration.getInstance().insert(action1);
+        ActionConfiguration.getInstance().insert(action2);
+        assertTrue(ActionConfiguration.getInstance().exists(action1.getMetadataKey()));
+        assertTrue(ActionParameterConfiguration.getInstance().exists(actionParameter11.getMetadataKey()));
+        assertTrue(ActionParameterConfiguration.getInstance().exists(actionParameter12.getMetadataKey()));
+    }
+
+    @Test
+    public void actionInsertOnlyTest() throws MetadataAlreadyExistsException {
+        assertEquals(0, ActionConfiguration.getInstance().getAll().size());
+        assertEquals(0, ActionParameterConfiguration.getInstance().getAll().size());
+        ActionConfiguration.getInstance().insert(action1);
+
+        assertTrue(ActionConfiguration.getInstance().get(action1.getMetadataKey()).isPresent());
+        assertEquals(Stream.of(actionParameter11, actionParameter12).collect(Collectors.toList()), ActionConfiguration.getInstance().get(action1.getMetadataKey()).get().getParameters());
+        assertEquals(action1, ActionConfiguration.getInstance().get(action1.getMetadataKey()).get());
     }
 
     @Test
     public void actionInsertTest() throws MetadataAlreadyExistsException {
-        int nbBefore = ActionConfiguration.getInstance().getAll().size();
-        Action newAction = createAction();
-        ActionConfiguration.getInstance().insert(newAction);
-        int nbAfter = ActionConfiguration.getInstance().getAll().size();
-        assertEquals(nbBefore, nbAfter - 1);
+        assertEquals(0, ActionConfiguration.getInstance().getAll().size());
+        assertEquals(0, ActionParameterConfiguration.getInstance().getAll().size());
+        ActionConfiguration.getInstance().insert(action1);
+        ActionConfiguration.getInstance().insert(action2);
+
+        assertTrue(ActionConfiguration.getInstance().get(action1.getMetadataKey()).isPresent());
+        assertEquals(Stream.of(actionParameter11, actionParameter12).collect(Collectors.toList()), ActionConfiguration.getInstance().get(action1.getMetadataKey()).get().getParameters());
+        assertEquals(action1, ActionConfiguration.getInstance().get(action1.getMetadataKey()).get());
+        assertTrue(ActionConfiguration.getInstance().get(action2.getMetadataKey()).isPresent());
+        assertEquals(Stream.of(actionParameter21, actionParameter22).collect(Collectors.toList()), ActionConfiguration.getInstance().get(action2.getMetadataKey()).get().getParameters());
+        assertEquals(action2, ActionConfiguration.getInstance().get(action2.getMetadataKey()).get());
     }
 
     @Test
-    public void actionInsertAlreadyExistsTest() {
-        assertThrows(MetadataAlreadyExistsException.class,() -> ActionConfiguration.getInstance().insert(action));
+    public void actionInsertAlreadyExistsOnlyTest() throws MetadataAlreadyExistsException {
+        ActionConfiguration.getInstance().insert(action1);
+        assertThrows(MetadataAlreadyExistsException.class,() -> ActionConfiguration.getInstance().insert(action1));
+    }
+    @Test
+    public void actionInsertAlreadyExistsTest() throws MetadataAlreadyExistsException {
+        ActionConfiguration.getInstance().insert(action1);
+        ActionConfiguration.getInstance().insert(action2);
+        assertThrows(MetadataAlreadyExistsException.class,() -> ActionConfiguration.getInstance().insert(action1));
     }
 
     @Test
-    public void actionDeleteTest() throws MetadataDoesNotExistException {
-        ActionConfiguration.getInstance().delete(action.getMetadataKey());
+    public void actionDeleteOnlyTest() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
+        assertEquals(0, ActionConfiguration.getInstance().getAll().size());
+        assertEquals(0, ActionParameterConfiguration.getInstance().getAll().size());
+        ActionConfiguration.getInstance().insert(action1);
+
+        assertEquals(1, ActionConfiguration.getInstance().getAll().size());
+        assertEquals(2, ActionParameterConfiguration.getInstance().getAll().size());
+
+        ActionConfiguration.getInstance().delete(action1.getMetadataKey());
+        assertEquals(0, ActionConfiguration.getInstance().getAll().size());
+        assertEquals(0, ActionParameterConfiguration.getInstance().getAll().size());
     }
 
     @Test
-    public void actionDeleteDoesNotExistTest() throws MetadataDoesNotExistException {
-        Action deleteScript = createAction();
-        assertThrows(MetadataDoesNotExistException.class,() -> ActionConfiguration.getInstance().delete(deleteScript.getMetadataKey()));
+    public void actionDeleteTest() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
+        assertEquals(0, ActionConfiguration.getInstance().getAll().size());
+        assertEquals(0, ActionParameterConfiguration.getInstance().getAll().size());
+        ActionConfiguration.getInstance().insert(action1);
+        ActionConfiguration.getInstance().insert(action2);
+
+        assertEquals(2, ActionConfiguration.getInstance().getAll().size());
+        assertEquals(4, ActionParameterConfiguration.getInstance().getAll().size());
+
+        ActionConfiguration.getInstance().delete(action1.getMetadataKey());
+        assertEquals(1, ActionConfiguration.getInstance().getAll().size());
+        assertEquals(2, ActionParameterConfiguration.getInstance().getAll().size());
     }
 
     @Test
-    public void actionGetTest() {
-        Optional<Action> newAction = ActionConfiguration.getInstance().get(action.getMetadataKey());
-        assertTrue(newAction.isPresent());
-        assertEquals(action.getMetadataKey().getScriptId(), newAction.get().getMetadataKey().getScriptId());
-        assertEquals(action.getMetadataKey().getScriptVersionNumber(), newAction.get().getMetadataKey().getScriptVersionNumber());
-        assertEquals(action.getMetadataKey().getActionId(), newAction.get().getMetadataKey().getActionId());
+    public void actionDeleteDoesNotExistOnlyTest() {
+        assertThrows(MetadataDoesNotExistException.class,() -> ActionConfiguration.getInstance().delete(action1.getMetadataKey()));
     }
 
     @Test
-    public void actionGetNotExistsTest(){
-        ActionKey actionParameterKey = new ActionKey("3", 4, "not exist");
-        assertFalse(ActionConfiguration.getInstance().exists(actionParameterKey));
-        assertFalse(ActionConfiguration.getInstance().get(actionParameterKey).isPresent());
+    public void actionDeleteDoesNotExistTest() throws MetadataAlreadyExistsException {
+        ActionConfiguration.getInstance().insert(action2);
+        assertThrows(MetadataDoesNotExistException.class,() -> ActionConfiguration.getInstance().delete(action1.getMetadataKey()));
     }
 
     @Test
-    public void actionUpdateTest() throws MetadataDoesNotExistException {
-        Action actionUpdate = action;
-        String newDescription = "new description";
-        actionUpdate.setDescription(newDescription);
-        ActionConfiguration.getInstance().update(actionUpdate);
-        Optional<Action> checkScript = ActionConfiguration.getInstance().get(actionUpdate.getMetadataKey());
-        assertTrue(checkScript.isPresent() && checkScript.get().getDescription().equals(newDescription));
+    public void actionGetOnlyTest() throws MetadataAlreadyExistsException {
+        assertEquals(0, ActionConfiguration.getInstance().getAll().size());
+        assertEquals(0, ActionParameterConfiguration.getInstance().getAll().size());
+        ActionConfiguration.getInstance().insert(action1);
+
+        assertTrue(ActionConfiguration.getInstance().get(action1.getMetadataKey()).isPresent());
+        assertEquals(Stream.of(actionParameter11, actionParameter12).collect(Collectors.toList()), ActionConfiguration.getInstance().get(action1.getMetadataKey()).get().getParameters());
+        assertEquals(action1, ActionConfiguration.getInstance().get(action1.getMetadataKey()).get());
     }
 
-    private Action createAction(){
-        ActionKey newActionKey = new ActionKey("scriptIdNb", 3, "actionId");
-        return new Action(newActionKey, 1, "fwk.dummy",
+    @Test
+    public void actionGetTest() throws MetadataAlreadyExistsException {
+        assertEquals(0, ActionConfiguration.getInstance().getAll().size());
+        assertEquals(0, ActionParameterConfiguration.getInstance().getAll().size());
+        ActionConfiguration.getInstance().insert(action1);
+        ActionConfiguration.getInstance().insert(action2);
+
+        assertTrue(ActionConfiguration.getInstance().get(action1.getMetadataKey()).isPresent());
+        assertEquals(Stream.of(actionParameter11, actionParameter12).collect(Collectors.toList()), ActionConfiguration.getInstance().get(action1.getMetadataKey()).get().getParameters());
+        assertEquals(action1, ActionConfiguration.getInstance().get(action1.getMetadataKey()).get());
+
+        assertTrue(ActionConfiguration.getInstance().get(action2.getMetadataKey()).isPresent());
+        assertEquals(Stream.of(actionParameter21, actionParameter22).collect(Collectors.toList()), ActionConfiguration.getInstance().get(action2.getMetadataKey()).get().getParameters());
+        assertEquals(action2, ActionConfiguration.getInstance().get(action2.getMetadataKey()).get());
+    }
+
+    @Test
+    public void actionGetNotExistsOnlyTest(){
+        assertFalse(ActionConfiguration.getInstance().exists(action1.getMetadataKey()));
+    }
+
+    @Test
+    public void actionGetNotExistsTest() throws MetadataAlreadyExistsException {
+        ActionConfiguration.getInstance().insert(action2);
+        assertFalse(ActionConfiguration.getInstance().exists(action1.getMetadataKey()));
+    }
+
+    @Test
+    public void actionUpdateOnlyTest() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
+        ActionConfiguration.getInstance().insert(action1);
+        Optional<Action> actionFetched = ActionConfiguration.getInstance().get(action1.getMetadataKey());
+
+        assertTrue(actionFetched.isPresent());
+        assertEquals("dummy", actionFetched.get().getDescription());
+
+        action1.setDescription("new description");
+        ActionConfiguration.getInstance().update(action1);
+
+        actionFetched = ActionConfiguration.getInstance().get(action1.getMetadataKey());
+        assertTrue(actionFetched.isPresent());
+        assertEquals("new description", actionFetched.get().getDescription());
+    }
+
+    @Test
+    public void actionUpdateTest() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
+        ActionConfiguration.getInstance().insert(action1);
+        ActionConfiguration.getInstance().insert(action2);
+        Optional<Action> actionFetched = ActionConfiguration.getInstance().get(action1.getMetadataKey());
+
+        assertTrue(actionFetched.isPresent());
+        assertEquals("dummy", actionFetched.get().getDescription());
+
+        action1.setDescription("new description");
+        ActionConfiguration.getInstance().update(action1);
+
+        actionFetched = ActionConfiguration.getInstance().get(action1.getMetadataKey());
+        assertTrue(actionFetched.isPresent());
+        assertEquals("new description", actionFetched.get().getDescription());
+    }
+
+    @Test
+    public void actionGetAllTest() throws MetadataAlreadyExistsException {
+        assertEquals(0, ActionConfiguration.getInstance().getAll().size());
+
+        ActionConfiguration.getInstance().insert(action1);
+        ActionConfiguration.getInstance().insert(action2);
+
+        assertEquals(2, ActionConfiguration.getInstance().getAll().size());
+        assertEquals(4, ActionParameterConfiguration.getInstance().getAll().size());
+        assertEquals(Stream.of(action1, action2).collect(Collectors.toList()), ActionConfiguration.getInstance().getAll());
+    }
+
+    @Test
+    public void actionDeleteFromScriptOnlyTest() throws MetadataAlreadyExistsException {
+        assertEquals(0, ActionConfiguration.getInstance().getAll().size());
+
+        ActionConfiguration.getInstance().insert(action1);
+        ActionConfiguration.getInstance().insert(action2);
+
+        assertEquals(2, ActionConfiguration.getInstance().getAll().size());
+        assertEquals(4, ActionParameterConfiguration.getInstance().getAll().size());
+        assertEquals(Stream.of(action1, action2).collect(Collectors.toList()), ActionConfiguration.getInstance().getAll());
+
+        ActionConfiguration.getInstance().deleteActionsFromScript("1", 1);
+
+        assertEquals(0, ActionConfiguration.getInstance().getAll().size());
+        assertEquals(0, ActionParameterConfiguration.getInstance().getAll().size());
+    }
+
+    @Test
+    public void actionDeleteFromScriptTest() throws MetadataAlreadyExistsException {
+        assertEquals(0, ActionConfiguration.getInstance().getAll().size());
+        Action action = new Action(new ActionKey("1", 2, "2"), 2, "fwk.dummy",
                 "dummy", "dummy", "", "", "", "", "",
-                "0", new ArrayList<>());
+                "0", Stream.of(new ActionParameter(new ActionParameterKey("1", 1, "2", "name"), "value")).collect(Collectors.toList()));
+
+        ActionConfiguration.getInstance().insert(action1);
+        ActionConfiguration.getInstance().insert(action2);
+        ActionConfiguration.getInstance().insert(action);
+
+        assertEquals(3, ActionConfiguration.getInstance().getAll().size());
+        assertEquals(5, ActionParameterConfiguration.getInstance().getAll().size());
+        assertEquals(Stream.of(action1, action2, action).collect(Collectors.toList()), ActionConfiguration.getInstance().getAll());
+
+        ActionConfiguration.getInstance().deleteActionsFromScript("1", 1);
+
+        assertEquals(1, ActionConfiguration.getInstance().getAll().size());
+        assertEquals(1, ActionParameterConfiguration.getInstance().getAll().size());
     }
+
 }

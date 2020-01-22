@@ -3,7 +3,9 @@ package io.metadew.iesi.metadata.definition.script;
 
 import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.script.key.ScriptParameterKey;
+import lombok.EqualsAndHashCode;
 
+@EqualsAndHashCode(callSuper = true)
 public class ScriptParameter extends Metadata<ScriptParameterKey> {
 
     private String value;

@@ -2,7 +2,9 @@ package io.metadew.iesi.metadata.definition.action;
 
 import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.action.key.ActionParameterKey;
+import lombok.EqualsAndHashCode;
 
+@EqualsAndHashCode(callSuper = true)
 public class ActionParameter extends Metadata<ActionParameterKey> {
 
     private String value;

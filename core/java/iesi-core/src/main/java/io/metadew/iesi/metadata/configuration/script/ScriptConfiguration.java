@@ -4,6 +4,7 @@ import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.action.ActionConfiguration;
 import io.metadew.iesi.metadata.configuration.action.exception.ActionAlreadyExistsException;
+import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.script.exception.*;
 import io.metadew.iesi.metadata.definition.action.Action;
@@ -250,24 +251,24 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
         // add Parameters
         for (ScriptParameter scriptParameter : script.getParameters()) {
             try {
-                ScriptParameterConfiguration.getInstance().insert(script.getId(), script.getVersion().getNumber(), scriptParameter);
-            } catch (ScriptParameterAlreadyExistsException e) {
+                ScriptParameterConfiguration.getInstance().insert(scriptParameter);
+            } catch (MetadataAlreadyExistsException e) {
                 LOGGER.warn(e.getMessage() + ".skipping");
             }
         }
 
         // add version
         try {
-            ScriptVersionConfiguration.getInstance().insert(script.getId(), script.getVersion());
-        } catch (ScriptVersionAlreadyExistsException e) {
+            ScriptVersionConfiguration.getInstance().insert(script.getVersion());
+        }  catch (MetadataAlreadyExistsException e) {
             LOGGER.warn(e.getMessage() + ".skipping");
         }
 
         // add actions
         for (Action action : script.getActions()) {
             try {
-                ActionConfiguration.getInstance().insert(script.getId(), script.getVersion().getNumber(), action);
-            } catch (ActionAlreadyExistsException e) {
+                ActionConfiguration.getInstance().insert(action);
+            } catch (MetadataAlreadyExistsException e) {
                 LOGGER.warn(e.getMessage() + ". Skipping");
             }
         }

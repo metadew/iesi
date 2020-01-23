@@ -3,7 +3,9 @@ package io.metadew.iesi.metadata.definition.connection;
 
 import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionParameterKey;
+import lombok.EqualsAndHashCode;
 
+@EqualsAndHashCode(callSuper = true)
 public class ConnectionParameter extends Metadata<ConnectionParameterKey> {
 
     private String value;

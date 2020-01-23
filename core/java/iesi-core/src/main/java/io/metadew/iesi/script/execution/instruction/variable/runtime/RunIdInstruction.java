@@ -4,11 +4,11 @@ import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.instruction.variable.VariableInstruction;
 
 
-public class RunidInstruction implements VariableInstruction {
+public class RunIdInstruction implements VariableInstruction {
 
     private final ExecutionControl executionControl;
 
-    public RunidInstruction(ExecutionControl executionControl) {
+    public RunIdInstruction(ExecutionControl executionControl) {
         this.executionControl = executionControl;
     }
 

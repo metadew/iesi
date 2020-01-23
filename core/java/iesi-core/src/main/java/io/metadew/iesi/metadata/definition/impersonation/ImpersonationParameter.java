@@ -24,7 +24,7 @@ public class ImpersonationParameter extends Metadata<ImpersonationParameterKey> 
 
     //Getters and Setters
     public String getConnection() {
-        return getMetadataKey().getImpersonationParameterName();
+        return getMetadataKey().getParameterName();
     }
 
     public String getImpersonatedConnection() {

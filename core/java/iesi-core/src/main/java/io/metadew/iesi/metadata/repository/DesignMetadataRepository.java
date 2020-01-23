@@ -103,7 +103,7 @@ public class DesignMetadataRepository extends MetadataRepository {
             LOGGER.info(MessageFormat.format("Script {0}-{1} already exists in design repository. Updating to new definition", script.getName(), script.getVersion().getNumber()));
             try {
                 ScriptConfiguration.getInstance().update(script);
-            } catch (ScriptDoesNotExistException ex) {
+            } catch (MetadataDoesNotExistException ex) {
                 throw new MetadataRepositorySaveException(ex);
 
             }

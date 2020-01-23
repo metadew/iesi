@@ -1,6 +1,8 @@
 package io.metadew.iesi.script.execution.instruction.lookup;
 
 import io.metadew.iesi.metadata.configuration.environment.EnvironmentParameterConfiguration;
+import io.metadew.iesi.metadata.definition.environment.EnvironmentParameter;
+import io.metadew.iesi.metadata.definition.environment.key.EnvironmentParameterKey;
 
 import java.text.MessageFormat;
 import java.util.Optional;
@@ -15,10 +17,6 @@ public class EnvironmentLookup implements LookupInstruction {
 
     private final Pattern INPUT_PARAMETER_PATTERN = Pattern
             .compile("\\s*\"?(?<" + ENVIRONMENT_NAME_KEY + ">(\\w|\\.)+)\"?\\s*,\\s*(?<" + ENVIRONMENT_PARAMETER_NAME_KEY + ">(\\w|\\.)+)\\s*");
-    private final EnvironmentParameterConfiguration environmentParameterConfiguration;
-
-    public EnvironmentLookup() {
-        environmentParameterConfiguration = EnvironmentParameterConfiguration.getInstance();}
 
     @Override
     public String getKeyword() {
@@ -34,7 +32,8 @@ public class EnvironmentLookup implements LookupInstruction {
         String environmentName = inputParameterMatcher.group(ENVIRONMENT_NAME_KEY);
         String environmentParameterName = inputParameterMatcher.group(ENVIRONMENT_PARAMETER_NAME_KEY);
 
-        Optional<String> environmentParameterValue = environmentParameterConfiguration.getEnvironmentParameterValue(environmentName, environmentParameterName);
+        Optional<String> environmentParameterValue = EnvironmentParameterConfiguration.getInstance().get(new EnvironmentParameterKey(environmentName, environmentParameterName))
+                .map(EnvironmentParameter::getValue);
 
         if (!environmentParameterValue.isPresent()) {
             throw new IllegalArgumentException(MessageFormat.format("No environment parameter {0} is attached to environment {1}", environmentParameterName, environmentName));

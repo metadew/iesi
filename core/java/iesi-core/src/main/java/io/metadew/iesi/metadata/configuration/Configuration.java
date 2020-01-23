@@ -32,7 +32,7 @@ public abstract class Configuration<T extends Metadata, V extends MetadataKey> {
 
     @SuppressWarnings("unchecked")
 	public boolean exists(T metadata) {
-        return get((V) metadata.getMetadataKey()).isPresent();
+        return exists((V) metadata.getMetadataKey());
     }
 
     public boolean exists(V key) {

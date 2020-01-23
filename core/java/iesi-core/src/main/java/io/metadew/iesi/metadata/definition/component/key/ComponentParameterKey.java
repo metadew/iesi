@@ -3,25 +3,24 @@ package io.metadew.iesi.metadata.definition.component.key;
 import io.metadew.iesi.metadata.definition.key.MetadataKey;
 
 public class ComponentParameterKey extends MetadataKey {
-    private String componentId;
-    private long componentVersionNb;
+    private final ComponentKey componentKey;
     private String componentParameterName;
 
     public ComponentParameterKey(String componentId, long componentVersionNb, String componentParameterName) {
-        this.componentId = componentId;
-        this.componentVersionNb = componentVersionNb;
+        this.componentKey = new ComponentKey(componentId, componentVersionNb);
         this.componentParameterName = componentParameterName;
     }
 
-    public String getComponentId() {
-        return componentId;
-    }
-
-    public long getComponentVersionNb() {
-        return componentVersionNb;
+    public ComponentParameterKey(ComponentKey componentKey, String componentParameterName) {
+        this.componentKey = componentKey;
+        this.componentParameterName = componentParameterName;
     }
 
     public String getComponentParameterName() {
         return componentParameterName;
+    }
+
+    public ComponentKey getComponentKey() {
+        return componentKey;
     }
 }

@@ -6,6 +6,7 @@ import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsExc
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.script.exception.ScriptParameterAlreadyExistsException;
 import io.metadew.iesi.metadata.definition.script.ScriptParameter;
+import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.metadata.definition.script.key.ScriptParameterKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.logging.log4j.LogManager;
@@ -25,23 +26,38 @@ public class ScriptParameterConfiguration extends Configuration<ScriptParameter,
     private static ScriptParameterConfiguration INSTANCE;
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public synchronized static ScriptParameterConfiguration getInstance(){
+    public synchronized static ScriptParameterConfiguration getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new ScriptParameterConfiguration();
         }
         return INSTANCE;
     }
 
-    private ScriptParameterConfiguration() {}
+    private ScriptParameterConfiguration() {
+    }
 
     public void init(MetadataRepository metadataRepository) {
         setMetadataRepository(metadataRepository);
     }
 
     @Override
-    public Optional<ScriptParameter> get(ScriptParameterKey metadataKey) {
-        return getScriptParameter(metadataKey.getScriptId(),
-                metadataKey.getScriptVersionNumber(), metadataKey.getParameterName());
+    public Optional<ScriptParameter> get(ScriptParameterKey scriptParameterKey) {
+        try {
+            String queryScriptParameter = "select SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_PAR_NM, SCRIPT_PAR_VAL from " + getMetadataRepository().getTableNameByLabel("ScriptParameters")
+                    + " where SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptParameterKey.getScriptKey().getScriptId()) +
+                    " and SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(scriptParameterKey.getScriptKey().getScriptVersion()) +
+                    " and SCRIPT_PAR_NM = " + SQLTools.GetStringForSQL(scriptParameterKey.getParameterName()) + ";";
+            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(queryScriptParameter, "reader");
+            if (cachedRowSet.size() == 0) {
+                return Optional.empty();
+            } else if (cachedRowSet.size() > 1) {
+                LOGGER.info(MessageFormat.format("Found multiple implementations for ScriptParameter {0}. Returning first implementation", scriptParameterKey.toString()));
+            }
+            cachedRowSet.next();
+            return Optional.of(new ScriptParameter(scriptParameterKey, cachedRowSet.getString("SCRIPT_PAR_VAL")));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -81,66 +97,70 @@ public class ScriptParameterConfiguration extends Configuration<ScriptParameter,
         getMetadataRepository().executeUpdate(deleteStatement);
     }
 
-    private String deleteStatement(ScriptParameterKey metadataKey) {
+    private String deleteStatement(ScriptParameterKey scriptParameterKey) {
         return "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ScriptParameters") +
-                " WHERE " +
-                " SCRIPT_ID = " + SQLTools.GetStringForSQL(metadataKey.getScriptId()) + " AND " +
-                " SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(metadataKey.getScriptVersionNumber())+ " AND " +
-                " SCRIPT_PAR_NM = " + SQLTools.GetStringForSQL(metadataKey.getParameterName()) + ";";
+                " WHERE SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptParameterKey.getScriptKey().getScriptId()) + " AND " +
+                " SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(scriptParameterKey.getScriptKey().getScriptVersion()) + " AND " +
+                " SCRIPT_PAR_NM = " + SQLTools.GetStringForSQL(scriptParameterKey.getParameterName()) + ";";
     }
 
     @Override
-    public void insert(ScriptParameter metadata) throws MetadataAlreadyExistsException {
-        ScriptParameterKey scriptParameterKey = metadata.getMetadataKey();
-        insert(scriptParameterKey.getScriptId(), scriptParameterKey.getScriptVersionNumber(), metadata);
-    }
-
-    public void insert(String scriptId, long scriptVersionNumber, ScriptParameter scriptParameter) throws ScriptParameterAlreadyExistsException {
-        LOGGER.trace(MessageFormat.format("Inserting ScriptParameter {0}-{1}.", scriptId, scriptVersionNumber));
-        if (exists(scriptId, scriptVersionNumber, scriptParameter)) {
+    public void insert(ScriptParameter scriptParameter) throws MetadataAlreadyExistsException {
+        LOGGER.trace(MessageFormat.format("Inserting ScriptParameter {0}.", scriptParameter.toString()));
+        if (exists(scriptParameter)) {
             throw new ScriptParameterAlreadyExistsException(MessageFormat.format(
-                    "ScriptParameter {0}-{1} already exists", scriptId, scriptVersionNumber));
+                    "ScriptParameter {0} already exists", scriptParameter.toString()));
         }
-        getMetadataRepository().executeUpdate(getInsertStatement(scriptId, scriptVersionNumber, scriptParameter));
-
+        getMetadataRepository().executeUpdate( "INSERT INTO " + getMetadataRepository().getTableNameByLabel("ScriptParameters") +
+                " (SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_PAR_NM, SCRIPT_PAR_VAL) VALUES (" +
+                SQLTools.GetStringForSQL(scriptParameter.getMetadataKey().getScriptKey().getScriptId()) + "," +
+                SQLTools.GetStringForSQL(scriptParameter.getMetadataKey().getScriptKey().getScriptVersion()) + "," +
+                SQLTools.GetStringForSQL(scriptParameter.getMetadataKey().getParameterName()) + "," +
+                SQLTools.GetStringForSQL(scriptParameter.getValue()) + ");");
 
     }
 
-    private boolean exists(String scriptId, long scriptVersionNumber, ScriptParameter scriptParameter) {
+    public boolean exists(ScriptParameterKey scriptParameterKey) {
         String queryScriptParameter = "select SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_PAR_NM, SCRIPT_PAR_VAL from " + getMetadataRepository().getTableNameByLabel("ScriptParameters")
-                + " where SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptId) + " and SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(scriptVersionNumber) + " and SCRIPT_PAR_NM = " + SQLTools.GetStringForSQL(scriptParameter.getName()) + ";";
+                + " where SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptParameterKey.getScriptKey().getScriptId()) +
+                " and SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(scriptParameterKey.getScriptKey().getScriptVersion()) +
+                " and SCRIPT_PAR_NM = " + SQLTools.GetStringForSQL(scriptParameterKey.getParameterName()) + ";";
         CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(queryScriptParameter, "reader");
         return cachedRowSet.size() >= 1;
     }
 
-    // Insert
-    public String getInsertStatement(String scriptId, long scriptVersionNumber, ScriptParameter scriptParameter) {
-        return "INSERT INTO " + getMetadataRepository()
-                .getTableNameByLabel("ScriptParameters") +
-                " (SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_PAR_NM, SCRIPT_PAR_VAL) VALUES (" +
-                SQLTools.GetStringForSQL(scriptId) + "," +
-                scriptVersionNumber + "," +
-                SQLTools.GetStringForSQL(scriptParameter.getName()) + "," +
-                SQLTools.GetStringForSQL(scriptParameter.getValue()) + ");";
+    public void deleteByScript(ScriptKey scriptKey) {
+        String deleteStatement = "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ScriptParameters") +
+                " WHERE " +
+                " SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptKey.getScriptId()) + " AND " +
+                " SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(scriptKey.getScriptVersion()) + ";";
+        getMetadataRepository().executeUpdate(deleteStatement);
     }
 
-
-    public Optional<ScriptParameter> getScriptParameter(String scriptId, long scriptVersionNumber, String scriptParameterName) {
+    public List<ScriptParameter> getByScript(ScriptKey scriptKey) {
+        List<ScriptParameter> scriptParameters = new ArrayList<>();
+        String query = "select * from " + getMetadataRepository().getTableNameByLabel("ScriptParameters")
+                + " where SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptKey.getScriptId()) +
+                " and SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(scriptKey.getScriptVersion()) + ";";
+        CachedRowSet crs = getMetadataRepository().executeQuery(query, "reader");
         try {
-            String queryScriptParameter = "select SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_PAR_NM, SCRIPT_PAR_VAL from " + getMetadataRepository().getTableNameByLabel("ScriptParameters")
-                    + " where SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptId) + " and SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(scriptVersionNumber) + " and SCRIPT_PAR_NM = " + SQLTools.GetStringForSQL(scriptParameterName) + ";";
-            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(queryScriptParameter, "reader");
-            if (cachedRowSet.size() == 0) {
-                return Optional.empty();
-            } else if (cachedRowSet.size() > 1) {
-                LOGGER.info(MessageFormat.format("Found multiple implementations for ScriptParameter {0}-{1}-{2}. Returning first implementation", scriptId, scriptVersionNumber, scriptParameterName));
-            }
-            cachedRowSet.next();
-            ScriptParameterKey scriptParameterKey = new ScriptParameterKey(scriptId, scriptVersionNumber, scriptParameterName);
-            return Optional.of(new ScriptParameter(scriptParameterKey, cachedRowSet.getString("SCRIPT_PAR_VAL")));
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
+            while (crs.next()) {
+                ScriptParameterKey scriptParameterKey = new ScriptParameterKey(
+                        crs.getString("SCRIPT_ID"),
+                        crs.getLong("SCRIPT_VRS_NB"),
+                        crs.getString("SCRIPT_PAR_NM"));
+                scriptParameters.add(new ScriptParameter(
+                        scriptParameterKey,
+                        crs.getString("SCRIPT_PAR_VAL")));
 
+            }
+            crs.close();
+        } catch (SQLException e) {
+            StringWriter stackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTrace));
+            LOGGER.warn("exeption=" + e.getMessage());
+            LOGGER.info("exception.stacktrace=" + stackTrace.toString());
+        }
+        return scriptParameters;
+    }
 }

@@ -4,16 +4,21 @@ import io.metadew.iesi.metadata.definition.key.MetadataKey;
 
 public class EnvironmentParameterKey extends MetadataKey {
 
-    String environmentName;
-    String parameterName;
+    private EnvironmentKey environmentKey;
+    private String parameterName;
 
     public EnvironmentParameterKey(String environmentName, String environmentParameterName) {
-        this.environmentName = environmentName;
+        this.environmentKey = new EnvironmentKey(environmentName);
         this.parameterName = environmentParameterName;
     }
 
-    public String getEnvironmentName() {
-        return environmentName;
+    public EnvironmentParameterKey(EnvironmentKey environmentKey, String environmentParameterName) {
+        this.environmentKey = environmentKey;
+        this.parameterName = environmentParameterName;
+    }
+
+    public EnvironmentKey getEnvironmentKey() {
+        return environmentKey;
     }
 
     public String getParameterName() {

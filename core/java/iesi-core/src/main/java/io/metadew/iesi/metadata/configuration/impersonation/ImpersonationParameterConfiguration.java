@@ -40,7 +40,7 @@ public class ImpersonationParameterConfiguration extends Configuration<Impersona
 
     @Override
     public Optional<ImpersonationParameter> get(ImpersonationParameterKey metadataKey) {
-        return getImpersonationParameter(metadataKey.getImpersonationName(), metadataKey.getImpersonationParameterName());
+        return getImpersonationParameter(metadataKey.getImpersonationName(), metadataKey.getParameterName());
     }
 
     @Override
@@ -77,7 +77,7 @@ public class ImpersonationParameterConfiguration extends Configuration<Impersona
         return "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ImpersonationParameters") +
                 " WHERE " +
                 " IMP_NM = " + SQLTools.GetStringForSQL(metadataKey.getImpersonationName()) + " AND " +
-                " CONN_NM = " + SQLTools.GetStringForSQL(metadataKey.getImpersonationParameterName()) + ";";
+                " CONN_NM = " + SQLTools.GetStringForSQL(metadataKey.getParameterName()) + ";";
     }
 
     @Override

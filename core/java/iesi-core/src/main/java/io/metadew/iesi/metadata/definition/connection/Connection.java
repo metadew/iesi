@@ -4,11 +4,14 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
+import io.metadew.iesi.metadata.definition.environment.key.EnvironmentKey;
+import lombok.EqualsAndHashCode;
 
 import java.util.List;
 
 @JsonDeserialize(using = ConnectionJsonComponent.Deserializer.class)
 @JsonSerialize(using = ConnectionJsonComponent.Serializer.class)
+@EqualsAndHashCode(callSuper = true)
 public class Connection extends Metadata<ConnectionKey> {
 
     private String type;
@@ -18,7 +21,7 @@ public class Connection extends Metadata<ConnectionKey> {
     // Constructors
 
     public Connection(String name, String type, String description, String environment, List<ConnectionParameter> parameters) {
-        super(new ConnectionKey(name, environment));
+        super(new ConnectionKey(name, new EnvironmentKey(environment)));
         this.type = type;
         this.description = description;
         this.parameters = parameters;
@@ -52,7 +55,7 @@ public class Connection extends Metadata<ConnectionKey> {
     }
 
     public String getEnvironment() {
-        return getMetadataKey().getEnvironment();
+        return getMetadataKey().getEnvironmentKey().getName();
     }
 
 }

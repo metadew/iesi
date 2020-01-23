@@ -7,6 +7,7 @@ import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.metadata.definition.script.ScriptParameter;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -18,8 +19,9 @@ public class ScriptBuilder {
     private final long versionNumber;
     private int numberOfParameters = 0;
     private int numberOfActions = 0;
-    private List<Action> actions;
-    private List<ScriptParameter> scriptParameters;
+    private List<Action> actions = new ArrayList<>();
+    private List<ScriptParameter> scriptParameters = new ArrayList<>();
+    private String name;
 
     public ScriptBuilder(String scriptId, long versionNumber) {
         this.scriptId = scriptId;
@@ -28,6 +30,11 @@ public class ScriptBuilder {
 
     public ScriptBuilder addAction(Action action) {
         this.actions.add(action);
+        return this;
+    }
+
+    public ScriptBuilder name(String name) {
+        this.name = name;
         return this;
     }
 
@@ -48,17 +55,15 @@ public class ScriptBuilder {
     }
 
     public Script build() {
-        List<ScriptParameter> scriptParameters = IntStream.range(0, numberOfParameters)
+        scriptParameters.addAll(IntStream.range(0, numberOfParameters)
                 .boxed()
                 .map(i -> new ScriptParameterBuilder(scriptId, versionNumber,"parameter" + i).build())
-                .collect(Collectors.toList());
-        scriptParameters.addAll(this.scriptParameters);
-        List<Action> actions = IntStream.range(0, numberOfActions)
+                .collect(Collectors.toList()));
+        actions.addAll(IntStream.range(0, numberOfActions)
                 .boxed()
                 .map(i -> new ActionBuilder(scriptId, versionNumber,"action" + i).build())
-                .collect(Collectors.toList());
-        actions.addAll(this.actions);
-        return new Script(new ScriptKey(scriptId, versionNumber), "dummy", "dummy",
+                .collect(Collectors.toList()));
+        return new Script(new ScriptKey(scriptId, versionNumber), name == null ? "dummy" : name, "dummy",
                 new ScriptVersionBuilder(scriptId, versionNumber).build(),
                 scriptParameters,
                 actions);

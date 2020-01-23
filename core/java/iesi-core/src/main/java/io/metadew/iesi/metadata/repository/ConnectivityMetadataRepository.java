@@ -110,13 +110,13 @@ public class ConnectivityMetadataRepository extends MetadataRepository {
         LOGGER.info(MessageFormat.format("Inserting environment {0} into connectivity repository",
                 environment.getName()));
         try {
-            EnvironmentConfiguration.getInstance().insertEnvironment(environment);
-        } catch (EnvironmentAlreadyExistsException e) {
+            EnvironmentConfiguration.getInstance().insert(environment);
+        } catch (MetadataAlreadyExistsException e) {
             LOGGER.info(MessageFormat.format("Environment {0} already exists in connectivity repository. Updating connection {0} instead.",
                     environment.getName()));
             try {
-                EnvironmentConfiguration.getInstance().updateEnvironment(environment);
-            } catch (EnvironmentDoesNotExistException e1) {
+                EnvironmentConfiguration.getInstance().update(environment);
+            } catch (MetadataDoesNotExistException e1) {
                 StringWriter stackTrace = new StringWriter();
                 e1.printStackTrace(new PrintWriter(stackTrace));
                 LOGGER.warn("exeption=" + e1.getMessage());

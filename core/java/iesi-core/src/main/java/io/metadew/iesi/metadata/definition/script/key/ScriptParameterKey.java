@@ -1,29 +1,29 @@
 package io.metadew.iesi.metadata.definition.script.key;
 
 import io.metadew.iesi.metadata.definition.key.MetadataKey;
+import io.metadew.iesi.metadata.definition.script.Script;
 import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = false)
 public class ScriptParameterKey extends MetadataKey {
-    private String scriptId;
-    private long scriptVersionNumber;
+    private final ScriptKey scriptKey;
     private String parameterName;
 
     public ScriptParameterKey(String scriptId, long scriptVersionNumber, String parameterName) {
-        this.scriptId = scriptId;
-        this.scriptVersionNumber = scriptVersionNumber;
+        this.scriptKey = new ScriptKey(scriptId, scriptVersionNumber);
         this.parameterName = parameterName;
     }
 
-    public String getScriptId() {
-        return scriptId;
-    }
-
-    public long getScriptVersionNumber() {
-        return scriptVersionNumber;
+    public ScriptParameterKey(ScriptKey scriptKey, String parameterName) {
+        this.scriptKey = scriptKey;
+        this.parameterName = parameterName;
     }
 
     public String getParameterName() {
         return parameterName;
+    }
+
+    public ScriptKey getScriptKey() {
+        return scriptKey;
     }
 }

@@ -1,6 +1,8 @@
 package io.metadew.iesi.script.execution.instruction.lookup;
 
 import io.metadew.iesi.metadata.configuration.connection.ConnectionParameterConfiguration;
+import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
+import io.metadew.iesi.metadata.definition.connection.key.ConnectionParameterKey;
 import io.metadew.iesi.script.execution.ExecutionControl;
 
 import java.text.MessageFormat;
@@ -36,8 +38,9 @@ public class ConnectionLookup implements LookupInstruction {
         String connectionName = inputParameterMatcher.group(CONNECTION_NAME_KEY);
         String connectionParameterName = inputParameterMatcher.group(CONNECTION_PARAMETER_NAME_KEY);
 
-        Optional<String> connectionParameterValue = ConnectionParameterConfiguration.getInstance().getConnectionParameterValue(connectionName,
-                executionControl.getEnvName(), connectionParameterName);
+        Optional<String> connectionParameterValue = ConnectionParameterConfiguration.getInstance()
+                .get(new ConnectionParameterKey(connectionName, executionControl.getEnvName(), connectionParameterName))
+                .map(ConnectionParameter::getValue);
 
         if (!connectionParameterValue.isPresent()) {
             throw new IllegalArgumentException(MessageFormat.format("No connection parameter {0} is attached to connection {1}", connectionParameterName, connectionName));

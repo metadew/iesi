@@ -29,10 +29,10 @@ public class ScriptVersion extends Metadata<ScriptVersionKey> {
     }
 
     public long getNumber() {
-        return getMetadataKey().getVersionNumber();
+        return getMetadataKey().getScriptKey().getScriptVersion();
     }
 
     public String getScriptId() {
-        return getMetadataKey().getScriptId();
+        return getMetadataKey().getScriptKey().getScriptId();
     }
 }

@@ -9,6 +9,7 @@ import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistExce
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
+import io.metadew.iesi.metadata.definition.connection.key.ConnectionParameterKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -104,12 +105,12 @@ public class ConnectionConfiguration extends Configuration<Connection, Connectio
                     getMetadataRepository().getTableNameByLabel("ConnectionParameters") +
                     " WHERE " +
                     " CONN_NM  = " + SQLTools.GetStringForSQL(connectionKey.getName()) + " AND " +
-                    " ENV_NM = " + SQLTools.GetStringForSQL(connectionKey.getEnvironment()) + ";";
+                    " ENV_NM = " + SQLTools.GetStringForSQL(connectionKey.getEnvironmentKey().getName()) + ";";
             CachedRowSet crsConnectionParameters = getMetadataRepository().executeQuery(query, "reader");
             while (crsConnectionParameters.next()) {
                 ConnectionParameter connectionParameter =
-                        new ConnectionParameter(connectionKey.getName(), connectionKey.getEnvironment(),
-                                crsConnectionParameters.getString("CONN_PAR_NM"), crsConnectionParameters.getString("CONN_PAR_VAL"));
+                        new ConnectionParameter(new ConnectionParameterKey(connectionKey.getName(), connectionKey.getEnvironmentKey().getName(),
+                                crsConnectionParameters.getString("CONN_PAR_NM")), crsConnectionParameters.getString("CONN_PAR_VAL"));
                 connectionParameters.add(connectionParameter);
             }
             crsConnectionParameters.close();
@@ -174,7 +175,7 @@ public class ConnectionConfiguration extends Configuration<Connection, Connectio
             throw new ConnectionDoesNotExistException(MessageFormat.format(
                     "Connection {0} does not exists", metadataKey.toString()));
         }
-        List<String> deleteStatements = getDeleteQuery(metadataKey.getName(), metadataKey.getEnvironment());
+        List<String> deleteStatements = getDeleteQuery(metadataKey.getName(), metadataKey.getEnvironmentKey().getName());
         getMetadataRepository().executeBatch(deleteStatements);
     }
 
@@ -243,7 +244,7 @@ public class ConnectionConfiguration extends Configuration<Connection, Connectio
             queries.add(insertStatement(connection));
         }
         for (ConnectionParameter connectionParameter : connection.getParameters()) {
-            queries.add(ConnectionParameterConfiguration.getInstance().getInsertStatement(connection.getName(), connection.getEnvironment(), connectionParameter));
+            queries.add(ConnectionParameterConfiguration.getInstance().insertStatement(connectionParameter));
         }
 
         return queries;

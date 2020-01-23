@@ -6,13 +6,10 @@ import io.metadew.iesi.metadata.definition.component.key.ComponentAttributeKey;
 
 public class ComponentAttribute extends Metadata<ComponentAttributeKey> {
 
-    private String environment;
     private String value;
 
-
-    public ComponentAttribute(ComponentAttributeKey componentAttributeKey, String environment, String value) {
+    public ComponentAttribute(ComponentAttributeKey componentAttributeKey, String value) {
         super(componentAttributeKey);
-        this.environment = environment;
         this.value = value;
     }
 
@@ -27,14 +24,6 @@ public class ComponentAttribute extends Metadata<ComponentAttributeKey> {
 
     public void setValue(String value) {
         this.value = value;
-    }
-
-    public String getEnvironment() {
-        return environment;
-    }
-
-    public void setEnvironment(String environment) {
-        this.environment = environment;
     }
 
 }

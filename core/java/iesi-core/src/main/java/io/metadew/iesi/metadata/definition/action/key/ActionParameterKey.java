@@ -3,31 +3,24 @@ package io.metadew.iesi.metadata.definition.action.key;
 import io.metadew.iesi.metadata.definition.key.MetadataKey;
 
 public class ActionParameterKey extends MetadataKey {
-    private String actionId;
-    private String actionName;
-    private String scriptId;
-    private long scriptVersionNumber;
+    private final ActionKey actionKey;
+    private String parameterName;
 
-    public ActionParameterKey(String scriptId, long scriptVersionNumber, String actionId, String actionParameterName) {
-        this.actionId = actionId;
-        this.actionName = actionParameterName;
-        this.scriptId = scriptId;
-        this.scriptVersionNumber = scriptVersionNumber;
+    public ActionParameterKey(String scriptId, long scriptVersionNumber, String actionId, String parameterName) {
+        this.actionKey = new ActionKey(scriptId, scriptVersionNumber, actionId);
+        this.parameterName = parameterName;
     }
 
-    public String getActionId() {
-        return actionId;
+    public ActionParameterKey(ActionKey actionKey, String parameterName) {
+        this.actionKey = actionKey;
+        this.parameterName = parameterName;
     }
 
-    public String getActionName() {
-        return actionName;
+    public String getParameterName() {
+        return parameterName;
     }
 
-    public String getScriptId() {
-        return scriptId;
-    }
-
-    public long getScriptVersionNumber() {
-        return scriptVersionNumber;
+    public ActionKey getActionKey() {
+        return actionKey;
     }
 }

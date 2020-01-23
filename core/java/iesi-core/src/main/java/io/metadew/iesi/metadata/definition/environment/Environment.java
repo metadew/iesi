@@ -5,11 +5,13 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.environment.key.EnvironmentKey;
 import io.metadew.iesi.metadata.definition.script.ScriptJsonComponent;
+import lombok.EqualsAndHashCode;
 
 import java.util.List;
 
 @JsonDeserialize(using = EnvironmentJsonComponent.Deserializer.class)
 @JsonSerialize(using = EnvironmentJsonComponent.Serializer.class)
+@EqualsAndHashCode(callSuper = true)
 public class Environment extends Metadata<EnvironmentKey> {
 
     private String description;

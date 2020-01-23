@@ -83,9 +83,9 @@ public class ActionParameterConfigurationTest {
         assertEquals(1, ActionParameterConfiguration.getInstance().getAll().size());
         ActionParameterConfiguration.getInstance().insert(actionParameter1);
 
-        assertEquals(2, ActionParameterConfiguration.getInstance().getAll().size());
         assertTrue(ActionParameterConfiguration.getInstance().get(actionParameter1.getMetadataKey()).isPresent());
         assertEquals(actionParameter1, ActionParameterConfiguration.getInstance().get(actionParameter1.getMetadataKey()).get());
+        assertEquals(2, ActionParameterConfiguration.getInstance().getAll().size());
     }
 
     @Test

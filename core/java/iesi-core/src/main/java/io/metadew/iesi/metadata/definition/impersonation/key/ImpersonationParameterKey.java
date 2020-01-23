@@ -4,19 +4,24 @@ import io.metadew.iesi.metadata.definition.key.MetadataKey;
 
 public class ImpersonationParameterKey extends MetadataKey {
 
-    private String impersonationName;
-    private String impersonationParameterName;
+    private final ImpersonationKey impersonationKey;
+    private String parameterName;
 
-    public ImpersonationParameterKey(String impersonationName, String impersonationParameterName) {
-        this.impersonationName = impersonationName;
-        this.impersonationParameterName = impersonationParameterName;
+    public ImpersonationParameterKey(String impersonationName, String parameterName) {
+        this.impersonationKey = new ImpersonationKey(impersonationName);
+        this.parameterName = parameterName;
     }
 
-    public String getImpersonationName() {
-        return impersonationName;
+    public ImpersonationParameterKey(ImpersonationKey impersonationKey, String parameterName) {
+        this.impersonationKey = impersonationKey;
+        this.parameterName = parameterName;
     }
 
-    public String getImpersonationParameterName() {
-        return impersonationParameterName;
+    public String getParameterName() {
+        return parameterName;
+    }
+
+    public ImpersonationKey getImpersonationKey() {
+        return impersonationKey;
     }
 }

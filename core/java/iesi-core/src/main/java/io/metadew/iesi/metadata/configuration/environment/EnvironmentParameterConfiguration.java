@@ -5,6 +5,7 @@ import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.environment.EnvironmentParameter;
+import io.metadew.iesi.metadata.definition.environment.key.EnvironmentKey;
 import io.metadew.iesi.metadata.definition.environment.key.EnvironmentParameterKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.logging.log4j.LogManager;
@@ -21,12 +22,10 @@ import java.util.Optional;
 
 public class EnvironmentParameterConfiguration extends Configuration<EnvironmentParameter, EnvironmentParameterKey> {
 
-    private EnvironmentParameter environmentParameter;
-
     private static EnvironmentParameterConfiguration INSTANCE;
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public synchronized static EnvironmentParameterConfiguration getInstance(){
+    public synchronized static EnvironmentParameterConfiguration getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new EnvironmentParameterConfiguration();
         }
@@ -36,17 +35,32 @@ public class EnvironmentParameterConfiguration extends Configuration<Environment
     private EnvironmentParameterConfiguration() {
     }
 
-    public void init(MetadataRepository metadataRepository){
+    public void init(MetadataRepository metadataRepository) {
         setMetadataRepository(metadataRepository);
     }
 
+    @Override
+    public boolean exists(EnvironmentParameterKey environmentParameterKey) {
+        String queryEnvironmentParameter = "select ENV_NM, ENV_PAR_NM, ENV_PAR_VAL from " +
+                getMetadataRepository().getTableNameByLabel("EnvironmentParameters") +
+                " where ENV_NM = " + SQLTools.GetStringForSQL(environmentParameterKey.getEnvironmentKey().getName()) +
+                " and ENV_PAR_NM = " + SQLTools.GetStringForSQL(environmentParameterKey.getParameterName()) + ";";
+        CachedRowSet crsEnvironmentParameter = getMetadataRepository()
+                .executeQuery(queryEnvironmentParameter, "reader");
+        if (crsEnvironmentParameter.size() == 0) {
+            return false;
+        } else if (crsEnvironmentParameter.size() > 1) {
+            LOGGER.warn(MessageFormat.format("Found multiple implementations for Connection {0}. Returning first implementation", environmentParameterKey.toString()));
+        }
+        return true;
+    }
 
     @Override
     public Optional<EnvironmentParameter> get(EnvironmentParameterKey metadataKey) {
-        String queryEnvironmentParameter = "select ENV_NM, ENV_PAR_NM, ENV_PAR_VAL from "
-                + getMetadataRepository()
-                .getTableNameByLabel("EnvironmentParameters")
-                + " where ENV_NM = '" + metadataKey.getEnvironmentName() + "' and ENV_PAR_NM = '" + metadataKey.getParameterName() + "'";
+        String queryEnvironmentParameter = "select ENV_NM, ENV_PAR_NM, ENV_PAR_VAL from " +
+                getMetadataRepository().getTableNameByLabel("EnvironmentParameters") +
+                " where ENV_NM = " + SQLTools.GetStringForSQL(metadataKey.getEnvironmentKey().getName()) +
+                " and ENV_PAR_NM = " + SQLTools.GetStringForSQL(metadataKey.getParameterName()) + ";";
         CachedRowSet crsEnvironmentParameter = getMetadataRepository()
                 .executeQuery(queryEnvironmentParameter, "reader");
         try {
@@ -60,9 +74,7 @@ public class EnvironmentParameterConfiguration extends Configuration<Environment
             crsEnvironmentParameter.close();
             return Optional.of(new EnvironmentParameter(metadataKey, environmentParameterValue));
         } catch (SQLException e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-            throw new RuntimeException();
+            throw new RuntimeException(e);
         }
     }
 
@@ -103,7 +115,7 @@ public class EnvironmentParameterConfiguration extends Configuration<Environment
     private String deleteStatement(EnvironmentParameterKey metadataKey) {
         return "DELETE FROM " + getMetadataRepository().getTableNameByLabel("EnvironmentParameters") +
                 " WHERE " +
-                " ENV_NM = " + SQLTools.GetStringForSQL(metadataKey.getEnvironmentName()) + " AND " +
+                " ENV_NM = " + SQLTools.GetStringForSQL(metadataKey.getEnvironmentKey().getName()) + " AND " +
                 " ENV_PAR_NM = " + SQLTools.GetStringForSQL(metadataKey.getParameterName()) + ";";
     }
 
@@ -120,30 +132,34 @@ public class EnvironmentParameterConfiguration extends Configuration<Environment
     public String getInsertStatement(EnvironmentParameter environmentParameter) {
         return "INSERT INTO " + getMetadataRepository()
                 .getTableNameByLabel("EnvironmentParameters") + " (ENV_NM, ENV_PAR_NM, ENV_PAR_VAL) VALUES (" +
-                SQLTools.GetStringForSQL(environmentParameter.getMetadataKey().getEnvironmentName()) + "," +
+                SQLTools.GetStringForSQL(environmentParameter.getMetadataKey().getEnvironmentKey().getName()) + "," +
                 SQLTools.GetStringForSQL(environmentParameter.getName()) + "," +
                 SQLTools.GetStringForSQL(environmentParameter.getValue()) + ");";
     }
 
-    EnvironmentParameter getEnvironmentParameter(String environmentName, String environmentParameterName) {
-        EnvironmentParameterKey environmentParameterKey = new EnvironmentParameterKey(environmentName, environmentParameterName);
-        Optional<EnvironmentParameter> environmentParameterOpt = get(environmentParameterKey);
-        return environmentParameterOpt.get();
+    public void deleteByEnvironment(EnvironmentKey environmentKey) {
+        getMetadataRepository().executeUpdate("DELETE FROM " + getMetadataRepository().getTableNameByLabel("EnvironmentParameters") +
+                " WHERE " +
+                " ENV_NM = " + SQLTools.GetStringForSQL(environmentKey.getName()) + ";");
     }
 
-    public Optional<String> getEnvironmentParameterValue(String environmentName, String environmentParameterName) {
-        EnvironmentParameterKey environmentParameterKey = new EnvironmentParameterKey(environmentName, environmentParameterName);
-        Optional<EnvironmentParameter> environmentParameterOpt = get(environmentParameterKey);
-        return environmentParameterOpt.map(EnvironmentParameter::getValue);
-    }
-
-    // Getters and Setters
-    public EnvironmentParameter getEnvironmentParameter() {
-        return environmentParameter;
-    }
-
-    private void setEnvironmentParameter(EnvironmentParameter environmentParameter) {
-        this.environmentParameter = environmentParameter;
+    public List<EnvironmentParameter> getByEnvironment(EnvironmentKey environmentKey) {
+        List<EnvironmentParameter> environmentParameters = new ArrayList<>();
+        String queryEnvironmentParameter = "select ENV_NM, ENV_PAR_NM, ENV_PAR_VAL from "
+                + getMetadataRepository().getTableNameByLabel("EnvironmentParameters")
+                + " where ENV_NM = " + SQLTools.GetStringForSQL(environmentKey.getName()) + ";";
+        CachedRowSet crsEnvironmentParameter = getMetadataRepository()
+                .executeQuery(queryEnvironmentParameter, "reader");
+        try {
+            while (crsEnvironmentParameter.next()) {
+                environmentParameters.add(new EnvironmentParameter(environmentKey.getName(),
+                        crsEnvironmentParameter.getString("ENV_PAR_NM"),
+                        crsEnvironmentParameter.getString("ENV_PAR_VAL")));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return environmentParameters;
     }
 
 }

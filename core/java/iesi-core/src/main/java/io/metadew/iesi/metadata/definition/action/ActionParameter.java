@@ -14,7 +14,7 @@ public class ActionParameter extends Metadata<ActionParameterKey> {
         this.value = value;
     }
 
-    public String getName() {return this.getMetadataKey().getActionName();}
+    public String getName() {return this.getMetadataKey().getParameterName();}
 
     public String getValue() {
         return value;

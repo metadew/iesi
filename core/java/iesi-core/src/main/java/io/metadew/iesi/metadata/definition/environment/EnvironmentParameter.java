@@ -3,7 +3,9 @@ package io.metadew.iesi.metadata.definition.environment;
 
 import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.environment.key.EnvironmentParameterKey;
+import lombok.EqualsAndHashCode;
 
+@EqualsAndHashCode(callSuper = true)
 public class EnvironmentParameter extends Metadata<EnvironmentParameterKey> {
     private String value;
 

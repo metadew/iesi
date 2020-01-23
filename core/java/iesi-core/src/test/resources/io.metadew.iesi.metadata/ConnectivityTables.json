@@ -149,7 +149,7 @@
       "defaultTimestamp" : ""
     }, {
       "name" : "ENV_NM",
-      "description" : "Short name for the environment",
+      "description" : "Short name for the envioronment",
       "order" : "2",
       "type" : "string",
       "length" : "100",

@@ -6,19 +6,17 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = false)
 public class ScriptVersionKey extends MetadataKey {
 
-    private String scriptId;
-    private long versionNumber;
+    private final ScriptKey scriptKey;
 
     public ScriptVersionKey(String scriptId, long versionNumber) {
-        this.scriptId = scriptId;
-        this.versionNumber = versionNumber;
+        this.scriptKey = new ScriptKey(scriptId, versionNumber);
     }
 
-    public String getScriptId() {
-        return scriptId;
+    public ScriptVersionKey(ScriptKey scriptKey) {
+        this.scriptKey = scriptKey;
     }
 
-    public long getVersionNumber() {
-        return versionNumber;
+    public ScriptKey getScriptKey() {
+        return scriptKey;
     }
 }

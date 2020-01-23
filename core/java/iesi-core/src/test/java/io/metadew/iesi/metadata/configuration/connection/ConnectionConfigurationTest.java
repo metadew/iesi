@@ -30,7 +30,7 @@ public class ConnectionConfigurationTest {
 
     @Before
     public void setup() {
-        this.connectivityMetadataRepository = RepositoryTestSetup.getConnectivityMetadataRepository();
+        connectivityMetadataRepository = RepositoryTestSetup.getConnectivityMetadataRepository();
         ConnectionParameterKey connectionParameterKey = new ConnectionParameterKey("connection",
                 "test", "connection parameter");
         connectionParameter = new ConnectionParameter(connectionParameterKey, "parameter value");

@@ -3,7 +3,6 @@ package io.metadew.iesi.metadata.configuration.script;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.script.ScriptParameter;
-import io.metadew.iesi.metadata.definition.script.key.ScriptParameterKey;
 import io.metadew.iesi.metadata.repository.DesignMetadataRepository;
 import io.metadew.iesi.metadata.repository.RepositoryTestSetup;
 import org.junit.After;
@@ -39,7 +38,7 @@ public class ScriptParameterConfigurationTest {
     }
 
     @Test
-    public void scriptParameterNotExistTest() throws MetadataAlreadyExistsException {
+    public void scriptParameterNotExistTest() {
         assertFalse(ScriptParameterConfiguration.getInstance().exists(scriptParameter1.getMetadataKey()));
     }
 
@@ -77,7 +76,7 @@ public class ScriptParameterConfigurationTest {
     }
 
     @Test
-    public void scriptParameterDeleteDoesNotExistTest() throws MetadataDoesNotExistException {
+    public void scriptParameterDeleteDoesNotExistTest() {
         assertThrows(MetadataDoesNotExistException.class, () -> ScriptParameterConfiguration.getInstance().delete(scriptParameter1.getMetadataKey()));
     }
 
@@ -100,12 +99,14 @@ public class ScriptParameterConfigurationTest {
         ScriptParameterConfiguration.getInstance().insert(scriptParameter1);
 
         Optional<ScriptParameter> fetchedScriptParameter = ScriptParameterConfiguration.getInstance().get(scriptParameter1.getMetadataKey());
+        assertTrue(fetchedScriptParameter.isPresent());
         assertEquals("parameter value", fetchedScriptParameter.get().getValue());
 
         scriptParameter1.setValue("new value");
         ScriptParameterConfiguration.getInstance().update(scriptParameter1);
 
         fetchedScriptParameter = ScriptParameterConfiguration.getInstance().get(scriptParameter1.getMetadataKey());
+        assertTrue(fetchedScriptParameter.isPresent());
         assertEquals(fetchedScriptParameter.get().getValue(), "new value");
     }
 

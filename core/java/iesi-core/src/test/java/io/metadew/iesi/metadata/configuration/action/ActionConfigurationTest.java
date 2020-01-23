@@ -6,6 +6,7 @@ import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.action.key.ActionKey;
 import io.metadew.iesi.metadata.definition.action.key.ActionParameterKey;
+import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.metadata.repository.DesignMetadataRepository;
 import io.metadew.iesi.metadata.repository.RepositoryTestSetup;
 import org.junit.After;
@@ -29,25 +30,12 @@ public class ActionConfigurationTest {
     private ActionParameter actionParameter12;
     private Action action1;
     private Action action2;
-    private List<Action> actions;
     private ActionParameter actionParameter21;
     private ActionParameter actionParameter22;
 
     @Before
     public void setup() {
         designMetadataRepository = RepositoryTestSetup.getDesignMetadataRepository();
-//        actionParameter11 = new ActionParameter(new ActionParameterKey("1", 1, "1", "firstParameter"), "first parameter value");
-//        actionParameter12 = new ActionParameter(new ActionParameterKey("1", 1, "1", "secondParameter"), "second parameter value");
-//        actionParameter21 = new ActionParameter(new ActionParameterKey("1", 1, "1", "firstParameter"), "first parameter value");
-//        actionParameter22 = new ActionParameter(new ActionParameterKey("1", 1, "1", "secondParameter"), "second parameter value");
-//        actionParameters1 = Stream.of(actionParameter11, actionParameter12).collect(Collectors.toList());
-//        actionParameters2 = Stream.of(actionParameter11, actionParameter12).collect(Collectors.toList());
-//        action1 = new Action(new ActionKey("1", 1, "1"), 1, "fwk.dummy",
-//                "dummy", "dummy", "", "", "", "", "",
-//                "0", actionParameters1);
-//        action2 = new Action(new ActionKey("1", 1, "2"), 2, "fwk.dummy",
-//                "dummy", "dummy", "", "", "", "", "",
-//                "0", actionParameters2);
 
         action1 = new ActionBuilder("1", 1, "1")
                 .numberOfParameters(2)
@@ -263,7 +251,7 @@ public class ActionConfigurationTest {
         assertEquals(4, ActionParameterConfiguration.getInstance().getAll().size());
         assertEquals(Stream.of(action1, action2).collect(Collectors.toList()), ActionConfiguration.getInstance().getAll());
 
-        ActionConfiguration.getInstance().deleteActionsFromScript("1", 1);
+        ActionConfiguration.getInstance().deleteByScript(new ScriptKey("1", 1));
 
         assertEquals(0, ActionConfiguration.getInstance().getAll().size());
         assertEquals(0, ActionParameterConfiguration.getInstance().getAll().size());
@@ -272,9 +260,13 @@ public class ActionConfigurationTest {
     @Test
     public void actionDeleteFromScriptTest() throws MetadataAlreadyExistsException {
         assertEquals(0, ActionConfiguration.getInstance().getAll().size());
-        Action action = new Action(new ActionKey("1", 2, "2"), 2, "fwk.dummy",
-                "dummy", "dummy", "", "", "", "", "",
-                "0", Stream.of(new ActionParameter(new ActionParameterKey("1", 1, "2", "name"), "value")).collect(Collectors.toList()));
+
+        Action action = new ActionBuilder("1", 2, "2")
+                .numberOfParameters(1)
+                .build();
+//        , 2, "fwk.dummy",
+//                "dummy", "dummy", "", "", "", "", "",
+//                "0", Stream.of(new ActionParameter(new ActionParameterKey("1", 1, "2", "name"), "value")).collect(Collectors.toList()));
 
         ActionConfiguration.getInstance().insert(action1);
         ActionConfiguration.getInstance().insert(action2);
@@ -284,7 +276,7 @@ public class ActionConfigurationTest {
         assertEquals(5, ActionParameterConfiguration.getInstance().getAll().size());
         assertEquals(Stream.of(action1, action2, action).collect(Collectors.toList()), ActionConfiguration.getInstance().getAll());
 
-        ActionConfiguration.getInstance().deleteActionsFromScript("1", 1);
+        ActionConfiguration.getInstance().deleteByScript(new ScriptKey("1", 1));
 
         assertEquals(1, ActionConfiguration.getInstance().getAll().size());
         assertEquals(1, ActionParameterConfiguration.getInstance().getAll().size());

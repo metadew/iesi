@@ -2,10 +2,12 @@ package io.metadew.iesi.metadata.definition.component;
 
 import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.component.key.ComponentVersionKey;
+import lombok.EqualsAndHashCode;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@EqualsAndHashCode(callSuper = true)
 public class ComponentVersion extends Metadata<ComponentVersionKey> {
 
     private String description;
@@ -32,10 +34,6 @@ public class ComponentVersion extends Metadata<ComponentVersionKey> {
 
     public void setBuilds(List<ComponentBuild> builds) {
         this.builds = builds;
-    }
-
-    public long getNumber() {
-        return getMetadataKey().getComponentVersionNumber();
     }
 
 }

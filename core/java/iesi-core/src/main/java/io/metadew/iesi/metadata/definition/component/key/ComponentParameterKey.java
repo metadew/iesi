@@ -1,23 +1,25 @@
 package io.metadew.iesi.metadata.definition.component.key;
 
 import io.metadew.iesi.metadata.definition.key.MetadataKey;
+import lombok.EqualsAndHashCode;
 
+@EqualsAndHashCode(callSuper = false)
 public class ComponentParameterKey extends MetadataKey {
     private final ComponentKey componentKey;
-    private String componentParameterName;
+    private String parameterName;
 
-    public ComponentParameterKey(String componentId, long componentVersionNb, String componentParameterName) {
+    public ComponentParameterKey(String componentId, long componentVersionNb, String parameterName) {
         this.componentKey = new ComponentKey(componentId, componentVersionNb);
-        this.componentParameterName = componentParameterName;
+        this.parameterName = parameterName;
     }
 
-    public ComponentParameterKey(ComponentKey componentKey, String componentParameterName) {
+    public ComponentParameterKey(ComponentKey componentKey, String parameterName) {
         this.componentKey = componentKey;
-        this.componentParameterName = componentParameterName;
+        this.parameterName = parameterName;
     }
 
-    public String getComponentParameterName() {
-        return componentParameterName;
+    public String getParameterName() {
+        return parameterName;
     }
 
     public ComponentKey getComponentKey() {

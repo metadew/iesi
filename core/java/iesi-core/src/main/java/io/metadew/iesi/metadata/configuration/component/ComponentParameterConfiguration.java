@@ -5,7 +5,7 @@ import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.component.ComponentParameter;
-import io.metadew.iesi.metadata.definition.component.ComponentVersion;
+import io.metadew.iesi.metadata.definition.component.key.ComponentKey;
 import io.metadew.iesi.metadata.definition.component.key.ComponentParameterKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.logging.log4j.LogManager;
@@ -21,9 +21,6 @@ import java.util.List;
 import java.util.Optional;
 
 public class ComponentParameterConfiguration extends Configuration<ComponentParameter, ComponentParameterKey> {
-
-    private ComponentVersion componentVersion;
-    private ComponentParameter componentParameter;
 
     private static final Logger LOGGER = LogManager.getLogger();
     private static ComponentParameterConfiguration INSTANCE;
@@ -44,8 +41,26 @@ public class ComponentParameterConfiguration extends Configuration<ComponentPara
     }
 
     @Override
-    public Optional<ComponentParameter> get(ComponentParameterKey metadataKey) {
-        return getComponentParameter(metadataKey.getComponentId(), metadataKey.getComponentParameterName(), metadataKey.getComponentVersionNb());
+    public Optional<ComponentParameter> get(ComponentParameterKey componentParameterKey) {
+        String queryComponentParameter = "select COMP_ID, COMP_PAR_NM, COMP_PAR_VAL from " + getMetadataRepository().getTableNameByLabel("ComponentParameters")
+                + " where COMP_ID = " + SQLTools.GetStringForSQL(componentParameterKey.getComponentKey().getId()) +
+                " and COMP_PAR_NM = " + SQLTools.GetStringForSQL(componentParameterKey.getComponentKey().getVersionNumber()) +
+                " and COMP_VRS_NB = " + SQLTools.GetStringForSQL(componentParameterKey.getParameterName()) + ";";
+        CachedRowSet crsComponentParameter = getMetadataRepository().executeQuery(queryComponentParameter, "reader");
+        try {
+            if (crsComponentParameter.size()==0){
+                return Optional.empty();
+            }
+            crsComponentParameter.next();
+            ComponentParameter componentParameter = new ComponentParameter(componentParameterKey,
+                    crsComponentParameter.getString("COMP_PAR_VAL"));
+            crsComponentParameter.close();
+            return Optional.of(componentParameter);
+        } catch (SQLException e) {
+            StringWriter StackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(StackTrace));
+            throw new RuntimeException();
+        }
     }
 
     @Override
@@ -82,12 +97,9 @@ public class ComponentParameterConfiguration extends Configuration<ComponentPara
 
     private String deleteStatement(ComponentParameterKey componentParameterKey){
         return "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ComponentParameters") +
-                " WHERE COMP_ID = " +
-                SQLTools.GetStringForSQL(componentParameterKey.getComponentId()) +
-                "AND COMP_VRS_NB = " +
-                SQLTools.GetStringForSQL(componentParameterKey.getComponentVersionNb()) +
-                "AND COMP_PAR_NM = " +
-                SQLTools.GetStringForSQL(componentParameterKey.getComponentParameterName()) + ";";
+                " WHERE COMP_ID = " + SQLTools.GetStringForSQL(componentParameterKey.getComponentKey().getId()) +
+                "AND COMP_VRS_NB = " + SQLTools.GetStringForSQL(componentParameterKey.getComponentKey().getVersionNumber()) +
+                "AND COMP_PAR_NM = " + SQLTools.GetStringForSQL(componentParameterKey.getParameterName()) + ";";
     }
 
     @Override
@@ -102,63 +114,38 @@ public class ComponentParameterConfiguration extends Configuration<ComponentPara
 
     // Insert
     public String getInsertStatement(ComponentParameter componentParameter) {
-        String sql = "";
-
-        sql += "INSERT INTO " + getMetadataRepository().getTableNameByLabel("ComponentParameters");
-        sql += " (COMP_ID, COMP_VRS_NB, COMP_PAR_NM, COMP_PAR_VAL) ";
-        sql += "VALUES ";
-        sql += "(";
-        sql += SQLTools.GetStringForSQL(componentParameter.getMetadataKey().getComponentId());
-        sql += ",";
-        sql += SQLTools.GetStringForSQL(componentParameter.getMetadataKey().getComponentVersionNb());
-        sql += ",";
-        sql += SQLTools.GetStringForSQL(componentParameter.getMetadataKey().getComponentParameterName());
-        sql += ",";
-        sql += SQLTools.GetStringForSQL(componentParameter.getValue());
-        sql += ")";
-        sql += ";";
-
-        return sql;
+        return "INSERT INTO " + getMetadataRepository().getTableNameByLabel("ComponentParameters") +
+                " (COMP_ID, COMP_VRS_NB, COMP_PAR_NM, COMP_PAR_VAL) VALUES (" +
+                SQLTools.GetStringForSQL(componentParameter.getMetadataKey().getComponentKey().getId()) + "," +
+                SQLTools.GetStringForSQL(componentParameter.getMetadataKey().getComponentKey().getVersionNumber()) + "," +
+                SQLTools.GetStringForSQL(componentParameter.getMetadataKey().getParameterName()) + "," +
+                SQLTools.GetStringForSQL(componentParameter.getValue()) + ");";
     }
 
-    private Optional<ComponentParameter> getComponentParameter(String componentId, String componentParameterName, long componentVersionNumber) {
-        CachedRowSet crsComponentParameter = null;
-        String queryComponentParameter = "select COMP_ID, COMP_PAR_NM, COMP_PAR_VAL from " + getMetadataRepository().getTableNameByLabel("ComponentParameters")
-                + " where COMP_ID = " + SQLTools.GetStringForSQL(componentId) + " and COMP_PAR_NM = '" + componentParameterName + "'" + " and COMP_VRS_NB = " + componentVersionNumber;
-        crsComponentParameter = getMetadataRepository().executeQuery(queryComponentParameter, "reader");
+    public List<ComponentParameter> getByComponent(ComponentKey componentKey) {
         try {
-            if (crsComponentParameter.size()==0){
-                return Optional.empty();
+            List<ComponentParameter> componentParameters = new ArrayList<>();
+            String query = "select COMP_ID, COMP_VRS_NB, COMP_PAR_NM, COMP_PAR_VAL from "
+                    + getMetadataRepository().getTableNameByLabel("ComponentParameters") +
+                    " WHERE COMP_ID = " + SQLTools.GetStringForSQL(componentKey.getId()) +
+                    " AND COMP_VRS_NB = " + SQLTools.GetStringForSQL(componentKey.getVersionNumber()) + ";";
+            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
+            while (cachedRowSet.next()) {
+                componentParameters.add(new ComponentParameter(
+                        new ComponentParameterKey(componentKey, cachedRowSet.getString("COMP_PAR_NM")),
+                        cachedRowSet.getString("COMP_PAR_VAL")));
             }
-            crsComponentParameter.next();
-            ComponentParameterKey componentParameterKey = new ComponentParameterKey(componentId,
-                    componentVersionNumber, componentParameterName);
-            ComponentParameter componentParameter = new ComponentParameter(componentParameterKey,
-                    crsComponentParameter.getString("COMP_PAR_VAL"));
-            crsComponentParameter.close();
-            return Optional.of(componentParameter);
+            return componentParameters;
         } catch (SQLException e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-            throw new RuntimeException();
+            throw new RuntimeException(e);
         }
     }
 
-    // Getters and Setters
-    public ComponentParameter getComponentParameter() {
-        return componentParameter;
-    }
-
-    public void setComponentParameter(ComponentParameter componentParameter) {
-        this.componentParameter = componentParameter;
-    }
-
-    public ComponentVersion getComponentVersion() {
-        return componentVersion;
-    }
-
-    public void setComponentVersion(ComponentVersion componentVersion) {
-        this.componentVersion = componentVersion;
+    public void deleteByComponent(ComponentKey componentKey) {
+        String deleteStatement = "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ComponentParameters") +
+                " WHERE COMP_ID = " + SQLTools.GetStringForSQL(componentKey.getId()) +
+                "AND COMP_VRS_NB = " + SQLTools.GetStringForSQL(componentKey.getVersionNumber()) + ";";
+        getMetadataRepository().executeUpdate(deleteStatement);
     }
 
 }

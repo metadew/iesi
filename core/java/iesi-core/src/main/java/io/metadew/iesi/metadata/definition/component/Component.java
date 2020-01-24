@@ -4,12 +4,14 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.component.key.ComponentKey;
+import lombok.EqualsAndHashCode;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @JsonDeserialize(using = ComponentJsonComponent.Deserializer.class)
 @JsonSerialize(using = ComponentJsonComponent.Serializer.class)
+@EqualsAndHashCode(callSuper = true)
 public class Component extends Metadata<ComponentKey> {
 
     private String type;

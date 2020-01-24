@@ -19,23 +19,28 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class ComponentParameterConfigurationTest {
 
-    DesignMetadataRepository designMetadataRepository;
-    ComponentParameter componentParameter;
+    private DesignMetadataRepository designMetadataRepository;
+    private ComponentParameter componentParameter11;
+    private ComponentParameter componentParameter12;
+    private ComponentParameter componentParameter2;
+    private ComponentParameter componentParameter3;
 
 
     @Before
     public void setup() {
         this.designMetadataRepository = RepositoryTestSetup.getDesignMetadataRepository();
-        String componentId = "1";
-        long parameterNb = 1;
-        componentParameter = new ComponentParameter(new ComponentParameterKey("1", 1,
-                "parameter name"),
-                "parameter of component");
-        try{
-            ComponentParameterConfiguration.getInstance().insert(componentParameter);
-        }catch(MetadataAlreadyExistsException ignored){
-            // if component already is in database do nothing
-        }
+        componentParameter11 = new ComponentParameterBuilder("1", 1, "parameter name 1")
+                .value("value")
+                .build();
+        componentParameter12 = new ComponentParameterBuilder("1", 1, "parameter name 2")
+                .value("value")
+                .build();
+        componentParameter2 = new ComponentParameterBuilder("1", 2, "parameter name 1")
+                .value("value")
+                .build();
+        componentParameter3 = new ComponentParameterBuilder("2", 1, "parameter name 1")
+                .value("value")
+                .build();
     }
 
     @After
@@ -47,14 +52,12 @@ public class ComponentParameterConfigurationTest {
 
     @Test
     public void componentParameterNotExistsTest() {
-        ComponentParameterKey nonExistComponentParameterKey = new ComponentParameterKey("non_exist",
-                1, "non exist");
         assertFalse(ComponentParameterConfiguration.getInstance().exists(nonExistComponentParameterKey));
     }
 
     @Test
     public void componentParameterExistsTest(){
-        assertTrue(ComponentParameterConfiguration.getInstance().exists(componentParameter.getMetadataKey()));
+        assertTrue(ComponentParameterConfiguration.getInstance().exists(componentParameter11.getMetadataKey()));
     }
 
     @Test
@@ -68,12 +71,12 @@ public class ComponentParameterConfigurationTest {
 
     @Test
     public void componentParameterInsertAlreadyExistsTest() {
-        assertThrows(MetadataAlreadyExistsException.class,() -> ComponentParameterConfiguration.getInstance().insert(componentParameter));
+        assertThrows(MetadataAlreadyExistsException.class,() -> ComponentParameterConfiguration.getInstance().insert(componentParameter11));
     }
 
     @Test
     public void componentParameterDeleteTest() throws MetadataDoesNotExistException {
-        ComponentParameterConfiguration.getInstance().delete(componentParameter.getMetadataKey());
+        ComponentParameterConfiguration.getInstance().delete(componentParameter11.getMetadataKey());
     }
 
     @Test
@@ -85,15 +88,15 @@ public class ComponentParameterConfigurationTest {
 
     @Test
     public void componentParameterGetTest() {
-        Optional<ComponentParameter> newComponentParameter = ComponentParameterConfiguration.getInstance().get(componentParameter.getMetadataKey());
+        Optional<ComponentParameter> newComponentParameter = ComponentParameterConfiguration.getInstance().get(componentParameter11.getMetadataKey());
         assertTrue(newComponentParameter.isPresent());
-        assertEquals(componentParameter.getMetadataKey().getComponentId(),
+        assertEquals(componentParameter11.getMetadataKey().getComponentId(),
                 newComponentParameter.get().getMetadataKey().getComponentId());
-        assertEquals(componentParameter.getMetadataKey().getComponentVersionNb(),
+        assertEquals(componentParameter11.getMetadataKey().getComponentVersionNb(),
                 newComponentParameter.get().getMetadataKey().getComponentVersionNb());
-        assertEquals(componentParameter.getMetadataKey().getComponentParameterName(),
-                newComponentParameter.get().getMetadataKey().getComponentParameterName());
-        assertEquals(componentParameter.getValue(), newComponentParameter.get().getValue());
+        assertEquals(componentParameter11.getMetadataKey().getParameterName(),
+                newComponentParameter.get().getMetadataKey().getParameterName());
+        assertEquals(componentParameter11.getValue(), newComponentParameter.get().getValue());
     }
 
     @Test
@@ -106,7 +109,7 @@ public class ComponentParameterConfigurationTest {
 
     @Test
     public void componentParameterUpdateTest() throws MetadataDoesNotExistException {
-        ComponentParameter componentParameterUpdate = componentParameter;
+        ComponentParameter componentParameterUpdate = componentParameter11;
         String newValue = "new value";
         componentParameterUpdate.setValue(newValue);
         ComponentParameterConfiguration.getInstance().update(componentParameterUpdate);

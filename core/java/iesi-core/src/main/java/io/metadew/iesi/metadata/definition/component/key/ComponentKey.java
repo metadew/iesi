@@ -1,7 +1,9 @@
 package io.metadew.iesi.metadata.definition.component.key;
 
 import io.metadew.iesi.metadata.definition.key.MetadataKey;
+import lombok.EqualsAndHashCode;
 
+@EqualsAndHashCode(callSuper = false)
 public class ComponentKey extends MetadataKey {
     private String id;
     private long versionNumber;

@@ -3,7 +3,9 @@ package io.metadew.iesi.metadata.definition.component;
 
 import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.component.key.ComponentAttributeKey;
+import lombok.EqualsAndHashCode;
 
+@EqualsAndHashCode(callSuper = true)
 public class ComponentAttribute extends Metadata<ComponentAttributeKey> {
 
     private String value;

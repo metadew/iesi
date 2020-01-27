@@ -1,8 +1,8 @@
 package io.metadew.iesi.server.rest.controller;
 
 
-import io.metadew.iesi.metadata.configuration.exception.ImpersonationAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.exception.ImpersonationDoesNotExistException;
+import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
+import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.impersonation.ImpersonationConfiguration;
 import io.metadew.iesi.metadata.definition.impersonation.Impersonation;
 import io.metadew.iesi.metadata.definition.impersonation.key.ImpersonationKey;
@@ -67,8 +67,7 @@ public class ImpersonationController {
         try {
             impersonationConfiguration.insertImpersonation(impersonationDto.convertToEntity());
             return impersonatonDtoResourceAssembler.toResource(impersonationDto.convertToEntity());
-        } catch (ImpersonationAlreadyExistsException e) {
-            e.printStackTrace();
+        } catch (MetadataAlreadyExistsException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                     "Impersonation " + impersonationDto.getName() + " already exists");
         }
@@ -84,8 +83,7 @@ public class ImpersonationController {
                 halMultipleEmbeddedResource.add(linkTo(methodOn(ImpersonationController.class)
                         .get(impersonationDto.getName()))
                         .withRel(impersonationDto.getName()));
-            } catch (ImpersonationDoesNotExistException e) {
-                e.printStackTrace();
+            } catch (MetadataDoesNotExistException e) {
                 throw new DataNotFoundException(impersonationDto.getName());
             }
         }
@@ -104,8 +102,7 @@ public class ImpersonationController {
         try {
             impersonationConfiguration.updateImpersonation(impersonation.convertToEntity());
             return impersonatonDtoResourceAssembler.toResource(impersonation.convertToEntity());
-        } catch (ImpersonationDoesNotExistException e) {
-            e.printStackTrace();
+        } catch (MetadataDoesNotExistException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
 
@@ -126,7 +123,7 @@ public class ImpersonationController {
         try {
             impersonationConfiguration.deleteImpersonation(new ImpersonationKey(name));
             return ResponseEntity.status(HttpStatus.OK).build();
-        } catch (ImpersonationDoesNotExistException e) {
+        } catch (MetadataDoesNotExistException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }

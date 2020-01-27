@@ -2,9 +2,8 @@ package io.metadew.iesi.metadata.configuration.script;
 
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
+import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
-import io.metadew.iesi.metadata.configuration.script.exception.ScriptVersionAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.script.exception.ScriptVersionDoesNotExistException;
 import io.metadew.iesi.metadata.definition.script.ScriptVersion;
 import io.metadew.iesi.metadata.definition.script.key.ScriptVersionKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
@@ -92,7 +91,7 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
     public void delete(ScriptVersionKey scriptVersionKey) throws MetadataDoesNotExistException {
         LOGGER.trace(MessageFormat.format("Deleting ScriptVersion {0}.", scriptVersionKey.toString()));
         if (!exists(scriptVersionKey)) {
-            throw new ScriptVersionDoesNotExistException(MessageFormat.format("ScriptVersion {0} does not exists", scriptVersionKey.toString()));
+            throw new MetadataDoesNotExistException(scriptVersionKey);
         }
         String deleteStatement = deleteStatement(scriptVersionKey);
         getMetadataRepository().executeUpdate(deleteStatement);
@@ -143,11 +142,10 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
     }
 
     @Override
-    public void insert(ScriptVersion scriptVersion) throws ScriptVersionAlreadyExistsException {
+    public void insert(ScriptVersion scriptVersion) throws MetadataAlreadyExistsException {
         LOGGER.trace(MessageFormat.format("Inserting ScriptVersion {0}-{1}.", scriptVersion.getScriptId(), scriptVersion.getNumber()));
         if (exists(scriptVersion)) {
-            throw new ScriptVersionAlreadyExistsException(MessageFormat.format(
-                    "ScriptVersion {0}-{1} already exists", scriptVersion.getScriptId(), scriptVersion.getNumber()));
+            throw new MetadataAlreadyExistsException(scriptVersion);
         }
         getMetadataRepository().executeUpdate(getInsertStatement(scriptVersion));
     }

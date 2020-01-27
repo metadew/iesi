@@ -1,6 +1,6 @@
 package io.metadew.iesi.script.operation;
 
-import io.metadew.iesi.metadata.configuration.exception.ImpersonationDoesNotExistException;
+import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.impersonation.ImpersonationConfiguration;
 import io.metadew.iesi.metadata.definition.impersonation.Impersonation;
 
@@ -19,9 +19,9 @@ public class ImpersonationService {
         this.impersonationConfiguration = ImpersonationConfiguration.getInstance();
     }
 
-    public Map<String, String> getImpersontations(String impersonationName) throws ImpersonationDoesNotExistException {
+    public Map<String, String> getImpersontations(String impersonationName) throws MetadataDoesNotExistException {
         Map<String, String> impersonations = new HashMap<>();
-        Impersonation impersonation = impersonationConfiguration.getImpersonation(impersonationName).orElseThrow(() -> new ImpersonationDoesNotExistException(MessageFormat.format("Cannot find impersonation {0}", impersonationName)));
+        Impersonation impersonation = impersonationConfiguration.getImpersonation(impersonationName).orElseThrow(() -> new MetadataDoesNotExistException(MessageFormat.format("Cannot find impersonation {0}", impersonationName)));
         impersonation.getParameters().forEach(impersonationParameter -> impersonations.put(impersonationParameter.getConnection(), impersonationParameter.getImpersonatedConnection()));
         return impersonations;
     }

@@ -3,7 +3,8 @@ package io.metadew.iesi.metadata.repository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.configuration.environment.EnvironmentConfiguration;
-import io.metadew.iesi.metadata.configuration.exception.*;
+import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
+import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.impersonation.ImpersonationConfiguration;
 import io.metadew.iesi.metadata.definition.DataObject;
 import io.metadew.iesi.metadata.definition.Metadata;
@@ -130,12 +131,12 @@ public class ConnectivityMetadataRepository extends MetadataRepository {
                 impersonation.getName()));
         try {
             ImpersonationConfiguration.getInstance().insertImpersonation(impersonation);
-        } catch (ImpersonationAlreadyExistsException e) {
+        } catch (MetadataAlreadyExistsException e) {
             LOGGER.info(MessageFormat.format("Impersonation {0} already exists in connectivity repository. Updating impersonation {0} instead.",
                     impersonation.getName()));
             try {
                 ImpersonationConfiguration.getInstance().updateImpersonation(impersonation);
-            } catch (ImpersonationDoesNotExistException e1) {
+            } catch (MetadataDoesNotExistException e1) {
                 StringWriter stackTrace = new StringWriter();
                 e1.printStackTrace(new PrintWriter(stackTrace));
                 LOGGER.warn("exeption=" + e1.getMessage());

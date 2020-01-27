@@ -5,9 +5,9 @@ import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistExce
 import io.metadew.iesi.metadata.definition.script.ScriptVersion;
 import io.metadew.iesi.metadata.repository.DesignMetadataRepository;
 import io.metadew.iesi.metadata.repository.RepositoryTestSetup;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,15 +17,15 @@ import java.util.stream.Stream;
 import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class ScriptVersionConfigurationTest {
+class ScriptVersionConfigurationTest {
 
     private DesignMetadataRepository designMetadataRepository;
     private ScriptVersion scriptVersion1;
     private ScriptVersion scriptVersion2;
     private ScriptVersion scriptVersion3;
 
-    @Before
-    public void setup() {
+    @BeforeEach
+    void setup() {
         designMetadataRepository = RepositoryTestSetup.getDesignMetadataRepository();
 
         scriptVersion1 = new ScriptVersionBuilder("1", 1)
@@ -39,26 +39,26 @@ public class ScriptVersionConfigurationTest {
                 .build();
     }
 
-    @After
-    public void clearDatabase() {
+    @AfterEach
+    void clearDatabase() {
         // drop because the designMetadataRepository already is initialized so you can't recreate those tables
         // in the initializer unless you delete the tables after each test
         designMetadataRepository.dropAllTables();
     }
 
     @Test
-    public void scriptVersionNotExistTest(){
+    void scriptVersionNotExistTest(){
         assertFalse(ScriptVersionConfiguration.getInstance().exists(scriptVersion1));
     }
 
     @Test
-    public void scriptVersionExistsTest() throws MetadataAlreadyExistsException {
+    void scriptVersionExistsTest() throws MetadataAlreadyExistsException {
         ScriptVersionConfiguration.getInstance().insert(scriptVersion1);
         assertTrue(ScriptVersionConfiguration.getInstance().exists(scriptVersion1.getMetadataKey()));
     }
 
     @Test
-    public void scriptVersionInsertTest() throws MetadataAlreadyExistsException {
+    void scriptVersionInsertTest() throws MetadataAlreadyExistsException {
         assertEquals(0, ScriptVersionConfiguration.getInstance().getAll().size());
         ScriptVersionConfiguration.getInstance().insert(scriptVersion1);
 
@@ -67,7 +67,7 @@ public class ScriptVersionConfigurationTest {
         assertEquals(scriptVersion1, ScriptVersionConfiguration.getInstance().get(scriptVersion1.getMetadataKey()).get());
     }
     @Test
-    public void scriptVersionInsertMultipleTest() throws MetadataAlreadyExistsException {
+    void scriptVersionInsertMultipleTest() throws MetadataAlreadyExistsException {
         assertEquals(0, ScriptVersionConfiguration.getInstance().getAll().size());
         ScriptVersionConfiguration.getInstance().insert(scriptVersion1);
         ScriptVersionConfiguration.getInstance().insert(scriptVersion2);
@@ -80,13 +80,13 @@ public class ScriptVersionConfigurationTest {
     }
 
     @Test
-    public void scriptVersionInsertAlreadyExistsTest() throws MetadataAlreadyExistsException {
+    void scriptVersionInsertAlreadyExistsTest() throws MetadataAlreadyExistsException {
         ScriptVersionConfiguration.getInstance().insert(scriptVersion1);
         assertThrows(MetadataAlreadyExistsException.class,() -> ScriptVersionConfiguration.getInstance().insert(scriptVersion1));
     }
 
     @Test
-    public void scriptVersionDeleteTest() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
+    void scriptVersionDeleteTest() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
         ScriptVersionConfiguration.getInstance().insert(scriptVersion1);
 
         assertEquals(1, ScriptVersionConfiguration.getInstance().getAll().size());
@@ -95,7 +95,7 @@ public class ScriptVersionConfigurationTest {
     }
 
     @Test
-    public void scriptVersionDeleteMultipleTest() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
+    void scriptVersionDeleteMultipleTest() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
         ScriptVersionConfiguration.getInstance().insert(scriptVersion1);
         ScriptVersionConfiguration.getInstance().insert(scriptVersion2);
 
@@ -105,12 +105,12 @@ public class ScriptVersionConfigurationTest {
     }
 
     @Test
-    public void scriptVersionDeleteDoesNotExistTest() {
+    void scriptVersionDeleteDoesNotExistTest() {
         assertThrows(MetadataDoesNotExistException.class,() -> ScriptVersionConfiguration.getInstance().delete(scriptVersion1.getMetadataKey()));
     }
 
     @Test
-    public void scriptVersionGetTest() throws MetadataAlreadyExistsException {
+    void scriptVersionGetTest() throws MetadataAlreadyExistsException {
         ScriptVersionConfiguration.getInstance().insert(scriptVersion1);
 
         Optional<ScriptVersion> fetchedScriptVersion = ScriptVersionConfiguration.getInstance().get(scriptVersion1.getMetadataKey());
@@ -119,12 +119,12 @@ public class ScriptVersionConfigurationTest {
     }
 
     @Test
-    public void scriptVersionGetNotExistsTest(){
+    void scriptVersionGetNotExistsTest(){
         assertFalse(ScriptVersionConfiguration.getInstance().exists(scriptVersion1.getMetadataKey()));
     }
 
     @Test
-    public void scriptUpdateTest() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
+    void scriptUpdateTest() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
         ScriptVersionConfiguration.getInstance().insert(scriptVersion1);
         Optional<ScriptVersion> fetchedScriptVersion = ScriptVersionConfiguration.getInstance().get(scriptVersion1.getMetadataKey());
         assertTrue(fetchedScriptVersion.isPresent());
@@ -139,7 +139,7 @@ public class ScriptVersionConfigurationTest {
     }
 
     @Test
-    public void scriptGetAllVersionsOfScriptOnlyTest() throws MetadataAlreadyExistsException {
+    void scriptGetAllVersionsOfScriptOnlyTest() throws MetadataAlreadyExistsException {
         ScriptVersionConfiguration.getInstance().insert(scriptVersion1);
         ScriptVersionConfiguration.getInstance().insert(scriptVersion2);
 
@@ -148,7 +148,7 @@ public class ScriptVersionConfigurationTest {
         assertEquals(Stream.of(scriptVersion1, scriptVersion2).collect(Collectors.toList()), scriptVersions);
     }
     @Test
-    public void scriptGetAllVersionsOfScriptMultipleTest() throws MetadataAlreadyExistsException {
+    void scriptGetAllVersionsOfScriptMultipleTest() throws MetadataAlreadyExistsException {
         ScriptVersionConfiguration.getInstance().insert(scriptVersion1);
         ScriptVersionConfiguration.getInstance().insert(scriptVersion2);
         ScriptVersionConfiguration.getInstance().insert(scriptVersion3);

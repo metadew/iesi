@@ -5,9 +5,6 @@ import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.action.ActionConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
-import io.metadew.iesi.metadata.configuration.script.exception.ScriptAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.script.exception.ScriptDoesNotExistException;
-import io.metadew.iesi.metadata.configuration.script.exception.ScriptVersionDoesNotExistException;
 import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.metadata.definition.script.ScriptParameter;
@@ -148,20 +145,14 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
     public void delete(ScriptKey scriptKey) throws MetadataDoesNotExistException {
         LOGGER.trace(MessageFormat.format("Deleting script {0}-{1}.", scriptKey.toString()));
         if (!exists(scriptKey)) {
-            throw new ScriptDoesNotExistException(
-                    MessageFormat.format("Script {0}-{1} is not present in the repository so cannot be deleted",
-                            scriptKey.toString()));
+            throw new MetadataDoesNotExistException(scriptKey);
         }
         ScriptVersionKey scriptVersionKey = new ScriptVersionKey(scriptKey.getScriptId(), scriptKey.getScriptVersion());
-        try {
-            ScriptVersionConfiguration.getInstance().delete(scriptVersionKey);
-            ActionConfiguration.getInstance().deleteByScript(scriptKey);
-            ScriptParameterConfiguration.getInstance().deleteByScript(scriptKey);
-            getDeleteStatement(scriptKey)
-                    .ifPresent(getMetadataRepository()::executeUpdate);
-        } catch (ScriptVersionDoesNotExistException e) {
-            LOGGER.warn(e.getMessage() + ". Skipping");
-        }
+        ScriptVersionConfiguration.getInstance().delete(scriptVersionKey);
+        ActionConfiguration.getInstance().deleteByScript(scriptKey);
+        ScriptParameterConfiguration.getInstance().deleteByScript(scriptKey);
+        getDeleteStatement(scriptKey)
+                .ifPresent(getMetadataRepository()::executeUpdate);
     }
 
     public List<Script> getByName(String scriptName) {
@@ -189,7 +180,7 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
         }
     }
 
-    public void deleteByName(String scriptName) throws ScriptDoesNotExistException, SQLException {
+    public void deleteByName(String scriptName) {
         for (Script script : getByName(scriptName)) {
             try {
                 delete(script.getMetadataKey());
@@ -199,36 +190,22 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
         }
     }
 
-    public void insert(Script script) throws ScriptAlreadyExistsException {
+    public void insert(Script script) throws MetadataAlreadyExistsException {
         LOGGER.trace(MessageFormat.format("Inserting script {0}-{1}.", script.getName(), script.getVersion().getNumber()));
         if (exists(script)) {
-            throw new ScriptAlreadyExistsException(MessageFormat.format(
-                    "Script {0}-{1} already exists", script.getName(), script.getVersion().getNumber()));
+            throw new MetadataAlreadyExistsException(script);
         }
 
         // add Parameters
         for (ScriptParameter scriptParameter : script.getParameters()) {
-            try {
-                ScriptParameterConfiguration.getInstance().insert(scriptParameter);
-            } catch (MetadataAlreadyExistsException e) {
-                LOGGER.warn(e.getMessage() + ".skipping");
-            }
+            ScriptParameterConfiguration.getInstance().insert(scriptParameter);
         }
 
         // add version
-        try {
-            ScriptVersionConfiguration.getInstance().insert(script.getVersion());
-        } catch (MetadataAlreadyExistsException e) {
-            LOGGER.warn(e.getMessage() + ".skipping");
-        }
-
+        ScriptVersionConfiguration.getInstance().insert(script.getVersion());
         // add actions
         for (Action action : script.getActions()) {
-            try {
-                ActionConfiguration.getInstance().insert(action);
-            } catch (MetadataAlreadyExistsException e) {
-                LOGGER.warn(e.getMessage() + ". Skipping");
-            }
+            ActionConfiguration.getInstance().insert(action);
         }
 
         getMetadataRepository().executeUpdate(getInsertStatement(script));

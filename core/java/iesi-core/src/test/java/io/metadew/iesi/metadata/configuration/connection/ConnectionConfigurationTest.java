@@ -8,9 +8,9 @@ import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionParameterKey;
 import io.metadew.iesi.metadata.repository.ConnectivityMetadataRepository;
 import io.metadew.iesi.metadata.repository.RepositoryTestSetup;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,15 +21,15 @@ import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class ConnectionConfigurationTest {
+class ConnectionConfigurationTest {
 
-    ConnectionParameter connectionParameter;
-    Connection connection;
-    ConnectionKey connectionKey;
-    ConnectivityMetadataRepository connectivityMetadataRepository;
+    private ConnectionParameter connectionParameter;
+    private Connection connection;
+    private ConnectionKey connectionKey;
+    private ConnectivityMetadataRepository connectivityMetadataRepository;
 
-    @Before
-    public void setup() {
+    @BeforeEach
+    void setup() {
         connectivityMetadataRepository = RepositoryTestSetup.getConnectivityMetadataRepository();
         ConnectionParameterKey connectionParameterKey = new ConnectionParameterKey("connection",
                 "test", "connection parameter");
@@ -47,31 +47,31 @@ public class ConnectionConfigurationTest {
         }
     }
 
-    @After
-    public void clearDatabase() {
+    @AfterEach
+    void clearDatabase() {
         // drop because the designMetadataRepository already is initialized so you can't recreate those tables
         // in the initializer unless you delete the tables after each test
         connectivityMetadataRepository.dropAllTables();
     }
 
     @Test
-    public void connectionNotExistsTest() {
+    void connectionNotExistsTest() {
         ConnectionKey nonExistConnectionKey = new ConnectionKey("non_existing connection", "test");
         assertFalse(ConnectionConfiguration.getInstance().exists(nonExistConnectionKey));
     }
 
     @Test
-    public void connectionParameterExistsTest(){
+    void connectionParameterExistsTest(){
         assertTrue(ConnectionParameterConfiguration.getInstance().exists(connectionParameter.getMetadataKey()));
     }
 
     @Test
-    public void connectionExistsTest(){
+    void connectionExistsTest(){
         assertTrue(ConnectionConfiguration.getInstance().exists(connection.getMetadataKey()));
     }
 
     @Test
-    public void connectionInsertTest() throws MetadataAlreadyExistsException {
+    void connectionInsertTest() throws MetadataAlreadyExistsException {
         int nbBefore = ConnectionConfiguration.getInstance().getAll().size();
         Connection newConnection = createConnection();
         ConnectionConfiguration.getInstance().insert(newConnection);
@@ -80,23 +80,23 @@ public class ConnectionConfigurationTest {
     }
 
     @Test
-    public void connectionInsertAlreadyExistsTest() {
+    void connectionInsertAlreadyExistsTest() {
         assertThrows(MetadataAlreadyExistsException.class,() -> ConnectionConfiguration.getInstance().insert(connection));
     }
 
     @Test
-    public void connectionDeleteTest() throws MetadataDoesNotExistException {
+    void connectionDeleteTest() throws MetadataDoesNotExistException {
         ConnectionConfiguration.getInstance().delete(connection.getMetadataKey());
     }
 
     @Test
-    public void connectionDeleteDoesNotExistTest() throws MetadataDoesNotExistException {
+    void connectionDeleteDoesNotExistTest() throws MetadataDoesNotExistException {
         Connection deleteScript = createConnection();
         assertThrows(MetadataDoesNotExistException.class,() -> ConnectionConfiguration.getInstance().delete(deleteScript.getMetadataKey()));
     }
 
     @Test
-    public void connectionGetTest() {
+    void connectionGetTest() {
         Optional<Connection> newConnection = ConnectionConfiguration.getInstance().get(connection.getMetadataKey());
         assertTrue(newConnection.isPresent());
         assertEquals(connection.getMetadataKey().getName(), newConnection.get().getMetadataKey().getName());
@@ -104,14 +104,14 @@ public class ConnectionConfigurationTest {
     }
 
     @Test
-    public void connectionGetNotExistsTest(){
+    void connectionGetNotExistsTest(){
         ConnectionKey connectionParameterKey = new ConnectionKey("not exist", "test");
         assertFalse(ConnectionConfiguration.getInstance().exists(connectionParameterKey));
         assertFalse(ConnectionConfiguration.getInstance().get(connectionParameterKey).isPresent());
     }
 
     @Test
-    public void connectionUpdateTest() throws MetadataDoesNotExistException {
+    void connectionUpdateTest() throws MetadataDoesNotExistException {
         Connection connectionUpdate = connection;
         String newDescription = "new description";
         connectionUpdate.setDescription(newDescription);

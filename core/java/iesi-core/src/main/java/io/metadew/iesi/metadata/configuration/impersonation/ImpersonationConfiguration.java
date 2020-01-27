@@ -3,8 +3,6 @@ package io.metadew.iesi.metadata.configuration.impersonation;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.configuration.FrameworkObjectConfiguration;
 import io.metadew.iesi.metadata.configuration.Configuration;
-import io.metadew.iesi.metadata.configuration.exception.ImpersonationAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.exception.ImpersonationDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.ListObject;
@@ -62,7 +60,7 @@ public class ImpersonationConfiguration extends Configuration<Impersonation, Imp
     public void delete(ImpersonationKey metadataKey) throws MetadataDoesNotExistException {
         LOGGER.trace(MessageFormat.format("Deleting Impersonation {0}.", metadataKey.toString()));
         if (!exists(metadataKey)) {
-            throw new MetadataDoesNotExistException("Impersonation", metadataKey);
+            throw new MetadataDoesNotExistException(metadataKey);
         }
         List<String> deleteStatement = getDeleteStatement(metadataKey.getName());
         getMetadataRepository().executeBatch(deleteStatement);
@@ -72,8 +70,8 @@ public class ImpersonationConfiguration extends Configuration<Impersonation, Imp
     public void insert(Impersonation metadata) throws MetadataAlreadyExistsException {
         try{
             insertImpersonation(metadata);
-        }catch (ImpersonationAlreadyExistsException e){
-            throw new MetadataAlreadyExistsException("Impersonation", metadata.getMetadataKey());
+        }catch (MetadataAlreadyExistsException e){
+            throw new MetadataAlreadyExistsException(metadata.getMetadataKey());
         }
     }
 
@@ -162,15 +160,15 @@ public class ImpersonationConfiguration extends Configuration<Impersonation, Imp
         return crsEnvironment.size() == 1;
     }
 
-    public void deleteImpersonation(Impersonation impersonation) throws ImpersonationDoesNotExistException {
+    public void deleteImpersonation(Impersonation impersonation) throws MetadataDoesNotExistException {
         deleteImpersonation(impersonation.getMetadataKey());
     }
 
-    public void deleteImpersonation(ImpersonationKey impersonationKey) throws ImpersonationDoesNotExistException {
+    public void deleteImpersonation(ImpersonationKey impersonationKey) throws MetadataDoesNotExistException {
         //TODO fix logging
     	//frameworkExecution.getFrameworkLog().log(MessageFormat.format("Deleting impersonation {0}.", impersonation.getScriptName()), Level.TRACE);
         if (!exists(impersonationKey)) {
-            throw new ImpersonationDoesNotExistException(
+            throw new MetadataDoesNotExistException(
                     MessageFormat.format("Impersonation {0} is not present in the repository so cannot be updated",
                             impersonationKey.getName()));
 
@@ -193,11 +191,11 @@ public class ImpersonationConfiguration extends Configuration<Impersonation, Imp
         return queries;
     }
 
-    public void insertImpersonation(Impersonation impersonation) throws ImpersonationAlreadyExistsException {
+    public void insertImpersonation(Impersonation impersonation) throws MetadataAlreadyExistsException {
     	//TODO fix logging
     	//frameworkExecution.getFrameworkLog().log(MessageFormat.format("Inserting impersonation {0}.", impersonation.getScriptName()), Level.TRACE);
         if (exists(impersonation)) {
-            throw new ImpersonationAlreadyExistsException(MessageFormat.format("Impersonation {0} already exists", impersonation.getName()));
+            throw new MetadataAlreadyExistsException(MessageFormat.format("Impersonation {0} already exists", impersonation.getName()));
         }
 
         for (ImpersonationParameter impersonationParameter : impersonation.getParameters()){
@@ -213,19 +211,19 @@ public class ImpersonationConfiguration extends Configuration<Impersonation, Imp
         getMetadataRepository().executeUpdate(query);
     }
 
-    public void updateImpersonation(Impersonation impersonation) throws ImpersonationDoesNotExistException {
+    public void updateImpersonation(Impersonation impersonation) throws MetadataDoesNotExistException {
         //TODO fix logging
     	//frameworkExecution.getFrameworkLog().log(MessageFormat.format("Updating impersonation {0}.", impersonation.getScriptName()), Level.TRACE);
         try {
             deleteImpersonation(impersonation);
             insertImpersonation(impersonation);
-        } catch (ImpersonationDoesNotExistException e) {
+        } catch (MetadataDoesNotExistException e) {
             //TODO fix logging
         	//frameworkExecution.getFrameworkLog().log(MessageFormat.format("Impersonation {0} is not present in the repository so cannot be updated", impersonation.getScriptName()),Level.TRACE);
-            throw new ImpersonationDoesNotExistException(MessageFormat.format(
+            throw new MetadataDoesNotExistException(MessageFormat.format(
                     "Impersonation {0} is not present in the repository so cannot be updated", impersonation.getName()));
 
-        } catch (ImpersonationAlreadyExistsException e) {
+        } catch (MetadataAlreadyExistsException e) {
             //TODO fix logging
         	//frameworkExecution.getFrameworkLog().log(MessageFormat.format("Environment {0} is not deleted correctly during update. {1}", impersonation.getScriptName(), e.toString()),Level.WARN);
         }

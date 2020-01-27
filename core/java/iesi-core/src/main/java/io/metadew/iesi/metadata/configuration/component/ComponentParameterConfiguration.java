@@ -44,8 +44,8 @@ public class ComponentParameterConfiguration extends Configuration<ComponentPara
     public Optional<ComponentParameter> get(ComponentParameterKey componentParameterKey) {
         String queryComponentParameter = "select COMP_ID, COMP_PAR_NM, COMP_PAR_VAL from " + getMetadataRepository().getTableNameByLabel("ComponentParameters")
                 + " where COMP_ID = " + SQLTools.GetStringForSQL(componentParameterKey.getComponentKey().getId()) +
-                " and COMP_PAR_NM = " + SQLTools.GetStringForSQL(componentParameterKey.getComponentKey().getVersionNumber()) +
-                " and COMP_VRS_NB = " + SQLTools.GetStringForSQL(componentParameterKey.getParameterName()) + ";";
+                " and COMP_PAR_NM = " + SQLTools.GetStringForSQL(componentParameterKey.getParameterName()) +
+                " and COMP_VRS_NB = " + SQLTools.GetStringForSQL(componentParameterKey.getComponentKey().getVersionNumber()) + ";";
         CachedRowSet crsComponentParameter = getMetadataRepository().executeQuery(queryComponentParameter, "reader");
         try {
             if (crsComponentParameter.size()==0){
@@ -89,7 +89,7 @@ public class ComponentParameterConfiguration extends Configuration<ComponentPara
     public void delete(ComponentParameterKey metadataKey) throws MetadataDoesNotExistException {
         LOGGER.trace(MessageFormat.format("Deleting ComponentParameter {0}.", metadataKey.toString()));
         if (!exists(metadataKey)) {
-            throw new MetadataDoesNotExistException("ComponentParameter", metadataKey);
+            throw new MetadataDoesNotExistException(metadataKey);
         }
         String deleteStatement = deleteStatement(metadataKey);
         getMetadataRepository().executeUpdate(deleteStatement);
@@ -106,7 +106,7 @@ public class ComponentParameterConfiguration extends Configuration<ComponentPara
     public void insert(ComponentParameter metadata) throws MetadataAlreadyExistsException {
         LOGGER.trace(MessageFormat.format("Inserting ComponentParameter {0}.", metadata.getMetadataKey().toString()));
         if (exists(metadata.getMetadataKey())) {
-            throw new MetadataAlreadyExistsException("ComponentParameter", metadata.getMetadataKey());
+            throw new MetadataAlreadyExistsException(metadata.getMetadataKey());
         }
         String insertQuery = getInsertStatement(metadata);
         getMetadataRepository().executeUpdate(insertQuery);
@@ -144,8 +144,18 @@ public class ComponentParameterConfiguration extends Configuration<ComponentPara
     public void deleteByComponent(ComponentKey componentKey) {
         String deleteStatement = "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ComponentParameters") +
                 " WHERE COMP_ID = " + SQLTools.GetStringForSQL(componentKey.getId()) +
-                "AND COMP_VRS_NB = " + SQLTools.GetStringForSQL(componentKey.getVersionNumber()) + ";";
+                " AND COMP_VRS_NB = " + SQLTools.GetStringForSQL(componentKey.getVersionNumber()) + ";";
         getMetadataRepository().executeUpdate(deleteStatement);
+    }
+
+    public void deleteByComponentId(String componentId) {
+        String deleteStatement = "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ComponentParameters") +
+                " WHERE COMP_ID = " + SQLTools.GetStringForSQL(componentId) + ";";
+        getMetadataRepository().executeUpdate(deleteStatement);
+    }
+
+    public void deleteAll() {
+        getMetadataRepository().executeUpdate("DELETE FROM " + getMetadataRepository().getTableNameByLabel("ComponentParameters") + ";");
     }
 
 }

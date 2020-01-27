@@ -5,9 +5,9 @@ import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistExce
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
 import io.metadew.iesi.metadata.repository.ConnectivityMetadataRepository;
 import io.metadew.iesi.metadata.repository.RepositoryTestSetup;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
@@ -16,7 +16,7 @@ import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class ConnectionParameterConfigurationTest {
+class ConnectionParameterConfigurationTest {
 
     private ConnectionParameter connectionParameter11;
     private ConnectivityMetadataRepository connectivityMetadataRepository;
@@ -24,8 +24,8 @@ public class ConnectionParameterConfigurationTest {
     private ConnectionParameter connectionParameter2;
     private ConnectionParameter connectionParameter3;
 
-    @Before
-    public void setup() {
+    @BeforeEach
+    void setup() {
         this.connectivityMetadataRepository = RepositoryTestSetup.getConnectivityMetadataRepository();
         connectionParameter11 = new ConnectionParameterBuilder("connection1", "env1", "parameter name 1")
                 .value("parameter value")
@@ -41,26 +41,26 @@ public class ConnectionParameterConfigurationTest {
                 .build();
     }
 
-    @After
-    public void clearDatabase() {
+    @AfterEach
+    void clearDatabase() {
         // drop because the designMetadataRepository already is initialized so you can't recreate those tables
         // in the initializer unless you delete the tables after each test
         connectivityMetadataRepository.dropAllTables();
     }
 
     @Test
-    public void connectionParameterNotExistsTest() {
+    void connectionParameterNotExistsTest() {
         assertFalse(ConnectionParameterConfiguration.getInstance().exists(connectionParameter11));
     }
 
     @Test
-    public void connectionParameterExistsTest() throws MetadataAlreadyExistsException {
+    void connectionParameterExistsTest() throws MetadataAlreadyExistsException {
         ConnectionParameterConfiguration.getInstance().insert(connectionParameter11);
         assertTrue(ConnectionParameterConfiguration.getInstance().exists(connectionParameter11.getMetadataKey()));
     }
 
     @Test
-    public void connectionParameterInsertTest() throws MetadataAlreadyExistsException {
+    void connectionParameterInsertTest() throws MetadataAlreadyExistsException {
         assertEquals(0, ConnectionParameterConfiguration.getInstance().getAll().size());
 
         ConnectionParameterConfiguration.getInstance().insert(connectionParameter11);
@@ -73,13 +73,13 @@ public class ConnectionParameterConfigurationTest {
     }
 
     @Test
-    public void connectionParameterInsertAlreadyExistsTest() throws MetadataAlreadyExistsException {
+    void connectionParameterInsertAlreadyExistsTest() throws MetadataAlreadyExistsException {
         ConnectionParameterConfiguration.getInstance().insert(connectionParameter11);
         assertThrows(MetadataAlreadyExistsException.class,() -> ConnectionParameterConfiguration.getInstance().insert(connectionParameter11));
     }
 
     @Test
-    public void connectionParameterDeleteOnlyTest() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
+    void connectionParameterDeleteOnlyTest() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
         ConnectionParameterConfiguration.getInstance().insert(connectionParameter11);
         assertEquals(1, ConnectionParameterConfiguration.getInstance().getAll().size());
 
@@ -89,7 +89,7 @@ public class ConnectionParameterConfigurationTest {
     }
 
     @Test
-    public void connectionParameterDeleteMultiplePerConnectionEnvTest() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
+    void connectionParameterDeleteMultiplePerConnectionEnvTest() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
         ConnectionParameterConfiguration.getInstance().insert(connectionParameter11);
         ConnectionParameterConfiguration.getInstance().insert(connectionParameter12);
         assertEquals(2, ConnectionParameterConfiguration.getInstance().getAll().size());
@@ -103,7 +103,7 @@ public class ConnectionParameterConfigurationTest {
     }
 
     @Test
-    public void connectionParameterDeleteMultiplePerConnectionTest() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
+    void connectionParameterDeleteMultiplePerConnectionTest() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
         ConnectionParameterConfiguration.getInstance().insert(connectionParameter2);
         ConnectionParameterConfiguration.getInstance().insert(connectionParameter3);
         assertEquals(2, ConnectionParameterConfiguration.getInstance().getAll().size());
@@ -117,12 +117,12 @@ public class ConnectionParameterConfigurationTest {
     }
 
     @Test
-    public void connectionParameterDeleteDoesNotExistTest() {
+    void connectionParameterDeleteDoesNotExistTest() {
         assertThrows(MetadataDoesNotExistException.class,() -> ConnectionParameterConfiguration.getInstance().delete(connectionParameter11.getMetadataKey()));
     }
 
     @Test
-    public void connectionParameterGetOnlyTest() throws MetadataAlreadyExistsException {
+    void connectionParameterGetOnlyTest() throws MetadataAlreadyExistsException {
         ConnectionParameterConfiguration.getInstance().insert(connectionParameter11);
 
         Optional<ConnectionParameter> fetchedConnectionParameter = ConnectionParameterConfiguration.getInstance().get(connectionParameter11.getMetadataKey());
@@ -131,7 +131,7 @@ public class ConnectionParameterConfigurationTest {
     }
 
     @Test
-    public void connectionParameterGetMultiplePerConnectionEnvTest() throws MetadataAlreadyExistsException {
+    void connectionParameterGetMultiplePerConnectionEnvTest() throws MetadataAlreadyExistsException {
         ConnectionParameterConfiguration.getInstance().insert(connectionParameter11);
         ConnectionParameterConfiguration.getInstance().insert(connectionParameter12);
 
@@ -141,7 +141,7 @@ public class ConnectionParameterConfigurationTest {
     }
 
     @Test
-    public void connectionParameterGetMultiplePerConnectionTest() throws MetadataAlreadyExistsException {
+    void connectionParameterGetMultiplePerConnectionTest() throws MetadataAlreadyExistsException {
         ConnectionParameterConfiguration.getInstance().insert(connectionParameter2);
         ConnectionParameterConfiguration.getInstance().insert(connectionParameter3);
 
@@ -151,13 +151,13 @@ public class ConnectionParameterConfigurationTest {
     }
 
     @Test
-    public void connectionParameterGetNotExistsTest(){
+    void connectionParameterGetNotExistsTest(){
         Optional<ConnectionParameter> fetchedConnectionParameter = ConnectionParameterConfiguration.getInstance().get(connectionParameter2.getMetadataKey());
         assertFalse(fetchedConnectionParameter.isPresent());
     }
 
     @Test
-    public void connectionParameterUpdateSingleTest() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
+    void connectionParameterUpdateSingleTest() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
         ConnectionParameterConfiguration.getInstance().insert(connectionParameter11);
 
         Optional<ConnectionParameter> fetchedConnectionParameter = ConnectionParameterConfiguration.getInstance().get(connectionParameter11.getMetadataKey());
@@ -174,7 +174,7 @@ public class ConnectionParameterConfigurationTest {
     }
 
     @Test
-    public void connectionParameterUpdateMultiplePerConnectionEnvTest() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
+    void connectionParameterUpdateMultiplePerConnectionEnvTest() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
         ConnectionParameterConfiguration.getInstance().insert(connectionParameter11);
         ConnectionParameterConfiguration.getInstance().insert(connectionParameter12);
 
@@ -192,7 +192,7 @@ public class ConnectionParameterConfigurationTest {
     }
 
     @Test
-    public void connectionParameterUpdateMultiplePerConnectionTest() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
+    void connectionParameterUpdateMultiplePerConnectionTest() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
         ConnectionParameterConfiguration.getInstance().insert(connectionParameter2);
         ConnectionParameterConfiguration.getInstance().insert(connectionParameter3);
 

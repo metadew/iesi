@@ -68,8 +68,8 @@ public class ComponentJsonComponent {
                 componentAttributes.add(new ComponentAttribute(new ComponentAttributeKey(
                         componentId,
                         versionNumber,
-                        componentAttributeNode.get(ComponentAttributeJsonComponent.Field.NAME_KEY.value()).asText()),
-                        componentAttributeNode.get(ComponentAttributeJsonComponent.Field.ENVIRONMENT_KEY.value()).asText(),
+                        componentAttributeNode.get(ComponentAttributeJsonComponent.Field.NAME_KEY.value()).asText(),
+                        componentAttributeNode.get(ComponentAttributeJsonComponent.Field.ENVIRONMENT_KEY.value()).asText()),
                         componentAttributeNode.get(ComponentAttributeJsonComponent.Field.VALUE_KEY.value()).asText()));
             }
 
@@ -101,7 +101,7 @@ public class ComponentJsonComponent {
             ComponentVersion componentVersion = component.getVersion();
             jsonGenerator.writeObjectFieldStart(Field.VERSION_KEY.value());
             jsonGenerator.writeStartObject();
-            jsonGenerator.writeNumberField(ComponentVersionJsonComponent.Field.NUMBER_KEY.value(), componentVersion.getNumber());
+            jsonGenerator.writeNumberField(ComponentVersionJsonComponent.Field.NUMBER_KEY.value(), componentVersion.getMetadataKey().getComponentKey().getVersionNumber());
             jsonGenerator.writeStringField(ComponentVersionJsonComponent.Field.DESCRIPTION_KEY.value(), componentVersion.getDescription());
             jsonGenerator.writeEndObject();
 

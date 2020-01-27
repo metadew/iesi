@@ -39,8 +39,8 @@ public class ImpersonationParameterConfiguration extends Configuration<Impersona
     }
 
     @Override
-    public Optional<ImpersonationParameter> get(ImpersonationParameterKey metadataKey) {
-        return getImpersonationParameter(metadataKey.getImpersonationName(), metadataKey.getParameterName());
+    public Optional<ImpersonationParameter> get(ImpersonationParameterKey impersonationParameterKey) {
+        return getImpersonationParameter(impersonationParameterKey.getImpersonationKey().getName(), impersonationParameterKey.getParameterName());
     }
 
     @Override
@@ -67,7 +67,7 @@ public class ImpersonationParameterConfiguration extends Configuration<Impersona
     public void delete(ImpersonationParameterKey metadataKey) throws MetadataDoesNotExistException {
         LOGGER.trace(MessageFormat.format("Deleting ActionResultOutput {0}.", metadataKey.toString()));
         if (!exists(metadataKey)) {
-            throw new MetadataDoesNotExistException("ImpersonationParameter", metadataKey);
+            throw new MetadataDoesNotExistException(metadataKey);
         }
         String deleteStatement = deleteStatement(metadataKey);
         getMetadataRepository().executeUpdate(deleteStatement);
@@ -76,7 +76,7 @@ public class ImpersonationParameterConfiguration extends Configuration<Impersona
     private String deleteStatement(ImpersonationParameterKey metadataKey) {
         return "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ImpersonationParameters") +
                 " WHERE " +
-                " IMP_NM = " + SQLTools.GetStringForSQL(metadataKey.getImpersonationName()) + " AND " +
+                " IMP_NM = " + SQLTools.GetStringForSQL(metadataKey.getImpersonationKey().getName()) + " AND " +
                 " CONN_NM = " + SQLTools.GetStringForSQL(metadataKey.getParameterName()) + ";";
     }
 
@@ -84,9 +84,9 @@ public class ImpersonationParameterConfiguration extends Configuration<Impersona
     public void insert(ImpersonationParameter metadata) throws MetadataAlreadyExistsException {
         LOGGER.trace(MessageFormat.format("Inserting ImpersonationParameter {0}.", metadata.getMetadataKey().toString()));
         if (exists(metadata.getMetadataKey())) {
-            throw new MetadataAlreadyExistsException("ImpersonationParameter", metadata.getMetadataKey());
+            throw new MetadataAlreadyExistsException(metadata.getMetadataKey());
         }
-        String insertStatement = getInsertStatement(metadata.getMetadataKey().getImpersonationName(), metadata);
+        String insertStatement = getInsertStatement(metadata.getMetadataKey().getImpersonationKey().getName(), metadata);
         getMetadataRepository().executeUpdate(insertStatement);
     }
 

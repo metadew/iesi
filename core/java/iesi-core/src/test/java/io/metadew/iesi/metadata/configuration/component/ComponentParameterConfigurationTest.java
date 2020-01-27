@@ -6,18 +6,20 @@ import io.metadew.iesi.metadata.definition.component.ComponentParameter;
 import io.metadew.iesi.metadata.definition.component.key.ComponentParameterKey;
 import io.metadew.iesi.metadata.repository.DesignMetadataRepository;
 import io.metadew.iesi.metadata.repository.RepositoryTestSetup;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class ComponentParameterConfigurationTest {
+class ComponentParameterConfigurationTest {
 
     private DesignMetadataRepository designMetadataRepository;
     private ComponentParameter componentParameter11;
@@ -26,8 +28,8 @@ public class ComponentParameterConfigurationTest {
     private ComponentParameter componentParameter3;
 
 
-    @Before
-    public void setup() {
+    @BeforeEach
+    void setup() {
         this.designMetadataRepository = RepositoryTestSetup.getDesignMetadataRepository();
         componentParameter11 = new ComponentParameterBuilder("1", 1, "parameter name 1")
                 .value("value")
@@ -43,84 +45,304 @@ public class ComponentParameterConfigurationTest {
                 .build();
     }
 
-    @After
-    public void clearDatabase() {
+    @AfterEach
+    void clearDatabase() {
         // drop because the designMetadataRepository already is initialized so you can't recreate those tables
         // in the initializer unless you delete the tables after each test
         designMetadataRepository.dropAllTables();
     }
 
     @Test
-    public void componentParameterNotExistsTest() {
-        assertFalse(ComponentParameterConfiguration.getInstance().exists(nonExistComponentParameterKey));
+    void componentParameterNotExistsTest() {
+        assertFalse(ComponentParameterConfiguration.getInstance().exists(componentParameter11));
     }
 
     @Test
-    public void componentParameterExistsTest(){
+    void componentParameterExistsTest() throws MetadataAlreadyExistsException {
+        ComponentParameterConfiguration.getInstance().insert(componentParameter11);
         assertTrue(ComponentParameterConfiguration.getInstance().exists(componentParameter11.getMetadataKey()));
     }
 
     @Test
-    public void componentParameterInsertTest() throws MetadataAlreadyExistsException {
-        int nbBefore = ComponentParameterConfiguration.getInstance().getAll().size();
-        ComponentParameter newComponentParameter = createComponentParameter();
-        ComponentParameterConfiguration.getInstance().insert(newComponentParameter);
-        int nbAfter = ComponentParameterConfiguration.getInstance().getAll().size();
-        assertEquals(nbBefore, nbAfter - 1);
+    void componentParameterInsertOnlyTest() throws MetadataAlreadyExistsException {
+        assertEquals(0, ComponentParameterConfiguration.getInstance().getAll().size());
+
+        ComponentParameterConfiguration.getInstance().insert(componentParameter11);
+
+        assertEquals(1, ComponentParameterConfiguration.getInstance().getAll().size());
+        Optional<ComponentParameter> fetchedComponentParameter = ComponentParameterConfiguration.getInstance().get(componentParameter11.getMetadataKey());
+        assertTrue(fetchedComponentParameter.isPresent());
+        assertEquals(componentParameter11, fetchedComponentParameter.get());
     }
 
     @Test
-    public void componentParameterInsertAlreadyExistsTest() {
+    void componentParameterInsertMultipleTest() throws MetadataAlreadyExistsException {
+        assertEquals(0, ComponentParameterConfiguration.getInstance().getAll().size());
+
+        ComponentParameterConfiguration.getInstance().insert(componentParameter11);
+        ComponentParameterConfiguration.getInstance().insert(componentParameter12);
+        ComponentParameterConfiguration.getInstance().insert(componentParameter2);
+        ComponentParameterConfiguration.getInstance().insert(componentParameter3);
+
+        assertEquals(4, ComponentParameterConfiguration.getInstance().getAll().size());
+        Optional<ComponentParameter> fetchedComponentParameter11 = ComponentParameterConfiguration.getInstance().get(componentParameter11.getMetadataKey());
+        assertTrue(fetchedComponentParameter11.isPresent());
+        assertEquals(componentParameter11, fetchedComponentParameter11.get());
+
+        Optional<ComponentParameter> fetchedComponentParameter12 = ComponentParameterConfiguration.getInstance().get(componentParameter12.getMetadataKey());
+        assertTrue(fetchedComponentParameter12.isPresent());
+        assertEquals(componentParameter12, fetchedComponentParameter12.get());
+
+        Optional<ComponentParameter> fetchedComponentParameter2 = ComponentParameterConfiguration.getInstance().get(componentParameter2.getMetadataKey());
+        assertTrue(fetchedComponentParameter2.isPresent());
+        assertEquals(componentParameter2, fetchedComponentParameter2.get());
+
+        Optional<ComponentParameter> fetchedComponentParameter3 = ComponentParameterConfiguration.getInstance().get(componentParameter3.getMetadataKey());
+        assertTrue(fetchedComponentParameter3.isPresent());
+        assertEquals(componentParameter3, fetchedComponentParameter3.get());
+    }
+
+    @Test
+    void componentParameterInsertAlreadyExistsTest() throws MetadataAlreadyExistsException {
+        ComponentParameterConfiguration.getInstance().insert(componentParameter11);
         assertThrows(MetadataAlreadyExistsException.class,() -> ComponentParameterConfiguration.getInstance().insert(componentParameter11));
     }
 
     @Test
-    public void componentParameterDeleteTest() throws MetadataDoesNotExistException {
+    void componentParameterDeleteTest() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
+        ComponentParameterConfiguration.getInstance().insert(componentParameter11);
+        assertEquals(1, ComponentParameterConfiguration.getInstance().getAll().size());
+
         ComponentParameterConfiguration.getInstance().delete(componentParameter11.getMetadataKey());
+        assertEquals(0, ComponentParameterConfiguration.getInstance().getAll().size());
     }
 
     @Test
-    public void componentParameterDeleteDoesNotExistTest() throws MetadataDoesNotExistException {
-        ComponentParameter deleteComponentParameter = createComponentParameter();
+    void componentParameterDeleteMultipleTest() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
+        ComponentParameterConfiguration.getInstance().insert(componentParameter11);
+        ComponentParameterConfiguration.getInstance().insert(componentParameter12);
+        assertEquals(2, ComponentParameterConfiguration.getInstance().getAll().size());
+
+        ComponentParameterConfiguration.getInstance().delete(componentParameter11.getMetadataKey());
+        assertEquals(1, ComponentParameterConfiguration.getInstance().getAll().size());
+
+        Optional<ComponentParameter> fetchedComponentParameter12 = ComponentParameterConfiguration.getInstance().get(componentParameter12.getMetadataKey());
+        assertTrue(fetchedComponentParameter12.isPresent());
+        assertEquals(componentParameter12, fetchedComponentParameter12.get());
+    }
+
+    @Test
+    void componentParameterDeleteMultipleVersionsTest() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
+        ComponentParameterConfiguration.getInstance().insert(componentParameter11);
+        ComponentParameterConfiguration.getInstance().insert(componentParameter12);
+        ComponentParameterConfiguration.getInstance().insert(componentParameter2);
+        assertEquals(3, ComponentParameterConfiguration.getInstance().getAll().size());
+
+        ComponentParameterConfiguration.getInstance().delete(componentParameter11.getMetadataKey());
+        assertEquals(2, ComponentParameterConfiguration.getInstance().getAll().size());
+
+        Optional<ComponentParameter> fetchedComponentParameter12 = ComponentParameterConfiguration.getInstance().get(componentParameter12.getMetadataKey());
+        assertTrue(fetchedComponentParameter12.isPresent());
+        assertEquals(componentParameter12, fetchedComponentParameter12.get());
+
+        Optional<ComponentParameter> fetchedComponentParameter2 = ComponentParameterConfiguration.getInstance().get(componentParameter2.getMetadataKey());
+        assertTrue(fetchedComponentParameter2.isPresent());
+        assertEquals(componentParameter2, fetchedComponentParameter2.get());
+
+    }
+
+    @Test
+    void componentParameterDeleteMultipleVersionsAndIdTest() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
+        ComponentParameterConfiguration.getInstance().insert(componentParameter11);
+        ComponentParameterConfiguration.getInstance().insert(componentParameter12);
+        ComponentParameterConfiguration.getInstance().insert(componentParameter2);
+        ComponentParameterConfiguration.getInstance().insert(componentParameter3);
+        assertEquals(4, ComponentParameterConfiguration.getInstance().getAll().size());
+
+        ComponentParameterConfiguration.getInstance().delete(componentParameter2.getMetadataKey());
+        assertEquals(3, ComponentParameterConfiguration.getInstance().getAll().size());
+
+        Optional<ComponentParameter> fetchedComponentParameter11 = ComponentParameterConfiguration.getInstance().get(componentParameter11.getMetadataKey());
+        assertTrue(fetchedComponentParameter11.isPresent());
+        assertEquals(componentParameter11, fetchedComponentParameter11.get());
+
+        Optional<ComponentParameter> fetchedComponentParameter12 = ComponentParameterConfiguration.getInstance().get(componentParameter12.getMetadataKey());
+        assertTrue(fetchedComponentParameter12.isPresent());
+        assertEquals(componentParameter12, fetchedComponentParameter12.get());
+
+        Optional<ComponentParameter> fetchedComponentParameter3 = ComponentParameterConfiguration.getInstance().get(componentParameter3.getMetadataKey());
+        assertTrue(fetchedComponentParameter3.isPresent());
+        assertEquals(componentParameter3, fetchedComponentParameter3.get());
+    }
+
+    @Test
+    void componentParameterDeleteDoesNotExistTest() {
         assertThrows(MetadataDoesNotExistException.class,() ->
-                ComponentParameterConfiguration.getInstance().delete(deleteComponentParameter.getMetadataKey()));
+                ComponentParameterConfiguration.getInstance().delete(componentParameter11.getMetadataKey()));
     }
 
     @Test
-    public void componentParameterGetTest() {
-        Optional<ComponentParameter> newComponentParameter = ComponentParameterConfiguration.getInstance().get(componentParameter11.getMetadataKey());
-        assertTrue(newComponentParameter.isPresent());
-        assertEquals(componentParameter11.getMetadataKey().getComponentId(),
-                newComponentParameter.get().getMetadataKey().getComponentId());
-        assertEquals(componentParameter11.getMetadataKey().getComponentVersionNb(),
-                newComponentParameter.get().getMetadataKey().getComponentVersionNb());
-        assertEquals(componentParameter11.getMetadataKey().getParameterName(),
-                newComponentParameter.get().getMetadataKey().getParameterName());
-        assertEquals(componentParameter11.getValue(), newComponentParameter.get().getValue());
+    void componentParameterGetNotExistsTest(){
+        assertFalse(ComponentParameterConfiguration.getInstance().exists(componentParameter11));
+        assertFalse(ComponentParameterConfiguration.getInstance().get(componentParameter2.getMetadataKey()).isPresent());
     }
 
     @Test
-    public void componentParameterGetNotExistsTest(){
-        ComponentParameterKey componentParameterKey = new ComponentParameterKey("3", 1,
-                "parameter name not exist");
-        assertFalse(ComponentParameterConfiguration.getInstance().exists(componentParameterKey));
-        assertFalse(ComponentParameterConfiguration.getInstance().get(componentParameterKey).isPresent());
+    void componentParameterUpdateTest() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
+        ComponentParameterConfiguration.getInstance().insert(componentParameter11);
+
+        Optional<ComponentParameter> fetchedComponentParameter11 = ComponentParameterConfiguration.getInstance().get(componentParameter11.getMetadataKey());
+        assertTrue(fetchedComponentParameter11.isPresent());
+        assertEquals("value", fetchedComponentParameter11.get().getValue());
+
+        componentParameter11.setValue("dummy");
+        ComponentParameterConfiguration.getInstance().update(componentParameter11);
+
+        fetchedComponentParameter11 = ComponentParameterConfiguration.getInstance().get(componentParameter11.getMetadataKey());
+        assertTrue(fetchedComponentParameter11.isPresent());
+        assertEquals("dummy", fetchedComponentParameter11.get().getValue());
     }
 
     @Test
-    public void componentParameterUpdateTest() throws MetadataDoesNotExistException {
-        ComponentParameter componentParameterUpdate = componentParameter11;
-        String newValue = "new value";
-        componentParameterUpdate.setValue(newValue);
-        ComponentParameterConfiguration.getInstance().update(componentParameterUpdate);
-        Optional<ComponentParameter> checkComponentParameter = ComponentParameterConfiguration.getInstance().get(componentParameterUpdate.getMetadataKey());
-        assertTrue(checkComponentParameter.isPresent() && checkComponentParameter.get().getValue().equals(newValue));
+    void componentParameterUpdateMultipleVersionsTest() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
+        ComponentParameterConfiguration.getInstance().insert(componentParameter11);
+        ComponentParameterConfiguration.getInstance().insert(componentParameter12);
+
+        Optional<ComponentParameter> fetchedComponentParameter11 = ComponentParameterConfiguration.getInstance().get(componentParameter11.getMetadataKey());
+        assertTrue(fetchedComponentParameter11.isPresent());
+        assertEquals("value", fetchedComponentParameter11.get().getValue());
+
+        Optional<ComponentParameter> fetchedComponentParameter12 = ComponentParameterConfiguration.getInstance().get(componentParameter12.getMetadataKey());
+        assertTrue(fetchedComponentParameter12.isPresent());
+        assertEquals("value", fetchedComponentParameter12.get().getValue());
+
+        componentParameter11.setValue("dummy");
+        ComponentParameterConfiguration.getInstance().update(componentParameter11);
+
+        fetchedComponentParameter11 = ComponentParameterConfiguration.getInstance().get(componentParameter11.getMetadataKey());
+        assertTrue(fetchedComponentParameter11.isPresent());
+        assertEquals("dummy", fetchedComponentParameter11.get().getValue());
+
+        fetchedComponentParameter12 = ComponentParameterConfiguration.getInstance().get(componentParameter12.getMetadataKey());
+        assertTrue(fetchedComponentParameter12.isPresent());
+        assertEquals("value", fetchedComponentParameter12.get().getValue());
     }
 
-    private ComponentParameter createComponentParameter(){
-        ComponentParameter parameter = new ComponentParameter(new ComponentParameterKey("new",
-                1, "create parameter"),
-                "parameter of component");
-        return parameter;
+    @Test
+    void componentParameterUpdateMultipleTest() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
+        ComponentParameterConfiguration.getInstance().insert(componentParameter11);
+        ComponentParameterConfiguration.getInstance().insert(componentParameter12);
+        ComponentParameterConfiguration.getInstance().insert(componentParameter2);
+        ComponentParameterConfiguration.getInstance().insert(componentParameter3);
+
+        Optional<ComponentParameter> fetchedComponentParameter11 = ComponentParameterConfiguration.getInstance().get(componentParameter11.getMetadataKey());
+        assertTrue(fetchedComponentParameter11.isPresent());
+        assertEquals("value", fetchedComponentParameter11.get().getValue());
+
+        Optional<ComponentParameter> fetchedComponentParameter12 = ComponentParameterConfiguration.getInstance().get(componentParameter12.getMetadataKey());
+        assertTrue(fetchedComponentParameter12.isPresent());
+        assertEquals("value", fetchedComponentParameter12.get().getValue());
+
+        Optional<ComponentParameter> fetchedComponentParameter2 = ComponentParameterConfiguration.getInstance().get(componentParameter2.getMetadataKey());
+        assertTrue(fetchedComponentParameter2.isPresent());
+        assertEquals("value", fetchedComponentParameter2.get().getValue());
+
+        Optional<ComponentParameter> fetchedComponentParameter3 = ComponentParameterConfiguration.getInstance().get(componentParameter3.getMetadataKey());
+        assertTrue(fetchedComponentParameter3.isPresent());
+        assertEquals("value", fetchedComponentParameter3.get().getValue());
+
+        componentParameter2.setValue("dummy");
+        ComponentParameterConfiguration.getInstance().update(componentParameter2);
+
+        fetchedComponentParameter11 = ComponentParameterConfiguration.getInstance().get(componentParameter11.getMetadataKey());
+        assertTrue(fetchedComponentParameter11.isPresent());
+        assertEquals("value", fetchedComponentParameter11.get().getValue());
+
+        fetchedComponentParameter12 = ComponentParameterConfiguration.getInstance().get(componentParameter12.getMetadataKey());
+        assertTrue(fetchedComponentParameter12.isPresent());
+        assertEquals("value", fetchedComponentParameter12.get().getValue());
+
+        fetchedComponentParameter2 = ComponentParameterConfiguration.getInstance().get(componentParameter2.getMetadataKey());
+        assertTrue(fetchedComponentParameter2.isPresent());
+        assertEquals("dummy", fetchedComponentParameter2.get().getValue());
+
+        fetchedComponentParameter3 = ComponentParameterConfiguration.getInstance().get(componentParameter3.getMetadataKey());
+        assertTrue(fetchedComponentParameter3.isPresent());
+        assertEquals("value", fetchedComponentParameter3.get().getValue());
+    }
+
+    @Test
+    void componentParameterGetByComponentTest() throws MetadataAlreadyExistsException {
+        ComponentParameterConfiguration.getInstance().insert(componentParameter11);
+        ComponentParameterConfiguration.getInstance().insert(componentParameter12);
+        ComponentParameterConfiguration.getInstance().insert(componentParameter2);
+        ComponentParameterConfiguration.getInstance().insert(componentParameter3);
+
+        assertEquals(Stream.of(componentParameter11, componentParameter12).collect(Collectors.toList()),
+                ComponentParameterConfiguration.getInstance().getByComponent(componentParameter11.getMetadataKey().getComponentKey()));
+    }
+
+    @Test
+    void componentParameterGetByComponent2Test() throws MetadataAlreadyExistsException {
+        ComponentParameterConfiguration.getInstance().insert(componentParameter11);
+        ComponentParameterConfiguration.getInstance().insert(componentParameter12);
+        ComponentParameterConfiguration.getInstance().insert(componentParameter2);
+        ComponentParameterConfiguration.getInstance().insert(componentParameter3);
+
+        assertEquals(Stream.of(componentParameter2).collect(Collectors.toList()),
+                ComponentParameterConfiguration.getInstance().getByComponent(componentParameter2.getMetadataKey().getComponentKey()));
+    }
+
+    @Test
+    void componentParameterGetByComponent3Test() throws MetadataAlreadyExistsException {
+        ComponentParameterConfiguration.getInstance().insert(componentParameter11);
+        ComponentParameterConfiguration.getInstance().insert(componentParameter12);
+        ComponentParameterConfiguration.getInstance().insert(componentParameter2);
+        ComponentParameterConfiguration.getInstance().insert(componentParameter3);
+
+        assertEquals(Stream.of(componentParameter3).collect(Collectors.toList()),
+                ComponentParameterConfiguration.getInstance().getByComponent(componentParameter3.getMetadataKey().getComponentKey()));
+    }
+
+    @Test
+    void componentParameterDeleteByComponentTest() throws MetadataAlreadyExistsException {
+        ComponentParameterConfiguration.getInstance().insert(componentParameter11);
+        ComponentParameterConfiguration.getInstance().insert(componentParameter12);
+        ComponentParameterConfiguration.getInstance().insert(componentParameter2);
+        ComponentParameterConfiguration.getInstance().insert(componentParameter3);
+
+        assertEquals(4, ComponentParameterConfiguration.getInstance().getAll().size());
+
+        ComponentParameterConfiguration.getInstance().deleteByComponent(componentParameter11.getMetadataKey().getComponentKey());
+
+        assertEquals(2, ComponentParameterConfiguration.getInstance().getAll().size());
+    }
+
+    @Test
+    void componentParameterDeleteByComponent2Test() throws MetadataAlreadyExistsException {
+        ComponentParameterConfiguration.getInstance().insert(componentParameter11);
+        ComponentParameterConfiguration.getInstance().insert(componentParameter12);
+        ComponentParameterConfiguration.getInstance().insert(componentParameter2);
+        ComponentParameterConfiguration.getInstance().insert(componentParameter3);
+
+        assertEquals(4, ComponentParameterConfiguration.getInstance().getAll().size());
+
+        ComponentParameterConfiguration.getInstance().deleteByComponent(componentParameter2.getMetadataKey().getComponentKey());
+
+        assertEquals(3, ComponentParameterConfiguration.getInstance().getAll().size());
+    }
+
+    @Test
+    void componentParameterDeleteByComponent3Test() throws MetadataAlreadyExistsException {
+        ComponentParameterConfiguration.getInstance().insert(componentParameter11);
+        ComponentParameterConfiguration.getInstance().insert(componentParameter12);
+        ComponentParameterConfiguration.getInstance().insert(componentParameter2);
+        ComponentParameterConfiguration.getInstance().insert(componentParameter3);
+
+        assertEquals(4, ComponentParameterConfiguration.getInstance().getAll().size());
+
+        ComponentParameterConfiguration.getInstance().deleteByComponent(componentParameter3.getMetadataKey().getComponentKey());
+
+        assertEquals(3, ComponentParameterConfiguration.getInstance().getAll().size());
     }
 }

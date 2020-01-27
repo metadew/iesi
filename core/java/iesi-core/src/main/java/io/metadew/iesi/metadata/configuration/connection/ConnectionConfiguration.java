@@ -2,8 +2,6 @@ package io.metadew.iesi.metadata.configuration.connection;
 
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
-import io.metadew.iesi.metadata.configuration.connection.exception.ConnectionAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.connection.exception.ConnectionDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.connection.Connection;
@@ -172,7 +170,7 @@ public class ConnectionConfiguration extends Configuration<Connection, Connectio
     public void delete(ConnectionKey metadataKey) throws MetadataDoesNotExistException {
         LOGGER.trace(MessageFormat.format("Deleting Connection {0}.", metadataKey.toString()));
         if (!exists(metadataKey)) {
-            throw new ConnectionDoesNotExistException(MessageFormat.format(
+            throw new MetadataDoesNotExistException(MessageFormat.format(
                     "Connection {0} does not exists", metadataKey.toString()));
         }
         List<String> deleteStatements = getDeleteQuery(metadataKey.getName(), metadataKey.getEnvironmentKey().getName());
@@ -223,7 +221,7 @@ public class ConnectionConfiguration extends Configuration<Connection, Connectio
         // frameworkInstance.getFrameworkLog().log(MessageFormat.format("Inserting connection {0}-{1}.", connection.getScriptName(), connection.getEnvironment()), Level.TRACE);
         LOGGER.trace(MessageFormat.format("Inserting Connection {0}.", connection.getMetadataKey().toString()));
         if (exists(connection.getMetadataKey())) {
-            throw new ConnectionAlreadyExistsException(MessageFormat.format(
+            throw new MetadataAlreadyExistsException(MessageFormat.format(
                     "Connection {0} already exists", connection.getMetadataKey().toString()));
         }
         List<String> insertQuery = getInsertQuery(connection);
@@ -312,13 +310,11 @@ public class ConnectionConfiguration extends Configuration<Connection, Connectio
         return queries;
     }
 
-    public void deleteByName(String connectionName) throws ConnectionDoesNotExistException {
+    public void deleteByName(String connectionName) throws MetadataDoesNotExistException {
         // TODO fix logging
         //frameworkExecution.getFrameworkLog().log(MessageFormat.format("Deleting connection {0}.", connectionName), Level.TRACE);
         if (!exists(connectionName)) {
-            throw new ConnectionDoesNotExistException(
-                    MessageFormat.format("Connection {0} is not present in the repository so cannot be updated",
-                            connectionName));
+            throw new MetadataDoesNotExistException(MessageFormat.format("Connection {0} is not present in the repository so cannot be updated", connectionName));
 
         }
         List<String> deleteQuery = getDeleteByNameQuery(connectionName);

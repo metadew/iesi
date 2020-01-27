@@ -2,13 +2,11 @@ package io.metadew.iesi.metadata.configuration.action;
 
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
-import io.metadew.iesi.metadata.configuration.action.exception.ActionParameterAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.action.key.ActionKey;
 import io.metadew.iesi.metadata.definition.action.key.ActionParameterKey;
-import io.metadew.iesi.metadata.definition.script.ScriptVersion;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.logging.log4j.LogManager;
@@ -92,7 +90,7 @@ public class ActionParameterConfiguration extends Configuration<ActionParameter,
     public void delete(ActionParameterKey metadataKey) throws MetadataDoesNotExistException {
         LOGGER.trace(MessageFormat.format("Deleting ActionParameter {0}.", metadataKey.toString()));
         if (!exists(metadataKey)) {
-            throw new MetadataDoesNotExistException("ActionParameter", metadataKey);
+            throw new MetadataDoesNotExistException(metadataKey);
         }
         String deleteStatement = deleteStatement(metadataKey);
         getMetadataRepository().executeUpdate(deleteStatement);
@@ -110,8 +108,7 @@ public class ActionParameterConfiguration extends Configuration<ActionParameter,
     public void insert(ActionParameter actionParameter) throws MetadataAlreadyExistsException {
         LOGGER.trace(MessageFormat.format("Inserting ActionParameter {0}.", actionParameter.toString()));
         if (exists(actionParameter)) {
-            throw new ActionParameterAlreadyExistsException(MessageFormat.format(
-                    "ActionParameter {0} already exists", actionParameter.toString()));
+            throw new MetadataAlreadyExistsException(actionParameter);
         }
         String insertQuery = "INSERT INTO " + getMetadataRepository().getTableNameByLabel("ActionParameters") +
                 " (SCRIPT_ID, SCRIPT_VRS_NB, ACTION_ID, ACTION_PAR_NM, ACTION_PAR_VAL) VALUES (" +

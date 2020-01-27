@@ -1,8 +1,8 @@
 package io.metadew.iesi.metadata.repository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.metadew.iesi.metadata.configuration.exception.FeatureAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.exception.FeatureDoesNotExistException;
+import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
+import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.feature.FeatureConfiguration;
 import io.metadew.iesi.metadata.definition.DataObject;
 import io.metadew.iesi.metadata.definition.MetadataObject;
@@ -68,10 +68,10 @@ public class CatalogMetadataRepository extends MetadataRepository {
         FeatureConfiguration featureConfiguration = new FeatureConfiguration();
         try {
             featureConfiguration.insertFeature(feature);
-        } catch (FeatureAlreadyExistsException e) {
+        } catch (MetadataAlreadyExistsException e) {
             try {
                 featureConfiguration.updateFeature(feature);
-            } catch (FeatureDoesNotExistException ex) {
+            } catch (MetadataDoesNotExistException ex) {
                 throw new MetadataRepositorySaveException(ex);
             }
         }

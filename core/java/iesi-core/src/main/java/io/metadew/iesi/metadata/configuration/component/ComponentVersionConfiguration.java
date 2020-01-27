@@ -39,8 +39,29 @@ public class ComponentVersionConfiguration extends Configuration<ComponentVersio
     }
 
     @Override
-    public Optional<ComponentVersion> get(ComponentVersionKey metadataKey) {
-        return getComponentVersion(metadataKey.getComponentId(), metadataKey.getComponentVersionNumber());
+    public Optional<ComponentVersion> get(ComponentVersionKey componentVersionKey) {
+        String queryComponentVersion = "select COMP_ID, COMP_VRS_NB, COMP_VRS_DSC from " + getMetadataRepository().getTableNameByLabel("ComponentVersions")
+                + " where COMP_ID = " + SQLTools.GetStringForSQL(componentVersionKey.getComponentKey().getId()) +
+                " and COMP_VRS_NB = " + SQLTools.GetStringForSQL(componentVersionKey.getComponentKey().getVersionNumber());
+        CachedRowSet crsComponentVersion = getMetadataRepository().executeQuery(queryComponentVersion, "reader");
+        try {
+            if (crsComponentVersion.size() == 0) {
+                return Optional.empty();
+            } else if (crsComponentVersion.size() > 1) {
+                LOGGER.warn(MessageFormat.format("component.version=found multiple descriptions for component {0}. Returning first implementation.", componentVersionKey.toString()));
+            }
+            crsComponentVersion.next();
+            String description = crsComponentVersion.getString("COMP_VRS_DSC");
+            ComponentVersion componentVersion = new ComponentVersion(componentVersionKey, description);
+            crsComponentVersion.close();
+            return Optional.of(componentVersion);
+        } catch (Exception e) {
+            StringWriter stackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTrace));
+            LOGGER.warn("exeption=" + e.getMessage());
+            LOGGER.info("exception.stacktrace=" + stackTrace.toString());
+        }
+        return Optional.empty();
     }
 
     @Override
@@ -68,7 +89,7 @@ public class ComponentVersionConfiguration extends Configuration<ComponentVersio
     public void delete(ComponentVersionKey metadataKey) throws MetadataDoesNotExistException {
         LOGGER.trace(MessageFormat.format("Deleting ComponentVersion {0}.", metadataKey.toString()));
         if (!exists(metadataKey)) {
-            throw new MetadataDoesNotExistException("ComponentVersion", metadataKey);
+            throw new MetadataDoesNotExistException(metadataKey);
         }
         String deleteStatement = deleteStatement(metadataKey);
         getMetadataRepository().executeUpdate(deleteStatement);
@@ -76,17 +97,15 @@ public class ComponentVersionConfiguration extends Configuration<ComponentVersio
 
     private String deleteStatement(ComponentVersionKey componentVersionKey){
         return "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ComponentVersions") +
-                " WHERE COMP_ID = " +
-                SQLTools.GetStringForSQL(componentVersionKey.getComponentId()) +
-                " AND COMP_VRS_NB = " +
-                SQLTools.GetStringForSQL(componentVersionKey.getComponentVersionNumber()) + ";";
+                " WHERE COMP_ID = " + SQLTools.GetStringForSQL(componentVersionKey.getComponentKey().getId()) +
+                " AND COMP_VRS_NB = " + SQLTools.GetStringForSQL(componentVersionKey.getComponentKey().getVersionNumber()) + ";";
     }
 
     @Override
     public void insert(ComponentVersion metadata) throws MetadataAlreadyExistsException {
         LOGGER.trace(MessageFormat.format("Inserting ComponentVersion {0}.", metadata.getMetadataKey().toString()));
         if (exists(metadata.getMetadataKey())) {
-            throw new MetadataAlreadyExistsException("ComponentVersion", metadata.getMetadataKey());
+            throw new MetadataAlreadyExistsException(metadata.getMetadataKey());
         }
         String insertQuery = getInsertStatement(metadata);
         getMetadataRepository().executeUpdate(insertQuery);
@@ -94,47 +113,61 @@ public class ComponentVersionConfiguration extends Configuration<ComponentVersio
 
     // Insert
     public String getInsertStatement(ComponentVersion componentVersion) {
-        String sql = "";
-
-        sql += "INSERT INTO " + getMetadataRepository().getTableNameByLabel("ComponentVersions");
-        sql += " (COMP_ID, COMP_VRS_NB, COMP_VRS_DSC) ";
-        sql += "VALUES ";
-        sql += "(";
-        sql += SQLTools.GetStringForSQL(componentVersion.getMetadataKey().getComponentId());
-        sql += ",";
-        sql += SQLTools.GetStringForSQL(componentVersion.getMetadataKey().getComponentVersionNumber());
-        sql += ",";
-        sql += SQLTools.GetStringForSQL(componentVersion.getDescription());
-        sql += ")";
-        sql += ";";
-
-        return sql;
+        return "INSERT INTO " + getMetadataRepository().getTableNameByLabel("ComponentVersions")
+                + " (COMP_ID, COMP_VRS_NB, COMP_VRS_DSC) VALUES (" +
+                SQLTools.GetStringForSQL(componentVersion.getMetadataKey().getComponentKey().getId()) + "," +
+                SQLTools.GetStringForSQL(componentVersion.getMetadataKey().getComponentKey().getVersionNumber()) + "," +
+                SQLTools.GetStringForSQL(componentVersion.getDescription()) + ");";
     }
 
+    public List<ComponentVersion> getByComponent(String componentId) {
+        try {
+            List<ComponentVersion> componentVersions= new ArrayList<>();
+            String query = "select * from "
+                    + getMetadataRepository().getTableNameByLabel("ComponentVersions") +
+                    " WHERE COMP_ID = " + SQLTools.GetStringForSQL(componentId) + ";";
+            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
+            while (cachedRowSet.next()) {
+                ComponentVersionKey componentVersionKey = new ComponentVersionKey(
+                        cachedRowSet.getString("COMP_ID"),
+                        cachedRowSet.getLong("COMP_VRS_NB"));
+                componentVersions.add(new ComponentVersion(
+                        componentVersionKey,
+                        cachedRowSet.getString("COMP_VRS_DSC")));
+            }
+            return componentVersions;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-    Optional<ComponentVersion> getComponentVersion(String componentId, long componentVersionNumber) {
-        String queryComponentVersion = "select COMP_ID, COMP_VRS_NB, COMP_VRS_DSC from " + getMetadataRepository().getTableNameByLabel("ComponentVersions")
-                + " where COMP_ID = " + SQLTools.GetStringForSQL(componentId) + " and COMP_VRS_NB = " + SQLTools.GetStringForSQL(componentVersionNumber);
+    public void deleteByComponentId(String componentId) {
+        String deleteStatement = "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ComponentVersions") +
+                " WHERE COMP_ID = " + SQLTools.GetStringForSQL(componentId) + ";";
+        getMetadataRepository().executeUpdate(deleteStatement);
+    }
+
+    public long getLatestVersionByComponentId(String componentId) throws MetadataDoesNotExistException {
+        String queryComponentVersion = "select max(COMP_VRS_NB) as \"MAX_VRS_NB\" from "
+                + getMetadataRepository().getTableNameByLabel("ComponentVersions") +
+                " where COMP_ID = " + SQLTools.GetStringForSQL(componentId) + ";";
         CachedRowSet crsComponentVersion = getMetadataRepository().executeQuery(queryComponentVersion, "reader");
         try {
             if (crsComponentVersion.size() == 0) {
-                return Optional.empty();
-            } else if (crsComponentVersion.size() > 1) {
-                LOGGER.warn(MessageFormat.format("component.version=found multiple descriptions for component id {0} version {1}. " + "Returning first implementation.", componentId, componentVersionNumber));
+                throw new MetadataDoesNotExistException(MessageFormat.format("Component with ID {0} does not exeist, cannot find latest version", componentId));
+            } else {
+                crsComponentVersion.next();
+                long componentVersionNumber = crsComponentVersion.getLong("MAX_VRS_NB");
+                crsComponentVersion.close();
+                return componentVersionNumber;
             }
-            crsComponentVersion.next();
-            ComponentVersionKey componentVersionKey = new ComponentVersionKey(componentId, componentVersionNumber);
-            String description = crsComponentVersion.getString("COMP_VRS_DSC");
-            ComponentVersion componentVersion = new ComponentVersion(componentVersionKey, description);
-            crsComponentVersion.close();
-            return Optional.of(componentVersion);
-        } catch (Exception e) {
-            StringWriter stackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(stackTrace));
-            LOGGER.warn("exeption=" + e.getMessage());
-            LOGGER.info("exception.stacktrace=" + stackTrace.toString());
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
-        return Optional.empty();
+    }
+
+    public void deleteAll() {
+        getMetadataRepository().executeUpdate("DELETE FROM " + getMetadataRepository().getTableNameByLabel("ComponentVersions") + ";");
     }
 
 }

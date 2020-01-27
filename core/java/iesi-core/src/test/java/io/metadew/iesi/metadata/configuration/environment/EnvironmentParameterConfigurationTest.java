@@ -5,9 +5,9 @@ import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistExce
 import io.metadew.iesi.metadata.definition.environment.EnvironmentParameter;
 import io.metadew.iesi.metadata.repository.ConnectivityMetadataRepository;
 import io.metadew.iesi.metadata.repository.RepositoryTestSetup;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -18,15 +18,15 @@ import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class EnvironmentParameterConfigurationTest {
+class EnvironmentParameterConfigurationTest {
     
     private EnvironmentParameter environmentParameter11;
     private ConnectivityMetadataRepository connectivityMetadataRepository;
     private EnvironmentParameter environmentParameter12;
     private EnvironmentParameter environmentParameter2;
 
-    @Before
-    public void setup() {
+    @BeforeEach
+    void setup() {
         connectivityMetadataRepository = RepositoryTestSetup.getConnectivityMetadataRepository();
         environmentParameter11 = new EnvironmentParameterBuilder("env1", "parameter name 1")
                 .value("parameter value")
@@ -39,32 +39,32 @@ public class EnvironmentParameterConfigurationTest {
                 .build();
     }
 
-    @After
-    public void clearDatabase() {
+    @AfterEach
+    void clearDatabase() {
         // drop because the designMetadataRepository already is initialized so you can't recreate those tables
         // in the initializer unless you delete the tables after each test
         connectivityMetadataRepository.dropAllTables();
     }
 
     @Test
-    public void environmentParameterNotExistsOnlyTest() {
+    void environmentParameterNotExistsOnlyTest() {
         assertFalse(EnvironmentParameterConfiguration.getInstance().exists(environmentParameter11));
     }
 
     @Test
-    public void environmentParameterNotExistsSimilarEnvNameTest() throws MetadataAlreadyExistsException {
+    void environmentParameterNotExistsSimilarEnvNameTest() throws MetadataAlreadyExistsException {
         EnvironmentParameterConfiguration.getInstance().insert(environmentParameter12);
         assertFalse(EnvironmentParameterConfiguration.getInstance().exists(environmentParameter11));
     }
 
     @Test
-    public void environmentParameterExistsTest() throws MetadataAlreadyExistsException {
+    void environmentParameterExistsTest() throws MetadataAlreadyExistsException {
         EnvironmentParameterConfiguration.getInstance().insert(environmentParameter11);
         assertTrue(EnvironmentParameterConfiguration.getInstance().exists(environmentParameter11.getMetadataKey()));
     }
 
     @Test
-    public void environmentParameterInsertOnlyTest() throws MetadataAlreadyExistsException {
+    void environmentParameterInsertOnlyTest() throws MetadataAlreadyExistsException {
         assertEquals(0, EnvironmentParameterConfiguration.getInstance().getAll().size());
 
         EnvironmentParameterConfiguration.getInstance().insert(environmentParameter11);
@@ -76,7 +76,7 @@ public class EnvironmentParameterConfigurationTest {
     }
 
     @Test
-    public void environmentParameterInsertMultipleTest() throws MetadataAlreadyExistsException {
+    void environmentParameterInsertMultipleTest() throws MetadataAlreadyExistsException {
         assertEquals(0, EnvironmentParameterConfiguration.getInstance().getAll().size());
 
         EnvironmentParameterConfiguration.getInstance().insert(environmentParameter11);
@@ -96,24 +96,24 @@ public class EnvironmentParameterConfigurationTest {
     }
 
     @Test
-    public void environmentParameterInsertAlreadyExistsTest() throws MetadataAlreadyExistsException {
+    void environmentParameterInsertAlreadyExistsTest() throws MetadataAlreadyExistsException {
         EnvironmentParameterConfiguration.getInstance().insert(environmentParameter11);
         assertThrows(MetadataAlreadyExistsException.class,() -> EnvironmentParameterConfiguration.getInstance().insert(environmentParameter11));
     }
 
     @Test
-    public void environmentParameterDeleteTest() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
+    void environmentParameterDeleteTest() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
         EnvironmentParameterConfiguration.getInstance().insert(environmentParameter11);
         EnvironmentParameterConfiguration.getInstance().delete(environmentParameter11.getMetadataKey());
     }
 
     @Test
-    public void environmentParameterDeleteDoesNotExistTest() {
+    void environmentParameterDeleteDoesNotExistTest() {
         assertThrows(MetadataDoesNotExistException.class,() -> EnvironmentParameterConfiguration.getInstance().delete(environmentParameter2.getMetadataKey()));
     }
 
     @Test
-    public void environmentParameterGetTest() throws MetadataAlreadyExistsException {
+    void environmentParameterGetTest() throws MetadataAlreadyExistsException {
         assertEquals(0, EnvironmentParameterConfiguration.getInstance().getAll().size());
 
         EnvironmentParameterConfiguration.getInstance().insert(environmentParameter11);
@@ -133,7 +133,7 @@ public class EnvironmentParameterConfigurationTest {
     }
 
     @Test
-    public void environmentParameterGetAllTest() throws MetadataAlreadyExistsException {
+    void environmentParameterGetAllTest() throws MetadataAlreadyExistsException {
         assertEquals(0, EnvironmentParameterConfiguration.getInstance().getAll().size());
 
         EnvironmentParameterConfiguration.getInstance().insert(environmentParameter11);
@@ -144,12 +144,12 @@ public class EnvironmentParameterConfigurationTest {
     }
 
     @Test
-    public void environmentParameterGetNotExistsTest(){
+    void environmentParameterGetNotExistsTest(){
         assertFalse(EnvironmentParameterConfiguration.getInstance().exists(environmentParameter11));
     }
 
     @Test
-    public void environmentParameterUpdateOnlyTest() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
+    void environmentParameterUpdateOnlyTest() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
         EnvironmentParameterConfiguration.getInstance().insert(environmentParameter11);
         Optional<EnvironmentParameter> fetchedEnvironmentParameter11 = EnvironmentParameterConfiguration.getInstance().get(environmentParameter11.getMetadataKey());
         assertTrue(fetchedEnvironmentParameter11.isPresent());
@@ -164,7 +164,7 @@ public class EnvironmentParameterConfigurationTest {
     }
 
     @Test
-    public void environmentParameterUpdateMultipleTest() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
+    void environmentParameterUpdateMultipleTest() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
         EnvironmentParameterConfiguration.getInstance().insert(environmentParameter11);
         EnvironmentParameterConfiguration.getInstance().insert(environmentParameter12);
 

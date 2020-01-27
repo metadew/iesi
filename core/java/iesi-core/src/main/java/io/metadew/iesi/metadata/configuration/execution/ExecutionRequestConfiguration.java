@@ -4,8 +4,6 @@ import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
-import io.metadew.iesi.metadata.configuration.execution.exception.ExecutionRequestAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.execution.exception.ExecutionRequestDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.execution.script.ScriptExecutionRequestConfiguration;
 import io.metadew.iesi.metadata.definition.execution.AuthenticatedExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequest;
@@ -296,7 +294,7 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
     public void delete(ExecutionRequestKey executionRequestKey) throws MetadataDoesNotExistException {
         LOGGER.trace(MessageFormat.format("Deleting ExecutionRequest {0}.", executionRequestKey.toString()));
         if (!exists(executionRequestKey)) {
-            throw new ExecutionRequestDoesNotExistException(MessageFormat.format(
+            throw new MetadataDoesNotExistException(MessageFormat.format(
                     "ExecutionRequest {0} does not exists", executionRequestKey.toString()));
         }
         ScriptExecutionRequestConfiguration.getInstance().deleteByExecutionKey(executionRequestKey);
@@ -322,8 +320,7 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
     public void insert(ExecutionRequest executionRequest) throws MetadataAlreadyExistsException {
         LOGGER.trace(MessageFormat.format("Inserting ExecutionRequest {0}.", executionRequest.toString()));
         if (exists(executionRequest.getMetadataKey())) {
-            throw new ExecutionRequestAlreadyExistsException(MessageFormat.format(
-                    "ExecutionRequest {0} already exists", executionRequest.getMetadataKey().toString()));
+            throw new MetadataAlreadyExistsException(executionRequest);
         }
         for (ScriptExecutionRequest scriptExecutionRequest : executionRequest.getScriptExecutionRequests()) {
             ScriptExecutionRequestConfiguration.getInstance().insert(scriptExecutionRequest);
@@ -367,9 +364,9 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
     }
 
     @Override
-    public void update(ExecutionRequest executionRequest) throws ExecutionRequestDoesNotExistException {
+    public void update(ExecutionRequest executionRequest) throws MetadataDoesNotExistException {
         if (!exists(executionRequest.getMetadataKey())) {
-            throw new ExecutionRequestDoesNotExistException(MessageFormat.format(
+            throw new MetadataDoesNotExistException(MessageFormat.format(
                     "ExecutionRequest {0} already exists", executionRequest.getMetadataKey().toString()));
         }
         List<String> updateStatement = updateStatement(executionRequest);

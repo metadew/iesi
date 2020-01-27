@@ -2,8 +2,6 @@ package io.metadew.iesi.metadata.configuration.action;
 
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
-import io.metadew.iesi.metadata.configuration.action.exception.ActionAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.action.exception.ActionDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.action.Action;
@@ -28,8 +26,8 @@ public class ActionConfiguration extends Configuration<Action, ActionKey> {
     private final static Logger LOGGER = LogManager.getLogger();
     private static ActionConfiguration INSTANCE;
 
-    public synchronized static ActionConfiguration getInstance(){
-        if (INSTANCE == null){
+    public synchronized static ActionConfiguration getInstance() {
+        if (INSTANCE == null) {
             INSTANCE = new ActionConfiguration();
         }
         return INSTANCE;
@@ -38,7 +36,7 @@ public class ActionConfiguration extends Configuration<Action, ActionKey> {
     private ActionConfiguration() {
     }
 
-    public void init(MetadataRepository metadataRepository){
+    public void init(MetadataRepository metadataRepository) {
         setMetadataRepository(metadataRepository);
         ActionParameterConfiguration.getInstance().init(metadataRepository);
     }
@@ -89,8 +87,7 @@ public class ActionConfiguration extends Configuration<Action, ActionKey> {
     @Override
     public List<Action> getAll() {
         List<Action> actions = new ArrayList<>();
-        String query = "select * from " + getMetadataRepository().getTableNameByLabel("Actions")
-                + " order by ACTION_NM ASC";
+        String query = "select * from " + getMetadataRepository().getTableNameByLabel("Actions");
         CachedRowSet crs = getMetadataRepository().executeQuery(query, "reader");
         try {
             while (crs.next()) {
@@ -125,7 +122,7 @@ public class ActionConfiguration extends Configuration<Action, ActionKey> {
     public void delete(ActionKey actionKey) throws MetadataDoesNotExistException {
         LOGGER.trace(MessageFormat.format("Deleting Action {0}.", actionKey.toString()));
         if (!exists(actionKey)) {
-            throw new ActionDoesNotExistException(MessageFormat.format("Action {0}", actionKey.toString()));
+            throw new MetadataDoesNotExistException(actionKey);
         }
         ActionParameterConfiguration.getInstance().deleteByAction(actionKey);
         getMetadataRepository().executeUpdate(deleteStatement(actionKey));
@@ -135,15 +132,10 @@ public class ActionConfiguration extends Configuration<Action, ActionKey> {
     public void insert(Action action) throws MetadataAlreadyExistsException {
         LOGGER.trace(MessageFormat.format("Inserting action {0}.", action.toString()));
         if (exists(action)) {
-            throw new ActionAlreadyExistsException(MessageFormat.format(
-                    "Action {0} already exists", action.toString()));
+            throw new MetadataAlreadyExistsException(action);
         }
         for (ActionParameter actionParameter : action.getParameters()) {
-            try {
-                ActionParameterConfiguration.getInstance().insert(actionParameter);
-            } catch (MetadataAlreadyExistsException e) {
-                LOGGER.warn(e.getMessage() + ". Skipping");
-            }
+            ActionParameterConfiguration.getInstance().insert(actionParameter);
         }
         String query = "INSERT INTO " + getMetadataRepository()
                 .getTableNameByLabel("Actions") +
@@ -167,7 +159,7 @@ public class ActionConfiguration extends Configuration<Action, ActionKey> {
     public boolean exists(ActionKey actionKey) {
         String query = "select SCRIPT_ID, SCRIPT_VRS_NB, ACTION_ID from "
                 + getMetadataRepository().getTableNameByLabel("Actions")
-                + " where ACTION_ID = " + SQLTools.GetStringForSQL(actionKey.getActionId()) +
+                + " WHERE ACTION_ID = " + SQLTools.GetStringForSQL(actionKey.getActionId()) +
                 " AND SCRIPT_ID = " + SQLTools.GetStringForSQL(actionKey.getScriptKey().getScriptId()) +
                 " AND SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(actionKey.getScriptKey().getScriptVersion()) + ";";
         CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
@@ -181,18 +173,12 @@ public class ActionConfiguration extends Configuration<Action, ActionKey> {
                 " AND ACTION_ID = " + SQLTools.GetStringForSQL(actionKey.getActionId()) + ";";
     }
 
-    public void deleteActionsFromScript(ScriptKey scriptKey) {
-        ActionParameterConfiguration.getInstance().deleteByScript(scriptKey);
-        getMetadataRepository().executeUpdate("DELETE FROM " + getMetadataRepository().getTableNameByLabel("Actions") +
-                " WHERE SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptKey.getScriptId()) +
-                " AND SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(scriptKey.getScriptVersion()) + ";");
-    }
-
     public List<Action> getByScript(ScriptKey scriptKey) {
         List<Action> actions = new ArrayList<>();
         String query = "select * from " + getMetadataRepository().getTableNameByLabel("Actions") +
                 " where SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptKey.getScriptId()) +
-                " and SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(scriptKey.getScriptVersion()) + ";";
+                " and SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(scriptKey.getScriptVersion())
+                + " order by ACTION_NB ASC" + ";";
         CachedRowSet crs = getMetadataRepository().executeQuery(query, "reader");
         try {
             while (crs.next()) {

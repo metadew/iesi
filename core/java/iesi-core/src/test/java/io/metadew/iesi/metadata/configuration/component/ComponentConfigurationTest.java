@@ -1,24 +1,17 @@
 package io.metadew.iesi.metadata.configuration.component;
 
-import io.metadew.iesi.metadata.configuration.exception.ComponentAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.component.Component;
 import io.metadew.iesi.metadata.definition.component.ComponentAttribute;
 import io.metadew.iesi.metadata.definition.component.ComponentParameter;
 import io.metadew.iesi.metadata.definition.component.ComponentVersion;
-import io.metadew.iesi.metadata.definition.component.key.ComponentAttributeKey;
-import io.metadew.iesi.metadata.definition.component.key.ComponentKey;
-import io.metadew.iesi.metadata.definition.component.key.ComponentParameterKey;
-import io.metadew.iesi.metadata.definition.component.key.ComponentVersionKey;
 import io.metadew.iesi.metadata.repository.DesignMetadataRepository;
 import io.metadew.iesi.metadata.repository.RepositoryTestSetup;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 import static junit.framework.TestCase.assertEquals;
@@ -26,134 +19,267 @@ import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class ComponentConfigurationTest {
+class ComponentConfigurationTest {
 
-    DesignMetadataRepository designMetadataRepository;
-    Component component;
-    ComponentVersion componentVersion;
-    ComponentParameter componentParameter;
-    ComponentParameterKey componentParameterKey;
-    ComponentAttribute componentAttribute;
-    ComponentAttributeKey componentAttributeKey;
+    private DesignMetadataRepository designMetadataRepository;
+    private Component component1;
+    private Component component2;
+    private Component component3;
 
 
-    @Before
-    public void setup() {
-        this.designMetadataRepository = RepositoryTestSetup.getDesignMetadataRepository();
-        String componentId = "1";
-        long versionNb = 1;
-        String componentParameterName = "component parameter";
-        String attributeName = "component attribute";
-        componentParameterKey = new ComponentParameterKey(componentId, versionNb, componentParameterName);
-        componentParameter = new ComponentParameter(componentParameterKey, "parameter value");
-        List<ComponentParameter> componentParameters = new ArrayList<>();
-        componentParameters.add(componentParameter);
-        componentAttributeKey = new ComponentAttributeKey(componentId, versionNb, attributeName);
-        componentAttribute = new ComponentAttribute(componentAttributeKey, "environment", "component attribute");
-        List<ComponentAttribute> componentAttributes = new ArrayList<>();
-        componentAttributes.add(componentAttribute);
-        componentVersion = new ComponentVersion(new ComponentVersionKey("1", 1),
-                "version of component");
-        component = new Component(new ComponentKey("1", 1), "component", "testComponentExist",
-                "component for testing", componentVersion,
-                componentParameters, componentAttributes);
-        try{
-            ComponentConfiguration.getInstance().insert(component);
-        }catch(MetadataAlreadyExistsException ignored){
-            // if component already is in database do nothing
-        }
+    @BeforeEach
+    void setup() {
+        component1 = new ComponentBuilder("1", 1)
+                .numberOfAttributes(2)
+                .numberOfParameters(3)
+                .description("test")
+                .name("comp1")
+                .build();
+        component2 = new ComponentBuilder("1", 2)
+                .numberOfAttributes(2)
+                .numberOfParameters(3)
+                .name("comp1")
+                .description("test")
+                .build();
+        component3 = new ComponentBuilder("2", 1)
+                .numberOfAttributes(2)
+                .numberOfParameters(3)
+                .name("comp2")
+                .description("test")
+                .build();
+
+        designMetadataRepository = RepositoryTestSetup.getDesignMetadataRepository();
     }
 
-    @After
-    public void clearDatabase() {
+    @AfterEach
+    void clearDatabase() {
         // drop because the designMetadataRepository already is initialized so you can't recreate those tables
         // in the initializer unless you delete the tables after each test
         designMetadataRepository.dropAllTables();
     }
 
     @Test
-    public void componentNotExistsTest() {
-        ComponentKey nonExistComponentKey = new ComponentKey("non_exist", 1);
-        assertFalse(ComponentConfiguration.getInstance().exists(nonExistComponentKey));
+    void componentNotExistsTest() {
+        assertFalse(ComponentConfiguration.getInstance().exists(component1));
     }
 
     @Test
-    public void componentParameterExistsTest(){
-        assertTrue(ComponentParameterConfiguration.getInstance().exists(componentParameter.getMetadataKey()));
+    void componentExistsTest() throws MetadataAlreadyExistsException {
+        ComponentConfiguration.getInstance().insert(component1);
+        assertTrue(ComponentConfiguration.getInstance().exists(component1.getMetadataKey()));
     }
 
     @Test
-    public void componentExistsTest(){
-        assertTrue(ComponentConfiguration.getInstance().exists(component.getMetadataKey()));
+    void componentInsertTest() throws MetadataAlreadyExistsException {
+        ComponentConfiguration.getInstance().insert(component1);
+        assertEquals(1, ComponentConfiguration.getInstance().getAll().size());
+
+        Optional<Component> fetchedComponentVersion1 = ComponentConfiguration.getInstance().get(component1.getMetadataKey());
+        assertTrue(fetchedComponentVersion1.isPresent());
+        assertEquals(component1, fetchedComponentVersion1.get());
+
     }
 
     @Test
-    public void componentInsertTest() throws ComponentAlreadyExistsException {
-        int nbBefore = ComponentConfiguration.getInstance().getAll().size();
-        Component newComponent = createComponent();
-        ComponentConfiguration.getInstance().insert(newComponent);
-        int nbAfter = ComponentConfiguration.getInstance().getAll().size();
-        assertEquals(nbBefore, nbAfter - 1);
+    void componentInsertAlreadyExistsTest() throws MetadataAlreadyExistsException {
+        ComponentConfiguration.getInstance().insert(component1);
+        assertThrows(MetadataAlreadyExistsException.class,() -> ComponentConfiguration.getInstance().insert(component1));
     }
 
     @Test
-    public void componentInsertAlreadyExistsTest() {
-        assertThrows(ComponentAlreadyExistsException.class,() -> ComponentConfiguration.getInstance().insert(component));
+    void componentDeleteTest() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
+        ComponentConfiguration.getInstance().insert(component1);
+        ComponentConfiguration.getInstance().insert(component2);
+        ComponentConfiguration.getInstance().insert(component3);
+        System.out.println(ComponentConfiguration.getInstance().getAll());
+        assertEquals(3, ComponentConfiguration.getInstance().getAll().size());
+
+        ComponentConfiguration.getInstance().delete(component1.getMetadataKey());
+
+        assertEquals(2, ComponentConfiguration.getInstance().getAll().size());
+        assertEquals(6, ComponentParameterConfiguration.getInstance().getAll().size());
+        assertEquals(2, ComponentVersionConfiguration.getInstance().getAll().size());
+        assertEquals(4, ComponentAttributeConfiguration.getInstance().getAll().size());
+
+        Optional<Component> fetchedComponentVersion2 = ComponentConfiguration.getInstance().get(component2.getMetadataKey());
+        assertTrue(fetchedComponentVersion2.isPresent());
+        assertEquals(component2, fetchedComponentVersion2.get());
+        Optional<Component> fetchedComponentVersion3 = ComponentConfiguration.getInstance().get(component3.getMetadataKey());
+        assertTrue(fetchedComponentVersion3.isPresent());
+        assertEquals(component3, fetchedComponentVersion3.get());
     }
 
     @Test
-    public void componentDeleteTest() throws MetadataDoesNotExistException {
-        ComponentConfiguration.getInstance().delete(component.getMetadataKey());
+    void componentDeleteDoesNotExistTest() {
+        assertThrows(MetadataDoesNotExistException.class,() ->
+                ComponentConfiguration.getInstance().delete(component1.getMetadataKey()));
     }
 
     @Test
-    public void componentDeleteDoesNotExistTest() throws MetadataDoesNotExistException {
-        Component deleteComponent = createComponent();
-        assertThrows(MetadataDoesNotExistException.class,() -> ComponentConfiguration.getInstance().delete(deleteComponent.getMetadataKey()));
+    void componentGetNotExistsTest(){
+        assertFalse(ComponentConfiguration.getInstance().exists(component1));
+        assertFalse(ComponentConfiguration.getInstance().get(component1.getMetadataKey()).isPresent());
     }
 
     @Test
-    public void componentGetTest() {
-        Optional<Component> newComponent = ComponentConfiguration.getInstance().get(component.getMetadataKey());
-        assertTrue(newComponent.isPresent());
-        assertEquals(component.getMetadataKey().getId(), newComponent.get().getMetadataKey().getId());;
+    void componentUpdate1Test() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
+        ComponentConfiguration.getInstance().insert(component1);
+        ComponentConfiguration.getInstance().insert(component2);
+        ComponentConfiguration.getInstance().insert(component3);
+
+        Optional<Component> fetchedComponentVersion1 = ComponentConfiguration.getInstance().get(component1.getMetadataKey());
+        assertTrue(fetchedComponentVersion1.isPresent());
+        assertEquals("test", fetchedComponentVersion1.get().getDescription());
+        Optional<Component> fetchedComponentVersion2 = ComponentConfiguration.getInstance().get(component2.getMetadataKey());
+        assertTrue(fetchedComponentVersion2.isPresent());
+        assertEquals("test", fetchedComponentVersion2.get().getDescription());
+        Optional<Component> fetchedComponentVersion3 = ComponentConfiguration.getInstance().get(component3.getMetadataKey());
+        assertTrue(fetchedComponentVersion3.isPresent());
+        assertEquals("test", fetchedComponentVersion3.get().getDescription());
+
+        component1.setDescription("dummy");
+        ComponentConfiguration.getInstance().update(component1);
+
+        fetchedComponentVersion1 = ComponentConfiguration.getInstance().get(component1.getMetadataKey());
+        assertTrue(fetchedComponentVersion1.isPresent());
+        assertEquals("dummy", fetchedComponentVersion1.get().getDescription());
+        fetchedComponentVersion2 = ComponentConfiguration.getInstance().get(component2.getMetadataKey());
+        assertTrue(fetchedComponentVersion2.isPresent());
+        assertEquals("dummy", fetchedComponentVersion2.get().getDescription());
+        fetchedComponentVersion3 = ComponentConfiguration.getInstance().get(component3.getMetadataKey());
+        assertTrue(fetchedComponentVersion3.isPresent());
+        assertEquals("test", fetchedComponentVersion3.get().getDescription());
     }
 
     @Test
-    public void componentGetNotExistsTest(){
-        ComponentKey componentKey = new ComponentKey("3", 1);
-        assertFalse(ComponentConfiguration.getInstance().exists(componentKey));
-        assertFalse(ComponentConfiguration.getInstance().get(componentKey).isPresent());
+    void componentUpdate2Test() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
+        ComponentConfiguration.getInstance().insert(component1);
+        ComponentConfiguration.getInstance().insert(component2);
+        ComponentConfiguration.getInstance().insert(component3);
+
+        Optional<Component> fetchedComponentVersion1 = ComponentConfiguration.getInstance().get(component1.getMetadataKey());
+        assertTrue(fetchedComponentVersion1.isPresent());
+        assertEquals("test", fetchedComponentVersion1.get().getDescription());
+        Optional<Component> fetchedComponentVersion2 = ComponentConfiguration.getInstance().get(component2.getMetadataKey());
+        assertTrue(fetchedComponentVersion2.isPresent());
+        assertEquals("test", fetchedComponentVersion2.get().getDescription());
+        Optional<Component> fetchedComponentVersion3 = ComponentConfiguration.getInstance().get(component3.getMetadataKey());
+        assertTrue(fetchedComponentVersion3.isPresent());
+        assertEquals("test", fetchedComponentVersion3.get().getDescription());
+
+        component2.setDescription("dummy");
+        ComponentConfiguration.getInstance().update(component2);
+
+        fetchedComponentVersion1 = ComponentConfiguration.getInstance().get(component1.getMetadataKey());
+        assertTrue(fetchedComponentVersion1.isPresent());
+        assertEquals("dummy", fetchedComponentVersion1.get().getDescription());
+        fetchedComponentVersion2 = ComponentConfiguration.getInstance().get(component2.getMetadataKey());
+        assertTrue(fetchedComponentVersion2.isPresent());
+        assertEquals("dummy", fetchedComponentVersion2.get().getDescription());
+        fetchedComponentVersion3 = ComponentConfiguration.getInstance().get(component3.getMetadataKey());
+        assertTrue(fetchedComponentVersion3.isPresent());
+        assertEquals("test", fetchedComponentVersion3.get().getDescription());
     }
 
     @Test
-    public void componentUpdateTest() throws MetadataDoesNotExistException {
-        Component componentUpdate = component;
-        String newDescription = "new description";
-        componentUpdate.setDescription(newDescription);
-        ComponentConfiguration.getInstance().update(componentUpdate);
-        Optional<Component> checkComponent = ComponentConfiguration.getInstance().get(componentUpdate.getMetadataKey());
-        assertTrue(checkComponent.isPresent() && checkComponent.get().getDescription().equals(newDescription));
+    void componentUpdate3Test() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
+        ComponentConfiguration.getInstance().insert(component1);
+        ComponentConfiguration.getInstance().insert(component2);
+        ComponentConfiguration.getInstance().insert(component3);
+
+        Optional<Component> fetchedComponentVersion1 = ComponentConfiguration.getInstance().get(component1.getMetadataKey());
+        assertTrue(fetchedComponentVersion1.isPresent());
+        assertEquals("test", fetchedComponentVersion1.get().getDescription());
+        Optional<Component> fetchedComponentVersion2 = ComponentConfiguration.getInstance().get(component2.getMetadataKey());
+        assertTrue(fetchedComponentVersion2.isPresent());
+        assertEquals("test", fetchedComponentVersion2.get().getDescription());
+        Optional<Component> fetchedComponentVersion3 = ComponentConfiguration.getInstance().get(component3.getMetadataKey());
+        assertTrue(fetchedComponentVersion3.isPresent());
+        assertEquals("test", fetchedComponentVersion3.get().getDescription());
+
+        component3.setDescription("dummy");
+        ComponentConfiguration.getInstance().update(component3);
+
+        fetchedComponentVersion1 = ComponentConfiguration.getInstance().get(component1.getMetadataKey());
+        assertTrue(fetchedComponentVersion1.isPresent());
+        assertEquals("test", fetchedComponentVersion1.get().getDescription());
+        fetchedComponentVersion2 = ComponentConfiguration.getInstance().get(component2.getMetadataKey());
+        assertTrue(fetchedComponentVersion2.isPresent());
+        assertEquals("test", fetchedComponentVersion2.get().getDescription());
+        fetchedComponentVersion3 = ComponentConfiguration.getInstance().get(component3.getMetadataKey());
+        assertTrue(fetchedComponentVersion3.isPresent());
+        assertEquals("dummy", fetchedComponentVersion3.get().getDescription());
     }
 
-    private Component createComponent(){
-        String componentId = "new id";
-        long versionNb = 5;
-        String componentParameterName = "new parameter name";
-        String attributeName = "new attribute name";
-        ComponentParameterKey parameterKey = new ComponentParameterKey(componentId, versionNb, componentParameterName);
-        ComponentParameter parameter = new ComponentParameter(parameterKey, "parameter value");
-        List<ComponentParameter> parameters = new ArrayList<>();
-        parameters.add(parameter);
-        ComponentAttributeKey attributeKey = new ComponentAttributeKey(componentId, versionNb, attributeName);
-        ComponentAttribute attribute = new ComponentAttribute(attributeKey, "environment", "component attribute");
-        List<ComponentAttribute> attributes = new ArrayList<>();
-        attributes.add(attribute);
-        ComponentVersion version = new ComponentVersion(new ComponentVersionKey("1", 1),
-                "version of component");
-        Component newComponent = new Component(new ComponentKey(componentId, 1), "component", "new component",
-                "component for testing", version,
-                parameters, attributes);
-        return newComponent;
+//    @Test
+//    void componentGetByComponentId1Test() throws MetadataAlreadyExistsException {
+//        ComponentConfiguration.getInstance().insert(component1);
+//        ComponentConfiguration.getInstance().insert(component2);
+//        ComponentConfiguration.getInstance().insert(component3);
+//
+//        assertEquals(Stream.of(component1, component2).collect(Collectors.toList()),
+//                ComponentConfiguration.getInstance().getByComponent(component1.getMetadataKey().getComponentKey().getId()));
+//    }
+//    @Test
+//    void componentGetByComponentId2Test() throws MetadataAlreadyExistsException {
+//        ComponentConfiguration.getInstance().insert(component1);
+//        ComponentConfiguration.getInstance().insert(component2);
+//        ComponentConfiguration.getInstance().insert(component3);
+//
+//        assertEquals(Stream.of(component3).collect(Collectors.toList()),
+//                ComponentConfiguration.getInstance().getByComponent(component3.getMetadataKey().getComponentKey().getId()));
+//    }
+//
+//    @Test
+//    void componentDeleteByComponentId1Test() throws MetadataAlreadyExistsException, MetadataDoesNotExistException {
+//        ComponentConfiguration.getInstance().insert(component1);
+//        ComponentConfiguration.getInstance().insert(component2);
+//        ComponentConfiguration.getInstance().insert(component3);
+//
+//        ComponentConfiguration.getInstance().deleteByComponent(component3.getMetadataKey().getComponentKey());
+//
+//        assertEquals(Stream.of(component1, component2).collect(Collectors.toList()),
+//                ComponentConfiguration.getInstance().getByComponent(component1.getMetadataKey().getComponentKey().getId()));
+//    }
+//    @Test
+//    void componentDeleteByComponentId2Test() throws MetadataAlreadyExistsException, MetadataDoesNotExistException {
+//        ComponentConfiguration.getInstance().insert(component1);
+//        ComponentConfiguration.getInstance().insert(component2);
+//        ComponentConfiguration.getInstance().insert(component3);
+//
+//        ComponentConfiguration.getInstance().deleteByComponent(component1.getMetadataKey().getComponentKey());
+//
+//        assertEquals(Stream.of(component3).collect(Collectors.toList()),
+//                ComponentConfiguration.getInstance().getByComponent(component3.getMetadataKey().getComponentKey().getId()));
+//    }
+
+    @Test
+    void componentDeleteAllTest() throws MetadataAlreadyExistsException {
+        ComponentConfiguration.getInstance().insert(component1);
+        ComponentConfiguration.getInstance().insert(component2);
+        ComponentConfiguration.getInstance().insert(component3);
+
+        assertEquals(3, ComponentConfiguration.getInstance().getAll().size());
+        assertEquals(3, ComponentVersionConfiguration.getInstance().getAll().size());
+        assertEquals(6, ComponentAttributeConfiguration.getInstance().getAll().size());
+        assertEquals(9, ComponentParameterConfiguration.getInstance().getAll().size());
+
+        ComponentConfiguration.getInstance().deleteAll();
+
+        assertEquals(0, ComponentConfiguration.getInstance().getAll().size());
+        assertEquals(0, ComponentVersionConfiguration.getInstance().getAll().size());
+        assertEquals(0, ComponentAttributeConfiguration.getInstance().getAll().size());
+        assertEquals(0, ComponentParameterConfiguration.getInstance().getAll().size());
     }
-}
+
+    @Test
+    void componentGetLatestVersionAllTest() throws MetadataAlreadyExistsException, MetadataDoesNotExistException {
+        ComponentConfiguration.getInstance().insert(component1);
+        ComponentConfiguration.getInstance().insert(component2);
+        ComponentConfiguration.getInstance().insert(component3);
+
+        Optional<Component> fetchedComponent = ComponentConfiguration.getInstance().get(component1.getMetadataKey().getId());
+        assertTrue(fetchedComponent.isPresent());
+        assertEquals(component2, fetchedComponent.get());
+    }
+    }

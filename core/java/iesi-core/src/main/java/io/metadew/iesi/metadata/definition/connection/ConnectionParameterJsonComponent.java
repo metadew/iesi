@@ -1,15 +1,5 @@
 package io.metadew.iesi.metadata.definition.connection;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.*;
-import io.metadew.iesi.metadata.definition.MetadataJsonComponent;
-
-import java.io.IOException;
-import java.util.List;
-
 public class ConnectionParameterJsonComponent {
 
     public enum Field {

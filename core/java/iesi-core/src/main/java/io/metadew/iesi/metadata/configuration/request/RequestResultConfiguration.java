@@ -2,8 +2,8 @@ package io.metadew.iesi.metadata.configuration.request;
 
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
-import io.metadew.iesi.metadata.configuration.exception.RequestResultAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.exception.RequestResultDoesNotExistException;
+import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
+import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.RequestResult;
 import io.metadew.iesi.metadata.definition.key.RequestResultKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
@@ -90,9 +90,9 @@ public class RequestResultConfiguration extends Configuration<RequestResult, Req
     }
 
     @Override
-    public void delete(RequestResultKey key) throws RequestResultDoesNotExistException {
+    public void delete(RequestResultKey key) throws MetadataDoesNotExistException {
         if (!exists(key)) {
-            throw new RequestResultDoesNotExistException(
+            throw new MetadataDoesNotExistException(
                     MessageFormat.format("Request Result {0} does not exist", key.getRequestId()));
         }
         String query = "delete from "
@@ -102,9 +102,9 @@ public class RequestResultConfiguration extends Configuration<RequestResult, Req
     }
 
     @Override
-    public void insert(RequestResult requestResult) throws RequestResultAlreadyExistsException {
+    public void insert(RequestResult requestResult) throws MetadataAlreadyExistsException {
         if (exists(requestResult.getMetadataKey())) {
-            throw new RequestResultAlreadyExistsException(MessageFormat.format("Request Result {0} already exists",
+            throw new MetadataAlreadyExistsException(MessageFormat.format("Request Result {0} already exists",
                     requestResult.getMetadataKey().getRequestId()));
         }
         String query = "insert into "

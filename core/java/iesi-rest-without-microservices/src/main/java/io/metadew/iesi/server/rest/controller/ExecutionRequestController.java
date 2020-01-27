@@ -3,7 +3,6 @@ package io.metadew.iesi.server.rest.controller;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.execution.ExecutionRequestConfiguration;
-import io.metadew.iesi.metadata.configuration.execution.exception.ExecutionRequestDoesNotExistException;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequestBuilderException;
 import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
@@ -74,8 +73,7 @@ public class ExecutionRequestController {
                 halMultipleEmbeddedResource.add(linkTo(methodOn(ScriptController.class)
                         .getByName(executionRequestDto.getName()))
                         .withRel(executionRequestDto.getName()));
-            } catch (ExecutionRequestDoesNotExistException e) {
-                e.printStackTrace();
+            } catch (MetadataDoesNotExistException e) {
                 throw new DataNotFoundException(executionRequestDto.getName());
             }
         }
@@ -88,7 +86,7 @@ public class ExecutionRequestController {
         try {
             executionRequestConfiguration.update(executionRequestDto.convertToEntity());
             return executionRequestDtoResourceAssembler.toResource(executionRequestDto.convertToEntity());
-        } catch (ExecutionRequestDoesNotExistException e) {
+        } catch (MetadataDoesNotExistException e) {
             throw new DataNotFoundException(executionRequestDto.getExecutionRequestId());
         }
     }

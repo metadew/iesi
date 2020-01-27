@@ -2,18 +2,16 @@ package io.metadew.iesi.metadata.configuration.component;
 
 import io.metadew.iesi.metadata.definition.component.ComponentParameter;
 import io.metadew.iesi.metadata.definition.component.key.ComponentParameterKey;
-import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
-import io.metadew.iesi.metadata.definition.connection.key.ConnectionParameterKey;
 
 public class ComponentParameterBuilder {
 
-    private final String componentName;
+    private final String componentId;
     private final long componentVersion;
     private String parameterName;
     private String value;
 
-    public ComponentParameterBuilder(String componentName, long componentVersion, String parameterName) {
-        this.componentName = componentName;
+    public ComponentParameterBuilder(String componentId, long componentVersion, String parameterName) {
+        this.componentId = componentId;
         this.componentVersion = componentVersion;
         this.parameterName = parameterName;
     }
@@ -24,7 +22,7 @@ public class ComponentParameterBuilder {
     }
 
     public ComponentParameter build() {
-        return new ComponentParameter(new ComponentParameterKey(componentName, componentVersion, parameterName), value == null ? "dummy" : value);
+        return new ComponentParameter(new ComponentParameterKey(componentId, componentVersion, parameterName), value == null ? "dummy" : value);
     }
 
 }

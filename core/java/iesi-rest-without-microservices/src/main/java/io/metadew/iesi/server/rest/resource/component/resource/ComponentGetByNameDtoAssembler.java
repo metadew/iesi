@@ -23,7 +23,7 @@ public class ComponentGetByNameDtoAssembler extends ResourceAssemblerSupport<Lis
     @Override
     public ComponentByNameDto toResource(List<Component> components) {
         ComponentByNameDto componentDto = convertToDto(components);
-        Link versionLink = linkTo(methodOn(ComponentsController.class).get(components.get(0).getName(),components.get(0).getVersion().getNumber()))
+        Link versionLink = linkTo(methodOn(ComponentsController.class).get(components.get(0).getName(),components.get(0).getVersion().getMetadataKey().getComponentKey().getVersionNumber()))
                     .withRel("version: " + componentDto.getVersions().get(0));
         componentDto.add(linkTo(methodOn(ComponentsController.class)
                 .getByName(componentDto.getName()))
@@ -36,7 +36,7 @@ public class ComponentGetByNameDtoAssembler extends ResourceAssemblerSupport<Lis
         // TODO: check if all components is not empty.
         // TODO: check if all Components have the same name and type.
         return new ComponentByNameDto(components.get(0).getName(), components.get(0).getType(), components.get(0).getDescription(),
-                components.stream().map(component -> component.getVersion().getNumber()).collect(Collectors.toList()));
+                components.stream().map(component -> component.getVersion().getMetadataKey().getComponentKey().getVersionNumber()).collect(Collectors.toList()));
 
     }
 }

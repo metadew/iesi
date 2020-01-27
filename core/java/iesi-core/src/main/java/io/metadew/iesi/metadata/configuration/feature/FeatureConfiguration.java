@@ -3,8 +3,8 @@ package io.metadew.iesi.metadata.configuration.feature;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.configuration.FrameworkObjectConfiguration;
 import io.metadew.iesi.metadata.configuration.MetadataConfiguration;
-import io.metadew.iesi.metadata.configuration.exception.FeatureAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.exception.FeatureDoesNotExistException;
+import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
+import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.scenario.ScenarioConfiguration;
 import io.metadew.iesi.metadata.definition.ListObject;
 import io.metadew.iesi.metadata.definition.feature.Feature;
@@ -112,11 +112,11 @@ public class FeatureConfiguration extends MetadataConfiguration {
         return features;
     }
 
-    public void deleteFeature(Feature feature) throws FeatureDoesNotExistException {
+    public void deleteFeature(Feature feature) throws MetadataDoesNotExistException {
         //TODO fix logging
     	//frameworkExecution.getFrameworkLog().log(MessageFormat.format("Deleting feature {0}-{1}.", feature.getScriptName(), feature.getScriptVersion().getNumber()), Level.TRACE);
         if (!exists(feature)) {
-            throw new FeatureDoesNotExistException(
+            throw new MetadataDoesNotExistException(
                     MessageFormat.format("Feature {0}-{1} is not present in the repository so cannot be deleted",
                             feature.getName(), feature.getVersion().getNumber()));
         }
@@ -125,37 +125,35 @@ public class FeatureConfiguration extends MetadataConfiguration {
         MetadataControl.getInstance().getCatalogMetadataRepository().executeBatch(deleteQuery);
     }
 
-    public void deleteFeatureByName(String featureName) throws FeatureDoesNotExistException {
+    public void deleteFeatureByName(String featureName) throws MetadataDoesNotExistException {
         for (Feature feature : getFeatureByName(featureName)) {
             deleteFeature(feature);
         }
     }
 
-    public void insertFeature(Feature feature) throws FeatureAlreadyExistsException {
+    public void insertFeature(Feature feature) throws MetadataAlreadyExistsException {
         //TODO fix logging
     	//frameworkExecution.getFrameworkLog().log(MessageFormat.format("Inserting feature {0}-{1}.", feature.getScriptName(), feature.getScriptVersion().getNumber()), Level.TRACE);
         if (exists(feature)) {
-            throw new FeatureAlreadyExistsException(MessageFormat.format(
+            throw new MetadataAlreadyExistsException(MessageFormat.format(
                     "Feature {0}-{1} already exists", feature.getName(), feature.getVersion().getNumber()));
         }
         List<String> insertStatement = getInsertStatement(feature);
         MetadataControl.getInstance().getCatalogMetadataRepository().executeBatch(insertStatement);
     }
 
-    public void updateFeature(Feature feature) throws FeatureDoesNotExistException {
+    public void updateFeature(Feature feature) throws MetadataDoesNotExistException {
         //TODO fix logging
     	//frameworkExecution.getFrameworkLog().log(MessageFormat.format("Updating feature {0}-{1}.", feature.getScriptName(), feature.getScriptVersion().getNumber()), Level.TRACE);
         try {
             deleteFeature(feature);
             insertFeature(feature);
-        } catch (FeatureDoesNotExistException e) {
-            //TODO fix logging
-        	//frameworkExecution.getFrameworkLog().log(MessageFormat.format("Feature {0}-{1} is not present in the repository so cannot be updated",feature.getScriptName(), feature.getScriptVersion().getNumber()),Level.TRACE);
+        } catch (MetadataDoesNotExistException e) {
             throw e;
             // throw new ComponentDoesNotExistException(MessageFormat.format(
             //        "Component {0}-{1} is not present in the repository so cannot be updated", component.getScriptName(),  component.getScriptVersion().getNumber()));
 
-        } catch (FeatureAlreadyExistsException e) {
+        } catch (MetadataAlreadyExistsException e) {
         	// TODO fix logging
         	//frameworkExecution.getFrameworkLog().log(MessageFormat.format("Feature {0}-{1} is not deleted correctly during update. {2}",feature.getScriptName(), feature.getScriptVersion().getNumber(), e.toString()),Level.WARN);
         }

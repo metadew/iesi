@@ -1,8 +1,6 @@
 package io.metadew.iesi.server.rest.controller;
 
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
-import io.metadew.iesi.metadata.configuration.exception.ConnectionAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.exception.ConnectionDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.connection.Connection;
@@ -25,7 +23,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
-import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -143,7 +140,7 @@ public class ConnectionsController {
 		try {
 			connectionConfiguration.deleteByName(name);
 			return ResponseEntity.status(HttpStatus.OK).build();
-		} catch (io.metadew.iesi.metadata.configuration.connection.exception.ConnectionDoesNotExistException e) {
+		} catch (MetadataDoesNotExistException e) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
 		}
 	}

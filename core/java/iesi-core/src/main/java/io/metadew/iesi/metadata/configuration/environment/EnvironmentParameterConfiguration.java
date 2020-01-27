@@ -106,7 +106,7 @@ public class EnvironmentParameterConfiguration extends Configuration<Environment
     public void delete(EnvironmentParameterKey metadataKey) throws MetadataDoesNotExistException {
         LOGGER.trace(MessageFormat.format("Deleting Connection {0}.", metadataKey.toString()));
         if (!exists(metadataKey)) {
-            throw new MetadataDoesNotExistException("EnvironmentParameter", metadataKey);
+            throw new MetadataDoesNotExistException(metadataKey);
         }
         String deleteStatement = deleteStatement(metadataKey);
         getMetadataRepository().executeUpdate(deleteStatement);
@@ -123,7 +123,7 @@ public class EnvironmentParameterConfiguration extends Configuration<Environment
     public void insert(EnvironmentParameter metadata) throws MetadataAlreadyExistsException {
         LOGGER.trace(MessageFormat.format("Inserting Connection {0}.", metadata.getMetadataKey().toString()));
         if (exists(metadata.getMetadataKey())) {
-            throw new MetadataAlreadyExistsException("EnvironmentParameter", metadata.getMetadataKey());
+            throw new MetadataAlreadyExistsException(metadata.getMetadataKey());
         }
         String insertStatement = getInsertStatement(metadata);
         getMetadataRepository().executeUpdate(insertStatement);

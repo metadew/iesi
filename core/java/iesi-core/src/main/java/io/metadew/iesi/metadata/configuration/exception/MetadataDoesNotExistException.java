@@ -1,5 +1,6 @@
 package io.metadew.iesi.metadata.configuration.exception;
 
+import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.key.MetadataKey;
 
 import java.text.MessageFormat;
@@ -12,9 +13,14 @@ public class MetadataDoesNotExistException extends Exception {
         super(message);
     }
 
-    public MetadataDoesNotExistException(String className, MetadataKey metadataKey){
+    public MetadataDoesNotExistException(MetadataKey metadataKey){
         this(MessageFormat.format(
-                "{0}: {1} does not exists", className, metadataKey.toString()));
+                "{0}: {1} does not exists", metadataKey.getClass().getSimpleName(), metadataKey.toString()));
+    }
+
+    public MetadataDoesNotExistException(Metadata metadata){
+        this(MessageFormat.format(
+                "{0}: {1} does not exists", metadata.getClass().getSimpleName(), metadata.toString()));
     }
 
 }

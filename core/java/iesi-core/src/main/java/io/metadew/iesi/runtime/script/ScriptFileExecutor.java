@@ -3,8 +3,8 @@ package io.metadew.iesi.runtime.script;
 import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.framework.configuration.ScriptRunStatus;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
+import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.execution.script.ScriptExecutionConfiguration;
-import io.metadew.iesi.metadata.configuration.script.exception.ScriptDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.script.result.ScriptResultConfiguration;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptFileExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionKey;
@@ -41,18 +41,17 @@ public class ScriptFileExecutor implements ScriptExecutor<ScriptFileExecutionReq
     }
 
     @Override
-    public void execute(ScriptFileExecutionRequest scriptExecutionRequest) throws ScriptDoesNotExistException, ScriptExecutionBuildException, MetadataAlreadyExistsException {
-
+    public void execute(ScriptFileExecutionRequest scriptExecutionRequest) throws MetadataDoesNotExistException, ScriptExecutionBuildException, MetadataAlreadyExistsException {
         File file = new File(scriptExecutionRequest.getFileName());
         Script script = null;
         if (FileTools.getFileExtension(file).equalsIgnoreCase("json")) {
             JsonInputOperation jsonInputOperation = new JsonInputOperation(scriptExecutionRequest.getFileName());
             script = jsonInputOperation.getScript()
-                    .orElseThrow(() -> new ScriptDoesNotExistException(""));
+                    .orElseThrow(() -> new MetadataDoesNotExistException(jsonInputOperation.getFileName()));
         } else if (FileTools.getFileExtension(file).equalsIgnoreCase("yml")) {
             YamlInputOperation yamlInputOperation = new YamlInputOperation(scriptExecutionRequest.getFileName());
             script = yamlInputOperation.getScript()
-                    .orElseThrow(() -> new ScriptDoesNotExistException(""));
+                    .orElseThrow(() -> new MetadataDoesNotExistException(yamlInputOperation.getFileName()));
         }
 
         // TODO: ActionSelection?

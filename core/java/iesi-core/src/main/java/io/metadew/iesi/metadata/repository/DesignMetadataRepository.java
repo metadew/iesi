@@ -2,12 +2,10 @@ package io.metadew.iesi.metadata.repository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.metadata.configuration.component.ComponentConfiguration;
-import io.metadew.iesi.metadata.configuration.exception.ComponentAlreadyExistsException;
+import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.generation.GenerationConfiguration;
 import io.metadew.iesi.metadata.configuration.script.ScriptConfiguration;
-import io.metadew.iesi.metadata.configuration.script.exception.ScriptAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.script.exception.ScriptDoesNotExistException;
 import io.metadew.iesi.metadata.definition.DataObject;
 import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.MetadataObject;
@@ -99,7 +97,7 @@ public class DesignMetadataRepository extends MetadataRepository {
         }
         try {
             ScriptConfiguration.getInstance().insert(script);
-        } catch (ScriptAlreadyExistsException e) {
+        } catch (MetadataAlreadyExistsException e) {
             LOGGER.info(MessageFormat.format("Script {0}-{1} already exists in design repository. Updating to new definition", script.getName(), script.getVersion().getNumber()));
             try {
                 ScriptConfiguration.getInstance().update(script);
@@ -114,7 +112,7 @@ public class DesignMetadataRepository extends MetadataRepository {
         LOGGER.info(MessageFormat.format("Saving component {0} into design repository", component.getName()));
         try {
             ComponentConfiguration.getInstance().insert(component);
-        } catch (ComponentAlreadyExistsException e) {
+        } catch (MetadataAlreadyExistsException e) {
             LOGGER.warn(MessageFormat.format("Component {0} already exists in design repository. Updating to new definition", component.getName()), Level.INFO);
             try {
                 ComponentConfiguration.getInstance().update(component);

@@ -1,7 +1,6 @@
 package io.metadew.iesi.metadata.definition.script.key;
 
 import io.metadew.iesi.metadata.definition.key.MetadataKey;
-import io.metadew.iesi.metadata.definition.script.Script;
 import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = false)

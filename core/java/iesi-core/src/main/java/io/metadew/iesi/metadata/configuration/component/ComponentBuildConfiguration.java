@@ -72,7 +72,7 @@ public class ComponentBuildConfiguration extends Configuration<ComponentBuild, C
     public void delete(ComponentBuildKey metadataKey) throws MetadataDoesNotExistException {
         LOGGER.trace(MessageFormat.format("Deleting Component {0}.", metadataKey.toString()));
         if (!exists(metadataKey)) {
-            throw new MetadataDoesNotExistException("Component", metadataKey);
+            throw new MetadataDoesNotExistException(metadataKey);
         }
         String deleteStatement = deleteStatement(metadataKey);
         getMetadataRepository().executeUpdate(deleteStatement);
@@ -92,7 +92,7 @@ public class ComponentBuildConfiguration extends Configuration<ComponentBuild, C
     public void insert(ComponentBuild metadata) throws MetadataAlreadyExistsException {
         LOGGER.trace(MessageFormat.format("Inserting ComponentBuild {0}.", metadata.getMetadataKey().toString()));
         if (exists(metadata.getMetadataKey())) {
-            throw new MetadataAlreadyExistsException("ComponentBuild", metadata.getMetadataKey());
+            throw new MetadataAlreadyExistsException(metadata.getMetadataKey());
         }
         String insertQuery = getInsertStatement(metadata);
         getMetadataRepository().executeUpdate(insertQuery);

@@ -6,9 +6,9 @@ import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.action.key.ActionParameterKey;
 import io.metadew.iesi.metadata.repository.DesignMetadataRepository;
 import io.metadew.iesi.metadata.repository.RepositoryTestSetup;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
@@ -17,14 +17,14 @@ import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class ActionParameterConfigurationTest {
+class ActionParameterConfigurationTest {
 
     private ActionParameter actionParameter1;
     private DesignMetadataRepository designMetadataRepository;
     private ActionParameter actionParameter2;
 
-    @Before
-    public void setup() {
+    @BeforeEach
+    void setup() {
         designMetadataRepository = RepositoryTestSetup.getDesignMetadataRepository();
         actionParameter1 = new ActionParameterBuilder("1", 1, "1", "firstParameter")
                 .value("parameter value")
@@ -34,32 +34,32 @@ public class ActionParameterConfigurationTest {
                 .build();
     }
 
-    @After
-    public void clearDatabase() {
+    @AfterEach
+    void clearDatabase() {
         // drop because the designMetadataRepository already is initialized so you can't recreate those tables
         // in the initializer unless you delete the tables after each test
         designMetadataRepository.dropAllTables();
     }
 
     @Test
-    public void actionParameterNotExistsOnlyTest() {
+    void actionParameterNotExistsOnlyTest() {
         assertFalse(ActionParameterConfiguration.getInstance().exists(actionParameter1));
     }
 
     @Test
-    public void actionParameterNotExistsTest() throws MetadataAlreadyExistsException {
+    void actionParameterNotExistsTest() throws MetadataAlreadyExistsException {
         ActionParameterConfiguration.getInstance().insert(actionParameter2);
         assertFalse(ActionParameterConfiguration.getInstance().exists(actionParameter1));
     }
 
     @Test
-    public void actionParameterExistsOnlyTest() throws MetadataAlreadyExistsException {
+    void actionParameterExistsOnlyTest() throws MetadataAlreadyExistsException {
         ActionParameterConfiguration.getInstance().insert(actionParameter1);
         assertTrue(ActionParameterConfiguration.getInstance().exists(actionParameter1.getMetadataKey()));
     }
 
     @Test
-    public void actionParameterExistsTest() throws MetadataAlreadyExistsException {
+    void actionParameterExistsTest() throws MetadataAlreadyExistsException {
         ActionParameterConfiguration.getInstance().insert(actionParameter1);
         ActionParameterConfiguration.getInstance().insert(actionParameter2);
         assertTrue(ActionParameterConfiguration.getInstance().exists(actionParameter1.getMetadataKey()));
@@ -67,7 +67,7 @@ public class ActionParameterConfigurationTest {
     }
 
     @Test
-    public void actionParameterInsertOnlyTest() throws MetadataAlreadyExistsException {
+    void actionParameterInsertOnlyTest() throws MetadataAlreadyExistsException {
         assertEquals(0, ActionParameterConfiguration.getInstance().getAll().size());
 
         ActionParameterConfiguration.getInstance().insert(actionParameter1);
@@ -78,7 +78,7 @@ public class ActionParameterConfigurationTest {
     }
 
     @Test
-    public void actionParameterInsertTest() throws MetadataAlreadyExistsException {
+    void actionParameterInsertTest() throws MetadataAlreadyExistsException {
         ActionParameterConfiguration.getInstance().insert(actionParameter2);
         assertEquals(1, ActionParameterConfiguration.getInstance().getAll().size());
         ActionParameterConfiguration.getInstance().insert(actionParameter1);
@@ -89,13 +89,13 @@ public class ActionParameterConfigurationTest {
     }
 
     @Test
-    public void actionParameterInsertAlreadyExistsTest() throws MetadataAlreadyExistsException {
+    void actionParameterInsertAlreadyExistsTest() throws MetadataAlreadyExistsException {
         ActionParameterConfiguration.getInstance().insert(actionParameter1);
         assertThrows(MetadataAlreadyExistsException.class,() -> ActionParameterConfiguration.getInstance().insert(actionParameter1));
     }
 
     @Test
-    public void actionDeleteTest() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
+    void actionDeleteTest() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
         ActionParameterConfiguration.getInstance().insert(actionParameter1);
         assertEquals(1, ActionParameterConfiguration.getInstance().getAll().size());
         ActionParameterConfiguration.getInstance().delete(actionParameter1.getMetadataKey());
@@ -103,18 +103,12 @@ public class ActionParameterConfigurationTest {
     }
 
     @Test
-    public void actionDeleteDoesNotExistOnlyTest() {
+    void actionDeleteDoesNotExistOnlyTest() {
         assertThrows(MetadataDoesNotExistException.class,() -> ActionParameterConfiguration.getInstance().delete(actionParameter1.getMetadataKey()));
     }
 
     @Test
-    public void actionDeleteDoesNotExistTest() throws MetadataAlreadyExistsException {
-        ActionParameterConfiguration.getInstance().insert(actionParameter2);
-        assertThrows(MetadataDoesNotExistException.class,() -> ActionParameterConfiguration.getInstance().delete(actionParameter1.getMetadataKey()));
-    }
-
-    @Test
-    public void setActionParameterGetOnlyTest() throws MetadataAlreadyExistsException {
+    void setActionParameterGetOnlyTest() throws MetadataAlreadyExistsException {
         ActionParameterConfiguration.getInstance().insert(actionParameter1);
 
         Optional<ActionParameter> actionParameter1Fetched = ActionParameterConfiguration.getInstance().get(actionParameter1.getMetadataKey());
@@ -123,7 +117,13 @@ public class ActionParameterConfigurationTest {
     }
 
     @Test
-    public void setActionParameterGetTest() throws MetadataAlreadyExistsException {
+    void actionDeleteDoesNotExistTest() throws MetadataAlreadyExistsException {
+        ActionParameterConfiguration.getInstance().insert(actionParameter2);
+        assertThrows(MetadataDoesNotExistException.class,() -> ActionParameterConfiguration.getInstance().delete(actionParameter1.getMetadataKey()));
+    }
+
+    @Test
+    void setActionParameterGetTest() throws MetadataAlreadyExistsException {
         ActionParameterConfiguration.getInstance().insert(actionParameter1);
         ActionParameterConfiguration.getInstance().insert(actionParameter2);
 
@@ -133,7 +133,7 @@ public class ActionParameterConfigurationTest {
     }
 
     @Test
-    public void actionParameterGetNotExistsTest() throws MetadataAlreadyExistsException {
+    void actionParameterGetNotExistsTest() throws MetadataAlreadyExistsException {
         ActionParameterConfiguration.getInstance().insert(actionParameter1);
         ActionParameterConfiguration.getInstance().insert(actionParameter2);
 
@@ -142,7 +142,7 @@ public class ActionParameterConfigurationTest {
     }
 
     @Test
-    public void actionParameterUpdateOnlyTest() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
+    void actionParameterUpdateOnlyTest() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
         ActionParameterConfiguration.getInstance().insert(actionParameter1);
         Optional<ActionParameter> actionParameterFetched = ActionParameterConfiguration.getInstance().get(actionParameter1.getMetadataKey());
         assertTrue(actionParameterFetched.isPresent());
@@ -157,7 +157,7 @@ public class ActionParameterConfigurationTest {
     }
 
     @Test
-    public void actionParameterUpdateTest() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
+    void actionParameterUpdateTest() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
         ActionParameterConfiguration.getInstance().insert(actionParameter1);
         ActionParameterConfiguration.getInstance().insert(actionParameter2);
         Optional<ActionParameter> actionParameterFetched = ActionParameterConfiguration.getInstance().get(actionParameter1.getMetadataKey());

@@ -19,8 +19,7 @@ import java.io.StringWriter;
 public class ScriptDesignTraceService {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public ScriptDesignTraceService() {
-    }
+    public ScriptDesignTraceService() {}
 
     public void trace(ScriptExecution scriptExecution) {
 

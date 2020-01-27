@@ -30,15 +30,15 @@
             <properties>
                 <packaging.type>war</packaging.type>
                 <start-class>io.metadew.iesi.server.rest.ApplicationWar</start-class>
-<!--                <tomcat.version>9.0.27</tomcat.version>-->
+                <!--                <tomcat.version>9.0.27</tomcat.version>-->
             </properties>
-<!--            <dependencies>-->
-<!--            <dependency>-->
-<!--                <groupId>org.springframework.boot</groupId>-->
-<!--                <artifactId>spring-boot-starter-tomcat</artifactId>-->
-<!--                <scope>provided</scope>-->
-<!--            </dependency>-->
-<!--        </dependencies>-->
+            <!--            <dependencies>-->
+            <!--            <dependency>-->
+            <!--                <groupId>org.springframework.boot</groupId>-->
+            <!--                <artifactId>spring-boot-starter-tomcat</artifactId>-->
+            <!--                <scope>provided</scope>-->
+            <!--            </dependency>-->
+            <!--        </dependencies>-->
         </profile>
         <profile>
             <id>report</id>
@@ -107,6 +107,16 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-log4j2</artifactId>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>

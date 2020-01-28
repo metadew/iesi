@@ -43,13 +43,13 @@ class ScriptParameterConfigurationTest {
     }
 
     @Test
-    void scriptParameterExistsTest() throws MetadataAlreadyExistsException {
+    void scriptParameterExistsTest() {
         ScriptParameterConfiguration.getInstance().insert(scriptParameter1);
         assertTrue(ScriptParameterConfiguration.getInstance().exists(scriptParameter1.getMetadataKey()));
     }
 
     @Test
-    void scriptParameterInsertTest() throws MetadataAlreadyExistsException {
+    void scriptParameterInsertTest() {
         assertEquals(0, ScriptParameterConfiguration.getInstance().getAll().size());
 
         ScriptParameterConfiguration.getInstance().insert(scriptParameter1);
@@ -60,13 +60,13 @@ class ScriptParameterConfigurationTest {
     }
 
     @Test
-    void scriptParameterInsertAlreadyExistsTest() throws MetadataAlreadyExistsException {
+    void scriptParameterInsertAlreadyExistsTest() {
         ScriptParameterConfiguration.getInstance().insert(scriptParameter1);
         assertThrows(MetadataAlreadyExistsException.class, () -> ScriptParameterConfiguration.getInstance().insert(scriptParameter1));
     }
 
     @Test
-    void scriptParameterDeleteTest() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
+    void scriptParameterDeleteTest() {
         ScriptParameterConfiguration.getInstance().insert(scriptParameter1);
         assertEquals(1, ScriptParameterConfiguration.getInstance().getAll().size());
 
@@ -81,7 +81,7 @@ class ScriptParameterConfigurationTest {
     }
 
     @Test
-    void scriptParameterGetTest() throws MetadataAlreadyExistsException {
+    void scriptParameterGetTest() {
         ScriptParameterConfiguration.getInstance().insert(scriptParameter1);
 
         assertTrue(ScriptParameterConfiguration.getInstance().get(scriptParameter1.getMetadataKey()).isPresent());
@@ -95,7 +95,7 @@ class ScriptParameterConfigurationTest {
     }
 
     @Test
-    void scriptParameterUpdateTest() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
+    void scriptParameterUpdateTest() {
         ScriptParameterConfiguration.getInstance().insert(scriptParameter1);
 
         Optional<ScriptParameter> fetchedScriptParameter = ScriptParameterConfiguration.getInstance().get(scriptParameter1.getMetadataKey());

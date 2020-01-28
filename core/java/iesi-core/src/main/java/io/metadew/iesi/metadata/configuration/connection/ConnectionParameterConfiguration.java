@@ -86,7 +86,7 @@ public class ConnectionParameterConfiguration extends Configuration<ConnectionPa
     }
 
     @Override
-    public void delete(ConnectionParameterKey metadataKey) throws MetadataDoesNotExistException {
+    public void delete(ConnectionParameterKey metadataKey) {
         LOGGER.trace(MessageFormat.format("Deleting Connection {0}.", metadataKey.toString()));
         if (!exists(metadataKey)) {
             throw new MetadataDoesNotExistException(metadataKey);
@@ -104,7 +104,7 @@ public class ConnectionParameterConfiguration extends Configuration<ConnectionPa
     }
 
     @Override
-    public void insert(ConnectionParameter connectionParameter) throws MetadataAlreadyExistsException {
+    public void insert(ConnectionParameter connectionParameter) {
         LOGGER.trace(MessageFormat.format("Inserting Connection {0}.", connectionParameter.getMetadataKey().toString()));
         if (exists(connectionParameter.getMetadataKey())) {
             throw new MetadataAlreadyExistsException(connectionParameter.getMetadataKey());

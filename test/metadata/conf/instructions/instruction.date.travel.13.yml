@@ -2,7 +2,7 @@
 type: Script
 data:
   type: "script"
-  name: "instruction.date.travel.9"
+  name: "instruction.date.travel.13"
   description: "travel 1 day in the past to weekend. skip weekdays"
   actions:
   - number: 1

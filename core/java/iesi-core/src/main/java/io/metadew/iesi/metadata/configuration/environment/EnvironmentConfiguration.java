@@ -88,7 +88,7 @@ public class EnvironmentConfiguration extends Configuration<Environment, Environ
     }
 
     @Override
-    public void delete(EnvironmentKey environmentKey) throws MetadataDoesNotExistException {
+    public void delete(EnvironmentKey environmentKey) {
         LOGGER.trace(MessageFormat.format("Deleting Environment {0}.", environmentKey.toString()));
         if (!exists(environmentKey)) {
             throw new MetadataDoesNotExistException(environmentKey);
@@ -100,7 +100,7 @@ public class EnvironmentConfiguration extends Configuration<Environment, Environ
     }
 
     @Override
-    public void insert(Environment environment) throws MetadataAlreadyExistsException {
+    public void insert(Environment environment) {
         LOGGER.trace(MessageFormat.format("Inserting Environment {0}.", environment.getMetadataKey().toString()));
         if (exists(environment.getMetadataKey())) {
             throw new MetadataAlreadyExistsException(environment.getMetadataKey());

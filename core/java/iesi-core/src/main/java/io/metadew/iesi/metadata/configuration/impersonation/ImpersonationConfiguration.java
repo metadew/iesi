@@ -41,7 +41,7 @@ public class ImpersonationConfiguration extends Configuration<Impersonation, Imp
     private ImpersonationConfiguration() {
     }
 
-    public void init(MetadataRepository metadataRepository){
+    public void init(MetadataRepository metadataRepository) {
         setMetadataRepository(metadataRepository);
         ImpersonationParameterConfiguration.getInstance().init(metadataRepository);
     }
@@ -57,7 +57,7 @@ public class ImpersonationConfiguration extends Configuration<Impersonation, Imp
     }
 
     @Override
-    public void delete(ImpersonationKey metadataKey) throws MetadataDoesNotExistException {
+    public void delete(ImpersonationKey metadataKey) {
         LOGGER.trace(MessageFormat.format("Deleting Impersonation {0}.", metadataKey.toString()));
         if (!exists(metadataKey)) {
             throw new MetadataDoesNotExistException(metadataKey);
@@ -67,18 +67,14 @@ public class ImpersonationConfiguration extends Configuration<Impersonation, Imp
     }
 
     @Override
-    public void insert(Impersonation metadata) throws MetadataAlreadyExistsException {
-        try{
-            insertImpersonation(metadata);
-        }catch (MetadataAlreadyExistsException e){
-            throw new MetadataAlreadyExistsException(metadata.getMetadataKey());
-        }
+    public void insert(Impersonation metadata) {
+        insertImpersonation(metadata);
     }
 
     public ImpersonationConfiguration(Impersonation impersonation) {
         this.setImpersonation(impersonation);
     }
-    
+
     // Methods
     public Optional<Impersonation> getImpersonation(String impersonationName) {
         Impersonation impersonation = null;
@@ -107,32 +103,31 @@ public class ImpersonationConfiguration extends Configuration<Impersonation, Imp
         return Optional.ofNullable(impersonation);
     }
 
-    public List<ImpersonationParameter> getAllLinkedImpersonationParameters(String impersonationName){
+    public List<ImpersonationParameter> getAllLinkedImpersonationParameters(String impersonationName) {
         List<ImpersonationParameter> impersonationParameters = new ArrayList<>();
-        String selectQuery =  "select * from "
+        String selectQuery = "select * from "
                 + getMetadataRepository().getTableNameByLabel("ImpersonationParameters")
                 + " where IMP_NM = '" + impersonationName + "'";
         CachedRowSet crsImpersonationParameters = getMetadataRepository().executeQuery(selectQuery, "reader");
-        try{
-            while(crsImpersonationParameters.next()){
+        try {
+            while (crsImpersonationParameters.next()) {
                 ImpersonationParameterKey impersonationParameterKey = new ImpersonationParameterKey(impersonationName,
                         crsImpersonationParameters.getString("CONN_NM"));
                 impersonationParameters.add(new ImpersonationParameter(impersonationParameterKey,
                         crsImpersonationParameters.getString("CONN_IMP_NM"),
                         crsImpersonationParameters.getString("CONN_IMP_DSC")));
             }
-        }catch(SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return impersonationParameters;
-
 
 
     }
 
     public List<Impersonation> getAllImpersonations() {
         //TODO fix logging
-    	//frameworkExecution.getFrameworkLog().log("Getting all impersonations {0}.", Level.TRACE);
+        //frameworkExecution.getFrameworkLog().log("Getting all impersonations {0}.", Level.TRACE);
         List<Impersonation> impersonations = new ArrayList<>();
         String query = "select IMP_NM from " + getMetadataRepository().getTableNameByLabel("Impersonations")
                 + " order by IMP_NM ASC";
@@ -160,17 +155,15 @@ public class ImpersonationConfiguration extends Configuration<Impersonation, Imp
         return crsEnvironment.size() == 1;
     }
 
-    public void deleteImpersonation(Impersonation impersonation) throws MetadataDoesNotExistException {
+    public void deleteImpersonation(Impersonation impersonation) {
         deleteImpersonation(impersonation.getMetadataKey());
     }
 
-    public void deleteImpersonation(ImpersonationKey impersonationKey) throws MetadataDoesNotExistException {
+    public void deleteImpersonation(ImpersonationKey impersonationKey) {
         //TODO fix logging
-    	//frameworkExecution.getFrameworkLog().log(MessageFormat.format("Deleting impersonation {0}.", impersonation.getScriptName()), Level.TRACE);
+        //frameworkExecution.getFrameworkLog().log(MessageFormat.format("Deleting impersonation {0}.", impersonation.getScriptName()), Level.TRACE);
         if (!exists(impersonationKey)) {
-            throw new MetadataDoesNotExistException(
-                    MessageFormat.format("Impersonation {0} is not present in the repository so cannot be updated",
-                            impersonationKey.getName()));
+            throw new MetadataDoesNotExistException(impersonationKey);
 
         }
         List<String> query = getDeleteStatement(impersonationKey.getName());
@@ -179,7 +172,7 @@ public class ImpersonationConfiguration extends Configuration<Impersonation, Imp
 
     public void deleteAllImpersonations() {
         //TODO fix logging
-    	//frameworkExecution.getFrameworkLog().log("Deleting all impersonations", Level.TRACE);
+        //frameworkExecution.getFrameworkLog().log("Deleting all impersonations", Level.TRACE);
         List<String> query = getDeleteAllStatement();
         getMetadataRepository().executeBatch(query);
     }
@@ -191,42 +184,27 @@ public class ImpersonationConfiguration extends Configuration<Impersonation, Imp
         return queries;
     }
 
-    public void insertImpersonation(Impersonation impersonation) throws MetadataAlreadyExistsException {
-    	//TODO fix logging
-    	//frameworkExecution.getFrameworkLog().log(MessageFormat.format("Inserting impersonation {0}.", impersonation.getScriptName()), Level.TRACE);
+    public void insertImpersonation(Impersonation impersonation) {
+        //TODO fix logging
+        //frameworkExecution.getFrameworkLog().log(MessageFormat.format("Inserting impersonation {0}.", impersonation.getScriptName()), Level.TRACE);
         if (exists(impersonation)) {
-            throw new MetadataAlreadyExistsException(MessageFormat.format("Impersonation {0} already exists", impersonation.getName()));
+            throw new MetadataAlreadyExistsException(impersonation);
         }
 
-        for (ImpersonationParameter impersonationParameter : impersonation.getParameters()){
-            try{
-                ImpersonationParameterConfiguration.getInstance().insert(impersonationParameter);
-            }catch(MetadataAlreadyExistsException e){
-                //go to next
-            }
+        for (ImpersonationParameter impersonationParameter : impersonation.getParameters()) {
+            ImpersonationParameterConfiguration.getInstance().insert(impersonationParameter);
         }
-        String query = "INSERT INTO " + getMetadataRepository().getTableNameByLabel("Impersonations") +" (IMP_NM, IMP_DSC) VALUES (" +
+        String query = "INSERT INTO " + getMetadataRepository().getTableNameByLabel("Impersonations") + " (IMP_NM, IMP_DSC) VALUES (" +
                 SQLTools.GetStringForSQL(impersonation.getName()) + "," +
                 SQLTools.GetStringForSQL(impersonation.getDescription()) + ");";
         getMetadataRepository().executeUpdate(query);
     }
 
-    public void updateImpersonation(Impersonation impersonation) throws MetadataDoesNotExistException {
+    public void updateImpersonation(Impersonation impersonation) {
         //TODO fix logging
-    	//frameworkExecution.getFrameworkLog().log(MessageFormat.format("Updating impersonation {0}.", impersonation.getScriptName()), Level.TRACE);
-        try {
-            deleteImpersonation(impersonation);
-            insertImpersonation(impersonation);
-        } catch (MetadataDoesNotExistException e) {
-            //TODO fix logging
-        	//frameworkExecution.getFrameworkLog().log(MessageFormat.format("Impersonation {0} is not present in the repository so cannot be updated", impersonation.getScriptName()),Level.TRACE);
-            throw new MetadataDoesNotExistException(MessageFormat.format(
-                    "Impersonation {0} is not present in the repository so cannot be updated", impersonation.getName()));
-
-        } catch (MetadataAlreadyExistsException e) {
-            //TODO fix logging
-        	//frameworkExecution.getFrameworkLog().log(MessageFormat.format("Environment {0} is not deleted correctly during update. {1}", impersonation.getScriptName(), e.toString()),Level.WARN);
-        }
+        //frameworkExecution.getFrameworkLog().log(MessageFormat.format("Updating impersonation {0}.", impersonation.getScriptName()), Level.TRACE);
+        deleteImpersonation(impersonation);
+        insertImpersonation(impersonation);
     }
 
     public List<String> getDeleteStatement(String impersonationName) {
@@ -242,7 +220,7 @@ public class ImpersonationConfiguration extends Configuration<Impersonation, Imp
     public List<String> getInsertStatement(Impersonation impersonation) {
         ImpersonationParameterConfiguration impersonationParameterConfiguration = ImpersonationParameterConfiguration.getInstance();
         List<String> queries = new ArrayList<>();
-        queries.add("INSERT INTO " + getMetadataRepository().getTableNameByLabel("Impersonations") +" (IMP_NM, IMP_DSC) VALUES (" +
+        queries.add("INSERT INTO " + getMetadataRepository().getTableNameByLabel("Impersonations") + " (IMP_NM, IMP_DSC) VALUES (" +
                 SQLTools.GetStringForSQL(impersonation.getName()) + "," +
                 SQLTools.GetStringForSQL(impersonation.getDescription()) + ");");
         for (ImpersonationParameter impersonationParameter : impersonation.getParameters()) {
@@ -268,7 +246,7 @@ public class ImpersonationConfiguration extends Configuration<Impersonation, Imp
 
         return result;
     }
-    
+
 
     // Delete
 
@@ -354,7 +332,7 @@ public class ImpersonationConfiguration extends Configuration<Impersonation, Imp
             e.printStackTrace(new PrintWriter(StackTrace));
         }
         // new Impersonation("dummy", "dummy",  null) because code wants an object instead of a class
-        return new ListObject(FrameworkObjectConfiguration.getFrameworkObjectType(new Impersonation("dummy", "dummy",  null)), impersonationList);
+        return new ListObject(FrameworkObjectConfiguration.getFrameworkObjectType(new Impersonation("dummy", "dummy", null)), impersonationList);
     }
 
     // Exists

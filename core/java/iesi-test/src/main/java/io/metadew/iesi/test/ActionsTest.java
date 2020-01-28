@@ -319,7 +319,7 @@ public class ActionsTest {
 				scriptInputArgs.remove(paramList);
 			}
 
-		} catch (ParseException | ExecutionRequestBuilderException | ScriptExecutionRequestBuilderException | MetadataAlreadyExistsException | SQLException | MetadataDoesNotExistException | InstantiationException | InvocationTargetException | NoSuchMethodException | IllegalAccessException | ClassNotFoundException e) {
+		} catch (ParseException | ExecutionRequestBuilderException | ScriptExecutionRequestBuilderException | SQLException | InstantiationException | InvocationTargetException | NoSuchMethodException | IllegalAccessException | ClassNotFoundException e) {
 			e.printStackTrace();
 		}
 

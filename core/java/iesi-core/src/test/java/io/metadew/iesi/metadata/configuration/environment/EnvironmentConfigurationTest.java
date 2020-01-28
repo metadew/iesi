@@ -53,13 +53,13 @@ class EnvironmentConfigurationTest {
     }
 
     @Test
-    void environmentExistsTest() throws MetadataAlreadyExistsException {
+    void environmentExistsTest() {
         EnvironmentConfiguration.getInstance().insert(environment1);
         assertTrue(EnvironmentConfiguration.getInstance().exists(environment1));
     }
 
     @Test
-    void environmentInsertTest() throws MetadataAlreadyExistsException {
+    void environmentInsertTest() {
         assertEquals(0, EnvironmentConfiguration.getInstance().getAll().size());
 
         EnvironmentConfiguration.getInstance().insert(environment1);
@@ -71,13 +71,13 @@ class EnvironmentConfigurationTest {
     }
 
     @Test
-    void environmentInsertAlreadyExistsTest() throws MetadataAlreadyExistsException {
+    void environmentInsertAlreadyExistsTest() {
         EnvironmentConfiguration.getInstance().insert(environment1);
         assertThrows(MetadataAlreadyExistsException.class,() -> EnvironmentConfiguration.getInstance().insert(environment1));
     }
 
     @Test
-    void environmentDeleteTest() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
+    void environmentDeleteTest() {
         EnvironmentConfiguration.getInstance().insert(environment1);
         assertEquals(1, EnvironmentConfiguration.getInstance().getAll().size());
 
@@ -92,7 +92,7 @@ class EnvironmentConfigurationTest {
     }
 
     @Test
-    void environmentGetTest() throws MetadataAlreadyExistsException {
+    void environmentGetTest() {
         assertEquals(0, EnvironmentConfiguration.getInstance().getAll().size());
 
         EnvironmentConfiguration.getInstance().insert(environment1);
@@ -109,7 +109,7 @@ class EnvironmentConfigurationTest {
     }
 
     @Test
-    void environmentUpdateTest() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
+    void environmentUpdateTest() {
         EnvironmentConfiguration.getInstance().insert(environment1);
         Optional<Environment> fetchedEnvironment = EnvironmentConfiguration.getInstance().get(environment1.getMetadataKey());
         assertTrue(fetchedEnvironment.isPresent());
@@ -124,7 +124,7 @@ class EnvironmentConfigurationTest {
     }
 
     @Test
-    void environmentGetAllTest() throws MetadataAlreadyExistsException {
+    void environmentGetAllTest() {
         EnvironmentConfiguration.getInstance().insert(environment1);
         EnvironmentConfiguration.getInstance().insert(environment2);
 
@@ -132,7 +132,7 @@ class EnvironmentConfigurationTest {
     }
 
     @Test
-    void environmentDeleteAllTest() throws MetadataAlreadyExistsException {
+    void environmentDeleteAllTest() {
         EnvironmentConfiguration.getInstance().insert(environment1);
         EnvironmentConfiguration.getInstance().insert(environment2);
         assertEquals(2, EnvironmentConfiguration.getInstance().getAll().size());

@@ -87,7 +87,7 @@ public class ActionParameterConfiguration extends Configuration<ActionParameter,
     }
 
     @Override
-    public void delete(ActionParameterKey metadataKey) throws MetadataDoesNotExistException {
+    public void delete(ActionParameterKey metadataKey) {
         LOGGER.trace(MessageFormat.format("Deleting ActionParameter {0}.", metadataKey.toString()));
         if (!exists(metadataKey)) {
             throw new MetadataDoesNotExistException(metadataKey);
@@ -105,7 +105,7 @@ public class ActionParameterConfiguration extends Configuration<ActionParameter,
     }
 
     @Override
-    public void insert(ActionParameter actionParameter) throws MetadataAlreadyExistsException {
+    public void insert(ActionParameter actionParameter) {
         LOGGER.trace(MessageFormat.format("Inserting ActionParameter {0}.", actionParameter.toString()));
         if (exists(actionParameter)) {
             throw new MetadataAlreadyExistsException(actionParameter);

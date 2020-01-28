@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.configuration.environment.EnvironmentConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.impersonation.ImpersonationConfiguration;
 import io.metadew.iesi.metadata.definition.DataObject;
 import io.metadew.iesi.metadata.definition.Metadata;
@@ -17,8 +16,6 @@ import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.text.MessageFormat;
 import java.util.List;
 
@@ -96,14 +93,7 @@ public class ConnectivityMetadataRepository extends MetadataRepository {
         } catch (MetadataAlreadyExistsException e1) {
             LOGGER.info(MessageFormat.format("Connection {0}-{1} already exists in connectivity repository. Updating connection {0}-{1} instead.",
                     connection.getName(), connection.getEnvironment()));
-            try {
-                ConnectionConfiguration.getInstance().update(connection);
-            } catch (MetadataDoesNotExistException e2) {
-                StringWriter stackTrace = new StringWriter();
-                e2.printStackTrace(new PrintWriter(stackTrace));
-                LOGGER.warn("exeption=" + e2.getMessage());
-                LOGGER.info("exception.stacktrace=" + stackTrace.toString());
-            }
+            ConnectionConfiguration.getInstance().update(connection);
         }
     }
 
@@ -115,14 +105,7 @@ public class ConnectivityMetadataRepository extends MetadataRepository {
         } catch (MetadataAlreadyExistsException e) {
             LOGGER.info(MessageFormat.format("Environment {0} already exists in connectivity repository. Updating connection {0} instead.",
                     environment.getName()));
-            try {
-                EnvironmentConfiguration.getInstance().update(environment);
-            } catch (MetadataDoesNotExistException e1) {
-                StringWriter stackTrace = new StringWriter();
-                e1.printStackTrace(new PrintWriter(stackTrace));
-                LOGGER.warn("exeption=" + e1.getMessage());
-                LOGGER.info("exception.stacktrace=" + stackTrace.toString());
-            }
+            EnvironmentConfiguration.getInstance().update(environment);
         }
     }
 
@@ -134,14 +117,7 @@ public class ConnectivityMetadataRepository extends MetadataRepository {
         } catch (MetadataAlreadyExistsException e) {
             LOGGER.info(MessageFormat.format("Impersonation {0} already exists in connectivity repository. Updating impersonation {0} instead.",
                     impersonation.getName()));
-            try {
-                ImpersonationConfiguration.getInstance().updateImpersonation(impersonation);
-            } catch (MetadataDoesNotExistException e1) {
-                StringWriter stackTrace = new StringWriter();
-                e1.printStackTrace(new PrintWriter(stackTrace));
-                LOGGER.warn("exeption=" + e1.getMessage());
-                LOGGER.info("exception.stacktrace=" + stackTrace.toString());
-            }
+            ImpersonationConfiguration.getInstance().updateImpersonation(impersonation);
         }
     }
 

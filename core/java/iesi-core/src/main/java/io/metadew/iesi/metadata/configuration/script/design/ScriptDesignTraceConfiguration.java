@@ -2,8 +2,6 @@ package io.metadew.iesi.metadata.configuration.script.design;
 
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
-import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.script.design.ScriptDesignTrace;
 import io.metadew.iesi.metadata.definition.script.design.key.ScriptDesignTraceKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
@@ -84,7 +82,7 @@ public class ScriptDesignTraceConfiguration extends Configuration<ScriptDesignTr
     }
 
     @Override
-    public void delete(ScriptDesignTraceKey scriptDesignTraceKey) throws MetadataDoesNotExistException {
+    public void delete(ScriptDesignTraceKey scriptDesignTraceKey) {
         LOGGER.trace(MessageFormat.format("Deleting ScriptDesignTrace {0}.", scriptDesignTraceKey.toString()));
         String deleteStatement = deleteStatement(scriptDesignTraceKey);
         getMetadataRepository().executeUpdate(deleteStatement);
@@ -98,7 +96,7 @@ public class ScriptDesignTraceConfiguration extends Configuration<ScriptDesignTr
     }
 
     @Override
-    public void insert(ScriptDesignTrace scriptDesignTrace) throws MetadataAlreadyExistsException {
+    public void insert(ScriptDesignTrace scriptDesignTrace) {
         LOGGER.trace(MessageFormat.format("Inserting ScriptDesignParameterTrace {0}.", scriptDesignTrace.toString()));
         String insertStatement = insertStatement(scriptDesignTrace);
         getMetadataRepository().executeUpdate(insertStatement);

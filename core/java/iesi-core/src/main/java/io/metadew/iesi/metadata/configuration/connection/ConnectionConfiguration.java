@@ -167,11 +167,10 @@ public class ConnectionConfiguration extends Configuration<Connection, Connectio
     }
 
     @Override
-    public void delete(ConnectionKey metadataKey) throws MetadataDoesNotExistException {
+    public void delete(ConnectionKey metadataKey) {
         LOGGER.trace(MessageFormat.format("Deleting Connection {0}.", metadataKey.toString()));
         if (!exists(metadataKey)) {
-            throw new MetadataDoesNotExistException(MessageFormat.format(
-                    "Connection {0} does not exists", metadataKey.toString()));
+            throw new MetadataDoesNotExistException(metadataKey);
         }
         List<String> deleteStatements = getDeleteQuery(metadataKey.getName(), metadataKey.getEnvironmentKey().getName());
         getMetadataRepository().executeBatch(deleteStatements);
@@ -217,12 +216,11 @@ public class ConnectionConfiguration extends Configuration<Connection, Connectio
     }
 
     @Override
-    public void insert(Connection connection) throws MetadataAlreadyExistsException {
+    public void insert(Connection connection) {
         // frameworkInstance.getFrameworkLog().log(MessageFormat.format("Inserting connection {0}-{1}.", connection.getScriptName(), connection.getEnvironment()), Level.TRACE);
         LOGGER.trace(MessageFormat.format("Inserting Connection {0}.", connection.getMetadataKey().toString()));
         if (exists(connection.getMetadataKey())) {
-            throw new MetadataAlreadyExistsException(MessageFormat.format(
-                    "Connection {0} already exists", connection.getMetadataKey().toString()));
+            throw new MetadataAlreadyExistsException(connection);
         }
         List<String> insertQuery = getInsertQuery(connection);
         getMetadataRepository().executeBatch(insertQuery);
@@ -310,13 +308,7 @@ public class ConnectionConfiguration extends Configuration<Connection, Connectio
         return queries;
     }
 
-    public void deleteByName(String connectionName) throws MetadataDoesNotExistException {
-        // TODO fix logging
-        //frameworkExecution.getFrameworkLog().log(MessageFormat.format("Deleting connection {0}.", connectionName), Level.TRACE);
-        if (!exists(connectionName)) {
-            throw new MetadataDoesNotExistException(MessageFormat.format("Connection {0} is not present in the repository so cannot be updated", connectionName));
-
-        }
+    public void deleteByName(String connectionName) {
         List<String> deleteQuery = getDeleteByNameQuery(connectionName);
         getMetadataRepository().executeBatch(deleteQuery);
     }

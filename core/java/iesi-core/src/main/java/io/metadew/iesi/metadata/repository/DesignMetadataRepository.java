@@ -3,7 +3,6 @@ package io.metadew.iesi.metadata.repository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.metadata.configuration.component.ComponentConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.generation.GenerationConfiguration;
 import io.metadew.iesi.metadata.configuration.script.ScriptConfiguration;
 import io.metadew.iesi.metadata.definition.DataObject;
@@ -79,7 +78,7 @@ public class DesignMetadataRepository extends MetadataRepository {
             Component component = (Component) objectMapper.convertValue(dataObject, Metadata.class);
             save(component);
         } else if (dataObject.getType().equalsIgnoreCase("generation")) {
-            Generation generation= objectMapper.convertValue(dataObject, Generation.class);
+            Generation generation = objectMapper.convertValue(dataObject, Generation.class);
             save(generation);
         } else if (dataObject.getType().equalsIgnoreCase("subroutine")) {
             System.out.println("subroutine");
@@ -89,7 +88,7 @@ public class DesignMetadataRepository extends MetadataRepository {
         }
     }
 
-    public void save(Script script) throws MetadataRepositorySaveException {
+    public void save(Script script) {
         LOGGER.info(MessageFormat.format("Saving script {0}-{1} into design repository", script.getName(), script.getVersion().getNumber()));
         if (!verifyScript(script)) {
             LOGGER.error(MessageFormat.format("Script {0}-{1} cannot be saved as it contains errors", script.getName(), script.getVersion().getNumber()));
@@ -99,29 +98,20 @@ public class DesignMetadataRepository extends MetadataRepository {
             ScriptConfiguration.getInstance().insert(script);
         } catch (MetadataAlreadyExistsException e) {
             LOGGER.info(MessageFormat.format("Script {0}-{1} already exists in design repository. Updating to new definition", script.getName(), script.getVersion().getNumber()));
-            try {
-                ScriptConfiguration.getInstance().update(script);
-            } catch (MetadataDoesNotExistException ex) {
-                throw new MetadataRepositorySaveException(ex);
-
-            }
+            ScriptConfiguration.getInstance().update(script);
         }
     }
 
-    public void save(Component component) throws MetadataRepositorySaveException {
+    public void save(Component component) {
         LOGGER.info(MessageFormat.format("Saving component {0} into design repository", component.getName()));
         try {
             ComponentConfiguration.getInstance().insert(component);
         } catch (MetadataAlreadyExistsException e) {
             LOGGER.warn(MessageFormat.format("Component {0} already exists in design repository. Updating to new definition", component.getName()), Level.INFO);
-            try {
-                ComponentConfiguration.getInstance().update(component);
-            } catch (MetadataDoesNotExistException ex) {
-                throw new MetadataRepositorySaveException(ex);
-            }
+            ComponentConfiguration.getInstance().update(component);
         }
     }
-    
+
     public void save(Generation generation) {
         LOGGER.info(MessageFormat.format("Saving generation {0} into design repository", generation.getName()));
         GenerationConfiguration generationConfiguration = new GenerationConfiguration(generation);

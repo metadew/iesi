@@ -31,7 +31,8 @@ public class ComponentVersionConfiguration extends Configuration<ComponentVersio
         return INSTANCE;
     }
 
-    private ComponentVersionConfiguration() {}
+    private ComponentVersionConfiguration() {
+    }
 
     public void init(MetadataRepository metadataRepository) {
         setMetadataRepository(metadataRepository);
@@ -67,7 +68,7 @@ public class ComponentVersionConfiguration extends Configuration<ComponentVersio
     @Override
     public List<ComponentVersion> getAll() {
         try {
-            List<ComponentVersion> componentVersions= new ArrayList<>();
+            List<ComponentVersion> componentVersions = new ArrayList<>();
             String query = "select * from "
                     + getMetadataRepository().getTableNameByLabel("ComponentVersions") + ";";
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
@@ -86,7 +87,7 @@ public class ComponentVersionConfiguration extends Configuration<ComponentVersio
     }
 
     @Override
-    public void delete(ComponentVersionKey metadataKey) throws MetadataDoesNotExistException {
+    public void delete(ComponentVersionKey metadataKey) {
         LOGGER.trace(MessageFormat.format("Deleting ComponentVersion {0}.", metadataKey.toString()));
         if (!exists(metadataKey)) {
             throw new MetadataDoesNotExistException(metadataKey);
@@ -95,14 +96,14 @@ public class ComponentVersionConfiguration extends Configuration<ComponentVersio
         getMetadataRepository().executeUpdate(deleteStatement);
     }
 
-    private String deleteStatement(ComponentVersionKey componentVersionKey){
+    private String deleteStatement(ComponentVersionKey componentVersionKey) {
         return "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ComponentVersions") +
                 " WHERE COMP_ID = " + SQLTools.GetStringForSQL(componentVersionKey.getComponentKey().getId()) +
                 " AND COMP_VRS_NB = " + SQLTools.GetStringForSQL(componentVersionKey.getComponentKey().getVersionNumber()) + ";";
     }
 
     @Override
-    public void insert(ComponentVersion metadata) throws MetadataAlreadyExistsException {
+    public void insert(ComponentVersion metadata) {
         LOGGER.trace(MessageFormat.format("Inserting ComponentVersion {0}.", metadata.getMetadataKey().toString()));
         if (exists(metadata.getMetadataKey())) {
             throw new MetadataAlreadyExistsException(metadata.getMetadataKey());
@@ -122,7 +123,7 @@ public class ComponentVersionConfiguration extends Configuration<ComponentVersio
 
     public List<ComponentVersion> getByComponent(String componentId) {
         try {
-            List<ComponentVersion> componentVersions= new ArrayList<>();
+            List<ComponentVersion> componentVersions = new ArrayList<>();
             String query = "select * from "
                     + getMetadataRepository().getTableNameByLabel("ComponentVersions") +
                     " WHERE COMP_ID = " + SQLTools.GetStringForSQL(componentId) + ";";
@@ -147,14 +148,14 @@ public class ComponentVersionConfiguration extends Configuration<ComponentVersio
         getMetadataRepository().executeUpdate(deleteStatement);
     }
 
-    public long getLatestVersionByComponentId(String componentId) throws MetadataDoesNotExistException {
+    public long getLatestVersionByComponentId(String componentId) {
         String queryComponentVersion = "select max(COMP_VRS_NB) as \"MAX_VRS_NB\" from "
                 + getMetadataRepository().getTableNameByLabel("ComponentVersions") +
                 " where COMP_ID = " + SQLTools.GetStringForSQL(componentId) + ";";
         CachedRowSet crsComponentVersion = getMetadataRepository().executeQuery(queryComponentVersion, "reader");
         try {
             if (crsComponentVersion.size() == 0) {
-                throw new MetadataDoesNotExistException(MessageFormat.format("Component with ID {0} does not exeist, cannot find latest version", componentId));
+                throw new RuntimeException(MessageFormat.format("Component with ID {0} does not exeist, cannot find latest version", componentId));
             } else {
                 crsComponentVersion.next();
                 long componentVersionNumber = crsComponentVersion.getLong("MAX_VRS_NB");

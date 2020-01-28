@@ -1,7 +1,6 @@
 package io.metadew.iesi.runtime.script;
 
 import io.metadew.iesi.framework.configuration.ScriptRunStatus;
-import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.execution.script.ScriptExecutionConfiguration;
 import io.metadew.iesi.metadata.configuration.script.ScriptConfiguration;
@@ -12,13 +11,11 @@ import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.metadata.definition.script.result.key.ScriptResultKey;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
-import io.metadew.iesi.script.ScriptExecutionBuildException;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.execution.ScriptExecutionBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 
@@ -42,14 +39,12 @@ public class ScriptNameExecutor implements ScriptExecutor<ScriptNameExecutionReq
     }
 
     @Override
-    public void execute(ScriptNameExecutionRequest scriptExecutionRequest) throws MetadataDoesNotExistException, ScriptExecutionBuildException, MetadataAlreadyExistsException {
+    public void execute(ScriptNameExecutionRequest scriptExecutionRequest) {
 
         Script script = scriptExecutionRequest.getScriptVersion()
                 .map(scriptVersion -> ScriptConfiguration.getInstance().get(new ScriptKey(IdentifierTools.getScriptIdentifier(scriptExecutionRequest.getScriptName()), scriptVersion)))
                 .orElse(ScriptConfiguration.getInstance().getLatestVersion(scriptExecutionRequest.getScriptName()))
-                .orElseThrow(() -> new MetadataDoesNotExistException(MessageFormat.format("Script {0}:{1} does not exist", scriptExecutionRequest.getScriptName(), scriptExecutionRequest.getScriptVersion().map(Object::toString).orElse("latest"))));
-
-        // TODO: ActionSelection?
+                .orElseThrow(() -> new MetadataDoesNotExistException(new ScriptKey(IdentifierTools.getScriptIdentifier(scriptExecutionRequest.getScriptName()), scriptExecutionRequest.getScriptVersion().orElse(-1L))));
 
         ScriptExecution scriptExecution = new ScriptExecutionBuilder(true, false)
                 .script(script)

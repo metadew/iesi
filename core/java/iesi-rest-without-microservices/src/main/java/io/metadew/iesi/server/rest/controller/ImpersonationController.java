@@ -7,9 +7,6 @@ import io.metadew.iesi.metadata.configuration.impersonation.ImpersonationConfigu
 import io.metadew.iesi.metadata.definition.impersonation.Impersonation;
 import io.metadew.iesi.metadata.definition.impersonation.key.ImpersonationKey;
 import io.metadew.iesi.server.rest.error.DataBadRequestException;
-import io.metadew.iesi.server.rest.error.DataNotFoundException;
-import io.metadew.iesi.server.rest.pagination.ImpersonationCriteria;
-import io.metadew.iesi.server.rest.pagination.ImpersonationPagination;
 import io.metadew.iesi.server.rest.resource.HalMultipleEmbeddedResource;
 import io.metadew.iesi.server.rest.resource.impersonation.dto.ImpersonationDto;
 import io.metadew.iesi.server.rest.resource.impersonation.resource.ImpersonatonDtoResourceAssembler;
@@ -17,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -32,60 +28,47 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 public class ImpersonationController {
 
     private ImpersonationConfiguration impersonationConfiguration;
-    private final ImpersonationPagination impersonationPagination;
     private ImpersonatonDtoResourceAssembler impersonatonDtoResourceAssembler;
 
     @Autowired
-    ImpersonationController(ImpersonationConfiguration impersonationConfiguration, ImpersonationPagination impersonationPagination,
+    ImpersonationController(ImpersonationConfiguration impersonationConfiguration,
                             ImpersonatonDtoResourceAssembler impersonatonDtoResourceAssembler) {
         this.impersonationConfiguration = impersonationConfiguration;
-        this.impersonationPagination = impersonationPagination;
         this.impersonatonDtoResourceAssembler = impersonatonDtoResourceAssembler;
     }
 
 
     @GetMapping("")
-    public HalMultipleEmbeddedResource<ImpersonationDto> getAll(@Valid ImpersonationCriteria impersonationCriteria) {
+    public HalMultipleEmbeddedResource<ImpersonationDto> getAll() {
         List<Impersonation> impersonations = impersonationConfiguration.getAllImpersonations();
-        List<Impersonation> pagination = impersonationPagination.search(impersonations, impersonationCriteria);
-        return new HalMultipleEmbeddedResource<>(pagination.stream()
+        return new HalMultipleEmbeddedResource<>(impersonations.stream()
                 .filter(distinctByKey(Impersonation::getName))
                 .map(impersonation -> impersonatonDtoResourceAssembler.toResource(impersonation))
                 .collect(Collectors.toList()));
     }
 
     @GetMapping("/{name}")
-    public ImpersonationDto get(@PathVariable String name) {
-
+    public ImpersonationDto get(@PathVariable String name) throws MetadataDoesNotExistException {
         return impersonationConfiguration.getImpersonation(name)
                 .map(impersonation -> impersonatonDtoResourceAssembler.toResource(impersonation))
-                .orElseThrow(() -> new DataNotFoundException(name));
+                .orElseThrow(() -> new MetadataDoesNotExistException(new ImpersonationKey(name)));
     }
 
     @PostMapping("")
-    public ImpersonationDto post(@Valid @RequestBody ImpersonationDto impersonationDto) {
-        try {
-            impersonationConfiguration.insertImpersonation(impersonationDto.convertToEntity());
-            return impersonatonDtoResourceAssembler.toResource(impersonationDto.convertToEntity());
-        } catch (MetadataAlreadyExistsException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-                    "Impersonation " + impersonationDto.getName() + " already exists");
-        }
+    public ImpersonationDto post(@Valid @RequestBody ImpersonationDto impersonationDto) throws MetadataAlreadyExistsException {
+        impersonationConfiguration.insertImpersonation(impersonationDto.convertToEntity());
+        return impersonatonDtoResourceAssembler.toResource(impersonationDto.convertToEntity());
     }
 
     @PutMapping("")
-    public HalMultipleEmbeddedResource<ImpersonationDto> putAll(@Valid @RequestBody List<ImpersonationDto> impersonationDtos) {
+    public HalMultipleEmbeddedResource<ImpersonationDto> putAll(@Valid @RequestBody List<ImpersonationDto> impersonationDtos) throws MetadataDoesNotExistException {
         HalMultipleEmbeddedResource<ImpersonationDto> halMultipleEmbeddedResource = new HalMultipleEmbeddedResource<>();
         for (ImpersonationDto impersonationDto : impersonationDtos) {
-            try {
-                impersonationConfiguration.updateImpersonation(impersonationDto.convertToEntity());
-                halMultipleEmbeddedResource.embedResource(impersonationDto);
-                halMultipleEmbeddedResource.add(linkTo(methodOn(ImpersonationController.class)
-                        .get(impersonationDto.getName()))
-                        .withRel(impersonationDto.getName()));
-            } catch (MetadataDoesNotExistException e) {
-                throw new DataNotFoundException(impersonationDto.getName());
-            }
+            impersonationConfiguration.updateImpersonation(impersonationDto.convertToEntity());
+            halMultipleEmbeddedResource.embedResource(impersonationDto);
+            halMultipleEmbeddedResource.add(linkTo(methodOn(ImpersonationController.class)
+                    .get(impersonationDto.getName()))
+                    .withRel(impersonationDto.getName()));
         }
 
         return halMultipleEmbeddedResource;
@@ -93,18 +76,14 @@ public class ImpersonationController {
 
     @PutMapping("/{name}")
     public ImpersonationDto put(@PathVariable String name,
-                                @RequestBody ImpersonationDto impersonation) {
+                                @RequestBody ImpersonationDto impersonation) throws MetadataDoesNotExistException {
         if (!impersonation.getName().equals(name)) {
-            throw new DataNotFoundException(name);
+            throw new DataBadRequestException(name);
         } else if (impersonation.getName() == null) {
             throw new DataBadRequestException(name);
         }
-        try {
-            impersonationConfiguration.updateImpersonation(impersonation.convertToEntity());
-            return impersonatonDtoResourceAssembler.toResource(impersonation.convertToEntity());
-        } catch (MetadataDoesNotExistException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-        }
+        impersonationConfiguration.updateImpersonation(impersonation.convertToEntity());
+        return impersonatonDtoResourceAssembler.toResource(impersonation.convertToEntity());
 
     }
 
@@ -119,13 +98,9 @@ public class ImpersonationController {
     }
 
     @DeleteMapping("/{name}")
-    public ResponseEntity<?> delete(@PathVariable String name) {
-        try {
-            impersonationConfiguration.deleteImpersonation(new ImpersonationKey(name));
-            return ResponseEntity.status(HttpStatus.OK).build();
-        } catch (MetadataDoesNotExistException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+    public ResponseEntity<?> delete(@PathVariable String name) throws MetadataDoesNotExistException {
+        impersonationConfiguration.deleteImpersonation(new ImpersonationKey(name));
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
 }

@@ -64,7 +64,7 @@ public class ImpersonationParameterConfiguration extends Configuration<Impersona
     }
 
     @Override
-    public void delete(ImpersonationParameterKey metadataKey) throws MetadataDoesNotExistException {
+    public void delete(ImpersonationParameterKey metadataKey) {
         LOGGER.trace(MessageFormat.format("Deleting ActionResultOutput {0}.", metadataKey.toString()));
         if (!exists(metadataKey)) {
             throw new MetadataDoesNotExistException(metadataKey);
@@ -81,7 +81,7 @@ public class ImpersonationParameterConfiguration extends Configuration<Impersona
     }
 
     @Override
-    public void insert(ImpersonationParameter metadata) throws MetadataAlreadyExistsException {
+    public void insert(ImpersonationParameter metadata) {
         LOGGER.trace(MessageFormat.format("Inserting ImpersonationParameter {0}.", metadata.getMetadataKey().toString()));
         if (exists(metadata.getMetadataKey())) {
             throw new MetadataAlreadyExistsException(metadata.getMetadataKey());

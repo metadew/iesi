@@ -52,13 +52,13 @@ class ScriptVersionConfigurationTest {
     }
 
     @Test
-    void scriptVersionExistsTest() throws MetadataAlreadyExistsException {
+    void scriptVersionExistsTest() {
         ScriptVersionConfiguration.getInstance().insert(scriptVersion1);
         assertTrue(ScriptVersionConfiguration.getInstance().exists(scriptVersion1.getMetadataKey()));
     }
 
     @Test
-    void scriptVersionInsertTest() throws MetadataAlreadyExistsException {
+    void scriptVersionInsertTest() {
         assertEquals(0, ScriptVersionConfiguration.getInstance().getAll().size());
         ScriptVersionConfiguration.getInstance().insert(scriptVersion1);
 
@@ -67,7 +67,7 @@ class ScriptVersionConfigurationTest {
         assertEquals(scriptVersion1, ScriptVersionConfiguration.getInstance().get(scriptVersion1.getMetadataKey()).get());
     }
     @Test
-    void scriptVersionInsertMultipleTest() throws MetadataAlreadyExistsException {
+    void scriptVersionInsertMultipleTest() {
         assertEquals(0, ScriptVersionConfiguration.getInstance().getAll().size());
         ScriptVersionConfiguration.getInstance().insert(scriptVersion1);
         ScriptVersionConfiguration.getInstance().insert(scriptVersion2);
@@ -80,13 +80,13 @@ class ScriptVersionConfigurationTest {
     }
 
     @Test
-    void scriptVersionInsertAlreadyExistsTest() throws MetadataAlreadyExistsException {
+    void scriptVersionInsertAlreadyExistsTest() {
         ScriptVersionConfiguration.getInstance().insert(scriptVersion1);
         assertThrows(MetadataAlreadyExistsException.class,() -> ScriptVersionConfiguration.getInstance().insert(scriptVersion1));
     }
 
     @Test
-    void scriptVersionDeleteTest() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
+    void scriptVersionDeleteTest() {
         ScriptVersionConfiguration.getInstance().insert(scriptVersion1);
 
         assertEquals(1, ScriptVersionConfiguration.getInstance().getAll().size());
@@ -95,7 +95,7 @@ class ScriptVersionConfigurationTest {
     }
 
     @Test
-    void scriptVersionDeleteMultipleTest() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
+    void scriptVersionDeleteMultipleTest() {
         ScriptVersionConfiguration.getInstance().insert(scriptVersion1);
         ScriptVersionConfiguration.getInstance().insert(scriptVersion2);
 
@@ -110,7 +110,7 @@ class ScriptVersionConfigurationTest {
     }
 
     @Test
-    void scriptVersionGetTest() throws MetadataAlreadyExistsException {
+    void scriptVersionGetTest() {
         ScriptVersionConfiguration.getInstance().insert(scriptVersion1);
 
         Optional<ScriptVersion> fetchedScriptVersion = ScriptVersionConfiguration.getInstance().get(scriptVersion1.getMetadataKey());
@@ -124,7 +124,7 @@ class ScriptVersionConfigurationTest {
     }
 
     @Test
-    void scriptUpdateTest() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
+    void scriptUpdateTest() {
         ScriptVersionConfiguration.getInstance().insert(scriptVersion1);
         Optional<ScriptVersion> fetchedScriptVersion = ScriptVersionConfiguration.getInstance().get(scriptVersion1.getMetadataKey());
         assertTrue(fetchedScriptVersion.isPresent());
@@ -139,7 +139,7 @@ class ScriptVersionConfigurationTest {
     }
 
     @Test
-    void scriptGetAllVersionsOfScriptOnlyTest() throws MetadataAlreadyExistsException {
+    void scriptGetAllVersionsOfScriptOnlyTest() {
         ScriptVersionConfiguration.getInstance().insert(scriptVersion1);
         ScriptVersionConfiguration.getInstance().insert(scriptVersion2);
 
@@ -148,7 +148,7 @@ class ScriptVersionConfigurationTest {
         assertEquals(Stream.of(scriptVersion1, scriptVersion2).collect(Collectors.toList()), scriptVersions);
     }
     @Test
-    void scriptGetAllVersionsOfScriptMultipleTest() throws MetadataAlreadyExistsException {
+    void scriptGetAllVersionsOfScriptMultipleTest() {
         ScriptVersionConfiguration.getInstance().insert(scriptVersion1);
         ScriptVersionConfiguration.getInstance().insert(scriptVersion2);
         ScriptVersionConfiguration.getInstance().insert(scriptVersion3);

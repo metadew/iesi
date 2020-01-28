@@ -2,9 +2,11 @@ package io.metadew.iesi.server.rest.resource.script.resource;
 
 
 import io.metadew.iesi.metadata.definition.action.Action;
+import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.server.rest.controller.ScriptController;
 import io.metadew.iesi.server.rest.resource.script.dto.ScriptActionDto;
+import io.metadew.iesi.server.rest.resource.script.dto.ScriptActionParameterDto;
 import io.metadew.iesi.server.rest.resource.script.dto.ScriptDto;
 import io.metadew.iesi.server.rest.resource.script.dto.ScriptVersionDto;
 import org.springframework.hateoas.Link;
@@ -43,7 +45,13 @@ public class ScriptDtoResourceAssembler extends ResourceAssemblerSupport<Script,
 
 
     private ScriptActionDto convertToDto(Action action){
-        return new ScriptActionDto(action.getNumber(),action.getName(),action.getType(), action.getDescription(),action.getComponent(), action.getCondition(), action.getIteration(), action.getErrorExpected(),action.getErrorStop(),action.getRetries(),action.getParameters());
+        return new ScriptActionDto(action.getNumber(),action.getName(),action.getType(), action.getDescription(),action.getComponent(),
+                action.getCondition(), action.getIteration(), action.getErrorExpected(),action.getErrorStop(),action.getRetries(),
+                action.getParameters().stream().map(this::convertToDto).collect(Collectors.toList()));
+    }
+
+    private ScriptActionParameterDto convertToDto(ActionParameter actionParameter){
+        return new ScriptActionParameterDto(actionParameter.getMetadataKey().getParameterName(), actionParameter.getValue());
     }
 
 }

@@ -87,7 +87,7 @@ public class ScriptParameterConfiguration extends Configuration<ScriptParameter,
     }
 
     @Override
-    public void delete(ScriptParameterKey metadataKey) throws MetadataDoesNotExistException {
+    public void delete(ScriptParameterKey metadataKey) {
         LOGGER.trace(MessageFormat.format("Deleting ScriptParameter {0}.", metadataKey.toString()));
         if (!exists(metadataKey)) {
             throw new MetadataDoesNotExistException(metadataKey);
@@ -104,7 +104,7 @@ public class ScriptParameterConfiguration extends Configuration<ScriptParameter,
     }
 
     @Override
-    public void insert(ScriptParameter scriptParameter) throws MetadataAlreadyExistsException {
+    public void insert(ScriptParameter scriptParameter) {
         LOGGER.trace(MessageFormat.format("Inserting ScriptParameter {0}.", scriptParameter.toString()));
         if (exists(scriptParameter)) {
             throw new MetadataAlreadyExistsException(scriptParameter);

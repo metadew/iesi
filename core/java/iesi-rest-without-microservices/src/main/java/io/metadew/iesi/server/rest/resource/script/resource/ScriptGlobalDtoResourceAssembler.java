@@ -33,7 +33,6 @@ public class ScriptGlobalDtoResourceAssembler extends ResourceAssemblerSupport<L
     }
 
     private ScriptGlobalDto convertToDto(List<Script> scripts) {
-
         return modelMapper.map(scripts.get(0), ScriptGlobalDto.class);
 
     }

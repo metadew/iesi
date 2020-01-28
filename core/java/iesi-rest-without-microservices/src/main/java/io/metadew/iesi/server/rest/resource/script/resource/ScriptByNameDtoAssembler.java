@@ -29,7 +29,7 @@ public class ScriptByNameDtoAssembler extends ResourceAssemblerSupport<List<Scri
         scriptDto.getVersions().forEach(
                 version -> scriptDto.add(linkTo(methodOn(ScriptController.class)
                         .get(scriptDto.getName(), version))
-                        .withRel("version:"+version))
+                        .withRel("version:" + version))
         );
         return scriptDto;
     }

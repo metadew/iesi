@@ -52,19 +52,19 @@ class EnvironmentParameterConfigurationTest {
     }
 
     @Test
-    void environmentParameterNotExistsSimilarEnvNameTest() throws MetadataAlreadyExistsException {
+    void environmentParameterNotExistsSimilarEnvNameTest() {
         EnvironmentParameterConfiguration.getInstance().insert(environmentParameter12);
         assertFalse(EnvironmentParameterConfiguration.getInstance().exists(environmentParameter11));
     }
 
     @Test
-    void environmentParameterExistsTest() throws MetadataAlreadyExistsException {
+    void environmentParameterExistsTest() {
         EnvironmentParameterConfiguration.getInstance().insert(environmentParameter11);
         assertTrue(EnvironmentParameterConfiguration.getInstance().exists(environmentParameter11.getMetadataKey()));
     }
 
     @Test
-    void environmentParameterInsertOnlyTest() throws MetadataAlreadyExistsException {
+    void environmentParameterInsertOnlyTest() {
         assertEquals(0, EnvironmentParameterConfiguration.getInstance().getAll().size());
 
         EnvironmentParameterConfiguration.getInstance().insert(environmentParameter11);
@@ -76,7 +76,7 @@ class EnvironmentParameterConfigurationTest {
     }
 
     @Test
-    void environmentParameterInsertMultipleTest() throws MetadataAlreadyExistsException {
+    void environmentParameterInsertMultipleTest() {
         assertEquals(0, EnvironmentParameterConfiguration.getInstance().getAll().size());
 
         EnvironmentParameterConfiguration.getInstance().insert(environmentParameter11);
@@ -96,13 +96,13 @@ class EnvironmentParameterConfigurationTest {
     }
 
     @Test
-    void environmentParameterInsertAlreadyExistsTest() throws MetadataAlreadyExistsException {
+    void environmentParameterInsertAlreadyExistsTest() {
         EnvironmentParameterConfiguration.getInstance().insert(environmentParameter11);
         assertThrows(MetadataAlreadyExistsException.class,() -> EnvironmentParameterConfiguration.getInstance().insert(environmentParameter11));
     }
 
     @Test
-    void environmentParameterDeleteTest() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
+    void environmentParameterDeleteTest() {
         EnvironmentParameterConfiguration.getInstance().insert(environmentParameter11);
         EnvironmentParameterConfiguration.getInstance().delete(environmentParameter11.getMetadataKey());
     }
@@ -113,7 +113,7 @@ class EnvironmentParameterConfigurationTest {
     }
 
     @Test
-    void environmentParameterGetTest() throws MetadataAlreadyExistsException {
+    void environmentParameterGetTest() {
         assertEquals(0, EnvironmentParameterConfiguration.getInstance().getAll().size());
 
         EnvironmentParameterConfiguration.getInstance().insert(environmentParameter11);
@@ -133,7 +133,7 @@ class EnvironmentParameterConfigurationTest {
     }
 
     @Test
-    void environmentParameterGetAllTest() throws MetadataAlreadyExistsException {
+    void environmentParameterGetAllTest() {
         assertEquals(0, EnvironmentParameterConfiguration.getInstance().getAll().size());
 
         EnvironmentParameterConfiguration.getInstance().insert(environmentParameter11);
@@ -149,7 +149,7 @@ class EnvironmentParameterConfigurationTest {
     }
 
     @Test
-    void environmentParameterUpdateOnlyTest() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
+    void environmentParameterUpdateOnlyTest() {
         EnvironmentParameterConfiguration.getInstance().insert(environmentParameter11);
         Optional<EnvironmentParameter> fetchedEnvironmentParameter11 = EnvironmentParameterConfiguration.getInstance().get(environmentParameter11.getMetadataKey());
         assertTrue(fetchedEnvironmentParameter11.isPresent());
@@ -164,7 +164,7 @@ class EnvironmentParameterConfigurationTest {
     }
 
     @Test
-    void environmentParameterUpdateMultipleTest() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
+    void environmentParameterUpdateMultipleTest() {
         EnvironmentParameterConfiguration.getInstance().insert(environmentParameter11);
         EnvironmentParameterConfiguration.getInstance().insert(environmentParameter12);
 

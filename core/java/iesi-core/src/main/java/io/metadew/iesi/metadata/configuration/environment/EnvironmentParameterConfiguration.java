@@ -103,7 +103,7 @@ public class EnvironmentParameterConfiguration extends Configuration<Environment
     }
 
     @Override
-    public void delete(EnvironmentParameterKey metadataKey) throws MetadataDoesNotExistException {
+    public void delete(EnvironmentParameterKey metadataKey) {
         LOGGER.trace(MessageFormat.format("Deleting Connection {0}.", metadataKey.toString()));
         if (!exists(metadataKey)) {
             throw new MetadataDoesNotExistException(metadataKey);
@@ -120,7 +120,7 @@ public class EnvironmentParameterConfiguration extends Configuration<Environment
     }
 
     @Override
-    public void insert(EnvironmentParameter metadata) throws MetadataAlreadyExistsException {
+    public void insert(EnvironmentParameter metadata) {
         LOGGER.trace(MessageFormat.format("Inserting Connection {0}.", metadata.getMetadataKey().toString()));
         if (exists(metadata.getMetadataKey())) {
             throw new MetadataAlreadyExistsException(metadata.getMetadataKey());

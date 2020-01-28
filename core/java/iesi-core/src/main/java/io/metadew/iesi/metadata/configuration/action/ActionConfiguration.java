@@ -119,7 +119,7 @@ public class ActionConfiguration extends Configuration<Action, ActionKey> {
     }
 
     @Override
-    public void delete(ActionKey actionKey) throws MetadataDoesNotExistException {
+    public void delete(ActionKey actionKey) {
         LOGGER.trace(MessageFormat.format("Deleting Action {0}.", actionKey.toString()));
         if (!exists(actionKey)) {
             throw new MetadataDoesNotExistException(actionKey);
@@ -129,7 +129,7 @@ public class ActionConfiguration extends Configuration<Action, ActionKey> {
     }
 
     @Override
-    public void insert(Action action) throws MetadataAlreadyExistsException {
+    public void insert(Action action) {
         LOGGER.trace(MessageFormat.format("Inserting action {0}.", action.toString()));
         if (exists(action)) {
             throw new MetadataAlreadyExistsException(action);

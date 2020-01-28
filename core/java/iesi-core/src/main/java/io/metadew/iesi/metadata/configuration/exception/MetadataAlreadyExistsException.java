@@ -5,19 +5,16 @@ import io.metadew.iesi.metadata.definition.key.MetadataKey;
 
 import java.text.MessageFormat;
 
-public class MetadataAlreadyExistsException extends Exception {
+public class MetadataAlreadyExistsException extends RuntimeException {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public MetadataAlreadyExistsException(String message) {
-        super(message);
+    public MetadataAlreadyExistsException(MetadataKey metadataKey) {
+        super(MessageFormat.format("{0}: {1} already exists", metadataKey.getClass().getSimpleName(), metadataKey));
     }
 
-    public MetadataAlreadyExistsException(MetadataKey metadataKey){
-        this(MessageFormat.format("{0}: {1} already exists", metadataKey.getClass().getSimpleName(), metadataKey));
-    }
-    public MetadataAlreadyExistsException(Metadata metadata){
-        this(MessageFormat.format("{0}: {1} already exists", metadata.getClass().getSimpleName(), metadata));
+    public MetadataAlreadyExistsException(Metadata metadata) {
+        this(metadata.getMetadataKey());
     }
 
 }

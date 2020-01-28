@@ -7,6 +7,7 @@ import io.metadew.iesi.metadata.tools.IdentifierTools;
 import org.springframework.hateoas.ResourceSupport;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ScriptActionDto extends ResourceSupport {
 
@@ -20,13 +21,13 @@ public class ScriptActionDto extends ResourceSupport {
     private boolean errorExpected;
     private boolean errorStop;
     private String type;
-    private List<ActionParameter>  parameters;
+    private List<ScriptActionParameterDto>  parameters;
 
     public ScriptActionDto() {}
 
     public ScriptActionDto(long number, String name, String type, String description, String component, String condition,
                            String iteration, boolean errorExpected, boolean errorStop, int retries,
-                           List<ActionParameter> parameters) {
+                           List<ScriptActionParameterDto> parameters) {
         this.number = number;
         this.name = name;
         this.description = description;
@@ -43,7 +44,9 @@ public class ScriptActionDto extends ResourceSupport {
     public Action convertToEntity(String scriptName, long version){
         return new Action(new ActionKey(scriptName, version, IdentifierTools.getActionIdentifier(name)),
                 number, type, this.name, description, component, condition, iteration, errorExpected ? "y" : "n",
-                errorStop ? "y" : "n", Integer.toString(retries), parameters);
+                errorStop ? "y" : "n", Integer.toString(retries), parameters.stream()
+                .map(parameter -> parameter.convertToEntity(scriptName, version, IdentifierTools.getActionIdentifier(name)))
+                .collect(Collectors.toList()));
 
     }
 
@@ -103,11 +106,11 @@ public class ScriptActionDto extends ResourceSupport {
         this.type = type;
     }
 
-    public List<ActionParameter> getParameters() {
+    public List<ScriptActionParameterDto> getParameters() {
         return parameters;
     }
 
-    public void setParameters(List<ActionParameter> parameters) {
+    public void setParameters(List<ScriptActionParameterDto> parameters) {
         this.parameters = parameters;
     }
 

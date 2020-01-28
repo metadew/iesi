@@ -6,7 +6,6 @@ import io.metadew.iesi.metadata.configuration.execution.ExecutionRequestConfigur
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequestBuilderException;
 import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
-import io.metadew.iesi.server.rest.error.DataNotFoundException;
 import io.metadew.iesi.server.rest.resource.HalMultipleEmbeddedResource;
 import io.metadew.iesi.server.rest.resource.execution_request.dto.ExecutionRequestDto;
 import io.metadew.iesi.server.rest.resource.execution_request.resource.ExecutionRequestDtoResourceAssembler;
@@ -53,51 +52,39 @@ public class ExecutionRequestController {
     }
 
     @PostMapping("")
-    public ExecutionRequestDto post(@RequestBody ExecutionRequestDto executionRequestDto) {
+    public ExecutionRequestDto post(@RequestBody ExecutionRequestDto executionRequestDto) throws MetadataAlreadyExistsException {
         try {
             ExecutionRequest executionRequest = executionRequestDto.convertToNewEntity();
             executionRequestConfiguration.insert(executionRequest);
             return executionRequestDtoResourceAssembler.toResource(executionRequest);
-        } catch (MetadataAlreadyExistsException | ExecutionRequestBuilderException e) {
+        } catch (ExecutionRequestBuilderException e) {
             throw new RuntimeException(e);
         }
     }
 
     @PutMapping("")
-    public HalMultipleEmbeddedResource<ExecutionRequestDto> putAll(@RequestBody List<ExecutionRequestDto> executionRequestDtos) {
+    public HalMultipleEmbeddedResource<ExecutionRequestDto> putAll(@RequestBody List<ExecutionRequestDto> executionRequestDtos) throws MetadataDoesNotExistException {
         HalMultipleEmbeddedResource<ExecutionRequestDto> halMultipleEmbeddedResource = new HalMultipleEmbeddedResource<>();
         for (ExecutionRequestDto executionRequestDto : executionRequestDtos) {
-            try {
-                executionRequestConfiguration.update(executionRequestDto.convertToEntity());
-                halMultipleEmbeddedResource.embedResource(executionRequestDto);
-                halMultipleEmbeddedResource.add(linkTo(methodOn(ScriptController.class)
-                        .getByName(executionRequestDto.getName()))
-                        .withRel(executionRequestDto.getName()));
-            } catch (MetadataDoesNotExistException e) {
-                throw new DataNotFoundException(executionRequestDto.getName());
-            }
+            executionRequestConfiguration.update(executionRequestDto.convertToEntity());
+            halMultipleEmbeddedResource.embedResource(executionRequestDto);
+            halMultipleEmbeddedResource.add(linkTo(methodOn(ScriptController.class)
+                    .getByName(executionRequestDto.getName()))
+                    .withRel(executionRequestDto.getName()));
         }
 
         return halMultipleEmbeddedResource;
     }
 
     @PutMapping("/{id}")
-    public ExecutionRequestDto put(@PathVariable String id, @RequestBody ExecutionRequestDto executionRequestDto) {
-        try {
-            executionRequestConfiguration.update(executionRequestDto.convertToEntity());
-            return executionRequestDtoResourceAssembler.toResource(executionRequestDto.convertToEntity());
-        } catch (MetadataDoesNotExistException e) {
-            throw new DataNotFoundException(executionRequestDto.getExecutionRequestId());
-        }
+    public ExecutionRequestDto put(@PathVariable String id, @RequestBody ExecutionRequestDto executionRequestDto) throws MetadataDoesNotExistException {
+        executionRequestConfiguration.update(executionRequestDto.convertToEntity());
+        return executionRequestDtoResourceAssembler.toResource(executionRequestDto.convertToEntity());
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteByName(@PathVariable String id) {
-        try {
-            executionRequestConfiguration.delete(new ExecutionRequestKey(id));
-            return ResponseEntity.status(HttpStatus.OK).build();
-        } catch (MetadataDoesNotExistException e) {
-            throw new DataNotFoundException(id);
-        }
+    public ResponseEntity<?> deleteByName(@PathVariable String id) throws MetadataDoesNotExistException {
+        executionRequestConfiguration.delete(new ExecutionRequestKey(id));
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

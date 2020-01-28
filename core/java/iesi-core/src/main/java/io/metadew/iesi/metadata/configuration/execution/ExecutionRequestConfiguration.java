@@ -291,11 +291,10 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
     }
 
     @Override
-    public void delete(ExecutionRequestKey executionRequestKey) throws MetadataDoesNotExistException {
+    public void delete(ExecutionRequestKey executionRequestKey) {
         LOGGER.trace(MessageFormat.format("Deleting ExecutionRequest {0}.", executionRequestKey.toString()));
         if (!exists(executionRequestKey)) {
-            throw new MetadataDoesNotExistException(MessageFormat.format(
-                    "ExecutionRequest {0} does not exists", executionRequestKey.toString()));
+            throw new MetadataDoesNotExistException(executionRequestKey);
         }
         ScriptExecutionRequestConfiguration.getInstance().deleteByExecutionKey(executionRequestKey);
         List<String> deleteStatement = deleteStatement(executionRequestKey);
@@ -317,7 +316,7 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
     }
 
     @Override
-    public void insert(ExecutionRequest executionRequest) throws MetadataAlreadyExistsException {
+    public void insert(ExecutionRequest executionRequest) {
         LOGGER.trace(MessageFormat.format("Inserting ExecutionRequest {0}.", executionRequest.toString()));
         if (exists(executionRequest.getMetadataKey())) {
             throw new MetadataAlreadyExistsException(executionRequest);
@@ -364,10 +363,9 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
     }
 
     @Override
-    public void update(ExecutionRequest executionRequest) throws MetadataDoesNotExistException {
+    public void update(ExecutionRequest executionRequest) {
         if (!exists(executionRequest.getMetadataKey())) {
-            throw new MetadataDoesNotExistException(MessageFormat.format(
-                    "ExecutionRequest {0} already exists", executionRequest.getMetadataKey().toString()));
+            throw new MetadataDoesNotExistException(executionRequest);
         }
         List<String> updateStatement = updateStatement(executionRequest);
         getMetadataRepository().executeBatch(updateStatement);

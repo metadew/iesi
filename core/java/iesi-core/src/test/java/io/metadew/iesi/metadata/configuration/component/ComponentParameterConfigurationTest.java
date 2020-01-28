@@ -58,13 +58,13 @@ class ComponentParameterConfigurationTest {
     }
 
     @Test
-    void componentParameterExistsTest() throws MetadataAlreadyExistsException {
+    void componentParameterExistsTest() {
         ComponentParameterConfiguration.getInstance().insert(componentParameter11);
         assertTrue(ComponentParameterConfiguration.getInstance().exists(componentParameter11.getMetadataKey()));
     }
 
     @Test
-    void componentParameterInsertOnlyTest() throws MetadataAlreadyExistsException {
+    void componentParameterInsertOnlyTest() {
         assertEquals(0, ComponentParameterConfiguration.getInstance().getAll().size());
 
         ComponentParameterConfiguration.getInstance().insert(componentParameter11);
@@ -76,7 +76,7 @@ class ComponentParameterConfigurationTest {
     }
 
     @Test
-    void componentParameterInsertMultipleTest() throws MetadataAlreadyExistsException {
+    void componentParameterInsertMultipleTest() {
         assertEquals(0, ComponentParameterConfiguration.getInstance().getAll().size());
 
         ComponentParameterConfiguration.getInstance().insert(componentParameter11);
@@ -103,13 +103,13 @@ class ComponentParameterConfigurationTest {
     }
 
     @Test
-    void componentParameterInsertAlreadyExistsTest() throws MetadataAlreadyExistsException {
+    void componentParameterInsertAlreadyExistsTest() {
         ComponentParameterConfiguration.getInstance().insert(componentParameter11);
         assertThrows(MetadataAlreadyExistsException.class,() -> ComponentParameterConfiguration.getInstance().insert(componentParameter11));
     }
 
     @Test
-    void componentParameterDeleteTest() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
+    void componentParameterDeleteTest() {
         ComponentParameterConfiguration.getInstance().insert(componentParameter11);
         assertEquals(1, ComponentParameterConfiguration.getInstance().getAll().size());
 
@@ -118,7 +118,7 @@ class ComponentParameterConfigurationTest {
     }
 
     @Test
-    void componentParameterDeleteMultipleTest() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
+    void componentParameterDeleteMultipleTest() {
         ComponentParameterConfiguration.getInstance().insert(componentParameter11);
         ComponentParameterConfiguration.getInstance().insert(componentParameter12);
         assertEquals(2, ComponentParameterConfiguration.getInstance().getAll().size());
@@ -132,7 +132,7 @@ class ComponentParameterConfigurationTest {
     }
 
     @Test
-    void componentParameterDeleteMultipleVersionsTest() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
+    void componentParameterDeleteMultipleVersionsTest() {
         ComponentParameterConfiguration.getInstance().insert(componentParameter11);
         ComponentParameterConfiguration.getInstance().insert(componentParameter12);
         ComponentParameterConfiguration.getInstance().insert(componentParameter2);
@@ -152,7 +152,7 @@ class ComponentParameterConfigurationTest {
     }
 
     @Test
-    void componentParameterDeleteMultipleVersionsAndIdTest() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
+    void componentParameterDeleteMultipleVersionsAndIdTest() {
         ComponentParameterConfiguration.getInstance().insert(componentParameter11);
         ComponentParameterConfiguration.getInstance().insert(componentParameter12);
         ComponentParameterConfiguration.getInstance().insert(componentParameter2);
@@ -188,7 +188,7 @@ class ComponentParameterConfigurationTest {
     }
 
     @Test
-    void componentParameterUpdateTest() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
+    void componentParameterUpdateTest() {
         ComponentParameterConfiguration.getInstance().insert(componentParameter11);
 
         Optional<ComponentParameter> fetchedComponentParameter11 = ComponentParameterConfiguration.getInstance().get(componentParameter11.getMetadataKey());
@@ -204,7 +204,7 @@ class ComponentParameterConfigurationTest {
     }
 
     @Test
-    void componentParameterUpdateMultipleVersionsTest() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
+    void componentParameterUpdateMultipleVersionsTest() {
         ComponentParameterConfiguration.getInstance().insert(componentParameter11);
         ComponentParameterConfiguration.getInstance().insert(componentParameter12);
 
@@ -229,7 +229,7 @@ class ComponentParameterConfigurationTest {
     }
 
     @Test
-    void componentParameterUpdateMultipleTest() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
+    void componentParameterUpdateMultipleTest() {
         ComponentParameterConfiguration.getInstance().insert(componentParameter11);
         ComponentParameterConfiguration.getInstance().insert(componentParameter12);
         ComponentParameterConfiguration.getInstance().insert(componentParameter2);
@@ -272,7 +272,7 @@ class ComponentParameterConfigurationTest {
     }
 
     @Test
-    void componentParameterGetByComponentTest() throws MetadataAlreadyExistsException {
+    void componentParameterGetByComponentTest() {
         ComponentParameterConfiguration.getInstance().insert(componentParameter11);
         ComponentParameterConfiguration.getInstance().insert(componentParameter12);
         ComponentParameterConfiguration.getInstance().insert(componentParameter2);
@@ -283,7 +283,7 @@ class ComponentParameterConfigurationTest {
     }
 
     @Test
-    void componentParameterGetByComponent2Test() throws MetadataAlreadyExistsException {
+    void componentParameterGetByComponent2Test() {
         ComponentParameterConfiguration.getInstance().insert(componentParameter11);
         ComponentParameterConfiguration.getInstance().insert(componentParameter12);
         ComponentParameterConfiguration.getInstance().insert(componentParameter2);
@@ -294,7 +294,7 @@ class ComponentParameterConfigurationTest {
     }
 
     @Test
-    void componentParameterGetByComponent3Test() throws MetadataAlreadyExistsException {
+    void componentParameterGetByComponent3Test() {
         ComponentParameterConfiguration.getInstance().insert(componentParameter11);
         ComponentParameterConfiguration.getInstance().insert(componentParameter12);
         ComponentParameterConfiguration.getInstance().insert(componentParameter2);
@@ -305,7 +305,7 @@ class ComponentParameterConfigurationTest {
     }
 
     @Test
-    void componentParameterDeleteByComponentTest() throws MetadataAlreadyExistsException {
+    void componentParameterDeleteByComponentTest() {
         ComponentParameterConfiguration.getInstance().insert(componentParameter11);
         ComponentParameterConfiguration.getInstance().insert(componentParameter12);
         ComponentParameterConfiguration.getInstance().insert(componentParameter2);
@@ -319,7 +319,7 @@ class ComponentParameterConfigurationTest {
     }
 
     @Test
-    void componentParameterDeleteByComponent2Test() throws MetadataAlreadyExistsException {
+    void componentParameterDeleteByComponent2Test() {
         ComponentParameterConfiguration.getInstance().insert(componentParameter11);
         ComponentParameterConfiguration.getInstance().insert(componentParameter12);
         ComponentParameterConfiguration.getInstance().insert(componentParameter2);
@@ -333,7 +333,7 @@ class ComponentParameterConfigurationTest {
     }
 
     @Test
-    void componentParameterDeleteByComponent3Test() throws MetadataAlreadyExistsException {
+    void componentParameterDeleteByComponent3Test() {
         ComponentParameterConfiguration.getInstance().insert(componentParameter11);
         ComponentParameterConfiguration.getInstance().insert(componentParameter12);
         ComponentParameterConfiguration.getInstance().insert(componentParameter2);

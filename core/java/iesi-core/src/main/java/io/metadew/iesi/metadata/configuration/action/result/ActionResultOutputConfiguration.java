@@ -2,8 +2,6 @@ package io.metadew.iesi.metadata.configuration.action.result;
 
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
-import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.action.result.ActionResultOutput;
 import io.metadew.iesi.metadata.definition.action.result.key.ActionResultOutputKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
@@ -80,7 +78,7 @@ public class ActionResultOutputConfiguration extends Configuration<ActionResultO
     }
 
     @Override
-    public void delete(ActionResultOutputKey actionResultOutputKey) throws MetadataDoesNotExistException {
+    public void delete(ActionResultOutputKey actionResultOutputKey) {
         LOGGER.trace(MessageFormat.format("Deleting ActionResultOutput {0}.", actionResultOutputKey.toString()));
         String deleteStatement = deleteStatement(actionResultOutputKey);
         getMetadataRepository().executeUpdate(deleteStatement);
@@ -96,7 +94,7 @@ public class ActionResultOutputConfiguration extends Configuration<ActionResultO
     }
 
     @Override
-    public void insert(ActionResultOutput actionResultOutput) throws MetadataAlreadyExistsException {
+    public void insert(ActionResultOutput actionResultOutput) {
         LOGGER.trace(MessageFormat.format("Inserting ActionResultOutput {0}.", actionResultOutput.getMetadataKey().toString()));
         String insertStatement = insertStatement(actionResultOutput);
         getMetadataRepository().executeUpdate(insertStatement);

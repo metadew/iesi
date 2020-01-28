@@ -2,7 +2,7 @@
 type: Script
 data:
   type: "script"
-  name: "instruction.date.travel.7"
+  name: "instruction.date.travel.8"
   description: "travel 1 day in the future to weekday"
   actions:
   - number: 1

@@ -88,7 +88,7 @@ public class ComponentAttributeConfiguration extends Configuration<ComponentAttr
     }
 
     @Override
-    public void delete(ComponentAttributeKey metadataKey) throws MetadataDoesNotExistException {
+    public void delete(ComponentAttributeKey metadataKey) {
         LOGGER.trace(MessageFormat.format("Deleting ComponentAttribute {0}.", metadataKey.toString()));
         if (!exists(metadataKey)) {
             throw new MetadataDoesNotExistException(metadataKey);
@@ -106,7 +106,7 @@ public class ComponentAttributeConfiguration extends Configuration<ComponentAttr
     }
 
     @Override
-    public void insert(ComponentAttribute metadata) throws MetadataAlreadyExistsException {
+    public void insert(ComponentAttribute metadata) {
         LOGGER.trace(MessageFormat.format("Inserting ComponentAttribute {0}.", metadata.getMetadataKey().toString()));
         if (exists(metadata.getMetadataKey())) {
             throw new MetadataAlreadyExistsException(metadata.getMetadataKey());

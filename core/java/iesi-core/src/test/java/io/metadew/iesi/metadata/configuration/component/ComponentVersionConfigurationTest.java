@@ -53,13 +53,13 @@ class ComponentVersionConfigurationTest {
     }
 
     @Test
-    void componentVersionExistsTest() throws MetadataAlreadyExistsException {
+    void componentVersionExistsTest() {
         ComponentVersionConfiguration.getInstance().insert(componentVersion1);
         assertTrue(ComponentVersionConfiguration.getInstance().exists(componentVersion1.getMetadataKey()));
     }
 
     @Test
-    void componentVersionInsertTest() throws MetadataAlreadyExistsException {
+    void componentVersionInsertTest() {
         ComponentVersionConfiguration.getInstance().insert(componentVersion1);
         assertEquals(1, ComponentVersionConfiguration.getInstance().getAll().size());
 
@@ -70,13 +70,13 @@ class ComponentVersionConfigurationTest {
     }
 
     @Test
-    void componentVersionInsertAlreadyExistsTest() throws MetadataAlreadyExistsException {
+    void componentVersionInsertAlreadyExistsTest() {
         ComponentVersionConfiguration.getInstance().insert(componentVersion1);
         assertThrows(MetadataAlreadyExistsException.class,() -> ComponentVersionConfiguration.getInstance().insert(componentVersion1));
     }
 
     @Test
-    void componentVersionDeleteTest() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
+    void componentVersionDeleteTest() {
         ComponentVersionConfiguration.getInstance().insert(componentVersion1);
         ComponentVersionConfiguration.getInstance().insert(componentVersion2);
         ComponentVersionConfiguration.getInstance().insert(componentVersion3);
@@ -107,7 +107,7 @@ class ComponentVersionConfigurationTest {
     }
 
     @Test
-    void componentVersionUpdate1Test() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
+    void componentVersionUpdate1Test() {
         ComponentVersionConfiguration.getInstance().insert(componentVersion1);
         ComponentVersionConfiguration.getInstance().insert(componentVersion2);
         ComponentVersionConfiguration.getInstance().insert(componentVersion3);
@@ -137,7 +137,7 @@ class ComponentVersionConfigurationTest {
     }
 
     @Test
-    void componentVersionUpdate2Test() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
+    void componentVersionUpdate2Test() {
         ComponentVersionConfiguration.getInstance().insert(componentVersion1);
         ComponentVersionConfiguration.getInstance().insert(componentVersion2);
         ComponentVersionConfiguration.getInstance().insert(componentVersion3);
@@ -167,7 +167,7 @@ class ComponentVersionConfigurationTest {
     }
 
     @Test
-    void componentVersionUpdate3Test() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
+    void componentVersionUpdate3Test() {
         ComponentVersionConfiguration.getInstance().insert(componentVersion1);
         ComponentVersionConfiguration.getInstance().insert(componentVersion2);
         ComponentVersionConfiguration.getInstance().insert(componentVersion3);
@@ -197,7 +197,7 @@ class ComponentVersionConfigurationTest {
     }
 
     @Test
-    void componentVersionGetByComponentId1Test() throws MetadataAlreadyExistsException {
+    void componentVersionGetByComponentId1Test() {
         ComponentVersionConfiguration.getInstance().insert(componentVersion1);
         ComponentVersionConfiguration.getInstance().insert(componentVersion2);
         ComponentVersionConfiguration.getInstance().insert(componentVersion3);
@@ -206,7 +206,7 @@ class ComponentVersionConfigurationTest {
                 ComponentVersionConfiguration.getInstance().getByComponent(componentVersion1.getMetadataKey().getComponentKey().getId()));
     }
     @Test
-    void componentVersionGetByComponentId2Test() throws MetadataAlreadyExistsException {
+    void componentVersionGetByComponentId2Test() {
         ComponentVersionConfiguration.getInstance().insert(componentVersion1);
         ComponentVersionConfiguration.getInstance().insert(componentVersion2);
         ComponentVersionConfiguration.getInstance().insert(componentVersion3);
@@ -216,7 +216,7 @@ class ComponentVersionConfigurationTest {
     }
 
     @Test
-    void componentVersionDeleteByComponentId1Test() throws MetadataAlreadyExistsException {
+    void componentVersionDeleteByComponentId1Test() {
         ComponentVersionConfiguration.getInstance().insert(componentVersion1);
         ComponentVersionConfiguration.getInstance().insert(componentVersion2);
         ComponentVersionConfiguration.getInstance().insert(componentVersion3);
@@ -228,7 +228,7 @@ class ComponentVersionConfigurationTest {
     }
 
     @Test
-    void componentVersionDeleteByComponentId2Test() throws MetadataAlreadyExistsException {
+    void componentVersionDeleteByComponentId2Test() {
         ComponentVersionConfiguration.getInstance().insert(componentVersion1);
         ComponentVersionConfiguration.getInstance().insert(componentVersion2);
         ComponentVersionConfiguration.getInstance().insert(componentVersion3);

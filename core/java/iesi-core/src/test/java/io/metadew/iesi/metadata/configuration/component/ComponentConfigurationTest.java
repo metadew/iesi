@@ -64,13 +64,13 @@ class ComponentConfigurationTest {
     }
 
     @Test
-    void componentExistsTest() throws MetadataAlreadyExistsException {
+    void componentExistsTest() {
         ComponentConfiguration.getInstance().insert(component1);
         assertTrue(ComponentConfiguration.getInstance().exists(component1.getMetadataKey()));
     }
 
     @Test
-    void componentInsertTest() throws MetadataAlreadyExistsException {
+    void componentInsertTest() {
         ComponentConfiguration.getInstance().insert(component1);
         assertEquals(1, ComponentConfiguration.getInstance().getAll().size());
 
@@ -81,13 +81,13 @@ class ComponentConfigurationTest {
     }
 
     @Test
-    void componentInsertAlreadyExistsTest() throws MetadataAlreadyExistsException {
+    void componentInsertAlreadyExistsTest() {
         ComponentConfiguration.getInstance().insert(component1);
         assertThrows(MetadataAlreadyExistsException.class,() -> ComponentConfiguration.getInstance().insert(component1));
     }
 
     @Test
-    void componentDeleteTest() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
+    void componentDeleteTest() {
         ComponentConfiguration.getInstance().insert(component1);
         ComponentConfiguration.getInstance().insert(component2);
         ComponentConfiguration.getInstance().insert(component3);
@@ -122,7 +122,7 @@ class ComponentConfigurationTest {
     }
 
     @Test
-    void componentUpdate1Test() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
+    void componentUpdate1Test() {
         ComponentConfiguration.getInstance().insert(component1);
         ComponentConfiguration.getInstance().insert(component2);
         ComponentConfiguration.getInstance().insert(component3);
@@ -152,7 +152,7 @@ class ComponentConfigurationTest {
     }
 
     @Test
-    void componentUpdate2Test() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
+    void componentUpdate2Test() {
         ComponentConfiguration.getInstance().insert(component1);
         ComponentConfiguration.getInstance().insert(component2);
         ComponentConfiguration.getInstance().insert(component3);
@@ -182,7 +182,7 @@ class ComponentConfigurationTest {
     }
 
     @Test
-    void componentUpdate3Test() throws MetadataDoesNotExistException, MetadataAlreadyExistsException {
+    void componentUpdate3Test() {
         ComponentConfiguration.getInstance().insert(component1);
         ComponentConfiguration.getInstance().insert(component2);
         ComponentConfiguration.getInstance().insert(component3);
@@ -212,7 +212,7 @@ class ComponentConfigurationTest {
     }
 
 //    @Test
-//    void componentGetByComponentId1Test() throws MetadataAlreadyExistsException {
+//    void componentGetByComponentId1Test() {
 //        ComponentConfiguration.getInstance().insert(component1);
 //        ComponentConfiguration.getInstance().insert(component2);
 //        ComponentConfiguration.getInstance().insert(component3);
@@ -221,7 +221,7 @@ class ComponentConfigurationTest {
 //                ComponentConfiguration.getInstance().getByComponent(component1.getMetadataKey().getComponentKey().getId()));
 //    }
 //    @Test
-//    void componentGetByComponentId2Test() throws MetadataAlreadyExistsException {
+//    void componentGetByComponentId2Test() {
 //        ComponentConfiguration.getInstance().insert(component1);
 //        ComponentConfiguration.getInstance().insert(component2);
 //        ComponentConfiguration.getInstance().insert(component3);
@@ -254,7 +254,7 @@ class ComponentConfigurationTest {
 //    }
 
     @Test
-    void componentDeleteAllTest() throws MetadataAlreadyExistsException {
+    void componentDeleteAllTest() {
         ComponentConfiguration.getInstance().insert(component1);
         ComponentConfiguration.getInstance().insert(component2);
         ComponentConfiguration.getInstance().insert(component3);

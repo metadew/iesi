@@ -142,7 +142,7 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
     }
 
     @Override
-    public void delete(ScriptKey scriptKey) throws MetadataDoesNotExistException {
+    public void delete(ScriptKey scriptKey) {
         LOGGER.trace(MessageFormat.format("Deleting script {0}-{1}.", scriptKey.toString()));
         if (!exists(scriptKey)) {
             throw new MetadataDoesNotExistException(scriptKey);
@@ -182,15 +182,11 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
 
     public void deleteByName(String scriptName) {
         for (Script script : getByName(scriptName)) {
-            try {
-                delete(script.getMetadataKey());
-            } catch (MetadataDoesNotExistException e) {
-                LOGGER.warn(e.getMessage() + ".skipping");
-            }
+            delete(script.getMetadataKey());
         }
     }
 
-    public void insert(Script script) throws MetadataAlreadyExistsException {
+    public void insert(Script script) {
         LOGGER.trace(MessageFormat.format("Inserting script {0}-{1}.", script.getName(), script.getVersion().getNumber()));
         if (exists(script)) {
             throw new MetadataAlreadyExistsException(script);
@@ -210,19 +206,6 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
 
         getMetadataRepository().executeUpdate(getInsertStatement(script));
     }
-
-//    public void update(Script script) throws MetadataDoesNotExistException {
-//        LOGGER.trace(MessageFormat.format("Updating script {0}-{1}.", script.getName(), script.getVersion().getNumber()));
-//        try {
-//            delete(script.getMetadataKey());
-//            insert(script);
-//        } catch (MetadataDoesNotExistException e) {
-//            LOGGER.warn(MessageFormat.format("Script {0}-{1} is not present in the repository so cannot be updated", script.getName(), script.getVersion().getNumber()));
-//            throw e;
-//        } catch (ScriptAlreadyExistsException e) {
-//            LOGGER.warn(MessageFormat.format("Script {0}-{1} is not deleted correctly during update. {2}", script.getName(), script.getVersion().getNumber(), e.toString()));
-//        }
-//    }
 
     private String getInsertStatement(Script script) {
         if (!exists(script)) {

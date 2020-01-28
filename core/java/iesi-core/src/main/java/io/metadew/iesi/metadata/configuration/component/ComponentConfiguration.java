@@ -105,7 +105,7 @@ public class ComponentConfiguration extends Configuration<Component, ComponentKe
     }
 
     @Override
-    public void delete(ComponentKey componentKey) throws MetadataDoesNotExistException {
+    public void delete(ComponentKey componentKey) {
         LOGGER.trace(MessageFormat.format("Deleting Component {0}.", componentKey.toString()));
         if (!exists(componentKey)) {
             throw new MetadataDoesNotExistException(componentKey);
@@ -193,28 +193,16 @@ public class ComponentConfiguration extends Configuration<Component, ComponentKe
         return Optional.empty();
     }
 
-    public void insert(Component component) throws MetadataAlreadyExistsException {
+    public void insert(Component component) {
         if (exists(component.getMetadataKey())) {
-            throw new MetadataAlreadyExistsException(MessageFormat.format("Component {0} already exists", component.toString()));
+            throw new MetadataAlreadyExistsException(component);
         }
-        try {
-            ComponentVersionConfiguration.getInstance().insert(component.getVersion());
-        } catch (MetadataAlreadyExistsException e) {
-            LOGGER.warn(e.getMessage() + ". Skipping");
-        }
+        ComponentVersionConfiguration.getInstance().insert(component.getVersion());
         for (ComponentParameter componentParameter : component.getParameters()) {
-            try {
-                ComponentParameterConfiguration.getInstance().insert(componentParameter);
-            } catch (MetadataAlreadyExistsException e) {
-                LOGGER.warn(e.getMessage() + ". Skipping");
-            }
+            ComponentParameterConfiguration.getInstance().insert(componentParameter);
         }
         for (ComponentAttribute componentAttribute : component.getAttributes()) {
-            try {
-                ComponentAttributeConfiguration.getInstance().insert(componentAttribute);
-            } catch (MetadataAlreadyExistsException e) {
-                LOGGER.warn(e.getMessage() + ". Skipping");
-            }
+            ComponentAttributeConfiguration.getInstance().insert(componentAttribute);
         }
 
         getInsertStatement(component).ifPresent(getMetadataRepository()::executeUpdate);
@@ -241,14 +229,14 @@ public class ComponentConfiguration extends Configuration<Component, ComponentKe
         return crsComponent.size() != 0;
     }
 
-    public Optional<Component> get(String componentId) throws MetadataDoesNotExistException {
+    public Optional<Component> get(String componentId) {
         return get(new ComponentKey(componentId,
                 ComponentVersionConfiguration.getInstance().getLatestVersionByComponentId(componentId)));
     }
 
 
     @Override
-    public void update(Component component) throws MetadataDoesNotExistException {
+    public void update(Component component) {
         LOGGER.trace(MessageFormat.format("Deleting Component {0}.", component.toString()));
         if (!exists(component)) {
             throw new MetadataDoesNotExistException(component.getMetadataKey());

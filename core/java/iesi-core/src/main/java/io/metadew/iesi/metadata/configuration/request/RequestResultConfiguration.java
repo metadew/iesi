@@ -10,7 +10,6 @@ import io.metadew.iesi.metadata.repository.MetadataRepository;
 
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
-import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -90,10 +89,9 @@ public class RequestResultConfiguration extends Configuration<RequestResult, Req
     }
 
     @Override
-    public void delete(RequestResultKey key) throws MetadataDoesNotExistException {
+    public void delete(RequestResultKey key) {
         if (!exists(key)) {
-            throw new MetadataDoesNotExistException(
-                    MessageFormat.format("Request Result {0} does not exist", key.getRequestId()));
+            throw new MetadataDoesNotExistException(key);
         }
         String query = "delete from "
                 + getMetadataRepository().getTableNameByLabel("RequestResults") + " where "
@@ -102,10 +100,9 @@ public class RequestResultConfiguration extends Configuration<RequestResult, Req
     }
 
     @Override
-    public void insert(RequestResult requestResult) throws MetadataAlreadyExistsException {
+    public void insert(RequestResult requestResult) {
         if (exists(requestResult.getMetadataKey())) {
-            throw new MetadataAlreadyExistsException(MessageFormat.format("Request Result {0} already exists",
-                    requestResult.getMetadataKey().getRequestId()));
+            throw new MetadataAlreadyExistsException(requestResult);
         }
         String query = "insert into "
                 + getMetadataRepository().getTableNameByLabel("RequestResults")

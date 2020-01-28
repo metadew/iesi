@@ -89,7 +89,7 @@ public class ScriptExecutionBuilder {
         return this;
     }
 
-    public ScriptExecution build() throws ScriptExecutionBuildException {
+    public ScriptExecution build() {
         if (route) {
             return buildRouteScriptExecution();
         } else {
@@ -97,7 +97,7 @@ public class ScriptExecutionBuilder {
         }
     }
 
-    private ScriptExecution buildNonRouteScriptExecution() throws ScriptExecutionBuildException {
+    private ScriptExecution buildNonRouteScriptExecution() {
         if (root) {
             try {
                 ExecutionControl executionControl = new ExecutionControl();
@@ -136,7 +136,7 @@ public class ScriptExecutionBuilder {
         }
     }
 
-    private ScriptExecution buildRouteScriptExecution() throws ScriptExecutionBuildException {
+    private ScriptExecution buildRouteScriptExecution() {
         try {
             ExecutionControl executionControl = root ? new ExecutionControl() : getExecutionControl().orElseThrow(() -> new ScriptExecutionBuildException("No execution control supplied to route script execution builder"));
             return new RouteScriptExecution (

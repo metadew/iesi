@@ -69,7 +69,7 @@ public class ComponentBuildConfiguration extends Configuration<ComponentBuild, C
     }
 
     @Override
-    public void delete(ComponentBuildKey metadataKey) throws MetadataDoesNotExistException {
+    public void delete(ComponentBuildKey metadataKey) {
         LOGGER.trace(MessageFormat.format("Deleting Component {0}.", metadataKey.toString()));
         if (!exists(metadataKey)) {
             throw new MetadataDoesNotExistException(metadataKey);
@@ -89,7 +89,7 @@ public class ComponentBuildConfiguration extends Configuration<ComponentBuild, C
     }
 
     @Override
-    public void insert(ComponentBuild metadata) throws MetadataAlreadyExistsException {
+    public void insert(ComponentBuild metadata) {
         LOGGER.trace(MessageFormat.format("Inserting ComponentBuild {0}.", metadata.getMetadataKey().toString()));
         if (exists(metadata.getMetadataKey())) {
             throw new MetadataAlreadyExistsException(metadata.getMetadataKey());

@@ -86,7 +86,7 @@ public class ComponentParameterConfiguration extends Configuration<ComponentPara
     }
 
     @Override
-    public void delete(ComponentParameterKey metadataKey) throws MetadataDoesNotExistException {
+    public void delete(ComponentParameterKey metadataKey) {
         LOGGER.trace(MessageFormat.format("Deleting ComponentParameter {0}.", metadataKey.toString()));
         if (!exists(metadataKey)) {
             throw new MetadataDoesNotExistException(metadataKey);
@@ -103,7 +103,7 @@ public class ComponentParameterConfiguration extends Configuration<ComponentPara
     }
 
     @Override
-    public void insert(ComponentParameter metadata) throws MetadataAlreadyExistsException {
+    public void insert(ComponentParameter metadata) {
         LOGGER.trace(MessageFormat.format("Inserting ComponentParameter {0}.", metadata.getMetadataKey().toString()));
         if (exists(metadata.getMetadataKey())) {
             throw new MetadataAlreadyExistsException(metadata.getMetadataKey());

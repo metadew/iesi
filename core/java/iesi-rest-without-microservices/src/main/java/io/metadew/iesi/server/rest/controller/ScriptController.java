@@ -13,9 +13,8 @@ import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionReque
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.metadata.definition.script.ScriptParameter;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
+import io.metadew.iesi.metadata.tools.IdentifierTools;
 import io.metadew.iesi.server.rest.error.DataBadRequestException;
-import io.metadew.iesi.server.rest.error.DataNotFoundException;
-import io.metadew.iesi.server.rest.pagination.ScriptPagination;
 import io.metadew.iesi.server.rest.resource.HalMultipleEmbeddedResource;
 import io.metadew.iesi.server.rest.resource.script.dto.ScriptByNameDto;
 import io.metadew.iesi.server.rest.resource.script.dto.ScriptDto;
@@ -28,7 +27,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import java.util.Collections;
@@ -52,7 +50,7 @@ public class ScriptController {
     @Autowired
     ScriptController(ScriptConfiguration scriptConfiguration, ScriptDtoResourceAssembler scriptDtoResourceAssembler,
                      ScriptGlobalDtoResourceAssembler scriptGlobalDtoResourceAssembler, ScriptByNameDtoAssembler scriptByNameGetDtoAssembler,
-                     ScriptPagination scriptPagination, ExecutionRequestConfiguration executionRequestConfiguration) {
+                     ExecutionRequestConfiguration executionRequestConfiguration) {
         this.scriptConfiguration = scriptConfiguration;
         this.scriptDtoResourceAssembler = scriptDtoResourceAssembler;
         this.scriptGlobalDtoResourceAssembler = scriptGlobalDtoResourceAssembler;
@@ -73,33 +71,24 @@ public class ScriptController {
     public ResponseEntity<ScriptByNameDto> getByName(@PathVariable String name) {
         List<Script> script;
         script = scriptConfiguration.getByName(name);
-        if (script.isEmpty()) {
-            throw new DataNotFoundException(name);
-        }
         return ResponseEntity.ok(scriptByNameGetDtoAssembler.toResource(script));
     }
 
-
     @GetMapping("/{name}/{version}")
-    public ScriptDto get(@PathVariable String name, @PathVariable Long version) {
-        return scriptConfiguration.get(new ScriptKey(name, version))
+    public ScriptDto get(@PathVariable String name, @PathVariable Long version) throws MetadataDoesNotExistException {
+        return scriptConfiguration.get(new ScriptKey(IdentifierTools.getScriptIdentifier(name), version))
                 .map(scriptDtoResourceAssembler::toResource)
-                .orElseThrow(() -> new DataNotFoundException(name, version));
+                .orElseThrow(() -> new MetadataDoesNotExistException(new ScriptKey(IdentifierTools.getScriptIdentifier(name), version)));
     }
 
     @PostMapping("/")
-    public ScriptDto post(@Valid @RequestBody ScriptDto script) {
-        try {
-            scriptConfiguration.insert(script.convertToEntity());
-            return scriptDtoResourceAssembler.toResource(script.convertToEntity());
-        } catch (MetadataAlreadyExistsException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-                    "Script " + script.getName() + " already exists");
-        }
+    public ScriptDto post(@Valid @RequestBody ScriptDto script) throws MetadataAlreadyExistsException {
+        scriptConfiguration.insert(script.convertToEntity());
+        return scriptDtoResourceAssembler.toResource(script.convertToEntity());
     }
 
     @PostMapping("/{name}/{version}/execute")
-    public ResponseEntity executeScript(@Valid @RequestBody ScriptExecutionDto scriptExecutionDto, @PathVariable String name, @PathVariable Long version) {
+    public ResponseEntity executeScript(@Valid @RequestBody ScriptExecutionDto scriptExecutionDto, @PathVariable String name, @PathVariable Long version) throws MetadataAlreadyExistsException {
         try {
             ExecutionRequest executionRequest = new ExecutionRequestBuilder()
                     .context(scriptExecutionDto.getEnvironment())
@@ -117,28 +106,21 @@ public class ScriptController {
             executionRequestConfiguration.insert(executionRequest);
 
             return ResponseEntity.ok().body(scriptExecutionRequest.getMetadataKey().getId());
-        } catch (ScriptExecutionRequestBuilderException | ExecutionRequestBuilderException | MetadataAlreadyExistsException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch (ScriptExecutionRequestBuilderException | ExecutionRequestBuilderException e) {
             return ResponseEntity.badRequest().build();
         }
 
     }
 
     @PutMapping("")
-    public HalMultipleEmbeddedResource<ScriptDto> putAll(@Valid @RequestBody List<ScriptDto> scriptDtos) {
+    public HalMultipleEmbeddedResource<ScriptDto> putAll(@Valid @RequestBody List<ScriptDto> scriptDtos) throws MetadataDoesNotExistException {
         HalMultipleEmbeddedResource<ScriptDto> halMultipleEmbeddedResource = new HalMultipleEmbeddedResource<>();
         for (ScriptDto scriptDto : scriptDtos) {
-            try {
-                scriptConfiguration.update(scriptDto.convertToEntity());
-                halMultipleEmbeddedResource.embedResource(scriptDto);
-                halMultipleEmbeddedResource.add(linkTo(methodOn(ScriptController.class)
-                        .getByName(scriptDto.getName()))
-                        .withRel(scriptDto.getName()));
-            } catch (MetadataDoesNotExistException e) {
-                e.printStackTrace();
-                throw new DataNotFoundException(scriptDto.getName());
-            }
+            scriptConfiguration.update(scriptDto.convertToEntity());
+            halMultipleEmbeddedResource.embedResource(scriptDto);
+            halMultipleEmbeddedResource.add(linkTo(methodOn(ScriptController.class)
+                    .getByName(scriptDto.getName()))
+                    .withRel(scriptDto.getName()));
         }
 
         return halMultipleEmbeddedResource;
@@ -146,19 +128,12 @@ public class ScriptController {
 
     @PutMapping("/{name}/{version}")
     public ScriptDto put(@PathVariable String name, @PathVariable Long version,
-                         @RequestBody ScriptDto script) {
+                         @RequestBody ScriptDto script) throws MetadataDoesNotExistException {
         if (!script.getName().equals(name)) {
             throw new DataBadRequestException(name);
-        } else if (!scriptConfiguration.get(new ScriptKey(name, version)).isPresent()) {
-            throw new DataNotFoundException(name);
         }
-        try {
-            scriptConfiguration.update(script.convertToEntity());
-            return scriptDtoResourceAssembler.toResource(script.convertToEntity());
-        } catch (MetadataDoesNotExistException e) {
-            e.printStackTrace();
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-        }
+        scriptConfiguration.update(script.convertToEntity());
+        return scriptDtoResourceAssembler.toResource(script.convertToEntity());
 
     }
 
@@ -169,13 +144,8 @@ public class ScriptController {
     }
 
     @DeleteMapping("/{name}/{version}")
-    public ResponseEntity<?> delete(@PathVariable String name, Long version) {
-        Script script = scriptConfiguration.get(new ScriptKey(name, version)).orElseThrow(() -> new DataNotFoundException(name));
-        try {
-            scriptConfiguration.delete(script.getMetadataKey());
-            return ResponseEntity.status(HttpStatus.OK).build();
-        } catch (MetadataDoesNotExistException e) {
-            throw new DataNotFoundException(name);
-        }
+    public ResponseEntity<?> delete(@PathVariable String name, Long version) throws MetadataDoesNotExistException {
+        scriptConfiguration.delete(new ScriptKey(IdentifierTools.getScriptIdentifier(name), version));
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

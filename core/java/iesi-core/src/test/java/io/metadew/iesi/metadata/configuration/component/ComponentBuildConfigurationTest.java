@@ -58,7 +58,7 @@
 //    }
 //
 //    @Test
-//    public void componentBuildInsertTest() throws MetadataAlreadyExistsException {
+//    public void componentBuildInsertTest() {
 //        int nbBefore = ComponentBuildConfiguration.getInstance().getAll().size();
 //        ComponentBuild newComponentBuild = createComponentBuild();
 //        ComponentBuildConfiguration.getInstance().insert(newComponentBuild);

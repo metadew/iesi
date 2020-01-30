@@ -7,6 +7,7 @@ import io.metadew.iesi.metadata.execution.MetadataControl;
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.sql.SQLException;
 
 public class DataframeItemParameterConfiguration {
 
@@ -51,7 +52,7 @@ public class DataframeItemParameterConfiguration {
                 dataframeItemParameter.setValue(crsDataframeItemParameter.getString("DATAFRAME_ITEM_PAR_VAL"));
             }
             crsDataframeItemParameter.close();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
         }

@@ -54,7 +54,7 @@ public class FhoExecuteFileTransfer {
         this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
     }
 
-    public void prepare()  {
+    public void prepare() {
         // Set Parameters
         this.setSourceFilePath(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "sourceFilePath"));
@@ -98,7 +98,7 @@ public class FhoExecuteFileTransfer {
     }
 
     // Methods
-    public boolean execute() {
+    public boolean execute() throws InterruptedException {
         try {
             String sourceFilePath = convertSourceFilePath(getSourceFilePath().getValue());
             String sourceFileName = convertSourceFileName(getSourceFileName().getValue());
@@ -107,7 +107,8 @@ public class FhoExecuteFileTransfer {
             String targetFileName = convertTargetFileName(getTargetFileName().getValue());
             String targetConnectionName = convertTargetConnection(getTargetConnectionName().getValue());
             return execute(sourceFilePath, sourceFileName, sourceConnectionName, targetFilePath, targetFileName, targetConnectionName);
-
+        } catch (InterruptedException e) {
+            throw (e);
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
@@ -122,7 +123,7 @@ public class FhoExecuteFileTransfer {
 
     }
 
-    private boolean execute(String sourceFilePath, String sourceFileName, String sourceConnectionName, String targetFilePath, String targetFileName, String targetConnectionName) {
+    private boolean execute(String sourceFilePath, String sourceFileName, String sourceConnectionName, String targetFilePath, String targetFileName, String targetConnectionName) throws InterruptedException {
         // Get Connections
         ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
         Connection sourceConnection = connectionConfiguration
@@ -138,7 +139,8 @@ public class FhoExecuteFileTransfer {
         boolean sourceIsOnLocalHost = HostConnectionTools.isOnLocalhost(
                 sourceConnectionName, this.getExecutionControl().getEnvName());
         boolean targetIsOnLocalHost = HostConnectionTools.isOnLocalhost(
-                targetConnectionName, this.getExecutionControl().getEnvName());;
+                targetConnectionName, this.getExecutionControl().getEnvName());
+        ;
 
         // Run the action
         FileTransferOperation fileTransferOperation = new FileTransferOperation();

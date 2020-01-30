@@ -7,6 +7,7 @@ import io.metadew.iesi.metadata.execution.MetadataControl;
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.sql.SQLException;
 
 public class ImpersonationParameterConfiguration {
 
@@ -63,7 +64,7 @@ public class ImpersonationParameterConfiguration {
                 impersonationParameter.setDescription(crsImpersonationParameter.getString("CONN_IMP_DSC"));
             }
             crsImpersonationParameter.close();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
         }

@@ -6,6 +6,7 @@ import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.operation.ConditionOperation;
 
+import javax.script.ScriptException;
 import javax.sql.rowset.CachedRowSet;
 import java.io.File;
 import java.io.PrintWriter;
@@ -220,7 +221,7 @@ public class IterationConfiguration {
         ConditionOperation conditionOperation = new ConditionOperation(executionControl, condition);
         try {
             conditionResult = conditionOperation.evaluateCondition();
-        } catch (Exception exception) {
+        } catch (ScriptException exception) {
             conditionResult = true;
         }
 

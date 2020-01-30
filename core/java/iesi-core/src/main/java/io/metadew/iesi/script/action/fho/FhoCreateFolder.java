@@ -86,13 +86,15 @@ public class FhoCreateFolder {
     }
 
     // Methods
-    public boolean execute() {
+    public boolean execute() throws InterruptedException {
         try {
             String path = convertPath(getFolderPath().getValue());
             String folder = convertFolder(getFolderName().getValue());
             String connectionName = convertConnectionName(getConnectionName().getValue());
             return execute(path, folder, connectionName);
 
+        } catch (InterruptedException e) {
+            throw (e);
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
@@ -107,7 +109,7 @@ public class FhoCreateFolder {
 
     }
 
-    private boolean execute(String path, String folder, String connectionName) {
+    private boolean execute(String path, String folder, String connectionName) throws InterruptedException {
 
         boolean isOnLocalhost = HostConnectionTools.isOnLocalhost(
                 connectionName, this.getExecutionControl().getEnvName());
@@ -122,12 +124,8 @@ public class FhoCreateFolder {
             }
 
             this.setScope(subjectFolderPath);
-            try {
-                FolderTools.createFolder(subjectFolderPath, true);
-                this.setSuccess();
-            } catch (Exception e) {
-                this.setError(e.getMessage());
-            }
+            FolderTools.createFolder(subjectFolderPath, true);
+            this.setSuccess();
 
         } else {
             ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
@@ -149,17 +147,13 @@ public class FhoCreateFolder {
 
             ShellCommandSettings shellCommandSettings = new ShellCommandSettings();
             ShellCommandResult shellCommandResult = null;
-            try {
-                shellCommandResult = hostConnection.executeRemoteCommand("", "mkdir " + subjectFolderPath,
-                        shellCommandSettings);
+            shellCommandResult = hostConnection.executeRemoteCommand("", "mkdir " + subjectFolderPath,
+                    shellCommandSettings);
 
-                if (shellCommandResult.getReturnCode() == 0) {
-                    this.setSuccess();
-                } else {
-                    this.setError(shellCommandResult.getErrorOutput());
-                }
-            } catch (Exception e) {
-                this.setError(e.getMessage());
+            if (shellCommandResult.getReturnCode() == 0) {
+                this.setSuccess();
+            } else {
+                this.setError(shellCommandResult.getErrorOutput());
             }
         }
         return true;

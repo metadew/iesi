@@ -11,6 +11,7 @@ import io.metadew.iesi.metadata.execution.MetadataControl;
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,9 +52,10 @@ public class EnvironmentConfiguration extends MetadataConfiguration {
                 crsEnvironmentParameters.close();
             }
             crsEnvironment.close();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
+            throw new RuntimeException(e);
         }
         return Optional.ofNullable(environment);
     }
@@ -83,9 +85,10 @@ public class EnvironmentConfiguration extends MetadataConfiguration {
                 environmentConfiguration.getEnvironment(environmentName).ifPresent(environments::add);
             }
             crs.close();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
+            throw new RuntimeException(e);
         }
         return environments;
     }

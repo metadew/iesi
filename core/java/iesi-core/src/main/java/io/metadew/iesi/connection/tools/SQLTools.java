@@ -112,7 +112,7 @@ public final class SQLTools {
         try {
             rs.last();
             rowCount = rs.getRow();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
         }

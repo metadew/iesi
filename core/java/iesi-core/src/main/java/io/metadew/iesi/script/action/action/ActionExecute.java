@@ -12,6 +12,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.MessageFormat;
@@ -68,11 +69,13 @@ public class ActionExecute {
 		this.getActionParameterOperationMap().put("name", this.getName());
 	}
 	
-    public boolean execute() {
+    public boolean execute() throws InterruptedException {
         try {
             String actionName = convertActionName(getName().getValue());
             return executeAction(actionName);
-        } catch (Exception e) {
+		} catch (InterruptedException e) {
+        	throw e;
+		} catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
 
@@ -95,14 +98,13 @@ public class ActionExecute {
         }
     }
 
-	public boolean executeAction(String actionName) {
-		try {
-			this.getExecutionControl().logMessage(this.getActionExecution(), "action.execute.start", Level.INFO);
+	public boolean executeAction(String actionName) throws InterruptedException {
+		this.getExecutionControl().logMessage(this.getActionExecution(), "action.execute.start", Level.INFO);
 
-			// Get the action
-			Action action = null;
-			boolean result = false;
-			// TODO
+		// Get the action
+		Action action = null;
+		boolean result = false;
+		// TODO
 //			for (int i = 0; i < this.getScriptExecution().getActions().size(); i++) {
 //				action = this.getScriptExecution().getActions().get(i);
 //				if (action.getScriptName().equalsIgnoreCase(actionName)) {
@@ -110,36 +112,25 @@ public class ActionExecute {
 //					break;
 //				}
 //			}
-			if (!result) {
-				throw new RuntimeException("action.name.notfound");
-			}
-			
-			ActionExecution actionExecution = new ActionExecution(
-					this.getExecutionControl(), this.getScriptExecution(), action);
-			
-			// Initialize
-			actionExecution.initialize();
-			actionExecution.execute(null);
-			// TODO make use of script execution in order to leverage iterations as well
-			// In script execution --> create operation for logic
-			// Verify thread safe operations
-
-			this.getExecutionControl().logMessage(this.getActionExecution(), "action.execute.end", Level.INFO);
-			
-			this.getActionExecution().getActionControl().increaseSuccessCount();
-
-			return true;
-		} catch (Exception e) {
-			StringWriter StackTrace = new StringWriter();
-			e.printStackTrace(new PrintWriter(StackTrace));
-
-			this.getActionExecution().getActionControl().increaseErrorCount();
-
-			this.getActionExecution().getActionControl().logOutput("exception", e.getMessage());
-			this.getActionExecution().getActionControl().logOutput("stacktrace", StackTrace.toString());
-
-			return false;
+		if (!result) {
+			throw new RuntimeException("action.name.notfound");
 		}
+
+		ActionExecution actionExecution = new ActionExecution(
+				this.getExecutionControl(), this.getScriptExecution(), action);
+
+		// Initialize
+		actionExecution.initialize();
+		actionExecution.execute(null);
+		// TODO make use of script execution in order to leverage iterations as well
+		// In script execution --> create operation for logic
+		// Verify thread safe operations
+
+		this.getExecutionControl().logMessage(this.getActionExecution(), "action.execute.end", Level.INFO);
+
+		this.getActionExecution().getActionControl().increaseSuccessCount();
+
+		return true;
 
 	}
 

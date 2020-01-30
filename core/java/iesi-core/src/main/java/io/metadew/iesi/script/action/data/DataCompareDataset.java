@@ -80,12 +80,14 @@ public class DataCompareDataset {
     }
 
     //
-    public boolean execute() {
+    public boolean execute() throws InterruptedException {
         try {
             String leftDatasetName = convertDatasetName(getLeftDatasetName().getValue());
             String rightDatasetName = convertDatasetName(getRightDatasetName().getValue());
             String mappingName = convertMappingName(getMappingName().getValue());
             return compareDataset(leftDatasetName, rightDatasetName, mappingName);
+        } catch (InterruptedException e) {
+            throw (e);
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
@@ -100,7 +102,7 @@ public class DataCompareDataset {
 
     }
 
-    private boolean compareDataset(String leftDatasetName, String rightDatasetName, String mappingName) {
+    private boolean compareDataset(String leftDatasetName, String rightDatasetName, String mappingName) throws InterruptedException {
         Dataset leftDataset = executionControl.getExecutionRuntime().getDataset(leftDatasetName)
                 .orElseThrow(() -> new RuntimeException(MessageFormat.format("data.comparedataset could not find dataset {0} as left dataset", leftDatasetName)));
         Dataset rightDataset = executionControl.getExecutionRuntime().getDataset(rightDatasetName)

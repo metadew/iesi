@@ -6,6 +6,9 @@ import io.metadew.iesi.metadata.definition.user.User;
 import io.metadew.iesi.metadata.execution.MetadataControl;
 
 import java.io.Console;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+import java.sql.SQLException;
 import java.util.Scanner;
 
 public class UserExecution {
@@ -22,7 +25,6 @@ public class UserExecution {
     }
 
     public User createUser(String userName) {
-        try {
             User user = new User();
             user.setName(userName);
             user.setFirstName(this.getInput("Enter first name"));
@@ -33,17 +35,18 @@ public class UserExecution {
             user.setIndividualLoginFails(0L);
             user.setLocked("N");
             user.setType("user");
+        try {
             user.setPasswordHash(Password.getSaltedHash("ok"));
-            // user.setPasswordHash(Password.getSaltedHash(this.getPassword()));
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+            throw new RuntimeException(e);
+        }
+        // user.setPasswordHash(Password.getSaltedHash(this.getPassword()));
 
             UserConfiguration userConfiguration = new UserConfiguration();
             MetadataControl.getInstance().getControlMetadataRepository()
                     .executeBatch(userConfiguration.getInsertStatement(user));
 
             return user;
-        } catch (Exception exception) {
-            return null;
-        }
     }
 
     public void resetPassword(String userName) {
@@ -59,8 +62,8 @@ public class UserExecution {
             UserConfiguration userConfiguration = new UserConfiguration(user);
             MetadataControl.getInstance().getControlMetadataRepository()
                     .executeUpdate(userConfiguration.getPasswordStatement());
-        } catch (Exception exception) {
-
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException exception) {
+            throw new RuntimeException(exception);
         }
     }
 

@@ -3,6 +3,7 @@ package io.metadew.iesi.connection.java.tools;
 import io.metadew.iesi.metadata.definition.java.*;
 
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -85,7 +86,7 @@ public final class JarTools {
                 javaClasses.add(javaClass);
             }
             javaArchive.setClasses(javaClasses);
-        } catch (Exception e) {
+        } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException("java.jar.parse.error=" + e.getMessage());
         }
         return javaArchive;

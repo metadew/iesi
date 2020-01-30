@@ -7,6 +7,7 @@ import io.metadew.iesi.metadata.execution.MetadataControl;
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.sql.SQLException;
 import java.util.Optional;
 
 public class EnvironmentParameterConfiguration {
@@ -65,7 +66,7 @@ public class EnvironmentParameterConfiguration {
                 environmentParameter.setValue(crsEnvironmentParameter.getString("ENV_PAR_VAL"));
             }
             crsEnvironmentParameter.close();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
         }
@@ -86,7 +87,7 @@ public class EnvironmentParameterConfiguration {
                 output = crsEnvironmentParameter.getString("ENV_PAR_VAL");
             }
             crsEnvironmentParameter.close();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
             return Optional.empty();

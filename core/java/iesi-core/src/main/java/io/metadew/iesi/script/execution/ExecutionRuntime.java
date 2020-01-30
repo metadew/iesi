@@ -65,7 +65,7 @@ public class ExecutionRuntime {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public ExecutionRuntime(ExecutionControl executionControl, String runId)  {
+    public ExecutionRuntime(ExecutionControl executionControl, String runId) {
         this.executionControl = executionControl;
         this.runId = runId;
 
@@ -121,7 +121,7 @@ public class ExecutionRuntime {
         }
     }
 
-    public void setRuntimeVariables(ActionExecution actionExecution, String input)  {
+    public void setRuntimeVariables(ActionExecution actionExecution, String input) {
         String[] lines = input.split("\n");
         for (int i = 0; i < lines.length; i++) {
             String line = lines[i];
@@ -161,12 +161,12 @@ public class ExecutionRuntime {
     }
 
     // Set runtime variables
-    public void setRuntimeVariable(Long processId, String name, String value)  {
+    public void setRuntimeVariable(Long processId, String name, String value) {
         LOGGER.debug(new IESIMessage("exec.runvar.set=" + name + ":" + value));
         runtimeVariableConfiguration.setRuntimeVariable(runId, processId, name, value);
     }
 
-    public void setRuntimeVariable(ActionExecution actionExecution, String name, String value)  {
+    public void setRuntimeVariable(ActionExecution actionExecution, String name, String value) {
         LOGGER.debug(new IESIMessage("exec.runvar.set=" + name + ":" + value));
         runtimeVariableConfiguration.setRuntimeVariable(runId, actionExecution.getProcessId(), name, value);
     }
@@ -181,11 +181,11 @@ public class ExecutionRuntime {
     }
 
     // Iteration Variables
-    public void setIterationVariables(String listName, ResultSet rs)  {
+    public void setIterationVariables(String listName, ResultSet rs) {
         this.getIterationVariableConfiguration().setIterationList(runId, listName, rs);
     }
 
-    public String resolveVariables(String input)  {
+    public String resolveVariables(String input) {
         // Prevent null issues during string operations
         if (input == null) {
             input = "";
@@ -207,7 +207,7 @@ public class ExecutionRuntime {
         if (input == null) {
             input = "";
         }
-        String result = "";
+        String result;
 
         // First level: settings
         result = FrameworkControl.getInstance().resolveConfiguration(input);
@@ -229,7 +229,6 @@ public class ExecutionRuntime {
         int closePos;
         String variable_char = "#";
         String midBit;
-        String replaceValue;
         String temp = input;
         while (temp.indexOf(variable_char) > 0 || temp.startsWith(variable_char)) {
             openPos = temp.indexOf(variable_char);
@@ -237,10 +236,8 @@ public class ExecutionRuntime {
             midBit = temp.substring(openPos + 1, closePos);
 
             // Replace
-            replaceValue = this.getRuntimeVariableValue(midBit).orElse("");
-            if (replaceValue != null) {
-                input = input.replaceAll(variable_char + midBit + variable_char, replaceValue);
-            }
+            String replaceValue = this.getRuntimeVariableValue(midBit).orElse("");
+            input = input.replaceAll(variable_char + midBit + variable_char, replaceValue);
             temp = temp.substring(closePos + 1, temp.length());
 
         }
@@ -302,10 +299,10 @@ public class ExecutionRuntime {
 
     private HashMap<String, ComponentAttribute> getComponentAttributeHashmap(List<ComponentAttribute> componentAttributeList, String environment) {
         if (componentAttributeList == null) {
-            return null;
+            return new HashMap<>();
         }
 
-        HashMap<String, ComponentAttribute> componentAttributeMap = new HashMap<String, ComponentAttribute>();
+        HashMap<String, ComponentAttribute> componentAttributeMap = new HashMap<>();
         for (ComponentAttribute componentAttribute : componentAttributeList) {
             if (componentAttribute.getEnvironment().trim().equalsIgnoreCase(environment)) {
                 componentAttributeMap.put(componentAttribute.getName(), componentAttribute);
@@ -319,25 +316,20 @@ public class ExecutionRuntime {
         int openPos;
         int closePos;
         String variable_char = "#";
-        String midBit;
-        String replaceValue = null;
         String temp = input;
         while (temp.indexOf(variable_char) > 0 || temp.startsWith(variable_char)) {
             openPos = temp.indexOf(variable_char);
             closePos = temp.indexOf(variable_char, openPos + 1);
-            midBit = temp.substring(openPos + 1, closePos);
+            final String midBit = temp.substring(openPos + 1, closePos);
 
             // Try to find a configuration value
             // If none is found, null is set by default
-            try {
-                replaceValue = actionExecution.getComponentAttributeOperation().getProperty(midBit);
-            } catch (Exception e) {
-                replaceValue = null;
-            }
+            Optional<String> replaceValue = actionExecution.getComponentAttributeOperation()
+                    .flatMap(componentAttributeOperation -> componentAttributeOperation.getProperty(midBit));
 
             // Replacing the value if found
-            if (replaceValue != null) {
-                input = input.replaceAll(variable_char + midBit + variable_char, replaceValue);
+            if (replaceValue.isPresent()) {
+                input = input.replaceAll(variable_char + midBit + variable_char, replaceValue.get());
             }
             temp = temp.substring(closePos + 1, temp.length());
 
@@ -536,7 +528,7 @@ public class ExecutionRuntime {
                 output += this.resolveVariables(readLine);
                 output += "\n";
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
             throw new RuntimeException("The system cannot find the path specified", e);
         }

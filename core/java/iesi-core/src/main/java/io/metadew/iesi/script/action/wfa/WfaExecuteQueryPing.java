@@ -56,7 +56,7 @@ public class WfaExecuteQueryPing {
         this.setActionParameterOperationMap(new HashMap<>());
     }
 
-    public void prepare()  {
+    public void prepare() {
         // Set Parameters
         this.setSqlQuery(new ActionParameterOperation(this.getExecutionControl(), this.getActionExecution(),
                 this.getActionExecution().getAction().getType(), "query"));
@@ -97,7 +97,7 @@ public class WfaExecuteQueryPing {
         this.getActionParameterOperationMap().put("timeout", this.getTimeoutInterval());
     }
 
-    public boolean execute() {
+    public boolean execute() throws InterruptedException {
         try {
             String query = convertQuery(getSqlQuery().getValue());
             String connectionName = convertConnectionName(getConnectionName().getValue());
@@ -107,7 +107,8 @@ public class WfaExecuteQueryPing {
             int waitInterval = convertWaitInterval(getWaitInterval().getValue());
             return executeQueryPing(query, connectionName, hasResult, setRuntimeVariables, waitInterval, timeoutInterval);
 
-//			}
+        } catch (InterruptedException e) {
+            throw (e);
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
@@ -147,7 +148,7 @@ public class WfaExecuteQueryPing {
         }
     }
 
-    private boolean executeQueryPing(String query, String connectionName, boolean hasResult, boolean setRuntimeVariables, int waitInterval, int timeoutInterval) {
+    private boolean executeQueryPing(String query, String connectionName, boolean hasResult, boolean setRuntimeVariables, int waitInterval, int timeoutInterval) throws InterruptedException {
         // Get Connection
         ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
         Connection connection = connectionConfiguration.get(connectionName,
@@ -249,44 +250,27 @@ public class WfaExecuteQueryPing {
     }
 
     private boolean doneWaiting(Database database, String query, boolean hasResult, boolean setRuntimeVariables) {
-        try {
-            CachedRowSet crs;
-            crs = database.executeQuery(query);
-            if (SQLTools.getRowCount(crs) > 0) {
-                if (hasResult) {
-                    this.setRuntimeVariable(crs, setRuntimeVariables);
-                    return true;
-                } else {
-                    return false;
-                }
+        CachedRowSet crs;
+        crs = database.executeQuery(query);
+        if (SQLTools.getRowCount(crs) > 0) {
+            if (hasResult) {
+                this.setRuntimeVariable(crs, setRuntimeVariables);
+                return true;
             } else {
-                if (!hasResult) {
-                    return true;
-                } else {
-                    return false;
-                }
+                return false;
             }
-        } catch (Exception e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-
-            this.getActionExecution().getActionControl().increaseErrorCount();
-
-            this.getActionExecution().getActionControl().logOutput("exception", e.getMessage());
-            this.getActionExecution().getActionControl().logOutput("stacktrace", StackTrace.toString());
-
-            throw new RuntimeException(e.getMessage());
+        } else {
+            if (!hasResult) {
+                return true;
+            } else {
+                return false;
+            }
         }
     }
 
     private void setRuntimeVariable(CachedRowSet crs, boolean setRuntimeVariables) {
         if (setRuntimeVariables) {
-            try {
-                this.getExecutionControl().getExecutionRuntime().setRuntimeVariables(actionExecution, crs);
-            } catch (Exception e) {
-                this.getActionExecution().getActionControl().increaseWarningCount();
-                this.getExecutionControl().logExecutionOutput(this.getActionExecution(), "SET_RUN_VAR", e.getMessage());
-            }
+            this.getExecutionControl().getExecutionRuntime().setRuntimeVariables(actionExecution, crs);
         }
     }
 

@@ -18,7 +18,7 @@ public class HostContextIdentifier {
             } else {
                 return (CryptoTools.formatKeyString(GetLinuxSystemInfo(), 16));
             }
-        } catch (Exception E) {
+        } catch (UnknownHostException E) {
             throw new RuntimeException("Not possible to generte host context identifier");
         }
     }
@@ -45,7 +45,7 @@ public class HostContextIdentifier {
                 output += line;
             }
             input.close();
-        } catch (Exception E) {
+        } catch (IOException E) {
             System.err.println("Windows MotherBoard Exp : " + E.getMessage());
         }
         output = output.trim();
@@ -74,7 +74,7 @@ public class HostContextIdentifier {
             while ((readLine = bufferedReader.readLine()) != null) {
                 output += readLine.trim();
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return output;

@@ -14,6 +14,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -87,20 +88,11 @@ public class FwkSetRepository {
     }
 
     //
-    public boolean execute() {
+    public boolean execute() throws InterruptedException {
         try {
-            String repositoryReferenceName = convertRepositoryReferenceName(getRepositoryReferenceName().getValue());
-            String repositoryName = convertRepositoryName(getRepositoryName().getValue());
-            String repositoryInstanceName = convertRepositoryInstanceName(getRepositoryInstanceName().getValue());
-            List<String> repositoryInstanceLabels = convertRepositoryInstanceLabels(getRepositoryInstanceLabels().getValue());
-
-            // Run the action
-            this.getExecutionControl().getExecutionRuntime().setRepository(this.getExecutionControl(), repositoryReferenceName,
-                    repositoryName, repositoryInstanceName, String.join(",", repositoryInstanceLabels));
-
-            this.getActionExecution().getActionControl().increaseSuccessCount();
-
-            return true;
+            return executionOperation();
+        } catch (InterruptedException e) {
+            throw (e);
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
@@ -112,6 +104,21 @@ public class FwkSetRepository {
 
             return false;
         }
+    }
+
+    private boolean executionOperation() throws SQLException, InterruptedException {
+        String repositoryReferenceName = convertRepositoryReferenceName(getRepositoryReferenceName().getValue());
+        String repositoryName = convertRepositoryName(getRepositoryName().getValue());
+        String repositoryInstanceName = convertRepositoryInstanceName(getRepositoryInstanceName().getValue());
+        List<String> repositoryInstanceLabels = convertRepositoryInstanceLabels(getRepositoryInstanceLabels().getValue());
+
+        // Run the action
+        this.getExecutionControl().getExecutionRuntime().setRepository(this.getExecutionControl(), repositoryReferenceName,
+                repositoryName, repositoryInstanceName, String.join(",", repositoryInstanceLabels));
+
+        this.getActionExecution().getActionControl().increaseSuccessCount();
+
+        return true;
     }
 
     private String convertRepositoryInstanceName(DataType repositoryInstanceName) {

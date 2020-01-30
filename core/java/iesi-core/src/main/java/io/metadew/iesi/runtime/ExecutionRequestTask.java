@@ -28,5 +28,6 @@ public class ExecutionRequestTask implements Runnable {
         LOGGER.info("running " + executionRequest.getMetadataKey().getId());
         ExecutionRequestMonitor.getInstance().monitor(executionRequest.getMetadataKey(), Thread.currentThread());
         ExecutionRequestExecutorService.getInstance().execute(executionRequest);
+        ExecutionRequestMonitor.getInstance().stopMonitoring(executionRequest.getMetadataKey());
     }
 }

@@ -293,13 +293,9 @@ public class AssemblyExecution {
             String sourcePath = parts[1].replace("#GIT_REPO#", repository);
             sourcePath = sourcePath.replace("#GIT_DEV#", development);
             String targetPath = versionHome + parts[2] + File.separator + parts[0];
-            try {
-                LOGGER.debug("Copying " + sourcePath + " to " + targetPath);
-                Files.copy(Paths.get(sourcePath), Paths.get(targetPath));
-                //FileTools.copyFromFileToFile(sourcePath, targetPath);
-            } catch (Exception e ) {
-                LOGGER.info("skipping " + sourcePath);
-            }
+            LOGGER.debug("Copying " + sourcePath + " to " + targetPath);
+            Files.copy(Paths.get(sourcePath), Paths.get(targetPath));
+            //FileTools.copyFromFileToFile(sourcePath, targetPath);
         }
     }
 

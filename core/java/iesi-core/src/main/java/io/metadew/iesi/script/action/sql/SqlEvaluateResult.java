@@ -77,12 +77,14 @@ public class SqlEvaluateResult {
         this.getActionParameterOperationMap().put("connection", this.getConnectionName());
     }
 
-    public boolean execute() {
+    public boolean execute() throws InterruptedException {
         try {
             String query = convertQuery(getSqlQuery().getValue());
             boolean expectedResult = convertHasResult(getExpectedResult().getValue());
             String connectionName = convertConnectionName(getConnectionName().getValue());
             return performAction(query, expectedResult, connectionName);
+        } catch (InterruptedException e) {
+            throw (e);
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
@@ -97,7 +99,7 @@ public class SqlEvaluateResult {
 
     }
 
-    private boolean performAction(String query, boolean hasResult, String connectionName) {
+    private boolean performAction(String query, boolean hasResult, String connectionName) throws InterruptedException{
         ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
 
         Connection connection = connectionConfiguration.get(connectionName,

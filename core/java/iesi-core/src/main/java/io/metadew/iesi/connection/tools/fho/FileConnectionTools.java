@@ -6,6 +6,7 @@ import io.metadew.iesi.connection.FileConnection;
 import io.metadew.iesi.connection.HostConnection;
 import io.metadew.iesi.connection.host.LinuxHostUserInfo;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -88,7 +89,7 @@ public final class FileConnectionTools {
                     }
                 }
             }
-        } catch (Exception e) {
+        } catch (JSchException | SftpException e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
         }

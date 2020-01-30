@@ -247,7 +247,7 @@ public class FeatureConfiguration extends MetadataConfiguration {
                 feature.setDescription(crsFeature.getString("FEATURE_DSC"));
             }
             crsFeature.close();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
         }
@@ -388,7 +388,7 @@ public class FeatureConfiguration extends MetadataConfiguration {
                 crsFeatureVersion.close();
                 return Optional.of(latestFeatureVersion);
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
             //TODO fix logging
@@ -470,7 +470,7 @@ public class FeatureConfiguration extends MetadataConfiguration {
                     featureVersion.get(), featureParameters, scenarios);
             crsFeature.close();
             return Optional.of(feature);
-        } catch (Exception e) {
+        } catch (SQLException e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
             //TODO fix logging
@@ -497,7 +497,7 @@ public class FeatureConfiguration extends MetadataConfiguration {
                 featureList.add(featureConfiguration.getFeature(featureName).get());
             }
             crs.close();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
         }

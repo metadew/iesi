@@ -179,7 +179,8 @@ public class ScriptLauncher {
         String serverMode = "off";
         try {
             serverMode = FrameworkSettingConfiguration.getInstance().getSettingPath("server.mode")
-                    .map(settingPath -> FrameworkControl.getInstance().getProperty(settingPath))
+                    .map(settingPath -> FrameworkControl.getInstance().getProperty(settingPath)
+                            .orElseThrow(() -> new RuntimeException("no value set for server.mode")))
                     .orElse("off")
                     .toLowerCase();
             System.out.println("Setting framework.server.mode=" + serverMode);

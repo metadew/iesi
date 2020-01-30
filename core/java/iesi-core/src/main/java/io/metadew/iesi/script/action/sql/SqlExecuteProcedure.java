@@ -93,7 +93,7 @@ public class SqlExecuteProcedure {
         this.getActionParameterOperationMap().put("appendOutput", this.getAppendOutput());
     }
 
-    public boolean execute() {
+    public boolean execute() throws InterruptedException {
         try {
 
             String sqlProcedure = convertSqlProcedure(getSqlProcedure().getValue());
@@ -104,6 +104,8 @@ public class SqlExecuteProcedure {
 
             return execute(sqlProcedure, connectionName, sqlParameters, outputDataset, appendOutput);
 
+        } catch (InterruptedException e) {
+            throw (e);
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
@@ -118,7 +120,7 @@ public class SqlExecuteProcedure {
 
     }
 
-    private boolean execute(String sqlProcedure, String connectionName, String sqlParameters, String outputDatasetReferenceName, boolean appendOutput) throws SQLException {
+    private boolean execute(String sqlProcedure, String connectionName, String sqlParameters, String outputDatasetReferenceName, boolean appendOutput) throws SQLException, InterruptedException {
 
         // Get Connection
         ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();

@@ -67,7 +67,7 @@ public class BufferData {
                     rs = statement.executeQuery(QueryString);
                     this.setBuffer(rs);
                     rs.close();
-                } catch (Exception e) {
+                } catch (SQLException e) {
                     System.out.println(QueryString);
                     System.out.println("Query Actions Failed");
                     e.printStackTrace();
@@ -154,7 +154,7 @@ public class BufferData {
                         }
                         pstmt.executeUpdate();
                     }
-                } catch (Exception e) {
+                } catch (SQLException e) {
                     System.out.println(QueryString);
                     System.out.println("Query Actions Failed");
                     e.printStackTrace();

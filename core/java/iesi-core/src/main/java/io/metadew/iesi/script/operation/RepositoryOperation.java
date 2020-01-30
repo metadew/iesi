@@ -105,7 +105,7 @@ public class RepositoryOperation {
                 datasetFileName = crs.getString("DATASET_FILE_NM");
             }
             crs.close();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
         }
@@ -145,7 +145,7 @@ public class RepositoryOperation {
                 value = crs.getString("VALUE");
             }
             crs.close();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
         }
@@ -209,7 +209,7 @@ public class RepositoryOperation {
             query += value;
             query += "')";
             this.getDatasetConnection().executeUpdate(query);
-        } catch (Exception e) {
+        } catch (SQLException e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
         }
@@ -230,7 +230,7 @@ public class RepositoryOperation {
                 }
             }
             crs.close();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
         }

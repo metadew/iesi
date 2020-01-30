@@ -8,6 +8,7 @@ import io.metadew.iesi.metadata.execution.MetadataControl;
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.sql.SQLException;
 
 public class ComponentAttributeConfiguration {
 
@@ -59,7 +60,7 @@ public class ComponentAttributeConfiguration {
                 componentAttribute.setValue(crsComponentAttribute.getString("COMP_ATT_VAL"));
             }
             crsComponentAttribute.close();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
         }

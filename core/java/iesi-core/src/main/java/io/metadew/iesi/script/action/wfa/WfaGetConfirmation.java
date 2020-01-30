@@ -72,35 +72,11 @@ public class WfaGetConfirmation {
         this.getActionParameterOperationMap().put("timeout", this.getTimeoutInterval());
     }
 
-    @SuppressWarnings("unused")
-	public boolean execute() {
+	public boolean execute() throws InterruptedException {
         try {
-            int timeoutInterval = convertTimeoutInterval(getTimeoutInterval().getValue());
-            String question = convertQuestion(getConfirmationQuestion().getValue());
-            String type = convertType(getConfirmationType().getValue());
-
-            // Run the action
-            boolean result = false;
-            switch (type.toLowerCase()) {
-                case "y":
-                    result = this.getConfirmationYes(question);
-                    break;
-                case "y/n":
-                    result = this.getConfirmationYesNo(question);
-                    break;
-                case "auto":
-                    result = this.getConfirmationAuto(question);
-                    break;
-            }
-
-            // Evaluate result
-            if (result) {
-                this.getActionExecution().getActionControl().increaseSuccessCount();
-            } else {
-                this.getActionExecution().getActionControl().increaseErrorCount();
-            }
-
-            return true;
+            return executeOperation();
+        } catch (InterruptedException e) {
+            throw (e);
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
@@ -113,6 +89,35 @@ public class WfaGetConfirmation {
             return false;
         }
 
+    }
+
+    private boolean executeOperation() throws InterruptedException {
+        int timeoutInterval = convertTimeoutInterval(getTimeoutInterval().getValue());
+        String question = convertQuestion(getConfirmationQuestion().getValue());
+        String type = convertType(getConfirmationType().getValue());
+
+        // Run the action
+        boolean result = false;
+        switch (type.toLowerCase()) {
+            case "y":
+                result = this.getConfirmationYes(question);
+                break;
+            case "y/n":
+                result = this.getConfirmationYesNo(question);
+                break;
+            case "auto":
+                result = this.getConfirmationAuto(question);
+                break;
+        }
+
+        // Evaluate result
+        if (result) {
+            this.getActionExecution().getActionControl().increaseSuccessCount();
+        } else {
+            this.getActionExecution().getActionControl().increaseErrorCount();
+        }
+
+        return true;
     }
 
     private String convertType(DataType type) {

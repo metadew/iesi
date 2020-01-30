@@ -120,7 +120,7 @@ public class EvalVerifySingleField {
         this.getActionParameterOperationMap().put("connection", this.getConnectionName());
     }
 
-    public boolean execute() {
+    public boolean execute() throws InterruptedException {
         try {
             String databaseName = convertDatabaseName(getDatabaseName().getValue());
             String schemaName = convertSchemaName(getSchemaName().getValue());
@@ -131,6 +131,8 @@ public class EvalVerifySingleField {
             String checkOperatorName = convertCheckOperationName(getCheckOperatorName().getValue());
             String connectionName = convertConnectionName(getConnectionName().getValue());
             return verifySingleField(databaseName, schemaName, tableName, fieldName, checkName, checkName, checkValue, checkOperatorName, connectionName);
+        } catch (InterruptedException e) {
+            throw e;
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
@@ -145,7 +147,7 @@ public class EvalVerifySingleField {
 
     }
 
-    private boolean verifySingleField(String databaseName, String schemaName, String tableName, String fieldName, String checkName, String checkName1, String checkValue, String checkOperatorName, String connectionName) throws SQLException {
+    private boolean verifySingleField(String databaseName, String schemaName, String tableName, String fieldName, String checkName, String checkName1, String checkValue, String checkOperatorName, String connectionName) throws SQLException, InterruptedException {
         // Get Connection
         ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
         Connection connection = connectionConfiguration.get(connectionName, this.getExecutionControl().getEnvName()).get();

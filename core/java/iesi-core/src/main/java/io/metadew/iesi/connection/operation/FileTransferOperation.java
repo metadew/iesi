@@ -16,6 +16,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
@@ -122,7 +123,7 @@ public class FileTransferOperation {
             channel.disconnect();
             session.disconnect();
 
-        } catch (Exception e) {
+        } catch (SftpException | JSchException e) {
             throw new RuntimeException(e.getMessage());
         }
 
@@ -266,9 +267,7 @@ public class FileTransferOperation {
             channel.disconnect();
             session.disconnect();
 
-        } catch (
-
-                Exception e) {
+        } catch (SftpException | JSchException e) {
             throw new RuntimeException(e.getMessage());
         }
         return new FileTransferResult(0, fileTransferedList);
@@ -306,72 +305,67 @@ public class FileTransferOperation {
         List<FileTransfered> fileTransferedList = new ArrayList();
         ShellCommandSettings shellCommandSettings = new ShellCommandSettings();
 
-        try {
-            String filepath = sourceFilePath + File.separator + sourceFileName;
-            final File folder = new File(sourceFilePath);
+        String filepath = sourceFilePath + File.separator + sourceFileName;
+        final File folder = new File(sourceFilePath);
 
-            if (sourceFileName.equalsIgnoreCase("*")) {
-                for (final File file : folder.listFiles()) {
-                    if (file.isDirectory()) {
-                        // Ignore
-                    } else {
-                        String command = "copy /Y" + sourceFilePath + File.separator + file.getName() + " "
-                                + targetFilePath + File.separator + file.getName();
-                        targetConnectionConnection.executeLocalCommand("", command, shellCommandSettings);
-                        fileTransferedList.add(
-                                new FileTransfered(sourceFilePath, file.getName(), targetFilePath, file.getName()));
-                        filepath = sourceFilePath + File.separator + file.getName();
-                    }
-                }
-            } else if (sourceFileName.contains("�r.")) {
-                final String file_filter = ".+\\.vsd";
-                final File[] files = folder.listFiles(new FilenameFilter() {
-                    @Override
-                    public boolean accept(final File dir, final String name) {
-                        return name.matches(file_filter);
-                    }
-                });
-                // .+\\.vsd
-
-                for (final File file : files) {
-                    if (file.isDirectory()) {
-                        // Ignore
-                    } else {
-                        String command = "copy /Y" + sourceFilePath + File.separator + file.getName() + " "
-                                + targetFilePath + File.separator + file.getName();
-                        targetConnectionConnection.executeLocalCommand("", command, shellCommandSettings);
-                        fileTransferedList.add(
-                                new FileTransfered(sourceFilePath, file.getName(), targetFilePath, file.getName()));
-                        filepath = sourceFilePath + File.separator + file.getName();
-                    }
-                }
-            } else {
-                final String file_filter = sourceFileName;
-                final File[] files = folder.listFiles(new FilenameFilter() {
-
-                    @Override
-                    public boolean accept(final File dir, final String name) {
-                        return name.contentEquals(file_filter);
-                    }
-                });
-                for (
-
-                        final File file : files) {
-                    if (file.isDirectory()) {
-                        // Ignore
-                    } else {
-                        String command = "copy /Y" + sourceFilePath + File.separator + file.getName() + " "
-                                + targetFilePath + File.separator + targetFileName;
-                        targetConnectionConnection.executeLocalCommand("", command, shellCommandSettings);
-                        fileTransferedList.add(
-                                new FileTransfered(sourceFilePath, file.getName(), targetFilePath, targetFileName));
-                        filepath = sourceFileName + File.separator + file.getName();
-                    }
+        if (sourceFileName.equalsIgnoreCase("*")) {
+            for (final File file : folder.listFiles()) {
+                if (file.isDirectory()) {
+                    // Ignore
+                } else {
+                    String command = "copy /Y" + sourceFilePath + File.separator + file.getName() + " "
+                            + targetFilePath + File.separator + file.getName();
+                    targetConnectionConnection.executeLocalCommand("", command, shellCommandSettings);
+                    fileTransferedList.add(
+                            new FileTransfered(sourceFilePath, file.getName(), targetFilePath, file.getName()));
+                    filepath = sourceFilePath + File.separator + file.getName();
                 }
             }
+        } else if (sourceFileName.contains("�r.")) {
+            final String file_filter = ".+\\.vsd";
+            final File[] files = folder.listFiles(new FilenameFilter() {
+                @Override
+                public boolean accept(final File dir, final String name) {
+                    return name.matches(file_filter);
+                }
+            });
+            // .+\\.vsd
 
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
+            for (final File file : files) {
+                if (file.isDirectory()) {
+                    // Ignore
+                } else {
+                    String command = "copy /Y" + sourceFilePath + File.separator + file.getName() + " "
+                            + targetFilePath + File.separator + file.getName();
+                    targetConnectionConnection.executeLocalCommand("", command, shellCommandSettings);
+                    fileTransferedList.add(
+                            new FileTransfered(sourceFilePath, file.getName(), targetFilePath, file.getName()));
+                    filepath = sourceFilePath + File.separator + file.getName();
+                }
+            }
+        } else {
+            final String file_filter = sourceFileName;
+            final File[] files = folder.listFiles(new FilenameFilter() {
+
+                @Override
+                public boolean accept(final File dir, final String name) {
+                    return name.contentEquals(file_filter);
+                }
+            });
+            for (
+
+                    final File file : files) {
+                if (file.isDirectory()) {
+                    // Ignore
+                } else {
+                    String command = "copy /Y" + sourceFilePath + File.separator + file.getName() + " "
+                            + targetFilePath + File.separator + targetFileName;
+                    targetConnectionConnection.executeLocalCommand("", command, shellCommandSettings);
+                    fileTransferedList.add(
+                            new FileTransfered(sourceFilePath, file.getName(), targetFilePath, targetFileName));
+                    filepath = sourceFileName + File.separator + file.getName();
+                }
+            }
         }
 
         return new FileTransferResult(0, fileTransferedList);

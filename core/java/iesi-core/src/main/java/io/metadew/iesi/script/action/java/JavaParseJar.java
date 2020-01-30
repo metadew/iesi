@@ -79,13 +79,15 @@ public class JavaParseJar {
     }
 
     // Methods
-    public boolean execute() {
+    public boolean execute() throws InterruptedException {
         try {
             String path = convertPath(getFilePath().getValue());
             String fileName = convertFile(getFileName().getValue());
             String connectionName = convertConnectionName(getConnectionName().getValue());
             return execute(path, fileName, connectionName);
 
+        } catch (InterruptedException e) {
+            throw (e);
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
@@ -100,7 +102,7 @@ public class JavaParseJar {
 
     }
 
-    private boolean execute(String path, String fileName, String connectionName) {
+    private boolean execute(String path, String fileName, String connectionName) throws InterruptedException {
 
         boolean isOnLocalhost = HostConnectionTools.isOnLocalhost(
                 connectionName, this.getExecutionControl().getEnvName());

@@ -123,7 +123,7 @@ public class EvalVerifyMandatoryField {
         this.getActionParameterOperationMap().put("connection", this.getConnectionName());
     }
 
-    public boolean execute() {
+    public boolean execute() throws InterruptedException {
         try {
             String databaseName = convertDatabaseName(getDatabaseName().getValue());
             String schemaName = convertSchemaName(getSchemaName().getValue());
@@ -134,6 +134,8 @@ public class EvalVerifyMandatoryField {
             boolean isMandatory = convertIsMandatory(getMandatoryFlag().getValue());
             String connectionName = convertConnectionName(getConnectionName().getValue());
             return verifyMandatoryField(databaseName, schemaName, tableName, fieldName, evaluationFieldName, evaluationFieldValue, isMandatory, connectionName);
+        } catch (InterruptedException e) {
+            throw (e);
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
@@ -148,7 +150,7 @@ public class EvalVerifyMandatoryField {
 
     }
 
-    private boolean verifyMandatoryField(String databaseName, String schemaName, String tableName, String fieldName, String evaluationFieldName, String evaluationFieldValue, boolean isMandatory, String connectionName) throws SQLException {
+    private boolean verifyMandatoryField(String databaseName, String schemaName, String tableName, String fieldName, String evaluationFieldName, String evaluationFieldValue, boolean isMandatory, String connectionName) throws SQLException, InterruptedException {
         // Get Connection
         ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
         Connection connection = connectionConfiguration.get(connectionName, this.getExecutionControl().getEnvName()).get();

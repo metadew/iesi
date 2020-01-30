@@ -94,12 +94,8 @@ public class ScriptRunner {
             } finally {
                 connection.setAutoCommit(originalAutoCommit);
             }
-        } catch (IOException e) {
+        } catch (IOException | SQLException e) {
             throw e;
-        } catch (SQLException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new RuntimeException("Error running script.  Cause: " + e, e);
         } finally {
             return sqlScriptResult;
         }
@@ -192,7 +188,7 @@ public class ScriptRunner {
                     command = null;
                     try {
                         statement.close();
-                    } catch (Exception e) {
+                    } catch (SQLException e) {
                         // Ignore to workaround a bug in Jakarta DBCP
                     }
                     Thread.yield();

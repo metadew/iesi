@@ -39,6 +39,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
 public class ExecutionControl {
@@ -77,9 +78,11 @@ public class ExecutionControl {
     @SuppressWarnings("unchecked")
     private void initializeExecutionRuntime(String runId) throws ClassNotFoundException,
             NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, SQLException {
-        if (FrameworkSettingConfiguration.getInstance().getSettingPath("script.execution.runtime").isPresent() &&
-                !FrameworkControl.getInstance().getProperty(FrameworkSettingConfiguration.getInstance().getSettingPath("script.execution.runtime").get()).isEmpty()) {
-            Class classRef = Class.forName(FrameworkControl.getInstance().getProperty(FrameworkSettingConfiguration.getInstance().getSettingPath("script.execution.runtime").get()));
+        if (FrameworkSettingConfiguration.getInstance().getSettingPath("script.execution.runtime")
+                .map(settingsPath -> FrameworkControl.getInstance().getProperty(settingsPath).isPresent()
+                        && !FrameworkControl.getInstance().getProperty(settingsPath).get().isEmpty())
+                .orElse(false)) {
+            Class classRef = Class.forName(FrameworkControl.getInstance().getProperty(FrameworkSettingConfiguration.getInstance().getSettingPath("script.execution.runtime").get()).get());
             Class[] initParams = {ExecutionControl.class, String.class};
             Constructor constructor = classRef.getConstructor(initParams);
             this.executionRuntime = (ExecutionRuntime) constructor.newInstance(this, runId);

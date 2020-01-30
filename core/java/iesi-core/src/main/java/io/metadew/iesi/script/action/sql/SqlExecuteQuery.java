@@ -88,13 +88,15 @@ public class SqlExecuteQuery {
     }
 
 
-    public boolean execute() {
+    public boolean execute() throws InterruptedException {
         try {
             String query = convertQuery(getSqlQuery().getValue());
             String connection = convertConnectionName(getConnectionName().getValue());
             String outputDatasetReferenceName = convertDatasetReferenceName(getSqlQuery().getValue());
             boolean appendOutput = convertAppendOutput(getConnectionName().getValue());
             return executeQuery(query, connection, outputDatasetReferenceName, appendOutput);
+        } catch (InterruptedException e) {
+            throw (e);
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
@@ -149,7 +151,7 @@ public class SqlExecuteQuery {
         }
     }
 
-    private boolean executeQuery(String query, String connectionName, String outputDatasetReferenceName, boolean appendOutput) throws SQLException {
+    private boolean executeQuery(String query, String connectionName, String outputDatasetReferenceName, boolean appendOutput) throws SQLException, InterruptedException {
 
         // Get Connection
         ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();

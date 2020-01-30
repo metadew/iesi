@@ -77,11 +77,13 @@ public class FwkIncludeScript {
         this.getActionParameterOperationMap().put("version", this.getScriptVersion());
     }
 
-    public boolean execute() {
+    public boolean execute() throws InterruptedException {
         try {
             String scriptName = convertScriptName(getScriptName().getValue());
             Optional<Long> scriptVersion = convertScriptVersion(getScriptVersion().getValue());
             return includeScript(scriptName, scriptVersion);
+        } catch (InterruptedException e) {
+            throw (e);
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
@@ -95,7 +97,7 @@ public class FwkIncludeScript {
         }
     }
 
-    private boolean includeScript(String scriptName, Optional<Long> scriptVersion) {
+    private boolean includeScript(String scriptName, Optional<Long> scriptVersion) throws InterruptedException{
         ScriptConfiguration scriptConfiguration = new ScriptConfiguration();
         Script script = scriptVersion
                 .map(scriptVersion1 -> scriptConfiguration.get(scriptName, scriptVersion1))

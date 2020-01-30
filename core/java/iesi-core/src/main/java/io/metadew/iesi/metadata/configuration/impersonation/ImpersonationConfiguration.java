@@ -277,9 +277,10 @@ public class ImpersonationConfiguration extends MetadataConfiguration {
                 impersonationConfiguration.getImpersonation(impersonationName).ifPresent(impersonationList::add);
             }
             crs.close();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
+            throw new RuntimeException(e);
         }
 
         return new ListObject(FrameworkObjectConfiguration.getFrameworkObjectType(new Impersonation()), impersonationList);

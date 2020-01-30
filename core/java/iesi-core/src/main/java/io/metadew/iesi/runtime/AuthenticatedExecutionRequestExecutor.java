@@ -39,7 +39,8 @@ public class AuthenticatedExecutionRequestExecutor implements ExecutionRequestEx
     private AuthenticatedExecutionRequestExecutor() {
         this.userAccessConfiguration = new UserAccessConfiguration();
         this.authenticationEnabled = FrameworkSettingConfiguration.getInstance().getSettingPath("guard.authenticate")
-                .map(settingPath -> FrameworkControl.getInstance().getProperty(settingPath).equalsIgnoreCase("y"))
+                .map(settingPath -> FrameworkControl.getInstance().getProperty(settingPath)
+                        .orElseThrow(() -> new RuntimeException("no value set for guard.authenticate")).equalsIgnoreCase("y"))
                 .orElse(false);
     }
 

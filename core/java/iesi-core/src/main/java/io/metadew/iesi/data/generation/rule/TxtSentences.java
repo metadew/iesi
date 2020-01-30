@@ -10,128 +10,111 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-
 public class TxtSentences {
 
-	private GenerationRuleExecution generationRuleExecution;
-	private FrameworkExecution frameworkExecution;
-	private ExecutionControl executionControl;
-	private String generationRuleTypeName = "txt.sentences";
-	private static final Logger LOGGER = LogManager.getLogger();
+    private GenerationRuleExecution generationRuleExecution;
+    private FrameworkExecution frameworkExecution;
+    private ExecutionControl executionControl;
+    private String generationRuleTypeName = "txt.sentences";
+    private static final Logger LOGGER = LogManager.getLogger();
 
-	// Parameters
-	private GenerationRuleParameterExecution sentenceNumber;
+    // Parameters
+    private GenerationRuleParameterExecution sentenceNumber;
 
-	// Constructors
-	public TxtSentences() {
-		
-	}
-	
-	public TxtSentences(FrameworkExecution frameworkExecution, ExecutionControl executionControl, GenerationRuleExecution generationRuleExecution) {
-		this.setFrameworkExecution(frameworkExecution);
-		this.setEoControl(executionControl);
-		this.setGenerationRuleExecution(generationRuleExecution);
-	}
+    // Constructors
+    public TxtSentences() {
 
-	public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl, GenerationRuleExecution generationRuleExecution) {
-		this.setFrameworkExecution(frameworkExecution);
-		this.setEoControl(executionControl);
-		this.setGenerationRuleExecution(generationRuleExecution);
-	}
-	
-	//
-	public boolean execute() {
-		try {
-			LOGGER.warn("generation.rule.type=" + this.getGenerationRuleTypeName(), Level.INFO);
+    }
 
-			// Reset Parameters
-			this.setSentenceNumber(new GenerationRuleParameterExecution(this.getFrameworkExecution(), this.getEoControl(),
-					this.getGenerationRuleTypeName(), "SENTENCE_NB"));
+    public TxtSentences(FrameworkExecution frameworkExecution, ExecutionControl executionControl, GenerationRuleExecution generationRuleExecution) {
+        this.setFrameworkExecution(frameworkExecution);
+        this.setEoControl(executionControl);
+        this.setGenerationRuleExecution(generationRuleExecution);
+    }
 
-			// Get Parameters
-			for (GenerationRuleParameter generationRuleParameter : this.getGenerationRuleExecution().getGenerationRule()
-					.getParameters()) {
-				if (generationRuleParameter.getName().equalsIgnoreCase("sentence_nb")) {
-					this.getSentenceNumber().setInputValue(generationRuleParameter.getValue());
-				}
-			}
+    public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl, GenerationRuleExecution generationRuleExecution) {
+        this.setFrameworkExecution(frameworkExecution);
+        this.setEoControl(executionControl);
+        this.setGenerationRuleExecution(generationRuleExecution);
+    }
 
-			// Run the generationRule
-			try {				
-				for (int currentRecord = 0; currentRecord < this.getGenerationRuleExecution().getGenerationExecution().getNumberOfRecords(); currentRecord++) {
-					String generatedValue = "";
-					if (this.getSentenceNumber().getValue().trim().equalsIgnoreCase("")) {
-						generatedValue = this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().getGenerationObjectExecution().getLorem().paragraph();
-					} else {
-						generatedValue = this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().getGenerationObjectExecution().getLorem().paragraph(Integer.parseInt(this.getSentenceNumber().getValue()));
-					}
-					
-					String query = "update " + this.getGenerationRuleExecution().getGenerationExecution().getGeneration().getName();
-					query += " set v" + this.getGenerationRuleExecution().getGenerationRule().getField() + "=";
-					query += SQLTools.GetStringForSQL(generatedValue);
-					query += " where id=" + (currentRecord + 1);
-					this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().getTemporaryDatabaseConnection().executeUpdate(query);
-					
-					this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().updateProgress();
-				}
+    //
+    public boolean execute() {
+        LOGGER.warn("generation.rule.type=" + this.getGenerationRuleTypeName(), Level.INFO);
+
+        // Reset Parameters
+        this.setSentenceNumber(new GenerationRuleParameterExecution(this.getFrameworkExecution(), this.getEoControl(),
+                this.getGenerationRuleTypeName(), "SENTENCE_NB"));
+
+        // Get Parameters
+        for (GenerationRuleParameter generationRuleParameter : this.getGenerationRuleExecution().getGenerationRule()
+                .getParameters()) {
+            if (generationRuleParameter.getName().equalsIgnoreCase("sentence_nb")) {
+                this.getSentenceNumber().setInputValue(generationRuleParameter.getValue());
+            }
+        }
+
+        // Run the generationRule
+        for (int currentRecord = 0; currentRecord < this.getGenerationRuleExecution().getGenerationExecution().getNumberOfRecords(); currentRecord++) {
+            String generatedValue = "";
+            if (this.getSentenceNumber().getValue().trim().equalsIgnoreCase("")) {
+                generatedValue = this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().getGenerationObjectExecution().getLorem().paragraph();
+            } else {
+                generatedValue = this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().getGenerationObjectExecution().getLorem().paragraph(Integer.parseInt(this.getSentenceNumber().getValue()));
+            }
+
+            String query = "update " + this.getGenerationRuleExecution().getGenerationExecution().getGeneration().getName();
+            query += " set v" + this.getGenerationRuleExecution().getGenerationRule().getField() + "=";
+            query += SQLTools.GetStringForSQL(generatedValue);
+            query += " where id=" + (currentRecord + 1);
+            this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().getTemporaryDatabaseConnection().executeUpdate(query);
+
+            this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().updateProgress();
+        }
 
 
-			} catch (Exception e) {
-				throw new RuntimeException("Issue generating data: " + e, e);
-			}
-			return true;
-		} catch (Exception e) {
-			StringWriter StackTrace = new StringWriter();
-			e.printStackTrace(new PrintWriter(StackTrace));
+        return true;
+    }
 
-			// TODO logging
+    // Getters and Setters
+    public ExecutionControl getEoControl() {
+        return executionControl;
+    }
 
-			return false;
-		}
+    public void setEoControl(ExecutionControl executionControl) {
+        this.executionControl = executionControl;
+    }
 
-	}
+    public GenerationRuleExecution getGenerationRuleExecution() {
+        return generationRuleExecution;
+    }
 
-	// Getters and Setters
-	public ExecutionControl getEoControl() {
-		return executionControl;
-	}
+    public void setGenerationRuleExecution(GenerationRuleExecution generationRuleExecution) {
+        this.generationRuleExecution = generationRuleExecution;
+    }
 
-	public void setEoControl(ExecutionControl executionControl) {
-		this.executionControl = executionControl;
-	}
+    public String getGenerationRuleTypeName() {
+        return generationRuleTypeName;
+    }
 
-	public GenerationRuleExecution getGenerationRuleExecution() {
-		return generationRuleExecution;
-	}
+    public void setGenerationRuleTypeName(String generationRuleTypeName) {
+        this.generationRuleTypeName = generationRuleTypeName;
+    }
 
-	public void setGenerationRuleExecution(GenerationRuleExecution generationRuleExecution) {
-		this.generationRuleExecution = generationRuleExecution;
-	}
+    public GenerationRuleParameterExecution getSentenceNumber() {
+        return sentenceNumber;
+    }
 
-	public String getGenerationRuleTypeName() {
-		return generationRuleTypeName;
-	}
+    public void setSentenceNumber(GenerationRuleParameterExecution sentenceNumber) {
+        this.sentenceNumber = sentenceNumber;
+    }
 
-	public void setGenerationRuleTypeName(String generationRuleTypeName) {
-		this.generationRuleTypeName = generationRuleTypeName;
-	}
+    public FrameworkExecution getFrameworkExecution() {
+        return frameworkExecution;
+    }
 
-	public GenerationRuleParameterExecution getSentenceNumber() {
-		return sentenceNumber;
-	}
-
-	public void setSentenceNumber(GenerationRuleParameterExecution sentenceNumber) {
-		this.sentenceNumber = sentenceNumber;
-	}
-
-	public FrameworkExecution getFrameworkExecution() {
-		return frameworkExecution;
-	}
-
-	public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-		this.frameworkExecution = frameworkExecution;
-	}
+    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
+        this.frameworkExecution = frameworkExecution;
+    }
 
 }

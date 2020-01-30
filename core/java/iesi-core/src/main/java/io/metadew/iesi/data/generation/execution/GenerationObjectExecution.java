@@ -89,39 +89,31 @@ public class GenerationObjectExecution {
 
         int i = 0;
         // Default Configuration
-        try {
-            for (File file : FolderTools.getFilesInFolder(
-                    FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.gen"),
-                    "regex", ".+\\.yml")) {
+        for (File file : FolderTools.getFilesInFolder(
+                FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.gen"),
+                "regex", ".+\\.yml")) {
 
-                if (i == 0) {
-                    data = loadData(file.getAbsolutePath());
-                } else {
-                    this.getGenerationTools().getMapTools().deepMerge(data, loadData(file.getAbsolutePath()));
-                }
-
-                i++;
+            if (i == 0) {
+                data = loadData(file.getAbsolutePath());
+            } else {
+                this.getGenerationTools().getMapTools().deepMerge(data, loadData(file.getAbsolutePath()));
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+
+            i++;
         }
 
         // User configuration
-        try {
-            for (File file : FolderTools.getFilesInFolder(
-                    FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.conf"),
-                    "regex", ".+\\.yml")) {
+        for (File file : FolderTools.getFilesInFolder(
+                FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.conf"),
+                "regex", ".+\\.yml")) {
 
-                if (i == 0) {
-                    data = loadData(file.getAbsolutePath());
-                } else {
-                    this.getGenerationTools().getMapTools().deepMerge(data, loadData(file.getAbsolutePath()));
-                }
-
-                i++;
+            if (i == 0) {
+                data = loadData(file.getAbsolutePath());
+            } else {
+                this.getGenerationTools().getMapTools().deepMerge(data, loadData(file.getAbsolutePath()));
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+
+            i++;
         }
 
         return data;

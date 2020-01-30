@@ -29,7 +29,8 @@ public class ExecutionRequestListener implements Runnable {
 
     public ExecutionRequestListener() {
         int threadSize = FrameworkSettingConfiguration.getInstance().getSettingPath("server.threads")
-                .map(settingPath -> Integer.parseInt(FrameworkControl.getInstance().getProperty(settingPath)))
+                .map(settingPath -> Integer.parseInt(FrameworkControl.getInstance().getProperty(settingPath)
+                        .orElseThrow(() -> new RuntimeException("no value set for server.threads"))))
                 .orElse(4);
         LOGGER.info(MessageFormat.format("starting listener with thread pool size {0}", threadSize));
 

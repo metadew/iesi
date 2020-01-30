@@ -13,6 +13,7 @@ import io.metadew.iesi.metadata.operation.MetadataRepositoryOperation;
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,7 +58,7 @@ public class DataframeConfiguration {
                 dataframe.setDescription(crsDataframe.getString("DATAFRAME_DSC"));
             }
             crsDataframe.close();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
         }
@@ -289,7 +290,7 @@ public class DataframeConfiguration {
 
             }
             crsDataframe.close();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
         }
@@ -316,7 +317,7 @@ public class DataframeConfiguration {
                 dataframeList.add(dataframeConfiguration.getDataframe(dataframeName));
             }
             crs.close();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
         }

@@ -14,6 +14,7 @@ import org.apache.logging.log4j.Logger;
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -73,7 +74,7 @@ public class ActionConfiguration {
             crsActionParameters.close();
             crsAction.close();
             return Optional.of(action);
-        } catch (Exception e) {
+        } catch (SQLException e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
             LOGGER.info("exception=" + e);

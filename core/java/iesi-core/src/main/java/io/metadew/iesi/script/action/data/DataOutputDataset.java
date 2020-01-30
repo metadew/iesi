@@ -68,11 +68,13 @@ public class DataOutputDataset {
         actionParameterOperationMap.put("onScreen", this.getOnScreen());
     }
 
-    public boolean execute() {
+    public boolean execute() throws InterruptedException {
         try {
             Dataset dataset = new KeyValueDataset(getDatasetName().getValue(), getDatasetLabels().getValue(), executionControl.getExecutionRuntime());
             boolean onScreen = convertOnScreen(getOnScreen().getValue());
             return outputDataset(dataset, onScreen);
+        } catch (InterruptedException e) {
+            throw (e);
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
@@ -87,7 +89,7 @@ public class DataOutputDataset {
 
     }
 
-    private boolean outputDataset(Dataset dataset, boolean onScreen) {
+    private boolean outputDataset(Dataset dataset, boolean onScreen) throws InterruptedException {
         // TODO: loop over all dataset item and print them
         dataset.getDataItems(executionControl.getExecutionRuntime())
                 .forEach((key, value) -> LOGGER.info(MessageFormat.format("{0}:{1}", key, value)));

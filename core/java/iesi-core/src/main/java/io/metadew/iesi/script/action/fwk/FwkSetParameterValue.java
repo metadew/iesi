@@ -63,11 +63,13 @@ public class FwkSetParameterValue {
         this.getActionParameterOperationMap().put("value", this.getOperationValue());
     }
 
-    public boolean execute() {
+    public boolean execute() throws InterruptedException {
         try {
             String name = convertName(getOperationName().getValue());
             String value = convertValue(getOperationValue().getValue());
             return setParameter(name, value);
+        } catch (InterruptedException e) {
+            throw(e);
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
@@ -82,7 +84,7 @@ public class FwkSetParameterValue {
 
     }
 
-    private boolean setParameter(String name, String value)  {
+    private boolean setParameter(String name, String value) throws InterruptedException {
         this.getExecutionControl().getExecutionRuntime().setRuntimeVariable(actionExecution, name, value);
         this.getActionExecution().getActionControl().increaseSuccessCount();
         return true;

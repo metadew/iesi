@@ -41,12 +41,11 @@ public class FwkStopIteration {
         this.getActionParameterOperationMap().put("START_STEP_NM", this.getStartActionName());
     }
 
-    public boolean execute() {
+    public boolean execute() throws InterruptedException {
         try {
-            // Run the action
-            this.getActionExecution().getActionControl().increaseSuccessCount();
-
-            return true;
+            return performOperation();
+        } catch (InterruptedException e) {
+            throw (e);
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
@@ -59,6 +58,14 @@ public class FwkStopIteration {
             return false;
         }
 
+    }
+
+    private boolean performOperation() throws InterruptedException {
+
+        // Run the action
+        this.getActionExecution().getActionControl().increaseSuccessCount();
+
+        return true;
     }
 
     public ExecutionControl getExecutionControl() {

@@ -29,6 +29,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.*;
@@ -149,20 +151,11 @@ public class HttpExecuteRequest {
 
     }
 
-    public boolean execute() {
+    public boolean execute() throws InterruptedException {
         try {
-            HttpResponse httpResponse;
-            if (getProxyConnection().isPresent()) {
-                httpResponse = httpRequestService.send(httpRequest, proxyConnection);
-            }else {
-                httpResponse = httpRequestService.send(httpRequest);
-            }
-            outputResponse(httpResponse);
-            // Parsing entity
-            writeResponseToOutputDataset(httpResponse);
-            // Check error code
-            checkStatusCode(httpResponse);
-            return true;
+            return executionOperation();
+        } catch (InterruptedException e) {
+            throw e;
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
@@ -174,6 +167,21 @@ public class HttpExecuteRequest {
 
             return false;
         }
+    }
+
+    private boolean executionOperation() throws NoSuchAlgorithmException, IOException, KeyManagementException, InterruptedException {
+        HttpResponse httpResponse;
+        if (getProxyConnection().isPresent()) {
+            httpResponse = httpRequestService.send(httpRequest, proxyConnection);
+        }else {
+            httpResponse = httpRequestService.send(httpRequest);
+        }
+        outputResponse(httpResponse);
+        // Parsing entity
+        writeResponseToOutputDataset(httpResponse);
+        // Check error code
+        checkStatusCode(httpResponse);
+        return true;
     }
 
     private List<String> convertExpectStatusCodes(DataType expectedStatusCodes) {
@@ -374,7 +382,7 @@ public class HttpExecuteRequest {
                         actionExecution.getActionControl().logOutput("json.stacktrace", StackTrace.toString());
                     }
                 });
-            } catch (Exception e) {
+            } catch (IOException e) {
                 StringWriter StackTrace = new StringWriter();
                 e.printStackTrace(new PrintWriter(StackTrace));
                 actionExecution.getActionControl().logOutput("json.exception", e.getMessage());
@@ -386,29 +394,24 @@ public class HttpExecuteRequest {
 
     private void setRuntimeVariable(JsonNode jsonNode, String keyPrefix) {
         if (setRuntimeVariables) {
-            try {
-                Iterator<Map.Entry<String, JsonNode>> fields = jsonNode.fields();
-                while (fields.hasNext()) {
-                    Map.Entry<String, JsonNode> field = fields.next();
-                    if (field.getValue().getNodeType().equals(JsonNodeType.OBJECT)) {
-                        setRuntimeVariable(field.getValue(), keyPrefix + field.getKey() + ".");
-                    } else if (field.getValue().getNodeType().equals(JsonNodeType.ARRAY)) {
-                        int arrayCounter = 1;
-                        for (JsonNode element : field.getValue()) {
-                            setRuntimeVariable(element, keyPrefix + field.getKey() + "." + arrayCounter + ".");
-                            arrayCounter++;
-                        }
-                    } else if (field.getValue().getNodeType().equals(JsonNodeType.NULL)) {
-                        executionControl.getExecutionRuntime().setRuntimeVariable(actionExecution, keyPrefix + field.getKey(), "");
-                    } else if (field.getValue().isValueNode()) {
-                        executionControl.getExecutionRuntime().setRuntimeVariable(actionExecution, keyPrefix + field.getKey(), field.getValue().asText());
-                    } else {
-                        // TODO:
+            Iterator<Map.Entry<String, JsonNode>> fields = jsonNode.fields();
+            while (fields.hasNext()) {
+                Map.Entry<String, JsonNode> field = fields.next();
+                if (field.getValue().getNodeType().equals(JsonNodeType.OBJECT)) {
+                    setRuntimeVariable(field.getValue(), keyPrefix + field.getKey() + ".");
+                } else if (field.getValue().getNodeType().equals(JsonNodeType.ARRAY)) {
+                    int arrayCounter = 1;
+                    for (JsonNode element : field.getValue()) {
+                        setRuntimeVariable(element, keyPrefix + field.getKey() + "." + arrayCounter + ".");
+                        arrayCounter++;
                     }
+                } else if (field.getValue().getNodeType().equals(JsonNodeType.NULL)) {
+                    executionControl.getExecutionRuntime().setRuntimeVariable(actionExecution, keyPrefix + field.getKey(), "");
+                } else if (field.getValue().isValueNode()) {
+                    executionControl.getExecutionRuntime().setRuntimeVariable(actionExecution, keyPrefix + field.getKey(), field.getValue().asText());
+                } else {
+                    // TODO:
                 }
-            } catch (Exception e) {
-                actionExecution.getActionControl().increaseWarningCount();
-                executionControl.logExecutionOutput(actionExecution, "SET_RUN_VAR", e.getMessage());
             }
         }
     }

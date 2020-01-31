@@ -1,106 +1,125 @@
 package io.metadew.iesi.metadata.configuration.connection;
 
 import io.metadew.iesi.connection.tools.SQLTools;
+import io.metadew.iesi.metadata.configuration.Configuration;
+import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
+import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
-import io.metadew.iesi.metadata.execution.MetadataControl;
+import io.metadew.iesi.metadata.definition.connection.key.ConnectionParameterKey;
+import io.metadew.iesi.metadata.repository.MetadataRepository;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.sql.SQLException;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
-public class ConnectionParameterConfiguration {
+public class ConnectionParameterConfiguration extends Configuration<ConnectionParameter, ConnectionParameterKey> {
 
-    private ConnectionParameter connectionParameter;
+    private static ConnectionParameterConfiguration INSTANCE;
+    private static final Logger LOGGER = LogManager.getLogger();
 
-    // Constructors
-    public ConnectionParameterConfiguration(ConnectionParameter connectionParameter) {
-    	this.setConnectionParameter(connectionParameter);
+    public synchronized static ConnectionParameterConfiguration getInstance(){
+        if (INSTANCE == null) {
+            INSTANCE = new ConnectionParameterConfiguration();
+        }
+        return INSTANCE;
     }
 
-    public ConnectionParameterConfiguration() {
+    private ConnectionParameterConfiguration() {    }
+
+
+    public void init(MetadataRepository metadataRepository) {
+        setMetadataRepository(metadataRepository);
     }
 
-    // Insert
-    public String getInsertStatement(String connectionName, String environmentName) {
-        String sql = "";
-
-        sql += "INSERT INTO " + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("ConnectionParameters");
-        sql += " (CONN_NM, ENV_NM, CONN_PAR_NM, CONN_PAR_VAL) ";
-        sql += "VALUES ";
-        sql += "(";
-        sql += SQLTools.GetStringForSQL(connectionName);
-        sql += ",";
-        sql += SQLTools.GetStringForSQL(environmentName);
-        sql += ",";
-        sql += SQLTools.GetStringForSQL(this.getConnectionParameter().getName());
-        sql += ",";
-        sql += SQLTools.GetStringForSQL(this.getConnectionParameter().getValue());
-        sql += ")";
-        sql += ";";
-
-        return sql;
+    @Override
+    public Optional<ConnectionParameter> get(ConnectionParameterKey connectionParameterKey) {
+        try{
+            String query = "select CONN_NM, CONN_PAR_NM, CONN_PAR_VAL, ENV_NM from " +
+                    getMetadataRepository().getTableNameByLabel("ConnectionParameters") +
+                    " WHERE " +
+                    " CONN_NM  = " + SQLTools.GetStringForSQL(connectionParameterKey.getConnectionKey().getName()) + " AND " +
+                    " ENV_NM  = " + SQLTools.GetStringForSQL(connectionParameterKey.getConnectionKey().getEnvironmentKey().getName()) + " AND " +
+                    " CONN_PAR_NM = " + SQLTools.GetStringForSQL(connectionParameterKey.getParameterName()) + ";";
+            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
+            if (cachedRowSet.size() == 0) {
+                return Optional.empty();
+            } else if (cachedRowSet.size() > 1) {
+                LOGGER.warn(MessageFormat.format("Found multiple implementations for Connection {0}. Returning first implementation", connectionParameterKey.toString()));
+            }
+            cachedRowSet.next();
+            return Optional.of(new ConnectionParameter(connectionParameterKey, cachedRowSet.getString("CONN_PAR_VAL")));
+        }catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public String getInsertStatement(String connectionName, String environmentName, ConnectionParameter connectionParameter) {
-        return "INSERT INTO " + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("ConnectionParameters") +
+    @Override
+    public List<ConnectionParameter> getAll() {
+        List<ConnectionParameter> connectionParameters = new ArrayList<>();
+        String query = "select * from " + getMetadataRepository().getTableNameByLabel("ConnectionParameters")
+                + " order by CONN_NM ASC";
+        CachedRowSet crs = getMetadataRepository().executeQuery(query, "reader");
+        try {
+            while (crs.next()) {
+                connectionParameters.add(new ConnectionParameter(
+                        crs.getString("CONN_NM"),
+                        crs.getString("ENV_NM"),
+                        crs.getString("CONN_PAR_NM"),
+                        crs.getString("CONN_PAR_VAL")));
+
+            }
+            crs.close();
+        } catch (SQLException e) {
+            StringWriter stackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTrace));
+            LOGGER.warn("exeption=" + e.getMessage());
+            LOGGER.info("exception.stacktrace=" + stackTrace.toString());
+        }
+        return connectionParameters;
+    }
+
+    @Override
+    public void delete(ConnectionParameterKey metadataKey) {
+        LOGGER.trace(MessageFormat.format("Deleting Connection {0}.", metadataKey.toString()));
+        if (!exists(metadataKey)) {
+            throw new MetadataDoesNotExistException(metadataKey);
+        }
+        String deleteStatement = deleteStatement(metadataKey);
+        getMetadataRepository().executeUpdate(deleteStatement);
+    }
+
+    private String deleteStatement(ConnectionParameterKey connectionParameterKey) {
+        return "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ConnectionParameters") +
+                " WHERE " +
+                " CONN_NM = " + SQLTools.GetStringForSQL(connectionParameterKey.getConnectionKey().getName()) + " AND " +
+                " ENV_NM = " + SQLTools.GetStringForSQL(connectionParameterKey.getConnectionKey().getEnvironmentKey().getName())+ " AND " +
+                " CONN_PAR_NM = " + SQLTools.GetStringForSQL(connectionParameterKey.getParameterName()) + ";";
+    }
+
+    @Override
+    public void insert(ConnectionParameter connectionParameter) {
+        LOGGER.trace(MessageFormat.format("Inserting Connection {0}.", connectionParameter.getMetadataKey().toString()));
+        if (exists(connectionParameter.getMetadataKey())) {
+            throw new MetadataAlreadyExistsException(connectionParameter.getMetadataKey());
+        }
+        String insertStatement = insertStatement(connectionParameter);
+        getMetadataRepository().executeUpdate(insertStatement);
+    }
+
+    public String insertStatement(ConnectionParameter connectionParameter){
+        return "INSERT INTO " + getMetadataRepository().getTableNameByLabel("ConnectionParameters") +
                 " (CONN_NM, ENV_NM, CONN_PAR_NM, CONN_PAR_VAL) VALUES (" +
-                SQLTools.GetStringForSQL(connectionName) + "," +
-                SQLTools.GetStringForSQL(environmentName)+ "," +
-                SQLTools.GetStringForSQL(connectionParameter.getName()) + "," +
+                SQLTools.GetStringForSQL(connectionParameter.getMetadataKey().getConnectionKey().getName()) + "," +
+                SQLTools.GetStringForSQL(connectionParameter.getMetadataKey().getConnectionKey().getEnvironmentKey().getName())+ "," +
+                SQLTools.GetStringForSQL(connectionParameter.getMetadataKey().getParameterName()) + "," +
                 SQLTools.GetStringForSQL(connectionParameter.getValue()) + ");";
-    }
-
-    public ConnectionParameter getConnectionParameter(String cpnnectionName, String environmentName, String connectionParameterName) {
-        ConnectionParameter connectionParameter = new ConnectionParameter();
-        CachedRowSet crsConnectionParameter = null;
-        String queryConnectionParameter = "select CONN_NM, ENV_NM, CONN_PAR_NM, CONN_PAR_VAL from " + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("ConnectionParameters")
-                + " where CONN_NM = '" + cpnnectionName + "' and CONN_PAR_NM = '" + connectionParameterName + "' and ENV_NM = '" + environmentName + "'";
-        crsConnectionParameter = MetadataControl.getInstance().getConnectivityMetadataRepository().executeQuery(queryConnectionParameter, "reader");
-        try {
-            while (crsConnectionParameter.next()) {
-                connectionParameter.setName(connectionParameterName);
-                connectionParameter.setValue(crsConnectionParameter.getString("CONN_PAR_VAL"));
-
-            }
-            crsConnectionParameter.close();
-        } catch (Exception e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-        }
-        return connectionParameter;
-    }
-
-    public Optional<String> getConnectionParameterValue(String connectionName, String environmentName,
-                                                        String connectionParameterName) {
-        String output = null;
-        CachedRowSet crsConnectionParameter;
-        String queryConnectionParameter = "select CONN_NM, ENV_NM, CONN_PAR_NM, CONN_PAR_VAL from "
-                + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("ConnectionParameters") + " where CONN_NM = '"
-                + connectionName + "' and ENV_NM = '" + environmentName + "' and CONN_PAR_NM = '" + connectionParameterName + "'";
-        crsConnectionParameter = MetadataControl.getInstance().getConnectivityMetadataRepository().executeQuery(queryConnectionParameter, "reader");
-        try {
-            while (crsConnectionParameter.next()) {
-                output = crsConnectionParameter.getString("CONN_PAR_VAL");
-            }
-            crsConnectionParameter.close();
-        } catch (Exception e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-            return Optional.empty();
-        }
-
-        return Optional.ofNullable(output);
-    }
-
-
-    // Getters and Setters
-    public ConnectionParameter getConnectionParameter() {
-        return connectionParameter;
-    }
-
-    public void setConnectionParameter(ConnectionParameter connectionParameter) {
-        this.connectionParameter = connectionParameter;
     }
 
 }

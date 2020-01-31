@@ -1,22 +1,33 @@
 package io.metadew.iesi.metadata.repository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.metadew.iesi.metadata.configuration.exception.FeatureAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.exception.FeatureDoesNotExistException;
+import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.feature.FeatureConfiguration;
 import io.metadew.iesi.metadata.definition.DataObject;
+import io.metadew.iesi.metadata.definition.MetadataObject;
+import io.metadew.iesi.metadata.definition.MetadataTable;
 import io.metadew.iesi.metadata.definition.feature.Feature;
 import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
+import java.util.List;
 
 public class CatalogMetadataRepository extends MetadataRepository {
     private static final Logger LOGGER = LogManager.getLogger();
 
     public CatalogMetadataRepository(String name, String scope, String instanceName, RepositoryCoordinator repositoryCoordinator) {
         super(name, scope, instanceName, repositoryCoordinator);
+    }
+
+    public CatalogMetadataRepository(String name, String instanceName, RepositoryCoordinator repositoryCoordinator) {
+        super(name, instanceName, repositoryCoordinator);
+    }
+
+    public CatalogMetadataRepository(String tablePrefix, RepositoryCoordinator repositoryCoordinator, String name,
+                                     String scope, List<MetadataObject> metadataObjects, List<MetadataTable> metadataTables) {
+        super(tablePrefix, repositoryCoordinator, name, scope, metadataObjects, metadataTables);
     }
 
     @Override
@@ -26,12 +37,12 @@ public class CatalogMetadataRepository extends MetadataRepository {
 
     @Override
     public String getObjectDefinitionFileName() {
-    	return "CatalogObjects.json";
+        return "CatalogObjects.json";
     }
 
     @Override
     public String getCategory() {
-    	return "catalog";
+        return "catalog";
     }
 
     @Override
@@ -56,12 +67,8 @@ public class CatalogMetadataRepository extends MetadataRepository {
         FeatureConfiguration featureConfiguration = new FeatureConfiguration();
         try {
             featureConfiguration.insertFeature(feature);
-        } catch (FeatureAlreadyExistsException e) {
-            try {
-                featureConfiguration.updateFeature(feature);
-            } catch (FeatureDoesNotExistException ex) {
-                throw new MetadataRepositorySaveException(ex);
-            }
+        } catch (MetadataAlreadyExistsException e) {
+            featureConfiguration.updateFeature(feature);
         }
     }
 

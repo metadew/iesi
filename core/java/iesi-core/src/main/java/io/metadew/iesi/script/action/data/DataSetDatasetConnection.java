@@ -118,7 +118,7 @@ public class DataSetDatasetConnection {
 
     private boolean setDatasetConnection(String referenceName, String datasetName, List<String> labels) throws IOException, SQLException, InterruptedException {
         // TODO: use dataset data type
-        this.getExecutionControl().getExecutionRuntime().setKeyValueDataset(referenceName, datasetName, labels);
+        executionControl.getExecutionRuntime().setKeyValueDataset(referenceName, datasetName, labels);
         return true;
     }
 

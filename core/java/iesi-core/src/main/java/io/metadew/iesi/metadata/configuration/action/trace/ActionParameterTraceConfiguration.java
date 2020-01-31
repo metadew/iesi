@@ -2,8 +2,6 @@ package io.metadew.iesi.metadata.configuration.action.trace;
 
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
-import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.action.trace.ActionParameterTrace;
 import io.metadew.iesi.metadata.definition.action.trace.key.ActionParameterTraceKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
@@ -82,7 +80,7 @@ public class ActionParameterTraceConfiguration extends Configuration<ActionParam
     }
 
     @Override
-    public void delete(ActionParameterTraceKey actionParameterTraceKey) throws MetadataDoesNotExistException {
+    public void delete(ActionParameterTraceKey actionParameterTraceKey) {
         LOGGER.trace(MessageFormat.format("Deleting ActionParameterTrace {0}.", actionParameterTraceKey.toString()));
         String deleteStatement = deleteStatement(actionParameterTraceKey);
         getMetadataRepository().executeUpdate(deleteStatement);
@@ -99,13 +97,13 @@ public class ActionParameterTraceConfiguration extends Configuration<ActionParam
     }
 
     @Override
-    public void insert(ActionParameterTrace actionParameterTrace) throws MetadataAlreadyExistsException {
+    public void insert(ActionParameterTrace actionParameterTrace) {
         LOGGER.trace(MessageFormat.format("Inserting ActionParameterTrace {0}.", actionParameterTrace.getMetadataKey().toString()));
         String insertStatement = insertStatement(actionParameterTrace);
         getMetadataRepository().executeUpdate(insertStatement);
     }
 
-    public void insert(List<ActionParameterTrace> actionParameterTraces) throws MetadataAlreadyExistsException {
+    public void insert(List<ActionParameterTrace> actionParameterTraces) {
         LOGGER.trace(MessageFormat.format("Inserting ActionParameterTraces {0}.", actionParameterTraces.stream().map(ActionParameterTrace::getMetadataKey).collect(Collectors.toList()).toString()));
         List<String> insertQueries = new ArrayList<>();
         for (ActionParameterTrace actionParameterTrace : actionParameterTraces) {

@@ -128,8 +128,7 @@ public class FhoCreateFolder {
             this.setSuccess();
 
         } else {
-            ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
-            Connection connection = connectionConfiguration
+            Connection connection = ConnectionConfiguration.getInstance()
                     .get(connectionName, this.getExecutionControl().getEnvName())
                     .get();
             ConnectionOperation connectionOperation = new ConnectionOperation();

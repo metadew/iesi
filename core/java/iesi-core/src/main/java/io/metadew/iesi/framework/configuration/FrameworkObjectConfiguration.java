@@ -3,6 +3,8 @@ package io.metadew.iesi.framework.configuration;
 public class FrameworkObjectConfiguration {
 
     public static String getFrameworkObjectType(Object object) {
+        //TODO switch to class instead of object, doesn't seem logic to ask for object and constantly ask class
+        // also it seems more logical if the class itself handles their type instead of keeping config
         String type = "";
 
         if (object.getClass().getSimpleName().equalsIgnoreCase("Script")) type = "script";

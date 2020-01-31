@@ -3,7 +3,6 @@ package io.metadew.iesi.runtime;
 import io.metadew.iesi.framework.configuration.FrameworkSettingConfiguration;
 import io.metadew.iesi.framework.execution.FrameworkControl;
 import io.metadew.iesi.metadata.configuration.execution.ExecutionRequestConfiguration;
-import io.metadew.iesi.metadata.configuration.execution.exception.ExecutionRequestDoesNotExistException;
 import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequestStatus;
@@ -80,10 +79,7 @@ public class ExecutionRequestMonitor implements Runnable {
                             ExecutionRequestConfiguration.getInstance().get(executionRequestThreadEntry.getKey())
                                     .ifPresent(executionRequest -> {
                                         executionRequest.getScriptExecutionRequests().forEach(this::markAborted);
-                                        try {
-                                            ExecutionRequestConfiguration.getInstance().update(executionRequest);
-                                        } catch (ExecutionRequestDoesNotExistException ignored) {
-                                        }
+                                        ExecutionRequestConfiguration.getInstance().update(executionRequest);
                                     });
                             executionRequestThreadMap.remove(executionRequestThreadEntry.getKey());
                         } catch (InterruptedException e) {

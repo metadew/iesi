@@ -100,9 +100,8 @@ public class SqlEvaluateResult {
     }
 
     private boolean performAction(String query, boolean hasResult, String connectionName) throws InterruptedException{
-        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
 
-        Connection connection = connectionConfiguration.get(connectionName,
+        Connection connection = ConnectionConfiguration.getInstance().get(connectionName,
                 this.getExecutionControl().getEnvName()).get();
         ConnectionOperation connectionOperation = new ConnectionOperation();
         Database database = connectionOperation.getDatabase(connection);

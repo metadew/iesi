@@ -139,10 +139,9 @@ public class CliExecuteCommand {
         if (connectionName.isEmpty() || connectionName.equalsIgnoreCase("localhost")) {
             hostConnection = new HostConnection(HostConnectionTools.getLocalhostType());
         } else {
-            ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
-            Connection connection = connectionConfiguration.get(connectionName, executionControl.getEnvName())
+            Connection connection = ConnectionConfiguration.getInstance().get(connectionName, this.executionControl.getEnvName())
                     .orElseThrow(() -> new RuntimeException(MessageFormat.format("Cannot find connection definition for {} in environment {}",
-                            connectionName, executionControl.getEnvName())));
+                    connectionName, executionControl.getEnvName())));
             ConnectionOperation connectionOperation = new ConnectionOperation();
             hostConnection = connectionOperation.getHostConnection(connection);
         }

@@ -67,8 +67,7 @@ public class ConnIsAlive {
 
     private boolean execute(String connectionName) throws InterruptedException {
         // Get Connection
-        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
-        Connection connection = connectionConfiguration.get(connectionName,
+        Connection connection = ConnectionConfiguration.getInstance().get(connectionName,
                 this.getExecutionControl().getEnvName()).get();
 
         this.getActionExecution().getActionControl().increaseSuccessCount();

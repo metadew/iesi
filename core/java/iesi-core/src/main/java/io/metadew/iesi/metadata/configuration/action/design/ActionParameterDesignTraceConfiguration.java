@@ -2,8 +2,6 @@ package io.metadew.iesi.metadata.configuration.action.design;
 
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
-import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.action.design.ActionParameterDesignTrace;
 import io.metadew.iesi.metadata.definition.action.design.key.ActionParameterDesignTraceKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
@@ -82,7 +80,7 @@ public class ActionParameterDesignTraceConfiguration extends Configuration<Actio
     }
 
     @Override
-    public void delete(ActionParameterDesignTraceKey actionParameterDesignTraceKey) throws MetadataDoesNotExistException {
+    public void delete(ActionParameterDesignTraceKey actionParameterDesignTraceKey) {
         LOGGER.trace(MessageFormat.format("Deleting ActionParameterDesignTrace {0}.", actionParameterDesignTraceKey.toString()));
         String deleteStatement = deleteStatement(actionParameterDesignTraceKey);
         getMetadataRepository().executeUpdate(deleteStatement);
@@ -98,14 +96,14 @@ public class ActionParameterDesignTraceConfiguration extends Configuration<Actio
     }
 
     @Override
-    public void insert(ActionParameterDesignTrace actionParameterDesignTrace) throws MetadataAlreadyExistsException {
+    public void insert(ActionParameterDesignTrace actionParameterDesignTrace) {
         LOGGER.trace(MessageFormat.format("Inserting ActionParameterDesignTrace {0}.", actionParameterDesignTrace.toString()));
         String insertStatement = insertStatement(actionParameterDesignTrace);
         getMetadataRepository().executeUpdate(insertStatement);
     }
 
 
-    public void insert(List<ActionParameterDesignTrace> actionParameterDesignTraces) throws MetadataAlreadyExistsException, SQLException {
+    public void insert(List<ActionParameterDesignTrace> actionParameterDesignTraces) {
         LOGGER.trace(MessageFormat.format("Inserting ActionParameterDesignTraces {0}.", actionParameterDesignTraces.stream().map(ActionParameterDesignTrace::getMetadataKey).collect(Collectors.toList()).toString()));
         List<String> insertQueries = new ArrayList<>();
         for (ActionParameterDesignTrace actionParameterDesignTrace : actionParameterDesignTraces) {

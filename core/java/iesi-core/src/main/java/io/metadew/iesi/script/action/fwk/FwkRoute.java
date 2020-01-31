@@ -4,6 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.script.Script;
+import io.metadew.iesi.metadata.definition.script.ScriptParameter;
+import io.metadew.iesi.metadata.definition.script.ScriptVersion;
+import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
@@ -120,13 +123,16 @@ public class FwkRoute {
         // Evaluate conditions
 
         // Prepare script
-        Script script = new Script();
-        script.setId(this.getScriptExecution().getScript().getId());
-        script.setType(this.getScriptExecution().getScript().getType());
-        script.setName(this.getScriptExecution().getScript().getName());
-        script.setDescription(this.getScriptExecution().getScript().getDescription());
-        script.setVersion(this.getScriptExecution().getScript().getVersion());
-        script.setParameters(this.getScriptExecution().getScript().getParameters());
+        String scriptId = scriptExecution.getScript().getId();
+        Long versionNumber = scriptExecution.getScript().getVersion().getNumber();
+        ScriptKey scriptKey = new ScriptKey(scriptId, versionNumber);
+        String scriptName = scriptExecution.getScript().getName();
+        String scriptDescription = scriptExecution.getScript().getDescription();
+        ScriptVersion scriptVersion = scriptExecution.getScript().getVersion();
+        List<Action> scriptActions = new ArrayList<>();
+        List<ScriptParameter> scriptParameters = scriptExecution.getScript().getParameters();
+        Script script = new Script(scriptKey, scriptName, scriptDescription, scriptVersion,
+                scriptParameters, scriptActions);
 
         //Prepare action runtime
         this.getActionExecution().getActionControl().getActionRuntime().setRouteOperations(new ArrayList());
@@ -144,8 +150,8 @@ public class FwkRoute {
 
             // Move to destination
             boolean destinationFound = false;
-            List<Action> actions = new ArrayList();
-            for (Action action : this.getScriptExecution().getScript().getActions()) {
+            List<Action> actions = new ArrayList<>();
+            for (Action action : scriptExecution.getScript().getActions()) {
                 if (action.getName().equalsIgnoreCase(routeOperation.getDestination().getValue().toString())) {
                     destinationFound = true;
                 }

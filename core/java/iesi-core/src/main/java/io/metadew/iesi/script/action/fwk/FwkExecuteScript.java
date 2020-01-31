@@ -8,6 +8,8 @@ import io.metadew.iesi.framework.configuration.ScriptRunStatus;
 import io.metadew.iesi.metadata.configuration.script.ScriptConfiguration;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.script.Script;
+import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
+import io.metadew.iesi.metadata.tools.IdentifierTools;
 import io.metadew.iesi.script.ScriptExecutionBuildException;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
@@ -18,7 +20,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.*;
-import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -127,12 +128,11 @@ public class FwkExecuteScript {
             throw new RuntimeException(MessageFormat.format("Not allowed to run the script recursively. Attempting to run {0} in {1}", scriptName, scriptExecution.getScript().getName()));
         }
 
-        ScriptConfiguration scriptConfiguration = new ScriptConfiguration();
-        // Script script = scriptConfiguration.get(this.getScriptName().getValue());
+        // Script script = ScriptConfiguration.getInstance().get(this.getScriptName().getValue());
         Script script = scriptVersion
-                .map(version -> scriptConfiguration.get(scriptName, version)
+                .map(version -> ScriptConfiguration.getInstance().get(new ScriptKey(IdentifierTools.getScriptIdentifier(scriptName), version))
                         .orElseThrow(() -> new RuntimeException(MessageFormat.format("No implementation for script {0}-{1} found", scriptName, version))))
-                .orElse(scriptConfiguration.get(scriptName)
+                .orElse(ScriptConfiguration.getInstance().getLatestVersion(scriptName)
                         .orElseThrow(() -> new RuntimeException(MessageFormat.format("No implementation for script {0} found", scriptName))));
 
         Map<String, String> parameters = new HashMap<>();

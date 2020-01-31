@@ -27,6 +27,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ConnectionOperation {
 
@@ -110,7 +111,7 @@ public class ConnectionOperation {
             }
 
             if (this.isMissingMandatoryFields()) {
-                String message = "Mandatory fields missing for connection " + connection.getName();
+                String message = "Mandatory fields missing for oracle connection " + connection.getName();
                 throw new RuntimeException(message);
             }
 
@@ -203,7 +204,7 @@ public class ConnectionOperation {
             }
 
             if (this.isMissingMandatoryFields()) {
-                String message = "Mandatory fields missing for connection " + connection.getName();
+                String message = "Mandatory fields missing for netezza connection " + connection.getName();
                 throw new RuntimeException(message);
             }
 
@@ -287,7 +288,7 @@ public class ConnectionOperation {
             }
 
             if (this.isMissingMandatoryFields()) {
-                String message = "Mandatory fields missing for connection " + connection.getName();
+                String message = "Mandatory fields missing for postgres connection " + connection.getName();
                 throw new RuntimeException(message);
             }
 
@@ -371,7 +372,7 @@ public class ConnectionOperation {
             }
 
             if (this.isMissingMandatoryFields()) {
-                String message = "Mandatory fields missing for connection " + connection.getName();
+                String message = "Mandatory fields missing for mysql connection " + connection.getName();
                 throw new RuntimeException(message);
             }
 
@@ -430,7 +431,10 @@ public class ConnectionOperation {
             }
 
             if (this.isMissingMandatoryFields()) {
-                String message = "Mandatory fields missing for connection " + connection.getName();
+                String message = "Mandatory fields missing for sqlite connection " + connection.getName() +". "
+						+ String.join(", ", missingMandatoryFieldsList) + ". " + connection.getParameters().stream()
+						.map(connectionParameter -> connectionParameter.getName() + " = " + connectionParameter.getValue())
+						.collect(Collectors.joining(", "));
                 throw new RuntimeException(message);
             }
 
@@ -513,7 +517,7 @@ public class ConnectionOperation {
             }
 
             if (this.isMissingMandatoryFields()) {
-                String message = "Mandatory fields missing for connection " + connection.getName();
+                String message = "Mandatory fields missing for windows host connection " + connection.getName();
                 throw new RuntimeException(message);
             }
 
@@ -605,7 +609,7 @@ public class ConnectionOperation {
             }
 
             if (this.isMissingMandatoryFields()) {
-                String message = "Mandatory fields missing for connection " + connection.getName();
+                String message = "Mandatory fields missing for linux host connection " + connection.getName();
                 throw new RuntimeException(message);
             }
 
@@ -691,7 +695,7 @@ public class ConnectionOperation {
             }
 
             if (this.isMissingMandatoryFields()) {
-                String message = "Mandatory fields missing for connection " + connection.getName();
+                String message = "Mandatory fields missing for artifactory connection " + connection.getName();
                 throw new RuntimeException(message);
             }
 
@@ -734,11 +738,7 @@ public class ConnectionOperation {
 
     public ConnectionType getConnectionType(String connectionTypeName) {
         ConnectionTypeConfiguration connectionTypeConfiguration = new ConnectionTypeConfiguration();
-        ConnectionType connectionType = null;
-
-        connectionType = connectionTypeConfiguration.getConnectionType(connectionTypeName);
-
-        return connectionType;
+        return connectionTypeConfiguration.getConnectionType(connectionTypeName);
     }
 
     protected void addMissingField(String fieldName) {

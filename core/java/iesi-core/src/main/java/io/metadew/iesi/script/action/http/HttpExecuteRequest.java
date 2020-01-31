@@ -11,7 +11,7 @@ import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.datatypes.dataset.KeyValueDataset;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
-import io.metadew.iesi.metadata.configuration.exception.ComponentDoesNotExistException;
+import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.HttpRequestComponent;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.script.execution.ActionExecution;
@@ -88,7 +88,7 @@ public class HttpExecuteRequest {
         this.dataTypeService = new DataTypeService();
     }
 
-    public void prepare() throws URISyntaxException, HttpRequestBuilderException, IOException, SQLException, ComponentDoesNotExistException {
+    public void prepare() throws URISyntaxException, HttpRequestBuilderException, IOException, MetadataDoesNotExistException {
         // Reset Parameters
         ActionParameterOperation requestTypeActionParameterOperation = new ActionParameterOperation(executionControl, actionExecution, actionExecution.getAction().getType(), typeKey);
         ActionParameterOperation requestNameActionParameterOperation = new ActionParameterOperation(executionControl, actionExecution, actionExecution.getAction().getType(), requestKey);
@@ -217,8 +217,7 @@ public class HttpExecuteRequest {
         if (connectionName == null) {
             return null;
         } else if (connectionName instanceof Text) {
-            ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
-            return proxyConnection = connectionConfiguration.get(((Text) connectionName).getString(), executionControl.getEnvName())
+            return proxyConnection = ConnectionConfiguration.getInstance().get(((Text) connectionName).getString(), executionControl.getEnvName())
                     .map(ProxyConnection::from)
                     .orElseThrow(() -> new RuntimeException(MessageFormat.format("Cannot find connection {0}", ((Text) connectionName).getString())));
         } else {

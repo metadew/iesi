@@ -152,8 +152,7 @@ public class EvalVerifyMandatoryField {
 
     private boolean verifyMandatoryField(String databaseName, String schemaName, String tableName, String fieldName, String evaluationFieldName, String evaluationFieldValue, boolean isMandatory, String connectionName) throws SQLException, InterruptedException {
         // Get Connection
-        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
-        Connection connection = connectionConfiguration.get(connectionName, this.getExecutionControl().getEnvName()).get();
+        Connection connection = ConnectionConfiguration.getInstance().get(connectionName, this.getExecutionControl().getEnvName()).get();
         ConnectionOperation connectionOperation = new ConnectionOperation();
         Database database = connectionOperation.getDatabase(connection);
 

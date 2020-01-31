@@ -28,10 +28,8 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -272,8 +270,8 @@ public class ExecutionRuntime {
 
     public String resolveComponentTypeVariables(String input, List<ComponentAttribute> componentAttributeList,
                                                 String environment) {
-        HashMap<String, ComponentAttribute> componentAttributeMap = this
-                .getComponentAttributeHashmap(componentAttributeList, environment);
+
+        Map<String, ComponentAttribute> componentAttributeMap = this.getComponentAttributeHashmap(componentAttributeList, environment);
         int openPos;
         int closePos;
         String variable_char_open = "[";
@@ -297,18 +295,10 @@ public class ExecutionRuntime {
         return input;
     }
 
-    private HashMap<String, ComponentAttribute> getComponentAttributeHashmap(List<ComponentAttribute> componentAttributeList, String environment) {
-        if (componentAttributeList == null) {
-            return new HashMap<>();
-        }
-
-        HashMap<String, ComponentAttribute> componentAttributeMap = new HashMap<>();
-        for (ComponentAttribute componentAttribute : componentAttributeList) {
-            if (componentAttribute.getEnvironment().trim().equalsIgnoreCase(environment)) {
-                componentAttributeMap.put(componentAttribute.getName(), componentAttribute);
-            }
-        }
-        return componentAttributeMap;
+    private Map<String, ComponentAttribute> getComponentAttributeHashmap(List<ComponentAttribute> componentAttributeList, String environment) {
+        return componentAttributeList.stream()
+                .filter(componentAttribute -> componentAttribute.getMetadataKey().getEnvironmentKey().getName().equalsIgnoreCase(environment))
+                .collect(Collectors.toMap(ComponentAttribute::getName, Function.identity()));
     }
 
     public String resolveConfiguration(ActionExecution actionExecution, String input) {

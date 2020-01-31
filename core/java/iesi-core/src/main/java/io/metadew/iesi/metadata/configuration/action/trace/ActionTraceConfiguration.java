@@ -2,8 +2,6 @@ package io.metadew.iesi.metadata.configuration.action.trace;
 
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
-import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.action.trace.ActionTrace;
 import io.metadew.iesi.metadata.definition.action.trace.key.ActionTraceKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
@@ -98,7 +96,7 @@ public class ActionTraceConfiguration extends Configuration<ActionTrace, ActionT
     }
 
     @Override
-    public void delete(ActionTraceKey actionTraceKey) throws MetadataDoesNotExistException {
+    public void delete(ActionTraceKey actionTraceKey) {
         LOGGER.trace(MessageFormat.format("Deleting ActionTrace {0}.", actionTraceKey.toString()));
         String deleteStatement = deleteStatement(actionTraceKey);
         getMetadataRepository().executeUpdate(deleteStatement);
@@ -113,7 +111,7 @@ public class ActionTraceConfiguration extends Configuration<ActionTrace, ActionT
     }
 
     @Override
-    public void insert(ActionTrace actionTrace) throws MetadataAlreadyExistsException {
+    public void insert(ActionTrace actionTrace) {
         LOGGER.trace(MessageFormat.format("Inserting ActionTrace {0}.", actionTrace.getMetadataKey().toString()));
         String insertStatement = insertStatement(actionTrace);
         getMetadataRepository().executeUpdate(insertStatement);

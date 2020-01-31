@@ -1,13 +1,15 @@
 package io.metadew.iesi.metadata.definition.action;
 
-import io.metadew.iesi.metadata.tools.IdentifierTools;
+import io.metadew.iesi.metadata.definition.Metadata;
+import io.metadew.iesi.metadata.definition.action.key.ActionKey;
+import lombok.EqualsAndHashCode;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Action {
+@EqualsAndHashCode(callSuper = true)
+public class Action extends Metadata<ActionKey> {
 
-    private String id;
     private long number;
     private String type;
     private String name;
@@ -20,16 +22,11 @@ public class Action {
     private int retries = 0;
     private List<ActionParameter> parameters = new ArrayList<>();
 
-    //Constructors
-    public Action() {
-
-    }
-
     // TODO: make optional Paramaters of type Optional instead of ""
 
-    public Action(String id, long number, String type, String name, String description, String component,
-                  String condition, String iteration, boolean errorExpected, boolean errorStop, int retries, List<ActionParameter> parameters) {
-        this.id = id;
+    public Action(ActionKey actionKey, long number, String type, String name, String description, String component,
+                  String condition, String iteration, String errorExpected, String errorStop, String retries, List<ActionParameter> parameters) {
+        super(actionKey);
         this.number = number;
         this.type = type;
         this.name = name;
@@ -37,28 +34,13 @@ public class Action {
         this.component = component;
         this.condition = condition;
         this.iteration = iteration;
-        this.errorExpected = errorExpected ? "Y" : "N";
-        this.errorStop = errorStop ? "Y" : "N";
-        this.retries = retries;
+        this.errorExpected = errorExpected;
+        this.errorStop = errorStop;
+        this.retries = Integer.parseInt(retries);
         this.parameters = parameters;
     }
-    public Action(String id, long number, String type, String name, String description, String component,
-                  String condition, String iteration, String errorExpected, String errorStop, String retries, List<ActionParameter> parameters) {
-        this(id, number, type, name, description, component, condition, iteration, errorExpected.equalsIgnoreCase("y"),
-                errorStop.equalsIgnoreCase("y"), retries==null? 0:Integer.parseInt(retries), parameters);
-    }
 
-    public Action(long number, String type, String name, String description, String component,
-                  String condition, String iteration, String errorExpected, String errorStop, String retries, List<ActionParameter> parameters) {
-        this(number, type, name, description, component, condition, iteration, errorExpected.equalsIgnoreCase("y"),
-                errorStop.equalsIgnoreCase("y"), retries==null? 0:Integer.parseInt(retries), parameters);
-    }
-
-    public Action(long number, String type, String name, String description, String component,
-                  String condition, String iteration, boolean errorExpected, boolean errorStop, int retries, List<ActionParameter> parameters) {
-        this(IdentifierTools.getActionIdentifier(name), number, type, name, description, component, condition, iteration,
-                errorExpected, errorStop, retries, parameters);
-    }
+    public String getId(){return this.getMetadataKey().getActionId();}
 
     //Getters and Setters
     public String getName() {
@@ -147,15 +129,6 @@ public class Action {
 
     public void setRetries(int retries) {
         this.retries = retries;
-    }
-
-    public String getId() {
-        if (id == null) this.id = IdentifierTools.getActionIdentifier(this.getName());
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
 }

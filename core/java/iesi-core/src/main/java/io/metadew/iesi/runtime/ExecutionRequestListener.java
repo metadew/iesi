@@ -7,7 +7,6 @@ import io.metadew.iesi.framework.execution.FrameworkControl;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.framework.execution.FrameworkRuntime;
 import io.metadew.iesi.metadata.configuration.execution.ExecutionRequestConfiguration;
-import io.metadew.iesi.metadata.configuration.execution.exception.ExecutionRequestDoesNotExistException;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequestStatus;
 import org.apache.logging.log4j.LogManager;
@@ -53,7 +52,7 @@ public class ExecutionRequestListener implements Runnable {
                 scheduleRequests();
                 Thread.sleep(1000);
             }
-        } catch (ExecutionRequestDoesNotExistException | InterruptedException e) {
+        } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
@@ -72,7 +71,7 @@ public class ExecutionRequestListener implements Runnable {
         LOGGER.debug(MessageFormat.format("executionrequestlistener={0} execution requests in queue", executionRequestsQueue.size()));
     }
 
-    private void pollNewRequests() throws ExecutionRequestDoesNotExistException {
+    private void pollNewRequests() {
         LOGGER.trace("executionrequestlistener=fetching new requests");
         List<ExecutionRequest> executionRequests = ExecutionRequestConfiguration.getInstance().getAllNew();
         LOGGER.trace(MessageFormat.format("executionrequestlistener=found {0} new execution requests", executionRequests.size()));
@@ -87,7 +86,7 @@ public class ExecutionRequestListener implements Runnable {
     public void shutdown() throws InterruptedException {
         keepRunning = false;
         LOGGER.info("executionrequestlistener=shutting down execution request listener...");
-        if (!executor.awaitTermination(5, TimeUnit.SECONDS))  {
+        if (!executor.awaitTermination(5, TimeUnit.SECONDS)) {
             LOGGER.info("executionrequestlistener=forcing execution request listener shutdown...");
             executor.shutdownNow();
         }

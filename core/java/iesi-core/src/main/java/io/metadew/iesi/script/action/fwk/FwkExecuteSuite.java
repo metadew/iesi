@@ -169,8 +169,7 @@ public class FwkExecuteSuite {
     @SuppressWarnings({ "rawtypes", "unchecked" })
 	private boolean execute(String componentName, String suiteName, String suiteVersion, String suiteBuild, String repositoryConnectionName, String repositoryComponentPath, String repositorySuitePath, String repositoryVersionPath, String repositoryBuildPath, String repositoryBuildAsset, String environmentName) throws InterruptedException, ScriptExecutionBuildException {
         // Get Connection
-        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
-        Connection connection = connectionConfiguration.get(repositoryConnectionName,
+        Connection connection = ConnectionConfiguration.getInstance().get(repositoryConnectionName,
                 this.getExecutionControl().getEnvName()).get();
 
         // Artifactory

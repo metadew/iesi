@@ -2,8 +2,6 @@ package io.metadew.iesi.metadata.configuration.script.result;
 
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
-import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.script.result.ScriptResult;
 import io.metadew.iesi.metadata.definition.script.result.key.ScriptResultKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
@@ -91,7 +89,7 @@ public class ScriptResultConfiguration extends Configuration<ScriptResult, Scrip
     }
 
     @Override
-    public void delete(ScriptResultKey scriptResultKey) throws MetadataDoesNotExistException {
+    public void delete(ScriptResultKey scriptResultKey) {
         LOGGER.trace(MessageFormat.format("Deleting ScriptResult {0}.", scriptResultKey.toString()));
         String deleteStatement = deleteStatement(scriptResultKey);
         getMetadataRepository().executeUpdate(deleteStatement);
@@ -105,7 +103,7 @@ public class ScriptResultConfiguration extends Configuration<ScriptResult, Scrip
     }
 
     @Override
-    public void insert(ScriptResult scriptResult) throws MetadataAlreadyExistsException {
+    public void insert(ScriptResult scriptResult) {
         LOGGER.trace(MessageFormat.format("Inserting ScriptResult {0}.", scriptResult.getMetadataKey().toString()));
         String insertStatement = insertStatement(scriptResult);
         getMetadataRepository().executeUpdate(insertStatement);

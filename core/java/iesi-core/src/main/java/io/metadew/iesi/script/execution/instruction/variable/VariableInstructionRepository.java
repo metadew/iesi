@@ -4,7 +4,8 @@ import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.instruction.variable.framework.FrameworkHomeInstruction;
 import io.metadew.iesi.script.execution.instruction.variable.framework.VersionInstruction;
 import io.metadew.iesi.script.execution.instruction.variable.runtime.EnvironmentInstruction;
-import io.metadew.iesi.script.execution.instruction.variable.runtime.RunidInstruction;
+import io.metadew.iesi.script.execution.instruction.variable.runtime.ProcessIdInstruction;
+import io.metadew.iesi.script.execution.instruction.variable.runtime.RunIdInstruction;
 
 import java.util.HashMap;
 
@@ -22,9 +23,10 @@ public class VariableInstructionRepository {
         // Runtime
         EnvironmentInstruction environmentInstruction = new EnvironmentInstruction(executionControl);
         variableInstructions.put(environmentInstruction.getKeyword(), environmentInstruction);
-        RunidInstruction runidInstruction = new RunidInstruction(executionControl);
-        variableInstructions.put(runidInstruction.getKeyword(), runidInstruction);
-
+        RunIdInstruction runIdInstruction = new RunIdInstruction(executionControl);
+        variableInstructions.put(runIdInstruction.getKeyword(), runIdInstruction);
+        ProcessIdInstruction processIdInstruction = new ProcessIdInstruction(executionControl);
+        variableInstructions.put(processIdInstruction.getKeyword(), processIdInstruction);
 
         return variableInstructions;
     }

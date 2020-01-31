@@ -2,15 +2,14 @@ package io.metadew.iesi.metadata.configuration.request;
 
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
-import io.metadew.iesi.metadata.configuration.exception.RequestResultAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.exception.RequestResultDoesNotExistException;
+import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
+import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.RequestResult;
 import io.metadew.iesi.metadata.definition.key.RequestResultKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
-import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -90,10 +89,9 @@ public class RequestResultConfiguration extends Configuration<RequestResult, Req
     }
 
     @Override
-    public void delete(RequestResultKey key) throws RequestResultDoesNotExistException {
+    public void delete(RequestResultKey key) {
         if (!exists(key)) {
-            throw new RequestResultDoesNotExistException(
-                    MessageFormat.format("Request Result {0} does not exist", key.getRequestId()));
+            throw new MetadataDoesNotExistException(key);
         }
         String query = "delete from "
                 + getMetadataRepository().getTableNameByLabel("RequestResults") + " where "
@@ -102,10 +100,9 @@ public class RequestResultConfiguration extends Configuration<RequestResult, Req
     }
 
     @Override
-    public void insert(RequestResult requestResult) throws RequestResultAlreadyExistsException {
+    public void insert(RequestResult requestResult) {
         if (exists(requestResult.getMetadataKey())) {
-            throw new RequestResultAlreadyExistsException(MessageFormat.format("Request Result {0} already exists",
-                    requestResult.getMetadataKey().getRequestId()));
+            throw new MetadataAlreadyExistsException(requestResult);
         }
         String query = "insert into "
                 + getMetadataRepository().getTableNameByLabel("RequestResults")

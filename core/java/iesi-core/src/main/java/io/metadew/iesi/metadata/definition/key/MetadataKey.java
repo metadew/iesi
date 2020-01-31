@@ -1,5 +1,7 @@
 package io.metadew.iesi.metadata.definition.key;
 
+import lombok.EqualsAndHashCode;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -7,6 +9,7 @@ import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
+@EqualsAndHashCode
 public abstract class MetadataKey {
 
     @Override

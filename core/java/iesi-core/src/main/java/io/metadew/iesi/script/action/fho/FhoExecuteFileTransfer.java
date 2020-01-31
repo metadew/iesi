@@ -125,12 +125,11 @@ public class FhoExecuteFileTransfer {
 
     private boolean execute(String sourceFilePath, String sourceFileName, String sourceConnectionName, String targetFilePath, String targetFileName, String targetConnectionName) throws InterruptedException {
         // Get Connections
-        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
-        Connection sourceConnection = connectionConfiguration
+        Connection sourceConnection = ConnectionConfiguration.getInstance()
                 .get(sourceConnectionName, this.getExecutionControl().getEnvName()).get();
         ConnectionOperation connectionOperation = new ConnectionOperation();
         HostConnection sourceHostConnection = connectionOperation.getHostConnection(sourceConnection);
-        Connection targetConnection = connectionConfiguration
+        Connection targetConnection = ConnectionConfiguration.getInstance()
                 .get(targetConnectionName, this.getExecutionControl().getEnvName()).get();
         HostConnection targetHostConnection = connectionOperation.getHostConnection(targetConnection);
 

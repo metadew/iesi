@@ -1,0 +1,12 @@
+[ {
+  "data" : {
+    "name" : "Log",
+    "label" : "Logs",
+    "description" : "Operational metadata for scripts",
+    "type" : "operational",
+    "category" : "execution",
+    "migrate" : "Y",
+    "migrationKey" : "B001"
+  },
+  "type" : "MetadataObject"
+} ]

@@ -52,25 +52,25 @@ public class IesiConfiguration {
     @Bean
     @DependsOn("frameworkInstance")
     public ConnectionConfiguration connectionConfiguration() {
-        return new ConnectionConfiguration();
+        return ConnectionConfiguration.getInstance();
     }
 
     @Bean
     @DependsOn("frameworkInstance")
     public EnvironmentConfiguration environmentConfiguration() {
-        return new EnvironmentConfiguration();
+        return EnvironmentConfiguration.getInstance();
     }
 
     @Bean
     @DependsOn("frameworkInstance")
     public ImpersonationConfiguration impersonationConfiguration() {
-        return new ImpersonationConfiguration();
+        return ImpersonationConfiguration.getInstance();
     }
 
     @Bean
     @DependsOn("frameworkInstance")
     public ScriptConfiguration scriptConfiguration() {
-        return new ScriptConfiguration();
+        return ScriptConfiguration.getInstance();
     }
     @Bean
 
@@ -88,7 +88,7 @@ public class IesiConfiguration {
     @Bean
     @DependsOn("frameworkInstance")
     public ComponentConfiguration componentConfiguration() {
-        return new ComponentConfiguration();
+        return ComponentConfiguration.getInstance();
     }
 
     @Bean

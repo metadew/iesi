@@ -2,8 +2,6 @@ package io.metadew.iesi.metadata.configuration.action.performance;
 
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
-import io.metadew.iesi.metadata.configuration.action.performance.exception.ActionPerformanceAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.action.performance.exception.ActionPerformanceDoesNotExistException;
 import io.metadew.iesi.metadata.definition.action.performance.ActionPerformance;
 import io.metadew.iesi.metadata.definition.action.performance.key.ActionPerformanceKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
@@ -89,7 +87,7 @@ public class ActionPerformanceConfiguration extends Configuration<ActionPerforma
     }
 
     @Override
-    public void delete(ActionPerformanceKey key) throws ActionPerformanceDoesNotExistException {
+    public void delete(ActionPerformanceKey key) {
         String queryAction = "delete from "
                 + getMetadataRepository().getTableNameByLabel("ActionResultPerformances") + " where " +
                 "RUN_ID = " + SQLTools.GetStringForSQL(key.getRunId()) + " AND " +
@@ -99,7 +97,7 @@ public class ActionPerformanceConfiguration extends Configuration<ActionPerforma
     }
 
     @Override
-    public void insert(ActionPerformance actionPerformance) throws ActionPerformanceAlreadyExistsException {
+    public void insert(ActionPerformance actionPerformance) {
         String queryAction = "insert into "
                 + getMetadataRepository().getTableNameByLabel("ActionResultPerformances") +
                 " (RUN_ID, PRC_ID, ACTION_ID, SCOPE_NM, CONTEXT_NM, STRT_TMS, END_TMS, DURATION_VAL) values (" +

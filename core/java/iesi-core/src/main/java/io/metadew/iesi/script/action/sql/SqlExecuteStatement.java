@@ -83,8 +83,7 @@ public class SqlExecuteStatement {
 
     private boolean execute(String sqlStatement, String connectionName) throws InterruptedException {
         // Get Connection
-        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
-        Connection connection = connectionConfiguration.get(connectionName, executionControl.getEnvName())
+        Connection connection = ConnectionConfiguration.getInstance().get(connectionName, executionControl.getEnvName())
                 .orElseThrow(() -> new RuntimeException("Cannot find connection " + connectionName));
         ConnectionOperation connectionOperation = new ConnectionOperation();
         Database database = connectionOperation.getDatabase(connection);

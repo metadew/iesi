@@ -2,15 +2,12 @@ package io.metadew.iesi.runtime.script;
 
 import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.framework.configuration.ScriptRunStatus;
-import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.execution.script.ScriptExecutionConfiguration;
-import io.metadew.iesi.metadata.configuration.script.exception.ScriptDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.script.result.ScriptResultConfiguration;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptFileExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionKey;
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.metadata.definition.script.result.key.ScriptResultKey;
-import io.metadew.iesi.script.ScriptExecutionBuildException;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.execution.ScriptExecutionBuilder;
 import io.metadew.iesi.script.operation.JsonInputOperation;
@@ -41,18 +38,17 @@ public class ScriptFileExecutor implements ScriptExecutor<ScriptFileExecutionReq
     }
 
     @Override
-    public void execute(ScriptFileExecutionRequest scriptExecutionRequest) throws ScriptDoesNotExistException, ScriptExecutionBuildException, MetadataAlreadyExistsException {
-
+    public void execute(ScriptFileExecutionRequest scriptExecutionRequest) {
         File file = new File(scriptExecutionRequest.getFileName());
         Script script = null;
         if (FileTools.getFileExtension(file).equalsIgnoreCase("json")) {
             JsonInputOperation jsonInputOperation = new JsonInputOperation(scriptExecutionRequest.getFileName());
             script = jsonInputOperation.getScript()
-                    .orElseThrow(() -> new ScriptDoesNotExistException(""));
+                    .orElseThrow(() -> new RuntimeException(jsonInputOperation.getFileName()));
         } else if (FileTools.getFileExtension(file).equalsIgnoreCase("yml")) {
             YamlInputOperation yamlInputOperation = new YamlInputOperation(scriptExecutionRequest.getFileName());
             script = yamlInputOperation.getScript()
-                    .orElseThrow(() -> new ScriptDoesNotExistException(""));
+                    .orElseThrow(() -> new RuntimeException(yamlInputOperation.getFileName()));
         }
 
         // TODO: ActionSelection?

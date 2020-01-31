@@ -1,6 +1,7 @@
 ---
 type: "script"
 data:
+  type: "script"
   name: "iesi-test.repo.mssql.1"
   description: "Prepare database for metadata configuration on MS Sql Server"
   parameters: []

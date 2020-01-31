@@ -91,7 +91,7 @@ public class DataSetDatasetConnection {
 
     //
     @SuppressWarnings("unused")
-	public boolean execute() {
+	public boolean execute() throws InterruptedException {
         try {
             String referenceName = convertDatasetReferenceName(getReferenceName().getValue());
             String datasetName = convertDatasetName(getDatasetName().getValue());
@@ -100,6 +100,8 @@ public class DataSetDatasetConnection {
 
             return setDatasetConnection(referenceName, datasetName, labels);
 
+        } catch (InterruptedException e) {
+            throw (e);
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
@@ -114,7 +116,7 @@ public class DataSetDatasetConnection {
 
     }
 
-    private boolean setDatasetConnection(String referenceName, String datasetName, List<String> labels) throws IOException, SQLException {
+    private boolean setDatasetConnection(String referenceName, String datasetName, List<String> labels) throws IOException, SQLException, InterruptedException {
         // TODO: use dataset data type
         executionControl.getExecutionRuntime().setKeyValueDataset(referenceName, datasetName, labels);
         return true;

@@ -10,6 +10,7 @@ import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
+import io.metadew.iesi.script.ScriptExecutionBuildException;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
@@ -84,7 +85,7 @@ public class FwkExecuteScript {
         this.getActionParameterOperationMap().put("paramFile", this.getParamFile());
     }
 
-    public boolean execute() {
+    public boolean execute() throws InterruptedException {
         try {
             String scriptName = convertScriptName(getScriptName().getValue());
             Optional<Long> scriptVersion = convertScriptVersion(getScriptVersion().getValue());
@@ -93,6 +94,8 @@ public class FwkExecuteScript {
             Optional<String> parameterList = convertParameterList2(getParamList().getValue());
             Optional<String> parameterFileName = convertParameterFileName(getParamFile().getValue());
             return executeScript(scriptName, scriptVersion, environmentName, parameterList, parameterFileName);
+        } catch (InterruptedException e) {
+            throw (e);
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
@@ -119,7 +122,7 @@ public class FwkExecuteScript {
         }
     }
 
-    private boolean executeScript(String scriptName, Optional<Long> scriptVersion, Optional<String> environmentName, Optional<String> parameterList, Optional<String> parameterFileName) {
+    private boolean executeScript(String scriptName, Optional<Long> scriptVersion, Optional<String> environmentName, Optional<String> parameterList, Optional<String> parameterFileName) throws ScriptExecutionBuildException, InterruptedException {
         // Check on Running a script in a loop
         if (scriptExecution.getScript().getName().equals(scriptName)) {
             throw new RuntimeException(MessageFormat.format("Not allowed to run the script recursively. Attempting to run {0} in {1}", scriptName, scriptExecution.getScript().getName()));

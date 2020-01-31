@@ -29,7 +29,7 @@ public class FileLookup implements LookupInstruction {
                 output += FrameworkControl.getInstance().resolveConfiguration(readLine);
                 output += "\n";
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
         } finally {
             try {

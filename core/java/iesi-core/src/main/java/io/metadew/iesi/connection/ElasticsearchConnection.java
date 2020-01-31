@@ -9,6 +9,8 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
+import java.io.IOException;
+
 /**
  * Connection object for Elasticsearch.
  *
@@ -47,7 +49,7 @@ public class ElasticsearchConnection {
             };
             httpclient.execute(httpPut, responseHandler);
 
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

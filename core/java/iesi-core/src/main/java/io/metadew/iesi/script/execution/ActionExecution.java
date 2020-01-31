@@ -9,6 +9,7 @@ import io.metadew.iesi.script.operation.ConditionOperation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.script.ScriptException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Constructor;
@@ -16,6 +17,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.Optional;
 
 public class ActionExecution {
 
@@ -51,7 +53,7 @@ public class ActionExecution {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void execute(IterationInstance iterationInstance) {
+	public void execute(IterationInstance iterationInstance) throws InterruptedException {
 		this.executed = true;
 
 		LOGGER.info("action.name=" + action.getName());
@@ -95,7 +97,7 @@ public class ActionExecution {
 				ConditionOperation conditionOperation = new ConditionOperation(this, action.getCondition());
 				try {
 					conditionResult = conditionOperation.evaluateCondition();
-				} catch (Exception exception) {
+				} catch (ScriptException exception) {
 					conditionResult = true;
 					LOGGER.warn("action.condition=" + action.getCondition());
 					LOGGER.warn("action.condition.error=" + exception.getMessage());
@@ -150,7 +152,9 @@ public class ActionExecution {
 				actionControl.increaseSkipCount();
 				// TODO log output
 			}
-
+			dummy();
+		} catch (InterruptedException e) {
+			throw e;
 		} catch (Exception e) {
 			StringWriter stackTrace = new StringWriter();
 			e.printStackTrace(new PrintWriter(stackTrace));
@@ -161,6 +165,8 @@ public class ActionExecution {
 		actionControl.getActionRuntime().getRuntimeActionCacheConfiguration().shutdown();
 		executionControl.logEnd(this, scriptExecution);
 	}
+
+	private void dummy() throws InterruptedException {}
 
 	public void skip() {
 		LOGGER.info("action.name=" + action.getName());
@@ -210,8 +216,8 @@ public class ActionExecution {
 		this.scriptExecution = scriptExecution;
 	}
 
-	public ComponentAttributeOperation getComponentAttributeOperation() {
-		return componentAttributeOperation;
+	public Optional<ComponentAttributeOperation> getComponentAttributeOperation() {
+		return Optional.ofNullable(componentAttributeOperation);
 	}
 
 	public void setComponentAttributeOperation(ComponentAttributeOperation componentAttributeOperation) {

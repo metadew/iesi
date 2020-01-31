@@ -75,11 +75,13 @@ public class FwkOutputMessage {
     }
 
 
-    public boolean execute() {
+    public boolean execute() throws InterruptedException {
         try {
             List<String> messages = convertMessages(getMessage().getValue());
             boolean onScreen = convertOnScreen(getOnScreen().getValue());
             return outputMessage(messages, onScreen);
+        } catch (InterruptedException e) {
+            throw (e);
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
@@ -119,7 +121,7 @@ public class FwkOutputMessage {
         return messageList;
     }
 
-    private boolean outputMessage(List<String> messages, boolean onScreen) {
+    private boolean outputMessage(List<String> messages, boolean onScreen) throws InterruptedException {
         final Level level = onScreen ? Level.INFO : Level.DEBUG;
 
         messages.forEach(message -> {

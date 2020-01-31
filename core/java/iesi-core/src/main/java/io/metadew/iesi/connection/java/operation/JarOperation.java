@@ -6,6 +6,7 @@ import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.java.JavaArchive;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 
@@ -26,7 +27,7 @@ public class JarOperation {
 			javaArchive = JarTools.getJavaArchiveDefinition(fileName, urlClassLoader);
 			ObjectMapper mapper = new ObjectMapper();
 			System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(javaArchive));
-		} catch (Exception e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 

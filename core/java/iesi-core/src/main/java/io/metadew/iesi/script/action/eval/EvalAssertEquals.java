@@ -54,11 +54,13 @@ public class EvalAssertEquals {
         actionParameterOperationMap.put("actual", actualValue);
     }
 
-    public boolean execute() {
+    public boolean execute() throws InterruptedException {
         try {
             String expected = convertExpectedValue(expectedValue.getValue());
             String actual = convertActualValue(actualValue.getValue());
             return compare(expected, actual);
+        } catch (InterruptedException e) {
+            throw e;
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
@@ -73,7 +75,7 @@ public class EvalAssertEquals {
 
     }
 
-    private boolean compare(String expectedValue, String actualValue) {
+    private boolean compare(String expectedValue, String actualValue) throws InterruptedException {
         boolean evaluation = expectedValue.equals(actualValue);
         if (evaluation) {
             getActionExecution().getActionControl().increaseSuccessCount();

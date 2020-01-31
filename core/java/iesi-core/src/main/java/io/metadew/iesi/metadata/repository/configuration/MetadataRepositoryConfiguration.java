@@ -77,11 +77,7 @@ public class MetadataRepositoryConfiguration {
         getSettingValue(configFile, "metadata.repository.scope").map(value -> scope = value);
         getSettingValue(configFile, "metadata.repository.instance.name").map(value -> instanceName = value);
 
-        try {
-            repositoryConfiguration = new RepositoryConfigurationFactory().createRepositoryConfiguration(configFile);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        repositoryConfiguration = new RepositoryConfigurationFactory().createRepositoryConfiguration(configFile);
     }
 
     public List<MetadataRepository> toMetadataRepositories() {

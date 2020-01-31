@@ -12,6 +12,7 @@ import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.script.Script;
+import io.metadew.iesi.script.ScriptExecutionBuildException;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
@@ -135,7 +136,7 @@ public class FwkExecuteSuite {
         this.getActionParameterOperationMap().put("ENV_NM", this.getEnvironmentName());
     }
 
-    public boolean execute() {
+    public boolean execute() throws InterruptedException {
         try {
             String componentName = convertToString(getComponentName().getValue());
             String suiteName = convertToString(getSuiteName().getValue());
@@ -150,6 +151,8 @@ public class FwkExecuteSuite {
             String environmentName = convertToString(getEnvironmentName().getValue());
 
             return execute(componentName, suiteName, suiteVersion, suiteBuild, repositoryConnectionName, repositoryComponentPath, repositorySuitePath, repositoryVersionPath, repositoryBuildPath, repositoryBuildAsset, environmentName);
+        } catch (InterruptedException e) {
+            throw e;
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
@@ -164,7 +167,7 @@ public class FwkExecuteSuite {
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-	private boolean execute(String componentName, String suiteName, String suiteVersion, String suiteBuild, String repositoryConnectionName, String repositoryComponentPath, String repositorySuitePath, String repositoryVersionPath, String repositoryBuildPath, String repositoryBuildAsset, String environmentName) {
+	private boolean execute(String componentName, String suiteName, String suiteVersion, String suiteBuild, String repositoryConnectionName, String repositoryComponentPath, String repositorySuitePath, String repositoryVersionPath, String repositoryBuildPath, String repositoryBuildAsset, String environmentName) throws InterruptedException, ScriptExecutionBuildException {
         // Get Connection
         Connection connection = ConnectionConfiguration.getInstance().get(repositoryConnectionName,
                 this.getExecutionControl().getEnvName()).get();
@@ -222,7 +225,6 @@ public class FwkExecuteSuite {
         List<FileConnection> fileConnectionList = new ArrayList();
         fileConnectionList = FolderTools.getConnectionsInFolder(buildAssetFolder, "regex", ".+\\.json", fileConnectionList);
         for (FileConnection fileConnection : fileConnectionList) {
-            try {
                 Script script = null;
 
                 JsonInputOperation jsonInputOperation = new JsonInputOperation(fileConnection.getFilePath());
@@ -244,10 +246,6 @@ public class FwkExecuteSuite {
                     this.getActionExecution().getActionControl().increaseSuccessCount();
                 }
 
-            } catch (Exception e) {
-                this.getActionExecution().getActionControl().increaseErrorCount();
-                return false;
-            }
         }
         return true;
     }

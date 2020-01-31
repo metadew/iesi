@@ -58,13 +58,13 @@ public class SqlExecuteStatement {
         actionParameterOperationMap.put("connection", this.getConnectionName());
     }
 
-    public boolean execute() {
+    public boolean execute() throws InterruptedException {
         try {
             String sqlStatement = convertSqlStatement(getSqlStatement().getValue());
             String connectionName = convertConnectionName(getConnectionName().getValue());
             return execute(sqlStatement, connectionName);
-
-
+        } catch (InterruptedException e) {
+            throw (e);
         } catch (Exception e) {
             StringWriter stackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(stackTrace));
@@ -81,7 +81,7 @@ public class SqlExecuteStatement {
 
     }
 
-    private boolean execute(String sqlStatement, String connectionName)  {
+    private boolean execute(String sqlStatement, String connectionName) throws InterruptedException {
         // Get Connection
         Connection connection = ConnectionConfiguration.getInstance().get(connectionName, executionControl.getEnvName())
                 .orElseThrow(() -> new RuntimeException("Cannot find connection " + connectionName));

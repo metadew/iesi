@@ -12,13 +12,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.sql.rowset.CachedRowSet;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
 
 public class EnvironmentParameterConfiguration extends Configuration<EnvironmentParameter, EnvironmentParameterKey> {
 
@@ -94,10 +93,7 @@ public class EnvironmentParameterConfiguration extends Configuration<Environment
             }
             crs.close();
         } catch (SQLException e) {
-            StringWriter stackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(stackTrace));
-            LOGGER.warn("exeption=" + e.getMessage());
-            LOGGER.info("exception.stacktrace=" + stackTrace.toString());
+            throw new RuntimeException(e);
         }
         return environmentParameters;
     }

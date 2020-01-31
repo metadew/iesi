@@ -327,9 +327,10 @@ public class ImpersonationConfiguration extends Configuration<Impersonation, Imp
                 impersonationConfiguration.getImpersonation(impersonationName).ifPresent(impersonationList::add);
             }
             crs.close();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
+            throw new RuntimeException(e);
         }
         // new Impersonation("dummy", "dummy",  null) because code wants an object instead of a class
         return new ListObject(FrameworkObjectConfiguration.getFrameworkObjectType(new Impersonation("dummy", "dummy", null)), impersonationList);

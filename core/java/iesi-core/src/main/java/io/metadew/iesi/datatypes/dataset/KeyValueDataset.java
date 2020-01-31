@@ -82,16 +82,9 @@ public class KeyValueDataset extends Dataset {
 
     public void setDataItem(String key, DataType value) {
         // Store the data
-        try {
-            String query = "insert into " + SQLTools.GetStringForSQLTable(getTableName()) + " (key, value) values ("
-                    + SQLTools.GetStringForSQL(key) + ", " + SQLTools.GetStringForSQL(value.toString()) + ");";
-            getDatasetDatabase().executeUpdate(query);
-        } catch (Exception e) {
-            StringWriter stackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(stackTrace));
-            LOGGER.info("exception=" + e);
-            LOGGER.debug("exception.stacktrace=" + stackTrace);
-        }
+        String query = "insert into " + SQLTools.GetStringForSQLTable(getTableName()) + " (key, value) values ("
+                + SQLTools.GetStringForSQL(key) + ", " + SQLTools.GetStringForSQL(value.toString()) + ");";
+        getDatasetDatabase().executeUpdate(query);
     }
 
 
@@ -143,7 +136,7 @@ public class KeyValueDataset extends Dataset {
                 getDatasetDatabase().executeUpdate(create);
             }
             crs.close();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             StringWriter stackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(stackTrace));
             LOGGER.info("exception=" + e);

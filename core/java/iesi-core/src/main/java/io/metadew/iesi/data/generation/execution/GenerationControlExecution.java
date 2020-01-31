@@ -28,19 +28,13 @@ public class GenerationControlExecution {
     // Methods
     public void execute(String fullFileName) {
 
-        try {
-            if (this.getGenerationControl().getType().trim().equalsIgnoreCase("footer")) {
-                Footer executionControlFooter = new Footer(this.getFrameworkExecution(), this.getExecutionControl(), this);
-                executionControlFooter.execute(fullFileName);
-            } else if (this.getGenerationControl().getType().trim().equalsIgnoreCase("header")) {
-                Header executionControlHeader = new Header(this.getFrameworkExecution(), this.getExecutionControl(), this);
-                executionControlHeader.execute(fullFileName);
-            } else {
-
-            }
-        } catch (Exception e) {
-
-        } finally {
+        if (this.getGenerationControl().getType().trim().equalsIgnoreCase("footer")) {
+            Footer executionControlFooter = new Footer(this.getFrameworkExecution(), this.getExecutionControl(), this);
+            executionControlFooter.execute(fullFileName);
+        } else if (this.getGenerationControl().getType().trim().equalsIgnoreCase("header")) {
+            Header executionControlHeader = new Header(this.getFrameworkExecution(), this.getExecutionControl(), this);
+            executionControlHeader.execute(fullFileName);
+        } else {
 
         }
 

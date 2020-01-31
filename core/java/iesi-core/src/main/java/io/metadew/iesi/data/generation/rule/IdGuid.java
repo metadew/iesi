@@ -5,98 +5,83 @@ import io.metadew.iesi.data.generation.execution.GenerationRuleExecution;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.UUID;
 
 public class IdGuid {
 
-	private GenerationRuleExecution generationRuleExecution;
-	private FrameworkExecution frameworkExecution;
-	private ExecutionControl executionControl;
+    private GenerationRuleExecution generationRuleExecution;
+    private FrameworkExecution frameworkExecution;
+    private ExecutionControl executionControl;
 
-	// Parameters
+    // Parameters
 
-	// Constructors
-	public IdGuid() {
-		
-	}
-	
-	public IdGuid(FrameworkExecution frameworkExecution, ExecutionControl executionControl, GenerationRuleExecution generationRuleExecution) {
-		this.setFrameworkExecution(frameworkExecution);
-		this.setEoControl(executionControl);
-		this.setGenerationRuleExecution(generationRuleExecution);
-	}
+    // Constructors
+    public IdGuid() {
 
-	public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl, GenerationRuleExecution generationRuleExecution) {
-		this.setFrameworkExecution(frameworkExecution);
-		this.setEoControl(executionControl);
-		this.setGenerationRuleExecution(generationRuleExecution);
-	}
+    }
 
-	//
-	public boolean execute() {
-		try {
-			// Reset Parameters
+    public IdGuid(FrameworkExecution frameworkExecution, ExecutionControl executionControl, GenerationRuleExecution generationRuleExecution) {
+        this.setFrameworkExecution(frameworkExecution);
+        this.setEoControl(executionControl);
+        this.setGenerationRuleExecution(generationRuleExecution);
+    }
 
-			// Get Parameters
+    public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl, GenerationRuleExecution generationRuleExecution) {
+        this.setFrameworkExecution(frameworkExecution);
+        this.setEoControl(executionControl);
+        this.setGenerationRuleExecution(generationRuleExecution);
+    }
 
-			// Run the generationRule
-			try {
-				
-				for (int currentRecord = 0; currentRecord < this.getGenerationRuleExecution().getGenerationExecution()
-						.getNumberOfRecords(); currentRecord++) {
+    //
+    public boolean execute() {
+        // Reset Parameters
 
-					UUID uuid = UUID.randomUUID();
-					String generatedValue = uuid.toString();;
-					
-					String query = "update " + this.getGenerationRuleExecution().getGenerationExecution().getGeneration().getName();
-					query += " set v" + this.getGenerationRuleExecution().getGenerationRule().getField() + "=";
-					query += SQLTools.GetStringForSQL(generatedValue);
-					query += " where id=" + (currentRecord + 1);
-					this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().getTemporaryDatabaseConnection()
-							.executeUpdate(query);
-					
-					this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().updateProgress();
-				}
+        // Get Parameters
 
-			} catch (Exception e) {
-				throw new RuntimeException("Issue setting runtime variables: " + e, e);
-			}
-			return true;
-		} catch (Exception e) {
-			StringWriter StackTrace = new StringWriter();
-			e.printStackTrace(new PrintWriter(StackTrace));
+        // Run the generationRule
 
-			// TODO logging
+        for (int currentRecord = 0; currentRecord < this.getGenerationRuleExecution().getGenerationExecution()
+                .getNumberOfRecords(); currentRecord++) {
 
-			return false;
-		}
+            UUID uuid = UUID.randomUUID();
+            String generatedValue = uuid.toString();
+            ;
 
-	}
+            String query = "update " + this.getGenerationRuleExecution().getGenerationExecution().getGeneration().getName();
+            query += " set v" + this.getGenerationRuleExecution().getGenerationRule().getField() + "=";
+            query += SQLTools.GetStringForSQL(generatedValue);
+            query += " where id=" + (currentRecord + 1);
+            this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().getTemporaryDatabaseConnection()
+                    .executeUpdate(query);
 
-	// Getters and Setters
-	public ExecutionControl getEoControl() {
-		return executionControl;
-	}
+            this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().updateProgress();
+        }
 
-	public void setEoControl(ExecutionControl executionControl) {
-		this.executionControl = executionControl;
-	}
+        return true;
+    }
 
-	public GenerationRuleExecution getGenerationRuleExecution() {
-		return generationRuleExecution;
-	}
+    // Getters and Setters
+    public ExecutionControl getEoControl() {
+        return executionControl;
+    }
 
-	public void setGenerationRuleExecution(GenerationRuleExecution generationRuleExecution) {
-		this.generationRuleExecution = generationRuleExecution;
-	}
+    public void setEoControl(ExecutionControl executionControl) {
+        this.executionControl = executionControl;
+    }
 
-	public FrameworkExecution getFrameworkExecution() {
-		return frameworkExecution;
-	}
+    public GenerationRuleExecution getGenerationRuleExecution() {
+        return generationRuleExecution;
+    }
 
-	public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-		this.frameworkExecution = frameworkExecution;
-	}
+    public void setGenerationRuleExecution(GenerationRuleExecution generationRuleExecution) {
+        this.generationRuleExecution = generationRuleExecution;
+    }
+
+    public FrameworkExecution getFrameworkExecution() {
+        return frameworkExecution;
+    }
+
+    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
+        this.frameworkExecution = frameworkExecution;
+    }
 }

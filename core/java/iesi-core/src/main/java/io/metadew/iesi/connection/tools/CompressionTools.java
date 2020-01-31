@@ -33,7 +33,7 @@ public final class CompressionTools {
                 dest.close();
             }
             zis.close();
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

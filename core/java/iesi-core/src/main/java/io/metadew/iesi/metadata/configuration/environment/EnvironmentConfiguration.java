@@ -46,6 +46,9 @@ public class EnvironmentConfiguration extends Configuration<Environment, Environ
                 + SQLTools.GetStringForSQL(environmentKey.getName()) + ";";
         CachedRowSet crsEnvironment = getMetadataRepository().executeQuery(queryEnvironment, "reader");
         try {
+            if (crsEnvironment.size() == 0) {
+                return Optional.empty();
+            }
             crsEnvironment.next();
             // Get parameters
             String queryEnvironmentParameters = "select ENV_NM, ENV_PAR_NM, ENV_PAR_VAL from "
@@ -59,10 +62,8 @@ public class EnvironmentConfiguration extends Configuration<Environment, Environ
             crsEnvironmentParameters.close();
             crsEnvironment.close();
             return Optional.of(environment);
-        } catch (Exception e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-            return Optional.empty();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -83,6 +84,7 @@ public class EnvironmentConfiguration extends Configuration<Environment, Environ
         } catch (SQLException e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
+            throw new RuntimeException(e);
         }
         return environments;
     }

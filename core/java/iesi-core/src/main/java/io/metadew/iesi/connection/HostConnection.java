@@ -61,6 +61,7 @@ public class HostConnection {
         this.outputRuntimeVariablesOutput = outputRuntimeVariablesOutput;
         this.systemOutputKeywordList = systemOutputKeywordList;
     }
+
     public HostConnection(String type, String hostName, int portNumber, String userName, String userPassword, String tempPath,
                           String terminalFlag, String jumphostConnectionName, String allowLocalhostExecution,
                           String outputSystemOutput, String outputReturnCode, String outputRuntimeVariablesOutput) {
@@ -138,10 +139,14 @@ public class HostConnection {
 
         // Check if execution can be performed as being on localhost
         if (this.getAllowLocalhostExecution().equalsIgnoreCase("y")) {
-            if (this.localhostFileExists(FrameworkRuntime.getInstance().getLocalHostChallengeFileName())) {
-                result = true;
-            } else {
-                result = false;
+            try {
+                if (this.localhostFileExists(FrameworkRuntime.getInstance().getLocalHostChallengeFileName())) {
+                    result = true;
+                } else {
+                    result = false;
+                }
+            } catch (IOException | InterruptedException e) {
+                e.printStackTrace();
             }
         } else {
             result = false;
@@ -149,7 +154,7 @@ public class HostConnection {
         return result;
     }
 
-    private boolean localhostFileExists(String fileName) {
+    private boolean localhostFileExists(String fileName) throws IOException, InterruptedException {
         String command = "";
 
         if (this.getType().equalsIgnoreCase("windows")) {
@@ -160,28 +165,24 @@ public class HostConnection {
 
         // Execute command
         int rc;
+        final Process p = Runtime.getRuntime().exec(command);
+
+        BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
+        String line = null;
+        String lines = "";
+
         try {
-            final Process p = Runtime.getRuntime().exec(command);
-
-            BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
-            String line = null;
-            String lines = "";
-
-            try {
-                while ((line = input.readLine()) != null) {
-                    if (!lines.equalsIgnoreCase(""))
-                        lines = lines + "\n";
-                    lines = lines + line;
-                }
-            } catch (IOException e) {
-                throw new RuntimeException(e.getMessage(), e);
+            while ((line = input.readLine()) != null) {
+                if (!lines.equalsIgnoreCase(""))
+                    lines = lines + "\n";
+                lines = lines + line;
             }
-
-            rc = p.waitFor();
-
-        } catch (Exception e) {
-            rc = 1;
+        } catch (IOException e) {
+            throw new RuntimeException(e.getMessage(), e);
         }
+
+        rc = p.waitFor();
+
 
         if (rc == 0) {
             return true;
@@ -227,13 +228,13 @@ public class HostConnection {
 
             rc = p.waitFor();
             systemOutput = lines;
-            
+
             errorOutput = IOUtils.toString(p.getErrorStream());
 
         } catch (InterruptedException | IOException e) {
-			StringWriter StackTrace = new StringWriter();
-			e.printStackTrace(new PrintWriter(StackTrace));
-			
+            StringWriter StackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(StackTrace));
+
             rc = 1;
             errorOutput = StackTrace.toString();
         }
@@ -354,14 +355,14 @@ public class HostConnection {
                 }
                 try {
                     Thread.sleep(1000);
-                } catch (Exception e) {
+                } catch (InterruptedException e) {
                     throw new RuntimeException(e.getMessage(), e);
                 }
             }
 
             channel.disconnect();
             this.sessionDisconnect(sessions);
-        } catch (Exception e) {
+        } catch (IOException | JSchException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
 
@@ -457,14 +458,14 @@ public class HostConnection {
                 }
                 try {
                     Thread.sleep(1000);
-                } catch (Exception e) {
+                } catch (InterruptedException e) {
                     throw new RuntimeException(e.getMessage(), e);
                 }
             }
 
             channel.disconnect();
             session.disconnect();
-        } catch (Exception e) {
+        } catch (IOException | JSchException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
 
@@ -479,7 +480,7 @@ public class HostConnection {
     }
 
     public ShellCommandResult executeRemoteCommandExec2(String shellPath, String shellCommand,
-                                                        ShellCommandSettings shellCommandSettings) {
+                                                        ShellCommandSettings shellCommandSettings) throws InterruptedException {
         String compiledShellCommand = "";
         String executionShellPath = "";
         String executionShellCommand = "";
@@ -598,16 +599,12 @@ public class HostConnection {
                     rc = channel.getExitStatus();
                     break;
                 }
-                try {
-                    Thread.sleep(1000);
-                } catch (Exception e) {
-                    throw new RuntimeException(e.getMessage(), e);
-                }
+                Thread.sleep(1000);
             }
 
             channel.disconnect();
             this.sessionDisconnect(sessions);
-        } catch (Exception e) {
+        } catch (IOException | JSchException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
 
@@ -677,14 +674,14 @@ public class HostConnection {
                 }
                 try {
                     Thread.sleep(1000);
-                } catch (Exception e) {
+                } catch (InterruptedException e) {
                     throw new RuntimeException(e.getMessage(), e);
                 }
             }
 
             channel.disconnect();
             session.disconnect();
-        } catch (Exception e) {
+        } catch (IOException | JSchException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
 
@@ -820,14 +817,14 @@ public class HostConnection {
                 }
                 try {
                     Thread.sleep(1000);
-                } catch (Exception e) {
+                } catch (InterruptedException e) {
                     throw new RuntimeException(e.getMessage(), e);
                 }
             }
 
             channel.disconnect();
             this.sessionDisconnect(sessions);
-        } catch (Exception e) {
+        } catch (IOException | JSchException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
 
@@ -851,7 +848,7 @@ public class HostConnection {
                 output += readLine;
                 output += "\n";
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return new ByteArrayInputStream(output.getBytes(StandardCharsets.UTF_8));

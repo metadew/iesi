@@ -109,7 +109,7 @@ public class FwkSetIteration {
     }
 
     //
-    public boolean execute() {
+    public boolean execute() throws InterruptedException {
         try {
             String name = convertIterationName(getIterationName().getValue());
             String type = convertIterationType(getIterationType().getValue());
@@ -121,6 +121,8 @@ public class FwkSetIteration {
             String condition = convertIterationCondition(getIterationCondition().getValue());
             boolean interrupt = convertIterationInterrupt(getIterationInterrupt().getValue());
             return setIteration(name, type, list, values, from, to, step, condition, interrupt);
+        } catch (InterruptedException e) {
+            throw (e);
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
@@ -135,7 +137,7 @@ public class FwkSetIteration {
 
     }
 
-    private boolean setIteration(String name, String type, String list, String values, String from, String to, String step, String condition, boolean interrupt) {
+    private boolean setIteration(String name, String type, String list, String values, String from, String to, String step, String condition, boolean interrupt) throws InterruptedException {
         Iteration iteration = new Iteration(name, type, list, values, from, to, step==null?"1":step, condition, interrupt?"y":"n");
         this.getExecutionControl().getExecutionRuntime().setIteration(iteration);
         this.getActionExecution().getActionControl().increaseSuccessCount();

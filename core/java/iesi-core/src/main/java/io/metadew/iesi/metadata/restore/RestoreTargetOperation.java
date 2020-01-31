@@ -9,6 +9,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
+import java.io.IOException;
 
 public class RestoreTargetOperation {
 
@@ -25,12 +26,10 @@ public class RestoreTargetOperation {
     // Methods
     public void execute(String dataFile) {
         LOGGER.info("restore.file=" + dataFile);
-
         try {
             // Parse input file
             File file = new File(dataFile);
             ObjectMapper objectMapper = new ObjectMapper();
-            try {
                 DataObject dataObject = objectMapper.readValue(file, new TypeReference<DataObject>() {
                 });
                 if (dataObject.getType().equalsIgnoreCase("datatable")) {
@@ -43,14 +42,8 @@ public class RestoreTargetOperation {
                     LOGGER.error("restore.error.object.type.invalid" + dataFile);
                 }
 
-            } catch (Exception e) {
-                LOGGER.error("restore.error.file.read" + dataFile);
-            }
-        } catch (Exception e) {
-            LOGGER.error("restore.error.file.parse" + dataFile);
-        } finally {
-            // Log End
-            // this.getEoControl().endExecution(this);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
 
     }

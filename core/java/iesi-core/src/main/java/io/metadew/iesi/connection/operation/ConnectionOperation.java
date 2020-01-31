@@ -738,15 +738,7 @@ public class ConnectionOperation {
 
     public ConnectionType getConnectionType(String connectionTypeName) {
         ConnectionTypeConfiguration connectionTypeConfiguration = new ConnectionTypeConfiguration();
-        ConnectionType connectionType = null;
-
-        try {
-            connectionType = connectionTypeConfiguration.getConnectionType(connectionTypeName);
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage(), e);
-        }
-
-        return connectionType;
+        return connectionTypeConfiguration.getConnectionType(connectionTypeName);
     }
 
     protected void addMissingField(String fieldName) {

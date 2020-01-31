@@ -89,14 +89,15 @@ public class FhoDeleteFile {
     }
 
     // Methods
-    public boolean execute() {
+    public boolean execute() throws InterruptedException {
         try {
             String path = convertPath(getFilePath().getValue());
             String fileName = convertFile(getFileName().getValue());
             String connectionName = convertConnectionName(getConnectionName().getValue());
             System.out.println("Deleting " + path + " " + fileName + " on " + connectionName);
             return execute(path, fileName, connectionName);
-
+        } catch (InterruptedException e) {
+            throw (e);
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
@@ -110,7 +111,7 @@ public class FhoDeleteFile {
         }
     }
 
-    private boolean execute(String path, String fileName, String connectionName) {
+    private boolean execute(String path, String fileName, String connectionName) throws InterruptedException {
         System.out.println("Deleting " + path + " " + fileName + " on " + connectionName);
         boolean isOnLocalhost = HostConnectionTools.isOnLocalhost(
                 connectionName, this.getExecutionControl().getEnvName());
@@ -118,23 +119,15 @@ public class FhoDeleteFile {
         if (isOnLocalhost) {
             if (path.isEmpty()) {
                 this.setScope(fileName);
-                try {
-                    FileTools.delete(fileName);
-                    this.setSuccess();
-                } catch (Exception e) {
-                    this.setError(e.getMessage());
-                }
+                FileTools.delete(fileName);
+                this.setSuccess();
             } else {
                 List<FileConnection> fileConnections = FolderTools.getFilesInFolder(path, fileName);
                 for (FileConnection fileConnection : fileConnections) {
                     if (!fileConnection.isDirectory()) {
                         this.setScope(fileConnection.getFilePath());
-                        try {
-                            FileTools.delete(fileConnection.getFilePath());
-                            this.setSuccess();
-                        } catch (Exception e) {
-                            this.setError(e.getMessage());
-                        }
+                        FileTools.delete(fileConnection.getFilePath());
+                        this.setSuccess();
                     }
                 }
             }
@@ -200,16 +193,12 @@ public class FhoDeleteFile {
     private void deleteRemoteFile(HostConnection hostConnection, String filePath) {
         ShellCommandSettings shellCommandSettings = new ShellCommandSettings();
         ShellCommandResult shellCommandResult = null;
-        try {
-            shellCommandResult = hostConnection.executeRemoteCommand("", "rm -f " + filePath, shellCommandSettings);
+        shellCommandResult = hostConnection.executeRemoteCommand("", "rm -f " + filePath, shellCommandSettings);
 
-            if (shellCommandResult.getReturnCode() == 0) {
-                this.setSuccess();
-            } else {
-                this.setError(shellCommandResult.getErrorOutput());
-            }
-        } catch (Exception e) {
-            this.setError(e.getMessage());
+        if (shellCommandResult.getReturnCode() == 0) {
+            this.setSuccess();
+        } else {
+            this.setError(shellCommandResult.getErrorOutput());
         }
     }
 

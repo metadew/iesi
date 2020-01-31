@@ -33,7 +33,8 @@ public class ExecutionRequestMonitor implements Runnable {
 
     private ExecutionRequestMonitor() {
         this.timeout = FrameworkSettingConfiguration.getInstance().getSettingPath("server.threads.timeout")
-                .map(settingPath -> Long.parseLong(FrameworkControl.getInstance().getProperty(settingPath)))
+                .map(settingPath -> Long.parseLong(FrameworkControl.getInstance().getProperty(settingPath)
+                        .orElseThrow(() -> new RuntimeException("no value set for server.threads.timeout"))))
                 .orElse(60L);
         this.executionRequestThreadMap = new ConcurrentHashMap<>();
     }
@@ -57,6 +58,12 @@ public class ExecutionRequestMonitor implements Runnable {
             synchronized (executionRequestThreadMap) {
                 executionRequestThreadMap.put(executionRequestKey, new ThreadTimeCombination(task, LocalDateTime.now()));
             }
+        }
+    }
+
+    public void stopMonitoring(ExecutionRequestKey executionRequestKey) {
+        synchronized (executionRequestThreadMap) {
+            executionRequestThreadMap.remove(executionRequestKey);
         }
     }
 

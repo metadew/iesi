@@ -88,13 +88,15 @@ public class FhoDeleteFolder {
     }
 
     // Methods
-    public boolean execute() {
+    public boolean execute() throws InterruptedException {
         try {
             String path = convertPath(getFolderPath().getValue());
             String folder = convertFolder(getFolderName().getValue());
             String connectionName = convertConnectionName(getConnectionName().getValue());
             return execute(path, folder, connectionName);
 
+        } catch (InterruptedException e) {
+            throw (e);
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
@@ -109,30 +111,22 @@ public class FhoDeleteFolder {
 
     }
 
-    private boolean execute(String path, String folder, String connectionName) {
+    private boolean execute(String path, String folder, String connectionName) throws InterruptedException {
         boolean isOnLocalhost = HostConnectionTools.isOnLocalhost(
                 connectionName, this.getExecutionControl().getEnvName());
 
         if (isOnLocalhost) {
             if (path.isEmpty()) {
                 this.setScope(folder);
-                try {
-                    FolderTools.deleteFolder(folder, true);
-                    this.setSuccess();
-                } catch (Exception e) {
-                    this.setError(e.getMessage());
-                }
+                FolderTools.deleteFolder(folder, true);
+                this.setSuccess();
             } else {
                 List<FileConnection> fileConnections = FolderTools.getFilesInFolder(path, folder);
                 for (FileConnection fileConnection : fileConnections) {
                     if (fileConnection.isDirectory()) {
                         this.setScope(fileConnection.getFilePath());
-                        try {
-                            FolderTools.deleteFolder(fileConnection.getFilePath(), true);
-                            this.setSuccess();
-                        } catch (Exception e) {
-                            this.setError(e.getMessage());
-                        }
+                        FolderTools.deleteFolder(fileConnection.getFilePath(), true);
+                        this.setSuccess();
                     }
                 }
             }
@@ -191,17 +185,13 @@ public class FhoDeleteFolder {
     private void deleteRemoteFolder(HostConnection hostConnection, String folderFilePath) {
         ShellCommandSettings shellCommandSettings = new ShellCommandSettings();
         ShellCommandResult shellCommandResult = null;
-        try {
-            shellCommandResult = hostConnection.executeRemoteCommand("", "rm -rf " + folderFilePath,
-                    shellCommandSettings);
+        shellCommandResult = hostConnection.executeRemoteCommand("", "rm -rf " + folderFilePath,
+                shellCommandSettings);
 
-            if (shellCommandResult.getReturnCode() == 0) {
-                this.setSuccess();
-            } else {
-                this.setError(shellCommandResult.getErrorOutput());
-            }
-        } catch (Exception e) {
-            this.setError(e.getMessage());
+        if (shellCommandResult.getReturnCode() == 0) {
+            this.setSuccess();
+        } else {
+            this.setError(shellCommandResult.getErrorOutput());
         }
     }
 

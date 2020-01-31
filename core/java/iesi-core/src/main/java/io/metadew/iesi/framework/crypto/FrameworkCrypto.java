@@ -5,6 +5,13 @@ import io.metadew.iesi.framework.execution.FrameworkLog;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,7 +39,7 @@ public class FrameworkCrypto {
         String output = "";
         try {
             output = "ENC(" + aes.encrypt(input) + ")";
-        } catch (Exception e) {
+        } catch (NoSuchPaddingException | NoSuchAlgorithmException | BadPaddingException | IllegalBlockSizeException | InvalidKeyException | InvalidAlgorithmParameterException e) {
             e.printStackTrace();
         }
 
@@ -50,7 +57,7 @@ public class FrameworkCrypto {
             }
             try {
                 output = aes.decrypt(input.substring(4, input.length() - 1));
-            } catch (Exception e) {
+            } catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException | BadPaddingException | IllegalBlockSizeException | InvalidAlgorithmParameterException e) {
                 throw new RuntimeException(e);
             }
         } else {
@@ -71,7 +78,7 @@ public class FrameworkCrypto {
             }
             try {
                 output = aes.decrypt(input.substring(4, input.length() - 1));
-            } catch (Exception e) {
+            } catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException | BadPaddingException | IllegalBlockSizeException | InvalidAlgorithmParameterException e) {
                 throw new RuntimeException("Encrypted password cannot be decrypted on this host", e);
             }
         } else {
@@ -114,7 +121,7 @@ public class FrameworkCrypto {
             // Lookup
             try {
                 instructionOutput = aes.decrypt(instructionOutput.substring(4, instructionOutput.length() - 1));
-            } catch (Exception e) {
+            } catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException | BadPaddingException | IllegalBlockSizeException | InvalidAlgorithmParameterException e) {
                 throw new RuntimeException("Encrypted password cannot be decrypted on this host", e);
             }
 

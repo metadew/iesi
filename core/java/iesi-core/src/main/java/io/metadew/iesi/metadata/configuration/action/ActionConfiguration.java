@@ -74,7 +74,7 @@ public class ActionConfiguration extends Configuration<Action, ActionKey> {
             );
             crsAction.close();
             return Optional.of(action);
-        } catch (Exception e) {
+        } catch (SQLException e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
             LOGGER.info("exception=" + e);

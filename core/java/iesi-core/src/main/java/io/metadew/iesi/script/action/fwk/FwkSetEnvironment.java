@@ -57,12 +57,11 @@ public class FwkSetEnvironment {
         this.getActionParameterOperationMap().put("environment", this.getEnvironmentName());
     }
 
-    public boolean execute() {
+    public boolean execute() throws InterruptedException {
         try {
-            String environmentName = convertEnvironmentName(getEnvironmentName().getValue());
-            this.getExecutionControl().setEnvironment(actionExecution, environmentName);
-            this.getActionExecution().getActionControl().increaseSuccessCount();
-            return true;
+            return executeOperation();
+        } catch (InterruptedException e) {
+            throw (e);
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
@@ -75,6 +74,13 @@ public class FwkSetEnvironment {
             return false;
         }
 
+    }
+
+    private boolean executeOperation() throws InterruptedException {
+        String environmentName = convertEnvironmentName(getEnvironmentName().getValue());
+        this.getExecutionControl().setEnvironment(actionExecution, environmentName);
+        this.getActionExecution().getActionControl().increaseSuccessCount();
+        return true;
     }
 
     private String convertEnvironmentName(DataType environmentName) {

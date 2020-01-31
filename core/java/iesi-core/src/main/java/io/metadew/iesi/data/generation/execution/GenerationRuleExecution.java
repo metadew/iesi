@@ -7,7 +7,9 @@ import io.metadew.iesi.script.execution.ExecutionControl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.sql.SQLException;
 
 public class GenerationRuleExecution {
 
@@ -61,13 +63,10 @@ public class GenerationRuleExecution {
 				generationRuleBlankInjectionExecution.execute();
 			}
 
-		} catch (Exception e) {
+		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
 			e.printStackTrace();
 			LOGGER.warn("Exception during Executing Generation Rule (NAME) "
 					+ this.getGenerationRule().getField() + " (ID=" + this.getGenerationRule().getId() + ")");
-		} finally {
-			// Log End
-			// this.getExecutionControl().endExecution(this);
 		}
 
 	}

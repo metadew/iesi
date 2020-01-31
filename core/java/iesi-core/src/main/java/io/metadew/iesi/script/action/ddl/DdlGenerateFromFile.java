@@ -91,7 +91,7 @@ public class DdlGenerateFromFile {
     }
 
 
-    public boolean execute() {
+    public boolean execute() throws InterruptedException {
         try {
             String inputPath = convertInputPath(getInputPath().getValue());
             String inputFile = convertInputFile(getInputFile().getValue());
@@ -99,6 +99,8 @@ public class DdlGenerateFromFile {
             String outputPath = convertOutputPath(getOutputPath().getValue());
             String outputFile = convertOutputFile(getOutputFile().getValue());
             return executeQuery(inputPath, inputFile, outputType, outputPath, outputFile);
+        } catch (InterruptedException e) {
+            throw(e);
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
@@ -164,7 +166,7 @@ public class DdlGenerateFromFile {
         }
     }
 
-    private boolean executeQuery(String inputPath, String inputFile, String outputType, String outputPath, String outputFile) {
+    private boolean executeQuery(String inputPath, String inputFile, String outputType, String outputPath, String outputFile) throws InterruptedException{
 
     	// TODO - fix for schema databases (dummy database connection)
     	Database database = DatabaseTools.getDatabase("io.metadew.iesi.connection.database.SqliteDatabase");

@@ -7,6 +7,7 @@ import io.metadew.iesi.metadata.execution.MetadataControl;
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.sql.SQLException;
 import java.util.Optional;
 
 public class FeatureVersionConfiguration {
@@ -79,7 +80,7 @@ public class FeatureVersionConfiguration {
             FeatureVersion featureVersion = new FeatureVersion(featureId, featureVersionNumber, crsFeatureVersion.getString("FEATURE_VRS_DSC"));
             crsFeatureVersion.close();
             return Optional.of(featureVersion);
-        } catch (Exception e) {
+        } catch (SQLException e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
             return Optional.empty();

@@ -3,7 +3,9 @@ package io.metadew.iesi.framework.crypto;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.security.spec.InvalidKeySpecException;
 import java.util.Base64;
 
 public class Password {
@@ -17,7 +19,7 @@ public class Password {
      * suitable for storing in a database.
      * Empty passwords are not supported.
      */
-    public static String getSaltedHash(String password) throws Exception {
+    public static String getSaltedHash(String password) throws NoSuchAlgorithmException, InvalidKeySpecException {
         byte[] salt = SecureRandom.getInstance("SHA1PRNG").generateSeed(saltLen);
         return Base64.getEncoder().encodeToString(salt) + "$" + hash(password, salt);
     }
@@ -26,7 +28,7 @@ public class Password {
      * Checks whether given plaintext password corresponds
      * to a stored salted hash of the password.
      */
-    public static boolean check(String password, String stored) throws Exception {
+    public static boolean check(String password, String stored) throws InvalidKeySpecException, NoSuchAlgorithmException {
         String[] saltAndPass = stored.split("\\$");
         if (saltAndPass.length != 2) {
             throw new IllegalStateException(
@@ -36,7 +38,7 @@ public class Password {
         return hashOfInput.equalsIgnoreCase(saltAndPass[1]);
     }
 
-    private static String hash(String password, byte[] salt) throws Exception {
+    private static String hash(String password, byte[] salt) throws NoSuchAlgorithmException, InvalidKeySpecException {
         if (password == null || password.length() == 0)
             throw new IllegalArgumentException("Empty passwords are not supported.");
         SecretKeyFactory f = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");

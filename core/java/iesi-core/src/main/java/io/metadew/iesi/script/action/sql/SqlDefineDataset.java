@@ -74,13 +74,15 @@ public class SqlDefineDataset {
         this.getActionParameterOperationMap().put("identifier", this.getSqlIdentifier());
     }
 
-    public boolean execute() {
+    public boolean execute() throws InterruptedException {
         try {
             String referenceName = convertReferenceName(getReferenceName().getValue());
             String statement = convertStatement(getReferenceName().getValue());
             String connection = convertIdentifierName(getReferenceName().getValue());
             return execute(referenceName, statement, connection);
 
+        } catch (InterruptedException e) {
+            throw (e);
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
@@ -95,7 +97,7 @@ public class SqlDefineDataset {
 
     }
 
-    private boolean execute(String referenceName, String statement, String identifier) {
+    private boolean execute(String referenceName, String statement, String identifier) throws InterruptedException {
         Dataset dataset = new Dataset();
         dataset.setType("sql");
         dataset.setName(referenceName);

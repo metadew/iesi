@@ -12,6 +12,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.List;
 
@@ -78,7 +79,7 @@ public class DataObjectConfiguration {
         try {
             dataObject = objectMapper.readValue(data, new TypeReference<DataObject>() {
             });
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return dataObject;
@@ -90,7 +91,7 @@ public class DataObjectConfiguration {
         try {
             dataObjectList = objectMapper.readValue(data, new TypeReference<List<DataObject>>() {
             });
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return dataObjectList;
@@ -102,8 +103,6 @@ public class DataObjectConfiguration {
                 metadataRepository.save(dataObject);
             } catch (MetadataRepositorySaveException e) {
                 LOGGER.warn(MessageFormat.format("Failed to save {0} to repository", dataObject.getType()));
-            } catch (Exception e) {
-                e.printStackTrace();
             }
         }
     }

@@ -118,14 +118,11 @@ public class SocketTransmitMessage {
         }
     }
 
-    public boolean execute() {
+    public boolean execute() throws InterruptedException {
         try {
-            if (protocol.equalsIgnoreCase("tcp")) {
-                sendTCPMessage();
-            } else if (protocol.equalsIgnoreCase("udp")) {
-                sendUDPMessage();
-            }
-            return true;
+            return executionOperation();
+        } catch (InterruptedException e) {
+            throw e;
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
@@ -137,6 +134,15 @@ public class SocketTransmitMessage {
 
             return false;
         }
+    }
+
+    private boolean executionOperation() throws IOException, InterruptedException {
+        if (protocol.equalsIgnoreCase("tcp")) {
+            sendTCPMessage();
+        } else if (protocol.equalsIgnoreCase("udp")) {
+            sendUDPMessage();
+        }
+        return true;
     }
 
     private void sendUDPMessage() throws IOException {
@@ -166,7 +172,8 @@ public class SocketTransmitMessage {
             if (timeout == null) {
                 endDateTime = LocalDateTime.now().plus(
                         FrameworkSettingConfiguration.getInstance().getSettingPath("socket.timeout.default")
-                                .map(settingPath -> FrameworkControl.getInstance().getProperty(settingPath))
+                                .map(settingPath -> FrameworkControl.getInstance().getProperty(settingPath)
+                                        .orElseThrow(() -> new RuntimeException("no value set for socket.timeout.default")))
                                 .map(Integer::parseInt)
                                 .orElseThrow(() -> new RuntimeException("No value set for socket.timeout.default")),
                         ChronoUnit.SECONDS);

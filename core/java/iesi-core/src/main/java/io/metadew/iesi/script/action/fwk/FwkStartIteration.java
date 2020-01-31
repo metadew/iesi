@@ -77,12 +77,11 @@ public class FwkStartIteration {
         this.getActionParameterOperationMap().put("BREAK_ON_ERROR", this.getBreakOnError());
     }
 
-    public boolean execute() {
+    public boolean execute() throws InterruptedException {
         try {
-            // Run the action
-            this.getActionExecution().getActionControl().increaseSuccessCount();
-
-            return true;
+            return executeOperation();
+        } catch (InterruptedException e) {
+            throw (e);
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
@@ -95,6 +94,12 @@ public class FwkStartIteration {
             return false;
         }
 
+    }
+
+    private boolean executeOperation() throws InterruptedException {
+        this.getActionExecution().getActionControl().increaseSuccessCount();
+
+        return true;
     }
 
     public ExecutionControl getExecutionControl() {

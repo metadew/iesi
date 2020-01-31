@@ -106,7 +106,7 @@ public class CliExecuteCommand {
     }
 
     // Methods
-    public boolean execute() {
+    public boolean execute() throws InterruptedException {
         try {
             String shellPath = convertShellPath(this.shellPath.getValue());
             String shellCommand = convertShellCommand(this.shellCommand.getValue());
@@ -115,6 +115,8 @@ public class CliExecuteCommand {
             String settingRuntimeVariablesMode = convertSetRuntimeVariablesMode(this.setRunVarMode.getValue());
             String connectionName = convertConnectionName(this.connectionName.getValue());
             return executeCommand(shellPath, shellCommand, settingRuntimeVariables, settingRuntimeVariablesPrefix, settingRuntimeVariablesMode, connectionName);
+        } catch (InterruptedException e) {
+            throw (e);
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
@@ -129,7 +131,7 @@ public class CliExecuteCommand {
 
     }
 
-    private boolean executeCommand(String shellPath, String shellCommand, boolean settingRuntimeVariables, String settingRuntimeVariablesPrefix, String settingRuntimeVariablesMode, String connectionName) {
+    private boolean executeCommand(String shellPath, String shellCommand, boolean settingRuntimeVariables, String settingRuntimeVariablesPrefix, String settingRuntimeVariablesMode, String connectionName) throws InterruptedException{
         // Get Connection
         boolean isOnLocalhost = HostConnectionTools.isOnLocalhost(
                 connectionName, executionControl.getEnvName());

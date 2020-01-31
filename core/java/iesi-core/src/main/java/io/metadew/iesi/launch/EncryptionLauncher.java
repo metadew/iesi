@@ -34,11 +34,7 @@ public class EncryptionLauncher {
         FrameworkCrypto frameworkCrypto = FrameworkCrypto.getInstance();
 
         String output = "";
-        try {
-            output = frameworkCrypto.encrypt(input);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        output = frameworkCrypto.encrypt(input);
 
         System.out.println("The encrypted password is: " + output);
 
@@ -48,7 +44,7 @@ public class EncryptionLauncher {
             clpbrd.setContents(stringSelection, null);
 
             System.out.println("The encrypted password has been copied to the clipboard");
-        } catch (Exception e) {
+        } catch (HeadlessException e) {
             // do nothing, copy to clipboard failed
             System.out.println("The encrypted password not been copied to the clipboard");
         }

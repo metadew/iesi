@@ -48,7 +48,7 @@ public class SqlSetIterationVariables {
         this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
     }
 
-    public void prepare()  {
+    public void prepare() {
         // Reset Parameters
         this.setListName(new ActionParameterOperation(this.getExecutionControl(), this.getActionExecution(),
                 this.getActionExecution().getAction().getType(), "list"));
@@ -74,28 +74,11 @@ public class SqlSetIterationVariables {
         this.getActionParameterOperationMap().put("connection", this.getConnectionName());
     }
 
-    public boolean execute() {
+    public boolean execute() throws InterruptedException {
         try {
-            String query = convertQuery(getSqlQuery().getValue());
-            String connectionName = convertConnectionName(getConnectionName().getValue());
-            String listName = convertListName(getListName().getValue());
-
-            // Get Connection
-            Connection connection = ConnectionConfiguration.getInstance().get(connectionName,
-                    this.getExecutionControl().getEnvName()).get();
-            ConnectionOperation connectionOperation = new ConnectionOperation();
-            Database database = connectionOperation.getDatabase(connection);
-
-            // Run the action
-            CachedRowSet sqlResultSet = database.executeQuery(query);
-            try {
-                this.getExecutionControl().getExecutionRuntime().setIterationVariables(listName, sqlResultSet);
-                this.getActionExecution().getActionControl().increaseSuccessCount();
-            } catch (Exception e) {
-                throw new RuntimeException("Issue setting iteration variables: " + e, e);
-            }
-
-            return true;
+            return executeOperation();
+        } catch (InterruptedException e) {
+            throw (e);
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
@@ -108,6 +91,26 @@ public class SqlSetIterationVariables {
             return false;
         }
 
+    }
+
+    private boolean executeOperation() throws InterruptedException {
+
+        String query = convertQuery(getSqlQuery().getValue());
+        String connectionName = convertConnectionName(getConnectionName().getValue());
+        String listName = convertListName(getListName().getValue());
+
+        // Get Connection
+        Connection connection = ConnectionConfiguration.getInstance().get(connectionName,
+                this.getExecutionControl().getEnvName()).get();
+        ConnectionOperation connectionOperation = new ConnectionOperation();
+        Database database = connectionOperation.getDatabase(connection);
+
+        // Run the action
+        CachedRowSet sqlResultSet = database.executeQuery(query);
+        this.getExecutionControl().getExecutionRuntime().setIterationVariables(listName, sqlResultSet);
+        this.getActionExecution().getActionControl().increaseSuccessCount();
+
+        return true;
     }
 
     private String convertListName(DataType listName) {

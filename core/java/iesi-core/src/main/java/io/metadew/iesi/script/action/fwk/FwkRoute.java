@@ -99,61 +99,11 @@ public class FwkRoute {
         }
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    public boolean execute() {
+    public boolean execute() throws InterruptedException {
         try {
-
-            // Evaluate conditions
-
-            // Prepare script
-            String scriptId = this.getScriptExecution().getScript().getId();
-            Long versionNumber = this.getScriptExecution().getScript().getVersion().getNumber();
-            ScriptKey scriptKey = new ScriptKey(scriptId, versionNumber);
-            String scriptName = this.getScriptExecution().getScript().getName();
-            String scriptDescription = this.getScriptExecution().getScript().getDescription();
-            ScriptVersion scriptVersion = this.getScriptExecution().getScript().getVersion();
-            List<Action> scriptActions = new ArrayList<>();
-            List<ScriptParameter> scriptParameters = this.getScriptExecution().getScript().getParameters();
-            Script script = new Script(scriptKey, scriptName, scriptDescription, scriptVersion,
-                    scriptParameters, scriptActions);
-
-
-            //Prepare action runtime
-            this.getActionExecution().getActionControl().getActionRuntime().setRouteOperations(new ArrayList());
-
-            // Find appropriate actions
-            Iterator iterator = null;
-            ObjectMapper objectMapper = new ObjectMapper();
-            iterator = this.getRouteOperationMap().entrySet().iterator();
-            while (iterator.hasNext()) {
-                Map.Entry pair = (Map.Entry) iterator.next();
-                RouteOperation routeOperation = objectMapper.convertValue(pair.getValue(),
-                        RouteOperation.class);
-
-                // Evaluate
-
-                // Move to destination
-                boolean destinationFound = false;
-                List<Action> actions = new ArrayList();
-                for (Action action : this.getScriptExecution().getScript().getActions()) {
-                    if (action.getName().equalsIgnoreCase(routeOperation.getDestination().getValue().toString())) {
-                        destinationFound = true;
-                    }
-                    if (destinationFound) {
-                        actions.add(action);
-                    }
-                }
-                script.setActions(actions);
-
-                //Update routeOperation
-                routeOperation.setScript(script);
-
-                this.getActionExecution().getActionControl().getActionRuntime().getRouteOperations().add(routeOperation);
-
-                iterator.remove();
-            }
-
-            return true;
+            return executeOperation();
+        } catch (InterruptedException e) {
+            throw (e);
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
@@ -166,6 +116,60 @@ public class FwkRoute {
             return false;
         }
 
+    }
+
+    private boolean executeOperation() throws InterruptedException{
+
+        // Evaluate conditions
+
+        // Prepare script
+        String scriptId = scriptExecution.getScript().getId();
+        Long versionNumber = scriptExecution.getScript().getVersion().getNumber();
+        ScriptKey scriptKey = new ScriptKey(scriptId, versionNumber);
+        String scriptName = scriptExecution.getScript().getName();
+        String scriptDescription = scriptExecution.getScript().getDescription();
+        ScriptVersion scriptVersion = scriptExecution.getScript().getVersion();
+        List<Action> scriptActions = new ArrayList<>();
+        List<ScriptParameter> scriptParameters = scriptExecution.getScript().getParameters();
+        Script script = new Script(scriptKey, scriptName, scriptDescription, scriptVersion,
+                scriptParameters, scriptActions);
+
+        //Prepare action runtime
+        this.getActionExecution().getActionControl().getActionRuntime().setRouteOperations(new ArrayList());
+
+        // Find appropriate actions
+        Iterator iterator = null;
+        ObjectMapper objectMapper = new ObjectMapper();
+        iterator = this.getRouteOperationMap().entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry pair = (Map.Entry) iterator.next();
+            RouteOperation routeOperation = objectMapper.convertValue(pair.getValue(),
+                    RouteOperation.class);
+
+            // Evaluate
+
+            // Move to destination
+            boolean destinationFound = false;
+            List<Action> actions = new ArrayList<>();
+            for (Action action : scriptExecution.getScript().getActions()) {
+                if (action.getName().equalsIgnoreCase(routeOperation.getDestination().getValue().toString())) {
+                    destinationFound = true;
+                }
+                if (destinationFound) {
+                    actions.add(action);
+                }
+            }
+            script.setActions(actions);
+
+            //Update routeOperation
+            routeOperation.setScript(script);
+
+            this.getActionExecution().getActionControl().getActionRuntime().getRouteOperations().add(routeOperation);
+
+            iterator.remove();
+        }
+
+        return true;
     }
 
     private RouteOperation getRouteOperation(int id) {

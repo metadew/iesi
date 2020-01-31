@@ -87,13 +87,14 @@ public class FhoFolderExists {
     }
 
     // Methods
-    public boolean execute() {
+    public boolean execute() throws InterruptedException {
         try {
             String path = convertPath(getFolderPath().getValue());
             String folder = convertFolder(getFolderName().getValue());
             String connectionName = convertConnectionName(getConnectionName().getValue());
             return execute(path, folder, connectionName);
-
+        } catch (InterruptedException e) {
+            throw (e);
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
@@ -108,7 +109,7 @@ public class FhoFolderExists {
 
     }
 
-    private boolean execute(String path, String folder, String connectionName) {
+    private boolean execute(String path, String folder, String connectionName) throws InterruptedException {
         boolean isOnLocalhost = HostConnectionTools.isOnLocalhost(
                 connectionName, this.getExecutionControl().getEnvName());
 

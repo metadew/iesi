@@ -13,13 +13,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.sql.rowset.CachedRowSet;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
 
 public class ComponentAttributeConfiguration extends Configuration<ComponentAttribute, ComponentAttributeKey> {
 
@@ -57,9 +56,7 @@ public class ComponentAttributeConfiguration extends Configuration<ComponentAttr
                     crsComponentAttribute.getString("COMP_ATT_VAL"));
             crsComponentAttribute.close();
             return Optional.of(componentAttribute);
-        } catch (Exception e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }

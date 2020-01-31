@@ -57,13 +57,11 @@ public class FwkSetParameterList {
         this.getActionParameterOperationMap().put("list", this.getParameterList());
     }
 
-    public boolean execute() {
+    public boolean execute() throws InterruptedException {
         try {
-            Map<String, String> list = convertList(getParameterList().getValue());
-            for (Map.Entry<String, String> parameter : list.entrySet()) {
-                executionControl.getExecutionRuntime().setRuntimeVariable(actionExecution, parameter.getKey(), parameter.getValue());
-            }
-            return true;
+            return executionOperation();
+        } catch (InterruptedException e) {
+            throw (e);
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
@@ -76,6 +74,14 @@ public class FwkSetParameterList {
             return false;
         }
 
+    }
+
+    private boolean executionOperation() throws InterruptedException {
+        Map<String, String> list = convertList(getParameterList().getValue());
+        for (Map.Entry<String, String> parameter : list.entrySet()) {
+            executionControl.getExecutionRuntime().setRuntimeVariable(actionExecution, parameter.getKey(), parameter.getValue());
+        }
+        return true;
     }
 
     private Map<String, String> convertList(DataType list) {

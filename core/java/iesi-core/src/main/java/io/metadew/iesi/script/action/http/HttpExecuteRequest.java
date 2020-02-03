@@ -14,6 +14,7 @@ import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.HttpRequestComponent;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
+import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
@@ -217,7 +218,8 @@ public class HttpExecuteRequest {
         if (connectionName == null) {
             return null;
         } else if (connectionName instanceof Text) {
-            return proxyConnection = ConnectionConfiguration.getInstance().get(((Text) connectionName).getString(), executionControl.getEnvName())
+            return proxyConnection = ConnectionConfiguration.getInstance()
+                    .get(new ConnectionKey(((Text) connectionName).getString(), executionControl.getEnvName()))
                     .map(ProxyConnection::from)
                     .orElseThrow(() -> new RuntimeException(MessageFormat.format("Cannot find connection {0}", ((Text) connectionName).getString())));
         } else {

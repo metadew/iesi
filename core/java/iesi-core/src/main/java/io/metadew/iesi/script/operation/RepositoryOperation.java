@@ -10,6 +10,7 @@ import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration
 import io.metadew.iesi.metadata.configuration.repository.RepositoryConfiguration;
 import io.metadew.iesi.metadata.configuration.repository.RepositoryInstanceConfiguration;
 import io.metadew.iesi.metadata.definition.connection.Connection;
+import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.metadata.definition.repository.Repository;
 import io.metadew.iesi.metadata.definition.repository.RepositoryInstance;
 import io.metadew.iesi.metadata.definition.repository.RepositoryInstanceParameter;
@@ -63,7 +64,7 @@ public class RepositoryOperation {
         }
 
         // Get Connection
-        Connection connection = ConnectionConfiguration.getInstance().get(this.getRepositoryInstanceConnectionName().getValue(),this.getExecutionControl().getEnvName()).get();
+        Connection connection = ConnectionConfiguration.getInstance().get(new ConnectionKey(this.getRepositoryInstanceConnectionName().getValue(),this.getExecutionControl().getEnvName())).get();
         ConnectionOperation connectionOperation = new ConnectionOperation();
         this.setRepositoryDatabaseInstance(connectionOperation
                 .getDatabase(connection));

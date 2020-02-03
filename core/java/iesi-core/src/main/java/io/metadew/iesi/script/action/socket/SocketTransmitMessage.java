@@ -8,6 +8,7 @@ import io.metadew.iesi.framework.configuration.FrameworkSettingConfiguration;
 import io.metadew.iesi.framework.execution.FrameworkControl;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
+import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
@@ -195,7 +196,8 @@ public class SocketTransmitMessage {
 
     private SocketConnection convertSocket(DataType socket) {
         if (socket instanceof Text) {
-            return ConnectionConfiguration.getInstance().get(((Text) socket).getString(), executionControl.getEnvName())
+            return ConnectionConfiguration.getInstance()
+                    .get(new ConnectionKey(((Text) socket).getString(), executionControl.getEnvName()))
                     .map(SocketConnection::from)
                     .orElseThrow(() -> new RuntimeException(MessageFormat.format("Cannot find connection {0}", ((Text) socket).getString())));
         } else {

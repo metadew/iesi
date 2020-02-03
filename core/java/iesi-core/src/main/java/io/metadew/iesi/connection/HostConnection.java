@@ -8,6 +8,7 @@ import io.metadew.iesi.connection.operation.ConnectionOperation;
 import io.metadew.iesi.framework.execution.FrameworkRuntime;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.connection.Connection;
+import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import org.apache.commons.io.IOUtils;
 
 import java.io.*;
@@ -287,7 +288,8 @@ public class HostConnection {
                     if (i < jumphostConnections.length) {
                         jumphostConnection = jumphostConnections[i];
                         Connection connection = ConnectionConfiguration.getInstance()
-                                .get(jumphostConnection, shellCommandSettings.getEnvironment()).get();
+                                .get(new ConnectionKey(jumphostConnection, shellCommandSettings.getEnvironment()))
+                                .get();
                         ConnectionOperation connectionOperation = new ConnectionOperation();
                         hostConnection = connectionOperation.getHostConnection(connection);
                     } else {
@@ -535,7 +537,8 @@ public class HostConnection {
                     if (i < jumphostConnections.length) {
                         jumphostConnection = jumphostConnections[i];
                         Connection connection = ConnectionConfiguration.getInstance()
-                                .get(jumphostConnection, shellCommandSettings.getEnvironment()).get();
+                                .get(new ConnectionKey(jumphostConnection, shellCommandSettings.getEnvironment()))
+                                .get();
                         ConnectionOperation connectionOperation = new ConnectionOperation();
                         hostConnection = connectionOperation.getHostConnection(connection);
                     } else {
@@ -750,7 +753,8 @@ public class HostConnection {
                     if (i < jumphostConnections.length) {
                         jumphostConnection = jumphostConnections[i];
                         Connection connection = ConnectionConfiguration.getInstance()
-                                .get(jumphostConnection, shellCommandSettings.getEnvironment()).get();
+                                .get(new ConnectionKey(jumphostConnection, shellCommandSettings.getEnvironment()))
+                                .get();
                         ConnectionOperation connectionOperation = new ConnectionOperation();
                         hostConnection = connectionOperation.getHostConnection(connection);
                     } else {

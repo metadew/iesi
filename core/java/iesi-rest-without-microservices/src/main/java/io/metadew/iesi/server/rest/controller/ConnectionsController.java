@@ -64,7 +64,7 @@ public class ConnectionsController {
 
     @GetMapping("/{name}/{environment}")
     public ConnectionDto get(@PathVariable String name, @PathVariable String environment) throws MetadataDoesNotExistException {
-        Optional<Connection> connection = connectionConfiguration.get(name, environment);
+        Optional<Connection> connection = connectionConfiguration.get(new ConnectionKey(name, environment));
         return connection
                 .map(connectionDtoResourceAssembler::toResource)
                 .orElseThrow(() -> new MetadataDoesNotExistException(new ConnectionKey(name, environment)));

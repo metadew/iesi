@@ -4,6 +4,7 @@ import io.metadew.iesi.connection.HostConnection;
 import io.metadew.iesi.connection.operation.ConnectionOperation;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.connection.Connection;
+import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import org.apache.commons.lang3.SystemUtils;
 
 public final class HostConnectionTools {
@@ -17,7 +18,8 @@ public final class HostConnectionTools {
             isOnLocalhost = true;
         } else {
             Connection connection = ConnectionConfiguration.getInstance()
-                    .get(connectionName, environmentName).get();
+                    .get(new ConnectionKey(connectionName, environmentName))
+                    .get();
             ConnectionOperation connectionOperation = new ConnectionOperation();
             HostConnection hostConnection = connectionOperation.getHostConnection(connection);
 

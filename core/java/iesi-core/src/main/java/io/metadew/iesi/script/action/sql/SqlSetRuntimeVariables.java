@@ -7,6 +7,7 @@ import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.connection.Connection;
+import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
@@ -84,8 +85,7 @@ public class SqlSetRuntimeVariables {
         String query = convertQuery(sqlQuery.getValue());
         String connectionName = convertConnectionName(this.connectionName.getValue());
         // Get Connection
-        Connection connection = ConnectionConfiguration.getInstance().get(connectionName,
-                this.executionControl.getEnvName())
+        Connection connection = ConnectionConfiguration.getInstance().get(new ConnectionKey(connectionName, this.executionControl.getEnvName()))
                 .orElseThrow(() -> new RuntimeException("Could not find connection " + connectionName));
         ConnectionOperation connectionOperation = new ConnectionOperation();
         Database database = connectionOperation.getDatabase(connection);

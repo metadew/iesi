@@ -10,6 +10,7 @@ import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.connection.Connection;
+import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
@@ -126,11 +127,13 @@ public class FhoExecuteFileTransfer {
     private boolean execute(String sourceFilePath, String sourceFileName, String sourceConnectionName, String targetFilePath, String targetFileName, String targetConnectionName) throws InterruptedException {
         // Get Connections
         Connection sourceConnection = ConnectionConfiguration.getInstance()
-                .get(sourceConnectionName, this.getExecutionControl().getEnvName()).get();
+                .get(new ConnectionKey(sourceConnectionName, this.getExecutionControl().getEnvName()))
+                .get();
         ConnectionOperation connectionOperation = new ConnectionOperation();
         HostConnection sourceHostConnection = connectionOperation.getHostConnection(sourceConnection);
         Connection targetConnection = ConnectionConfiguration.getInstance()
-                .get(targetConnectionName, this.getExecutionControl().getEnvName()).get();
+                .get(new ConnectionKey(targetConnectionName, this.getExecutionControl().getEnvName()))
+                .get();
         HostConnection targetHostConnection = connectionOperation.getHostConnection(targetConnection);
 
         // Check if source or target are localhost

@@ -98,8 +98,8 @@ public class ComponentParameterConfiguration extends Configuration<ComponentPara
     private String deleteStatement(ComponentParameterKey componentParameterKey){
         return "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ComponentParameters") +
                 " WHERE COMP_ID = " + SQLTools.GetStringForSQL(componentParameterKey.getComponentKey().getId()) +
-                "AND COMP_VRS_NB = " + SQLTools.GetStringForSQL(componentParameterKey.getComponentKey().getVersionNumber()) +
-                "AND COMP_PAR_NM = " + SQLTools.GetStringForSQL(componentParameterKey.getParameterName()) + ";";
+                " AND COMP_VRS_NB = " + SQLTools.GetStringForSQL(componentParameterKey.getComponentKey().getVersionNumber()) +
+                " AND COMP_PAR_NM = " + SQLTools.GetStringForSQL(componentParameterKey.getParameterName()) + ";";
     }
 
     @Override

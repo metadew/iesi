@@ -75,8 +75,7 @@ public final class SQLTools {
     }
 
     private static String GetCleanString(String input) {
-        String cleanString = input;
-        return cleanString.replace("'", "''");
+        return input.replace("'", "''");
     }
 
 

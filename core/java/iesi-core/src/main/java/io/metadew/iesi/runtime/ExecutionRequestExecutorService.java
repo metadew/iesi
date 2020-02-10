@@ -1,18 +1,21 @@
 package io.metadew.iesi.runtime;
 
+import io.metadew.iesi.metadata.configuration.execution.ExecutionRequestConfiguration;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequest;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import io.metadew.iesi.metadata.definition.execution.ExecutionRequestStatus;
+import lombok.extern.log4j.Log4j2;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 
+@Log4j2
 public class ExecutionRequestExecutorService {
 
     private Map<Class<? extends ExecutionRequest>, ExecutionRequestExecutor> requestExecutorMap;
 
-    private static final Logger LOGGER = LogManager.getLogger();
     private static ExecutionRequestExecutorService INSTANCE;
 
     public synchronized static ExecutionRequestExecutorService getInstance() {
@@ -33,12 +36,21 @@ public class ExecutionRequestExecutorService {
 
     @SuppressWarnings("unchecked")
     public void execute(ExecutionRequest executionRequest) {
-        ExecutionRequestExecutor executionRequestExecutor = requestExecutorMap.get(executionRequest.getClass());
-        if (executionRequestExecutor == null) {
-            LOGGER.error(MessageFormat.format("No Executor found for request type {0}", executionRequest.getClass()));
-        } else {
-            LOGGER.info(MessageFormat.format("Executing request {0}", executionRequest.getMetadataKey().getId()));
-            executionRequestExecutor.execute(executionRequest);
+        try {
+            ExecutionRequestExecutor executionRequestExecutor = requestExecutorMap.get(executionRequest.getClass());
+            if (executionRequestExecutor == null) {
+                log.error(MessageFormat.format("No Executor found for request type {0}", executionRequest.getClass()));
+                executionRequest.updateExecutionRequestStatus(ExecutionRequestStatus.DECLINED);
+                ExecutionRequestConfiguration.getInstance().update(executionRequest);
+            } else {
+                log.info(MessageFormat.format("Executing request {0}", executionRequest.getMetadataKey().getId()));
+                executionRequestExecutor.execute(executionRequest);
+            }
+        } catch (Exception e) {
+            StringWriter stackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTrace));
+            log.info("exception=" + e);
+            log.debug("exception.stacktrace=" + stackTrace.toString());
         }
     }
 

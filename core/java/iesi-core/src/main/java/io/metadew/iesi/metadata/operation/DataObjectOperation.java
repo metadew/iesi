@@ -102,14 +102,9 @@ public class DataObjectOperation {
 				dataObjects = new ArrayList<>();
 				dataObjects.add(dataObject);
 			}
+			bufferedReader.close();
 		} catch (IOException e) {
 			e.printStackTrace();
-		} finally {
-			try {
-				bufferedReader.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
 		}
 	}
 

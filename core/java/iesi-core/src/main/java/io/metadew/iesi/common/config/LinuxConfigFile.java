@@ -2,7 +2,10 @@ package io.metadew.iesi.common.config;
 
 import io.metadew.iesi.framework.execution.FrameworkControl;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 
 public class LinuxConfigFile extends ConfigFile {
 
@@ -27,7 +30,7 @@ public class LinuxConfigFile extends ConfigFile {
 
                 }
             }
-
+            bufferedReader.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

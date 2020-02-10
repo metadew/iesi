@@ -74,6 +74,7 @@ public class HostContextIdentifier {
             while ((readLine = bufferedReader.readLine()) != null) {
                 output += readLine.trim();
             }
+            bufferedReader.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

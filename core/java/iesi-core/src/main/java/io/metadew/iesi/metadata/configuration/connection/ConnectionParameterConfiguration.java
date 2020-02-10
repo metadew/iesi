@@ -157,11 +157,15 @@ public class ConnectionParameterConfiguration extends Configuration<ConnectionPa
     }
 
     public void update(ConnectionParameter connectionParameter) {
-        getMetadataRepository().executeUpdate("UPDATE " + getMetadataRepository().getTableNameByLabel("ConnectionParameters") +
-                " SET CONN_PAR_VAL = " + SQLTools.GetStringForSQL(connectionParameter.getValue()) +
-                " WHERE CONN_NM = " + SQLTools.GetStringForSQL(connectionParameter.getMetadataKey().getConnectionKey().getName()) +
-                " AND ENV_NM = " + SQLTools.GetStringForSQL(connectionParameter.getMetadataKey().getConnectionKey().getEnvironmentKey().getName()) +
-                " AND CONN_PAR_NM = " + SQLTools.GetStringForSQL(connectionParameter.getMetadataKey().getParameterName()) + ";");
+        if (exists(connectionParameter)) {
+            getMetadataRepository().executeUpdate("UPDATE " + getMetadataRepository().getTableNameByLabel("ConnectionParameters") +
+                    " SET CONN_PAR_VAL = " + SQLTools.GetStringForSQL(connectionParameter.getValue()) +
+                    " WHERE CONN_NM = " + SQLTools.GetStringForSQL(connectionParameter.getMetadataKey().getConnectionKey().getName()) +
+                    " AND ENV_NM = " + SQLTools.GetStringForSQL(connectionParameter.getMetadataKey().getConnectionKey().getEnvironmentKey().getName()) +
+                    " AND CONN_PAR_NM = " + SQLTools.GetStringForSQL(connectionParameter.getMetadataKey().getParameterName()) + ";");
+        } else {
+            insert(connectionParameter);
+        }
     }
 
 }

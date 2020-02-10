@@ -116,6 +116,7 @@ public final class FileTools {
                 output += readLine;
                 output += "\n";
             }
+            bufferedReader.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -134,6 +135,7 @@ public final class FileTools {
                 output += frameworkControl.resolveConfiguration(readLine);
                 output += "\n";
             }
+            bufferedReader.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -150,6 +152,7 @@ public final class FileTools {
                 output += frameworkControl.resolveConfiguration(readLine);
                 output += "\n";
             }
+            bufferedReader.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

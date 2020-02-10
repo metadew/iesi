@@ -126,7 +126,8 @@ public final class SQLTools {
 
     public static String getFirstSQLStmt(String absoluteFilePath) {
         String result = "";
-        try (BufferedReader br = new BufferedReader(new FileReader(absoluteFilePath))) {
+        try (
+                BufferedReader br = new BufferedReader(new FileReader(absoluteFilePath))) {
 
             String line;
             while ((line = br.readLine()) != null) {
@@ -142,8 +143,9 @@ public final class SQLTools {
                     result = result + line.substring(0, line.indexOf(";"));
                     break;
                 }
-            }
 
+            }
+            br.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -74,7 +74,7 @@ public class Header {
             // delete temporary file
             FileTools.delete(tempFullFileName);
 
-
+            bufferedReader.close();
             return true;
         } catch (IOException e) {
             throw new RuntimeException(e);

@@ -8,7 +8,6 @@ import io.metadew.iesi.metadata.execution.MetadataControl;
 import java.io.Console;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
-import java.sql.SQLException;
 import java.util.Scanner;
 
 public class UserExecution {

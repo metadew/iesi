@@ -3,6 +3,7 @@ package io.metadew.iesi.runtime;
 import io.metadew.iesi.framework.configuration.FrameworkSettingConfiguration;
 import io.metadew.iesi.framework.execution.FrameworkControl;
 import io.metadew.iesi.metadata.configuration.execution.ExecutionRequestConfiguration;
+import io.metadew.iesi.metadata.definition.execution.ExecutionRequestStatus;
 import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequestStatus;
@@ -104,6 +105,13 @@ public class ExecutionRequestMonitor implements Runnable {
 
     public void shutdown() throws InterruptedException {
         keepRunning = false;
+        for (ExecutionRequestKey executionRequestKey : executionRequestThreadMap.keySet()) {
+            ExecutionRequestConfiguration.getInstance().get(executionRequestKey)
+                .ifPresent(executionRequest -> {
+                    executionRequest.updateExecutionRequestStatus(ExecutionRequestStatus.KILLED);
+                    ExecutionRequestConfiguration.getInstance().update(executionRequest);
+                });
+        }
         LOGGER.info("shutting down execution request execution monitor...");
         Thread mainThread = Thread.currentThread();
         mainThread.join(2000);

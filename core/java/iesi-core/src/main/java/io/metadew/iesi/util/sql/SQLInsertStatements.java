@@ -101,7 +101,7 @@ public class SQLInsertStatements {
 
 			FileTools.delete(filePath);
 			FileTools.appendToFile(filePath, "", insertStatement.toString());
-
+			bufferedReader.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

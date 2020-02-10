@@ -1,7 +1,6 @@
 package io.metadew.iesi.common.properties;
 
 import java.io.*;
-import java.sql.SQLException;
 import java.util.Properties;
 
 public final class PropertiesTools {

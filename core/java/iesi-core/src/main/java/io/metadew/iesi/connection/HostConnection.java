@@ -178,12 +178,12 @@ public class HostConnection {
                     lines = lines + "\n";
                 lines = lines + line;
             }
+            input.close();
         } catch (IOException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
 
         rc = p.waitFor();
-
 
         if (rc == 0) {
             return true;
@@ -231,7 +231,7 @@ public class HostConnection {
             systemOutput = lines;
 
             errorOutput = IOUtils.toString(p.getErrorStream());
-
+            input.close();
         } catch (InterruptedException | IOException e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
@@ -852,6 +852,7 @@ public class HostConnection {
                 output += readLine;
                 output += "\n";
             }
+            bufferedReader.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -910,6 +911,7 @@ public class HostConnection {
                 this.setOutputReturnCode(tempCommandReturnCode);
                 this.setOutputRuntimeVariablesOutput(tempCommandRuntimeVariables);
             }
+            bufReader.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

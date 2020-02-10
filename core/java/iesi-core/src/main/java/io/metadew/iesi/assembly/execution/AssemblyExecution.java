@@ -297,6 +297,7 @@ public class AssemblyExecution {
             Files.copy(Paths.get(sourcePath), Paths.get(targetPath));
             //FileTools.copyFromFileToFile(sourcePath, targetPath);
         }
+        bufferedReader.close();
     }
 
     private void loadSystemConfigurations() throws IOException {

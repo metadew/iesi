@@ -55,11 +55,11 @@ public class EncryptionLauncher {
 
         try {
             input = br.readLine();
+            br.close();
         } catch (IOException ioe) {
             System.out.println("IO error waiting for any key to be pressed");
             System.exit(1);
         }
-
     }
 
 }

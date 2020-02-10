@@ -100,6 +100,7 @@ public class FrameworkControl {
                     properties.putAll(configFile.getProperties());
                 }
             }
+            bufferedReader.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

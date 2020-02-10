@@ -30,7 +30,7 @@ public class WindowsConfigFile extends ConfigFile {
 
                 }
             }
-
+bufferedReader.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -63,6 +63,8 @@ public class ExecutionRequestListener implements Runnable {
             ExecutionRequest executionRequest = executionRequestsQueue.peek();
             try {
                 executor.submit(new ExecutionRequestTask(executionRequest));
+                executionRequest.updateExecutionRequestStatus(ExecutionRequestStatus.SUBMITTED);
+                ExecutionRequestConfiguration.getInstance().update(executionRequest);
                 executionRequestsQueue.remove();
             } catch (RejectedExecutionException e) {
                 workersAvailable = false;

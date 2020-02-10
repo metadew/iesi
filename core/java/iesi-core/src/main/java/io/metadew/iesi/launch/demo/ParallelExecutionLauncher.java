@@ -88,7 +88,7 @@ public class ParallelExecutionLauncher extends Thread {
             rc = p.waitFor();
             systemOutput = lines;
             errorOutput = IOUtils.toString(p.getErrorStream());
-
+            input.close();
         } catch (InterruptedException | IOException e) {
             throw new RuntimeException(e.getMessage(), e);
         }

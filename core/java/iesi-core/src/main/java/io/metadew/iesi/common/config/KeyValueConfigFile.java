@@ -30,6 +30,7 @@ public class KeyValueConfigFile extends ConfigFile {
                     }
                 }
             }
+            bufferedReader.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -54,6 +55,7 @@ public class KeyValueConfigFile extends ConfigFile {
                     }
                 }
             }
+            bufferedReader.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

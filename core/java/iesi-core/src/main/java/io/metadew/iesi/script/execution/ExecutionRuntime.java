@@ -518,6 +518,7 @@ public class ExecutionRuntime {
                 output += this.resolveVariables(readLine);
                 output += "\n";
             }
+            bufferedReader.close();
         } catch (IOException e) {
             e.printStackTrace();
             throw new RuntimeException("The system cannot find the path specified", e);

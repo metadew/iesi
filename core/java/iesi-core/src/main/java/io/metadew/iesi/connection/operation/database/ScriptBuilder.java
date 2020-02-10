@@ -4,7 +4,6 @@ import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.tools.OutputTools;
 
 import javax.sql.rowset.CachedRowSet;
-import java.io.IOException;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Timestamp;

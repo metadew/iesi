@@ -59,14 +59,9 @@ public class ConvertConfigFiles {
 								+ FileTools.getFileName(file, false) + ".yml"), dataObject);
 
 					}
+					bufferedReader.close();
 				} catch (IOException e) {
 					e.printStackTrace();
-				} finally {
-					try {
-						bufferedReader.close();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
 				}
 			}
 		}

@@ -29,14 +29,9 @@ public class FileLookup implements LookupInstruction {
                 output += FrameworkControl.getInstance().resolveConfiguration(readLine);
                 output += "\n";
             }
+            bufferedReader.close();
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            try {
-                bufferedReader.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
         //TODO harmonize for first line input
         //String output = input.trim();

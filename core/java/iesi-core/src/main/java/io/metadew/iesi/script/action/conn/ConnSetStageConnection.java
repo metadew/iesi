@@ -52,9 +52,9 @@ public class ConnSetStageConnection {
 
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-            if (actionParameter.getName().equalsIgnoreCase("stage")) {
+            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("stage")) {
                 this.getStageName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("cleanup")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("cleanup")) {
                 this.getStageCleanup().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }

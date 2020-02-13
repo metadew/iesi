@@ -2,7 +2,7 @@ package io.metadew.iesi.script.action.data;
 
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.dataset.Dataset;
-import io.metadew.iesi.datatypes.dataset.KeyValueDataset;
+import io.metadew.iesi.datatypes.dataset.DatasetHandler;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.script.execution.ActionExecution;
@@ -53,11 +53,11 @@ public class DataOutputDataset {
 
         // Get Parameters
         for (ActionParameter actionParameter : actionExecution.getAction().getParameters()) {
-            if (actionParameter.getName().equalsIgnoreCase("name")) {
+            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("name")) {
                 this.getDatasetName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("labels")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("labels")) {
                 this.getDatasetLabels().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("onScreen")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("onScreen")) {
                 this.getOnScreen().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }
@@ -70,7 +70,7 @@ public class DataOutputDataset {
 
     public boolean execute() throws InterruptedException {
         try {
-            Dataset dataset = new KeyValueDataset(getDatasetName().getValue(), getDatasetLabels().getValue(), executionControl.getExecutionRuntime());
+            Dataset dataset =  DatasetHandler.getInstance().getByNameAndLabels(getDatasetName().getValue(), getDatasetLabels().getValue(), executionControl.getExecutionRuntime());
             boolean onScreen = convertOnScreen(getOnScreen().getValue());
             return outputDataset(dataset, onScreen);
         } catch (InterruptedException e) {
@@ -91,7 +91,7 @@ public class DataOutputDataset {
 
     private boolean outputDataset(Dataset dataset, boolean onScreen) throws InterruptedException {
         // TODO: loop over all dataset item and print them
-        dataset.getDataItems(executionControl.getExecutionRuntime())
+        DatasetHandler.getInstance().getDataItems(dataset, executionControl.getExecutionRuntime())
                 .forEach((key, value) -> LOGGER.info(MessageFormat.format("{0}:{1}", key, value)));
 
         actionExecution.getActionControl().increaseSuccessCount();

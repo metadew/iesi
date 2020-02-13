@@ -129,7 +129,7 @@ public class ExecutionControl {
         ActionResult actionResult = new ActionResult(
                 runId,
                 actionExecution.getProcessId(),
-                actionExecution.getAction().getId(),
+                actionExecution.getAction().getMetadataKey().getActionId(),
                 actionExecution.getScriptExecution().getProcessId(),
                 actionExecution.getAction().getName(),
                 envName,
@@ -144,7 +144,7 @@ public class ExecutionControl {
         ActionResult actionResult = new ActionResult(
                 runId,
                 actionExecution.getProcessId(),
-                actionExecution.getAction().getId(),
+                actionExecution.getAction().getMetadataKey().getActionId(),
                 actionExecution.getScriptExecution().getProcessId(),
                 actionExecution.getAction().getName(),
                 envName,
@@ -204,7 +204,7 @@ public class ExecutionControl {
     }
 
     public void logEnd(ActionExecution actionExecution, ScriptExecution scriptExecution) {
-        ActionResult actionResult = ActionResultConfiguration.getInstance().get(new ActionResultKey(runId, actionExecution.getProcessId(), actionExecution.getAction().getId()))
+        ActionResult actionResult = ActionResultConfiguration.getInstance().get(new ActionResultKey(runId, actionExecution.getProcessId(), actionExecution.getAction().getMetadataKey().getActionId()))
                 .orElseThrow(() -> new MetadataDoesNotExistException(new ScriptResultKey(runId, scriptExecution.getProcessId())));
 
         String status = getStatus(actionExecution, scriptExecution);
@@ -309,7 +309,7 @@ public class ExecutionControl {
         outputValue = TextTools.shortenTextForDatabase(outputValue, 2000);
 
         ActionResultOutput actionResultOutput = new ActionResultOutput(
-                new ActionResultOutputKey(runId, actionExecution.getProcessId(), actionExecution.getAction().getId(), outputName),
+                new ActionResultOutputKey(runId, actionExecution.getProcessId(), actionExecution.getAction().getMetadataKey().getActionId(), outputName),
                 outputValue);
         ActionResultOutputConfiguration.getInstance().insert(actionResultOutput);
 

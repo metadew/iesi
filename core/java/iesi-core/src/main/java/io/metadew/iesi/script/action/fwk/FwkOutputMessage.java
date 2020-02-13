@@ -62,9 +62,9 @@ public class FwkOutputMessage {
 
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-            if (actionParameter.getName().equalsIgnoreCase("message")) {
+            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("message")) {
                 this.getMessage().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("onscreen")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("onscreen")) {
                 this.getOnScreen().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }

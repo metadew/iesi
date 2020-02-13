@@ -1,7 +1,7 @@
 package io.metadew.iesi.script.action.fwk;
 
 import io.metadew.iesi.datatypes.DataType;
-import io.metadew.iesi.datatypes.DataTypeService;
+import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
@@ -33,7 +33,6 @@ public class FwkSetRepository {
     private ActionParameterOperation repositoryInstanceName;
     private ActionParameterOperation repositoryInstanceLabels;
     private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
-    private DataTypeService dataTypeService;
     private static final Logger LOGGER = LogManager.getLogger();
 
     // Constructors
@@ -51,7 +50,6 @@ public class FwkSetRepository {
         this.executionControl = executionControl;
         this.actionExecution = actionExecution;
         this.actionParameterOperationMap = new HashMap<>();
-        this.dataTypeService = new DataTypeService();
     }
 
     public void prepare()  {
@@ -69,13 +67,13 @@ public class FwkSetRepository {
                         this.getActionExecution(), this.getActionExecution().getAction().getType(), "labels"));
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-            if (actionParameter.getName().equalsIgnoreCase("repository")) {
+            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("repository")) {
                 this.getRepositoryName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("name")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("name")) {
                 this.getRepositoryReferenceName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("instance")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("instance")) {
                 this.getRepositoryInstanceName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("labels")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("labels")) {
                 this.getRepositoryInstanceLabels().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }
@@ -146,7 +144,7 @@ public class FwkSetRepository {
         List<String> labels = new ArrayList<>();
         if (repositoryLabels instanceof Text) {
             Arrays.stream(repositoryLabels.toString().split(","))
-                    .forEach(repositoryLabel -> labels.add(convertRepositoryInstanceLabel(dataTypeService.resolve(repositoryLabel.trim(), executionControl.getExecutionRuntime()))));
+                    .forEach(repositoryLabel -> labels.add(convertRepositoryInstanceLabel(DataTypeHandler.getInstance().resolve(repositoryLabel.trim(), executionControl.getExecutionRuntime()))));
             return labels;
         } else if (repositoryLabels instanceof Array) {
             ((Array) repositoryLabels).getList()

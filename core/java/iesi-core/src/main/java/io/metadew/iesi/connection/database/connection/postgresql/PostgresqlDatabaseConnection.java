@@ -1,6 +1,7 @@
 package io.metadew.iesi.connection.database.connection.postgresql;
 
 import io.metadew.iesi.connection.database.connection.DatabaseConnection;
+import io.metadew.iesi.connection.database.connection.SchemaDatabaseConnection;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -11,13 +12,16 @@ import java.util.Optional;
  *
  * @author peter.billen
  */
-public class PostgresqlDatabaseConnection extends DatabaseConnection {
+public class PostgresqlDatabaseConnection extends SchemaDatabaseConnection {
 
     private static String type = "postgresql";
-    private String schema;
 
     public PostgresqlDatabaseConnection(String connectionURL, String userName, String userPassword) {
         super(type, connectionURL, userName, userPassword);
+    }
+
+    public PostgresqlDatabaseConnection(String connectionURL, String userName, String userPassword, String schema) {
+        super(type, connectionURL, userName, userPassword, schema);
     }
 
     public PostgresqlDatabaseConnection(String hostName, int portNumber, String databaseName, String userName,
@@ -47,24 +51,4 @@ public class PostgresqlDatabaseConnection extends DatabaseConnection {
         return "org.postgresql.Driver";
     }
 
-    private Optional<String> getSchema() {
-        return Optional.ofNullable(schema);
-    }
-
-    public void setSchema(String schema) {
-        this.schema = schema;
-    }
-
-    public Connection getConnection() {
-        try {
-            Connection connection = super.getConnection();
-            Optional<String> schema = getSchema();
-            if (schema.isPresent()) {
-                connection.setSchema(schema.get());
-            }
-            return connection;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
 }

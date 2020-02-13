@@ -56,9 +56,8 @@ public class ScriptJsonComponent {
             if (versionNode != null) {
                 versionNumber = versionNode.get(ScriptVersionJsonComponent.Field.NUMBER_KEY.value()).asLong();
                 scriptVersion = new ScriptVersion(
-                        new ScriptVersionKey(
-                                scriptId, versionNumber
-                        ), versionNode.get(ScriptVersionJsonComponent.Field.DESCRIPTION_KEY.value()).asText()
+                        new ScriptVersionKey(scriptId, versionNumber),
+                        versionNode.get(ScriptVersionJsonComponent.Field.DESCRIPTION_KEY.value()).asText()
                 );
             } else {
                 versionNumber = 0L;
@@ -154,7 +153,7 @@ public class ScriptJsonComponent {
             jsonGenerator.writeArrayFieldStart(Field.ACTIONS_KEY.value());
             for (Action scriptAction : script.getActions()) {
                 jsonGenerator.writeStartObject();
-                jsonGenerator.writeStringField(ActionJsonComponent.Field.ID_KEY.value(), scriptAction.getId());
+                jsonGenerator.writeStringField(ActionJsonComponent.Field.ID_KEY.value(), scriptAction.getMetadataKey().getActionId());
                 jsonGenerator.writeNumberField(ActionJsonComponent.Field.NUMBER_KEY.value(), scriptAction.getNumber());
                 jsonGenerator.writeStringField(ActionJsonComponent.Field.TYPE_KEY.value(), scriptAction.getType());
                 jsonGenerator.writeStringField(ActionJsonComponent.Field.NAME_KEY.value(), scriptAction.getName());
@@ -168,7 +167,7 @@ public class ScriptJsonComponent {
 
                 // write action parameters
                 for (ActionParameter actionParameter : scriptAction.getParameters()) {
-                    jsonGenerator.writeStringField(ActionParameterJsonComponent.Field.PARAMETER_NAME_KEY.value(), actionParameter.getName());
+                    jsonGenerator.writeStringField(ActionParameterJsonComponent.Field.PARAMETER_NAME_KEY.value(), actionParameter.getMetadataKey().getParameterName());
                     jsonGenerator.writeStringField(ActionParameterJsonComponent.Field.PARAMETER_VALUE_KEY.value(), actionParameter.getValue());
                     jsonGenerator.writeEndObject();
                 }

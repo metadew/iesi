@@ -2,6 +2,7 @@ package io.metadew.iesi.script.action.data;
 
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.dataset.Dataset;
+import io.metadew.iesi.datatypes.dataset.DatasetHandler;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.mapping.MappingConfiguration;
@@ -15,6 +16,7 @@ import io.metadew.iesi.script.operation.ActionParameterOperation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.activation.DataHandler;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.MessageFormat;
@@ -64,11 +66,11 @@ public class DataCompareDataset {
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "mapping"));
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-            if (actionParameter.getName().equalsIgnoreCase("leftdataset")) {
+            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("leftdataset")) {
                 this.getLeftDatasetName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("rightdataset")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("rightdataset")) {
                 this.getRightDatasetName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("mapping")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("mapping")) {
                 this.getMappingName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }
@@ -114,8 +116,8 @@ public class DataCompareDataset {
         Mapping mapping = mappingConfiguration.getMapping(mappingName);
         for (Transformation transformation : mapping.getTransformations()) {
 
-            Optional<DataType> leftFieldValue = leftDataset.getDataItem(transformation.getLeftField(), executionControl.getExecutionRuntime());
-            Optional<DataType> rightFieldValue = rightDataset.getDataItem(transformation.getRightField(), executionControl.getExecutionRuntime());
+            Optional<DataType> leftFieldValue = DatasetHandler.getInstance().getDataItem(leftDataset, transformation.getLeftField(), executionControl.getExecutionRuntime());
+            Optional<DataType> rightFieldValue =  DatasetHandler.getInstance().getDataItem(rightDataset, transformation.getRightField(), executionControl.getExecutionRuntime());
             if (!leftFieldValue.isPresent()) {
                 this.getActionExecution().getActionControl().logWarning("field.left",
                         MessageFormat.format("cannot find value for {0} in dataset {1}.", transformation.getLeftField(), leftDatasetName));

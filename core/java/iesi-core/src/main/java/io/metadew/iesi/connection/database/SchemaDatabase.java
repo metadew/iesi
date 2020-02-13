@@ -1,6 +1,6 @@
 package io.metadew.iesi.connection.database;
 
-import io.metadew.iesi.connection.database.connection.DatabaseConnection;
+import io.metadew.iesi.connection.database.connection.SchemaDatabaseConnection;
 import io.metadew.iesi.metadata.definition.MetadataField;
 import io.metadew.iesi.metadata.definition.MetadataTable;
 
@@ -10,22 +10,24 @@ public abstract class SchemaDatabase extends Database {
 
     private String schema;
 
-    public SchemaDatabase(DatabaseConnection databaseConnection, String schema) {
-        super(databaseConnection);
+    public SchemaDatabase(SchemaDatabaseConnection schemaDatabaseConnection, String schema) {
+        super(schemaDatabaseConnection);
+        schemaDatabaseConnection.setSchema(schema);
         this.schema = schema;
     }
 
-    public SchemaDatabase(DatabaseConnection databaseConnection) {
-        super(databaseConnection);
+    public SchemaDatabase(SchemaDatabaseConnection schemaDatabaseConnection) {
+        this(schemaDatabaseConnection, null);
     }
 
-    public SchemaDatabase(DatabaseConnection databaseConnection, int initialPoolSize, int maximalPoolSize,  String schema) {
-        super(databaseConnection, initialPoolSize, maximalPoolSize);
+    public SchemaDatabase(SchemaDatabaseConnection schemaDatabaseConnection, int initialPoolSize, int maximalPoolSize,  String schema) {
+        super(schemaDatabaseConnection, initialPoolSize, maximalPoolSize);
+        schemaDatabaseConnection.setSchema(schema);
         this.schema = schema;
     }
 
-    public SchemaDatabase(DatabaseConnection databaseConnection, int initialPoolSize, int maximalPoolSize) {
-        super(databaseConnection, initialPoolSize, maximalPoolSize);
+    public SchemaDatabase(SchemaDatabaseConnection schemaDatabaseConnection, int initialPoolSize, int maximalPoolSize) {
+        this(schemaDatabaseConnection, initialPoolSize, maximalPoolSize, null);
     }
    
     public String getCreateStatement(MetadataTable table) {

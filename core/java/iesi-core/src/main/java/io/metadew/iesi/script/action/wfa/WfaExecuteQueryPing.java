@@ -74,17 +74,17 @@ public class WfaExecuteQueryPing {
 
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-            if (actionParameter.getName().equalsIgnoreCase("query")) {
+            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("query")) {
                 this.getSqlQuery().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("hasresult")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("hasresult")) {
                 this.getExpectedResult().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("setruntimevariables")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("setruntimevariables")) {
                 this.getSetRuntimeVariables().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("connection")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("connection")) {
                 this.getConnectionName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("wait")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("wait")) {
                 this.getWaitInterval().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("timeout")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("timeout")) {
                 this.getTimeoutInterval().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }

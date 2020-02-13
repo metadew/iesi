@@ -25,7 +25,7 @@ public abstract class Database {
     private static final int DEFAULT_MAX_POOL_SIZE = 8;
     private static final Logger LOGGER = LogManager.getLogger();
 
-    DatabaseConnection databaseConnection;
+    private DatabaseConnection databaseConnection;
     private int initialPoolSize;
     private int maximalPoolSize;
     private List<Connection> connectionPool;

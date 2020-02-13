@@ -1,7 +1,7 @@
 package io.metadew.iesi.script.execution.instruction.lookup;
 
 import io.metadew.iesi.datatypes.DataType;
-import io.metadew.iesi.datatypes.DataTypeService;
+import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.framework.execution.IESIMessage;
@@ -20,13 +20,11 @@ public class ListLookup implements LookupInstruction {
 
 	private final Pattern INPUT_PARAMETER_PATTERN = Pattern
             .compile("\\s*\"?(?<" + ARRAY_KEY + ">(\\w|\\.)+)\"?\\s*,\\s*(?<" + ELEMENT_KEY + ">(\\w|\\.)+)\\s*");
-    private final DataTypeService dataTypeService;
 
     private static final Logger LOGGER = LogManager.getLogger();
     private final ExecutionRuntime executionRuntime;
 
     public ListLookup(ExecutionRuntime executionRuntime) {
-        this.dataTypeService = new DataTypeService();
         this.executionRuntime = executionRuntime;
     }
 
@@ -41,8 +39,8 @@ public class ListLookup implements LookupInstruction {
 //        }
         LOGGER.debug(MessageFormat.format("fetching element {0} of list {1}", arguments[1], arguments[0]));
 
-        Array array = getArray(dataTypeService.resolve(arguments[0], executionRuntime));
-        int arrayElementIndex = getIndex(dataTypeService.resolve(arguments[1], executionRuntime)) - 1;
+        Array array = getArray(DataTypeHandler.getInstance().resolve(arguments[0], executionRuntime));
+        int arrayElementIndex = getIndex(DataTypeHandler.getInstance().resolve(arguments[1], executionRuntime)) - 1;
 //        Array array = getArray(dataTypeService.resolve(inputParameterMatcher.group(ARRAY_KEY)));
 //        int arrayElementIndex = Integer.parseInt(inputParameterMatcher.group(ELEMENT_KEY)) - 1;
 

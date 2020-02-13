@@ -27,16 +27,6 @@ public class FrameworkConfiguration {
 	private FrameworkConfiguration() {}
 
 
-//	public FrameworkConfiguration() {
-//		this.setFrameworkCode(FrameworkSettings.IDENTIFIER.value());
-//		this.initializeFrameworkHome();
-//		this.setFolderConfiguration(new FrameworkFolderConfiguration(this.getFrameworkHome()));
-//		this.setSettingConfiguration(new FrameworkSettingConfiguration(this.getFrameworkHome()));
-//		this.setActionTypeConfiguration(new FrameworkActionTypeConfiguration(this.getFolderConfiguration()));
-//		this.setGenerationRuleTypeConfiguration(
-//				new FrameworkGenerationRuleTypeConfiguration(this.getFolderConfiguration()));
-//	}
-
 	public void init() {
 		this.frameworkCode = FrameworkSettings.IDENTIFIER.value();
 		ThreadContext.put("fwk.code", frameworkCode);

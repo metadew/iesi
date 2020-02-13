@@ -10,8 +10,6 @@ import org.apache.logging.log4j.Logger;
 
 public class NonAuthenticatedExecutionRequestExecutor implements ExecutionRequestExecutor<NonAuthenticatedExecutionRequest> {
 
-    private static final Logger LOGGER = LogManager.getLogger();
-
     private static NonAuthenticatedExecutionRequestExecutor INSTANCE;
 
     public synchronized static NonAuthenticatedExecutionRequestExecutor getInstance() {
@@ -37,7 +35,5 @@ public class NonAuthenticatedExecutionRequestExecutor implements ExecutionReques
         for (ScriptExecutionRequest scriptExecutionRequest : executionRequest.getScriptExecutionRequests()) {
             ScriptExecutorService.getInstance().execute(scriptExecutionRequest);
         }
-        executionRequest.updateExecutionRequestStatus(ExecutionRequestStatus.COMPLETED);
-        ExecutionRequestConfiguration.getInstance().update(executionRequest);
     }
 }

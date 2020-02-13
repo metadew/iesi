@@ -56,7 +56,7 @@ public class FwkExitScript {
 
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-            if (actionParameter.getName().equalsIgnoreCase("status")) {
+            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("status")) {
                 this.getStatus().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }

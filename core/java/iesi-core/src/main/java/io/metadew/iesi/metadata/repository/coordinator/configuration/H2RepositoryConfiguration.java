@@ -58,7 +58,7 @@ public class H2RepositoryConfiguration extends RepositoryConfiguration {
         if (getUser().isPresent()) {
             H2DatabaseConnection h2DatabaseConnection = getH2DataBaseConnection(getUser().get(), FrameworkCrypto.getInstance().decrypt(getUserPassword().orElse("")));
             getSchema().ifPresent(h2DatabaseConnection::setSchema);
-            H2Database h2Database = new H2Database(h2DatabaseConnection, getSchema().orElse(""));
+            H2Database h2Database = new H2Database(h2DatabaseConnection, schema);
             databases.put("owner", h2Database);
             databases.put("writer", h2Database);
             databases.put("reader", h2Database);
@@ -66,21 +66,21 @@ public class H2RepositoryConfiguration extends RepositoryConfiguration {
         if (getWriter().isPresent()) {
             H2DatabaseConnection h2DatabaseConnection = getH2DataBaseConnection(getWriter().get(), FrameworkCrypto.getInstance().decrypt(getWriterPassword().orElse("")));
             getSchema().ifPresent(h2DatabaseConnection::setSchema);
-            H2Database h2Database = new H2Database(h2DatabaseConnection, getSchema().orElse(""));
+            H2Database h2Database = new H2Database(h2DatabaseConnection, schema);
             databases.put("writer", h2Database);
             databases.put("reader", h2Database);
         }
         if (getReader().isPresent()) {
                 H2DatabaseConnection h2DatabaseConnection = getH2DataBaseConnection(getReader().get(), FrameworkCrypto.getInstance().decrypt(getReaderPassword().orElse("")));
                 getSchema().ifPresent(h2DatabaseConnection::setSchema);
-                H2Database h2Database = new H2Database(h2DatabaseConnection, getSchema().orElse(""));
+                H2Database h2Database = new H2Database(h2DatabaseConnection, schema);
                 databases.put("reader", h2Database);
         }
 
         if (!getUser().isPresent() && !getWriter().isPresent() && !getReader().isPresent()) {
             H2DatabaseConnection h2DatabaseConnection = getH2DataBaseConnection("","");
             getSchema().ifPresent(h2DatabaseConnection::setSchema);
-            H2Database h2Database = new H2Database(h2DatabaseConnection, getSchema().orElse(""));
+            H2Database h2Database = new H2Database(h2DatabaseConnection, schema);
             databases.put("owner", h2Database);
             databases.put("writer", h2Database);
             databases.put("reader", h2Database);
@@ -92,7 +92,7 @@ public class H2RepositoryConfiguration extends RepositoryConfiguration {
     private H2DatabaseConnection getH2DataBaseConnection(String user, String password) {
         switch (type) {
             case "embedded":
-                return new H2EmbeddedDatabaseConnection(getFile().orElseThrow(RuntimeException::new), user, password);
+                return new H2EmbeddedDatabaseConnection(getFile().orElseThrow(RuntimeException::new), user, password, schema);
             case "server":
                 return new H2ServerDatabaseConnection(getHost().orElseThrow(RuntimeException::new), Integer.parseInt(getPort().orElseThrow(RuntimeException::new)), getFile().orElseThrow(RuntimeException::new), user, password);
             case "memory":

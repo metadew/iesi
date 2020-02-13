@@ -3,6 +3,7 @@ package io.metadew.iesi.metadata.service.action;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.datatypes.dataset.Dataset;
+import io.metadew.iesi.datatypes.dataset.DatasetHandler;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.action.trace.ActionParameterTraceConfiguration;
 import io.metadew.iesi.metadata.definition.action.trace.ActionParameterTrace;
@@ -43,9 +44,9 @@ public class ActionParameterTraceService {
     private List<ActionParameterTrace> getActionParameterTraces(ActionExecution actionExecution, String key, DataType value) {
         List<ActionParameterTrace> actionParameterTraces = new ArrayList<>();
         if (value == null) {
-            actionParameterTraces.add(new ActionParameterTrace(new ActionParameterTraceKey(actionExecution.getExecutionControl().getRunId(), actionExecution.getProcessId(), actionExecution.getAction().getId(), key), "null"));
+            actionParameterTraces.add(new ActionParameterTrace(new ActionParameterTraceKey(actionExecution.getExecutionControl().getRunId(), actionExecution.getProcessId(), actionExecution.getAction().getMetadataKey().getActionId(), key), "null"));
         } else if (value instanceof Text) {
-            actionParameterTraces.add(new ActionParameterTrace(new ActionParameterTraceKey(actionExecution.getExecutionControl().getRunId(), actionExecution.getProcessId(), actionExecution.getAction().getId(), key), ((Text) value).getString()));
+            actionParameterTraces.add(new ActionParameterTrace(new ActionParameterTraceKey(actionExecution.getExecutionControl().getRunId(), actionExecution.getProcessId(), actionExecution.getAction().getMetadataKey().getActionId(), key), ((Text) value).getString()));
         } else if (value instanceof Array) {
             int counter = 0;
             for (DataType element : ((Array) value).getList()) {
@@ -53,7 +54,7 @@ public class ActionParameterTraceService {
                 counter++;
             }
         } else if (value instanceof Dataset) {
-            for (Map.Entry<String, DataType> datasetItem : ((Dataset) value).getDataItems(actionExecution.getExecutionControl().getExecutionRuntime()).entrySet()) {
+            for (Map.Entry<String, DataType> datasetItem : DatasetHandler.getInstance().getDataItems((Dataset) value, actionExecution.getExecutionControl().getExecutionRuntime()).entrySet()) {
                 actionParameterTraces.addAll(getActionParameterTraces(actionExecution, key + datasetItem.getKey(), datasetItem.getValue()));
             }
         } else {

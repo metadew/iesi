@@ -45,6 +45,9 @@ public class ExecutionRequestExecutorService {
             } else {
                 log.info(MessageFormat.format("Executing request {0}", executionRequest.getMetadataKey().getId()));
                 executionRequestExecutor.execute(executionRequest);
+
+                executionRequest.updateExecutionRequestStatus(ExecutionRequestStatus.COMPLETED);
+                ExecutionRequestConfiguration.getInstance().update(executionRequest);
             }
         } catch (Exception e) {
             StringWriter stackTrace = new StringWriter();

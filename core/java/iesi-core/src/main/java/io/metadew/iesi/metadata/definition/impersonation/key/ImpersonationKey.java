@@ -1,16 +1,13 @@
 package io.metadew.iesi.metadata.definition.impersonation.key;
 
 import io.metadew.iesi.metadata.definition.key.MetadataKey;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+@Data
+@EqualsAndHashCode(callSuper = true)
 public class ImpersonationKey extends MetadataKey {
 
-    private String name;
+    private final String name;
 
-    public ImpersonationKey(String name) {
-        this.name = name;
-    }
-
-    public String getName() {
-        return name;
-    }
 }

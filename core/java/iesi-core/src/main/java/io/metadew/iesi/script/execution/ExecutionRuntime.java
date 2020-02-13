@@ -3,7 +3,9 @@ package io.metadew.iesi.script.execution;
 import io.metadew.iesi.connection.r.RWorkspace;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.data.generation.execution.GenerationObjectExecution;
-import io.metadew.iesi.datatypes.dataset.KeyValueDataset;
+import io.metadew.iesi.datatypes.dataset.Dataset;
+import io.metadew.iesi.datatypes.dataset.DatasetHandler;
+import io.metadew.iesi.datatypes.dataset.keyvalue.KeyValueDataset;
 import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
 import io.metadew.iesi.framework.execution.FrameworkControl;
 import io.metadew.iesi.framework.execution.IESIMessage;
@@ -46,7 +48,7 @@ public class ExecutionRuntime {
     //private HashMap<String, StageOperation> stageOperationMap;
     private HashMap<String, RepositoryOperation> repositoryOperationMap;
     private HashMap<String, StageOperation> stageOperationMap;
-    private HashMap<String, KeyValueDataset> datasetMap;
+    private HashMap<String, Dataset> datasetMap;
     private HashMap<String, RWorkspace> RWorkspaceMap;
     private HashMap<String, IterationOperation> iterationOperationMap;
     private HashMap<String, ExecutionRuntimeExtension> executionRuntimeExtensionMap;
@@ -558,12 +560,11 @@ public class ExecutionRuntime {
         this.getRepositoryOperationMap().put(repositoryReferenceName, repositoryOperation);
     }
 
-    public void setKeyValueDataset(String referenceName, String datasetName, List<String> datasetLabels) throws IOException, SQLException {
-        datasetMap.put(referenceName,
-                new KeyValueDataset(datasetName, datasetLabels, this));
+    public void setKeyValueDataset(String referenceName, String datasetName, List<String> datasetLabels) throws IOException {
+        datasetMap.put(referenceName, DatasetHandler.getInstance().getByNameAndLabels(datasetName, datasetLabels, this));
     }
 
-    public Optional<KeyValueDataset> getDataset(String referenceName) {
+    public Optional<Dataset> getDataset(String referenceName) {
         return Optional.ofNullable(datasetMap.get(referenceName));
     }
 

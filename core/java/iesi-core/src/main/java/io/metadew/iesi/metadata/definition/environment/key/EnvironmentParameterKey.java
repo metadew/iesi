@@ -1,27 +1,19 @@
 package io.metadew.iesi.metadata.definition.environment.key;
 
 import io.metadew.iesi.metadata.definition.key.MetadataKey;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+@Data
+@EqualsAndHashCode(callSuper = true)
 public class EnvironmentParameterKey extends MetadataKey {
 
-    private EnvironmentKey environmentKey;
-    private String parameterName;
+    private final EnvironmentKey environmentKey;
+    private final String parameterName;
 
     public EnvironmentParameterKey(String environmentName, String environmentParameterName) {
         this.environmentKey = new EnvironmentKey(environmentName);
         this.parameterName = environmentParameterName;
     }
 
-    public EnvironmentParameterKey(EnvironmentKey environmentKey, String environmentParameterName) {
-        this.environmentKey = environmentKey;
-        this.parameterName = environmentParameterName;
-    }
-
-    public EnvironmentKey getEnvironmentKey() {
-        return environmentKey;
-    }
-
-    public String getParameterName() {
-        return parameterName;
-    }
 }

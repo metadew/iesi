@@ -98,27 +98,27 @@ public class FwkExecuteSuite {
 
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-            if (actionParameter.getName().equalsIgnoreCase("comp_nm")) {
+            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("comp_nm")) {
                 this.getComponentName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("suite_nm")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("suite_nm")) {
                 this.getSuiteName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("suite_version")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("suite_version")) {
                 this.getSuiteVersion().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("suite_build")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("suite_build")) {
                 this.getSuiteBuild().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("repo_con_nm")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("repo_con_nm")) {
                 this.getRepositoryConnectionName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("repo_comp_path")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("repo_comp_path")) {
                 this.getRepositoryComponentPath().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("repo_suite_path")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("repo_suite_path")) {
                 this.getRepositorySuitePath().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("repo_version_path")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("repo_version_path")) {
                 this.getRepositoryVersionPath().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("repo_build_path")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("repo_build_path")) {
                 this.getRepositoryBuildPath().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("repo_build_asset")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("repo_build_asset")) {
                 this.getRepositoryBuildAsset().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("env_nm")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("env_nm")) {
                 this.getEnvironmentName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }

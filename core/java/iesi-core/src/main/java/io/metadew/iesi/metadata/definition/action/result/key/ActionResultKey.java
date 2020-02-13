@@ -1,29 +1,15 @@
 package io.metadew.iesi.metadata.definition.action.result.key;
 
 import io.metadew.iesi.metadata.definition.key.MetadataKey;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+@Data
+@EqualsAndHashCode(callSuper = true)
 public class ActionResultKey extends MetadataKey {
 
-    private String runId;
-    private Long processId;
-    private String actionId;
-
-    public ActionResultKey(String runId, Long processId, String actionId) {
-        this.runId = runId;
-        this.processId = processId;
-        this.actionId = actionId;
-    }
-
-    public String getRunId() {
-        return runId;
-    }
-
-    public Long getProcessId() {
-        return processId;
-    }
-
-    public String getActionId() {
-        return actionId;
-    }
+    private final String runId;
+    private final Long processId;
+    private final String actionId;
 
 }

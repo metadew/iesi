@@ -60,11 +60,11 @@ public class SqlSetIterationVariables {
 
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-            if (actionParameter.getName().equalsIgnoreCase("list")) {
+            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("list")) {
                 this.getListName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("query")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("query")) {
                 this.getSqlQuery().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("connection")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("connection")) {
                 this.getConnectionName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }

@@ -60,11 +60,11 @@ public class ModSoapui {
 
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-            if (actionParameter.getName().equalsIgnoreCase("project")) {
+            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("project")) {
                 this.getProject().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("suite")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("suite")) {
                 this.getTestSuite().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("case")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("case")) {
                 this.getTestCase().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }

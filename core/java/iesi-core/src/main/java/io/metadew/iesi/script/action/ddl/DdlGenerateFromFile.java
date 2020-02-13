@@ -69,15 +69,15 @@ public class DdlGenerateFromFile {
 
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-            if (actionParameter.getName().equalsIgnoreCase("inputPath")) {
+            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("inputPath")) {
                 this.getInputPath().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("inputFile")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("inputFile")) {
                 this.getInputFile().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("type")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("type")) {
                 this.getOutputType().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("outputPath")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("outputPath")) {
                 this.getOutputPath().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("outputFile")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("outputFile")) {
                 this.getOutputFile().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }

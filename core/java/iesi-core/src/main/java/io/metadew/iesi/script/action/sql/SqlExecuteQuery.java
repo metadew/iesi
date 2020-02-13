@@ -5,7 +5,8 @@ import io.metadew.iesi.connection.database.sql.SqlScriptResult;
 import io.metadew.iesi.connection.operation.ConnectionOperation;
 import io.metadew.iesi.connection.tools.sql.SQLDataTransfer;
 import io.metadew.iesi.datatypes.DataType;
-import io.metadew.iesi.datatypes.dataset.KeyValueDataset;
+import io.metadew.iesi.datatypes.dataset.Dataset;
+import io.metadew.iesi.datatypes.dataset.keyvalue.KeyValueDataset;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
@@ -70,13 +71,13 @@ public class SqlExecuteQuery {
 
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-            if (actionParameter.getName().equalsIgnoreCase("query")) {
+            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("query")) {
                 this.getSqlQuery().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("connection")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("connection")) {
                 this.getConnectionName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("outputdataset")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("outputdataset")) {
                 this.getOutputDataset().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("appendoutput")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("appendoutput")) {
                 this.getAppendOutput().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }
@@ -173,7 +174,7 @@ public class SqlExecuteQuery {
 
         SqlScriptResult sqlScriptResult;
 
-        Optional<KeyValueDataset> dataset = this.getExecutionControl().getExecutionRuntime()
+        Optional<Dataset> dataset = this.getExecutionControl().getExecutionRuntime()
                 .getDataset(outputDatasetReferenceName);
         CachedRowSet crs = database.executeQuery(query);
         this.getActionExecution().getActionControl().logOutput("sql.execute.size", Integer.toString(crs.size()));

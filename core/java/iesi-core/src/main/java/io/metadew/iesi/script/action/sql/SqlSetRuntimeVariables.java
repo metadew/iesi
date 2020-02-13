@@ -46,9 +46,9 @@ public class SqlSetRuntimeVariables {
 
         // Get Parameters
         for (ActionParameter actionParameter : actionExecution.getAction().getParameters()) {
-            if (actionParameter.getName().equalsIgnoreCase("query")) {
+            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("query")) {
                 sqlQuery.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("connection")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("connection")) {
                 connectionName.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }

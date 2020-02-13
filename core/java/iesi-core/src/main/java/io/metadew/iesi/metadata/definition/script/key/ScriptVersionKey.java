@@ -1,9 +1,11 @@
 package io.metadew.iesi.metadata.definition.script.key;
 
 import io.metadew.iesi.metadata.definition.key.MetadataKey;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-@EqualsAndHashCode(callSuper = false)
+@Data
+@EqualsAndHashCode(callSuper = true)
 public class ScriptVersionKey extends MetadataKey {
 
     private final ScriptKey scriptKey;
@@ -12,11 +14,4 @@ public class ScriptVersionKey extends MetadataKey {
         this.scriptKey = new ScriptKey(scriptId, versionNumber);
     }
 
-    public ScriptVersionKey(ScriptKey scriptKey) {
-        this.scriptKey = scriptKey;
-    }
-
-    public ScriptKey getScriptKey() {
-        return scriptKey;
-    }
 }

@@ -1,7 +1,7 @@
 package io.metadew.iesi.script.action.fwk;
 
 import io.metadew.iesi.datatypes.DataType;
-import io.metadew.iesi.datatypes.DataTypeService;
+import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.framework.configuration.ScriptRunStatus;
@@ -43,7 +43,6 @@ public class FwkExecuteScript {
     private ActionParameterOperation paramList;
     private ActionParameterOperation paramFile;
     private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
-    private DataTypeService dataTypeService;
     private static final Logger LOGGER = LogManager.getLogger();
 
     public FwkExecuteScript(ExecutionControl executionControl, ScriptExecution scriptExecution, ActionExecution actionExecution) {
@@ -51,7 +50,6 @@ public class FwkExecuteScript {
         this.actionExecution = actionExecution;
         this.scriptExecution = scriptExecution;
         this.actionParameterOperationMap = new HashMap<>();
-        this.dataTypeService = new DataTypeService();
     }
 
     public void prepare() {
@@ -64,15 +62,15 @@ public class FwkExecuteScript {
 
         // Get Parameters
         for (ActionParameter actionParameter : actionExecution.getAction().getParameters()) {
-            if (actionParameter.getName().equalsIgnoreCase("script")) {
+            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("script")) {
                 this.getScriptName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("version")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("version")) {
                 this.getScriptVersion().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("environment")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("environment")) {
                 this.getEnvironmentName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("paramlist")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("paramlist")) {
                 this.getParamList().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("paramfile")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("paramfile")) {
                 this.getParamFile().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }
@@ -154,8 +152,7 @@ public class FwkExecuteScript {
 
         if (subScriptScriptExecution.getResult().equalsIgnoreCase(ScriptRunStatus.SUCCESS.value())) {
             actionExecution.getActionControl().increaseSuccessCount();
-        } else if (subScriptScriptExecution.getResult()
-                .equalsIgnoreCase(ScriptRunStatus.WARNING.value())) {
+        } else if (subScriptScriptExecution.getResult().equalsIgnoreCase(ScriptRunStatus.WARNING.value())) {
             actionExecution.getActionControl().increaseWarningCount();
         } else if (subScriptScriptExecution.getResult()
                 .equalsIgnoreCase(ScriptRunStatus.ERROR.value())) {
@@ -193,7 +190,7 @@ public class FwkExecuteScript {
         Map<String, String> parameterMap = new HashMap<>();
         if (list instanceof Text) {
             Arrays.stream(list.toString().split(","))
-                    .forEach(parameterEntry -> parameterMap.putAll(convertParameterEntry(dataTypeService.resolve(parameterEntry, executionControl.getExecutionRuntime()))));
+                    .forEach(parameterEntry -> parameterMap.putAll(convertParameterEntry(DataTypeHandler.getInstance().resolve(parameterEntry, executionControl.getExecutionRuntime()))));
             return Optional.of(parameterMap);
         } else if (list instanceof Array) {
             for (DataType parameterEntry : ((Array) list).getList()) {

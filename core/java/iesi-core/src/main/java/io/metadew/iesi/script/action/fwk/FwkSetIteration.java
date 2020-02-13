@@ -75,23 +75,23 @@ public class FwkSetIteration {
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "interrupt"));
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-            if (actionParameter.getName().equalsIgnoreCase("name")) {
+            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("name")) {
                 this.getIterationName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("type")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("type")) {
                 this.getIterationType().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("list")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("list")) {
                 this.getIterationList().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("values")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("values")) {
                 this.getIterationValues().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("from")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("from")) {
                 this.getIterationFrom().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("to")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("to")) {
                 this.getIterationTo().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("step")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("step")) {
                 this.getIterationStep().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("condition")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("condition")) {
                 this.getIterationCondition().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("interrupt")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("interrupt")) {
                 this.getIterationInterrupt().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }

@@ -47,9 +47,9 @@ public class SqlExecuteStatement {
 
         // Get Parameters
         for (ActionParameter actionParameter : actionExecution.getAction().getParameters()) {
-            if (actionParameter.getName().equalsIgnoreCase("statement")) {
+            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("statement")) {
                 this.getSqlStatement().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("connection")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("connection")) {
                 this.getConnectionName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }

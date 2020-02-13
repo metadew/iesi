@@ -56,7 +56,7 @@ public class ScriptNameExecutor implements ScriptExecutor<ScriptNameExecutionReq
                 .build();
 
         io.metadew.iesi.metadata.definition.execution.script.ScriptExecution scriptExecution1 =
-                new io.metadew.iesi.metadata.definition.execution.script.ScriptExecution(new ScriptExecutionKey(),
+                new io.metadew.iesi.metadata.definition.execution.script.ScriptExecution(new ScriptExecutionKey(IdentifierTools.getScriptExecutionRequestIdentifier()),
                         scriptExecutionRequest.getMetadataKey(), scriptExecution.getExecutionControl().getRunId(),
                         ScriptRunStatus.RUNNING, LocalDateTime.now(), null);
         ScriptExecutionConfiguration.getInstance().insert(scriptExecution1);

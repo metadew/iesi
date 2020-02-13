@@ -72,11 +72,11 @@ public class FhoFileExists {
 
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-            if (actionParameter.getName().equalsIgnoreCase("path")) {
+            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("path")) {
                 this.getFilePath().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("file")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("file")) {
                 this.getFileName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("connection")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("connection")) {
                 this.getConnectionName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }

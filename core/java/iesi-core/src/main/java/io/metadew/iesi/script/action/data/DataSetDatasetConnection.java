@@ -1,7 +1,7 @@
 package io.metadew.iesi.script.action.data;
 
 import io.metadew.iesi.datatypes.DataType;
-import io.metadew.iesi.datatypes.DataTypeService;
+import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
@@ -34,7 +34,6 @@ public class DataSetDatasetConnection {
     private ActionParameterOperation datasetName;
     private ActionParameterOperation datasetLabels;
     private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
-    private DataTypeService dataTypeService;
     private static final Logger LOGGER = LogManager.getLogger();
 
     // Constructors
@@ -52,7 +51,6 @@ public class DataSetDatasetConnection {
         this.executionControl = executionControl;
         this.actionExecution = actionExecution;
         this.actionParameterOperationMap = new HashMap<>();
-        this.dataTypeService = new DataTypeService();
     }
 
     public void prepare() {
@@ -68,13 +66,13 @@ public class DataSetDatasetConnection {
         
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-            if (actionParameter.getName().equalsIgnoreCase("name")) {
+            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("name")) {
                 this.getReferenceName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("type")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("type")) {
                 this.getDatasetType().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("dataset")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("dataset")) {
                 this.getDatasetName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("labels")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("labels")) {
                 this.getDatasetLabels().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }
@@ -137,7 +135,7 @@ public class DataSetDatasetConnection {
         List<String> labels = new ArrayList<>();
         if (datasetLabels instanceof Text) {
             Arrays.stream(datasetLabels.toString().split(","))
-                    .forEach(datasetLabel -> labels.add(convertDatasetLabel(dataTypeService.resolve(datasetLabel.trim(), executionControl.getExecutionRuntime()))));
+                    .forEach(datasetLabel -> labels.add(convertDatasetLabel(DataTypeHandler.getInstance().resolve(datasetLabel.trim(), executionControl.getExecutionRuntime()))));
             return labels;
         } else if (datasetLabels instanceof Array) {
             ((Array) datasetLabels).getList()

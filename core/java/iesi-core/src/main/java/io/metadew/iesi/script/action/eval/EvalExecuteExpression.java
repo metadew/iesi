@@ -53,7 +53,7 @@ public class EvalExecuteExpression {
 
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-            if (actionParameter.getName().equalsIgnoreCase("expression")) {
+            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("expression")) {
                 this.getEvaluationExpression().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }

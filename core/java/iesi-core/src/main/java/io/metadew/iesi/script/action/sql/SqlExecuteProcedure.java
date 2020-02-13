@@ -5,7 +5,8 @@ import io.metadew.iesi.connection.database.sql.SqlScriptResult;
 import io.metadew.iesi.connection.operation.ConnectionOperation;
 import io.metadew.iesi.connection.tools.sql.SQLDataTransfer;
 import io.metadew.iesi.datatypes.DataType;
-import io.metadew.iesi.datatypes.dataset.KeyValueDataset;
+import io.metadew.iesi.datatypes.dataset.Dataset;
+import io.metadew.iesi.datatypes.dataset.keyvalue.KeyValueDataset;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
@@ -73,15 +74,15 @@ public class SqlExecuteProcedure {
 
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-            if (actionParameter.getName().equalsIgnoreCase("procedure")) {
+            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("procedure")) {
                 this.getSqlProcedure().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("connection")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("connection")) {
                 this.getConnectionName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("parameters")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("parameters")) {
                 this.getSqlParameters().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("outputdataset")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("outputdataset")) {
                 this.getOutputDataset().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("appendoutput")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("appendoutput")) {
                 this.getAppendOutput().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }
@@ -141,8 +142,7 @@ public class SqlExecuteProcedure {
         // TODO Retrieve config from a file
 
         if (!outputDatasetReferenceName.isEmpty()) {
-            Optional<KeyValueDataset> dataset = this.getExecutionControl().getExecutionRuntime()
-                    .getDataset(outputDatasetReferenceName);
+            Optional<Dataset> dataset = executionControl.getExecutionRuntime().getDataset(outputDatasetReferenceName);
 
             // Perform the action
             SQLDataTransfer.transferData(crs, dataset.get().getDatasetDatabase(), dataset.get().getName(), !appendOutput);

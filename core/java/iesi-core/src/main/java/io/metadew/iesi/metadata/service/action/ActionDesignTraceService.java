@@ -25,7 +25,7 @@ public class ActionDesignTraceService {
             ActionDesignTraceConfiguration.getInstance().insert(new ActionDesignTrace(runId, processId, action));
             List<ActionParameterDesignTrace> actionParameterDesignTraces = new ArrayList<>();
             for (ActionParameter actionParameter : action.getParameters()) {
-                actionParameterDesignTraces.add(new ActionParameterDesignTrace(runId, processId, action.getId(), actionParameter));
+                actionParameterDesignTraces.add(new ActionParameterDesignTrace(runId, processId, action.getMetadataKey().getActionId(), actionParameter));
             }
             ActionParameterDesignTraceConfiguration.getInstance().insert(actionParameterDesignTraces);
     }

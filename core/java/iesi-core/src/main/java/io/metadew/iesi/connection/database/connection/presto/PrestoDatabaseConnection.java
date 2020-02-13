@@ -1,6 +1,7 @@
 package io.metadew.iesi.connection.database.connection.presto;
 
 import io.metadew.iesi.connection.database.connection.DatabaseConnection;
+import io.metadew.iesi.connection.database.connection.SchemaDatabaseConnection;
 
 import java.sql.Connection;
 import java.util.Optional;
@@ -10,13 +11,16 @@ import java.util.Optional;
  *
  * @author peter.billen
  */
-public class PrestoDatabaseConnection extends DatabaseConnection {
+public class PrestoDatabaseConnection extends SchemaDatabaseConnection {
 
     private static String type = "presto";
-    private String schema;
 
     public PrestoDatabaseConnection(String connectionURL, String userName, String userPassword) {
         super(type, connectionURL, userName, userPassword);
+    }
+
+    public PrestoDatabaseConnection(String connectionURL, String userName, String userPassword, String schema) {
+        super(type, connectionURL, userName, userPassword, schema);
     }
 
     public PrestoDatabaseConnection(String hostName, int portNumber, String catalogName, String schemaName, String userName, String userPassword) {
@@ -50,17 +54,4 @@ public class PrestoDatabaseConnection extends DatabaseConnection {
         return "io.prestosql.jdbc.PrestoDriver";
     }
 
-    public void setSchema(String schema) {
-        this.schema = schema;
-    }
-
-    @SuppressWarnings("unused")
-    private Optional<String> getSchema() {
-        return Optional.ofNullable(schema);
-    }
-
-    public Connection getConnection() {
-        Connection connection = super.getConnection();
-        return connection;
-    }
 }

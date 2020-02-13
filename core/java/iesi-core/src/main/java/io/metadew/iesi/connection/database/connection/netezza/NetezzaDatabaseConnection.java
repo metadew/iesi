@@ -1,6 +1,7 @@
 package io.metadew.iesi.connection.database.connection.netezza;
 
 import io.metadew.iesi.connection.database.connection.DatabaseConnection;
+import io.metadew.iesi.connection.database.connection.SchemaDatabaseConnection;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -11,13 +12,16 @@ import java.util.Optional;
  *
  * @author peter.billen
  */
-public class NetezzaDatabaseConnection extends DatabaseConnection {
+public class NetezzaDatabaseConnection extends SchemaDatabaseConnection {
 
     private static String type = "netezza";
-    private String schema;
 
     public NetezzaDatabaseConnection(String connectionURL, String userName, String userPassword) {
         super(type, connectionURL, userName, userPassword);
+    }
+
+    public NetezzaDatabaseConnection(String connectionURL, String userName, String userPassword, String schema) {
+        super(type, connectionURL, userName, userPassword, schema);
     }
 
     public NetezzaDatabaseConnection(String hostName, int portNumber, String databaseName, String userName, String userPassword) {
@@ -46,25 +50,4 @@ public class NetezzaDatabaseConnection extends DatabaseConnection {
         return "org.netezza.Driver";
     }
 
-    public void setSchema(String schema) {
-        this.schema = schema;
-    }
-
-    private Optional<String> getSchema() {
-        return Optional.ofNullable(schema);
-    }
-
-    public Connection getConnection() {
-        try {
-            Connection connection = super.getConnection();
-            Optional<String> schema = getSchema();
-            if (schema.isPresent()) {
-                connection.setSchema(schema.get());
-
-            }
-            return connection;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
 }

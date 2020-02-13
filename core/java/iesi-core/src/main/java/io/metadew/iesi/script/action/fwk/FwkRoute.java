@@ -56,16 +56,16 @@ public class FwkRoute {
 
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-            if (actionParameter.getName().toLowerCase().startsWith("condition")) {
+            if (actionParameter.getMetadataKey().getParameterName().toLowerCase().startsWith("condition")) {
                 ActionParameterOperation condition = new ActionParameterOperation(this.getExecutionControl(),
                         this.getActionExecution(), this.getActionExecution().getAction().getType(), "condition");
 
                 condition.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
 
                 int id = 0;
-                int delim = actionParameter.getName().indexOf(".");
+                int delim = actionParameter.getMetadataKey().getParameterName().indexOf(".");
                 if (delim > 0) {
-                    String[] item = actionParameter.getName().split(".");
+                    String[] item = actionParameter.getMetadataKey().getParameterName().split(".");
                     id = Integer.parseInt(item[1]);
                 }
 
@@ -74,17 +74,17 @@ public class FwkRoute {
                 routeOperation.setCondition(condition);
                 this.setRouteOperation(routeOperation);
 
-                this.getActionParameterOperationMap().put(actionParameter.getName(), condition);
-            } else if (actionParameter.getName().equalsIgnoreCase("destination")) {
+                this.getActionParameterOperationMap().put(actionParameter.getMetadataKey().getParameterName(), condition);
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("destination")) {
                 ActionParameterOperation destination = new ActionParameterOperation(this.getExecutionControl(),
                         this.getActionExecution(), this.getActionExecution().getAction().getType(), "destination");
 
                 destination.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
 
                 int id = 0;
-                int delim = actionParameter.getName().indexOf(".");
+                int delim = actionParameter.getMetadataKey().getParameterName().indexOf(".");
                 if (delim > 0) {
-                    String[] item = actionParameter.getName().split(".");
+                    String[] item = actionParameter.getMetadataKey().getParameterName().split(".");
                     id = Integer.parseInt(item[1]);
                 }
 
@@ -93,7 +93,7 @@ public class FwkRoute {
                 routeOperation.setDestination(destination);
                 this.setRouteOperation(routeOperation);
 
-                this.getActionParameterOperationMap().put(actionParameter.getName(), destination);
+                this.getActionParameterOperationMap().put(actionParameter.getMetadataKey().getParameterName(), destination);
             }
 
         }

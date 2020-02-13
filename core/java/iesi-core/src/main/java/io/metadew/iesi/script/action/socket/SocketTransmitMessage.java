@@ -3,6 +3,7 @@ package io.metadew.iesi.script.action.socket;
 import io.metadew.iesi.connection.network.SocketConnection;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.dataset.Dataset;
+import io.metadew.iesi.datatypes.dataset.DatasetHandler;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.framework.configuration.FrameworkSettingConfiguration;
 import io.metadew.iesi.framework.execution.FrameworkControl;
@@ -53,7 +54,7 @@ public class SocketTransmitMessage {
         this.actionParameterOperationMap = new HashMap<>();
     }
 
-    public void prepare()  {
+    public void prepare() {
         // Reset Parameters
         ActionParameterOperation socketActionParameterOperation = new ActionParameterOperation(executionControl, actionExecution, actionExecution.getAction().getType(), socketKey);
         ActionParameterOperation messageActionParameterOperation = new ActionParameterOperation(executionControl, actionExecution, actionExecution.getAction().getType(), messageKey);
@@ -63,15 +64,15 @@ public class SocketTransmitMessage {
 
         // Get Parameters
         for (ActionParameter actionParameter : actionExecution.getAction().getParameters()) {
-            if (actionParameter.getName().equalsIgnoreCase(messageKey)) {
+            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(messageKey)) {
                 messageActionParameterOperation.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase(socketKey)) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(socketKey)) {
                 socketActionParameterOperation.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase(protocolKey)) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(protocolKey)) {
                 protocolActionParameterOperation.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase(outputKey)) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(outputKey)) {
                 outputActionParameterOperation.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase(timeoutKey)) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(timeoutKey)) {
                 timeoutActionParameterOperation.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }
@@ -153,11 +154,11 @@ public class SocketTransmitMessage {
                 message.getBytes(Charset.forName(socket.getEncoding())).length);
         datagramSocket.send(datagramPacketToSend);
         if (getOutputDataset().isPresent()) {
-                outputDataset.clean(executionControl.getExecutionRuntime());
-                byte[] buffer = new byte[65508];
-                DatagramPacket datagramPacketToReceive = new DatagramPacket(buffer, buffer.length);
-                datagramSocket.receive(datagramPacketToReceive);
-                outputDataset.setDataItem("response", new Text(new String(datagramPacketToReceive.getData(), 0, datagramPacketToReceive.getLength(), Charset.forName(socket.getEncoding()))));
+            DatasetHandler.getInstance().clean(outputDataset, executionControl.getExecutionRuntime());
+            byte[] buffer = new byte[65508];
+            DatagramPacket datagramPacketToReceive = new DatagramPacket(buffer, buffer.length);
+            datagramSocket.receive(datagramPacketToReceive);
+            DatasetHandler.getInstance().setDataItem(outputDataset, "response", new Text(new String(datagramPacketToReceive.getData(), 0, datagramPacketToReceive.getLength(), Charset.forName(socket.getEncoding()))));
         }
     }
 
@@ -168,7 +169,7 @@ public class SocketTransmitMessage {
         dOut.write(message.getBytes(Charset.forName(socket.getEncoding())));
         dOut.flush();
         if (getOutputDataset().isPresent()) {
-            outputDataset.clean(executionControl.getExecutionRuntime());
+            DatasetHandler.getInstance().clean(outputDataset, executionControl.getExecutionRuntime());
             LocalDateTime endDateTime;
             if (timeout == null) {
                 endDateTime = LocalDateTime.now().plus(
@@ -185,7 +186,7 @@ public class SocketTransmitMessage {
                 if (dIn.available() > 0) {
                     byte[] bytes = new byte[dIn.available()];
                     int bytesRead = dIn.read(bytes);
-                    outputDataset.setDataItem("response", new Text(new String(bytes, 0, bytesRead, Charset.forName(socket.getEncoding()))));
+                    DatasetHandler.getInstance().setDataItem(outputDataset, "response", new Text(new String(bytes, 0, bytesRead, Charset.forName(socket.getEncoding()))));
                     break;
                 }
             }

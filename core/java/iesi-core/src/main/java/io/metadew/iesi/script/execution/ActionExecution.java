@@ -170,7 +170,7 @@ public class ActionExecution {
 
 	public void skip() {
 		LOGGER.info("action.name=" + action.getName());
-		LOGGER.debug("action.id=" + action.getId());
+		LOGGER.debug("action.id=" + action.getMetadataKey().getActionId());
 		LOGGER.info("action.selection.skip");
 
 		// Log Skip

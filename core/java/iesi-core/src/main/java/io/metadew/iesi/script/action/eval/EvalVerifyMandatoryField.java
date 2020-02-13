@@ -94,21 +94,21 @@ public class EvalVerifyMandatoryField {
 
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-            if (actionParameter.getName().equalsIgnoreCase("database")) {
+            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("database")) {
                 this.getDatabaseName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("schema")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("schema")) {
                 this.getSchemaName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("table")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("table")) {
                 this.getTableName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("field")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("field")) {
                 this.getFieldName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("evaluationfield")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("evaluationfield")) {
                 this.getEvaluationFieldName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("evaluationvalue")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("evaluationvalue")) {
                 this.getEvaluationFieldValue().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("ismandatory")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("ismandatory")) {
                 this.getMandatoryFlag().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("connection")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("connection")) {
                 this.getConnectionName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }

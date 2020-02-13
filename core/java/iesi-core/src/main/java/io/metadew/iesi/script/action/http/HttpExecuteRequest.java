@@ -6,9 +6,10 @@ import com.fasterxml.jackson.databind.node.JsonNodeType;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.metadew.iesi.connection.http.*;
 import io.metadew.iesi.datatypes.DataType;
-import io.metadew.iesi.datatypes.DataTypeService;
 import io.metadew.iesi.datatypes.array.Array;
-import io.metadew.iesi.datatypes.dataset.KeyValueDataset;
+import io.metadew.iesi.datatypes.dataset.DatasetHandler;
+import io.metadew.iesi.datatypes.dataset.keyvalue.KeyValueDataset;
+import io.metadew.iesi.datatypes.dataset.keyvalue.KeyValueDatasetService;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
@@ -47,7 +48,6 @@ public class HttpExecuteRequest {
     private HttpRequestComponentService httpRequestComponentService;
     private ActionExecution actionExecution;
     private ExecutionControl executionControl;
-    private DataTypeService dataTypeService;
     // Parameters
     private static final String typeKey = "type";
     private static final String requestKey = "request";
@@ -86,7 +86,6 @@ public class HttpExecuteRequest {
         this.actionParameterOperationMap = new HashMap<>();
         this.httpRequestComponentService = new HttpRequestComponentService(executionControl);
         this.httpRequestService = new HttpRequestService();
-        this.dataTypeService = new DataTypeService();
     }
 
     public void prepare() throws URISyntaxException, HttpRequestBuilderException, IOException, MetadataDoesNotExistException {
@@ -101,19 +100,19 @@ public class HttpExecuteRequest {
 
         // Get Parameters
         for (ActionParameter actionParameter : actionExecution.getAction().getParameters()) {
-            if (actionParameter.getName().equalsIgnoreCase(requestKey)) {
+            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(requestKey)) {
                 requestNameActionParameterOperation.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase(typeKey)) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(typeKey)) {
                 requestTypeActionParameterOperation.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase(bodyKey)) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(bodyKey)) {
                 requestBodyActionParameterOperation.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase(setRuntimeVariablesKey)) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(setRuntimeVariablesKey)) {
                 setRuntimeVariablesActionParameterOperation.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase(setDatasetKey)) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(setDatasetKey)) {
                 setDatasetActionParameterOperation.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase(expectedStatusCodesKey)) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(expectedStatusCodesKey)) {
                 expectedStatusCodesActionParameterOperation.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase(proxyKey)) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(proxyKey)) {
                 proxyActionParameterOperation.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }
@@ -147,7 +146,7 @@ public class HttpExecuteRequest {
         if (getOutputDataset().isPresent()) {
             List<String> labels = new ArrayList<>(outputDataset.getLabels());
             labels.add("typed");
-            rawOutputDataset = new KeyValueDataset(outputDataset.getName(), labels, executionControl.getExecutionRuntime());
+            rawOutputDataset = (KeyValueDataset) DatasetHandler.getInstance().getByNameAndLabels(outputDataset.getName(), labels, executionControl.getExecutionRuntime());
         }
 
     }
@@ -245,8 +244,10 @@ public class HttpExecuteRequest {
         if (outputDatasetReferenceName == null) {
             return null;
         } else if (outputDatasetReferenceName instanceof Text) {
-            return executionControl.getExecutionRuntime().getDataset(((Text) outputDatasetReferenceName).getString())
-                .orElseThrow(() -> new RuntimeException(MessageFormat.format("No dataset found with name ''{0}''", ((Text) outputDatasetReferenceName).getString())));
+            return executionControl.getExecutionRuntime()
+                    .getDataset(((Text) outputDatasetReferenceName).getString())
+                    .map(dataset -> (KeyValueDataset) dataset)
+                    .orElseThrow(() -> new RuntimeException(MessageFormat.format("No dataset found with name ''{0}''", ((Text) outputDatasetReferenceName).getString())));
         } else {
             LOGGER.warn(MessageFormat.format(actionExecution.getAction().getType() + " does not accept {0} as type for OutputDatasetReferenceName",
                     outputDatasetReferenceName.getClass()));
@@ -353,12 +354,12 @@ public class HttpExecuteRequest {
 
     private void writeTextPlainResponseToOutputDataset(HttpResponse httpResponse) {
         getOutputDataset().ifPresent(dataset -> {
-            dataset.clean(getExecutionControl().getExecutionRuntime());
-            dataset.setDataItem("response", new Text(httpResponse.getEntityString().orElse("")));
+            DatasetHandler.getInstance().clean(dataset, getExecutionControl().getExecutionRuntime());
+            DatasetHandler.getInstance().setDataItem(dataset, "response", new Text(httpResponse.getEntityString().orElse("")));
         });
         getRawOutputDataset().ifPresent(dataset -> {
-            dataset.clean(getExecutionControl().getExecutionRuntime());
-            dataset.setDataItem("response", new Text(httpResponse.getEntityString().orElse("")));
+            DatasetHandler.getInstance().clean(dataset, getExecutionControl().getExecutionRuntime());
+            DatasetHandler.getInstance().setDataItem(dataset, "response", new Text(httpResponse.getEntityString().orElse("")));
         });
     }
 
@@ -369,13 +370,13 @@ public class HttpExecuteRequest {
                 setRuntimeVariable(jsonNode, setRuntimeVariables);
                 // TODO: flip raw/normal if ready to migrate
                 getOutputDataset().ifPresent(dataset -> {
-                    dataset.clean(getExecutionControl().getExecutionRuntime());
-                    dataTypeService.getKeyValueDatasetService().writeRawJSON(dataset, jsonNode);
+                    DatasetHandler.getInstance().clean(dataset, getExecutionControl().getExecutionRuntime());
+                    KeyValueDatasetService.getInstance().writeRawJSON(dataset, jsonNode);
                 });
                 getRawOutputDataset().ifPresent(dataset -> {
-                    dataset.clean(getExecutionControl().getExecutionRuntime());
+                    DatasetHandler.getInstance().clean(dataset, getExecutionControl().getExecutionRuntime());
                     try {
-                        dataTypeService.getKeyValueDatasetService().write(dataset, (ObjectNode) jsonNode, executionControl.getExecutionRuntime());
+                        KeyValueDatasetService.getInstance().write(dataset, (ObjectNode) jsonNode, executionControl.getExecutionRuntime());
                     } catch (IOException | SQLException e) {
                         StringWriter StackTrace = new StringWriter();
                         e.printStackTrace(new PrintWriter(StackTrace));

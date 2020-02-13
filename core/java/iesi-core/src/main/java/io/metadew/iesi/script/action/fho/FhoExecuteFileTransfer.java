@@ -74,17 +74,17 @@ public class FhoExecuteFileTransfer {
 
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-            if (actionParameter.getName().equalsIgnoreCase("sourcefilepath")) {
+            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("sourcefilepath")) {
                 this.getSourceFilePath().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("sourcefilename")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("sourcefilename")) {
                 this.getSourceFileName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("sourceconnection")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("sourceconnection")) {
                 this.getSourceConnectionName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("targetfilepath")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("targetfilepath")) {
                 this.getTargetFilePath().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("targetfilename")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("targetfilename")) {
                 this.getTargetFileName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("targetconnection")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("targetconnection")) {
                 this.getTargetConnectionName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }

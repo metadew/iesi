@@ -52,7 +52,7 @@ public class WfaExecuteWait {
 
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-            if (actionParameter.getName().equalsIgnoreCase("wait")) {
+            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("wait")) {
                 this.getWaitInterval().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }

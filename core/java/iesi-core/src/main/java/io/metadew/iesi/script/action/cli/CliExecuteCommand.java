@@ -79,19 +79,19 @@ public class CliExecuteCommand {
 
         // Get Parameters
         for (ActionParameter actionParameter : actionExecution.getAction().getParameters()) {
-            if (actionParameter.getName().equalsIgnoreCase(shellPathKey)) {
+            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(shellPathKey)) {
                 shellPath.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase(shellCommandKey)) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(shellCommandKey)) {
                 shellCommand.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase(setRunVarKey)) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(setRunVarKey)) {
                 setRunVar.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase(setRunVarPrefixKey)) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(setRunVarPrefixKey)) {
                 setRunVarPrefix.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase(setRunVarModeKey)) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(setRunVarModeKey)) {
                 setRunVarMode.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase(systemOutputNameKey)) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(systemOutputNameKey)) {
                 systemOutputName.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase(connectionNameKey)) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(connectionNameKey)) {
                 connectionName.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }

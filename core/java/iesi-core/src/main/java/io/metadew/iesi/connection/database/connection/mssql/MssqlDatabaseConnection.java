@@ -1,6 +1,7 @@
 package io.metadew.iesi.connection.database.connection.mssql;
 
 import io.metadew.iesi.connection.database.connection.DatabaseConnection;
+import io.metadew.iesi.connection.database.connection.SchemaDatabaseConnection;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -12,13 +13,17 @@ import java.util.Optional;
  *
  * @author peter.billen
  */
-public class MssqlDatabaseConnection extends DatabaseConnection {
+public class MssqlDatabaseConnection extends SchemaDatabaseConnection {
 
     private static String type = "mssql";
-    private String schema;
 
     public MssqlDatabaseConnection(String connectionURL, String userName, String userPassword) {
         super(type, connectionURL, userName, userPassword);
+    }
+
+
+    public MssqlDatabaseConnection(String connectionURL, String userName, String userPassword, String schema) {
+        super(type, connectionURL, userName, userPassword, schema);
     }
 
     public MssqlDatabaseConnection(String hostName, int portNumber, String databaseName, String userName,
@@ -60,27 +65,4 @@ public class MssqlDatabaseConnection extends DatabaseConnection {
         return "com.microsoft.sqlserver.jdbc.SQLServerDriver";
     }
 
-    public void setSchema(String schema) {
-        this.schema = schema;
-    }
-
-    private Optional<String> getSchema() {
-        return Optional.ofNullable(schema);
-    }
-
-    public Connection getConnection() {
-        try {
-            Connection connection = super.getConnection();
-
-            Optional<String> schema = getSchema();
-            if (schema.isPresent()) {
-                // TODO: The old JDBC API does not support the setSchema call
-                connection.createStatement().execute("alter session set current_schema=" + schema.get());
-                // connection.setSchema(schema.get());
-            }
-            return connection;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
 }

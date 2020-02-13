@@ -91,7 +91,6 @@ class ComponentConfigurationTest {
         ComponentConfiguration.getInstance().insert(component1);
         ComponentConfiguration.getInstance().insert(component2);
         ComponentConfiguration.getInstance().insert(component3);
-        System.out.println(ComponentConfiguration.getInstance().getAll());
         assertEquals(3, ComponentConfiguration.getInstance().getAll().size());
 
         ComponentConfiguration.getInstance().delete(component1.getMetadataKey());

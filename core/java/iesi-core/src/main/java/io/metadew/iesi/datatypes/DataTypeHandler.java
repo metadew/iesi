@@ -134,7 +134,7 @@ public class DataTypeHandler {
         return instructionArguments;
     }
 
-    public DataType resolve(KeyValueDataset rootDataset, String key, JsonNode jsonNode, ExecutionRuntime executionRuntime) throws IOException, SQLException {
+    public DataType resolve(KeyValueDataset rootDataset, String key, JsonNode jsonNode, ExecutionRuntime executionRuntime) throws IOException {
         if (jsonNode.getNodeType().equals(JsonNodeType.ARRAY)) {
             return ArrayService.getInstance().resolve(rootDataset, key, (ArrayNode) jsonNode, executionRuntime);
         } else if (jsonNode.getNodeType().equals(JsonNodeType.NULL)) {

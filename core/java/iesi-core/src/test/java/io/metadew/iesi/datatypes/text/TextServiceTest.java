@@ -1,8 +1,6 @@
 package io.metadew.iesi.datatypes.text;
 
-import com.fasterxml.jackson.databind.node.NullNode;
-import com.fasterxml.jackson.databind.node.TextNode;
-import com.fasterxml.jackson.databind.node.ValueNode;
+import com.fasterxml.jackson.databind.node.*;
 import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 import org.junit.jupiter.api.Test;
@@ -38,13 +36,17 @@ class TextServiceTest {
         assertEquals(new Text("testing"), TextService.getInstance().resolve("testing", executionRuntime));
     }
 
-    void resolveTestValueNode() {
-        new TextNode("testing");
-        assertEquals(new Text("testing"), null);
+    @Test
+    void resolveValueNodeTest() {
+        assertEquals(new Text("testing"), TextService.getInstance().resolve(new TextNode("testing")));
+        assertEquals(new Text("true"), TextService.getInstance().resolve(BooleanNode.getTrue()));
+        assertEquals(new Text("1.0"), TextService.getInstance().resolve(new DoubleNode(1.0)));
+        assertEquals(new Text("1BE"), TextService.getInstance().resolve(new IntNode(1)));
     }
 
-    public Text resolve(NullNode jsonNode) {
-        return new Text("");
+    @Test
+    void resolveNullNodeTest() {
+        assertEquals(new Text(""), TextService.getInstance().resolve(NullNode.getInstance()));
     }
 
 

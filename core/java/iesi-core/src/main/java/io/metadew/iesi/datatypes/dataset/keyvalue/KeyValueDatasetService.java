@@ -158,11 +158,11 @@ public class KeyValueDatasetService extends BaseDatasetService<KeyValueDataset> 
         }
     }
 
-    public void write(KeyValueDataset dataset, ObjectNode jsonNode, ExecutionRuntime executionRuntime) throws IOException, SQLException {
+    public void write(KeyValueDataset dataset, ObjectNode jsonNode, ExecutionRuntime executionRuntime) throws IOException {
         DataTypeHandler.getInstance().resolve(dataset, null, jsonNode, executionRuntime);
     }
 
-    public DataType resolve(KeyValueDataset dataset, String key, ObjectNode jsonNode, ExecutionRuntime executionRuntime) throws IOException, SQLException {
+    public DataType resolve(KeyValueDataset dataset, String key, ObjectNode jsonNode, ExecutionRuntime executionRuntime) throws IOException {
         Iterator<Map.Entry<String, JsonNode>> fields = jsonNode.fields();
         KeyValueDataset objectDataset = getObjectDataset(dataset, key);
         while (fields.hasNext()) {

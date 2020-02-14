@@ -49,7 +49,7 @@ public class ArrayService implements DataTypeService<Array> {
         return new Array(resolvedArguments);
     }
 
-    public Array resolve(KeyValueDataset dataset, String key, ArrayNode jsonNode, ExecutionRuntime executionRuntime) throws IOException, SQLException {
+    public Array resolve(KeyValueDataset dataset, String key, ArrayNode jsonNode, ExecutionRuntime executionRuntime) throws IOException {
         Array array = new Array();
         int elementCounter = 1;
         for (JsonNode element : jsonNode) {

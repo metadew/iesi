@@ -377,7 +377,7 @@ public class HttpExecuteRequest {
                     DatasetHandler.getInstance().clean(dataset, getExecutionControl().getExecutionRuntime());
                     try {
                         KeyValueDatasetService.getInstance().write(dataset, (ObjectNode) jsonNode, executionControl.getExecutionRuntime());
-                    } catch (IOException | SQLException e) {
+                    } catch (IOException e) {
                         StringWriter StackTrace = new StringWriter();
                         e.printStackTrace(new PrintWriter(StackTrace));
                         actionExecution.getActionControl().logOutput("json.exception", e.getMessage());

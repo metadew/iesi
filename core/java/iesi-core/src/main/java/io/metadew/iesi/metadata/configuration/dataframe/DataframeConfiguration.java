@@ -1,7 +1,6 @@
 package io.metadew.iesi.metadata.configuration.dataframe;
 
 import io.metadew.iesi.connection.tools.SQLTools;
-import io.metadew.iesi.framework.configuration.FrameworkObjectConfiguration;
 import io.metadew.iesi.metadata.definition.ListObject;
 import io.metadew.iesi.metadata.definition.dataframe.Dataframe;
 import io.metadew.iesi.metadata.definition.dataframe.DataframeItem;
@@ -302,30 +301,6 @@ public class DataframeConfiguration {
         return dataframe;
     }
 
-    // Get
-    public ListObject getDataframes() {
-        List<Dataframe> dataframeList = new ArrayList<>();
-        CachedRowSet crs = null;
-        String query = "select DATAFRAME_NM, DATAFRAME_DSC from "
-                + MetadataControl.getInstance().getCatalogMetadataRepository().getTableNameByLabel("Dataviews") + " order by DATAFRAME_NM ASC";
-        crs = MetadataControl.getInstance().getCatalogMetadataRepository().executeQuery(query, "reader");
-        DataframeConfiguration dataframeConfiguration = new DataframeConfiguration();
-        try {
-            String dataframeName = "";
-            while (crs.next()) {
-                dataframeName = crs.getString("DATAFRAME_NM");
-                dataframeList.add(dataframeConfiguration.getDataframe(dataframeName));
-            }
-            crs.close();
-        } catch (SQLException e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-        }
-
-        return new ListObject(
-                FrameworkObjectConfiguration.getFrameworkObjectType(new Dataframe()),
-                dataframeList);
-    }
 
     // Exists
     public boolean exists() {

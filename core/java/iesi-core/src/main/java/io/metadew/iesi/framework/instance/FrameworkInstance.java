@@ -1,7 +1,6 @@
 package io.metadew.iesi.framework.instance;
 
-import io.metadew.iesi.framework.configuration.FrameworkActionTypeConfiguration;
-import io.metadew.iesi.framework.configuration.FrameworkConfiguration;
+import io.metadew.iesi.framework.configuration.framework.FrameworkConfiguration;
 import io.metadew.iesi.framework.crypto.FrameworkCrypto;
 import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
 import io.metadew.iesi.framework.execution.FrameworkControl;
@@ -32,7 +31,18 @@ public class FrameworkInstance {
 
 
     public void init() {
-        init(new FrameworkInitializationFile(), new FrameworkExecutionContext(new Context("general", "")));
+        FrameworkConfiguration.getInstance();
+        FrameworkCrypto.getInstance();
+
+        // Prepare configuration and shared Metadata
+        FrameworkControl frameworkControl = FrameworkControl.getInstance();
+        //frameworkControl.init("write", frameworkInitializationFile);
+
+        FrameworkExecution.getInstance().init();
+        // TODO: move Executor (Request to separate module)
+        ExecutionRequestExecutorService.getInstance();
+
+        // init(new FrameworkInitializationFile(), new FrameworkExecutionContext(new Context("general", "")));
     }
 
     public void init(FrameworkInitializationFile frameworkInitializationFile, FrameworkExecutionContext context) {
@@ -40,86 +50,60 @@ public class FrameworkInstance {
     }
 
     public void init(FrameworkInitializationFile frameworkInitializationFile, FrameworkExecutionContext context, String frameworkHome) {
-        // Get the framework configuration
-        FrameworkConfiguration frameworkConfiguration = FrameworkConfiguration.getInstance();
-        frameworkConfiguration.init(frameworkHome);
-
-        FrameworkCrypto.getInstance();
-
-        // Set appropriate initialization file
-        if (frameworkInitializationFile.getName().trim().isEmpty()) {
-            frameworkInitializationFile = new FrameworkInitializationFile(frameworkConfiguration.getFrameworkCode() + "-conf.ini");
-        }
-
-        // Prepare configuration and shared Metadata
-        FrameworkControl frameworkControl = FrameworkControl.getInstance();
-        frameworkControl.init("write", frameworkInitializationFile);
-
-        FrameworkActionTypeConfiguration.getInstance().setActionTypesFromPlugins(frameworkControl.getFrameworkPluginConfigurationList());
-        List<MetadataRepository> metadataRepositories = new ArrayList<>();
-
-        for (MetadataRepositoryConfiguration metadataRepositoryConfiguration : frameworkControl.getMetadataRepositoryConfigurations()) {
-            metadataRepositories.addAll(metadataRepositoryConfiguration.toMetadataRepositories());
-
-        }
-        MetadataControl.getInstance().init(metadataRepositories);
-
-        FrameworkExecution.getInstance().init(context);
-        // TODO: move Executor (Request to separate module)
-        ExecutionRequestExecutorService.getInstance();
+//        // Get the framework configuration
+//        FrameworkConfiguration.getInstance();
+//        FrameworkCrypto.getInstance();
+//
+//        // Set appropriate initialization file
+//        if (frameworkInitializationFile.getName().trim().isEmpty()) {
+//            frameworkInitializationFile = new FrameworkInitializationFile(frameworkConfiguration.getFrameworkCode() + "-conf.ini");
+//        }
+//
+//        // Prepare configuration and shared Metadata
+//        FrameworkControl frameworkControl = FrameworkControl.getInstance();
+//        frameworkControl.init("write", frameworkInitializationFile);
+//
+////        List<MetadataRepository> metadataRepositories = new ArrayList<>();
+////
+////        for (MetadataRepositoryConfiguration metadataRepositoryConfiguration : frameworkControl.getMetadataRepositoryConfigurations()) {
+////            metadataRepositories.addAll(metadataRepositoryConfiguration.toMetadataRepositories());
+////
+////        }
+////        MetadataControl.getInstance().init(metadataRepositories);
+//
+//        FrameworkExecution.getInstance().init(context);
+//        // TODO: move Executor (Request to separate module)
+//        ExecutionRequestExecutorService.getInstance();
     }
 
     public void init(String logonType, FrameworkInitializationFile frameworkInitializationFile, FrameworkExecutionContext context) {
-        // Get the framework configuration
-        FrameworkConfiguration frameworkConfiguration = FrameworkConfiguration.getInstance();
-        frameworkConfiguration.init();
-
-        FrameworkCrypto.getInstance();
-
-        // Set appropriate initialization file
-        if (frameworkInitializationFile.getName().trim().isEmpty()) {
-            frameworkInitializationFile = new FrameworkInitializationFile(frameworkConfiguration.getFrameworkCode() + "-conf.ini");
-        }
-
-        // Prepare configuration and shared Metadata
-        FrameworkControl frameworkControl = FrameworkControl.getInstance();
-        frameworkControl.init(logonType, frameworkInitializationFile);
-
-        FrameworkActionTypeConfiguration.getInstance().setActionTypesFromPlugins(frameworkControl.getFrameworkPluginConfigurationList());
-        List<MetadataRepository> metadataRepositories = new ArrayList<>();
-
-        for (MetadataRepositoryConfiguration metadataRepositoryConfiguration : frameworkControl.getMetadataRepositoryConfigurations()) {
-            metadataRepositories.addAll(metadataRepositoryConfiguration.toMetadataRepositories());
-
-        }
-        MetadataControl.getInstance().init(metadataRepositories);
-
-        // Set up connection to the metadata repository
-//		this.executionServerFilePath = FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("run.exec")
-//						+ File.separator + "ExecutionServerRepository.db3";
+//        // Get the framework configuration
+//        FrameworkConfiguration frameworkConfiguration = FrameworkConfiguration.getInstance();
+//        frameworkConfiguration.init();
 //
-//		if (!ExecutionServerTools.getServerMode().equalsIgnoreCase("off")) {
-//			if (!FileTools.exists(this.getExecutionServerFilePath())) {
-//				throw new RuntimeException("framework.server.repository.notfound");
-//			}
-//		}
-
-//		SqliteDatabaseConnection executionServerDatabaseConnection = new SqliteDatabaseConnection(this.getExecutionServerFilePath());
-//		SqliteDatabase sqliteDatabase = new SqliteDatabase(executionServerDatabaseConnection);
-//		Map<String, Database> databases = new HashMap<>();
-//		databases.put("reader", sqliteDatabase);
-//		databases.put("writer", sqliteDatabase);
-//		databases.put("owner", sqliteDatabase);
-//		RepositoryCoordinator repositoryCoordinator = new RepositoryCoordinator(databases);
-//		this.executionServerRepositoryConfiguration = new ExecutionServerMetadataRepository(
-//				frameworkConfiguration.getFrameworkCode(), null, null, null, repositoryCoordinator,
-//				FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.def"),
-//				FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.def"));
-
-
-        FrameworkExecution.getInstance().init(context);
-        // TODO: move Executor (Request to separate module)
-        ExecutionRequestExecutorService.getInstance();
+//        FrameworkCrypto.getInstance();
+//
+//        // Set appropriate initialization file
+//        if (frameworkInitializationFile.getName().trim().isEmpty()) {
+//            frameworkInitializationFile = new FrameworkInitializationFile(frameworkConfiguration.getFrameworkCode() + "-conf.ini");
+//        }
+//
+//        // Prepare configuration and shared Metadata
+//        FrameworkControl frameworkControl = FrameworkControl.getInstance();
+//        frameworkControl.init(logonType, frameworkInitializationFile);
+//
+//        FrameworkActionTypeConfiguration.getInstance().setActionTypesFromPlugins(frameworkControl.getFrameworkPluginConfigurationList());
+//        List<MetadataRepository> metadataRepositories = new ArrayList<>();
+//
+//        for (MetadataRepositoryConfiguration metadataRepositoryConfiguration : frameworkControl.getMetadataRepositoryConfigurations()) {
+//            metadataRepositories.addAll(metadataRepositoryConfiguration.toMetadataRepositories());
+//
+//        }
+//        MetadataControl.getInstance().init(metadataRepositories);
+//
+//        FrameworkExecution.getInstance().init(context);
+//        // TODO: move Executor (Request to separate module)
+//        ExecutionRequestExecutorService.getInstance();
     }
 
     public void shutdown() {

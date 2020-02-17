@@ -5,7 +5,8 @@ import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.connection.DatabaseConnection;
 import io.metadew.iesi.connection.database.connection.sqlite.SqliteDatabaseConnection;
 import io.metadew.iesi.connection.operation.ConnectionOperation;
-import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
+import io.metadew.iesi.framework.configuration.framework.FrameworkConfiguration;
+import io.metadew.iesi.framework.definition.FrameworkFolder;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.configuration.repository.RepositoryConfiguration;
 import io.metadew.iesi.metadata.configuration.repository.RepositoryInstanceConfiguration;
@@ -71,8 +72,9 @@ public class RepositoryOperation {
 
 
         ObjectMapper objectMapper = new ObjectMapper();
-        String datasetFolderName = FrameworkFolderConfiguration.getInstance()
-                .getFolderAbsolutePath("data") + File.separator + "datasets" + File.separator + "";
+        String datasetFolderName = FrameworkConfiguration.getInstance().getFrameworkFolder("data")
+                .map(FrameworkFolder::getAbsolutePath)
+                .orElseThrow(() -> new RuntimeException("no definition found for data")) + File.separator + "datasets" + File.separator + "";
         String metadataFileName = datasetFolderName + File.separator + "metadata" + File.separator + "metadata.db3";
         SqliteDatabaseConnection dcSQLiteConnection = new SqliteDatabaseConnection(metadataFileName);
         this.setMetadataConnection(objectMapper.convertValue(dcSQLiteConnection, DatabaseConnection.class));

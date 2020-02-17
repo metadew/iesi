@@ -1,9 +1,6 @@
 package io.metadew.iesi.launch;
 
-import io.metadew.iesi.common.config.ConfigFile;
-import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
 import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
-import io.metadew.iesi.framework.execution.FrameworkControl;
 import io.metadew.iesi.framework.execution.FrameworkExecutionContext;
 import io.metadew.iesi.framework.execution.FrameworkRuntime;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
@@ -12,12 +9,10 @@ import io.metadew.iesi.metadata.definition.Context;
 import io.metadew.iesi.metadata.execution.MetadataControl;
 import io.metadew.iesi.metadata.operation.MetadataRepositoryOperation;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
-import io.metadew.iesi.metadata.repository.configuration.MetadataRepositoryConfiguration;
 import io.metadew.iesi.metadata.restore.RestoreExecution;
 import org.apache.commons.cli.*;
 import org.apache.logging.log4j.ThreadContext;
 
-import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.text.MessageFormat;
@@ -92,10 +87,10 @@ public class MetadataLauncher {
         if (line.hasOption("config")) {
             String config = line.getOptionValue("config");
 
-            ConfigFile configFile = FrameworkControl.getInstance().getConfigFile("keyvalue",
-                    FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("conf") + File.separator + config);
+            //ConfigFile configFile = FrameworkControl.getInstance().getConfigFile("keyvalue",
+            //        FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("conf") + File.separator + config);
 
-            metadataRepositories = new MetadataRepositoryConfiguration(configFile).toMetadataRepositories();
+            //metadataRepositories = new MetadataRepositoryConfiguration(configFile).toMetadataRepositories();
 
             // metadataRepositories.addAll(metadataRepositories);
 

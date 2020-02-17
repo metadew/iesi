@@ -16,7 +16,6 @@ import io.metadew.iesi.script.operation.ActionParameterOperation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.activation.DataHandler;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.MessageFormat;

@@ -19,12 +19,12 @@ public class ConnectionTypeParameterConfiguration {
         ConnectionTypeParameter connectionTypeParameterResult = null;
         ConnectionTypeConfiguration connectionTypeConfiguration = new ConnectionTypeConfiguration();
         ConnectionType connectionType = connectionTypeConfiguration.getConnectionType(connectionTypeName);
-        for (ConnectionTypeParameter connectionTypeParameter : connectionType.getParameters()) {
-            if (connectionTypeParameter.getName().equalsIgnoreCase(connectionTypeParameterName)) {
-                connectionTypeParameterResult = connectionTypeParameter;
-                break;
-            }
-        }
+//        for (ConnectionTypeParameter connectionTypeParameter : connectionType.getParameters()) {
+//            if (connectionTypeParameter.getName().equalsIgnoreCase(connectionTypeParameterName)) {
+//                connectionTypeParameterResult = connectionTypeParameter;
+//                break;
+//            }
+//        }
         return connectionTypeParameterResult;
     }
 

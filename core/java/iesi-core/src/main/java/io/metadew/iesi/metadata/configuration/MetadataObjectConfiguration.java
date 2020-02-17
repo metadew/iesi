@@ -1,8 +1,6 @@
 package io.metadew.iesi.metadata.configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.metadew.iesi.metadata.definition.DataObject;
-import io.metadew.iesi.metadata.definition.MetadataObject;
 import io.metadew.iesi.metadata.operation.DataObjectOperation;
 
 import java.util.HashMap;
@@ -22,12 +20,12 @@ public class MetadataObjectConfiguration {
         dataObjectOperation.parseFile();
         ObjectMapper objectMapper = new ObjectMapper();
         //
-        for (DataObject dataObject : dataObjectOperation.getDataObjects()) {
-            if (dataObject.getType().equalsIgnoreCase("metadataobject")) {
-                MetadataObject metadataObject = objectMapper.convertValue(dataObject.getData(), MetadataObject.class);
-                this.getObjectMap().put(metadataObject.getLabel(), metadataObject.getName());
-            }
-        }
+//        for (DataObject dataObject : dataObjectOperation.getDataObjects()) {
+//            if (dataObject.getType().equalsIgnoreCase("metadataobject")) {
+//                MetadataObject metadataObject = objectMapper.convertValue(dataObject.getData(), MetadataObject.class);
+//                this.getObjectMap().put(metadataObject.getLabel(), metadataObject.getName());
+//            }
+//        }
 
     }
 

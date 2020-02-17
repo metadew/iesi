@@ -16,6 +16,7 @@ public class SqliteRepositoryConfiguration extends RepositoryConfiguration {
     private String file;
 
 
+
     public SqliteRepositoryConfiguration(ConfigFile configFile) {
         super(configFile);
     }

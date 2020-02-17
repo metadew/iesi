@@ -65,7 +65,7 @@ public class MetadataTableConfiguration {
         for (DataObject dataObject : dataObjectOperation.getDataObjects()) {
             if (dataObject.getType().equalsIgnoreCase("metadatatable")) {
                 MetadataTable metadataTable = objectMapper.convertValue(dataObject.getData(), MetadataTable.class);
-                this.getTableMap().put(metadataTable.getLabel(), metadataTable.getName());
+                //this.getTableMap().put(metadataTable.getLabel(), metadataTable.getName());
             }
         }
 

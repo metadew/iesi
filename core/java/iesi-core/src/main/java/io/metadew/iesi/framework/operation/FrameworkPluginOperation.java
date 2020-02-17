@@ -19,7 +19,7 @@ public class FrameworkPluginOperation {
         boolean result = false;
         for (FrameworkPluginConfiguration frameworkPluginConfiguration : FrameworkControl.getInstance().getFrameworkPluginConfigurationList()) {
             StringBuilder configurationFile = new StringBuilder();
-            configurationFile.append(frameworkPluginConfiguration.getFrameworkPlugin().getPath());
+            //configurationFile.append(frameworkPluginConfiguration.getFrameworkPlugin().getPath());
             configurationFile.append(FrameworkFolderConfiguration.getInstance().getFolderPath("metadata.conf"));
             configurationFile.append(File.separator);
             configurationFile.append(configurationToVerify);

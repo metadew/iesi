@@ -2,7 +2,8 @@ package io.metadew.iesi.metadata.operation;
 
 import io.metadew.iesi.common.text.ParsingTools;
 import io.metadew.iesi.connection.tools.FileTools;
-import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
+import io.metadew.iesi.framework.configuration.framework.FrameworkConfiguration;
+import io.metadew.iesi.framework.definition.FrameworkFolder;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
@@ -61,10 +62,18 @@ public class MetadataRepositoryOperation {
         LOGGER.info("metadata.load.start");
 
         // Folder definition
-        String inputFolder = FilenameUtils.normalize(FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.in.new"));
-        String workFolder = FilenameUtils.normalize(FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.in.work"));
-        String errorFolder = FilenameUtils.normalize(FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.in.error"));
-        String archiveFolder = FilenameUtils.normalize(FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.in.done"));
+        String inputFolder = FilenameUtils.normalize(FrameworkConfiguration.getInstance().getFrameworkFolder("metadata.in.new")
+                .map(FrameworkFolder::getAbsolutePath)
+                .orElseThrow(() -> new RuntimeException("no configuration found metadata.in.new")));
+        String workFolder = FilenameUtils.normalize(FrameworkConfiguration.getInstance().getFrameworkFolder("metadata.in.work")
+                .map(FrameworkFolder::getAbsolutePath)
+                .orElseThrow(() -> new RuntimeException("no configuration found metadata.in.new")));
+        String errorFolder = FilenameUtils.normalize(FrameworkConfiguration.getInstance().getFrameworkFolder("metadata.in.error")
+                .map(FrameworkFolder::getAbsolutePath)
+                .orElseThrow(() -> new RuntimeException("no configuration found metadata.in.new")));
+        String archiveFolder = FilenameUtils.normalize(FrameworkConfiguration.getInstance().getFrameworkFolder("metadata.in.done")
+                .map(FrameworkFolder::getAbsolutePath)
+                .orElseThrow(() -> new RuntimeException("no configuration found metadata.in.new")));
 
         // Load files
         if (input.trim().equalsIgnoreCase("")) {
@@ -215,7 +224,7 @@ public class MetadataRepositoryOperation {
 
 //    private void saveMetadataRepositoryDDL(String ddl) {
 //        StringBuilder targetFilePath = new StringBuilder();
-//        targetFilePath.append(FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.out.ddl"));
+//        targetFilePath.append(FrameworkConfiguration.getInstance().getFrameworkFolder(.getInstance().getFolderAbsolutePath("metadata.out.ddl"));
 //        targetFilePath.append(File.separator);
 //        targetFilePath.append(this.getMetadataRepository().getName());
 //        targetFilePath.append("_");

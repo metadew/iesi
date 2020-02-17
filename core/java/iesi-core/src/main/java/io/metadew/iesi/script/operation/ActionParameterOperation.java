@@ -101,7 +101,7 @@ public class ActionParameterOperation {
         String decryptedInputValue = FrameworkCrypto.getInstance().resolve(resolvedInputValue);
 
         // Impersonate
-        if (actionTypeParameter.getImpersonate().trim().equalsIgnoreCase("y")) {
+        if (actionTypeParameter.isImpersonate()) {
             String impersonatedConnectionName = executionControl.getExecutionRuntime()
                     .getImpersonationOperation().getImpersonatedConnection(decryptedInputValue);
             if (!impersonatedConnectionName.equalsIgnoreCase("")) {

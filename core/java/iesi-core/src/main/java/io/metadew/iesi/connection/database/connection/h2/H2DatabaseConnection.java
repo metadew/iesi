@@ -1,6 +1,5 @@
 package io.metadew.iesi.connection.database.connection.h2;
 
-import io.metadew.iesi.connection.database.connection.DatabaseConnection;
 import io.metadew.iesi.connection.database.connection.SchemaDatabaseConnection;
 
 import java.sql.Connection;

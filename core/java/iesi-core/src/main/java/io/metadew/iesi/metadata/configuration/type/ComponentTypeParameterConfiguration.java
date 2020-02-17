@@ -20,12 +20,12 @@ public class ComponentTypeParameterConfiguration {
         ComponentTypeParameter componentTypeParameterResult = null;
         ComponentTypeConfiguration componentTypeConfiguration = new ComponentTypeConfiguration();
         ComponentType componentType = componentTypeConfiguration.getComponentType(componentTypeName);
-        for (ComponentTypeParameter componentTypeParameter : componentType.getParameters()) {
-            if (componentTypeParameter.getName().equalsIgnoreCase(componentTypeParameterName)) {
-                componentTypeParameterResult = componentTypeParameter;
-                break;
-            }
-        }
+//        for (ComponentTypeParameter componentTypeParameter : componentType.getParameters()) {
+//            if (componentTypeParameter.getName().equalsIgnoreCase(componentTypeParameterName)) {
+//                componentTypeParameterResult = componentTypeParameter;
+//                break;
+//            }
+//        }
         return componentTypeParameterResult;
     }
 

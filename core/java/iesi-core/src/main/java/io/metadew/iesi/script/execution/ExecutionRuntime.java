@@ -5,8 +5,8 @@ import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.data.generation.execution.GenerationObjectExecution;
 import io.metadew.iesi.datatypes.dataset.Dataset;
 import io.metadew.iesi.datatypes.dataset.DatasetHandler;
-import io.metadew.iesi.datatypes.dataset.keyvalue.KeyValueDataset;
-import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
+import io.metadew.iesi.framework.configuration.framework.FrameworkConfiguration;
+import io.metadew.iesi.framework.definition.FrameworkFolder;
 import io.metadew.iesi.framework.execution.FrameworkControl;
 import io.metadew.iesi.framework.execution.IESIMessage;
 import io.metadew.iesi.metadata.definition.Iteration;
@@ -70,7 +70,9 @@ public class ExecutionRuntime {
         this.runId = runId;
 
         // Create cache folder
-        this.runCacheFolderName = FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("run.cache") + File.separator + runId;
+        this.runCacheFolderName = FrameworkConfiguration.getInstance().getFrameworkFolder("run.cache")
+                .map(FrameworkFolder::getAbsolutePath)
+                .orElseThrow(() -> new RuntimeException("no definition found for run.cache"))+ File.separator + runId;
         // FolderTools.createFolder(runCacheFolderName);
         this.runtimeVariableConfiguration = new RuntimeVariableConfiguration(this.runCacheFolderName);
         this.iterationVariableConfiguration = new IterationVariableConfiguration(this.runCacheFolderName, true);

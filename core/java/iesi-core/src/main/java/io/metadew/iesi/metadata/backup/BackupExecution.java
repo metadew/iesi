@@ -3,7 +3,8 @@ package io.metadew.iesi.metadata.backup;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.connection.tools.FolderTools;
 import io.metadew.iesi.connection.tools.OutputTools;
-import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
+import io.metadew.iesi.framework.configuration.framework.FrameworkConfiguration;
+import io.metadew.iesi.framework.definition.FrameworkFolder;
 import io.metadew.iesi.metadata.definition.DataObject;
 import io.metadew.iesi.metadata.definition.MetadataTable;
 import io.metadew.iesi.metadata.operation.DataObjectOperation;
@@ -104,8 +105,10 @@ public class BackupExecution {
 
 		// Get source configuration
 		DataObjectOperation dataObjectOperation = new DataObjectOperation(
-				FrameworkFolderConfiguration.getInstance()
-						.getFolderAbsolutePath("metadata.def") + File.separator + "MetadataTables.json");
+				FrameworkConfiguration.getInstance().getFrameworkFolder("metadata.def")
+						.map(FrameworkFolder::getAbsolutePath)
+						.orElseThrow(() -> new RuntimeException("no definition found for metadata.def")) +
+						File.separator + "MetadataTables.json");
 
 		// Create backup location
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssS");
@@ -113,17 +116,21 @@ public class BackupExecution {
 		Timestamp timestamp = new Timestamp(date.getTime());
 		String folderName = "";
 		if (path.trim().equalsIgnoreCase("")) {
-			folderName = FrameworkFolderConfiguration.getInstance()
-					.getFolderAbsolutePath("metadata.def") + File.separator + sdf.format(timestamp);
+			folderName = FrameworkConfiguration.getInstance().getFrameworkFolder("metadata.def")
+					.map(FrameworkFolder::getAbsolutePath)
+					.orElseThrow(() -> new RuntimeException("no definition found for metadata.def")) + File.separator + sdf.format(timestamp);
 			;
 
 			// Ensure the base folder structure exists
-			FolderTools.createFolder(FrameworkFolderConfiguration.getInstance()
-					.getFolderAbsolutePath("data")); // Data
-			FolderTools.createFolder(FrameworkFolderConfiguration.getInstance()
-					.getFolderAbsolutePath("data")); // Backups
-			FolderTools.createFolder(FrameworkFolderConfiguration.getInstance()
-					.getFolderAbsolutePath("data")); // Backups Metadata
+			FolderTools.createFolder(FrameworkConfiguration.getInstance().getFrameworkFolder("data")
+					.map(FrameworkFolder::getAbsolutePath)
+					.orElseThrow(() -> new RuntimeException("no definition found for metadata.def"))); // Data
+			FolderTools.createFolder(FrameworkConfiguration.getInstance().getFrameworkFolder("data")
+					.map(FrameworkFolder::getAbsolutePath)
+					.orElseThrow(() -> new RuntimeException("no definition found for metadata.def"))); // Backups
+			FolderTools.createFolder(FrameworkConfiguration.getInstance().getFrameworkFolder("data")
+					.map(FrameworkFolder::getAbsolutePath)
+					.orElseThrow(() -> new RuntimeException("no definition found for metadata.def"))); // Backups Metadata
 		} else {
 			folderName = path;
 		}

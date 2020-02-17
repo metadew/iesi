@@ -3,7 +3,7 @@ package io.metadew.iesi.script.execution;
 import io.metadew.iesi.common.text.TextTools;
 import io.metadew.iesi.connection.elasticsearch.filebeat.DelimitedFileBeatElasticSearchConnection;
 import io.metadew.iesi.connection.tools.SQLTools;
-import io.metadew.iesi.framework.configuration.FrameworkSettingConfiguration;
+import io.metadew.iesi.framework.configuration.Configuration;
 import io.metadew.iesi.framework.configuration.ScriptRunStatus;
 import io.metadew.iesi.framework.crypto.FrameworkCrypto;
 import io.metadew.iesi.framework.execution.FrameworkControl;
@@ -71,12 +71,9 @@ public class ExecutionControl {
 
     @SuppressWarnings("unchecked")
     private void initializeExecutionRuntime(String runId) throws ClassNotFoundException,
-            NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, SQLException {
-        if (FrameworkSettingConfiguration.getInstance().getSettingPath("script.execution.runtime")
-                .map(settingsPath -> FrameworkControl.getInstance().getProperty(settingsPath).isPresent()
-                        && !FrameworkControl.getInstance().getProperty(settingsPath).get().isEmpty())
-                .orElse(false)) {
-            Class classRef = Class.forName(FrameworkControl.getInstance().getProperty(FrameworkSettingConfiguration.getInstance().getSettingPath("script.execution.runtime").get()).get());
+            NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+        if (Configuration.getInstance().getProperty("iesi.script.execution.runtime").isPresent()) {
+            Class classRef = Class.forName((String) Configuration.getInstance().getProperty("iesi.script.execution.runtime").get());
             Class[] initParams = {ExecutionControl.class, String.class};
             Constructor constructor = classRef.getConstructor(initParams);
             this.executionRuntime = (ExecutionRuntime) constructor.newInstance(this, runId);

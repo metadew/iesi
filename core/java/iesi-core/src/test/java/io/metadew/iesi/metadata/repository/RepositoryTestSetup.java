@@ -49,13 +49,13 @@ public class RepositoryTestSetup {
         DataObjectOperation dataObjectOperation = new DataObjectOperation(objectsAbsolutePath);
         dataObjectOperation.parseFile();
         //
-        for (DataObject dataObject : dataObjectOperation.getDataObjects()) {
-            if (dataObject.getType().equalsIgnoreCase("metadatatable")) {
-                MetadataTable metadataTable = objectMapper.convertValue(dataObject.getData(), MetadataTable.class);
-                metadataTable.setName(metadataTable.getName());
-                metadataTables.add(metadataTable);
-            }
-        }
+//        for (DataObject dataObject : dataObjectOperation.getDataObjects()) {
+//            if (dataObject.getType().equalsIgnoreCase("metadatatable")) {
+//                MetadataTable metadataTable = objectMapper.convertValue(dataObject.getData(), MetadataTable.class);
+//                metadataTable.setName(metadataTable.getName());
+//                metadataTables.add(metadataTable);
+//            }
+//        }
         return metadataTables;
     }
 

@@ -6,8 +6,6 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.connection.tools.FolderTools;
 import io.metadew.iesi.metadata.definition.DataObject;
-import io.metadew.iesi.metadata.definition.MetadataObject;
-import io.metadew.iesi.metadata.definition.MetadataTable;
 import io.metadew.iesi.metadata.operation.DataObjectOperation;
 
 import java.io.BufferedReader;
@@ -58,20 +56,20 @@ public class ConvertDataModelFiles {
 						dataObjectOperation.parseFile();
 						//
 						for (DataObject dataObject : dataObjectOperation.getDataObjects()) {
-							if (dataObject.getType().equalsIgnoreCase("metadatatable")) {
-								MetadataTable metadataTable = objectMapper.convertValue(dataObject.getData(),
-										MetadataTable.class);
-								System.out.println(FileTools.getFolderPath(file) + File.separator
-										+ metadataTable.getName() + ".yml");
-								yamlMapper.writeValue(new File(FileTools.getFolderPath(file) + File.separator
-										+ metadataTable.getName() + ".yml"), dataObject);
-							}
-							if (dataObject.getType().equalsIgnoreCase("metadataobject")) {
-								MetadataObject metadataObject = objectMapper.convertValue(dataObject.getData(), MetadataObject.class);
-								yamlMapper.writeValue(new File(FileTools.getFolderPath(file) + File.separator
-										+ metadataObject.getName() + ".yml"), dataObject);
-
-							}
+//							if (dataObject.getType().equalsIgnoreCase("metadatatable")) {
+//								MetadataTable metadataTable = objectMapper.convertValue(dataObject.getData(),
+//										MetadataTable.class);
+//								System.out.println(FileTools.getFolderPath(file) + File.separator
+//										+ metadataTable.getName() + ".yml");
+//								yamlMapper.writeValue(new File(FileTools.getFolderPath(file) + File.separator
+//										+ metadataTable.getName() + ".yml"), dataObject);
+//							}
+//							if (dataObject.getType().equalsIgnoreCase("metadataobject")) {
+//								MetadataObject metadataObject = objectMapper.convertValue(dataObject.getData(), MetadataObject.class);
+//								yamlMapper.writeValue(new File(FileTools.getFolderPath(file) + File.separator
+//										+ metadataObject.getName() + ".yml"), dataObject);
+//
+//							}
 						}
 					} else {
 						DataObject dataObject = objectMapper.readValue(file, new TypeReference<DataObject>() {

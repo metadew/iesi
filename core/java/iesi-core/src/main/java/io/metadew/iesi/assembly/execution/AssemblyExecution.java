@@ -181,7 +181,7 @@ public class AssemblyExecution {
                 if (dataObject.getType().equalsIgnoreCase("actiontype")) {
                     ActionType actionType = objectMapper.convertValue(dataObject.getData(), ActionType.class);
                     dataObjectOutput = new DataObject("ActionType", actionType);
-                    name = actionType.getName();
+                    //name = actionType.getName();
                 } else if (dataObject.getType().equalsIgnoreCase("componenttype")) {
                     ComponentType componentType = objectMapper.convertValue(dataObject.getData(),
                             ComponentType.class);
@@ -191,7 +191,7 @@ public class AssemblyExecution {
                     ConnectionType connectionType = objectMapper.convertValue(dataObject.getData(),
                             ConnectionType.class);
                     dataObjectOutput = new DataObject("ConnectionType", connectionType);
-                    name = connectionType.getName();
+                    // name = connectionType.getName();
                 } else if (dataObject.getType().equalsIgnoreCase("generationtype")) {
                     GenerationType generationType = objectMapper.convertValue(dataObject.getData(),
                             GenerationType.class);

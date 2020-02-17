@@ -17,7 +17,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public abstract class Database {
 
@@ -297,109 +296,114 @@ public abstract class Database {
 
     // TODO: remove
     public String getCreateStatement(MetadataTable table, String tableNamePrefix) {
-        StringBuilder createQuery = new StringBuilder();
-        // StringBuilder fieldComments = new StringBuilder();
-        String tableName = tableNamePrefix + table.getName();
-
-        createQuery.append("CREATE TABLE ").append(tableName).append("\n(\n");
-        int counter = 1;
-        for (MetadataField field : table.getFields()) {
-            if (counter > 1) {
-                createQuery.append(",\n");
-            }
-            createQuery.append("\t").append(field.getName());
-
-            int tabNumber = 1;
-            if (field.getName().length() >= 8) {
-                tabNumber = (int) (4 - Math.ceil((double) field.getName().length() / 8));
-            } else {
-                tabNumber = 4;
-            }
-
-            for (int tabCount = 1; tabCount <= tabNumber; tabCount++) {
-                createQuery.append("\t");
-            }
-
-            createQuery.append(toQueryString(field));
-            /*
-             * TODO create comment syntax inside subclasses returning stringbuilder rather
-             * than just a boolean
-             *
-             * if (addComments() && field.getDescription().isPresent()) {
-             * fieldComments.append("\nCOMMENT ON COLUMN ").append(tableName).append(".").
-             * append(field.getScriptName())
-             * .append(" IS '").append(field.getDescription().get()).append("';"); }
-             */
-            counter++;
-        }
-
-        createQuery.append("\n)\n").append(createQueryExtras()).append(";");
-        // createQuery.append(fieldComments).append("\n\n");
-
-        return createQuery.toString();
+//        StringBuilder createQuery = new StringBuilder();
+//        // StringBuilder fieldComments = new StringBuilder();
+//        String tableName = tableNamePrefix + table.getName();
+//
+//        createQuery.append("CREATE TABLE ").append(tableName).append("\n(\n");
+//        int counter = 1;
+//        for (MetadataField field : table.getFields()) {
+//            if (counter > 1) {
+//                createQuery.append(",\n");
+//            }
+//            createQuery.append("\t").append(field.getName());
+//
+//            int tabNumber = 1;
+//            if (field.getName().length() >= 8) {
+//                tabNumber = (int) (4 - Math.ceil((double) field.getName().length() / 8));
+//            } else {
+//                tabNumber = 4;
+//            }
+//
+//            for (int tabCount = 1; tabCount <= tabNumber; tabCount++) {
+//                createQuery.append("\t");
+//            }
+//
+//            createQuery.append(toQueryString(field));
+//            /*
+//             * TODO create comment syntax inside subclasses returning stringbuilder rather
+//             * than just a boolean
+//             *
+//             * if (addComments() && field.getDescription().isPresent()) {
+//             * fieldComments.append("\nCOMMENT ON COLUMN ").append(tableName).append(".").
+//             * append(field.getScriptName())
+//             * .append(" IS '").append(field.getDescription().get()).append("';"); }
+//             */
+//            counter++;
+//        }
+//
+//        createQuery.append("\n)\n").append(createQueryExtras()).append(";");
+//        // createQuery.append(fieldComments).append("\n\n");
+//
+//        return createQuery.toString();
+        return null;
     }
 
     public String getDeleteStatement(MetadataTable table) {
-        return "delete from " + table.getName() + ";";
+        //return "delete from " + table.getName() + ";";
+        return null;
     }
 
     public String getDropStatement(MetadataTable table) {
-        return "drop table " + table.getName() + ";";
+        //return "drop table " + table.getName() + ";";
+        return null;
     }
 
     public String getCreateStatement(MetadataTable table) {
-        StringBuilder createQuery = new StringBuilder();
-        // StringBuilder fieldComments = new StringBuilder();
-        String tableName = table.getName();
-        createQuery.append("CREATE TABLE ").append(tableName).append("\n(\n");
-        int counter = 1;
-        for (MetadataField field : table.getFields()) {
-            if (counter > 1) {
-                createQuery.append(",\n");
-            }
-            createQuery.append("\t").append(field.getName());
-
-            int tabNumber = 1;
-            if (field.getName().length() >= 8) {
-                tabNumber = (int) (4 - Math.ceil((double) field.getName().length() / 8));
-            } else {
-                tabNumber = 4;
-            }
-
-            for (int tabCount = 1; tabCount <= tabNumber; tabCount++) {
-                createQuery.append("\t");
-            }
-
-            createQuery.append(toQueryString(field));
-            /*
-             * TODO create comment syntax inside subclasses returning stringbuilder rather
-             * than just a boolean
-             *
-             * if (addComments() && field.getDescription().isPresent()) {
-             * fieldComments.append("\nCOMMENT ON COLUMN ").append(tableName).append(".").
-             * append(field.getScriptName())
-             * .append(" IS '").append(field.getDescription().get()).append("';"); }
-             */
-            counter++;
-        }
-        getPrimaryKeyConstraints(table).ifPresent(primaryKeysConstraint -> createQuery.append(",\n").append(primaryKeysConstraint));
-
-        createQuery.append("\n);\n");
-        createQuery.append(createQueryExtras());
-        // createQuery.append(fieldComments).append("\n\n");
-
-        return createQuery.toString();
+//        StringBuilder createQuery = new StringBuilder();
+//        // StringBuilder fieldComments = new StringBuilder();
+//        String tableName = table.getName();
+//        createQuery.append("CREATE TABLE ").append(tableName).append("\n(\n");
+//        int counter = 1;
+//        for (MetadataField field : table.getFields()) {
+//            if (counter > 1) {
+//                createQuery.append(",\n");
+//            }
+//            createQuery.append("\t").append(field.getName());
+//
+//            int tabNumber = 1;
+//            if (field.getName().length() >= 8) {
+//                tabNumber = (int) (4 - Math.ceil((double) field.getName().length() / 8));
+//            } else {
+//                tabNumber = 4;
+//            }
+//
+//            for (int tabCount = 1; tabCount <= tabNumber; tabCount++) {
+//                createQuery.append("\t");
+//            }
+//
+//            createQuery.append(toQueryString(field));
+//            /*
+//             * TODO create comment syntax inside subclasses returning stringbuilder rather
+//             * than just a boolean
+//             *
+//             * if (addComments() && field.getDescription().isPresent()) {
+//             * fieldComments.append("\nCOMMENT ON COLUMN ").append(tableName).append(".").
+//             * append(field.getScriptName())
+//             * .append(" IS '").append(field.getDescription().get()).append("';"); }
+//             */
+//            counter++;
+//        }
+//        getPrimaryKeyConstraints(table).ifPresent(primaryKeysConstraint -> createQuery.append(",\n").append(primaryKeysConstraint));
+//
+//        createQuery.append("\n);\n");
+//        createQuery.append(createQueryExtras());
+//        // createQuery.append(fieldComments).append("\n\n");
+//
+//        return createQuery.toString();
+        return null;
     }
 
     Optional<String> getPrimaryKeyConstraints(MetadataTable metadataTable) {
-        List<MetadataField> primaryKeyMetadataFields = metadataTable.getFields().stream()
-                .filter(MetadataField::isPrimaryKey)
-                .collect(Collectors.toList());
-        if (primaryKeyMetadataFields.isEmpty()) {
-            return Optional.empty();
-        } else {
-            return Optional.of("CONSTRAINT pk_" + metadataTable.getName() + " PRIMARY KEY (" + primaryKeyMetadataFields.stream().map(MetadataField::getName).collect(Collectors.joining(", ")) + ")");
-        }
+//        List<MetadataField> primaryKeyMetadataFields = metadataTable.getFields().stream()
+//                .filter(MetadataField::isPrimaryKey)
+//                .collect(Collectors.toList());
+//        if (primaryKeyMetadataFields.isEmpty()) {
+//            return Optional.empty();
+//        } else {
+//            return Optional.of("CONSTRAINT pk_" + metadataTable.getName() + " PRIMARY KEY (" + primaryKeyMetadataFields.stream().map(MetadataField::getName).collect(Collectors.joining(", ")) + ")");
+//        }
+        return null;
     }
 
     public void dropTable(MetadataTable table) {

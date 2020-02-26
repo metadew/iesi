@@ -6,4 +6,4 @@ server:
     key-store-type: PKCS12
     key-store-password: password
   use-forward-headers: true
-  port: 12580
+  port: 8080

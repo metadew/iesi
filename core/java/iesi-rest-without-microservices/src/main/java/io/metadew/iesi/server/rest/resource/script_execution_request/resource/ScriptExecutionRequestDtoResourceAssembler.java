@@ -14,7 +14,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 @Component
-public  class ScriptExecutionRequestDtoResourceAssembler extends ResourceAssemblerSupport<ScriptExecutionRequest, ScriptExecutionRequestDto> {
+public class ScriptExecutionRequestDtoResourceAssembler extends ResourceAssemblerSupport<ScriptExecutionRequest, ScriptExecutionRequestDto> {
 
     @Autowired
     public ScriptExecutionRequestDtoResourceAssembler() {

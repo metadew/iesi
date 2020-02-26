@@ -6,8 +6,10 @@ import io.metadew.iesi.metadata.configuration.action.design.ActionParameterDesig
 import io.metadew.iesi.metadata.configuration.action.trace.ActionParameterTraceConfiguration;
 import io.metadew.iesi.metadata.configuration.action.trace.ActionTraceConfiguration;
 import io.metadew.iesi.metadata.configuration.script.design.ScriptDesignTraceConfiguration;
+import io.metadew.iesi.metadata.configuration.script.design.ScriptLabelDesignTraceConfiguration;
 import io.metadew.iesi.metadata.configuration.script.design.ScriptParameterDesignTraceConfiguration;
 import io.metadew.iesi.metadata.configuration.script.design.ScriptVersionDesignTraceConfiguration;
+import io.metadew.iesi.metadata.configuration.script.trace.ScriptLabelTraceConfiguration;
 import io.metadew.iesi.metadata.configuration.script.trace.ScriptParameterTraceConfiguration;
 import io.metadew.iesi.metadata.configuration.script.trace.ScriptTraceConfiguration;
 import io.metadew.iesi.metadata.configuration.script.trace.ScriptVersionTraceConfiguration;
@@ -29,6 +31,8 @@ public class TraceMetadataRepository extends MetadataRepository {
         ScriptDesignTraceConfiguration.getInstance().init(this);
         ScriptVersionDesignTraceConfiguration.getInstance().init(this);
         ScriptParameterDesignTraceConfiguration.getInstance().init(this);
+        ScriptLabelDesignTraceConfiguration.getInstance().init(this);
+        ScriptLabelTraceConfiguration.getInstance().init(this);
         ScriptTraceConfiguration.getInstance().init(this);
         ScriptVersionTraceConfiguration.getInstance().init(this);
         ScriptParameterTraceConfiguration.getInstance().init(this);

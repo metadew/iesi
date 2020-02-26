@@ -252,6 +252,6 @@ public class ConnectionConfiguration extends Configuration<Connection, Connectio
         getMetadataRepository().executeUpdate("UPDATE " + getMetadataRepository().getTableNameByLabel("Connections") +
                 " SET CONN_TYP_NM = " + SQLTools.GetStringForSQL(connection.getType()) +
                 " , CONN_DSC = " + SQLTools.GetStringForSQL(connection.getDescription()) +
-                " WHERE CONN_NM = " + SQLTools.GetStringForSQL(connection.getName()) + ";");
+                " WHERE CONN_NM = " + SQLTools.GetStringForSQL(connection.getMetadataKey().getName()) + ";");
     }
 }

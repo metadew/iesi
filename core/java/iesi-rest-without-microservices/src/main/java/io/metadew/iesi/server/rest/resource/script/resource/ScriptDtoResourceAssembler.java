@@ -4,11 +4,9 @@ package io.metadew.iesi.server.rest.resource.script.resource;
 import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.script.Script;
+import io.metadew.iesi.metadata.definition.script.ScriptLabel;
 import io.metadew.iesi.server.rest.controller.ScriptController;
-import io.metadew.iesi.server.rest.resource.script.dto.ScriptActionDto;
-import io.metadew.iesi.server.rest.resource.script.dto.ScriptActionParameterDto;
-import io.metadew.iesi.server.rest.resource.script.dto.ScriptDto;
-import io.metadew.iesi.server.rest.resource.script.dto.ScriptVersionDto;
+import io.metadew.iesi.server.rest.resource.script.dto.*;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
 import org.springframework.stereotype.Component;
@@ -40,17 +38,22 @@ public class ScriptDtoResourceAssembler extends ResourceAssemblerSupport<Script,
     private ScriptDto convertToDto(Script script) {
         return new ScriptDto(script.getName(), script.getDescription(),
                 ScriptVersionDto.convertToDto(script.getVersion()), script.getParameters(),
-                script.getActions().stream().map(this::convertToDto).collect(Collectors.toList()));
+                script.getActions().stream().map(this::convertToDto).collect(Collectors.toList()),
+                script.getLabels().stream().map(this::convertToDto).collect(Collectors.toList()));
     }
 
 
-    private ScriptActionDto convertToDto(Action action){
-        return new ScriptActionDto(action.getNumber(),action.getName(),action.getType(), action.getDescription(),action.getComponent(),
-                action.getCondition(), action.getIteration(), action.getErrorExpected(),action.getErrorStop(),action.getRetries(),
+    private ScriptActionDto convertToDto(Action action) {
+        return new ScriptActionDto(action.getNumber(), action.getName(), action.getType(), action.getDescription(), action.getComponent(),
+                action.getCondition(), action.getIteration(), action.getErrorExpected(), action.getErrorStop(), action.getRetries(),
                 action.getParameters().stream().map(this::convertToDto).collect(Collectors.toList()));
     }
 
-    private ScriptActionParameterDto convertToDto(ActionParameter actionParameter){
+    private ScriptLabelDto convertToDto(ScriptLabel scriptLabel) {
+        return new ScriptLabelDto(scriptLabel.getName(), scriptLabel.getValue());
+    }
+
+    private ScriptActionParameterDto convertToDto(ActionParameter actionParameter) {
         return new ScriptActionParameterDto(actionParameter.getMetadataKey().getParameterName(), actionParameter.getValue());
     }
 

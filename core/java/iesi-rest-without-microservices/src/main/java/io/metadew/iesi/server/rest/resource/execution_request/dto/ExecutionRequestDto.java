@@ -11,12 +11,11 @@ import lombok.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
-@NoArgsConstructor
-@Getter
-@Setter
-@ToString
+@Data
+@AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 public class ExecutionRequestDto extends Dto {
 
@@ -29,26 +28,16 @@ public class ExecutionRequestDto extends Dto {
     private String email;
     private ExecutionRequestStatus executionRequestStatus;
     private List<ScriptExecutionRequestDto> scriptExecutionRequests;
-
-    public ExecutionRequestDto(String executionRequestId, LocalDateTime requestTimestamp, String name, String description, String scope, String context,
-                               String email, ExecutionRequestStatus executionRequestStatus, List<ScriptExecutionRequestDto> scriptExecutionRequests) {
-        super();
-        this.executionRequestId = executionRequestId;
-        this.requestTimestamp = requestTimestamp;
-        this.name = name;
-        this.description = description;
-        this.scope = scope;
-        this.context = context;
-        this.email = email;
-        this.executionRequestStatus = executionRequestStatus;
-        this.scriptExecutionRequests = scriptExecutionRequests;
-    }
+    private List<ExecutionRequestLabelDto> executionRequestLabels;
 
     public ExecutionRequest convertToEntity() {
         return new NonAuthenticatedExecutionRequest(new ExecutionRequestKey(executionRequestId), requestTimestamp, name,
                 context, description, scope, context, executionRequestStatus, scriptExecutionRequests.stream()
                 .map(ScriptExecutionRequestDto::convertToEntity)
-                .collect(Collectors.toList()));
+                .collect(Collectors.toList()),
+                executionRequestLabels.stream()
+                        .map(label -> label.convertToEntity(new ExecutionRequestKey(executionRequestId)))
+                        .collect(Collectors.toList()));
     }
 
     public ExecutionRequest convertToNewEntity() throws ExecutionRequestBuilderException {
@@ -57,6 +46,8 @@ public class ExecutionRequestDto extends Dto {
                 .context(context)
                 .description(description)
                 .scope(scope)
+                .executionRequestLabels(executionRequestLabels.stream()
+                        .collect(Collectors.toMap(ExecutionRequestLabelDto::getName, ExecutionRequestLabelDto::getValue)))
                 .build();
         List<ScriptExecutionRequest> scriptExecutionRequests = new ArrayList<>();
         for (ScriptExecutionRequestDto scriptExecutionRequest : this.scriptExecutionRequests) {
@@ -66,10 +57,9 @@ public class ExecutionRequestDto extends Dto {
                 throw new RuntimeException(e);
             }
         }
+
         executionRequest.setScriptExecutionRequests(scriptExecutionRequests);
         return executionRequest;
     }
-
-    // public abstract ExecutionRequest convertToEntity(ExecutionRequestDto executionRequestDto) throws ExecutionRequestBuilderException;
 
 }

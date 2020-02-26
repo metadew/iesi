@@ -1,16 +1,18 @@
 package io.metadew.iesi.server.rest.resource.connection.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import io.metadew.iesi.server.rest.resource.Dto;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.springframework.hateoas.ResourceSupport;
 
-public class ConnectionGlobalDto extends ResourceSupport {
+@Data
+@EqualsAndHashCode(callSuper = false)
+@AllArgsConstructor
+public class ConnectionGlobalDto extends Dto {
 
-    @Setter private String name;
-    @Getter @Setter private String type;
-    @Getter @Setter private String description;
+    private String name;
+    private String type;
+    private String description;
 
-    public String getName() {
-        return this.name;
-    }
 }

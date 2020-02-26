@@ -87,12 +87,12 @@ public class ConnectivityMetadataRepository extends MetadataRepository {
 
     public void save(Connection connection) {
         LOGGER.info(MessageFormat.format("Inserting connection {0}-{1} into connectivity repository",
-                connection.getName(), connection.getEnvironment()));
+                connection.getMetadataKey().getName(), connection.getMetadataKey().getEnvironmentKey().getName()));
         try {
             ConnectionConfiguration.getInstance().insert(connection);
         } catch (MetadataAlreadyExistsException e1) {
             LOGGER.info(MessageFormat.format("Connection {0}-{1} already exists in connectivity repository. Updating connection {0}-{1} instead.",
-                    connection.getName(), connection.getEnvironment()));
+                    connection.getMetadataKey().getName(), connection.getMetadataKey().getEnvironmentKey().getName()));
             ConnectionConfiguration.getInstance().update(connection);
         }
     }

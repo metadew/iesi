@@ -36,9 +36,9 @@ public class FileTransferOperation {
         List<FileTransfered> fileTransferedList = new ArrayList();
         ConnectionOperation connectionOperation = new ConnectionOperation();
         HostConnection sourceConnectionConnection = connectionOperation.getHostConnection(sourceConnection);
-        LOGGER.trace("fho.transfer.source.connection=" + sourceConnection.getName());
+        LOGGER.trace("fho.transfer.source.connection=" + sourceConnection.getMetadataKey().getName());
         HostConnection targetConnectionConnection = connectionOperation.getHostConnection(targetConnection);
-        LOGGER.trace("fho.transfer.target.connection=" + targetConnection.getName());
+        LOGGER.trace("fho.transfer.target.connection=" + targetConnection.getMetadataKey().getName());
 
         try {
             String filepath = sourceFilePath + File.separator + sourceFileName;
@@ -137,9 +137,9 @@ public class FileTransferOperation {
         List<FileTransfered> fileTransferedList = new ArrayList();
         ConnectionOperation connectionOperation = new ConnectionOperation();
         HostConnection sourceConnectionConnection = connectionOperation.getHostConnection(sourceConnection);
-        LOGGER.trace("fho.transfer.source.connection=" + sourceConnection.getName());
+        LOGGER.trace("fho.transfer.source.connection=" + sourceConnection.getMetadataKey().getName());
         HostConnection targetConnectionConnection = connectionOperation.getHostConnection(targetConnection);
-        LOGGER.trace("fho.transfer.target.connection=" + targetConnection.getName());
+        LOGGER.trace("fho.transfer.target.connection=" + targetConnection.getMetadataKey().getName());
 
         try {
             String filepath = targetFilePath + File.separator + targetFileName;

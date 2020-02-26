@@ -5,10 +5,7 @@ import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.execution.script.ScriptExecutionRequestConfiguration;
-import io.metadew.iesi.metadata.definition.execution.AuthenticatedExecutionRequest;
-import io.metadew.iesi.metadata.definition.execution.ExecutionRequest;
-import io.metadew.iesi.metadata.definition.execution.ExecutionRequestStatus;
-import io.metadew.iesi.metadata.definition.execution.NonAuthenticatedExecutionRequest;
+import io.metadew.iesi.metadata.definition.execution.*;
 import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequest;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
@@ -41,6 +38,7 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
     // Constructors
     public void init(MetadataRepository metadataRepository) {
         setMetadataRepository(metadataRepository);
+        ExecutionRequestLabelConfiguration.getInstance().init(metadataRepository);
     }
 
 
@@ -81,6 +79,7 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
                         cachedRowSet.getString("CONTEXT_NM"),
                         ExecutionRequestStatus.valueOf(cachedRowSet.getString("ST_NM")),
                         ScriptExecutionRequestConfiguration.getInstance().getByExecutionRequest(executionRequestKey),
+                        ExecutionRequestLabelConfiguration.getInstance().getByExecutionRequest(executionRequestKey),
                         cachedRowSet.getString("SPACE_NM"),
                         cachedRowSet.getString("USER_NM"), cachedRowSet.getString("USER_PASSWORD")));
             } else if (cachedRowSet.getString("NON_AUTH") != null) {
@@ -92,11 +91,11 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
                         cachedRowSet.getString("SCOPE_NM"),
                         cachedRowSet.getString("CONTEXT_NM"),
                         ExecutionRequestStatus.valueOf(cachedRowSet.getString("ST_NM")),
-                        ScriptExecutionRequestConfiguration.getInstance().getByExecutionRequest(executionRequestKey)));
+                        ScriptExecutionRequestConfiguration.getInstance().getByExecutionRequest(executionRequestKey),
+                        ExecutionRequestLabelConfiguration.getInstance().getByExecutionRequest(executionRequestKey)));
             } else {
                 LOGGER.warn(MessageFormat.format("ExecutionRequest {0} does not have a certain class", executionRequestKey.toString()));
                 return Optional.empty();
-
             }
 
 //        switch (cachedRowSet.getInt("clazz")) {
@@ -163,6 +162,7 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
                             cachedRowSet.getString("CONTEXT_NM"),
                             ExecutionRequestStatus.valueOf(cachedRowSet.getString("ST_NM")),
                             ScriptExecutionRequestConfiguration.getInstance().getByExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID"))),
+                            ExecutionRequestLabelConfiguration.getInstance().getByExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID"))),
                             cachedRowSet.getString("SPACE_NM"),
                             cachedRowSet.getString("USER_NM"), cachedRowSet.getString("USER_PASSWORD")));
                 } else if (cachedRowSet.getString("NON_AUTH") != null) {
@@ -174,7 +174,8 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
                             cachedRowSet.getString("SCOPE_NM"),
                             cachedRowSet.getString("CONTEXT_NM"),
                             ExecutionRequestStatus.valueOf(cachedRowSet.getString("ST_NM")),
-                            ScriptExecutionRequestConfiguration.getInstance().getByExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID")))));
+                            ScriptExecutionRequestConfiguration.getInstance().getByExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID"))),
+                            ExecutionRequestLabelConfiguration.getInstance().getByExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID")))));
                 } else {
                     LOGGER.warn(MessageFormat.format("ExecutionRequest {0} does not have a certain class", cachedRowSet.getString("REQUEST_ID")));
 
@@ -243,6 +244,7 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
                             cachedRowSet.getString("CONTEXT_NM"),
                             ExecutionRequestStatus.valueOf(cachedRowSet.getString("ST_NM")),
                             ScriptExecutionRequestConfiguration.getInstance().getByExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID"))),
+                            ExecutionRequestLabelConfiguration.getInstance().getByExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID"))),
                             cachedRowSet.getString("SPACE_NM"),
                             cachedRowSet.getString("USER_NM"), cachedRowSet.getString("USER_PASSWORD")));
                 } else if (cachedRowSet.getString("NON_AUTH") != null) {
@@ -254,7 +256,8 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
                             cachedRowSet.getString("SCOPE_NM"),
                             cachedRowSet.getString("CONTEXT_NM"),
                             ExecutionRequestStatus.valueOf(cachedRowSet.getString("ST_NM")),
-                            ScriptExecutionRequestConfiguration.getInstance().getByExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID")))));
+                            ScriptExecutionRequestConfiguration.getInstance().getByExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID"))),
+                            ExecutionRequestLabelConfiguration.getInstance().getByExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID")))));
                 } else {
                     LOGGER.warn(MessageFormat.format("ExecutionRequest {0} does not have a certain class", cachedRowSet.getString("REQUEST_ID")));
 

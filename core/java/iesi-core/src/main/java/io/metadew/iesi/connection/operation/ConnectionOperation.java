@@ -111,7 +111,7 @@ public class ConnectionOperation {
             }
 
             if (this.isMissingMandatoryFields()) {
-                String message = "Mandatory fields missing for oracle connection " + connection.getName();
+                String message = "Mandatory fields missing for oracle connection " + connection.getMetadataKey().getName();
                 throw new RuntimeException(message);
             }
 
@@ -204,7 +204,7 @@ public class ConnectionOperation {
             }
 
             if (this.isMissingMandatoryFields()) {
-                String message = "Mandatory fields missing for netezza connection " + connection.getName();
+                String message = "Mandatory fields missing for netezza connection " + connection.getMetadataKey().getName();
                 throw new RuntimeException(message);
             }
 
@@ -288,7 +288,7 @@ public class ConnectionOperation {
             }
 
             if (this.isMissingMandatoryFields()) {
-                String message = "Mandatory fields missing for postgres connection " + connection.getName();
+                String message = "Mandatory fields missing for postgres connection " + connection.getMetadataKey().getName();
                 throw new RuntimeException(message);
             }
 
@@ -372,7 +372,7 @@ public class ConnectionOperation {
             }
 
             if (this.isMissingMandatoryFields()) {
-                String message = "Mandatory fields missing for mysql connection " + connection.getName();
+                String message = "Mandatory fields missing for mysql connection " + connection.getMetadataKey().getName();
                 throw new RuntimeException(message);
             }
 
@@ -431,7 +431,7 @@ public class ConnectionOperation {
             }
 
             if (this.isMissingMandatoryFields()) {
-                String message = "Mandatory fields missing for sqlite connection " + connection.getName() +". "
+                String message = "Mandatory fields missing for sqlite connection " + connection.getMetadataKey().getName() +". "
 						+ String.join(", ", missingMandatoryFieldsList) + ". " + connection.getParameters().stream()
 						.map(connectionParameter -> connectionParameter.getName() + " = " + connectionParameter.getValue())
 						.collect(Collectors.joining(", "));
@@ -517,7 +517,7 @@ public class ConnectionOperation {
             }
 
             if (this.isMissingMandatoryFields()) {
-                String message = "Mandatory fields missing for windows host connection " + connection.getName();
+                String message = "Mandatory fields missing for windows host connection " + connection.getMetadataKey().getName();
                 throw new RuntimeException(message);
             }
 
@@ -609,7 +609,7 @@ public class ConnectionOperation {
             }
 
             if (this.isMissingMandatoryFields()) {
-                String message = "Mandatory fields missing for linux host connection " + connection.getName();
+                String message = "Mandatory fields missing for linux host connection " + connection.getMetadataKey().getName();
                 throw new RuntimeException(message);
             }
 
@@ -695,7 +695,7 @@ public class ConnectionOperation {
             }
 
             if (this.isMissingMandatoryFields()) {
-                String message = "Mandatory fields missing for artifactory connection " + connection.getName();
+                String message = "Mandatory fields missing for artifactory connection " + connection.getMetadataKey().getName();
                 throw new RuntimeException(message);
             }
 

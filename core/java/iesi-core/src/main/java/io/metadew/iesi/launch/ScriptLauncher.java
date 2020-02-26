@@ -7,10 +7,7 @@ import io.metadew.iesi.framework.execution.FrameworkExecutionContext;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.execution.ExecutionRequestConfiguration;
 import io.metadew.iesi.metadata.definition.Context;
-import io.metadew.iesi.metadata.definition.execution.ExecutionRequest;
-import io.metadew.iesi.metadata.definition.execution.ExecutionRequestBuilder;
-import io.metadew.iesi.metadata.definition.execution.ExecutionRequestBuilderException;
-import io.metadew.iesi.metadata.definition.execution.ExecutionRequestStatus;
+import io.metadew.iesi.metadata.definition.execution.*;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequestBuilder;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequestBuilderException;
 import io.metadew.iesi.runtime.ExecutionRequestExecutorService;
@@ -21,9 +18,7 @@ import org.apache.logging.log4j.ThreadContext;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * The execution launcher is entry point to launch all automation scripts.
@@ -48,7 +43,8 @@ public class ScriptLauncher {
                 .addOption(Option.builder("impersonation").hasArg().desc("define impersonation name to use").build())
                 .addOption(Option.builder("exit").hasArg().desc("define if an explicit exit is required").build())
                 .addOption(Option.builder("password").hasArg().desc("define the password to log in with").build())
-                .addOption(Option.builder("user").hasArg().desc("define the user to log in with").build());
+                .addOption(Option.builder("user").hasArg().desc("define the user to log in with").build())
+                .addOption(Option.builder("labels").hasArgs().desc("define the user to log in with").build());
 
         // create the parser
         CommandLineParser parser = new DefaultParser();
@@ -166,11 +162,19 @@ public class ScriptLauncher {
                 executionRequestBuilder.user(line.getOptionValue("user"));
             }
 
-            // Get the user password
-            if (line.hasOption("password")) {
-                System.out.println("Option -password (password) value = " + "*****");
-                executionRequestBuilder.password(line.getOptionValue("password"));
+        // Get the user password
+        if (line.hasOption("password")) {
+            System.out.println("Option -password (password) value = " + "*****");
+            executionRequestBuilder.password(line.getOptionValue("password"));
+        }
+        // Get the labels
+        if (line.hasOption("labels")) {
+            System.out.println("Option -labels (labels) value = " + Arrays.toString(line.getOptionValues("labels")));
+            List<ExecutionRequestLabel> executionRequestLabels = new ArrayList<>();
+            for (String label : line.getOptionValues("labels")) {
+                executionRequestBuilder.executionRequestLabel(label.split("=")[0], label.split("=")[1]);
             }
+        }
 
         // Server mode
         String serverMode = "off";
@@ -200,7 +204,7 @@ public class ScriptLauncher {
         ExecutionRequestConfiguration.getInstance().insert(executionRequest);
 
         if (serverMode.equalsIgnoreCase("off")) {
-            executionRequest.updateExecutionRequestStatus(ExecutionRequestStatus.SUBMITTED);
+            executionRequest.setExecutionRequestStatus(ExecutionRequestStatus.SUBMITTED);
             ExecutionRequestConfiguration.getInstance().update(executionRequest);
             ExecutionRequestExecutorService.getInstance().execute(executionRequest);
         } else if (serverMode.equalsIgnoreCase("standalone")) {

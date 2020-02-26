@@ -1,11 +1,17 @@
 package io.metadew.iesi.server.rest.resource.component.resource;
 
 import io.metadew.iesi.metadata.definition.component.Component;
+import io.metadew.iesi.metadata.definition.component.ComponentAttribute;
+import io.metadew.iesi.metadata.definition.component.ComponentParameter;
 import io.metadew.iesi.server.rest.controller.ComponentsController;
+import io.metadew.iesi.server.rest.resource.component.dto.ComponentAttributeDto;
 import io.metadew.iesi.server.rest.resource.component.dto.ComponentDto;
+import io.metadew.iesi.server.rest.resource.component.dto.ComponentParameterDto;
 import io.metadew.iesi.server.rest.resource.component.dto.ComponentVersionDto;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
+
+import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
@@ -30,9 +36,19 @@ public class ComponentDtoResourceAssembler extends ResourceAssemblerSupport<Comp
         return componentDto;
     }
 
-
     private ComponentDto convertToDto(Component component) {
         return new ComponentDto(component.getType(), component.getName(), component.getDescription(),
-                new ComponentVersionDto(component.getVersion().getMetadataKey().getComponentKey().getVersionNumber(), component.getVersion().getDescription()), component.getParameters(), component.getAttributes());
+                new ComponentVersionDto(component.getVersion().getMetadataKey().getComponentKey().getVersionNumber(), component.getVersion().getDescription()),
+                component.getParameters().stream().map(this::convertToDto).collect(Collectors.toList()),
+                component.getAttributes().stream().map(this::convertToDto).collect(Collectors.toList()));
+    }
+
+    private ComponentParameterDto convertToDto(ComponentParameter componentParameter) {
+        return new ComponentParameterDto(componentParameter.getMetadataKey().getParameterName(), componentParameter.getValue());
+    }
+
+    private ComponentAttributeDto convertToDto(ComponentAttribute componentAttribute) {
+        return new ComponentAttributeDto(componentAttribute.getMetadataKey().getEnvironmentKey().getName(),
+                componentAttribute.getMetadataKey().getComponentAttributeName(), componentAttribute.getValue());
     }
 }

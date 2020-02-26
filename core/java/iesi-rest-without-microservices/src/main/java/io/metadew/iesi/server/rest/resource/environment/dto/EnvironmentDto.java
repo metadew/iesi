@@ -2,40 +2,23 @@ package io.metadew.iesi.server.rest.resource.environment.dto;
 
 import io.metadew.iesi.metadata.definition.environment.Environment;
 import io.metadew.iesi.metadata.definition.environment.EnvironmentParameter;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.springframework.hateoas.ResourceSupport;
 
 import java.util.List;
 
+@Data
+@EqualsAndHashCode(callSuper = false)
+@AllArgsConstructor
 public class EnvironmentDto extends ResourceSupport {
-    @Getter @Setter private String name;
-    @Getter @Setter private String description;
-    @Getter @Setter private List<EnvironmentParameter> parameters;
+    private String name;
+    private String description;
+    private List<EnvironmentParameter> parameters;
 
-    public EnvironmentDto(Environment environment){}
-
-    public EnvironmentDto(String name, String description, List<EnvironmentParameter> parameters) {
-        this.name = name;
-        this.description = description;
-        this.parameters = parameters;
-    }
     public Environment convertToEntity() {
         return new Environment(name, description, parameters);
-    }
-
-    public String getName() {
-        return name;
-    }
-
-
-    public String getDescription() {
-        return description;
-    }
-
-
-    public List<EnvironmentParameter> getParameters() {
-        return parameters;
     }
 
 }

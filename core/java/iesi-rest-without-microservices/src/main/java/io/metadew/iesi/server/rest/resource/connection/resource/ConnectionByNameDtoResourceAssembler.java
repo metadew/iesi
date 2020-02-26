@@ -37,7 +37,7 @@ public class ConnectionByNameDtoResourceAssembler extends ResourceAssemblerSuppo
 
         ConnectionByNameDto connectionByNameDto = modelMapper.map(connections.get(0), ConnectionByNameDto.class);
         connectionByNameDto.setEnvironments(connections.stream()
-                .map(Connection::getEnvironment)
+                .map(connection -> connection.getMetadataKey().getEnvironmentKey().getName())
                 .collect(Collectors.toList()));
         return connectionByNameDto;
     }

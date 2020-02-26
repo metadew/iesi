@@ -79,7 +79,7 @@ public class DbMssqlConnectionOperation {
         }
 
         if (this.isMissingMandatoryFields()) {
-            String message = "Mandatory fields missing for connection " + connection.getName();
+            String message = "Mandatory fields missing for connection " + connection.getMetadataKey().getName();
             throw new RuntimeException(message);
         }
 

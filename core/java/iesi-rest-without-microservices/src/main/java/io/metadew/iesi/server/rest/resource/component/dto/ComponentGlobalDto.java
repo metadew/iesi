@@ -1,36 +1,20 @@
 package io.metadew.iesi.server.rest.resource.component.dto;
 
+import io.metadew.iesi.server.rest.resource.Dto;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.springframework.hateoas.ResourceSupport;
 
-public class ComponentGlobalDto extends ResourceSupport {
+@Data
+@EqualsAndHashCode(callSuper = false)
+@AllArgsConstructor
+public class ComponentGlobalDto extends Dto {
 
     private String type;
     private String name;
     private String description;
 
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
 }
 
 

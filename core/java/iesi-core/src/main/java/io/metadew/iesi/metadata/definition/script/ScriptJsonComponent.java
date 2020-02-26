@@ -11,9 +11,12 @@ import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.action.ActionParameterJsonComponent;
 import io.metadew.iesi.metadata.definition.action.key.ActionKey;
 import io.metadew.iesi.metadata.definition.action.key.ActionParameterKey;
+import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
+import io.metadew.iesi.metadata.definition.script.key.ScriptLabelKey;
 import io.metadew.iesi.metadata.definition.script.key.ScriptParameterKey;
 import io.metadew.iesi.metadata.definition.script.key.ScriptVersionKey;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
+import org.apache.commons.codec.digest.DigestUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -30,7 +33,7 @@ public class ScriptJsonComponent {
         VERSION_KEY("version"),
         PARAMETERS_KEY("parameters"),
         ACTIONS_KEY("actions"),
-        VALUE_KEY("value");
+        LABELS_KEY("labels");
 
 
         private final String label;
@@ -63,14 +66,14 @@ public class ScriptJsonComponent {
                 versionNumber = 0L;
                 scriptVersion = new ScriptVersion(new ScriptVersionKey(scriptId, versionNumber), "default version");
             }
+            ScriptKey scriptKey = new ScriptKey(scriptId, versionNumber);
 
-            //version
 
             //script parameters
             List<ScriptParameter> scriptParameters = new ArrayList<>();
             if (node.get(ScriptJsonComponent.Field.PARAMETERS_KEY.value()) != null) {
                 for (JsonNode scriptParameterNode : node.get(ScriptJsonComponent.Field.PARAMETERS_KEY.value())) {
-                    scriptParameters.add(new ScriptParameter(new ScriptParameterKey(scriptId, versionNumber,
+                    scriptParameters.add(new ScriptParameter(new ScriptParameterKey(scriptKey,
                             scriptParameterNode.get(ScriptParameterJsonComponent.Field.PARAMETER_NAME_KEY.value()).asText()),
                             scriptParameterNode.get(ScriptParameterJsonComponent.Field.PARAMETER_VALUE_KEY.value()).asText()));
                 }
@@ -85,18 +88,14 @@ public class ScriptJsonComponent {
                 List<ActionParameter> actionParameters = new ArrayList<>();
                 for (JsonNode scriptActionParNode : scriptActionNode.get(ActionJsonComponent.Field.PARAMETERS_KEY.value())) {
                     actionParameters.add(new ActionParameter(
-                            new ActionParameterKey(
-                                    scriptId, versionNumber, action_id,
+                            new ActionParameterKey(new ActionKey(scriptKey, action_id),
                                     scriptActionParNode.get(ActionParameterJsonComponent.Field.PARAMETER_NAME_KEY.value()).asText()
                             ),
                             scriptActionParNode.get(ActionParameterJsonComponent.Field.PARAMETER_VALUE_KEY.value()).asText()
                     ));
                 }
 
-                scriptActions.add(new Action(new ActionKey(
-                        scriptId,
-                        versionNumber,
-                        action_id),
+                scriptActions.add(new Action(new ActionKey(scriptKey, action_id),
                         scriptActionNode.get(ActionJsonComponent.Field.NUMBER_KEY.value()).asLong(),
                         scriptActionNode.get(ActionJsonComponent.Field.TYPE_KEY.value()).asText(),
                         scriptActionNode.get(ActionJsonComponent.Field.NAME_KEY.value()).asText(),
@@ -110,12 +109,20 @@ public class ScriptJsonComponent {
                         actionParameters));
             }
 
-            return new Script(scriptId,
+            List<ScriptLabel> scriptLabels = new ArrayList<>();
+            for (JsonNode scriptLabelNode : node.get(Field.LABELS_KEY.value())) {
+                String name = scriptLabelNode.get(ScriptLabelJsonComponent.Field.NAME_KEY.value()).asText();
+                scriptLabels.add(new ScriptLabel(new ScriptLabelKey(DigestUtils.sha256Hex(scriptId + versionNumber + name)), scriptKey, name,
+                        scriptLabelNode.get(ScriptLabelJsonComponent.Field.VALUE.value()).asText()));
+            }
+
+            return new Script(scriptKey,
                     node.get(Field.NAME_KEY.value()).asText(),
                     node.get(Field.DESCRIPTION_KEY.value()).asText(),
                     scriptVersion,
                     scriptParameters,
-                    scriptActions);
+                    scriptActions,
+                    scriptLabels);
         }
     }
 
@@ -127,7 +134,7 @@ public class ScriptJsonComponent {
 
             jsonGenerator.writeObjectFieldStart(MetadataJsonComponent.Field.DATA_KEY.value());
 
-            jsonGenerator.writeStringField(Field.ID_KEY.value(), script.getId());
+            jsonGenerator.writeStringField(Field.ID_KEY.value(), script.getMetadataKey().getScriptId());
             jsonGenerator.writeStringField(Field.NAME_KEY.value(), script.getName());
             jsonGenerator.writeStringField(Field.DESCRIPTION_KEY.value(), script.getDescription());
 
@@ -139,12 +146,20 @@ public class ScriptJsonComponent {
             jsonGenerator.writeStringField(ScriptVersionJsonComponent.Field.DESCRIPTION_KEY.value(), scriptVersion.getDescription());
             jsonGenerator.writeEndObject();
 
-            // write parameters
             jsonGenerator.writeArrayFieldStart(Field.PARAMETERS_KEY.value());
             for (ScriptParameter scriptParameter : script.getParameters()) {
                 jsonGenerator.writeStartObject();
                 jsonGenerator.writeStringField(ScriptParameterJsonComponent.Field.PARAMETER_NAME_KEY.value(), scriptParameter.getName());
                 jsonGenerator.writeStringField(ScriptParameterJsonComponent.Field.PARAMETER_VALUE_KEY.value(), scriptParameter.getValue());
+                jsonGenerator.writeEndObject();
+            }
+            jsonGenerator.writeEndArray();
+
+            jsonGenerator.writeArrayFieldStart(Field.LABELS_KEY.value());
+            for (ScriptLabel scriptLabel : script.getLabels()) {
+                jsonGenerator.writeStartObject();
+                jsonGenerator.writeStringField(ScriptLabelJsonComponent.Field.NAME_KEY.value(), scriptLabel.getName());
+                jsonGenerator.writeStringField(ScriptLabelJsonComponent.Field.VALUE.value(), scriptLabel.getValue());
                 jsonGenerator.writeEndObject();
             }
             jsonGenerator.writeEndArray();

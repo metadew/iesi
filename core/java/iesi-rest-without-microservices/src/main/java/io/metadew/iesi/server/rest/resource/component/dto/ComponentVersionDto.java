@@ -2,41 +2,21 @@ package io.metadew.iesi.server.rest.resource.component.dto;
 
 import io.metadew.iesi.metadata.definition.component.ComponentVersion;
 import io.metadew.iesi.metadata.definition.component.key.ComponentVersionKey;
-import org.springframework.hateoas.ResourceSupport;
+import io.metadew.iesi.server.rest.resource.Dto;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-public class ComponentVersionDto extends ResourceSupport {
+@Data
+@EqualsAndHashCode(callSuper = false)
+@AllArgsConstructor
+public class ComponentVersionDto extends Dto {
 
     private long number;
     private String description;
 
-    public ComponentVersionDto() {
+    public ComponentVersion convertToEntity(String componentId) {
+        return new ComponentVersion(new ComponentVersionKey(componentId, number), description);
     }
-
-    public ComponentVersionDto(long number, String description) {
-        super();
-        this.number = number;
-        this.description = description;
-    }
-
-    public ComponentVersion convertToEntity(String name) {
-        return new ComponentVersion(new ComponentVersionKey(name, number), description);
-    }
-
-    public long getNumber() {
-        return number;
-    }
-
-    public void setNumber(long number) {
-        this.number = number;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
 
 }

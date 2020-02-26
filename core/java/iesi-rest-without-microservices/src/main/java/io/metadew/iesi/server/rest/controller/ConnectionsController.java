@@ -51,7 +51,7 @@ public class ConnectionsController {
     public HalMultipleEmbeddedResource<ConnectionGlobalDto> getAll() {
         List<Connection> connections = connectionConfiguration.getAll();
         return new HalMultipleEmbeddedResource<>(connections.stream()
-                .filter(distinctByKey(Connection::getName))
+                .filter(distinctByKey(connection -> connection.getMetadataKey().getName()))
                 .map(connection -> connectionGlobalDtoResourceAssembler.toResource(Collections.singletonList(connection)))
                 .collect(Collectors.toList()));
     }

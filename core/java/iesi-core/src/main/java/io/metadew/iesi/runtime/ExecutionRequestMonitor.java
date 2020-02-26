@@ -10,7 +10,6 @@ import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequestStatus;
 import io.metadew.iesi.metadata.definition.key.MetadataKey;
-import lombok.EqualsAndHashCode;
 import lombok.extern.log4j.Log4j2;
 
 import java.io.PrintWriter;
@@ -128,7 +127,7 @@ public class ExecutionRequestMonitor implements Runnable {
         for (ExecutionRequestKey executionRequestKey : executionRequestThreadMap.keySet()) {
             ExecutionRequestConfiguration.getInstance().get(executionRequestKey)
                     .ifPresent(executionRequest -> {
-                        executionRequest.updateExecutionRequestStatus(ExecutionRequestStatus.KILLED);
+                        executionRequest.setExecutionRequestStatus(ExecutionRequestStatus.KILLED);
                         ExecutionRequestConfiguration.getInstance().update(executionRequest);
                     });
             ScriptExecutionRequestConfiguration.getInstance().getByExecutionRequest(executionRequestKey)

@@ -2,6 +2,7 @@ package io.metadew.iesi.script.execution.instruction.lookup;
 
 import io.metadew.iesi.metadata.configuration.connection.ConnectionParameterConfiguration;
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
+import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionParameterKey;
 import io.metadew.iesi.script.execution.ExecutionControl;
 
@@ -39,7 +40,7 @@ public class ConnectionLookup implements LookupInstruction {
         String connectionParameterName = inputParameterMatcher.group(CONNECTION_PARAMETER_NAME_KEY);
 
         Optional<String> connectionParameterValue = ConnectionParameterConfiguration.getInstance()
-                .get(new ConnectionParameterKey(connectionName, executionControl.getEnvName(), connectionParameterName))
+                .get(new ConnectionParameterKey(new ConnectionKey(connectionName, executionControl.getEnvName()), connectionParameterName))
                 .map(ConnectionParameter::getValue);
 
         if (!connectionParameterValue.isPresent()) {

@@ -41,16 +41,16 @@ public class HttpRequestComponentParameterService {
     }
 
     public DataType getParameterValue(ComponentParameter componentParameter, List<ComponentAttribute> componentAttributes, ActionExecution actionExecution)  {
-        executionControl.logMessage(actionExecution, "component.param " + componentParameter.getName() + ": " + componentParameter.getValue(), Level.DEBUG);
+        executionControl.logMessage(actionExecution, "component.param " + componentParameter.getMetadataKey().getParameterName() + ": " + componentParameter.getValue(), Level.DEBUG);
         return getParameterValue(componentParameter.getValue(), componentAttributes, actionExecution);
     }
 
     public boolean isHeader(ComponentParameter componentParameter) {
-        return componentParameter.getName().startsWith("header");
+        return componentParameter.getMetadataKey().getParameterName().startsWith("header");
     }
 
     public boolean isQueryParameter(ComponentParameter componentParameter) {
-        return componentParameter.getName().startsWith("queryparam");
+        return componentParameter.getMetadataKey().getParameterName().startsWith("queryparam");
     }
 
     public Map<String, DataType> getHeader(ComponentParameter componentParameter, List<ComponentAttribute> componentAttributes, ActionExecution actionExecution)  {

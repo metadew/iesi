@@ -1,0 +1,46 @@
+---
+data:
+  name: EXE_REQ_LBL
+  label: ExecutionRequestLabels
+  description: Design metadata for execution request labels
+  type: operational
+  category: execution
+  migrate: Y
+  migrationKey: A002
+  fields:
+  - name: ID
+    description: Unique identifier for the script label
+    order: "1"
+    type: string
+    length: "255"
+    nullable: N
+    defaultTimestamp: 
+  - name: REQUEST_ID
+    description: Unique identifier for the request item
+    order: '1'
+    type: string
+    length: '255'
+    nullable: N
+    defaultTimestamp: ''
+  - name: NAME
+    description: Name of the script label
+    order: "3"
+    type: string
+    length: "100"
+    nullable: N
+    defaultTimestamp: 
+  - name: VALUE
+    description: value of the script label
+    order: "4"
+    type: string
+    length: "2000"
+    nullable: Y
+    defaultTimestamp: 
+  - name: LOAD_TMS
+    description: Load timestamp indicating when the record was inserted in the table
+    order: "5"
+    type: timestamp
+    length: "0"
+    nullable: N
+    defaultTimestamp: Y
+type: MetadataTable

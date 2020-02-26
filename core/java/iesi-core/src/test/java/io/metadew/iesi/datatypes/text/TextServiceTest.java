@@ -41,7 +41,7 @@ class TextServiceTest {
         assertEquals(new Text("testing"), TextService.getInstance().resolve(new TextNode("testing")));
         assertEquals(new Text("true"), TextService.getInstance().resolve(BooleanNode.getTrue()));
         assertEquals(new Text("1.0"), TextService.getInstance().resolve(new DoubleNode(1.0)));
-        assertEquals(new Text("1BE"), TextService.getInstance().resolve(new IntNode(1)));
+        assertEquals(new Text("1"), TextService.getInstance().resolve(new IntNode(1)));
     }
 
     @Test

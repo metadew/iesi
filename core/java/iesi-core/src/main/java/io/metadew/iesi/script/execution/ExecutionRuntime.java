@@ -300,7 +300,7 @@ public class ExecutionRuntime {
     private Map<String, ComponentAttribute> getComponentAttributeHashmap(List<ComponentAttribute> componentAttributeList, String environment) {
         return componentAttributeList.stream()
                 .filter(componentAttribute -> componentAttribute.getMetadataKey().getEnvironmentKey().getName().equalsIgnoreCase(environment))
-                .collect(Collectors.toMap(ComponentAttribute::getName, Function.identity()));
+                .collect(Collectors.toMap(componentAttribute -> componentAttribute.getMetadataKey().getComponentAttributeName(), Function.identity()));
     }
 
     public String resolveConfiguration(ActionExecution actionExecution, String input) {

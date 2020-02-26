@@ -11,8 +11,6 @@ import io.metadew.iesi.metadata.definition.execution.ExecutionRequestStatus;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequest;
 import io.metadew.iesi.runtime.script.ScriptExecutorService;
 import lombok.extern.log4j.Log4j2;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 @Log4j2
 public class AuthenticatedExecutionRequestExecutor implements ExecutionRequestExecutor<AuthenticatedExecutionRequest> {
@@ -49,7 +47,7 @@ public class AuthenticatedExecutionRequestExecutor implements ExecutionRequestEx
         } else {
             log.info("authentication.disabled:access automatically granted");
         }
-        executionRequest.updateExecutionRequestStatus(ExecutionRequestStatus.ACCEPTED);
+        executionRequest.setExecutionRequestStatus(ExecutionRequestStatus.ACCEPTED);
         ExecutionRequestConfiguration.getInstance().update(executionRequest);
 
         for (ScriptExecutionRequest scriptExecutionRequest : executionRequest.getScriptExecutionRequests()) {
@@ -64,7 +62,7 @@ public class AuthenticatedExecutionRequestExecutor implements ExecutionRequestEx
         if (userAccess.isException()) {
             log.info(new IESIMessage("guard.user.exception=" + userAccess.getExceptionMessage()));
             log.info(new IESIMessage("guard.user.denied"));
-            executionRequest.updateExecutionRequestStatus(ExecutionRequestStatus.DECLINED);
+            executionRequest.setExecutionRequestStatus(ExecutionRequestStatus.DECLINED);
             ExecutionRequestConfiguration.getInstance().update(executionRequest);
             throw new RuntimeException("guard.user.denied");
         }

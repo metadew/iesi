@@ -19,6 +19,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.annotation.Order;
 
+import java.nio.file.Paths;
 import java.sql.SQLException;
 
 @Configuration
@@ -29,8 +30,12 @@ public class IesiConfiguration {
 
     @Bean
     @Order(0)
-    public FrameworkInstance frameworkInstance(FrameworkInitializationFile frameworkInitializationFile, FrameworkExecutionContext frameworkExecutionContext) throws SQLException {
-        FrameworkInstance.getInstance().init(frameworkInitializationFile, frameworkExecutionContext, frameworkHome);
+    public FrameworkInstance frameworkInstance(FrameworkInitializationFile frameworkInitializationFile, FrameworkExecutionContext frameworkExecutionContext) {
+        if (frameworkHome == null) {
+            FrameworkInstance.getInstance().init(frameworkInitializationFile, frameworkExecutionContext);
+        } else {
+            FrameworkInstance.getInstance().init(frameworkInitializationFile, frameworkExecutionContext, Paths.get(frameworkHome).toAbsolutePath());
+        }
         return FrameworkInstance.getInstance();
     }
 

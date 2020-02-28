@@ -13,6 +13,8 @@ import io.metadew.iesi.metadata.repository.MetadataRepository;
 import io.metadew.iesi.metadata.repository.configuration.MetadataRepositoryConfiguration;
 import io.metadew.iesi.runtime.ExecutionRequestExecutorService;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,9 +42,13 @@ public class FrameworkInstance {
     }
 
     public void init(FrameworkInitializationFile frameworkInitializationFile, FrameworkExecutionContext context, String frameworkHome) {
+        init(frameworkInitializationFile, context, Paths.get(frameworkHome));
+    }
+
+    public void init(FrameworkInitializationFile frameworkInitializationFile, FrameworkExecutionContext context, Path frameworkHome) {
         // Get the framework configuration
         FrameworkConfiguration frameworkConfiguration = FrameworkConfiguration.getInstance();
-        frameworkConfiguration.init(frameworkHome);
+        frameworkConfiguration.init(frameworkHome.toAbsolutePath());
 
         FrameworkCrypto.getInstance();
 

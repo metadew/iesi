@@ -11,6 +11,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,10 +36,8 @@ public class FrameworkActionTypeConfiguration {
 
     public void init(FrameworkFolderConfiguration frameworkFolderConfiguration) {
         actionTypeMap = new HashMap<>();
-
-        String initFilePath = frameworkFolderConfiguration.getFolderAbsolutePath("metadata.conf") +
-                File.separator +
-                "ActionTypes.json";
+        Path initFilePath = Paths.get(frameworkFolderConfiguration.getFolderAbsolutePath("metadata.conf"))
+                .resolve("ActionTypes.json");
         DataObjectOperation dataObjectOperation = new DataObjectOperation(initFilePath);
         dataObjectOperation.parseFile();
 

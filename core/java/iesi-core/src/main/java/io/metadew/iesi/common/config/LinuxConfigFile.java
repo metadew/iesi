@@ -6,15 +6,16 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class LinuxConfigFile extends ConfigFile {
 
-    public LinuxConfigFile(String fileName) {
+    public LinuxConfigFile(Path fileName) {
         super();
         try {
-            File file = new File(fileName);
             @SuppressWarnings("resource")
-            BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
+            BufferedReader bufferedReader = new BufferedReader(new FileReader(fileName.toFile()));
             String readLine = "";
             while ((readLine = bufferedReader.readLine()) != null) {
                 if (readLine.trim().toLowerCase().startsWith("export ")) {

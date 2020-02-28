@@ -1,21 +1,20 @@
 package io.metadew.iesi.common.config;
 
 import io.metadew.iesi.framework.execution.FrameworkControl;
-import org.apache.commons.io.FilenameUtils;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Path;
 
 public class KeyValueConfigFile extends ConfigFile {
 
-    public KeyValueConfigFile(String fileName) {
+    public KeyValueConfigFile(Path fileName) {
         super();
-        this.setFilePath(fileName);
+        this.setFilePath(fileName.toString());
         try {
-            File file = new File(FilenameUtils.normalize(fileName));
-            BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
+            BufferedReader bufferedReader = new BufferedReader(new FileReader(fileName.toFile()));
             String readLine;
             while ((readLine = bufferedReader.readLine()) != null) {
                 String innerpart = readLine.trim();

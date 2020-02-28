@@ -226,7 +226,6 @@ public class ExecutionControl {
         String status;
 
         if (actionExecution.getActionControl().getExecutionMetrics().getSkipCount() == 0) {
-
             if (actionExecution.getActionControl().getExecutionMetrics().getErrorCount() > 0) {
                 status = ScriptRunStatus.ERROR.value();
                 scriptExecution.getExecutionMetrics().increaseErrorCount(1);

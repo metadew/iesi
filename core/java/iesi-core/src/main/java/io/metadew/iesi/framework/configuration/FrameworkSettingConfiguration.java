@@ -5,14 +5,15 @@ import io.metadew.iesi.framework.definition.FrameworkSetting;
 import io.metadew.iesi.metadata.definition.DataObject;
 import io.metadew.iesi.metadata.operation.DataObjectOperation;
 
-import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
 public class FrameworkSettingConfiguration {
 
-    private String solutionHome;
+    private Path solutionHome;
     private Map<String, String> settingMap;
 
     private static FrameworkSettingConfiguration INSTANCE;
@@ -27,16 +28,19 @@ public class FrameworkSettingConfiguration {
     private FrameworkSettingConfiguration() {}
 
     public void init(String solutionHome, Map<String, String> settingMap) {
-        this.solutionHome = solutionHome;
+        this.solutionHome = Paths.get(solutionHome);
         this.settingMap = settingMap;
     }
 
     public void init(String solutionHome) {
+        init(Paths.get(solutionHome));
+    }
+
+    public void init(Path solutionHome) {
         this.solutionHome = solutionHome;
         this.settingMap = new HashMap<>();
-        String initFilePath = this.solutionHome + File.separator + "sys" + File.separator + "init" + File.separator +
-                "FrameworkSettings.json";
-        DataObjectOperation dataObjectOperation = new DataObjectOperation(initFilePath);
+        Path initFilePath = solutionHome.resolve("sys").resolve("init").resolve("FrameworkSettings.json");
+        DataObjectOperation dataObjectOperation = new DataObjectOperation(initFilePath.toString());
         dataObjectOperation.parseFile();
         ObjectMapper objectMapper = new ObjectMapper();
         for (DataObject dataObject : dataObjectOperation.getDataObjects()) {

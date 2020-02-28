@@ -11,10 +11,14 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
+
+import static org.apache.commons.io.FilenameUtils.separatorsToUnix;
 
 public class FrameworkControl {
 
@@ -49,8 +53,8 @@ public class FrameworkControl {
         this.properties = new Properties();
         this.metadataRepositoryConfigurations = new ArrayList<>();
         this.frameworkPluginConfigurationList = new ArrayList<>();
-        properties.put(FrameworkConfiguration.getInstance().getFrameworkCode() + ".home", FrameworkConfiguration.getInstance().getFrameworkHome());
-        readSettingFiles(frameworkInitializationFile.getName());
+        properties.put(FrameworkConfiguration.getInstance().getFrameworkCode() + ".home", separatorsToUnix(FrameworkConfiguration.getInstance().getFrameworkHome().toString()));
+        readSettingFiles(FrameworkConfiguration.getInstance().getFrameworkHome().resolve("conf").resolve(frameworkInitializationFile.getName()));
     }
 
     public void init(String assemblyHome) {
@@ -63,10 +67,9 @@ public class FrameworkControl {
     }
 
     // Methods
-    private void readSettingFiles(String initializationFile) {
+    private void readSettingFiles(Path initializationFile) {
         try {
-            File file = new File(this.resolveConfiguration("#" + FrameworkConfiguration.getInstance().getFrameworkCode()
-                    + ".home#/conf/" + initializationFile));
+            File file = initializationFile.toFile();
             BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
             String readLine;
 
@@ -76,16 +79,15 @@ public class FrameworkControl {
 
                 String key = parts[0];
                 String type = parts[1];
-                String value = parts[2];
-                value = this.resolveConfiguration(value);
-
+                String value = this.resolveConfiguration(parts[2]);
+                Path path = Paths.get(value);
                 ConfigFile configFile;
                 if (key.equalsIgnoreCase("linux")) {
-                    configFile = new LinuxConfigFile(value);
+                    configFile = new LinuxConfigFile(path);
                 } else if (key.equalsIgnoreCase("windows")) {
-                    configFile = new WindowsConfigFile(value);
+                    configFile = new WindowsConfigFile(path);
                 } else if (key.equalsIgnoreCase("keyvalue")) {
-                    configFile = new KeyValueConfigFile(value);
+                    configFile = new KeyValueConfigFile(path);
                 } else {
                     continue;
                 }
@@ -138,11 +140,6 @@ public class FrameworkControl {
         return input;
     }
 
-    public void addKeyValueConfigFile(String path) {
-        KeyValueConfigFile keyValueConfigFile = new KeyValueConfigFile(path);
-        properties.putAll(keyValueConfigFile.getProperties());
-    }
-
     public void addSetting(String key, String value) {
         properties.put(key, value);
     }
@@ -159,13 +156,13 @@ public class FrameworkControl {
         ObjectMapper objectMapper = new ObjectMapper();
         ConfigFile configFile = null;
         if (type.equalsIgnoreCase("linux")) {
-            LinuxConfigFile linuxConfigFile = new LinuxConfigFile(filePath);
+            LinuxConfigFile linuxConfigFile = new LinuxConfigFile(Paths.get(filePath));
             configFile = objectMapper.convertValue(linuxConfigFile, ConfigFile.class);
         } else if (type.equalsIgnoreCase("windows")) {
-            WindowsConfigFile windowsConfigFile = new WindowsConfigFile(filePath);
+            WindowsConfigFile windowsConfigFile = new WindowsConfigFile(Paths.get(filePath));
             configFile = objectMapper.convertValue(windowsConfigFile, ConfigFile.class);
         } else if (type.equalsIgnoreCase("keyvalue")) {
-            KeyValueConfigFile keyValueConfigFile = new KeyValueConfigFile(filePath);
+            KeyValueConfigFile keyValueConfigFile = new KeyValueConfigFile(Paths.get(filePath));
             configFile = objectMapper.convertValue(keyValueConfigFile, ConfigFile.class);
         }
 

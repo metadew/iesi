@@ -7,6 +7,7 @@ import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsExc
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.DataObject;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequestBuilderException;
+import io.metadew.iesi.metadata.definition.execution.script.ScriptExecution;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequestBuilderException;
 import io.metadew.iesi.test.launch.LaunchArgument;
 import io.metadew.iesi.test.launch.LaunchItem;
@@ -246,6 +247,7 @@ public class ActionsTest {
 				// Parameter list
 				LaunchArgument paramList = null;
 				if (launchItem.getParameterList() != null && !launchItem.getParameterList().trim().isEmpty()) {
+					System.out.println(launchItem.getParameterList());
 					paramList = new LaunchArgument(true, "-paramlist", launchItem.getParameterList());
 					scriptInputArgs.add(paramList);
 				}

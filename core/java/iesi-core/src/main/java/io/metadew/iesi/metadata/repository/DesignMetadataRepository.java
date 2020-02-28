@@ -13,7 +13,6 @@ import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.component.Component;
 import io.metadew.iesi.metadata.definition.generation.Generation;
 import io.metadew.iesi.metadata.definition.script.Script;
-import io.metadew.iesi.metadata.definition.script.ScriptParameter;
 import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -119,8 +118,12 @@ public class DesignMetadataRepository extends MetadataRepository {
     }
 
     private boolean verifyScript(Script script) {
-        List<String> parameterNames = script.getParameters().stream().map(ScriptParameter::getName).collect(Collectors.toList());
-        List<String> duplicateParameters = parameterNames.stream().filter(i -> Collections.frequency(parameterNames, i) > 1).collect(Collectors.toList());
+        List<String> parameterNames = script.getParameters().stream()
+                .map(parameter -> parameter.getMetadataKey().getParameterName())
+                .collect(Collectors.toList());
+        List<String> duplicateParameters = parameterNames.stream()
+                .filter(parameter -> Collections.frequency(parameterNames, parameter) > 1)
+                .collect(Collectors.toList());
         if (duplicateParameters.size() > 1) {
             LOGGER.error(MessageFormat.format("Script {0}-{1} has duplicate parameters: {2}", script.getName(), script.getVersion().getNumber(), duplicateParameters.toString()));
         }

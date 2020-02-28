@@ -1,10 +1,6 @@
 package io.metadew.iesi.connection.database.connection.presto;
 
-import io.metadew.iesi.connection.database.connection.DatabaseConnection;
 import io.metadew.iesi.connection.database.connection.SchemaDatabaseConnection;
-
-import java.sql.Connection;
-import java.util.Optional;
 
 /**
  * Connection object for Presto SQL . This class extends the default database connection object.

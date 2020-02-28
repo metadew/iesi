@@ -41,7 +41,7 @@ public class ImpersonationOperation {
                     LOGGER.info("impersonation.conn.notfound=" + impersonationName);
                 } else {
                     for (ImpersonationParameter impersonationParameter : impersonation.get().getParameters()) {
-                        this.setImpersonation(impersonationParameter.getConnection(), impersonationParameter.getImpersonatedConnection());
+                        this.setImpersonation(impersonationParameter.getMetadataKey().getImpersonationKey().getName(), impersonationParameter.getImpersonatedConnection());
                     }
                 }
             }

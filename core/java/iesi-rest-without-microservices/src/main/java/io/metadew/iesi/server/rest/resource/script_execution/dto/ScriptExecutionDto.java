@@ -19,8 +19,8 @@ public class ScriptExecutionDto extends Dto {
 
     private String scriptExecutionId;
     private String scriptExecutionRequestId;
-    private ScriptRunStatus scriptRunStatus;
     private String runId;
+    private ScriptRunStatus scriptRunStatus;
     private LocalDateTime startTimestamp;
     private LocalDateTime endTimestamp;
 

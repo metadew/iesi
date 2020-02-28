@@ -1,11 +1,6 @@
 package io.metadew.iesi.connection.database.connection.mssql;
 
-import io.metadew.iesi.connection.database.connection.DatabaseConnection;
 import io.metadew.iesi.connection.database.connection.SchemaDatabaseConnection;
-
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Optional;
 
 /**
  * Connection object for Microsoft SQL databases. This class extends the default

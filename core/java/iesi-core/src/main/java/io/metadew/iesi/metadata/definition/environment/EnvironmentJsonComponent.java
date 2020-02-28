@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
 import io.metadew.iesi.metadata.definition.MetadataJsonComponent;
+import io.metadew.iesi.metadata.definition.environment.key.EnvironmentKey;
 import io.metadew.iesi.metadata.definition.environment.key.EnvironmentParameterKey;
 
 import java.io.IOException;
@@ -40,7 +41,7 @@ public class EnvironmentJsonComponent {
             if (node.get(Field.PARAMETERS_KEY.value()) != null) {
                 for (JsonNode environmentParameterNode : node.get(Field.PARAMETERS_KEY.value())) {
                     environmentParameters.add(new EnvironmentParameter(new EnvironmentParameterKey(
-                            environmentName,
+                            new EnvironmentKey(environmentName),
                             environmentParameterNode.get(EnvironmentParameterJsonComponent.Field.NAME_KEY.value()).asText()),
                             environmentParameterNode.get(EnvironmentParameterJsonComponent.Field.VALUE_KEY.value()).asText()));
                 }

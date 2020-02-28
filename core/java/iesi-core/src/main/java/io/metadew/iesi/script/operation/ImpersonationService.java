@@ -23,7 +23,7 @@ public class ImpersonationService {
         Map<String, String> impersonations = new HashMap<>();
         Impersonation impersonation = impersonationConfiguration.getImpersonation(impersonationName)
                 .orElseThrow(() -> new MetadataDoesNotExistException(new ImpersonationKey(impersonationName)));
-        impersonation.getParameters().forEach(impersonationParameter -> impersonations.put(impersonationParameter.getConnection(), impersonationParameter.getImpersonatedConnection()));
+        impersonation.getParameters().forEach(impersonationParameter -> impersonations.put(impersonationParameter.getMetadataKey().getParameterName(), impersonationParameter.getImpersonatedConnection()));
         return impersonations;
     }
 

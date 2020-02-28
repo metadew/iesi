@@ -5,6 +5,7 @@ import io.metadew.iesi.metadata.configuration.script.ScriptParameterBuilder;
 import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.environment.Environment;
 import io.metadew.iesi.metadata.definition.environment.EnvironmentParameter;
+import io.metadew.iesi.metadata.definition.environment.key.EnvironmentKey;
 import io.metadew.iesi.metadata.definition.environment.key.EnvironmentParameterKey;
 import io.metadew.iesi.metadata.definition.script.ScriptParameter;
 
@@ -30,7 +31,7 @@ public class EnvironmentParameterBuilder {
     }
 
     public EnvironmentParameter build() {
-        return new EnvironmentParameter(new EnvironmentParameterKey(name, parameterName), value == null ? "dummy" : value);
+        return new EnvironmentParameter(new EnvironmentParameterKey(new EnvironmentKey(name), parameterName), value == null ? "dummy" : value);
     }
 
 }

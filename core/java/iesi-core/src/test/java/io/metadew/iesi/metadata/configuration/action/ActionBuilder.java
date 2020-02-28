@@ -3,6 +3,7 @@ package io.metadew.iesi.metadata.configuration.action;
 import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.action.key.ActionKey;
+import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,7 +32,7 @@ public class ActionBuilder {
                 .boxed()
                 .map(i -> new ActionParameterBuilder(scriptId, scriptVersionNumber, actionId, "parameter" + i).build())
                 .collect(Collectors.toList());
-        return new Action(new ActionKey(scriptId, scriptVersionNumber, actionId), 1, "fwk.dummy",
+        return new Action(new ActionKey(new ScriptKey(scriptId, scriptVersionNumber), actionId), 1, "fwk.dummy",
                 "dummy", "dummy", "", "", "", "", "",
                 "0", actionParameters);
     }

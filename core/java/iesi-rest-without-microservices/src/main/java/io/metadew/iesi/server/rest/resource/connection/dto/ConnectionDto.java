@@ -2,10 +2,10 @@ package io.metadew.iesi.server.rest.resource.connection.dto;
 
 
 import io.metadew.iesi.metadata.definition.connection.Connection;
-import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
 import io.metadew.iesi.server.rest.resource.Dto;
-import lombok.*;
-import org.springframework.hateoas.ResourceSupport;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.util.List;
 import java.util.stream.Collectors;

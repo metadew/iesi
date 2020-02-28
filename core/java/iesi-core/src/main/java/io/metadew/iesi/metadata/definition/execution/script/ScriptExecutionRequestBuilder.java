@@ -2,10 +2,11 @@ package io.metadew.iesi.metadata.definition.execution.script;
 
 import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
 import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionRequestKey;
-import io.metadew.iesi.metadata.tools.IdentifierTools;
 
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 public class ScriptExecutionRequestBuilder {
 
@@ -20,9 +21,8 @@ public class ScriptExecutionRequestBuilder {
 
     private List<Long> actionSelect;
     private boolean exit;
-    private String impersonation;
-    private Map<String, String> parameters = new HashMap<>();
-    private Map<String, String> impersonations = new HashMap<>();
+    private List<ScriptExecutionRequestParameter> parameters = new ArrayList<>();
+    private List<ScriptExecutionRequestImpersonation> impersonations = new ArrayList<>();
     private String environment;
 
     public ScriptExecutionRequestBuilder() {}
@@ -50,18 +50,18 @@ public class ScriptExecutionRequestBuilder {
         return this;
     }
 
-    public ScriptExecutionRequestBuilder impersonation(String impersonation) {
-        this.impersonation = impersonation;
-        return this;
-    }
-
     public ScriptExecutionRequestBuilder environment(String environment) {
         this.environment = environment;
         return this;
     }
 
-    public ScriptExecutionRequestBuilder impersonations(Map<String, String> impersonations) {
-        this.impersonations = impersonations;
+    public ScriptExecutionRequestBuilder impersonations(List<ScriptExecutionRequestImpersonation> impersonations) {
+        this.impersonations.addAll(impersonations);
+        return this;
+    }
+
+    public ScriptExecutionRequestBuilder impersonations(ScriptExecutionRequestImpersonation impersonation) {
+        this.impersonations.add(impersonation);
         return this;
     }
 
@@ -75,12 +75,13 @@ public class ScriptExecutionRequestBuilder {
         return this;
     }
 
-    public ScriptExecutionRequestBuilder parameters(Map<String, String> parameters) {
-        if (this.parameters == null) {
-            this.parameters = parameters;
-        } else {
-            this.parameters.putAll(parameters);
-        }
+    public ScriptExecutionRequestBuilder parameters(List<ScriptExecutionRequestParameter> parameters) {
+        this.parameters.addAll(parameters);
+        return this;
+    }
+
+    public ScriptExecutionRequestBuilder parameter(ScriptExecutionRequestParameter parameter) {
+        this.parameters.add(parameter);
         return this;
     }
 
@@ -115,17 +116,11 @@ public class ScriptExecutionRequestBuilder {
     private ScriptNameExecutionRequest buildScriptNameExecutionRequest() throws ScriptExecutionRequestBuilderException {
         verifyMandatoryNameArguments();
         return new ScriptNameExecutionRequest(
-                getScriptExecutionRequestKey()
-                        .orElse(new ScriptExecutionRequestKey(IdentifierTools.getScriptExecutionRequestIdentifier())),
+                scriptExecutionRequestKey,
                 executionRequestKey,
-                scriptName,
-                scriptVersion,
-                environment,
-                getActionSelect().orElse(new ArrayList<>()),
-                exit,
-                impersonation,
-                impersonations,
-                parameters, ScriptExecutionRequestStatus.NEW);
+                environment, exit, impersonations, parameters, ScriptExecutionRequestStatus.NEW, scriptName,
+                scriptVersion
+        );
     }
 
     private void verifyMandatoryNameArguments() throws ScriptExecutionRequestBuilderException {
@@ -143,21 +138,13 @@ public class ScriptExecutionRequestBuilder {
     private ScriptFileExecutionRequest buildFileScriptExecutionRequest() throws ScriptExecutionRequestBuilderException {
         verifyMandatoryFileArguments();
         return new ScriptFileExecutionRequest(
-                getScriptExecutionRequestKey()
-                        .orElse(new ScriptExecutionRequestKey(IdentifierTools.getScriptExecutionRequestIdentifier()
-                        )),
+                scriptExecutionRequestKey,
                 executionRequestKey,
                 fileName,
                 environment,
-                getActionSelect().orElse(new ArrayList<>()),
                 exit,
-                impersonation,
                 impersonations,
                 parameters, ScriptExecutionRequestStatus.NEW);
-    }
-
-    private Optional<List<Long>> getActionSelect() {
-        return Optional.ofNullable(actionSelect);
     }
 
     private Optional<ScriptExecutionRequestKey> getScriptExecutionRequestKey() {

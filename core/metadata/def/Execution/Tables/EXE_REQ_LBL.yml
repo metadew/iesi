@@ -1,6 +1,6 @@
 ---
 data:
-  name: EXE_REQ_LBL
+  name: REQ_LBL
   label: ExecutionRequestLabels
   description: Design metadata for execution request labels
   type: operational
@@ -14,28 +14,29 @@ data:
     type: string
     length: "255"
     nullable: N
-    defaultTimestamp: 
+    defaultTimestamp: ''
+    primaryKey: true
   - name: REQUEST_ID
     description: Unique identifier for the request item
     order: '1'
     type: string
     length: '255'
     nullable: N
-    defaultTimestamp: ''
+    defaultTimestamp: ''''
   - name: NAME
     description: Name of the script label
     order: "3"
     type: string
     length: "100"
     nullable: N
-    defaultTimestamp: 
+    defaultTimestamp: ''
   - name: VALUE
     description: value of the script label
     order: "4"
     type: string
     length: "2000"
     nullable: Y
-    defaultTimestamp: 
+    defaultTimestamp: ''
   - name: LOAD_TMS
     description: Load timestamp indicating when the record was inserted in the table
     order: "5"

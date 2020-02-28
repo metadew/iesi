@@ -11,12 +11,4 @@ import lombok.RequiredArgsConstructor;
 public class ScriptParameterKey extends MetadataKey {
     private final ScriptKey scriptKey;
     private final String parameterName;
-
-    public ScriptParameterKey(String scriptId, long scriptVersionNumber, String parameterName) {
-        this.scriptKey = new ScriptKey(scriptId, scriptVersionNumber);
-        this.parameterName = parameterName;
-    }
-
-
-
 }

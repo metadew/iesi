@@ -1,13 +1,12 @@
 package io.metadew.iesi.metadata.definition.execution;
 
 import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
-import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestLabelKey;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequest;
-import io.metadew.iesi.metadata.tools.IdentifierTools;
 
 import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 public class ExecutionRequestBuilder {
 
@@ -26,10 +25,14 @@ public class ExecutionRequestBuilder {
     private String email;
 
     private List<ScriptExecutionRequest> scriptExecutionRequests;
-    private HashMap<String, String> executionRequestLabels = new HashMap<>();
+    private List<ExecutionRequestLabel> executionRequestLabels = new ArrayList<>();
 
     public ExecutionRequestBuilder name(String name) {
         this.name = name;
+        return this;
+    }
+    public ExecutionRequestBuilder id(String id) {
+        this.id = id;
         return this;
     }
 
@@ -38,13 +41,14 @@ public class ExecutionRequestBuilder {
         return this;
     }
 
-    public ExecutionRequestBuilder executionRequestLabels(Map<String, String> executionRequestLabels) {
-        this.executionRequestLabels.putAll(executionRequestLabels);
+
+    public ExecutionRequestBuilder executionRequestLabels(List<ExecutionRequestLabel> executionRequestLabels) {
+        this.executionRequestLabels.addAll(executionRequestLabels);
         return this;
     }
 
-    public ExecutionRequestBuilder executionRequestLabel(String name, String value) {
-        this.executionRequestLabels.put(name, value);
+    public ExecutionRequestBuilder executionRequestLabel(ExecutionRequestLabel executionRequestLabel) {
+        this.executionRequestLabels.add(executionRequestLabel);
         return this;
     }
 
@@ -94,9 +98,8 @@ public class ExecutionRequestBuilder {
     }
 
     private NonAuthenticatedExecutionRequest buildNonAuthenticatedExecutionRequest() {
-        UUID uuid = UUID.randomUUID();
         return new NonAuthenticatedExecutionRequest(
-                new ExecutionRequestKey(uuid.toString()),
+                new ExecutionRequestKey(id),
                 LocalDateTime.now(),
                 name,
                 description,
@@ -105,16 +108,13 @@ public class ExecutionRequestBuilder {
                 context,
                 ExecutionRequestStatus.NEW,
                 getScriptExecutionRequests().orElse(new ArrayList<>()),
-                executionRequestLabels.entrySet().stream()
-                        .map(entry -> new ExecutionRequestLabel(new ExecutionRequestLabelKey(UUID.randomUUID().toString()), new ExecutionRequestKey(uuid.toString()), entry.getKey(), entry.getValue()))
-                        .collect(Collectors.toList()));
+                executionRequestLabels);
     }
 
     private AuthenticatedExecutionRequest buildAuthenticatedExecutionRequest() throws ExecutionRequestBuilderException {
         verifyMandatoryAuthenticationArguments();
-        UUID uuid = UUID.randomUUID();
         return new AuthenticatedExecutionRequest(
-                new ExecutionRequestKey(uuid.toString()),
+                new ExecutionRequestKey(id),
                 LocalDateTime.now(),
                 name,
                 description,
@@ -123,9 +123,7 @@ public class ExecutionRequestBuilder {
                 context,
                 ExecutionRequestStatus.NEW,
                 getScriptExecutionRequests().orElse(new ArrayList<>()),
-                executionRequestLabels.entrySet().stream()
-                        .map(entry -> new ExecutionRequestLabel(new ExecutionRequestLabelKey(UUID.randomUUID().toString()), new ExecutionRequestKey(uuid.toString()), entry.getKey(), entry.getValue()))
-                        .collect(Collectors.toList()),
+                executionRequestLabels,
                 space,
                 user,
                 password);

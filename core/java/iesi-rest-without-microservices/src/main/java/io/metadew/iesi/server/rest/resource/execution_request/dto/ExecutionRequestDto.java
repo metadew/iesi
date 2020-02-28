@@ -6,12 +6,13 @@ import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionReque
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequestBuilderException;
 import io.metadew.iesi.server.rest.resource.Dto;
 import io.metadew.iesi.server.rest.resource.script_execution_request.dto.ScriptExecutionRequestDto;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 @Data
@@ -38,28 +39,6 @@ public class ExecutionRequestDto extends Dto {
                 executionRequestLabels.stream()
                         .map(label -> label.convertToEntity(new ExecutionRequestKey(executionRequestId)))
                         .collect(Collectors.toList()));
-    }
-
-    public ExecutionRequest convertToNewEntity() throws ExecutionRequestBuilderException {
-        ExecutionRequest executionRequest = new ExecutionRequestBuilder()
-                .name(name)
-                .context(context)
-                .description(description)
-                .scope(scope)
-                .executionRequestLabels(executionRequestLabels.stream()
-                        .collect(Collectors.toMap(ExecutionRequestLabelDto::getName, ExecutionRequestLabelDto::getValue)))
-                .build();
-        List<ScriptExecutionRequest> scriptExecutionRequests = new ArrayList<>();
-        for (ScriptExecutionRequestDto scriptExecutionRequest : this.scriptExecutionRequests) {
-            try {
-                scriptExecutionRequests.add(scriptExecutionRequest.convertToNewEntity(executionRequest.getMetadataKey().getId()));
-            } catch (ScriptExecutionRequestBuilderException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        executionRequest.setScriptExecutionRequests(scriptExecutionRequests);
-        return executionRequest;
     }
 
 }

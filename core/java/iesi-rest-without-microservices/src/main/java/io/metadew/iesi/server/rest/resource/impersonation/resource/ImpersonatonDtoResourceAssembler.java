@@ -40,11 +40,11 @@ public class ImpersonatonDtoResourceAssembler extends ResourceAssemblerSupport<I
         if (impersonation == null) {
             throw new IllegalArgumentException("Impersonations have to be non empty");
         }
-        return new ImpersonationDto(impersonation.getName(), impersonation.getDescription(), impersonation.getParameters().stream().map(this::convertToDto).collect(Collectors.toList()));
+        return new ImpersonationDto(impersonation.getMetadataKey().getName(), impersonation.getDescription(), impersonation.getParameters().stream().map(this::convertToDto).collect(Collectors.toList()));
     }
 
     private ImpersonationParameterDto convertToDto(ImpersonationParameter impersonationParameter) {
-        return new ImpersonationParameterDto(impersonationParameter.getConnection(), impersonationParameter.getImpersonatedConnection(),
+        return new ImpersonationParameterDto(impersonationParameter.getMetadataKey().getParameterName(), impersonationParameter.getImpersonatedConnection(),
                 impersonationParameter.getDescription());
     }
 }

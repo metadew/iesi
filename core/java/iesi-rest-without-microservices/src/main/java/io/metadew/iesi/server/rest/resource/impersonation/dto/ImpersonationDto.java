@@ -2,6 +2,7 @@ package io.metadew.iesi.server.rest.resource.impersonation.dto;
 
 
 import io.metadew.iesi.metadata.definition.impersonation.Impersonation;
+import io.metadew.iesi.metadata.definition.impersonation.key.ImpersonationKey;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -19,7 +20,8 @@ public class ImpersonationDto extends ResourceSupport {
     private List<ImpersonationParameterDto> parameters;
 
     public Impersonation convertToEntity() {
-        return new Impersonation(name, description, parameters.stream().map(parameter -> parameter.convertToEntity(name)).collect(Collectors.toList()));
+        return new Impersonation(new ImpersonationKey(name), description,
+                parameters.stream().map(parameter -> parameter.convertToEntity(name)).collect(Collectors.toList()));
     }
 
 }

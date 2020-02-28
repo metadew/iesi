@@ -109,7 +109,7 @@ public class ExecutionRequestMonitor implements Runnable {
     }
 
     private void markAborted(ScriptExecutionRequest scriptExecutionRequest) {
-        scriptExecutionRequest.updateScriptExecutionRequestStatus(ScriptExecutionRequestStatus.ABORTED);
+        scriptExecutionRequest.setScriptExecutionRequestStatus(ScriptExecutionRequestStatus.ABORTED);
     }
 
     private boolean isTerminated(ExecutionRequestKey executionRequestKey) {
@@ -132,7 +132,7 @@ public class ExecutionRequestMonitor implements Runnable {
                     });
             ScriptExecutionRequestConfiguration.getInstance().getByExecutionRequest(executionRequestKey)
                     .forEach(scriptExecutionRequest -> {
-                        scriptExecutionRequest.updateScriptExecutionRequestStatus(ScriptExecutionRequestStatus.ABORTED);
+                        scriptExecutionRequest.setScriptExecutionRequestStatus(ScriptExecutionRequestStatus.ABORTED);
                         ScriptExecutionRequestConfiguration.getInstance().update(scriptExecutionRequest);
                     });
         }

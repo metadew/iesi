@@ -8,8 +8,7 @@ import io.metadew.iesi.metadata.definition.execution.ExecutionRequestLabel;
 import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
 import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestLabelKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
@@ -18,10 +17,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Log4j2
 public class ExecutionRequestLabelConfiguration extends Configuration<ExecutionRequestLabel, ExecutionRequestLabelKey> {
 
     private static ExecutionRequestLabelConfiguration INSTANCE;
-    private static final Logger LOGGER = LogManager.getLogger();
 
     public synchronized static ExecutionRequestLabelConfiguration getInstance() {
         if (INSTANCE == null) {
@@ -46,7 +45,7 @@ public class ExecutionRequestLabelConfiguration extends Configuration<ExecutionR
             if (cachedRowSet.size() == 0) {
                 return Optional.empty();
             } else if (cachedRowSet.size() > 1) {
-                LOGGER.info(MessageFormat.format("Found multiple implementations for {0}. Returning first implementation", scriptLabelKey.toString()));
+                log.info(MessageFormat.format("Found multiple implementations for {0}. Returning first implementation", scriptLabelKey.toString()));
             }
             cachedRowSet.next();
             return Optional.of(new ExecutionRequestLabel(scriptLabelKey,
@@ -81,7 +80,7 @@ public class ExecutionRequestLabelConfiguration extends Configuration<ExecutionR
 
     @Override
     public void delete(ExecutionRequestLabelKey scriptLabelKey) {
-        LOGGER.trace(MessageFormat.format("Deleting {0}.", scriptLabelKey.toString()));
+        log.trace(MessageFormat.format("Deleting {0}.", scriptLabelKey.toString()));
         if (!exists(scriptLabelKey)) {
             throw new MetadataDoesNotExistException(scriptLabelKey);
         }
@@ -96,7 +95,7 @@ public class ExecutionRequestLabelConfiguration extends Configuration<ExecutionR
 
     @Override
     public void insert(ExecutionRequestLabel scriptLabel) {
-        LOGGER.trace(MessageFormat.format("Inserting {0}.", scriptLabel.toString()));
+        log.trace(MessageFormat.format("Inserting {0}.", scriptLabel.toString()));
         if (exists(scriptLabel)) {
             throw new MetadataAlreadyExistsException(scriptLabel);
         }

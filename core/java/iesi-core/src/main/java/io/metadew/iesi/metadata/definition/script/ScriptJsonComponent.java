@@ -59,19 +59,19 @@ public class ScriptJsonComponent {
             if (versionNode != null) {
                 versionNumber = versionNode.get(ScriptVersionJsonComponent.Field.NUMBER_KEY.value()).asLong();
                 scriptVersion = new ScriptVersion(
-                        new ScriptVersionKey(scriptId, versionNumber),
+                        new ScriptVersionKey(new ScriptKey(scriptId, versionNumber)),
                         versionNode.get(ScriptVersionJsonComponent.Field.DESCRIPTION_KEY.value()).asText()
                 );
             } else {
                 versionNumber = 0L;
-                scriptVersion = new ScriptVersion(new ScriptVersionKey(scriptId, versionNumber), "default version");
+                scriptVersion = new ScriptVersion(new ScriptVersionKey(new ScriptKey(scriptId, versionNumber)), "default version");
             }
             ScriptKey scriptKey = new ScriptKey(scriptId, versionNumber);
 
 
             //script parameters
             List<ScriptParameter> scriptParameters = new ArrayList<>();
-            if (node.get(ScriptJsonComponent.Field.PARAMETERS_KEY.value()) != null) {
+            if (node.hasNonNull(ScriptJsonComponent.Field.PARAMETERS_KEY.value())) {
                 for (JsonNode scriptParameterNode : node.get(ScriptJsonComponent.Field.PARAMETERS_KEY.value())) {
                     scriptParameters.add(new ScriptParameter(new ScriptParameterKey(scriptKey,
                             scriptParameterNode.get(ScriptParameterJsonComponent.Field.PARAMETER_NAME_KEY.value()).asText()),
@@ -110,10 +110,12 @@ public class ScriptJsonComponent {
             }
 
             List<ScriptLabel> scriptLabels = new ArrayList<>();
-            for (JsonNode scriptLabelNode : node.get(Field.LABELS_KEY.value())) {
-                String name = scriptLabelNode.get(ScriptLabelJsonComponent.Field.NAME_KEY.value()).asText();
-                scriptLabels.add(new ScriptLabel(new ScriptLabelKey(DigestUtils.sha256Hex(scriptId + versionNumber + name)), scriptKey, name,
-                        scriptLabelNode.get(ScriptLabelJsonComponent.Field.VALUE.value()).asText()));
+            if (node.hasNonNull(Field.LABELS_KEY.value())) {
+                for (JsonNode scriptLabelNode : node.get(Field.LABELS_KEY.value())) {
+                    String name = scriptLabelNode.get(ScriptLabelJsonComponent.Field.NAME_KEY.value()).asText();
+                    scriptLabels.add(new ScriptLabel(new ScriptLabelKey(DigestUtils.sha256Hex(scriptId + versionNumber + name)), scriptKey, name,
+                            scriptLabelNode.get(ScriptLabelJsonComponent.Field.VALUE.value()).asText()));
+                }
             }
 
             return new Script(scriptKey,
@@ -149,7 +151,7 @@ public class ScriptJsonComponent {
             jsonGenerator.writeArrayFieldStart(Field.PARAMETERS_KEY.value());
             for (ScriptParameter scriptParameter : script.getParameters()) {
                 jsonGenerator.writeStartObject();
-                jsonGenerator.writeStringField(ScriptParameterJsonComponent.Field.PARAMETER_NAME_KEY.value(), scriptParameter.getName());
+                jsonGenerator.writeStringField(ScriptParameterJsonComponent.Field.PARAMETER_NAME_KEY.value(), scriptParameter.getMetadataKey().getParameterName());
                 jsonGenerator.writeStringField(ScriptParameterJsonComponent.Field.PARAMETER_VALUE_KEY.value(), scriptParameter.getValue());
                 jsonGenerator.writeEndObject();
             }

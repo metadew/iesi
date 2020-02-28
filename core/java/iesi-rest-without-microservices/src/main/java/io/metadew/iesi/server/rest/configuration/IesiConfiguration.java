@@ -20,7 +20,6 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.annotation.Order;
 
 import java.nio.file.Paths;
-import java.sql.SQLException;
 
 @Configuration
 public class IesiConfiguration {

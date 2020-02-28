@@ -1,4 +1,4 @@
-package io.metadew.iesi.server.rest.component.dto;
+package io.metadew.iesi.server.rest.resource.component.dto;
 
 import io.metadew.iesi.metadata.definition.component.Component;
 import io.metadew.iesi.metadata.definition.component.ComponentAttribute;
@@ -10,16 +10,12 @@ import io.metadew.iesi.metadata.definition.component.key.ComponentParameterKey;
 import io.metadew.iesi.metadata.definition.component.key.ComponentVersionKey;
 import io.metadew.iesi.metadata.definition.environment.key.EnvironmentKey;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
-import io.metadew.iesi.server.rest.resource.component.dto.ComponentAttributeDto;
-import io.metadew.iesi.server.rest.resource.component.dto.ComponentDto;
-import io.metadew.iesi.server.rest.resource.component.dto.ComponentParameterDto;
-import io.metadew.iesi.server.rest.resource.component.dto.ComponentVersionDto;
 import org.junit.Test;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 public class ComponentDtoTest {
 

@@ -1,7 +1,6 @@
 package io.metadew.iesi.metadata.definition.script.trace;
 
 import io.metadew.iesi.metadata.definition.Metadata;
-import io.metadew.iesi.metadata.definition.script.design.key.ScriptLabelDesignTraceKey;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.metadata.definition.script.trace.key.ScriptLabelTraceKey;
 import lombok.Data;

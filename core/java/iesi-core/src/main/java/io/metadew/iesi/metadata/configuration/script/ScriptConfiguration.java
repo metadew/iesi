@@ -68,7 +68,7 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
             crsScript.next();
 
             // Get the version
-            Optional<ScriptVersion> scriptVersion = ScriptVersionConfiguration.getInstance().get(new ScriptVersionKey(scriptKey.getScriptId(), scriptKey.getScriptVersion()));
+            Optional<ScriptVersion> scriptVersion = ScriptVersionConfiguration.getInstance().get(new ScriptVersionKey(new ScriptKey(scriptKey.getScriptId(), scriptKey.getScriptVersion())));
             if (!scriptVersion.isPresent()) {
                 return Optional.empty();
             }
@@ -107,7 +107,7 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
                 return false;
             }
             crsScript.next();
-            return ScriptVersionConfiguration.getInstance().exists(new ScriptVersionKey(scriptKey.getScriptId(), scriptKey.getScriptVersion()));
+            return ScriptVersionConfiguration.getInstance().exists(new ScriptVersionKey(new ScriptKey(scriptKey.getScriptId(), scriptKey.getScriptVersion())));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -152,7 +152,7 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
         if (!exists(scriptKey)) {
             throw new MetadataDoesNotExistException(scriptKey);
         }
-        ScriptVersionKey scriptVersionKey = new ScriptVersionKey(scriptKey.getScriptId(), scriptKey.getScriptVersion());
+        ScriptVersionKey scriptVersionKey = new ScriptVersionKey(new ScriptKey(scriptKey.getScriptId(), scriptKey.getScriptVersion()));
         ScriptVersionConfiguration.getInstance().delete(scriptVersionKey);
         ActionConfiguration.getInstance().deleteByScript(scriptKey);
         ScriptParameterConfiguration.getInstance().deleteByScript(scriptKey);

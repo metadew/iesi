@@ -9,7 +9,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
 
 
 @Data
@@ -19,33 +19,21 @@ public class ScriptExecutionRequestDto extends Dto {
 
     private String scriptExecutionRequestId;
     private String executionRequestId;
-    private List<Long> actionSelect;
-    private boolean exit;
-    private String impersonation;
     private String environment;
-    private Map<String, String> impersonations;
-    private Map<String, String> parameters;
+    private boolean exit;
+    private List<ScriptExecutionRequestImpersonationDto> impersonations;
+    private List<ScriptExecutionRequestParameterDto> parameters;
     private ScriptExecutionRequestStatus scriptExecutionRequestStatus;
     private String scriptName;
     private Long scriptVersion;
 
-
-    public ScriptExecutionRequest convertToEntity() {
-        return new ScriptNameExecutionRequest(new ScriptExecutionRequestKey(scriptExecutionRequestId), new ExecutionRequestKey(executionRequestId),
-                scriptName, scriptVersion, environment, actionSelect, exit, impersonation, impersonations, parameters, scriptExecutionRequestStatus);
+    public ScriptNameExecutionRequest convertToEntity() {
+        return new ScriptNameExecutionRequest(
+                new ScriptExecutionRequestKey(scriptExecutionRequestId),
+                new ExecutionRequestKey(executionRequestId),
+                environment, exit, impersonations.stream().map(impersonation -> impersonation.convertToEntity(new ScriptExecutionRequestKey(scriptExecutionRequestId))).collect(Collectors.toList()), parameters.stream().map(parameter -> parameter.convertToEntity(new ScriptExecutionRequestKey(scriptExecutionRequestId))).collect(Collectors.toList()), scriptExecutionRequestStatus, scriptName,
+                scriptVersion
+        );
     }
 
-    public ScriptExecutionRequest convertToNewEntity(String executionRequestId) throws ScriptExecutionRequestBuilderException {
-        return new ScriptExecutionRequestBuilder()
-                .mode("script")
-                .executionRequestKey(new ExecutionRequestKey(executionRequestId))
-                .environment(environment)
-                .exit(exit)
-                .impersonation(impersonation)
-                .impersonations(impersonations)
-                .parameters(parameters)
-                .scriptName(scriptName)
-                .scriptVersion(scriptVersion)
-                .build();
-    }
 }

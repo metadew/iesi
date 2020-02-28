@@ -1,6 +1,7 @@
 package io.metadew.iesi.metadata.definition.script;
 
 import io.metadew.iesi.metadata.definition.Metadata;
+import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.metadata.definition.script.key.ScriptVersionKey;
 import lombok.EqualsAndHashCode;
 
@@ -15,7 +16,7 @@ public class ScriptVersion extends Metadata<ScriptVersionKey> {
     }
 
     public ScriptVersion(String scriptId, long number, String description) {
-        super(new ScriptVersionKey(scriptId, number));
+        super(new ScriptVersionKey(new ScriptKey(scriptId, number)));
         this.description = description;
     }
 

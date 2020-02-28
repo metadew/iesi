@@ -1,6 +1,5 @@
 package io.metadew.iesi.server.rest.resource.execution_request.dto;
 
-import io.metadew.iesi.metadata.definition.execution.ExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequestLabel;
 import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
 import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestLabelKey;
@@ -16,4 +15,5 @@ public class ExecutionRequestLabelDto {
     public ExecutionRequestLabel convertToEntity(ExecutionRequestKey executionRequestKey) {
         return new ExecutionRequestLabel(new ExecutionRequestLabelKey(DigestUtils.sha256Hex(executionRequestKey.getId()+name)), executionRequestKey, name, value);
     }
+
 }

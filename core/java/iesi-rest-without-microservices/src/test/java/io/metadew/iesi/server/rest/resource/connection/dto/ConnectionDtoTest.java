@@ -1,17 +1,15 @@
-package io.metadew.iesi.server.rest.connection.dto;
+package io.metadew.iesi.server.rest.resource.connection.dto;
 
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionParameterKey;
-import io.metadew.iesi.server.rest.resource.connection.dto.ConnectionDto;
-import io.metadew.iesi.server.rest.resource.connection.dto.ConnectionParameterDto;
 import org.junit.Test;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 public class ConnectionDtoTest {
 

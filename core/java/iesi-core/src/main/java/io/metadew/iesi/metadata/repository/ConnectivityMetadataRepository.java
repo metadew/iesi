@@ -111,12 +111,12 @@ public class ConnectivityMetadataRepository extends MetadataRepository {
 
     public void save(Impersonation impersonation) {
         LOGGER.info(MessageFormat.format("Inserting impersonation {0} into connectivity repository",
-                impersonation.getName()));
+                impersonation.getMetadataKey().getName()));
         try {
             ImpersonationConfiguration.getInstance().insertImpersonation(impersonation);
         } catch (MetadataAlreadyExistsException e) {
             LOGGER.info(MessageFormat.format("Impersonation {0} already exists in connectivity repository. Updating impersonation {0} instead.",
-                    impersonation.getName()));
+                    impersonation.getMetadataKey().getName()));
             ImpersonationConfiguration.getInstance().updateImpersonation(impersonation);
         }
     }

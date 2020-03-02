@@ -31,7 +31,6 @@ public class DbTeradataConnectionService {
     }
 
     public TeradataDatabase getDatabase(Connection connection) {
-
         String hostName = getMandatoryParameterWithKey(connection, hostKey);
         String databaseName = getMandatoryParameterWithKey(connection, databaseKey);
         String userName = getMandatoryParameterWithKey(connection, userKey);

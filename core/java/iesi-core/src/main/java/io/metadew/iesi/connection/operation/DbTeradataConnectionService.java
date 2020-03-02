@@ -5,12 +5,19 @@ import io.metadew.iesi.connection.database.connection.TeradataDatabaseConnection
 import io.metadew.iesi.framework.crypto.FrameworkCrypto;
 import io.metadew.iesi.framework.execution.FrameworkControl;
 import io.metadew.iesi.metadata.definition.connection.Connection;
-import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 
+import java.text.MessageFormat;
+import java.util.Optional;
+
+@Log4j2
 public class DbTeradataConnectionService {
-    private static final Logger LOGGER = LogManager.getLogger();
+
+    private final static String hostKey = "host";
+    private final static String databaseKey = "database";
+    private final static String userKey = "user";
+    private final static String passwordKey = "password";
+
     private static DbTeradataConnectionService INSTANCE;
 
     public synchronized static DbTeradataConnectionService getInstance() {
@@ -23,33 +30,34 @@ public class DbTeradataConnectionService {
     private DbTeradataConnectionService() {
     }
 
-    public TeradataDatabase getDatabase(Connection connection)  {
-        String hostName = null;
-        String databaseName= null;
-        String userName = null;
-        String userPassword = null;
+    public TeradataDatabase getDatabase(Connection connection) {
 
-        for (ConnectionParameter connectionParameter : connection.getParameters()) {
-            if (connectionParameter.getName().equalsIgnoreCase("host")) {
-                hostName = FrameworkCrypto.getInstance().decryptIfNeeded(
-                        FrameworkControl.getInstance().resolveConfiguration(connectionParameter.getValue()));
-            } else if (connectionParameter.getName().equalsIgnoreCase("database")) {
-                databaseName = FrameworkCrypto.getInstance().decryptIfNeeded(
-                        FrameworkControl.getInstance().resolveConfiguration(connectionParameter.getValue()));
-            } else if (connectionParameter.getName().equalsIgnoreCase("user")) {
-                userName = FrameworkCrypto.getInstance().decryptIfNeeded(
-                        FrameworkControl.getInstance().resolveConfiguration(connectionParameter.getValue()));
-            } else if (connectionParameter.getName().equalsIgnoreCase("password")) {
-                userPassword = FrameworkCrypto.getInstance().decryptIfNeeded(
-                        FrameworkControl.getInstance().resolveConfiguration(connectionParameter.getValue()));
-            }
-        }
-        if (hostName == null || databaseName == null || userName == null || userPassword == null) {
-            throw new RuntimeException();
-        } else  {
-            TeradataDatabaseConnection teradataDatabaseConnection = new TeradataDatabaseConnection(hostName, 0, databaseName, userName, userPassword);
-            return new TeradataDatabase(teradataDatabaseConnection);
-        }
+        String hostName = getMandatoryParameterWithKey(connection, hostKey);
+        String databaseName = getMandatoryParameterWithKey(connection, databaseKey);
+        String userName = getMandatoryParameterWithKey(connection, userKey);
+        String userPassword = getMandatoryParameterWithKey(connection, passwordKey);
+
+        TeradataDatabaseConnection teradataDatabaseConnection = new TeradataDatabaseConnection(hostName, 0, databaseName, userName, userPassword);
+        return new TeradataDatabase(teradataDatabaseConnection);
+    }
+
+    private String getMandatoryParameterWithKey(Connection connection, String key) {
+        return connection.getParameters().stream()
+                .filter(connectionParameter -> connectionParameter.getName().equalsIgnoreCase(key))
+                .findFirst()
+                .map(connectionParameter -> FrameworkControl.getInstance().resolveConfiguration(connectionParameter.getValue()))
+                .map(connectionParameterValue -> FrameworkCrypto.getInstance().decryptIfNeeded(connectionParameterValue))
+                .orElseThrow(() -> new RuntimeException(MessageFormat.format("Connection {0} does not contain mandatory parameter ''{1}''", connection, key)));
+
+    }
+
+    private Optional<String> getOptionalParameterWithKey(Connection connection, String key) {
+        return connection.getParameters().stream()
+                .filter(connectionParameter -> connectionParameter.getName().equalsIgnoreCase(key))
+                .findFirst()
+                .map(connectionParameter -> FrameworkControl.getInstance().resolveConfiguration(connectionParameter.getValue()))
+                .map(connectionParameterValue -> FrameworkCrypto.getInstance().decryptIfNeeded(connectionParameterValue));
+
     }
 
 }

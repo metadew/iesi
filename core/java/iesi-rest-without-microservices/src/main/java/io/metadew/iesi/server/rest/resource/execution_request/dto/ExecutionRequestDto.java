@@ -9,6 +9,7 @@ import io.metadew.iesi.server.rest.resource.script_execution_request.dto.ScriptE
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 @Data
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
+@NoArgsConstructor
 public class ExecutionRequestDto extends Dto {
 
     private String executionRequestId;

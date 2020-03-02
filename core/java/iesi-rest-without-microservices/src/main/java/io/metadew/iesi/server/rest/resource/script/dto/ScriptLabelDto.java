@@ -4,6 +4,7 @@ import io.metadew.iesi.metadata.definition.script.ScriptLabel;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.metadata.definition.script.key.ScriptLabelKey;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.apache.commons.codec.digest.DigestUtils;
 
 @Data

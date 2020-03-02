@@ -5,12 +5,14 @@ import io.metadew.iesi.metadata.definition.action.key.ActionParameterKey;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import org.springframework.hateoas.ResourceSupport;
 
 
 @Data
 @EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
+@NoArgsConstructor
 public class ActionParameterDto extends ResourceSupport {
 
     private String name;

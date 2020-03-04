@@ -29,13 +29,13 @@ public class ScriptByNameDtoAssembler extends ResourceAssemblerSupport<List<Scri
         scriptDto.getVersions().forEach(
                 version -> scriptDto.add(linkTo(methodOn(ScriptController.class)
                         .get(scriptDto.getName(), version))
-                        .withRel("version:"+version))
+                        .withRel("version:" + version))
         );
         return scriptDto;
     }
 
     private ScriptByNameDto convertToDto(List<Script> scripts) {
-        return new ScriptByNameDto(scripts.get(0).getName(), scripts.get(0).getType(), scripts.get(0).getDescription(),
+        return new ScriptByNameDto(scripts.get(0).getName(), scripts.get(0).getDescription(),
                 scripts.stream().map(script -> script.getVersion().getNumber()).collect(Collectors.toList()));
     }
 }

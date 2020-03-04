@@ -1,23 +1,21 @@
 package io.metadew.iesi.metadata.definition.component;
 
 
-public class ComponentBuild {
+import io.metadew.iesi.metadata.definition.Metadata;
+import io.metadew.iesi.metadata.definition.component.key.ComponentBuildKey;
 
-    private String name;
+public class ComponentBuild extends Metadata<ComponentBuildKey> {
+
     private String description;
 
-    //Constructors
-    public ComponentBuild() {
-
+    public ComponentBuild(ComponentBuildKey componentBuildKey, String description){
+        super(componentBuildKey);
+        this.description = description;
     }
 
     //Getters and Setters
     public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+        return getMetadataKey().getComponentBuildName();
     }
 
     public String getDescription() {

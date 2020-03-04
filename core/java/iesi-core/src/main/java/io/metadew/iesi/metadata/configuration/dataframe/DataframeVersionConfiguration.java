@@ -7,6 +7,7 @@ import io.metadew.iesi.metadata.execution.MetadataControl;
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.sql.SQLException;
 
 public class DataframeVersionConfiguration {
 
@@ -70,7 +71,7 @@ public class DataframeVersionConfiguration {
                 dataframeVersion.setDescription(crsDataframeVersion.getString("DATAFRAME_VRS_DSC"));
             }
             crsDataframeVersion.close();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
         }

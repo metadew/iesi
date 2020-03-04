@@ -10,234 +10,218 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
 public class NumNumber {
 
-	private GenerationRuleExecution generationRuleExecution;
-	private FrameworkExecution frameworkExecution;
-	private ExecutionControl executionControl;
-	private String generationRuleTypeName = "num.number";
+    private GenerationRuleExecution generationRuleExecution;
+    private FrameworkExecution frameworkExecution;
+    private ExecutionControl executionControl;
+    private String generationRuleTypeName = "num.number";
 
-	// Defaults
-	private static final int DEFAULT_DECIMAL_NUMBER = 2;
-	private static final String DEFAULT_DECIMAL_CHAR = ".";
+    // Defaults
+    private static final int DEFAULT_DECIMAL_NUMBER = 2;
+    private static final String DEFAULT_DECIMAL_CHAR = ".";
 
-	// Parameters
-	private GenerationRuleParameterExecution minimumValue;
-	private GenerationRuleParameterExecution maximumValue;
-	private GenerationRuleParameterExecution decimalFlag;
-	private GenerationRuleParameterExecution decimalNumber;
-	private GenerationRuleParameterExecution decimalChar;
-	private static final Logger LOGGER = LogManager.getLogger();
+    // Parameters
+    private GenerationRuleParameterExecution minimumValue;
+    private GenerationRuleParameterExecution maximumValue;
+    private GenerationRuleParameterExecution decimalFlag;
+    private GenerationRuleParameterExecution decimalNumber;
+    private GenerationRuleParameterExecution decimalChar;
+    private static final Logger LOGGER = LogManager.getLogger();
 
-	// Constructors
-	public NumNumber() {
-		
-	}
-	
-	public NumNumber(FrameworkExecution frameworkExecution, ExecutionControl executionControl, GenerationRuleExecution generationRuleExecution) {
-		this.setFrameworkExecution(frameworkExecution);
-		this.setEoControl(executionControl);
-		this.setGenerationRuleExecution(generationRuleExecution);
-	}
+    // Constructors
+    public NumNumber() {
 
-	public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl, GenerationRuleExecution generationRuleExecution) {
-		this.setFrameworkExecution(frameworkExecution);
-		this.setEoControl(executionControl);
-		this.setGenerationRuleExecution(generationRuleExecution);
-	}
+    }
 
-	//
-	public boolean execute() {
-		try {
-			LOGGER.info("generation.rule.type=" + this.getGenerationRuleTypeName(), Level.INFO);
+    public NumNumber(FrameworkExecution frameworkExecution, ExecutionControl executionControl, GenerationRuleExecution generationRuleExecution) {
+        this.setFrameworkExecution(frameworkExecution);
+        this.setEoControl(executionControl);
+        this.setGenerationRuleExecution(generationRuleExecution);
+    }
 
-			// Reset Parameters
-			this.setMinimumValue(new GenerationRuleParameterExecution(this.getFrameworkExecution(), this.getEoControl(),
-					this.getGenerationRuleTypeName(), "MIN_VALUE"));
-			this.setMaximumValue(new GenerationRuleParameterExecution(this.getFrameworkExecution(), this.getEoControl(),
-					this.getGenerationRuleTypeName(), "MAX_VALUE"));
-			this.setDecimalFlag(new GenerationRuleParameterExecution(this.getFrameworkExecution(), this.getEoControl(),
-					this.getGenerationRuleTypeName(), "DECIMAL_FL"));
-			this.setDecimalNumber(new GenerationRuleParameterExecution(this.getFrameworkExecution(), this.getEoControl(),
-					this.getGenerationRuleTypeName(), "DECIMAL_NB"));
-			this.setDecimalChar(new GenerationRuleParameterExecution(this.getFrameworkExecution(), this.getEoControl(),
-					this.getGenerationRuleTypeName(), "DECIMAL_CHR"));
+    public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl, GenerationRuleExecution generationRuleExecution) {
+        this.setFrameworkExecution(frameworkExecution);
+        this.setEoControl(executionControl);
+        this.setGenerationRuleExecution(generationRuleExecution);
+    }
 
-			// Get Parameters
-			for (GenerationRuleParameter generationRuleParameter : this.getGenerationRuleExecution().getGenerationRule()
-					.getParameters()) {
-				if (generationRuleParameter.getName().equalsIgnoreCase("min_value")) {
-					this.getMinimumValue().setInputValue(generationRuleParameter.getValue());
-				} else if (generationRuleParameter.getName().equalsIgnoreCase("max_value")) {
-					this.getMaximumValue().setInputValue(generationRuleParameter.getValue());
-				} else if (generationRuleParameter.getName().equalsIgnoreCase("decimal_fl")) {
-					this.getDecimalFlag().setInputValue(generationRuleParameter.getValue());
-				} else if (generationRuleParameter.getName().equalsIgnoreCase("decimal_nb")) {
-					this.getDecimalNumber().setInputValue(generationRuleParameter.getValue());
-				} else if (generationRuleParameter.getName().equalsIgnoreCase("decimal_chr")) {
-					this.getDecimalChar().setInputValue(generationRuleParameter.getValue());
-				}
-			}
+    //
+    public boolean execute() {
+        LOGGER.info("generation.rule.type=" + this.getGenerationRuleTypeName(), Level.INFO);
 
-			// Run the generationRule
-			try {
-				for (int currentRecord = 0; currentRecord < this.getGenerationRuleExecution().getGenerationExecution()
-						.getNumberOfRecords(); currentRecord++) {
+        // Reset Parameters
+        this.setMinimumValue(new GenerationRuleParameterExecution(this.getFrameworkExecution(), this.getEoControl(),
+                this.getGenerationRuleTypeName(), "MIN_VALUE"));
+        this.setMaximumValue(new GenerationRuleParameterExecution(this.getFrameworkExecution(), this.getEoControl(),
+                this.getGenerationRuleTypeName(), "MAX_VALUE"));
+        this.setDecimalFlag(new GenerationRuleParameterExecution(this.getFrameworkExecution(), this.getEoControl(),
+                this.getGenerationRuleTypeName(), "DECIMAL_FL"));
+        this.setDecimalNumber(new GenerationRuleParameterExecution(this.getFrameworkExecution(), this.getEoControl(),
+                this.getGenerationRuleTypeName(), "DECIMAL_NB"));
+        this.setDecimalChar(new GenerationRuleParameterExecution(this.getFrameworkExecution(), this.getEoControl(),
+                this.getGenerationRuleTypeName(), "DECIMAL_CHR"));
 
-					String generatedValue = "";
-					if (this.getDecimalFlag().getValue().trim().equalsIgnoreCase("n")) {
-						generatedValue = String.valueOf(this.getGenerationRuleExecution().getGenerationExecution()
-								.getGenerationRuntime().getGenerationObjectExecution().getNumber()
-								.between(Long.parseLong(this.getMinimumValue().getValue()),
-										Long.parseLong(this.getMaximumValue().getValue())));
-					} else {
-						int numberOfDecimals = DEFAULT_DECIMAL_NUMBER;
-						if (!this.getDecimalNumber().getValue().trim().equalsIgnoreCase("")) {
-							numberOfDecimals = Integer.valueOf(this.getDecimalNumber().getValue());
-						}
-						
-						DecimalFormatSymbols otherSymbols = new DecimalFormatSymbols(Locale.ROOT);
-						if (this.getDecimalChar().getValue().trim().equalsIgnoreCase("")) {
-							String temp = DEFAULT_DECIMAL_CHAR;
-							char charTemp = temp.charAt(0);
-							otherSymbols.setDecimalSeparator(charTemp);
-						} else {
-							String temp = this.getDecimalChar().getValue();
-							char charTemp = temp.charAt(0);
-							otherSymbols.setDecimalSeparator(charTemp);							
-						}
-						//otherSymbols.setDecimalSeparator(',');
-						//otherSymbols.setGroupingSeparator('.');
-						
-						StringBuilder stringBuilder = new StringBuilder();
-						stringBuilder.append("0.");
-						for (int i=0; i < numberOfDecimals; i++) {
-							stringBuilder.append("0");
-						}
-						stringBuilder.append("##");
-						
-						DecimalFormat decimalFormat = new DecimalFormat(stringBuilder.toString(),otherSymbols);
+        // Get Parameters
+        for (GenerationRuleParameter generationRuleParameter : this.getGenerationRuleExecution().getGenerationRule()
+                .getParameters()) {
+            if (generationRuleParameter.getName().equalsIgnoreCase("min_value")) {
+                this.getMinimumValue().setInputValue(generationRuleParameter.getValue());
+            } else if (generationRuleParameter.getName().equalsIgnoreCase("max_value")) {
+                this.getMaximumValue().setInputValue(generationRuleParameter.getValue());
+            } else if (generationRuleParameter.getName().equalsIgnoreCase("decimal_fl")) {
+                this.getDecimalFlag().setInputValue(generationRuleParameter.getValue());
+            } else if (generationRuleParameter.getName().equalsIgnoreCase("decimal_nb")) {
+                this.getDecimalNumber().setInputValue(generationRuleParameter.getValue());
+            } else if (generationRuleParameter.getName().equalsIgnoreCase("decimal_chr")) {
+                this.getDecimalChar().setInputValue(generationRuleParameter.getValue());
+            }
+        }
+
+        // Run the generationRule
+        for (int currentRecord = 0; currentRecord < this.getGenerationRuleExecution().getGenerationExecution()
+                .getNumberOfRecords(); currentRecord++) {
+
+            String generatedValue = "";
+            if (this.getDecimalFlag().getValue().trim().equalsIgnoreCase("n")) {
+                generatedValue = String.valueOf(this.getGenerationRuleExecution().getGenerationExecution()
+                        .getGenerationRuntime().getGenerationObjectExecution().getNumber()
+                        .between(Long.parseLong(this.getMinimumValue().getValue()),
+                                Long.parseLong(this.getMaximumValue().getValue())));
+            } else {
+                int numberOfDecimals = DEFAULT_DECIMAL_NUMBER;
+                if (!this.getDecimalNumber().getValue().trim().equalsIgnoreCase("")) {
+                    numberOfDecimals = Integer.valueOf(this.getDecimalNumber().getValue());
+                }
+
+                DecimalFormatSymbols otherSymbols = new DecimalFormatSymbols(Locale.ROOT);
+                if (this.getDecimalChar().getValue().trim().equalsIgnoreCase("")) {
+                    String temp = DEFAULT_DECIMAL_CHAR;
+                    char charTemp = temp.charAt(0);
+                    otherSymbols.setDecimalSeparator(charTemp);
+                } else {
+                    String temp = this.getDecimalChar().getValue();
+                    char charTemp = temp.charAt(0);
+                    otherSymbols.setDecimalSeparator(charTemp);
+                }
+                //otherSymbols.setDecimalSeparator(',');
+                //otherSymbols.setGroupingSeparator('.');
+
+                StringBuilder stringBuilder = new StringBuilder();
+                stringBuilder.append("0.");
+                for (int i = 0; i < numberOfDecimals; i++) {
+                    stringBuilder.append("0");
+                }
+                stringBuilder.append("##");
+
+                DecimalFormat decimalFormat = new DecimalFormat(stringBuilder.toString(), otherSymbols);
 
 
+                generatedValue = String.valueOf(decimalFormat.format(this.getGenerationRuleExecution()
+                        .getGenerationExecution().getGenerationRuntime().getGenerationObjectExecution().getNumber()
+                        .round(this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime()
+                                        .getGenerationObjectExecution().getNumber()
+                                        .between(Double.parseDouble(this.getMinimumValue().getValue()),
+                                                Double.parseDouble(this.getMaximumValue().getValue())),
+                                numberOfDecimals)));
+            }
 
-						generatedValue = String.valueOf(decimalFormat.format(this.getGenerationRuleExecution()
-								.getGenerationExecution().getGenerationRuntime().getGenerationObjectExecution().getNumber()
-								.round(this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime()
-										.getGenerationObjectExecution().getNumber()
-										.between(Double.parseDouble(this.getMinimumValue().getValue()),
-												Double.parseDouble(this.getMaximumValue().getValue())),
-										numberOfDecimals)));
-					}
+            String query = "update " + this.getGenerationRuleExecution().getGenerationExecution().getGeneration().getName();
+            query += " set v" + this.getGenerationRuleExecution().getGenerationRule().getField() + "=";
+            query += SQLTools.GetStringForSQL(generatedValue);
+            query += " where id=" + (currentRecord + 1);
+            this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().getTemporaryDatabaseConnection()
+                    .executeUpdate(query);
 
-					String query = "update " + this.getGenerationRuleExecution().getGenerationExecution().getGeneration().getName();
-					query += " set v" + this.getGenerationRuleExecution().getGenerationRule().getField() + "=";
-					query += SQLTools.GetStringForSQL(generatedValue);
-					query += " where id=" + (currentRecord + 1);
-					this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().getTemporaryDatabaseConnection()
-							.executeUpdate(query);
+            this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().updateProgress();
+        }
 
-					this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().updateProgress();
-				}
+        return true;
 
-			} catch (Exception e) {
-				throw new RuntimeException("Issue setting runtime variables: " + e, e);
-			}
-			return true;
-		} catch (Exception e) {
-			StringWriter StackTrace = new StringWriter();
-			e.printStackTrace(new PrintWriter(StackTrace));
+    }
 
-			// TODO logging
+    // Getters and Setters
+    public ExecutionControl getEoControl() {
+        return executionControl;
+    }
 
-			return false;
-		}
+    public void setEoControl(ExecutionControl executionControl) {
+        this.executionControl = executionControl;
+    }
 
-	}
+    public GenerationRuleExecution getGenerationRuleExecution() {
+        return generationRuleExecution;
+    }
 
-	// Getters and Setters
-	public ExecutionControl getEoControl() {
-		return executionControl;
-	}
+    public void setGenerationRuleExecution(GenerationRuleExecution generationRuleExecution) {
+        this.generationRuleExecution = generationRuleExecution;
+    }
 
-	public void setEoControl(ExecutionControl executionControl) {
-		this.executionControl = executionControl;
-	}
+    public String getGenerationRuleTypeName() {
+        return generationRuleTypeName;
+    }
 
-	public GenerationRuleExecution getGenerationRuleExecution() {
-		return generationRuleExecution;
-	}
+    public void setGenerationRuleTypeName(String generationRuleTypeName) {
+        this.generationRuleTypeName = generationRuleTypeName;
+    }
 
-	public void setGenerationRuleExecution(GenerationRuleExecution generationRuleExecution) {
-		this.generationRuleExecution = generationRuleExecution;
-	}
+    public GenerationRuleParameterExecution getMinimumValue() {
+        return minimumValue;
+    }
 
-	public String getGenerationRuleTypeName() {
-		return generationRuleTypeName;
-	}
+    public void setMinimumValue(GenerationRuleParameterExecution minimumValue) {
+        this.minimumValue = minimumValue;
+    }
 
-	public void setGenerationRuleTypeName(String generationRuleTypeName) {
-		this.generationRuleTypeName = generationRuleTypeName;
-	}
+    public GenerationRuleParameterExecution getMaximumValue() {
+        return maximumValue;
+    }
 
-	public GenerationRuleParameterExecution getMinimumValue() {
-		return minimumValue;
-	}
+    public void setMaximumValue(GenerationRuleParameterExecution maximumValue) {
+        this.maximumValue = maximumValue;
+    }
 
-	public void setMinimumValue(GenerationRuleParameterExecution minimumValue) {
-		this.minimumValue = minimumValue;
-	}
+    public GenerationRuleParameterExecution getDecimalFlag() {
+        return decimalFlag;
+    }
 
-	public GenerationRuleParameterExecution getMaximumValue() {
-		return maximumValue;
-	}
+    public void setDecimalFlag(GenerationRuleParameterExecution decimalFlag) {
+        this.decimalFlag = decimalFlag;
+    }
 
-	public void setMaximumValue(GenerationRuleParameterExecution maximumValue) {
-		this.maximumValue = maximumValue;
-	}
+    public GenerationRuleParameterExecution getDecimalNumber() {
+        return decimalNumber;
+    }
 
-	public GenerationRuleParameterExecution getDecimalFlag() {
-		return decimalFlag;
-	}
+    public void setDecimalNumber(GenerationRuleParameterExecution decimalNumber) {
+        this.decimalNumber = decimalNumber;
+    }
 
-	public void setDecimalFlag(GenerationRuleParameterExecution decimalFlag) {
-		this.decimalFlag = decimalFlag;
-	}
+    public GenerationRuleParameterExecution getDecimalChar() {
+        return decimalChar;
+    }
 
-	public GenerationRuleParameterExecution getDecimalNumber() {
-		return decimalNumber;
-	}
+    public void setDecimalChar(GenerationRuleParameterExecution decimalChar) {
+        this.decimalChar = decimalChar;
+    }
 
-	public void setDecimalNumber(GenerationRuleParameterExecution decimalNumber) {
-		this.decimalNumber = decimalNumber;
-	}
+    public static int getDefaultDecimalNumber() {
+        return DEFAULT_DECIMAL_NUMBER;
+    }
 
-	public GenerationRuleParameterExecution getDecimalChar() {
-		return decimalChar;
-	}
+    public static String getDefaultDecimalChar() {
+        return DEFAULT_DECIMAL_CHAR;
+    }
 
-	public void setDecimalChar(GenerationRuleParameterExecution decimalChar) {
-		this.decimalChar = decimalChar;
-	}
+    public FrameworkExecution getFrameworkExecution() {
+        return frameworkExecution;
+    }
 
-	public static int getDefaultDecimalNumber() {
-		return DEFAULT_DECIMAL_NUMBER;
-	}
-
-	public static String getDefaultDecimalChar() {
-		return DEFAULT_DECIMAL_CHAR;
-	}
-
-	public FrameworkExecution getFrameworkExecution() {
-		return frameworkExecution;
-	}
-
-	public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-		this.frameworkExecution = frameworkExecution;
-	}
+    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
+        this.frameworkExecution = frameworkExecution;
+    }
 }

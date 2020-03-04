@@ -3,9 +3,14 @@ package io.metadew.iesi.metadata.definition.action.design;
 import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.action.design.key.ActionDesignTraceKey;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
+@Data
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 public class ActionDesignTrace extends Metadata<ActionDesignTraceKey> {
-
 
     private long number;
     private String type;
@@ -33,48 +38,9 @@ public class ActionDesignTrace extends Metadata<ActionDesignTraceKey> {
     }
 
     public ActionDesignTrace(String runId, Long processId, Action action) {
-        this(new ActionDesignTraceKey(runId, processId, action.getId()),
+        this(new ActionDesignTraceKey(runId, processId, action.getMetadataKey().getActionId()),
                 action.getNumber(), action.getType(), action.getName(), action.getDescription(), action.getComponent(), action.getCondition(), action.getIteration(), action.getRetries(),
                 action.getErrorExpected() ? "y" : "n", action.getErrorStop()?"y":"n");
     }
 
-    public String getType() {
-        return type;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public String getComponent() {
-        return component;
-    }
-
-    public String getCondition() {
-        return condition;
-    }
-
-    public String getIteration() {
-        return iteration;
-    }
-
-    public String getErrorExpected() {
-        return errorExpected;
-    }
-
-    public String getErrorStop() {
-        return errorStop;
-    }
-
-    public int getRetries() {
-        return retries;
-    }
-
-    public long getNumber() {
-        return number;
-    }
 }

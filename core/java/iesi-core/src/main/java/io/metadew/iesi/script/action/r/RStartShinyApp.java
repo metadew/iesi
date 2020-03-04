@@ -42,9 +42,9 @@ public class RStartShinyApp {
 
         // Get Parameters
         for (ActionParameter actionParameter : actionExecution.getAction().getParameters()) {
-            if (actionParameter.getName().equalsIgnoreCase(workspaceReferenceNameKey)) {
+            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(workspaceReferenceNameKey)) {
                 workspaceReferenceNameActionParameterOperation.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase(portKey)) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(portKey)) {
                 scriptActionParameterOperation.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }

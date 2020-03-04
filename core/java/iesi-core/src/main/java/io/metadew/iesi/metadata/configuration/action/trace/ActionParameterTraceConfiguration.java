@@ -2,10 +2,6 @@ package io.metadew.iesi.metadata.configuration.action.trace;
 
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
-import io.metadew.iesi.metadata.configuration.action.trace.exception.ActionParameterTraceAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.action.trace.exception.ActionParameterTraceDoesNotExistException;
-import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.action.trace.ActionParameterTrace;
 import io.metadew.iesi.metadata.definition.action.trace.key.ActionParameterTraceKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
@@ -84,12 +80,8 @@ public class ActionParameterTraceConfiguration extends Configuration<ActionParam
     }
 
     @Override
-    public void delete(ActionParameterTraceKey actionParameterTraceKey) throws MetadataDoesNotExistException {
+    public void delete(ActionParameterTraceKey actionParameterTraceKey) {
         LOGGER.trace(MessageFormat.format("Deleting ActionParameterTrace {0}.", actionParameterTraceKey.toString()));
-        if (!exists(actionParameterTraceKey)) {
-            throw new ActionParameterTraceDoesNotExistException(MessageFormat.format(
-                    "ActionParameterTrace {0} does not exists", actionParameterTraceKey.toString()));
-        }
         String deleteStatement = deleteStatement(actionParameterTraceKey);
         getMetadataRepository().executeUpdate(deleteStatement);
 
@@ -105,25 +97,17 @@ public class ActionParameterTraceConfiguration extends Configuration<ActionParam
     }
 
     @Override
-    public void insert(ActionParameterTrace actionParameterTrace) throws MetadataAlreadyExistsException {
+    public void insert(ActionParameterTrace actionParameterTrace) {
         LOGGER.trace(MessageFormat.format("Inserting ActionParameterTrace {0}.", actionParameterTrace.getMetadataKey().toString()));
-        if (exists(actionParameterTrace.getMetadataKey())) {
-            throw new ActionParameterTraceAlreadyExistsException(MessageFormat.format(
-                    "ActionParameterTrace {0} already exists", actionParameterTrace.getMetadataKey().toString()));
-        }
         String insertStatement = insertStatement(actionParameterTrace);
         getMetadataRepository().executeUpdate(insertStatement);
     }
 
-    public void insert(List<ActionParameterTrace> actionParameterTraces) throws MetadataAlreadyExistsException {
+    public void insert(List<ActionParameterTrace> actionParameterTraces) {
         LOGGER.trace(MessageFormat.format("Inserting ActionParameterTraces {0}.", actionParameterTraces.stream().map(ActionParameterTrace::getMetadataKey).collect(Collectors.toList()).toString()));
         List<String> insertQueries = new ArrayList<>();
         for (ActionParameterTrace actionParameterTrace : actionParameterTraces) {
-            if (exists(actionParameterTrace.getMetadataKey())) {
-                LOGGER.info(MessageFormat.format("ActionParameterTrace {0} already exists. Skipping", actionParameterTrace.getMetadataKey().toString()));
-            } else {
-                insertQueries.add(insertStatement(actionParameterTrace));
-            }
+            insertQueries.add(insertStatement(actionParameterTrace));
         }
         getMetadataRepository().executeBatch(insertQueries);
     }
@@ -136,5 +120,21 @@ public class ActionParameterTraceConfiguration extends Configuration<ActionParam
                 SQLTools.GetStringForSQL(actionParameterTrace.getMetadataKey().getActionId()) + "," +
                 SQLTools.GetStringForSQL(actionParameterTrace.getMetadataKey().getName()) + "," +
                 SQLTools.GetStringForSQL(actionParameterTrace.getValue()) + ");";
+    }
+
+    @Override
+    public void update(ActionParameterTrace actionParameterTrace) {
+        LOGGER.trace(MessageFormat.format("Updating ActionParameterTrace {0}.", actionParameterTrace.getMetadataKey().toString()));
+        String updateStatement = updateStatement(actionParameterTrace);
+        getMetadataRepository().executeUpdate(updateStatement);
+    }
+
+    private String updateStatement(ActionParameterTrace actionParameterTrace) {
+        return "UPDATE " + getMetadataRepository().getTableNameByLabel("ActionParameterTraces") +
+                " SET ACTION_PAR_VAL = " + SQLTools.GetStringForSQL(actionParameterTrace.getValue()) +
+                " WHERE RUN_ID = " + SQLTools.GetStringForSQL(actionParameterTrace.getMetadataKey().getRunId()) +
+                " AND PRC_ID = " + SQLTools.GetStringForSQL(actionParameterTrace.getMetadataKey().getProcessId()) +
+                " AND ACTION_ID = " + SQLTools.GetStringForSQL(actionParameterTrace.getMetadataKey().getActionId()) +
+                " AND ACTION_PAR_NM = " + SQLTools.GetStringForSQL(actionParameterTrace.getMetadataKey().getName()) + ";";
     }
 }

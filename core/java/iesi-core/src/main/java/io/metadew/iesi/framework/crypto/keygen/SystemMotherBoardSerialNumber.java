@@ -1,23 +1,15 @@
 package io.metadew.iesi.framework.crypto.keygen;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.InputStreamReader;
+import java.io.*;
 
 public class SystemMotherBoardSerialNumber {
 
     public static String getSystemMotherBoardSerialNumber() {
-        try {
-            String OSName = System.getProperty("os.name");
-            if (OSName.contains("Windows")) {
-                return (getWindowsMotherBoard_SerialNumber());
-            } else {
-                return (GetLinuxMotherBoard_serialNumber());
-            }
-        } catch (Exception E) {
-            System.err.println("System MotherBoard Exp : " + E.getMessage());
-            return null;
+        String OSName = System.getProperty("os.name");
+        if (OSName.contains("Windows")) {
+            return (getWindowsMotherBoard_SerialNumber());
+        } else {
+            return (GetLinuxMotherBoard_serialNumber());
         }
     }
 
@@ -47,7 +39,7 @@ public class SystemMotherBoardSerialNumber {
                 result += line;
             }
             input.close();
-        } catch (Exception E) {
+        } catch (IOException E) {
             System.err.println("Windows MotherBoard Exp : " + E.getMessage());
         }
         return result.trim();
@@ -63,7 +55,7 @@ public class SystemMotherBoardSerialNumber {
             sNum = sNumReader.readLine().trim();
             SerNumProcess.waitFor();
             sNumReader.close();
-        } catch (Exception ex) {
+        } catch (IOException | InterruptedException ex) {
             System.err.println("Linux Motherboard Exp : " + ex.getMessage());
             sNum = null;
         }

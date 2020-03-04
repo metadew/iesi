@@ -1,14 +1,16 @@
 package io.metadew.iesi.metadata.configuration.component;
 
 import io.metadew.iesi.connection.tools.SQLTools;
-import io.metadew.iesi.metadata.configuration.MetadataConfiguration;
-import io.metadew.iesi.metadata.configuration.exception.ComponentAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.exception.ComponentDoesNotExistException;
+import io.metadew.iesi.metadata.configuration.Configuration;
+import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
+import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.component.Component;
 import io.metadew.iesi.metadata.definition.component.ComponentAttribute;
 import io.metadew.iesi.metadata.definition.component.ComponentParameter;
 import io.metadew.iesi.metadata.definition.component.ComponentVersion;
-import io.metadew.iesi.metadata.execution.MetadataControl;
+import io.metadew.iesi.metadata.definition.component.key.ComponentKey;
+import io.metadew.iesi.metadata.definition.component.key.ComponentVersionKey;
+import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -21,122 +23,58 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class ComponentConfiguration extends MetadataConfiguration {
+public class ComponentConfiguration extends Configuration<Component, ComponentKey> {
 
-    private final static Logger LOGGER = LogManager.getLogger();
-    private final ComponentVersionConfiguration componentVersionConfiguration;
+    private static final Logger LOGGER = LogManager.getLogger();
+    private static ComponentConfiguration INSTANCE;
+
+    public synchronized static ComponentConfiguration getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new ComponentConfiguration();
+        }
+        return INSTANCE;
+    }
 
     // Constructors
-    public ComponentConfiguration() {
-        componentVersionConfiguration = new ComponentVersionConfiguration();
+    private ComponentConfiguration() {
+    }
+
+
+    public void init(MetadataRepository metadataRepository) {
+        setMetadataRepository(metadataRepository);
+        ComponentVersionConfiguration.getInstance().init(metadataRepository);
+        ComponentParameterConfiguration.getInstance().init(metadataRepository);
+        ComponentAttributeConfiguration.getInstance().init(metadataRepository);
     }
 
     @Override
-    public List<Component> getAllObjects() {
-        return this.getAll();
-    }
-
-
-    public List<Component> getAll() {
-        List<Component> components = new ArrayList<>();
-        String queryComponent = "select COMP_NM from "
-                + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("Components");
-        CachedRowSet crsComponent = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(queryComponent, "reader");
-        try {
-            while (crsComponent.next()) {
-                components.addAll(getByName(crsComponent.getString("COMP_NM")));
-            }
-        } catch (SQLException e) {
-            StringWriter stackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(stackTrace));
-            LOGGER.warn("exeption=" + e.getMessage());
-            LOGGER.info("exception.stacktrace=" + stackTrace.toString());
-        }
-        return components;
-    }
-
-    public List<Component> getByName(String componentName) {
-        List<Component> components = new ArrayList<>();
+    public Optional<Component> get(ComponentKey componentKey) {
         String queryComponent = "select COMP_ID, COMP_TYP_NM, COMP_NM, COMP_DSC from "
-                + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("Components") + " where COMP_NM = '"
-                + componentName + "'";
-        CachedRowSet crsComponent = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(queryComponent, "reader");
-        try {
-            if (crsComponent.size() == 0) {
-                LOGGER.warn(MessageFormat.format("component.version=no implementations for component {0}.", componentName));
-                return components;
-            } else if (crsComponent.size() > 1) {
-                LOGGER.warn(MessageFormat.format("component.version=found multiple implementations for component {0}. Returning first implementation.", componentName));
-            }
-            crsComponent.next();
-            String componentId = crsComponent.getString("COMP_ID");
-            String queryComponentVersions = "select COMP_VRS_NB from "
-                    + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("ComponentVersions") + " where COMP_ID = "
-                    + SQLTools.GetStringForSQL(componentId);
-            CachedRowSet crsComponentVersions = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(queryComponentVersions, "reader");
-            while (crsComponentVersions.next()) {
-                get(componentName, crsComponentVersions.getLong("COMP_VRS_NB")).ifPresent(components::add);
-            }
-            crsComponentVersions.close();
-            crsComponent.close();
-        } catch (SQLException e) {
-            StringWriter stackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(stackTrace));
-            LOGGER.warn("exeption=" + e.getMessage());
-            LOGGER.info("exception.stacktrace=" + stackTrace.toString());
-        }
-        return components;
-    }
-
-    public Optional<Component> get(String componentName, long versionNumber) {
-        String queryComponent = "select COMP_ID, COMP_TYP_NM, COMP_NM, COMP_DSC from "
-                + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("Components")
-                + " where COMP_NM = "
-                + SQLTools.GetStringForSQL(componentName);
-        CachedRowSet crsComponent = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(queryComponent, "reader");
+                + getMetadataRepository().getTableNameByLabel("Components")
+                + " where COMP_ID = " + SQLTools.GetStringForSQL(componentKey.getId());
+        CachedRowSet crsComponent = getMetadataRepository().executeQuery(queryComponent, "reader");
         try {
             if (crsComponent.size() == 0) {
                 return Optional.empty();
             } else if (crsComponent.size() > 1) {
-                LOGGER.warn(MessageFormat.format("component.version=found multiple implementations for component {0}. Returning first implementation.", componentName));
+                LOGGER.warn(MessageFormat.format("component.version=found multiple implementations for component {0}. Returning first implementation.", componentKey.toString()));
             }
             crsComponent.next();
-            String componentId = crsComponent.getString("COMP_ID");
 
             // get version
-            Optional<ComponentVersion> componentVersion = componentVersionConfiguration.getComponentVersion(componentId, versionNumber);
+            Optional<ComponentVersion> componentVersion = ComponentVersionConfiguration.getInstance().get(new ComponentVersionKey(componentKey));
             if (!componentVersion.isPresent()) {
                 return Optional.empty();
             }
 
-            // get parameters
-            String queryComponentParameters = "select COMP_PAR_NM, COMP_PAR_VAL from "
-                    + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("ComponentParameters")
-                    + " where COMP_ID = " + SQLTools.GetStringForSQL(componentId) + " and COMP_VRS_NB = " + versionNumber;
-            CachedRowSet crsComponentParameters = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(queryComponentParameters, "reader");
-            List<ComponentParameter> componentParameters = new ArrayList<>();
-            while (crsComponentParameters.next()) {
-                componentParameters.add(new ComponentParameter(crsComponentParameters.getString("COMP_PAR_NM"),
-                        crsComponentParameters.getString("COMP_PAR_VAL")));
-            }
+            List<ComponentParameter> componentParameters = ComponentParameterConfiguration.getInstance().getByComponent(componentKey);
+            List<ComponentAttribute> componentAttributes = ComponentAttributeConfiguration.getInstance().getByComponent(componentKey);
 
-            // get attributes
-            String queryComponentAttributes = "select ENV_NM, COMP_ATT_NM, COMP_ATT_VAL from "
-                    + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("ComponentAttributes")
-                    + " where COMP_ID = " + SQLTools.GetStringForSQL(componentId) + " and COMP_VRS_NB = " + versionNumber;
-            CachedRowSet crsComponentAttributes = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(queryComponentAttributes, "reader");
-            List<ComponentAttribute> componentAttributes = new ArrayList<>();
-            while (crsComponentAttributes.next()) {
-                componentAttributes.add(new ComponentAttribute(crsComponentAttributes.getString("ENV_NM"),
-                        crsComponentAttributes.getString("COMP_ATT_NM"),
-                        crsComponentAttributes.getString("COMP_ATT_VAL")));
-            }
             String componentType = crsComponent.getString("COMP_TYP_NM");
             String componentDescription = crsComponent.getString("COMP_DSC");
+            String componentName = crsComponent.getString("COMP_NM");
             crsComponent.close();
-            crsComponentParameters.close();
-            crsComponentAttributes.close();
-            return Optional.of(new Component(componentId,
+            return Optional.of(new Component(componentKey,
                     componentType,
                     componentName,
                     componentDescription,
@@ -148,79 +86,102 @@ public class ComponentConfiguration extends MetadataConfiguration {
         }
     }
 
-    public boolean exists(Component component)  {
+    @Override
+    public List<Component> getAll() {
+        List<Component> components = new ArrayList<>();
+        String queryComponent = "select COMP_ID from " + getMetadataRepository().getTableNameByLabel("Components");
+        CachedRowSet crsComponent = getMetadataRepository().executeQuery(queryComponent, "reader");
         try {
+            while (crsComponent.next()) {
+                components.addAll(getByID(crsComponent.getString("COMP_ID")));
+            }
+        } catch (SQLException e) {
+            StringWriter stackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTrace));
+            LOGGER.warn("exception=" + e.getMessage());
+            LOGGER.info("exception.stacktrace=" + stackTrace.toString());
+        }
+        return components;
+    }
+
+    @Override
+    public void delete(ComponentKey componentKey) {
+        LOGGER.trace(MessageFormat.format("Deleting Component {0}.", componentKey.toString()));
+        if (!exists(componentKey)) {
+            throw new MetadataDoesNotExistException(componentKey);
+        }
+        ComponentVersionConfiguration.getInstance().delete(new ComponentVersionKey(componentKey));
+        ComponentParameterConfiguration.getInstance().deleteByComponent(componentKey);
+        ComponentAttributeConfiguration.getInstance().deleteByComponent(componentKey);
+
+        getDeleteStatement(componentKey).ifPresent(getMetadataRepository()::executeUpdate);
+    }
+
+    public void deleteById(String componentId) {
+        LOGGER.trace(MessageFormat.format("Deleting Component with id {0}.", componentId));
+        ComponentVersionConfiguration.getInstance().deleteByComponentId(componentId);
+        ComponentParameterConfiguration.getInstance().deleteByComponentId(componentId);
+        ComponentAttributeConfiguration.getInstance().deleteByComponentId(componentId);
+
+        getMetadataRepository().executeUpdate("DELETE FROM " + getMetadataRepository().getTableNameByLabel("Components") +
+                " WHERE COMP_ID = " + SQLTools.GetStringForSQL(componentId) + ";");
+    }
+
+    public List<Component> getByID(String componentId) {
+        List<Component> components = new ArrayList<>();
+        String queryComponent = "select distinct(COMP_ID) from " + getMetadataRepository().getTableNameByLabel("Components") +
+                " where COMP_ID = " + SQLTools.GetStringForSQL(componentId) + ";";
+        CachedRowSet crsComponent = getMetadataRepository().executeQuery(queryComponent, "reader");
+        try {
+            if (crsComponent.size() == 0) {
+                LOGGER.warn(MessageFormat.format("component.version=no implementations for component {0}.", componentId));
+                return components;
+            }
+            crsComponent.next();
+            List<ComponentVersion> componentVersions = ComponentVersionConfiguration.getInstance().getByComponent(componentId);
+            componentVersions
+                    .forEach(componentVersion -> get(componentVersion.getMetadataKey().getComponentKey())
+                            .ifPresent(components::add));
+            crsComponent.close();
+        } catch (SQLException e) {
+            StringWriter stackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTrace));
+            LOGGER.warn("exeption=" + e.getMessage());
+            LOGGER.info("exception.stacktrace=" + stackTrace.toString());
+        }
+        return components;
+    }
+
+
+    public boolean exists(ComponentKey componentKey) {
         String queryComponent = "select COMP_ID, COMP_TYP_NM, COMP_NM, COMP_DSC from "
-                + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("Components")
-                + " where COMP_NM = "
-                + SQLTools.GetStringForSQL(component.getName());
-        CachedRowSet crsComponent = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(queryComponent, "reader");
+                + getMetadataRepository().getTableNameByLabel("Components")
+                + " where COMP_ID = " + SQLTools.GetStringForSQL(componentKey.getId());
+        CachedRowSet crsComponent = getMetadataRepository().executeQuery(queryComponent, "reader");
         if (crsComponent.size() == 0) {
             return false;
         }
-        crsComponent.next();
-        String componentId = crsComponent.getString("COMP_ID");
-
-        // get version
-        ComponentVersionConfiguration componentVersionConfiguration = new ComponentVersionConfiguration();
-        Optional<ComponentVersion> componentVersion = componentVersionConfiguration.getComponentVersion(componentId, component.getVersion().getNumber());
-        return componentVersion.isPresent();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        return ComponentVersionConfiguration.getInstance().exists(new ComponentVersionKey(componentKey));
     }
 
     public void deleteAll() {
-        List<String> queries = new ArrayList<>();
-        queries.add("DELETE FROM " + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("Components") + ";");
-        queries.add("DELETE FROM " + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("ComponentVersions") + ";");
-        queries.add("DELETE FROM " + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("ComponentParameters") + ";");
-        queries.add("DELETE FROM " + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("ComponentAttributes") + ";");
-        MetadataControl.getInstance().getDesignMetadataRepository().executeBatch(queries);
+        ComponentVersionConfiguration.getInstance().deleteAll();
+        ComponentAttributeConfiguration.getInstance().deleteAll();
+        ComponentParameterConfiguration.getInstance().deleteAll();
+        getMetadataRepository().executeUpdate("DELETE FROM " + getMetadataRepository().getTableNameByLabel("Components") + ";");
     }
 
-    public void deleteByName(String componentName) throws ComponentDoesNotExistException, SQLException {
-        for (Component component : getByName(componentName)) {
-            delete(component);
-        }
-    }
-
-    public void delete(Component component) throws ComponentDoesNotExistException, SQLException {
-        //TODO fix logging
-        //frameworkExecution.getFrameworkLog().log(MessageFormat.format("Deleting component {0}-{1}.", component.getName(), component.getVersion().getNumber()), Level.TRACE);
-        if (!exists(component)) {
-            throw new ComponentDoesNotExistException(MessageFormat.format("Component {0}-{1} is not present in the repository so cannot be deleted",
-                    component.getName(), component.getVersion().getNumber()));
-        }
-
-        List<String> deleteQuery = getDeleteStatement(component);
-        MetadataControl.getInstance().getDesignMetadataRepository().executeBatch(deleteQuery);
-    }
-
-    private List<String> getDeleteStatement(Component component) {
-        List<String> queries = new ArrayList<>();
-        // delete parameters
-        String deleteParametersQuery = "DELETE FROM " + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("ComponentParameters") +
-                " WHERE COMP_ID = " + SQLTools.GetStringForSQL(component.getId()) + " AND COMP_VRS_NB = " + SQLTools.GetStringForSQL(component.getVersion().getNumber()) + ";";
-        queries.add(deleteParametersQuery);
-        String deleteAttributesQuery = "DELETE FROM " + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("ComponentAttributes") +
-                " WHERE COMP_ID = " + SQLTools.GetStringForSQL(component.getId()) + " AND COMP_VRS_NB = " + SQLTools.GetStringForSQL(component.getVersion().getNumber()) + ";";
-        queries.add(deleteAttributesQuery);
-        String deleteVersionQuery = "DELETE FROM " + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("ComponentVersions") +
-                " WHERE COMP_ID = " + SQLTools.GetStringForSQL(component.getId()) + " AND COMP_VRS_NB = " + SQLTools.GetStringForSQL(component.getVersion().getNumber()) + ";";
-        queries.add(deleteVersionQuery);
-        // delete component info if last version
+    private Optional<String> getDeleteStatement(ComponentKey componentKey) {
         String countQuery = "SELECT COUNT(DISTINCT COMP_VRS_NB ) AS total_versions FROM "
-                + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("ComponentVersions")
-                + " WHERE COMP_ID = " + SQLTools.GetStringForSQL(component.getId()) + " AND "
-                + " COMP_VRS_NB != " + SQLTools.GetStringForSQL(component.getVersion().getNumber()) + ";";
-        CachedRowSet crs = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(countQuery, "reader");
+                + getMetadataRepository().getTableNameByLabel("ComponentVersions")
+                + " WHERE COMP_ID = " + SQLTools.GetStringForSQL(componentKey.getId()) + " AND "
+                + " COMP_VRS_NB != " + SQLTools.GetStringForSQL(componentKey.getVersionNumber()) + ";";
+        CachedRowSet crs = getMetadataRepository().executeQuery(countQuery, "reader");
 
         try {
             if (crs.next() && Integer.parseInt(crs.getString("total_versions")) == 0) {
-                String deleteComponentQuery = "DELETE FROM " + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("Components") +
-                        " WHERE COMP_ID = " + SQLTools.GetStringForSQL(component.getName()) + ";";
-                queries.add(deleteComponentQuery);
+                return Optional.of("DELETE FROM " + getMetadataRepository().getTableNameByLabel("Components") +
+                        " WHERE COMP_ID = " + SQLTools.GetStringForSQL(componentKey.getId()) + ";");
             }
         } catch (SQLException e) {
             StringWriter stackTrace = new StringWriter();
@@ -229,133 +190,69 @@ public class ComponentConfiguration extends MetadataConfiguration {
             LOGGER.info("exception.stacktrace=" + stackTrace.toString());
         }
 
-        return queries;
+        return Optional.empty();
     }
 
-    public void insert(Component component) throws ComponentAlreadyExistsException, SQLException {
-        // TODO handle component ID
-        // TODO fix logging
-        //frameworkExecution.getFrameworkLog().log(MessageFormat.format("Inserting component {0}-{1}.", component.getName(), component.getVersion().getNumber()), Level.TRACE);
-        if (exists(component)) {
-            throw new ComponentAlreadyExistsException(MessageFormat.format("Component {0}-{1} already exists", component.getName(), component.getVersion().getNumber()));
+    public void insert(Component component) {
+        if (exists(component.getMetadataKey())) {
+            throw new MetadataAlreadyExistsException(component);
         }
-        List<String> insertStatement = getInsertStatement(component);
-        MetadataControl.getInstance().getDesignMetadataRepository().executeBatch(insertStatement);
+        ComponentVersionConfiguration.getInstance().insert(component.getVersion());
+        for (ComponentParameter componentParameter : component.getParameters()) {
+            ComponentParameterConfiguration.getInstance().insert(componentParameter);
+        }
+        for (ComponentAttribute componentAttribute : component.getAttributes()) {
+            ComponentAttributeConfiguration.getInstance().insert(componentAttribute);
+        }
+
+        getInsertStatement(component).ifPresent(getMetadataRepository()::executeUpdate);
 
     }
 
-    private List<String> getInsertStatement(Component component) {
-        // TODO: check id generation
-        List<String> queries = new ArrayList<>();
-
-
-        if (!exists(component.getName())) {
-            String componentQuery = "INSERT INTO " + MetadataControl.getInstance().getDesignMetadataRepository()
-                    .getTableNameByLabel("Components") +
+    private Optional<String> getInsertStatement(Component component) {
+        if (!existsById(component.getId())) {
+            return Optional.of("INSERT INTO " + getMetadataRepository().getTableNameByLabel("Components") +
                     " (COMP_ID, COMP_TYP_NM, COMP_NM, COMP_DSC) VALUES (" +
                     SQLTools.GetStringForSQL(component.getId()) + "," +
                     SQLTools.GetStringForSQL(component.getType()) + "," +
                     SQLTools.GetStringForSQL(component.getName()) + "," +
-                    SQLTools.GetStringForSQL(component.getDescription()) + ");";
-            queries.add(componentQuery);
+                    SQLTools.GetStringForSQL(component.getDescription()) + ");");
         }
-
-        // add version
-        String componentVersionQuery = "INSERT INTO " + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("ComponentVersions") +
-                " (COMP_ID, COMP_VRS_NB, COMP_VRS_DSC) VALUES (" +
-                SQLTools.GetStringForSQL(component.getId()) + "," +
-                SQLTools.GetStringForSQL(component.getVersion().getNumber()) + "," +
-                SQLTools.GetStringForSQL(component.getVersion().getDescription()) + ");";
-        queries.add(componentVersionQuery);
-
-        // add Parameters
-
-        for (ComponentParameter parameter : component.getParameters()) {
-            String componentParameterQuery = "INSERT INTO " + MetadataControl.getInstance().getDesignMetadataRepository()
-                    .getTableNameByLabel("ComponentParameters") +
-                    " (COMP_ID, COMP_VRS_NB, COMP_PAR_NM, COMP_PAR_VAL) VALUES (" +
-                    SQLTools.GetStringForSQL(component.getId()) + "," +
-                    SQLTools.GetStringForSQL(component.getVersion().getNumber()) + "," +
-                    SQLTools.GetStringForSQL(parameter.getName()) + "," +
-                    SQLTools.GetStringForSQL(parameter.getValue()) + ");";
-            queries.add(componentParameterQuery);
-        }
-
-        // add attributes
-        for (ComponentAttribute attribute : component.getAttributes()) {
-            String componentAttributeQuery = "INSERT INTO " + MetadataControl.getInstance().getDesignMetadataRepository()
-                    .getTableNameByLabel("ComponentAttributes") +
-                    " (COMP_ID, COMP_VRS_NB, ENV_NM, COMP_ATT_NM, COMP_ATT_VAL) VALUES (" +
-                    SQLTools.GetStringForSQL(component.getId()) + "," +
-                    SQLTools.GetStringForSQL(component.getVersion().getNumber()) + "," +
-                    SQLTools.GetStringForSQL(attribute.getEnvironment()) + "," +
-                    SQLTools.GetStringForSQL(attribute.getName()) + "," +
-                    SQLTools.GetStringForSQL(attribute.getValue()) + ");";
-            queries.add(componentAttributeQuery);
-        }
-        return queries;
+        return Optional.empty();
     }
 
-    private boolean exists(String name) {
+    private boolean existsById(String componentId) {
         String queryComponent = "select COMP_ID, COMP_TYP_NM, COMP_NM, COMP_DSC from "
-                + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("Components")
-                + " where COMP_NM = "
-                + SQLTools.GetStringForSQL(name);
-        CachedRowSet crsComponent = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(queryComponent, "reader");
+                + getMetadataRepository().getTableNameByLabel("Components")
+                + " where COMP_ID = " + SQLTools.GetStringForSQL(componentId);
+        CachedRowSet crsComponent = getMetadataRepository().executeQuery(queryComponent, "reader");
         return crsComponent.size() != 0;
     }
 
-    public void update(Component component) throws ComponentDoesNotExistException, SQLException {
-        //TODO fix logggin
-        //frameworkExecution.getFrameworkLog().log(MessageFormat.format("Updating component {0}-{1}.", component.getName(), component.getVersion().getNumber()), Level.TRACE);
-        try {
-            delete(component);
-            insert(component);
-        } catch (ComponentDoesNotExistException e) {
-            //TODO fix logging
-            //frameworkExecution.getFrameworkLog().log(MessageFormat.format("Component {0}-{1} is not present in the repository so cannot be updated",component.getName(), component.getVersion().getNumber()),Level.TRACE);
-            throw e;
-            // throw new ComponentDoesNotExistException(MessageFormat.format(
-            //        "Component {0}-{1} is not present in the repository so cannot be updated", component.getName(),  component.getVersion().getNumber()));
-
-        } catch (ComponentAlreadyExistsException e) {
-            StringWriter stackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(stackTrace));
-            LOGGER.warn("exeption=" + e.getMessage());
-            LOGGER.info("exception.stacktrace=" + stackTrace.toString());
-            //frameworkExecution.getFrameworkLog().log(MessageFormat.format("Component {0}-{1} is not deleted correctly during update. {2}",component.getName(), component.getVersion().getNumber(), e.toString()),Level.WARN);
-        }
+    public Optional<Component> get(String componentId) {
+        return get(new ComponentKey(componentId,
+                ComponentVersionConfiguration.getInstance().getLatestVersionByComponentId(componentId)));
     }
 
 
-    private long getLatestVersion(String componentName) {
-        long componentVersionNumber = -1;
-        CachedRowSet crsComponentVersion = null;
-        String queryComponentVersion = "select max(COMP_VRS_NB) as \"MAX_VRS_NB\" from "
-                + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("ComponentVersions") + " a inner join "
-                + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("Components")
-                + " b on a.COMP_ID = b.COMP_ID where b.COMP_NM = " + SQLTools.GetStringForSQL(componentName) + ";";
-        crsComponentVersion = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(queryComponentVersion, "reader");
-        try {
-            while (crsComponentVersion.next()) {
-                componentVersionNumber = crsComponentVersion.getLong("MAX_VRS_NB");
-            }
-            crsComponentVersion.close();
-        } catch (Exception e) {
-            StringWriter stackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(stackTrace));
-            LOGGER.warn("exeption=" + e.getMessage());
-            LOGGER.info("exception.stacktrace=" + stackTrace.toString());
+    @Override
+    public void update(Component component) {
+        LOGGER.trace(MessageFormat.format("Deleting Component {0}.", component.toString()));
+        if (!exists(component)) {
+            throw new MetadataDoesNotExistException(component.getMetadataKey());
         }
 
-        if (componentVersionNumber == -1) {
-            throw new RuntimeException("No component version found for Component (NAME) " + componentName);
+        ComponentVersionConfiguration.getInstance().update(component.getVersion());
+        for (ComponentParameter componentParameter : component.getParameters()) {
+            ComponentParameterConfiguration.getInstance().update(componentParameter);
         }
-
-        return componentVersionNumber;
-    }
-
-    public Optional<Component> get(String componentName) {
-        return get(componentName, this.getLatestVersion(componentName));
+        for (ComponentAttribute componentAttribute : component.getAttributes()) {
+            ComponentAttributeConfiguration.getInstance().update(componentAttribute);
+        }
+        getMetadataRepository().executeUpdate("UPDATE " + getMetadataRepository().getTableNameByLabel("Components") +
+                " SET COMP_TYP_NM = " + SQLTools.GetStringForSQL(component.getType()) + "," +
+                " COMP_NM = " + SQLTools.GetStringForSQL(component.getName()) + "," +
+                " COMP_DSC = " + SQLTools.GetStringForSQL(component.getDescription()) +
+                " WHERE COMP_ID = " + SQLTools.GetStringForSQL(component.getId()) + ";");
     }
 }

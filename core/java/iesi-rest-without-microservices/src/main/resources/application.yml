@@ -2,9 +2,6 @@ server:
   servlet:
     context-path: /api
 
-iesi:
-  home: C:/Users/robbe.berrevoets/IESISandbox/v0.1.1/v0.1.0
-
 spring:
   profiles:
     active: http
@@ -17,7 +14,10 @@ management:
   endpoints:
     web:
       exposure:
-        exclude: '*'
+        include: health, httptrace, metrics, mappings
+  trace:
+    http:
+      include: request-headers,response-headers,cookie-headers,principal,time-taken,authorization-header,remote-address,session-id
 
 security:
   jwt:

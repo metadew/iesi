@@ -88,7 +88,7 @@ public final class FileConnectionTools {
                     }
                 }
             }
-        } catch (Exception e) {
+        } catch (JSchException | SftpException e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
         }

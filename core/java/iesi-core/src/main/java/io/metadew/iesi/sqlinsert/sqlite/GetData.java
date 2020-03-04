@@ -7,6 +7,7 @@ import io.metadew.iesi.sqlinsert.engine.Engine;
 import io.metadew.iesi.sqlinsert.engine.OutputFile;
 
 import java.io.File;
+import java.io.IOException;
 import java.sql.*;
 
 public class GetData {
@@ -58,7 +59,7 @@ public class GetData {
                     OutputFile of = new OutputFile();
                     of.PrintToFile(rs, FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("modules.sqlinsert.run.tmp") + File.separator + "data.txt");
                     rs.close();
-                } catch (Exception e) {
+                } catch (IOException | SQLException e) {
                     System.out.println(QueryString);
                     System.out.println("Query Actions Failed");
                     e.printStackTrace();

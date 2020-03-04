@@ -2,8 +2,6 @@ package io.metadew.iesi.metadata.configuration.action.performance;
 
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
-import io.metadew.iesi.metadata.configuration.action.performance.exception.ActionPerformanceAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.action.performance.exception.ActionPerformanceDoesNotExistException;
 import io.metadew.iesi.metadata.definition.action.performance.ActionPerformance;
 import io.metadew.iesi.metadata.definition.action.performance.key.ActionPerformanceKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
@@ -18,7 +16,6 @@ import java.util.List;
 import java.util.Optional;
 
 public class ActionPerformanceConfiguration extends Configuration<ActionPerformance, ActionPerformanceKey> {
-
 
     private static final Logger LOGGER = LogManager.getLogger();
     private static ActionPerformanceConfiguration INSTANCE;
@@ -45,7 +42,6 @@ public class ActionPerformanceConfiguration extends Configuration<ActionPerforma
                     + getMetadataRepository().getTableNameByLabel("ActionResultPerformances") + " where " +
                     "RUN_ID = " + SQLTools.GetStringForSQL(key.getRunId()) + " AND " +
                     "PRC_ID = " + key.getProcedureId() + " AND " +
-                    "ACTION_ID = " + SQLTools.GetStringForSQL(key.getActionId()) + " AND " +
                     "SCOPE_NM = " + SQLTools.GetStringForSQL(key.getScope()) + ";";
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(queryAction, "reader");
             if (cachedRowSet.size() == 0) {
@@ -56,9 +52,9 @@ public class ActionPerformanceConfiguration extends Configuration<ActionPerforma
             cachedRowSet.next();
             return Optional.of(new ActionPerformance(new ActionPerformanceKey(cachedRowSet.getString("RUN_ID"),
                     cachedRowSet.getLong("PRC_ID"),
-                    cachedRowSet.getString("ACTION_ID"),
                     cachedRowSet.getString("SCOPE_NM")),
                     cachedRowSet.getString("CONTEXT_NM"),
+                    cachedRowSet.getString("ACTION_ID"),
                     cachedRowSet.getTimestamp("STRT_TMS").toLocalDateTime(),
                     cachedRowSet.getTimestamp("END_TMS").toLocalDateTime(),
                     cachedRowSet.getDouble("DURATION_VAL")));
@@ -77,9 +73,9 @@ public class ActionPerformanceConfiguration extends Configuration<ActionPerforma
             while (cachedRowSet.next()) {
                 actionPerformances.add(new ActionPerformance(new ActionPerformanceKey(cachedRowSet.getString("RUN_ID"),
                         cachedRowSet.getLong("PRC_ID"),
-                        cachedRowSet.getString("ACTION_ID"),
                         cachedRowSet.getString("SCOPE_NM")),
                         cachedRowSet.getString("CONTEXT_NM"),
+                        cachedRowSet.getString("ACTION_ID"),
                         cachedRowSet.getTimestamp("STRT_TMS").toLocalDateTime(),
                         cachedRowSet.getTimestamp("END_TMS").toLocalDateTime(),
                         cachedRowSet.getDouble("DURATION_VAL")));
@@ -91,38 +87,45 @@ public class ActionPerformanceConfiguration extends Configuration<ActionPerforma
     }
 
     @Override
-    public void delete(ActionPerformanceKey key) throws ActionPerformanceDoesNotExistException {
-        if (!exists(key)) {
-            throw new ActionPerformanceDoesNotExistException(MessageFormat.format("Action Performance {0}-{1}-{2}-{3} does not exist",
-                    key.getRunId(), key.getProcedureId(), key.getActionId(), key.getScope()));
-        }
+    public void delete(ActionPerformanceKey key) {
         String queryAction = "delete from "
                 + getMetadataRepository().getTableNameByLabel("ActionResultPerformances") + " where " +
                 "RUN_ID = " + SQLTools.GetStringForSQL(key.getRunId()) + " AND " +
-                "PRC_ID = " + key.getProcedureId() + " AND " +
-                "ACTION_ID = " + SQLTools.GetStringForSQL(key.getActionId()) + " AND " +
+                "PRC_ID = " + SQLTools.GetStringForSQL(key.getProcedureId()) + " AND " +
                 "SCOPE_NM = " + SQLTools.GetStringForSQL(key.getScope()) + ";";
         getMetadataRepository().executeUpdate(queryAction);
     }
 
     @Override
-    public void insert(ActionPerformance actionPerformance) throws ActionPerformanceAlreadyExistsException {
-        if (exists(actionPerformance.getMetadataKey())) {
-            throw new ActionPerformanceAlreadyExistsException(MessageFormat.format("Action Performance {0}-{1}-{2}-{3} already exists",
-                    actionPerformance.getMetadataKey().getRunId(), actionPerformance.getMetadataKey().getProcedureId(),
-                    actionPerformance.getMetadataKey().getActionId(), actionPerformance.getMetadataKey().getScope()));
-        }
+    public void insert(ActionPerformance actionPerformance) {
         String queryAction = "insert into "
                 + getMetadataRepository().getTableNameByLabel("ActionResultPerformances") +
                 " (RUN_ID, PRC_ID, ACTION_ID, SCOPE_NM, CONTEXT_NM, STRT_TMS, END_TMS, DURATION_VAL) values (" +
                 SQLTools.GetStringForSQL(actionPerformance.getMetadataKey().getRunId()) + ", " +
-                actionPerformance.getMetadataKey().getProcedureId() + ", " +
-                SQLTools.GetStringForSQL(actionPerformance.getMetadataKey().getActionId()) + ", " +
+                SQLTools.GetStringForSQL(actionPerformance.getMetadataKey().getProcedureId()) + ", " +
+                SQLTools.GetStringForSQL(actionPerformance.getActionId()) + ", " +
                 SQLTools.GetStringForSQL(actionPerformance.getMetadataKey().getScope()) + ", " +
                 SQLTools.GetStringForSQL(actionPerformance.getContext()) + ", " +
                 SQLTools.GetStringForSQL(actionPerformance.getStartTimestamp()) + ", " +
                 SQLTools.GetStringForSQL(actionPerformance.getEndTimestamp()) + ", " +
-                actionPerformance.getDuration() + ");";
+                SQLTools.GetStringForSQL(actionPerformance.getDuration()) + ");";
+        getMetadataRepository().executeUpdate(queryAction);
+    }
+
+    @Override
+    public void update(ActionPerformance actionPerformance) {
+        String queryAction = "UPDATE " + getMetadataRepository().getTableNameByLabel("ActionResultPerformances") +
+                " SET " +
+                "CONTEXT_NM = " + SQLTools.GetStringForSQL(actionPerformance.getContext()) + ", " +
+                "STRT_TMS = " + SQLTools.GetStringForSQL(actionPerformance.getStartTimestamp()) + ", " +
+                "END_TMS = " + SQLTools.GetStringForSQL(actionPerformance.getEndTimestamp()) + ", " +
+                "DURATION_VAL = " + SQLTools.GetStringForSQL(actionPerformance.getDuration()) +
+                " WHERE RUN_ID = " + SQLTools.GetStringForSQL(actionPerformance.getMetadataKey().getRunId()) +
+                " AND PRC_ID = " + SQLTools.GetStringForSQL(actionPerformance.getMetadataKey().getProcedureId()) +
+                " ACTION_ID = " + SQLTools.GetStringForSQL(actionPerformance.getActionId()) +
+                " AND SCOPE_NM =" + SQLTools.GetStringForSQL(actionPerformance.getMetadataKey().getScope()) + ";";
+
+
         getMetadataRepository().executeUpdate(queryAction);
     }
 }

@@ -1,11 +1,8 @@
 package io.metadew.iesi.runtime.script;
 
-import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.execution.script.ScriptExecutionRequestConfiguration;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequestStatus;
-import io.metadew.iesi.script.ScriptExecutionBuildException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -37,7 +34,7 @@ public class ScriptExecutorService {
     }
 
     @SuppressWarnings("unchecked")
-    public void execute(ScriptExecutionRequest scriptExecutionRequest) throws MetadataDoesNotExistException, MetadataAlreadyExistsException, ScriptExecutionBuildException {
+    public void execute(ScriptExecutionRequest scriptExecutionRequest) {
         ScriptExecutor scriptExecutor = scriptExecutorMap.get(scriptExecutionRequest.getClass());
 
         scriptExecutionRequest.updateScriptExecutionRequestStatus(ScriptExecutionRequestStatus.SUBMITTED);

@@ -1,0 +1,45 @@
+[ {
+  "data" : {
+    "name" : "Connection",
+    "label" : "Connections",
+    "description" : "Design metadata for connections",
+    "type" : "design",
+    "category" : "connectivity",
+    "migrate" : "Y",
+    "migrationKey" : "NA"
+  },
+  "type" : "MetadataObject"
+}, {
+  "data" : {
+    "name" : "Environment",
+    "label" : "Environments",
+    "description" : "Design metadata for environments",
+    "type" : "design",
+    "category" : "connectivity",
+    "migrate" : "Y",
+    "migrationKey" : "NA"
+  },
+  "type" : "MetadataObject"
+}, {
+  "data" : {
+    "name" : "Impersonation",
+    "label" : "Impersonations",
+    "description" : "Design metadata for impersonations",
+    "type" : "design",
+    "category" : "connectivity",
+    "migrate" : "Y",
+    "migrationKey" : "NA"
+  },
+  "type" : "MetadataObject"
+}, {
+  "data" : {
+    "name" : "Repository",
+    "label" : "Repositories",
+    "description" : "Design metadata for repositories",
+    "type" : "design",
+    "category" : "connectivity",
+    "migrate" : "Y",
+    "migrationKey" : "NA"
+  },
+  "type" : "MetadataObject"
+} ]

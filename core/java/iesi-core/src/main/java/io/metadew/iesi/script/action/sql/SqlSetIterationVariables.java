@@ -7,6 +7,7 @@ import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.connection.Connection;
+import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
@@ -48,7 +49,7 @@ public class SqlSetIterationVariables {
         this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
     }
 
-    public void prepare()  {
+    public void prepare() {
         // Reset Parameters
         this.setListName(new ActionParameterOperation(this.getExecutionControl(), this.getActionExecution(),
                 this.getActionExecution().getAction().getType(), "list"));
@@ -59,11 +60,11 @@ public class SqlSetIterationVariables {
 
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-            if (actionParameter.getName().equalsIgnoreCase("list")) {
+            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("list")) {
                 this.getListName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("query")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("query")) {
                 this.getSqlQuery().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("connection")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("connection")) {
                 this.getConnectionName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }
@@ -74,29 +75,11 @@ public class SqlSetIterationVariables {
         this.getActionParameterOperationMap().put("connection", this.getConnectionName());
     }
 
-    public boolean execute() {
+    public boolean execute() throws InterruptedException {
         try {
-            String query = convertQuery(getSqlQuery().getValue());
-            String connectionName = convertConnectionName(getConnectionName().getValue());
-            String listName = convertListName(getListName().getValue());
-
-            // Get Connection
-            ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
-            Connection connection = connectionConfiguration.get(connectionName,
-                    this.getExecutionControl().getEnvName()).get();
-            ConnectionOperation connectionOperation = new ConnectionOperation();
-            Database database = connectionOperation.getDatabase(connection);
-
-            // Run the action
-            CachedRowSet sqlResultSet = database.executeQuery(query);
-            try {
-                this.getExecutionControl().getExecutionRuntime().setIterationVariables(listName, sqlResultSet);
-                this.getActionExecution().getActionControl().increaseSuccessCount();
-            } catch (Exception e) {
-                throw new RuntimeException("Issue setting iteration variables: " + e, e);
-            }
-
-            return true;
+            return executeOperation();
+        } catch (InterruptedException e) {
+            throw (e);
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
@@ -109,6 +92,26 @@ public class SqlSetIterationVariables {
             return false;
         }
 
+    }
+
+    private boolean executeOperation() throws InterruptedException {
+
+        String query = convertQuery(getSqlQuery().getValue());
+        String connectionName = convertConnectionName(getConnectionName().getValue());
+        String listName = convertListName(getListName().getValue());
+
+        // Get Connection
+        Connection connection = ConnectionConfiguration.getInstance().get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
+                .get();
+        ConnectionOperation connectionOperation = new ConnectionOperation();
+        Database database = connectionOperation.getDatabase(connection);
+
+        // Run the action
+        CachedRowSet sqlResultSet = database.executeQuery(query);
+        this.getExecutionControl().getExecutionRuntime().setIterationVariables(listName, sqlResultSet);
+        this.getActionExecution().getActionControl().increaseSuccessCount();
+
+        return true;
     }
 
     private String convertListName(DataType listName) {

@@ -1,0 +1,493 @@
+[ {
+  "data" : {
+    "name" : "EXE_CTL",
+    "label" : "RequestExecutions",
+    "description" : "In-process runtime execution control",
+    "type" : "operational",
+    "category" : "execution",
+    "migrate" : "Y",
+    "migrationKey" : "NA",
+    "fields" : [ {
+      "name" : "EXE_ID",
+      "description" : "Unique identifier for the execution process",
+      "order" : "1",
+      "type" : "number",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "REQUEST_ID",
+      "description" : "Unique identifier for the request item",
+      "order" : "2",
+      "type" : "string",
+      "length" : "255",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    } ]
+  },
+  "type" : "MetadataTable"
+}, {
+  "data" : {
+    "name" : "EXE_REQ",
+    "label" : "ExecutionRequests",
+    "description" : "In-process runtime requests for execution",
+    "type" : "operational",
+    "category" : "execution",
+    "migrate" : "Y",
+    "migrationKey" : "NA",
+    "fields" : [ {
+      "name" : "REQUEST_ID",
+      "description" : "Unique identifier for the request item",
+      "order" : "1",
+      "type" : "string",
+      "length" : "255",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "REQUEST_TMS",
+      "description" : "Request timestamp",
+      "order" : "4",
+      "type" : "timestamp",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "REQUEST_NM",
+      "description" : "Request name",
+      "order" : "5",
+      "type" : "string",
+      "length" : "200",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "REQUEST_DSC",
+      "description" : "Request description",
+      "order" : "6",
+      "type" : "string",
+      "length" : "2000",
+      "nullable" : "Y",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "NOTIF_EMAIL",
+      "description" : "Email addresses to send a notification to",
+      "order" : "8",
+      "type" : "string",
+      "length" : "2000",
+      "nullable" : "Y",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "SCOPE_NM",
+      "description" : "Scope of the request",
+      "order" : "9",
+      "type" : "string",
+      "length" : "100",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "CONTEXT_NM",
+      "description" : "Context of the request",
+      "order" : "10",
+      "type" : "string",
+      "length" : "100",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "ST_NM",
+      "description" : "Status",
+      "order" : "10",
+      "type" : "string",
+      "length" : "100",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "LOAD_TMS",
+      "description" : "Load timestamp indicating when the record was inserted in the table",
+      "order" : "15",
+      "type" : "timestamp",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : "Y"
+    } ]
+  },
+  "type" : "MetadataTable"
+}, {
+  "data" : {
+    "name" : "EXE_REQ_AUTH",
+    "label" : "AuthenticatedExecutionRequests",
+    "description" : "In-process runtime requests for execution",
+    "type" : "operational",
+    "category" : "execution",
+    "migrate" : "Y",
+    "migrationKey" : "NA",
+    "fields" : [ {
+      "name" : "REQUEST_ID",
+      "description" : "Unique identifier for the request item",
+      "order" : "1",
+      "type" : "string",
+      "length" : "255",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "SPACE_NM",
+      "description" : "Unique identifier for the space",
+      "order" : "11",
+      "type" : "string",
+      "length" : "100",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "USER_NM",
+      "description" : "Unique identifier for the user",
+      "order" : "12",
+      "type" : "string",
+      "length" : "100",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "USER_PASSWORD",
+      "description" : "User password",
+      "order" : "13",
+      "type" : "string",
+      "length" : "2000",
+      "nullable" : "Y",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "LOAD_TMS",
+      "description" : "Load timestamp indicating when the record was inserted in the table",
+      "order" : "15",
+      "type" : "timestamp",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : "Y"
+    } ]
+  },
+  "type" : "MetadataTable"
+}, {
+  "data" : {
+    "name" : "EXE_REQ_NON_AUTH",
+    "label" : "NonAuthenticatedExecutionRequests",
+    "description" : "In-process runtime requests for execution",
+    "type" : "operational",
+    "category" : "execution",
+    "migrate" : "Y",
+    "migrationKey" : "NA",
+    "fields" : [ {
+      "name" : "REQUEST_ID",
+      "description" : "Unique identifier for the request item",
+      "order" : "1",
+      "type" : "string",
+      "length" : "255",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "LOAD_TMS",
+      "description" : "Load timestamp indicating when the record was inserted in the table",
+      "order" : "15",
+      "type" : "timestamp",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : "Y"
+    } ]
+  },
+  "type" : "MetadataTable"
+}, {
+  "data" : {
+    "name" : "EXE_REQ_PAR",
+    "label" : "RequestParameters",
+    "description" : "In-process runtime request parameters for execution",
+    "type" : "operational",
+    "category" : "execution",
+    "migrate" : "Y",
+    "migrationKey" : "NA",
+    "fields" : [ {
+      "name" : "REQUEST_ID",
+      "description" : "Unique identifier for the request item",
+      "order" : "1",
+      "type" : "string",
+      "length" : "255",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "REQUEST_PAR_TYP_NM",
+      "description" : "Keyword for the request parameter type",
+      "order" : "2",
+      "type" : "string",
+      "length" : "100",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "REQUEST_PAR_NM",
+      "description" : "Parameter name",
+      "order" : "3",
+      "type" : "string",
+      "length" : "100",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "REQUEST_PAR_VAL",
+      "description" : "Parameter value",
+      "order" : "4",
+      "type" : "string",
+      "length" : "2000",
+      "nullable" : "Y",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "LOAD_TMS",
+      "description" : "Load timestamp indicating when the record was inserted in the table",
+      "order" : "5",
+      "type" : "timestamp",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : "Y"
+    } ]
+  },
+  "type" : "MetadataTable"
+}, {
+  "data" : {
+    "name" : "EXE_SCRPT_EXEC",
+    "label" : "ScriptExecutions",
+    "description" : "In-process runtime script requests for execution",
+    "type" : "operational",
+    "category" : "execution",
+    "migrate" : "Y",
+    "migrationKey" : "NA",
+    "fields" : [ {
+      "name" : "SCRIPT_EXEC_ID",
+      "description" : "Unique identifier for the script request item",
+      "order" : "1",
+      "type" : "string",
+      "length" : "255",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "SCRPT_REQUEST_ID",
+      "description" : "Unique identifier for the script request item",
+      "order" : "1",
+      "type" : "string",
+      "length" : "255",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "RUN_ID",
+      "description" : "Unique identifier for the script request item",
+      "order" : "1",
+      "type" : "string",
+      "length" : "255",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "ST_NM",
+      "description" : "Status",
+      "order" : "10",
+      "type" : "string",
+      "length" : "100",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "STRT_TMS",
+      "description" : "Load timestamp indicating when the record was inserted in the table",
+      "order" : "15",
+      "type" : "timestamp",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : "N"
+    }, {
+      "name" : "END_TMS",
+      "description" : "Load timestamp indicating when the record was inserted in the table",
+      "order" : "15",
+      "type" : "timestamp",
+      "length" : "0",
+      "nullable" : "Y",
+      "defaultTimestamp" : "N"
+    }, {
+      "name" : "LOAD_TMS",
+      "description" : "Load timestamp indicating when the record was inserted in the table",
+      "order" : "15",
+      "type" : "timestamp",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : "Y"
+    } ]
+  },
+  "type" : "MetadataTable"
+}, {
+  "data" : {
+    "name" : "SCRPT_EXEC_REQ",
+    "label" : "ScriptExecutionRequests",
+    "description" : "In-process runtime script requests for execution",
+    "type" : "operational",
+    "category" : "execution",
+    "migrate" : "Y",
+    "migrationKey" : "NA",
+    "fields" : [ {
+      "name" : "EXEC_REQUEST_ID",
+      "description" : "Unique identifier for the script request item",
+      "order" : "1",
+      "type" : "string",
+      "length" : "255",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "SCRPT_REQUEST_ID",
+      "description" : "Unique identifier for the script request item",
+      "order" : "1",
+      "type" : "string",
+      "length" : "255",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "EXIT",
+      "description" : "Unique identifier for the script request item",
+      "order" : "1",
+      "type" : "string",
+      "length" : "255",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "IMPERSONATION",
+      "description" : "impersonation",
+      "order" : "1",
+      "type" : "string",
+      "length" : "255",
+      "nullable" : "Y",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "IMPERSONATIONS",
+      "description" : "impersonation",
+      "order" : "1",
+      "type" : "string",
+      "length" : "255",
+      "nullable" : "Y",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "ENVIRONMENT",
+      "description" : "Request timestamp",
+      "order" : "4",
+      "type" : "string",
+      "length" : "255",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "PARAMETERS",
+      "description" : "PARAMETERS",
+      "order" : "5",
+      "type" : "string",
+      "length" : "2000",
+      "nullable" : "Y",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "ST_NM",
+      "description" : "Status",
+      "order" : "10",
+      "type" : "string",
+      "length" : "100",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "LOAD_TMS",
+      "description" : "Load timestamp indicating when the record was inserted in the table",
+      "order" : "15",
+      "type" : "timestamp",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : "Y"
+    } ]
+  },
+  "type" : "MetadataTable"
+}, {
+  "data" : {
+    "name" : "EXE_SCRPT_FL_EXEC_REQ",
+    "label" : "ScriptFileExecutionRequests",
+    "description" : "In-process runtime script requests for execution",
+    "type" : "operational",
+    "category" : "execution",
+    "migrate" : "Y",
+    "migrationKey" : "NA",
+    "fields" : [ {
+      "name" : "EXEC_REQUEST_ID",
+      "description" : "Unique identifier for the script request item",
+      "order" : "1",
+      "type" : "string",
+      "length" : "255",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "SCRPT_REQUEST_ID",
+      "description" : "Unique identifier for the script request item",
+      "order" : "1",
+      "type" : "string",
+      "length" : "255",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "SCRPT_FILENAME",
+      "description" : "Unique identifier for the script request item",
+      "order" : "1",
+      "type" : "string",
+      "length" : "255",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "LOAD_TMS",
+      "description" : "Load timestamp indicating when the record was inserted in the table",
+      "order" : "15",
+      "type" : "timestamp",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : "Y"
+    } ]
+  },
+  "type" : "MetadataTable"
+}, {
+  "data" : {
+    "name" : "EXE_SCRPT_NM_EXEC_REQ",
+    "label" : "ScriptNameExecutionRequests",
+    "description" : "In-process runtime script requests for execution",
+    "type" : "operational",
+    "category" : "execution",
+    "migrate" : "Y",
+    "migrationKey" : "NA",
+    "fields" : [ {
+      "name" : "EXEC_REQUEST_ID",
+      "description" : "Unique identifier for the script request item",
+      "order" : "1",
+      "type" : "string",
+      "length" : "255",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "SCRPT_REQUEST_ID",
+      "description" : "Unique identifier for the script request item",
+      "order" : "1",
+      "type" : "string",
+      "length" : "255",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "SCRPT_NAME",
+      "description" : "Unique identifier for the script request item",
+      "order" : "1",
+      "type" : "string",
+      "length" : "255",
+      "nullable" : "N",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "SCRPT_VRS",
+      "description" : "Unique identifier for the script request item",
+      "order" : "1",
+      "type" : "number",
+      "length" : "255",
+      "nullable" : "Y",
+      "defaultTimestamp" : ""
+    }, {
+      "name" : "LOAD_TMS",
+      "description" : "Load timestamp indicating when the record was inserted in the table",
+      "order" : "15",
+      "type" : "timestamp",
+      "length" : "0",
+      "nullable" : "N",
+      "defaultTimestamp" : "Y"
+    } ]
+  },
+  "type" : "MetadataTable"
+} ]

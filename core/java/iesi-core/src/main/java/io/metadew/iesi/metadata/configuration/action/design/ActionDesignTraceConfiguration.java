@@ -2,10 +2,6 @@ package io.metadew.iesi.metadata.configuration.action.design;
 
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
-import io.metadew.iesi.metadata.configuration.action.design.exception.ActionDesignTraceAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.action.design.exception.ActionDesignTraceDoesNotExistException;
-import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.action.design.ActionDesignTrace;
 import io.metadew.iesi.metadata.definition.action.design.key.ActionDesignTraceKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
@@ -100,12 +96,8 @@ public class ActionDesignTraceConfiguration extends Configuration<ActionDesignTr
     }
 
     @Override
-    public void delete(ActionDesignTraceKey actionDesignTraceKey) throws MetadataDoesNotExistException {
+    public void delete(ActionDesignTraceKey actionDesignTraceKey) {
         LOGGER.trace(MessageFormat.format("Deleting ActionDesignTrace {0}.", actionDesignTraceKey.toString()));
-        if (!exists(actionDesignTraceKey)) {
-            throw new ActionDesignTraceDoesNotExistException(MessageFormat.format(
-                    "ActionTrace {0} does not exists", actionDesignTraceKey.toString()));
-        }
         String deleteStatement = deleteStatement(actionDesignTraceKey);
         getMetadataRepository().executeUpdate(deleteStatement);
     }
@@ -119,12 +111,8 @@ public class ActionDesignTraceConfiguration extends Configuration<ActionDesignTr
     }
 
     @Override
-    public void insert(ActionDesignTrace actionDesignTrace) throws MetadataAlreadyExistsException {
+    public void insert(ActionDesignTrace actionDesignTrace) {
         LOGGER.trace(MessageFormat.format("Inserting ActionDesignTrace {0}.", actionDesignTrace.toString()));
-        if (exists(actionDesignTrace.getMetadataKey())) {
-            throw new ActionDesignTraceAlreadyExistsException(MessageFormat.format(
-                    "ActionParameterTrace {0} already exists", actionDesignTrace.getMetadataKey().toString()));
-        }
         String insertStatement = insertStatement(actionDesignTrace);
         getMetadataRepository().executeUpdate(insertStatement);
     }
@@ -147,4 +135,29 @@ public class ActionDesignTraceConfiguration extends Configuration<ActionDesignTr
                 SQLTools.GetStringForSQL(actionDesignTrace.getErrorExpected()) + "," +
                 SQLTools.GetStringForSQL(actionDesignTrace.getErrorStop()) + ");";
     }
+
+    @Override
+    public void update(ActionDesignTrace actionDesignTrace) {
+        LOGGER.trace(MessageFormat.format("Updating ActionDesignTrace {0}.", actionDesignTrace.getMetadataKey().toString()));
+        String updateStatement = updateStatement(actionDesignTrace);
+        getMetadataRepository().executeUpdate(updateStatement);
+    }
+
+    private String updateStatement(ActionDesignTrace actionDesignTrace) {
+        return "UPDATE " + getMetadataRepository().getTableNameByLabel("ActionDesignTraces") +
+                " SET ACTION_NB = " + SQLTools.GetStringForSQL(actionDesignTrace.getNumber()) + "," +
+                "ACTION_TYP_NM = " + SQLTools.GetStringForSQL(actionDesignTrace.getType()) + "," +
+                "ACTION_NM = " + SQLTools.GetStringForSQL(actionDesignTrace.getName()) + "," +
+                "ACTION_DSC = " + SQLTools.GetStringForSQL(actionDesignTrace.getDescription()) + "," +
+                "COMP_NM = " + SQLTools.GetStringForSQL(actionDesignTrace.getComponent()) + "," +
+                "ITERATION_VAL = " + SQLTools.GetStringForSQL(actionDesignTrace.getIteration()) + "," +
+                "CONDITION_VAL = " + SQLTools.GetStringForSQL(actionDesignTrace.getCondition()) + "," +
+                "RETRIES_VAL = " + SQLTools.GetStringForSQL(actionDesignTrace.getRetries()) + "," +
+                "EXP_ERR_FL = " + SQLTools.GetStringForSQL(actionDesignTrace.getErrorExpected()) + "," +
+                "STOP_ERR_FL =" + SQLTools.GetStringForSQL(actionDesignTrace.getErrorStop()) +
+                " WHERE RUN_ID = " + SQLTools.GetStringForSQL(actionDesignTrace.getMetadataKey().getRunId()) +
+                " AND PRC_ID = " + SQLTools.GetStringForSQL(actionDesignTrace.getMetadataKey().getProcessId()) +
+                " AND ACTION_ID = " + SQLTools.GetStringForSQL(actionDesignTrace.getMetadataKey().getActionId()) + ";";
+    }
+
 }

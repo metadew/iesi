@@ -1,5 +1,7 @@
 package io.metadew.iesi.server.rest.error;
 
+import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
+import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -16,21 +18,19 @@ import java.util.Map;
 @ControllerAdvice
 public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
-	@ExceptionHandler(DataNotFoundException.class)
-	public void HandleNotFound(HttpServletResponse response) throws IOException {
-		response.sendError(HttpStatus.NOT_FOUND.value());
+	@ResponseStatus(HttpStatus.NOT_FOUND)
+	@ExceptionHandler(MetadataDoesNotExistException.class)
+	public void handleMetadataDoesNotExistException(HttpServletResponse response) {
+	}
 
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	@ExceptionHandler(MetadataAlreadyExistsException.class)
+	public void handleMetadataAlreadyExistsException(HttpServletResponse response) {
 	}
 
 	@ExceptionHandler(DataBadRequestException.class)
 	public void HandleBadRequest(HttpServletResponse response) throws IOException {
 		response.sendError(HttpStatus.BAD_REQUEST.value());
-
-	}
-
-	@ExceptionHandler(SqlNotFoundException.class)
-	public void SqlNotFound(HttpServletResponse response) throws IOException {
-		response.sendError(HttpStatus.INTERNAL_SERVER_ERROR.value());
 
 	}
 

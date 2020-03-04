@@ -16,6 +16,7 @@ data:
       length: '255'
       nullable: N
       defaultTimestamp: ''
+      primaryKey: true
     - name: PRC_ID
       description: Process number for the script execution
       order: '2'
@@ -23,6 +24,7 @@ data:
       length: '0'
       nullable: N
       defaultTimestamp: ''
+      primaryKey: true
     - name: PARENT_PRC_ID
       description: Process number for the parent executing the script
       order: '3'
@@ -49,7 +51,7 @@ data:
       order: '7'
       type: string
       length: '100'
-      nullable: N
+      nullable: Y
       defaultTimestamp: ''
     - name: SCRIPT_DSC
       description: Description of the script

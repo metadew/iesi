@@ -12,13 +12,14 @@ import io.metadew.iesi.metadata.configuration.execution.script.ScriptExecutionCo
 import io.metadew.iesi.metadata.configuration.impersonation.ImpersonationConfiguration;
 import io.metadew.iesi.metadata.configuration.script.ScriptConfiguration;
 import io.metadew.iesi.metadata.definition.Context;
-import io.metadew.iesi.runtime.ExecutorService;
+import io.metadew.iesi.runtime.ExecutionRequestExecutorService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.annotation.Order;
 
+import java.nio.file.Paths;
 import java.sql.SQLException;
 
 @Configuration
@@ -29,8 +30,12 @@ public class IesiConfiguration {
 
     @Bean
     @Order(0)
-    public FrameworkInstance frameworkInstance(FrameworkInitializationFile frameworkInitializationFile, FrameworkExecutionContext frameworkExecutionContext) throws SQLException {
-        FrameworkInstance.getInstance().init(frameworkInitializationFile, frameworkExecutionContext, frameworkHome);
+    public FrameworkInstance frameworkInstance(FrameworkInitializationFile frameworkInitializationFile, FrameworkExecutionContext frameworkExecutionContext) {
+        if (frameworkHome == null) {
+            FrameworkInstance.getInstance().init(frameworkInitializationFile, frameworkExecutionContext);
+        } else {
+            FrameworkInstance.getInstance().init(frameworkInitializationFile, frameworkExecutionContext, Paths.get(frameworkHome).toAbsolutePath());
+        }
         return FrameworkInstance.getInstance();
     }
 
@@ -45,32 +50,32 @@ public class IesiConfiguration {
 
     @Bean
     @DependsOn("frameworkInstance")
-    ExecutorService executorService() {
-        return ExecutorService.getInstance();
+    ExecutionRequestExecutorService executorService() {
+        return ExecutionRequestExecutorService.getInstance();
     }
 
     @Bean
     @DependsOn("frameworkInstance")
     public ConnectionConfiguration connectionConfiguration() {
-        return new ConnectionConfiguration();
+        return ConnectionConfiguration.getInstance();
     }
 
     @Bean
     @DependsOn("frameworkInstance")
     public EnvironmentConfiguration environmentConfiguration() {
-        return new EnvironmentConfiguration();
+        return EnvironmentConfiguration.getInstance();
     }
 
     @Bean
     @DependsOn("frameworkInstance")
     public ImpersonationConfiguration impersonationConfiguration() {
-        return new ImpersonationConfiguration();
+        return ImpersonationConfiguration.getInstance();
     }
 
     @Bean
     @DependsOn("frameworkInstance")
     public ScriptConfiguration scriptConfiguration() {
-        return new ScriptConfiguration();
+        return ScriptConfiguration.getInstance();
     }
     @Bean
 
@@ -88,7 +93,7 @@ public class IesiConfiguration {
     @Bean
     @DependsOn("frameworkInstance")
     public ComponentConfiguration componentConfiguration() {
-        return new ComponentConfiguration();
+        return ComponentConfiguration.getInstance();
     }
 
     @Bean

@@ -13,7 +13,6 @@ public class ExecutionLog {
     @SuppressWarnings("unused")
     public void setLog(ScriptLog scriptLog) {
         ObjectMapper mapper = new ObjectMapper();
-        try {
 
 //			for (MetadataRepositoryConfigurationBack metadataRepositoryConfiguration : this.getFrameworkExecution()
 //					.getFrameworkControl().getMetadataRepositoryConfigurations()) {
@@ -24,9 +23,6 @@ public class ExecutionLog {
 //				}
 //
 //			}
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
 }

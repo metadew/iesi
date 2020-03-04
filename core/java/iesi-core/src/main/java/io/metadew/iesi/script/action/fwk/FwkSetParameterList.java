@@ -1,7 +1,7 @@
 package io.metadew.iesi.script.action.fwk;
 
 import io.metadew.iesi.datatypes.DataType;
-import io.metadew.iesi.datatypes.DataTypeService;
+import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
@@ -23,7 +23,6 @@ import java.util.regex.Pattern;
 
 public class FwkSetParameterList {
 
-    private final DataTypeService dataTypeService;
     private ActionExecution actionExecution;
     private ExecutionControl executionControl;
 
@@ -39,7 +38,6 @@ public class FwkSetParameterList {
         this.setExecutionControl(executionControl);
         this.setActionExecution(actionExecution);
         this.setActionParameterOperationMap(new HashMap<>());
-        this.dataTypeService = new DataTypeService();
     }
 
     public void prepare()  {
@@ -49,7 +47,7 @@ public class FwkSetParameterList {
 
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-            if (actionParameter.getName().equalsIgnoreCase("list"))
+            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("list"))
                 this.getParameterList().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
         }
 
@@ -57,13 +55,11 @@ public class FwkSetParameterList {
         this.getActionParameterOperationMap().put("list", this.getParameterList());
     }
 
-    public boolean execute() {
+    public boolean execute() throws InterruptedException {
         try {
-            Map<String, String> list = convertList(getParameterList().getValue());
-            for (Map.Entry<String, String> parameter : list.entrySet()) {
-                executionControl.getExecutionRuntime().setRuntimeVariable(actionExecution, parameter.getKey(), parameter.getValue());
-            }
-            return true;
+            return executionOperation();
+        } catch (InterruptedException e) {
+            throw (e);
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
@@ -78,11 +74,19 @@ public class FwkSetParameterList {
 
     }
 
+    private boolean executionOperation() throws InterruptedException {
+        Map<String, String> list = convertList(getParameterList().getValue());
+        for (Map.Entry<String, String> parameter : list.entrySet()) {
+            executionControl.getExecutionRuntime().setRuntimeVariable(actionExecution, parameter.getKey(), parameter.getValue());
+        }
+        return true;
+    }
+
     private Map<String, String> convertList(DataType list) {
         Map<String, String> parameterMap = new HashMap<>();
         if (list instanceof Text) {
             Arrays.stream(list.toString().split(","))
-                    .forEach(parameterEntry -> parameterMap.putAll(convertParameterEntry(dataTypeService.resolve(parameterEntry, executionControl.getExecutionRuntime()))));
+                    .forEach(parameterEntry -> parameterMap.putAll(convertParameterEntry(DataTypeHandler.getInstance().resolve(parameterEntry, executionControl.getExecutionRuntime()))));
             return parameterMap;
         } else if (list instanceof Array) {
             for (DataType parameterEntry : ((Array) list).getList()) {

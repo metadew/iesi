@@ -33,7 +33,7 @@ public class ActionTrace extends Metadata<ActionTraceKey> {
     }
 
     public ActionTrace(String runId, Long processId, Action action) {
-        this(new ActionTraceKey(runId, processId, action.getId()), action.getNumber(), action.getType(), action.getName(),
+        this(new ActionTraceKey(runId, processId, action.getMetadataKey().getActionId()), action.getNumber(), action.getType(), action.getName(),
                 action.getDescription(), action.getComponent(), action.getCondition(), action.getIteration(), action.getRetries(),
                 action.getErrorExpected()?"y":"n", action.getErrorStop()?"y":"n");
     }

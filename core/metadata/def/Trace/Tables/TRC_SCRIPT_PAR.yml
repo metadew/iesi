@@ -16,6 +16,7 @@ data:
       length: '255'
       nullable: N
       defaultTimestamp: ''
+      primaryKey: true
     - name: PRC_ID
       description: Process number for the script execution
       order: '2'
@@ -23,6 +24,7 @@ data:
       length: '0'
       nullable: N
       defaultTimestamp: ''
+      primaryKey: true
     - name: SCRIPT_PAR_NM
       description: Name of the script parameter
       order: '4'
@@ -30,6 +32,7 @@ data:
       length: '100'
       nullable: N
       defaultTimestamp: ''
+      primaryKey: true
     - name: SCRIPT_PAR_VAL
       description: String type parameter value
       order: '5'

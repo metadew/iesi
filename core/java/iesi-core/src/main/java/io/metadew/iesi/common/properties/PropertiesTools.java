@@ -1,9 +1,6 @@
 package io.metadew.iesi.common.properties;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.Properties;
 
 public final class PropertiesTools {
@@ -11,7 +8,7 @@ public final class PropertiesTools {
 	public static void setProperties(String filePath, Properties properties) {
         try (OutputStream output = new FileOutputStream(filePath)) {
             properties.store(output, null);
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new RuntimeException("properties.store.error");
         }
 	}
@@ -20,7 +17,7 @@ public final class PropertiesTools {
         Properties properties = new Properties();
 		try (InputStream input = new FileInputStream(filePath)) {
             properties.load(input);
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new RuntimeException("properties.load.error");
         }
 		return properties;
@@ -41,7 +38,7 @@ public final class PropertiesTools {
             });
 
         	PropertiesTools.setProperties(filePath, updatedProperties);
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new RuntimeException("properties.store.error");
         }
 	}
@@ -50,7 +47,7 @@ public final class PropertiesTools {
         Properties properties = new Properties();
 		try (InputStream input = new FileInputStream(filePath)) {
             properties.load(input);
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new RuntimeException("properties.load.error");
         }
 		return (String) properties.get(key);

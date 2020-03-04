@@ -53,77 +53,81 @@ public abstract class ScriptExecution {
 		int actionIndex = 0;
 
 		while (actionIndex < actionsToExecute.size()) {
-			Action action = actionsToExecute.get(actionIndex);
+			try {
+				Action action = actionsToExecute.get(actionIndex);
 
-			ActionExecution actionExecution = new ActionExecution(executionControl, this, action);
+				ActionExecution actionExecution = new ActionExecution(executionControl, this, action);
 
-			if (!rootingStrategy.executionAllowed(actionSelectOperation, action)) {
-				// TODO: log
-				actionExecution.skip();
-				continue;
-			}
-
-			if (action.getType().equalsIgnoreCase("fwk.route")) {
-				executeFwkRouteAction(actionExecution);
-				break;
-			}
-
-			if (action.getType().equalsIgnoreCase("fwk.startIteration")) {
-				// Do not change - work in progress
-			}
-
-			IterationExecution iterationExecution = new IterationExecution();
-			if (action.getIteration() != null && !action.getIteration().trim().isEmpty()) {
-				iterationExecution.initialize(executionControl, actionExecution, action.getIteration());
-			}
-
-			while (iterationExecution.hasNext()) {
-				actionExecution.initialize();
-				actionExecution.execute(iterationExecution.getIterationInstance());
-				int retryCounter = 1;
-
-				while (retryCounter <= action.getRetries() && actionExecution.getActionControl().getExecutionMetrics().getErrorCount() > 0) {
-					if (action.getErrorStop()) {
-						executionControl.logMessage(this, "action.error -> retries.ignore", Level.INFO);
-						executionControl.setActionErrorStop(true);
-						break;
-					} else if (!iterationExecution.isIterationOff() && iterationExecution.getIterationOperation().getIteration().getInterrupt().equalsIgnoreCase("y")
-							&& actionExecution.getActionControl().getExecutionMetrics().getErrorCount() > 0) {
-						break;
-					}
-
-					actionExecution.initialize();
-					executionControl.logMessage(this, "action.retry." + retryCounter, Level.INFO);
-					actionExecution.execute(iterationExecution.getIterationInstance());
-					retryCounter++;
+				if (!rootingStrategy.executionAllowed(actionSelectOperation, action)) {
+					// TODO: log
+					actionExecution.skip();
+					continue;
 				}
-			}
+
+				if (action.getType().equalsIgnoreCase("fwk.route")) {
+					executeFwkRouteAction(actionExecution);
+					break;
+				}
+
+				if (action.getType().equalsIgnoreCase("fwk.startIteration")) {
+					// Do not change - work in progress
+				}
+
+				IterationExecution iterationExecution = new IterationExecution();
+				if (action.getIteration() != null && !action.getIteration().trim().isEmpty()) {
+					iterationExecution.initialize(executionControl, actionExecution, action.getIteration());
+				}
+
+				while (iterationExecution.hasNext()) {
+					actionExecution.initialize();
+					actionExecution.execute(iterationExecution.getIterationInstance());
+					int retryCounter = 1;
+
+					while (retryCounter <= action.getRetries() && actionExecution.getActionControl().getExecutionMetrics().getErrorCount() > 0) {
+						if (action.getErrorStop()) {
+							executionControl.logMessage(this, "action.error -> retries.ignore", Level.INFO);
+							executionControl.setActionErrorStop(true);
+							break;
+						} else if (!iterationExecution.isIterationOff() && iterationExecution.getIterationOperation().getIteration().getInterrupt().equalsIgnoreCase("y")
+								&& actionExecution.getActionControl().getExecutionMetrics().getErrorCount() > 0) {
+							break;
+						}
+
+						actionExecution.initialize();
+						executionControl.logMessage(this, "action.retry." + retryCounter, Level.INFO);
+						actionExecution.execute(iterationExecution.getIterationInstance());
+						retryCounter++;
+					}
+				}
 
 
-			if (action.getType().equalsIgnoreCase("fwk.includeScript")) {
-				executeFwkIncludeAction(actionExecution, actionsToExecute, actionIndex);
-			}
+				if (action.getType().equalsIgnoreCase("fwk.includeScript")) {
+					executeFwkIncludeAction(actionExecution, actionsToExecute, actionIndex);
+				}
 
-			if (action.getType().equalsIgnoreCase("fwk.exitScript")) {
-				executionControl.logMessage(this, "script.exit", Level.INFO);
-				executionControl.setScriptExit(true);
+				if (action.getType().equalsIgnoreCase("fwk.exitScript")) {
+					executionControl.logMessage(this, "script.exit", Level.INFO);
+					executionControl.setScriptExit(true);
+					break;
+				}
+
+				if (!actionExecution.isExecuted()) {
+					executionMetrics.increaseWarningCount(1);
+					executionControl.logMessage(this, "action.warning -> iteration.condition.block",
+							Level.INFO);
+				}
+
+				if (actionExecution.getActionControl().getExecutionMetrics().getErrorCount() > 0 && action.getErrorStop()) {
+					executionControl.logMessage(this, "action.error -> script.stop", Level.INFO);
+					executionControl.setActionErrorStop(true);
+					break;
+				}
+
+				rootingStrategy.continueAction(actionSelectOperation, action);
+				actionIndex++;
+			} catch (InterruptedException e) {
 				break;
 			}
-
-			if (!actionExecution.isExecuted()) {
-				executionMetrics.increaseWarningCount(1);
-				executionControl.logMessage(this, "action.warning -> iteration.condition.block",
-						Level.INFO);
-			}
-
-			if (actionExecution.getActionControl().getExecutionMetrics().getErrorCount() > 0 && action.getErrorStop()) {
-				executionControl.logMessage(this, "action.error -> script.stop", Level.INFO);
-				executionControl.setActionErrorStop(true);
-				break;
-			}
-
-			rootingStrategy.continueAction(actionSelectOperation, action);
-			actionIndex++;
 		}
 		endExecution();
 	}
@@ -131,6 +135,7 @@ public abstract class ScriptExecution {
 	protected abstract void endExecution();
 
 	protected abstract void prepareExecution() ;
+	
 
 	public RootingStrategy getRootingStrategy() {
 		return rootingStrategy;
@@ -142,7 +147,7 @@ public abstract class ScriptExecution {
 		actionsToExecute.addAll(actionIndex, fwkIncludeScript.getScript().getActions());
 	}
 
-	private void executeFwkRouteAction(ActionExecution actionExecution) {
+	private void executeFwkRouteAction(ActionExecution actionExecution) throws InterruptedException {
 		actionExecution.execute(null);
 
 		// Create future variables
@@ -176,7 +181,7 @@ public abstract class ScriptExecution {
 				completedScriptExecution = completedFuture.get();
 				this.getExecutionMetrics()
 						.mergeExecutionMetrics(completedScriptExecution.getExecutionMetrics());
-			} catch (Exception e) {
+			} catch (ExecutionException e) {
 				Throwable cause = e.getCause();
 				this.getExecutionControl().logMessage(this, "route.error=" + cause, Level.INFO);
 				continue;

@@ -1,10 +1,5 @@
 package io.metadew.iesi.script.execution.instruction.data.math;
 
-import io.metadew.iesi.script.execution.instruction.data.DataInstruction;
-
-import java.util.Arrays;
-import java.util.List;
-
 public class Substraction extends BinaryArithmeticOperation{
 
     @Override

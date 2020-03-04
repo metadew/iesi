@@ -1,7 +1,6 @@
 package io.metadew.iesi.script.execution;
 
 import io.metadew.iesi.metadata.definition.script.Script;
-import io.metadew.iesi.script.ScriptExecutionBuildException;
 
 public class ScriptRunnable implements Runnable {
     private Script script;
@@ -15,18 +14,14 @@ public class ScriptRunnable implements Runnable {
 
     @Override
     public void run() {
-        try {
-            ScriptExecution scriptExecution = new ScriptExecutionBuilder(true, true)
-                    .script(script)
-                    .executionControl(this.scriptExecution.getExecutionControl())
-                    .executionMetrics(this.scriptExecution.getExecutionMetrics())
-                    .actionSelectOperation(this.scriptExecution.getActionSelectOperation())
-                    .parentScriptExecution(this.scriptExecution.getParentScriptExecution().orElse(null))
-                    .build();
-            scriptExecution.execute();
-        } catch (ScriptExecutionBuildException e) {
-            e.printStackTrace();
-        }
+        ScriptExecution scriptExecution = new ScriptExecutionBuilder(true, true)
+                .script(script)
+                .executionControl(this.scriptExecution.getExecutionControl())
+                .executionMetrics(this.scriptExecution.getExecutionMetrics())
+                .actionSelectOperation(this.scriptExecution.getActionSelectOperation())
+                .parentScriptExecution(this.scriptExecution.getParentScriptExecution().orElse(null))
+                .build();
+        scriptExecution.execute();
     }
 
     // Getters and setters

@@ -56,7 +56,7 @@ public class FwkExitScript {
 
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-            if (actionParameter.getName().equalsIgnoreCase("status")) {
+            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("status")) {
                 this.getStatus().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }
@@ -65,14 +65,11 @@ public class FwkExitScript {
         this.getActionParameterOperationMap().put("status", this.getStatus());
     }
 
-    public boolean execute() {
+    public boolean execute() throws InterruptedException {
         try {
-            Optional<String> status = convertStatus(getStatus().getValue());
-            // Verify if the status is empty
-            if (status.map(status1 -> status1.trim().isEmpty()).orElse(false)) {
-                this.getStatus().setInputValue(ScriptRunStatus.SUCCESS.value(), executionControl.getExecutionRuntime());
-            }
-            return true;
+            return executeOperation();
+        } catch (InterruptedException e) {
+            throw (e);
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
@@ -85,6 +82,15 @@ public class FwkExitScript {
             return false;
         }
 
+    }
+
+    private boolean executeOperation() throws InterruptedException {
+        Optional<String> status = convertStatus(getStatus().getValue());
+        // Verify if the status is empty
+        if (status.map(status1 -> status1.trim().isEmpty()).orElse(false)) {
+            this.getStatus().setInputValue(ScriptRunStatus.SUCCESS.value(), executionControl.getExecutionRuntime());
+        }
+        return true;
     }
 
     private Optional<String> convertStatus(DataType status) {

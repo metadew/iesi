@@ -1,28 +1,23 @@
 package io.metadew.iesi.metadata.definition.script;
 
 
-public class ScriptParameter {
+import io.metadew.iesi.metadata.definition.Metadata;
+import io.metadew.iesi.metadata.definition.script.key.ScriptParameterKey;
+import lombok.EqualsAndHashCode;
 
-    private String name;
+@EqualsAndHashCode(callSuper = true)
+public class ScriptParameter extends Metadata<ScriptParameterKey> {
+
     private String value;
 
-    //Constructors
-    public ScriptParameter() {
-
-    }
-
-    public ScriptParameter(String name, String value) {
-        this.name = name;
+    public ScriptParameter(ScriptParameterKey scriptParameterKey, String value) {
+        super(scriptParameterKey);
         this.value = value;
     }
 
     //Getters and Setters
     public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+        return getMetadataKey().getParameterName();
     }
 
     public String getValue() {

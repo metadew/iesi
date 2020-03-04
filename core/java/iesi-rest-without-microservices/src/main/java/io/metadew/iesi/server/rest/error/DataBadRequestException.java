@@ -10,4 +10,8 @@ public class DataBadRequestException extends RuntimeException {
     public DataBadRequestException(String name) {
         super("Mismatch between url query" + " '" + name + "' and request body " );
     }
+
+    public DataBadRequestException(long name) {
+        super("Mismatch between url query" + " '" + name + "' and request body " );
+    }
 }

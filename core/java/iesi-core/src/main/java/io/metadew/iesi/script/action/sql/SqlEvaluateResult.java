@@ -8,6 +8,7 @@ import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.connection.Connection;
+import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
@@ -62,11 +63,11 @@ public class SqlEvaluateResult {
 
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-            if (actionParameter.getName().equalsIgnoreCase("query")) {
+            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("query")) {
                 this.getSqlQuery().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("hasresult")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("hasresult")) {
                 this.getExpectedResult().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("connection")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("connection")) {
                 this.getConnectionName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }
@@ -77,12 +78,14 @@ public class SqlEvaluateResult {
         this.getActionParameterOperationMap().put("connection", this.getConnectionName());
     }
 
-    public boolean execute() {
+    public boolean execute() throws InterruptedException {
         try {
             String query = convertQuery(getSqlQuery().getValue());
             boolean expectedResult = convertHasResult(getExpectedResult().getValue());
             String connectionName = convertConnectionName(getConnectionName().getValue());
             return performAction(query, expectedResult, connectionName);
+        } catch (InterruptedException e) {
+            throw (e);
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
@@ -97,11 +100,11 @@ public class SqlEvaluateResult {
 
     }
 
-    private boolean performAction(String query, boolean hasResult, String connectionName) {
-        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
+    private boolean performAction(String query, boolean hasResult, String connectionName) throws InterruptedException{
 
-        Connection connection = connectionConfiguration.get(connectionName,
-                this.getExecutionControl().getEnvName()).get();
+        Connection connection = ConnectionConfiguration.getInstance()
+                .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
+                .get();
         ConnectionOperation connectionOperation = new ConnectionOperation();
         Database database = connectionOperation.getDatabase(connection);
 

@@ -1,6 +1,7 @@
 package io.metadew.iesi.connection.database.connection.dremio;
 
 import io.metadew.iesi.connection.database.connection.DatabaseConnection;
+import io.metadew.iesi.connection.database.connection.SchemaDatabaseConnection;
 
 import java.sql.Connection;
 import java.util.Optional;
@@ -10,13 +11,16 @@ import java.util.Optional;
  *
  * @author peter.billen
  */
-public class DremioDatabaseConnection extends DatabaseConnection {
+public class DremioDatabaseConnection extends SchemaDatabaseConnection {
 
     private static String type = "dremio";
-    private String schema;
 
     public DremioDatabaseConnection(String connectionURL, String userName, String userPassword) {
         super(type, connectionURL, userName, userPassword);
+    }
+
+    public DremioDatabaseConnection(String connectionURL, String userName, String userPassword, String schema) {
+        super(type, connectionURL, userName, userPassword, schema);
     }
 
     public DremioDatabaseConnection(String hostName, int portNumber, String connectionMode, String clusterName, String schemaName, String userName, String userPassword) {
@@ -59,17 +63,4 @@ public class DremioDatabaseConnection extends DatabaseConnection {
         return "com.dremio.jdbc.Driver";
     }
 
-    public void setSchema(String schema) {
-        this.schema = schema;
-    }
-
-    @SuppressWarnings("unused")
-    private Optional<String> getSchema() {
-        return Optional.ofNullable(schema);
-    }
-
-    public Connection getConnection() {
-        Connection connection = super.getConnection();
-        return connection;
-    }
 }

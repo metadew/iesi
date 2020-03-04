@@ -3,6 +3,7 @@ package io.metadew.iesi.connection.tools;
 import java.io.*;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 
 
 public final class OutputTools {
@@ -44,7 +45,7 @@ public final class OutputTools {
 
             delim_format = stringBuffer.toString();
 
-        } catch (Exception ex) {
+        } catch (SQLException ex) {
             ex.printStackTrace();
         }
         return delim_format;
@@ -140,7 +141,7 @@ public final class OutputTools {
             }
             ps.close();
             out.close();
-        } catch (Exception ex) {
+        } catch (IOException | SQLException ex) {
             ex.printStackTrace();
         }
 

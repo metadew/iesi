@@ -1,22 +1,22 @@
 package io.metadew.iesi.metadata.definition.connection.key;
 
+import io.metadew.iesi.metadata.definition.environment.key.EnvironmentKey;
 import io.metadew.iesi.metadata.definition.key.MetadataKey;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
 
+@Data
+@RequiredArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 public class ConnectionKey extends MetadataKey {
 
-    private String name;
-    private String environment;
+    private final String name;
+    private final EnvironmentKey environmentKey;
 
-    public ConnectionKey(String name, String environment) {
+    public ConnectionKey(String name, String environmentName) {
         this.name = name;
-        this.environment = environment;
+        this.environmentKey = new EnvironmentKey(environmentName);
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public String getEnvironment() {
-        return environment;
-    }
 }

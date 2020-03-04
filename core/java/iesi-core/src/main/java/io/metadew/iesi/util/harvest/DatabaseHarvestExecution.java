@@ -7,6 +7,7 @@ import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.connection.Connection;
+import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 
 import java.io.File;
 import java.io.PrintWriter;
@@ -68,8 +69,9 @@ public class DatabaseHarvestExecution {
         }
 
         // Get Connection
-        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
-        Connection connection = connectionConfiguration.get(sourceConnectionName, environmentName).get();
+        Connection connection = ConnectionConfiguration.getInstance()
+                .get(new ConnectionKey(sourceConnectionName, environmentName))
+                .get();
         ConnectionOperation connectionOperation = new ConnectionOperation();
         Database database = connectionOperation.getDatabase(connection);
 

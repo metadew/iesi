@@ -11,10 +11,10 @@ import io.metadew.iesi.metadata.definition.Context;
 import io.metadew.iesi.metadata.execution.MetadataControl;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import io.metadew.iesi.metadata.repository.configuration.MetadataRepositoryConfiguration;
-import io.metadew.iesi.runtime.ExecutorService;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import io.metadew.iesi.runtime.ExecutionRequestExecutorService;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,9 +42,13 @@ public class FrameworkInstance {
     }
 
     public void init(FrameworkInitializationFile frameworkInitializationFile, FrameworkExecutionContext context, String frameworkHome) {
+        init(frameworkInitializationFile, context, Paths.get(frameworkHome));
+    }
+
+    public void init(FrameworkInitializationFile frameworkInitializationFile, FrameworkExecutionContext context, Path frameworkHome) {
         // Get the framework configuration
         FrameworkConfiguration frameworkConfiguration = FrameworkConfiguration.getInstance();
-        frameworkConfiguration.init(frameworkHome);
+        frameworkConfiguration.init(frameworkHome.toAbsolutePath());
 
         FrameworkCrypto.getInstance();
 
@@ -68,7 +72,7 @@ public class FrameworkInstance {
 
         FrameworkExecution.getInstance().init(context);
         // TODO: move Executor (Request to separate module)
-        ExecutorService.getInstance();
+        ExecutionRequestExecutorService.getInstance();
     }
 
     public void init(String logonType, FrameworkInitializationFile frameworkInitializationFile, FrameworkExecutionContext context) {
@@ -121,7 +125,7 @@ public class FrameworkInstance {
 
         FrameworkExecution.getInstance().init(context);
         // TODO: move Executor (Request to separate module)
-        ExecutorService.getInstance();
+        ExecutionRequestExecutorService.getInstance();
     }
 
     public void shutdown() {

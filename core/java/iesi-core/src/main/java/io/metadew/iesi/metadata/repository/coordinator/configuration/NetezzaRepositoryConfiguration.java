@@ -59,7 +59,7 @@ public class NetezzaRepositoryConfiguration extends RepositoryConfiguration {
         if (getUser().isPresent()) {
             NetezzaDatabaseConnection netezzaDatabaseConnection = new NetezzaDatabaseConnection(finalJdbcConnectionString, getUser().get(), FrameworkCrypto.getInstance().decrypt(getUserPassword().orElse("")));
             getSchema().ifPresent(netezzaDatabaseConnection::setSchema);
-            NetezzaDatabase netezzaDatabase = new NetezzaDatabase(netezzaDatabaseConnection, getSchema().orElse(""));
+            NetezzaDatabase netezzaDatabase = new NetezzaDatabase(netezzaDatabaseConnection, schema);
             databases.put("owner", netezzaDatabase);
             databases.put("writer", netezzaDatabase);
             databases.put("reader", netezzaDatabase);
@@ -68,7 +68,7 @@ public class NetezzaRepositoryConfiguration extends RepositoryConfiguration {
         if (getWriter().isPresent()) {
             NetezzaDatabaseConnection netezzaDatabaseConnection = new NetezzaDatabaseConnection(finalJdbcConnectionString, getWriter().get(), FrameworkCrypto.getInstance().decrypt(getWriterPassword().orElse("")));
             getSchema().ifPresent(netezzaDatabaseConnection::setSchema);
-            NetezzaDatabase netezzaDatabase = new NetezzaDatabase(netezzaDatabaseConnection, getSchema().orElse(""));
+            NetezzaDatabase netezzaDatabase = new NetezzaDatabase(netezzaDatabaseConnection, schema);
             databases.put("writer", netezzaDatabase);
             databases.put("reader", netezzaDatabase);
         }
@@ -76,7 +76,7 @@ public class NetezzaRepositoryConfiguration extends RepositoryConfiguration {
         if (getReader().isPresent()) {
             NetezzaDatabaseConnection netezzaDatabaseConnection = new NetezzaDatabaseConnection(finalJdbcConnectionString, getReader().get(), FrameworkCrypto.getInstance().decrypt(getReaderPassword().orElse("")));
             getSchema().ifPresent(netezzaDatabaseConnection::setSchema);
-            NetezzaDatabase netezzaDatabase = new NetezzaDatabase(netezzaDatabaseConnection, getSchema().orElse(""));
+            NetezzaDatabase netezzaDatabase = new NetezzaDatabase(netezzaDatabaseConnection, schema);
             databases.put("reader", netezzaDatabase);
         }
 

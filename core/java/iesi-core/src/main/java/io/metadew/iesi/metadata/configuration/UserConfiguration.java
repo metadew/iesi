@@ -181,7 +181,7 @@ public class UserConfiguration {
                     crs.getString("USER_LOCK_FL"));
             crs.close();
             return Optional.of(user);
-        } catch (Exception e) {
+        } catch (SQLException e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
             return Optional.empty();

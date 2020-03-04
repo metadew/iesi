@@ -15,6 +15,7 @@ data:
     length: "255"
     nullable: "N"
     defaultTimestamp: ""
+    primaryKey: true
   - name: "PRC_ID"
     description: "Process number for the script within the script execution"
     order: "2"
@@ -22,6 +23,7 @@ data:
     length: "0"
     nullable: "N"
     defaultTimestamp: ""
+    primaryKey: true
   - name: "SCRIPT_ID"
     description: "Unique identifier for the script design"
     order: "3"
@@ -36,6 +38,7 @@ data:
     length: "100"
     nullable: "N"
     defaultTimestamp: ""
+    primaryKey: true
   - name: "OUT_VAL"
     description: "String type output value"
     order: "5"

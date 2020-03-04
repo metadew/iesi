@@ -41,9 +41,9 @@ public class RPrepareWorkspace {
 
         // Get Parameters
         for (ActionParameter actionParameter : actionExecution.getAction().getParameters()) {
-            if (actionParameter.getName().equalsIgnoreCase(workspaceReferenceNameKey)) {
+            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(workspaceReferenceNameKey)) {
                 workspaceReferenceNameActionParameterOperation.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase(scriptKey)) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(scriptKey)) {
                 scriptActionParameterOperation.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }

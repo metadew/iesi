@@ -1,7 +1,7 @@
 package io.metadew.iesi.script.operation;
 
 import io.metadew.iesi.datatypes.DataType;
-import io.metadew.iesi.datatypes.DataTypeService;
+import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.framework.crypto.FrameworkCrypto;
 import io.metadew.iesi.metadata.definition.component.ComponentAttribute;
 import io.metadew.iesi.metadata.definition.component.ComponentParameter;
@@ -20,12 +20,10 @@ import java.util.Map;
  */
 public class HttpRequestComponentParameterService {
 
-    private final DataTypeService dataTypeService;
     private ExecutionControl executionControl;
 
     public HttpRequestComponentParameterService(ExecutionControl executionControl) {
         this.executionControl = executionControl;
-        this.dataTypeService = new DataTypeService();
     }
 
     private DataType getParameterValue(String value, List<ComponentAttribute> componentAttributes, ActionExecution actionExecution)  {
@@ -39,7 +37,7 @@ public class HttpRequestComponentParameterService {
         value = executionControl.getExecutionRuntime().resolveVariables(actionExecution, value);
         // Resolve internal encryption
         value = FrameworkCrypto.getInstance().resolve(value);
-        return dataTypeService.resolve(value, executionControl.getExecutionRuntime());
+        return DataTypeHandler.getInstance().resolve(value, executionControl.getExecutionRuntime());
     }
 
     public DataType getParameterValue(ComponentParameter componentParameter, List<ComponentAttribute> componentAttributes, ActionExecution actionExecution)  {

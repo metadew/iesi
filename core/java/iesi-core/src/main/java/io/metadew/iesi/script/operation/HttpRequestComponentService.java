@@ -2,13 +2,13 @@ package io.metadew.iesi.script.operation;
 
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.metadata.configuration.component.ComponentConfiguration;
-import io.metadew.iesi.metadata.configuration.exception.ComponentDoesNotExistException;
 import io.metadew.iesi.metadata.definition.HttpRequestComponent;
 import io.metadew.iesi.metadata.definition.component.Component;
+import io.metadew.iesi.metadata.definition.component.key.ComponentKey;
+import io.metadew.iesi.metadata.tools.IdentifierTools;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 
-import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -21,17 +21,15 @@ import java.util.stream.Collectors;
 public class HttpRequestComponentService {
 
     private HttpRequestComponentParameterService httpRequestComponentParameterService;
-    private ComponentConfiguration componentConfiguration;
     private ExecutionControl executionControl;
 
     public HttpRequestComponentService(ExecutionControl executionControl) {
         this.executionControl = executionControl;
-        this.componentConfiguration = new ComponentConfiguration();
         this.httpRequestComponentParameterService = new HttpRequestComponentParameterService(executionControl);
     }
 
-    public HttpRequestComponent getHttpRequestComponent(String requestComponentName, ActionExecution actionExecution) throws ComponentDoesNotExistException, SQLException {
-        Component request = componentConfiguration.get(requestComponentName)
+    public HttpRequestComponent getHttpRequestComponent(String requestComponentName, ActionExecution actionExecution) {
+        Component request = ComponentConfiguration.getInstance().get(IdentifierTools.getComponentIdentifier(requestComponentName))
                 .orElseThrow(() -> new RuntimeException(MessageFormat.format("component.notfound=no component exists with name {0}.", requestComponentName)));
         return transform(request, actionExecution);
 
@@ -65,7 +63,7 @@ public class HttpRequestComponentService {
 
 
     public HttpRequestComponent getHttpRequestComponent(String requestComponentName, Long requestComponentVersion, ActionExecution actionExecution) {
-        Component request = componentConfiguration.get(requestComponentName, requestComponentVersion)
+        Component request = ComponentConfiguration.getInstance().get(new ComponentKey(requestComponentName, requestComponentVersion))
                 .orElseThrow(() -> new RuntimeException(MessageFormat.format("component.notfound=no component exists with name {0}.", requestComponentName)));
         return transform(request, actionExecution);
     }

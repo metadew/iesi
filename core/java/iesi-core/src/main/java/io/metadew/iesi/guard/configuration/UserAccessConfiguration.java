@@ -5,6 +5,8 @@ import io.metadew.iesi.guard.definition.UserAccess;
 import io.metadew.iesi.metadata.configuration.UserConfiguration;
 import io.metadew.iesi.metadata.definition.user.User;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.Optional;
 
 public class UserAccessConfiguration {
@@ -36,7 +38,7 @@ public class UserAccessConfiguration {
                     userAccess.setExceptionMessage("user.password.incorrect");
                 }
             }
-        } catch (Exception e) {
+        } catch (InvalidKeySpecException | NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
 

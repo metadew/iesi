@@ -36,7 +36,7 @@ public class ParameterOperation {
                 inputParameter.setName(midBit);
                 inputParameter.setScriptName(script.getName());
                 inputParameter.setActionName(action.getName());
-                inputParameter.setActionParameterName(actionParameter.getName());
+                inputParameter.setActionParameterName(actionParameter.getMetadataKey().getParameterName());
                 inputParameterList.add(inputParameter);
                 input = input.replaceAll(variable_char + midBit + variable_char, replaceValue);
             }

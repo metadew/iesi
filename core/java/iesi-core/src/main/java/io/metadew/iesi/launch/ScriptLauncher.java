@@ -5,8 +5,6 @@ import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
 import io.metadew.iesi.framework.execution.FrameworkControl;
 import io.metadew.iesi.framework.execution.FrameworkExecutionContext;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
-import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.execution.ExecutionRequestConfiguration;
 import io.metadew.iesi.metadata.definition.Context;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequest;
@@ -15,7 +13,7 @@ import io.metadew.iesi.metadata.definition.execution.ExecutionRequestBuilderExce
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequestStatus;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequestBuilder;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequestBuilderException;
-import io.metadew.iesi.runtime.ExecutorService;
+import io.metadew.iesi.runtime.ExecutionRequestExecutorService;
 import io.metadew.iesi.script.operation.ImpersonationService;
 import org.apache.commons.cli.*;
 import org.apache.logging.log4j.ThreadContext;
@@ -23,7 +21,6 @@ import org.apache.logging.log4j.ThreadContext;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,7 +32,7 @@ import java.util.Map;
  */
 public class ScriptLauncher {
 
-    public static void main(String[] args) throws ScriptExecutionRequestBuilderException, ExecutionRequestBuilderException, MetadataAlreadyExistsException, SQLException, MetadataDoesNotExistException, ParseException {
+    public static void main(String[] args) throws ScriptExecutionRequestBuilderException, ExecutionRequestBuilderException, ParseException {
         ThreadContext.clearAll();
 
         Options options = new Options()
@@ -179,7 +176,8 @@ public class ScriptLauncher {
         String serverMode = "off";
         try {
             serverMode = FrameworkSettingConfiguration.getInstance().getSettingPath("server.mode")
-                    .map(settingPath -> FrameworkControl.getInstance().getProperty(settingPath))
+                    .map(settingPath -> FrameworkControl.getInstance().getProperty(settingPath)
+                            .orElseThrow(() -> new RuntimeException("no value set for server.mode")))
                     .orElse("off")
                     .toLowerCase();
             System.out.println("Setting framework.server.mode=" + serverMode);
@@ -204,7 +202,7 @@ public class ScriptLauncher {
         if (serverMode.equalsIgnoreCase("off")) {
             executionRequest.updateExecutionRequestStatus(ExecutionRequestStatus.SUBMITTED);
             ExecutionRequestConfiguration.getInstance().update(executionRequest);
-            ExecutorService.getInstance().execute(executionRequest);
+            ExecutionRequestExecutorService.getInstance().execute(executionRequest);
         } else if (serverMode.equalsIgnoreCase("standalone")) {
             System.out.println("RequestID="+executionRequest.getMetadataKey().getId());
         } else {

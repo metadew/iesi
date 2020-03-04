@@ -4,8 +4,6 @@ import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
-import io.metadew.iesi.metadata.configuration.execution.script.exception.ScriptExecutionRequestAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.execution.script.exception.ScriptExecutionRequestDoesNotExistException;
 import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequestStatus;
@@ -163,11 +161,10 @@ public class ScriptExecutionRequestConfiguration extends Configuration<ScriptExe
     }
 
     @Override
-    public void delete(ScriptExecutionRequestKey scriptExecutionRequestKey) throws MetadataDoesNotExistException {
+    public void delete(ScriptExecutionRequestKey scriptExecutionRequestKey) {
         LOGGER.trace(MessageFormat.format("Deleting ScriptExecutionRequest {0}.", scriptExecutionRequestKey.toString()));
         if (!exists(scriptExecutionRequestKey)) {
-            throw new ScriptExecutionRequestDoesNotExistException(MessageFormat.format(
-                    "ScriptExecutionRequest {0} does not exists", scriptExecutionRequestKey.toString()));
+            throw new MetadataDoesNotExistException(scriptExecutionRequestKey);
         }
         List<String> deleteStatement = deleteStatement(scriptExecutionRequestKey);
         getMetadataRepository().executeBatch(deleteStatement);
@@ -188,11 +185,10 @@ public class ScriptExecutionRequestConfiguration extends Configuration<ScriptExe
     }
 
     @Override
-    public void insert(ScriptExecutionRequest scriptExecutionRequest) throws MetadataAlreadyExistsException {
+    public void insert(ScriptExecutionRequest scriptExecutionRequest) {
         LOGGER.trace(MessageFormat.format("Inserting ScriptExecutionRequest {0}.", scriptExecutionRequest.toString()));
         if (exists(scriptExecutionRequest.getMetadataKey())) {
-            throw new ScriptExecutionRequestAlreadyExistsException(MessageFormat.format(
-                    "ScriptExecutionRequest {0} already exists", scriptExecutionRequest.getMetadataKey().toString()));
+            throw new MetadataAlreadyExistsException(scriptExecutionRequest);
         }
         List<String> insertStatement = insertStatement(scriptExecutionRequest);
         getMetadataRepository().executeBatch(insertStatement);
@@ -310,10 +306,9 @@ public class ScriptExecutionRequestConfiguration extends Configuration<ScriptExe
     }
 
     @Override
-    public void update(ScriptExecutionRequest executionRequest) throws ScriptExecutionRequestDoesNotExistException {
+    public void update(ScriptExecutionRequest executionRequest) {
         if (!exists(executionRequest.getMetadataKey())) {
-            throw new ScriptExecutionRequestDoesNotExistException(MessageFormat.format(
-                    "ScriptExecutionRequest {0} already exists", executionRequest.getMetadataKey().toString()));
+            throw new MetadataDoesNotExistException(executionRequest);
         }
         List<String> updateStatement = updateStatement(executionRequest);
         getMetadataRepository().executeBatch(updateStatement);

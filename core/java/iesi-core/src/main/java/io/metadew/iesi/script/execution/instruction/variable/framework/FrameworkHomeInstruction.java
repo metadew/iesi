@@ -16,7 +16,7 @@ public class FrameworkHomeInstruction implements VariableInstruction {
 
     @Override
     public String generateOutput() {
-        return FilenameUtils.normalize(FrameworkConfiguration.getInstance().getFrameworkHome());
+        return FilenameUtils.normalize(FrameworkConfiguration.getInstance().getFrameworkHome().toString());
     }
 
     @Override

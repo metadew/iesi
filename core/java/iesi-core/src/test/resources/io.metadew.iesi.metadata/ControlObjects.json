@@ -1,0 +1,45 @@
+[ {
+  "data" : {
+    "name" : "SpaceUser",
+    "label" : "SpaceUsers",
+    "description" : "Control metadata for space users",
+    "type" : "control",
+    "category" : "execution",
+    "migrate" : "Y",
+    "migrationKey" : "B001"
+  },
+  "type" : "MetadataObject"
+}, {
+  "data" : {
+    "name" : "User",
+    "label" : "Users",
+    "description" : "Control metadata for users",
+    "type" : "control",
+    "category" : "execution",
+    "migrate" : "Y",
+    "migrationKey" : "B001"
+  },
+  "type" : "MetadataObject"
+}, {
+  "data" : {
+    "name" : "UserGroup",
+    "label" : "UserGroups",
+    "description" : "Control metadata for user groups",
+    "type" : "control",
+    "category" : "execution",
+    "migrate" : "Y",
+    "migrationKey" : "B001"
+  },
+  "type" : "MetadataObject"
+}, {
+  "data" : {
+    "name" : "UserRole",
+    "label" : "UserRoles",
+    "description" : "Control metadata for user roles",
+    "type" : "control",
+    "category" : "execution",
+    "migrate" : "Y",
+    "migrationKey" : "B001"
+  },
+  "type" : "MetadataObject"
+} ]

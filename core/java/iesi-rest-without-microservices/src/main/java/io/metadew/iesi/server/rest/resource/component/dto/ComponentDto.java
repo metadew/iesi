@@ -3,6 +3,7 @@ package io.metadew.iesi.server.rest.resource.component.dto;
 import io.metadew.iesi.metadata.definition.component.Component;
 import io.metadew.iesi.metadata.definition.component.ComponentAttribute;
 import io.metadew.iesi.metadata.definition.component.ComponentParameter;
+import io.metadew.iesi.metadata.tools.IdentifierTools;
 import org.springframework.hateoas.ResourceSupport;
 
 import java.util.List;
@@ -50,8 +51,8 @@ public class ComponentDto extends ResourceSupport {
     }
 
     public Component convertToEntity() {
-        return new Component(
-                type, name, description, version.convertToEntity(), parameters, attributes);
+        return new Component(IdentifierTools.getComponentIdentifier(name),
+                type, name, description, version.convertToEntity(name), parameters, attributes);
     }
 
     public String getType() {

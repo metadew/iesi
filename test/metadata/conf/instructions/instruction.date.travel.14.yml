@@ -1,0 +1,29 @@
+---
+type: Script
+data:
+  type: "script"
+  name: "instruction.date.travel.14"
+  description: "travel 1 day in the future to weekend. skip weekdays"
+  actions:
+  - number: 1
+    type: "fwk.setParameterValue"
+    name: "set parameter according to value"
+    description: "default"
+    errorExpected: "N"
+    errorStop: "Y"
+    parameters:
+    - name: "name"
+      value : "parameter"
+    - name: "value"
+      value : "{{*date.travel(19012020,\"day\",1, nw)}}"
+  - number: 2
+    type: "eval.assertEquals"
+    name: "check parameter value"
+    description: "default"
+    errorExpected: "N"
+    errorStop: "Y"
+    parameters:
+    - name: "expected"
+      value : "25012020"
+    - name: "actual"
+      value : "#parameter#"

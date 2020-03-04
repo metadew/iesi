@@ -59,7 +59,7 @@ public class PostgresqlRepositoryConfiguration extends RepositoryConfiguration {
         if (getUser().isPresent()) {
                 PostgresqlDatabaseConnection postgresqlDatabaseConnection = new PostgresqlDatabaseConnection(finalJdbcConnectionString, getUser().get(), FrameworkCrypto.getInstance().decrypt(getWriterPassword().orElse("")));
                 getSchema().ifPresent(postgresqlDatabaseConnection::setSchema);
-                PostgresqlDatabase postgresqlDatabase = new PostgresqlDatabase(postgresqlDatabaseConnection, getSchema().orElse(""));
+                PostgresqlDatabase postgresqlDatabase = new PostgresqlDatabase(postgresqlDatabaseConnection, schema);
                 databases.put("owner", postgresqlDatabase);
                 databases.put("writer", postgresqlDatabase);
                 databases.put("reader", postgresqlDatabase);
@@ -67,14 +67,14 @@ public class PostgresqlRepositoryConfiguration extends RepositoryConfiguration {
         if (getWriter().isPresent()) {
             PostgresqlDatabaseConnection postgresqlDatabaseConnection = new PostgresqlDatabaseConnection(finalJdbcConnectionString, getWriter().get(), FrameworkCrypto.getInstance().decrypt(getWriterPassword().orElse("")));
             getSchema().ifPresent(postgresqlDatabaseConnection::setSchema);
-            PostgresqlDatabase postgresqlDatabase = new PostgresqlDatabase(postgresqlDatabaseConnection, getSchema().orElse(""));
+            PostgresqlDatabase postgresqlDatabase = new PostgresqlDatabase(postgresqlDatabaseConnection, schema);
             databases.put("writer", postgresqlDatabase);
             databases.put("reader", postgresqlDatabase);
         }
          if (getReader().isPresent()) {
              PostgresqlDatabaseConnection postgresqlDatabaseConnection = new PostgresqlDatabaseConnection(finalJdbcConnectionString, getReader().get(), FrameworkCrypto.getInstance().decrypt(getReaderPassword().orElse("")));
              getSchema().ifPresent(postgresqlDatabaseConnection::setSchema);
-             PostgresqlDatabase postgresqlDatabase = new PostgresqlDatabase(postgresqlDatabaseConnection, getSchema().orElse(""));
+             PostgresqlDatabase postgresqlDatabase = new PostgresqlDatabase(postgresqlDatabaseConnection, schema);
              databases.put("reader", postgresqlDatabase);
          }
         return new RepositoryCoordinator(databases);

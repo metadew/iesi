@@ -9,12 +9,7 @@ public final class ConnectionTools {
         ConnectionTypeConfiguration connectionTypeConfiguration = new ConnectionTypeConfiguration();
         ConnectionType connectionType;
 
-        try {
-            connectionType = connectionTypeConfiguration.getConnectionType(connectionTypeName);
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage(), e);
-        }
-
+        connectionType = connectionTypeConfiguration.getConnectionType(connectionTypeName);
         return connectionType;
     }
 }

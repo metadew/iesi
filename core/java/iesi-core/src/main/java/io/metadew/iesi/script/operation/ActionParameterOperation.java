@@ -1,13 +1,11 @@
 package io.metadew.iesi.script.operation;
 
 import io.metadew.iesi.datatypes.DataType;
-import io.metadew.iesi.datatypes.DataTypeService;
+import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.framework.crypto.FrameworkCrypto;
 import io.metadew.iesi.metadata.configuration.type.ActionTypeParameterConfiguration;
 import io.metadew.iesi.metadata.definition.action.type.ActionTypeParameter;
-import io.metadew.iesi.runtime.subroutine.ShellCommandSubroutine;
-import io.metadew.iesi.runtime.subroutine.SqlStatementSubroutine;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
@@ -22,7 +20,6 @@ import java.text.MessageFormat;
  */
 public class ActionParameterOperation {
 
-    private final DataTypeService dataTypeService;
     private final ActionTypeParameterConfiguration actionTypeParameterConfiguration;
     private ExecutionControl executionControl;
     private ActionExecution actionExecution;
@@ -40,18 +37,16 @@ public class ActionParameterOperation {
         this.name = name;
         actionTypeParameter = actionTypeParameterConfiguration.getActionTypeParameter(actionTypeName, name)
                 .orElseThrow(() -> new RuntimeException(MessageFormat.format("No definition found for parameter {0} of action {1}", name, actionTypeName)));
-        this.dataTypeService = new DataTypeService();
     }
 
     public ActionParameterOperation(ExecutionControl executionControl,
-                                    String actionTypeName, String name, String value)  {
+                                    String actionTypeName, String name, String value) {
         actionTypeParameterConfiguration = new ActionTypeParameterConfiguration();
         this.executionControl = executionControl;
         this.name = name;
         actionTypeParameter = actionTypeParameterConfiguration.getActionTypeParameter(actionTypeName, name)
                 .orElseThrow(() -> new RuntimeException(MessageFormat.format("No definition found for parameter {0} of action {1}", name, actionTypeName)));
         this.setInputValue(value, executionControl.getExecutionRuntime());
-        this.dataTypeService = new DataTypeService();
     }
 
     private String lookupSubroutine(String input) {
@@ -84,25 +79,25 @@ public class ActionParameterOperation {
         if (inputValue == null) inputValue = "";
         // TODO: list resolvement to a data type
         // Keep input value with orginal entry
-    	this.inputValue = inputValue;
+        this.inputValue = inputValue;
 
-    	// Start manipulation with lookups
-    	// Look up inside action perimeter
+        // Start manipulation with lookups
+        // Look up inside action perimeter
         inputValue = actionExecution.getActionControl().getActionRuntime().resolveRuntimeVariables(inputValue);
-		
-		// TODO centralize lookup logic here (get inside the execution controls / runtime)
+
+        // TODO centralize lookup logic here (get inside the execution controls / runtime)
         String resolvedInputValue = executionControl.getExecutionRuntime().resolveVariables(actionExecution, inputValue);
-        
+
         // TODO verify if still needed
         value = new Text(inputValue);
-        
+
         resolvedInputValue = lookupSubroutine(resolvedInputValue);
         executionControl.logMessage(actionExecution, "action.param=" + name + ":" + resolvedInputValue, Level.DEBUG);
         resolvedInputValue = executionControl.getExecutionRuntime().resolveConceptLookup(resolvedInputValue).getValue();
-        
+
         // perform lookup again after cross concept lookup
         resolvedInputValue = executionControl.getExecutionRuntime().resolveVariables(actionExecution, resolvedInputValue);
-        
+
         String decryptedInputValue = FrameworkCrypto.getInstance().resolve(resolvedInputValue);
 
         // Impersonate
@@ -117,7 +112,7 @@ public class ActionParameterOperation {
         }
 
         // Resolve to data type
-        value = dataTypeService.resolve(resolvedInputValue, executionRuntime);
+        value = DataTypeHandler.getInstance().resolve(resolvedInputValue, executionRuntime);
     }
 
     public ExecutionControl getExecutionControl() {

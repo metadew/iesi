@@ -54,7 +54,7 @@ public final class SQLDataTransfer {
             }
 
             crs.close();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             throw new RuntimeException("sql.data.transfer.failed");
         } finally {
             liveTargetDatabaseConnection.close();

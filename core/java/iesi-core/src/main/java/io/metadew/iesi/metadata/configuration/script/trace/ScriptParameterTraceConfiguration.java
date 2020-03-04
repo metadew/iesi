@@ -2,10 +2,6 @@ package io.metadew.iesi.metadata.configuration.script.trace;
 
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
-import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
-import io.metadew.iesi.metadata.configuration.script.trace.exception.ScriptParameterTraceAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.script.trace.exception.ScriptParameterTraceDoesNotExistException;
 import io.metadew.iesi.metadata.definition.script.trace.ScriptParameterTrace;
 import io.metadew.iesi.metadata.definition.script.trace.key.ScriptParameterTraceKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
@@ -82,12 +78,8 @@ public class ScriptParameterTraceConfiguration extends Configuration<ScriptParam
     }
 
     @Override
-    public void delete(ScriptParameterTraceKey scriptParameterTraceKey) throws MetadataDoesNotExistException {
+    public void delete(ScriptParameterTraceKey scriptParameterTraceKey) {
         LOGGER.trace(MessageFormat.format("Deleting ScriptParameterTrace {0}.", scriptParameterTraceKey.toString()));
-        if (!exists(scriptParameterTraceKey)) {
-            throw new ScriptParameterTraceDoesNotExistException(MessageFormat.format(
-                    "ScriptParameterTrace {0} does not exists", scriptParameterTraceKey.toString()));
-        }
         String deleteStatement = deleteStatement(scriptParameterTraceKey);
         getMetadataRepository().executeUpdate(deleteStatement);
     }
@@ -101,12 +93,8 @@ public class ScriptParameterTraceConfiguration extends Configuration<ScriptParam
     }
 
     @Override
-    public void insert(ScriptParameterTrace scriptParameterTrace) throws MetadataAlreadyExistsException {
+    public void insert(ScriptParameterTrace scriptParameterTrace) {
         LOGGER.trace(MessageFormat.format("Inserting ScriptParameterTrace {0}.", scriptParameterTrace.getMetadataKey().toString()));
-        if (exists(scriptParameterTrace.getMetadataKey())) {
-            throw new ScriptParameterTraceAlreadyExistsException(MessageFormat.format(
-                    "ScriptParameterTrace {0} already exists", scriptParameterTrace.getMetadataKey().toString()));
-        }
         String insertStatement = insertStatement(scriptParameterTrace);
         getMetadataRepository().executeUpdate(insertStatement);
     }
@@ -118,5 +106,20 @@ public class ScriptParameterTraceConfiguration extends Configuration<ScriptParam
                 SQLTools.GetStringForSQL(scriptParameterTrace.getMetadataKey().getProcessId()) + "," +
                 SQLTools.GetStringForSQL(scriptParameterTrace.getMetadataKey().getScriptParameterName()) + "," +
                 SQLTools.GetStringForSQL(scriptParameterTrace.getScriptParameterValue()) + ");";
+    }
+
+    @Override
+    public void update(ScriptParameterTrace scriptParameterTrace) {
+        LOGGER.trace(MessageFormat.format("Updating ScriptParameterTrace {0}.", scriptParameterTrace.toString()));
+        String updateStatement = updateStatement(scriptParameterTrace);
+        getMetadataRepository().executeUpdate(updateStatement);
+    }
+
+    private String updateStatement(ScriptParameterTrace scriptParameterTrace) {
+        return "UPDATE " + getMetadataRepository().getTableNameByLabel("ScriptParameterTraces") +
+                " SET SCRIPT_PAR_VAL = " + SQLTools.GetStringForSQL(scriptParameterTrace.getScriptParameterValue()) +
+                " WHERE RUN_ID = " + SQLTools.GetStringForSQL(scriptParameterTrace.getMetadataKey().getRunId()) +
+                " AND PRC_ID = " + SQLTools.GetStringForSQL(scriptParameterTrace.getMetadataKey().getProcessId()) +
+                " AND SCRIPT_PAR_NM = " + SQLTools.GetStringForSQL(scriptParameterTrace.getMetadataKey().getScriptParameterName()) + ";";
     }
 }

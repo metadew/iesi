@@ -1,6 +1,7 @@
 package io.metadew.iesi.connection.database.connection.h2;
 
 import io.metadew.iesi.connection.database.connection.DatabaseConnection;
+import io.metadew.iesi.connection.database.connection.SchemaDatabaseConnection;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -11,59 +12,21 @@ import java.util.Optional;
  *
  * @author peter.billen
  */
-public class H2DatabaseConnection extends DatabaseConnection {
+public class H2DatabaseConnection extends SchemaDatabaseConnection {
 
     private static String type = "h2";
-    private String schema;
 
     public H2DatabaseConnection(String connectionURL, String userName, String userPassword) {
         super(type, connectionURL, userName, userPassword);
     }
 
-    public H2DatabaseConnection(String hostName, int portNumber, String filePath, String userName, String userPassword) {
-        super(type, "jdbc:h2:tcp://" + hostName + ":" + portNumber + "/" + filePath, userName, userPassword);
+    public H2DatabaseConnection(String connectionURL, String userName, String userPassword, String schema) {
+        super(type, connectionURL, userName, userPassword, schema);
     }
-
-//    public static String getConnectionUrl(String hostName, int portNumber, String filePath) {
-//        StringBuilder connectionUrl = new StringBuilder();
-//        connectionUrl.append("jdbc:h2:");
-//        if (!hostName.isEmpty()) {
-//            connectionUrl.append("tcp://");
-//            connectionUrl.append(hostName);
-//            if (portNumber > 0) {
-//                connectionUrl.append(":");
-//                connectionUrl.append(portNumber);
-//            }
-//            connectionUrl.append("/");
-//        }
-//
-//        connectionUrl.append(filePath);
-//        return connectionUrl.toString();
-//    }
-
-//    public static String getConnectionUrl(String hostName, int portNumber, String pathName, String fileName) {
-//        StringBuilder filePath = new StringBuilder();
-//
-//        if (!pathName.isEmpty()) {
-//            filePath.append(pathName);
-//            filePath.append("/");
-//        }
-//        filePath.append(fileName);
-//
-//        return getConnectionUrl(hostName, portNumber, filePath.toString());
-//    }
 
     @Override
     public String getDriver() {
         return "org.h2.Driver";
-    }
-
-    public void setSchema(String schema) {
-        this.schema = schema;
-    }
-
-    private Optional<String> getSchema() {
-        return Optional.ofNullable(schema);
     }
 
     public Connection getConnection() {
@@ -73,8 +36,6 @@ public class H2DatabaseConnection extends DatabaseConnection {
             Optional<String> schema = getSchema();
             if (schema.isPresent()) {
                 connection.createStatement().execute("SET SCHEMA " + schema.get());
-                // TODO test the set schema call
-                //connection.setSchema(schema.get());
             }
             return connection;
         } catch (SQLException e) {

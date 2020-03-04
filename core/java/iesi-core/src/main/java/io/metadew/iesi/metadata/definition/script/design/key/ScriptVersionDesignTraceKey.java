@@ -1,23 +1,14 @@
 package io.metadew.iesi.metadata.definition.script.design.key;
 
 import io.metadew.iesi.metadata.definition.key.MetadataKey;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+@Data
+@EqualsAndHashCode(callSuper = true)
 public class ScriptVersionDesignTraceKey extends MetadataKey {
 
-    private String runId;
-    private Long processId;
-
-    public ScriptVersionDesignTraceKey(String runId, Long processId) {
-        this.runId = runId;
-        this.processId = processId;
-    }
-
-    public String getRunId() {
-        return runId;
-    }
-
-    public Long getProcessId() {
-        return processId;
-    }
+    private final String runId;
+    private final Long processId;
 
 }

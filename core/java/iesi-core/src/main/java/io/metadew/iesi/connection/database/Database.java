@@ -8,6 +8,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.sql.rowset.CachedRowSet;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -15,6 +16,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public abstract class Database {
 
@@ -22,7 +25,7 @@ public abstract class Database {
     private static final int DEFAULT_MAX_POOL_SIZE = 8;
     private static final Logger LOGGER = LogManager.getLogger();
 
-    DatabaseConnection databaseConnection;
+    private DatabaseConnection databaseConnection;
     private int initialPoolSize;
     private int maximalPoolSize;
     private List<Connection> connectionPool;
@@ -117,7 +120,7 @@ public abstract class Database {
             this.databaseConnection.executeUpdate(query, connection);
             connection.commit();
             releaseConnection(connection);
-        } catch (Exception e) {
+        } catch (SQLException e) {
             StringWriter stackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(stackTrace));
             LOGGER.info("sql.exception=" + e);
@@ -136,7 +139,7 @@ public abstract class Database {
             connection.commit();
             releaseConnection(connection);
             return cachedRowSet;
-        } catch (Exception e) {
+        } catch (SQLException e) {
             StringWriter stackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(stackTrace));
             LOGGER.info("exception=" + e);
@@ -154,7 +157,7 @@ public abstract class Database {
             databaseConnection.executeBatch(queries, connection);
             connection.commit();
             releaseConnection(connection);
-        } catch (Exception e) {
+        } catch (SQLException e) {
             StringWriter stackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(stackTrace));
             LOGGER.info("exception=" + e);
@@ -168,7 +171,7 @@ public abstract class Database {
     public CachedRowSet executeQuery(String query, Connection connection) {
         try {
             return this.databaseConnection.executeQuery(query, connection);
-        } catch (Exception e) {
+        } catch (SQLException e) {
             StringWriter stackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(stackTrace));
             LOGGER.info("exception=" + e);
@@ -186,7 +189,7 @@ public abstract class Database {
             connection.commit();
             releaseConnection(connection);
             return cachedRowSet;
-        } catch (Exception e) {
+        } catch (SQLException e) {
             StringWriter stackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(stackTrace));
             LOGGER.info("exception=" + e);
@@ -201,7 +204,7 @@ public abstract class Database {
     public CachedRowSet executeQueryLimitRows(String query, int limit, Connection connection) {
         try {
             return this.databaseConnection.executeQueryLimitRows(query, limit, connection);
-        } catch (Exception e) {
+        } catch (SQLException e) {
             StringWriter stackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(stackTrace));
             LOGGER.info("exception=" + e);
@@ -219,7 +222,7 @@ public abstract class Database {
             connection.commit();
             releaseConnection(connection);
             return sqlScriptResult;
-        } catch (Exception e) {
+        } catch (SQLException | IOException e) {
             StringWriter stackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(stackTrace));
             LOGGER.info("exception=" + e);
@@ -233,7 +236,7 @@ public abstract class Database {
     public SqlScriptResult executeScript(String filename, Connection connection) {
         try {
             return this.databaseConnection.executeScript(filename, connection);
-        } catch (Exception e) {
+        } catch (SQLException | IOException e) {
             StringWriter stackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(stackTrace));
             LOGGER.info("exception=" + e);
@@ -250,7 +253,7 @@ public abstract class Database {
             connection.commit();
             releaseConnection(connection);
             return sqlScriptResult;
-        } catch (Exception e) {
+        } catch (SQLException | IOException e) {
             StringWriter stackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(stackTrace));
             LOGGER.info("exception=" + e);
@@ -264,7 +267,7 @@ public abstract class Database {
     public SqlScriptResult executeScript(InputStream inputStream, Connection connection) {
         try {
             return this.databaseConnection.executeScript(inputStream, connection);
-        } catch (Exception e) {
+        } catch (SQLException | IOException e) {
             StringWriter stackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(stackTrace));
             LOGGER.info("exception=" + e);
@@ -281,7 +284,7 @@ public abstract class Database {
             connection.commit();
             releaseConnection(connection);
             return cachedRowSet;
-        } catch (Exception e) {
+        } catch (SQLException e) {
             StringWriter stackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(stackTrace));
             LOGGER.info("exception=" + e);
@@ -379,12 +382,24 @@ public abstract class Database {
              */
             counter++;
         }
+        getPrimaryKeyConstraints(table).ifPresent(primaryKeysConstraint -> createQuery.append(",\n").append(primaryKeysConstraint));
 
         createQuery.append("\n);\n");
         createQuery.append(createQueryExtras());
         // createQuery.append(fieldComments).append("\n\n");
 
         return createQuery.toString();
+    }
+
+    Optional<String> getPrimaryKeyConstraints(MetadataTable metadataTable) {
+        List<MetadataField> primaryKeyMetadataFields = metadataTable.getFields().stream()
+                .filter(MetadataField::isPrimaryKey)
+                .collect(Collectors.toList());
+        if (primaryKeyMetadataFields.isEmpty()) {
+            return Optional.empty();
+        } else {
+            return Optional.of("CONSTRAINT pk_" + metadataTable.getName() + " PRIMARY KEY (" + primaryKeyMetadataFields.stream().map(MetadataField::getName).collect(Collectors.joining(", ")) + ")");
+        }
     }
 
     public void dropTable(MetadataTable table) {

@@ -7,6 +7,7 @@ import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.connection.Connection;
+import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
@@ -45,9 +46,9 @@ public class SqlSetRuntimeVariables {
 
         // Get Parameters
         for (ActionParameter actionParameter : actionExecution.getAction().getParameters()) {
-            if (actionParameter.getName().equalsIgnoreCase("query")) {
+            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("query")) {
                 sqlQuery.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("connection")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("connection")) {
                 connectionName.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }
@@ -58,23 +59,11 @@ public class SqlSetRuntimeVariables {
     }
 
 
-    public boolean execute() {
+    public boolean execute() throws InterruptedException {
         try {
-            String query = convertQuery(sqlQuery.getValue());
-            String connectionName = convertConnectionName(this.connectionName.getValue());
-            // Get Connection
-            ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
-            Connection connection = connectionConfiguration.get(connectionName,
-                    this.executionControl.getEnvName())
-                    .orElseThrow(() -> new RuntimeException("Could not find connection " + connectionName));
-            ConnectionOperation connectionOperation = new ConnectionOperation();
-            Database database = connectionOperation.getDatabase(connection);
-
-            // Run the action
-            CachedRowSet sqlResultSet = database.executeQuery(query);
-            this.executionControl.getExecutionRuntime().setRuntimeVariables(actionExecution, sqlResultSet);
-            actionExecution.getActionControl().increaseSuccessCount();
-            return true;
+            return executeOperation();
+        } catch (InterruptedException e) {
+            throw (e);
         } catch (Exception e) {
             StringWriter stackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(stackTrace));
@@ -89,6 +78,23 @@ public class SqlSetRuntimeVariables {
             return false;
         }
 
+    }
+
+    private boolean executeOperation() throws InterruptedException {
+
+        String query = convertQuery(sqlQuery.getValue());
+        String connectionName = convertConnectionName(this.connectionName.getValue());
+        // Get Connection
+        Connection connection = ConnectionConfiguration.getInstance().get(new ConnectionKey(connectionName, this.executionControl.getEnvName()))
+                .orElseThrow(() -> new RuntimeException("Could not find connection " + connectionName));
+        ConnectionOperation connectionOperation = new ConnectionOperation();
+        Database database = connectionOperation.getDatabase(connection);
+
+        // Run the action
+        CachedRowSet sqlResultSet = database.executeQuery(query);
+        this.executionControl.getExecutionRuntime().setRuntimeVariables(actionExecution, sqlResultSet);
+        actionExecution.getActionControl().increaseSuccessCount();
+        return true;
     }
 
     private String convertConnectionName(DataType connectionName) {

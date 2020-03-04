@@ -75,23 +75,23 @@ public class FwkSetIteration {
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "interrupt"));
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-            if (actionParameter.getName().equalsIgnoreCase("name")) {
+            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("name")) {
                 this.getIterationName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("type")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("type")) {
                 this.getIterationType().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("list")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("list")) {
                 this.getIterationList().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("values")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("values")) {
                 this.getIterationValues().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("from")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("from")) {
                 this.getIterationFrom().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("to")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("to")) {
                 this.getIterationTo().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("step")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("step")) {
                 this.getIterationStep().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("condition")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("condition")) {
                 this.getIterationCondition().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("interrupt")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("interrupt")) {
                 this.getIterationInterrupt().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }
@@ -109,7 +109,7 @@ public class FwkSetIteration {
     }
 
     //
-    public boolean execute() {
+    public boolean execute() throws InterruptedException {
         try {
             String name = convertIterationName(getIterationName().getValue());
             String type = convertIterationType(getIterationType().getValue());
@@ -121,6 +121,8 @@ public class FwkSetIteration {
             String condition = convertIterationCondition(getIterationCondition().getValue());
             boolean interrupt = convertIterationInterrupt(getIterationInterrupt().getValue());
             return setIteration(name, type, list, values, from, to, step, condition, interrupt);
+        } catch (InterruptedException e) {
+            throw (e);
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
@@ -135,7 +137,7 @@ public class FwkSetIteration {
 
     }
 
-    private boolean setIteration(String name, String type, String list, String values, String from, String to, String step, String condition, boolean interrupt) {
+    private boolean setIteration(String name, String type, String list, String values, String from, String to, String step, String condition, boolean interrupt) throws InterruptedException {
         Iteration iteration = new Iteration(name, type, list, values, from, to, step==null?"1":step, condition, interrupt?"y":"n");
         this.getExecutionControl().getExecutionRuntime().setIteration(iteration);
         this.getActionExecution().getActionControl().increaseSuccessCount();

@@ -4,16 +4,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.framework.definition.FrameworkFolder;
 import io.metadew.iesi.metadata.definition.DataObject;
 import io.metadew.iesi.metadata.operation.DataObjectOperation;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.ThreadContext;
 
-import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
+
 public class FrameworkFolderConfiguration {
 
-    private String solutionHome;
+    private Path solutionHome;
 
     private Map<String, FrameworkFolder> folderMap;
 
@@ -28,23 +29,26 @@ public class FrameworkFolderConfiguration {
 
     private FrameworkFolderConfiguration() {}
 
-    public void init(String solutionHome) {
-        this.setSolutionHome(solutionHome);
+    public void init(Path solutionHome) {
         this.folderMap = new HashMap<>();
-
-        String initFilePath = solutionHome + File.separator + "sys" + File.separator + "init" + File.separator + "FrameworkFolders.json";
-        DataObjectOperation dataObjectOperation = new DataObjectOperation(initFilePath);
+        this.solutionHome = solutionHome;
+        Path initFilePath = solutionHome.resolve("sys").resolve("init").resolve("FrameworkFolders.json");
+        DataObjectOperation dataObjectOperation = new DataObjectOperation(initFilePath.toString());
         dataObjectOperation.parseFile();
         ObjectMapper objectMapper = new ObjectMapper();
         for (DataObject dataObject : dataObjectOperation.getDataObjects()) {
             if (dataObject.getType().equalsIgnoreCase("frameworkfolder")) {
                 FrameworkFolder frameworkFolder = objectMapper.convertValue(dataObject.getData(), FrameworkFolder.class);
-                String folderPath = solutionHome + File.separator + frameworkFolder.getPath().replace("/", File.separator);
-                frameworkFolder.setAbsolutePath(FilenameUtils.normalize(folderPath));
+                Path folderPath = solutionHome.resolve(frameworkFolder.getPath());
+                frameworkFolder.setAbsolutePath(folderPath.toAbsolutePath().toString());
                 folderMap.put(frameworkFolder.getName(), frameworkFolder);
             }
         }
         ThreadContext.put("location", getFolderAbsolutePath("logs"));
+    }
+
+    public void init(String solutionHome) {
+        init(Paths.get(solutionHome));
     }
 
 //    private void initalizeValues() {
@@ -72,14 +76,6 @@ public class FrameworkFolderConfiguration {
 
     public String getFolderPath(String key) {
         return this.getFolderMap().get(key).getPath();
-    }
-
-    public String getSolutionHome() {
-        return solutionHome;
-    }
-
-    public void setSolutionHome(String solutionHome) {
-        this.solutionHome = solutionHome;
     }
 
     public Map<String, FrameworkFolder> getFolderMap() {

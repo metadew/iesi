@@ -1,34 +1,15 @@
 package io.metadew.iesi.metadata.definition.action.performance.key;
 
 import io.metadew.iesi.metadata.definition.key.MetadataKey;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+@Data
+@EqualsAndHashCode(callSuper = true)
 public class ActionPerformanceKey extends MetadataKey {
 
-    private String runId;
-    private Long procedureId;
-    private String actionId;
-    private String scope;
+    private final String runId;
+    private final Long procedureId;
+    private final String scope;
 
-    public ActionPerformanceKey(String runId, Long procedureId, String actionId, String scope) {
-        this.runId = runId;
-        this.procedureId = procedureId;
-        this.actionId = actionId;
-        this.scope = scope;
-    }
-
-    public String getRunId() {
-        return runId;
-    }
-
-    public Long getProcedureId() {
-        return procedureId;
-    }
-
-    public String getActionId() {
-        return actionId;
-    }
-
-    public String getScope() {
-        return scope;
-    }
 }

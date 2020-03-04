@@ -1,0 +1,36 @@
+---
+type: Script
+data:
+  type: "script"
+  name: "http.executeRequest"
+  description: "call an endpoint"
+  actions:
+  - number: 1
+    type: "data.setDatasetConnection"
+    name: "set output dataset connection"
+    description: "default"
+    errorExpected: "N"
+    errorStop: "Y"
+    parameters:
+    - name: "name"
+      value : "output"
+    - name: "dataset"
+      value : "httpExecuteRequest"
+    - name: "labels"
+      value : "output, {{$run.id}}"
+  - number: 2
+    type: "http.executeRequest"
+    name: "call"
+    description: "call the endpoint"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "Y"
+    parameters: 
+    - name: "type"
+      value: "get"
+    - name: "request"
+      value: "HttpExecuteRequest"
+    - name: "setDataset"
+      value: "output"

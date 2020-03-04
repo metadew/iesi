@@ -6,6 +6,7 @@ import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.connection.Connection;
+import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 
 import javax.sql.rowset.CachedRowSet;
 import java.sql.PreparedStatement;
@@ -25,11 +26,14 @@ public class DatabaseOffloadExecution {
 
         // Get Connection
         ConnectionOperation connectionOperation = new ConnectionOperation();
-        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
 
-        Connection sourceConnection = connectionConfiguration.get(sourceConnectionName, sourceEnvironmentName).get();
+        Connection sourceConnection = ConnectionConfiguration.getInstance()
+                .get(new ConnectionKey(sourceConnectionName, sourceEnvironmentName))
+                .get();
         Database sourceDatabase = connectionOperation.getDatabase(sourceConnection);
-        Connection targetConnection = connectionConfiguration.get(targetConnectionName, targetEnvironmentName).get();
+        Connection targetConnection = ConnectionConfiguration.getInstance()
+                .get(new ConnectionKey(targetConnectionName, targetEnvironmentName))
+                .get();
         Database targetDatabase = connectionOperation.getDatabase(targetConnection);
 
         CachedRowSet crs = null;

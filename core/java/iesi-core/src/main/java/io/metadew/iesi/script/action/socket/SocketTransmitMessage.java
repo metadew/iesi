@@ -3,12 +3,13 @@ package io.metadew.iesi.script.action.socket;
 import io.metadew.iesi.connection.network.SocketConnection;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.dataset.Dataset;
+import io.metadew.iesi.datatypes.dataset.DatasetHandler;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.framework.configuration.FrameworkSettingConfiguration;
-import io.metadew.iesi.framework.definition.FrameworkSetting;
 import io.metadew.iesi.framework.execution.FrameworkControl;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
+import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
@@ -53,7 +54,7 @@ public class SocketTransmitMessage {
         this.actionParameterOperationMap = new HashMap<>();
     }
 
-    public void prepare()  {
+    public void prepare() {
         // Reset Parameters
         ActionParameterOperation socketActionParameterOperation = new ActionParameterOperation(executionControl, actionExecution, actionExecution.getAction().getType(), socketKey);
         ActionParameterOperation messageActionParameterOperation = new ActionParameterOperation(executionControl, actionExecution, actionExecution.getAction().getType(), messageKey);
@@ -63,15 +64,15 @@ public class SocketTransmitMessage {
 
         // Get Parameters
         for (ActionParameter actionParameter : actionExecution.getAction().getParameters()) {
-            if (actionParameter.getName().equalsIgnoreCase(messageKey)) {
+            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(messageKey)) {
                 messageActionParameterOperation.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase(socketKey)) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(socketKey)) {
                 socketActionParameterOperation.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase(protocolKey)) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(protocolKey)) {
                 protocolActionParameterOperation.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase(outputKey)) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(outputKey)) {
                 outputActionParameterOperation.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase(timeoutKey)) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(timeoutKey)) {
                 timeoutActionParameterOperation.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }
@@ -119,14 +120,11 @@ public class SocketTransmitMessage {
         }
     }
 
-    public boolean execute() {
+    public boolean execute() throws InterruptedException {
         try {
-            if (protocol.equalsIgnoreCase("tcp")) {
-                sendTCPMessage();
-            } else if (protocol.equalsIgnoreCase("udp")) {
-                sendUDPMessage();
-            }
-            return true;
+            return executionOperation();
+        } catch (InterruptedException e) {
+            throw e;
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
@@ -140,6 +138,15 @@ public class SocketTransmitMessage {
         }
     }
 
+    private boolean executionOperation() throws IOException, InterruptedException {
+        if (protocol.equalsIgnoreCase("tcp")) {
+            sendTCPMessage();
+        } else if (protocol.equalsIgnoreCase("udp")) {
+            sendUDPMessage();
+        }
+        return true;
+    }
+
     private void sendUDPMessage() throws IOException {
         InetSocketAddress socketAddress = new InetSocketAddress(socket.getHostName(), socket.getPort());
         DatagramSocket datagramSocket = new DatagramSocket(socketAddress);
@@ -147,11 +154,11 @@ public class SocketTransmitMessage {
                 message.getBytes(Charset.forName(socket.getEncoding())).length);
         datagramSocket.send(datagramPacketToSend);
         if (getOutputDataset().isPresent()) {
-                outputDataset.clean(executionControl.getExecutionRuntime());
-                byte[] buffer = new byte[65508];
-                DatagramPacket datagramPacketToReceive = new DatagramPacket(buffer, buffer.length);
-                datagramSocket.receive(datagramPacketToReceive);
-                outputDataset.setDataItem("response", new Text(new String(datagramPacketToReceive.getData(), 0, datagramPacketToReceive.getLength(), Charset.forName(socket.getEncoding()))));
+            DatasetHandler.getInstance().clean(outputDataset, executionControl.getExecutionRuntime());
+            byte[] buffer = new byte[65508];
+            DatagramPacket datagramPacketToReceive = new DatagramPacket(buffer, buffer.length);
+            datagramSocket.receive(datagramPacketToReceive);
+            DatasetHandler.getInstance().setDataItem(outputDataset, "response", new Text(new String(datagramPacketToReceive.getData(), 0, datagramPacketToReceive.getLength(), Charset.forName(socket.getEncoding()))));
         }
     }
 
@@ -162,12 +169,13 @@ public class SocketTransmitMessage {
         dOut.write(message.getBytes(Charset.forName(socket.getEncoding())));
         dOut.flush();
         if (getOutputDataset().isPresent()) {
-            outputDataset.clean(executionControl.getExecutionRuntime());
+            DatasetHandler.getInstance().clean(outputDataset, executionControl.getExecutionRuntime());
             LocalDateTime endDateTime;
             if (timeout == null) {
                 endDateTime = LocalDateTime.now().plus(
                         FrameworkSettingConfiguration.getInstance().getSettingPath("socket.timeout.default")
-                                .map(settingPath -> FrameworkControl.getInstance().getProperty(settingPath))
+                                .map(settingPath -> FrameworkControl.getInstance().getProperty(settingPath)
+                                        .orElseThrow(() -> new RuntimeException("no value set for socket.timeout.default")))
                                 .map(Integer::parseInt)
                                 .orElseThrow(() -> new RuntimeException("No value set for socket.timeout.default")),
                         ChronoUnit.SECONDS);
@@ -178,7 +186,7 @@ public class SocketTransmitMessage {
                 if (dIn.available() > 0) {
                     byte[] bytes = new byte[dIn.available()];
                     int bytesRead = dIn.read(bytes);
-                    outputDataset.setDataItem("response", new Text(new String(bytes, 0, bytesRead, Charset.forName(socket.getEncoding()))));
+                    DatasetHandler.getInstance().setDataItem(outputDataset, "response", new Text(new String(bytes, 0, bytesRead, Charset.forName(socket.getEncoding()))));
                     break;
                 }
             }
@@ -189,8 +197,8 @@ public class SocketTransmitMessage {
 
     private SocketConnection convertSocket(DataType socket) {
         if (socket instanceof Text) {
-            ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
-            return connectionConfiguration.get(((Text) socket).getString(), executionControl.getEnvName())
+            return ConnectionConfiguration.getInstance()
+                    .get(new ConnectionKey(((Text) socket).getString(), executionControl.getEnvName()))
                     .map(SocketConnection::from)
                     .orElseThrow(() -> new RuntimeException(MessageFormat.format("Cannot find connection {0}", ((Text) socket).getString())));
         } else {

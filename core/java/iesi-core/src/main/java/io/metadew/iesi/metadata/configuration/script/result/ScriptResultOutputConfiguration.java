@@ -2,10 +2,6 @@ package io.metadew.iesi.metadata.configuration.script.result;
 
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
-import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
-import io.metadew.iesi.metadata.configuration.script.result.exception.ScriptResultOutputAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.script.result.exception.ScriptResultOutputDoesNotExistException;
 import io.metadew.iesi.metadata.definition.script.result.ScriptResultOutput;
 import io.metadew.iesi.metadata.definition.script.result.key.ScriptResultOutputKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
@@ -81,12 +77,8 @@ public class ScriptResultOutputConfiguration extends Configuration<ScriptResultO
     }
 
     @Override
-    public void delete(ScriptResultOutputKey scriptResultOutputKey) throws MetadataDoesNotExistException {
+    public void delete(ScriptResultOutputKey scriptResultOutputKey) {
         LOGGER.trace(MessageFormat.format("Deleting ScriptResultOutput {0}.", scriptResultOutputKey.toString()));
-        if (!exists(scriptResultOutputKey)) {
-            throw new ScriptResultOutputDoesNotExistException(MessageFormat.format(
-                    "ActionResultOutput {0} does not exists", scriptResultOutputKey.toString()));
-        }
         String deleteStatement = deleteStatement(scriptResultOutputKey);
         getMetadataRepository().executeUpdate(deleteStatement);
     }
@@ -100,12 +92,8 @@ public class ScriptResultOutputConfiguration extends Configuration<ScriptResultO
     }
 
     @Override
-    public void insert(ScriptResultOutput scriptResultOutput) throws MetadataAlreadyExistsException {
+    public void insert(ScriptResultOutput scriptResultOutput) {
         LOGGER.trace(MessageFormat.format("Inserting ScriptResultOutput {0}.", scriptResultOutput.getMetadataKey().toString()));
-        if (exists(scriptResultOutput.getMetadataKey())) {
-            throw new ScriptResultOutputAlreadyExistsException(MessageFormat.format(
-                    "ActionResult {0} already exists", scriptResultOutput.getMetadataKey().toString()));
-        }
         String insertStatement = insertStatement(scriptResultOutput);
         getMetadataRepository().executeUpdate(insertStatement);
     }
@@ -119,6 +107,22 @@ public class ScriptResultOutputConfiguration extends Configuration<ScriptResultO
                 + SQLTools.GetStringForSQL(scriptResultOutput.getScriptId()) + ","
                 + SQLTools.GetStringForSQL(scriptResultOutput.getMetadataKey().getOutputName()) + ","
                 + SQLTools.GetStringForSQL(scriptResultOutput.getValue()) + ");";
+    }
+
+    @Override
+    public void update(ScriptResultOutput scriptResultOutput) {
+        LOGGER.trace(MessageFormat.format("Updating ScriptResultOutput {0}.", scriptResultOutput.getMetadataKey().toString()));
+        String updateStatement = updateStatement(scriptResultOutput);
+        getMetadataRepository().executeUpdate(updateStatement);
+    }
+
+    private String updateStatement(ScriptResultOutput scriptResultOutput) {
+        return "UPDATE " + getMetadataRepository().getTableNameByLabel("ScriptResultOutputs")
+                + " SET SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptResultOutput.getScriptId()) + "," +
+                " OUT_VAL = " + SQLTools.GetStringForSQL(scriptResultOutput.getValue()) +
+                " WHERE RUN_ID = " + SQLTools.GetStringForSQL(scriptResultOutput.getMetadataKey().getRunId()) +
+                " AND PRC_ID =" + SQLTools.GetStringForSQL(scriptResultOutput.getMetadataKey().getProcessId()) +
+                " AND OUT_NM = " + SQLTools.GetStringForSQL(scriptResultOutput.getMetadataKey().getOutputName()) + ";";
     }
 
     public List<ScriptResultOutput> getByRunId(String runId) {

@@ -5,11 +5,13 @@ import io.metadew.iesi.connection.database.sql.SqlScriptResult;
 import io.metadew.iesi.connection.operation.ConnectionOperation;
 import io.metadew.iesi.connection.tools.sql.SQLDataTransfer;
 import io.metadew.iesi.datatypes.DataType;
-import io.metadew.iesi.datatypes.dataset.KeyValueDataset;
+import io.metadew.iesi.datatypes.dataset.Dataset;
+import io.metadew.iesi.datatypes.dataset.keyvalue.KeyValueDataset;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.connection.Connection;
+import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
@@ -69,13 +71,13 @@ public class SqlExecuteQuery {
 
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-            if (actionParameter.getName().equalsIgnoreCase("query")) {
+            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("query")) {
                 this.getSqlQuery().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("connection")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("connection")) {
                 this.getConnectionName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("outputdataset")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("outputdataset")) {
                 this.getOutputDataset().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("appendoutput")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("appendoutput")) {
                 this.getAppendOutput().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }
@@ -88,13 +90,15 @@ public class SqlExecuteQuery {
     }
 
 
-    public boolean execute() {
+    public boolean execute() throws InterruptedException {
         try {
             String query = convertQuery(getSqlQuery().getValue());
             String connection = convertConnectionName(getConnectionName().getValue());
             String outputDatasetReferenceName = convertDatasetReferenceName(getSqlQuery().getValue());
             boolean appendOutput = convertAppendOutput(getConnectionName().getValue());
             return executeQuery(query, connection, outputDatasetReferenceName, appendOutput);
+        } catch (InterruptedException e) {
+            throw (e);
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
@@ -149,12 +153,12 @@ public class SqlExecuteQuery {
         }
     }
 
-    private boolean executeQuery(String query, String connectionName, String outputDatasetReferenceName, boolean appendOutput) throws SQLException {
+    private boolean executeQuery(String query, String connectionName, String outputDatasetReferenceName, boolean appendOutput) throws SQLException, InterruptedException {
 
         // Get Connection
-        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
-        Connection connection = connectionConfiguration
-                .get(connectionName, this.getExecutionControl().getEnvName()).get();
+        Connection connection = ConnectionConfiguration.getInstance()
+                .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
+                .get();
         ConnectionOperation connectionOperation = new ConnectionOperation();
         Database database = connectionOperation.getDatabase(connection);
 
@@ -170,7 +174,7 @@ public class SqlExecuteQuery {
 
         SqlScriptResult sqlScriptResult;
 
-        Optional<KeyValueDataset> dataset = this.getExecutionControl().getExecutionRuntime()
+        Optional<Dataset> dataset = this.getExecutionControl().getExecutionRuntime()
                 .getDataset(outputDatasetReferenceName);
         CachedRowSet crs = database.executeQuery(query);
         this.getActionExecution().getActionControl().logOutput("sql.execute.size", Integer.toString(crs.size()));

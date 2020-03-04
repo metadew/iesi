@@ -2,10 +2,6 @@ package io.metadew.iesi.metadata.configuration.action.result;
 
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
-import io.metadew.iesi.metadata.configuration.action.result.exception.ActionResultAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.action.result.exception.ActionResultDoesNotExistException;
-import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.action.result.ActionResult;
 import io.metadew.iesi.metadata.definition.action.result.key.ActionResultKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
@@ -90,12 +86,8 @@ public class ActionResultConfiguration extends Configuration<ActionResult, Actio
     }
 
     @Override
-    public void delete(ActionResultKey actionResultKey) throws MetadataDoesNotExistException {
+    public void delete(ActionResultKey actionResultKey) {
         LOGGER.trace(MessageFormat.format("Deleting ActionResult {0}.", actionResultKey.toString()));
-        if (!exists(actionResultKey)) {
-            throw new ActionResultDoesNotExistException(MessageFormat.format(
-                    "ActionResult {0} does not exists", actionResultKey.toString()));
-        }
         String deleteStatement = deleteStatement(actionResultKey);
         getMetadataRepository().executeUpdate(deleteStatement);
     }
@@ -109,12 +101,8 @@ public class ActionResultConfiguration extends Configuration<ActionResult, Actio
     }
 
     @Override
-    public void insert(ActionResult actionResult) throws MetadataAlreadyExistsException {
+    public void insert(ActionResult actionResult) {
         LOGGER.trace(MessageFormat.format("Inserting ActionResult {0}.", actionResult.toString()));
-        if (exists(actionResult.getMetadataKey())) {
-            throw new ActionResultAlreadyExistsException(MessageFormat.format(
-                    "ActionResult {0} already exists", actionResult.getMetadataKey().toString()));
-        }
         String insertStatement = insertStatement(actionResult);
         getMetadataRepository().executeUpdate(insertStatement);
     }
@@ -134,74 +122,25 @@ public class ActionResultConfiguration extends Configuration<ActionResult, Actio
                 + SQLTools.GetStringForSQL(actionResult.getEndTimestamp()) + ");";
     }
 
-//    public List<ActionResult> getActions(String runId) {
-//        List<ActionResult> actionResults = new ArrayList<>();
-//        String query = "select RUN_ID, PRC_ID, SCRIPT_PRC_ID, ACTION_ID, ACTION_NM, ENV_NM, ST_NM, STRT_TMS, END_TMS from "
-//                + getMetadataRepository()
-//                .getTableNameByLabel("ActionResults")
-//                + " where RUN_ID = '" + runId + "' order by PRC_ID asc, STRT_TMS asc";
-//        CachedRowSet crsActionResults = getMetadataRepository()
-//                .executeQuery(query, "reader");
-//        try {
-//            while (crsActionResults.next()) {
-//                ActionResult actionResult = new ActionResult();
-//                Long processId = crsActionResults.getLong("PRC_ID");
-//                actionResult.setProcessId(processId);
-//                actionResult.setScriptProcessId(crsActionResults.getLong("SCRIPT_PRC_ID"));
-//                actionResult.setActionId(crsActionResults.getString("ACTION_ID"));
-//                actionResult.setActionName(crsActionResults.getString("ACTION_NM"));
-//                actionResult.setEnvironment(crsActionResults.getString("ENV_NM"));
-//                actionResult.setStatus(crsActionResults.getString("ST_NM"));
-//                actionResult.setStartTimestamp(crsActionResults.getString("STRT_TMS"));
-//                actionResult.setEndTimestamp(crsActionResults.getString("END_TMS"));
-//                actionResult.setOutputs(actionResultOutputConfiguration.getActionResultOutputs(runId, processId));
-//                actionResults.add(actionResult);
-//            }
-//            crsActionResults.close();
-//        } catch (Exception e) {
-//            StringWriter StackTrace = new StringWriter();
-//            e.printStackTrace(new PrintWriter(StackTrace));
-//        }
-//
-//        if (actionResults.size() == 0) {
-//            throw new RuntimeException("actionresult.error.empty");
-//        }
-//
-//        return actionResults;
-//    }
-//
-//    public List<ActionResult> getActions(String runId, Long scriptProcessId) {
-//        List<ActionResult> actionResults = new ArrayList<>();
-//        String query = "select RUN_ID, PRC_ID, SCRIPT_PRC_ID, ACTION_ID, ACTION_NM, ENV_NM, ST_NM, STRT_TMS, END_TMS from "
-//                + getMetadataRepository()
-//                .getTableNameByLabel("ActionResults")
-//                + " where RUN_ID = '" + runId + "' and SCRIPT_PRC_ID = " + scriptProcessId + " order by PRC_ID asc, STRT_TMS asc";
-//        CachedRowSet crsActionResults = getMetadataRepository()
-//                .executeQuery(query, "reader");
-//        try {
-//            while (crsActionResults.next()) {
-//                ActionResult actionResult = new ActionResult();
-//                actionResult.setProcessId(crsActionResults.getLong("PRC_ID"));
-//                actionResult.setScriptProcessId(crsActionResults.getLong("SCRIPT_PRC_ID"));
-//                actionResult.setActionId(crsActionResults.getString("ACTION_ID"));
-//                actionResult.setActionName(crsActionResults.getString("ACTION_NM"));
-//                actionResult.setEnvironment(crsActionResults.getString("ENV_NM"));
-//                actionResult.setStatus(crsActionResults.getString("ST_NM"));
-//                actionResult.setStartTimestamp(crsActionResults.getString("STRT_TMS"));
-//                actionResult.setEndTimestamp(crsActionResults.getString("END_TMS"));
-//                actionResults.add(actionResult);
-//            }
-//            crsActionResults.close();
-//        } catch (Exception e) {
-//            StringWriter StackTrace = new StringWriter();
-//            e.printStackTrace(new PrintWriter(StackTrace));
-//        }
-//
-//        if (actionResults.size() == 0) {
-//            throw new RuntimeException("actionresult.error.empty");
-//        }
-//
-//        return actionResults;
-//    }
+    @Override
+    public void update(ActionResult actionResult) {
+        LOGGER.trace(MessageFormat.format("Updating ActionResult {0}.", actionResult.toString()));
+        String updateStatement = updateStatement(actionResult);
+        getMetadataRepository().executeUpdate(updateStatement);
+    }
 
+    private String updateStatement(ActionResult actionResult) {
+        return "UPDATE " + getMetadataRepository().getTableNameByLabel("ActionResults") +
+                " SET SCRIPT_PRC_ID = " + SQLTools.GetStringForSQL(actionResult.getScriptProcessId()) + "," +
+                "ACTION_ID = " + SQLTools.GetStringForSQL(actionResult.getMetadataKey().getActionId()) + "," +
+                "ACTION_NM = " + SQLTools.GetStringForSQL(actionResult.getActionName()) + "," +
+                "ENV_NM = " + SQLTools.GetStringForSQL(actionResult.getEnvironment()) + "," +
+                "ST_NM = " + SQLTools.GetStringForSQL(actionResult.getStatus()) + "," +
+                "STRT_TMS = " + SQLTools.GetStringForSQL(actionResult.getStartTimestamp()) + "," +
+                "END_TMS = " + SQLTools.GetStringForSQL(actionResult.getEndTimestamp()) +
+                "WHERE RUN_ID = " + SQLTools.GetStringForSQL(actionResult.getMetadataKey().getRunId()) +
+                " AND PRC_ID = " + SQLTools.GetStringForSQL(actionResult.getMetadataKey().getProcessId()) + ";";
+
+
+    }
 }

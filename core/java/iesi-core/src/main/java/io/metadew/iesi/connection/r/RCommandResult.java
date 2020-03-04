@@ -24,6 +24,7 @@ public class RCommandResult {
     public RCommandResult(int statusCode, Reader output) throws IOException {
         this.statusCode = statusCode;
         this.output = IOUtils.toString(output);
+        output.close();
     }
 
 

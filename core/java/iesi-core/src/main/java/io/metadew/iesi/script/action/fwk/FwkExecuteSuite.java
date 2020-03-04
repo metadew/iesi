@@ -11,7 +11,9 @@ import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.connection.Connection;
+import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.metadata.definition.script.Script;
+import io.metadew.iesi.script.ScriptExecutionBuildException;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
@@ -96,27 +98,27 @@ public class FwkExecuteSuite {
 
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-            if (actionParameter.getName().equalsIgnoreCase("comp_nm")) {
+            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("comp_nm")) {
                 this.getComponentName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("suite_nm")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("suite_nm")) {
                 this.getSuiteName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("suite_version")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("suite_version")) {
                 this.getSuiteVersion().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("suite_build")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("suite_build")) {
                 this.getSuiteBuild().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("repo_con_nm")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("repo_con_nm")) {
                 this.getRepositoryConnectionName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("repo_comp_path")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("repo_comp_path")) {
                 this.getRepositoryComponentPath().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("repo_suite_path")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("repo_suite_path")) {
                 this.getRepositorySuitePath().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("repo_version_path")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("repo_version_path")) {
                 this.getRepositoryVersionPath().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("repo_build_path")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("repo_build_path")) {
                 this.getRepositoryBuildPath().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("repo_build_asset")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("repo_build_asset")) {
                 this.getRepositoryBuildAsset().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("env_nm")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("env_nm")) {
                 this.getEnvironmentName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }
@@ -135,7 +137,7 @@ public class FwkExecuteSuite {
         this.getActionParameterOperationMap().put("ENV_NM", this.getEnvironmentName());
     }
 
-    public boolean execute() {
+    public boolean execute() throws InterruptedException {
         try {
             String componentName = convertToString(getComponentName().getValue());
             String suiteName = convertToString(getSuiteName().getValue());
@@ -150,6 +152,8 @@ public class FwkExecuteSuite {
             String environmentName = convertToString(getEnvironmentName().getValue());
 
             return execute(componentName, suiteName, suiteVersion, suiteBuild, repositoryConnectionName, repositoryComponentPath, repositorySuitePath, repositoryVersionPath, repositoryBuildPath, repositoryBuildAsset, environmentName);
+        } catch (InterruptedException e) {
+            throw e;
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
@@ -164,11 +168,11 @@ public class FwkExecuteSuite {
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-	private boolean execute(String componentName, String suiteName, String suiteVersion, String suiteBuild, String repositoryConnectionName, String repositoryComponentPath, String repositorySuitePath, String repositoryVersionPath, String repositoryBuildPath, String repositoryBuildAsset, String environmentName) {
+	private boolean execute(String componentName, String suiteName, String suiteVersion, String suiteBuild, String repositoryConnectionName, String repositoryComponentPath, String repositorySuitePath, String repositoryVersionPath, String repositoryBuildPath, String repositoryBuildAsset, String environmentName) throws InterruptedException, ScriptExecutionBuildException {
         // Get Connection
-        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
-        Connection connection = connectionConfiguration.get(repositoryConnectionName,
-                this.getExecutionControl().getEnvName()).get();
+        Connection connection = ConnectionConfiguration.getInstance()
+                .get(new ConnectionKey(repositoryConnectionName, this.getExecutionControl().getEnvName()))
+                .get();
 
         // Artifactory
         // *********************************************************
@@ -223,7 +227,6 @@ public class FwkExecuteSuite {
         List<FileConnection> fileConnectionList = new ArrayList();
         fileConnectionList = FolderTools.getConnectionsInFolder(buildAssetFolder, "regex", ".+\\.json", fileConnectionList);
         for (FileConnection fileConnection : fileConnectionList) {
-            try {
                 Script script = null;
 
                 JsonInputOperation jsonInputOperation = new JsonInputOperation(fileConnection.getFilePath());
@@ -245,10 +248,6 @@ public class FwkExecuteSuite {
                     this.getActionExecution().getActionControl().increaseSuccessCount();
                 }
 
-            } catch (Exception e) {
-                this.getActionExecution().getActionControl().increaseErrorCount();
-                return false;
-            }
         }
         return true;
     }

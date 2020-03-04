@@ -9,9 +9,6 @@ import io.metadew.iesi.script.execution.ExecutionControl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-
 public class Footer {
 
     private GenerationControlExecution generationControlExecution;
@@ -32,40 +29,27 @@ public class Footer {
 
     //
     public boolean execute(String fullFileName) {
-        try {
-            LOGGER.info("generation.control.type=" + this.generationControlTypeName);
+        LOGGER.info("generation.control.type=" + this.generationControlTypeName);
 
-            // Reset Parameters
-
-
-            // Get Parameters
+        // Reset Parameters
 
 
-            // Run the generation control
-            try {
-                StringBuilder footer = new StringBuilder();
+        // Get Parameters
 
-                for (GenerationControlRule generationControlRule : this.getGenerationControlExecution().getGenerationControl().getRules()) {
-                    GenerationControlRuleExecution generationControlRuleExecution = new GenerationControlRuleExecution(this.getFrameworkExecution(), this.getExecutionControl(), this.getGenerationControlExecution().getGenerationExecution(), generationControlRule);
-                    generationControlRuleExecution.execute();
-                    footer.append(generationControlRuleExecution.getOutput());
-                }
 
-                FileTools.appendToFile(fullFileName, "", footer.toString());
+        // Run the generation control
+        StringBuilder footer = new StringBuilder();
 
-            } catch (Exception e) {
-                throw new RuntimeException("Issue generating output: " + e, e);
-            }
-
-            return true;
-        } catch (Exception e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-
-            // TODO logging
-
-            return false;
+        for (GenerationControlRule generationControlRule : this.getGenerationControlExecution().getGenerationControl().getRules()) {
+            GenerationControlRuleExecution generationControlRuleExecution = new GenerationControlRuleExecution(this.getFrameworkExecution(), this.getExecutionControl(), this.getGenerationControlExecution().getGenerationExecution(), generationControlRule);
+            generationControlRuleExecution.execute();
+            footer.append(generationControlRuleExecution.getOutput());
         }
+
+        FileTools.appendToFile(fullFileName, "", footer.toString());
+
+
+        return true;
 
     }
 

@@ -5,6 +5,8 @@ import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.script.ScriptConfiguration;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.script.Script;
+import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
+import io.metadew.iesi.metadata.tools.IdentifierTools;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
@@ -65,9 +67,9 @@ public class FwkIncludeScript {
 
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-            if (actionParameter.getName().equalsIgnoreCase("script")) {
+            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("script")) {
                 this.getScriptName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("version")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("version")) {
                 this.getScriptVersion().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }
@@ -77,11 +79,13 @@ public class FwkIncludeScript {
         this.getActionParameterOperationMap().put("version", this.getScriptVersion());
     }
 
-    public boolean execute() {
+    public boolean execute() throws InterruptedException {
         try {
             String scriptName = convertScriptName(getScriptName().getValue());
             Optional<Long> scriptVersion = convertScriptVersion(getScriptVersion().getValue());
             return includeScript(scriptName, scriptVersion);
+        } catch (InterruptedException e) {
+            throw (e);
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
@@ -95,11 +99,10 @@ public class FwkIncludeScript {
         }
     }
 
-    private boolean includeScript(String scriptName, Optional<Long> scriptVersion) {
-        ScriptConfiguration scriptConfiguration = new ScriptConfiguration();
+    private boolean includeScript(String scriptName, Optional<Long> scriptVersion) throws InterruptedException{
         Script script = scriptVersion
-                .map(scriptVersion1 -> scriptConfiguration.get(scriptName, scriptVersion1))
-                .orElse(scriptConfiguration.get(scriptName)).get();
+                .map(scriptVersion1 -> ScriptConfiguration.getInstance().get(new ScriptKey(IdentifierTools.getScriptIdentifier(scriptName), scriptVersion1)))
+                .orElse(ScriptConfiguration.getInstance().getLatestVersion(scriptName)).get();
         setScript(script);
         this.getActionExecution().getActionControl().increaseSuccessCount();
         return true;

@@ -37,11 +37,11 @@ public class FwkDummy {
 
     }
 
-    public boolean execute() {
+    public boolean execute() throws InterruptedException {
         try {
-            this.getExecutionControl().logMessage(this.getActionExecution(), "Not doing anything", Level.TRACE);
-            this.getActionExecution().getActionControl().increaseSuccessCount();
-            return true;
+            return executeOperation();
+        } catch (InterruptedException e) {
+            throw (e);
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
@@ -54,6 +54,12 @@ public class FwkDummy {
             return false;
         }
 
+    }
+
+    private boolean executeOperation() throws InterruptedException {
+        this.getExecutionControl().logMessage(this.getActionExecution(), "Not doing anything", Level.TRACE);
+        this.getActionExecution().getActionControl().increaseSuccessCount();
+        return true;
     }
 
     public ExecutionControl getExecutionControl() {

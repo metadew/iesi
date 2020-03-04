@@ -8,6 +8,7 @@ import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.connection.Connection;
+import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
@@ -56,7 +57,7 @@ public class WfaExecuteQueryPing {
         this.setActionParameterOperationMap(new HashMap<>());
     }
 
-    public void prepare()  {
+    public void prepare() {
         // Set Parameters
         this.setSqlQuery(new ActionParameterOperation(this.getExecutionControl(), this.getActionExecution(),
                 this.getActionExecution().getAction().getType(), "query"));
@@ -73,17 +74,17 @@ public class WfaExecuteQueryPing {
 
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-            if (actionParameter.getName().equalsIgnoreCase("query")) {
+            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("query")) {
                 this.getSqlQuery().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("hasresult")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("hasresult")) {
                 this.getExpectedResult().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("setruntimevariables")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("setruntimevariables")) {
                 this.getSetRuntimeVariables().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("connection")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("connection")) {
                 this.getConnectionName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("wait")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("wait")) {
                 this.getWaitInterval().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("timeout")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("timeout")) {
                 this.getTimeoutInterval().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }
@@ -97,7 +98,7 @@ public class WfaExecuteQueryPing {
         this.getActionParameterOperationMap().put("timeout", this.getTimeoutInterval());
     }
 
-    public boolean execute() {
+    public boolean execute() throws InterruptedException {
         try {
             String query = convertQuery(getSqlQuery().getValue());
             String connectionName = convertConnectionName(getConnectionName().getValue());
@@ -107,7 +108,8 @@ public class WfaExecuteQueryPing {
             int waitInterval = convertWaitInterval(getWaitInterval().getValue());
             return executeQueryPing(query, connectionName, hasResult, setRuntimeVariables, waitInterval, timeoutInterval);
 
-//			}
+        } catch (InterruptedException e) {
+            throw (e);
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
@@ -147,11 +149,11 @@ public class WfaExecuteQueryPing {
         }
     }
 
-    private boolean executeQueryPing(String query, String connectionName, boolean hasResult, boolean setRuntimeVariables, int waitInterval, int timeoutInterval) {
+    private boolean executeQueryPing(String query, String connectionName, boolean hasResult, boolean setRuntimeVariables, int waitInterval, int timeoutInterval) throws InterruptedException {
         // Get Connection
-        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
-        Connection connection = connectionConfiguration.get(connectionName,
-                this.getExecutionControl().getEnvName()).get();
+        Connection connection = ConnectionConfiguration.getInstance()
+                .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
+                .get();
         ConnectionOperation connectionOperation = new ConnectionOperation();
         Database database = connectionOperation.getDatabase(connection);
 
@@ -249,44 +251,27 @@ public class WfaExecuteQueryPing {
     }
 
     private boolean doneWaiting(Database database, String query, boolean hasResult, boolean setRuntimeVariables) {
-        try {
-            CachedRowSet crs;
-            crs = database.executeQuery(query);
-            if (SQLTools.getRowCount(crs) > 0) {
-                if (hasResult) {
-                    this.setRuntimeVariable(crs, setRuntimeVariables);
-                    return true;
-                } else {
-                    return false;
-                }
+        CachedRowSet crs;
+        crs = database.executeQuery(query);
+        if (SQLTools.getRowCount(crs) > 0) {
+            if (hasResult) {
+                this.setRuntimeVariable(crs, setRuntimeVariables);
+                return true;
             } else {
-                if (!hasResult) {
-                    return true;
-                } else {
-                    return false;
-                }
+                return false;
             }
-        } catch (Exception e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-
-            this.getActionExecution().getActionControl().increaseErrorCount();
-
-            this.getActionExecution().getActionControl().logOutput("exception", e.getMessage());
-            this.getActionExecution().getActionControl().logOutput("stacktrace", StackTrace.toString());
-
-            throw new RuntimeException(e.getMessage());
+        } else {
+            if (!hasResult) {
+                return true;
+            } else {
+                return false;
+            }
         }
     }
 
     private void setRuntimeVariable(CachedRowSet crs, boolean setRuntimeVariables) {
         if (setRuntimeVariables) {
-            try {
-                this.getExecutionControl().getExecutionRuntime().setRuntimeVariables(actionExecution, crs);
-            } catch (Exception e) {
-                this.getActionExecution().getActionControl().increaseWarningCount();
-                this.getExecutionControl().logExecutionOutput(this.getActionExecution(), "SET_RUN_VAR", e.getMessage());
-            }
+            this.getExecutionControl().getExecutionRuntime().setRuntimeVariables(actionExecution, crs);
         }
     }
 

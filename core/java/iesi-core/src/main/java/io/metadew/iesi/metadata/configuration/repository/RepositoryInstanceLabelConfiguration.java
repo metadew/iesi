@@ -7,6 +7,7 @@ import io.metadew.iesi.metadata.execution.MetadataControl;
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.sql.SQLException;
 
 public class RepositoryInstanceLabelConfiguration {
 
@@ -68,7 +69,7 @@ public class RepositoryInstanceLabelConfiguration {
                 repositoryInstanceLabel.setValue(repositoryInstanceLabelName);
             }
             crsRepositoryInstanceLabel.close();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
         }

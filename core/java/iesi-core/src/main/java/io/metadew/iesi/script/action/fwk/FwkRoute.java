@@ -4,6 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.script.Script;
+import io.metadew.iesi.metadata.definition.script.ScriptParameter;
+import io.metadew.iesi.metadata.definition.script.ScriptVersion;
+import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
@@ -53,16 +56,16 @@ public class FwkRoute {
 
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-            if (actionParameter.getName().toLowerCase().startsWith("condition")) {
+            if (actionParameter.getMetadataKey().getParameterName().toLowerCase().startsWith("condition")) {
                 ActionParameterOperation condition = new ActionParameterOperation(this.getExecutionControl(),
                         this.getActionExecution(), this.getActionExecution().getAction().getType(), "condition");
 
                 condition.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
 
                 int id = 0;
-                int delim = actionParameter.getName().indexOf(".");
+                int delim = actionParameter.getMetadataKey().getParameterName().indexOf(".");
                 if (delim > 0) {
-                    String[] item = actionParameter.getName().split(".");
+                    String[] item = actionParameter.getMetadataKey().getParameterName().split(".");
                     id = Integer.parseInt(item[1]);
                 }
 
@@ -71,17 +74,17 @@ public class FwkRoute {
                 routeOperation.setCondition(condition);
                 this.setRouteOperation(routeOperation);
 
-                this.getActionParameterOperationMap().put(actionParameter.getName(), condition);
-            } else if (actionParameter.getName().equalsIgnoreCase("destination")) {
+                this.getActionParameterOperationMap().put(actionParameter.getMetadataKey().getParameterName(), condition);
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("destination")) {
                 ActionParameterOperation destination = new ActionParameterOperation(this.getExecutionControl(),
                         this.getActionExecution(), this.getActionExecution().getAction().getType(), "destination");
 
                 destination.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
 
                 int id = 0;
-                int delim = actionParameter.getName().indexOf(".");
+                int delim = actionParameter.getMetadataKey().getParameterName().indexOf(".");
                 if (delim > 0) {
-                    String[] item = actionParameter.getName().split(".");
+                    String[] item = actionParameter.getMetadataKey().getParameterName().split(".");
                     id = Integer.parseInt(item[1]);
                 }
 
@@ -90,63 +93,17 @@ public class FwkRoute {
                 routeOperation.setDestination(destination);
                 this.setRouteOperation(routeOperation);
 
-                this.getActionParameterOperationMap().put(actionParameter.getName(), destination);
+                this.getActionParameterOperationMap().put(actionParameter.getMetadataKey().getParameterName(), destination);
             }
 
         }
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    public boolean execute() {
+    public boolean execute() throws InterruptedException {
         try {
-
-            // Evaluate conditions
-
-            // Prepare script
-            Script script = new Script();
-            script.setId(this.getScriptExecution().getScript().getId());
-            script.setType(this.getScriptExecution().getScript().getType());
-            script.setName(this.getScriptExecution().getScript().getName());
-            script.setDescription(this.getScriptExecution().getScript().getDescription());
-            script.setVersion(this.getScriptExecution().getScript().getVersion());
-            script.setParameters(this.getScriptExecution().getScript().getParameters());
-
-            //Prepare action runtime
-            this.getActionExecution().getActionControl().getActionRuntime().setRouteOperations(new ArrayList());
-
-            // Find appropriate actions
-            Iterator iterator = null;
-            ObjectMapper objectMapper = new ObjectMapper();
-            iterator = this.getRouteOperationMap().entrySet().iterator();
-            while (iterator.hasNext()) {
-                Map.Entry pair = (Map.Entry) iterator.next();
-                RouteOperation routeOperation = objectMapper.convertValue(pair.getValue(),
-                        RouteOperation.class);
-
-                // Evaluate
-
-                // Move to destination
-                boolean destinationFound = false;
-                List<Action> actions = new ArrayList();
-                for (Action action : this.getScriptExecution().getScript().getActions()) {
-                    if (action.getName().equalsIgnoreCase(routeOperation.getDestination().getValue().toString())) {
-                        destinationFound = true;
-                    }
-                    if (destinationFound) {
-                        actions.add(action);
-                    }
-                }
-                script.setActions(actions);
-
-                //Update routeOperation
-                routeOperation.setScript(script);
-
-                this.getActionExecution().getActionControl().getActionRuntime().getRouteOperations().add(routeOperation);
-
-                iterator.remove();
-            }
-
-            return true;
+            return executeOperation();
+        } catch (InterruptedException e) {
+            throw (e);
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
@@ -159,6 +116,60 @@ public class FwkRoute {
             return false;
         }
 
+    }
+
+    private boolean executeOperation() throws InterruptedException{
+
+        // Evaluate conditions
+
+        // Prepare script
+        String scriptId = scriptExecution.getScript().getId();
+        Long versionNumber = scriptExecution.getScript().getVersion().getNumber();
+        ScriptKey scriptKey = new ScriptKey(scriptId, versionNumber);
+        String scriptName = scriptExecution.getScript().getName();
+        String scriptDescription = scriptExecution.getScript().getDescription();
+        ScriptVersion scriptVersion = scriptExecution.getScript().getVersion();
+        List<Action> scriptActions = new ArrayList<>();
+        List<ScriptParameter> scriptParameters = scriptExecution.getScript().getParameters();
+        Script script = new Script(scriptKey, scriptName, scriptDescription, scriptVersion,
+                scriptParameters, scriptActions);
+
+        //Prepare action runtime
+        this.getActionExecution().getActionControl().getActionRuntime().setRouteOperations(new ArrayList());
+
+        // Find appropriate actions
+        Iterator iterator = null;
+        ObjectMapper objectMapper = new ObjectMapper();
+        iterator = this.getRouteOperationMap().entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry pair = (Map.Entry) iterator.next();
+            RouteOperation routeOperation = objectMapper.convertValue(pair.getValue(),
+                    RouteOperation.class);
+
+            // Evaluate
+
+            // Move to destination
+            boolean destinationFound = false;
+            List<Action> actions = new ArrayList<>();
+            for (Action action : scriptExecution.getScript().getActions()) {
+                if (action.getName().equalsIgnoreCase(routeOperation.getDestination().getValue().toString())) {
+                    destinationFound = true;
+                }
+                if (destinationFound) {
+                    actions.add(action);
+                }
+            }
+            script.setActions(actions);
+
+            //Update routeOperation
+            routeOperation.setScript(script);
+
+            this.getActionExecution().getActionControl().getActionRuntime().getRouteOperations().add(routeOperation);
+
+            iterator.remove();
+        }
+
+        return true;
     }
 
     private RouteOperation getRouteOperation(int id) {

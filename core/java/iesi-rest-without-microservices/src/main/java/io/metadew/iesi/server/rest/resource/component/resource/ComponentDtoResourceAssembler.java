@@ -21,7 +21,7 @@ public class ComponentDtoResourceAssembler extends ResourceAssemblerSupport<Comp
     public ComponentDto toResource(Component component) {
         ComponentDto componentDto = convertToDto(component);
         Link selfLink = linkTo(methodOn(ComponentsController.class).get(component.getName(),
-                component.getVersion().getNumber()))
+                component.getVersion().getMetadataKey().getComponentKey().getVersionNumber()))
                 .withRel("component:" + componentDto.getName() +"-"+ componentDto.getVersion().getNumber());
         componentDto.add(selfLink);
         Link versionLink = linkTo(methodOn(ComponentsController.class).getByName(component.getName()))
@@ -33,6 +33,6 @@ public class ComponentDtoResourceAssembler extends ResourceAssemblerSupport<Comp
 
     private ComponentDto convertToDto(Component component) {
         return new ComponentDto(component.getType(), component.getName(), component.getDescription(),
-                new ComponentVersionDto(component.getVersion().getNumber(), component.getVersion().getDescription()), component.getParameters(), component.getAttributes());
+                new ComponentVersionDto(component.getVersion().getMetadataKey().getComponentKey().getVersionNumber(), component.getVersion().getDescription()), component.getParameters(), component.getAttributes());
     }
 }

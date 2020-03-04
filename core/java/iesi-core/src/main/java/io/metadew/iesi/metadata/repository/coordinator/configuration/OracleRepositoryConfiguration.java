@@ -67,7 +67,7 @@ public class OracleRepositoryConfiguration extends RepositoryConfiguration {
         if (getUser().isPresent()) {
                     OracleDatabaseConnection oracleDatabaseConnection = new OracleDatabaseConnection(finalJdbcConnectionString, getUser().get(), FrameworkCrypto.getInstance().decrypt(getUserPassword().orElse("")));
                     getSchema().ifPresent(oracleDatabaseConnection::setSchema);
-                    OracleDatabase oracleDatabase = new OracleDatabase(oracleDatabaseConnection, getSchema().orElse(""));
+                    OracleDatabase oracleDatabase = new OracleDatabase(oracleDatabaseConnection, schema);
                     databases.put("owner", oracleDatabase);
                     databases.put("writer", oracleDatabase);
                     databases.put("reader", oracleDatabase);
@@ -75,7 +75,7 @@ public class OracleRepositoryConfiguration extends RepositoryConfiguration {
         if (getWriter().isPresent()) {
             OracleDatabaseConnection oracleDatabaseConnection = new OracleDatabaseConnection(finalJdbcConnectionString, getWriter().get(), FrameworkCrypto.getInstance().decrypt(getWriterPassword().orElse("")));
             getSchema().ifPresent(oracleDatabaseConnection::setSchema);
-            OracleDatabase oracleDatabase = new OracleDatabase(oracleDatabaseConnection, getSchema().orElse(""));
+            OracleDatabase oracleDatabase = new OracleDatabase(oracleDatabaseConnection, schema);
             databases.put("writer", oracleDatabase);
             databases.put("reader", oracleDatabase);
         }
@@ -83,7 +83,7 @@ public class OracleRepositoryConfiguration extends RepositoryConfiguration {
         if(getReader().isPresent()) {
                 OracleDatabaseConnection oracleDatabaseConnection = new OracleDatabaseConnection(finalJdbcConnectionString, getReader().get(), FrameworkCrypto.getInstance().decrypt(getReaderPassword().orElse("")));
                 getSchema().ifPresent(oracleDatabaseConnection::setSchema);
-                OracleDatabase oracleDatabase = new OracleDatabase(oracleDatabaseConnection, getSchema().orElse(""));
+                OracleDatabase oracleDatabase = new OracleDatabase(oracleDatabaseConnection, schema);
                 databases.put("reader", oracleDatabase);
         }
 

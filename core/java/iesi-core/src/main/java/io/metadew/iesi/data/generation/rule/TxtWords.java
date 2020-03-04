@@ -9,127 +9,111 @@ import io.metadew.iesi.script.execution.ExecutionControl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-
 public class TxtWords {
 
-	private GenerationRuleExecution generationRuleExecution;
-	private FrameworkExecution frameworkExecution;
-	private ExecutionControl executionControl;
-	private String generationRuleTypeName = "txt.words";
-	private static final Logger LOGGER = LogManager.getLogger();
+    private GenerationRuleExecution generationRuleExecution;
+    private FrameworkExecution frameworkExecution;
+    private ExecutionControl executionControl;
+    private String generationRuleTypeName = "txt.words";
+    private static final Logger LOGGER = LogManager.getLogger();
 
-	// Parameters
-	private GenerationRuleParameterExecution wordNumber;
+    // Parameters
+    private GenerationRuleParameterExecution wordNumber;
 
-	// Constructors
-	public TxtWords() {
-		
-	}
-	
-	public TxtWords(FrameworkExecution frameworkExecution, ExecutionControl executionControl, GenerationRuleExecution generationRuleExecution) {
-		this.setFrameworkExecution(frameworkExecution);
-		this.setEoControl(executionControl);
-		this.setGenerationRuleExecution(generationRuleExecution);
-	}
+    // Constructors
+    public TxtWords() {
 
-	public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl, GenerationRuleExecution generationRuleExecution) {
-		this.setFrameworkExecution(frameworkExecution);
-		this.setEoControl(executionControl);
-		this.setGenerationRuleExecution(generationRuleExecution);
-	}
+    }
 
-	//
-	public boolean execute() {
-		try {
-			LOGGER.info("generation.rule.type=" + this.getGenerationRuleTypeName());
+    public TxtWords(FrameworkExecution frameworkExecution, ExecutionControl executionControl, GenerationRuleExecution generationRuleExecution) {
+        this.setFrameworkExecution(frameworkExecution);
+        this.setEoControl(executionControl);
+        this.setGenerationRuleExecution(generationRuleExecution);
+    }
 
-			// Reset Parameters
-			this.setWordNumber(new GenerationRuleParameterExecution(this.getFrameworkExecution(), this.getEoControl(),
-					this.getGenerationRuleTypeName(), "WORD_NB"));
+    public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl, GenerationRuleExecution generationRuleExecution) {
+        this.setFrameworkExecution(frameworkExecution);
+        this.setEoControl(executionControl);
+        this.setGenerationRuleExecution(generationRuleExecution);
+    }
 
-			// Get Parameters
-			for (GenerationRuleParameter generationRuleParameter : this.getGenerationRuleExecution().getGenerationRule()
-					.getParameters()) {
-				if (generationRuleParameter.getName().equalsIgnoreCase("word_nb")) {
-					this.getWordNumber().setInputValue(generationRuleParameter.getValue());
-				}
-			}
+    //
+    public boolean execute() {
+        LOGGER.info("generation.rule.type=" + this.getGenerationRuleTypeName());
 
-			// Run the generationRule
-			try {				
-				for (int currentRecord = 0; currentRecord < this.getGenerationRuleExecution().getGenerationExecution().getNumberOfRecords(); currentRecord++) {
-					String generatedValue = "";
-					if (this.getWordNumber().getValue().trim().equalsIgnoreCase("")) {
-						generatedValue = this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().getGenerationObjectExecution().getLorem().words();
-					} else {
-						generatedValue = this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().getGenerationObjectExecution().getLorem().words(Integer.parseInt(this.getWordNumber().getValue()));
-					}
-					
-					String query = "update " + this.getGenerationRuleExecution().getGenerationExecution().getGeneration().getName();
-					query += " set v" + this.getGenerationRuleExecution().getGenerationRule().getField() + "=";
-					query += SQLTools.GetStringForSQL(generatedValue);
-					query += " where id=" + (currentRecord + 1);
-					this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().getTemporaryDatabaseConnection().executeUpdate(query);
-					
-					this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().updateProgress();
-				}
+        // Reset Parameters
+        this.setWordNumber(new GenerationRuleParameterExecution(this.getFrameworkExecution(), this.getEoControl(),
+                this.getGenerationRuleTypeName(), "WORD_NB"));
+
+        // Get Parameters
+        for (GenerationRuleParameter generationRuleParameter : this.getGenerationRuleExecution().getGenerationRule()
+                .getParameters()) {
+            if (generationRuleParameter.getName().equalsIgnoreCase("word_nb")) {
+                this.getWordNumber().setInputValue(generationRuleParameter.getValue());
+            }
+        }
+
+        // Run the generationRule
+        for (int currentRecord = 0; currentRecord < this.getGenerationRuleExecution().getGenerationExecution().getNumberOfRecords(); currentRecord++) {
+            String generatedValue = "";
+            if (this.getWordNumber().getValue().trim().equalsIgnoreCase("")) {
+                generatedValue = this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().getGenerationObjectExecution().getLorem().words();
+            } else {
+                generatedValue = this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().getGenerationObjectExecution().getLorem().words(Integer.parseInt(this.getWordNumber().getValue()));
+            }
+
+            String query = "update " + this.getGenerationRuleExecution().getGenerationExecution().getGeneration().getName();
+            query += " set v" + this.getGenerationRuleExecution().getGenerationRule().getField() + "=";
+            query += SQLTools.GetStringForSQL(generatedValue);
+            query += " where id=" + (currentRecord + 1);
+            this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().getTemporaryDatabaseConnection().executeUpdate(query);
+
+            this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().updateProgress();
+        }
 
 
-			} catch (Exception e) {
-				throw new RuntimeException("Issue generating data: " + e, e);
-			}
-			return true;
-		} catch (Exception e) {
-			StringWriter StackTrace = new StringWriter();
-			e.printStackTrace(new PrintWriter(StackTrace));
+        return true;
 
-			// TODO logging
+    }
 
-			return false;
-		}
+    // Getters and Setters
+    public ExecutionControl getEoControl() {
+        return executionControl;
+    }
 
-	}
+    public void setEoControl(ExecutionControl executionControl) {
+        this.executionControl = executionControl;
+    }
 
-	// Getters and Setters
-	public ExecutionControl getEoControl() {
-		return executionControl;
-	}
+    public GenerationRuleExecution getGenerationRuleExecution() {
+        return generationRuleExecution;
+    }
 
-	public void setEoControl(ExecutionControl executionControl) {
-		this.executionControl = executionControl;
-	}
+    public void setGenerationRuleExecution(GenerationRuleExecution generationRuleExecution) {
+        this.generationRuleExecution = generationRuleExecution;
+    }
 
-	public GenerationRuleExecution getGenerationRuleExecution() {
-		return generationRuleExecution;
-	}
+    public String getGenerationRuleTypeName() {
+        return generationRuleTypeName;
+    }
 
-	public void setGenerationRuleExecution(GenerationRuleExecution generationRuleExecution) {
-		this.generationRuleExecution = generationRuleExecution;
-	}
+    public void setGenerationRuleTypeName(String generationRuleTypeName) {
+        this.generationRuleTypeName = generationRuleTypeName;
+    }
 
-	public String getGenerationRuleTypeName() {
-		return generationRuleTypeName;
-	}
+    public GenerationRuleParameterExecution getWordNumber() {
+        return wordNumber;
+    }
 
-	public void setGenerationRuleTypeName(String generationRuleTypeName) {
-		this.generationRuleTypeName = generationRuleTypeName;
-	}
+    public void setWordNumber(GenerationRuleParameterExecution wordNumber) {
+        this.wordNumber = wordNumber;
+    }
 
-	public GenerationRuleParameterExecution getWordNumber() {
-		return wordNumber;
-	}
+    public FrameworkExecution getFrameworkExecution() {
+        return frameworkExecution;
+    }
 
-	public void setWordNumber(GenerationRuleParameterExecution wordNumber) {
-		this.wordNumber = wordNumber;
-	}
-
-	public FrameworkExecution getFrameworkExecution() {
-		return frameworkExecution;
-	}
-
-	public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-		this.frameworkExecution = frameworkExecution;
-	}
+    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
+        this.frameworkExecution = frameworkExecution;
+    }
 }

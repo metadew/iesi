@@ -243,7 +243,7 @@ public final class FolderTools {
         if (!Files.exists(path)) {
             try {
                 Files.createDirectories(path);
-            } catch (Exception e) {
+            } catch (IOException e) {
                 e.printStackTrace();
                 throw new RuntimeException("folder.create.error");
             }

@@ -2,8 +2,8 @@ package io.metadew.iesi.connection.database.connection;
 
 import io.metadew.iesi.connection.database.sql.SqlScriptResult;
 import io.metadew.iesi.connection.operation.database.ScriptRunner;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.Getter;
+import lombok.extern.log4j.Log4j2;
 
 import javax.sql.rowset.CachedRowSet;
 import javax.sql.rowset.RowSetProvider;
@@ -17,11 +17,12 @@ import java.util.List;
  *
  * @author peter.billen
  */
+@Log4j2
 public abstract class DatabaseConnection {
 
-    private static Logger LOGGER = LogManager.getLogger();
-
+    @Getter
     private String type;
+    @Getter
     private String connectionURL;
     private String userName;
     private String userPassword;
@@ -35,9 +36,6 @@ public abstract class DatabaseConnection {
 
     public abstract String getDriver();
 
-//    public String prepareQuery(String query) {
-//        return query;
-//    }
 
     public Connection getConnection() {
         try {
@@ -48,13 +46,12 @@ public abstract class DatabaseConnection {
         } catch (ClassNotFoundException | SQLException e) {
             StringWriter stackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(stackTrace));
-            LOGGER.info("exception=" + e);
-            LOGGER.debug("exception.stacktrace=" + stackTrace.toString());
+            log.info("exception=" + e);
+            log.debug("exception.stacktrace=" + stackTrace.toString());
             throw new RuntimeException(e);
         }
     }
 
-    // Illegal character manipulation
     private String removeIllgegalCharactersForSingleQuery(String input) {
         input = input.trim();
         if (input.endsWith(";")) {
@@ -74,13 +71,12 @@ public abstract class DatabaseConnection {
         // Remove illegal characters at the end
         query = this.removeIllgegalCharactersForSingleQuery(query);
         Statement statement = connection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-        LOGGER.info(connectionURL + ":" + query);
+        log.info(connectionURL + ":" + query);
         ResultSet resultSet = statement.executeQuery(query);
         CachedRowSet crs = RowSetProvider.newFactory().createCachedRowSet();
         crs.populate(resultSet);
         resultSet.close();
         statement.close();
-
         return crs;
     }
 
@@ -100,7 +96,7 @@ public abstract class DatabaseConnection {
                 ResultSet.CONCUR_READ_ONLY);
         statement.setMaxRows(limit);
 
-        LOGGER.info(connectionURL + ":" + query);
+        log.info(connectionURL + ":" + query);
         ResultSet rs = statement.executeQuery(query);
         CachedRowSet crs = RowSetProvider.newFactory().createCachedRowSet();
         crs.populate(rs);
@@ -178,16 +174,16 @@ public abstract class DatabaseConnection {
     }
 
     public void executeUpdate(String query) throws SQLException {
-            Connection connection = getConnection();
-            executeUpdate(query, connection);
-            connection.close();
+        Connection connection = getConnection();
+        executeUpdate(query, connection);
+        connection.close();
     }
 
     public void executeUpdate(String query, Connection connection) throws SQLException {
         // Remove illegal characters at the end
         query = this.removeIllgegalCharactersForSingleQuery(query);
         // query = prepareQuery(query);
-        LOGGER.info(connectionURL + ":" + query);
+        log.info(connectionURL + ":" + query);
 
         Statement statement = connection.createStatement();
         statement.executeUpdate(query);
@@ -205,7 +201,7 @@ public abstract class DatabaseConnection {
         for (String query : queries) {
             query = this.removeIllgegalCharactersForSingleQuery(query);
             // query = prepareQuery(query);
-            LOGGER.info(connectionURL + ":" + query);
+            log.info(connectionURL + ":" + query);
             statement.addBatch(query);
         }
         statement.executeBatch();
@@ -255,15 +251,4 @@ public abstract class DatabaseConnection {
         return connection.prepareStatement(sqlStatement);
     }
 
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getConnectionURL() {
-        return connectionURL;
-    }
 }

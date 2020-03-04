@@ -59,7 +59,7 @@ public class MssqlRepositoryConfiguration extends RepositoryConfiguration {
         if(getUser().isPresent()) {
             MssqlDatabaseConnection mssqlDatabaseConnection = new MssqlDatabaseConnection(finalJdbcConnectionString, getUser().get(), FrameworkCrypto.getInstance().decrypt(getUserPassword().orElse("")));
             getSchema().ifPresent(mssqlDatabaseConnection::setSchema);
-            MssqlDatabase mssqlDatabase = new MssqlDatabase(mssqlDatabaseConnection, getSchema().orElse(""));
+            MssqlDatabase mssqlDatabase = new MssqlDatabase(mssqlDatabaseConnection, schema);
             databases.put("owner", mssqlDatabase);
             databases.put("writer", mssqlDatabase);
             databases.put("reader", mssqlDatabase);
@@ -67,21 +67,21 @@ public class MssqlRepositoryConfiguration extends RepositoryConfiguration {
         if (getWriter().isPresent()) {
             MssqlDatabaseConnection mssqlDatabaseConnection = new MssqlDatabaseConnection(finalJdbcConnectionString, getWriter().get(), FrameworkCrypto.getInstance().decrypt(getWriterPassword().orElse("")));
             getSchema().ifPresent(mssqlDatabaseConnection::setSchema);
-            MssqlDatabase mssqlDatabase = new MssqlDatabase(mssqlDatabaseConnection, getSchema().orElse(""));
+            MssqlDatabase mssqlDatabase = new MssqlDatabase(mssqlDatabaseConnection, schema);
             databases.put("writer", mssqlDatabase);
             databases.put("reader", mssqlDatabase);
         }
         if (getReader().isPresent()) {
             	MssqlDatabaseConnection mssqlDatabaseConnection = new MssqlDatabaseConnection(finalJdbcConnectionString, getReader().get(), FrameworkCrypto.getInstance().decrypt(getReaderPassword().orElse("")));
                 getSchema().ifPresent(mssqlDatabaseConnection::setSchema);
-                MssqlDatabase mssqlDatabase = new MssqlDatabase(mssqlDatabaseConnection, getSchema().orElse(""));
+                MssqlDatabase mssqlDatabase = new MssqlDatabase(mssqlDatabaseConnection, schema);
                 databases.put("reader", mssqlDatabase);
         }
 
         if (!getReader().isPresent() && ! getUser().isPresent() && !getWriter().isPresent()){
         	MssqlDatabaseConnection mssqlDatabaseConnection = new MssqlDatabaseConnection(finalJdbcConnectionString, "", "");
             getSchema().ifPresent(mssqlDatabaseConnection::setSchema);
-            MssqlDatabase mssqlDatabase = new MssqlDatabase(mssqlDatabaseConnection, getSchema().orElse(""));
+            MssqlDatabase mssqlDatabase = new MssqlDatabase(mssqlDatabaseConnection, schema);
             databases.put("owner", mssqlDatabase);
             databases.put("writer", mssqlDatabase);
             databases.put("reader", mssqlDatabase);

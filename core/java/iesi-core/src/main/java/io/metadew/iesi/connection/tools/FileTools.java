@@ -8,20 +8,17 @@ import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 
 public final class FileTools {
 
     public static void delete(String fileName) {
         File f = new File(fileName);
-        try {
-            if (f.exists()) {
-                if (!f.delete()) {
-                    throw new RuntimeException("Unable to delete file " + f.getAbsolutePath());
-                }
-                ;
+        if (f.exists()) {
+            if (!f.delete()) {
+                throw new RuntimeException("Unable to delete file " + f.getAbsolutePath());
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+            ;
         }
     }
 
@@ -29,7 +26,7 @@ public final class FileTools {
         File f = new File(fileName);
         try {
             FileUtils.forceDelete(f);
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
             throw new RuntimeException("Unable to delete file " + f.getAbsolutePath());
         }
@@ -102,7 +99,7 @@ public final class FileTools {
             }
             ps.close();
             out.close();
-        } catch (Exception ex) {
+        } catch (SQLException ex) {
             ex.printStackTrace();
         }
 
@@ -119,7 +116,8 @@ public final class FileTools {
                 output += readLine;
                 output += "\n";
             }
-        } catch (Exception e) {
+            bufferedReader.close();
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return new ByteArrayInputStream(output.getBytes(StandardCharsets.UTF_8));
@@ -137,7 +135,8 @@ public final class FileTools {
                 output += frameworkControl.resolveConfiguration(readLine);
                 output += "\n";
             }
-        } catch (Exception e) {
+            bufferedReader.close();
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return new ByteArrayInputStream(output.getBytes(StandardCharsets.UTF_8));
@@ -153,7 +152,8 @@ public final class FileTools {
                 output += frameworkControl.resolveConfiguration(readLine);
                 output += "\n";
             }
-        } catch (Exception e) {
+            bufferedReader.close();
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return new ByteArrayInputStream(output.getBytes(StandardCharsets.UTF_8));
@@ -185,22 +185,18 @@ public final class FileTools {
     }
 
     public static String getFileName(File file) {
-    	return getFileName(file, true);
+        return getFileName(file, true);
     }
-    
+
     public static String getFileName(File file, boolean extension) {
         String name = "";
 
-        try {
-            if (file != null && file.exists()) {
-                name = file.getName();
-            }
-        } catch (Exception e) {
-            name = "";
+        if (file != null && file.exists()) {
+            name = file.getName();
         }
 
         if (!extension) {
-        	name = name.substring(0, name.lastIndexOf("."));
+            name = name.substring(0, name.lastIndexOf("."));
         }
         return name;
 
@@ -210,21 +206,17 @@ public final class FileTools {
     public static String getFileExtension(File file) {
         String extension = "";
 
-        try {
-            if (file != null && file.exists()) {
-                String name = file.getName();
-                extension = name.substring(name.lastIndexOf(".") + 1);
-            }
-        } catch (Exception e) {
-            extension = "";
+        if (file != null && file.exists()) {
+            String name = file.getName();
+            extension = name.substring(name.lastIndexOf(".") + 1);
         }
 
         return extension;
 
     }
-    
+
     public static String getFolderPath(File file) {
-    	return file.getParent();
+        return file.getParent();
     }
 
 }

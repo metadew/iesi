@@ -11,6 +11,7 @@ import io.metadew.iesi.script.operation.ConditionOperation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.script.ScriptException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.MessageFormat;
@@ -52,7 +53,7 @@ public class EvalExecuteExpression {
 
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-            if (actionParameter.getName().equalsIgnoreCase("expression")) {
+            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("expression")) {
                 this.getEvaluationExpression().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }
@@ -61,13 +62,13 @@ public class EvalExecuteExpression {
         this.getActionParameterOperationMap().put("expression", this.getEvaluationExpression());
     }
 
-    public boolean execute() {
+    public boolean execute() throws InterruptedException {
         try {
             String expression = convertExpression(getEvaluationExpression().getValue());
             return evaluatedExpression(expression);
-        } catch (
-
-                Exception e) {
+        } catch (InterruptedException e) {
+            throw e;
+        } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
 
@@ -91,12 +92,12 @@ public class EvalExecuteExpression {
         }
     }
 
-    private boolean evaluatedExpression(String expression) {
+    private boolean evaluatedExpression(String expression) throws InterruptedException {
         boolean evaluation;
         ConditionOperation conditionOperation = new ConditionOperation(this.getActionExecution(), expression);
         try {
             evaluation = conditionOperation.evaluateCondition();
-        } catch (Exception exception) {
+        } catch (ScriptException exception) {
             evaluation = false;
             this.getActionExecution().getActionControl().logWarning("expression", expression);
             this.getActionExecution().getActionControl().logWarning("expression.error", exception.getMessage());

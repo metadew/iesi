@@ -14,7 +14,6 @@ data:
     iteration: ""
     errorExpected: "N"
     errorStop: "N"
-    parameters:
     parameters: 
     - name: "path"
       value: "#iesi.home#"

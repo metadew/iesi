@@ -8,6 +8,7 @@ import io.metadew.iesi.metadata.execution.MetadataControl;
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.sql.SQLException;
 
 public class DataframeParameterConfiguration {
 
@@ -56,7 +57,7 @@ public class DataframeParameterConfiguration {
                 dataframeParameter.setValue(crsDataframeParameter.getString("DATAFRAME_PAR_VAL"));
             }
             crsDataframeParameter.close();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
         }

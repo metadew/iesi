@@ -1,0 +1,13 @@
+---
+type: Component
+data:
+  type: http.request
+  name: HttpExecuteRequest
+  description: call open endpoint
+  version:
+    number: 1
+    description: initial version
+  parameters:
+  - name: url
+    value : https://jsonplaceholder.typicode.com/posts/1
+  attributes: []

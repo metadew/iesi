@@ -7,6 +7,7 @@ import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.connection.Connection;
+import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
@@ -90,21 +91,21 @@ public class EvalVerifySingleField {
 
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-            if (actionParameter.getName().equalsIgnoreCase("database")) {
+            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("database")) {
                 this.getDatabaseName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("schema")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("schema")) {
                 this.getSchemaName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("table")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("table")) {
                 this.getTableName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("field")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("field")) {
                 this.getFieldName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("check")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("check")) {
                 this.getCheckName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("operator")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("operator")) {
                 this.getCheckOperatorName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("value")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("value")) {
                 this.getCheckValue().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("connection")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("connection")) {
                 this.getConnectionName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }
@@ -120,7 +121,7 @@ public class EvalVerifySingleField {
         this.getActionParameterOperationMap().put("connection", this.getConnectionName());
     }
 
-    public boolean execute() {
+    public boolean execute() throws InterruptedException {
         try {
             String databaseName = convertDatabaseName(getDatabaseName().getValue());
             String schemaName = convertSchemaName(getSchemaName().getValue());
@@ -131,6 +132,8 @@ public class EvalVerifySingleField {
             String checkOperatorName = convertCheckOperationName(getCheckOperatorName().getValue());
             String connectionName = convertConnectionName(getConnectionName().getValue());
             return verifySingleField(databaseName, schemaName, tableName, fieldName, checkName, checkName, checkValue, checkOperatorName, connectionName);
+        } catch (InterruptedException e) {
+            throw e;
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
@@ -145,10 +148,11 @@ public class EvalVerifySingleField {
 
     }
 
-    private boolean verifySingleField(String databaseName, String schemaName, String tableName, String fieldName, String checkName, String checkName1, String checkValue, String checkOperatorName, String connectionName) throws SQLException {
+    private boolean verifySingleField(String databaseName, String schemaName, String tableName, String fieldName, String checkName, String checkName1, String checkValue, String checkOperatorName, String connectionName) throws SQLException, InterruptedException {
         // Get Connection
-        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
-        Connection connection = connectionConfiguration.get(connectionName, this.getExecutionControl().getEnvName()).get();
+        Connection connection = ConnectionConfiguration.getInstance()
+                .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
+                .get();
         ConnectionOperation connectionOperation = new ConnectionOperation();
         Database database = connectionOperation.getDatabase(connection);
 

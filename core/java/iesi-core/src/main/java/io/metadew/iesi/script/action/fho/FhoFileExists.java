@@ -11,6 +11,7 @@ import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.connection.Connection;
+import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
@@ -71,11 +72,11 @@ public class FhoFileExists {
 
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-            if (actionParameter.getName().equalsIgnoreCase("path")) {
+            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("path")) {
                 this.getFilePath().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("file")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("file")) {
                 this.getFileName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("connection")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("connection")) {
                 this.getConnectionName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }
@@ -87,13 +88,14 @@ public class FhoFileExists {
     }
 
     // Methods
-    public boolean execute() {
+    public boolean execute() throws InterruptedException {
         try {
             String path = convertPath(getFilePath().getValue());
             String fileName = convertFile(getFileName().getValue());
             String connectionName = convertConnectionName(getConnectionName().getValue());
             return execute(path, fileName, connectionName);
-
+        } catch (InterruptedException e) {
+            throw (e);
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
@@ -108,7 +110,7 @@ public class FhoFileExists {
 
     }
 
-    private boolean execute(String path, String fileName, String connectionName) {
+    private boolean execute(String path, String fileName, String connectionName) throws InterruptedException {
         boolean isOnLocalhost = HostConnectionTools.isOnLocalhost(
                 connectionName, this.getExecutionControl().getEnvName());
 
@@ -142,9 +144,8 @@ public class FhoFileExists {
                 }
             }
         } else {
-            ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
-            Connection connection = connectionConfiguration
-                    .get(connectionName, this.getExecutionControl().getEnvName())
+            Connection connection = ConnectionConfiguration.getInstance()
+                    .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
                     .get();
             ConnectionOperation connectionOperation = new ConnectionOperation();
             HostConnection hostConnection = connectionOperation.getHostConnection(connection);

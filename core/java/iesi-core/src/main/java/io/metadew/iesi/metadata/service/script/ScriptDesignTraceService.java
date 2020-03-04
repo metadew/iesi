@@ -1,6 +1,5 @@
 package io.metadew.iesi.metadata.service.script;
 
-import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.script.design.ScriptDesignTraceConfiguration;
 import io.metadew.iesi.metadata.configuration.script.design.ScriptParameterDesignTraceConfiguration;
 import io.metadew.iesi.metadata.configuration.script.design.ScriptVersionDesignTraceConfiguration;
@@ -12,9 +11,6 @@ import io.metadew.iesi.metadata.definition.script.design.ScriptVersionDesignTrac
 import io.metadew.iesi.script.execution.ScriptExecution;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.io.PrintWriter;
-import java.io.StringWriter;
 
 public class ScriptDesignTraceService {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -28,21 +24,13 @@ public class ScriptDesignTraceService {
         long parentProcessId = scriptExecution.getParentScriptExecution().map(ScriptExecution::getProcessId).orElse(-1L);
         Script script = scriptExecution.getScript();
 
-        try {
-            ScriptDesignTraceConfiguration.getInstance().insert(new ScriptDesignTrace(runId, processId, parentProcessId, script));
-            ScriptVersionDesignTraceConfiguration.getInstance().insert(new ScriptVersionDesignTrace(runId, processId, script.getVersion()));
+        ScriptDesignTraceConfiguration.getInstance().insert(new ScriptDesignTrace(runId, processId, parentProcessId, script));
+        ScriptVersionDesignTraceConfiguration.getInstance().insert(new ScriptVersionDesignTrace(runId, processId, script.getVersion()));
 
-            for (ScriptParameter scriptParameter : script.getParameters()) {
-                ScriptParameterDesignTraceConfiguration.getInstance().insert(new ScriptParameterDesignTrace(runId, processId, scriptParameter));
-            }
-
-        } catch (MetadataAlreadyExistsException e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-
-            LOGGER.warn("exception=" + e.getMessage());
-            LOGGER.info("stacktrace" + StackTrace.toString());
+        for (ScriptParameter scriptParameter : script.getParameters()) {
+            ScriptParameterDesignTraceConfiguration.getInstance().insert(new ScriptParameterDesignTrace(runId, processId, scriptParameter));
         }
+
 
     }
 

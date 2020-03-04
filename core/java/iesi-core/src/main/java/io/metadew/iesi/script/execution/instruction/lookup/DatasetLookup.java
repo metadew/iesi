@@ -1,8 +1,9 @@
 package io.metadew.iesi.script.execution.instruction.lookup;
 
 import io.metadew.iesi.datatypes.DataType;
-import io.metadew.iesi.datatypes.DataTypeService;
+import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.dataset.Dataset;
+import io.metadew.iesi.datatypes.dataset.DatasetHandler;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.framework.execution.IESIMessage;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
@@ -23,12 +24,10 @@ public class DatasetLookup implements LookupInstruction {
             .compile("\\s*\"?(?<" + DATASET_NAME_KEY + ">(\\w|\\.)+)\"?\\s*,\\s*(?<" + DATASET_ITEM_NAME_KEY + ">(\\w|\\.)+)\\s*");
 
     private final ExecutionRuntime executionRuntime;
-    private final DataTypeService dataTypeService;
     private static final Logger LOGGER = LogManager.getLogger();
 
     public DatasetLookup(ExecutionRuntime executionRuntime) {
         this.executionRuntime = executionRuntime;
-        this.dataTypeService = new DataTypeService();
     }
 
     @Override
@@ -49,8 +48,8 @@ public class DatasetLookup implements LookupInstruction {
 
 
         String[] arguments = splitInput(parameters);
-        Dataset dataset = getDataset(dataTypeService.resolve(arguments[0].trim(), executionRuntime));
-        Optional<DataType> dataItem = dataset.getDataItem(arguments[1].trim(), executionRuntime);
+        Dataset dataset = getDataset(DataTypeHandler.getInstance().resolve(arguments[0].trim(), executionRuntime));
+        Optional<DataType> dataItem = DatasetHandler.getInstance().getDataItem(dataset, arguments[1].trim(), executionRuntime);
 
         if (!dataItem.isPresent()) {
             throw new IllegalArgumentException(MessageFormat.format("No dataset item {0} is attached to dataset {1}", arguments[1], dataset.toString()));

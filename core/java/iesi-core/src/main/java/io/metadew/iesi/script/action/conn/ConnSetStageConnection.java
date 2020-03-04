@@ -52,9 +52,9 @@ public class ConnSetStageConnection {
 
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-            if (actionParameter.getName().equalsIgnoreCase("stage")) {
+            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("stage")) {
                 this.getStageName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("cleanup")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("cleanup")) {
                 this.getStageCleanup().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }
@@ -65,11 +65,13 @@ public class ConnSetStageConnection {
     }
 
     //
-    public boolean execute() {
+    public boolean execute() throws InterruptedException {
         try {
             String stageName = convertStageName(getStageName().getValue());
             boolean cleanup = convertCleanup(getStageCleanup().getValue());
             return execute(stageName, cleanup);
+        } catch (InterruptedException e) {
+            throw (e);
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
@@ -84,13 +86,9 @@ public class ConnSetStageConnection {
 
     }
 
-    private boolean execute(String stageName, boolean cleanup) {
+    private boolean execute(String stageName, boolean cleanup) throws InterruptedException {
         // Set the stage connection
-        try {
-            this.getExecutionControl().getExecutionRuntime().setStage(stageName, cleanup);
-        } catch (Exception e) {
-            throw new RuntimeException("conn.stage.error");
-        }
+        this.getExecutionControl().getExecutionRuntime().setStage(stageName, cleanup);
 
         // Increase the success count
         this.getActionExecution().getActionControl().increaseSuccessCount();
@@ -101,7 +99,7 @@ public class ConnSetStageConnection {
         if (stageName instanceof Text) {
             return stageName.toString();
         } else {
-            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() +  " does not accept {0} as type for stage name",
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for stage name",
                     stageName.getClass()));
             return stageName.toString();
         }
@@ -115,7 +113,7 @@ public class ConnSetStageConnection {
         if (cleanup instanceof Text) {
             return cleanup.toString().equalsIgnoreCase("y");
         } else {
-            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() +  " does not accept {0} as type for cleanup",
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for cleanup",
                     cleanup.getClass()));
             return false;
         }

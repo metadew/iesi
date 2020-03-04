@@ -9,142 +9,125 @@ import io.metadew.iesi.script.execution.ExecutionControl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-
 public class ValBoolean {
 
-	private GenerationRuleExecution generationRuleExecution;
-	private FrameworkExecution frameworkExecution;
-	private ExecutionControl executionControl;
-	private String generationRuleTypeName = "val.boolean";
+    private GenerationRuleExecution generationRuleExecution;
+    private FrameworkExecution frameworkExecution;
+    private ExecutionControl executionControl;
+    private String generationRuleTypeName = "val.boolean";
 
-	// Parameters
-	private GenerationRuleParameterExecution trueValue;
-	private GenerationRuleParameterExecution falseValue;
-	private static final Logger LOGGER = LogManager.getLogger();
+    // Parameters
+    private GenerationRuleParameterExecution trueValue;
+    private GenerationRuleParameterExecution falseValue;
+    private static final Logger LOGGER = LogManager.getLogger();
 
-	// Constructors
-	public ValBoolean() {
-		
-	}
-	
-	public ValBoolean(FrameworkExecution frameworkExecution, ExecutionControl executionControl, GenerationRuleExecution generationRuleExecution) {
-		this.setFrameworkExecution(frameworkExecution);
-		this.setExecutionControl(executionControl);
-		this.setGenerationRuleExecution(generationRuleExecution);
-	}
+    // Constructors
+    public ValBoolean() {
 
-	public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl, GenerationRuleExecution generationRuleExecution) {
-		this.setFrameworkExecution(frameworkExecution);
-		this.setExecutionControl(executionControl);
-		this.setGenerationRuleExecution(generationRuleExecution);
-	}
+    }
 
-	//
-	public boolean execute() {
-		try {
-			LOGGER.info("generation.rule.type=" + this.getGenerationRuleTypeName());
+    public ValBoolean(FrameworkExecution frameworkExecution, ExecutionControl executionControl, GenerationRuleExecution generationRuleExecution) {
+        this.setFrameworkExecution(frameworkExecution);
+        this.setExecutionControl(executionControl);
+        this.setGenerationRuleExecution(generationRuleExecution);
+    }
 
-			// Reset Parameters
-			this.setTrueValue(new GenerationRuleParameterExecution(this.getFrameworkExecution(), this.getExecutionControl(),
-					this.getGenerationRuleTypeName(), "TRUE_VALUE"));
-			this.setFalseValue(new GenerationRuleParameterExecution(this.getFrameworkExecution(), this.getExecutionControl(),
-					this.getGenerationRuleTypeName(), "FALSE_VALUE"));
+    public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl, GenerationRuleExecution generationRuleExecution) {
+        this.setFrameworkExecution(frameworkExecution);
+        this.setExecutionControl(executionControl);
+        this.setGenerationRuleExecution(generationRuleExecution);
+    }
 
-			// Get Parameters
-			for (GenerationRuleParameter generationRuleParameter : this.getGenerationRuleExecution().getGenerationRule()
-					.getParameters()) {
-				if (generationRuleParameter.getName().equalsIgnoreCase("true_value")) {
-					this.getTrueValue().setInputValue(generationRuleParameter.getValue());
-				} else if (generationRuleParameter.getName().equalsIgnoreCase("false_value")) {
-					this.getFalseValue().setInputValue(generationRuleParameter.getValue());
-				}
-			}
+    //
+    public boolean execute() {
+        LOGGER.info("generation.rule.type=" + this.getGenerationRuleTypeName());
 
-			// Run the generationRule
-			try {
-				for (int currentRecord = 0; currentRecord < this.getGenerationRuleExecution().getGenerationExecution()
-						.getNumberOfRecords(); currentRecord++) {
+        // Reset Parameters
+        this.setTrueValue(new GenerationRuleParameterExecution(this.getFrameworkExecution(), this.getExecutionControl(),
+                this.getGenerationRuleTypeName(), "TRUE_VALUE"));
+        this.setFalseValue(new GenerationRuleParameterExecution(this.getFrameworkExecution(), this.getExecutionControl(),
+                this.getGenerationRuleTypeName(), "FALSE_VALUE"));
 
-					String generatedValue = "";
-					if (this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().getGenerationObjectExecution().getBool().bool()) {
-						generatedValue = this.getTrueValue().getValue();
-					} else {
-						generatedValue = this.getFalseValue().getValue();
-					}
-					
-					String query = "update " + this.getGenerationRuleExecution().getGenerationExecution().getGeneration().getName();
-					query += " set v" + this.getGenerationRuleExecution().getGenerationRule().getField() + "=";
-					query += SQLTools.GetStringForSQL(generatedValue);
-					query += " where id=" + (currentRecord + 1);
-					this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().getTemporaryDatabaseConnection()
-							.executeUpdate(query);
-					
-					this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().updateProgress();
-				}
+        // Get Parameters
+        for (GenerationRuleParameter generationRuleParameter : this.getGenerationRuleExecution().getGenerationRule()
+                .getParameters()) {
+            if (generationRuleParameter.getName().equalsIgnoreCase("true_value")) {
+                this.getTrueValue().setInputValue(generationRuleParameter.getValue());
+            } else if (generationRuleParameter.getName().equalsIgnoreCase("false_value")) {
+                this.getFalseValue().setInputValue(generationRuleParameter.getValue());
+            }
+        }
 
-			} catch (Exception e) {
-				throw new RuntimeException("Issue setting runtime variables: " + e, e);
-			}
-			return true;
-		} catch (Exception e) {
-			StringWriter StackTrace = new StringWriter();
-			e.printStackTrace(new PrintWriter(StackTrace));
+        // Run the generationRule
+        for (int currentRecord = 0; currentRecord < this.getGenerationRuleExecution().getGenerationExecution()
+                .getNumberOfRecords(); currentRecord++) {
 
-			// TODO logging
+            String generatedValue = "";
+            if (this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().getGenerationObjectExecution().getBool().bool()) {
+                generatedValue = this.getTrueValue().getValue();
+            } else {
+                generatedValue = this.getFalseValue().getValue();
+            }
 
-			return false;
-		}
+            String query = "update " + this.getGenerationRuleExecution().getGenerationExecution().getGeneration().getName();
+            query += " set v" + this.getGenerationRuleExecution().getGenerationRule().getField() + "=";
+            query += SQLTools.GetStringForSQL(generatedValue);
+            query += " where id=" + (currentRecord + 1);
+            this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().getTemporaryDatabaseConnection()
+                    .executeUpdate(query);
 
-	}
+            this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().updateProgress();
+        }
 
-	// Getters and Setters
-	public ExecutionControl getExecutionControl() {
-		return executionControl;
-	}
+        return true;
+    }
 
-	public void setExecutionControl(ExecutionControl executionControl) {
-		this.executionControl = executionControl;
-	}
+    // Getters and Setters
+    public ExecutionControl getExecutionControl() {
+        return executionControl;
+    }
 
-	public GenerationRuleExecution getGenerationRuleExecution() {
-		return generationRuleExecution;
-	}
+    public void setExecutionControl(ExecutionControl executionControl) {
+        this.executionControl = executionControl;
+    }
 
-	public void setGenerationRuleExecution(GenerationRuleExecution generationRuleExecution) {
-		this.generationRuleExecution = generationRuleExecution;
-	}
+    public GenerationRuleExecution getGenerationRuleExecution() {
+        return generationRuleExecution;
+    }
 
-	public String getGenerationRuleTypeName() {
-		return generationRuleTypeName;
-	}
+    public void setGenerationRuleExecution(GenerationRuleExecution generationRuleExecution) {
+        this.generationRuleExecution = generationRuleExecution;
+    }
 
-	public void setGenerationRuleTypeName(String generationRuleTypeName) {
-		this.generationRuleTypeName = generationRuleTypeName;
-	}
+    public String getGenerationRuleTypeName() {
+        return generationRuleTypeName;
+    }
 
-	public GenerationRuleParameterExecution getTrueValue() {
-		return trueValue;
-	}
+    public void setGenerationRuleTypeName(String generationRuleTypeName) {
+        this.generationRuleTypeName = generationRuleTypeName;
+    }
 
-	public void setTrueValue(GenerationRuleParameterExecution trueValue) {
-		this.trueValue = trueValue;
-	}
+    public GenerationRuleParameterExecution getTrueValue() {
+        return trueValue;
+    }
 
-	public GenerationRuleParameterExecution getFalseValue() {
-		return falseValue;
-	}
+    public void setTrueValue(GenerationRuleParameterExecution trueValue) {
+        this.trueValue = trueValue;
+    }
 
-	public void setFalseValue(GenerationRuleParameterExecution falseValue) {
-		this.falseValue = falseValue;
-	}
+    public GenerationRuleParameterExecution getFalseValue() {
+        return falseValue;
+    }
 
-	public FrameworkExecution getFrameworkExecution() {
-		return frameworkExecution;
-	}
+    public void setFalseValue(GenerationRuleParameterExecution falseValue) {
+        this.falseValue = falseValue;
+    }
 
-	public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-		this.frameworkExecution = frameworkExecution;
-	}
+    public FrameworkExecution getFrameworkExecution() {
+        return frameworkExecution;
+    }
+
+    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
+        this.frameworkExecution = frameworkExecution;
+    }
 }

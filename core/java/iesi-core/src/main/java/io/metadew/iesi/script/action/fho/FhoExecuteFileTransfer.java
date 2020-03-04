@@ -10,6 +10,7 @@ import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.connection.Connection;
+import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
@@ -54,7 +55,7 @@ public class FhoExecuteFileTransfer {
         this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
     }
 
-    public void prepare()  {
+    public void prepare() {
         // Set Parameters
         this.setSourceFilePath(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "sourceFilePath"));
@@ -73,17 +74,17 @@ public class FhoExecuteFileTransfer {
 
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-            if (actionParameter.getName().equalsIgnoreCase("sourcefilepath")) {
+            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("sourcefilepath")) {
                 this.getSourceFilePath().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("sourcefilename")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("sourcefilename")) {
                 this.getSourceFileName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("sourceconnection")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("sourceconnection")) {
                 this.getSourceConnectionName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("targetfilepath")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("targetfilepath")) {
                 this.getTargetFilePath().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("targetfilename")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("targetfilename")) {
                 this.getTargetFileName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("targetconnection")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("targetconnection")) {
                 this.getTargetConnectionName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }
@@ -98,7 +99,7 @@ public class FhoExecuteFileTransfer {
     }
 
     // Methods
-    public boolean execute() {
+    public boolean execute() throws InterruptedException {
         try {
             String sourceFilePath = convertSourceFilePath(getSourceFilePath().getValue());
             String sourceFileName = convertSourceFileName(getSourceFileName().getValue());
@@ -107,7 +108,8 @@ public class FhoExecuteFileTransfer {
             String targetFileName = convertTargetFileName(getTargetFileName().getValue());
             String targetConnectionName = convertTargetConnection(getTargetConnectionName().getValue());
             return execute(sourceFilePath, sourceFileName, sourceConnectionName, targetFilePath, targetFileName, targetConnectionName);
-
+        } catch (InterruptedException e) {
+            throw (e);
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
@@ -122,15 +124,16 @@ public class FhoExecuteFileTransfer {
 
     }
 
-    private boolean execute(String sourceFilePath, String sourceFileName, String sourceConnectionName, String targetFilePath, String targetFileName, String targetConnectionName) {
+    private boolean execute(String sourceFilePath, String sourceFileName, String sourceConnectionName, String targetFilePath, String targetFileName, String targetConnectionName) throws InterruptedException {
         // Get Connections
-        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
-        Connection sourceConnection = connectionConfiguration
-                .get(sourceConnectionName, this.getExecutionControl().getEnvName()).get();
+        Connection sourceConnection = ConnectionConfiguration.getInstance()
+                .get(new ConnectionKey(sourceConnectionName, this.getExecutionControl().getEnvName()))
+                .get();
         ConnectionOperation connectionOperation = new ConnectionOperation();
         HostConnection sourceHostConnection = connectionOperation.getHostConnection(sourceConnection);
-        Connection targetConnection = connectionConfiguration
-                .get(targetConnectionName, this.getExecutionControl().getEnvName()).get();
+        Connection targetConnection = ConnectionConfiguration.getInstance()
+                .get(new ConnectionKey(targetConnectionName, this.getExecutionControl().getEnvName()))
+                .get();
         HostConnection targetHostConnection = connectionOperation.getHostConnection(targetConnection);
 
         // Check if source or target are localhost
@@ -138,7 +141,8 @@ public class FhoExecuteFileTransfer {
         boolean sourceIsOnLocalHost = HostConnectionTools.isOnLocalhost(
                 sourceConnectionName, this.getExecutionControl().getEnvName());
         boolean targetIsOnLocalHost = HostConnectionTools.isOnLocalhost(
-                targetConnectionName, this.getExecutionControl().getEnvName());;
+                targetConnectionName, this.getExecutionControl().getEnvName());
+        ;
 
         // Run the action
         FileTransferOperation fileTransferOperation = new FileTransferOperation();

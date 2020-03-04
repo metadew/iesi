@@ -1,40 +1,38 @@
 package io.metadew.iesi.metadata.definition.script;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.action.Action;
-import io.metadew.iesi.metadata.tools.IdentifierTools;
+import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
+import lombok.EqualsAndHashCode;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class Script {
+@JsonDeserialize(using = ScriptJsonComponent.Deserializer.class)
+@JsonSerialize(using = ScriptJsonComponent.Serializer.class)
+@EqualsAndHashCode(callSuper = true)
+public class Script extends Metadata<ScriptKey> {
 
-    private String id;
-    private String type = "script";
     private String name;
     private String description;
-    // Set a default script version if not provided
-    private ScriptVersion version = new ScriptVersion();
-    private List<ScriptParameter> parameters = new ArrayList<>();
-    private List<Action> actions = new ArrayList<>();
+    private ScriptVersion version;
+    private List<ScriptParameter> parameters;
+    private List<Action> actions;
 
-    // Constructors
-    public Script() {
-    }
 
-    public Script(String id, String type, String name, String description, ScriptVersion version,
+    public Script(String id, String name, String description, ScriptVersion version,
                   List<ScriptParameter> parameters, List<Action> actions) {
-        this.id = id;
-        this.type = type;
+        super(new ScriptKey(id, version.getNumber()));
         this.name = name;
         this.description = description;
         this.version = version;
         this.parameters = parameters;
         this.actions = actions;
     }
-    public Script(String type, String name, String description, ScriptVersion version,
+    public Script(ScriptKey scriptKey, String name, String description, ScriptVersion version,
                   List<ScriptParameter> parameters, List<Action> actions) {
-        this.id = IdentifierTools.getScriptIdentifier(name);
-        this.type = type;
+        super(scriptKey);
         this.name = name;
         this.description = description;
         this.version = version;
@@ -75,14 +73,6 @@ public class Script {
         this.parameters = parameters;
     }
 
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
     public ScriptVersion getVersion() {
         return version;
     }
@@ -92,12 +82,7 @@ public class Script {
     }
 
     public String getId() {
-        if (id == null) this.id = IdentifierTools.getScriptIdentifier(this.getName());
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
+        return getMetadataKey().getScriptId();
     }
 
     public boolean isEmpty() {

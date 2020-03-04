@@ -9,7 +9,10 @@ import io.metadew.iesi.script.execution.ExecutionControl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 
 public class Header {
 
@@ -31,62 +34,51 @@ public class Header {
 
     //
     public boolean execute(String fullFileName) {
+        LOGGER.info("generation.control.type=" + this.generationControlTypeName);
         try {
-            LOGGER.info("generation.control.type=" + this.generationControlTypeName);
-
             // Reset Parameters
 
             // Get Parameters
 
             // Run the generation control
-            try {
-                StringBuilder header = new StringBuilder();
+            StringBuilder header = new StringBuilder();
 
-                for (GenerationControlRule generationControlRule : this.getGenerationControlExecution()
-                        .getGenerationControl().getRules()) {
-                    GenerationControlRuleExecution generationControlRuleExecution = new GenerationControlRuleExecution(
-                            this.getFrameworkExecution(), this.getExecutionControl(),
-                            this.getGenerationControlExecution().getGenerationExecution(), generationControlRule);
-                    generationControlRuleExecution.execute();
-                    header.append(generationControlRuleExecution.getOutput());
-                }
-
-                // Create new file
-                String tempFullFileName = fullFileName + ".tmp";
-                FileTools.delete(tempFullFileName);
-                FileTools.appendToFile(tempFullFileName, "",
-                        header.toString());
-
-                // Copy file contents
-                File file = new File(fullFileName);
-                @SuppressWarnings("resource")
-                BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
-                String readLine = "";
-                while ((readLine = bufferedReader.readLine()) != null) {
-                    FileTools.appendToFile(tempFullFileName, "",
-                            readLine);
-                }
-
-                // copy file to orginal one
-                FileTools.copyFromFileToFile(tempFullFileName, fullFileName);
-
-                // delete temporary file
-                FileTools.delete(tempFullFileName);
-
-            } catch (Exception e) {
-                throw new RuntimeException("Issue generating header: " + e, e);
+            for (GenerationControlRule generationControlRule : this.getGenerationControlExecution()
+                    .getGenerationControl().getRules()) {
+                GenerationControlRuleExecution generationControlRuleExecution = new GenerationControlRuleExecution(
+                        this.getFrameworkExecution(), this.getExecutionControl(),
+                        this.getGenerationControlExecution().getGenerationExecution(), generationControlRule);
+                generationControlRuleExecution.execute();
+                header.append(generationControlRuleExecution.getOutput());
             }
 
+            // Create new file
+            String tempFullFileName = fullFileName + ".tmp";
+            FileTools.delete(tempFullFileName);
+            FileTools.appendToFile(tempFullFileName, "",
+                    header.toString());
+
+            // Copy file contents
+            File file = new File(fullFileName);
+            @SuppressWarnings("resource")
+            BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
+            String readLine = "";
+            while ((readLine = bufferedReader.readLine()) != null) {
+                FileTools.appendToFile(tempFullFileName, "",
+                        readLine);
+            }
+
+            // copy file to orginal one
+            FileTools.copyFromFileToFile(tempFullFileName, fullFileName);
+
+            // delete temporary file
+            FileTools.delete(tempFullFileName);
+
+            bufferedReader.close();
             return true;
-        } catch (Exception e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-
-            // TODO logging
-
-            return false;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-
     }
 
     // Getters and Setters

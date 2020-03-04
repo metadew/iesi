@@ -75,8 +75,7 @@ public final class SQLTools {
     }
 
     private static String GetCleanString(String input) {
-        String cleanString = input;
-        return cleanString.replace("'", "''");
+        return input.replace("'", "''");
     }
 
 
@@ -112,7 +111,7 @@ public final class SQLTools {
         try {
             rs.last();
             rowCount = rs.getRow();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
         }
@@ -127,7 +126,8 @@ public final class SQLTools {
 
     public static String getFirstSQLStmt(String absoluteFilePath) {
         String result = "";
-        try (BufferedReader br = new BufferedReader(new FileReader(absoluteFilePath))) {
+        try (
+                BufferedReader br = new BufferedReader(new FileReader(absoluteFilePath))) {
 
             String line;
             while ((line = br.readLine()) != null) {
@@ -143,8 +143,9 @@ public final class SQLTools {
                     result = result + line.substring(0, line.indexOf(";"));
                     break;
                 }
-            }
 
+            }
+            br.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

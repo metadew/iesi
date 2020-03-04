@@ -10,6 +10,7 @@ import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.connection.Connection;
+import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
@@ -78,19 +79,19 @@ public class CliExecuteCommand {
 
         // Get Parameters
         for (ActionParameter actionParameter : actionExecution.getAction().getParameters()) {
-            if (actionParameter.getName().equalsIgnoreCase(shellPathKey)) {
+            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(shellPathKey)) {
                 shellPath.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase(shellCommandKey)) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(shellCommandKey)) {
                 shellCommand.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase(setRunVarKey)) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(setRunVarKey)) {
                 setRunVar.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase(setRunVarPrefixKey)) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(setRunVarPrefixKey)) {
                 setRunVarPrefix.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase(setRunVarModeKey)) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(setRunVarModeKey)) {
                 setRunVarMode.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase(systemOutputNameKey)) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(systemOutputNameKey)) {
                 systemOutputName.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase(connectionNameKey)) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(connectionNameKey)) {
                 connectionName.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }
@@ -106,7 +107,7 @@ public class CliExecuteCommand {
     }
 
     // Methods
-    public boolean execute() {
+    public boolean execute() throws InterruptedException {
         try {
             String shellPath = convertShellPath(this.shellPath.getValue());
             String shellCommand = convertShellCommand(this.shellCommand.getValue());
@@ -115,6 +116,8 @@ public class CliExecuteCommand {
             String settingRuntimeVariablesMode = convertSetRuntimeVariablesMode(this.setRunVarMode.getValue());
             String connectionName = convertConnectionName(this.connectionName.getValue());
             return executeCommand(shellPath, shellCommand, settingRuntimeVariables, settingRuntimeVariablesPrefix, settingRuntimeVariablesMode, connectionName);
+        } catch (InterruptedException e) {
+            throw (e);
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
@@ -129,7 +132,7 @@ public class CliExecuteCommand {
 
     }
 
-    private boolean executeCommand(String shellPath, String shellCommand, boolean settingRuntimeVariables, String settingRuntimeVariablesPrefix, String settingRuntimeVariablesMode, String connectionName) {
+    private boolean executeCommand(String shellPath, String shellCommand, boolean settingRuntimeVariables, String settingRuntimeVariablesPrefix, String settingRuntimeVariablesMode, String connectionName) throws InterruptedException{
         // Get Connection
         boolean isOnLocalhost = HostConnectionTools.isOnLocalhost(
                 connectionName, executionControl.getEnvName());
@@ -137,10 +140,9 @@ public class CliExecuteCommand {
         if (connectionName.isEmpty() || connectionName.equalsIgnoreCase("localhost")) {
             hostConnection = new HostConnection(HostConnectionTools.getLocalhostType());
         } else {
-            ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
-            Connection connection = connectionConfiguration.get(connectionName, executionControl.getEnvName())
+            Connection connection = ConnectionConfiguration.getInstance().get(new ConnectionKey(connectionName, this.executionControl.getEnvName()))
                     .orElseThrow(() -> new RuntimeException(MessageFormat.format("Cannot find connection definition for {} in environment {}",
-                            connectionName, executionControl.getEnvName())));
+                    connectionName, executionControl.getEnvName())));
             ConnectionOperation connectionOperation = new ConnectionOperation();
             hostConnection = connectionOperation.getHostConnection(connection);
         }

@@ -2,6 +2,7 @@ package io.metadew.iesi.server.rest.resource.script.dto;
 
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.metadata.definition.script.ScriptParameter;
+import io.metadew.iesi.metadata.tools.IdentifierTools;
 import org.springframework.hateoas.ResourceSupport;
 
 import java.util.List;
@@ -10,7 +11,6 @@ import java.util.stream.Collectors;
 
 public class ScriptDto extends ResourceSupport {
 
-    private String type;
     private String name;
     private String description;
     private ScriptVersionDto version;
@@ -19,8 +19,7 @@ public class ScriptDto extends ResourceSupport {
 
     public ScriptDto() {}
 
-    public ScriptDto(String name, String type, String description, ScriptVersionDto version, List<ScriptParameter> parameters, List<ScriptActionDto> actions) {
-        this.type = type;
+    public ScriptDto(String name, String description, ScriptVersionDto version, List<ScriptParameter> parameters, List<ScriptActionDto> actions) {
         this.name = name;
         this.description = description;
         this.version = version;
@@ -29,8 +28,8 @@ public class ScriptDto extends ResourceSupport {
     }
 
     public Script convertToEntity() {
-        return new Script(type, name, description,  version.convertToEntity(), parameters,
-                actions.stream().map(ScriptActionDto::convertToEntity).collect(Collectors.toList()));
+        return new Script(IdentifierTools.getScriptIdentifier(name), name, description,  version.convertToEntity(), parameters,
+                actions.stream().map(action -> action.convertToEntity(name, version.getNumber())).collect(Collectors.toList()));
     }
 
     @Override
@@ -39,8 +38,7 @@ public class ScriptDto extends ResourceSupport {
         if (!(o instanceof ScriptDto)) return false;
         if (!super.equals(o)) return false;
         ScriptDto scriptDto = (ScriptDto) o;
-        return type.equals(scriptDto.type) &&
-                getName().equals(scriptDto.getName()) &&
+        return getName().equals(scriptDto.getName()) &&
                 getDescription().equals(scriptDto.getDescription()) &&
                 getVersion().equals(scriptDto.getVersion()) &&
                 getParameters().equals(scriptDto.getParameters()) &&
@@ -49,7 +47,7 @@ public class ScriptDto extends ResourceSupport {
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), type, getName(), getDescription(), getVersion(), getParameters(), getActions());
+        return Objects.hash(super.hashCode(), getName(), getDescription(), getVersion(), getParameters(), getActions());
     }
 
     public String getName() {

@@ -1,0 +1,34 @@
+[ {
+  "data" : {
+    "name" : "Component",
+    "label" : "Components",
+    "description" : "Design metadata for components",
+    "type" : "design",
+    "category" : "structure",
+    "migrate" : "Y",
+    "migrationKey" : "B003"
+  },
+  "type" : "MetadataObject"
+}, {
+  "data" : {
+    "name" : "Script",
+    "label" : "Scripts",
+    "description" : "Design metadata for scripts",
+    "type" : "design",
+    "category" : "execution",
+    "migrate" : "Y",
+    "migrationKey" : "B001"
+  },
+  "type" : "MetadataObject"
+}, {
+  "data" : {
+    "name" : "Subroutine",
+    "label" : "Subroutines",
+    "description" : "Design metadata for subroutines",
+    "type" : "design",
+    "category" : "reference",
+    "migrate" : "Y",
+    "migrationKey" : "B020"
+  },
+  "type" : "MetadataObject"
+} ]

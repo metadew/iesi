@@ -3,6 +3,8 @@ package io.metadew.iesi.connection.database.tools;
 import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.connection.DatabaseConnection;
 
+import java.lang.reflect.InvocationTargetException;
+
 public final class DatabaseTools {
 
 	public static Database getDatabase(DatabaseConnection databaseConnection, String className) {
@@ -10,7 +12,7 @@ public final class DatabaseTools {
 		try {
 			Class classRef = Class.forName(databaseConnection.getType());
 			instance = classRef.getDeclaredConstructor(databaseConnection.getClass()).newInstance(databaseConnection);
-		} catch (Exception e) {
+		} catch (NoSuchMethodException | ClassNotFoundException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
 			throw new RuntimeException("Unable to get database object");
 		}
     	return (Database) instance;
@@ -21,7 +23,7 @@ public final class DatabaseTools {
 		try {
 			Class classRef = Class.forName(className);
 			instance = classRef.getDeclaredConstructor().newInstance();
-		} catch (Exception e) {
+		} catch (NoSuchMethodException | ClassNotFoundException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
 			throw new RuntimeException("Unable to get database object");
 		}
     	return (Database) instance;

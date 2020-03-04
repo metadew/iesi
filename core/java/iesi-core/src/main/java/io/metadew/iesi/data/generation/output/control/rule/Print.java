@@ -9,9 +9,6 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-
 public class Print {
 
     private GenerationControlRuleExecution generationControlRuleExecution;
@@ -33,38 +30,24 @@ public class Print {
 
     //
     public boolean execute() {
-        try {
-            LOGGER.warn("generation.control.rule.type=" + this.getGenerationControlRuleTypeName(), Level.INFO);
+        LOGGER.warn("generation.control.rule.type=" + this.getGenerationControlRuleTypeName(), Level.INFO);
 
-            // Reset Parameters
-            this.setValue(new GenerationControlRuleParameterExecution(this.getFrameworkExecution(), this.getExecutionControl(),
-                    this.getGenerationControlRuleTypeName(), "VALUE"));
+        // Reset Parameters
+        this.setValue(new GenerationControlRuleParameterExecution(this.getFrameworkExecution(), this.getExecutionControl(),
+                this.getGenerationControlRuleTypeName(), "VALUE"));
 
-            // Get Parameters
-            for (GenerationControlRuleParameter generationControlRuleParameter : this.getGenerationControlRuleExecution().getGenerationControlRule()
-                    .getParameters()) {
-                if (generationControlRuleParameter.getName().equalsIgnoreCase("value")) {
-                    this.getValue().setInputValue(generationControlRuleParameter.getValue());
-                }
+        // Get Parameters
+        for (GenerationControlRuleParameter generationControlRuleParameter : this.getGenerationControlRuleExecution().getGenerationControlRule()
+                .getParameters()) {
+            if (generationControlRuleParameter.getName().equalsIgnoreCase("value")) {
+                this.getValue().setInputValue(generationControlRuleParameter.getValue());
             }
-
-            // Run the generation Control Rule
-            try {
-                this.setOutput(this.getValue().getValue());
-            } catch (Exception e) {
-                throw new RuntimeException("Issue generating control rule output: " + e, e);
-            }
-
-            return true;
-        } catch (Exception e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-
-            // TODO logging
-
-            return false;
         }
 
+        // Run the generation Control Rule
+        this.setOutput(this.getValue().getValue());
+
+        return true;
     }
 
     // Getters and Setters

@@ -23,6 +23,7 @@ public class FileSystemOperation {
                 String[] parts = innerpart.split(";");
                 FolderTools.createFolder(targetFolderPath + parts[0]);
             }
+            bufferedReader.close();
         } catch (IOException e) {
             throw new RuntimeException("Issue creating solution structure", e);
         }

@@ -1,13 +1,15 @@
 package io.metadew.iesi.script.action.fwk;
 
 import io.metadew.iesi.datatypes.DataType;
-import io.metadew.iesi.datatypes.DataTypeService;
+import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.framework.configuration.ScriptRunStatus;
 import io.metadew.iesi.metadata.configuration.script.ScriptConfiguration;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.script.Script;
+import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
+import io.metadew.iesi.metadata.tools.IdentifierTools;
 import io.metadew.iesi.script.ScriptExecutionBuildException;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
@@ -18,7 +20,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.*;
-import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -42,7 +43,6 @@ public class FwkExecuteScript {
     private ActionParameterOperation paramList;
     private ActionParameterOperation paramFile;
     private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
-    private DataTypeService dataTypeService;
     private static final Logger LOGGER = LogManager.getLogger();
 
     public FwkExecuteScript(ExecutionControl executionControl, ScriptExecution scriptExecution, ActionExecution actionExecution) {
@@ -50,7 +50,6 @@ public class FwkExecuteScript {
         this.actionExecution = actionExecution;
         this.scriptExecution = scriptExecution;
         this.actionParameterOperationMap = new HashMap<>();
-        this.dataTypeService = new DataTypeService();
     }
 
     public void prepare() {
@@ -63,15 +62,15 @@ public class FwkExecuteScript {
 
         // Get Parameters
         for (ActionParameter actionParameter : actionExecution.getAction().getParameters()) {
-            if (actionParameter.getName().equalsIgnoreCase("script")) {
+            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("script")) {
                 this.getScriptName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("version")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("version")) {
                 this.getScriptVersion().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("environment")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("environment")) {
                 this.getEnvironmentName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("paramlist")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("paramlist")) {
                 this.getParamList().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("paramfile")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("paramfile")) {
                 this.getParamFile().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }
@@ -84,7 +83,7 @@ public class FwkExecuteScript {
         this.getActionParameterOperationMap().put("paramFile", this.getParamFile());
     }
 
-    public boolean execute() {
+    public boolean execute() throws InterruptedException {
         try {
             String scriptName = convertScriptName(getScriptName().getValue());
             Optional<Long> scriptVersion = convertScriptVersion(getScriptVersion().getValue());
@@ -93,6 +92,8 @@ public class FwkExecuteScript {
             Optional<String> parameterList = convertParameterList2(getParamList().getValue());
             Optional<String> parameterFileName = convertParameterFileName(getParamFile().getValue());
             return executeScript(scriptName, scriptVersion, environmentName, parameterList, parameterFileName);
+        } catch (InterruptedException e) {
+            throw (e);
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
@@ -119,18 +120,17 @@ public class FwkExecuteScript {
         }
     }
 
-    private boolean executeScript(String scriptName, Optional<Long> scriptVersion, Optional<String> environmentName, Optional<String> parameterList, Optional<String> parameterFileName) throws ScriptExecutionBuildException, SQLException {
+    private boolean executeScript(String scriptName, Optional<Long> scriptVersion, Optional<String> environmentName, Optional<String> parameterList, Optional<String> parameterFileName) throws ScriptExecutionBuildException, InterruptedException {
         // Check on Running a script in a loop
         if (scriptExecution.getScript().getName().equals(scriptName)) {
             throw new RuntimeException(MessageFormat.format("Not allowed to run the script recursively. Attempting to run {0} in {1}", scriptName, scriptExecution.getScript().getName()));
         }
 
-        ScriptConfiguration scriptConfiguration = new ScriptConfiguration();
-        // Script script = scriptConfiguration.get(this.getScriptName().getValue());
+        // Script script = ScriptConfiguration.getInstance().get(this.getScriptName().getValue());
         Script script = scriptVersion
-                .map(version -> scriptConfiguration.get(scriptName, version)
+                .map(version -> ScriptConfiguration.getInstance().get(new ScriptKey(IdentifierTools.getScriptIdentifier(scriptName), version))
                         .orElseThrow(() -> new RuntimeException(MessageFormat.format("No implementation for script {0}-{1} found", scriptName, version))))
-                .orElse(scriptConfiguration.get(scriptName)
+                .orElse(ScriptConfiguration.getInstance().getLatestVersion(scriptName)
                         .orElseThrow(() -> new RuntimeException(MessageFormat.format("No implementation for script {0} found", scriptName))));
 
         Map<String, String> parameters = new HashMap<>();
@@ -152,8 +152,7 @@ public class FwkExecuteScript {
 
         if (subScriptScriptExecution.getResult().equalsIgnoreCase(ScriptRunStatus.SUCCESS.value())) {
             actionExecution.getActionControl().increaseSuccessCount();
-        } else if (subScriptScriptExecution.getResult()
-                .equalsIgnoreCase(ScriptRunStatus.WARNING.value())) {
+        } else if (subScriptScriptExecution.getResult().equalsIgnoreCase(ScriptRunStatus.WARNING.value())) {
             actionExecution.getActionControl().increaseWarningCount();
         } else if (subScriptScriptExecution.getResult()
                 .equalsIgnoreCase(ScriptRunStatus.ERROR.value())) {
@@ -191,7 +190,7 @@ public class FwkExecuteScript {
         Map<String, String> parameterMap = new HashMap<>();
         if (list instanceof Text) {
             Arrays.stream(list.toString().split(","))
-                    .forEach(parameterEntry -> parameterMap.putAll(convertParameterEntry(dataTypeService.resolve(parameterEntry, executionControl.getExecutionRuntime()))));
+                    .forEach(parameterEntry -> parameterMap.putAll(convertParameterEntry(DataTypeHandler.getInstance().resolve(parameterEntry, executionControl.getExecutionRuntime()))));
             return Optional.of(parameterMap);
         } else if (list instanceof Array) {
             for (DataType parameterEntry : ((Array) list).getList()) {

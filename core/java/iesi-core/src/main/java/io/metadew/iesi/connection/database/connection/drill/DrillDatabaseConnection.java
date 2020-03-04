@@ -1,9 +1,6 @@
 package io.metadew.iesi.connection.database.connection.drill;
 
-import io.metadew.iesi.connection.database.connection.DatabaseConnection;
-
-import java.sql.Connection;
-import java.util.Optional;
+import io.metadew.iesi.connection.database.connection.SchemaDatabaseConnection;
 
 /**
  * Connection object for Apache Drill . This class extends the default database connection object.
@@ -11,13 +8,16 @@ import java.util.Optional;
  * @author peter.billen
  *
  */
-public class DrillDatabaseConnection extends DatabaseConnection {
+public class DrillDatabaseConnection extends SchemaDatabaseConnection {
 
 	private static String type = "drill";
-	private String schema;
 
 	public DrillDatabaseConnection(String connectionURL, String userName, String userPassword) {
 		super(type, connectionURL, userName, userPassword);
+	}
+
+	public DrillDatabaseConnection(String connectionURL, String userName, String userPassword, String schema) {
+		super(type, connectionURL, userName, userPassword, schema);
 	}
 
 	public DrillDatabaseConnection(String connectionMode, String clusterNames, String directoryName, String clusterId, String schemaName, String triesParameter, String userName, String userPassword) {
@@ -62,17 +62,4 @@ private static String getConnectionUrl(String connectionMode, String clusterName
 		return "org.apache.drill.jdbc.Driver";
 	}
 
-	public void setSchema(String schema) {
-		this.schema = schema;
-	}
-
-	@SuppressWarnings("unused")
-	private Optional<String> getSchema() {
-		return Optional.ofNullable(schema);
-	}
-
-	public Connection getConnection() {
-		Connection connection = super.getConnection();
-		return connection;
-	}
 }

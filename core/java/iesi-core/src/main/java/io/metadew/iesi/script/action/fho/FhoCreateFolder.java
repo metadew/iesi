@@ -11,6 +11,7 @@ import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.connection.Connection;
+import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
@@ -70,11 +71,11 @@ public class FhoCreateFolder {
 
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-            if (actionParameter.getName().equalsIgnoreCase("path")) {
+            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("path")) {
                 this.getFolderPath().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("folder")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("folder")) {
                 this.getFolderName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("connection")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("connection")) {
                 this.getConnectionName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }
@@ -86,13 +87,15 @@ public class FhoCreateFolder {
     }
 
     // Methods
-    public boolean execute() {
+    public boolean execute() throws InterruptedException {
         try {
             String path = convertPath(getFolderPath().getValue());
             String folder = convertFolder(getFolderName().getValue());
             String connectionName = convertConnectionName(getConnectionName().getValue());
             return execute(path, folder, connectionName);
 
+        } catch (InterruptedException e) {
+            throw (e);
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
@@ -107,7 +110,7 @@ public class FhoCreateFolder {
 
     }
 
-    private boolean execute(String path, String folder, String connectionName) {
+    private boolean execute(String path, String folder, String connectionName) throws InterruptedException {
 
         boolean isOnLocalhost = HostConnectionTools.isOnLocalhost(
                 connectionName, this.getExecutionControl().getEnvName());
@@ -122,17 +125,12 @@ public class FhoCreateFolder {
             }
 
             this.setScope(subjectFolderPath);
-            try {
-                FolderTools.createFolder(subjectFolderPath, true);
-                this.setSuccess();
-            } catch (Exception e) {
-                this.setError(e.getMessage());
-            }
+            FolderTools.createFolder(subjectFolderPath, true);
+            this.setSuccess();
 
         } else {
-            ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
-            Connection connection = connectionConfiguration
-                    .get(connectionName, this.getExecutionControl().getEnvName())
+            Connection connection = ConnectionConfiguration.getInstance()
+                    .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
                     .get();
             ConnectionOperation connectionOperation = new ConnectionOperation();
             HostConnection hostConnection = connectionOperation.getHostConnection(connection);
@@ -149,17 +147,13 @@ public class FhoCreateFolder {
 
             ShellCommandSettings shellCommandSettings = new ShellCommandSettings();
             ShellCommandResult shellCommandResult = null;
-            try {
-                shellCommandResult = hostConnection.executeRemoteCommand("", "mkdir " + subjectFolderPath,
-                        shellCommandSettings);
+            shellCommandResult = hostConnection.executeRemoteCommand("", "mkdir " + subjectFolderPath,
+                    shellCommandSettings);
 
-                if (shellCommandResult.getReturnCode() == 0) {
-                    this.setSuccess();
-                } else {
-                    this.setError(shellCommandResult.getErrorOutput());
-                }
-            } catch (Exception e) {
-                this.setError(e.getMessage());
+            if (shellCommandResult.getReturnCode() == 0) {
+                this.setSuccess();
+            } else {
+                this.setError(shellCommandResult.getErrorOutput());
             }
         }
         return true;

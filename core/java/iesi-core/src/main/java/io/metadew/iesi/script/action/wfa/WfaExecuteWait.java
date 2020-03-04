@@ -52,7 +52,7 @@ public class WfaExecuteWait {
 
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-            if (actionParameter.getName().equalsIgnoreCase("wait")) {
+            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("wait")) {
                 this.getWaitInterval().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }
@@ -60,11 +60,12 @@ public class WfaExecuteWait {
 
     }
 
-    public boolean execute() {
+    public boolean execute() throws InterruptedException {
         try {
             int waitInterval = convertWaitInterval(getWaitInterval().getValue());
             return executeWait(waitInterval);
-
+        } catch (InterruptedException e) {
+            throw (e);
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
@@ -78,7 +79,7 @@ public class WfaExecuteWait {
 
     }
 
-    private boolean executeWait(int waitInterval) {
+    private boolean executeWait(int waitInterval) throws InterruptedException {
         // Run the action
         long wait = waitInterval * 1000;
         if (wait < 0)

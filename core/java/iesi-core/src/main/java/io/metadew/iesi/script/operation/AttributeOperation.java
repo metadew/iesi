@@ -8,6 +8,8 @@ import org.apache.logging.log4j.Level;
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.sql.SQLException;
+import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -52,24 +54,20 @@ public class AttributeOperation {
             while (crs.next()) {
                 String key = crs.getString("COMP_ATT_NM");
                 String value = crs.getString("COMP_ATT_VAL");
-                this.getProperties().put(key, value);
+                properties.put(key, value);
                 this.getExecutionControl().logMessage(this.getActionExecution(), "attribute.name=" + key, Level.DEBUG);
                 this.getExecutionControl().logMessage(this.getActionExecution(), "attribute.name=" + value, Level.DEBUG);
             }
             crs.close();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
         }
     }
 
 
-    public String getProperty(String input) {
-        String output = this.getProperties().getProperty(input);
-        if (output == null) {
-            throw new RuntimeException("Unknown value lookup requested: " + input);
-        }
-        return output;
+    public Optional<String> getProperty(String input) {
+        return Optional.ofNullable(properties.getProperty(input));
     }
 
     // Getters and setters

@@ -6,6 +6,7 @@ public enum ScriptExecutionRequestStatus {
     ACCEPTED("ACCEPTED"),
     DECLINED("DECLINED"),
     COMPLETED("COMPLETED"),
+    ABORTED("ABORTED"),
     UNKNOWN("UNKNOWN");
 
     private String value;

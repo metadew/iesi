@@ -1,34 +1,20 @@
 package io.metadew.iesi.metadata.definition.action;
 
-public class ActionParameter {
+import io.metadew.iesi.metadata.definition.Metadata;
+import io.metadew.iesi.metadata.definition.action.key.ActionParameterKey;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
-    private String name;
+@Data
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
+public class ActionParameter extends Metadata<ActionParameterKey> {
+
     private String value;
 
-    // Constructors
-    public ActionParameter() {
-
-    }
-
-    public ActionParameter(String name, String value) {
-        this.name = name;
-        this.value = value;
-    }
-
-    // Getters and Setters
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
+    public ActionParameter(ActionParameterKey actionParameterKey, String value) {
+        super(actionParameterKey);
         this.value = value;
     }
 

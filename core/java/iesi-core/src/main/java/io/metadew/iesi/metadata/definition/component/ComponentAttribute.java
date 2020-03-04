@@ -1,30 +1,23 @@
 package io.metadew.iesi.metadata.definition.component;
 
 
-public class ComponentAttribute {
+import io.metadew.iesi.metadata.definition.Metadata;
+import io.metadew.iesi.metadata.definition.component.key.ComponentAttributeKey;
+import lombok.EqualsAndHashCode;
 
-    private String name;
-    private String environment;
+@EqualsAndHashCode(callSuper = true)
+public class ComponentAttribute extends Metadata<ComponentAttributeKey> {
+
     private String value;
 
-    //Constructors
-    public ComponentAttribute() {
-
-    }
-
-    public ComponentAttribute(String environment, String name, String value) {
-        this.name = name;
-        this.environment = environment;
+    public ComponentAttribute(ComponentAttributeKey componentAttributeKey, String value) {
+        super(componentAttributeKey);
         this.value = value;
     }
 
     //Getters and Setters
     public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+        return getMetadataKey().getComponentAttributeName();
     }
 
     public String getValue() {
@@ -33,14 +26,6 @@ public class ComponentAttribute {
 
     public void setValue(String value) {
         this.value = value;
-    }
-
-    public String getEnvironment() {
-        return environment;
-    }
-
-    public void setEnvironment(String environment) {
-        this.environment = environment;
     }
 
 }

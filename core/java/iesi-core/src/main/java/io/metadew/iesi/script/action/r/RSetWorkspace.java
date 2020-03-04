@@ -37,9 +37,9 @@ public class RSetWorkspace {
 
         // Get Parameters
         for (ActionParameter actionParameter : actionExecution.getAction().getParameters()) {
-            if (actionParameter.getName().equalsIgnoreCase(referenceNameKey)) {
+            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(referenceNameKey)) {
                 referenceNameActionParameterOperation.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase(pathKey)) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(pathKey)) {
                 pathActionParameterOperation.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }

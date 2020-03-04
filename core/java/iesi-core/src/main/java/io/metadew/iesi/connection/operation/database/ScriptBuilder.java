@@ -5,6 +5,7 @@ import io.metadew.iesi.connection.tools.OutputTools;
 
 import javax.sql.rowset.CachedRowSet;
 import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.text.SimpleDateFormat;
@@ -129,7 +130,7 @@ public class ScriptBuilder {
             crs.close();
             insert_stmts = stringBuffer.toString();
 
-        } catch (Exception e) {
+        } catch (SQLException e) {
             System.out.println("Query Actions Failed");
             e.printStackTrace();
         }

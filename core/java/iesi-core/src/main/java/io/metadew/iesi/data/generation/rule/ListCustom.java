@@ -10,149 +10,133 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ListCustom {
 
-	private GenerationRuleExecution generationRuleExecution;
-	private FrameworkExecution frameworkExecution;
-	private ExecutionControl executionControl;
-	private String generationRuleTypeName = "list.custom";
+    private GenerationRuleExecution generationRuleExecution;
+    private FrameworkExecution frameworkExecution;
+    private ExecutionControl executionControl;
+    private String generationRuleTypeName = "list.custom";
 
-	// Parameters
-	private GenerationRuleParameterExecution items;
-	private GenerationRuleParameterExecution selectionType;
-	private static final Logger LOGGER = LogManager.getLogger();
+    // Parameters
+    private GenerationRuleParameterExecution items;
+    private GenerationRuleParameterExecution selectionType;
+    private static final Logger LOGGER = LogManager.getLogger();
 
-	// Constructors
-	public ListCustom() {
-		
-	}
-	
-	public ListCustom(FrameworkExecution frameworkExecution, ExecutionControl executionControl, GenerationRuleExecution generationRuleExecution) {
-		this.setFrameworkExecution(frameworkExecution);
-		this.setEoControl(executionControl);
-		this.setGenerationRuleExecution(generationRuleExecution);
-	}
+    // Constructors
+    public ListCustom() {
 
-	public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl, GenerationRuleExecution generationRuleExecution) {
-		this.setFrameworkExecution(frameworkExecution);
-		this.setEoControl(executionControl);
-		this.setGenerationRuleExecution(generationRuleExecution);
-	}
+    }
 
-	//
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public boolean execute() {
-		try {
-			LOGGER.warn("generation.rule.type=" + this.getGenerationRuleTypeName(), Level.INFO);
+    public ListCustom(FrameworkExecution frameworkExecution, ExecutionControl executionControl, GenerationRuleExecution generationRuleExecution) {
+        this.setFrameworkExecution(frameworkExecution);
+        this.setEoControl(executionControl);
+        this.setGenerationRuleExecution(generationRuleExecution);
+    }
 
-			// Reset Parameters
-			this.setItems(new GenerationRuleParameterExecution(this.getFrameworkExecution(), this.getEoControl(),
-					this.getGenerationRuleTypeName(), "ITEMS"));
-			this.setSelectionType(new GenerationRuleParameterExecution(this.getFrameworkExecution(), this.getEoControl(),
-					this.getGenerationRuleTypeName(), "SELECTION_TYPE"));
+    public void init(FrameworkExecution frameworkExecution, ExecutionControl executionControl, GenerationRuleExecution generationRuleExecution) {
+        this.setFrameworkExecution(frameworkExecution);
+        this.setEoControl(executionControl);
+        this.setGenerationRuleExecution(generationRuleExecution);
+    }
 
-			// Get Parameters
-			for (GenerationRuleParameter generationRuleParameter : this.getGenerationRuleExecution().getGenerationRule()
-					.getParameters()) {
-				if (generationRuleParameter.getName().equalsIgnoreCase("items")) {
-					this.getItems().setInputValue(generationRuleParameter.getValue());
-				} else if (generationRuleParameter.getName().equalsIgnoreCase("selection_type")) {
-					this.getSelectionType().setInputValue(generationRuleParameter.getValue());
-				}
-			}
+    //
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    public boolean execute() {
+        LOGGER.warn("generation.rule.type=" + this.getGenerationRuleTypeName(), Level.INFO);
 
-			// Run the generationRule
-			try {
-				// Create the selection list
-				List<String> list = new ArrayList();
-				
-				String[] parts = this.getItems().getValue().split(",");
-				for (int i = 0; i < parts.length; i++) {
-					list.add(parts[i]);
-				}
-				
-				for (int currentRecord = 0; currentRecord < this.getGenerationRuleExecution().getGenerationExecution()
-						.getNumberOfRecords(); currentRecord++) {
+        // Reset Parameters
+        this.setItems(new GenerationRuleParameterExecution(this.getFrameworkExecution(), this.getEoControl(),
+                this.getGenerationRuleTypeName(), "ITEMS"));
+        this.setSelectionType(new GenerationRuleParameterExecution(this.getFrameworkExecution(), this.getEoControl(),
+                this.getGenerationRuleTypeName(), "SELECTION_TYPE"));
 
-					String generatedValue = list.get(this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime()
-							.getGenerationObjectExecution().getNumber().getNextInt(0, list.size()));
+        // Get Parameters
+        for (GenerationRuleParameter generationRuleParameter : this.getGenerationRuleExecution().getGenerationRule()
+                .getParameters()) {
+            if (generationRuleParameter.getName().equalsIgnoreCase("items")) {
+                this.getItems().setInputValue(generationRuleParameter.getValue());
+            } else if (generationRuleParameter.getName().equalsIgnoreCase("selection_type")) {
+                this.getSelectionType().setInputValue(generationRuleParameter.getValue());
+            }
+        }
 
-					String query = "update " + this.getGenerationRuleExecution().getGenerationExecution().getGeneration().getName();
-					query += " set v" + this.getGenerationRuleExecution().getGenerationRule().getField() + "=";
-					query += SQLTools.GetStringForSQL(generatedValue);
-					query += " where id=" + (currentRecord + 1);
-					this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().getTemporaryDatabaseConnection()
-							.executeUpdate(query);
+        // Run the generationRule
+        // Create the selection list
+        List<String> list = new ArrayList();
 
-					this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().updateProgress();
-				}
+        String[] parts = this.getItems().getValue().split(",");
+        for (int i = 0; i < parts.length; i++) {
+            list.add(parts[i]);
+        }
 
-			} catch (Exception e) {
-				throw new RuntimeException("Issue setting runtime variables: " + e, e);
-			}
-			return true;
-		} catch (Exception e) {
-			StringWriter StackTrace = new StringWriter();
-			e.printStackTrace(new PrintWriter(StackTrace));
+        for (int currentRecord = 0; currentRecord < this.getGenerationRuleExecution().getGenerationExecution()
+                .getNumberOfRecords(); currentRecord++) {
 
-			// TODO logging
+            String generatedValue = list.get(this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime()
+                    .getGenerationObjectExecution().getNumber().getNextInt(0, list.size()));
 
-			return false;
-		}
+            String query = "update " + this.getGenerationRuleExecution().getGenerationExecution().getGeneration().getName();
+            query += " set v" + this.getGenerationRuleExecution().getGenerationRule().getField() + "=";
+            query += SQLTools.GetStringForSQL(generatedValue);
+            query += " where id=" + (currentRecord + 1);
+            this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().getTemporaryDatabaseConnection()
+                    .executeUpdate(query);
 
-	}
+            this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().updateProgress();
+        }
 
-	// Getters and Setters
-	public ExecutionControl getEoControl() {
-		return executionControl;
-	}
+        return true;
+    }
 
-	public void setEoControl(ExecutionControl executionControl) {
-		this.executionControl = executionControl;
-	}
+    // Getters and Setters
+    public ExecutionControl getEoControl() {
+        return executionControl;
+    }
 
-	public GenerationRuleExecution getGenerationRuleExecution() {
-		return generationRuleExecution;
-	}
+    public void setEoControl(ExecutionControl executionControl) {
+        this.executionControl = executionControl;
+    }
 
-	public void setGenerationRuleExecution(GenerationRuleExecution generationRuleExecution) {
-		this.generationRuleExecution = generationRuleExecution;
-	}
+    public GenerationRuleExecution getGenerationRuleExecution() {
+        return generationRuleExecution;
+    }
 
-	public String getGenerationRuleTypeName() {
-		return generationRuleTypeName;
-	}
+    public void setGenerationRuleExecution(GenerationRuleExecution generationRuleExecution) {
+        this.generationRuleExecution = generationRuleExecution;
+    }
 
-	public void setGenerationRuleTypeName(String generationRuleTypeName) {
-		this.generationRuleTypeName = generationRuleTypeName;
-	}
+    public String getGenerationRuleTypeName() {
+        return generationRuleTypeName;
+    }
 
-	public GenerationRuleParameterExecution getItems() {
-		return items;
-	}
+    public void setGenerationRuleTypeName(String generationRuleTypeName) {
+        this.generationRuleTypeName = generationRuleTypeName;
+    }
 
-	public void setItems(GenerationRuleParameterExecution items) {
-		this.items = items;
-	}
+    public GenerationRuleParameterExecution getItems() {
+        return items;
+    }
 
-	public GenerationRuleParameterExecution getSelectionType() {
-		return selectionType;
-	}
+    public void setItems(GenerationRuleParameterExecution items) {
+        this.items = items;
+    }
 
-	public void setSelectionType(GenerationRuleParameterExecution selectionType) {
-		this.selectionType = selectionType;
-	}
+    public GenerationRuleParameterExecution getSelectionType() {
+        return selectionType;
+    }
 
-	public FrameworkExecution getFrameworkExecution() {
-		return frameworkExecution;
-	}
+    public void setSelectionType(GenerationRuleParameterExecution selectionType) {
+        this.selectionType = selectionType;
+    }
 
-	public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
-		this.frameworkExecution = frameworkExecution;
-	}
+    public FrameworkExecution getFrameworkExecution() {
+        return frameworkExecution;
+    }
+
+    public void setFrameworkExecution(FrameworkExecution frameworkExecution) {
+        this.frameworkExecution = frameworkExecution;
+    }
 }

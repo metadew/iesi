@@ -2,8 +2,6 @@ package io.metadew.iesi.metadata.configuration.script.trace;
 
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
-import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.script.trace.ScriptParameterTrace;
 import io.metadew.iesi.metadata.definition.script.trace.key.ScriptParameterTraceKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
@@ -80,7 +78,7 @@ public class ScriptParameterTraceConfiguration extends Configuration<ScriptParam
     }
 
     @Override
-    public void delete(ScriptParameterTraceKey scriptParameterTraceKey) throws MetadataDoesNotExistException {
+    public void delete(ScriptParameterTraceKey scriptParameterTraceKey) {
         LOGGER.trace(MessageFormat.format("Deleting ScriptParameterTrace {0}.", scriptParameterTraceKey.toString()));
         String deleteStatement = deleteStatement(scriptParameterTraceKey);
         getMetadataRepository().executeUpdate(deleteStatement);
@@ -95,7 +93,7 @@ public class ScriptParameterTraceConfiguration extends Configuration<ScriptParam
     }
 
     @Override
-    public void insert(ScriptParameterTrace scriptParameterTrace) throws MetadataAlreadyExistsException {
+    public void insert(ScriptParameterTrace scriptParameterTrace) {
         LOGGER.trace(MessageFormat.format("Inserting ScriptParameterTrace {0}.", scriptParameterTrace.getMetadataKey().toString()));
         String insertStatement = insertStatement(scriptParameterTrace);
         getMetadataRepository().executeUpdate(insertStatement);

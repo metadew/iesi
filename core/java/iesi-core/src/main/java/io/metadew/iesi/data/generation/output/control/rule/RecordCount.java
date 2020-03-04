@@ -7,8 +7,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.sql.rowset.CachedRowSet;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.sql.SQLException;
 
 public class RecordCount {
 
@@ -31,41 +30,32 @@ public class RecordCount {
 
     //
     public boolean execute() {
+        LOGGER.info("generation.control.rule.type=" + this.getGenerationControlRuleTypeName());
+
+        // Reset Parameters
+
+        // Get Parameters
+
+        // Run the generation Control Rule
         try {
-            LOGGER.info("generation.control.rule.type=" + this.getGenerationControlRuleTypeName());
+            CachedRowSet crs = null;
+            String query = "select count(*) as 'RECORD_COUNT' from "
+                    + this.getGenerationControlRuleExecution().getGenerationExecution().getGenerationRuntime().getTableName();
+            crs = this.getGenerationControlRuleExecution().getGenerationExecution().getGenerationRuntime().getTemporaryDatabaseConnection()
+                    .executeQuery(query);
 
-            // Reset Parameters
-
-            // Get Parameters
-
-            // Run the generation Control Rule
-            try {
-                CachedRowSet crs = null;
-                String query = "select count(*) as 'RECORD_COUNT' from "
-                        + this.getGenerationControlRuleExecution().getGenerationExecution().getGenerationRuntime().getTableName();
-                crs = this.getGenerationControlRuleExecution().getGenerationExecution().getGenerationRuntime().getTemporaryDatabaseConnection()
-                        .executeQuery(query);
-
-                String recordCount = "";
-                while (crs.next()) {
-                    recordCount = crs.getString("RECORD_COUNT");
-                }
-                crs.close();
-
-                this.setOutput(recordCount);
-            } catch (Exception e) {
-                throw new RuntimeException("Issue generating control rule output: " + e, e);
+            String recordCount = "";
+            while (crs.next()) {
+                recordCount = crs.getString("RECORD_COUNT");
             }
+            crs.close();
 
-            return true;
-        } catch (Exception e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-
-            // TODO logging
-
-            return false;
+            this.setOutput(recordCount);
+        } catch (SQLException e) {
+            throw new RuntimeException("Issue generating control rule output: " + e, e);
         }
+
+        return true;
 
     }
 

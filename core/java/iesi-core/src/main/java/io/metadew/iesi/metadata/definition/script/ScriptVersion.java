@@ -1,18 +1,21 @@
 package io.metadew.iesi.metadata.definition.script;
 
-public class ScriptVersion {
-    private String scriptId;
-    private long number = 0;
+import io.metadew.iesi.metadata.definition.Metadata;
+import io.metadew.iesi.metadata.definition.script.key.ScriptVersionKey;
+import lombok.EqualsAndHashCode;
+
+@EqualsAndHashCode(callSuper = true)
+public class ScriptVersion extends Metadata<ScriptVersionKey> {
+
     private String description = "Default version";
 
-    // Constructors
-    public ScriptVersion() {
-
+    public ScriptVersion(ScriptVersionKey scriptVersionKey, String description) {
+        super(scriptVersionKey);
+        this.description = description;
     }
 
     public ScriptVersion(String scriptId, long number, String description) {
-        this.scriptId = scriptId;
-        this.number = number;
+        super(new ScriptVersionKey(scriptId, number));
         this.description = description;
     }
 
@@ -26,14 +29,10 @@ public class ScriptVersion {
     }
 
     public long getNumber() {
-        return number;
-    }
-
-    public void setNumber(long number) {
-        this.number = number;
+        return getMetadataKey().getScriptKey().getScriptVersion();
     }
 
     public String getScriptId() {
-        return scriptId;
+        return getMetadataKey().getScriptKey().getScriptId();
     }
 }

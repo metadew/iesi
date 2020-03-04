@@ -3,13 +3,14 @@ package io.metadew.iesi.script.execution;
 import io.metadew.iesi.connection.r.RWorkspace;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.data.generation.execution.GenerationObjectExecution;
-import io.metadew.iesi.datatypes.dataset.KeyValueDataset;
+import io.metadew.iesi.datatypes.dataset.Dataset;
+import io.metadew.iesi.datatypes.dataset.DatasetHandler;
+import io.metadew.iesi.datatypes.dataset.keyvalue.KeyValueDataset;
 import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
 import io.metadew.iesi.framework.execution.FrameworkControl;
 import io.metadew.iesi.framework.execution.IESIMessage;
 import io.metadew.iesi.metadata.definition.Iteration;
 import io.metadew.iesi.metadata.definition.component.ComponentAttribute;
-import io.metadew.iesi.runtime.definition.LookupResult;
 import io.metadew.iesi.script.configuration.IterationVariableConfiguration;
 import io.metadew.iesi.script.configuration.RuntimeVariableConfiguration;
 import io.metadew.iesi.script.execution.instruction.data.DataInstruction;
@@ -29,10 +30,8 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -49,7 +48,7 @@ public class ExecutionRuntime {
     //private HashMap<String, StageOperation> stageOperationMap;
     private HashMap<String, RepositoryOperation> repositoryOperationMap;
     private HashMap<String, StageOperation> stageOperationMap;
-    private HashMap<String, KeyValueDataset> datasetMap;
+    private HashMap<String, Dataset> datasetMap;
     private HashMap<String, RWorkspace> RWorkspaceMap;
     private HashMap<String, IterationOperation> iterationOperationMap;
     private HashMap<String, ExecutionRuntimeExtension> executionRuntimeExtensionMap;
@@ -66,7 +65,7 @@ public class ExecutionRuntime {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public ExecutionRuntime(ExecutionControl executionControl, String runId)  {
+    public ExecutionRuntime(ExecutionControl executionControl, String runId) {
         this.executionControl = executionControl;
         this.runId = runId;
 
@@ -122,7 +121,7 @@ public class ExecutionRuntime {
         }
     }
 
-    public void setRuntimeVariables(ActionExecution actionExecution, String input)  {
+    public void setRuntimeVariables(ActionExecution actionExecution, String input) {
         String[] lines = input.split("\n");
         for (int i = 0; i < lines.length; i++) {
             String line = lines[i];
@@ -162,12 +161,12 @@ public class ExecutionRuntime {
     }
 
     // Set runtime variables
-    public void setRuntimeVariable(Long processId, String name, String value)  {
+    public void setRuntimeVariable(Long processId, String name, String value) {
         LOGGER.debug(new IESIMessage("exec.runvar.set=" + name + ":" + value));
         runtimeVariableConfiguration.setRuntimeVariable(runId, processId, name, value);
     }
 
-    public void setRuntimeVariable(ActionExecution actionExecution, String name, String value)  {
+    public void setRuntimeVariable(ActionExecution actionExecution, String name, String value) {
         LOGGER.debug(new IESIMessage("exec.runvar.set=" + name + ":" + value));
         runtimeVariableConfiguration.setRuntimeVariable(runId, actionExecution.getProcessId(), name, value);
     }
@@ -182,11 +181,11 @@ public class ExecutionRuntime {
     }
 
     // Iteration Variables
-    public void setIterationVariables(String listName, ResultSet rs)  {
+    public void setIterationVariables(String listName, ResultSet rs) {
         this.getIterationVariableConfiguration().setIterationList(runId, listName, rs);
     }
 
-    public String resolveVariables(String input)  {
+    public String resolveVariables(String input) {
         // Prevent null issues during string operations
         if (input == null) {
             input = "";
@@ -208,7 +207,7 @@ public class ExecutionRuntime {
         if (input == null) {
             input = "";
         }
-        String result = "";
+        String result;
 
         // First level: settings
         result = FrameworkControl.getInstance().resolveConfiguration(input);
@@ -230,7 +229,6 @@ public class ExecutionRuntime {
         int closePos;
         String variable_char = "#";
         String midBit;
-        String replaceValue;
         String temp = input;
         while (temp.indexOf(variable_char) > 0 || temp.startsWith(variable_char)) {
             openPos = temp.indexOf(variable_char);
@@ -238,10 +236,8 @@ public class ExecutionRuntime {
             midBit = temp.substring(openPos + 1, closePos);
 
             // Replace
-            replaceValue = this.getRuntimeVariableValue(midBit).orElse("");
-            if (replaceValue != null) {
-                input = input.replaceAll(variable_char + midBit + variable_char, replaceValue);
-            }
+            String replaceValue = this.getRuntimeVariableValue(midBit).orElse("");
+            input = input.replaceAll(variable_char + midBit + variable_char, replaceValue);
             temp = temp.substring(closePos + 1, temp.length());
 
         }
@@ -276,8 +272,8 @@ public class ExecutionRuntime {
 
     public String resolveComponentTypeVariables(String input, List<ComponentAttribute> componentAttributeList,
                                                 String environment) {
-        HashMap<String, ComponentAttribute> componentAttributeMap = this
-                .getComponentAttributeHashmap(componentAttributeList, environment);
+
+        Map<String, ComponentAttribute> componentAttributeMap = this.getComponentAttributeHashmap(componentAttributeList, environment);
         int openPos;
         int closePos;
         String variable_char_open = "[";
@@ -301,18 +297,10 @@ public class ExecutionRuntime {
         return input;
     }
 
-    private HashMap<String, ComponentAttribute> getComponentAttributeHashmap(List<ComponentAttribute> componentAttributeList, String environment) {
-        if (componentAttributeList == null) {
-            return null;
-        }
-
-        HashMap<String, ComponentAttribute> componentAttributeMap = new HashMap<String, ComponentAttribute>();
-        for (ComponentAttribute componentAttribute : componentAttributeList) {
-            if (componentAttribute.getEnvironment().trim().equalsIgnoreCase(environment)) {
-                componentAttributeMap.put(componentAttribute.getName(), componentAttribute);
-            }
-        }
-        return componentAttributeMap;
+    private Map<String, ComponentAttribute> getComponentAttributeHashmap(List<ComponentAttribute> componentAttributeList, String environment) {
+        return componentAttributeList.stream()
+                .filter(componentAttribute -> componentAttribute.getMetadataKey().getEnvironmentKey().getName().equalsIgnoreCase(environment))
+                .collect(Collectors.toMap(ComponentAttribute::getName, Function.identity()));
     }
 
     public String resolveConfiguration(ActionExecution actionExecution, String input) {
@@ -320,25 +308,20 @@ public class ExecutionRuntime {
         int openPos;
         int closePos;
         String variable_char = "#";
-        String midBit;
-        String replaceValue = null;
         String temp = input;
         while (temp.indexOf(variable_char) > 0 || temp.startsWith(variable_char)) {
             openPos = temp.indexOf(variable_char);
             closePos = temp.indexOf(variable_char, openPos + 1);
-            midBit = temp.substring(openPos + 1, closePos);
+            final String midBit = temp.substring(openPos + 1, closePos);
 
             // Try to find a configuration value
             // If none is found, null is set by default
-            try {
-                replaceValue = actionExecution.getComponentAttributeOperation().getProperty(midBit);
-            } catch (Exception e) {
-                replaceValue = null;
-            }
+            Optional<String> replaceValue = actionExecution.getComponentAttributeOperation()
+                    .flatMap(componentAttributeOperation -> componentAttributeOperation.getProperty(midBit));
 
             // Replacing the value if found
-            if (replaceValue != null) {
-                input = input.replaceAll(variable_char + midBit + variable_char, replaceValue);
+            if (replaceValue.isPresent()) {
+                input = input.replaceAll(variable_char + midBit + variable_char, replaceValue.get());
             }
             temp = temp.substring(closePos + 1, temp.length());
 
@@ -537,7 +520,8 @@ public class ExecutionRuntime {
                 output += this.resolveVariables(readLine);
                 output += "\n";
             }
-        } catch (Exception e) {
+            bufferedReader.close();
+        } catch (IOException e) {
             e.printStackTrace();
             throw new RuntimeException("The system cannot find the path specified", e);
         }
@@ -576,12 +560,11 @@ public class ExecutionRuntime {
         this.getRepositoryOperationMap().put(repositoryReferenceName, repositoryOperation);
     }
 
-    public void setKeyValueDataset(String referenceName, String datasetName, List<String> datasetLabels) throws IOException, SQLException {
-        datasetMap.put(referenceName,
-                new KeyValueDataset(datasetName, datasetLabels, this));
+    public void setKeyValueDataset(String referenceName, String datasetName, List<String> datasetLabels) throws IOException {
+        datasetMap.put(referenceName, DatasetHandler.getInstance().getByNameAndLabels(datasetName, datasetLabels, this));
     }
 
-    public Optional<KeyValueDataset> getDataset(String referenceName) {
+    public Optional<Dataset> getDataset(String referenceName) {
         return Optional.ofNullable(datasetMap.get(referenceName));
     }
 

@@ -10,6 +10,7 @@ import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration
 import io.metadew.iesi.metadata.configuration.repository.RepositoryConfiguration;
 import io.metadew.iesi.metadata.configuration.repository.RepositoryInstanceConfiguration;
 import io.metadew.iesi.metadata.definition.connection.Connection;
+import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.metadata.definition.repository.Repository;
 import io.metadew.iesi.metadata.definition.repository.RepositoryInstance;
 import io.metadew.iesi.metadata.definition.repository.RepositoryInstanceParameter;
@@ -63,8 +64,7 @@ public class RepositoryOperation {
         }
 
         // Get Connection
-        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
-        Connection connection = connectionConfiguration.get(this.getRepositoryInstanceConnectionName().getValue(),this.getExecutionControl().getEnvName()).get();
+        Connection connection = ConnectionConfiguration.getInstance().get(new ConnectionKey(this.getRepositoryInstanceConnectionName().getValue(),this.getExecutionControl().getEnvName())).get();
         ConnectionOperation connectionOperation = new ConnectionOperation();
         this.setRepositoryDatabaseInstance(connectionOperation
                 .getDatabase(connection));
@@ -105,7 +105,7 @@ public class RepositoryOperation {
                 datasetFileName = crs.getString("DATASET_FILE_NM");
             }
             crs.close();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
         }
@@ -145,7 +145,7 @@ public class RepositoryOperation {
                 value = crs.getString("VALUE");
             }
             crs.close();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
         }
@@ -209,7 +209,7 @@ public class RepositoryOperation {
             query += value;
             query += "')";
             this.getDatasetConnection().executeUpdate(query);
-        } catch (Exception e) {
+        } catch (SQLException e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
         }
@@ -230,7 +230,7 @@ public class RepositoryOperation {
                 }
             }
             crs.close();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
         }

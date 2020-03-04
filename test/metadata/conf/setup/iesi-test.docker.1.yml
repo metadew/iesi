@@ -1,6 +1,7 @@
 ---
 type: "script"
 data:
+  type: "script"
   name: "iesi-test.docker.1"
   description: "Control the docker environment for iesi-test"
   parameters: []

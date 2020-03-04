@@ -13,7 +13,7 @@ import java.util.List;
 public final class Launcher {
 
 	
-	public static void execute(String launcher, List<LaunchArgument> inputArgs) throws ExecutionRequestBuilderException, ScriptExecutionRequestBuilderException, MetadataAlreadyExistsException, SQLException, MetadataDoesNotExistException, ParseException, ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
+	public static void execute(String launcher, List<LaunchArgument> inputArgs) throws ExecutionRequestBuilderException, ScriptExecutionRequestBuilderException, SQLException, ParseException, ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
 		
 		int inputArgsArraySize = 0;
 		for (LaunchArgument launchArgument : inputArgs) {

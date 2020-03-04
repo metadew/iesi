@@ -5,6 +5,7 @@ import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.connection.Connection;
+import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
@@ -56,7 +57,7 @@ public class ConnIsAlive {
 
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-            if (actionParameter.getName().equalsIgnoreCase("connection")) {
+            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("connection")) {
                 this.getConnectionName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }
@@ -65,27 +66,23 @@ public class ConnIsAlive {
         this.getActionParameterOperationMap().put("connection", this.getConnectionName());
     }
 
-    private boolean execute(String connectionName) {
+    private boolean execute(String connectionName) throws InterruptedException {
         // Get Connection
-        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
-        Connection connection = connectionConfiguration.get(connectionName,
-                this.getExecutionControl().getEnvName()).get();
+        Connection connection = ConnectionConfiguration.getInstance()
+                .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
+                .get();
 
-        try {
-            if (connection.getType().equalsIgnoreCase("")) {
-            }
-            this.getActionExecution().getActionControl().increaseSuccessCount();
-        } catch (Exception e) {
-            throw new RuntimeException("tbd " + e, e);
-        }
+        this.getActionExecution().getActionControl().increaseSuccessCount();
         return true;
     }
 
     //
-    public boolean execute() {
+    public boolean execute() throws InterruptedException {
         try {
             String connectionName = convertConnectionName(getConnectionName().getValue());
             return execute(connectionName);
+        } catch (InterruptedException e) {
+            throw (e);
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
@@ -104,7 +101,7 @@ public class ConnIsAlive {
         if (connectionName instanceof Text) {
             return connectionName.toString();
         } else {
-            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() +  " does not accept {0} as type for connection name",
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for connection name",
                     connectionName.getClass()));
             return connectionName.toString();
         }

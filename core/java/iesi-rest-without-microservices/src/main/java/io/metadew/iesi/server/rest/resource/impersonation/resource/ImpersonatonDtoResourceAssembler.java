@@ -16,7 +16,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 @Component
-public class ImpersonatonDtoResourceAssembler  extends ResourceAssemblerSupport<Impersonation, ImpersonationDto> {
+public class ImpersonatonDtoResourceAssembler extends ResourceAssemblerSupport<Impersonation, ImpersonationDto> {
 
     private final ModelMapper modelMapper;
 
@@ -29,7 +29,8 @@ public class ImpersonatonDtoResourceAssembler  extends ResourceAssemblerSupport<
     @Override
     public ImpersonationDto toResource(Impersonation impersonation) {
         ImpersonationDto impersonationDto = convertToDto(impersonation);
-        Link selfLink = linkTo(methodOn(ImpersonationController.class).get(impersonationDto.getName()))
+        Link selfLink = linkTo(methodOn(ImpersonationController.class)
+                .get(impersonationDto.getName()))
                 .withSelfRel();
         impersonationDto.add(selfLink);
         return impersonationDto;

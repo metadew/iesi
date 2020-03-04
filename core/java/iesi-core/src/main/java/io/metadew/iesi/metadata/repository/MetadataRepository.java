@@ -25,9 +25,9 @@ public abstract class MetadataRepository {
 	private final static Logger LOGGER = LogManager.getLogger();
 	private final String tablePrefix;
 
-	RepositoryCoordinator repositoryCoordinator;
-	String name;
-	String scope;
+	private RepositoryCoordinator repositoryCoordinator;
+	private String name;
+	private String scope;
 	private List<MetadataObject> metadataObjects;
 	private List<MetadataTable> metadataTables;
 
@@ -41,7 +41,8 @@ public abstract class MetadataRepository {
 		metadataTables = new ArrayList<>();
 
 		DataObjectOperation dataObjectOperation = new DataObjectOperation();
-		dataObjectOperation.setInputFile(FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.def") + File.separator + getObjectDefinitionFileName());
+		dataObjectOperation.setInputFile(FrameworkFolderConfiguration.getInstance().
+				getFolderAbsolutePath("metadata.def") + File.separator + getObjectDefinitionFileName());
 		dataObjectOperation.parseFile();
 		ObjectMapper objectMapper = new ObjectMapper();
 		//
@@ -62,7 +63,32 @@ public abstract class MetadataRepository {
 				metadataTables.add(metadataTable);
 			}
 		}
+	}
 
+	// Constructor for testing
+	public MetadataRepository(String name, String scope ,RepositoryCoordinator repositoryCoordinator){
+		this.name = name;
+		this.scope = scope;
+		this.repositoryCoordinator = repositoryCoordinator;
+		this.tablePrefix = "test";
+	}
+
+	public MetadataRepository(String tablePrefix, RepositoryCoordinator repositoryCoordinator, String name, String scope,
+							  List<MetadataObject> metadataObjects, List<MetadataTable> metadataTables) {
+		this.tablePrefix = tablePrefix;
+		this.repositoryCoordinator = repositoryCoordinator;
+		this.name = name;
+		this.scope = scope;
+		this.metadataObjects = metadataObjects;
+		this.metadataTables = metadataTables;
+	}
+
+	public void setMetadataObjects(List<MetadataObject> metadataObjects) {
+		this.metadataObjects = metadataObjects;
+	}
+
+	public void setMetadataTables(List<MetadataTable> metadataTables) {
+		this.metadataTables = metadataTables;
 	}
 
 	public abstract String getDefinitionFileName();
@@ -151,7 +177,7 @@ public abstract class MetadataRepository {
 	public abstract void save(DataObject dataObject) throws MetadataRepositorySaveException;
 
 	public void shutdown() {
-		LOGGER.info("shutting down metadata repository " + getCategory());
+		LOGGER.debug("shutting down metadata repository " + getCategory());
 		repositoryCoordinator.shutdown();
 	}
 }

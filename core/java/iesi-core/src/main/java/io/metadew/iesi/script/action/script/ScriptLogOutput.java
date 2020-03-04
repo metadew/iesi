@@ -51,9 +51,9 @@ public class ScriptLogOutput {
 
         // Get Parameters
         for (ActionParameter actionParameter : actionExecution.getAction().getParameters()) {
-            if (actionParameter.getName().equalsIgnoreCase("name")) {
+            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("name")) {
                 outputName.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
-            } else if (actionParameter.getName().equalsIgnoreCase("value")) {
+            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("value")) {
                 outputValue.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }
@@ -63,20 +63,11 @@ public class ScriptLogOutput {
         actionParameterOperationMap.put("value", outputValue);
     }
 
-    public boolean execute() {
+    public boolean execute() throws InterruptedException {
         try {
-            String name = convertOutputName(outputName.getValue());
-            String value = convertOutputValue(outputValue.getValue());
-            // log the output in the script
-            executionControl.logExecutionOutput(actionExecution.getScriptExecution(), name, value);
-
-            // Log the output in the action as well
-            actionExecution.getActionControl().logOutput("output.name", name);
-            actionExecution.getActionControl().logOutput("output.value", value);
-
-            actionExecution.getActionControl().increaseSuccessCount();
-
-            return true;
+            return executeOperation();
+        } catch (InterruptedException e) {
+            throw (e);
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
@@ -89,6 +80,21 @@ public class ScriptLogOutput {
             return false;
         }
 
+    }
+
+    private boolean executeOperation() throws InterruptedException {
+        String name = convertOutputName(outputName.getValue());
+        String value = convertOutputValue(outputValue.getValue());
+        // log the output in the script
+        executionControl.logExecutionOutput(actionExecution.getScriptExecution(), name, value);
+
+        // Log the output in the action as well
+        actionExecution.getActionControl().logOutput("output.name", name);
+        actionExecution.getActionControl().logOutput("output.value", value);
+
+        actionExecution.getActionControl().increaseSuccessCount();
+
+        return true;
     }
 
     private String convertOutputValue(DataType outputValue) {

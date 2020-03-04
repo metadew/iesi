@@ -20,7 +20,7 @@ public class ImpersonationDto extends ResourceSupport {
         this.parameters = parameters;
     }
     public Impersonation convertToEntity() {
-        return new Impersonation(name, description, parameters.stream().map(ImpersonationParameterDto::convertToEntity).collect(Collectors.toList()));
+        return new Impersonation(name, description, parameters.stream().map(parameter -> parameter.convertToEntity(name)).collect(Collectors.toList()));
     }
 
     public String getName() {

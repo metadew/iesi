@@ -1,6 +1,7 @@
 package io.metadew.iesi.server.rest.resource.component.dto;
 
 import io.metadew.iesi.metadata.definition.component.ComponentVersion;
+import io.metadew.iesi.metadata.definition.component.key.ComponentVersionKey;
 import org.springframework.hateoas.ResourceSupport;
 
 public class ComponentVersionDto extends ResourceSupport {
@@ -17,9 +18,8 @@ public class ComponentVersionDto extends ResourceSupport {
         this.description = description;
     }
 
-    public ComponentVersion convertToEntity() {
-        return new ComponentVersion(
-                number, description);
+    public ComponentVersion convertToEntity(String name) {
+        return new ComponentVersion(new ComponentVersionKey(name, number), description);
     }
 
     public long getNumber() {

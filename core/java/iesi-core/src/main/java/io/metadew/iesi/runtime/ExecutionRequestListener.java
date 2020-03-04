@@ -7,31 +7,38 @@ import io.metadew.iesi.framework.execution.FrameworkControl;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.framework.execution.FrameworkRuntime;
 import io.metadew.iesi.metadata.configuration.execution.ExecutionRequestConfiguration;
-import io.metadew.iesi.metadata.configuration.execution.exception.ExecutionRequestDoesNotExistException;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequestStatus;
+import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.ThreadContext;
 
 import java.text.MessageFormat;
+import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.Queue;
+import java.util.concurrent.*;
 
+@Log4j2
 public class ExecutionRequestListener implements Runnable {
 
-    private static final Logger LOGGER = LogManager.getLogger();
+    private Queue<ExecutionRequest> executionRequestsQueue;
     private final ExecutorService executor;
     private boolean keepRunning = true;
 
     public ExecutionRequestListener() {
         int threadSize = FrameworkSettingConfiguration.getInstance().getSettingPath("server.threads")
-                .map(settingPath -> Integer.parseInt(FrameworkControl.getInstance().getProperty(settingPath)))
+                .map(settingPath -> Integer.parseInt(FrameworkControl.getInstance().getProperty(settingPath)
+                        .orElseThrow(() -> new RuntimeException("no value set for server.threads"))))
                 .orElse(4);
-        LOGGER.info(MessageFormat.format("starting listener with thread pool size {0}", threadSize));
-        executor = Executors.newFixedThreadPool(threadSize);
+        log.info(MessageFormat.format("starting listener with thread pool size {0}", threadSize));
+
+        executor = new ThreadPoolExecutor(threadSize, threadSize,
+                0L, TimeUnit.MILLISECONDS,
+                new EmptyQueue());
+        executionRequestsQueue = new LinkedBlockingQueue<>();
+        new Thread(ExecutionRequestMonitor.getInstance()).start();
     }
 
     public void run() {
@@ -42,32 +49,96 @@ public class ExecutionRequestListener implements Runnable {
         ThreadContext.put("fwk.code", FrameworkConfiguration.getInstance().getFrameworkCode());
         try {
             while (keepRunning) {
-                LOGGER.trace("executionrequestlistener=fetching new requests");
-                List<ExecutionRequest> executionRequests = ExecutionRequestConfiguration.getInstance().getAllNew();
-                LOGGER.trace(MessageFormat.format("executionrequestlistener=found {0} Requests", executionRequests.size()));
-                for (ExecutionRequest executionRequest : executionRequests) {
-                    LOGGER.info(MessageFormat.format("executionrequestlistener=submitting request {0} for execution", executionRequest.getMetadataKey().getId()));
-                    executionRequest.updateExecutionRequestStatus(ExecutionRequestStatus.SUBMITTED);
-                    ExecutionRequestConfiguration.getInstance().update(executionRequest);
-                    executor.submit(new ExecutionRequestTask(executionRequest));
-                }
+                pollNewRequests();
+                scheduleRequests();
                 Thread.sleep(1000);
             }
-        } catch (ExecutionRequestDoesNotExistException | InterruptedException e) {
+        } catch (InterruptedException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private void scheduleRequests() {
+        log.debug(MessageFormat.format("executionrequestlistener={0} execution requests in queue", executionRequestsQueue.size()));
+        boolean workersAvailable = true;
+        while (workersAvailable && executionRequestsQueue.peek() != null) {
+            ExecutionRequest executionRequest = executionRequestsQueue.peek();
+            try {
+                log.debug("executionrequestlistener=trying to assign "+executionRequest.getMetadataKey().toString()+" to execute execution requests");
+                executor.submit(new ExecutionRequestTask(executionRequest));
+                executionRequest.updateExecutionRequestStatus(ExecutionRequestStatus.SUBMITTED);
+                ExecutionRequestConfiguration.getInstance().update(executionRequest);
+                log.debug(MessageFormat.format("executionrequestlistener=removing {0} from queue", executionRequest.getMetadataKey().toString()));
+                executionRequestsQueue.remove();
+            } catch (RejectedExecutionException e) {
+                log.debug("executionrequestlistener=no workers available to execute execution requests");
+                workersAvailable = false;
+            }
+        }
+    }
+
+    public void submit(ExecutionRequest executionRequest) {
+        executionRequest.updateExecutionRequestStatus(ExecutionRequestStatus.SUBMITTED);
+        ExecutionRequestConfiguration.getInstance().update(executionRequest);
+        executionRequestsQueue.add(executionRequest);
+    }
+
+    private void pollNewRequests() {
+        log.trace("executionrequestlistener=fetching new requests");
+        List<ExecutionRequest> executionRequests = ExecutionRequestConfiguration.getInstance().getAllNew();
+        log.trace(MessageFormat.format("executionrequestlistener=found {0} new execution requests", executionRequests.size()));
+        for (ExecutionRequest executionRequest : executionRequests) {
+            log.info(MessageFormat.format("executionrequestlistener=submitting request {0} for execution", executionRequest.getMetadataKey().getId()));
+            executionRequest.updateExecutionRequestStatus(ExecutionRequestStatus.SUBMITTED);
+            ExecutionRequestConfiguration.getInstance().update(executionRequest);
+            executionRequestsQueue.add(executionRequest);
         }
     }
 
     public void shutdown() throws InterruptedException {
         keepRunning = false;
-        LOGGER.info("shutting down execution listener...");
-        if (!executor.awaitTermination(5, TimeUnit.SECONDS))  {
-            LOGGER.info("Forcing execution listener shutdown...");
+        log.info("executionrequestlistener=shutting down execution request listener...");
+        if (!executor.awaitTermination(5, TimeUnit.SECONDS)) {
+            log.info("executionrequestlistener=forcing execution request listener shutdown...");
             executor.shutdownNow();
         }
-        LOGGER.info("Execution listener shutdown");
+        ExecutionRequestMonitor.getInstance().shutdown();
+        log.info("executionrequestlistener=execution request listener shutdown");
         Thread mainThread = Thread.currentThread();
         mainThread.join(2000);
+    }
+
+    private static class EmptyQueue extends ArrayBlockingQueue<Runnable> {
+        private static final long serialVersionUID = 1L;
+
+        EmptyQueue() {
+            super(1);
+        }
+
+        public int remainingCapacity() {
+            return 0;
+        }
+
+        public boolean add(Runnable runnable) {
+            throw new IllegalStateException("Queue is full");
+        }
+
+        public void put(Runnable runnable) throws InterruptedException {
+            throw new InterruptedException("Unable to insert into queue");
+        }
+
+        public boolean offer(Runnable runnable, long timeout, TimeUnit timeUnit) throws InterruptedException {
+            Thread.sleep(timeUnit.toMillis(timeout));
+            return false;
+        }
+
+        public boolean addAll(Collection<? extends Runnable> collection) {
+            if (collection.size() > 0) {
+                throw new IllegalArgumentException("Too many items in collection");
+            } else {
+                return false;
+            }
+        }
     }
 
 }

@@ -151,32 +151,19 @@ public class MetadataRepositoryOperation {
 
         File workFile = new File(FilenameUtils.normalize(workFolder + File.separator + file.getName()));
         if (!workFile.isDirectory()) {
-            try {
-                LOGGER.info("metadata.file=" + file.getName());
-                DataObjectOperation dataObjectOperation = new DataObjectOperation(workFile.getAbsolutePath());
-                dataObjectOperation.saveToMetadataRepository(metadataRepositories);
+            LOGGER.info("metadata.file=" + file.getName());
+            DataObjectOperation dataObjectOperation = new DataObjectOperation(workFile.getAbsolutePath());
+            dataObjectOperation.saveToMetadataRepository(metadataRepositories);
 
-                // Move file to archive folder
-                if (moveToArchiveFolder) {
-                    String archiveFileName = dateFormat.format(new Date()) + "-" + timeFormat.format(new Date()) + "-"
-                            + uuid + "-" + workFile.getName();
-                    FileTools.copyFromFileToFile(workFile.getAbsolutePath(),
-                            FilenameUtils.normalize(archiveFolder + File.separator + archiveFileName));
-                    FileTools.delete(workFile.getAbsolutePath());
-                }
-
-            } catch (Exception e) {
-
-                // Move file to error folder
-                if (moveToErrorFolder) {
-                    String errorFileName = dateFormat.format(new Date()) + "-" + timeFormat.format(new Date()) + "-"
-                            + uuid + "-" + file.getName();
-                    FileTools.copyFromFileToFile(workFile.getAbsolutePath(),
-                            FilenameUtils.normalize(errorFolder + File.separator + errorFileName));
-                    FileTools.delete(workFile.getAbsolutePath());
-                }
-
+            // Move file to archive folder
+            if (moveToArchiveFolder) {
+                String archiveFileName = dateFormat.format(new Date()) + "-" + timeFormat.format(new Date()) + "-"
+                        + uuid + "-" + workFile.getName();
+                FileTools.copyFromFileToFile(workFile.getAbsolutePath(),
+                        FilenameUtils.normalize(archiveFolder + File.separator + archiveFileName));
+                FileTools.delete(workFile.getAbsolutePath());
             }
+
         }
 
     }

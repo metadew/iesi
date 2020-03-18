@@ -2,9 +2,6 @@ server:
   servlet:
     context-path: /api
 
-iesi:
-  home: .
-
 spring:
   profiles:
     active: http

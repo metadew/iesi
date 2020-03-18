@@ -1,11 +1,6 @@
 package io.metadew.iesi.connection.database.connection.db2;
 
-import io.metadew.iesi.connection.database.connection.DatabaseConnection;
 import io.metadew.iesi.connection.database.connection.SchemaDatabaseConnection;
-
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Optional;
 
 /**
  * Connection object for IBM DB2 databases. This class extends the default
@@ -45,11 +40,6 @@ public class Db2DatabaseConnection extends SchemaDatabaseConnection {
         }
 
         return connectionUrl.toString();
-    }
-
-    @Override
-    public String getDriver() {
-        return "com.ibm.db2.jcc.DB2Driver";
     }
 
 }

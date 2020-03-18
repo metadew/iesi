@@ -49,9 +49,4 @@ public class PrestoDatabaseConnection extends SchemaDatabaseConnection {
         return connectionUrl.toString();
     }
 
-    @Override
-    public String getDriver() {
-        return "io.prestosql.jdbc.PrestoDriver";
-    }
-
 }

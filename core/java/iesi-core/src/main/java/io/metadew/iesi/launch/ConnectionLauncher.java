@@ -2,6 +2,7 @@ package io.metadew.iesi.launch;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.connection.database.Database;
+import io.metadew.iesi.connection.database.DatabaseHandlerImpl;
 import io.metadew.iesi.connection.database.sql.SqlScriptResult;
 import io.metadew.iesi.connection.operation.ConnectionOperation;
 import io.metadew.iesi.connection.tools.FileTools;
@@ -113,7 +114,7 @@ public class ConnectionLauncher {
             SqlScriptResult sqlScriptResult;
             InputStream inputStream = FileTools.convertToInputStream(sqlStatement,
                     null);
-            sqlScriptResult = database.executeScript(inputStream);
+            sqlScriptResult = DatabaseHandlerImpl.getInstance().executeScript(database, inputStream);
 
             // Evaluate result
             //this.getActionExecution().getActionControl().logOutput("sys.out", sqlScriptResult.getSystemOutput());

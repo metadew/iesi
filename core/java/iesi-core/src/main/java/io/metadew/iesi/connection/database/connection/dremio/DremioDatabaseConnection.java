@@ -58,9 +58,5 @@ public class DremioDatabaseConnection extends SchemaDatabaseConnection {
         return connectionUrl.toString();
     }
 
-    @Override
-    public String getDriver() {
-        return "com.dremio.jdbc.Driver";
-    }
 
 }

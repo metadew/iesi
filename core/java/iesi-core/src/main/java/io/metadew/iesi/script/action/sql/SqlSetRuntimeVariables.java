@@ -1,6 +1,7 @@
 package io.metadew.iesi.script.action.sql;
 
 import io.metadew.iesi.connection.database.Database;
+import io.metadew.iesi.connection.database.DatabaseHandlerImpl;
 import io.metadew.iesi.connection.operation.ConnectionOperation;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.text.Text;
@@ -91,7 +92,7 @@ public class SqlSetRuntimeVariables {
         Database database = connectionOperation.getDatabase(connection);
 
         // Run the action
-        CachedRowSet sqlResultSet = database.executeQuery(query);
+        CachedRowSet sqlResultSet = DatabaseHandlerImpl.getInstance().executeQuery(database, query);
         this.executionControl.getExecutionRuntime().setRuntimeVariables(actionExecution, sqlResultSet);
         actionExecution.getActionControl().increaseSuccessCount();
         return true;

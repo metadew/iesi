@@ -3,6 +3,7 @@ package io.metadew.iesi.script.operation;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.connection.DatabaseConnection;
+import io.metadew.iesi.connection.database.connection.DatabaseConnectionHandlerImpl;
 import io.metadew.iesi.connection.database.connection.sqlite.SqliteDatabaseConnection;
 import io.metadew.iesi.connection.operation.ConnectionOperation;
 import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
@@ -99,7 +100,7 @@ public class RepositoryOperation {
             query += where;
         }
 
-        crs = this.getMetadataConnection().executeQuery(query);
+        crs = DatabaseConnectionHandlerImpl.getInstance().executeQuery(getMetadataConnection(), query);
         try {
             while (crs.next()) {
                 datasetFileName = crs.getString("DATASET_FILE_NM");
@@ -139,7 +140,7 @@ public class RepositoryOperation {
         }
 
         String value = "";
-        crs = this.getDatasetConnection().executeQuery(query);
+        crs = DatabaseConnectionHandlerImpl.getInstance().executeQuery(getDatasetConnection(), query);
         try {
             while (crs.next()) {
                 value = crs.getString("VALUE");
@@ -208,7 +209,7 @@ public class RepositoryOperation {
             query += "','";
             query += value;
             query += "')";
-            this.getDatasetConnection().executeUpdate(query);
+            DatabaseConnectionHandlerImpl.getInstance().executeUpdate(getDatasetConnection(), query);
         } catch (SQLException e) {
             StringWriter StackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(StackTrace));
@@ -219,7 +220,7 @@ public class RepositoryOperation {
         // Check if table exists
         String queryTableExists = "select name from sqlite_master where name = '" + datasetTableName + "'";
         CachedRowSet crs = null;
-        crs = this.getDatasetConnection().executeQuery(queryTableExists);
+        crs = DatabaseConnectionHandlerImpl.getInstance().executeQuery(getDatasetConnection(), queryTableExists);
         String value = "";
         boolean tableExists = false;
         try {
@@ -238,10 +239,10 @@ public class RepositoryOperation {
         // Perform necessary initialization actions
         if (tableExists) {
             String clean = "delete from " + datasetTableName;
-            this.getDatasetConnection().executeUpdate(clean);
+            DatabaseConnectionHandlerImpl.getInstance().executeUpdate(getDatasetConnection(), clean);
         } else {
             String create = "CREATE TABLE " + datasetTableName + " (key TEXT, value TEXT)";
-            this.getDatasetConnection().executeUpdate(create);
+            DatabaseConnectionHandlerImpl.getInstance().executeUpdate(getDatasetConnection(), create);
         }
 
     }

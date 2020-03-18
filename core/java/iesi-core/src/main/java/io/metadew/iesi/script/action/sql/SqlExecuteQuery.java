@@ -1,6 +1,7 @@
 package io.metadew.iesi.script.action.sql;
 
 import io.metadew.iesi.connection.database.Database;
+import io.metadew.iesi.connection.database.DatabaseHandlerImpl;
 import io.metadew.iesi.connection.database.sql.SqlScriptResult;
 import io.metadew.iesi.connection.operation.ConnectionOperation;
 import io.metadew.iesi.connection.tools.sql.SQLDataTransfer;
@@ -176,7 +177,7 @@ public class SqlExecuteQuery {
 
         Optional<Dataset> dataset = this.getExecutionControl().getExecutionRuntime()
                 .getDataset(outputDatasetReferenceName);
-        CachedRowSet crs = database.executeQuery(query);
+        CachedRowSet crs = DatabaseHandlerImpl.getInstance().executeQuery(database, query);
         this.getActionExecution().getActionControl().logOutput("sql.execute.size", Integer.toString(crs.size()));
         // TODO resolve for files and resolve inside
         if (dataset.isPresent()) {

@@ -46,9 +46,4 @@ public class PostgresqlDatabaseConnection extends SchemaDatabaseConnection {
         return connectionUrl.toString();
     }
 
-    @Override
-    public String getDriver() {
-        return "org.postgresql.Driver";
-    }
-
 }

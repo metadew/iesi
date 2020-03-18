@@ -2,6 +2,7 @@ package io.metadew.iesi.script.action.ddl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.connection.database.Database;
+import io.metadew.iesi.connection.database.DatabaseHandlerImpl;
 import io.metadew.iesi.connection.database.tools.DatabaseTools;
 import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.datatypes.DataType;
@@ -176,7 +177,7 @@ public class DdlGenerateFromFile {
     	
     	for (DataObject dataObject : dataObjectOperation.getDataObjects()) {
     		MetadataTable metadataTable = objectMapper.convertValue(dataObject.getData(), MetadataTable.class);
-    		FileTools.appendToFile(outputFile, "", database.getCreateStatement(metadataTable, "IESI_"));
+    		FileTools.appendToFile(outputFile, "", DatabaseHandlerImpl.getInstance().getCreateStatement(database, metadataTable, "IESI_"));
     	}
     	
     	this.getActionExecution().getActionControl().increaseSuccessCount();

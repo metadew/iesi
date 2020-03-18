@@ -1,6 +1,7 @@
 package io.metadew.iesi.data.generation.execution;
 
 import io.metadew.iesi.client.execution.ProgressBar;
+import io.metadew.iesi.connection.database.DatabaseHandlerImpl;
 import io.metadew.iesi.connection.database.SqliteDatabase;
 import io.metadew.iesi.connection.database.connection.sqlite.SqliteDatabaseConnection;
 import io.metadew.iesi.connection.tools.FolderTools;
@@ -81,10 +82,10 @@ public class GenerationRuntime {
 		this.setNumberOfGeneratedItems(0);
 
 		this.setFieldListSelect(fieldListSelect);
-		this.getTemporaryDatabaseConnection().executeUpdate(query);
+		DatabaseHandlerImpl.getInstance().executeUpdate(this.getTemporaryDatabaseConnection(), query);
 		
 		// Create index
-		this.getTemporaryDatabaseConnection().executeUpdate("create index " + this.getTableName() + "_id_index on " + this.getTableName() +  "(id)");
+		DatabaseHandlerImpl.getInstance().executeUpdate(this.getTemporaryDatabaseConnection(), "create index " + this.getTableName() + "_id_index on " + this.getTableName() +  "(id)");
 
 		// insert id values
 		query = "";
@@ -94,7 +95,7 @@ public class GenerationRuntime {
 		query += ")";
 
 		for (int currentRecord = 0; currentRecord < numberOfRecords; currentRecord++) {
-			this.getTemporaryDatabaseConnection().executeUpdate(query);
+			DatabaseHandlerImpl.getInstance().executeUpdate(this.getTemporaryDatabaseConnection(), query);
 		}
 		
 	}

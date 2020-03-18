@@ -1,5 +1,6 @@
 package io.metadew.iesi.data.generation.rule;
 
+import io.metadew.iesi.connection.database.DatabaseHandlerImpl;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.data.generation.execution.GenerationRuleExecution;
 import io.metadew.iesi.data.generation.execution.GenerationRuleParameterExecution;
@@ -94,8 +95,8 @@ public class DtDate {
             query += " set v" + this.getGenerationRuleExecution().getGenerationRule().getField() + "=";
             query += SQLTools.GetStringForSQL(generatedValue);
             query += " where id=" + (currentRecord + 1);
-            this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().getTemporaryDatabaseConnection()
-                    .executeUpdate(query);
+            DatabaseHandlerImpl.getInstance().executeUpdate(this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().getTemporaryDatabaseConnection()
+                    , query);
 
             this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().updateProgress();
         }

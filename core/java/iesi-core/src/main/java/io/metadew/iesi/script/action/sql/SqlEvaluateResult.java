@@ -1,6 +1,7 @@
 package io.metadew.iesi.script.action.sql;
 
 import io.metadew.iesi.connection.database.Database;
+import io.metadew.iesi.connection.database.DatabaseHandlerImpl;
 import io.metadew.iesi.connection.operation.ConnectionOperation;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.datatypes.DataType;
@@ -110,7 +111,7 @@ public class SqlEvaluateResult {
 
         // Run the action
         CachedRowSet crs;
-        crs = database.executeQueryLimitRows(query, 10);
+        crs = DatabaseHandlerImpl.getInstance().executeQueryLimitRows(database, query, 10);
         int rowCount = SQLTools.getRowCount(crs);
         this.getActionExecution().getActionControl().logOutput("count", Integer.toString(rowCount));
 

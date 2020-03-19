@@ -1,6 +1,7 @@
 package io.metadew.iesi.connection.operation.database;
 
 import io.metadew.iesi.connection.database.Database;
+import io.metadew.iesi.connection.database.DatabaseHandlerImpl;
 import io.metadew.iesi.connection.tools.OutputTools;
 
 import javax.sql.rowset.CachedRowSet;
@@ -44,7 +45,7 @@ public class ScriptBuilder {
         try {
             // Get data to buffer
             CachedRowSet crs = null;
-            crs = database.executeQuery(sqlStatement);
+            crs = DatabaseHandlerImpl.getInstance().executeQuery(database, sqlStatement);
 
             // Get result set meta data
             ResultSetMetaData rsmd = crs.getMetaData();

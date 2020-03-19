@@ -1,5 +1,6 @@
 package io.metadew.iesi.data.generation.execution;
 
+import io.metadew.iesi.connection.database.DatabaseHandlerImpl;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
@@ -69,8 +70,8 @@ public class GenerationRuleBlankInjectionExecution {
             query += SQLTools.GetStringForSQL(blankValue);
             query += " where id=" + (list.get((int) selectedBlank));
 
-            this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().getTemporaryDatabaseConnection()
-                    .executeUpdate(query);
+            DatabaseHandlerImpl.getInstance().executeUpdate(this.getGenerationRuleExecution().getGenerationExecution().getGenerationRuntime().getTemporaryDatabaseConnection()
+                    , query);
 
             list.remove((int) selectedBlank);
 

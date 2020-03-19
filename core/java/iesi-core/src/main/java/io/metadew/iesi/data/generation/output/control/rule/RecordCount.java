@@ -1,5 +1,6 @@
 package io.metadew.iesi.data.generation.output.control.rule;
 
+import io.metadew.iesi.connection.database.DatabaseHandlerImpl;
 import io.metadew.iesi.data.generation.execution.GenerationControlRuleExecution;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
@@ -41,8 +42,8 @@ public class RecordCount {
             CachedRowSet crs = null;
             String query = "select count(*) as 'RECORD_COUNT' from "
                     + this.getGenerationControlRuleExecution().getGenerationExecution().getGenerationRuntime().getTableName();
-            crs = this.getGenerationControlRuleExecution().getGenerationExecution().getGenerationRuntime().getTemporaryDatabaseConnection()
-                    .executeQuery(query);
+            crs = DatabaseHandlerImpl.getInstance().executeQuery(this.getGenerationControlRuleExecution().getGenerationExecution().getGenerationRuntime().getTemporaryDatabaseConnection()
+                    , query);
 
             String recordCount = "";
             while (crs.next()) {

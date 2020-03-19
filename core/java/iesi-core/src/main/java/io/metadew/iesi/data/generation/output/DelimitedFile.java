@@ -1,6 +1,7 @@
 package io.metadew.iesi.data.generation.output;
 
 import io.metadew.iesi.common.text.ParsingTools;
+import io.metadew.iesi.connection.database.DatabaseHandlerImpl;
 import io.metadew.iesi.connection.tools.FolderTools;
 import io.metadew.iesi.connection.tools.OutputTools;
 import io.metadew.iesi.data.generation.execution.GenerationControlExecution;
@@ -93,8 +94,8 @@ public class DelimitedFile {
                 + this.getGenerationOutputExecution().getGenerationExecution().getGenerationRuntime().getFieldListSelect()
                 + " from "
                 + this.getGenerationOutputExecution().getGenerationExecution().getGenerationRuntime().getTableName();
-        crs = this.getGenerationOutputExecution().getGenerationExecution().getGenerationRuntime().getTemporaryDatabaseConnection()
-                .executeQuery(query);
+        crs = DatabaseHandlerImpl.getInstance().executeQuery(this.getGenerationOutputExecution().getGenerationExecution().getGenerationRuntime().getTemporaryDatabaseConnection()
+                , query);
 		try {
 			OutputTools.createOutputFile(fileName, folderName, crs,
 					this.getSeparator().getValue(),

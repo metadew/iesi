@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.ValueNode;
 import io.metadew.iesi.connection.database.Database;
+import io.metadew.iesi.connection.database.DatabaseHandlerImpl;
 import io.metadew.iesi.connection.database.SqliteDatabase;
 import io.metadew.iesi.connection.database.connection.sqlite.SqliteDatabaseConnection;
 import io.metadew.iesi.connection.tools.SQLTools;
@@ -91,7 +92,7 @@ public class KeyValueDatasetService extends BaseDatasetService<KeyValueDataset> 
         DatasetMetadataService.getInstance().insertDatasetDatabaseInformation(datasetMetadata, nextInventoryId, datasetFilename, tableName);
         Database database = new SqliteDatabase(new SqliteDatabaseConnection(filepath));
         String create = "CREATE TABLE " + SQLTools.GetStringForSQLTable(tableName) + " (key TEXT, value TEXT)";
-        database.executeUpdate(create);
+        DatabaseHandlerImpl.getInstance().executeUpdate(database, create);
         return new KeyValueDataset(name, labels, datasetMetadata, database, tableName);
     }
 
@@ -182,14 +183,14 @@ public class KeyValueDatasetService extends BaseDatasetService<KeyValueDataset> 
         // Check if table exists
         String queryTableExists = "select name from sqlite_master where name = " + SQLTools.GetStringForSQLTable(keyValueDataset.getTableName()) + ";";
         try {
-            CachedRowSet crs = keyValueDataset.getDatasetDatabase().executeQuery(queryTableExists);
+            CachedRowSet crs = DatabaseHandlerImpl.getInstance().executeQuery(keyValueDataset.getDatasetDatabase(), queryTableExists);
             if (crs.size() >= 1) {
                 crs.next();
                 String clean = "delete from " + SQLTools.GetStringForSQLTable(keyValueDataset.getTableName()) + ";";
-                keyValueDataset.getDatasetDatabase().executeUpdate(clean);
+                DatabaseHandlerImpl.getInstance().executeUpdate(keyValueDataset.getDatasetDatabase(), clean);
             } else {
                 String create = "CREATE TABLE " + SQLTools.GetStringForSQLTable(keyValueDataset.getTableName()) + " (key TEXT, value TEXT);";
-                keyValueDataset.getDatasetDatabase().executeUpdate(create);
+                DatabaseHandlerImpl.getInstance().executeUpdate(keyValueDataset.getDatasetDatabase(), create);
             }
             crs.close();
         } catch (SQLException e) {
@@ -214,7 +215,7 @@ public class KeyValueDatasetService extends BaseDatasetService<KeyValueDataset> 
     public Optional<DataType> getDataItem(KeyValueDataset dataset, String dataItem, ExecutionRuntime executionRuntime) {
         String query = "select value from " + SQLTools.GetStringForSQLTable(dataset.getTableName()) + " where key = " + SQLTools.GetStringForSQL(dataItem) + ";";
         try {
-            CachedRowSet crs = dataset.getDatasetDatabase().executeQuery(query);
+            CachedRowSet crs = DatabaseHandlerImpl.getInstance().executeQuery(dataset.getDatasetDatabase(), query);
             if (crs.size() == 0) {
                 return Optional.empty();
             } else if (crs.size() > 1) {
@@ -234,7 +235,7 @@ public class KeyValueDatasetService extends BaseDatasetService<KeyValueDataset> 
         Map<String, DataType> dataItems = new HashMap<>();
         try {
             String query = "select key, value from " + SQLTools.GetStringForSQLTable(dataset.getTableName()) + ";";
-            CachedRowSet crs = dataset.getDatasetDatabase().executeQuery(query);
+            CachedRowSet crs = DatabaseHandlerImpl.getInstance().executeQuery(dataset.getDatasetDatabase(), query);
             while (crs.next()) {
                 dataItems.put(crs.getString("key"), DataTypeHandler.getInstance().resolve(crs.getString("value"), executionRuntime));
             }
@@ -249,7 +250,7 @@ public class KeyValueDatasetService extends BaseDatasetService<KeyValueDataset> 
     public void setDataItem(KeyValueDataset dataset, String key, DataType value) {
         String query = "insert into " + SQLTools.GetStringForSQLTable(dataset.getTableName()) + " (key, value) values ("
                 + SQLTools.GetStringForSQL(key) + ", " + SQLTools.GetStringForSQL(value.toString()) + ");";
-        dataset.getDatasetDatabase().executeUpdate(query);
+        DatabaseHandlerImpl.getInstance().executeUpdate(dataset.getDatasetDatabase(), query);
     }
 
     @Override

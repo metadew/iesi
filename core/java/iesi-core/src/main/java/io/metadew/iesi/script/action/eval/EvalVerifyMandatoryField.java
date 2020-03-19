@@ -1,6 +1,7 @@
 package io.metadew.iesi.script.action.eval;
 
 import io.metadew.iesi.connection.database.Database;
+import io.metadew.iesi.connection.database.DatabaseHandlerImpl;
 import io.metadew.iesi.connection.operation.ConnectionOperation;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.text.Text;
@@ -164,7 +165,7 @@ public class EvalVerifyMandatoryField {
         CachedRowSet cachedRowSet;
 
         // Success
-        cachedRowSet = database.executeQuery(this.getSqlSuccess());
+        cachedRowSet = DatabaseHandlerImpl.getInstance().executeQuery(database, this.getSqlSuccess());
         while (cachedRowSet.next()) {
             successTotal = cachedRowSet.getLong("RES_SUC");
         }
@@ -172,7 +173,7 @@ public class EvalVerifyMandatoryField {
         this.getActionExecution().getActionControl().logOutput("pass", Long.toString(successTotal));
 
         // Error
-        cachedRowSet = database.executeQuery(this.getSqlError());
+        cachedRowSet = DatabaseHandlerImpl.getInstance().executeQuery(database, this.getSqlError());
         while (cachedRowSet.next()) {
             errorTotal = cachedRowSet.getLong("RES_ERR");
         }

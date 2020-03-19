@@ -62,30 +62,4 @@ public class OracleDatabaseConnection extends SchemaDatabaseConnection {
         return connectionUrl.toString();
     }
 
-
-    @Override
-    public String getDriver() {
-        return "oracle.jdbc.driver.OracleDriver";
-    }
-
-    public Connection getConnection() {
-        try {
-            Connection connection = super.getConnection();
-
-            Optional<String> schema = getSchema();
-            if (schema.isPresent()) {
-                // TODO: The old JDBC API does not support the setSchema call
-                connection.createStatement().execute("alter session set current_schema=" + schema.get());
-                // connection.setSchema(schema.get());
-            }
-            connection.createStatement().execute("alter session set nls_timestamp_format='YYYY-MM-DD\"T\" HH24:MI:SS:FF'");
-            return connection;
-        } catch (SQLException e) {
-            StringWriter stackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(stackTrace));
-            LOGGER.info("exception=" + e);
-            LOGGER.debug("exception.stacktrace=" + stackTrace.toString());
-            throw new RuntimeException(e);
-        }
-    }
 }

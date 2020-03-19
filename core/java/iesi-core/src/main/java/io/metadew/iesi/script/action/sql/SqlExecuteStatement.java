@@ -1,6 +1,7 @@
 package io.metadew.iesi.script.action.sql;
 
 import io.metadew.iesi.connection.database.Database;
+import io.metadew.iesi.connection.database.DatabaseHandlerImpl;
 import io.metadew.iesi.connection.operation.ConnectionOperation;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.text.Text;
@@ -99,7 +100,7 @@ public class SqlExecuteStatement {
             sqlStatement = sqlStatement + ";";
         }
 
-        database.executeUpdate(sqlStatement);
+        DatabaseHandlerImpl.getInstance().executeUpdate(database, sqlStatement);
 
         // Evaluate result
 //        actionExecution.getActionControl().logOutput("sys.out", sqlScriptResult.getSystemOutput());

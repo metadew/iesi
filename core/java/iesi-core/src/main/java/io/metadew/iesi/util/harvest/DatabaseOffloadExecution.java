@@ -1,6 +1,7 @@
 package io.metadew.iesi.util.harvest;
 
 import io.metadew.iesi.connection.database.Database;
+import io.metadew.iesi.connection.database.DatabaseHandlerImpl;
 import io.metadew.iesi.connection.operation.ConnectionOperation;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
@@ -37,7 +38,7 @@ public class DatabaseOffloadExecution {
         Database targetDatabase = connectionOperation.getDatabase(targetConnection);
 
         CachedRowSet crs = null;
-        crs = sourceDatabase.executeQuery(sqlStatement);
+        crs = DatabaseHandlerImpl.getInstance().executeQuery(sourceDatabase, sqlStatement);
 
         String QueryString = "";
         java.sql.Connection liveTargetDatabaseConnection = null;
@@ -54,16 +55,16 @@ public class DatabaseOffloadExecution {
             // Cleaning
             if (cleanPrevious) {
                 QueryString = SQLTools.getDropStmt(name, true);
-                targetDatabase.executeUpdate(QueryString);
+                DatabaseHandlerImpl.getInstance().executeUpdate(targetDatabase, QueryString);
             }
 
             // create the dataset table if needed
             QueryString = SQLTools.getCreateStmt(rsmd, name, true);
-            targetDatabase.executeUpdate(QueryString);
+            DatabaseHandlerImpl.getInstance().executeUpdate(targetDatabase, QueryString);
 
             String temp = "";
             String sql = SQLTools.getInsertPstmt(rsmd, name);
-            liveTargetDatabaseConnection = targetDatabase.getLiveConnection();
+            liveTargetDatabaseConnection = DatabaseHandlerImpl.getInstance().getLiveConnection(targetDatabase);
             PreparedStatement preparedStatement = liveTargetDatabaseConnection.prepareStatement(sql);
 
             int crsType = crs.getType();

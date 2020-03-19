@@ -21,8 +21,4 @@ public class MysqlDatabaseConnection extends DatabaseConnection {
     }
 
 
-    @Override
-    public String getDriver() {
-        return "com.mysql.jdbc.Driver";
-    }
 }

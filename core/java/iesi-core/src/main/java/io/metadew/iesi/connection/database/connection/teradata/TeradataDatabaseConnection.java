@@ -1,4 +1,6 @@
-package io.metadew.iesi.connection.database.connection;
+package io.metadew.iesi.connection.database.connection.teradata;
+
+import io.metadew.iesi.connection.database.connection.DatabaseConnection;
 
 /**
  * Connection object for Teradata databases. This class extends the default database connection object.
@@ -19,8 +21,4 @@ public class TeradataDatabaseConnection extends DatabaseConnection {
     }
 
 
-    @Override
-    public String getDriver() {
-        return "com.teradata.jdbc.TeraDriver";
-    }
 }

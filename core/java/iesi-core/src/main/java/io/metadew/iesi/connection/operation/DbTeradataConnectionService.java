@@ -1,7 +1,7 @@
 package io.metadew.iesi.connection.operation;
 
 import io.metadew.iesi.connection.database.TeradataDatabase;
-import io.metadew.iesi.connection.database.connection.TeradataDatabaseConnection;
+import io.metadew.iesi.connection.database.connection.teradata.TeradataDatabaseConnection;
 import io.metadew.iesi.framework.crypto.FrameworkCrypto;
 import io.metadew.iesi.framework.execution.FrameworkControl;
 import io.metadew.iesi.metadata.definition.connection.Connection;
@@ -31,7 +31,6 @@ public class DbTeradataConnectionService {
     }
 
     public TeradataDatabase getDatabase(Connection connection) {
-
         String hostName = getMandatoryParameterWithKey(connection, hostKey);
         String databaseName = getMandatoryParameterWithKey(connection, databaseKey);
         String userName = getMandatoryParameterWithKey(connection, userKey);

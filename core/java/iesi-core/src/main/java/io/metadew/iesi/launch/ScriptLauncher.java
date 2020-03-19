@@ -138,7 +138,7 @@ public class ScriptLauncher {
             System.out.println("Option -paramlist (parameter list) value = " + line.getOptionValue("paramlist"));
             for (String label : line.getOptionValues("paramlist")) {
                 scriptExecutionRequestBuilder.parameter(new ScriptExecutionRequestParameter(
-                        new ScriptExecutionRequestParameterKey(scriptExecutionRequestKey.getId()+label.split("=")[0]),
+                        new ScriptExecutionRequestParameterKey(DigestUtils.sha256Hex(scriptExecutionRequestKey.getId()+label.split("=")[0])),
                         scriptExecutionRequestKey,
                         label.split("=")[0], label.split("=")[1]));
             }

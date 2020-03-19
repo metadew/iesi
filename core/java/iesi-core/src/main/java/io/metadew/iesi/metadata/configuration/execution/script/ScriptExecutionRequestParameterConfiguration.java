@@ -68,7 +68,7 @@ public class ScriptExecutionRequestParameterConfiguration extends Configuration<
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
             while (cachedRowSet.next()) {
                 scriptExecutionRequests.add(new ScriptExecutionRequestParameter(
-                        new ScriptExecutionRequestParameterKey("ID"),
+                        new ScriptExecutionRequestParameterKey(cachedRowSet.getString("ID")),
                         new ScriptExecutionRequestKey(cachedRowSet.getString("SCRIPT_EXEC_REQ_ID")),
                         cachedRowSet.getString("NAME"),
                         cachedRowSet.getString("VALUE")));
@@ -117,7 +117,7 @@ public class ScriptExecutionRequestParameterConfiguration extends Configuration<
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
             while (cachedRowSet.next()) {
                 scriptExecutionRequestParameters.add(new ScriptExecutionRequestParameter(
-                        new ScriptExecutionRequestParameterKey("ID"),
+                        new ScriptExecutionRequestParameterKey(cachedRowSet.getString("ID")),
                         new ScriptExecutionRequestKey(cachedRowSet.getString("SCRIPT_EXEC_REQ_ID")),
                         cachedRowSet.getString("NAME"),
                         cachedRowSet.getString("VALUE")));

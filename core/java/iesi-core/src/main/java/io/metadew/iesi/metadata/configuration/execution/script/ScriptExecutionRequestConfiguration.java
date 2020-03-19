@@ -280,7 +280,7 @@ public class ScriptExecutionRequestConfiguration extends Configuration<ScriptExe
         }
     }
 
-    public void deleteByExecutionKey(ExecutionRequestKey executionRequestKey) {
+    public void deleteByExecutionRequest(ExecutionRequestKey executionRequestKey) {
         log.trace(MessageFormat.format("Deleting ScriptExecutionRequest by ExecutionKey {0}.", executionRequestKey.toString()));
         List<String> deleteStatement = deleteStatement(executionRequestKey);
         getMetadataRepository().executeBatch(deleteStatement);

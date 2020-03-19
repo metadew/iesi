@@ -37,18 +37,18 @@ public class ExecutionRequestLabelConfiguration extends Configuration<ExecutionR
     }
 
     @Override
-    public Optional<ExecutionRequestLabel> get(ExecutionRequestLabelKey scriptLabelKey) {
+    public Optional<ExecutionRequestLabel> get(ExecutionRequestLabelKey executionRequestLabelKey) {
         try {
             String queryScriptLabel = "select ID, REQUEST_ID, NAME, VALUE from " + getMetadataRepository().getTableNameByLabel("ExecutionRequestLabels")
-                    + " where ID = " + SQLTools.GetStringForSQL(scriptLabelKey.getId()) + ";";
+                    + " where ID = " + SQLTools.GetStringForSQL(executionRequestLabelKey.getId()) + ";";
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(queryScriptLabel, "reader");
             if (cachedRowSet.size() == 0) {
                 return Optional.empty();
             } else if (cachedRowSet.size() > 1) {
-                log.info(MessageFormat.format("Found multiple implementations for {0}. Returning first implementation", scriptLabelKey.toString()));
+                log.info(MessageFormat.format("Found multiple implementations for {0}. Returning first implementation", executionRequestLabelKey.toString()));
             }
             cachedRowSet.next();
-            return Optional.of(new ExecutionRequestLabel(scriptLabelKey,
+            return Optional.of(new ExecutionRequestLabel(executionRequestLabelKey,
                     new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID")),
                     cachedRowSet.getString("NAME"),
                     cachedRowSet.getString("VALUE")));
@@ -79,32 +79,32 @@ public class ExecutionRequestLabelConfiguration extends Configuration<ExecutionR
     }
 
     @Override
-    public void delete(ExecutionRequestLabelKey scriptLabelKey) {
-        log.trace(MessageFormat.format("Deleting {0}.", scriptLabelKey.toString()));
-        if (!exists(scriptLabelKey)) {
-            throw new MetadataDoesNotExistException(scriptLabelKey);
+    public void delete(ExecutionRequestLabelKey executionRequestLabelKey) {
+        log.trace(MessageFormat.format("Deleting {0}.", executionRequestLabelKey.toString()));
+        if (!exists(executionRequestLabelKey)) {
+            throw new MetadataDoesNotExistException(executionRequestLabelKey);
         }
-        String deleteStatement = deleteStatement(scriptLabelKey);
+        String deleteStatement = deleteStatement(executionRequestLabelKey);
         getMetadataRepository().executeUpdate(deleteStatement);
     }
 
-    private String deleteStatement(ExecutionRequestLabelKey scriptLabelKey) {
+    private String deleteStatement(ExecutionRequestLabelKey executionRequestLabelKey) {
         return "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ExecutionRequestLabels") +
-                " WHERE ID = " + SQLTools.GetStringForSQL(scriptLabelKey.getId()) + ";";
+                " WHERE ID = " + SQLTools.GetStringForSQL(executionRequestLabelKey.getId()) + ";";
     }
 
     @Override
-    public void insert(ExecutionRequestLabel scriptLabel) {
-        log.trace(MessageFormat.format("Inserting {0}.", scriptLabel.toString()));
-        if (exists(scriptLabel)) {
-            throw new MetadataAlreadyExistsException(scriptLabel);
+    public void insert(ExecutionRequestLabel executionRequestLabel) {
+        log.trace(MessageFormat.format("Inserting {0}.", executionRequestLabel.toString()));
+        if (exists(executionRequestLabel)) {
+            throw new MetadataAlreadyExistsException(executionRequestLabel);
         }
         getMetadataRepository().executeUpdate( "INSERT INTO " + getMetadataRepository().getTableNameByLabel("ExecutionRequestLabels") +
                 " (ID, REQUEST_ID, NAME, VALUE) VALUES (" +
-                SQLTools.GetStringForSQL(scriptLabel.getMetadataKey().getId()) + "," +
-                SQLTools.GetStringForSQL(scriptLabel.getExecutionRequestKey().getId()) + "," +
-                SQLTools.GetStringForSQL(scriptLabel.getName()) + "," +
-                SQLTools.GetStringForSQL(scriptLabel.getValue()) + ");");
+                SQLTools.GetStringForSQL(executionRequestLabel.getMetadataKey().getId()) + "," +
+                SQLTools.GetStringForSQL(executionRequestLabel.getExecutionRequestKey().getId()) + "," +
+                SQLTools.GetStringForSQL(executionRequestLabel.getName()) + "," +
+                SQLTools.GetStringForSQL(executionRequestLabel.getValue()) + ");");
 
     }
 
@@ -115,17 +115,17 @@ public class ExecutionRequestLabelConfiguration extends Configuration<ExecutionR
         return cachedRowSet.size() >= 1;
     }
 
-    public void deleteByExecutionRequest(ExecutionRequestKey scriptKey) {
+    public void deleteByExecutionRequest(ExecutionRequestKey executionRequestKey) {
         String deleteStatement = "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ExecutionRequestLabels") +
                 " WHERE " +
-                " REQUEST_ID = " + SQLTools.GetStringForSQL(scriptKey.getId()) + ";";
+                " REQUEST_ID = " + SQLTools.GetStringForSQL(executionRequestKey.getId()) + ";";
         getMetadataRepository().executeUpdate(deleteStatement);
     }
 
-    public List<ExecutionRequestLabel> getByExecutionRequest(ExecutionRequestKey scriptKey) {
+    public List<ExecutionRequestLabel> getByExecutionRequest(ExecutionRequestKey executionRequestKey) {
         List<ExecutionRequestLabel> scriptLabels = new ArrayList<>();
         String query = "select * from " + getMetadataRepository().getTableNameByLabel("ExecutionRequestLabels")
-                + " where REQUEST_ID = " + SQLTools.GetStringForSQL(scriptKey.getId()) + ";";
+                + " where REQUEST_ID = " + SQLTools.GetStringForSQL(executionRequestKey.getId()) + ";";
         CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
         try {
             while (cachedRowSet.next()) {
@@ -141,5 +141,21 @@ public class ExecutionRequestLabelConfiguration extends Configuration<ExecutionR
             throw new RuntimeException(e);
         }
         return scriptLabels;
+    }
+
+    public void update(ExecutionRequestLabel executionRequestLabel) {
+        if (!exists(executionRequestLabel.getMetadataKey())) {
+            throw new MetadataDoesNotExistException(executionRequestLabel);
+        }
+        getMetadataRepository().executeUpdate(updateStatement(executionRequestLabel));
+    }
+
+    private String updateStatement(ExecutionRequestLabel executionRequestLabel) {
+        return "UPDATE " + getMetadataRepository().getTableNameByLabel("ExecutionRequestLabels") + " SET " +
+                "REQUEST_ID=" + SQLTools.GetStringForSQL(executionRequestLabel.getExecutionRequestKey().getId()) + "," +
+                "NAME=" + SQLTools.GetStringForSQL(executionRequestLabel.getName()) + "," +
+                "VALUE=" + SQLTools.GetStringForSQL(executionRequestLabel.getValue()) +
+                " WHERE " +
+                "REQUEST_ID =" + SQLTools.GetStringForSQL(executionRequestLabel.getMetadataKey().getId()) + ";";
     }
 }

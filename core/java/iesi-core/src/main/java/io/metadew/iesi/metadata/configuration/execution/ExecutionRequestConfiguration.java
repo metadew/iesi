@@ -5,10 +5,7 @@ import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.execution.script.ScriptExecutionRequestConfiguration;
-import io.metadew.iesi.metadata.definition.execution.AuthenticatedExecutionRequest;
-import io.metadew.iesi.metadata.definition.execution.ExecutionRequest;
-import io.metadew.iesi.metadata.definition.execution.ExecutionRequestStatus;
-import io.metadew.iesi.metadata.definition.execution.NonAuthenticatedExecutionRequest;
+import io.metadew.iesi.metadata.definition.execution.*;
 import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequest;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
@@ -302,7 +299,8 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
         if (!exists(executionRequestKey)) {
             throw new MetadataDoesNotExistException(executionRequestKey);
         }
-        ScriptExecutionRequestConfiguration.getInstance().deleteByExecutionKey(executionRequestKey);
+        ScriptExecutionRequestConfiguration.getInstance().deleteByExecutionRequest(executionRequestKey);
+        ExecutionRequestLabelConfiguration.getInstance().deleteByExecutionRequest(executionRequestKey);
         List<String> deleteStatement = deleteStatement(executionRequestKey);
         getMetadataRepository().executeBatch(deleteStatement);
     }
@@ -329,6 +327,9 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
         }
         for (ScriptExecutionRequest scriptExecutionRequest : executionRequest.getScriptExecutionRequests()) {
             ScriptExecutionRequestConfiguration.getInstance().insert(scriptExecutionRequest);
+        }
+        for (ExecutionRequestLabel executionRequestLabel : executionRequest.getExecutionRequestLabels()) {
+            ExecutionRequestLabelConfiguration.getInstance().insert(executionRequestLabel);
         }
         List<String> insertStatement = insertStatement(executionRequest);
         getMetadataRepository().executeBatch(insertStatement);
@@ -372,6 +373,12 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
     public void update(ExecutionRequest executionRequest) {
         if (!exists(executionRequest.getMetadataKey())) {
             throw new MetadataDoesNotExistException(executionRequest);
+        }
+        for (ScriptExecutionRequest scriptExecutionRequest : executionRequest.getScriptExecutionRequests()) {
+            ScriptExecutionRequestConfiguration.getInstance().update(scriptExecutionRequest);
+        }
+        for (ExecutionRequestLabel executionRequestLabel : executionRequest.getExecutionRequestLabels()) {
+            ExecutionRequestLabelConfiguration.getInstance().update(executionRequestLabel);
         }
         List<String> updateStatement = updateStatement(executionRequest);
         getMetadataRepository().executeBatch(updateStatement);

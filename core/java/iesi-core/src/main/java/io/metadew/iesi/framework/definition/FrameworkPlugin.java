@@ -1,30 +1,11 @@
 package io.metadew.iesi.framework.definition;
 
+import lombok.Data;
+
+@Data
 public class FrameworkPlugin {
 
-    private String name;
-    private String path;
-
-    //Constructors
-    public FrameworkPlugin() {
-
-    }
-
-    //Getters and Setters
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getPath() {
-        return path;
-    }
-
-    public void setPath(String path) {
-        this.path = path;
-    }
+    private final String name;
+    private final String path;
 
 }

@@ -9,37 +9,24 @@ import java.io.File;
 
 public class FrameworkPluginConfiguration {
 
-    private ConfigFile configFile;
-    private FrameworkPlugin frameworkPlugin;
+    private static FrameworkPluginConfiguration INSTANCE;
 
-    // Constructors
-    public FrameworkPluginConfiguration(ConfigFile configFile) {
-        this.setFrameworkPlugin(new FrameworkPlugin());
-        this.getFrameworkPlugin()
-                .setName(configFile.getProperty(
-                        FrameworkSettingConfiguration.getInstance().getSettingPath("plugin.name").get()).get()
-                        .toLowerCase());
-        StringBuilder path = new StringBuilder();
-        path.append(FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("plugins"));
-        path.append(File.separator);
-        path.append(this.getFrameworkPlugin().getName());
-        this.getFrameworkPlugin().setPath(path.toString());
+    public synchronized static FrameworkPluginConfiguration getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new FrameworkPluginConfiguration();
+        }
+        return INSTANCE;
     }
 
-    public ConfigFile getConfigFile() {
-        return configFile;
-    }
+    private FrameworkPluginConfiguration() {}
 
-    public void setConfigFile(ConfigFile configFile) {
-        this.configFile = configFile;
-    }
-
-    public FrameworkPlugin getFrameworkPlugin() {
-        return frameworkPlugin;
-    }
-
-    public void setFrameworkPlugin(FrameworkPlugin frameworkPlugin) {
-        this.frameworkPlugin = frameworkPlugin;
+    public FrameworkPlugin from(ConfigFile configFile) {
+        String name = configFile
+                .getProperty(FrameworkSettingConfiguration.getInstance()
+                        .getSettingPath("plugin.name").get()).get()
+                .toLowerCase();
+        return new FrameworkPlugin(name,
+                FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("plugins") + File.separator + name);
     }
 
 }

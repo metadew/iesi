@@ -61,7 +61,7 @@ public class FrameworkInstance {
         FrameworkControl frameworkControl = FrameworkControl.getInstance();
         frameworkControl.init("write", frameworkInitializationFile);
 
-        FrameworkActionTypeConfiguration.getInstance().setActionTypesFromPlugins(frameworkControl.getFrameworkPluginConfigurationList());
+        FrameworkActionTypeConfiguration.getInstance().setActionTypesFromPlugins(frameworkControl.getFrameworkPlugins());
         List<MetadataRepository> metadataRepositories = new ArrayList<>();
 
         for (MetadataRepositoryConfiguration metadataRepositoryConfiguration : frameworkControl.getMetadataRepositoryConfigurations()) {
@@ -91,7 +91,7 @@ public class FrameworkInstance {
         FrameworkControl frameworkControl = FrameworkControl.getInstance();
         frameworkControl.init(logonType, frameworkInitializationFile);
 
-        FrameworkActionTypeConfiguration.getInstance().setActionTypesFromPlugins(frameworkControl.getFrameworkPluginConfigurationList());
+        FrameworkActionTypeConfiguration.getInstance().setActionTypesFromPlugins(frameworkControl.getFrameworkPlugins());
         List<MetadataRepository> metadataRepositories = new ArrayList<>();
 
         for (MetadataRepositoryConfiguration metadataRepositoryConfiguration : frameworkControl.getMetadataRepositoryConfigurations()) {

@@ -2,12 +2,13 @@ package io.metadew.iesi.framework.operation;
 
 import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
+import io.metadew.iesi.framework.definition.FrameworkPlugin;
 import io.metadew.iesi.framework.execution.FrameworkControl;
-import io.metadew.iesi.metadata.configuration.FrameworkPluginConfiguration;
+import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
-
+@Log4j2
 public class FrameworkPluginOperation {
 
     private String pluginConfigurationFile;
@@ -17,13 +18,13 @@ public class FrameworkPluginOperation {
 
     public boolean verifyPlugins(String configurationToVerify) {
         boolean result = false;
-        for (FrameworkPluginConfiguration frameworkPluginConfiguration : FrameworkControl.getInstance().getFrameworkPluginConfigurationList()) {
-            StringBuilder configurationFile = new StringBuilder();
-            configurationFile.append(frameworkPluginConfiguration.getFrameworkPlugin().getPath());
-            configurationFile.append(FrameworkFolderConfiguration.getInstance().getFolderPath("metadata.conf"));
-            configurationFile.append(File.separator);
-            configurationFile.append(configurationToVerify);
-            String filePath = FilenameUtils.normalize(configurationFile.toString());
+        for (FrameworkPlugin frameworkPlugin : FrameworkControl.getInstance().getFrameworkPlugins()) {
+            String configurationFile = frameworkPlugin.getPath() +
+                    File.separator +
+                    FrameworkFolderConfiguration.getInstance().getFolderPath("metadata.conf") +
+                    File.separator +
+                    configurationToVerify;
+            String filePath = FilenameUtils.normalize(configurationFile);
             if (FileTools.exists(filePath)) {
                 this.setPluginConfigurationFile(filePath);
                 result = true;

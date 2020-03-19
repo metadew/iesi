@@ -4,8 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.common.config.*;
 import io.metadew.iesi.framework.configuration.FrameworkConfiguration;
 import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
+import io.metadew.iesi.framework.definition.FrameworkPlugin;
 import io.metadew.iesi.metadata.configuration.FrameworkPluginConfiguration;
 import io.metadew.iesi.metadata.repository.configuration.MetadataRepositoryConfiguration;
+import lombok.extern.log4j.Log4j2;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -20,11 +22,12 @@ import java.util.Properties;
 
 import static org.apache.commons.io.FilenameUtils.separatorsToUnix;
 
+@Log4j2
 public class FrameworkControl {
 
     private Properties properties;
     private List<MetadataRepositoryConfiguration> metadataRepositoryConfigurations;
-    private List<FrameworkPluginConfiguration> frameworkPluginConfigurationList;
+    private List<FrameworkPlugin> frameworkPlugins;
     private String logonType;
 
 
@@ -41,10 +44,10 @@ public class FrameworkControl {
     }
 
     public void init(Properties properties, List<MetadataRepositoryConfiguration> metadataRepositoryConfigurations,
-                     List<FrameworkPluginConfiguration> frameworkPluginConfigurationList, String logonType) {
+                     List<FrameworkPlugin> frameworkPlugins, String logonType) {
         this.properties = properties;
         this.metadataRepositoryConfigurations = metadataRepositoryConfigurations;
-        this.frameworkPluginConfigurationList = frameworkPluginConfigurationList;
+        this.frameworkPlugins = frameworkPlugins;
         this.logonType = logonType;
     }
 
@@ -52,7 +55,7 @@ public class FrameworkControl {
         this.logonType = logonType;
         this.properties = new Properties();
         this.metadataRepositoryConfigurations = new ArrayList<>();
-        this.frameworkPluginConfigurationList = new ArrayList<>();
+        this.frameworkPlugins = new ArrayList<>();
         properties.put(FrameworkConfiguration.getInstance().getFrameworkCode() + ".home", separatorsToUnix(FrameworkConfiguration.getInstance().getFrameworkHome().toString()));
         readSettingFiles(FrameworkConfiguration.getInstance().getFrameworkHome().resolve("conf").resolve(frameworkInitializationFile.getName()));
     }
@@ -63,7 +66,7 @@ public class FrameworkControl {
         addSetting("iesi.identifier", "iesi");
         addSetting("iesi.metadata.repository.instance.name", "");
         this.metadataRepositoryConfigurations = new ArrayList<>();
-        this.frameworkPluginConfigurationList = new ArrayList<>();
+        this.frameworkPlugins = new ArrayList<>();
     }
 
     // Methods
@@ -93,11 +96,13 @@ public class FrameworkControl {
                 }
 
                 if (type.trim().equalsIgnoreCase("repository")) {
+                    log.info("Configuring repository according to " + configFile.getFilePath());
                     MetadataRepositoryConfiguration metadataRepositoryConfiguration = new MetadataRepositoryConfiguration(configFile);
                     this.getMetadataRepositoryConfigurations().add(metadataRepositoryConfiguration);
                 } else if (type.trim().equalsIgnoreCase("plugin")) {
-                    FrameworkPluginConfiguration frameworkPluginConfiguration = new FrameworkPluginConfiguration(configFile);
-                    this.getFrameworkPluginConfigurationList().add(frameworkPluginConfiguration);
+                    log.trace("Configuring plugin according to " + configFile.getFilePath());
+                    this.getFrameworkPlugins().add(FrameworkPluginConfiguration.getInstance().from(configFile));
+                    log.trace("Configured " + FrameworkPluginConfiguration.getInstance().from(configFile));
                 } else {
                     properties.putAll(configFile.getProperties());
                 }
@@ -198,12 +203,8 @@ public class FrameworkControl {
     }
 
 
-    public List<FrameworkPluginConfiguration> getFrameworkPluginConfigurationList() {
-        return frameworkPluginConfigurationList;
-    }
-
-    public void setFrameworkPluginConfigurationList(List<FrameworkPluginConfiguration> frameworkPluginConfigurationList) {
-        this.frameworkPluginConfigurationList = frameworkPluginConfigurationList;
+    public List<FrameworkPlugin> getFrameworkPlugins() {
+        return frameworkPlugins;
     }
 
 }

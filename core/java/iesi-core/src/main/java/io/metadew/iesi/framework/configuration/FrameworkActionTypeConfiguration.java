@@ -2,7 +2,7 @@ package io.metadew.iesi.framework.configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.connection.tools.FileTools;
-import io.metadew.iesi.metadata.configuration.FrameworkPluginConfiguration;
+import io.metadew.iesi.framework.definition.FrameworkPlugin;
 import io.metadew.iesi.metadata.definition.DataObject;
 import io.metadew.iesi.metadata.definition.action.type.ActionType;
 import io.metadew.iesi.metadata.operation.DataObjectOperation;
@@ -50,9 +50,9 @@ public class FrameworkActionTypeConfiguration {
         }
     }
 
-    public void setActionTypesFromPlugins(List<FrameworkPluginConfiguration> frameworkPluginConfigurationList) {
-        for (FrameworkPluginConfiguration frameworkPluginConfiguration : frameworkPluginConfigurationList) {
-            String initFilePath = frameworkPluginConfiguration.getFrameworkPlugin().getPath() +
+    public void setActionTypesFromPlugins(List<FrameworkPlugin> frameworkPlugins) {
+        for (FrameworkPlugin frameworkPlugin : frameworkPlugins) {
+            String initFilePath = frameworkPlugin.getPath() +
                     FrameworkFolderConfiguration.getInstance().getFolderPath("metadata.conf") +
                     File.separator +
                     "ActionTypes.json";

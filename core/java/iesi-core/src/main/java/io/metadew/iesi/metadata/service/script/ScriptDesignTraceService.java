@@ -19,8 +19,7 @@ import org.apache.logging.log4j.Logger;
 public class ScriptDesignTraceService {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public ScriptDesignTraceService() {
-    }
+    public ScriptDesignTraceService() {}
 
     public void trace(ScriptExecution scriptExecution) {
 

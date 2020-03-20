@@ -10,10 +10,12 @@ import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
 import io.metadew.iesi.metadata.definition.connection.ConnectionType;
 import io.metadew.iesi.metadata.definition.connection.ConnectionTypeParameter;
+import lombok.extern.log4j.Log4j2;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Log4j2
 public class DbMariadbConnectionOperation {
 	
 	private boolean missingMandatoryFields;

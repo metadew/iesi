@@ -14,12 +14,8 @@ import java.util.List;
 @Log4j2
 public class DbMssqlConnectionService {
 
-    private boolean missingMandatoryFields;
-    private List<String> missingMandatoryFieldsList;
-
     private final static String hostKey = "host";
-    private final static String portNumberTempKey = "host";
-    private final static int portNumberKey = 0;
+    private final static String portKey = "port";
     private final static String databaseKey = "database";
     private final static String userKey = "user";
     private final static String passwordKey = "password";
@@ -38,12 +34,13 @@ public class DbMssqlConnectionService {
     public MssqlDatabase getDatabase(Connection connection) {
 
         String hostName = getMandatoryParameterWithKey(connection, hostKey);
+        int port = Integer.parseInt(getMandatoryParameterWithKey(connection,portKey));
         String databaseName = getMandatoryParameterWithKey(connection, databaseKey);
         String userName = getMandatoryParameterWithKey(connection, userKey);
         String userPassword = getMandatoryParameterWithKey(connection, passwordKey);
 
         MssqlDatabaseConnection mssqlDatabaseConnection = new MssqlDatabaseConnection(hostName,
-                0,
+                port,
                 databaseName,
                 userName,
                 userPassword);
@@ -59,34 +56,4 @@ public class DbMssqlConnectionService {
                 .orElseThrow(() -> new RuntimeException(MessageFormat.format("Connection {0} does not contain mandatory parameter ''{1}''", connection, key)));
 
     }
-    private String getMandatoryParameterWithKey2(ConnectionType connectionType, String key) {
-        return connectionType.getParameters().stream()
-                .filter(connectionParameter -> connectionParameter.getName().equalsIgnoreCase(key))
-                .findFirst()
-                .map(connectionParameter -> FrameworkControl.getInstance().resolveConfiguration(connectionParameter.getType()))
-                .map(connectionParameterValue -> FrameworkCrypto.getInstance().decryptIfNeeded(connectionParameterValue))
-                .orElseThrow(() -> new RuntimeException(MessageFormat.format("Connection {0} does not contain mandatory parameter ''{1}''", connectionType, key)));
-
-    }
-    protected void addMissingField(String fieldName) {
-        this.setMissingMandatoryFields(true);
-        this.getMissingMandatoryFieldsList().add(fieldName);
-    }
-
-    public List<String> getMissingMandatoryFieldsList() {
-        return missingMandatoryFieldsList;
-    }
-
-    public void setMissingMandatoryFieldsList(List<String> missingMandatoryFieldsList) {
-        this.missingMandatoryFieldsList = missingMandatoryFieldsList;
-    }
-
-    public boolean isMissingMandatoryFields() {
-        return missingMandatoryFields;
-    }
-
-    public void setMissingMandatoryFields(boolean missingMandatoryFields) {
-        this.missingMandatoryFields = missingMandatoryFields;
-    }
-
 }

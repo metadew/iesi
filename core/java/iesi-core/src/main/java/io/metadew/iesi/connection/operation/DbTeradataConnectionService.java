@@ -8,7 +8,6 @@ import io.metadew.iesi.metadata.definition.connection.Connection;
 import lombok.extern.log4j.Log4j2;
 
 import java.text.MessageFormat;
-import java.util.Optional;
 
 @Log4j2
 public class DbTeradataConnectionService {
@@ -49,14 +48,4 @@ public class DbTeradataConnectionService {
                 .orElseThrow(() -> new RuntimeException(MessageFormat.format("Connection {0} does not contain mandatory parameter ''{1}''", connection, key)));
 
     }
-
-    private Optional<String> getOptionalParameterWithKey(Connection connection, String key) {
-        return connection.getParameters().stream()
-                .filter(connectionParameter -> connectionParameter.getName().equalsIgnoreCase(key))
-                .findFirst()
-                .map(connectionParameter -> FrameworkControl.getInstance().resolveConfiguration(connectionParameter.getValue()))
-                .map(connectionParameterValue -> FrameworkCrypto.getInstance().decryptIfNeeded(connectionParameterValue));
-
-    }
-
 }

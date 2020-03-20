@@ -33,7 +33,6 @@ public class FrameworkExecution {
         ThreadContext.put("context.name", frameworkExecutionContext.getContext().getName());
         ThreadContext.put("context.scope", frameworkExecutionContext.getContext().getScope());
         this.frameworkExecutionSettings = frameworkExecutionSettings;
-        FrameworkControl.getInstance().setSettingsList(frameworkExecutionSettings.getSettingsList());
         FrameworkRuntime.getInstance().init();
         FrameworkLog.getInstance().init();
         this.frameworkResultProvider = new FrameworkResultProvider();

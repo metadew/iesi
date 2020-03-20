@@ -3,7 +3,6 @@ package io.metadew.iesi.metadata.repository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.metadata.configuration.component.ComponentConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.generation.GenerationConfiguration;
 import io.metadew.iesi.metadata.configuration.script.ScriptConfiguration;
 import io.metadew.iesi.metadata.definition.DataObject;
 import io.metadew.iesi.metadata.definition.Metadata;
@@ -11,7 +10,6 @@ import io.metadew.iesi.metadata.definition.MetadataObject;
 import io.metadew.iesi.metadata.definition.MetadataTable;
 import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.component.Component;
-import io.metadew.iesi.metadata.definition.generation.Generation;
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.metadata.definition.script.ScriptParameter;
 import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
@@ -27,21 +25,8 @@ import java.util.stream.Collectors;
 public class DesignMetadataRepository extends MetadataRepository {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public DesignMetadataRepository(String name, String scope, String instanceName, RepositoryCoordinator repositoryCoordinator) {
-        super(name, scope, instanceName, repositoryCoordinator);
-        ScriptConfiguration.getInstance().init(this);
-        ComponentConfiguration.getInstance().init(this);
-    }
-
     public DesignMetadataRepository(String name, String scope, RepositoryCoordinator repositoryCoordinator) {
         super(name, scope, repositoryCoordinator);
-        ScriptConfiguration.getInstance().init(this);
-        ComponentConfiguration.getInstance().init(this);
-    }
-
-    public DesignMetadataRepository(String tablePrefix, RepositoryCoordinator repositoryCoordinator, String name, String scope,
-                                    List<MetadataObject> metadataObjects, List<MetadataTable> metadataTables) {
-        super(tablePrefix, repositoryCoordinator, name, scope, metadataObjects, metadataTables);
         ScriptConfiguration.getInstance().init(this);
         ComponentConfiguration.getInstance().init(this);
     }
@@ -77,9 +62,6 @@ public class DesignMetadataRepository extends MetadataRepository {
         } else if (dataObject.getType().equalsIgnoreCase("component")) {
             Component component = (Component) objectMapper.convertValue(dataObject, Metadata.class);
             save(component);
-        } else if (dataObject.getType().equalsIgnoreCase("generation")) {
-            Generation generation = objectMapper.convertValue(dataObject, Generation.class);
-            save(generation);
         } else if (dataObject.getType().equalsIgnoreCase("subroutine")) {
             System.out.println("subroutine");
             // TODO
@@ -110,12 +92,6 @@ public class DesignMetadataRepository extends MetadataRepository {
             LOGGER.warn(MessageFormat.format("Component {0} already exists in design repository. Updating to new definition", component.getName()), Level.INFO);
             ComponentConfiguration.getInstance().update(component);
         }
-    }
-
-    public void save(Generation generation) {
-        LOGGER.info(MessageFormat.format("Saving generation {0} into design repository", generation.getName()));
-        GenerationConfiguration generationConfiguration = new GenerationConfiguration(generation);
-        executeUpdate(generationConfiguration.getInsertStatement());
     }
 
     private boolean verifyScript(Script script) {

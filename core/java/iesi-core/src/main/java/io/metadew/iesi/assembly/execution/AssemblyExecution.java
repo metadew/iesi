@@ -82,10 +82,10 @@ public class AssemblyExecution {
         loadRestLicenses(versionHome);
         loadRestDependencies(versionHome);
 
-        loadMetadataConfiguration();
-        loadMetadataDefinitions();
+        //loadMetadataConfiguration();
+        //loadMetadataDefinitions();
 
-        loadSystemConfigurations();
+        // loadSystemConfigurations();
         loadAssets(versionHome);
         loadAssetsNodist(versionHome);
 
@@ -103,7 +103,7 @@ public class AssemblyExecution {
         }
 
 
-        initConfiguration(versionHome);
+        //initConfiguration(versionHome);
         initFramework(versionHome);
         // create folder
         /*
@@ -151,108 +151,108 @@ public class AssemblyExecution {
         // TODO optimize for configuration in yaml
         // Create Folders
         String metadataConfHome = versionHome + File.separator + "metadata" + File.separator + "conf";
-        FolderTools.createFolder(metadataConfHome + File.separator + "ActionType");
-        FolderTools.createFolder(metadataConfHome + File.separator + "ComponentType");
-        FolderTools.createFolder(metadataConfHome + File.separator + "ConnectionType");
-        FolderTools.createFolder(metadataConfHome + File.separator + "GenerationType");
-        FolderTools.createFolder(metadataConfHome + File.separator + "GenerationRuleType");
-        FolderTools.createFolder(metadataConfHome + File.separator + "GenerationOutputType");
-        FolderTools.createFolder(metadataConfHome + File.separator + "GenerationControlType");
-        FolderTools.createFolder(metadataConfHome + File.separator + "GenerationControlRuleType");
-        FolderTools.createFolder(metadataConfHome + File.separator + "SubroutineType");
-        FolderTools.createFolder(metadataConfHome + File.separator + "ScriptType");
-        FolderTools.createFolder(metadataConfHome + File.separator + "DataframeType");
-        FolderTools.createFolder(metadataConfHome + File.separator + "DataframeItemType");
-        FolderTools.createFolder(metadataConfHome + File.separator + "LedgerType");
-        FolderTools.createFolder(metadataConfHome + File.separator + "UserType");
+        //FolderTools.createFolder(metadataConfHome + File.separator + "ActionType");
+//        FolderTools.createFolder(metadataConfHome + File.separator + "ComponentType");
+//        FolderTools.createFolder(metadataConfHome + File.separator + "ConnectionType");
+//        FolderTools.createFolder(metadataConfHome + File.separator + "GenerationType");
+//        FolderTools.createFolder(metadataConfHome + File.separator + "GenerationRuleType");
+//        FolderTools.createFolder(metadataConfHome + File.separator + "GenerationOutputType");
+//        FolderTools.createFolder(metadataConfHome + File.separator + "GenerationControlType");
+//        FolderTools.createFolder(metadataConfHome + File.separator + "GenerationControlRuleType");
+//        FolderTools.createFolder(metadataConfHome + File.separator + "SubroutineType");
+//        FolderTools.createFolder(metadataConfHome + File.separator + "ScriptType");
+//        FolderTools.createFolder(metadataConfHome + File.separator + "DataframeType");
+//        FolderTools.createFolder(metadataConfHome + File.separator + "DataframeItemType");
+//        FolderTools.createFolder(metadataConfHome + File.separator + "LedgerType");
+//        FolderTools.createFolder(metadataConfHome + File.separator + "UserType");
 
-        final File[] confs = FolderTools.getFilesInFolder(metadataConfHome, "regex", ".+\\.json");
-        for (final File conf : confs) {
-            // Read configuration
-            DataObjectOperation dataObjectOperation = new DataObjectOperation(conf.getAbsolutePath());
+//        final File[] confs = FolderTools.getFilesInFolder(metadataConfHome, "regex", ".+\\.json");
+//        for (final File conf : confs) {
+//            // Read configuration
+//            DataObjectOperation dataObjectOperation = new DataObjectOperation(conf.getAbsolutePath());
+//
+//            ObjectMapper objectMapper = new ObjectMapper();
+//            for (DataObject dataObject : dataObjectOperation.getDataObjects()) {
+//                DataObject dataObjectOutput = null;
+//                String output;
+//                String name = "";
+//
+//                // Action Types
+//                if (dataObject.getType().equalsIgnoreCase("actiontype")) {
+//                    ActionType actionType = objectMapper.convertValue(dataObject.getData(), ActionType.class);
+//                    dataObjectOutput = new DataObject("ActionType", actionType);
+//                    //name = actionType.getName();
+//                } else if (dataObject.getType().equalsIgnoreCase("componenttype")) {
+//                    ComponentType componentType = objectMapper.convertValue(dataObject.getData(),
+//                            ComponentType.class);
+//                    dataObjectOutput = new DataObject("ComponentType", componentType);
+//                    name = componentType.getName();
+//                } else if (dataObject.getType().equalsIgnoreCase("connectiontype")) {
+//                    ConnectionType connectionType = objectMapper.convertValue(dataObject.getData(),
+//                            ConnectionType.class);
+//                    dataObjectOutput = new DataObject("ConnectionType", connectionType);
+//                    // name = connectionType.getName();
+//                } else if (dataObject.getType().equalsIgnoreCase("generationtype")) {
+//                    GenerationType generationType = objectMapper.convertValue(dataObject.getData(),
+//                            GenerationType.class);
+//                    dataObjectOutput = new DataObject("GenerationType", generationType);
+//                    name = generationType.getName();
+//                } else if (dataObject.getType().equalsIgnoreCase("generationruletype")) {
+//                    GenerationRuleType generationRuleType = objectMapper.convertValue(dataObject.getData(),
+//                            GenerationRuleType.class);
+//                    dataObjectOutput = new DataObject("GenerationRuleType", generationRuleType);
+//                    name = generationRuleType.getName();
+//                } else if (dataObject.getType().equalsIgnoreCase("generationoutputtype")) {
+//                    GenerationOutputType generationOutputType = objectMapper.convertValue(dataObject.getData(),
+//                            GenerationOutputType.class);
+//                    dataObjectOutput = new DataObject("GenerationOutputType", generationOutputType);
+//                    name = generationOutputType.getName();
+//                } else if (dataObject.getType().equalsIgnoreCase("generationcontroltype")) {
+//                    GenerationControlType generationControlType = objectMapper.convertValue(dataObject.getData(),
+//                            GenerationControlType.class);
+//                    dataObjectOutput = new DataObject("GenerationControlType", generationControlType);
+//                    name = generationControlType.getName();
+//                } else if (dataObject.getType().equalsIgnoreCase("generationcontrolruletype")) {
+//                    GenerationControlRuleType generationControlRuleType = objectMapper
+//                            .convertValue(dataObject.getData(), GenerationControlRuleType.class);
+//                    dataObjectOutput = new DataObject("GenerationControlRuleType", generationControlRuleType);
+//                    name = generationControlRuleType.getName();
+//                } else if (dataObject.getType().equalsIgnoreCase("subroutinetype")) {
+//                    SubroutineType subroutineType = objectMapper.convertValue(dataObject.getData(),
+//                            SubroutineType.class);
+//                    dataObjectOutput = new DataObject("SubroutineType", subroutineType);
+//                    name = subroutineType.getName();
+//                } else if (dataObject.getType().equalsIgnoreCase("scripttype")) {
+//                    ScriptType scriptType = objectMapper.convertValue(dataObject.getData(), ScriptType.class);
+//                    dataObjectOutput = new DataObject("ScriptType", scriptType);
+//                    name = scriptType.getName();
+//                } else if (dataObject.getType().equalsIgnoreCase("ledgertype")) {
+//                    LedgerType ledgerType = objectMapper.convertValue(dataObject.getData(), LedgerType.class);
+//                    dataObjectOutput = new DataObject("LedgerType", ledgerType);
+//                    name = ledgerType.getName();
+//                } else if (dataObject.getType().equalsIgnoreCase("dataframetype")) {
+//                    DataframeType dataframeType = objectMapper.convertValue(dataObject.getData(),
+//                            DataframeType.class);
+//                    dataObjectOutput = new DataObject("DataframeType", dataframeType);
+//                    name = dataframeType.getName();
+//                } else if (dataObject.getType().equalsIgnoreCase("dataframeitemtype")) {
+//                    DataframeItemType dataframeItemType = objectMapper.convertValue(dataObject.getData(),
+//                            DataframeItemType.class);
+//                    dataObjectOutput = new DataObject("DataframeItemType", dataframeItemType);
+//                    name = dataframeItemType.getName();
+//                } else if (dataObject.getType().equalsIgnoreCase("usertype")) {
+//                    UserType userType = objectMapper.convertValue(dataObject.getData(), UserType.class);
+//                    dataObjectOutput = new DataObject("UserType", userType);
+//                    name = userType.getName();
+//                }
+//
+//                // Write output
+//                output = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(dataObjectOutput);
+//                FileTools.appendToFile(metadataConfHome + File.separator + dataObject.getType() + File.separator + name + ".json", "", output);
+//
+//            }
 
-            ObjectMapper objectMapper = new ObjectMapper();
-            for (DataObject dataObject : dataObjectOperation.getDataObjects()) {
-                DataObject dataObjectOutput = null;
-                String output;
-                String name = "";
-
-                // Action Types
-                if (dataObject.getType().equalsIgnoreCase("actiontype")) {
-                    ActionType actionType = objectMapper.convertValue(dataObject.getData(), ActionType.class);
-                    dataObjectOutput = new DataObject("ActionType", actionType);
-                    //name = actionType.getName();
-                } else if (dataObject.getType().equalsIgnoreCase("componenttype")) {
-                    ComponentType componentType = objectMapper.convertValue(dataObject.getData(),
-                            ComponentType.class);
-                    dataObjectOutput = new DataObject("ComponentType", componentType);
-                    name = componentType.getName();
-                } else if (dataObject.getType().equalsIgnoreCase("connectiontype")) {
-                    ConnectionType connectionType = objectMapper.convertValue(dataObject.getData(),
-                            ConnectionType.class);
-                    dataObjectOutput = new DataObject("ConnectionType", connectionType);
-                    // name = connectionType.getName();
-                } else if (dataObject.getType().equalsIgnoreCase("generationtype")) {
-                    GenerationType generationType = objectMapper.convertValue(dataObject.getData(),
-                            GenerationType.class);
-                    dataObjectOutput = new DataObject("GenerationType", generationType);
-                    name = generationType.getName();
-                } else if (dataObject.getType().equalsIgnoreCase("generationruletype")) {
-                    GenerationRuleType generationRuleType = objectMapper.convertValue(dataObject.getData(),
-                            GenerationRuleType.class);
-                    dataObjectOutput = new DataObject("GenerationRuleType", generationRuleType);
-                    name = generationRuleType.getName();
-                } else if (dataObject.getType().equalsIgnoreCase("generationoutputtype")) {
-                    GenerationOutputType generationOutputType = objectMapper.convertValue(dataObject.getData(),
-                            GenerationOutputType.class);
-                    dataObjectOutput = new DataObject("GenerationOutputType", generationOutputType);
-                    name = generationOutputType.getName();
-                } else if (dataObject.getType().equalsIgnoreCase("generationcontroltype")) {
-                    GenerationControlType generationControlType = objectMapper.convertValue(dataObject.getData(),
-                            GenerationControlType.class);
-                    dataObjectOutput = new DataObject("GenerationControlType", generationControlType);
-                    name = generationControlType.getName();
-                } else if (dataObject.getType().equalsIgnoreCase("generationcontrolruletype")) {
-                    GenerationControlRuleType generationControlRuleType = objectMapper
-                            .convertValue(dataObject.getData(), GenerationControlRuleType.class);
-                    dataObjectOutput = new DataObject("GenerationControlRuleType", generationControlRuleType);
-                    name = generationControlRuleType.getName();
-                } else if (dataObject.getType().equalsIgnoreCase("subroutinetype")) {
-                    SubroutineType subroutineType = objectMapper.convertValue(dataObject.getData(),
-                            SubroutineType.class);
-                    dataObjectOutput = new DataObject("SubroutineType", subroutineType);
-                    name = subroutineType.getName();
-                } else if (dataObject.getType().equalsIgnoreCase("scripttype")) {
-                    ScriptType scriptType = objectMapper.convertValue(dataObject.getData(), ScriptType.class);
-                    dataObjectOutput = new DataObject("ScriptType", scriptType);
-                    name = scriptType.getName();
-                } else if (dataObject.getType().equalsIgnoreCase("ledgertype")) {
-                    LedgerType ledgerType = objectMapper.convertValue(dataObject.getData(), LedgerType.class);
-                    dataObjectOutput = new DataObject("LedgerType", ledgerType);
-                    name = ledgerType.getName();
-                } else if (dataObject.getType().equalsIgnoreCase("dataframetype")) {
-                    DataframeType dataframeType = objectMapper.convertValue(dataObject.getData(),
-                            DataframeType.class);
-                    dataObjectOutput = new DataObject("DataframeType", dataframeType);
-                    name = dataframeType.getName();
-                } else if (dataObject.getType().equalsIgnoreCase("dataframeitemtype")) {
-                    DataframeItemType dataframeItemType = objectMapper.convertValue(dataObject.getData(),
-                            DataframeItemType.class);
-                    dataObjectOutput = new DataObject("DataframeItemType", dataframeItemType);
-                    name = dataframeItemType.getName();
-                } else if (dataObject.getType().equalsIgnoreCase("usertype")) {
-                    UserType userType = objectMapper.convertValue(dataObject.getData(), UserType.class);
-                    dataObjectOutput = new DataObject("UserType", userType);
-                    name = userType.getName();
-                }
-
-                // Write output
-                output = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(dataObjectOutput);
-                FileTools.appendToFile(metadataConfHome + File.separator + dataObject.getType() + File.separator + name + ".json", "", output);
-
-            }
-
-        }
+        //}
     }
 
     private void loadAssetsNodist(String versionHome) throws IOException {

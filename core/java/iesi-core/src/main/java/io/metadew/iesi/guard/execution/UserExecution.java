@@ -1,9 +1,9 @@
 package io.metadew.iesi.guard.execution;
 
+import io.metadew.iesi.framework.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.framework.crypto.Password;
 import io.metadew.iesi.metadata.configuration.UserConfiguration;
 import io.metadew.iesi.metadata.definition.user.User;
-import io.metadew.iesi.metadata.execution.MetadataControl;
 
 import java.io.Console;
 import java.security.NoSuchAlgorithmException;
@@ -42,7 +42,7 @@ public class UserExecution {
         // user.setPasswordHash(Password.getSaltedHash(this.getPassword()));
 
             UserConfiguration userConfiguration = new UserConfiguration();
-            MetadataControl.getInstance().getControlMetadataRepository()
+            MetadataRepositoryConfiguration.getInstance().getControlMetadataRepository()
                     .executeBatch(userConfiguration.getInsertStatement(user));
 
             return user;
@@ -59,7 +59,7 @@ public class UserExecution {
             // user.setPasswordHash(Password.getSaltedHash(this.getPassword()));
 
             UserConfiguration userConfiguration = new UserConfiguration(user);
-            MetadataControl.getInstance().getControlMetadataRepository()
+            MetadataRepositoryConfiguration.getInstance().getControlMetadataRepository()
                     .executeUpdate(userConfiguration.getPasswordStatement());
         } catch (NoSuchAlgorithmException | InvalidKeySpecException exception) {
             throw new RuntimeException(exception);
@@ -68,19 +68,19 @@ public class UserExecution {
 
     public void updateActive(String userName, String status) {
         UserConfiguration userConfiguration = new UserConfiguration();
-        MetadataControl.getInstance().getControlMetadataRepository()
+        MetadataRepositoryConfiguration.getInstance().getControlMetadataRepository()
                 .executeUpdate(userConfiguration.getActiveUpdateStatement(userName, status));
     }
 
     public void updateLocked(String userName, String status) {
         UserConfiguration userConfiguration = new UserConfiguration();
-        MetadataControl.getInstance().getControlMetadataRepository()
+        MetadataRepositoryConfiguration.getInstance().getControlMetadataRepository()
                 .executeUpdate(userConfiguration.getBlockedUpdateStatement(userName, status));
     }
 
     public void resetIndividualLoginFails(String userName) {
         UserConfiguration userConfiguration = new UserConfiguration();
-        MetadataControl.getInstance().getControlMetadataRepository()
+        MetadataRepositoryConfiguration.getInstance().getControlMetadataRepository()
                 .executeUpdate(userConfiguration.resetIndividualLoginFails(userName));
     }
 

@@ -3,8 +3,8 @@ package io.metadew.iesi.framework.execution;
 import io.metadew.iesi.common.properties.PropertiesTools;
 import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.connection.tools.FolderTools;
-import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
 import io.metadew.iesi.framework.configuration.FrameworkKeywords;
+import io.metadew.iesi.framework.configuration.framework.FrameworkConfiguration;
 import io.metadew.iesi.framework.control.ProcessIdentifierController;
 import io.metadew.iesi.framework.definition.FrameworkRunIdentifier;
 import org.apache.commons.io.FilenameUtils;
@@ -45,7 +45,7 @@ public class FrameworkRuntime {
 	public void init(String runId) {
 		this.frameworkRunId = runId;
 		ThreadContext.put("fwk.runid", runId);
-		this.runCacheFolderName = FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("run.cache")
+		this.runCacheFolderName = FrameworkConfiguration.getInstance().getMandatoryFrameworkFolder("run.cache").getAbsolutePath()
 				+ File.separator + this.frameworkRunId;
 		FolderTools.createFolder(runCacheFolderName);
 

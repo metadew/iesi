@@ -1,8 +1,6 @@
 package io.metadew.iesi.metadata.configuration.script;
 
-import io.metadew.iesi.metadata.definition.script.ScriptParameter;
 import io.metadew.iesi.metadata.definition.script.ScriptVersion;
-import io.metadew.iesi.metadata.definition.script.key.ScriptParameterKey;
 import io.metadew.iesi.metadata.definition.script.key.ScriptVersionKey;
 
 import java.util.Optional;

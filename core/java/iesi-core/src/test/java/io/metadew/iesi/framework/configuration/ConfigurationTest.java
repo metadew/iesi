@@ -1,5 +1,6 @@
 package io.metadew.iesi.framework.configuration;
 
+import io.metadew.iesi.framework.configuration.guard.GuardConfiguration;
 import io.metadew.iesi.framework.configuration.metadata.MetadataConfiguration;
 import io.metadew.iesi.framework.configuration.plugin.PluginConfiguration;
 import org.junit.jupiter.api.Test;
@@ -20,6 +21,7 @@ class ConfigurationTest {
         assertTrue(true);
 
         PluginConfiguration pluginConfiguration = PluginConfiguration.getInstance();
+        GuardConfiguration guardConfiguration = GuardConfiguration.getInstance();
 
         assertTrue(true);
     }

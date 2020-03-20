@@ -14,7 +14,7 @@ public class PostgresqlMetadataRepositoryCoordinationDefinitionJsonComponent {
         TYPE("postgresql"),
         HOST("host"),
         PORT("port"),
-        NAME("name"),
+        DATABASE("database"),
         SCHEMA("schema");
 
         private final String label;
@@ -36,9 +36,13 @@ public class PostgresqlMetadataRepositoryCoordinationDefinitionJsonComponent {
             PostgresqlRepositoryCoordinatorDefinition repositoryCoordinatorDefinition = new PostgresqlRepositoryCoordinatorDefinition();
             MetadataRepositoryCoordinationDefinitionJsonComponent.setDefaultInformation(repositoryCoordinatorDefinition, node, jsonParser);
             repositoryCoordinatorDefinition.setHost(node.get(Field.HOST.value()).asText());
-            repositoryCoordinatorDefinition.setPort(node.get(Field.PORT.value()).asText());
-            repositoryCoordinatorDefinition.setName(node.get(Field.NAME.value()).asText());
-            repositoryCoordinatorDefinition.setSchema(node.get(Field.SCHEMA.value()).asText());
+            repositoryCoordinatorDefinition.setPort(Integer.parseInt(node.get(Field.PORT.value()).asText()));
+            repositoryCoordinatorDefinition.setDatabase(node.get(Field.DATABASE.value()).asText());
+
+            // Optional
+            if (node.hasNonNull(Field.SCHEMA.value())) {
+                repositoryCoordinatorDefinition.setSchema(node.get(Field.SCHEMA.value()).asText());;
+            }
             return repositoryCoordinatorDefinition;
         }
     }

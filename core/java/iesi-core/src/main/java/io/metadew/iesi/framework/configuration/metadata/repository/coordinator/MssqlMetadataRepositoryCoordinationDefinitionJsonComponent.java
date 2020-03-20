@@ -35,10 +35,14 @@ public class MssqlMetadataRepositoryCoordinationDefinitionJsonComponent {
             JsonNode node = jsonParser.getCodec().readTree(jsonParser);
             MssqlRepositoryCoordinatorDefinition repositoryCoordinatorDefinition = new MssqlRepositoryCoordinatorDefinition();
             MetadataRepositoryCoordinationDefinitionJsonComponent.setDefaultInformation(repositoryCoordinatorDefinition, node, jsonParser);
+            // Mandatory
             repositoryCoordinatorDefinition.setHost(node.get(Field.HOST.value()).asText());
-            repositoryCoordinatorDefinition.setPort(node.get(Field.PORT.value()).asText());
+            repositoryCoordinatorDefinition.setPort(Integer.parseInt(node.get(Field.PORT.value()).asText()));
             repositoryCoordinatorDefinition.setDatabase(node.get(Field.DATABASE.value()).asText());
-            repositoryCoordinatorDefinition.setSchema(node.get(Field.SCHEMA.value()).asText());
+            // Optional
+            if (node.hasNonNull(Field.SCHEMA.value())) {
+                repositoryCoordinatorDefinition.setSchema(node.get(H2MetadataRepositoryCoordinationDefinitionJsonComponent.Field.SCHEMA.value()).asText());;
+            }
             return repositoryCoordinatorDefinition;
         }
     }

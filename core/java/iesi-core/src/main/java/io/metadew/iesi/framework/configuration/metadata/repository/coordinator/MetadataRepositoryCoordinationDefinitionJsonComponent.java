@@ -13,6 +13,7 @@ import java.text.MessageFormat;
 public class MetadataRepositoryCoordinationDefinitionJsonComponent {
     public enum Field {
         TYPE_KEY("type"),
+        CONNECTION_KEY("connection"),
         OWNER_KEY("owner"),
         READER_KEY("reader"),
         WRITER_KEY("writer");
@@ -53,10 +54,21 @@ public class MetadataRepositoryCoordinationDefinitionJsonComponent {
     }
 
     public static void setDefaultInformation(RepositoryCoordinatorDefinition repositoryCoordinatorDefinition, JsonNode jsonNode, JsonParser jsonParser) throws JsonProcessingException {
+        // Mandatory
         repositoryCoordinatorDefinition.setType(jsonNode.get(Field.TYPE_KEY.value()).asText());
-        repositoryCoordinatorDefinition.setOwner(jsonParser.getCodec().treeToValue(jsonNode.get(Field.OWNER_KEY.value()), RepositoryCoordinatorProfileDefinition.class));
-        repositoryCoordinatorDefinition.setWriter(jsonParser.getCodec().treeToValue(jsonNode.get(Field.WRITER_KEY.value()), RepositoryCoordinatorProfileDefinition.class));
-        repositoryCoordinatorDefinition.setReader(jsonParser.getCodec().treeToValue(jsonNode.get(Field.READER_KEY.value()), RepositoryCoordinatorProfileDefinition.class));
+        // Optional
+        if (jsonNode.hasNonNull(Field.CONNECTION_KEY.value())) {
+            repositoryCoordinatorDefinition.setConnection(jsonNode.get(Field.CONNECTION_KEY.value()).asText());
+        }
+        if (jsonNode.hasNonNull(Field.OWNER_KEY.value())) {
+            repositoryCoordinatorDefinition.setOwner(jsonParser.getCodec().treeToValue(jsonNode.get(Field.OWNER_KEY.value()), RepositoryCoordinatorProfileDefinition.class));
+        }
+        if (jsonNode.hasNonNull(Field.WRITER_KEY.value())) {
+            repositoryCoordinatorDefinition.setWriter(jsonParser.getCodec().treeToValue(jsonNode.get(Field.WRITER_KEY.value()), RepositoryCoordinatorProfileDefinition.class));
+        }
+        if (jsonNode.hasNonNull(Field.READER_KEY.value())) {
+            repositoryCoordinatorDefinition.setReader(jsonParser.getCodec().treeToValue(jsonNode.get(Field.READER_KEY.value()), RepositoryCoordinatorProfileDefinition.class));
+        }
     }
 
 

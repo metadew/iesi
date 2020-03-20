@@ -1,9 +1,7 @@
 package io.metadew.iesi.runtime;
 
-import io.metadew.iesi.framework.configuration.FrameworkConfiguration;
-import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
-import io.metadew.iesi.framework.configuration.FrameworkSettingConfiguration;
-import io.metadew.iesi.framework.execution.FrameworkControl;
+import io.metadew.iesi.framework.configuration.Configuration;
+import io.metadew.iesi.framework.configuration.framework.FrameworkConfiguration;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.framework.execution.FrameworkRuntime;
 import io.metadew.iesi.metadata.configuration.execution.ExecutionRequestConfiguration;
@@ -26,9 +24,8 @@ public class ExecutionRequestListener implements Runnable {
     private boolean keepRunning = true;
 
     public ExecutionRequestListener() {
-        int threadSize = FrameworkSettingConfiguration.getInstance().getSettingPath("server.threads")
-                .map(settingPath -> Integer.parseInt(FrameworkControl.getInstance().getProperty(settingPath)
-                        .orElseThrow(() -> new RuntimeException("no value set for server.threads"))))
+        int threadSize = Configuration.getInstance().getProperty("server.threads")
+                .map(settingPath -> Integer.parseInt((String) settingPath))
                 .orElse(4);
         log.info(MessageFormat.format("starting listener with thread pool size {0}", threadSize));
 
@@ -40,11 +37,11 @@ public class ExecutionRequestListener implements Runnable {
     }
 
     public void run() {
-        ThreadContext.put("location", FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("logs"));
+        ThreadContext.put("location", FrameworkConfiguration.getInstance().getMandatoryFrameworkFolder("logs").getAbsolutePath());
         ThreadContext.put("context.name", FrameworkExecution.getInstance().getFrameworkExecutionContext().getContext().getName());
         ThreadContext.put("context.scope", FrameworkExecution.getInstance().getFrameworkExecutionContext().getContext().getScope());
         ThreadContext.put("fwk.runid", FrameworkRuntime.getInstance().getFrameworkRunId());
-        ThreadContext.put("fwk.code", FrameworkConfiguration.getInstance().getFrameworkCode());
+        ThreadContext.put("fwk.code", (String) Configuration.getInstance().getMandatoryProperty("code"));
         try {
             while (keepRunning) {
                 pollNewRequests();

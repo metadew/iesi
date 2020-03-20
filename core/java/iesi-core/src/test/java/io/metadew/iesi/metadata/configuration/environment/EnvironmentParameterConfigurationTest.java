@@ -28,6 +28,7 @@ class EnvironmentParameterConfigurationTest {
     @BeforeEach
     void setup() {
         connectivityMetadataRepository = RepositoryTestSetup.getConnectivityMetadataRepository();
+        connectivityMetadataRepository.createAllTables();
         environmentParameter11 = new EnvironmentParameterBuilder("env1", "parameter name 1")
                 .value("parameter value")
                 .build();

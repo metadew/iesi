@@ -10,35 +10,14 @@ iesi:
         name:
         instance:
 
-        # raw JDBC connection string. Once this value is set, all subsequent configurations will be ignored
-        connection:
-
         # type of database: sqlite, h2, mssql, netezza, oracle, postgresql
         coordinator:
-          type: sqlite
-          file: '#iesi.home#/repository.db3'
-          owner: {}
-          writer: {}
-          reader: {}
-      - categories:
-          - design
-        coordinator:
-          type: oracle
-          host:
-          name:
-          port:
-          schema:
-          service:
-          tnsalias:
+          type: h2
+          mode: memory
+          database: test;DB_CLOSE_DELAY=-1
           owner:
-            user: test
-            password: test
-          reader:
-            user: test
-            password: test
-          writer:
-            user: test
-            password: test
+            user: ""
+            password: ""
 
 #          type: h2
 #          mode: embedded

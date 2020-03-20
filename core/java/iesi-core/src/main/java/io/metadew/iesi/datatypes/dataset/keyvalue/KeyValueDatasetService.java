@@ -18,7 +18,7 @@ import io.metadew.iesi.datatypes.dataset.DatasetService;
 import io.metadew.iesi.datatypes.dataset.metadata.DatasetMetadata;
 import io.metadew.iesi.datatypes.dataset.metadata.DatasetMetadataService;
 import io.metadew.iesi.datatypes.text.Text;
-import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
+import io.metadew.iesi.framework.configuration.framework.FrameworkConfiguration;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 import lombok.Synchronized;
 import lombok.extern.log4j.Log4j2;
@@ -79,7 +79,7 @@ public class KeyValueDatasetService extends BaseDatasetService<KeyValueDataset> 
         DatasetMetadataService.getInstance().insertDatasetLabelInformation(datasetMetadata, nextInventoryId, labels);
 
         log.debug(MessageFormat.format("creating dataset {0} for {1} at {2} table {3}", nextInventoryId, name, datasetFilename, tableName));
-        String filepath = FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath(tableName) + File.separator + "datasets"
+        String filepath = FrameworkConfiguration.getInstance().getMandatoryFrameworkFolder(tableName).getAbsolutePath() + File.separator + "datasets"
                 + File.separator + name + File.separator + tableName + File.separator + datasetFilename;
         File file = new File(filepath);
         file.setWritable(true, true);

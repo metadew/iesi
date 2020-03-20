@@ -27,7 +27,7 @@ class ScriptVersionConfigurationTest {
     @BeforeEach
     void setup() {
         designMetadataRepository = RepositoryTestSetup.getDesignMetadataRepository();
-
+        designMetadataRepository.createAllTables();
         scriptVersion1 = new ScriptVersionBuilder("1", 1)
                 .description("version of script")
                 .build();
@@ -47,7 +47,7 @@ class ScriptVersionConfigurationTest {
     }
 
     @Test
-    void scriptVersionNotExistTest(){
+    void scriptVersionNotExistTest() {
         assertFalse(ScriptVersionConfiguration.getInstance().exists(scriptVersion1));
     }
 
@@ -66,6 +66,7 @@ class ScriptVersionConfigurationTest {
         assertTrue(ScriptVersionConfiguration.getInstance().get(scriptVersion1.getMetadataKey()).isPresent());
         assertEquals(scriptVersion1, ScriptVersionConfiguration.getInstance().get(scriptVersion1.getMetadataKey()).get());
     }
+
     @Test
     void scriptVersionInsertMultipleTest() {
         assertEquals(0, ScriptVersionConfiguration.getInstance().getAll().size());
@@ -82,7 +83,7 @@ class ScriptVersionConfigurationTest {
     @Test
     void scriptVersionInsertAlreadyExistsTest() {
         ScriptVersionConfiguration.getInstance().insert(scriptVersion1);
-        assertThrows(MetadataAlreadyExistsException.class,() -> ScriptVersionConfiguration.getInstance().insert(scriptVersion1));
+        assertThrows(MetadataAlreadyExistsException.class, () -> ScriptVersionConfiguration.getInstance().insert(scriptVersion1));
     }
 
     @Test
@@ -106,7 +107,7 @@ class ScriptVersionConfigurationTest {
 
     @Test
     void scriptVersionDeleteDoesNotExistTest() {
-        assertThrows(MetadataDoesNotExistException.class,() -> ScriptVersionConfiguration.getInstance().delete(scriptVersion1.getMetadataKey()));
+        assertThrows(MetadataDoesNotExistException.class, () -> ScriptVersionConfiguration.getInstance().delete(scriptVersion1.getMetadataKey()));
     }
 
     @Test
@@ -119,7 +120,7 @@ class ScriptVersionConfigurationTest {
     }
 
     @Test
-    void scriptVersionGetNotExistsTest(){
+    void scriptVersionGetNotExistsTest() {
         assertFalse(ScriptVersionConfiguration.getInstance().exists(scriptVersion1.getMetadataKey()));
     }
 
@@ -147,6 +148,7 @@ class ScriptVersionConfigurationTest {
 
         assertEquals(Stream.of(scriptVersion1, scriptVersion2).collect(Collectors.toList()), scriptVersions);
     }
+
     @Test
     void scriptGetAllVersionsOfScriptMultipleTest() {
         ScriptVersionConfiguration.getInstance().insert(scriptVersion1);

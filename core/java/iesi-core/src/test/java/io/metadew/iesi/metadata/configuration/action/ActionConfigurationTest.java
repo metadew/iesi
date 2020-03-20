@@ -34,6 +34,7 @@ class ActionConfigurationTest {
     @BeforeEach
     void setup() {
         designMetadataRepository = RepositoryTestSetup.getDesignMetadataRepository();
+        designMetadataRepository.createAllTables();
 
         action1 = new ActionBuilder("1", 1, "1")
                 .numberOfParameters(2)

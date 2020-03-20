@@ -2,7 +2,8 @@
  * Creation Date: 19-JUL-2013
  * Update Date: 19-JUL-2013
  * Version: 1
- */
+ *//*
+
 
 package io.metadew.iesi.sqlinsert;
 
@@ -18,11 +19,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 
+*/
 /**
  * Entry point for launching the sqlinsert functionality.
  *
  * @author peter.billen
- */
+ *//*
+
 public class SQLInsert {
 
     public static void main(String[] args) throws InterruptedException, IOException {
@@ -89,7 +92,7 @@ public class SQLInsert {
         if (Type.equals("JDBC")) {
             if (Service.equals("info")) {
                 if (RDBMS.equals("MySQL")) {
-                    io.metadew.iesi.sqlinsert.mysql.GetInfo getInfo = new io.metadew.iesi.sqlinsert.mysql.GetInfo(frameworkConfiguration);
+                    io.metadew.iesi.sqlinsert.mysql.GetInfo getInfo = new io.metadew.iesi.sqlinsert.mysql.GetInfo();
                     getInfo.doExec();
                     System.out.println("Info Service Action Completed");
                 } else if (RDBMS.equals("Netezza")) {
@@ -97,7 +100,7 @@ public class SQLInsert {
                     getInfo.doExec();
                     System.out.println("Info Service Action Completed");
                 } else if (RDBMS.equals("Oracle")) {
-                    io.metadew.iesi.sqlinsert.oracle.GetInfo getInfo = new io.metadew.iesi.sqlinsert.oracle.GetInfo(frameworkConfiguration);
+                    io.metadew.iesi.sqlinsert.oracle.GetInfo getInfo = new io.metadew.iesi.sqlinsert.oracle.GetInfo();
                     getInfo.doExec();
                     System.out.println("Info Service Action Completed");
                 } else if (RDBMS.equals("SQLite")) {
@@ -113,7 +116,7 @@ public class SQLInsert {
                     getInfo.doExec();
                     System.out.println("Info Service Action Completed");
                 } else if (RDBMS.equals("Hive")) {
-                    io.metadew.iesi.sqlinsert.hive.GetInfo getInfo = new io.metadew.iesi.sqlinsert.hive.GetInfo(frameworkConfiguration);
+                    io.metadew.iesi.sqlinsert.hive.GetInfo getInfo = new io.metadew.iesi.sqlinsert.hive.GetInfo();
                     getInfo.doExec();
                     System.out.println("Info Service Action Completed");
                 } else {
@@ -122,7 +125,7 @@ public class SQLInsert {
                 }
             } else if (Service.equals("exec")) {
                 if (RDBMS.equals("MySQL")) {
-                    io.metadew.iesi.sqlinsert.mysql.RunScript runScript = new io.metadew.iesi.sqlinsert.mysql.RunScript(frameworkConfiguration);
+                    io.metadew.iesi.sqlinsert.mysql.RunScript runScript = new io.metadew.iesi.sqlinsert.mysql.RunScript();
                     runScript.doExec();
                 } else if (RDBMS.equals("Netezza")) {
                     io.metadew.iesi.sqlinsert.netezza.RunScript runScript = new io.metadew.iesi.sqlinsert.netezza.RunScript(frameworkConfiguration);
@@ -145,7 +148,7 @@ public class SQLInsert {
                 }
             } else if (Service.equals("data")) {
                 if (RDBMS.equals("MySQL")) {
-                    io.metadew.iesi.sqlinsert.mysql.GetData getData = new io.metadew.iesi.sqlinsert.mysql.GetData(frameworkConfiguration);
+                    io.metadew.iesi.sqlinsert.mysql.GetData getData = new io.metadew.iesi.sqlinsert.mysql.GetData();
                     getData.doExec();
                     System.out.println("Data Service Action Completed");
                 } else if (RDBMS.equals("Netezza")) {
@@ -169,7 +172,7 @@ public class SQLInsert {
                     getData.doExec();
                     System.out.println("Data Service Action Completed");
                 } else if (RDBMS.equals("Hive")) {
-                    io.metadew.iesi.sqlinsert.hive.GetData getData = new io.metadew.iesi.sqlinsert.hive.GetData(frameworkConfiguration);
+                    io.metadew.iesi.sqlinsert.hive.GetData getData = new io.metadew.iesi.sqlinsert.hive.GetData();
                     getData.doExec();
                     System.out.println("Data Service Action Completed");
                 } else {
@@ -178,7 +181,7 @@ public class SQLInsert {
                 }
             } else if (Service.equals("buffer")) {
                 if (RDBMS.equals("MySQL")) {
-                    io.metadew.iesi.sqlinsert.mysql.BufferData buf = new io.metadew.iesi.sqlinsert.mysql.BufferData(frameworkConfiguration);
+                    io.metadew.iesi.sqlinsert.mysql.BufferData buf = new io.metadew.iesi.sqlinsert.mysql.BufferData();
                     buf.getBuffer();
                     System.out.println("Buffer Action Completed");
                 } else if (RDBMS.equals("Netezza")) {
@@ -202,7 +205,7 @@ public class SQLInsert {
                     getData.getBuffer();
                     System.out.println("Buffer Action Completed");
                 } else if (RDBMS.equals("Hive")) {
-                    io.metadew.iesi.sqlinsert.hive.BufferData getData = new io.metadew.iesi.sqlinsert.hive.BufferData(frameworkConfiguration);
+                    io.metadew.iesi.sqlinsert.hive.BufferData getData = new io.metadew.iesi.sqlinsert.hive.BufferData();
                     getData.getBuffer();
                     System.out.println("Buffer Action Completed");
                 } else {
@@ -243,4 +246,4 @@ public class SQLInsert {
 
     }
 
-}
+}*/

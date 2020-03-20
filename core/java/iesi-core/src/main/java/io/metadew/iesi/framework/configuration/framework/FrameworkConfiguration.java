@@ -6,6 +6,7 @@ import io.metadew.iesi.framework.definition.FrameworkFolder;
 import io.metadew.iesi.framework.definition.FrameworkSetting;
 import lombok.extern.log4j.Log4j2;
 
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -73,7 +74,17 @@ public class FrameworkConfiguration {
         return Optional.ofNullable(frameworkSettings.get(frameworkSetting));
     }
 
+    public FrameworkSetting getMandatoryFrameworkSetting(String frameworkSetting) {
+        return Optional.ofNullable(frameworkSettings.get(frameworkSetting))
+                .orElseThrow(() -> new RuntimeException(MessageFormat.format("No FrameworkSetting ''{0}'' found", frameworkSetting)));
+    }
+
     public Optional<FrameworkFolder> getFrameworkFolder(String frameworkFolder) {
         return Optional.ofNullable(frameworkFolders.get(frameworkFolder));
+    }
+
+    public FrameworkFolder getMandatoryFrameworkFolder(String frameworkFolder) {
+        return Optional.ofNullable(frameworkFolders.get(frameworkFolder))
+                .orElseThrow(() -> new RuntimeException(MessageFormat.format("No FrameworkFolder ''{0}'' found", frameworkFolder)));
     }
 }

@@ -1,6 +1,5 @@
 package io.metadew.iesi.data.generation.execution;
 
-import io.metadew.iesi.framework.configuration.FrameworkConfiguration;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.generation.GenerationRule;
 import io.metadew.iesi.script.execution.ExecutionControl;
@@ -39,8 +38,7 @@ public class GenerationRuleExecution {
 		this.setProcessId(0L);
 
 		try {
-			String className = FrameworkConfiguration.getInstance().getGenerationRuleTypeConfiguration()
-					.getGenerationRuleTypeClass(this.getGenerationRule().getType());
+			String className = null;
 			// TODO add log
 			// this.getExecutionControl().logMessage(this, "generation.rule.type=" + this.getGenerationRule().getType(), Level.DEBUG);
 			

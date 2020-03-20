@@ -26,6 +26,7 @@ class ActionParameterConfigurationTest {
     @BeforeEach
     void setup() {
         designMetadataRepository = RepositoryTestSetup.getDesignMetadataRepository();
+        designMetadataRepository.createAllTables();
         actionParameter1 = new ActionParameterBuilder("1", 1, "1", "firstParameter")
                 .value("parameter value")
                 .build();

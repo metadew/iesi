@@ -35,10 +35,14 @@ public class NetezzaMetadataRepositoryCoordinationDefinitionJsonComponent {
             JsonNode node = jsonParser.getCodec().readTree(jsonParser);
             NetezzaRepositoryCoordinatorDefinition repositoryCoordinatorDefinition = new NetezzaRepositoryCoordinatorDefinition();
             MetadataRepositoryCoordinationDefinitionJsonComponent.setDefaultInformation(repositoryCoordinatorDefinition, node, jsonParser);
+            // Optional
             repositoryCoordinatorDefinition.setHost(node.get(Field.HOST.value()).asText());
-            repositoryCoordinatorDefinition.setPort(node.get(Field.PORT.value()).asText());
+            repositoryCoordinatorDefinition.setPort(Integer.parseInt(node.get(Field.PORT.value()).asText()));
             repositoryCoordinatorDefinition.setName(node.get(Field.NAME.value()).asText());
-            repositoryCoordinatorDefinition.setSchema(node.get(Field.SCHEMA.value()).asText());
+            // Optional
+            if (node.hasNonNull(Field.SCHEMA.value())) {
+                repositoryCoordinatorDefinition.setSchema(node.get(H2MetadataRepositoryCoordinationDefinitionJsonComponent.Field.SCHEMA.value()).asText());;
+            }
             return repositoryCoordinatorDefinition;
         }
     }

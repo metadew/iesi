@@ -1,7 +1,7 @@
 package io.metadew.iesi.launch;
 
 import io.metadew.iesi.assembly.execution.AssemblyExecution;
-import io.metadew.iesi.framework.configuration.FrameworkConfiguration;
+import io.metadew.iesi.framework.configuration.Configuration;
 import io.metadew.iesi.framework.crypto.FrameworkCrypto;
 import io.metadew.iesi.framework.execution.FrameworkControl;
 import org.apache.commons.cli.*;
@@ -77,13 +77,11 @@ public class AssemblyLauncher {
         }
 
         // FWK init
-        FrameworkConfiguration frameworkConfiguration = FrameworkConfiguration.getInstance();
-        frameworkConfiguration.initAssembly(repository);
+        Configuration frameworkConfiguration = Configuration.getInstance();
 
         FrameworkCrypto.getInstance();
 
         FrameworkControl frameworkControl = FrameworkControl.getInstance();
-        frameworkControl.init("assembly");
 
         AssemblyExecution assemblyExecution = new AssemblyExecution(repository, development, sandbox, instance,
                 version, configuration, applyConfiguration, testAssembly, distribution);

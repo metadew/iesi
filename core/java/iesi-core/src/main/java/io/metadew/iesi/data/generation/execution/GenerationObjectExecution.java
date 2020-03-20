@@ -4,7 +4,8 @@ import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.connection.tools.FolderTools;
 import io.metadew.iesi.data.generation.configuration.*;
 import io.metadew.iesi.data.generation.tools.GenerationTools;
-import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
+import io.metadew.iesi.framework.configuration.framework.FrameworkConfiguration;
+import io.metadew.iesi.framework.definition.FrameworkFolder;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
@@ -90,7 +91,9 @@ public class GenerationObjectExecution {
         int i = 0;
         // Default Configuration
         for (File file : FolderTools.getFilesInFolder(
-                FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.gen"),
+                FrameworkConfiguration.getInstance().getFrameworkFolder("metadata.gen")
+                        .map(FrameworkFolder::getAbsolutePath)
+                        .orElseThrow(() -> new RuntimeException("No framework folder 'metadata.gen' found")),
                 "regex", ".+\\.yml")) {
 
             if (i == 0) {
@@ -104,7 +107,8 @@ public class GenerationObjectExecution {
 
         // User configuration
         for (File file : FolderTools.getFilesInFolder(
-                FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.conf"),
+                FrameworkConfiguration.getInstance().getMandatoryFrameworkFolder("metadata.conf")
+                        .getAbsolutePath(),
                 "regex", ".+\\.yml")) {
 
             if (i == 0) {

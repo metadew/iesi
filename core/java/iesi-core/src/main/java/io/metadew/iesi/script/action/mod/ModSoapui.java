@@ -5,7 +5,7 @@ import io.metadew.iesi.connection.host.ShellCommandResult;
 import io.metadew.iesi.connection.tools.FolderTools;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.text.Text;
-import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
+import io.metadew.iesi.framework.configuration.framework.FrameworkConfiguration;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
@@ -135,7 +135,7 @@ public class ModSoapui {
         String output = this.getActionExecution().getActionControl().getActionRuntime().getRunCacheFolderName() + "soapui";
         FolderTools.createFolder(output);
 
-        String command = FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("modules") +
+        String command = FrameworkConfiguration.getInstance().getMandatoryFrameworkFolder("modules").getAbsolutePath() +
                 File.separator + "soapui" + File.separator + "bin" + File.separator + "iesi-soapui.cmd";
         command = command + " -project " + project;
         if (!testSuite.isEmpty()) command = command + " -suite " + testSuite;

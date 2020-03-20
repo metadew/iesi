@@ -1,9 +1,9 @@
 package io.metadew.iesi.metadata.configuration.subroutine;
 
 import io.metadew.iesi.connection.tools.SQLTools;
+import io.metadew.iesi.framework.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.metadata.definition.subroutine.Subroutine;
 import io.metadew.iesi.metadata.definition.subroutine.SubroutineParameter;
-import io.metadew.iesi.metadata.execution.MetadataControl;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
@@ -29,17 +29,17 @@ public class SubroutineConfiguration {
         String sql = "";
 
         if (this.exists()) {
-            sql += "DELETE FROM " + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("SubroutineParameters");
+            sql += "DELETE FROM " + MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository().getTableNameByLabel("SubroutineParameters");
             sql += " WHERE SRT_NM = " + SQLTools.GetStringForSQL(this.getSubroutine().getName());
             sql += ";";
             sql += "\n";
-            sql += "DELETE FROM " + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("Subroutines");
+            sql += "DELETE FROM " + MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository().getTableNameByLabel("Subroutines");
             sql += " WHERE SRT_NM = " + SQLTools.GetStringForSQL(this.getSubroutine().getName());
             sql += ";";
             sql += "\n";
         }
 
-        sql += "INSERT INTO " + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("Subroutines");
+        sql += "INSERT INTO " + MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository().getTableNameByLabel("Subroutines");
         sql += " (SRT_NM, SRT_TYP_NM, SRT_DSC) ";
         sql += "VALUES ";
         sql += "(";
@@ -79,8 +79,8 @@ public class SubroutineConfiguration {
     public Subroutine getSubroutine(String subroutineName) {
         Subroutine subroutine = new Subroutine();
         CachedRowSet crsSubroutine = null;
-        String querySubroutine = "select SRT_NM, SRT_TYP_NM, SRT_DSC from " + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("Subroutines") + " where SRT_NM = '" + subroutineName + "'";
-        crsSubroutine = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(querySubroutine, "reader");
+        String querySubroutine = "select SRT_NM, SRT_TYP_NM, SRT_DSC from " + MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository().getTableNameByLabel("Subroutines") + " where SRT_NM = '" + subroutineName + "'";
+        crsSubroutine = MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository().executeQuery(querySubroutine, "reader");
         SubroutineParameterConfiguration subroutineParameterConfiguration = new SubroutineParameterConfiguration();
         try {
             while (crsSubroutine.next()) {
@@ -90,9 +90,9 @@ public class SubroutineConfiguration {
 
                 // Get parameters
                 CachedRowSet crsSubroutineParameters = null;
-                String querySubroutineParameters = "select SRT_NM, SRT_PAR_NM, SRT_PAR_VAL from " + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("SubroutineParameters")
+                String querySubroutineParameters = "select SRT_NM, SRT_PAR_NM, SRT_PAR_VAL from " + MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository().getTableNameByLabel("SubroutineParameters")
                         + " where SRT_NM = '" + subroutineName + "'";
-                crsSubroutineParameters = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(querySubroutineParameters, "reader");
+                crsSubroutineParameters = MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository().executeQuery(querySubroutineParameters, "reader");
                 List<SubroutineParameter> subroutineParameterList = new ArrayList();
                 while (crsSubroutineParameters.next()) {
                     subroutineParameterList

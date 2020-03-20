@@ -1,7 +1,7 @@
 package io.metadew.iesi.metadata.configuration.type;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
+import io.metadew.iesi.framework.configuration.framework.FrameworkConfiguration;
 import io.metadew.iesi.metadata.definition.ledger.LedgerType;
 import io.metadew.iesi.metadata.operation.DataObjectOperation;
 
@@ -21,7 +21,7 @@ public class LedgerTypeConfiguration {
     }
 
     public LedgerType getLedgerType(String ledgerTypeName) {
-        String conf = FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.conf") + File.separator
+        String conf = FrameworkConfiguration.getInstance().getMandatoryFrameworkFolder("metadata.conf").getAbsolutePath() + File.separator
                 + this.getDataObjectType() + File.separator + ledgerTypeName + ".json";
         DataObjectOperation dataObjectOperation = new DataObjectOperation(conf);
         ObjectMapper objectMapper = new ObjectMapper();

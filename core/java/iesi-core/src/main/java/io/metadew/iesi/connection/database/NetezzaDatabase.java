@@ -10,6 +10,10 @@ public class NetezzaDatabase extends SchemaDatabase {
         super(databaseConnection, schema);
     }
 
+    public NetezzaDatabase(NetezzaDatabaseConnection databaseConnection)  {
+        super(databaseConnection);
+    }
+
     @Override
     public String getSystemTimestampExpression() {
         return "CURRENT_TIMESTAMP";
@@ -59,7 +63,7 @@ public class NetezzaDatabase extends SchemaDatabase {
         }
 
         // Nullable
-        if (field.isNullable()) {
+        if (!field.isNullable()) {
             fieldQuery.append(" NOT NULL");
         }
         return fieldQuery.toString();

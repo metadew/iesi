@@ -5,8 +5,8 @@ import io.metadew.iesi.connection.elasticsearch.filebeat.DelimitedFileBeatElasti
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.configuration.Configuration;
 import io.metadew.iesi.framework.configuration.ScriptRunStatus;
+import io.metadew.iesi.framework.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.framework.crypto.FrameworkCrypto;
-import io.metadew.iesi.framework.execution.FrameworkControl;
 import io.metadew.iesi.framework.execution.IESIMessage;
 import io.metadew.iesi.metadata.backup.BackupExecution;
 import io.metadew.iesi.metadata.configuration.action.result.ActionResultConfiguration;
@@ -24,8 +24,6 @@ import io.metadew.iesi.metadata.definition.script.result.ScriptResultElasticSear
 import io.metadew.iesi.metadata.definition.script.result.ScriptResultOutput;
 import io.metadew.iesi.metadata.definition.script.result.key.ScriptResultKey;
 import io.metadew.iesi.metadata.definition.script.result.key.ScriptResultOutputKey;
-import io.metadew.iesi.metadata.execution.MetadataControl;
-import io.metadew.iesi.metadata.restore.RestoreExecution;
 import io.metadew.iesi.metadata.service.action.ActionDesignTraceService;
 import io.metadew.iesi.metadata.service.script.ScriptDesignTraceService;
 import org.apache.logging.log4j.*;
@@ -86,10 +84,10 @@ public class ExecutionControl {
         this.envName = environmentName;
 
         // Set environment variables
-        executionRuntime.setRuntimeVariablesFromList(actionExecution, MetadataControl.getInstance()
+        executionRuntime.setRuntimeVariablesFromList(actionExecution, MetadataRepositoryConfiguration.getInstance()
                 .getConnectivityMetadataRepository()
                 .executeQuery("select env_par_nm, env_par_val from "
-                        + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("EnvironmentParameters")
+                        + MetadataRepositoryConfiguration.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("EnvironmentParameters")
                         + " where env_nm = " + SQLTools.GetStringForSQL(this.envName) + " order by env_par_nm asc, env_par_val asc", "reader"));
     }
 
@@ -159,9 +157,6 @@ public class ExecutionControl {
 //        initializeRunId();
 //    }
 
-    public void logStart(RestoreExecution restoreExecution) {
-        initializeRunId();
-    }
 
 //    public Long getNewProcessId() {
 //        Long processId = FrameworkRuntime.getInstance().getNextProcessId();
@@ -212,10 +207,6 @@ public class ExecutionControl {
     }
 
     public void logEnd(BackupExecution backupExecution) {
-
-    }
-
-    public void logEnd(RestoreExecution restoreExecution) {
 
     }
 

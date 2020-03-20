@@ -11,6 +11,7 @@ import java.util.Map;
 @NoArgsConstructor
 public class MetadataTable {
 
+    private String name;
     private String label;
     private String description;
     private String category;

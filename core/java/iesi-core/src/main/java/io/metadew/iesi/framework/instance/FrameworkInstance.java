@@ -1,19 +1,14 @@
 package io.metadew.iesi.framework.instance;
 
 import io.metadew.iesi.framework.configuration.framework.FrameworkConfiguration;
+import io.metadew.iesi.framework.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.framework.crypto.FrameworkCrypto;
 import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
 import io.metadew.iesi.framework.execution.FrameworkControl;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.framework.execution.FrameworkExecutionContext;
-import io.metadew.iesi.metadata.definition.Context;
-import io.metadew.iesi.metadata.execution.MetadataControl;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
-import io.metadew.iesi.metadata.repository.configuration.MetadataRepositoryConfiguration;
 import io.metadew.iesi.runtime.ExecutionRequestExecutorService;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class FrameworkInstance {
 
@@ -69,7 +64,7 @@ public class FrameworkInstance {
 ////            metadataRepositories.addAll(metadataRepositoryConfiguration.toMetadataRepositories());
 ////
 ////        }
-////        MetadataControl.getInstance().init(metadataRepositories);
+////        MetadataRepositoryConfiguration.getInstance().init(metadataRepositories);
 //
 //        FrameworkExecution.getInstance().init(context);
 //        // TODO: move Executor (Request to separate module)
@@ -99,7 +94,7 @@ public class FrameworkInstance {
 //            metadataRepositories.addAll(metadataRepositoryConfiguration.toMetadataRepositories());
 //
 //        }
-//        MetadataControl.getInstance().init(metadataRepositories);
+//        MetadataRepositoryConfiguration.getInstance().init(metadataRepositories);
 //
 //        FrameworkExecution.getInstance().init(context);
 //        // TODO: move Executor (Request to separate module)
@@ -107,7 +102,7 @@ public class FrameworkInstance {
     }
 
     public void shutdown() {
-        for (MetadataRepository metadataRepository : MetadataControl.getInstance().getMetadataRepositories()) {
+        for (MetadataRepository metadataRepository : MetadataRepositoryConfiguration.getInstance().getMetadataRepositories()) {
             if (metadataRepository != null) {
                 metadataRepository.shutdown();
             }

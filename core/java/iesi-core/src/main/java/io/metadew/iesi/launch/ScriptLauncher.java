@@ -1,8 +1,7 @@
 package io.metadew.iesi.launch;
 
-import io.metadew.iesi.framework.configuration.FrameworkSettingConfiguration;
+import io.metadew.iesi.framework.configuration.Configuration;
 import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
-import io.metadew.iesi.framework.execution.FrameworkControl;
 import io.metadew.iesi.framework.execution.FrameworkExecutionContext;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.execution.ExecutionRequestConfiguration;
@@ -55,129 +54,130 @@ public class ScriptLauncher {
 
         ExecutionRequestBuilder executionRequestBuilder = new ExecutionRequestBuilder();
         ScriptExecutionRequestBuilder scriptExecutionRequestBuilder = new ScriptExecutionRequestBuilder();
-            // parse the command line arguments
-            CommandLine line = parser.parse(options, args);
+        // parse the command line arguments
+        CommandLine line = parser.parse(options, args);
 
-            if (line.hasOption("help")) {
-                // automatically generate the help statement
-                HelpFormatter formatter = new HelpFormatter();
-                formatter.printHelp("[command]", options);
-                System.exit(0);
+        if (line.hasOption("help")) {
+            // automatically generate the help statement
+            HelpFormatter formatter = new HelpFormatter();
+            formatter.printHelp("[command]", options);
+            System.exit(0);
+        }
+
+        Configuration.getInstance();
+
+        // Define the exit behaviour
+        if (line.hasOption("exit")) {
+            switch (line.getOptionValue("exit").trim().toLowerCase()) {
+                case "y":
+                case "true":
+                    scriptExecutionRequestBuilder.exit(true);
+                    break;
+                case "n":
+                case "false":
+                    scriptExecutionRequestBuilder.exit(false);
+                    break;
+                default:
+                    break;
             }
+        }
 
-            // Define the exit behaviour
-            if (line.hasOption("exit")) {
-                switch (line.getOptionValue("exit").trim().toLowerCase()) {
-                    case "y":
-                    case "true":
-                        scriptExecutionRequestBuilder.exit(true);
-                        break;
-                    case "n":
-                    case "false":
-                        scriptExecutionRequestBuilder.exit(false);
-                        break;
-                    default:
-                        break;
-                }
-            }
+        // Define the initialization file
+        if (line.hasOption("ini")) {
+            // Create framework instance
+            System.out.println("Option -ini (ini) value = " + line.getOptionValue("ini"));
+            FrameworkInstance.getInstance().init(new FrameworkInitializationFile(line.getOptionValue("ini")),
+                    new FrameworkExecutionContext(new Context("script", "")));
+        } else {
+            FrameworkInstance.getInstance().init(new FrameworkInitializationFile(),
+                    new FrameworkExecutionContext(new Context("script", "")));
+        }
 
-            // Define the initialization file
-            if (line.hasOption("ini")) {
-                // Create framework instance
-                System.out.println("Option -ini (ini) value = " + line.getOptionValue("ini"));
-                FrameworkInstance.getInstance().init(new FrameworkInitializationFile(line.getOptionValue("ini")),
-                        new FrameworkExecutionContext(new Context("script", "")));
+        // Get the script
+        // Script is leading, Json option is trailing
+        if (line.hasOption("script")) {
+            System.out.println("Option -script (script) value = " + line.getOptionValue("script"));
+            scriptExecutionRequestBuilder.mode("script");
+            scriptExecutionRequestBuilder.scriptName(line.getOptionValue("script"));
+
+            if (line.hasOption("version")) {
+                System.out.println("Option -version (version) value = " + line.getOptionValue("version"));
+                scriptExecutionRequestBuilder.scriptVersion(Long.parseLong(line.getOptionValue("version")));
             } else {
-                FrameworkInstance.getInstance().init(new FrameworkInitializationFile(),
-                        new FrameworkExecutionContext(new Context("script", "")));
+                System.out.println("Option -version (version) value = latest");
             }
 
-            // Get the script
-            // Script is leading, Json option is trailing
-            if (line.hasOption("script")) {
-                System.out.println("Option -script (script) value = " + line.getOptionValue("script"));
-                scriptExecutionRequestBuilder.mode("script");
-                scriptExecutionRequestBuilder.scriptName(line.getOptionValue("script"));
+        } else if (line.hasOption("file")) {
+            System.out.println("Option -file (file) value = " + line.getOptionValue("file"));
+            scriptExecutionRequestBuilder.mode("file");
+            scriptExecutionRequestBuilder.fileName(line.getOptionValue("file"));
+        } else {
+            System.out.println("Option -script (script) or -file (file) missing");
+            System.exit(1);
+        }
 
-                if (line.hasOption("version")) {
-                    System.out.println("Option -version (version) value = " + line.getOptionValue("version"));
-                    scriptExecutionRequestBuilder.scriptVersion(Long.parseLong(line.getOptionValue("version")));
-                } else {
-                    System.out.println("Option -version (version) value = latest");
-                }
+        // Get the environment
+        if (line.hasOption("env")) {
+            System.out.println("Option -env (environment) value = " + line.getOptionValue("env"));
+            scriptExecutionRequestBuilder.environment(line.getOptionValue("env"));
+        } else {
+            System.out.println("Option -env (environment) missing");
+            System.exit(1);
+        }
 
-            } else if (line.hasOption("file")) {
-                System.out.println("Option -file (file) value = " + line.getOptionValue("file"));
-                scriptExecutionRequestBuilder.mode("file");
-                scriptExecutionRequestBuilder.fileName(line.getOptionValue("file"));
-            } else {
-                System.out.println("Option -script (script) or -file (file) missing");
-                System.exit(1);
-            }
+        // Get variable configurations
+        if (line.hasOption("paramlist")) {
+            System.out.println("Option -paramlist (parameter list) value = " + line.getOptionValue("paramlist"));
+            scriptExecutionRequestBuilder.parameters(parseParameterRepresentation(line.getOptionValue("paramlist")));
+        }
 
-            // Get the environment
-            if (line.hasOption("env")) {
-                System.out.println("Option -env (environment) value = " + line.getOptionValue("env"));
-                scriptExecutionRequestBuilder.environment(line.getOptionValue("env"));
-            } else {
-                System.out.println("Option -env (environment) missing");
-                System.exit(1);
-            }
+        if (line.hasOption("paramfile")) {
+            System.out.println("Option -paramfile (parameter file) value = " + line.getOptionValue("paramfile"));
+            scriptExecutionRequestBuilder.parameters(parseParameterFiles(line.getOptionValue("paramfile")));
+        }
 
-            // Get variable configurations
-            if (line.hasOption("paramlist")) {
-                System.out.println("Option -paramlist (parameter list) value = " + line.getOptionValue("paramlist"));
-                scriptExecutionRequestBuilder.parameters(parseParameterRepresentation(line.getOptionValue("paramlist")));
-            }
+        // Get action select settings
+        if (line.hasOption("actions")) {
+            // TODO: define actionSelection as a strategy (include/exclude)
+            System.out.println("Option -actions (actions) value = " + line.getOptionValue("actions"));
+            //actionSelect = line.getOptionValue("actions");
+        }
 
-            if (line.hasOption("paramfile")) {
-                System.out.println("Option -paramfile (parameter file) value = " + line.getOptionValue("paramfile"));
-                scriptExecutionRequestBuilder.parameters(parseParameterFiles(line.getOptionValue("paramfile")));
-            }
+        // Get settings input
+        if (line.hasOption("settings")) {
+            // TODO: never used
+            System.out.println("Option -settings (settings) value = " + line.getOptionValue("settings"));
+        }
 
-            // Get action select settings
-            if (line.hasOption("actions")) {
-                // TODO: define actionSelection as a strategy (include/exclude)
-                System.out.println("Option -actions (actions) value = " + line.getOptionValue("actions"));
-                //actionSelect = line.getOptionValue("actions");
-            }
+        // Get impersonation input
+        if (line.hasOption("impersonation")) {
+            System.out.println("Option -impersonation (impersonation) value = " + line.getOptionValue("impersonation"));
+            scriptExecutionRequestBuilder.impersonation(line.getOptionValue("impersonate"));
+        }
 
-            // Get settings input
-            if (line.hasOption("settings")) {
-                // TODO: never used
-                System.out.println("Option -settings (settings) value = " + line.getOptionValue("settings"));
-            }
+        // Get impersonation input
+        if (line.hasOption("impersonate")) {
+            System.out.println("Option -impersonate (impersonate) value = " + line.getOptionValue("impersonate"));
+            scriptExecutionRequestBuilder.impersonations(new ImpersonationService().getImpersontationsFromCommandline(line.getOptionValue("impersonate")));
+        }
 
-            // Get impersonation input
-            if (line.hasOption("impersonation")) {
-                System.out.println("Option -impersonation (impersonation) value = " + line.getOptionValue("impersonation"));
-                scriptExecutionRequestBuilder.impersonation(line.getOptionValue("impersonate"));
-            }
+        // Get the user name
+        if (line.hasOption("user")) {
+            System.out.println("Option -user (user) value = " + line.getOptionValue("user"));
+            executionRequestBuilder.user(line.getOptionValue("user"));
+        }
 
-            // Get impersonation input
-            if (line.hasOption("impersonate")) {
-                System.out.println("Option -impersonate (impersonate) value = " + line.getOptionValue("impersonate"));
-                scriptExecutionRequestBuilder.impersonations(new ImpersonationService().getImpersontationsFromCommandline(line.getOptionValue("impersonate")));
-            }
-
-            // Get the user name
-            if (line.hasOption("user")) {
-                System.out.println("Option -user (user) value = " + line.getOptionValue("user"));
-                executionRequestBuilder.user(line.getOptionValue("user"));
-            }
-
-            // Get the user password
-            if (line.hasOption("password")) {
-                System.out.println("Option -password (password) value = " + "*****");
-                executionRequestBuilder.password(line.getOptionValue("password"));
-            }
+        // Get the user password
+        if (line.hasOption("password")) {
+            System.out.println("Option -password (password) value = " + "*****");
+            executionRequestBuilder.password(line.getOptionValue("password"));
+        }
 
         // Server mode
         String serverMode = "off";
         try {
-            serverMode = FrameworkSettingConfiguration.getInstance().getSettingPath("server.mode")
-                    .map(settingPath -> FrameworkControl.getInstance().getProperty(settingPath)
-                            .orElseThrow(() -> new RuntimeException("no value set for server.mode")))
+            serverMode = Configuration.getInstance().getProperty("server.mode")
+                    .map(settingPath -> (String) settingPath)
                     .orElse("off")
                     .toLowerCase();
             System.out.println("Setting framework.server.mode=" + serverMode);
@@ -204,9 +204,9 @@ public class ScriptLauncher {
             ExecutionRequestConfiguration.getInstance().update(executionRequest);
             ExecutionRequestExecutorService.getInstance().execute(executionRequest);
         } else if (serverMode.equalsIgnoreCase("standalone")) {
-            System.out.println("RequestID="+executionRequest.getMetadataKey().getId());
+            System.out.println("RequestID=" + executionRequest.getMetadataKey().getId());
         } else {
-            throw new RuntimeException("unknown setting for " + FrameworkSettingConfiguration.getInstance().getSettingPath("server.mode").get());
+            throw new RuntimeException("unknown setting for " + Configuration.getInstance().getMandatoryProperty("server.mode"));
         }
 
         FrameworkInstance.getInstance().shutdown();

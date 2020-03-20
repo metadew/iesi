@@ -6,7 +6,7 @@ import io.metadew.iesi.connection.tools.OutputTools;
 import io.metadew.iesi.data.generation.execution.GenerationControlExecution;
 import io.metadew.iesi.data.generation.execution.GenerationOutputExecution;
 import io.metadew.iesi.data.generation.execution.GenerationOutputParameterExecution;
-import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
+import io.metadew.iesi.framework.configuration.framework.FrameworkConfiguration;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.definition.generation.GenerationControl;
 import io.metadew.iesi.metadata.definition.generation.GenerationOutputParameter;
@@ -83,12 +83,12 @@ public class DelimitedFile {
         // Run the generation Output
         String fullFileName = "";
 
-        String folderName = FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("run.tmp")
+        String folderName = FrameworkConfiguration.getInstance().getMandatoryFrameworkFolder("run.tmp").getAbsolutePath()
                 + File.separator + this.getGenerationOutputExecution().getGenerationExecution().getGeneration().getName();
         FolderTools.createFolder(folderName);
         String fileName = this.composeFileName();
         fullFileName = folderName + File.separator + fileName;
-        CachedRowSet crs = null;
+        CachedRowSet crs;
         String query = "select "
                 + this.getGenerationOutputExecution().getGenerationExecution().getGenerationRuntime().getFieldListSelect()
                 + " from "

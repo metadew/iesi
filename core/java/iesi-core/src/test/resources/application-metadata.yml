@@ -1,7 +1,7 @@
 iesi:
   metadata:
     tables:
-      CXN_CONN:
+      - name: CXN_CONN
         label: Connections
         description: Design metadata for connections
         category: connectivity
@@ -34,7 +34,7 @@ iesi:
             length: '0'
             nullable: false
             defaultTimestamp: true
-      CXN_CONN_IMP:
+      - name: CXN_CONN_IMP
         label: Impersonations
         description: Design metadata for connection impersonations
         category: connectivity
@@ -60,7 +60,7 @@ iesi:
             length: '0'
             nullable: false
             defaultTimestamp: true
-      CXN_CONN_IMP_PAR:
+      - name: CXN_CONN_IMP_PAR
         label: ImpersonationParameters
         description: Design metadata for connection impersonation parameters
         category: connectivity
@@ -100,7 +100,7 @@ iesi:
             length: '0'
             nullable: false
             defaultTimestamp: true
-      CXN_CONN_PAR:
+      - name: CXN_CONN_PAR
         label: ConnectionParameters
         description: Design metadata for connection parameters
         category: connectivity
@@ -140,7 +140,7 @@ iesi:
             length: '0'
             nullable: false
             defaultTimestamp: true
-      CXN_ENV:
+      - name: CXN_ENV
         label: Environments
         description: Design metadata for environments
         category: connectivity
@@ -166,7 +166,7 @@ iesi:
             length: '0'
             nullable: false
             defaultTimestamp: true
-      CXN_ENV_PAR:
+      - name: CXN_ENV_PAR
         label: EnvironmentParameters
         description: Design metadata for environment parameters
         category: connectivity
@@ -392,7 +392,7 @@ iesi:
       #            length: '0'
       #            nullable: false
       #            defaultTimestamp: true
-      DES_ACTION:
+      - name: DES_ACTION
         label: Actions
         description: Design metadata for actions
         category: design
@@ -496,7 +496,7 @@ iesi:
             length: '0'
             nullable: false
             defaultTimestamp: true
-      DES_ACTION_PAR:
+      - name: DES_ACTION_PAR
         label: ActionParameters
         description: Design metadata for action parameters
         category: design
@@ -543,7 +543,7 @@ iesi:
             length: '0'
             nullable: false
             defaultTimestamp: true
-      DES_COMP:
+      - name: DES_COMP
         label: Components
         description: Design metadata for components
         category: design
@@ -583,7 +583,7 @@ iesi:
             length: '0'
             nullable: false
             defaultTimestamp: true
-      DES_COMP_ATT:
+      - name: DES_COMP_ATT
         label: ComponentAttributes
         description: Design metadata for component attributes
         category: design
@@ -630,7 +630,7 @@ iesi:
             length: '0'
             nullable: false
             defaultTimestamp: true
-      DES_COMP_PAR:
+      - name: DES_COMP_PAR
         label: ComponentParameters
         description: Design metadata for component parameters
         category: design
@@ -670,7 +670,7 @@ iesi:
             length: '0'
             nullable: false
             defaultTimestamp: true
-      DES_COMP_VRS:
+      - name: DES_COMP_VRS
         label: ComponentVersions
         description: Design metadata for component versions
         category: design
@@ -1128,7 +1128,7 @@ iesi:
       #            length: '0'
       #            nullable: false
       #            defaultTimestamp: true
-      DES_SCRIPT:
+      - name: DES_SCRIPT
         label: Scripts
         description: Design metadata for scripts
         category: design
@@ -1168,7 +1168,7 @@ iesi:
             length: '0'
             nullable: false
             defaultTimestamp: true
-      DES_SCRIPT_PAR:
+      - name: DES_SCRIPT_PAR
         label: ScriptParameters
         description: Design metadata for script parameters
         category: design
@@ -1208,7 +1208,7 @@ iesi:
             length: '0'
             nullable: false
             defaultTimestamp: true
-      DES_SCRIPT_VRS:
+      - name: DES_SCRIPT_VRS
         label: ScriptVersions
         description: Design metadata for script versions
         category: design
@@ -1241,7 +1241,7 @@ iesi:
             length: '0'
             nullable: false
             defaultTimestamp: true
-      TRC_ACTION:
+      - name: TRC_ACTION
         label: ActionTraces
         description: Trace metadata for actions
         category: trace
@@ -1347,7 +1347,7 @@ iesi:
             length: '0'
             nullable: false
             defaultTimestamp: true
-      TRC_ACTION_PAR:
+      - name: TRC_ACTION_PAR
         label: ActionParameterTraces
         description: Trace metadata for action parameters
         category: trace
@@ -1397,7 +1397,7 @@ iesi:
             length: '0'
             nullable: false
             defaultTimestamp: true
-      TRC_DES_ACTION:
+      - name: TRC_DES_ACTION
         label: ActionDesignTraces
         description: Trace metadata for action designs
         category: trace
@@ -1503,7 +1503,7 @@ iesi:
             length: '0'
             nullable: false
             defaultTimestamp: true
-      TRC_DES_ACTION_PAR:
+      - name: TRC_DES_ACTION_PAR
         label: ActionParameterDesignTraces
         description: Trace metadata for action design parameters
         category: trace
@@ -1553,7 +1553,7 @@ iesi:
             length: '0'
             nullable: false
             defaultTimestamp: true
-      TRC_DES_SCRIPT:
+      - name: TRC_DES_SCRIPT
         label: ScriptDesignTraces
         description: Trace metadata for script designs
         category: trace
@@ -1616,7 +1616,7 @@ iesi:
             length: '0'
             nullable: false
             defaultTimestamp: true
-      TRC_DES_SCRIPT_PAR:
+      - name: TRC_DES_SCRIPT_PAR
         label: ScriptParameterDesignTraces
         description: Trace metadata for script design parameters
         category: trace
@@ -1659,7 +1659,7 @@ iesi:
             length: '0'
             nullable: false
             defaultTimestamp: true
-      TRC_DES_SCRIPT_VRS:
+      - name: TRC_DES_SCRIPT_VRS
         label: ScriptVersionDesignTraces
         description: Trace metadata for script design versions
         category: trace
@@ -1701,7 +1701,7 @@ iesi:
             length: '0'
             nullable: false
             defaultTimestamp: true
-      TRC_SCRIPT:
+      - name: TRC_SCRIPT
         label: ScriptTraces
         description: Trace metadata for scripts
         category: trace
@@ -1764,7 +1764,7 @@ iesi:
             length: '0'
             nullable: false
             defaultTimestamp: true
-      TRC_SCRIPT_PAR:
+      - name: TRC_SCRIPT_PAR
         label: ScriptParameterTraces
         description: Trace metadata for script parameters
         category: trace
@@ -1807,7 +1807,7 @@ iesi:
             length: '0'
             nullable: false
             defaultTimestamp: true
-      TRC_SCRIPT_VRS:
+      - name: TRC_SCRIPT_VRS
         label: ScriptVersionTraces
         description: Trace metadata for script versions
         category: trace
@@ -1849,7 +1849,7 @@ iesi:
             length: '0'
             nullable: false
             defaultTimestamp: true
-      RES_ACTION:
+      - name: RES_ACTION
         label: ActionResults
         description: Opertional metadata for action results
         category: result
@@ -1919,7 +1919,7 @@ iesi:
             length: '0'
             nullable: true
             defaultTimestamp: 
-      RES_ACTION_OUT:
+      - name: RES_ACTION_OUT
         label: ActionResultOutputs
         description: Opertional metadata for action result outputs
         category: result
@@ -1969,7 +1969,7 @@ iesi:
             length: '0'
             nullable: false
             defaultTimestamp: true
-      RES_ACTION_PERF:
+      - name: RES_ACTION_PERF
         label: ActionResultPerformances
         description: Opertional metadata for action result performances
         category: result
@@ -2033,7 +2033,7 @@ iesi:
             length: '0'
             nullable: true
             defaultTimestamp: 
-      RES_REQUEST:
+      - name: RES_REQUEST
         label: RequestResults
         description: Opertional metadata for request results
         category: result
@@ -2129,7 +2129,7 @@ iesi:
             length: '0'
             nullable: true
             defaultTimestamp: 
-      RES_SCRIPT:
+      - name: RES_SCRIPT
         label: ScriptResults
         description: Opertional metadata for script outputs
         category: result
@@ -2206,7 +2206,7 @@ iesi:
             length: '0'
             nullable: true
             defaultTimestamp: 
-      RES_SCRIPT_OUT:
+      - name: RES_SCRIPT_OUT
         label: ScriptResultOutputs
         description: Opertional metadata for script result outputs
         category: result

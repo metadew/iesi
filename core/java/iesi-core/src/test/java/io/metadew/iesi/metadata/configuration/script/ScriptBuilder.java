@@ -1,6 +1,5 @@
 package io.metadew.iesi.metadata.configuration.script;
 
-import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.metadata.configuration.action.ActionBuilder;
 import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.script.Script;
@@ -9,7 +8,6 @@ import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 

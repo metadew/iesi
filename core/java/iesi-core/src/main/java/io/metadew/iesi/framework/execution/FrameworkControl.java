@@ -2,7 +2,6 @@ package io.metadew.iesi.framework.execution;
 
 import io.metadew.iesi.framework.configuration.Configuration;
 
-import java.util.Optional;
 import java.util.Properties;
 
 public class FrameworkControl {
@@ -27,7 +26,6 @@ public class FrameworkControl {
         int closePos;
         String variable_char = "#";
         String midBit;
-        Optional<String> replaceValue;
         String temp = input;
         while (temp.indexOf(variable_char) > 0 || temp.startsWith(variable_char)) {
             openPos = temp.indexOf(variable_char);

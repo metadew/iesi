@@ -1,6 +1,6 @@
 package io.metadew.iesi.script.execution.instruction.variable.framework;
 
-import io.metadew.iesi.framework.configuration.FrameworkConfiguration;
+import io.metadew.iesi.framework.configuration.Configuration;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.instruction.variable.VariableInstruction;
 import org.apache.commons.io.FilenameUtils;
@@ -16,7 +16,8 @@ public class FrameworkHomeInstruction implements VariableInstruction {
 
     @Override
     public String generateOutput() {
-        return FilenameUtils.normalize(FrameworkConfiguration.getInstance().getFrameworkHome());
+        return FilenameUtils.normalize((String) Configuration.getInstance().getProperty("home")
+                .orElseThrow(() -> new RuntimeException("No value found for 'home'")));
     }
 
     @Override

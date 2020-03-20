@@ -1,11 +1,9 @@
 package io.metadew.iesi.metadata.configuration.impersonation;
 
 import io.metadew.iesi.connection.tools.SQLTools;
-import io.metadew.iesi.framework.configuration.FrameworkObjectConfiguration;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
-import io.metadew.iesi.metadata.definition.ListObject;
 import io.metadew.iesi.metadata.definition.impersonation.Impersonation;
 import io.metadew.iesi.metadata.definition.impersonation.ImpersonationParameter;
 import io.metadew.iesi.metadata.definition.impersonation.key.ImpersonationKey;
@@ -311,29 +309,6 @@ public class ImpersonationConfiguration extends Configuration<Impersonation, Imp
         }
 
         return result;
-    }
-
-    public ListObject getImpersonations() {
-        List<Impersonation> impersonationList = new ArrayList<>();
-        CachedRowSet crs = null;
-        String query = "select IMP_NM from " + getMetadataRepository().getTableNameByLabel("Impersonations")
-                + " order by IMP_NM ASC";
-        crs = getMetadataRepository().executeQuery(query, "reader");
-        ImpersonationConfiguration impersonationConfiguration = new ImpersonationConfiguration();
-        try {
-            String impersonationName = "";
-            while (crs.next()) {
-                impersonationName = crs.getString("IMP_NM");
-                impersonationConfiguration.getImpersonation(impersonationName).ifPresent(impersonationList::add);
-            }
-            crs.close();
-        } catch (SQLException e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-            throw new RuntimeException(e);
-        }
-        // new Impersonation("dummy", "dummy",  null) because code wants an object instead of a class
-        return new ListObject(FrameworkObjectConfiguration.getFrameworkObjectType(new Impersonation("dummy", "dummy", null)), impersonationList);
     }
 
     // Exists

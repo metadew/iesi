@@ -2,6 +2,7 @@ package io.metadew.iesi.connection.operation;
 
 import io.metadew.iesi.connection.database.TeradataDatabase;
 import io.metadew.iesi.connection.database.connection.TeradataDatabaseConnection;
+import io.metadew.iesi.framework.configuration.Configuration;
 import io.metadew.iesi.framework.crypto.FrameworkCrypto;
 import io.metadew.iesi.framework.execution.FrameworkControl;
 import io.metadew.iesi.metadata.definition.connection.Connection;

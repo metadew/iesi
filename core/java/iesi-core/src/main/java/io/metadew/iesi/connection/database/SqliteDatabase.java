@@ -74,7 +74,7 @@ public class SqliteDatabase extends Database {
         }
 
         // Nullable
-        if (field.isNullable()) {
+        if (!field.isNullable()) {
             fieldQuery.append(" NOT NULL");
         }
         return fieldQuery.toString();

@@ -31,7 +31,7 @@ class ScriptConfigurationTest {
     @BeforeEach
     void setup() {
         designMetadataRepository = RepositoryTestSetup.getDesignMetadataRepository();
-
+designMetadataRepository.createAllTables();
         script11 = new ScriptBuilder(IdentifierTools.getScriptIdentifier("script1"), 1)
                 .name("script1")
                 .numberOfActions(2)

@@ -8,6 +8,10 @@ public class PostgresqlDatabase extends SchemaDatabase {
     public PostgresqlDatabase(PostgresqlDatabaseConnection databaseConnection, String schema) {
         super(databaseConnection, schema);
     }
+
+    public PostgresqlDatabase(PostgresqlDatabaseConnection databaseConnection) {
+        super(databaseConnection);
+    }
     
     @Override
     public String getSystemTimestampExpression() {
@@ -58,7 +62,7 @@ public class PostgresqlDatabase extends SchemaDatabase {
         }
 
         // Nullable
-        if (field.isNullable()) {
+        if (!field.isNullable()) {
             fieldQuery.append(" NOT NULL");
         }
         return fieldQuery.toString();

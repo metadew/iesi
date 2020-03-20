@@ -14,7 +14,6 @@ public class MetadataRepositoryDefinition {
 
     private String name;
     private String instance;
-    private String connection;
     private List<String> categories;
     private RepositoryCoordinatorDefinition coordinator;
 

@@ -1,3 +1,4 @@
+/*
 package io.metadew.iesi.launch;
 
 import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
@@ -9,11 +10,13 @@ import org.apache.commons.cli.*;
 
 import java.sql.SQLException;
 
+*/
 /**
  * The offload launcher is entry point to launch the data offloading utility.
  *
  * @author peter.billen
- */
+ *//*
+
 public class OffloadLauncher {
 
     public static void main(String[] args) {
@@ -193,4 +196,4 @@ public class OffloadLauncher {
         System.out.println();
     }
 
-}
+}*/

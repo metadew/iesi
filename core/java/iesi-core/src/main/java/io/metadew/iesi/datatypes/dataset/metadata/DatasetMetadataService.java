@@ -4,7 +4,7 @@ import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.SqliteDatabase;
 import io.metadew.iesi.connection.database.connection.sqlite.SqliteDatabaseConnection;
 import io.metadew.iesi.connection.tools.SQLTools;
-import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
+import io.metadew.iesi.framework.configuration.framework.FrameworkConfiguration;
 import io.metadew.iesi.framework.execution.IESIMessage;
 import lombok.Synchronized;
 import lombok.extern.log4j.Log4j2;
@@ -32,7 +32,8 @@ public class DatasetMetadataService {
     private DatasetMetadataService() {}
 
     public DatasetMetadata getByName(String datasetName) {
-        return new DatasetMetadata(datasetName, new SqliteDatabase(new SqliteDatabaseConnection(FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("data") + File.separator + "datasets"
+        return new DatasetMetadata(datasetName, new SqliteDatabase(new SqliteDatabaseConnection(
+                FrameworkConfiguration.getInstance().getMandatoryFrameworkFolder("data").getAbsolutePath() + File.separator + "datasets"
                 + File.separator + datasetName + File.separator + "metadata" + File.separator + "metadata.db3")));
     }
 
@@ -72,7 +73,7 @@ public class DatasetMetadataService {
                         "Returning first occurrence.", id)));
             }
             cachedRowSetFileTable.next();
-            Database database = new SqliteDatabase(new SqliteDatabaseConnection(FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("data") + File.separator + "datasets"
+            Database database = new SqliteDatabase(new SqliteDatabaseConnection(FrameworkConfiguration.getInstance().getMandatoryFrameworkFolder("data").getAbsolutePath() + File.separator + "datasets"
                     + File.separator + datasetMetadata.getDatasetName() + File.separator + "data" + File.separator + cachedRowSetFileTable.getString("DATASET_FILE_NM")));
             cachedRowSetFileTable.close();
             return database;

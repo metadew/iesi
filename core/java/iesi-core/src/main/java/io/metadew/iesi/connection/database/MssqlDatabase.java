@@ -9,6 +9,10 @@ public class MssqlDatabase extends SchemaDatabase {
         super(databaseConnection, schema);
     }
 
+    public MssqlDatabase(MssqlDatabaseConnection mssqlDatabaseConnection) {
+        super(mssqlDatabaseConnection);
+    }
+
     @Override
     public String getSystemTimestampExpression() {
         return "CURRENT_TIMESTAMP";
@@ -54,7 +58,7 @@ public class MssqlDatabase extends SchemaDatabase {
         }
 
         // Nullable
-        if (field.isNullable()) {
+        if (!field.isNullable()) {
             fieldQuery.append(" NOT NULL");
         }
         return fieldQuery.toString();

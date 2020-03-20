@@ -16,17 +16,8 @@ import java.util.List;
 public class ControlMetadataRepository extends MetadataRepository {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public ControlMetadataRepository(String name, String scope, String instanceName, RepositoryCoordinator repositoryCoordinator) {
-        super(name, scope, instanceName, repositoryCoordinator);
-    }
-
     public ControlMetadataRepository(String name, String instanceName, RepositoryCoordinator repositoryCoordinator) {
         super(name, instanceName, repositoryCoordinator);
-    }
-
-    public ControlMetadataRepository(String tablePrefix, RepositoryCoordinator repositoryCoordinator, String name, String scope,
-                                     List<MetadataObject> metadataObjects, List<MetadataTable> metadataTables) {
-        super(tablePrefix, repositoryCoordinator, name, scope, metadataObjects, metadataTables);
     }
 
     @Override

@@ -1,7 +1,6 @@
 package io.metadew.iesi.runtime;
 
-import io.metadew.iesi.framework.configuration.FrameworkSettingConfiguration;
-import io.metadew.iesi.framework.execution.FrameworkControl;
+import io.metadew.iesi.framework.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.execution.ExecutionRequestConfiguration;
 import io.metadew.iesi.metadata.configuration.execution.script.ScriptExecutionRequestConfiguration;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequest;
@@ -39,9 +38,9 @@ public class ExecutionRequestMonitor implements Runnable {
     }
 
     private ExecutionRequestMonitor() {
-        this.timeout = FrameworkSettingConfiguration.getInstance().getSettingPath("server.threads.timeout")
-                .map(settingPath -> Long.parseLong(FrameworkControl.getInstance().getProperty(settingPath)
-                        .orElseThrow(() -> new RuntimeException("no value set for server.threads.timeout"))))
+        // TODO: Create server configuration
+        this.timeout = Configuration.getInstance().getProperty("server.threads.timeout")
+                .map(settingPath -> Long.parseLong((String) settingPath))
                 .orElse(60L);
         this.executionRequestThreadMap = new ConcurrentHashMap<>();
     }

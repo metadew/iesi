@@ -1,7 +1,6 @@
 package io.metadew.iesi.runtime;
 
-import io.metadew.iesi.framework.configuration.FrameworkSettingConfiguration;
-import io.metadew.iesi.framework.execution.FrameworkControl;
+import io.metadew.iesi.framework.configuration.guard.GuardConfiguration;
 import io.metadew.iesi.framework.execution.IESIMessage;
 import io.metadew.iesi.guard.configuration.UserAccessConfiguration;
 import io.metadew.iesi.guard.definition.UserAccess;
@@ -29,10 +28,9 @@ public class AuthenticatedExecutionRequestExecutor implements ExecutionRequestEx
 
     private AuthenticatedExecutionRequestExecutor() {
         this.userAccessConfiguration = new UserAccessConfiguration();
-        this.authenticationEnabled = FrameworkSettingConfiguration.getInstance().getSettingPath("guard.authenticate")
-                .map(settingPath -> FrameworkControl.getInstance().getProperty(settingPath)
-                        .orElseThrow(() -> new RuntimeException("no value set for guard.authenticate")).equalsIgnoreCase("y"))
-                .orElse(false);
+        this.authenticationEnabled = GuardConfiguration.getInstance().getGuardSetting("authenticate")
+                .map(s -> s.equalsIgnoreCase("y"))
+                .orElseThrow(() -> new RuntimeException("no value set for guard.authenticate"));
     }
 
     @Override

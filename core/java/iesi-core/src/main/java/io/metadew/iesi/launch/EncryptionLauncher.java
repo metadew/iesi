@@ -1,6 +1,6 @@
 package io.metadew.iesi.launch;
 
-import io.metadew.iesi.framework.configuration.FrameworkConfiguration;
+import io.metadew.iesi.framework.configuration.Configuration;
 import io.metadew.iesi.framework.crypto.FrameworkCrypto;
 
 import java.awt.*;
@@ -21,6 +21,8 @@ public class EncryptionLauncher {
 
     public static void main(String[] args) {
 
+        Configuration.getInstance();
+
         Console console = System.console();
         if (console == null) {
             System.out.println("Couldn't get Console instance");
@@ -30,7 +32,7 @@ public class EncryptionLauncher {
         char[] passwordArray = console.readPassword("Enter the password to encrypt: ");
 
         String input = new String(passwordArray);
-        FrameworkConfiguration.getInstance().init();
+        Configuration.getInstance();
         FrameworkCrypto frameworkCrypto = FrameworkCrypto.getInstance();
 
         String output = "";

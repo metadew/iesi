@@ -65,7 +65,7 @@ public class H2Database extends SchemaDatabase {
         }
 
         // Nullable
-        if (field.isNullable()) {
+        if (!field.isNullable()) {
             fieldQuery.append(" NOT NULL");
         }
         return fieldQuery.toString();

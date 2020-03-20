@@ -7,8 +7,6 @@ import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsExc
 import io.metadew.iesi.metadata.configuration.impersonation.ImpersonationConfiguration;
 import io.metadew.iesi.metadata.definition.DataObject;
 import io.metadew.iesi.metadata.definition.Metadata;
-import io.metadew.iesi.metadata.definition.MetadataObject;
-import io.metadew.iesi.metadata.definition.MetadataTable;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.environment.Environment;
 import io.metadew.iesi.metadata.definition.impersonation.Impersonation;
@@ -17,28 +15,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
-import java.util.List;
 
 public class ConnectivityMetadataRepository extends MetadataRepository {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public ConnectivityMetadataRepository(String name, String scope, String instanceName, RepositoryCoordinator repositoryCoordinator) {
-        super(name, scope, instanceName, repositoryCoordinator);
-        ConnectionConfiguration.getInstance().init(this);
-        EnvironmentConfiguration.getInstance().init(this);
-        ImpersonationConfiguration.getInstance().init(this);
-    }
-
     public ConnectivityMetadataRepository(String name, String instanceName, RepositoryCoordinator repositoryCoordinator) {
         super(name, instanceName, repositoryCoordinator);
-        ConnectionConfiguration.getInstance().init(this);
-        EnvironmentConfiguration.getInstance().init(this);
-        ImpersonationConfiguration.getInstance().init(this);
-    }
-
-    public ConnectivityMetadataRepository(String tablePrefix, RepositoryCoordinator repositoryCoordinator, String name, String scope,
-                                          List<MetadataObject> metadataObjects, List<MetadataTable> metadataTables) {
-        super(tablePrefix, repositoryCoordinator, name, scope, metadataObjects, metadataTables);
         ConnectionConfiguration.getInstance().init(this);
         EnvironmentConfiguration.getInstance().init(this);
         ImpersonationConfiguration.getInstance().init(this);

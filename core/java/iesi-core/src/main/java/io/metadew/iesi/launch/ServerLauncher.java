@@ -1,5 +1,6 @@
 package io.metadew.iesi.launch;
 
+import io.metadew.iesi.framework.configuration.Configuration;
 import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
 import io.metadew.iesi.framework.execution.FrameworkExecutionContext;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
@@ -29,6 +30,8 @@ public class ServerLauncher {
             formatter.printHelp("[command]", options);
             System.exit(0);
         }
+
+        Configuration.getInstance();
 
         if (cmd.hasOption("ini")) {
             FrameworkInstance.getInstance().init(new FrameworkInitializationFile(cmd.getOptionValue("ini")),

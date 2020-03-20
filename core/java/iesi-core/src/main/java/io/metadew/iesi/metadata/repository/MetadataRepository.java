@@ -1,20 +1,15 @@
 package io.metadew.iesi.metadata.repository;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.metadew.iesi.framework.configuration.framework.FrameworkConfiguration;
-import io.metadew.iesi.framework.definition.FrameworkFolder;
+import io.metadew.iesi.framework.configuration.metadata.tables.MetadataTablesConfiguration;
 import io.metadew.iesi.metadata.definition.DataObject;
-import io.metadew.iesi.metadata.definition.MetadataObject;
 import io.metadew.iesi.metadata.definition.MetadataTable;
-import io.metadew.iesi.metadata.operation.DataObjectOperation;
 import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.sql.rowset.CachedRowSet;
-import java.io.File;
 import java.io.InputStream;
-import java.util.ArrayList;
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,74 +18,49 @@ public abstract class MetadataRepository {
 	// TODO: propagate SQLExcpetion
 	private final static Logger LOGGER = LogManager.getLogger();
 	private final String tablePrefix;
+	private final List<MetadataTable> metadataTables;
 
 	private RepositoryCoordinator repositoryCoordinator;
 	private String name;
-	private String scope;
-	private List<MetadataObject> metadataObjects;
-	private List<MetadataTable> metadataTables;
 
-	public MetadataRepository(String name, String scope, String instanceName,
+	public MetadataRepository(String name, String instanceName,
 							  RepositoryCoordinator repositoryCoordinator) {
 		this.tablePrefix = "iesi".toUpperCase() + "_" + (instanceName != null ? instanceName + "_" : "");
 		this.name = name;
-		this.scope = scope;
 		this.repositoryCoordinator = repositoryCoordinator;
-		metadataObjects = new ArrayList<>();
-		metadataTables = new ArrayList<>();
-
-		DataObjectOperation dataObjectOperation = new DataObjectOperation();
-		dataObjectOperation.setInputFile(FrameworkConfiguration.getInstance().getFrameworkFolder("metadata.def")
-				.map(FrameworkFolder::getAbsolutePath)
-				.orElseThrow(() -> new RuntimeException("no configuration found metadata.def")) + File.separator + getObjectDefinitionFileName());
-		dataObjectOperation.parseFile();
-		ObjectMapper objectMapper = new ObjectMapper();
-		//
-		for (DataObject dataObject : dataObjectOperation.getDataObjects()) {
-			if (dataObject.getType().equalsIgnoreCase("metadataobject")) {
-				metadataObjects.add(objectMapper.convertValue(dataObject.getData(), MetadataObject.class));
-			}
-		}
-
-		dataObjectOperation = new DataObjectOperation();
-		dataObjectOperation.setInputFile(FrameworkConfiguration.getInstance().getFrameworkFolder("metadata.def")
-				.map(FrameworkFolder::getAbsolutePath)
-				.orElseThrow(() -> new RuntimeException("no configuration found metadata.in.new")) + File.separator + getDefinitionFileName());
-		dataObjectOperation.parseFile();
-		//
+		this.metadataTables = MetadataTablesConfiguration.getInstance().getMetadataTables().stream()
+				.filter(metadataTable -> metadataTable.getCategory().equalsIgnoreCase(getCategory()))
+				.peek(metadataTable -> metadataTable.setName(tablePrefix + metadataTable.getName()))
+				.collect(Collectors.toList());
+//		metadataObjects = new ArrayList<>();
+//		metadataTables = new ArrayList<>();
+//
+//		DataObjectOperation dataObjectOperation = new DataObjectOperation();
+//		dataObjectOperation.setInputFile(FrameworkConfiguration.getInstance().getFrameworkFolder("metadata.def")
+//				.map(FrameworkFolder::getAbsolutePath)
+//				.orElseThrow(() -> new RuntimeException("no configuration found metadata.def")) + File.separator + getObjectDefinitionFileName());
+//		dataObjectOperation.parseFile();
+//		ObjectMapper objectMapper = new ObjectMapper();
+//		//
 //		for (DataObject dataObject : dataObjectOperation.getDataObjects()) {
-//			if (dataObject.getType().equalsIgnoreCase("metadatatable")) {
-//				MetadataTable metadataTable = objectMapper.convertValue(dataObject.getData(), MetadataTable.class);
-//				metadataTable.setName(tablePrefix + metadataTable.getName());
-//				metadataTables.add(metadataTable);
+//			if (dataObject.getType().equalsIgnoreCase("metadataobject")) {
+//				metadataObjects.add(objectMapper.convertValue(dataObject.getData(), MetadataObject.class));
 //			}
 //		}
-	}
-
-	// Constructor for testing
-	public MetadataRepository(String name, String scope ,RepositoryCoordinator repositoryCoordinator){
-		this.name = name;
-		this.scope = scope;
-		this.repositoryCoordinator = repositoryCoordinator;
-		this.tablePrefix = "test";
-	}
-
-	public MetadataRepository(String tablePrefix, RepositoryCoordinator repositoryCoordinator, String name, String scope,
-							  List<MetadataObject> metadataObjects, List<MetadataTable> metadataTables) {
-		this.tablePrefix = tablePrefix;
-		this.repositoryCoordinator = repositoryCoordinator;
-		this.name = name;
-		this.scope = scope;
-		this.metadataObjects = metadataObjects;
-		this.metadataTables = metadataTables;
-	}
-
-	public void setMetadataObjects(List<MetadataObject> metadataObjects) {
-		this.metadataObjects = metadataObjects;
-	}
-
-	public void setMetadataTables(List<MetadataTable> metadataTables) {
-		this.metadataTables = metadataTables;
+//
+//		dataObjectOperation = new DataObjectOperation();
+//		dataObjectOperation.setInputFile(FrameworkConfiguration.getInstance().getFrameworkFolder("metadata.def")
+//				.map(FrameworkFolder::getAbsolutePath)
+//				.orElseThrow(() -> new RuntimeException("no configuration found metadata.in.new")) + File.separator + getDefinitionFileName());
+//		dataObjectOperation.parseFile();
+//		//
+////		for (DataObject dataObject : dataObjectOperation.getDataObjects()) {
+////			if (dataObject.getType().equalsIgnoreCase("metadatatable")) {
+////				MetadataTable metadataTable = objectMapper.convertValue(dataObject.getData(), MetadataTable.class);
+////				metadataTable.setName(tablePrefix + metadataTable.getName());
+////				metadataTables.add(metadataTable);
+////			}
+////		}
 	}
 
 	public abstract String getDefinitionFileName();
@@ -168,13 +138,13 @@ public abstract class MetadataRepository {
 				.collect(Collectors.joining("\n\n"));
 	}
 
+
 	public String getTableNameByLabel(String label) {
-//		return metadataTables.stream()
-//				.filter(metadataTable -> metadataTable.getLabel().equalsIgnoreCase(label))
-//				.findFirst()
-//				.map(MetadataTable::getName)
-//				.orElseThrow(() -> new RuntimeException(MessageFormat.format("No label {0} found for metadata repository {1}", label, getCategory())));
-	return null;
+		return metadataTables.stream()
+				.filter(metadataTable -> metadataTable.getLabel().equalsIgnoreCase(label))
+				.findFirst()
+				.map(MetadataTable::getName)
+				.orElseThrow(() -> new RuntimeException(MessageFormat.format("No label {0} found for metadata repository {1}", label, getCategory())));
 	}
 
 	public abstract void save(DataObject dataObject) throws MetadataRepositorySaveException;

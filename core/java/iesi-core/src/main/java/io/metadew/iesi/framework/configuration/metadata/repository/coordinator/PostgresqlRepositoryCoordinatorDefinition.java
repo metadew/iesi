@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
+import java.util.Optional;
+
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
@@ -12,19 +14,21 @@ import lombok.ToString;
 public class PostgresqlRepositoryCoordinatorDefinition extends RepositoryCoordinatorDefinition {
 
     private String host;
-    private String port;
-    private String name;
+    private int port;
+    private String database;
     private String schema;
 
     public PostgresqlRepositoryCoordinatorDefinition() {
         super();
     }
 
-    public PostgresqlRepositoryCoordinatorDefinition(String type, RepositoryCoordinatorProfileDefinition owner, RepositoryCoordinatorProfileDefinition writer, RepositoryCoordinatorProfileDefinition user, String host, String port, String name, String schema) {
+    public PostgresqlRepositoryCoordinatorDefinition(String type, RepositoryCoordinatorProfileDefinition owner, RepositoryCoordinatorProfileDefinition writer, RepositoryCoordinatorProfileDefinition user, String host, int port, String database, String schema) {
         super(type, owner, writer, user);
         this.host = host;
         this.port = port;
-        this.name = name;
+        this.database = database;
         this.schema = schema;
     }
+
+    public Optional<String> getSchema() {return Optional.ofNullable(schema);}
 }

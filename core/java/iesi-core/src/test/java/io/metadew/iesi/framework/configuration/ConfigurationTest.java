@@ -17,7 +17,6 @@ class ConfigurationTest {
         Configuration configuration = Configuration.getInstance();
         io.metadew.iesi.framework.configuration.framework.FrameworkConfiguration conf = io.metadew.iesi.framework.configuration.framework.FrameworkConfiguration.getInstance();
         MetadataConfiguration metadataRepositoryConfiguration = MetadataConfiguration.getInstance();
-
         assertTrue(true);
 
         PluginConfiguration pluginConfiguration = PluginConfiguration.getInstance();

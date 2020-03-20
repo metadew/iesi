@@ -113,7 +113,7 @@ public class MetadataLauncher {
                 case "trace":
                     metadataRepositories.add(MetadataRepositoryConfiguration.getInstance().getTraceMetadataRepository());
                     break;
-                case "execution_server":
+                case "execution":
                     metadataRepositories.add(MetadataRepositoryConfiguration.getInstance().getExecutionServerMetadataRepository());
                     break;
                 case "general":

@@ -1,6 +1,7 @@
 package io.metadew.iesi.launch;
 
 import io.metadew.iesi.framework.configuration.Configuration;
+import io.metadew.iesi.framework.configuration.metadata.MetadataConfiguration;
 import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
 import io.metadew.iesi.framework.execution.FrameworkExecutionContext;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
@@ -52,8 +53,6 @@ public class ScriptLauncher {
         // create the parser
         CommandLineParser parser = new DefaultParser();
 
-        ExecutionRequestBuilder executionRequestBuilder = new ExecutionRequestBuilder();
-        ScriptExecutionRequestBuilder scriptExecutionRequestBuilder = new ScriptExecutionRequestBuilder();
         // parse the command line arguments
         CommandLine line = parser.parse(options, args);
 
@@ -65,6 +64,9 @@ public class ScriptLauncher {
         }
 
         Configuration.getInstance();
+        MetadataConfiguration.getInstance();
+        ExecutionRequestBuilder executionRequestBuilder = new ExecutionRequestBuilder();
+        ScriptExecutionRequestBuilder scriptExecutionRequestBuilder = new ScriptExecutionRequestBuilder();
 
         // Define the exit behaviour
         if (line.hasOption("exit")) {

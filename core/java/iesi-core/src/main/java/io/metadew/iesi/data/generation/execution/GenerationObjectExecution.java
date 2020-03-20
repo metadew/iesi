@@ -91,23 +91,8 @@ public class GenerationObjectExecution {
         int i = 0;
         // Default Configuration
         for (File file : FolderTools.getFilesInFolder(
-                FrameworkConfiguration.getInstance().getFrameworkFolder("metadata.gen")
-                        .map(FrameworkFolder::getAbsolutePath)
-                        .orElseThrow(() -> new RuntimeException("No framework folder 'metadata.gen' found")),
-                "regex", ".+\\.yml")) {
-
-            if (i == 0) {
-                data = loadData(file.getAbsolutePath());
-            } else {
-                this.getGenerationTools().getMapTools().deepMerge(data, loadData(file.getAbsolutePath()));
-            }
-
-            i++;
-        }
-
-        // User configuration
-        for (File file : FolderTools.getFilesInFolder(
-                FrameworkConfiguration.getInstance().getMandatoryFrameworkFolder("metadata.conf")
+                FrameworkConfiguration.getInstance()
+                        .getMandatoryFrameworkFolder("metadata.gen")
                         .getAbsolutePath(),
                 "regex", ".+\\.yml")) {
 
@@ -119,6 +104,23 @@ public class GenerationObjectExecution {
 
             i++;
         }
+
+//        // User configuration
+//        File[] files = FolderTools.getFilesInFolder(
+//                FrameworkConfiguration.getInstance()
+//                        .getMandatoryFrameworkFolder("metadata.conf")
+//                        .getAbsolutePath(),
+//                "regex", ".+\\.yml");
+//        for (File file : files) {
+//
+//            if (i == 0) {
+//                data = loadData(file.getAbsolutePath());
+//            } else {
+//                this.getGenerationTools().getMapTools().deepMerge(data, loadData(file.getAbsolutePath()));
+//            }
+//
+//            i++;
+//        }
 
         return data;
     }

@@ -3,8 +3,7 @@ package io.metadew.iesi.test;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.connection.tools.FolderTools;
-import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
+import io.metadew.iesi.framework.configuration.Configuration;
 import io.metadew.iesi.metadata.definition.DataObject;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequestBuilderException;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequestBuilderException;
@@ -12,6 +11,8 @@ import io.metadew.iesi.test.launch.LaunchArgument;
 import io.metadew.iesi.test.launch.LaunchItem;
 import io.metadew.iesi.test.launch.LaunchItemOperation;
 import io.metadew.iesi.test.launch.Launcher;
+import org.apache.commons.cli.*;
+import org.apache.commons.lang3.ArrayUtils;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
@@ -19,17 +20,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-import org.apache.commons.lang3.ArrayUtils;
-
 public class ActionsTest {
 
 	public static void main(String[] args) {
+
+		Configuration.getInstance();
 
 		Options options = new Options()
 				.addOption(Option.builder("repository").hasArg().required()
@@ -145,7 +140,7 @@ public class ActionsTest {
 			metadataCreateArgs.add(create);
 			LaunchArgument type = new LaunchArgument(true, "-type", "general");
 			metadataCreateArgs.add(type);
-			Launcher.execute("metadata", metadataCreateArgs);
+			// Launcher.execute("metadata", metadataCreateArgs);
 
 			if (cmd.hasOption("create")) {
 				System.exit(0);

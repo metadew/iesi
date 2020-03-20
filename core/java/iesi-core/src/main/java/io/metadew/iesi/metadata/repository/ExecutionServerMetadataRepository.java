@@ -9,7 +9,8 @@ import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
 public class ExecutionServerMetadataRepository extends MetadataRepository {
 
     public ExecutionServerMetadataRepository(String name, String instanceName, RepositoryCoordinator repositoryCoordinator) {
-        super(name, instanceName, repositoryCoordinator);ExecutionRequestConfiguration.getInstance().init(this);
+        super(name, instanceName, repositoryCoordinator);
+        ExecutionRequestConfiguration.getInstance().init(this);
         ScriptExecutionRequestConfiguration.getInstance().init(this);
         ScriptExecutionConfiguration.getInstance().init(this);
     }
@@ -26,7 +27,7 @@ public class ExecutionServerMetadataRepository extends MetadataRepository {
 
     @Override
     public String getCategory() {
-        return "execution_server";
+        return "execution";
     }
 
     @Override

@@ -1,9 +1,7 @@
 package io.metadew.iesi.metadata.configuration.type;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import io.metadew.iesi.framework.configuration.metadata.componenttypes.MetadataComponentTypesConfiguration;
 import io.metadew.iesi.metadata.definition.component.ComponentType;
-import io.metadew.iesi.metadata.operation.DataObjectOperation;
-import io.metadew.iesi.metadata.operation.TypeConfigurationOperation;
 
 public class ComponentTypeConfiguration {
 
@@ -19,12 +17,8 @@ public class ComponentTypeConfiguration {
     }
 
     public ComponentType getComponentType(String componentTypeName) {
-        String conf = TypeConfigurationOperation.getTypeConfigurationFile(this.getDataObjectType(), componentTypeName);
-        DataObjectOperation dataObjectOperation = new DataObjectOperation(conf);
-        ObjectMapper objectMapper = new ObjectMapper();
-        ComponentType componentType = objectMapper.convertValue(dataObjectOperation.getDataObject().getData(),
-                ComponentType.class);
-        return componentType;
+        return MetadataComponentTypesConfiguration.getInstance().getComponentType(componentTypeName)
+                .orElseThrow(() -> new RuntimeException("connection type " + componentTypeName + " not found"));
     }
 
     // Getters and Setters

@@ -1,5 +1,6 @@
 package io.metadew.iesi.framework.definition;
 
+import io.metadew.iesi.framework.configuration.Configuration;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,9 +11,12 @@ import lombok.NoArgsConstructor;
 public class FrameworkFolder {
 
     private String path;
-    private String absolutePath;
     private String label;
     private String description;
     private String permissions;
+
+    public String getAbsolutePath() {
+        return Configuration.getInstance().getMandatoryProperty("home") + path;
+    }
 
 }

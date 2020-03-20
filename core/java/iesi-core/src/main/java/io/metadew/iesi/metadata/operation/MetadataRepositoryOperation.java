@@ -62,18 +62,20 @@ public class MetadataRepositoryOperation {
         LOGGER.info("metadata.load.start");
 
         // Folder definition
-        String inputFolder = FilenameUtils.normalize(FrameworkConfiguration.getInstance().getFrameworkFolder("metadata.in.new")
-                .map(FrameworkFolder::getAbsolutePath)
-                .orElseThrow(() -> new RuntimeException("no configuration found metadata.in.new")));
-        String workFolder = FilenameUtils.normalize(FrameworkConfiguration.getInstance().getFrameworkFolder("metadata.in.work")
-                .map(FrameworkFolder::getAbsolutePath)
-                .orElseThrow(() -> new RuntimeException("no configuration found metadata.in.new")));
-        String errorFolder = FilenameUtils.normalize(FrameworkConfiguration.getInstance().getFrameworkFolder("metadata.in.error")
-                .map(FrameworkFolder::getAbsolutePath)
-                .orElseThrow(() -> new RuntimeException("no configuration found metadata.in.new")));
-        String archiveFolder = FilenameUtils.normalize(FrameworkConfiguration.getInstance().getFrameworkFolder("metadata.in.done")
-                .map(FrameworkFolder::getAbsolutePath)
-                .orElseThrow(() -> new RuntimeException("no configuration found metadata.in.new")));
+        String inputFolder = FilenameUtils.normalize(FrameworkConfiguration.getInstance()
+                .getMandatoryFrameworkFolder("metadata.in.new")
+                .getAbsolutePath());
+        String workFolder = FilenameUtils.normalize(FrameworkConfiguration.getInstance()
+                .getMandatoryFrameworkFolder("metadata.in.work")
+                .getAbsolutePath());
+        String errorFolder = FilenameUtils.normalize(FrameworkConfiguration.getInstance()
+                .getMandatoryFrameworkFolder("metadata.in.error")
+                .getAbsolutePath());
+        String archiveFolder = FilenameUtils.normalize(FrameworkConfiguration.getInstance()
+                .getMandatoryFrameworkFolder("metadata.in.done")
+                .getAbsolutePath());
+
+        System.out.println(inputFolder);
 
         // Load files
         if (input.trim().equalsIgnoreCase("")) {

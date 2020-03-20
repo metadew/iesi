@@ -2,7 +2,6 @@ package io.metadew.iesi.framework.configuration.metadata.repository.service;
 
 import io.metadew.iesi.framework.configuration.metadata.repository.MetadataRepositoryDefinition;
 import io.metadew.iesi.framework.configuration.metadata.repository.coordinator.service.MetadataRepositoryCoordinatorHandlerImpl;
-import io.metadew.iesi.framework.configuration.metadata.repository.coordinator.service.SqliteMetadataRepositoryCoordinatorService;
 import io.metadew.iesi.metadata.repository.*;
 
 import java.text.MessageFormat;
@@ -81,7 +80,7 @@ public class MetadataRepositoryServiceImpl implements MetadataRepositoryService 
                         metadataRepositoryDefinition.getName(),
                         metadataRepositoryDefinition.getInstance(),
                         MetadataRepositoryCoordinatorHandlerImpl.getInstance().convert(metadataRepositoryDefinition.getCoordinator())));
-            } else if (category.equalsIgnoreCase("execution_server")) {
+            } else if (category.equalsIgnoreCase("execution")) {
                 metadataRepositories.add(new ExecutionServerMetadataRepository(
                         metadataRepositoryDefinition.getName(),
                         metadataRepositoryDefinition.getInstance(),

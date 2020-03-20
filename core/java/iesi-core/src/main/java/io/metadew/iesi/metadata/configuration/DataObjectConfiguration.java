@@ -71,19 +71,7 @@ public class DataObjectConfiguration {
 //        }
 //    }
 
-    public DataObject getDataObject(String data) {
-        DataObject dataObject = null;
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            dataObject = objectMapper.readValue(data, new TypeReference<DataObject>() {
-            });
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return dataObject;
-    }
-
-//    public List<DataObject> getDataArray(String data) {
+    //    public List<DataObject> getDataArray(String data) {
 //        List<DataObject> dataObjectList = null;
 //        ObjectMapper objectMapper = new ObjectMapper();
 //        try {
@@ -103,10 +91,6 @@ public class DataObjectConfiguration {
                 LOGGER.warn(MessageFormat.format("Failed to save {0} to repository", dataObject.getType()));
             }
         }
-    }
-
-    private void createFolder(String path, String folderName) {
-        FolderTools.createFolder(path + File.separator + folderName);
     }
 
     public List<DataObject> getDataObjects() {

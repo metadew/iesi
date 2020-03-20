@@ -70,15 +70,6 @@ public class FrameworkConfiguration {
         }
     }
 
-    public Optional<FrameworkSetting> getFrameworkSetting(String frameworkSetting) {
-        return Optional.ofNullable(frameworkSettings.get(frameworkSetting));
-    }
-
-    public FrameworkSetting getMandatoryFrameworkSetting(String frameworkSetting) {
-        return Optional.ofNullable(frameworkSettings.get(frameworkSetting))
-                .orElseThrow(() -> new RuntimeException(MessageFormat.format("No FrameworkSetting ''{0}'' found", frameworkSetting)));
-    }
-
     public Optional<FrameworkFolder> getFrameworkFolder(String frameworkFolder) {
         return Optional.ofNullable(frameworkFolders.get(frameworkFolder));
     }

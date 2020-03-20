@@ -23,7 +23,7 @@ public class TraceMetadataRepository extends MetadataRepository {
     private static final Logger LOGGER = LogManager.getLogger();
 
     public TraceMetadataRepository(String name, String instanceName, RepositoryCoordinator repositoryCoordinator){
-        super(name, instanceName, repositoryCoordinator);
+        super(instanceName, repositoryCoordinator);
         ScriptDesignTraceConfiguration.getInstance().init(this);
         ScriptVersionDesignTraceConfiguration.getInstance().init(this);
         ScriptParameterDesignTraceConfiguration.getInstance().init(this);
@@ -37,25 +37,10 @@ public class TraceMetadataRepository extends MetadataRepository {
     }
 
     @Override
-    public String getDefinitionFileName() {
-        return "TraceTables.json";
-    }
-
-    @Override
-    public String getObjectDefinitionFileName() {
-        return "TraceObjects.json";
-    }
-
-    @Override
     public String getCategory() {
         return "trace";
     }
 
-
-    @Override
-    public String getCategoryPrefix() {
-        return "TRC";
-    }
 
     @SuppressWarnings("unused")
     @Override

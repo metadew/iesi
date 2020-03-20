@@ -17,12 +17,6 @@ public class HttpRequestComponent {
 
     private final static Logger LOGGER = LogManager.getLogger();
 
-    public HttpRequestComponent(String uri, Map<String, String> headers, Map<String, String> queryParameters) {
-        this.uri = uri;
-        this.headers = headers;
-        this.queryParameters = queryParameters;
-    }
-
     public HttpRequestComponent(DataType uri, Map<String, DataType> headers, Map<String, DataType> queryParameters) {
         this.uri = convertUri(uri);
         this.headers = convertHeaders(headers);

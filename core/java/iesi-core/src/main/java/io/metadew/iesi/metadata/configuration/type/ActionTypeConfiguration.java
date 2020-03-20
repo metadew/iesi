@@ -15,12 +15,4 @@ public class ActionTypeConfiguration {
                 .orElseThrow(() -> new RuntimeException("action type " + actionTypeName + " not found"));
     }
 
-    public String getDataObjectType() {
-        return dataObjectType;
-    }
-
-    public void setDataObjectType(String dataObjectType) {
-        this.dataObjectType = dataObjectType;
-    }
-
 }

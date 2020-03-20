@@ -68,12 +68,4 @@ public class HttpRequestComponentService {
         return transform(request, actionExecution);
     }
 
-    public ExecutionControl getExecutionControl() {
-        return executionControl;
-    }
-
-    public void setExecutionControl(ExecutionControl executionControl) {
-        this.executionControl = executionControl;
-    }
-
 }

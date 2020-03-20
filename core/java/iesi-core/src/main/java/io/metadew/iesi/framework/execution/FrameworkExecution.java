@@ -7,7 +7,6 @@ public class FrameworkExecution {
     // private FrameworkInstance frameworkInstance;
     private FrameworkExecutionContext frameworkExecutionContext;
     private FrameworkExecutionSettings frameworkExecutionSettings;
-    private FrameworkResultProvider frameworkResultProvider;
 
     private static FrameworkExecution INSTANCE;
 
@@ -35,19 +34,10 @@ public class FrameworkExecution {
         this.frameworkExecutionSettings = frameworkExecutionSettings;
         FrameworkRuntime.getInstance().init();
         FrameworkLog.getInstance().init();
-        this.frameworkResultProvider = new FrameworkResultProvider();
     }
 
     public FrameworkExecutionContext getFrameworkExecutionContext() {
         return frameworkExecutionContext;
-    }
-
-    public FrameworkExecutionSettings getFrameworkExecutionSettings() {
-        return frameworkExecutionSettings;
-    }
-
-    public FrameworkResultProvider getFrameworkResultProvider() {
-        return frameworkResultProvider;
     }
 
 }

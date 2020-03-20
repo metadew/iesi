@@ -17,7 +17,7 @@ public class ResultMetadataRepository extends MetadataRepository {
     private static final Logger LOGGER = LogManager.getLogger();
 
     public ResultMetadataRepository(String name, String instanceName, RepositoryCoordinator repositoryCoordinator) {
-        super(name, instanceName, repositoryCoordinator);
+        super(instanceName, repositoryCoordinator);
         ScriptResultConfiguration.getInstance().init(this);
         ActionResultConfiguration.getInstance().init(this);
         ActionResultOutputConfiguration.getInstance().init(this);
@@ -26,28 +26,12 @@ public class ResultMetadataRepository extends MetadataRepository {
     }
 
     @Override
-    public String getDefinitionFileName() {
-        return "ResultTables.json";
-    }
-
-    @Override
-    public String getObjectDefinitionFileName() {
-        return "ResultObjects.json";
-    }
-
-    @Override
     public String getCategory() {
         return "result";
     }
 
     @Override
-    public String getCategoryPrefix() {
-        return "RES";
-    }
-
-    @Override
     public void save(DataObject dataObject) {
-        ObjectMapper objectMapper = new ObjectMapper();
         if (dataObject.getType().equalsIgnoreCase("log")) {
 //            Script script = objectMapper.convertValue(dataObject.getData(), Script.class);
 //            ScriptConfiguration scriptConfiguration = new ScriptConfiguration(script,

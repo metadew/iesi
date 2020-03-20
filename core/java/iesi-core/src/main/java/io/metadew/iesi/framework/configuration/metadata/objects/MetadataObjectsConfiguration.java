@@ -42,10 +42,6 @@ public class MetadataObjectsConfiguration {
         }
     }
 
-    public Optional<MetadataObject> getMetadataObject(String metadataObject) {
-        return Optional.ofNullable(metadataObjectMap.get(metadataObject));
-    }
-
     @SuppressWarnings("unchecked")
     private boolean containsConfiguration() {
         return Configuration.getInstance().getProperties().containsKey(MetadataConfiguration.configurationKey) ||

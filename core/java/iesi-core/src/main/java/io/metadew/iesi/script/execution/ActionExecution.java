@@ -31,9 +31,7 @@ public class ActionExecution {
 	private Long processId;
 	private ComponentAttributeOperation componentAttributeOperation;
 	private Object actionTypeExecution;
-	private boolean initialized = false;
 	private boolean executed = false;
-	private boolean childExecution = false;
 
 	// Constructors
 	public ActionExecution(ExecutionControl executionControl,
@@ -48,7 +46,6 @@ public class ActionExecution {
 	// Methods
 	public void initialize() {
 		this.processId = executionControl.getNextProcessId();
-		this.initialized = true;
 		this.executed = false;
 	}
 
@@ -64,7 +61,7 @@ public class ActionExecution {
 
 		// Initialize control
 		this.actionControl = new ActionControl(executionControl, this);
-		actionControl.getActionRuntime().initActionCache(action.getName(), executionControl.getExecutionRuntime().getRunCacheFolderName());
+		actionControl.getActionRuntime().initActionCache(executionControl.getExecutionRuntime().getRunCacheFolderName());
 
 		// Initialize iteration variables
 		if (iterationInstance != null) {
@@ -188,32 +185,16 @@ public class ActionExecution {
 		return action;
 	}
 
-	public void setAction(Action action) {
-		this.action = action;
-	}
-
 	public ExecutionControl getExecutionControl() {
 		return executionControl;
-	}
-
-	public void setExecutionControl(ExecutionControl executionControl) {
-		this.executionControl = executionControl;
 	}
 
 	public Long getProcessId() {
 		return processId;
 	}
 
-	public void setProcessId(Long processId) {
-		this.processId = processId;
-	}
-
 	public ScriptExecution getScriptExecution() {
 		return scriptExecution;
-	}
-
-	public void setScriptExecution(ScriptExecution scriptExecution) {
-		this.scriptExecution = scriptExecution;
 	}
 
 	public Optional<ComponentAttributeOperation> getComponentAttributeOperation() {
@@ -228,43 +209,13 @@ public class ActionExecution {
 		return actionControl;
 	}
 
-	public void setActionControl(ActionControl actionControl) {
-		this.actionControl = actionControl;
-	}
-
 	public Object getActionTypeExecution() {
 		return actionTypeExecution;
-	}
-
-	public void setActionTypeExecution(Object actionTypeExecution) {
-		this.actionTypeExecution = actionTypeExecution;
-	}
-
-	public boolean isInitialized() {
-		return initialized;
-	}
-
-	public void setInitialized(boolean initialized) {
-		this.initialized = initialized;
 	}
 
 	public boolean isExecuted() {
 		return executed;
 	}
 
-	public void setExecuted(boolean executed) {
-		this.executed = executed;
-	}
 
-	public boolean isChildExecution() {
-		return childExecution;
-	}
-
-	public void setChildExecution(boolean childExecution) {
-		this.childExecution = childExecution;
-	}
-
-	public ActionPerformanceLogger getActionPerformanceLogger() {
-		return actionPerformanceLogger;
-	}
 }

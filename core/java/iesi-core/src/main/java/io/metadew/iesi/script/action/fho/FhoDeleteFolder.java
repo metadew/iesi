@@ -136,7 +136,7 @@ public class FhoDeleteFolder {
                     .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
                     .get();
             ConnectionOperation connectionOperation = new ConnectionOperation();
-            HostConnection hostConnection = connectionOperation.getHostConnection(connection);
+            HostConnection hostConnection = connectionOperation.getHostConnection();
 
             if (path.isEmpty()) {
                 this.setScope(folder);

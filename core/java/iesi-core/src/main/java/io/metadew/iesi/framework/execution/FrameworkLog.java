@@ -41,19 +41,6 @@ public class FrameworkLog {
         }
     }
 
-    // TODO: look at Logger Messages
-    public String prepareLog(String message) {
-        return FrameworkCrypto.getInstance().redact(FrameworkCrypto.getInstance().redact(message), encryptionRedactionList);
-    }
-
-    public String[] prepareLog(FileTransfered fileTransfered) {
-        return new String[] {
-                "source.path=" + fileTransfered.getSourceFilePath(),
-                "source.file=" + fileTransfered.getSourceFileName(),
-                "target.path=" + fileTransfered.getTargetFilePath(),
-                "target.file=" + fileTransfered.getTargetFileName() };
-    }
-
     public void log(FileTransfered fileTransfered, Level level) {
         this.log("source.path=" + fileTransfered.getSourceFilePath(), level);
         this.log("source.file=" + fileTransfered.getSourceFileName(), level);

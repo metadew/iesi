@@ -25,7 +25,4 @@ public class FrameworkHomeInstruction implements VariableInstruction {
         return "fwk.home";
     }
 
-    public ExecutionControl getExecutionControl() {
-        return executionControl;
-    }
 }

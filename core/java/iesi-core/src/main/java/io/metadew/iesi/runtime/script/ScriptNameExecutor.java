@@ -21,7 +21,6 @@ import java.util.HashMap;
 
 public class ScriptNameExecutor implements ScriptExecutor<ScriptNameExecutionRequest> {
 
-    private static final Logger LOGGER = LogManager.getLogger();
     private static ScriptNameExecutor INSTANCE;
 
     public synchronized static ScriptNameExecutor getInstance() {

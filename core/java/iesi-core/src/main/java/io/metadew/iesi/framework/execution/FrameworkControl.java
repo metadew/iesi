@@ -6,8 +6,6 @@ import java.util.Properties;
 
 public class FrameworkControl {
 
-    private Properties properties;
-
 
     private static FrameworkControl INSTANCE;
 

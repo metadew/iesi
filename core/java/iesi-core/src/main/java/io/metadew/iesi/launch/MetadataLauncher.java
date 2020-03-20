@@ -3,11 +3,8 @@ package io.metadew.iesi.launch;
 import io.metadew.iesi.framework.configuration.Configuration;
 import io.metadew.iesi.framework.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
-import io.metadew.iesi.framework.execution.FrameworkExecutionContext;
 import io.metadew.iesi.framework.execution.FrameworkRuntime;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
-import io.metadew.iesi.metadata.backup.BackupExecution;
-import io.metadew.iesi.metadata.definition.Context;
 import io.metadew.iesi.metadata.operation.MetadataRepositoryOperation;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.commons.cli.*;
@@ -127,30 +124,6 @@ public class MetadataLauncher {
                 default:
                     System.out.println("Unknown Option -type (type) = " + type);
                     endLauncher(1, true);
-            }
-        }
-        // Backup
-        if (line.hasOption("backup")) {
-            for (MetadataRepository metadataRepository : metadataRepositories) {
-                writeHeaderMessage();
-                System.out.println("Option -backup (backup) selected");
-
-                // Get path value
-                String path = "";
-                if (line.hasOption("path")) {
-                    path = line.getOptionValue("path");
-                    System.out.println("Option -path (path) value = " + path);
-                } else {
-                    System.out.println("Option -path (path) not provided");
-                    writeFooterMessage();
-                    endLauncher(1, true);
-                }
-
-                // Execute
-                BackupExecution backupExecution = new BackupExecution();
-                backupExecution.execute(path);
-                writeFooterMessage();
-                endLauncher(0, true);
             }
         }
 

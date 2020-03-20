@@ -141,7 +141,7 @@ public class WfaExecuteFilePing {
                 .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
                 .get();
         ConnectionOperation connectionOperation = new ConnectionOperation();
-        HostConnection dcConnection = connectionOperation.getHostConnection(connection);
+        HostConnection dcConnection = connectionOperation.getHostConnection();
 
         // Check if connection is localhost
         boolean connectionIsLocalHost = connectionOperation.isOnLocalConnection(dcConnection);
@@ -359,7 +359,7 @@ public class WfaExecuteFilePing {
     private List<FileConnection> checkRemoteFolder(Connection connection, String filePath, String fileName) {
         List<FileConnection> connectionsFound = new ArrayList();
         ConnectionOperation connectionOperation = new ConnectionOperation();
-        HostConnection hostConnection = connectionOperation.getHostConnection(connection);
+        HostConnection hostConnection = connectionOperation.getHostConnection();
         this.getActionExecution().getActionControl().logOutput("conn.name", connection.getName());
 
         try {

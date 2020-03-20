@@ -27,16 +27,8 @@ public class ScriptExecutionRequestBuilder {
 
     public ScriptExecutionRequestBuilder() {}
 
-    public ScriptExecutionRequestBuilder(String mode) {
-        this.mode = mode;
-    }
-
     public ScriptExecutionRequestBuilder executionRequestKey(ExecutionRequestKey executionRequestKey) {
         this.executionRequestKey = executionRequestKey;
-        return this;
-    }
-    public ScriptExecutionRequestBuilder scriptExecutionRequestKey(ScriptExecutionRequestKey scriptExecutionRequestKey) {
-        this.scriptExecutionRequestKey = scriptExecutionRequestKey;
         return this;
     }
 
@@ -62,11 +54,6 @@ public class ScriptExecutionRequestBuilder {
 
     public ScriptExecutionRequestBuilder impersonations(Map<String, String> impersonations) {
         this.impersonations = impersonations;
-        return this;
-    }
-
-    public ScriptExecutionRequestBuilder actionSelect(List<Long> actionSelect) {
-        this.actionSelect = actionSelect;
         return this;
     }
 

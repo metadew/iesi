@@ -71,7 +71,6 @@ public class FwkRoute {
 
                 RouteOperation routeOperation = this.getRouteOperation(id);
                 routeOperation.setId(id);
-                routeOperation.setCondition(condition);
                 this.setRouteOperation(routeOperation);
 
                 this.getActionParameterOperationMap().put(actionParameter.getMetadataKey().getParameterName(), condition);

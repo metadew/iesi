@@ -14,10 +14,6 @@ import java.util.List;
 
 public class ActionDesignTraceService {
 
-
-    private static final Logger LOGGER = LogManager.getLogger();
-
-
     public ActionDesignTraceService() {
     }
 

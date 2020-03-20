@@ -146,8 +146,8 @@ public class ModSoapui {
         HostConnection hostConnection = new HostConnection();
         ShellCommandResult shellCommandResult = hostConnection
                 .executeLocalCommand("",
-                        command,
-                        null);
+                        command
+                );
         if (shellCommandResult.getReturnCode() == 0) {
             this.getActionExecution().getActionControl().increaseSuccessCount();
         } else {

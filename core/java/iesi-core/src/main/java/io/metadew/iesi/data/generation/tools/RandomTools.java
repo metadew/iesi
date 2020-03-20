@@ -68,7 +68,4 @@ public class RandomTools {
         return secureRandom.nextDouble() * (max - min) + min;
     }
 
-    public double randDouble() {
-        return secureRandom.nextDouble();
-    }
 }

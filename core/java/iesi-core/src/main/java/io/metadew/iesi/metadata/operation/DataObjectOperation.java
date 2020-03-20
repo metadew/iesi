@@ -23,10 +23,6 @@ public class DataObjectOperation {
 	private DataObject dataObject;
 	private DataObjectConfiguration dataObjectConfiguration;
 
-	// Constructors
-	public DataObjectOperation() {
-	}
-
 	public DataObjectOperation(String inputFile) {
 		this.inputFile = inputFile;
 		File file = new File(inputFile);
@@ -190,10 +186,6 @@ public class DataObjectOperation {
 			this.setDataObjectConfiguration(new DataObjectConfiguration(dataObjects));
 			this.getDataObjectConfiguration().saveToMetadataRepository(metadataRepository);
 		}
-	}
-
-	public void setInputFile(String inputFile) {
-		this.inputFile = FilenameUtils.normalize(inputFile);
 	}
 
 	public DataObjectConfiguration getDataObjectConfiguration() {

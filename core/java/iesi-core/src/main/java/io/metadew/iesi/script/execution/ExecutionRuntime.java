@@ -25,7 +25,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -39,7 +38,6 @@ import java.util.stream.Collectors;
 
 public class ExecutionRuntime {
 
-    private ExecutionControl executionControl;
     private RuntimeVariableConfiguration runtimeVariableConfiguration;
     private IterationVariableConfiguration iterationVariableConfiguration;
     private String runId;
@@ -50,7 +48,6 @@ public class ExecutionRuntime {
     private HashMap<String, Dataset> datasetMap;
     private HashMap<String, RWorkspace> RWorkspaceMap;
     private HashMap<String, IterationOperation> iterationOperationMap;
-    private HashMap<String, ExecutionRuntimeExtension> executionRuntimeExtensionMap;
     private ImpersonationOperation impersonationOperation;
     private HashMap<String, DataInstruction> dataInstructions;
     private HashMap<String, VariableInstruction> variableInstructions;
@@ -65,7 +62,6 @@ public class ExecutionRuntime {
     private static final Logger LOGGER = LogManager.getLogger();
 
     public ExecutionRuntime(ExecutionControl executionControl, String runId) {
-        this.executionControl = executionControl;
         this.runId = runId;
 
         // Create cache folder
@@ -79,8 +75,6 @@ public class ExecutionRuntime {
         // Initialize maps
         stageOperationMap = new HashMap<>();
         iterationOperationMap = new HashMap<>();
-        executionRuntimeExtensionMap = new HashMap<>();
-
         // Initialize impersonations
         impersonationOperation = new ImpersonationOperation();
 
@@ -158,12 +152,6 @@ public class ExecutionRuntime {
         } catch (SQLException e) {
             throw new RuntimeException("Error getting sql result " + e, e);
         }
-    }
-
-    // Set runtime variables
-    public void setRuntimeVariable(Long processId, String name, String value) {
-        LOGGER.debug(new IESIMessage("exec.runvar.set=" + name + ":" + value));
-        runtimeVariableConfiguration.setRuntimeVariable(runId, processId, name, value);
     }
 
     public void setRuntimeVariable(ActionExecution actionExecution, String name, String value) {
@@ -407,7 +395,7 @@ public class ExecutionRuntime {
                     resolvedInput = this.generateLookupInstruction(instructionKeyword, instructionArgumentsResolved);
                     break;
                 case "$":
-                    resolvedInput = this.getVariableInstruction(VariableInstructionTools.getSynonymKey(instructionKeyword), instructionArgumentsResolved);
+                    resolvedInput = this.getVariableInstruction(VariableInstructionTools.getSynonymKey(instructionKeyword));
                     break;
                 case "*":
                     resolvedInput = this.generateDataInstruction(instructionKeyword, instructionArgumentsResolved);
@@ -428,7 +416,6 @@ public class ExecutionRuntime {
             LOGGER.trace(new IESIMessage(MessageFormat.format("concept.lookup.resolve.instruction.result=resolved {0} to {1}", input, resolvedInput)));
 
             lookupResult.setInputValue(input);
-            lookupResult.setType(instructionType);
             lookupResult.setContext(instructionKeyword);
             lookupResult.setValue(resolvedInput);
             return lookupResult;
@@ -491,7 +478,7 @@ public class ExecutionRuntime {
         }
     }
 
-    private String getVariableInstruction(String context, String input) {
+    private String getVariableInstruction(String context) {
         VariableInstruction variableInstruction = this.getVariableInstructions().get(context);
         if (variableInstruction == null) {
             throw new IllegalArgumentException(MessageFormat.format("No variable instruction named {0} found.", context));
@@ -509,25 +496,6 @@ public class ExecutionRuntime {
         }
     }
 
-    // Conversion
-    public InputStream convertToInputStream(File file) {
-        String output = "";
-        try {
-            @SuppressWarnings("resource")
-            BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
-            String readLine = "";
-            while ((readLine = bufferedReader.readLine()) != null) {
-                output += this.resolveVariables(readLine);
-                output += "\n";
-            }
-            bufferedReader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new RuntimeException("The system cannot find the path specified", e);
-        }
-        return new ByteArrayInputStream(output.getBytes(StandardCharsets.UTF_8));
-    }
-
     // Define logging level
 //    private void defineLoggingLevel() {
 //        if (FrameworkControl.getInstance()
@@ -543,14 +511,6 @@ public class ExecutionRuntime {
     public void setStage(String stageName, boolean stageCleanup) {
         StageOperation stageOperation = new StageOperation(stageName, stageCleanup);
         this.getStageOperationMap().put(stageName, stageOperation);
-    }
-
-    public void setStageOperation(String stageName, StageOperation stageOperation) {
-        this.getStageOperationMap().put(stageName, stageOperation);
-    }
-
-    public StageOperation getStageOperation(String stageName) {
-        return this.getStageOperationMap().get(stageName);
     }
 
     public void setKeyValueDataset(String referenceName, String datasetName, List<String> datasetLabels) throws IOException {
@@ -581,10 +541,6 @@ public class ExecutionRuntime {
 
     // Execution Runtime Extension Management
 
-    public String getRunId() {
-        return runId;
-    }
-
     public HashMap<String, StageOperation> getStageOperationMap() {
         return stageOperationMap;
     }
@@ -609,14 +565,6 @@ public class ExecutionRuntime {
 
     public HashMap<String, VariableInstruction> getVariableInstructions() {
         return variableInstructions;
-    }
-
-    public ExecutionControl getExecutionControl() {
-        return executionControl;
-    }
-
-    public void setExecutionControl(ExecutionControl executionControl) {
-        this.executionControl = executionControl;
     }
 
 

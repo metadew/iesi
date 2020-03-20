@@ -1,17 +1,12 @@
 package io.metadew.iesi.framework.configuration;
 
 public enum ScriptRunStatus {
-    NEW("NEW"),
     RUNNING("RUNNING"),
     SUCCESS("SUCCESS"),
     WARNING("WARNING"),
     ERROR("ERROR"),
     STOPPED("STOPPED"),
-    ABORTED("ABORTED"),
-    SKIPPED("SKIPPED"),
-    CANCELLED("CANCELLED"),
-    KILLED("KILLED"),
-    UNKNOWN("UNKNOWN");
+    SKIPPED("SKIPPED");
 
     private String value;
 

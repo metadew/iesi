@@ -35,9 +35,9 @@ public class FileTransferOperation {
 
         List<FileTransfered> fileTransferedList = new ArrayList();
         ConnectionOperation connectionOperation = new ConnectionOperation();
-        HostConnection sourceConnectionConnection = connectionOperation.getHostConnection(sourceConnection);
+        HostConnection sourceConnectionConnection = connectionOperation.getHostConnection();
         LOGGER.trace("fho.transfer.source.connection=" + sourceConnection.getName());
-        HostConnection targetConnectionConnection = connectionOperation.getHostConnection(targetConnection);
+        HostConnection targetConnectionConnection = connectionOperation.getHostConnection();
         LOGGER.trace("fho.transfer.target.connection=" + targetConnection.getName());
 
         try {
@@ -136,9 +136,9 @@ public class FileTransferOperation {
 
         List<FileTransfered> fileTransferedList = new ArrayList();
         ConnectionOperation connectionOperation = new ConnectionOperation();
-        HostConnection sourceConnectionConnection = connectionOperation.getHostConnection(sourceConnection);
+        HostConnection sourceConnectionConnection = connectionOperation.getHostConnection();
         LOGGER.trace("fho.transfer.source.connection=" + sourceConnection.getName());
-        HostConnection targetConnectionConnection = connectionOperation.getHostConnection(targetConnection);
+        HostConnection targetConnectionConnection = connectionOperation.getHostConnection();
         LOGGER.trace("fho.transfer.target.connection=" + targetConnection.getName());
 
         try {
@@ -277,8 +277,8 @@ public class FileTransferOperation {
                                                    Connection targetConnection) {
 
         ConnectionOperation connectionOperation = new ConnectionOperation();
-        HostConnection sourceConnectionConnection = connectionOperation.getHostConnection(sourceConnection);
-        HostConnection targetConnectionConnection = connectionOperation.getHostConnection(targetConnection);
+        HostConnection sourceConnectionConnection = connectionOperation.getHostConnection();
+        HostConnection targetConnectionConnection = connectionOperation.getHostConnection();
 
         FileTransferResult fileTransferResult = null;
         if (sourceConnectionConnection.getType().equalsIgnoreCase("windows")
@@ -314,7 +314,7 @@ public class FileTransferOperation {
                 } else {
                     String command = "copy /Y" + sourceFilePath + File.separator + file.getName() + " "
                             + targetFilePath + File.separator + file.getName();
-                    targetConnectionConnection.executeLocalCommand("", command, shellCommandSettings);
+                    targetConnectionConnection.executeLocalCommand("", command);
                     fileTransferedList.add(
                             new FileTransfered(sourceFilePath, file.getName(), targetFilePath, file.getName()));
                     filepath = sourceFilePath + File.separator + file.getName();
@@ -336,7 +336,7 @@ public class FileTransferOperation {
                 } else {
                     String command = "copy /Y" + sourceFilePath + File.separator + file.getName() + " "
                             + targetFilePath + File.separator + file.getName();
-                    targetConnectionConnection.executeLocalCommand("", command, shellCommandSettings);
+                    targetConnectionConnection.executeLocalCommand("", command);
                     fileTransferedList.add(
                             new FileTransfered(sourceFilePath, file.getName(), targetFilePath, file.getName()));
                     filepath = sourceFilePath + File.separator + file.getName();
@@ -359,7 +359,7 @@ public class FileTransferOperation {
                 } else {
                     String command = "copy /Y" + sourceFilePath + File.separator + file.getName() + " "
                             + targetFilePath + File.separator + targetFileName;
-                    targetConnectionConnection.executeLocalCommand("", command, shellCommandSettings);
+                    targetConnectionConnection.executeLocalCommand("", command);
                     fileTransferedList.add(
                             new FileTransfered(sourceFilePath, file.getName(), targetFilePath, targetFileName));
                     filepath = sourceFileName + File.separator + file.getName();
@@ -372,9 +372,7 @@ public class FileTransferOperation {
 
 
     // Remote to Remote
-    public FileTransferResult transferRemoteToRemote(String sourceFilePath, String sourceFileName,
-                                                     Connection sourceConnection, String targetFilePath, String targetFileName,
-                                                     Connection targetConnection) {
+    public FileTransferResult transferRemoteToRemote() {
 
         throw new RuntimeException("method not supported");
     }

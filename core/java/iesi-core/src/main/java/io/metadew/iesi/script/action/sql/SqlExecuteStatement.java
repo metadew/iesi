@@ -87,7 +87,7 @@ public class SqlExecuteStatement {
         Connection connection = ConnectionConfiguration.getInstance().get(new ConnectionKey(connectionName, executionControl.getEnvName()))
                 .orElseThrow(() -> new RuntimeException("Cannot find connection " + connectionName));
         ConnectionOperation connectionOperation = new ConnectionOperation();
-        Database database = connectionOperation.getDatabase(connection);
+        Database database = connectionOperation.getDatabase();
 
         if (database == null) {
             throw new RuntimeException("Error establishing DB connection");

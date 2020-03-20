@@ -40,16 +40,8 @@ public class ActionResult extends Metadata<ActionResultKey> {
 		return actionName;
 	}
 
-	public void setActionName(String actionName) {
-		this.actionName = actionName;
-	}
-
 	public String getEnvironment() {
 		return environment;
-	}
-
-	public void setEnvironment(String environment) {
-		this.environment = environment;
 	}
 
 	public String getStatus() {
@@ -62,10 +54,6 @@ public class ActionResult extends Metadata<ActionResultKey> {
 
 	public LocalDateTime getStartTimestamp() {
 		return startTimestamp;
-	}
-
-	public void setStartTimestamp(LocalDateTime startTimestamp) {
-		this.startTimestamp = startTimestamp;
 	}
 
 	public LocalDateTime getEndTimestamp() {

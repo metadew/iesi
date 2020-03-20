@@ -24,35 +24,6 @@ public class UserConfiguration {
         this.user = user;
     }
 
-    public List<User> getUsers() {
-        List<User> users = new ArrayList<>();
-        String query = "select USER_NM, USER_TYP_NM, USER_FIRST_NM, USER_LAST_NM, USER_ACT_FL, USER_PWD_HASH, USER_PWD_EXP_FL, LOGIN_FAIL_CUM_NB, LOGIN_FAIL_IND_NB, USER_LOCK_FL from "
-                + MetadataRepositoryConfiguration.getInstance().getControlMetadataRepository().getTableNameByLabel("Users");
-        CachedRowSet crs = MetadataRepositoryConfiguration.getInstance().getControlMetadataRepository().executeQuery(query, "reader");
-        try {
-            while (crs.next()) {
-                users.add(new User(crs.getString("USER_NM"),
-                        crs.getString("USER_TYP_NM"),
-                        crs.getString("USER_FIRST_NM"),
-                        crs.getString("USER_LAST_NM"),
-                        crs.getString("USER_ACT_FL"),
-                        crs.getString("USER_PWD_HASH"),
-                        crs.getString("USER_PWD_EXP_FL"),
-                        crs.getLong("LOGIN_FAIL_CUM_NB"),
-                        crs.getLong("LOGIN_FAIL_IND_NB"),
-                        crs.getString("USER_LOCK_FL")));
-            }
-            crs.close();
-        } catch (SQLException e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-            //TODO fix logging
-            //this.frameworkExecution.getFrameworkLog().log("users.error=" + e, Level.INFO);
-            //this.frameworkExecution.getFrameworkLog().log("users.stacktrace=" + StackTrace, Level.INFO);
-        }
-        return users;
-    }
-
     // Delete
     public String getDeleteStatement() {
         return "DELETE FROM " + MetadataRepositoryConfiguration.getInstance().getControlMetadataRepository().getTableNameByLabel("Users") +
@@ -68,10 +39,6 @@ public class UserConfiguration {
 
     public List<String> getInsertStatement(User user) {
         List<String> queries = new ArrayList<>();
-
-        if (this.exists()) {
-            queries.add(this.getDeleteStatement(user));
-        }
 
         queries.add("INSERT INTO " + MetadataRepositoryConfiguration.getInstance().getControlMetadataRepository().getTableNameByLabel("Users") +
                 " (USER_NM, USER_TYP_NM, USER_FIRST_NM, USER_LAST_NM, USER_ACT_FL, USER_PWD_HASH, USER_PWD_EXP_FL, LOGIN_FAIL_CUM_NB, LOGIN_FAIL_IND_NB, USER_LOCK_FL) VALUES (" +
@@ -89,29 +56,6 @@ public class UserConfiguration {
 
     }
 
-
-    // Insert
-    public List<String> getInsertStatement() {
-        List<String> queries = new ArrayList<>();
-
-        if (this.exists()) {
-            queries.add(this.getDeleteStatement());
-        }
-
-        queries.add("INSERT INTO " + MetadataRepositoryConfiguration.getInstance().getControlMetadataRepository().getTableNameByLabel("Users") +
-                " (USER_NM, USER_TYP_NM, USER_FIRST_NM, USER_LAST_NM, USER_ACT_FL, USER_PWD_HASH, USER_PWD_EXP_FL, LOGIN_FAIL_CUM_NB, LOGIN_FAIL_IND_NB, USER_LOCK_FL) VALUES (" +
-                SQLTools.GetStringForSQL(this.getUser().getName()) + "," +
-                SQLTools.GetStringForSQL(this.getUser().getType()) + "," +
-                SQLTools.GetStringForSQL(this.getUser().getFirstName()) + "," +
-                SQLTools.GetStringForSQL(this.getUser().getLastName()) + "," +
-                SQLTools.GetStringForSQL(this.getUser().getActive()) + "," +
-                SQLTools.GetStringForSQL(this.getUser().getPasswordHash()) + "," +
-                SQLTools.GetStringForSQL(this.getUser().getExpired()) + "," +
-                SQLTools.GetStringForSQL(this.getUser().getCumulativeLoginFails()) + "," +
-                SQLTools.GetStringForSQL(this.getUser().getIndividualLoginFails()) + "," +
-                SQLTools.GetStringForSQL(this.getUser().getLocked()) + ");");
-        return queries;
-    }
 
     public String getPasswordStatement() {
         String sql = "";
@@ -188,30 +132,13 @@ public class UserConfiguration {
         }
     }
 
-    // Exists
-    public boolean exists() {
-        // TODO
-        return true;
-    }
-    // Exists
-    public boolean exists(User user) {
-        // TODO
-        return false;
-    }
 
     // Getters and Setters
     public User getUser() {
         return user;
     }
 
-    public void setUser(User user) {
-        this.user = user;
-    }
-
     public void insertUser(User user) {
-        if (exists(user)) {
-
-        }
         MetadataRepositoryConfiguration.getInstance().getControlMetadataRepository().executeBatch(getInsertStatement(user));
     }
 }

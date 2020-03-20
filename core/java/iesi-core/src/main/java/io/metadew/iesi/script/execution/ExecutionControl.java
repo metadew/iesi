@@ -8,7 +8,6 @@ import io.metadew.iesi.framework.configuration.ScriptRunStatus;
 import io.metadew.iesi.framework.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.framework.crypto.FrameworkCrypto;
 import io.metadew.iesi.framework.execution.IESIMessage;
-import io.metadew.iesi.metadata.backup.BackupExecution;
 import io.metadew.iesi.metadata.configuration.action.result.ActionResultConfiguration;
 import io.metadew.iesi.metadata.configuration.action.result.ActionResultOutputConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
@@ -149,7 +148,7 @@ public class ExecutionControl {
         );
         ActionResultConfiguration.getInstance().insert(actionResult);
 
-        this.logMessage(actionExecution, "action.status=" + ScriptRunStatus.SKIPPED.value(), Level.INFO);
+        this.logMessage("action.status=" + ScriptRunStatus.SKIPPED.value(), Level.INFO);
 
     }
 
@@ -206,10 +205,6 @@ public class ExecutionControl {
 
     }
 
-    public void logEnd(BackupExecution backupExecution) {
-
-    }
-
     private String getStatus(ActionExecution actionExecution, ScriptExecution scriptExecution) {
         String status;
 
@@ -230,7 +225,7 @@ public class ExecutionControl {
             scriptExecution.getExecutionMetrics().increaseSkipCount(1);
         }
 
-        logMessage(actionExecution, "action.status=" + status, Level.INFO);
+        logMessage("action.status=" + status, Level.INFO);
 
         return status;
 
@@ -255,7 +250,7 @@ public class ExecutionControl {
             status = ScriptRunStatus.WARNING.value();
         }
 
-        logMessage(scriptExecution, "script.status=" + status, Level.INFO);
+        logMessage("script.status=" + status, Level.INFO);
 
         String output = scriptExecution.getExecutionControl().getExecutionRuntime().resolveVariables("#output#");
         if (output != null && !output.isEmpty()) {
@@ -265,29 +260,13 @@ public class ExecutionControl {
         return status;
     }
 
-    public void logExecutionOutput(ScriptExecution scriptExecution, String outputName, int outputValue) {
-        logExecutionOutput(scriptExecution, outputName, Integer.toString(outputValue));
-    }
-
-    public void logExecutionOutput(ScriptExecution scriptExecution, String outputName, long outputValue) {
-        logExecutionOutput(scriptExecution, outputName, Long.toString(outputValue));
-    }
-
     public void logExecutionOutput(ScriptExecution scriptExecution, String outputName, String outputValue) {
         // Redact any encrypted values
         outputValue = FrameworkCrypto.getInstance().redact(outputValue);
         outputValue = TextTools.shortenTextForDatabase(outputValue, 2000);
-        logMessage(scriptExecution, "script.output=" + outputName + ":" + outputValue, Level.INFO);
+        logMessage("script.output=" + outputName + ":" + outputValue, Level.INFO);
         ScriptResultOutput scriptResultOutput = new ScriptResultOutput(new ScriptResultOutputKey(runId, scriptExecution.getProcessId(), outputName), scriptExecution.getScript().getId(), outputValue);
         ScriptResultOutputConfiguration.getInstance().insert(scriptResultOutput);
-    }
-
-    public void logExecutionOutput(ActionExecution actionExecution, String outputName, int outputValue) {
-        logExecutionOutput(actionExecution, outputName, Integer.toString(outputValue));
-    }
-
-    public void logExecutionOutput(ActionExecution actionExecution, String outputName, long outputValue) {
-        logExecutionOutput(actionExecution, outputName, Long.toString(outputValue));
     }
 
     public void logExecutionOutput(ActionExecution actionExecution, String outputName, String outputValue) {
@@ -304,7 +283,7 @@ public class ExecutionControl {
     }
 
     // Log message
-    public void logMessage(ActionExecution actionExecution, String message, Level level) {
+    public void logMessage(String message, Level level) {
 //        if (!actionExecution.getScriptExecution().isRootScript() && level == Level.INFO || level == Level.ALL) {
 //            // do not display non-root info on info level
 //            // redirect to debug level
@@ -314,16 +293,6 @@ public class ExecutionControl {
     }
 
     public void logMessage(IESIMessage message, Level level) {
-        LOGGER.log(level, SCRIPTMARKER, message);
-    }
-
-    public void logMessage(ScriptExecution scriptExecution, String message, Level level) {
-//        if (!scriptExecution.isRootScript() && level == Level.INFO || level == Level.ALL) {
-//            // do not display non-root info on info level
-//            // redirect to debug level
-//            level = Level.DEBUG;
-//        }
-
         LOGGER.log(level, SCRIPTMARKER, message);
     }
 

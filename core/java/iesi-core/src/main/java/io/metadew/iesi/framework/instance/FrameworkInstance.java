@@ -25,53 +25,11 @@ public class FrameworkInstance {
     }
 
 
-    public void init() {
-        FrameworkConfiguration.getInstance();
-        FrameworkCrypto.getInstance();
-
-        // Prepare configuration and shared Metadata
-        FrameworkControl frameworkControl = FrameworkControl.getInstance();
-        //frameworkControl.init("write", frameworkInitializationFile);
-
-        FrameworkExecution.getInstance().init();
-        // TODO: move Executor (Request to separate module)
-        ExecutionRequestExecutorService.getInstance();
-
-        // init(new FrameworkInitializationFile(), new FrameworkExecutionContext(new Context("general", "")));
-    }
-
     public void init(FrameworkInitializationFile frameworkInitializationFile, FrameworkExecutionContext context) {
-        init("write", frameworkInitializationFile, context);
+        init();
     }
 
-    public void init(FrameworkInitializationFile frameworkInitializationFile, FrameworkExecutionContext context, String frameworkHome) {
-//        // Get the framework configuration
-//        FrameworkConfiguration.getInstance();
-//        FrameworkCrypto.getInstance();
-//
-//        // Set appropriate initialization file
-//        if (frameworkInitializationFile.getName().trim().isEmpty()) {
-//            frameworkInitializationFile = new FrameworkInitializationFile(frameworkConfiguration.getFrameworkCode() + "-conf.ini");
-//        }
-//
-//        // Prepare configuration and shared Metadata
-//        FrameworkControl frameworkControl = FrameworkControl.getInstance();
-//        frameworkControl.init("write", frameworkInitializationFile);
-//
-////        List<MetadataRepository> metadataRepositories = new ArrayList<>();
-////
-////        for (MetadataRepositoryConfiguration metadataRepositoryConfiguration : frameworkControl.getMetadataRepositoryConfigurations()) {
-////            metadataRepositories.addAll(metadataRepositoryConfiguration.toMetadataRepositories());
-////
-////        }
-////        MetadataRepositoryConfiguration.getInstance().init(metadataRepositories);
-//
-//        FrameworkExecution.getInstance().init(context);
-//        // TODO: move Executor (Request to separate module)
-//        ExecutionRequestExecutorService.getInstance();
-    }
-
-    public void init(String logonType, FrameworkInitializationFile frameworkInitializationFile, FrameworkExecutionContext context) {
+    public void init() {
 //        // Get the framework configuration
 //        FrameworkConfiguration frameworkConfiguration = FrameworkConfiguration.getInstance();
 //        frameworkConfiguration.init();

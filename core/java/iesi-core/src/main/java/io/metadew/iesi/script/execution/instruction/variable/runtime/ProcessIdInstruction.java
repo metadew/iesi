@@ -22,7 +22,4 @@ public class ProcessIdInstruction implements VariableInstruction {
         return "process.id";
     }
 
-    public ExecutionControl getExecutionControl() {
-        return executionControl;
-    }
 }

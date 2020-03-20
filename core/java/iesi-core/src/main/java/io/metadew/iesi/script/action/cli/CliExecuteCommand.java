@@ -144,7 +144,7 @@ public class CliExecuteCommand {
                     .orElseThrow(() -> new RuntimeException(MessageFormat.format("Cannot find connection definition for {} in environment {}",
                     connectionName, executionControl.getEnvName())));
             ConnectionOperation connectionOperation = new ConnectionOperation();
-            hostConnection = connectionOperation.getHostConnection(connection);
+            hostConnection = connectionOperation.getHostConnection();
         }
 
 
@@ -158,7 +158,7 @@ public class CliExecuteCommand {
 
         if (isOnLocalhost) {
             shellCommandResult = hostConnection.executeLocalCommand(shellPath,
-                    shellCommand, shellCommandSettings);
+                    shellCommand);
         } else {
             shellCommandResult = hostConnection.executeRemoteCommand(shellPath,
                     shellCommand, shellCommandSettings);

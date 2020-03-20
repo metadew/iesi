@@ -6,8 +6,6 @@ import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsExc
 import io.metadew.iesi.metadata.configuration.script.ScriptConfiguration;
 import io.metadew.iesi.metadata.definition.DataObject;
 import io.metadew.iesi.metadata.definition.Metadata;
-import io.metadew.iesi.metadata.definition.MetadataObject;
-import io.metadew.iesi.metadata.definition.MetadataTable;
 import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.component.Component;
 import io.metadew.iesi.metadata.definition.script.Script;
@@ -26,29 +24,14 @@ public class DesignMetadataRepository extends MetadataRepository {
     private static final Logger LOGGER = LogManager.getLogger();
 
     public DesignMetadataRepository(String name, String scope, RepositoryCoordinator repositoryCoordinator) {
-        super(name, scope, repositoryCoordinator);
+        super(scope, repositoryCoordinator);
         ScriptConfiguration.getInstance().init(this);
         ComponentConfiguration.getInstance().init(this);
     }
 
     @Override
-    public String getDefinitionFileName() {
-        return "DesignTables.json";
-    }
-
-    @Override
-    public String getObjectDefinitionFileName() {
-        return "DesignObjects.json";
-    }
-
-    @Override
     public String getCategory() {
         return "design";
-    }
-
-    @Override
-    public String getCategoryPrefix() {
-        return "DES";
     }
 
     @Override

@@ -52,11 +52,6 @@ public class StageOperation {
     }
 
 
-    public SqliteDatabaseConnection getStageConnection() {
-        return stageConnection;
-    }
-
-
     public void setStageConnection(SqliteDatabaseConnection stageConnection) {
         this.stageConnection = stageConnection;
     }

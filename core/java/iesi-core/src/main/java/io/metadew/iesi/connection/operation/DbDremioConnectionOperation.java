@@ -1,7 +1,6 @@
 package io.metadew.iesi.connection.operation;
 
 import io.metadew.iesi.connection.database.Database;
-import io.metadew.iesi.metadata.definition.connection.Connection;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +14,7 @@ public class DbDremioConnectionOperation {
 	}
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public Database getDatabase(Connection connection) {
+	public Database getDatabase() {
 		this.setMissingMandatoryFieldsList(new ArrayList());
 //
 //		Database database = null;

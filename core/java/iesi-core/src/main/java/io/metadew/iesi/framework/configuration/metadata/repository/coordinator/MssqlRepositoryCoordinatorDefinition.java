@@ -10,7 +10,7 @@ import java.util.Optional;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-@JsonDeserialize(using = NetezzaMetadataRepositoryCoordinationDefinitionJsonComponent.Deserializer.class)
+@JsonDeserialize(using = MssqlMetadataRepositoryCoordinationDefinitionJsonComponent.Deserializer.class)
 public class MssqlRepositoryCoordinatorDefinition extends RepositoryCoordinatorDefinition {
 
     private String host;

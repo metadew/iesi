@@ -8,7 +8,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.sql.rowset.CachedRowSet;
-import java.io.InputStream;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,12 +20,10 @@ public abstract class MetadataRepository {
 	private final List<MetadataTable> metadataTables;
 
 	private RepositoryCoordinator repositoryCoordinator;
-	private String name;
 
-	public MetadataRepository(String name, String instanceName,
+	public MetadataRepository(String instanceName,
 							  RepositoryCoordinator repositoryCoordinator) {
 		this.tablePrefix = "iesi".toUpperCase() + "_" + (instanceName != null ? instanceName + "_" : "");
-		this.name = name;
 		this.repositoryCoordinator = repositoryCoordinator;
 		this.metadataTables = MetadataTablesConfiguration.getInstance().getMetadataTables().stream()
 				.filter(metadataTable -> metadataTable.getCategory().equalsIgnoreCase(getCategory()))
@@ -63,17 +60,7 @@ public abstract class MetadataRepository {
 ////		}
 	}
 
-	public abstract String getDefinitionFileName();
-
-	public abstract String getObjectDefinitionFileName();
-
 	public abstract String getCategory();
-
-	public abstract String getCategoryPrefix();
-
-	public String getTablePrefix() {
-		return tablePrefix;
-	}
 
 	private void dropTable(MetadataTable metadataTable) {
 		repositoryCoordinator.dropTable(metadataTable);
@@ -103,22 +90,6 @@ public abstract class MetadataRepository {
 
 	public void executeBatch(List<String> queries) {
 		repositoryCoordinator.executeBatch(queries);
-	}
-
-	// TODO: remove because security danger: query can target objects outside of
-	public void executeScript(String fileName, String logonType) {
-		repositoryCoordinator.executeScript(fileName, logonType);
-	}
-
-	// TODO: remove because security danger: query can target objects outside of
-	public void executeScript(InputStream inputStream, String logonType) {
-		repositoryCoordinator.executeScript(inputStream, logonType);
-	}
-
-	// TODO: remove because security danger: query can target objects outside of
-	// repository responsibilities
-	public void executeScript(InputStream inputStream) {
-		repositoryCoordinator.executeScript(inputStream, "writer");
 	}
 
 	private void createTable(MetadataTable metadataTable) {

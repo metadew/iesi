@@ -12,7 +12,6 @@ import java.util.Map;
 public class ActionTraceService {
 
     private final ActionParameterTraceService actionParameterTraceService;
-    private static final Logger LOGGER = LogManager.getLogger();
 
     public ActionTraceService() {
         this.actionParameterTraceService = new ActionParameterTraceService();

@@ -115,11 +115,6 @@ public class ActionSelectOperation {
         return tempResult;
     }
 
-    // Getters and Setters
-    public String getType() {
-        return type;
-    }
-
     public void setType(String type) {
         this.type = type;
     }
@@ -128,16 +123,8 @@ public class ActionSelectOperation {
         return fromList;
     }
 
-    public void setFromList(ArrayList<String> fromList) {
-        this.fromList = fromList;
-    }
-
     public ArrayList<String> getToList() {
         return toList;
-    }
-
-    public void setToList(ArrayList<String> toList) {
-        this.toList = toList;
     }
 
     public String getMode() {

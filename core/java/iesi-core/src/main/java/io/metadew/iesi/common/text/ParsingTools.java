@@ -60,17 +60,4 @@ public final class ParsingTools {
 
     }
 
-    public static String[] getValuesForDelimitedList(boolean isEnclosed, String input) {
-        String[] result = null;
-        if (isEnclosed) {
-            if (!input.isEmpty()) {
-                input = input.substring(1, input.length() - 1);
-            }
-            result = input.split("\",\"");
-        } else {
-            result = input.split(",");
-        }
-        return result;
-    }
-
 }

@@ -45,10 +45,6 @@ public class Script extends Metadata<ScriptKey> {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getDescription() {
         return description;
     }
@@ -69,24 +65,12 @@ public class Script extends Metadata<ScriptKey> {
         return parameters;
     }
 
-    public void setParameters(List<ScriptParameter> parameters) {
-        this.parameters = parameters;
-    }
-
     public ScriptVersion getVersion() {
         return version;
     }
 
-    public void setVersion(ScriptVersion version) {
-        this.version = version;
-    }
-
     public String getId() {
         return getMetadataKey().getScriptId();
-    }
-
-    public boolean isEmpty() {
-        return (this.name == null || this.name.isEmpty()) ;
     }
 
 }

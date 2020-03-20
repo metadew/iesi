@@ -20,30 +20,15 @@ public class ConnectivityMetadataRepository extends MetadataRepository {
     private static final Logger LOGGER = LogManager.getLogger();
 
     public ConnectivityMetadataRepository(String name, String instanceName, RepositoryCoordinator repositoryCoordinator) {
-        super(name, instanceName, repositoryCoordinator);
+        super(instanceName, repositoryCoordinator);
         ConnectionConfiguration.getInstance().init(this);
         EnvironmentConfiguration.getInstance().init(this);
         ImpersonationConfiguration.getInstance().init(this);
     }
 
     @Override
-    public String getDefinitionFileName() {
-        return "ConnectivityTables.json";
-    }
-
-    @Override
-    public String getObjectDefinitionFileName() {
-        return "ConnectivityObjects.json";
-    }
-
-    @Override
     public String getCategory() {
         return "connectivity";
-    }
-
-    @Override
-    public String getCategoryPrefix() {
-        return "CXN";
     }
 
     @Override

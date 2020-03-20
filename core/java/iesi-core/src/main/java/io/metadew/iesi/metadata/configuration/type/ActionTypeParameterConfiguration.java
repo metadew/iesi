@@ -8,10 +8,7 @@ import java.util.Optional;
 
 public class ActionTypeParameterConfiguration {
 
-    private final ActionTypeConfiguration actionTypeConfiguration;
-
     public ActionTypeParameterConfiguration() {
-        actionTypeConfiguration = new ActionTypeConfiguration();
     }
 
     // Get Action Type Parameter

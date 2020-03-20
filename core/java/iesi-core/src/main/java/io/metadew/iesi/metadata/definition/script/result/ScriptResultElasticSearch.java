@@ -32,63 +32,9 @@ public class ScriptResultElasticSearch implements ElasticSearchDocument {
         endTimestamp = scriptResult.getEndTimestamp();
     }
 
-    public ScriptResultElasticSearch(String runId, Long processId, Long parentProcessId,
-                                     String scriptId, String scriptName, Long scriptVersion, String environment,
-                                     String status, LocalDateTime startTimestamp, LocalDateTime endTimestamp) {
-        this.runId = runId;
-        this.processId = processId;
-        this.parentProcessId = parentProcessId;
-        this.scriptId = scriptId;
-        this.scriptName = scriptName;
-        this.scriptVersion = scriptVersion;
-        this.environment = environment;
-        this.status = status;
-        this.startTimestamp = startTimestamp;
-        this.endTimestamp = endTimestamp;
-    }
-
     @Override
     public Marker getLoggingMarker() {
         return MarkerManager.getMarker("scriptresults");
     }
 
-    public String getRunId() {
-        return runId;
-    }
-
-    public Long getProcessId() {
-        return processId;
-    }
-
-    public Long getParentProcessId() {
-        return parentProcessId;
-    }
-
-    public String getScriptId() {
-        return scriptId;
-    }
-
-    public String getScriptName() {
-        return scriptName;
-    }
-
-    public Long getScriptVersion() {
-        return scriptVersion;
-    }
-
-    public String getEnvironment() {
-        return environment;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public LocalDateTime getStartTimestamp() {
-        return startTimestamp;
-    }
-
-    public LocalDateTime getEndTimestamp() {
-        return endTimestamp;
-    }
 }

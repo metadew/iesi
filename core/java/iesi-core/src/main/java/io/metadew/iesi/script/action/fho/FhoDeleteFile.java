@@ -137,7 +137,7 @@ public class FhoDeleteFile {
                     .get(connectionKey)
                     .get();
             ConnectionOperation connectionOperation = new ConnectionOperation();
-            HostConnection hostConnection = connectionOperation.getHostConnection(connection);
+            HostConnection hostConnection = connectionOperation.getHostConnection();
 
             if (path.isEmpty()) {
                 this.setScope(fileName);

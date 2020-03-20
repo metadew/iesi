@@ -3,9 +3,7 @@ package io.metadew.iesi.framework.execution;
 import io.metadew.iesi.common.properties.PropertiesTools;
 import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.connection.tools.FolderTools;
-import io.metadew.iesi.framework.configuration.FrameworkKeywords;
 import io.metadew.iesi.framework.configuration.framework.FrameworkConfiguration;
-import io.metadew.iesi.framework.control.ProcessIdentifierController;
 import io.metadew.iesi.framework.definition.FrameworkRunIdentifier;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.ThreadContext;
@@ -96,47 +94,18 @@ public class FrameworkRuntime {
 //		processIdProperties.put("processId", "-1");
 //		PropertiesTools.setProperties(this.getProcessIdFileName(), processIdProperties);
 //	}
-	
-	public Long getNextProcessId() {
-		String spoolFileName = runSpoolFolderName + File.separator + UUID.randomUUID().toString() + ".fwk";
-		ProcessIdentifierController.getNextProcessId(processIdFileName, spoolFileName);
-		Long processId = Long.parseLong(PropertiesTools.getProperty(spoolFileName, FrameworkKeywords.PROCESSID.value()));
-		FileTools.delete(spoolFileName);
-		return processId;
-	}
-	
-	
+
+
 	public void terminate() {
 		//FolderTools.deleteFolder(this.getRunCacheFolderName(), true);
-	}
-
-	// Getters and setters
-	public String getRunCacheFolderName() {
-		return runCacheFolderName;
 	}
 
 	public String getFrameworkRunId() {
 		return frameworkRunId;
 	}
 
-	public void setFrameworkRunId(String frameworkRunId) {
-		this.frameworkRunId = frameworkRunId;
-	}
-
 	public String getLocalHostChallengeFileName() {
 		return localHostChallengeFileName;
-	}
-
-	public String getLocalHostChallenge() {
-		return localHostChallenge;
-	}
-
-	public String getProcessIdFileName() {
-		return processIdFileName;
-	}
-
-	public String getRunSpoolFolderName() {
-		return runSpoolFolderName;
 	}
 
 }

@@ -2,8 +2,6 @@ package io.metadew.iesi.metadata.operation;
 
 import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.framework.configuration.framework.FrameworkConfiguration;
-import io.metadew.iesi.framework.configuration.metadata.actiontypes.MetadataActionTypesConfiguration;
-import io.metadew.iesi.framework.operation.FrameworkPluginOperation;
 
 import java.io.File;
 import java.text.MessageFormat;

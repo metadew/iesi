@@ -41,7 +41,7 @@ public class HttpRequestComponentParameterService {
     }
 
     public DataType getParameterValue(ComponentParameter componentParameter, List<ComponentAttribute> componentAttributes, ActionExecution actionExecution)  {
-        executionControl.logMessage(actionExecution, "component.param " + componentParameter.getName() + ": " + componentParameter.getValue(), Level.DEBUG);
+        executionControl.logMessage("component.param " + componentParameter.getName() + ": " + componentParameter.getValue(), Level.DEBUG);
         return getParameterValue(componentParameter.getValue(), componentAttributes, actionExecution);
     }
 
@@ -77,10 +77,6 @@ public class HttpRequestComponentParameterService {
 
     public ExecutionControl getExecutionControl() {
         return executionControl;
-    }
-
-    public void setExecutionControl(ExecutionControl executionControl) {
-        this.executionControl = executionControl;
     }
 
 }

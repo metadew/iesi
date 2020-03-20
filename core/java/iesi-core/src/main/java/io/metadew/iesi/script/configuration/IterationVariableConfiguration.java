@@ -44,19 +44,6 @@ public class IterationVariableConfiguration {
         database.executeUpdate(query);
     }
 
-    // Methods
-    public void cleanIterationVariables(String runId)  {
-        String query = "delete from " + PRC_ITERATION_VAR + " where RUN_ID = " + SQLTools.GetStringForSQL(runId) + ";";
-        database.executeUpdate(query);
-    }
-
-    public void cleanIterationVariables(String runId, long processId)  {
-        String query = "delete from " + PRC_ITERATION_VAR
-                + " where RUN_ID = " + SQLTools.GetStringForSQL(runId)
-                + " and PRC_ID = " + SQLTools.GetStringForSQL(processId) + ";";
-        database.executeUpdate(query);
-    }
-
     public void cleanIterationVariables(String runId, String iterationList)  {
         String query = "delete from " + PRC_ITERATION_VAR
                 + " where RUN_ID = " + SQLTools.GetStringForSQL(runId)

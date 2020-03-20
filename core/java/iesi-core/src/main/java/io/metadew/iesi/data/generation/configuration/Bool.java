@@ -9,12 +9,4 @@ public class Bool extends GenerationComponentExecution {
         super(execution);
     }
 
-    public boolean bool() {
-        return this.getGenerationTools().getRandomTools().randBoolean();
-        //sreturn bool(0.5f);
-    }
-
-    public boolean bool(float trueRatio) {
-        return Math.random() < trueRatio;
-    }
 }

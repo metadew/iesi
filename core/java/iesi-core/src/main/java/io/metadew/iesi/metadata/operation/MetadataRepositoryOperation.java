@@ -3,7 +3,6 @@ package io.metadew.iesi.metadata.operation;
 import io.metadew.iesi.common.text.ParsingTools;
 import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.framework.configuration.framework.FrameworkConfiguration;
-import io.metadew.iesi.framework.definition.FrameworkFolder;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
@@ -15,9 +14,6 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class MetadataRepositoryOperation {
-
-    private String action;
-    private boolean generateDdl;
 
 
     private static final Logger LOGGER = LogManager.getLogger();
@@ -239,19 +235,4 @@ public class MetadataRepositoryOperation {
 //    }
 
 
-    public String getAction() {
-        return action;
-    }
-
-    public void setAction(String action) {
-        this.action = action;
-    }
-
-    public boolean isGenerateDdl() {
-        return generateDdl;
-    }
-
-    public void setGenerateDdl(boolean generateDdl) {
-        this.generateDdl = generateDdl;
-    }
 }

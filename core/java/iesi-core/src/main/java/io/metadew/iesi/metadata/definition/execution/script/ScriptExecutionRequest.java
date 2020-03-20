@@ -42,10 +42,6 @@ public abstract class ScriptExecutionRequest extends Metadata<ScriptExecutionReq
         this.scriptExecutionRequestStatus = scriptExecutionRequestStatus;
     }
 
-    public List<Long> getActionSelect() {
-        return actionSelect;
-    }
-
     public boolean isExit() {
         return exit;
     }

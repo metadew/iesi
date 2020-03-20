@@ -9,13 +9,6 @@ public class ImpersonationParameter extends Metadata<ImpersonationParameterKey> 
     private String impersonatedConnection;
     private String description;
 
-    //Constructors
-    public ImpersonationParameter(String impersonationName, String connection, String impersonatedConnection, String description) {
-        super(new ImpersonationParameterKey(impersonationName, connection));
-        this.impersonatedConnection = impersonatedConnection;
-        this.description = description;
-    }
-
     public ImpersonationParameter(ImpersonationParameterKey impersonationParameterKey, String impersonatedConnection, String description){
         super(impersonationParameterKey);
         this.impersonatedConnection = impersonatedConnection;
@@ -31,16 +24,8 @@ public class ImpersonationParameter extends Metadata<ImpersonationParameterKey> 
         return impersonatedConnection;
     }
 
-    public void setImpersonatedConnection(String impersonatedConnection) {
-        this.impersonatedConnection = impersonatedConnection;
-    }
-
     public String getDescription() {
         return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
 }

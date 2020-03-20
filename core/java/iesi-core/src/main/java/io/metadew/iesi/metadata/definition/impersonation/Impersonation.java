@@ -18,12 +18,6 @@ public class Impersonation extends Metadata<ImpersonationKey> {
         this.parameters = parameters;
     }
 
-    public Impersonation(ImpersonationKey impersonationKey, String description, List<ImpersonationParameter> parameters) {
-        super(impersonationKey);
-        this.description = description;
-        this.parameters = parameters;
-    }
-
     //Getters and Setters
     public String getName() {
         return getMetadataKey().getName();
@@ -33,16 +27,8 @@ public class Impersonation extends Metadata<ImpersonationKey> {
         return description;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
     public List<ImpersonationParameter> getParameters() {
         return parameters;
-    }
-
-    public void setParameters(List<ImpersonationParameter> parameters) {
-        this.parameters = parameters;
     }
 
 }

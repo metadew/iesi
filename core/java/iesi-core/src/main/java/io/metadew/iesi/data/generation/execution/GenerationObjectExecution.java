@@ -5,7 +5,6 @@ import io.metadew.iesi.connection.tools.FolderTools;
 import io.metadew.iesi.data.generation.configuration.*;
 import io.metadew.iesi.data.generation.tools.GenerationTools;
 import io.metadew.iesi.framework.configuration.framework.FrameworkConfiguration;
-import io.metadew.iesi.framework.definition.FrameworkFolder;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
@@ -160,32 +159,8 @@ public class GenerationObjectExecution {
         this.generationTools = generationTools;
     }
 
-    public String getLocale() {
-        return locale;
-    }
-
-    public void setLocale(String locale) {
-        this.locale = locale;
-    }
-
-    public GenerationDataExecution getExecution() {
-        return execution;
-    }
-
-    public void setExecution(GenerationDataExecution execution) {
-        this.execution = execution;
-    }
-
-    public Address getAddress() {
-        return address;
-    }
-
     public void setAddress(Address address) {
         this.address = address;
-    }
-
-    public Company getCompany() {
-        return company;
     }
 
     public void setCompany(Company company) {
@@ -200,56 +175,28 @@ public class GenerationObjectExecution {
         return internet;
     }
 
-    public Lorem getLorem() {
-        return lorem;
-    }
-
     public void setLorem(Lorem lorem) {
         this.lorem = lorem;
-    }
-
-    public App getApp() {
-        return app;
     }
 
     public void setApp(App app) {
         this.app = app;
     }
 
-    public Avatar getAvatar() {
-        return avatar;
-    }
-
     public void setAvatar(Avatar avatar) {
         this.avatar = avatar;
-    }
-
-    public Book getBook() {
-        return book;
     }
 
     public void setBook(Book book) {
         this.book = book;
     }
 
-    public Color getColor() {
-        return color;
-    }
-
     public void setColor(Color color) {
         this.color = color;
     }
 
-    public CreditCard getCreditCard() {
-        return creditCard;
-    }
-
     public void setCreditCard(CreditCard creditCard) {
         this.creditCard = creditCard;
-    }
-
-    public Team getTeam() {
-        return team;
     }
 
     public void setTeam(Team team) {
@@ -262,10 +209,6 @@ public class GenerationObjectExecution {
 
     public void setName(Name name) {
         this.name = name;
-    }
-
-    public University getUniversity() {
-        return university;
     }
 
     public void setUniversity(University university) {
@@ -304,40 +247,20 @@ public class GenerationObjectExecution {
         this.phoneNumber = phoneNumber;
     }
 
-    public Placeholdit getPlaceholdit() {
-        return placeholdit;
-    }
-
     public void setPlaceholdit(Placeholdit placeholdit) {
         this.placeholdit = placeholdit;
-    }
-
-    public Retail getRetail() {
-        return retail;
     }
 
     public void setRetail(Retail retail) {
         this.retail = retail;
     }
 
-    public SlackEmoji getSlackEmoji() {
-        return slackEmoji;
-    }
-
     public void setSlackEmoji(SlackEmoji slackEmoji) {
         this.slackEmoji = slackEmoji;
     }
 
-    public Bool getBool() {
-        return bool;
-    }
-
     public void setBool(Bool bool) {
         this.bool = bool;
-    }
-
-    public Timestamp getTimestamp() {
-        return timestamp;
     }
 
     public void setTimestamp(Timestamp timestamp) {

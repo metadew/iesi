@@ -26,16 +26,8 @@ public class Context {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getScope() {
         return scope;
-    }
-
-    public void setScope(String scope) {
-        this.scope = scope;
     }
 
 

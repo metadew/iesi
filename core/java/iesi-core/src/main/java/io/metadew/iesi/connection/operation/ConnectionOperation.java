@@ -4,7 +4,6 @@ import io.metadew.iesi.connection.ArtifactoryConnection;
 import io.metadew.iesi.connection.HostConnection;
 import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.metadata.configuration.type.ConnectionTypeConfiguration;
-import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.ConnectionType;
 
 import java.net.InetAddress;
@@ -21,7 +20,7 @@ public class ConnectionOperation {
     }
 
     // Methods
-    public Database getDatabase(Connection connection) {
+    public Database getDatabase() {
 //        this.setMissingMandatoryFieldsList(new ArrayList<>());
 //
 //        Database database = null;
@@ -464,7 +463,7 @@ public class ConnectionOperation {
         return null;
     }
 
-    public HostConnection getHostConnection(Connection connection) {
+    public HostConnection getHostConnection() {
 //        this.setMissingMandatoryFieldsList(new ArrayList<>());
 //
 //        ObjectMapper objectMapper = new ObjectMapper();
@@ -626,7 +625,7 @@ public class ConnectionOperation {
         return null;
     }
 
-    public ArtifactoryConnection getArtifactoryConnection(Connection connection) {
+    public ArtifactoryConnection getArtifactoryConnection() {
 //        this.setMissingMandatoryFieldsList(new ArrayList<>());
 //
 //        ArtifactoryConnection artifactoryConnection = null;

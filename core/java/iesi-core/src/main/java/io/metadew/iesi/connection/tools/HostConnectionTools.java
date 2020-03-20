@@ -21,7 +21,7 @@ public final class HostConnectionTools {
                     .get(new ConnectionKey(connectionName, environmentName))
                     .get();
             ConnectionOperation connectionOperation = new ConnectionOperation();
-            HostConnection hostConnection = connectionOperation.getHostConnection(connection);
+            HostConnection hostConnection = connectionOperation.getHostConnection();
 
             if (hostConnection.isOnLocalhost()) {
                 isOnLocalhost = true;

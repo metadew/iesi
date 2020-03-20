@@ -92,7 +92,7 @@ public class ActionParameterOperation {
         value = new Text(inputValue);
 
         resolvedInputValue = lookupSubroutine(resolvedInputValue);
-        executionControl.logMessage(actionExecution, "action.param=" + name + ":" + resolvedInputValue, Level.DEBUG);
+        executionControl.logMessage("action.param=" + name + ":" + resolvedInputValue, Level.DEBUG);
         resolvedInputValue = executionControl.getExecutionRuntime().resolveConceptLookup(resolvedInputValue).getValue();
 
         // perform lookup again after cross concept lookup
@@ -105,7 +105,7 @@ public class ActionParameterOperation {
             String impersonatedConnectionName = executionControl.getExecutionRuntime()
                     .getImpersonationOperation().getImpersonatedConnection(decryptedInputValue);
             if (!impersonatedConnectionName.equalsIgnoreCase("")) {
-                executionControl.logMessage(actionExecution, "action." + name
+                executionControl.logMessage("action." + name
                         + ".impersonate=" + this.getValue() + ":" + impersonatedConnectionName, Level.DEBUG);
                 resolvedInputValue = impersonatedConnectionName;
             }
@@ -113,22 +113,6 @@ public class ActionParameterOperation {
 
         // Resolve to data type
         value = DataTypeHandler.getInstance().resolve(resolvedInputValue, executionRuntime);
-    }
-
-    public ExecutionControl getExecutionControl() {
-        return executionControl;
-    }
-
-    public void setExecutionControl(ExecutionControl executionControl) {
-        this.executionControl = executionControl;
-    }
-
-    public ActionExecution getActionExecution() {
-        return actionExecution;
-    }
-
-    public void setActionExecution(ActionExecution actionExecution) {
-        this.actionExecution = actionExecution;
     }
 
 }

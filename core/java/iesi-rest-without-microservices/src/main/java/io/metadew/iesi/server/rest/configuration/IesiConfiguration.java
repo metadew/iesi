@@ -1,5 +1,6 @@
 package io.metadew.iesi.server.rest.configuration;
 
+import io.metadew.iesi.framework.configuration.metadata.MetadataConfiguration;
 import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
 import io.metadew.iesi.framework.execution.FrameworkExecutionContext;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
@@ -30,7 +31,8 @@ public class IesiConfiguration {
     @Bean
     @Order(0)
     public FrameworkInstance frameworkInstance(FrameworkInitializationFile frameworkInitializationFile, FrameworkExecutionContext frameworkExecutionContext) throws SQLException {
-        FrameworkInstance.getInstance().init(frameworkInitializationFile, frameworkExecutionContext, frameworkHome);
+        io.metadew.iesi.framework.configuration.Configuration.getInstance();
+        MetadataConfiguration.getInstance();
         return FrameworkInstance.getInstance();
     }
 

@@ -37,6 +37,7 @@ public abstract class Database {
     private int maximalPoolSize;
     private List<Connection> connectionPool;
     private List<Connection> usedConnections = new ArrayList<>();
+    @EqualsAndHashCode.Exclude
     private final Object connectionPoolLock = new Object();
 
     public Database(DatabaseConnection databaseConnection) {

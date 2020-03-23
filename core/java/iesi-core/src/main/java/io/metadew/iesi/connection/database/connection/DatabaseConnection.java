@@ -1,23 +1,13 @@
 package io.metadew.iesi.connection.database.connection;
 
-import io.metadew.iesi.connection.database.sql.SqlScriptResult;
-import io.metadew.iesi.connection.operation.database.ScriptRunner;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
 
-import javax.sql.rowset.CachedRowSet;
-import javax.sql.rowset.RowSetProvider;
-import java.io.*;
-import java.sql.*;
-import java.util.List;
-
-/**
- * Connection object for databases. This is extended depending on the database
- * type.
- *
- * @author peter.billen
- */
 @Log4j2
+@ToString
+@EqualsAndHashCode
 public abstract class DatabaseConnection {
 
     @Getter

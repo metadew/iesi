@@ -1,12 +1,11 @@
 package io.metadew.iesi.connection.database.connection.teradata;
 
 import io.metadew.iesi.connection.database.connection.DatabaseConnection;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
-/**
- * Connection object for Teradata databases. This class extends the default database connection object.
- *
- * @author peter.billen
- */
+@EqualsAndHashCode(callSuper = true)
+@ToString
 public class TeradataDatabaseConnection extends DatabaseConnection {
 
     private static String type = "teradata";

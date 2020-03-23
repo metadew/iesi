@@ -13,6 +13,7 @@ import java.text.MessageFormat;
 public class DbTeradataConnectionService {
 
     private final static String hostKey = "host";
+    private final static String portKey = "port";
     private final static String databaseKey = "database";
     private final static String userKey = "user";
     private final static String passwordKey = "password";
@@ -31,11 +32,12 @@ public class DbTeradataConnectionService {
 
     public TeradataDatabase getDatabase(Connection connection) {
         String hostName = getMandatoryParameterWithKey(connection, hostKey);
+        int port = Integer.parseInt(getMandatoryParameterWithKey(connection, portKey));
         String databaseName = getMandatoryParameterWithKey(connection, databaseKey);
         String userName = getMandatoryParameterWithKey(connection, userKey);
         String userPassword = getMandatoryParameterWithKey(connection, passwordKey);
 
-        TeradataDatabaseConnection teradataDatabaseConnection = new TeradataDatabaseConnection(hostName, 0, databaseName, userName, userPassword);
+        TeradataDatabaseConnection teradataDatabaseConnection = new TeradataDatabaseConnection(hostName, port, databaseName, userName, userPassword);
         return new TeradataDatabase(teradataDatabaseConnection);
     }
 

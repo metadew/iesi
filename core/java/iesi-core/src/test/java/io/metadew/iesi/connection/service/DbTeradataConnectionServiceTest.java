@@ -4,54 +4,132 @@ import io.metadew.iesi.connection.database.TeradataDatabase;
 import io.metadew.iesi.connection.database.connection.DatabaseConnectionHandlerImpl;
 import io.metadew.iesi.connection.database.connection.teradata.TeradataDatabaseConnection;
 import io.metadew.iesi.connection.operation.DbTeradataConnectionService;
+import io.metadew.iesi.framework.crypto.FrameworkCrypto;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionParameterKey;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.powermock.reflect.Whitebox;
 
+import java.text.MessageFormat;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.mockito.Mockito.mock;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest( { DatabaseConnectionHandlerImpl.class })
-@PowerMockIgnore({"javax.management.*","javax.script.*"})
-public class DbTeradataConnectionServiceTest   {
-    @Mock
-    private DatabaseConnectionHandlerImpl databaseConnectionHandler;
 
-    @Before
-    public void setup(){
-        MockitoAnnotations.initMocks(this);
+class DbTeradataConnectionServiceTest {
+
+    @BeforeAll
+    static void setup()  {
+        DatabaseConnectionHandlerImpl databaseConnectionHandler = PowerMockito.mock(DatabaseConnectionHandlerImpl.class);
+        Whitebox.setInternalState(DatabaseConnectionHandlerImpl.class, "INSTANCE", databaseConnectionHandler);
+        Mockito.doReturn(null).when(databaseConnectionHandler).getConnection(any());
+    }
+
+    @Test
+    void getDatabaseTest() {
+        Connection connection = new Connection(new ConnectionKey("test", "tst"),
+                "db.teradata",
+                "description",
+                Stream.of(new ConnectionParameter(new ConnectionParameterKey("test", "tst", "host"), "host"),
+                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "port"), "1"),
+                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "database"), "database"),
+                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "user"), "user"),
+                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "password"), "password"))
+                        .collect(Collectors.toList()));
+        TeradataDatabase teradataDatabaseExpected = new TeradataDatabase(new TeradataDatabaseConnection("host", 1, "database", "user", "password"));
+        assertEquals(teradataDatabaseExpected, DbTeradataConnectionService.getInstance().getDatabase(connection));
     }
     @Test
-    public void getDatabaseTest (){
-        mockStatic(DatabaseConnectionHandlerImpl.class);
-        DatabaseConnectionHandlerImpl mock = mock(DatabaseConnectionHandlerImpl.class);
-        PowerMockito.when(DatabaseConnectionHandlerImpl.getInstance()).thenReturn(mock);
-
-        Connection connection = new Connection(new ConnectionKey("value", "value"),
-                "jdbc:teradata://",
+    void getDatabaseWithEncryptedPasswordTest() {
+        Connection connection = new Connection(new ConnectionKey("test", "tst"),
+                "db.teradata",
                 "description",
-                Stream.of(new ConnectionParameter(new ConnectionParameterKey("value", "value", "host"), "value"),
-                        new ConnectionParameter(new ConnectionParameterKey("value", "value", "port"), "0"),
-                        new ConnectionParameter(new ConnectionParameterKey("value", "value", "database"), "value"),
-                        new ConnectionParameter(new ConnectionParameterKey("value", "value", "user"), "value"),
-                        new ConnectionParameter(new ConnectionParameterKey("value", "value", "password"), "value"))
+                Stream.of(new ConnectionParameter(new ConnectionParameterKey("test", "tst", "host"), "host"),
+                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "port"), "1"),
+                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "database"), "database"),
+                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "user"), "user"),
+                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "password"), FrameworkCrypto.getInstance().encrypt("encrypted_password")))
                         .collect(Collectors.toList()));
-     TeradataDatabase teradataDatabaseExpected = new TeradataDatabase(new TeradataDatabaseConnection("value", 0, "value", "value", "value"));
-        Assert.assertEquals(teradataDatabaseExpected, DbTeradataConnectionService.getInstance().getDatabase(connection));
+        TeradataDatabase teradataDatabaseExpected = new TeradataDatabase(new TeradataDatabaseConnection("host", 1, "database", "user", "encrypted_password"));
+        assertEquals(teradataDatabaseExpected, DbTeradataConnectionService.getInstance().getDatabase(connection));
     }
+
+    @Test
+    void getDatabaseMissingHost() {
+        Connection connection = new Connection(new ConnectionKey("test", "tst"),
+                "db.teradata",
+                "description",
+                Stream.of(new ConnectionParameter(new ConnectionParameterKey("test", "tst", "port"), "1"),
+                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "database"), "database"),
+                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "user"), "user"),
+                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "password"), "password"))
+                        .collect(Collectors.toList()));
+        assertThrows(RuntimeException.class, () -> DbTeradataConnectionService.getInstance().getDatabase(connection),
+                MessageFormat.format("Connection {0} does not contain mandatory parameter 'host'", connection));
+    }
+
+    @Test
+    void getDatabaseMissingPort() {
+        Connection connection = new Connection(new ConnectionKey("test", "tst"),
+                "db.teradata",
+                "description",
+                Stream.of(new ConnectionParameter(new ConnectionParameterKey("test", "tst", "host"), "host"),
+                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "database"), "database"),
+                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "user"), "user"),
+                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "password"), "password"))
+                        .collect(Collectors.toList()));
+        assertThrows(RuntimeException.class, () -> DbTeradataConnectionService.getInstance().getDatabase(connection),
+                MessageFormat.format("Connection {0} does not contain mandatory parameter 'port'", connection));
+    }
+
+    @Test
+    void getDatabaseMissingDatabase() {
+        Connection connection = new Connection(new ConnectionKey("test", "tst"),
+                "db.teradata",
+                "description",
+                Stream.of(new ConnectionParameter(new ConnectionParameterKey("test", "tst", "host"), "host"),
+                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "port"), "1"),
+                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "user"), "user"),
+                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "password"), "password"))
+                        .collect(Collectors.toList()));
+        assertThrows(RuntimeException.class, () -> DbTeradataConnectionService.getInstance().getDatabase(connection),
+                MessageFormat.format("Connection {0} does not contain mandatory parameter 'database'", connection));
+    }
+
+    @Test
+    void getDatabaseMissingUser() {
+        Connection connection = new Connection(new ConnectionKey("test", "tst"),
+                "db.teradata",
+                "description",
+                Stream.of(new ConnectionParameter(new ConnectionParameterKey("test", "tst", "host"), "host"),
+                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "port"), "1"),
+                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "database"), "database"),
+                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "password"), "password"))
+                        .collect(Collectors.toList()));
+        assertThrows(RuntimeException.class, () -> DbTeradataConnectionService.getInstance().getDatabase(connection),
+                MessageFormat.format("Connection {0} does not contain mandatory parameter 'user'", connection));
+    }
+
+    @Test
+    void getDatabaseMissingPassword() {
+        Connection connection = new Connection(new ConnectionKey("test", "tst"),
+                "db.teradata",
+                "description",
+                Stream.of(new ConnectionParameter(new ConnectionParameterKey("test", "tst", "host"), "host"),
+                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "port"), "1"),
+                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "database"), "database"),
+                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "user"), "user"))
+                        .collect(Collectors.toList()));
+        assertThrows(RuntimeException.class, () -> DbTeradataConnectionService.getInstance().getDatabase(connection),
+                MessageFormat.format("Connection {0} does not contain mandatory parameter 'password'", connection));
+    }
+
 }

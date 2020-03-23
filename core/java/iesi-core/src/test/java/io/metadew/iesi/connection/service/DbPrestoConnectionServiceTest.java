@@ -3,61 +3,162 @@ package io.metadew.iesi.connection.service;
 import io.metadew.iesi.connection.database.PrestoDatabase;
 import io.metadew.iesi.connection.database.connection.DatabaseConnectionHandlerImpl;
 import io.metadew.iesi.connection.database.connection.presto.PrestoDatabaseConnection;
-import io.metadew.iesi.connection.database.connection.teradata.TeradataDatabaseConnection;
 import io.metadew.iesi.connection.operation.DbPrestoConnectionService;
-import io.metadew.iesi.connection.operation.DbTeradataConnectionService;
+import io.metadew.iesi.framework.crypto.FrameworkCrypto;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionParameterKey;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeAll;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.powermock.reflect.Whitebox;
 
+import java.text.MessageFormat;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest( { DatabaseConnectionHandlerImpl.class })
-@PowerMockIgnore({"javax.management.*","javax.script.*"})
-public class DbPrestoConnectionServiceTest   {
-    @Mock
-    private DatabaseConnectionHandlerImpl databaseConnectionHandler;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 
-    @Before
-    public void setup(){
-        MockitoAnnotations.initMocks(this);
-        PowerMockito.mockStatic(DatabaseConnectionHandlerImpl.class);
+
+public class DbPrestoConnectionServiceTest   {
+    @BeforeAll
+    static void setup()  {
+        DatabaseConnectionHandlerImpl databaseConnectionHandler = PowerMockito.mock(DatabaseConnectionHandlerImpl.class);
+        Whitebox.setInternalState(DatabaseConnectionHandlerImpl.class, "INSTANCE", databaseConnectionHandler);
+        Mockito.doReturn(null).when(databaseConnectionHandler).getConnection(any());
     }
     @Test
     public void getDatabaseTest (){
-        Mockito.when(DatabaseConnectionHandlerImpl.getInstance()).thenReturn(databaseConnectionHandler);
-//        PowerMockito.when(databaseConnectionHandler.getConnection(null)).thenReturn(null);
-
-        Connection connection = new Connection(new ConnectionKey("value", "value"),
-                "jdbc:presto://",
+        Connection connection = new Connection(new ConnectionKey("test", "tst"),
+                "db.presto",
                 "description",
-                Stream.of(new ConnectionParameter(new ConnectionParameterKey("value", "value", "host"), "value"),
-                        new ConnectionParameter(new ConnectionParameterKey("value", "value", "port"), "0"),
-                        new ConnectionParameter(new ConnectionParameterKey("value", "value", "catalog"), "value"),
-                        new ConnectionParameter(new ConnectionParameterKey("value", "value", "schema"), "value"),
-                        new ConnectionParameter(new ConnectionParameterKey("value", "value", "user"), "value"),
-                        new ConnectionParameter(new ConnectionParameterKey("value", "value", "password"), "value"))
+                Stream.of(new ConnectionParameter(new ConnectionParameterKey("test", "tst", "host"), "host"),
+                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "catalog"), "catalog"),
+                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "port"), "1"),
+                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "schema"), "schema"),
+                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "user"), "user"),
+                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "password"), "password"))
                         .collect(Collectors.toList()));
-        PrestoDatabase prestoDatabaseExpected = new PrestoDatabase(new PrestoDatabaseConnection("hostName",
-                0,
-                "catalogName",
-                "schemaName",
-                "userName",
-                "userPassword"),"schema");
+        PrestoDatabase prestoDatabaseExpected = new PrestoDatabase(new PrestoDatabaseConnection("host",
+                1,
+                "catalog",
+                "schema",
+                "user",
+                "password"),"");
         Assert.assertEquals(prestoDatabaseExpected, DbPrestoConnectionService.getInstance().getDatabase(connection));
     }
+
+    @Test
+    public void getDatabaseWithEncryptedPasswordTest (){
+        Connection connection = new Connection(new ConnectionKey("test", "tst"),
+                "db.presto",
+                "description",
+                Stream.of(new ConnectionParameter(new ConnectionParameterKey("test", "tst", "host"), "host"),
+                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "catalog"), "catalog"),
+                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "port"), "1"),
+                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "schema"), "schema"),
+                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "user"), "user"),
+                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "password"), FrameworkCrypto.getInstance().encrypt("encrypted_password")))
+                        .collect(Collectors.toList()));
+        PrestoDatabase prestoDatabaseExpected = new PrestoDatabase(new PrestoDatabaseConnection("host",
+                1,
+                "catalog",
+                "schema",
+                "user",
+                "encrypted_password"),"");
+        Assert.assertEquals(prestoDatabaseExpected, DbPrestoConnectionService.getInstance().getDatabase(connection));
+    }
+    @Test
+    void getDatabaseMissingHost() {
+        Connection connection = new Connection(new ConnectionKey("test", "tst"),
+                "db.presto",
+                "description",
+                Stream.of(new ConnectionParameter(new ConnectionParameterKey("test", "tst", "catalog"), "catalog"),
+                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "port"), "1"),
+                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "schema"), "schema"),
+                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "user"), "user"),
+                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "password"), "password"))
+                        .collect(Collectors.toList()));
+        assertThrows(RuntimeException.class, () -> DbPrestoConnectionService.getInstance().getDatabase(connection),
+                MessageFormat.format("Connection {0} does not contain mandatory parameter 'host'", connection));
+    }
+
+    @Test
+    void getDatabaseMissingPort() {
+        Connection connection = new Connection(new ConnectionKey("test", "tst"),
+                "db.presto",
+                "description",
+                Stream.of(new ConnectionParameter(new ConnectionParameterKey("test", "tst", "host"), "host"),
+                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "catalog"), "catalog"),
+                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "schema"), "schema"),
+                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "user"), "user"),
+                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "password"), "password"))
+                        .collect(Collectors.toList()));
+        assertThrows(RuntimeException.class, () -> DbPrestoConnectionService.getInstance().getDatabase(connection),
+                MessageFormat.format("Connection {0} does not contain mandatory parameter 'port'", connection));
+    }
+
+    @Test
+    void getDatabaseMissingSchema() {
+        Connection connection = new Connection(new ConnectionKey("test", "tst"),
+                "db.presto",
+                "description",
+                Stream.of(new ConnectionParameter(new ConnectionParameterKey("test", "tst", "host"), "host"),
+                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "catalog"), "catalog"),
+                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "port"), "1"),
+                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "user"), "user"),
+                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "password"), "password"))
+                        .collect(Collectors.toList()));
+        assertThrows(RuntimeException.class, () -> DbPrestoConnectionService.getInstance().getDatabase(connection),
+                MessageFormat.format("Connection {0} does not contain mandatory parameter 'schema'", connection));
+    }
+    @Test
+    void getDatabaseMissingCatalog() {
+        Connection connection = new Connection(new ConnectionKey("test", "tst"),
+                "db.presto",
+                "description",
+                Stream.of(new ConnectionParameter(new ConnectionParameterKey("test", "tst", "host"), "host"),
+                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "port"), "1"),
+                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "schema"), "schema"),
+                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "user"), "user"),
+                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "password"), "password"))
+                        .collect(Collectors.toList()));
+        assertThrows(RuntimeException.class, () -> DbPrestoConnectionService.getInstance().getDatabase(connection),
+                MessageFormat.format("Connection {0} does not contain mandatory parameter 'catalog'", connection));
+    }
+
+    @Test
+    void getDatabaseMissingUser() {
+        Connection connection = new Connection(new ConnectionKey("test", "tst"),
+                "db.presto",
+                "description",
+                Stream.of(new ConnectionParameter(new ConnectionParameterKey("test", "tst", "host"), "host"),
+                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "catalog"), "catalog"),
+                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "port"), "1"),
+                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "schema"), "schema"),
+                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "password"), "password"))
+                        .collect(Collectors.toList()));
+        assertThrows(RuntimeException.class, () -> DbPrestoConnectionService.getInstance().getDatabase(connection),
+                MessageFormat.format("Connection {0} does not contain mandatory parameter 'user'", connection));
+    }
+
+    @Test
+    void getDatabaseMissingPassword() {
+        Connection connection = new Connection(new ConnectionKey("test", "tst"),
+                "db.presto",
+                "description",
+                Stream.of(new ConnectionParameter(new ConnectionParameterKey("test", "tst", "host"), "host"),
+                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "catalog"), "catalog"),
+                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "port"), "1"),
+                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "schema"), "schema"),
+                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "user"), "user"))
+                        .collect(Collectors.toList()));
+        assertThrows(RuntimeException.class, () -> DbPrestoConnectionService.getInstance().getDatabase(connection),
+                MessageFormat.format("Connection {0} does not contain mandatory parameter 'password'", connection));
+    }
+
 }

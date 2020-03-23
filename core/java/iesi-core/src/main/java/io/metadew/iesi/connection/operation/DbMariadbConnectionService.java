@@ -14,7 +14,7 @@ import java.text.MessageFormat;
 @Log4j2
 public class DbMariadbConnectionService {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static DbMariadbConnectionOperation INSTANCE;
+    private static DbMariadbConnectionService INSTANCE;
 
     private final static String hostKey = "host";
     private final static String portKey = "port";
@@ -22,9 +22,9 @@ public class DbMariadbConnectionService {
     private final static String userKey = "user";
     private final static String passwordKey = "password";
 
-    public synchronized static DbMariadbConnectionOperation getInstance() {
+    public synchronized static DbMariadbConnectionService getInstance() {
         if (INSTANCE == null) {
-            INSTANCE = new DbMariadbConnectionOperation();
+            INSTANCE = new DbMariadbConnectionService();
         }
         return INSTANCE;
     }

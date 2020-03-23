@@ -1,6 +1,8 @@
 package io.metadew.iesi.connection.database.connection.mssql;
 
 import io.metadew.iesi.connection.database.connection.SchemaDatabaseConnection;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 /**
  * Connection object for Microsoft SQL databases. This class extends the default
@@ -8,6 +10,8 @@ import io.metadew.iesi.connection.database.connection.SchemaDatabaseConnection;
  *
  * @author peter.billen
  */
+@EqualsAndHashCode(callSuper = true)
+@ToString
 public class MssqlDatabaseConnection extends SchemaDatabaseConnection {
 
     private static String type = "mssql";

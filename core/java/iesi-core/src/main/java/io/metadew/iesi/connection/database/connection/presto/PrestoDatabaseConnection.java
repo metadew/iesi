@@ -11,6 +11,10 @@ import java.util.Optional;
  *
  * @author peter.billen
  */
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+@EqualsAndHashCode(callSuper = true)
+@ToString
 public class PrestoDatabaseConnection extends SchemaDatabaseConnection {
 
     private static String type = "presto";

@@ -2,6 +2,8 @@ package io.metadew.iesi.connection.database.connection.oracle;
 
 import io.metadew.iesi.connection.database.connection.DatabaseConnection;
 import io.metadew.iesi.connection.database.connection.SchemaDatabaseConnection;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -16,6 +18,8 @@ import java.util.Optional;
  *
  * @author peter.billen
  */
+@EqualsAndHashCode(callSuper = true)
+@ToString
 public class OracleDatabaseConnection extends SchemaDatabaseConnection {
 
     private static Logger LOGGER = LogManager.getLogger();

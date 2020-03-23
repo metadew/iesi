@@ -2,6 +2,8 @@ package io.metadew.iesi.connection.database.connection.dremio;
 
 import io.metadew.iesi.connection.database.connection.DatabaseConnection;
 import io.metadew.iesi.connection.database.connection.SchemaDatabaseConnection;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import java.sql.Connection;
 import java.util.Optional;
@@ -11,6 +13,8 @@ import java.util.Optional;
  *
  * @author peter.billen
  */
+@EqualsAndHashCode(callSuper = true)
+@ToString
 public class DremioDatabaseConnection extends SchemaDatabaseConnection {
 
     private static String type = "dremio";

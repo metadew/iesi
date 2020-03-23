@@ -13,7 +13,7 @@ import java.text.MessageFormat;
 @Log4j2
 public class DbDb2ConnectionService {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static DbDb2ConnectionOperation INSTANCE;
+    private static DbDb2ConnectionService INSTANCE;
 
     private final static String hostKey = "host";
     private final static String portKey = "port";
@@ -21,9 +21,9 @@ public class DbDb2ConnectionService {
     private final static String userKey = "user";
     private final static String passwordKey = "password";
 
-    public synchronized static DbDb2ConnectionOperation getInstance() {
+    public synchronized static DbDb2ConnectionService getInstance() {
         if (INSTANCE == null) {
-            INSTANCE = new DbDb2ConnectionOperation();
+            INSTANCE = new DbDb2ConnectionService();
         }
         return INSTANCE;
     }

@@ -2,11 +2,8 @@ package io.metadew.iesi.launch;
 
 import io.metadew.iesi.framework.configuration.Configuration;
 import io.metadew.iesi.framework.configuration.metadata.MetadataConfiguration;
-import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
-import io.metadew.iesi.framework.execution.FrameworkExecutionContext;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.execution.ExecutionRequestConfiguration;
-import io.metadew.iesi.metadata.definition.Context;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequestBuilder;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequestBuilderException;
@@ -37,14 +34,11 @@ public class ScriptLauncher {
 
         Options options = new Options()
                 .addOption(Option.builder("help").desc("print this message").build())
-                .addOption(Option.builder("ini").desc("define the initialization file").hasArg().build())
                 .addOption(Option.builder("script").hasArg().desc("define the script name to execute").build())
                 .addOption(Option.builder("version").hasArg().desc("define the version of the script to execute").build())
                 .addOption(Option.builder("file").hasArg().desc("define the configuration file to execute").build())
                 .addOption(Option.builder("env").hasArg().desc("define the environment name where the execution needs to take place").build())
                 .addOption(Option.builder("paramlist").hasArg().desc("define a list of parameters to use").build())
-                .addOption(Option.builder("actions").hasArg().desc("select actions to execute or not").build())
-                .addOption(Option.builder("settings").hasArg().desc("set specific setting values").build())
                 .addOption(Option.builder("impersonation").hasArg().desc("define impersonation name to use").build())
                 .addOption(Option.builder("exit").hasArg().desc("define if an explicit exit is required").build())
                 .addOption(Option.builder("password").hasArg().desc("define the password to log in with").build())
@@ -82,17 +76,6 @@ public class ScriptLauncher {
                 default:
                     break;
             }
-        }
-
-        // Define the initialization file
-        if (line.hasOption("ini")) {
-            // Create framework instance
-            System.out.println("Option -ini (ini) value = " + line.getOptionValue("ini"));
-            FrameworkInstance.getInstance().init(new FrameworkInitializationFile(line.getOptionValue("ini")),
-                    new FrameworkExecutionContext(new Context("script", "")));
-        } else {
-            FrameworkInstance.getInstance().init(new FrameworkInitializationFile(),
-                    new FrameworkExecutionContext(new Context("script", "")));
         }
 
         // Get the script
@@ -143,12 +126,6 @@ public class ScriptLauncher {
             // TODO: define actionSelection as a strategy (include/exclude)
             System.out.println("Option -actions (actions) value = " + line.getOptionValue("actions"));
             //actionSelect = line.getOptionValue("actions");
-        }
-
-        // Get settings input
-        if (line.hasOption("settings")) {
-            // TODO: never used
-            System.out.println("Option -settings (settings) value = " + line.getOptionValue("settings"));
         }
 
         // Get impersonation input

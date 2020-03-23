@@ -1,9 +1,5 @@
 package io.metadew.iesi.framework.configuration;
 
-import io.metadew.iesi.framework.configuration.framework.FrameworkConfiguration;
-import io.metadew.iesi.framework.configuration.guard.GuardConfiguration;
-import io.metadew.iesi.framework.configuration.metadata.MetadataConfiguration;
-import io.metadew.iesi.framework.configuration.plugin.PluginConfiguration;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.yaml.snakeyaml.Yaml;
@@ -36,8 +32,11 @@ public class Configuration {
     private Configuration() {
         properties = new HashMap<>();
         loadClasspathFiles();
+        log.debug("configuration after classpath loading: " + properties);
         loadFilesystemFiles();
+        log.debug("configuration after configuration file loading: " + properties);
         loadSystemVariables();
+        log.debug("configuration after system variable loading: " + properties);
     }
 
     public Optional<Object> getProperty(String key) {
@@ -46,11 +45,12 @@ public class Configuration {
 
     @SuppressWarnings("unchecked")
     private Optional<Object> getProperty(String key, Map<String, Object> properties) {
+        log.trace("looking for " + key + " in " + properties);
         if (properties == null) {
             return Optional.empty();
         } else if (key.contains(".")) {
-            String[] splittedKey = key.split(".", 2);
-            return getProperty(splittedKey[0], (Map<String, Object>) properties.get(splittedKey[1]));
+            String[] splittedKey = key.split("\\.", 2);
+            return getProperty(splittedKey[1], (Map<String, Object>) properties.get(splittedKey[0]));
         } else {
             return Optional.ofNullable(properties.get(key));
         }
@@ -81,11 +81,11 @@ public class Configuration {
                         Yaml yaml = new Yaml();
                         Map<String, Object> yamlProperties = yaml.load(Files.newBufferedReader(file));
                         if (yamlProperties.containsKey(iesiKeyword)) {
-                            update(properties, (Map<String, Object>) yamlProperties.get(iesiKeyword), "");
+                            log.debug("loading configurations from " + file.getFileName());
+                            update(properties, (Map<String, Object>) yamlProperties.get(iesiKeyword), iesiKeyword);
                         } else {
                             log.warn("configuration " + file.toString() + " does not contain any iesi properties");
                         }
-                        // update(properties, yaml.load(Files.newBufferedReader(file)));
                     }
                     return FileVisitResult.CONTINUE;
                 }
@@ -108,7 +108,7 @@ public class Configuration {
         for (String resourceName : getApplicationResourceFiles()) {
             Map<String, Object> yamlProperties = yaml.load(getClass().getClassLoader().getResourceAsStream(resourceName));
             if (yamlProperties.containsKey(iesiKeyword)) {
-                update(properties, (Map<String, Object>) yamlProperties.get(iesiKeyword), "");
+                update(properties, (Map<String, Object>) yamlProperties.get(iesiKeyword), iesiKeyword);
             } else {
                 log.warn("configuration " + resourceName + " on classpath does not contain any iesi properties");
             }
@@ -117,11 +117,14 @@ public class Configuration {
 
     @SuppressWarnings("unchecked")
     private void update(Map<String, Object> original, Map<String, Object> update, String initialKey) {
+        log.trace("updating " + original + " with " + update + " with initial key " + initialKey);
         for (Map.Entry<String, Object> entry : update.entrySet()) {
-            if (original.containsKey(entry.getKey())) {
+            if (original.containsKey(entry.getKey()) && original.get(entry.getKey()) == null) {
+                original.put(entry.getKey(), entry.getValue());
+            } else if (original.containsKey(entry.getKey())) {
                 if (original.get(entry.getKey()).getClass().equals(entry.getValue().getClass())) {
                     if (entry.getValue() instanceof Map) {
-                        update((Map<String, Object>) original.get(entry.getKey()), (Map<String, Object>) entry.getValue(), entry.getKey()+".");
+                        update((Map<String, Object>) original.get(entry.getKey()), (Map<String, Object>) entry.getValue(), initialKey + "." + entry.getKey());
                     } else {
                         original.put(entry.getKey(), entry.getValue());
                     }

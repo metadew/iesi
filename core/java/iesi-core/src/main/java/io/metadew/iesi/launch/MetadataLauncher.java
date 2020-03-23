@@ -2,7 +2,6 @@ package io.metadew.iesi.launch;
 
 import io.metadew.iesi.framework.configuration.Configuration;
 import io.metadew.iesi.framework.configuration.metadata.repository.MetadataRepositoryConfiguration;
-import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
 import io.metadew.iesi.framework.execution.FrameworkRuntime;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.operation.MetadataRepositoryOperation;
@@ -16,24 +15,13 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * The metadata launcher is entry point to launch all configuration management
- * operations.
- *
- * @author peter.billen
- */
 public class MetadataLauncher {
 
     public static void main(String[] args) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, ParseException, SQLException {
         ThreadContext.clearAll();
 
         Options options = new Options().addOption(new Option("help", "print this message"))
-                .addOption(Option.builder("ini").hasArg().desc("define the initialization file").build())
                 .addOption(Option.builder("type").hasArg().desc("define the type of metadata repository").required().build())
-                .addOption(Option.builder("config").hasArg().desc("define the metadata repository config").build())
-                .addOption(Option.builder("backup").desc("create a backup of the entire metadata repository").build())
-                .addOption(Option.builder("restore").desc("restore a backup of the metadata repository").build())
-                .addOption(Option.builder("path").hasArg().desc("path to be used to for backup or restore").build())
                 .addOption(Option.builder("drop").desc("drop all metadata tables in the metadata repository").build())
                 .addOption(Option.builder("create").desc("create all metadata tables in the metadata repository").build())
                 .addOption(Option.builder("clean").desc("clean all tables in the metadata repository").build())
@@ -65,13 +53,6 @@ public class MetadataLauncher {
         // Define the exit behaviour
         boolean exit = !line.hasOption("exit") || line.getOptionValue("exit").equalsIgnoreCase("y") || line.getOptionValue("exit").equalsIgnoreCase("true");
 
-        // Create the framework instance
-        FrameworkInitializationFile frameworkInitializationFile = new FrameworkInitializationFile();
-        if (line.hasOption("ini")) {
-            System.out.println("Option -ini (ini) value = " + line.getOptionValue("ini"));
-            frameworkInitializationFile.setName(line.getOptionValue("ini"));
-        }
-
         System.out.println("initialize framework");
         Configuration.getInstance();
         // FrameworkInstance.getInstance().init(frameworkInitializationFile, new FrameworkExecutionContext(new Context("metadata", "")));
@@ -82,49 +63,36 @@ public class MetadataLauncher {
         System.out.println("Option -type (type) value = " + line.getOptionValue("type"));
         String type = line.getOptionValue("type");
 
-
-        if (line.hasOption("config")) {
-            String config = line.getOptionValue("config");
-
-            //ConfigFile configFile = FrameworkControl.getInstance().getConfigFile("keyvalue",
-            //        FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("conf") + File.separator + config);
-
-            //metadataRepositories = new MetadataRepositoryConfiguration(configFile).toMetadataRepositories();
-
-            // metadataRepositories.addAll(metadataRepositories);
-
-        } else {
-            switch (type) {
-                case "connectivity":
-                    metadataRepositories.add(MetadataRepositoryConfiguration.getInstance().getConnectivityMetadataRepository());
-                    break;
-                case "control":
-                    metadataRepositories.add(MetadataRepositoryConfiguration.getInstance().getControlMetadataRepository());
-                    break;
-                case "design":
-                    metadataRepositories.add(MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository());
-                    break;
-                case "result":
-                    metadataRepositories.add(MetadataRepositoryConfiguration.getInstance().getResultMetadataRepository());
-                    break;
-                case "trace":
-                    metadataRepositories.add(MetadataRepositoryConfiguration.getInstance().getTraceMetadataRepository());
-                    break;
-                case "execution":
-                    metadataRepositories.add(MetadataRepositoryConfiguration.getInstance().getExecutionServerMetadataRepository());
-                    break;
-                case "general":
-                    metadataRepositories.add(MetadataRepositoryConfiguration.getInstance().getConnectivityMetadataRepository());
-                    metadataRepositories.add(MetadataRepositoryConfiguration.getInstance().getControlMetadataRepository());
-                    metadataRepositories.add(MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository());
-                    metadataRepositories.add(MetadataRepositoryConfiguration.getInstance().getResultMetadataRepository());
-                    metadataRepositories.add(MetadataRepositoryConfiguration.getInstance().getTraceMetadataRepository());
-                    metadataRepositories.add(MetadataRepositoryConfiguration.getInstance().getExecutionServerMetadataRepository());
-                    break;
-                default:
-                    System.out.println("Unknown Option -type (type) = " + type);
-                    endLauncher(1, true);
-            }
+        switch (type) {
+            case "connectivity":
+                metadataRepositories.add(MetadataRepositoryConfiguration.getInstance().getConnectivityMetadataRepository());
+                break;
+            case "control":
+                metadataRepositories.add(MetadataRepositoryConfiguration.getInstance().getControlMetadataRepository());
+                break;
+            case "design":
+                metadataRepositories.add(MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository());
+                break;
+            case "result":
+                metadataRepositories.add(MetadataRepositoryConfiguration.getInstance().getResultMetadataRepository());
+                break;
+            case "trace":
+                metadataRepositories.add(MetadataRepositoryConfiguration.getInstance().getTraceMetadataRepository());
+                break;
+            case "execution":
+                metadataRepositories.add(MetadataRepositoryConfiguration.getInstance().getExecutionServerMetadataRepository());
+                break;
+            case "general":
+                metadataRepositories.add(MetadataRepositoryConfiguration.getInstance().getConnectivityMetadataRepository());
+                metadataRepositories.add(MetadataRepositoryConfiguration.getInstance().getControlMetadataRepository());
+                metadataRepositories.add(MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository());
+                metadataRepositories.add(MetadataRepositoryConfiguration.getInstance().getResultMetadataRepository());
+                metadataRepositories.add(MetadataRepositoryConfiguration.getInstance().getTraceMetadataRepository());
+                metadataRepositories.add(MetadataRepositoryConfiguration.getInstance().getExecutionServerMetadataRepository());
+                break;
+            default:
+                System.out.println("Unknown Option -type (type) = " + type);
+                endLauncher(1, true);
         }
 
         // Drop

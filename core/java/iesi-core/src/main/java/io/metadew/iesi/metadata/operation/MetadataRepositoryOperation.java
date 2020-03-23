@@ -123,8 +123,10 @@ public class MetadataRepositoryOperation {
             }
         });
 
-        for (final File file : files) {
-            this.loadConfigurationFile(metadataRepositories, file, inputFolder, workFolder, archiveFolder, errorFolder);
+        if (files != null) {
+            for (final File file : files) {
+                this.loadConfigurationFile(metadataRepositories, file, inputFolder, workFolder, archiveFolder, errorFolder);
+            }
         }
     }
 

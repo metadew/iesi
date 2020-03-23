@@ -153,7 +153,6 @@ public class FrameworkCrypto {
             replaceValue = this.decrypt(variable_char + midBit + variable_char_close);
             if (replaceValue != null) {
                 input = input.replace(variable_char + midBit + variable_char_close, replaceValue);
-                FrameworkLog.getInstance().getEncryptionRedactionList().add(replaceValue);
             }
             temp = temp.substring(closePos + 1, temp.length());
 

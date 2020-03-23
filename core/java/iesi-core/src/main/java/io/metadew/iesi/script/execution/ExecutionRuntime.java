@@ -20,11 +20,16 @@ import io.metadew.iesi.script.execution.instruction.lookup.LookupInstructionRepo
 import io.metadew.iesi.script.execution.instruction.variable.VariableInstruction;
 import io.metadew.iesi.script.execution.instruction.variable.VariableInstructionRepository;
 import io.metadew.iesi.script.execution.instruction.variable.VariableInstructionTools;
-import io.metadew.iesi.script.operation.*;
+import io.metadew.iesi.script.operation.ActionParameterOperation;
+import io.metadew.iesi.script.operation.ImpersonationOperation;
+import io.metadew.iesi.script.operation.IterationOperation;
+import io.metadew.iesi.script.operation.StageOperation;
+import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -40,6 +45,7 @@ public class ExecutionRuntime {
 
     private RuntimeVariableConfiguration runtimeVariableConfiguration;
     private IterationVariableConfiguration iterationVariableConfiguration;
+    @Getter
     private String runId;
     private String runCacheFolderName;
 
@@ -566,7 +572,6 @@ public class ExecutionRuntime {
     public HashMap<String, VariableInstruction> getVariableInstructions() {
         return variableInstructions;
     }
-
 
     public RuntimeVariableConfiguration getRuntimeVariableConfiguration() {
         return runtimeVariableConfiguration;

@@ -1,10 +1,7 @@
 package io.metadew.iesi.launch;
 
 import io.metadew.iesi.framework.configuration.Configuration;
-import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
-import io.metadew.iesi.framework.execution.FrameworkExecutionContext;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
-import io.metadew.iesi.metadata.definition.Context;
 import io.metadew.iesi.runtime.ExecutionRequestListener;
 import org.apache.commons.cli.*;
 import org.apache.logging.log4j.ThreadContext;
@@ -15,11 +12,7 @@ public class ServerLauncher {
         ThreadContext.clearAll();
         Options options = new Options()
                 .addOption(Option.builder("help")
-                        .desc("print this message").build())
-                .addOption(Option.builder("ini")
-                        .hasArg()
-                        .desc("define the initialization file")
-                        .build());
+                        .desc("print this message").build());
 
         CommandLineParser parser = new DefaultParser();
         CommandLine cmd = parser.parse(options, args);
@@ -33,13 +26,6 @@ public class ServerLauncher {
 
         Configuration.getInstance();
 
-        if (cmd.hasOption("ini")) {
-            FrameworkInstance.getInstance().init(new FrameworkInitializationFile(cmd.getOptionValue("ini")),
-                    new FrameworkExecutionContext(new Context("server", "")));
-        } else {
-            FrameworkInstance.getInstance().init(new FrameworkInitializationFile(),
-                    new FrameworkExecutionContext(new Context("server", "")));
-        }
         FrameworkInstance frameworkInstance = FrameworkInstance.getInstance();
         ExecutionRequestListener executionRequestListener= new ExecutionRequestListener();
         final Thread mainThread = Thread.currentThread();

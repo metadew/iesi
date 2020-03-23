@@ -7,7 +7,6 @@ import io.metadew.iesi.connection.tools.sql.SQLDataTransfer;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.dataset.Dataset;
 import io.metadew.iesi.datatypes.text.Text;
-import io.metadew.iesi.framework.execution.FrameworkExecution;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.connection.Connection;
@@ -46,7 +45,7 @@ public class SqlExecuteProcedure {
 
     }
 
-    public SqlExecuteProcedure(FrameworkExecution frameworkExecution, ExecutionControl executionControl,
+    public SqlExecuteProcedure(ExecutionControl executionControl,
                                ScriptExecution scriptExecution, ActionExecution actionExecution) {
         this.init(executionControl, scriptExecution, actionExecution);
     }

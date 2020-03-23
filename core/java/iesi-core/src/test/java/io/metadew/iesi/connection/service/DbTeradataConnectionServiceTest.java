@@ -8,36 +8,50 @@ import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionParameterKey;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
+@RunWith(PowerMockRunner.class)
+@PrepareForTest( { DatabaseConnectionHandlerImpl.class })
+@PowerMockIgnore({"javax.management.*","javax.script.*"})
+public class DbTeradataConnectionServiceTest   {
+    @Mock
+    private DatabaseConnectionHandlerImpl databaseConnectionHandler;
 
-class DbTeradataConnectionServiceTest {
+    @Before
+    public void setup(){
+        MockitoAnnotations.initMocks(this);
+    }
     @Test
-    void getDatabaseTest(){
-        DatabaseConnectionHandlerImpl databaseConnectionHandler= DatabaseConnectionHandlerImpl.getInstance();
-        DatabaseConnectionHandlerImpl spyList = Mockito.spy(databaseConnectionHandler);
+    public void getDatabaseTest (){
+        mockStatic(DatabaseConnectionHandlerImpl.class);
+        DatabaseConnectionHandlerImpl mock = mock(DatabaseConnectionHandlerImpl.class);
+        PowerMockito.when(DatabaseConnectionHandlerImpl.getInstance()).thenReturn(mock);
 
-        Mockito.doReturn(null).when(spyList).getConnection(any());
-
-        Connection connection = new Connection(new ConnectionKey("test", "tst"),
+        Connection connection = new Connection(new ConnectionKey("value", "value"),
                 "jdbc:teradata://",
                 "description",
-                Stream.of(new ConnectionParameter(new ConnectionParameterKey("test", "tst", "host"), "value"),
-                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "database"), "value"),
-                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "user"), "value"),
-                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "password"), "value"))
+                Stream.of(new ConnectionParameter(new ConnectionParameterKey("value", "value", "host"), "value"),
+                        new ConnectionParameter(new ConnectionParameterKey("value", "value", "port"), "0"),
+                        new ConnectionParameter(new ConnectionParameterKey("value", "value", "database"), "value"),
+                        new ConnectionParameter(new ConnectionParameterKey("value", "value", "user"), "value"),
+                        new ConnectionParameter(new ConnectionParameterKey("value", "value", "password"), "value"))
                         .collect(Collectors.toList()));
      TeradataDatabase teradataDatabaseExpected = new TeradataDatabase(new TeradataDatabaseConnection("value", 0, "value", "value", "value"));
-        assertEquals(teradataDatabaseExpected, DbTeradataConnectionService.getInstance().getDatabase(connection));
+        Assert.assertEquals(teradataDatabaseExpected, DbTeradataConnectionService.getInstance().getDatabase(connection));
     }
-
-
-
 }

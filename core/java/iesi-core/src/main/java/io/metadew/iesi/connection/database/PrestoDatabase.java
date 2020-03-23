@@ -14,5 +14,4 @@ public class PrestoDatabase extends SchemaDatabase {
     public PrestoDatabase(PrestoDatabaseConnection databaseConnection, String schema) {
         super(databaseConnection, schema);
     }
-
 }

@@ -10,4 +10,19 @@ public class Book extends GenerationComponentExecution {
         super(execution);
     }
 
+    public String title() {
+        return fetch("book.title");
+    }
+
+    public String author() {
+        return parse("book.title");
+    }
+
+    public String publisher() {
+        return fetch("book.publisher");
+    }
+
+    public String genre() {
+        return fetch("book.genre");
+    }
 }

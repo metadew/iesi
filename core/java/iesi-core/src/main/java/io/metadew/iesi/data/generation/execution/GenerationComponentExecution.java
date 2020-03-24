@@ -25,6 +25,18 @@ public abstract class GenerationComponentExecution {
         return this.getGenerationTools().getStringTools().camelToSnake(this.getClass().getSimpleName());
     }
 
+    protected <K extends GenerationComponentExecution> K getComponent(Class<K> klass) {
+        try {
+            return klass.getConstructor(GenerationDataExecution.class).newInstance(execution);
+        } catch (InstantiationException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            throw new IllegalArgumentException("Unsupported component '" + klass + "'", e);
+        }
+    }
+
+    protected String getSeparator() {
+        return (String) execution.get("separator");
+    }
+
     protected String fetch(String key) {
         String[] keys = key.split("\\.");
 

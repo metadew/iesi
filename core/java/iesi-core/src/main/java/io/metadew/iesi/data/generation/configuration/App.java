@@ -9,4 +9,15 @@ public class App extends GenerationComponentExecution {
         super(execution);
     }
 
+    public String name() {
+        return fetch("app.name");
+    }
+
+    public String version() {
+        return numerify(fetch("app.version"));
+    }
+
+    public String author() {
+        return parse(fetch("app.author"));
+    }
 }

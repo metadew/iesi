@@ -3,8 +3,8 @@ package io.metadew.iesi.script.operation;
 import io.metadew.iesi.connection.database.connection.sqlite.SqliteDatabaseConnection;
 import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.connection.tools.FolderTools;
-import io.metadew.iesi.framework.configuration.framework.FrameworkConfiguration;
-import io.metadew.iesi.framework.definition.FrameworkFolder;
+import io.metadew.iesi.common.configuration.framework.FrameworkConfiguration;
+import io.metadew.iesi.common.configuration.framework.FrameworkFolder;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;

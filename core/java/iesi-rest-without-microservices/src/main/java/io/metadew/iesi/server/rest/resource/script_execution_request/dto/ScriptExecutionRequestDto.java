@@ -6,7 +6,6 @@ import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionR
 import io.metadew.iesi.server.rest.resource.Dto;
 import lombok.*;
 
-import java.util.List;
 import java.util.Map;
 
 @NoArgsConstructor
@@ -18,7 +17,6 @@ public class ScriptExecutionRequestDto extends Dto {
 
     private String scriptExecutionRequestId;
     private String executionRequestId;
-    private List<Long> actionSelect;
     private boolean exit;
     private String impersonation;
     private String environment;
@@ -28,13 +26,12 @@ public class ScriptExecutionRequestDto extends Dto {
     private String scriptName;
     private Long scriptVersion;
 
-    public ScriptExecutionRequestDto(String scriptExecutionRequestId, String executionRequestId, List<Long> actionSelect, boolean exit,
+    public ScriptExecutionRequestDto(String scriptExecutionRequestId, String executionRequestId, boolean exit,
                                      String impersonation, String environment, Map<String, String> impersonations,
                                      Map<String, String> parameters, ScriptExecutionRequestStatus scriptExecutionRequestStatus,
                                      String scriptName, Long scriptVersion) {
         this.scriptExecutionRequestId = scriptExecutionRequestId;
         this.executionRequestId = executionRequestId;
-        this.actionSelect = actionSelect;
         this.exit = exit;
         this.impersonation = impersonation;
         this.environment = environment;
@@ -46,9 +43,8 @@ public class ScriptExecutionRequestDto extends Dto {
     }
 
     public ScriptExecutionRequest convertToEntity() {
-        // ScriptExecutionRequestKey scriptExecutionRequestKey, ExecutionRequestKey executionRequestKey, String scriptName, Long scriptVersion, String environment, List<Long> actionSelect, boolean exit, String impersonation, Map<String, String> impersonations, Map<String, String> parameters, ScriptExecutionRequestStatus scriptExecutionRequestStatus
-        return new ScriptNameExecutionRequest(new ScriptExecutionRequestKey(scriptExecutionRequestId), new ExecutionRequestKey(executionRequestId),
-                scriptName, scriptVersion, environment, actionSelect, exit, impersonation, impersonations, parameters, scriptExecutionRequestStatus);
+        return new ScriptNameExecutionRequest(new ScriptExecutionRequestKey(scriptExecutionRequestId),
+                new ExecutionRequestKey(executionRequestId), scriptName, scriptVersion, environment, exit, impersonation, impersonations, parameters, scriptExecutionRequestStatus);
     }
 
     public ScriptExecutionRequest convertToNewEntity(String executionRequestId) throws ScriptExecutionRequestBuilderException {

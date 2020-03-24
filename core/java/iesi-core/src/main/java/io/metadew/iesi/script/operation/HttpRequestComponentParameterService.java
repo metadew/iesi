@@ -2,7 +2,7 @@ package io.metadew.iesi.script.operation;
 
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
-import io.metadew.iesi.framework.crypto.FrameworkCrypto;
+import io.metadew.iesi.common.crypto.FrameworkCrypto;
 import io.metadew.iesi.metadata.definition.component.ComponentAttribute;
 import io.metadew.iesi.metadata.definition.component.ComponentParameter;
 import io.metadew.iesi.script.execution.ActionExecution;

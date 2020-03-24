@@ -95,7 +95,7 @@ public class ScriptController {
                     .scope("script")
                     .name(scriptExecutionDto.getScript())
                     .build();
-            ScriptExecutionRequest scriptExecutionRequest = new ScriptExecutionRequestBuilder("script")
+            ScriptExecutionRequest scriptExecutionRequest = new ScriptExecutionRequestBuilder()
                     .scriptName(scriptExecutionDto.getScript())
                     .scriptVersion(scriptExecutionDto.getVersion())
                     .environment(scriptExecutionDto.getEnvironment())

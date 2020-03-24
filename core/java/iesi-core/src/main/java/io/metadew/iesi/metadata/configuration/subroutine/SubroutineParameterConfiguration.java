@@ -1,7 +1,7 @@
 package io.metadew.iesi.metadata.configuration.subroutine;
 
 import io.metadew.iesi.connection.tools.SQLTools;
-import io.metadew.iesi.framework.configuration.metadata.repository.MetadataRepositoryConfiguration;
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.metadata.definition.subroutine.SubroutineParameter;
 
 import javax.sql.rowset.CachedRowSet;

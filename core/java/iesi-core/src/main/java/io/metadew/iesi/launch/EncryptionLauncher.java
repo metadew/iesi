@@ -1,7 +1,7 @@
 package io.metadew.iesi.launch;
 
-import io.metadew.iesi.framework.configuration.Configuration;
-import io.metadew.iesi.framework.crypto.FrameworkCrypto;
+import io.metadew.iesi.common.configuration.Configuration;
+import io.metadew.iesi.common.crypto.FrameworkCrypto;
 
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;

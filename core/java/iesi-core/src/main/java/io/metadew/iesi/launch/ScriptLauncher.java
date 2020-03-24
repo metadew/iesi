@@ -1,8 +1,8 @@
 package io.metadew.iesi.launch;
 
-import io.metadew.iesi.framework.configuration.Configuration;
-import io.metadew.iesi.framework.configuration.metadata.MetadataConfiguration;
-import io.metadew.iesi.framework.instance.FrameworkInstance;
+import io.metadew.iesi.common.configuration.Configuration;
+import io.metadew.iesi.common.configuration.metadata.MetadataConfiguration;
+import io.metadew.iesi.common.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.execution.ExecutionRequestConfiguration;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequestBuilder;

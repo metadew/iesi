@@ -1,6 +1,6 @@
 package io.metadew.iesi.metadata.repository;
 
-import io.metadew.iesi.framework.configuration.metadata.tables.MetadataTablesConfiguration;
+import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
 import io.metadew.iesi.metadata.definition.DataObject;
 import io.metadew.iesi.metadata.definition.MetadataTable;
 import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;

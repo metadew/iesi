@@ -1,7 +1,7 @@
 package io.metadew.iesi.runtime.script;
 
 import io.metadew.iesi.connection.tools.FileTools;
-import io.metadew.iesi.framework.configuration.ScriptRunStatus;
+import io.metadew.iesi.common.configuration.ScriptRunStatus;
 import io.metadew.iesi.metadata.configuration.execution.script.ScriptExecutionConfiguration;
 import io.metadew.iesi.metadata.configuration.script.result.ScriptResultConfiguration;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptFileExecutionRequest;

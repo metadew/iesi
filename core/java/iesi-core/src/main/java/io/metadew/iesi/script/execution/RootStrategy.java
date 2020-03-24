@@ -1,8 +1,7 @@
 package io.metadew.iesi.script.execution;
 
 import io.metadew.iesi.connection.tools.SQLTools;
-import io.metadew.iesi.framework.configuration.metadata.repository.MetadataRepositoryConfiguration;
-import io.metadew.iesi.framework.execution.IESIMessage;
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.script.operation.ActionSelectOperation;
 import org.apache.logging.log4j.LogManager;
@@ -29,7 +28,7 @@ public class RootStrategy implements RootingStrategy {
     @Override
     public boolean executionAllowed(ActionSelectOperation actionSelectOperation, Action action) {
         boolean actionAllowed = actionSelectOperation.getExecutionStatus(action);
-        LOGGER.trace(new IESIMessage(MessageFormat.format("Execution of action ''{0}'' is {1}allowed", action.getName(), (actionAllowed ? "":"not "))));
+        LOGGER.trace(MessageFormat.format("Execution of action ''{0}'' is {1}allowed", action.getName(), (actionAllowed ? "":"not ")));
         return actionSelectOperation.getExecutionStatus(action);
     }
 

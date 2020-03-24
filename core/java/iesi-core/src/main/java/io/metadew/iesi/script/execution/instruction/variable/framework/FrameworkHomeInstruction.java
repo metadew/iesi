@@ -1,6 +1,6 @@
 package io.metadew.iesi.script.execution.instruction.variable.framework;
 
-import io.metadew.iesi.framework.configuration.Configuration;
+import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.instruction.variable.VariableInstruction;
 import org.apache.commons.io.FilenameUtils;

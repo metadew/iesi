@@ -3,11 +3,10 @@ package io.metadew.iesi.script.execution;
 import io.metadew.iesi.common.text.TextTools;
 import io.metadew.iesi.connection.elasticsearch.filebeat.DelimitedFileBeatElasticSearchConnection;
 import io.metadew.iesi.connection.tools.SQLTools;
-import io.metadew.iesi.framework.configuration.Configuration;
-import io.metadew.iesi.framework.configuration.ScriptRunStatus;
-import io.metadew.iesi.framework.configuration.metadata.repository.MetadataRepositoryConfiguration;
-import io.metadew.iesi.framework.crypto.FrameworkCrypto;
-import io.metadew.iesi.framework.execution.IESIMessage;
+import io.metadew.iesi.common.configuration.Configuration;
+import io.metadew.iesi.common.configuration.ScriptRunStatus;
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
+import io.metadew.iesi.common.crypto.FrameworkCrypto;
 import io.metadew.iesi.metadata.configuration.action.result.ActionResultConfiguration;
 import io.metadew.iesi.metadata.configuration.action.result.ActionResultOutputConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
@@ -17,7 +16,6 @@ import io.metadew.iesi.metadata.definition.action.result.ActionResult;
 import io.metadew.iesi.metadata.definition.action.result.ActionResultOutput;
 import io.metadew.iesi.metadata.definition.action.result.key.ActionResultKey;
 import io.metadew.iesi.metadata.definition.action.result.key.ActionResultOutputKey;
-import io.metadew.iesi.metadata.definition.script.ScriptLog;
 import io.metadew.iesi.metadata.definition.script.result.ScriptResult;
 import io.metadew.iesi.metadata.definition.script.result.ScriptResultElasticSearch;
 import io.metadew.iesi.metadata.definition.script.result.ScriptResultOutput;
@@ -38,9 +36,7 @@ public class ExecutionControl {
     private final DelimitedFileBeatElasticSearchConnection elasticSearchConnection;
     private final ActionDesignTraceService actionDesignTraceService;
     private ExecutionRuntime executionRuntime;
-    private ExecutionLog executionLog;
     private ExecutionTrace executionTrace;
-    private ScriptLog scriptLog;
     private String runId;
     private String envName;
     private boolean actionErrorStop = false;
@@ -58,7 +54,6 @@ public class ExecutionControl {
             InvocationTargetException, InstantiationException, IllegalAccessException, SQLException {
         this.scriptDesignTraceService = new ScriptDesignTraceService();
         this.actionDesignTraceService = new ActionDesignTraceService();
-        this.executionLog = new ExecutionLog();
         this.executionTrace = new ExecutionTrace();
         initializeRunId();
         initializeExecutionRuntime(runId);
@@ -109,10 +104,6 @@ public class ExecutionControl {
         );
         ScriptResultConfiguration.getInstance().insert(scriptResult);
 
-
-        this.scriptLog = new ScriptLog(runId, scriptExecution.getProcessId(), parentProcessId, scriptExecution.getScript().getId(),
-                scriptExecution.getScript().getVersion().getNumber(), envName, "ACTIVE", LocalDateTime.now(), null);
-        this.executionLog.setLog(scriptLog);
 
         // Trace the design of the script
         scriptDesignTraceService.trace(scriptExecution);
@@ -185,9 +176,6 @@ public class ExecutionControl {
         // Only is the script is a root script, this will be cleaned
         // In other scripts, the processing variables are still valid
 
-        scriptLog.setEnd(LocalDateTime.now());
-        scriptLog.setStatus(status);
-        executionLog.setLog(this.getScriptLog());
         elasticSearchConnection.ingest(new ScriptResultElasticSearch(scriptResult));
 
         return status;
@@ -292,9 +280,6 @@ public class ExecutionControl {
         LOGGER.log(level, SCRIPTMARKER, message);
     }
 
-    public void logMessage(IESIMessage message, Level level) {
-        LOGGER.log(level, SCRIPTMARKER, message);
-    }
 
     public void endExecution() {
         System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
@@ -309,7 +294,7 @@ public class ExecutionControl {
     public void initializeRunId() {
         this.runId = UUID.randomUUID().toString();
         ThreadContext.put("runId", runId);
-        logMessage(new IESIMessage("exec.runid=" + runId), Level.INFO);
+        LOGGER.info("exec.runid=" + runId);
     }
 
     public String getEnvName() {
@@ -334,10 +319,6 @@ public class ExecutionControl {
 
     public Long getLastProcessId() {
         return lastProcessId;
-    }
-
-    public ScriptLog getScriptLog() {
-        return scriptLog;
     }
 
     public void setScriptExit(boolean scriptExit) {

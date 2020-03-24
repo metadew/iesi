@@ -9,7 +9,6 @@ import java.util.*;
 public abstract class ScriptExecutionRequest extends Metadata<ScriptExecutionRequestKey> {
 
     private ExecutionRequestKey executionRequestKey;
-    private List<Long> actionSelect;
     private boolean exit;
     private String impersonation;
     private String environment;
@@ -21,7 +20,6 @@ public abstract class ScriptExecutionRequest extends Metadata<ScriptExecutionReq
         super(scriptExecutionRequestKey);
         this.environment = environment;
         this.scriptExecutionRequestStatus = scriptExecutionRequestStatus;
-        this.actionSelect = new ArrayList<>();
         this.parameters = new HashMap<>();
         this.impersonations = new HashMap<>();
         this.exit = true;
@@ -29,12 +27,11 @@ public abstract class ScriptExecutionRequest extends Metadata<ScriptExecutionReq
     }
 
     public ScriptExecutionRequest(ScriptExecutionRequestKey scriptExecutionRequestKey, ExecutionRequestKey executionRequestKey, String environment,
-                                  List<Long> actionSelect, boolean exit, String impersonation, Map<String, String> impersonations,
+                                  boolean exit, String impersonation, Map<String, String> impersonations,
                                   Map<String, String> parameters, ScriptExecutionRequestStatus scriptExecutionRequestStatus) {
         super(scriptExecutionRequestKey);
         this.executionRequestKey = executionRequestKey;
         this.environment = environment;
-        this.actionSelect = actionSelect;
         this.exit = exit;
         this.impersonation = impersonation;
         this.impersonations = impersonations;

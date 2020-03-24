@@ -1,9 +1,9 @@
 package io.metadew.iesi.launch;
 
-import io.metadew.iesi.framework.configuration.Configuration;
-import io.metadew.iesi.framework.configuration.metadata.repository.MetadataRepositoryConfiguration;
-import io.metadew.iesi.framework.execution.FrameworkRuntime;
-import io.metadew.iesi.framework.instance.FrameworkInstance;
+import io.metadew.iesi.common.configuration.Configuration;
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
+import io.metadew.iesi.common.FrameworkRuntime;
+import io.metadew.iesi.common.FrameworkInstance;
 import io.metadew.iesi.metadata.operation.MetadataRepositoryOperation;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.commons.cli.*;

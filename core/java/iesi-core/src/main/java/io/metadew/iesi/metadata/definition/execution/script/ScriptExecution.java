@@ -1,6 +1,6 @@
 package io.metadew.iesi.metadata.definition.execution.script;
 
-import io.metadew.iesi.framework.configuration.ScriptRunStatus;
+import io.metadew.iesi.common.configuration.ScriptRunStatus;
 import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionKey;
 import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionRequestKey;

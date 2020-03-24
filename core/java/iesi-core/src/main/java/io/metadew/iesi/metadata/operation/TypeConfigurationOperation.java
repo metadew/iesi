@@ -1,7 +1,7 @@
 package io.metadew.iesi.metadata.operation;
 
 import io.metadew.iesi.connection.tools.FileTools;
-import io.metadew.iesi.framework.configuration.framework.FrameworkConfiguration;
+import io.metadew.iesi.common.configuration.framework.FrameworkConfiguration;
 
 import java.io.File;
 import java.text.MessageFormat;

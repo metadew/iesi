@@ -18,8 +18,8 @@ public class ScriptNameExecutionRequest extends ScriptExecutionRequest {
         this.scriptVersion = scriptVersion;
     }
 
-    public ScriptNameExecutionRequest(ScriptExecutionRequestKey scriptExecutionRequestKey, ExecutionRequestKey executionRequestKey, String scriptName, Long scriptVersion, String environment, List<Long> actionSelect, boolean exit, String impersonation, Map<String, String> impersonations, Map<String, String> parameters, ScriptExecutionRequestStatus scriptExecutionRequestStatus) {
-        super(scriptExecutionRequestKey, executionRequestKey, environment, actionSelect, exit, impersonation, impersonations, parameters, scriptExecutionRequestStatus);
+    public ScriptNameExecutionRequest(ScriptExecutionRequestKey scriptExecutionRequestKey, ExecutionRequestKey executionRequestKey, String scriptName, Long scriptVersion, String environment, boolean exit, String impersonation, Map<String, String> impersonations, Map<String, String> parameters, ScriptExecutionRequestStatus scriptExecutionRequestStatus) {
+        super(scriptExecutionRequestKey, executionRequestKey, environment, exit, impersonation, impersonations, parameters, scriptExecutionRequestStatus);
         this.scriptName = scriptName;
         this.scriptVersion = scriptVersion;
     }

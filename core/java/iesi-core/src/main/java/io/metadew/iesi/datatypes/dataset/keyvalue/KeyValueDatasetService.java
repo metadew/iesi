@@ -18,7 +18,7 @@ import io.metadew.iesi.datatypes.dataset.DatasetService;
 import io.metadew.iesi.datatypes.dataset.metadata.DatasetMetadata;
 import io.metadew.iesi.datatypes.dataset.metadata.DatasetMetadataService;
 import io.metadew.iesi.datatypes.text.Text;
-import io.metadew.iesi.framework.configuration.framework.FrameworkConfiguration;
+import io.metadew.iesi.common.configuration.framework.FrameworkConfiguration;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 import lombok.Synchronized;
 import lombok.extern.log4j.Log4j2;

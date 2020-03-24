@@ -18,7 +18,7 @@ public class ScriptFileExecutionRequest extends ScriptExecutionRequest {
     public ScriptFileExecutionRequest(ScriptExecutionRequestKey scriptExecutionRequestKey, ExecutionRequestKey executionRequestKey, String fileName, String environment,
                                       List<Long> actionSelect, boolean exit, String impersonation, Map<String, String> impersonations,
                                       Map<String, String> parameters, ScriptExecutionRequestStatus scriptExecutionRequestStatus) {
-        super(scriptExecutionRequestKey, executionRequestKey, environment, actionSelect, exit, impersonation, impersonations, parameters, scriptExecutionRequestStatus);
+        super(scriptExecutionRequestKey, executionRequestKey, environment, exit, impersonation, impersonations, parameters, scriptExecutionRequestStatus);
         this.fileName = fileName;
     }
 

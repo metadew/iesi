@@ -1,7 +1,7 @@
 package io.metadew.iesi.runtime;
 
-import io.metadew.iesi.framework.configuration.Configuration;
-import io.metadew.iesi.framework.configuration.framework.FrameworkConfiguration;
+import io.metadew.iesi.common.configuration.Configuration;
+import io.metadew.iesi.common.configuration.framework.FrameworkConfiguration;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

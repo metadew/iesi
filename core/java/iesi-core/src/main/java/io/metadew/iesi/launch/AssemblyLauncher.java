@@ -1,9 +1,9 @@
 package io.metadew.iesi.launch;
 
 import io.metadew.iesi.assembly.execution.AssemblyExecution;
-import io.metadew.iesi.framework.configuration.Configuration;
-import io.metadew.iesi.framework.crypto.FrameworkCrypto;
-import io.metadew.iesi.framework.execution.FrameworkControl;
+import io.metadew.iesi.common.configuration.Configuration;
+import io.metadew.iesi.common.crypto.FrameworkCrypto;
+import io.metadew.iesi.common.FrameworkControl;
 import org.apache.commons.cli.*;
 
 import java.io.IOException;

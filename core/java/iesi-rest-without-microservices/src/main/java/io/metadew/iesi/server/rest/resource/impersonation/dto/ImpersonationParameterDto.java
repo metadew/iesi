@@ -2,6 +2,7 @@ package io.metadew.iesi.server.rest.resource.impersonation.dto;
 
 
 import io.metadew.iesi.metadata.definition.impersonation.ImpersonationParameter;
+import io.metadew.iesi.metadata.definition.impersonation.key.ImpersonationParameterKey;
 import org.springframework.hateoas.ResourceSupport;
 
 public class ImpersonationParameterDto extends ResourceSupport {
@@ -19,7 +20,7 @@ public class ImpersonationParameterDto extends ResourceSupport {
         this.impersonation = impersonation;
     }
     public ImpersonationParameter convertToEntity(String impersonationName) {
-        return new ImpersonationParameter(impersonationName, connection, impersonation, description);
+        return new ImpersonationParameter(new ImpersonationParameterKey(impersonationName, impersonation), connection, description);
     }
 
     public String getConnection() {

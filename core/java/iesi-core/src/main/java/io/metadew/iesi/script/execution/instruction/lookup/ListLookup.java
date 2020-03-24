@@ -4,7 +4,6 @@ import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.datatypes.text.Text;
-import io.metadew.iesi.framework.execution.IESIMessage;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -79,7 +78,7 @@ public class ListLookup implements LookupInstruction {
 
         int lookupConceptStartIndex = input.indexOf(lookupConceptStartKey, lookupConceptStopIndex);
         if (input.indexOf(lookupConceptStopKey, lookupConceptStartIndex) == -1) {
-            LOGGER.warn(new IESIMessage(MessageFormat.format("concept.lookup.resolve.error=error during concept lookup resolvement of {0}. Concept lookup instruction not properly closed.", input)));
+            LOGGER.warn(MessageFormat.format("concept.lookup.resolve.error=error during concept lookup resolvement of {0}. Concept lookup instruction not properly closed.", input));
             throw new RuntimeException();
         }
         lookupConceptStopIndex = input.indexOf(lookupConceptStopKey, lookupConceptStartIndex);
@@ -87,7 +86,7 @@ public class ListLookup implements LookupInstruction {
         while (nextLookupConceptStartIndex > 0 && nextLookupConceptStartIndex < lookupConceptStopIndex) {
             lookupConceptStopIndex = input.indexOf(lookupConceptStopKey, lookupConceptStopIndex + lookupConceptStopKey.length());
             if (lookupConceptStopIndex < 0) {
-                LOGGER.warn(new IESIMessage(MessageFormat.format("concept.lookup.resolve.error=error during concept lookup resolvement of {0}. Concept lookup instruction not properly closed.", input)));
+                LOGGER.warn(MessageFormat.format("concept.lookup.resolve.error=error during concept lookup resolvement of {0}. Concept lookup instruction not properly closed.", input));
                 throw new RuntimeException();
             }
             nextLookupConceptStartIndex = input.indexOf(lookupConceptStartKey, nextLookupConceptStartIndex + lookupConceptStartKey.length());

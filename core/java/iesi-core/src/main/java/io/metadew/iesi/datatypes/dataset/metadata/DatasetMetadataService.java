@@ -4,8 +4,7 @@ import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.SqliteDatabase;
 import io.metadew.iesi.connection.database.connection.sqlite.SqliteDatabaseConnection;
 import io.metadew.iesi.connection.tools.SQLTools;
-import io.metadew.iesi.framework.configuration.framework.FrameworkConfiguration;
-import io.metadew.iesi.framework.execution.IESIMessage;
+import io.metadew.iesi.common.configuration.framework.FrameworkConfiguration;
 import lombok.Synchronized;
 import lombok.extern.log4j.Log4j2;
 
@@ -46,12 +45,12 @@ public class DatasetMetadataService {
             if (cachedRowSet.size() == 0) {
                 return Optional.empty();
             } else if (cachedRowSet.size() > 1) {
-                log.trace(new IESIMessage(MessageFormat.format("Found multiple dataset ids ({0}) for labels {1}-{2}. Returning first occurence",
-                        cachedRowSet.size(), datasetMetadata.getDatasetName(), String.join(", ", labels))));
+                log.trace(MessageFormat.format("Found multiple dataset ids ({0}) for labels {1}-{2}. Returning first occurence",
+                        cachedRowSet.size(), datasetMetadata.getDatasetName(), String.join(", ", labels)));
             }
             cachedRowSet.next();
             long datasetInventoryId = cachedRowSet.getLong("DATASET_INV_ID");
-            log.trace(new IESIMessage(MessageFormat.format("Found dataset id {0} for labels {1}-{2}.", Long.toString(datasetInventoryId), datasetMetadata.getDatasetName(), String.join(", ", labels))));
+            log.trace("Found dataset id {0} for labels {1}-{2}.", Long.toString(datasetInventoryId), datasetMetadata.getDatasetName(), String.join(", ", labels));
 
             return Optional.of(datasetInventoryId);
         } catch (SQLException e) {
@@ -69,8 +68,8 @@ public class DatasetMetadataService {
                 throw new RuntimeException(MessageFormat.format("dataset id {0} is does not have an implementation. " +
                         "Please implement this dataset", datasetMetadata.getDatasetName()));
             } else if (cachedRowSetFileTable.size() > 1) {
-                log.warn(new IESIMessage(MessageFormat.format("Found more than implementation for dataset id {0}. " +
-                        "Returning first occurrence.", id)));
+                log.warn(MessageFormat.format("Found more than implementation for dataset id {0}. " +
+                        "Returning first occurrence.", id));
             }
             cachedRowSetFileTable.next();
             Database database = new SqliteDatabase(new SqliteDatabaseConnection(FrameworkConfiguration.getInstance().getMandatoryFrameworkFolder("data").getAbsolutePath() + File.separator + "datasets"
@@ -93,8 +92,8 @@ public class DatasetMetadataService {
                         "Please implement this dataset", datasetMetadata.getDatasetName()));
             } else if (cachedRowSetFileTable.size() > 1) {
 
-                log.warn(new IESIMessage(MessageFormat.format("Found more than implementation for dataset id {0}. " +
-                        "Returning first occurrence.", id)));
+                log.warn(MessageFormat.format("Found more than implementation for dataset id {0}. " +
+                        "Returning first occurrence.", id));
 
             }
             cachedRowSetFileTable.next();

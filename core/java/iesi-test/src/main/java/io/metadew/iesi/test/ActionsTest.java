@@ -3,7 +3,7 @@ package io.metadew.iesi.test;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.connection.tools.FolderTools;
-import io.metadew.iesi.framework.configuration.Configuration;
+import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.metadata.definition.DataObject;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequestBuilderException;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequestBuilderException;

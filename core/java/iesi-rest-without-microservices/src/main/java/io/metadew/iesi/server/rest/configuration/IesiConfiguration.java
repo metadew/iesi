@@ -1,8 +1,6 @@
 package io.metadew.iesi.server.rest.configuration;
 
 import io.metadew.iesi.framework.configuration.metadata.MetadataConfiguration;
-import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
-import io.metadew.iesi.framework.execution.FrameworkExecutionContext;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.UserConfiguration;
 import io.metadew.iesi.metadata.configuration.component.ComponentConfiguration;
@@ -12,7 +10,6 @@ import io.metadew.iesi.metadata.configuration.execution.ExecutionRequestConfigur
 import io.metadew.iesi.metadata.configuration.execution.script.ScriptExecutionConfiguration;
 import io.metadew.iesi.metadata.configuration.impersonation.ImpersonationConfiguration;
 import io.metadew.iesi.metadata.configuration.script.ScriptConfiguration;
-import io.metadew.iesi.metadata.definition.Context;
 import io.metadew.iesi.runtime.ExecutionRequestExecutorService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -30,20 +27,12 @@ public class IesiConfiguration {
 
     @Bean
     @Order(0)
-    public FrameworkInstance frameworkInstance(FrameworkInitializationFile frameworkInitializationFile, FrameworkExecutionContext frameworkExecutionContext) throws SQLException {
+    public FrameworkInstance frameworkInstance() throws SQLException {
         io.metadew.iesi.framework.configuration.Configuration.getInstance();
         MetadataConfiguration.getInstance();
         return FrameworkInstance.getInstance();
     }
 
-    @Bean
-    FrameworkExecutionContext frameworkExecutionContext() {
-        return new FrameworkExecutionContext(new Context("restserver", ""));
-    }
-
-    @Bean FrameworkInitializationFile frameworkInitializationFile() {
-        return new FrameworkInitializationFile(System.getProperty("iesi.ini", "iesi-conf.ini"));
-    }
 
     @Bean
     @DependsOn("frameworkInstance")

@@ -1,7 +1,6 @@
 package io.metadew.iesi.runtime;
 
-import io.metadew.iesi.framework.configuration.guard.GuardConfiguration;
-import io.metadew.iesi.framework.execution.IESIMessage;
+import io.metadew.iesi.common.configuration.guard.GuardConfiguration;
 import io.metadew.iesi.guard.configuration.UserAccessConfiguration;
 import io.metadew.iesi.guard.definition.UserAccess;
 import io.metadew.iesi.metadata.configuration.execution.ExecutionRequestConfiguration;
@@ -58,8 +57,8 @@ public class AuthenticatedExecutionRequestExecutor implements ExecutionRequestEx
         UserAccess userAccess = userAccessConfiguration.doUserLogin(executionRequest.getUser(), executionRequest.getPassword());
 
         if (userAccess.isException()) {
-            log.info(new IESIMessage("guard.user.exception=" + userAccess.getExceptionMessage()));
-            log.info(new IESIMessage("guard.user.denied"));
+            log.info("guard.user.exception=" + userAccess.getExceptionMessage());
+            log.info("guard.user.denied");
             executionRequest.updateExecutionRequestStatus(ExecutionRequestStatus.DECLINED);
             ExecutionRequestConfiguration.getInstance().update(executionRequest);
             throw new RuntimeException("guard.user.denied");

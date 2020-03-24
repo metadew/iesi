@@ -1,7 +1,7 @@
 package io.metadew.iesi.guard.execution;
 
-import io.metadew.iesi.framework.configuration.metadata.repository.MetadataRepositoryConfiguration;
-import io.metadew.iesi.framework.crypto.Password;
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
+import io.metadew.iesi.common.crypto.Password;
 import io.metadew.iesi.metadata.configuration.UserConfiguration;
 import io.metadew.iesi.metadata.definition.user.User;
 

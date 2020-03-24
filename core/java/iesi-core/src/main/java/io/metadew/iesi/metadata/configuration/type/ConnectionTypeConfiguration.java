@@ -1,6 +1,6 @@
 package io.metadew.iesi.metadata.configuration.type;
 
-import io.metadew.iesi.framework.configuration.metadata.connectiontypes.MetadataConnectionTypesConfiguration;
+import io.metadew.iesi.common.configuration.metadata.connectiontypes.MetadataConnectionTypesConfiguration;
 import io.metadew.iesi.metadata.definition.connection.ConnectionType;
 
 public class ConnectionTypeConfiguration {

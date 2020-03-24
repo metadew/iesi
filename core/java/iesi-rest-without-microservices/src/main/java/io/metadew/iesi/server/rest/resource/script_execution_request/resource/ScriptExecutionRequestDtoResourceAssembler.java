@@ -33,7 +33,7 @@ public  class ScriptExecutionRequestDtoResourceAssembler extends ResourceAssembl
     private ScriptExecutionRequestDto convertToDto(ScriptExecutionRequest scriptExecutionRequest) {
         if (scriptExecutionRequest instanceof ScriptNameExecutionRequest) {
             return new ScriptExecutionRequestDto(scriptExecutionRequest.getMetadataKey().getId(), scriptExecutionRequest.getExecutionRequestKey().getId(),
-                    scriptExecutionRequest.getActionSelect(), scriptExecutionRequest.isExit(), scriptExecutionRequest.getImpersonation().orElse(null),
+                    scriptExecutionRequest.isExit(), scriptExecutionRequest.getImpersonation().orElse(null),
                     scriptExecutionRequest.getEnvironment(), scriptExecutionRequest.getImpersonations().orElse(null), scriptExecutionRequest.getParameters(), scriptExecutionRequest.getScriptExecutionRequestStatus(),
                     ((ScriptNameExecutionRequest) scriptExecutionRequest).getScriptName(), ((ScriptNameExecutionRequest) scriptExecutionRequest).getScriptVersion().orElse(-1L));
         } else {

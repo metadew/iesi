@@ -108,7 +108,6 @@ public class ScriptExecutionRequestBuilder {
                 scriptName,
                 scriptVersion,
                 environment,
-                getActionSelect().orElse(new ArrayList<>()),
                 exit,
                 impersonation,
                 impersonations,

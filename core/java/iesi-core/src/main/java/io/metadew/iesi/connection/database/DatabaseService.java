@@ -12,6 +12,10 @@ import java.util.Optional;
 
 public interface DatabaseService<T extends Database> {
 
+    public T getDatabase(io.metadew.iesi.metadata.definition.connection.Connection connection);
+
+    public String keyword();
+
     public Connection getConnection(T database);
 
     public boolean releaseConnection(T database, Connection connection);

@@ -22,7 +22,6 @@ import java.util.Optional;
 @ToString
 public class OracleDatabaseConnection extends SchemaDatabaseConnection {
 
-    private static Logger LOGGER = LogManager.getLogger();
     private static String type = "oracle";
 
     public OracleDatabaseConnection(String connectionURL, String userName, String userPassword) {

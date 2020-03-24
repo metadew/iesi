@@ -42,7 +42,7 @@ public class DbDb2ConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "user"), "user"),
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "password"), "password"))
                         .collect(Collectors.toList()));
-        Db2Database db2Database = new Db2Database(new Db2DatabaseConnection("host", 1, "database", "user", "password"),"");
+        Db2Database db2Database = new Db2Database(new Db2DatabaseConnection("host", 1, "database", "user", "password"),"schema");
         assertEquals(db2Database, DbDb2ConnectionService.getInstance().getDatabase(connection));
     }
     @Test
@@ -56,7 +56,7 @@ public class DbDb2ConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "user"), "user"),
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "password"), FrameworkCrypto.getInstance().encrypt("encrypted_password")))
                         .collect(Collectors.toList()));
-        Db2Database db2Database = new Db2Database(new Db2DatabaseConnection("host", 1, "database", "user", "encrypted_password"),"");
+        Db2Database db2Database = new Db2Database(new Db2DatabaseConnection("host", 1, "database", "user", "encrypted_password"),"schema");
         assertEquals(db2Database, DbDb2ConnectionService.getInstance().getDatabase(connection));
     }
 

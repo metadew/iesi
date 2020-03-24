@@ -12,6 +12,8 @@ import java.util.Optional;
 
 public interface DatabaseHandler {
 
+    public Database getDatabase(io.metadew.iesi.metadata.definition.connection.Connection connection);
+
     public Connection getConnection(Database database);
 
     public boolean releaseConnection(Database database, Connection connection);

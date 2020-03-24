@@ -44,7 +44,7 @@ public class DbDremioConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "user"), "user"),
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "password"), "password"))
                         .collect(Collectors.toList()));
-        DremioDatabase dremioDatabase = new DremioDatabase(new DremioDatabaseConnection("host", 1, "zookeeper","cluster",  "schema", "user", "password"),"");
+        DremioDatabase dremioDatabase = new DremioDatabase(new DremioDatabaseConnection("host", 1, "zookeeper","cluster",  "schema", "user", "password"),"schema");
         assertEquals(dremioDatabase, DbDremioConnectionService.getInstance().getDatabase(connection));
     }
 
@@ -61,7 +61,7 @@ public class DbDremioConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "user"), "user"),
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "password"), "password"))
                         .collect(Collectors.toList()));
-        DremioDatabase dremioDatabase = new DremioDatabase(new DremioDatabaseConnection("host", 1, "direct","cluster",  "schema", "user", "password"),"");
+        DremioDatabase dremioDatabase = new DremioDatabase(new DremioDatabaseConnection("host", 1, "direct","cluster",  "schema", "user", "password"),"schema");
         assertEquals(dremioDatabase, DbDremioConnectionService.getInstance().getDatabase(connection));
     }
 
@@ -95,7 +95,7 @@ public class DbDremioConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "user"), "user"),
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "password"), FrameworkCrypto.getInstance().encrypt("encrypted_password")))
                         .collect(Collectors.toList()));
-        DremioDatabase dremioDatabase = new DremioDatabase(new DremioDatabaseConnection("host", 1, "direct","cluster",  "schema", "user", "encrypted_password"),"");
+        DremioDatabase dremioDatabase = new DremioDatabase(new DremioDatabaseConnection("host", 1, "direct","cluster",  "schema", "user", "encrypted_password"),"schema");
         assertEquals(dremioDatabase, DbDremioConnectionService.getInstance().getDatabase(connection));
     }
 

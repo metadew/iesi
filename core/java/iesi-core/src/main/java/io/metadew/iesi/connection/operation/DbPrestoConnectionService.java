@@ -1,5 +1,7 @@
 package io.metadew.iesi.connection.operation;
+import io.metadew.iesi.connection.database.OracleDatabase;
 import io.metadew.iesi.connection.database.PrestoDatabase;
+import io.metadew.iesi.connection.database.connection.oracle.OracleDatabaseConnection;
 import io.metadew.iesi.connection.database.connection.presto.PrestoDatabaseConnection;
 import io.metadew.iesi.framework.crypto.FrameworkCrypto;
 import io.metadew.iesi.framework.execution.FrameworkControl;
@@ -9,13 +11,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
+import java.util.Optional;
 
 @Log4j2
 public class DbPrestoConnectionService {
 
-    private static final Logger LOGGER = LogManager.getLogger();
     private static DbPrestoConnectionService INSTANCE;
 
+    private final static String connectionUrlKey = "connectionURL";
     private final static String hostKey = "host";
     private final static String catalogNameKey = "catalog";
     private final static String portKey = "port";
@@ -33,15 +36,25 @@ public class DbPrestoConnectionService {
     private DbPrestoConnectionService() {
     }
     public PrestoDatabase getDatabase(Connection connection)  {
+        String userName = getMandatoryParameterWithKey(connection, userKey);
+        String userPassword = getMandatoryParameterWithKey(connection, passwordKey);
+        String schemaName = getMandatoryParameterWithKey(connection, schemaKey);
+        PrestoDatabaseConnection prestoDatabaseConnection;
+        if (getOptionalParameterWithKey(connection, connectionUrlKey).isPresent()) {
+            prestoDatabaseConnection = new PrestoDatabaseConnection(
+                    getOptionalParameterWithKey(connection, connectionUrlKey).get(),
+                    userName,
+                    userPassword,
+                    schemaName);
+            return new PrestoDatabase(prestoDatabaseConnection, schemaName);
+        }
 
         String hostName = getMandatoryParameterWithKey(connection, hostKey);
         int port = Integer.parseInt(getMandatoryParameterWithKey(connection,portKey));
         String catalogName = getMandatoryParameterWithKey(connection, catalogNameKey);
-        String schemaName = getMandatoryParameterWithKey(connection, schemaKey);
-        String userName = getMandatoryParameterWithKey(connection, userKey);
-        String userPassword = getMandatoryParameterWithKey(connection, passwordKey);
 
-        PrestoDatabaseConnection prestoDatabaseConnection = new PrestoDatabaseConnection(hostName,
+        prestoDatabaseConnection = new PrestoDatabaseConnection(
+                hostName,
                 port,
                 catalogName,
                 schemaName,
@@ -57,5 +70,13 @@ public class DbPrestoConnectionService {
                 .map(connectionParameter -> FrameworkControl.getInstance().resolveConfiguration(connectionParameter.getValue()))
                 .map(connectionParameterValue -> FrameworkCrypto.getInstance().decryptIfNeeded(connectionParameterValue))
                 .orElseThrow(() -> new RuntimeException(MessageFormat.format("Connection {0} does not contain mandatory parameter ''{1}''", connection, key)));
+    }
+
+    private Optional<String> getOptionalParameterWithKey(Connection connection, String key) {
+        return connection.getParameters().stream()
+                .filter(connectionParameter -> connectionParameter.getName().equalsIgnoreCase(key))
+                .findFirst()
+                .map(connectionParameter -> FrameworkControl.getInstance().resolveConfiguration(connectionParameter.getValue()))
+                .map(connectionParameterValue -> FrameworkCrypto.getInstance().decryptIfNeeded(connectionParameterValue));
     }
 }

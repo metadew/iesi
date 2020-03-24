@@ -1,12 +1,16 @@
 package io.metadew.iesi.connection.database;
 
 import io.metadew.iesi.connection.database.sql.SqlScriptResult;
+import io.metadew.iesi.framework.crypto.FrameworkCrypto;
+import io.metadew.iesi.framework.execution.FrameworkControl;
 import io.metadew.iesi.metadata.definition.MetadataField;
 import io.metadew.iesi.metadata.definition.MetadataTable;
+import lombok.RequiredArgsConstructor;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.InputStream;
 import java.sql.Connection;
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,7 +18,7 @@ import java.util.Optional;
 
 public class DatabaseHandlerImpl implements DatabaseHandler {
 
-    private Map<Class<? extends Database>, DatabaseService> databaseServiceMap;
+    private Map<ClassStringPair, DatabaseService> databaseServiceMap;
 
     private static DatabaseHandlerImpl INSTANCE;
 
@@ -27,20 +31,37 @@ public class DatabaseHandlerImpl implements DatabaseHandler {
 
     private DatabaseHandlerImpl() {
         databaseServiceMap = new HashMap<>();
-        databaseServiceMap.put(Db2DatabaseServiceImpl.getInstance().appliesTo(), Db2DatabaseServiceImpl.getInstance());
-        databaseServiceMap.put(DremioDatabaseServiceImpl.getInstance().appliesTo(), DremioDatabaseServiceImpl.getInstance());
-        databaseServiceMap.put(DrillDatabaseServiceImpl.getInstance().appliesTo(), DrillDatabaseServiceImpl.getInstance());
-        databaseServiceMap.put(H2DatabaseServiceImpl.getInstance().appliesTo(), H2DatabaseServiceImpl.getInstance());
-        databaseServiceMap.put(MariadbDatabaseServiceImpl.getInstance().appliesTo(), MariadbDatabaseServiceImpl.getInstance());
-        databaseServiceMap.put(MssqlDatabaseServiceImpl.getInstance().appliesTo(), MssqlDatabaseServiceImpl.getInstance());
-        databaseServiceMap.put(MysqlDatabaseServiceImpl.getInstance().appliesTo(), MysqlDatabaseServiceImpl.getInstance());
-        databaseServiceMap.put(NetezzaDatabaseServiceImpl.getInstance().appliesTo(), NetezzaDatabaseServiceImpl.getInstance());
-        databaseServiceMap.put(OracleDatabaseServiceImpl.getInstance().appliesTo(), OracleDatabaseServiceImpl.getInstance());
-        databaseServiceMap.put(PostgresqlDatabaseServiceImpl.getInstance().appliesTo(), PostgresqlDatabaseServiceImpl.getInstance());
-        databaseServiceMap.put(PrestoDatabaseServiceImpl.getInstance().appliesTo(), PrestoDatabaseServiceImpl.getInstance());
-        databaseServiceMap.put(SqliteDatabaseServiceImpl.getInstance().appliesTo(), SqliteDatabaseServiceImpl.getInstance());
-        databaseServiceMap.put(TeradataDatabaseServiceImpl.getInstance().appliesTo(), TeradataDatabaseServiceImpl.getInstance());
+        databaseServiceMap.put(new ClassStringPair(Db2DatabaseServiceImpl.getInstance().keyword(), Db2DatabaseServiceImpl.getInstance().appliesTo()),
+                Db2DatabaseServiceImpl.getInstance());
+        databaseServiceMap.put(new ClassStringPair(Db2DatabaseServiceImpl.getInstance().keyword(), DremioDatabaseServiceImpl.getInstance().appliesTo()),
+                DremioDatabaseServiceImpl.getInstance());
+        databaseServiceMap.put(new ClassStringPair(Db2DatabaseServiceImpl.getInstance().keyword(), DrillDatabaseServiceImpl.getInstance().appliesTo()),
+                DrillDatabaseServiceImpl.getInstance());
+        databaseServiceMap.put(new ClassStringPair(Db2DatabaseServiceImpl.getInstance().keyword(), H2DatabaseServiceImpl.getInstance().appliesTo()),
+                H2DatabaseServiceImpl.getInstance());
+        databaseServiceMap.put(new ClassStringPair(Db2DatabaseServiceImpl.getInstance().keyword(), MariadbDatabaseServiceImpl.getInstance().appliesTo()),
+                MariadbDatabaseServiceImpl.getInstance());
+        databaseServiceMap.put(new ClassStringPair(Db2DatabaseServiceImpl.getInstance().keyword(), MssqlDatabaseServiceImpl.getInstance().appliesTo()),
+                MssqlDatabaseServiceImpl.getInstance());
+        databaseServiceMap.put(new ClassStringPair(Db2DatabaseServiceImpl.getInstance().keyword(), MysqlDatabaseServiceImpl.getInstance().appliesTo()),
+                MysqlDatabaseServiceImpl.getInstance());
+        databaseServiceMap.put(new ClassStringPair(Db2DatabaseServiceImpl.getInstance().keyword(), NetezzaDatabaseServiceImpl.getInstance().appliesTo()),
+                NetezzaDatabaseServiceImpl.getInstance());
+        databaseServiceMap.put(new ClassStringPair(Db2DatabaseServiceImpl.getInstance().keyword(), OracleDatabaseServiceImpl.getInstance().appliesTo()),
+                OracleDatabaseServiceImpl.getInstance());
+        databaseServiceMap.put(new ClassStringPair(Db2DatabaseServiceImpl.getInstance().keyword(), PostgresqlDatabaseServiceImpl.getInstance().appliesTo()),
+                PostgresqlDatabaseServiceImpl.getInstance());
+        databaseServiceMap.put(new ClassStringPair(Db2DatabaseServiceImpl.getInstance().keyword(), PrestoDatabaseServiceImpl.getInstance().appliesTo()),
+                PrestoDatabaseServiceImpl.getInstance());
+        databaseServiceMap.put(new ClassStringPair(Db2DatabaseServiceImpl.getInstance().keyword(), SqliteDatabaseServiceImpl.getInstance().appliesTo()),
+                SqliteDatabaseServiceImpl.getInstance());
+        databaseServiceMap.put(new ClassStringPair(Db2DatabaseServiceImpl.getInstance().keyword(), TeradataDatabaseServiceImpl.getInstance().appliesTo()),
+                TeradataDatabaseServiceImpl.getInstance());
+    }
 
+    @Override
+    public Database getDatabase(io.metadew.iesi.metadata.definition.connection.Connection connection) {
+        return getDatabaseService(connection.getType()).getDatabase(connection);
     }
 
     @SuppressWarnings("unchecked")
@@ -183,12 +204,46 @@ public class DatabaseHandlerImpl implements DatabaseHandler {
         return getDatabaseService(database).toQueryString(database, field);
     }
 
+    public String getMandatoryParameterWithKey(io.metadew.iesi.metadata.definition.connection.Connection connection, String key) {
+        return connection.getParameters().stream()
+                .filter(connectionParameter -> connectionParameter.getName().equalsIgnoreCase(key))
+                .findFirst()
+                .map(connectionParameter -> FrameworkControl.getInstance().resolveConfiguration(connectionParameter.getValue()))
+                .map(connectionParameterValue -> FrameworkCrypto.getInstance().decryptIfNeeded(connectionParameterValue))
+                .orElseThrow(() -> new RuntimeException(MessageFormat.format("Connection {0} does not contain mandatory parameter ''{1}''", connection, key)));
+
+    }
+
+    public Optional<String> getOptionalParameterWithKey(io.metadew.iesi.metadata.definition.connection.Connection connection, String key) {
+        return connection.getParameters().stream()
+                .filter(connectionParameter -> connectionParameter.getName().equalsIgnoreCase(key))
+                .findFirst()
+                .map(connectionParameter -> FrameworkControl.getInstance().resolveConfiguration(connectionParameter.getValue()))
+                .map(connectionParameterValue -> FrameworkCrypto.getInstance().decryptIfNeeded(connectionParameterValue));
+    }
+
     private DatabaseService getDatabaseService(Database database) {
         return databaseServiceMap.entrySet().stream()
-                .filter(entry -> entry.getKey().isAssignableFrom(database.getClass()))
+                .filter(entry -> entry.getKey().clazz.isAssignableFrom(database.getClass()))
                 .map(Map.Entry::getValue)
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("Could not find DatabaseService for " + database.getClass().getSimpleName()));
+    }
+
+    private DatabaseService getDatabaseService(String databaseType) {
+        return databaseServiceMap.entrySet().stream()
+                .filter(entry -> entry.getKey().keyword.equals(databaseType))
+                .map(Map.Entry::getValue)
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Could not find DatabaseService for " + databaseType));
+    }
+
+    @RequiredArgsConstructor
+    private static class ClassStringPair {
+
+        private final String keyword;
+        private final Class<? extends Database> clazz;
+
     }
 
 }

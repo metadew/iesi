@@ -46,7 +46,7 @@ public class DbDrillConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "password"), "password"))
                         .collect(Collectors.toList()));
 
-        DrillDatabase drillDatabase = new DrillDatabase(new DrillDatabaseConnection("mode","cluster", "directory", "clusterId", "schema","tries","user","password"),"");
+        DrillDatabase drillDatabase = new DrillDatabase(new DrillDatabaseConnection("mode","cluster", "directory", "clusterId", "schema","tries","user","password"),"schema");
         assertEquals(drillDatabase, DbDrillConnectionService.getInstance().getDatabase(connection));
     }
 
@@ -65,7 +65,7 @@ public class DbDrillConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "password"),  FrameworkCrypto.getInstance().encrypt("encrypted_password")))
                         .collect(Collectors.toList()));
 
-        DrillDatabase drillDatabase = new DrillDatabase(new DrillDatabaseConnection("mode","cluster", "directory", "clusterId", "schema","tries","user","encrypted_password"),"");
+        DrillDatabase drillDatabase = new DrillDatabase(new DrillDatabaseConnection("mode","cluster", "directory", "clusterId", "schema","tries","user","encrypted_password"),"schema");
         assertEquals(drillDatabase, DbDrillConnectionService.getInstance().getDatabase(connection));
     }
 

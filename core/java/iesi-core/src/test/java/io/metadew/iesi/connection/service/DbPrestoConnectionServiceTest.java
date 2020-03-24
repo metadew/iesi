@@ -10,8 +10,8 @@ import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionParameterKey;
 import org.junit.Assert;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.reflect.Whitebox;
@@ -24,15 +24,17 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 
 
-public class DbPrestoConnectionServiceTest   {
+class DbPrestoConnectionServiceTest {
+
     @BeforeAll
-    static void setup()  {
+    static void setup() {
         DatabaseConnectionHandlerImpl databaseConnectionHandler = PowerMockito.mock(DatabaseConnectionHandlerImpl.class);
         Whitebox.setInternalState(DatabaseConnectionHandlerImpl.class, "INSTANCE", databaseConnectionHandler);
         Mockito.doReturn(null).when(databaseConnectionHandler).getConnection(any());
     }
+
     @Test
-    public void getDatabaseTest (){
+    void getDatabaseTest() {
         Connection connection = new Connection(new ConnectionKey("test", "tst"),
                 "db.presto",
                 "description",
@@ -48,12 +50,12 @@ public class DbPrestoConnectionServiceTest   {
                 "catalog",
                 "schema",
                 "user",
-                "password"),"");
+                "password"), "");
         Assert.assertEquals(prestoDatabaseExpected, DbPrestoConnectionService.getInstance().getDatabase(connection));
     }
 
     @Test
-    public void getDatabaseWithEncryptedPasswordTest (){
+    void getDatabaseWithEncryptedPasswordTest() {
         Connection connection = new Connection(new ConnectionKey("test", "tst"),
                 "db.presto",
                 "description",
@@ -69,9 +71,10 @@ public class DbPrestoConnectionServiceTest   {
                 "catalog",
                 "schema",
                 "user",
-                "encrypted_password"),"");
+                "encrypted_password"), "");
         Assert.assertEquals(prestoDatabaseExpected, DbPrestoConnectionService.getInstance().getDatabase(connection));
     }
+
     @Test
     void getDatabaseMissingHost() {
         Connection connection = new Connection(new ConnectionKey("test", "tst"),
@@ -116,6 +119,7 @@ public class DbPrestoConnectionServiceTest   {
         assertThrows(RuntimeException.class, () -> DbPrestoConnectionService.getInstance().getDatabase(connection),
                 MessageFormat.format("Connection {0} does not contain mandatory parameter 'schema'", connection));
     }
+
     @Test
     void getDatabaseMissingCatalog() {
         Connection connection = new Connection(new ConnectionKey("test", "tst"),

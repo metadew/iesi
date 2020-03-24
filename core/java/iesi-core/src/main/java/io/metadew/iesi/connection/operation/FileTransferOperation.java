@@ -33,10 +33,10 @@ public class FileTransferOperation {
 
         List<FileTransfered> fileTransferedList = new ArrayList();
         ConnectionOperation connectionOperation = new ConnectionOperation();
-        HostConnection sourceConnectionConnection = connectionOperation.getHostConnection();
-        LOGGER.trace("fho.transfer.source.connection=" + sourceConnection.getName());
-        HostConnection targetConnectionConnection = connectionOperation.getHostConnection();
-        LOGGER.trace("fho.transfer.target.connection=" + targetConnection.getName());
+        HostConnection sourceConnectionConnection = connectionOperation.getHostConnection(sourceConnection);
+        LOGGER.trace("fho.transfer.source.connection=" + sourceConnection.getMetadataKey().getName());
+        HostConnection targetConnectionConnection = connectionOperation.getHostConnection(targetConnection);
+        LOGGER.trace("fho.transfer.target.connection=" + targetConnection.getMetadataKey().getName());
 
         try {
             String filepath = sourceFilePath + File.separator + sourceFileName;
@@ -134,10 +134,10 @@ public class FileTransferOperation {
 
         List<FileTransfered> fileTransferedList = new ArrayList();
         ConnectionOperation connectionOperation = new ConnectionOperation();
-        HostConnection sourceConnectionConnection = connectionOperation.getHostConnection();
-        LOGGER.trace("fho.transfer.source.connection=" + sourceConnection.getName());
-        HostConnection targetConnectionConnection = connectionOperation.getHostConnection();
-        LOGGER.trace("fho.transfer.target.connection=" + targetConnection.getName());
+        HostConnection sourceConnectionConnection = connectionOperation.getHostConnection(sourceConnection);
+        LOGGER.trace("fho.transfer.source.connection=" + sourceConnection.getMetadataKey().getName());
+        HostConnection targetConnectionConnection = connectionOperation.getHostConnection(targetConnection);
+        LOGGER.trace("fho.transfer.target.connection=" + targetConnection.getMetadataKey().getName());
 
         try {
             String filepath = targetFilePath + File.separator + targetFileName;
@@ -275,8 +275,8 @@ public class FileTransferOperation {
                                                    Connection targetConnection) {
 
         ConnectionOperation connectionOperation = new ConnectionOperation();
-        HostConnection sourceConnectionConnection = connectionOperation.getHostConnection();
-        HostConnection targetConnectionConnection = connectionOperation.getHostConnection();
+        HostConnection sourceConnectionConnection = connectionOperation.getHostConnection(sourceConnection);
+        HostConnection targetConnectionConnection = connectionOperation.getHostConnection(targetConnection);
 
         FileTransferResult fileTransferResult = null;
         if (sourceConnectionConnection.getType().equalsIgnoreCase("windows")

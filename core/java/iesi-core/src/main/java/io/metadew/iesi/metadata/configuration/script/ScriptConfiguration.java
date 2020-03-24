@@ -7,6 +7,7 @@ import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsExc
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.script.Script;
+import io.metadew.iesi.metadata.definition.script.ScriptLabel;
 import io.metadew.iesi.metadata.definition.script.ScriptParameter;
 import io.metadew.iesi.metadata.definition.script.ScriptVersion;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
@@ -45,6 +46,7 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
         setMetadataRepository(metadataRepository);
         ActionConfiguration.getInstance().init(metadataRepository);
         ScriptVersionConfiguration.getInstance().init(metadataRepository);
+        ScriptLabelConfiguration.getInstance().init(metadataRepository);
         ScriptParameterConfiguration.getInstance().init(metadataRepository);
     }
 
@@ -66,7 +68,7 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
             crsScript.next();
 
             // Get the version
-            Optional<ScriptVersion> scriptVersion = ScriptVersionConfiguration.getInstance().get(new ScriptVersionKey(scriptKey.getScriptId(), scriptKey.getScriptVersion()));
+            Optional<ScriptVersion> scriptVersion = ScriptVersionConfiguration.getInstance().get(new ScriptVersionKey(new ScriptKey(scriptKey.getScriptId(), scriptKey.getScriptVersion())));
             if (!scriptVersion.isPresent()) {
                 return Optional.empty();
             }
@@ -77,8 +79,11 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
             // Get parameters
             List<ScriptParameter> scriptParameters = ScriptParameterConfiguration.getInstance().getByScript(scriptKey);
 
-            Script script = new Script(scriptKey.getScriptId(), crsScript.getString("SCRIPT_NM"), crsScript.getString("SCRIPT_DSC"),
-                    scriptVersion.get(), scriptParameters, actions);
+            // Get labels
+            List<ScriptLabel> scriptLabels = ScriptLabelConfiguration.getInstance().getByScript(scriptKey);
+
+            Script script = new Script(scriptKey, crsScript.getString("SCRIPT_NM"), crsScript.getString("SCRIPT_DSC"),
+                    scriptVersion.get(), scriptParameters, actions, scriptLabels);
             crsScript.close();
             return Optional.of(script);
         } catch (Exception e) {
@@ -102,7 +107,7 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
                 return false;
             }
             crsScript.next();
-            return ScriptVersionConfiguration.getInstance().exists(new ScriptVersionKey(scriptKey.getScriptId(), scriptKey.getScriptVersion()));
+            return ScriptVersionConfiguration.getInstance().exists(new ScriptVersionKey(new ScriptKey(scriptKey.getScriptId(), scriptKey.getScriptVersion())));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -147,10 +152,11 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
         if (!exists(scriptKey)) {
             throw new MetadataDoesNotExistException(scriptKey);
         }
-        ScriptVersionKey scriptVersionKey = new ScriptVersionKey(scriptKey.getScriptId(), scriptKey.getScriptVersion());
+        ScriptVersionKey scriptVersionKey = new ScriptVersionKey(new ScriptKey(scriptKey.getScriptId(), scriptKey.getScriptVersion()));
         ScriptVersionConfiguration.getInstance().delete(scriptVersionKey);
         ActionConfiguration.getInstance().deleteByScript(scriptKey);
         ScriptParameterConfiguration.getInstance().deleteByScript(scriptKey);
+        ScriptLabelConfiguration.getInstance().deleteByScript(scriptKey);
         getDeleteStatement(scriptKey)
                 .ifPresent(getMetadataRepository()::executeUpdate);
     }
@@ -197,6 +203,11 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
             ScriptParameterConfiguration.getInstance().insert(scriptParameter);
         }
 
+        // add Parameters
+        for (ScriptLabel scriptLabel : script.getLabels()) {
+            ScriptLabelConfiguration.getInstance().insert(scriptLabel);
+        }
+
         // add version
         ScriptVersionConfiguration.getInstance().insert(script.getVersion());
         // add actions
@@ -211,7 +222,7 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
         if (!exists(script)) {
             return "INSERT INTO " + getMetadataRepository().getTableNameByLabel("Scripts") +
                     " (SCRIPT_ID, SCRIPT_NM, SCRIPT_DSC) VALUES (" +
-                    SQLTools.GetStringForSQL(script.getId()) + "," +
+                    SQLTools.GetStringForSQL(script.getMetadataKey().getScriptId()) + "," +
                     SQLTools.GetStringForSQL(script.getName()) + "," +
                     SQLTools.GetStringForSQL(script.getDescription()) + ");";
         } else {

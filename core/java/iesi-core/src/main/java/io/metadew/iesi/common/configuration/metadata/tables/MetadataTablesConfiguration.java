@@ -30,9 +30,10 @@ public class MetadataTablesConfiguration {
         metadataTables = new ArrayList<>();
         if (containsConfiguration()) {
             List<Object> frameworkSettingConfigurations =
-                    (List<Object>) ((Map<String, Object>) Configuration.getInstance().getProperties()
-                    .get(MetadataConfiguration.configurationKey))
-                    .get(metadataTableKey);
+                    (List<Object>) ((Map<String, Object>) Configuration.getInstance()
+                            .getProperties()
+                            .get(MetadataConfiguration.configurationKey))
+                            .get(metadataTableKey);
             ObjectMapper objectMapper = new ObjectMapper();
             for (Object entry : frameworkSettingConfigurations) {
                 metadataTables.add(objectMapper.convertValue(entry, MetadataTable.class));

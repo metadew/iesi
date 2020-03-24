@@ -148,7 +148,7 @@ public class FhoFileExists {
                     .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
                     .get();
             ConnectionOperation connectionOperation = new ConnectionOperation();
-            HostConnection hostConnection = connectionOperation.getHostConnection();
+            HostConnection hostConnection = connectionOperation.getHostConnection(connection);
 
             for (FileConnection fileConnection : FileConnectionTools.getFileConnections(hostConnection,
                     FilenameUtils.separatorsToUnix(file.getParent()), FilenameUtils.separatorsToUnix(file.getName()), false)) {

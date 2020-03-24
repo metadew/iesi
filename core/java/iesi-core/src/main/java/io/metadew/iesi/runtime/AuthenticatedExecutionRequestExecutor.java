@@ -44,7 +44,7 @@ public class AuthenticatedExecutionRequestExecutor implements ExecutionRequestEx
         } else {
             log.info("authentication.disabled:access automatically granted");
         }
-        executionRequest.updateExecutionRequestStatus(ExecutionRequestStatus.ACCEPTED);
+        executionRequest.setExecutionRequestStatus(ExecutionRequestStatus.ACCEPTED);
         ExecutionRequestConfiguration.getInstance().update(executionRequest);
 
         for (ScriptExecutionRequest scriptExecutionRequest : executionRequest.getScriptExecutionRequests()) {
@@ -59,7 +59,7 @@ public class AuthenticatedExecutionRequestExecutor implements ExecutionRequestEx
         if (userAccess.isException()) {
             log.info("guard.user.exception=" + userAccess.getExceptionMessage());
             log.info("guard.user.denied");
-            executionRequest.updateExecutionRequestStatus(ExecutionRequestStatus.DECLINED);
+            executionRequest.setExecutionRequestStatus(ExecutionRequestStatus.DECLINED);
             ExecutionRequestConfiguration.getInstance().update(executionRequest);
             throw new RuntimeException("guard.user.denied");
         }

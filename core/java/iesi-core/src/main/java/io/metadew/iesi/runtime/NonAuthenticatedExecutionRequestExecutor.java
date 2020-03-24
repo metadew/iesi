@@ -27,7 +27,7 @@ public class NonAuthenticatedExecutionRequestExecutor implements ExecutionReques
 
     @Override
     public void execute(NonAuthenticatedExecutionRequest executionRequest) {
-        executionRequest.updateExecutionRequestStatus(ExecutionRequestStatus.ACCEPTED);
+        executionRequest.setExecutionRequestStatus(ExecutionRequestStatus.ACCEPTED);
         ExecutionRequestConfiguration.getInstance().update(executionRequest);
 
         for (ScriptExecutionRequest scriptExecutionRequest : executionRequest.getScriptExecutionRequests()) {

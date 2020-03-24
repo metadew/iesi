@@ -270,7 +270,7 @@ public class HostConnection {
                                 .get(new ConnectionKey(jumphostConnection, shellCommandSettings.getEnvironment()))
                                 .get();
                         ConnectionOperation connectionOperation = new ConnectionOperation();
-                        hostConnection = connectionOperation.getHostConnection();
+                        hostConnection = connectionOperation.getHostConnection(connection);
                     } else {
                         hostConnection = this;
                     }
@@ -421,7 +421,7 @@ public class HostConnection {
                                 .get(new ConnectionKey(jumphostConnection, shellCommandSettings.getEnvironment()))
                                 .get();
                         ConnectionOperation connectionOperation = new ConnectionOperation();
-                        hostConnection = connectionOperation.getHostConnection();
+                        hostConnection = connectionOperation.getHostConnection(connection);
                     } else {
                         hostConnection = this;
                     }

@@ -1,26 +1,26 @@
 package io.metadew.iesi.launch;
 
+import io.metadew.iesi.common.FrameworkInstance;
 import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.configuration.metadata.MetadataConfiguration;
-import io.metadew.iesi.common.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.execution.ExecutionRequestConfiguration;
-import io.metadew.iesi.metadata.definition.execution.ExecutionRequest;
-import io.metadew.iesi.metadata.definition.execution.ExecutionRequestBuilder;
-import io.metadew.iesi.metadata.definition.execution.ExecutionRequestBuilderException;
-import io.metadew.iesi.metadata.definition.execution.ExecutionRequestStatus;
+import io.metadew.iesi.metadata.definition.execution.*;
+import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
+import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestLabelKey;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequestBuilder;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequestBuilderException;
+import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequestImpersonation;
+import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequestParameter;
+import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionRequestImpersonationKey;
+import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionRequestKey;
+import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionRequestParameterKey;
+import io.metadew.iesi.metadata.definition.impersonation.key.ImpersonationKey;
 import io.metadew.iesi.runtime.ExecutionRequestExecutorService;
-import io.metadew.iesi.script.operation.ImpersonationService;
 import org.apache.commons.cli.*;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.logging.log4j.ThreadContext;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * The execution launcher is entry point to launch all automation scripts.
@@ -42,7 +42,8 @@ public class ScriptLauncher {
                 .addOption(Option.builder("impersonation").hasArg().desc("define impersonation name to use").build())
                 .addOption(Option.builder("exit").hasArg().desc("define if an explicit exit is required").build())
                 .addOption(Option.builder("password").hasArg().desc("define the password to log in with").build())
-                .addOption(Option.builder("user").hasArg().desc("define the user to log in with").build());
+                .addOption(Option.builder("user").hasArg().desc("define the user to log in with").build())
+                .addOption(Option.builder("labels").hasArgs().desc("define the user to log in with").build());
 
         // create the parser
         CommandLineParser parser = new DefaultParser();
@@ -60,7 +61,20 @@ public class ScriptLauncher {
         Configuration.getInstance();
         MetadataConfiguration.getInstance();
         ExecutionRequestBuilder executionRequestBuilder = new ExecutionRequestBuilder();
+        String executionRequestId = UUID.randomUUID().toString();
+        executionRequestBuilder.id(executionRequestId);
         ScriptExecutionRequestBuilder scriptExecutionRequestBuilder = new ScriptExecutionRequestBuilder();
+        ScriptExecutionRequestKey scriptExecutionRequestKey = new ScriptExecutionRequestKey(UUID.randomUUID().toString());
+        scriptExecutionRequestBuilder.scriptExecutionRequestKey(scriptExecutionRequestKey);
+
+        // parse the command line arguments
+
+        if (line.hasOption("help")) {
+            // automatically generate the help statement
+            HelpFormatter formatter = new HelpFormatter();
+            formatter.printHelp("[command]", options);
+            System.exit(0);
+        }
 
         // Define the exit behaviour
         if (line.hasOption("exit")) {
@@ -113,31 +127,23 @@ public class ScriptLauncher {
         // Get variable configurations
         if (line.hasOption("paramlist")) {
             System.out.println("Option -paramlist (parameter list) value = " + line.getOptionValue("paramlist"));
-            scriptExecutionRequestBuilder.parameters(parseParameterRepresentation(line.getOptionValue("paramlist")));
-        }
-
-        if (line.hasOption("paramfile")) {
-            System.out.println("Option -paramfile (parameter file) value = " + line.getOptionValue("paramfile"));
-            scriptExecutionRequestBuilder.parameters(parseParameterFiles(line.getOptionValue("paramfile")));
-        }
-
-        // Get action select settings
-        if (line.hasOption("actions")) {
-            // TODO: define actionSelection as a strategy (include/exclude)
-            System.out.println("Option -actions (actions) value = " + line.getOptionValue("actions"));
-            //actionSelect = line.getOptionValue("actions");
+            for (String parameter : line.getOptionValues("paramlist")) {
+                scriptExecutionRequestBuilder.parameter(new ScriptExecutionRequestParameter(
+                        new ScriptExecutionRequestParameterKey(DigestUtils.sha256Hex(scriptExecutionRequestKey.getId() + parameter.split("=")[0])),
+                        scriptExecutionRequestKey,
+                        parameter.split("=")[0], parameter.split("=")[1]));
+            }
         }
 
         // Get impersonation input
-        if (line.hasOption("impersonation")) {
-            System.out.println("Option -impersonation (impersonation) value = " + line.getOptionValue("impersonation"));
-            scriptExecutionRequestBuilder.impersonation(line.getOptionValue("impersonate"));
-        }
-
-        // Get impersonation input
-        if (line.hasOption("impersonate")) {
-            System.out.println("Option -impersonate (impersonate) value = " + line.getOptionValue("impersonate"));
-            scriptExecutionRequestBuilder.impersonations(new ImpersonationService().getImpersontationsFromCommandline(line.getOptionValue("impersonate")));
+        if (line.hasOption("impersonations")) {
+            System.out.println("Option -impersonations (impersonations) value = " + Arrays.toString(line.getOptionValues("impersonations")));
+            for (String impersonation : line.getOptionValues("impersonation")) {
+                scriptExecutionRequestBuilder.impersonations(new ScriptExecutionRequestImpersonation(
+                        new ScriptExecutionRequestImpersonationKey(DigestUtils.sha256Hex(scriptExecutionRequestKey.getId()+impersonation)),
+                        scriptExecutionRequestKey,
+                        new ImpersonationKey(impersonation)));
+            }
         }
 
         // Get the user name
@@ -150,6 +156,17 @@ public class ScriptLauncher {
         if (line.hasOption("password")) {
             System.out.println("Option -password (password) value = " + "*****");
             executionRequestBuilder.password(line.getOptionValue("password"));
+        }
+        // Get the labels
+        if (line.hasOption("labels")) {
+            System.out.println("Option -labels (labels) value = " + Arrays.toString(line.getOptionValues("labels")));
+            List<ExecutionRequestLabel> executionRequestLabels = new ArrayList<>();
+            for (String label : line.getOptionValues("labels")) {
+                executionRequestBuilder.executionRequestLabel(new ExecutionRequestLabel(
+                        new ExecutionRequestLabelKey(DigestUtils.sha256Hex(executionRequestId+label.split("=")[0])),
+                        new ExecutionRequestKey(executionRequestId),
+                        label.split("=")[0], label.split("=")[1]));
+            }
         }
 
         // Server mode
@@ -179,7 +196,7 @@ public class ScriptLauncher {
         ExecutionRequestConfiguration.getInstance().insert(executionRequest);
 
         if (serverMode.equalsIgnoreCase("off")) {
-            executionRequest.updateExecutionRequestStatus(ExecutionRequestStatus.SUBMITTED);
+            executionRequest.setExecutionRequestStatus(ExecutionRequestStatus.SUBMITTED);
             ExecutionRequestConfiguration.getInstance().update(executionRequest);
             ExecutionRequestExecutorService.getInstance().execute(executionRequest);
         } else if (serverMode.equalsIgnoreCase("standalone")) {
@@ -191,44 +208,44 @@ public class ScriptLauncher {
         FrameworkInstance.getInstance().shutdown();
     }
 
-    // TODO: move to service, see fwk execute script
-    private static Map<String, String> parseParameterFiles(String files) {
-        Map<String, String> parameters = new HashMap<>();
-        String[] parts = files.split(",");
-        for (String paremeterFile : parts) {
-            parameters.putAll(parseParameterFile(paremeterFile));
-        }
-        return parameters;
-    }
-
-    private static Map<String, String> parseParameterFile(String file) {
-        Map<String, String> parameters = new HashMap<>();
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(file));
-
-            String line;
-            while ((line = br.readLine()) != null) {
-                int delim = line.indexOf("=");
-                if (delim > 0) {
-                    parameters.put(line.substring(0, delim), line.substring(delim + 1));
-                }
-            }
-            br.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return parameters;
-    }
-
-    private static Map<String, String> parseParameterRepresentation(String parametersRepresentation) {
-        Map<String, String> parameters = new HashMap<>();
-        for (String parameterCombination : parametersRepresentation.split(",")) {
-            String[] parameter = parameterCombination.split("=");
-            if (parameter.length == 2) {
-                parameters.put(parameter[0], parameter[1]);
-            }
-        }
-        return parameters;
-    }
+//    // TODO: move to service, see fwk execute script
+//    private static Map<String, String> parseParameterFiles(String files) {
+//        Map<String, String> parameters = new HashMap<>();
+//        String[] parts = files.split(",");
+//        for (String paremeterFile : parts) {
+//            parameters.putAll(parseParameterFile(paremeterFile));
+//        }
+//        return parameters;
+//    }
+//
+//    private static Map<String, String> parseParameterFile(String file) {
+//        Map<String, String> parameters = new HashMap<>();
+//        try {
+//            BufferedReader br = new BufferedReader(new FileReader(file));
+//
+//            String line;
+//            while ((line = br.readLine()) != null) {
+//                int delim = line.indexOf("=");
+//                if (delim > 0) {
+//                    parameters.put(line.substring(0, delim), line.substring(delim + 1));
+//                }
+//            }
+//            br.close();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        return parameters;
+//    }
+//
+//    private static Map<String, String> parseParameterRepresentation(String parametersRepresentation) {
+//        Map<String, String> parameters = new HashMap<>();
+//        for (String parameterCombination : parametersRepresentation.split(",")) {
+//            String[] parameter = parameterCombination.split("=");
+//            if (parameter.length == 2) {
+//                parameters.put(parameter[0], parameter[1]);
+//            }
+//        }
+//        return parameters;
+//    }
 
 }

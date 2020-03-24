@@ -133,7 +133,7 @@ public class FhoCreateFolder {
                     .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
                     .get();
             ConnectionOperation connectionOperation = new ConnectionOperation();
-            HostConnection hostConnection = connectionOperation.getHostConnection();
+            HostConnection hostConnection = connectionOperation.getHostConnection(connection);
 
             String subjectFolderPath = "";
             if (path.isEmpty()) {

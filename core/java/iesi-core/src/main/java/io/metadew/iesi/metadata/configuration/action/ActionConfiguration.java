@@ -91,7 +91,7 @@ public class ActionConfiguration extends Configuration<Action, ActionKey> {
         CachedRowSet crs = getMetadataRepository().executeQuery(query, "reader");
         try {
             while (crs.next()) {
-                ActionKey actionKey = new ActionKey(crs.getString("SCRIPT_ID"), crs.getLong("SCRIPT_VRS_NB"),
+                ActionKey actionKey = new ActionKey(new ScriptKey(crs.getString("SCRIPT_ID"), crs.getLong("SCRIPT_VRS_NB")),
                         crs.getString("ACTION_ID"));
                 List<ActionParameter> actionParameters = ActionParameterConfiguration.getInstance().getByAction(actionKey);
                 actions.add(new Action(actionKey,

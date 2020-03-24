@@ -130,11 +130,11 @@ public class FhoExecuteFileTransfer {
                 .get(new ConnectionKey(sourceConnectionName, this.getExecutionControl().getEnvName()))
                 .get();
         ConnectionOperation connectionOperation = new ConnectionOperation();
-        HostConnection sourceHostConnection = connectionOperation.getHostConnection();
+        HostConnection sourceHostConnection = connectionOperation.getHostConnection(sourceConnection);
         Connection targetConnection = ConnectionConfiguration.getInstance()
                 .get(new ConnectionKey(targetConnectionName, this.getExecutionControl().getEnvName()))
                 .get();
-        HostConnection targetHostConnection = connectionOperation.getHostConnection();
+        HostConnection targetHostConnection = connectionOperation.getHostConnection(targetConnection);
 
         // Check if source or target are localhost
         // TODO check the creation of the sourceConnections

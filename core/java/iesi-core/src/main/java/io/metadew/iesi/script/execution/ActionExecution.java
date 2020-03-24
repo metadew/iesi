@@ -85,9 +85,6 @@ public class ActionExecution {
 			Object[] initArgs = { executionControl, scriptExecution, this };
 			Object instance = constructor.newInstance(initArgs);
 
-			Method prepare = classRef.getDeclaredMethod("prepare");
-			prepare.invoke(instance);
-
 			// Check condition, execute by default
 			boolean conditionResult = true;
 			if (action.getCondition() != null && !action.getCondition().isEmpty() && !action.getCondition().equalsIgnoreCase("null")) {
@@ -100,6 +97,9 @@ public class ActionExecution {
 					LOGGER.warn("action.condition.error=" + exception.getMessage());
 				}
 			}
+
+			Method prepare = classRef.getDeclaredMethod("prepare");
+			prepare.invoke(instance);
 
 			// Execution
 			if (conditionResult) {

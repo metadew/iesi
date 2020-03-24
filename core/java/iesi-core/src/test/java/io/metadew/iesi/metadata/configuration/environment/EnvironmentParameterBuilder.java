@@ -1,6 +1,7 @@
 package io.metadew.iesi.metadata.configuration.environment;
 
 import io.metadew.iesi.metadata.definition.environment.EnvironmentParameter;
+import io.metadew.iesi.metadata.definition.environment.key.EnvironmentKey;
 import io.metadew.iesi.metadata.definition.environment.key.EnvironmentParameterKey;
 
 public class EnvironmentParameterBuilder {
@@ -20,7 +21,7 @@ public class EnvironmentParameterBuilder {
     }
 
     public EnvironmentParameter build() {
-        return new EnvironmentParameter(new EnvironmentParameterKey(name, parameterName), value == null ? "dummy" : value);
+        return new EnvironmentParameter(new EnvironmentParameterKey(new EnvironmentKey(name), parameterName), value == null ? "dummy" : value);
     }
 
 }

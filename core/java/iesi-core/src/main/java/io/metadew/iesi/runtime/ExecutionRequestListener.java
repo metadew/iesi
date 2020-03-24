@@ -56,7 +56,7 @@ public class ExecutionRequestListener implements Runnable {
             try {
                 log.debug("executionrequestlistener=trying to assign "+executionRequest.getMetadataKey().toString()+" to execute execution requests");
                 executor.submit(new ExecutionRequestTask(executionRequest));
-                executionRequest.updateExecutionRequestStatus(ExecutionRequestStatus.SUBMITTED);
+                executionRequest.setExecutionRequestStatus(ExecutionRequestStatus.SUBMITTED);
                 ExecutionRequestConfiguration.getInstance().update(executionRequest);
                 log.debug(MessageFormat.format("executionrequestlistener=removing {0} from queue", executionRequest.getMetadataKey().toString()));
                 executionRequestsQueue.remove();
@@ -68,7 +68,7 @@ public class ExecutionRequestListener implements Runnable {
     }
 
     public void submit(ExecutionRequest executionRequest) {
-        executionRequest.updateExecutionRequestStatus(ExecutionRequestStatus.SUBMITTED);
+        executionRequest.setExecutionRequestStatus(ExecutionRequestStatus.SUBMITTED);
         ExecutionRequestConfiguration.getInstance().update(executionRequest);
         executionRequestsQueue.add(executionRequest);
     }
@@ -79,7 +79,7 @@ public class ExecutionRequestListener implements Runnable {
         log.trace(MessageFormat.format("executionrequestlistener=found {0} new execution requests", executionRequests.size()));
         for (ExecutionRequest executionRequest : executionRequests) {
             log.info(MessageFormat.format("executionrequestlistener=submitting request {0} for execution", executionRequest.getMetadataKey().getId()));
-            executionRequest.updateExecutionRequestStatus(ExecutionRequestStatus.SUBMITTED);
+            executionRequest.setExecutionRequestStatus(ExecutionRequestStatus.SUBMITTED);
             ExecutionRequestConfiguration.getInstance().update(executionRequest);
             executionRequestsQueue.add(executionRequest);
         }

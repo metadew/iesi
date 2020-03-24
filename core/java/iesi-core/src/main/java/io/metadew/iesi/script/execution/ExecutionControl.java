@@ -94,7 +94,7 @@ public class ExecutionControl {
         Long parentProcessId = scriptExecution.getParentScriptExecution().map(ScriptExecution::getProcessId).orElse(-1L);
         ScriptResult scriptResult = new ScriptResult(new ScriptResultKey(runId, scriptExecution.getProcessId()),
                 parentProcessId,
-                scriptExecution.getScript().getId(),
+                scriptExecution.getScript().getMetadataKey().getScriptId(),
                 scriptExecution.getScript().getName(),
                 scriptExecution.getScript().getVersion().getNumber(),
                 envName,
@@ -197,7 +197,6 @@ public class ExecutionControl {
         String status;
 
         if (actionExecution.getActionControl().getExecutionMetrics().getSkipCount() == 0) {
-
             if (actionExecution.getActionControl().getExecutionMetrics().getErrorCount() > 0) {
                 status = ScriptRunStatus.ERROR.value();
                 scriptExecution.getExecutionMetrics().increaseErrorCount(1);
@@ -253,7 +252,7 @@ public class ExecutionControl {
         outputValue = FrameworkCrypto.getInstance().redact(outputValue);
         outputValue = TextTools.shortenTextForDatabase(outputValue, 2000);
         logMessage("script.output=" + outputName + ":" + outputValue, Level.INFO);
-        ScriptResultOutput scriptResultOutput = new ScriptResultOutput(new ScriptResultOutputKey(runId, scriptExecution.getProcessId(), outputName), scriptExecution.getScript().getId(), outputValue);
+        ScriptResultOutput scriptResultOutput = new ScriptResultOutput(new ScriptResultOutputKey(runId, scriptExecution.getProcessId(), outputName), scriptExecution.getScript().getMetadataKey().getScriptId(), outputValue);
         ScriptResultOutputConfiguration.getInstance().insert(scriptResultOutput);
     }
 

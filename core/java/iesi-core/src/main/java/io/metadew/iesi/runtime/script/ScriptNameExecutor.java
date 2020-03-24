@@ -3,8 +3,10 @@ package io.metadew.iesi.runtime.script;
 import io.metadew.iesi.common.configuration.ScriptRunStatus;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.execution.script.ScriptExecutionConfiguration;
+import io.metadew.iesi.metadata.configuration.impersonation.ImpersonationConfiguration;
 import io.metadew.iesi.metadata.configuration.script.ScriptConfiguration;
 import io.metadew.iesi.metadata.configuration.script.result.ScriptResultConfiguration;
+import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequestParameter;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptNameExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionKey;
 import io.metadew.iesi.metadata.definition.script.Script;
@@ -16,6 +18,8 @@ import io.metadew.iesi.script.execution.ScriptExecutionBuilder;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class ScriptNameExecutor implements ScriptExecutor<ScriptNameExecutionRequest> {
 
@@ -28,7 +32,8 @@ public class ScriptNameExecutor implements ScriptExecutor<ScriptNameExecutionReq
         return INSTANCE;
     }
 
-    private ScriptNameExecutor() {}
+    private ScriptNameExecutor() {
+    }
 
     @Override
     public Class<ScriptNameExecutionRequest> appliesTo() {
@@ -43,12 +48,18 @@ public class ScriptNameExecutor implements ScriptExecutor<ScriptNameExecutionReq
                 .orElse(ScriptConfiguration.getInstance().getLatestVersion(scriptExecutionRequest.getScriptName()))
                 .orElseThrow(() -> new MetadataDoesNotExistException(new ScriptKey(IdentifierTools.getScriptIdentifier(scriptExecutionRequest.getScriptName()), scriptExecutionRequest.getScriptVersion().orElse(-1L))));
 
+        Map<String, String> impersonations = new HashMap<>();
+        scriptExecutionRequest.getImpersonations()
+                .forEach(scriptExecutionRequestImpersonation -> ImpersonationConfiguration.getInstance().get(scriptExecutionRequestImpersonation.getImpersonationKey())
+                        .ifPresent(impersonation -> impersonation.getParameters()
+                                .forEach(impersonationParameter -> impersonations.put(impersonationParameter.getMetadataKey().getParameterName(), impersonationParameter.getImpersonatedConnection()))));
+
         ScriptExecution scriptExecution = new ScriptExecutionBuilder(true, false)
                 .script(script)
                 .exitOnCompletion(scriptExecutionRequest.isExit())
-                .parameters(scriptExecutionRequest.getParameters())
-                .impersonations(scriptExecutionRequest.getImpersonations().orElse(new HashMap<>()))
-                // .actionSelectOperation(new ActionSelectOperation(scriptExecutionRequest.getActionSelect()))
+                .parameters(scriptExecutionRequest.getParameters().stream()
+                        .collect(Collectors.toMap(ScriptExecutionRequestParameter::getName, ScriptExecutionRequestParameter::getValue)))
+                .impersonations(impersonations)
                 .environment(scriptExecutionRequest.getEnvironment())
                 .build();
 

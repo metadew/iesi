@@ -57,7 +57,7 @@ class ActionConfigurationTest {
 
     @Test
     void actionNotExistsTest() {
-        ActionKey nonExistActionKey = new ActionKey("non_exist", 2, "non");
+        ActionKey nonExistActionKey = new ActionKey(new ScriptKey("non_exist", 2L), "non");
         assertFalse(ActionConfiguration.getInstance().exists(nonExistActionKey));
     }
 

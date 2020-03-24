@@ -2,7 +2,6 @@ package io.metadew.iesi.metadata.definition.execution;
 
 import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequest;
-import io.metadew.iesi.metadata.tools.IdentifierTools;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -26,14 +25,30 @@ public class ExecutionRequestBuilder {
     private String email;
 
     private List<ScriptExecutionRequest> scriptExecutionRequests;
+    private List<ExecutionRequestLabel> executionRequestLabels = new ArrayList<>();
 
     public ExecutionRequestBuilder name(String name) {
         this.name = name;
         return this;
     }
+    public ExecutionRequestBuilder id(String id) {
+        this.id = id;
+        return this;
+    }
 
     public ExecutionRequestBuilder description(String description) {
         this.description = description;
+        return this;
+    }
+
+
+    public ExecutionRequestBuilder executionRequestLabels(List<ExecutionRequestLabel> executionRequestLabels) {
+        this.executionRequestLabels.addAll(executionRequestLabels);
+        return this;
+    }
+
+    public ExecutionRequestBuilder executionRequestLabel(ExecutionRequestLabel executionRequestLabel) {
+        this.executionRequestLabels.add(executionRequestLabel);
         return this;
     }
 
@@ -84,21 +99,7 @@ public class ExecutionRequestBuilder {
 
     private NonAuthenticatedExecutionRequest buildNonAuthenticatedExecutionRequest() {
         return new NonAuthenticatedExecutionRequest(
-                new ExecutionRequestKey(IdentifierTools.getExecutionRequestIdentifier()),
-                LocalDateTime.now(),
-                name,
-                description,
-                email,
-                scope,
-                context,
-                ExecutionRequestStatus.NEW,
-                getScriptExecutionRequests().orElse(new ArrayList<>()));
-    }
-
-    private AuthenticatedExecutionRequest buildAuthenticatedExecutionRequest() throws ExecutionRequestBuilderException {
-        verifyMandatoryAuthenticationArguments();
-        return new AuthenticatedExecutionRequest(
-                new ExecutionRequestKey(IdentifierTools.getExecutionRequestIdentifier()),
+                new ExecutionRequestKey(id),
                 LocalDateTime.now(),
                 name,
                 description,
@@ -107,6 +108,22 @@ public class ExecutionRequestBuilder {
                 context,
                 ExecutionRequestStatus.NEW,
                 getScriptExecutionRequests().orElse(new ArrayList<>()),
+                executionRequestLabels);
+    }
+
+    private AuthenticatedExecutionRequest buildAuthenticatedExecutionRequest() throws ExecutionRequestBuilderException {
+        verifyMandatoryAuthenticationArguments();
+        return new AuthenticatedExecutionRequest(
+                new ExecutionRequestKey(id),
+                LocalDateTime.now(),
+                name,
+                description,
+                email,
+                scope,
+                context,
+                ExecutionRequestStatus.NEW,
+                getScriptExecutionRequests().orElse(new ArrayList<>()),
+                executionRequestLabels,
                 space,
                 user,
                 password);

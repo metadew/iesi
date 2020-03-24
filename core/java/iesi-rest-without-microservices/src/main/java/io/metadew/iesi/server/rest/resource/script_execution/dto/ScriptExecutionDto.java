@@ -1,36 +1,28 @@
 package io.metadew.iesi.server.rest.resource.script_execution.dto;
 
-import io.metadew.iesi.framework.configuration.ScriptRunStatus;
+import io.metadew.iesi.common.configuration.ScriptRunStatus;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecution;
 import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionKey;
 import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionRequestKey;
 import io.metadew.iesi.server.rest.resource.Dto;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.time.LocalDateTime;
 
-@NoArgsConstructor
-@Getter
-@Setter
-@ToString
+
+@Data
 @EqualsAndHashCode(callSuper = false)
+@AllArgsConstructor
 public class ScriptExecutionDto extends Dto {
 
     private String scriptExecutionId;
-    private ScriptRunStatus scriptRunStatus;
+    private String scriptExecutionRequestId;
     private String runId;
+    private ScriptRunStatus scriptRunStatus;
     private LocalDateTime startTimestamp;
     private LocalDateTime endTimestamp;
-    private String scriptExecutionRequestId;
-
-    public ScriptExecutionDto(String scriptExecutionId, String scriptExecutionRequestId, ScriptRunStatus scriptRunStatus, String runId, LocalDateTime startTimestamp, LocalDateTime endTimestamp) {
-        this.scriptExecutionId = scriptExecutionId;
-        this.scriptExecutionRequestId = scriptExecutionRequestId;
-        this.scriptRunStatus = scriptRunStatus;
-        this.runId = runId;
-        this.startTimestamp = startTimestamp;
-        this.endTimestamp = endTimestamp;
-    }
 
     public ScriptExecution convertToEntity() {
         return new ScriptExecution(new ScriptExecutionKey(scriptExecutionId), new ScriptExecutionRequestKey(scriptExecutionRequestId),

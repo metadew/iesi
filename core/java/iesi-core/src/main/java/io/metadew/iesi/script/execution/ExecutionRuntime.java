@@ -1,13 +1,13 @@
 package io.metadew.iesi.script.execution;
 
+import io.metadew.iesi.common.FrameworkControl;
+import io.metadew.iesi.common.configuration.framework.FrameworkConfiguration;
+import io.metadew.iesi.common.configuration.framework.FrameworkFolder;
 import io.metadew.iesi.connection.r.RWorkspace;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.data.generation.execution.GenerationObjectExecution;
 import io.metadew.iesi.datatypes.dataset.Dataset;
 import io.metadew.iesi.datatypes.dataset.DatasetHandler;
-import io.metadew.iesi.common.configuration.framework.FrameworkConfiguration;
-import io.metadew.iesi.common.configuration.framework.FrameworkFolder;
-import io.metadew.iesi.common.FrameworkControl;
 import io.metadew.iesi.metadata.definition.Iteration;
 import io.metadew.iesi.metadata.definition.component.ComponentAttribute;
 import io.metadew.iesi.script.configuration.IterationVariableConfiguration;
@@ -38,7 +38,6 @@ import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-//import io.metadew.iesi.script.operation.StageOperation;
 
 public class ExecutionRuntime {
 
@@ -293,7 +292,7 @@ public class ExecutionRuntime {
     private Map<String, ComponentAttribute> getComponentAttributeHashmap(List<ComponentAttribute> componentAttributeList, String environment) {
         return componentAttributeList.stream()
                 .filter(componentAttribute -> componentAttribute.getMetadataKey().getEnvironmentKey().getName().equalsIgnoreCase(environment))
-                .collect(Collectors.toMap(ComponentAttribute::getName, Function.identity()));
+                .collect(Collectors.toMap(componentAttribute -> componentAttribute.getMetadataKey().getComponentAttributeName(), Function.identity()));
     }
 
     public String resolveConfiguration(ActionExecution actionExecution, String input) {

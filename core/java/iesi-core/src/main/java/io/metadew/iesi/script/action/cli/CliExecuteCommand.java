@@ -144,7 +144,7 @@ public class CliExecuteCommand {
                     .orElseThrow(() -> new RuntimeException(MessageFormat.format("Cannot find connection definition for {} in environment {}",
                     connectionName, executionControl.getEnvName())));
             ConnectionOperation connectionOperation = new ConnectionOperation();
-            hostConnection = connectionOperation.getHostConnection();
+            hostConnection = connectionOperation.getHostConnection(connection);
         }
 
 

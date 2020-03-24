@@ -122,7 +122,7 @@ public class FwkRoute {
         // Evaluate conditions
 
         // Prepare script
-        String scriptId = scriptExecution.getScript().getId();
+        String scriptId = scriptExecution.getScript().getMetadataKey().getScriptId();
         Long versionNumber = scriptExecution.getScript().getVersion().getNumber();
         ScriptKey scriptKey = new ScriptKey(scriptId, versionNumber);
         String scriptName = scriptExecution.getScript().getName();
@@ -131,7 +131,7 @@ public class FwkRoute {
         List<Action> scriptActions = new ArrayList<>();
         List<ScriptParameter> scriptParameters = scriptExecution.getScript().getParameters();
         Script script = new Script(scriptKey, scriptName, scriptDescription, scriptVersion,
-                scriptParameters, scriptActions);
+                scriptParameters, scriptActions, scriptExecution.getScript().getLabels());
 
         //Prepare action runtime
         this.getActionExecution().getActionControl().getActionRuntime().setRouteOperations(new ArrayList());

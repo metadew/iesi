@@ -166,123 +166,123 @@ iesi:
             length: 0
             nullable: false
             defaultTimestamp: true
-        - name: DES_SCRIPT_LBL
-          label: ScriptLabels
-          description: Design metadata for script parameters
-          category: design
-          fields:
-            - name: ID
-              description: Unique identifier for the script label
-              order: 1
-              type: string
-              length: 255
-              nullable: false
-              defaultTimestamp: 
-            - name: SCRIPT_ID
-              description: Unique identifier for the script design
-              order: 1
-              type: string
-              length: 255
-              nullable: false
-              defaultTimestamp: 
-            - name: SCRIPT_VRS_NB
-              description: Unique identifier for the script version
-              order: 2
-              type: number
-              length: 0
-              nullable: false
-              defaultTimestamp: 
-            - name: NAME
-              description: Name of the script label
-              order: 3
-              type: string
-              length: 100
-              nullable: false
-              defaultTimestamp: 
-            - name: VALUE
-              description: value of the script label
-              order: 4
-              type: string
-              length: 2000
-              nullable: true
-              defaultTimestamp: 
-            - name: LOAD_TMS
-              description: Load timestamp indicating when the record was inserted in the table
-              order: 5
-              type: timestamp
-              length: 0
-              nullable: false
-              defaultTimestamp: true  
-        - name: TRC_DES_SCRIPT_LBL
-          label: ScriptLabelDesignTraces
-          description: Design metadata for script parameters
-          category: trace
-          fields:
-            - name: RUN_ID
-              description: Unique identifier for the script execution
-              order: 1
-              type: string
-              length: 255
-              nullable: false
-              defaultTimestamp: 
-              primaryKey: true
-            - name: PRC_ID
-              description: Process number for the script execution
-              order: 2
-              type: number
-              length: 0
-              nullable: false
-              defaultTimestamp: 
-              primaryKey: true
-            - name: SCRIPT_LBL_ID
-              description: Unique identifier for the script label
-              order: 1
-              type: string
-              length: 255
-              nullable: false
-              defaultTimestamp: 
-              primaryKey: true
-            - name: SCRIPT_ID
-              description: Unique identifier for the script design
-              order: 1
-              type: string
-              length: 255
-              nullable: false
-              defaultTimestamp: 
-            - name: SCRIPT_VRS_NB
-              description: Unique identifier for the script version
-              order: 2
-              type: number
-              length: 0
-              nullable: false
-              defaultTimestamp: 
-            - name: NAME
-              description: Name of the script label
-              order: 3
-              type: string
-              length: 100
-              nullable: false
-              defaultTimestamp: 
-            - name: VALUE
-              description: value of the script label
-              order: 4
-              type: string
-              length: 2000
-              nullable: true
-              defaultTimestamp: 
-            - name: LOAD_TMS
-              description: Load timestamp indicating when the record was inserted in the table
-              order: 5
-              type: timestamp
-              length: 0
-              nullable: false
-              defaultTimestamp: true
+      - name: DES_SCRIPT_LBL
+        label: ScriptLabels
+        description: Design metadata for script parameters
+        category: design
+        fields:
+          ID:
+            description: Unique identifier for the script label
+            order: 1
+            type: string
+            length: 255
+            nullable: false
+            defaultTimestamp:
+          SCRIPT_ID:
+            description: Unique identifier for the script design
+            order: 1
+            type: string
+            length: 255
+            nullable: false
+            defaultTimestamp:
+          SCRIPT_VRS_NB:
+            description: Unique identifier for the script version
+            order: 2
+            type: number
+            length: 0
+            nullable: false
+            defaultTimestamp:
+          NAME:
+            description: Name of the script label
+            order: 3
+            type: string
+            length: 100
+            nullable: false
+            defaultTimestamp:
+          VALUE:
+            description: value of the script label
+            order: 4
+            type: string
+            length: 2000
+            nullable: true
+            defaultTimestamp:
+          LOAD_TMS:
+            description: Load timestamp indicating when the record was inserted in the table
+            order: 5
+            type: timestamp
+            length: 0
+            nullable: false
+            defaultTimestamp: true
+      - name: TRC_DES_SCRIPT_LBL
+        label: ScriptLabelDesignTraces
+        description: Design metadata for script parameters
+        category: trace
+        fields:
+          RUN_ID:
+            description: Unique identifier for the script execution
+            order: 1
+            type: string
+            length: 255
+            nullable: false
+            defaultTimestamp:
+            primaryKey: true
+          PRC_ID:
+            description: Process number for the script execution
+            order: 2
+            type: number
+            length: 0
+            nullable: false
+            defaultTimestamp:
+            primaryKey: true
+          SCRIPT_LBL_ID:
+            description: Unique identifier for the script label
+            order: 1
+            type: string
+            length: 255
+            nullable: false
+            defaultTimestamp:
+            primaryKey: true
+          SCRIPT_ID:
+            description: Unique identifier for the script design
+            order: 1
+            type: string
+            length: 255
+            nullable: false
+            defaultTimestamp:
+          SCRIPT_VRS_NB:
+            description: Unique identifier for the script version
+            order: 2
+            type: number
+            length: 0
+            nullable: false
+            defaultTimestamp:
+          NAME:
+            description: Name of the script label
+            order: 3
+            type: string
+            length: 100
+            nullable: false
+            defaultTimestamp:
+          VALUE:
+            description: value of the script label
+            order: 4
+            type: string
+            length: 2000
+            nullable: true
+            defaultTimestamp:
+          LOAD_TMS:
+            description: Load timestamp indicating when the record was inserted in the table
+            order: 5
+            type: timestamp
+            length: 0
+            nullable: false
+            defaultTimestamp: true
       - name: TRC_SCRIPT_LBL
         label: ScriptLabelTraces
         description: Design metadata for script parameters
         category: trace
         fields:
-          - name: RUN_ID
+          RUN_ID:
             description: Unique identifier for the script execution
             order: 1
             type: string
@@ -290,7 +290,7 @@ iesi:
             nullable: false
             defaultTimestamp: 
             primaryKey: true
-          - name: PRC_ID
+          PRC_ID:
             description: Process number for the script execution
             order: 2
             type: number
@@ -298,7 +298,7 @@ iesi:
             nullable: false
             defaultTimestamp: 
             primaryKey: true
-          - name: SCRIPT_LBL_ID
+          SCRIPT_LBL_ID:
             description: Unique identifier for the script label
             order: 1
             type: string
@@ -306,47 +306,47 @@ iesi:
             nullable: false
             defaultTimestamp: 
             primaryKey: true
-          - name: SCRIPT_ID
+          SCRIPT_ID:
             description: Unique identifier for the script design
             order: 1
             type: string
             length: 255
             nullable: false
             defaultTimestamp: 
-          - name: SCRIPT_VRS_NB
+          SCRIPT_VRS_NB:
             description: Unique identifier for the script version
             order: 2
             type: number
             length: 0
             nullable: false
             defaultTimestamp: 
-          - name: NAME
+          NAME:
             description: Name of the script label
             order: 3
             type: string
             length: 100
             nullable: false
             defaultTimestamp: 
-          - name: VALUE
+          VALUE:
             description: value of the script label
             order: 4
             type: string
             length: 2000
             nullable: true
             defaultTimestamp: 
-          - name: LOAD_TMS
+          LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
             order: 5
             type: timestamp
             length: 0
             nullable: false
             defaultTimestamp: true
-      - name: REQ_LBL
+      - name: EXE_REQ_LBL
         label: ExecutionRequestLabels
         description: Design metadata for execution request labels
         category: execution
         fields:
-          - name: ID
+          ID:
             description: Unique identifier for the script label
             order: 1
             type: string
@@ -354,28 +354,28 @@ iesi:
             nullable: false
             defaultTimestamp: 
             primaryKey: true
-          - name: REQUEST_ID
+          REQUEST_ID:
             description: Unique identifier for the request item
             order: 1
             type: string
             length: 255
             nullable: false
             defaultTimestamp: 
-          - name: NAME
+          NAME:
             description: Name of the script label
             order: 3
             type: string
             length: 100
             nullable: false
             defaultTimestamp: 
-          - name: VALUE
+          VALUE:
             description: value of the script label
             order: 4
             type: string
             length: 2000
             nullable: true
             defaultTimestamp: 
-          - name: LOAD_TMS
+          LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
             order: 5
             type: timestamp
@@ -415,25 +415,6 @@ iesi:
             length: 0
             nullable: false
             defaultTimestamp: true
-      - name: EXE_CTL
-        label: RequestExecutions
-        description: In-process runtime execution control
-        category: execution
-        fields:
-          EXE_ID:
-            description: Unique identifier for the execution process
-            order: 1
-            type: number
-            length: 0
-            nullable: false
-            defaultTimestamp: 
-          REQUEST_ID:
-            description: Unique identifier for the request item
-            order: 2
-            type: string
-            length: 255
-            nullable: false
-            defaultTimestamp: 
                 
       - name: EXE_REQ
         label: ExecutionRequests
@@ -658,17 +639,18 @@ iesi:
             length: 0
             nullable: false
             defaultTimestamp: true
-      - name: SCRPT_EXEC_REQ
+      - name: EXE_SCRPT_EXEC_REQ
         label: ScriptExecutionRequests
         description: In-process runtime script requests for execution
         category: execution
         fields:
-          EXEC_REQUEST_ID:
+          ID:
             description: Unique identifier for the script request item
             order: 1
             type: string
             length: 255
             nullable: false
+            primaryKey: true
             defaultTimestamp: 
           SCRPT_REQUEST_ID:
             description: Unique identifier for the script request item
@@ -683,35 +665,14 @@ iesi:
             type: string
             length: 255
             nullable: false
-            defaultTimestamp: 
-          IMPERSONATION:
-            description: impersonation
-            order: 1
-            type: string
-            length: 255
-            nullable: true
-            defaultTimestamp: 
-          IMPERSONATIONS:
-            description: impersonation
-            order: 1
-            type: string
-            length: 255
-            nullable: true
-            defaultTimestamp: 
+            defaultTimestamp:
           ENVIRONMENT:
             description: Request timestamp
             order: 4
             type: string
             length: 255
             nullable: false
-            defaultTimestamp: 
-          PARAMETERS:
-            description: PARAMETERS
-            order: 5
-            type: string
-            length: 2000
-            nullable: true
-            defaultTimestamp: 
+            defaultTimestamp:
           ST_NM:
             description: Status
             order: 10
@@ -726,18 +687,95 @@ iesi:
             length: 0
             nullable: false
             defaultTimestamp: true
-      - name: EXE_SCRPT_FL_EXEC_REQ
-        label: ScriptFileExecutionRequests
+      - name: EXE_SCRPT_EXEC_REQ_IMP
+        label: ScriptExecutionRequestImpersonations
         description: In-process runtime script requests for execution
         category: execution
         fields:
-          EXEC_REQUEST_ID:
-            description: Unique identifier for the script request item
+          ID:
+            description: Unique identifier for the script execution request id
             order: 1
             type: string
             length: 255
             nullable: false
             defaultTimestamp: 
+            primaryKey: true
+          SCRIPT_EXEC_REQ_ID:
+            description: Unique identifier for the script execution request id
+            order: 1
+            type: string
+            length: 255
+            nullable: false
+            defaultTimestamp: 
+          IMP_ID:
+            description: Unique identifier for impersonation
+            order: 1
+            type: string
+            length: 255
+            nullable: false
+            defaultTimestamp: 
+          LOAD_TMS:
+            description: Load timestamp indicating when the record was inserted in the table
+            order: 15
+            type: timestamp
+            length: 0
+            nullable: false
+            defaultTimestamp: true
+      - name: SCRPT_EXEC_REQ_PAR
+        label: ScriptExecutionRequestParameters
+        description: In-process runtime script requests for execution
+        category: execution
+        fields:
+          ID:
+            description: Unique identifier for the script execution request parameter id
+            order: '1'
+            type: string
+            length: '255'
+            nullable: false
+            defaultTimestamp: ''
+            primaryKey: true
+          SCRIPT_EXEC_REQ_ID:
+            description: Unique identifier for the script execution request id
+            order: '1'
+            type: string
+            length: '255'
+            nullable: false
+            defaultTimestamp: ''
+          NAME:
+            description: name
+            order: '1'
+            type: string
+            length: '255'
+            nullable: false
+            defaultTimestamp: ''
+          VALUE:
+            description: value
+            order: '1'
+            type: string
+            length: '255'
+            nullable: false
+            defaultTimestamp: ''
+          LOAD_TMS:
+            description: Load timestamp indicating when the record was inserted in the table
+            order: '15'
+            type: timestamp
+            length: '0'
+            nullable: false
+            defaultTimestamp: true
+
+      - name: EXE_SCRPT_FL_EXEC_REQ
+        label: ScriptFileExecutionRequests
+        description: In-process runtime script requests for execution
+        category: execution
+        fields:
+          ID:
+            description: Unique identifier for the script request item
+            order: 1
+            type: string
+            length: 255
+            nullable: false
+            defaultTimestamp:
+            primaryKey: true
           SCRPT_REQUEST_ID:
             description: Unique identifier for the script request item
             order: 1
@@ -764,13 +802,14 @@ iesi:
         description: In-process runtime script requests for execution
         category: execution
         fields:
-          EXEC_REQUEST_ID:
+          ID:
             description: Unique identifier for the script request item
             order: 1
             type: string
             length: 255
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
+            primaryKey: true
           SCRPT_REQUEST_ID:
             description: Unique identifier for the script request item
             order: 1

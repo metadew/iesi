@@ -1,6 +1,7 @@
 package io.metadew.iesi.connection.database;
 
 import io.metadew.iesi.metadata.definition.MetadataField;
+import io.metadew.iesi.metadata.definition.connection.Connection;
 
 public class MysqlDatabaseServiceImpl extends DatabaseServiceImpl<MysqlDatabase> implements DatabaseService<MysqlDatabase>  {
 
@@ -14,6 +15,16 @@ public class MysqlDatabaseServiceImpl extends DatabaseServiceImpl<MysqlDatabase>
     }
 
     private MysqlDatabaseServiceImpl() {}
+
+    @Override
+    public MysqlDatabase getDatabase(Connection connection) {
+        return null;
+    }
+
+    @Override
+    public String keyword() {
+        return null;
+    }
 
     @Override
     public String getSystemTimestampExpression(MysqlDatabase mysqlDatabase) {

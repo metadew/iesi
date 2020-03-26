@@ -40,9 +40,11 @@ public class DbDb2ConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "port"), "1"),
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "database"), "database"),
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "user"), "user"),
+                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "schema"), "schema"),
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "password"), "password"))
                         .collect(Collectors.toList()));
-        Db2Database db2Database = new Db2Database(new Db2DatabaseConnection("host", 1, "database", "user", "password"),"schema");
+        Db2Database db2Database = new Db2Database(new Db2DatabaseConnection(
+                "host", 1, "database", "user", "password"),"");
         assertEquals(db2Database, DbDb2ConnectionService.getInstance().getDatabase(connection));
     }
     @Test
@@ -53,6 +55,7 @@ public class DbDb2ConnectionServiceTest {
                 Stream.of(new ConnectionParameter(new ConnectionParameterKey("test", "tst", "host"), "host"),
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "port"), "1"),
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "database"), "database"),
+                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "schema"), "schema"),
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "user"), "user"),
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "password"), FrameworkCrypto.getInstance().encrypt("encrypted_password")))
                         .collect(Collectors.toList()));

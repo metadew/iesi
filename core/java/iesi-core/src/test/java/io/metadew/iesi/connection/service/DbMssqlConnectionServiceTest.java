@@ -39,11 +39,12 @@ public class DbMssqlConnectionServiceTest {
                 Stream.of(new ConnectionParameter(new ConnectionParameterKey("test", "tst", "host"), "host"),
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "port"), "1"),
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "database"), "database"),
+                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "schema"), "schema"),
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "user"), "user"),
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "password"), "password"))
                         .collect(Collectors.toList()));
 
-        MssqlDatabase mssqlDatabase = new MssqlDatabase(new MssqlDatabaseConnection("host", 1, "database", "user", "password"),"");
+        MssqlDatabase mssqlDatabase = new MssqlDatabase(new MssqlDatabaseConnection("host", 1, "database", "user", "password"),"schema");
         assertEquals(mssqlDatabase, DbMssqlConnectionService.getInstance().getDatabase(connection));
     }
 
@@ -55,6 +56,7 @@ public class DbMssqlConnectionServiceTest {
                 Stream.of(new ConnectionParameter(new ConnectionParameterKey("test", "tst", "host"), "host"),
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "port"), "1"),
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "database"), "database"),
+                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "schema"), "schema"),
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "user"), "user"),
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "password"), FrameworkCrypto.getInstance().encrypt("encrypted_password")))
                         .collect(Collectors.toList()));

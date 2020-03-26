@@ -1,6 +1,7 @@
 package io.metadew.iesi.connection.database;
 
 import io.metadew.iesi.metadata.definition.MetadataField;
+import io.metadew.iesi.metadata.definition.connection.Connection;
 
 public class PostgresqlDatabaseServiceImpl extends SchemaDatabaseServiceImpl<PostgresqlDatabase> implements SchemaDatabaseService<PostgresqlDatabase>  {
 
@@ -14,6 +15,16 @@ public class PostgresqlDatabaseServiceImpl extends SchemaDatabaseServiceImpl<Pos
     }
 
     private PostgresqlDatabaseServiceImpl() {}
+
+    @Override
+    public PostgresqlDatabase getDatabase(Connection connection) {
+        return null;
+    }
+
+    @Override
+    public String keyword() {
+        return null;
+    }
 
     @Override
     public String getSystemTimestampExpression(PostgresqlDatabase postgresqlDatabase) {

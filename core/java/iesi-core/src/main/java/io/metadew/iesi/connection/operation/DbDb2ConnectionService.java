@@ -53,7 +53,7 @@ public class DbDb2ConnectionService {
                 databaseName,
                 userName,
                 userPassword);
-        return new Db2Database(db2DatabaseConnection, schemaName);
+        return new Db2Database(db2DatabaseConnection, "");
     }
     private String getMandatoryParameterWithKey(Connection connection, String key) {
         return connection.getParameters().stream()

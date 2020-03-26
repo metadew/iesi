@@ -1,14 +1,11 @@
 package io.metadew.iesi.connection.operation;
-import io.metadew.iesi.connection.database.OracleDatabase;
+
 import io.metadew.iesi.connection.database.PrestoDatabase;
-import io.metadew.iesi.connection.database.connection.oracle.OracleDatabaseConnection;
 import io.metadew.iesi.connection.database.connection.presto.PrestoDatabaseConnection;
 import io.metadew.iesi.framework.crypto.FrameworkCrypto;
 import io.metadew.iesi.framework.execution.FrameworkControl;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import lombok.extern.log4j.Log4j2;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.Optional;

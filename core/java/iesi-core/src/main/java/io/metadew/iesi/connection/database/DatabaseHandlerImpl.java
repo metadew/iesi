@@ -33,29 +33,29 @@ public class DatabaseHandlerImpl implements DatabaseHandler {
         databaseServiceMap = new HashMap<>();
         databaseServiceMap.put(new ClassStringPair(Db2DatabaseServiceImpl.getInstance().keyword(), Db2DatabaseServiceImpl.getInstance().appliesTo()),
                 Db2DatabaseServiceImpl.getInstance());
-        databaseServiceMap.put(new ClassStringPair(Db2DatabaseServiceImpl.getInstance().keyword(), DremioDatabaseServiceImpl.getInstance().appliesTo()),
+        databaseServiceMap.put(new ClassStringPair(DremioDatabaseServiceImpl.getInstance().keyword(), DremioDatabaseServiceImpl.getInstance().appliesTo()),
                 DremioDatabaseServiceImpl.getInstance());
-        databaseServiceMap.put(new ClassStringPair(Db2DatabaseServiceImpl.getInstance().keyword(), DrillDatabaseServiceImpl.getInstance().appliesTo()),
+        databaseServiceMap.put(new ClassStringPair(DrillDatabaseServiceImpl.getInstance().keyword(), DrillDatabaseServiceImpl.getInstance().appliesTo()),
                 DrillDatabaseServiceImpl.getInstance());
-        databaseServiceMap.put(new ClassStringPair(Db2DatabaseServiceImpl.getInstance().keyword(), H2DatabaseServiceImpl.getInstance().appliesTo()),
+        databaseServiceMap.put(new ClassStringPair(H2DatabaseServiceImpl.getInstance().keyword(), H2DatabaseServiceImpl.getInstance().appliesTo()),
                 H2DatabaseServiceImpl.getInstance());
-        databaseServiceMap.put(new ClassStringPair(Db2DatabaseServiceImpl.getInstance().keyword(), MariadbDatabaseServiceImpl.getInstance().appliesTo()),
+        databaseServiceMap.put(new ClassStringPair(MariadbDatabaseServiceImpl.getInstance().keyword(), MariadbDatabaseServiceImpl.getInstance().appliesTo()),
                 MariadbDatabaseServiceImpl.getInstance());
-        databaseServiceMap.put(new ClassStringPair(Db2DatabaseServiceImpl.getInstance().keyword(), MssqlDatabaseServiceImpl.getInstance().appliesTo()),
+        databaseServiceMap.put(new ClassStringPair(MssqlDatabaseServiceImpl.getInstance().keyword(), MssqlDatabaseServiceImpl.getInstance().appliesTo()),
                 MssqlDatabaseServiceImpl.getInstance());
-        databaseServiceMap.put(new ClassStringPair(Db2DatabaseServiceImpl.getInstance().keyword(), MysqlDatabaseServiceImpl.getInstance().appliesTo()),
+        databaseServiceMap.put(new ClassStringPair(MysqlDatabaseServiceImpl.getInstance().keyword(), MysqlDatabaseServiceImpl.getInstance().appliesTo()),
                 MysqlDatabaseServiceImpl.getInstance());
-        databaseServiceMap.put(new ClassStringPair(Db2DatabaseServiceImpl.getInstance().keyword(), NetezzaDatabaseServiceImpl.getInstance().appliesTo()),
+        databaseServiceMap.put(new ClassStringPair(NetezzaDatabaseServiceImpl.getInstance().keyword(), NetezzaDatabaseServiceImpl.getInstance().appliesTo()),
                 NetezzaDatabaseServiceImpl.getInstance());
-        databaseServiceMap.put(new ClassStringPair(Db2DatabaseServiceImpl.getInstance().keyword(), OracleDatabaseServiceImpl.getInstance().appliesTo()),
+        databaseServiceMap.put(new ClassStringPair(OracleDatabaseServiceImpl.getInstance().keyword(), OracleDatabaseServiceImpl.getInstance().appliesTo()),
                 OracleDatabaseServiceImpl.getInstance());
-        databaseServiceMap.put(new ClassStringPair(Db2DatabaseServiceImpl.getInstance().keyword(), PostgresqlDatabaseServiceImpl.getInstance().appliesTo()),
+        databaseServiceMap.put(new ClassStringPair(PostgresqlDatabaseServiceImpl.getInstance().keyword(), PostgresqlDatabaseServiceImpl.getInstance().appliesTo()),
                 PostgresqlDatabaseServiceImpl.getInstance());
-        databaseServiceMap.put(new ClassStringPair(Db2DatabaseServiceImpl.getInstance().keyword(), PrestoDatabaseServiceImpl.getInstance().appliesTo()),
+        databaseServiceMap.put(new ClassStringPair(PrestoDatabaseServiceImpl.getInstance().keyword(), PrestoDatabaseServiceImpl.getInstance().appliesTo()),
                 PrestoDatabaseServiceImpl.getInstance());
-        databaseServiceMap.put(new ClassStringPair(Db2DatabaseServiceImpl.getInstance().keyword(), SqliteDatabaseServiceImpl.getInstance().appliesTo()),
+        databaseServiceMap.put(new ClassStringPair(SqliteDatabaseServiceImpl.getInstance().keyword(), SqliteDatabaseServiceImpl.getInstance().appliesTo()),
                 SqliteDatabaseServiceImpl.getInstance());
-        databaseServiceMap.put(new ClassStringPair(Db2DatabaseServiceImpl.getInstance().keyword(), TeradataDatabaseServiceImpl.getInstance().appliesTo()),
+        databaseServiceMap.put(new ClassStringPair(TeradataDatabaseServiceImpl.getInstance().keyword(), TeradataDatabaseServiceImpl.getInstance().appliesTo()),
                 TeradataDatabaseServiceImpl.getInstance());
     }
 

@@ -1,6 +1,7 @@
 package io.metadew.iesi.connection.database;
 
 import io.metadew.iesi.metadata.definition.MetadataField;
+import io.metadew.iesi.metadata.definition.connection.Connection;
 
 public class NetezzaDatabaseServiceImpl extends SchemaDatabaseServiceImpl<NetezzaDatabase> implements SchemaDatabaseService<NetezzaDatabase>  {
 
@@ -14,6 +15,16 @@ public class NetezzaDatabaseServiceImpl extends SchemaDatabaseServiceImpl<Netezz
     }
 
     private NetezzaDatabaseServiceImpl() {}
+
+    @Override
+    public NetezzaDatabase getDatabase(Connection connection) {
+        return null;
+    }
+
+    @Override
+    public String keyword() {
+        return null;
+    }
 
     @Override
     public String getSystemTimestampExpression(NetezzaDatabase netezzaDatabase) {

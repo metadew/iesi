@@ -60,7 +60,7 @@ public class DbDremioConnectionService {
                 schemaName,
                 userName,
                 userPassword);
-        return new DremioDatabase(dremioDatabaseConnection, "");
+        return new DremioDatabase(dremioDatabaseConnection, schemaName);
     }
 
     private String getMandatoryParameterWithKey(Connection connection, String key) {

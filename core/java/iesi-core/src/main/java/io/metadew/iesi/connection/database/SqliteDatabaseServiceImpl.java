@@ -19,6 +19,16 @@ public class SqliteDatabaseServiceImpl extends DatabaseServiceImpl<SqliteDatabas
 
     private SqliteDatabaseServiceImpl() {}
 
+    @Override
+    public SqliteDatabase getDatabase(io.metadew.iesi.metadata.definition.connection.Connection connection) {
+        return null;
+    }
+
+    @Override
+    public String keyword() {
+        return null;
+    }
+
     public Connection getConnection(SqliteDatabase sqliteDatabase) {
         synchronized (sqliteDatabase.getConnectionPoolLock()) {
             return DatabaseConnectionHandlerImpl.getInstance().getConnection(sqliteDatabase.getDatabaseConnection());

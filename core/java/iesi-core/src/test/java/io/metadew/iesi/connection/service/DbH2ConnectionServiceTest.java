@@ -13,6 +13,7 @@ import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionParameterKey;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -28,11 +29,17 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 
 public class DbH2ConnectionServiceTest {
+
     @BeforeAll
     static void setup()  {
         DatabaseConnectionHandlerImpl databaseConnectionHandler = PowerMockito.mock(DatabaseConnectionHandlerImpl.class);
         Whitebox.setInternalState(DatabaseConnectionHandlerImpl.class, "INSTANCE", databaseConnectionHandler);
         Mockito.doReturn(null).when(databaseConnectionHandler).getConnection(any());
+    }
+
+    @AfterAll
+    static void destroy() {
+        Whitebox.setInternalState(DatabaseConnectionHandlerImpl.class, "INSTANCE", (DatabaseConnectionHandlerImpl) null);
     }
 
     @Test

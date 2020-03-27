@@ -38,449 +38,449 @@ public class ConnectionOperation {
     public ConnectionOperation() {
     }
 
-    // Methods
-    public Database getDatabase(Connection connection) {
-        this.setMissingMandatoryFieldsList(new ArrayList<>());
-
-        Database database = null;
-        if (connection.getType().equalsIgnoreCase("db.oracle")) {
-            String hostName = "";
-            String portNumberTemp = "";
-            int portNumber = 0;
-            String tnsAlias = "";
-            String userName = "";
-            String userPassword = null;
-            String serviceName = "";
-
-            for (ConnectionParameter connectionParameter : connection.getParameters()) {
-                if (connectionParameter.getName().equalsIgnoreCase("host")) {
-                    hostName = (connectionParameter.getValue());
-                    hostName = FrameworkControl.getInstance().resolveConfiguration(hostName);
-                } else if (connectionParameter.getName().equalsIgnoreCase("port")) {
-                    portNumberTemp = connectionParameter.getValue();
-                    portNumberTemp = FrameworkControl.getInstance()
-                            .resolveConfiguration(portNumberTemp);
-                } else if (connectionParameter.getName().equalsIgnoreCase("tnsalias")) {
-                    tnsAlias = connectionParameter.getValue();
-                    tnsAlias = FrameworkControl.getInstance().resolveConfiguration(tnsAlias);
-                } else if (connectionParameter.getName().equalsIgnoreCase("user")) {
-                    userName = connectionParameter.getValue();
-                    userName = FrameworkControl.getInstance().resolveConfiguration(userName);
-                } else if (connectionParameter.getName().equalsIgnoreCase("password")) {
-                    userPassword = connectionParameter.getValue();
-                    userPassword = FrameworkControl.getInstance()
-                            .resolveConfiguration(userPassword);
-                } else if (connectionParameter.getName().equalsIgnoreCase("service")) {
-                    serviceName = connectionParameter.getValue();
-                    serviceName = FrameworkControl.getInstance()
-                            .resolveConfiguration(serviceName);
-                }
-            }
-
-            // Check Mandatory Parameters
-            this.setMissingMandatoryFields(false);
-            ConnectionType connectionType = this.getConnectionType(connection.getType());
-            for (ConnectionTypeParameter connectionTypeParameter : connectionType.getParameters()) {
-                if (connectionTypeParameter.getMandatory().equalsIgnoreCase("y")) {
-                    if (connectionTypeParameter.getName().equalsIgnoreCase("host")) {
-                        if (hostName.trim().equalsIgnoreCase(""))
-                            this.addMissingField("host");
-                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("port")) {
-                        if (portNumberTemp.trim().equalsIgnoreCase(""))
-                            this.addMissingField("port");
-                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("tnsalias")) {
-                        if (tnsAlias.trim().equalsIgnoreCase(""))
-                            this.addMissingField("tnsalias");
-                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("user")) {
-                        if (userName.trim().equalsIgnoreCase(""))
-                            this.addMissingField("user");
-                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("password")) {
-                        if (userPassword.trim().equalsIgnoreCase(""))
-                            this.addMissingField("password");
-                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("service")) {
-                        if (userPassword.trim().equalsIgnoreCase(""))
-                            this.addMissingField("service");
-                    }
-                }
-            }
-
-            // Addition for combined mandatory behavour of SERVICE_NM and TNS_ALIAS
-            if (tnsAlias.trim().equalsIgnoreCase("") && serviceName.trim().equalsIgnoreCase("")) {
-                this.addMissingField("service");
-                this.addMissingField("tnsalias");
-            }
-
-            if (this.isMissingMandatoryFields()) {
-                String message = "Mandatory fields missing for oracle connection " + connection.getName();
-                throw new RuntimeException(message);
-            }
-
-            // Decrypt Parameters
-            for (ConnectionTypeParameter connectionTypeParameter : connectionType.getParameters()) {
-                if (connectionTypeParameter.getEncrypted().equalsIgnoreCase("y")) {
-                    if (connectionTypeParameter.getName().equalsIgnoreCase("host")) {
-                        hostName = FrameworkCrypto.getInstance().decrypt(hostName);
-                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("port")) {
-                        portNumberTemp = FrameworkCrypto.getInstance().decrypt(portNumberTemp);
-                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("tnsalias")) {
-                        tnsAlias = FrameworkCrypto.getInstance().decrypt(tnsAlias);
-                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("user")) {
-                        userName = FrameworkCrypto.getInstance().decrypt(userName);
-                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("password")) {
-                        userPassword = FrameworkCrypto.getInstance().decrypt(userPassword);
-                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("service")) {
-                        serviceName = FrameworkCrypto.getInstance().decrypt(serviceName);
-                    }
-                }
-            }
-
-            // Convert port number
-            if (!portNumberTemp.isEmpty()) {
-                portNumber = Integer.parseInt(portNumberTemp);
-            }
-
-            OracleDatabaseConnection oracleDatabaseConnection;
-            if (tnsAlias != null && tnsAlias.isEmpty()) {
-                oracleDatabaseConnection = new TnsAliasOracleDatabaseConnection(hostName, portNumber, tnsAlias,
-                        userName, userPassword);
-            } else {
-                oracleDatabaseConnection = new ServiceNameOracleDatabaseConnection(hostName, portNumber,
-                        serviceName, userName, userPassword);
-            }
-            // TODO: schema as parameter to add to Oracle database
-            database = new OracleDatabase(oracleDatabaseConnection, "");
-        } else if (connection.getType().equalsIgnoreCase("db.netezza")) {
-            String hostName = "";
-            String portNumberTemp = "";
-            int portNumber = 0;
-            String databaseName = "";
-            String userName = "";
-            String userPassword = "";
-
-            for (ConnectionParameter connectionParameter : connection.getParameters()) {
-                if (connectionParameter.getName().equalsIgnoreCase("host")) {
-                    hostName = (connectionParameter.getValue());
-                    hostName = FrameworkControl.getInstance().resolveConfiguration(hostName);
-                } else if (connectionParameter.getName().equalsIgnoreCase("port")) {
-                    portNumberTemp = connectionParameter.getValue();
-                    portNumberTemp = FrameworkControl.getInstance()
-                            .resolveConfiguration(portNumberTemp);
-                } else if (connectionParameter.getName().equalsIgnoreCase("database")) {
-                    databaseName = connectionParameter.getValue();
-                    databaseName = FrameworkControl.getInstance()
-                            .resolveConfiguration(databaseName);
-                } else if (connectionParameter.getName().equalsIgnoreCase("user")) {
-                    userName = connectionParameter.getValue();
-                    userName = FrameworkControl.getInstance().resolveConfiguration(userName);
-                } else if (connectionParameter.getName().equalsIgnoreCase("password")) {
-                    userPassword = connectionParameter.getValue();
-                    userPassword = FrameworkControl.getInstance()
-                            .resolveConfiguration(userPassword);
-                }
-            }
-
-            // Check Mandatory Parameters
-            this.setMissingMandatoryFields(false);
-            ConnectionType connectionType = this.getConnectionType(connection.getType());
-            for (ConnectionTypeParameter connectionTypeParameter : connectionType.getParameters()) {
-                if (connectionTypeParameter.getMandatory().equalsIgnoreCase("y")) {
-                    if (connectionTypeParameter.getName().equalsIgnoreCase("host")) {
-                        if (hostName.trim().equalsIgnoreCase(""))
-                            this.addMissingField("host");
-                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("port")) {
-                        if (portNumberTemp.trim().equalsIgnoreCase(""))
-                            this.addMissingField("port");
-                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("database")) {
-                        if (databaseName.trim().equalsIgnoreCase(""))
-                            this.addMissingField("database");
-                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("user")) {
-                        if (userName.trim().equalsIgnoreCase(""))
-                            this.addMissingField("user");
-                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("password")) {
-                        if (userPassword.trim().equalsIgnoreCase(""))
-                            this.addMissingField("password");
-                    }
-                }
-            }
-
-            if (this.isMissingMandatoryFields()) {
-                String message = "Mandatory fields missing for netezza connection " + connection.getName();
-                throw new RuntimeException(message);
-            }
-
-            // Decrypt Parameters
-            for (ConnectionTypeParameter connectionTypeParameter : connectionType.getParameters()) {
-                if (connectionTypeParameter.getEncrypted().equalsIgnoreCase("y")) {
-                    if (connectionTypeParameter.getName().equalsIgnoreCase("host")) {
-                        hostName = FrameworkCrypto.getInstance().decrypt(hostName);
-                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("port")) {
-                        portNumberTemp = FrameworkCrypto.getInstance().decrypt(portNumberTemp);
-                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("database")) {
-                        databaseName = FrameworkCrypto.getInstance().decrypt(databaseName);
-                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("user")) {
-                        userName = FrameworkCrypto.getInstance().decrypt(userName);
-                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("password")) {
-                        userPassword = FrameworkCrypto.getInstance().decrypt(userPassword);
-                    }
-                }
-            }
-
-            // Convert port number
-            if (!portNumberTemp.isEmpty()) {
-                portNumber = Integer.parseInt(portNumberTemp);
-            }
-
-            NetezzaDatabaseConnection netezzaDatabaseConnection = new NetezzaDatabaseConnection(hostName,
-                    portNumber, databaseName, userName, userPassword);
-            database = new NetezzaDatabase(netezzaDatabaseConnection, "");
-        } else if (connection.getType().equalsIgnoreCase("db.postgresql")) {
-            String hostName = "";
-            String portNumberTemp = "";
-            int portNumber = 0;
-            String databaseName = "";
-            String userName = "";
-            String userPassword = "";
-
-            for (ConnectionParameter connectionParameter : connection.getParameters()) {
-                if (connectionParameter.getName().equalsIgnoreCase("host")) {
-                    hostName = (connectionParameter.getValue());
-                    hostName = FrameworkControl.getInstance().resolveConfiguration(hostName);
-                } else if (connectionParameter.getName().equalsIgnoreCase("port")) {
-                    portNumberTemp = connectionParameter.getValue();
-                    portNumberTemp = FrameworkControl.getInstance()
-                            .resolveConfiguration(portNumberTemp);
-                } else if (connectionParameter.getName().equalsIgnoreCase("database")) {
-                    databaseName = connectionParameter.getValue();
-                    databaseName = FrameworkControl.getInstance()
-                            .resolveConfiguration(databaseName);
-                } else if (connectionParameter.getName().equalsIgnoreCase("user")) {
-                    userName = connectionParameter.getValue();
-                    userName = FrameworkControl.getInstance().resolveConfiguration(userName);
-                } else if (connectionParameter.getName().equalsIgnoreCase("password")) {
-                    userPassword = connectionParameter.getValue();
-                    userPassword = FrameworkControl.getInstance()
-                            .resolveConfiguration(userPassword);
-                }
-            }
-
-            // Check Mandatory Parameters
-            this.setMissingMandatoryFields(false);
-            ConnectionType connectionType = this.getConnectionType(connection.getType());
-            for (ConnectionTypeParameter connectionTypeParameter : connectionType.getParameters()) {
-                if (connectionTypeParameter.getMandatory().equalsIgnoreCase("y")) {
-                    if (connectionTypeParameter.getName().equalsIgnoreCase("host")) {
-                        if (hostName.trim().equalsIgnoreCase(""))
-                            this.addMissingField("host");
-                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("port")) {
-                        if (portNumberTemp.trim().equalsIgnoreCase(""))
-                            this.addMissingField("port");
-                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("database")) {
-                        if (databaseName.trim().equalsIgnoreCase(""))
-                            this.addMissingField("database");
-                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("user")) {
-                        if (userName.trim().equalsIgnoreCase(""))
-                            this.addMissingField("user");
-                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("password")) {
-                        if (userPassword.trim().equalsIgnoreCase(""))
-                            this.addMissingField("password");
-                    }
-                }
-            }
-
-            if (this.isMissingMandatoryFields()) {
-                String message = "Mandatory fields missing for postgres connection " + connection.getName();
-                throw new RuntimeException(message);
-            }
-
-            // Decrypt Parameters
-            for (ConnectionTypeParameter connectionTypeParameter : connectionType.getParameters()) {
-                if (connectionTypeParameter.getEncrypted().equalsIgnoreCase("y")) {
-                    if (connectionTypeParameter.getName().equalsIgnoreCase("host")) {
-                        hostName = FrameworkCrypto.getInstance().decrypt(hostName);
-                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("port")) {
-                        portNumberTemp = FrameworkCrypto.getInstance().decrypt(portNumberTemp);
-                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("database")) {
-                        databaseName = FrameworkCrypto.getInstance().decrypt(databaseName);
-                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("user")) {
-                        userName = FrameworkCrypto.getInstance().decrypt(userName);
-                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("password")) {
-                        userPassword = FrameworkCrypto.getInstance().decrypt(userPassword);
-                    }
-                }
-            }
-
-            // Convert port number
-            if (!portNumberTemp.isEmpty()) {
-                portNumber = Integer.parseInt(portNumberTemp);
-            }
-
-            PostgresqlDatabaseConnection postgresqlDatabaseConnection = new PostgresqlDatabaseConnection(hostName,
-                    portNumber, databaseName, userName, userPassword);
-            database = new PostgresqlDatabase(postgresqlDatabaseConnection, "");
-        } else if (connection.getType().equalsIgnoreCase("db.mysql")) {
-            String hostName = "";
-            String portNumberTemp = "";
-            int portNumber = 0;
-            String schemaName = "";
-            String userName = "";
-            String userPassword = "";
-
-            for (ConnectionParameter connectionParameter : connection.getParameters()) {
-                if (connectionParameter.getName().equalsIgnoreCase("host")) {
-                    hostName = (connectionParameter.getValue());
-                    hostName = FrameworkControl.getInstance().resolveConfiguration(hostName);
-                } else if (connectionParameter.getName().equalsIgnoreCase("port")) {
-                    portNumberTemp = connectionParameter.getValue();
-                    portNumberTemp = FrameworkControl.getInstance()
-                            .resolveConfiguration(portNumberTemp);
-                } else if (connectionParameter.getName().equalsIgnoreCase("schema")) {
-                    schemaName = connectionParameter.getValue();
-                    schemaName = FrameworkControl.getInstance()
-                            .resolveConfiguration(schemaName);
-                } else if (connectionParameter.getName().equalsIgnoreCase("user")) {
-                    userName = connectionParameter.getValue();
-                    userName = FrameworkControl.getInstance().resolveConfiguration(userName);
-                } else if (connectionParameter.getName().equalsIgnoreCase("password")) {
-                    userPassword = connectionParameter.getValue();
-                    userPassword = FrameworkControl.getInstance()
-                            .resolveConfiguration(userPassword);
-                }
-            }
-
-            // Check Mandatory Parameters
-            this.setMissingMandatoryFields(false);
-            ConnectionType connectionType = this.getConnectionType(connection.getType());
-            for (ConnectionTypeParameter connectionTypeParameter : connectionType.getParameters()) {
-                if (connectionTypeParameter.getMandatory().equalsIgnoreCase("y")) {
-                    if (connectionTypeParameter.getName().equalsIgnoreCase("host")) {
-                        if (hostName.trim().equalsIgnoreCase(""))
-                            this.addMissingField("host");
-                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("port")) {
-                        if (portNumberTemp.trim().equalsIgnoreCase(""))
-                            this.addMissingField("port");
-                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("schema")) {
-                        if (schemaName.trim().equalsIgnoreCase(""))
-                            this.addMissingField("schema");
-                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("user")) {
-                        if (userName.trim().equalsIgnoreCase(""))
-                            this.addMissingField("user");
-                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("password")) {
-                        if (userPassword.trim().equalsIgnoreCase(""))
-                            this.addMissingField("password");
-                    }
-                }
-            }
-
-            if (this.isMissingMandatoryFields()) {
-                String message = "Mandatory fields missing for mysql connection " + connection.getName();
-                throw new RuntimeException(message);
-            }
-
-            // Decrypt Parameters
-            for (ConnectionTypeParameter connectionTypeParameter : connectionType.getParameters()) {
-                if (connectionTypeParameter.getEncrypted().equalsIgnoreCase("y")) {
-                    if (connectionTypeParameter.getName().equalsIgnoreCase("host")) {
-                        hostName = FrameworkCrypto.getInstance().decrypt(hostName);
-                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("port")) {
-                        portNumberTemp = FrameworkCrypto.getInstance().decrypt(portNumberTemp);
-                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("schema")) {
-                        schemaName = FrameworkCrypto.getInstance().decrypt(schemaName);
-                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("user")) {
-                        userName = FrameworkCrypto.getInstance().decrypt(userName);
-                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("password")) {
-                        userPassword = FrameworkCrypto.getInstance().decrypt(userPassword);
-                    }
-                }
-            }
-
-            // Convert port number
-            if (!portNumberTemp.isEmpty()) {
-                portNumber = Integer.parseInt(portNumberTemp);
-            }
-
-            MysqlDatabaseConnection mysqlDatabaseConnection = new MysqlDatabaseConnection(hostName, portNumber,
-                    schemaName, userName, userPassword);
-            database = new MysqlDatabase(mysqlDatabaseConnection);
-        } else if (connection.getType().equalsIgnoreCase("db.sqlite")) {
-            String filePath = "";
-            String fileName = "";
-
-            for (ConnectionParameter connectionParameter : connection.getParameters()) {
-                if (connectionParameter.getName().equalsIgnoreCase("filepath")) {
-                    filePath = (connectionParameter.getValue());
-                    filePath = FrameworkControl.getInstance().resolveConfiguration(filePath);
-                } else if (connectionParameter.getName().equalsIgnoreCase("filename")) {
-                    fileName = connectionParameter.getValue();
-                    fileName = FrameworkControl.getInstance().resolveConfiguration(fileName);
-                }
-            }
-
-            // Check Mandatory Parameters
-            this.setMissingMandatoryFields(false);
-            ConnectionType connectionType = this.getConnectionType(connection.getType());
-            for (ConnectionTypeParameter connectionTypeParameter : connectionType.getParameters()) {
-                if (connectionTypeParameter.getMandatory().equalsIgnoreCase("y")) {
-                    if (connectionTypeParameter.getName().equalsIgnoreCase("filepath")) {
-                        if (filePath.trim().equalsIgnoreCase(""))
-                            this.addMissingField("filePath");
-                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("filename")) {
-                        if (fileName.trim().equalsIgnoreCase(""))
-                            this.addMissingField("fileName");
-                    }
-                }
-            }
-
-            if (this.isMissingMandatoryFields()) {
-                String message = "Mandatory fields missing for sqlite connection " + connection.getName() +". "
-						+ String.join(", ", missingMandatoryFieldsList) + ". " + connection.getParameters().stream()
-						.map(connectionParameter -> connectionParameter.getName() + " = " + connectionParameter.getValue())
-						.collect(Collectors.joining(", "));
-                throw new RuntimeException(message);
-            }
-
-            // Decrypt Parameters
-            for (ConnectionTypeParameter connectionTypeParameter : connectionType.getParameters()) {
-                if (connectionTypeParameter.getEncrypted().equalsIgnoreCase("y")) {
-                    if (connectionTypeParameter.getName().equalsIgnoreCase("filepath")) {
-                        filePath = FrameworkCrypto.getInstance().decrypt(filePath);
-                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("filename")) {
-                        fileName = FrameworkCrypto.getInstance().decrypt(fileName);
-                    }
-                }
-            }
-
-            SqliteDatabaseConnection sqliteDatabaseConnection = new SqliteDatabaseConnection(
-                    FilenameUtils.normalize(filePath + File.separator + fileName));
-            database = new SqliteDatabase(sqliteDatabaseConnection);
-        } else if (connection.getType().equalsIgnoreCase("db.db2")) {
-            DbDb2ConnectionOperation dbDb2ConnectionOperation = new DbDb2ConnectionOperation();
-            database = dbDb2ConnectionOperation.getDatabase(connection);
-        } else if (connection.getType().equalsIgnoreCase("db.h2")) {
-            DbH2ConnectionOperation dbH2ConnectionOperation = new DbH2ConnectionOperation();
-            database = dbH2ConnectionOperation.getDatabase(connection);
-        } else if (connection.getType().equalsIgnoreCase("db.mariadb")) {
-            DbMariadbConnectionOperation dbMariadbConnectionOperation = new DbMariadbConnectionOperation();
-            database = dbMariadbConnectionOperation.getDatabase(connection);
-        } else if (connection.getType().equalsIgnoreCase("db.mssql")) {
-            DbMssqlConnectionOperation dbMssqlConnectionOperation = new DbMssqlConnectionOperation();
-            database = dbMssqlConnectionOperation.getDatabase(connection);
-        } else if (connection.getType().equalsIgnoreCase("db.presto")) {
-            DbPrestoConnectionOperation dbPrestoConnectionOperation = new DbPrestoConnectionOperation();
-            database = dbPrestoConnectionOperation.getDatabase(connection);
-        } else if (connection.getType().equalsIgnoreCase("db.dremio")) {
-            DbDremioConnectionOperation dbDremioConnectionOperation = new DbDremioConnectionOperation();
-            database = dbDremioConnectionOperation.getDatabase(connection);
-        } else if (connection.getType().equalsIgnoreCase("db.drill")) {
-            DbDrillConnectionOperation dbDrillConnectionOperation = new DbDrillConnectionOperation();
-            database = dbDrillConnectionOperation.getDatabase(connection);
-        } else if (connection.getType().equalsIgnoreCase("db.teradata")) {
-            database = DbTeradataConnectionService.getInstance().getDatabase(connection);
-        } else {
-            String message = "Database type is not (yet) supported: " + connection.getType();
-            throw new RuntimeException(message);
-        }
-        return database;
-    }
+//    // Methods
+//    public Database getDatabase(Connection connection) {
+//        this.setMissingMandatoryFieldsList(new ArrayList<>());
+//
+//        Database database = null;
+//        if (connection.getType().equalsIgnoreCase("db.oracle")) {
+//            String hostName = "";
+//            String portNumberTemp = "";
+//            int portNumber = 0;
+//            String tnsAlias = "";
+//            String userName = "";
+//            String userPassword = null;
+//            String serviceName = "";
+//
+//            for (ConnectionParameter connectionParameter : connection.getParameters()) {
+//                if (connectionParameter.getName().equalsIgnoreCase("host")) {
+//                    hostName = (connectionParameter.getValue());
+//                    hostName = FrameworkControl.getInstance().resolveConfiguration(hostName);
+//                } else if (connectionParameter.getName().equalsIgnoreCase("port")) {
+//                    portNumberTemp = connectionParameter.getValue();
+//                    portNumberTemp = FrameworkControl.getInstance()
+//                            .resolveConfiguration(portNumberTemp);
+//                } else if (connectionParameter.getName().equalsIgnoreCase("tnsalias")) {
+//                    tnsAlias = connectionParameter.getValue();
+//                    tnsAlias = FrameworkControl.getInstance().resolveConfiguration(tnsAlias);
+//                } else if (connectionParameter.getName().equalsIgnoreCase("user")) {
+//                    userName = connectionParameter.getValue();
+//                    userName = FrameworkControl.getInstance().resolveConfiguration(userName);
+//                } else if (connectionParameter.getName().equalsIgnoreCase("password")) {
+//                    userPassword = connectionParameter.getValue();
+//                    userPassword = FrameworkControl.getInstance()
+//                            .resolveConfiguration(userPassword);
+//                } else if (connectionParameter.getName().equalsIgnoreCase("service")) {
+//                    serviceName = connectionParameter.getValue();
+//                    serviceName = FrameworkControl.getInstance()
+//                            .resolveConfiguration(serviceName);
+//                }
+//            }
+//
+//            // Check Mandatory Parameters
+//            this.setMissingMandatoryFields(false);
+//            ConnectionType connectionType = this.getConnectionType(connection.getType());
+//            for (ConnectionTypeParameter connectionTypeParameter : connectionType.getParameters()) {
+//                if (connectionTypeParameter.getMandatory().equalsIgnoreCase("y")) {
+//                    if (connectionTypeParameter.getName().equalsIgnoreCase("host")) {
+//                        if (hostName.trim().equalsIgnoreCase(""))
+//                            this.addMissingField("host");
+//                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("port")) {
+//                        if (portNumberTemp.trim().equalsIgnoreCase(""))
+//                            this.addMissingField("port");
+//                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("tnsalias")) {
+//                        if (tnsAlias.trim().equalsIgnoreCase(""))
+//                            this.addMissingField("tnsalias");
+//                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("user")) {
+//                        if (userName.trim().equalsIgnoreCase(""))
+//                            this.addMissingField("user");
+//                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("password")) {
+//                        if (userPassword.trim().equalsIgnoreCase(""))
+//                            this.addMissingField("password");
+//                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("service")) {
+//                        if (userPassword.trim().equalsIgnoreCase(""))
+//                            this.addMissingField("service");
+//                    }
+//                }
+//            }
+//
+//            // Addition for combined mandatory behavour of SERVICE_NM and TNS_ALIAS
+//            if (tnsAlias.trim().equalsIgnoreCase("") && serviceName.trim().equalsIgnoreCase("")) {
+//                this.addMissingField("service");
+//                this.addMissingField("tnsalias");
+//            }
+//
+//            if (this.isMissingMandatoryFields()) {
+//                String message = "Mandatory fields missing for oracle connection " + connection.getName();
+//                throw new RuntimeException(message);
+//            }
+//
+//            // Decrypt Parameters
+//            for (ConnectionTypeParameter connectionTypeParameter : connectionType.getParameters()) {
+//                if (connectionTypeParameter.getEncrypted().equalsIgnoreCase("y")) {
+//                    if (connectionTypeParameter.getName().equalsIgnoreCase("host")) {
+//                        hostName = FrameworkCrypto.getInstance().decrypt(hostName);
+//                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("port")) {
+//                        portNumberTemp = FrameworkCrypto.getInstance().decrypt(portNumberTemp);
+//                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("tnsalias")) {
+//                        tnsAlias = FrameworkCrypto.getInstance().decrypt(tnsAlias);
+//                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("user")) {
+//                        userName = FrameworkCrypto.getInstance().decrypt(userName);
+//                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("password")) {
+//                        userPassword = FrameworkCrypto.getInstance().decrypt(userPassword);
+//                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("service")) {
+//                        serviceName = FrameworkCrypto.getInstance().decrypt(serviceName);
+//                    }
+//                }
+//            }
+//
+//            // Convert port number
+//            if (!portNumberTemp.isEmpty()) {
+//                portNumber = Integer.parseInt(portNumberTemp);
+//            }
+//
+//            OracleDatabaseConnection oracleDatabaseConnection;
+//            if (tnsAlias != null && tnsAlias.isEmpty()) {
+//                oracleDatabaseConnection = new TnsAliasOracleDatabaseConnection(hostName, portNumber, tnsAlias,
+//                        userName, userPassword);
+//            } else {
+//                oracleDatabaseConnection = new ServiceNameOracleDatabaseConnection(hostName, portNumber,
+//                        serviceName, userName, userPassword);
+//            }
+//            // TODO: schema as parameter to add to Oracle database
+//            database = new OracleDatabase(oracleDatabaseConnection, "");
+//        } else if (connection.getType().equalsIgnoreCase("db.netezza")) {
+//            String hostName = "";
+//            String portNumberTemp = "";
+//            int portNumber = 0;
+//            String databaseName = "";
+//            String userName = "";
+//            String userPassword = "";
+//
+//            for (ConnectionParameter connectionParameter : connection.getParameters()) {
+//                if (connectionParameter.getName().equalsIgnoreCase("host")) {
+//                    hostName = (connectionParameter.getValue());
+//                    hostName = FrameworkControl.getInstance().resolveConfiguration(hostName);
+//                } else if (connectionParameter.getName().equalsIgnoreCase("port")) {
+//                    portNumberTemp = connectionParameter.getValue();
+//                    portNumberTemp = FrameworkControl.getInstance()
+//                            .resolveConfiguration(portNumberTemp);
+//                } else if (connectionParameter.getName().equalsIgnoreCase("database")) {
+//                    databaseName = connectionParameter.getValue();
+//                    databaseName = FrameworkControl.getInstance()
+//                            .resolveConfiguration(databaseName);
+//                } else if (connectionParameter.getName().equalsIgnoreCase("user")) {
+//                    userName = connectionParameter.getValue();
+//                    userName = FrameworkControl.getInstance().resolveConfiguration(userName);
+//                } else if (connectionParameter.getName().equalsIgnoreCase("password")) {
+//                    userPassword = connectionParameter.getValue();
+//                    userPassword = FrameworkControl.getInstance()
+//                            .resolveConfiguration(userPassword);
+//                }
+//            }
+//
+//            // Check Mandatory Parameters
+//            this.setMissingMandatoryFields(false);
+//            ConnectionType connectionType = this.getConnectionType(connection.getType());
+//            for (ConnectionTypeParameter connectionTypeParameter : connectionType.getParameters()) {
+//                if (connectionTypeParameter.getMandatory().equalsIgnoreCase("y")) {
+//                    if (connectionTypeParameter.getName().equalsIgnoreCase("host")) {
+//                        if (hostName.trim().equalsIgnoreCase(""))
+//                            this.addMissingField("host");
+//                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("port")) {
+//                        if (portNumberTemp.trim().equalsIgnoreCase(""))
+//                            this.addMissingField("port");
+//                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("database")) {
+//                        if (databaseName.trim().equalsIgnoreCase(""))
+//                            this.addMissingField("database");
+//                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("user")) {
+//                        if (userName.trim().equalsIgnoreCase(""))
+//                            this.addMissingField("user");
+//                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("password")) {
+//                        if (userPassword.trim().equalsIgnoreCase(""))
+//                            this.addMissingField("password");
+//                    }
+//                }
+//            }
+//
+//            if (this.isMissingMandatoryFields()) {
+//                String message = "Mandatory fields missing for netezza connection " + connection.getName();
+//                throw new RuntimeException(message);
+//            }
+//
+//            // Decrypt Parameters
+//            for (ConnectionTypeParameter connectionTypeParameter : connectionType.getParameters()) {
+//                if (connectionTypeParameter.getEncrypted().equalsIgnoreCase("y")) {
+//                    if (connectionTypeParameter.getName().equalsIgnoreCase("host")) {
+//                        hostName = FrameworkCrypto.getInstance().decrypt(hostName);
+//                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("port")) {
+//                        portNumberTemp = FrameworkCrypto.getInstance().decrypt(portNumberTemp);
+//                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("database")) {
+//                        databaseName = FrameworkCrypto.getInstance().decrypt(databaseName);
+//                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("user")) {
+//                        userName = FrameworkCrypto.getInstance().decrypt(userName);
+//                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("password")) {
+//                        userPassword = FrameworkCrypto.getInstance().decrypt(userPassword);
+//                    }
+//                }
+//            }
+//
+//            // Convert port number
+//            if (!portNumberTemp.isEmpty()) {
+//                portNumber = Integer.parseInt(portNumberTemp);
+//            }
+//
+//            NetezzaDatabaseConnection netezzaDatabaseConnection = new NetezzaDatabaseConnection(hostName,
+//                    portNumber, databaseName, userName, userPassword);
+//            database = new NetezzaDatabase(netezzaDatabaseConnection, "");
+//        } else if (connection.getType().equalsIgnoreCase("db.postgresql")) {
+//            String hostName = "";
+//            String portNumberTemp = "";
+//            int portNumber = 0;
+//            String databaseName = "";
+//            String userName = "";
+//            String userPassword = "";
+//
+//            for (ConnectionParameter connectionParameter : connection.getParameters()) {
+//                if (connectionParameter.getName().equalsIgnoreCase("host")) {
+//                    hostName = (connectionParameter.getValue());
+//                    hostName = FrameworkControl.getInstance().resolveConfiguration(hostName);
+//                } else if (connectionParameter.getName().equalsIgnoreCase("port")) {
+//                    portNumberTemp = connectionParameter.getValue();
+//                    portNumberTemp = FrameworkControl.getInstance()
+//                            .resolveConfiguration(portNumberTemp);
+//                } else if (connectionParameter.getName().equalsIgnoreCase("database")) {
+//                    databaseName = connectionParameter.getValue();
+//                    databaseName = FrameworkControl.getInstance()
+//                            .resolveConfiguration(databaseName);
+//                } else if (connectionParameter.getName().equalsIgnoreCase("user")) {
+//                    userName = connectionParameter.getValue();
+//                    userName = FrameworkControl.getInstance().resolveConfiguration(userName);
+//                } else if (connectionParameter.getName().equalsIgnoreCase("password")) {
+//                    userPassword = connectionParameter.getValue();
+//                    userPassword = FrameworkControl.getInstance()
+//                            .resolveConfiguration(userPassword);
+//                }
+//            }
+//
+//            // Check Mandatory Parameters
+//            this.setMissingMandatoryFields(false);
+//            ConnectionType connectionType = this.getConnectionType(connection.getType());
+//            for (ConnectionTypeParameter connectionTypeParameter : connectionType.getParameters()) {
+//                if (connectionTypeParameter.getMandatory().equalsIgnoreCase("y")) {
+//                    if (connectionTypeParameter.getName().equalsIgnoreCase("host")) {
+//                        if (hostName.trim().equalsIgnoreCase(""))
+//                            this.addMissingField("host");
+//                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("port")) {
+//                        if (portNumberTemp.trim().equalsIgnoreCase(""))
+//                            this.addMissingField("port");
+//                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("database")) {
+//                        if (databaseName.trim().equalsIgnoreCase(""))
+//                            this.addMissingField("database");
+//                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("user")) {
+//                        if (userName.trim().equalsIgnoreCase(""))
+//                            this.addMissingField("user");
+//                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("password")) {
+//                        if (userPassword.trim().equalsIgnoreCase(""))
+//                            this.addMissingField("password");
+//                    }
+//                }
+//            }
+//
+//            if (this.isMissingMandatoryFields()) {
+//                String message = "Mandatory fields missing for postgres connection " + connection.getName();
+//                throw new RuntimeException(message);
+//            }
+//
+//            // Decrypt Parameters
+//            for (ConnectionTypeParameter connectionTypeParameter : connectionType.getParameters()) {
+//                if (connectionTypeParameter.getEncrypted().equalsIgnoreCase("y")) {
+//                    if (connectionTypeParameter.getName().equalsIgnoreCase("host")) {
+//                        hostName = FrameworkCrypto.getInstance().decrypt(hostName);
+//                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("port")) {
+//                        portNumberTemp = FrameworkCrypto.getInstance().decrypt(portNumberTemp);
+//                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("database")) {
+//                        databaseName = FrameworkCrypto.getInstance().decrypt(databaseName);
+//                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("user")) {
+//                        userName = FrameworkCrypto.getInstance().decrypt(userName);
+//                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("password")) {
+//                        userPassword = FrameworkCrypto.getInstance().decrypt(userPassword);
+//                    }
+//                }
+//            }
+//
+//            // Convert port number
+//            if (!portNumberTemp.isEmpty()) {
+//                portNumber = Integer.parseInt(portNumberTemp);
+//            }
+//
+//            PostgresqlDatabaseConnection postgresqlDatabaseConnection = new PostgresqlDatabaseConnection(hostName,
+//                    portNumber, databaseName, userName, userPassword);
+//            database = new PostgresqlDatabase(postgresqlDatabaseConnection, "");
+//        } else if (connection.getType().equalsIgnoreCase("db.mysql")) {
+//            String hostName = "";
+//            String portNumberTemp = "";
+//            int portNumber = 0;
+//            String schemaName = "";
+//            String userName = "";
+//            String userPassword = "";
+//
+//            for (ConnectionParameter connectionParameter : connection.getParameters()) {
+//                if (connectionParameter.getName().equalsIgnoreCase("host")) {
+//                    hostName = (connectionParameter.getValue());
+//                    hostName = FrameworkControl.getInstance().resolveConfiguration(hostName);
+//                } else if (connectionParameter.getName().equalsIgnoreCase("port")) {
+//                    portNumberTemp = connectionParameter.getValue();
+//                    portNumberTemp = FrameworkControl.getInstance()
+//                            .resolveConfiguration(portNumberTemp);
+//                } else if (connectionParameter.getName().equalsIgnoreCase("schema")) {
+//                    schemaName = connectionParameter.getValue();
+//                    schemaName = FrameworkControl.getInstance()
+//                            .resolveConfiguration(schemaName);
+//                } else if (connectionParameter.getName().equalsIgnoreCase("user")) {
+//                    userName = connectionParameter.getValue();
+//                    userName = FrameworkControl.getInstance().resolveConfiguration(userName);
+//                } else if (connectionParameter.getName().equalsIgnoreCase("password")) {
+//                    userPassword = connectionParameter.getValue();
+//                    userPassword = FrameworkControl.getInstance()
+//                            .resolveConfiguration(userPassword);
+//                }
+//            }
+//
+//            // Check Mandatory Parameters
+//            this.setMissingMandatoryFields(false);
+//            ConnectionType connectionType = this.getConnectionType(connection.getType());
+//            for (ConnectionTypeParameter connectionTypeParameter : connectionType.getParameters()) {
+//                if (connectionTypeParameter.getMandatory().equalsIgnoreCase("y")) {
+//                    if (connectionTypeParameter.getName().equalsIgnoreCase("host")) {
+//                        if (hostName.trim().equalsIgnoreCase(""))
+//                            this.addMissingField("host");
+//                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("port")) {
+//                        if (portNumberTemp.trim().equalsIgnoreCase(""))
+//                            this.addMissingField("port");
+//                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("schema")) {
+//                        if (schemaName.trim().equalsIgnoreCase(""))
+//                            this.addMissingField("schema");
+//                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("user")) {
+//                        if (userName.trim().equalsIgnoreCase(""))
+//                            this.addMissingField("user");
+//                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("password")) {
+//                        if (userPassword.trim().equalsIgnoreCase(""))
+//                            this.addMissingField("password");
+//                    }
+//                }
+//            }
+//
+//            if (this.isMissingMandatoryFields()) {
+//                String message = "Mandatory fields missing for mysql connection " + connection.getName();
+//                throw new RuntimeException(message);
+//            }
+//
+//            // Decrypt Parameters
+//            for (ConnectionTypeParameter connectionTypeParameter : connectionType.getParameters()) {
+//                if (connectionTypeParameter.getEncrypted().equalsIgnoreCase("y")) {
+//                    if (connectionTypeParameter.getName().equalsIgnoreCase("host")) {
+//                        hostName = FrameworkCrypto.getInstance().decrypt(hostName);
+//                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("port")) {
+//                        portNumberTemp = FrameworkCrypto.getInstance().decrypt(portNumberTemp);
+//                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("schema")) {
+//                        schemaName = FrameworkCrypto.getInstance().decrypt(schemaName);
+//                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("user")) {
+//                        userName = FrameworkCrypto.getInstance().decrypt(userName);
+//                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("password")) {
+//                        userPassword = FrameworkCrypto.getInstance().decrypt(userPassword);
+//                    }
+//                }
+//            }
+//
+//            // Convert port number
+//            if (!portNumberTemp.isEmpty()) {
+//                portNumber = Integer.parseInt(portNumberTemp);
+//            }
+//
+//            MysqlDatabaseConnection mysqlDatabaseConnection = new MysqlDatabaseConnection(hostName, portNumber,
+//                    schemaName, userName, userPassword);
+//            database = new MysqlDatabase(mysqlDatabaseConnection);
+//        } else if (connection.getType().equalsIgnoreCase("db.sqlite")) {
+//            String filePath = "";
+//            String fileName = "";
+//
+//            for (ConnectionParameter connectionParameter : connection.getParameters()) {
+//                if (connectionParameter.getName().equalsIgnoreCase("filepath")) {
+//                    filePath = (connectionParameter.getValue());
+//                    filePath = FrameworkControl.getInstance().resolveConfiguration(filePath);
+//                } else if (connectionParameter.getName().equalsIgnoreCase("filename")) {
+//                    fileName = connectionParameter.getValue();
+//                    fileName = FrameworkControl.getInstance().resolveConfiguration(fileName);
+//                }
+//            }
+//
+//            // Check Mandatory Parameters
+//            this.setMissingMandatoryFields(false);
+//            ConnectionType connectionType = this.getConnectionType(connection.getType());
+//            for (ConnectionTypeParameter connectionTypeParameter : connectionType.getParameters()) {
+//                if (connectionTypeParameter.getMandatory().equalsIgnoreCase("y")) {
+//                    if (connectionTypeParameter.getName().equalsIgnoreCase("filepath")) {
+//                        if (filePath.trim().equalsIgnoreCase(""))
+//                            this.addMissingField("filePath");
+//                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("filename")) {
+//                        if (fileName.trim().equalsIgnoreCase(""))
+//                            this.addMissingField("fileName");
+//                    }
+//                }
+//            }
+//
+//            if (this.isMissingMandatoryFields()) {
+//                String message = "Mandatory fields missing for sqlite connection " + connection.getName() +". "
+//						+ String.join(", ", missingMandatoryFieldsList) + ". " + connection.getParameters().stream()
+//						.map(connectionParameter -> connectionParameter.getName() + " = " + connectionParameter.getValue())
+//						.collect(Collectors.joining(", "));
+//                throw new RuntimeException(message);
+//            }
+//
+//            // Decrypt Parameters
+//            for (ConnectionTypeParameter connectionTypeParameter : connectionType.getParameters()) {
+//                if (connectionTypeParameter.getEncrypted().equalsIgnoreCase("y")) {
+//                    if (connectionTypeParameter.getName().equalsIgnoreCase("filepath")) {
+//                        filePath = FrameworkCrypto.getInstance().decrypt(filePath);
+//                    } else if (connectionTypeParameter.getName().equalsIgnoreCase("filename")) {
+//                        fileName = FrameworkCrypto.getInstance().decrypt(fileName);
+//                    }
+//                }
+//            }
+//
+//            SqliteDatabaseConnection sqliteDatabaseConnection = new SqliteDatabaseConnection(
+//                    FilenameUtils.normalize(filePath + File.separator + fileName));
+//            database = new SqliteDatabase(sqliteDatabaseConnection);
+//        } else if (connection.getType().equalsIgnoreCase("db.db2")) {
+//            DbDb2ConnectionOperation dbDb2ConnectionOperation = new DbDb2ConnectionOperation();
+//            database = dbDb2ConnectionOperation.getDatabase(connection);
+//        } else if (connection.getType().equalsIgnoreCase("db.h2")) {
+//            DbH2ConnectionOperation dbH2ConnectionOperation = new DbH2ConnectionOperation();
+//            database = dbH2ConnectionOperation.getDatabase(connection);
+//        } else if (connection.getType().equalsIgnoreCase("db.mariadb")) {
+//            DbMariadbConnectionOperation dbMariadbConnectionOperation = new DbMariadbConnectionOperation();
+//            database = dbMariadbConnectionOperation.getDatabase(connection);
+//        } else if (connection.getType().equalsIgnoreCase("db.mssql")) {
+//            DbMssqlConnectionOperation dbMssqlConnectionOperation = new DbMssqlConnectionOperation();
+//            database = dbMssqlConnectionOperation.getDatabase(connection);
+//        } else if (connection.getType().equalsIgnoreCase("db.presto")) {
+//            DbPrestoConnectionOperation dbPrestoConnectionOperation = new DbPrestoConnectionOperation();
+//            database = dbPrestoConnectionOperation.getDatabase(connection);
+//        } else if (connection.getType().equalsIgnoreCase("db.dremio")) {
+//            DbDremioConnectionOperation dbDremioConnectionOperation = new DbDremioConnectionOperation();
+//            database = dbDremioConnectionOperation.getDatabase(connection);
+//        } else if (connection.getType().equalsIgnoreCase("db.drill")) {
+//            DbDrillConnectionOperation dbDrillConnectionOperation = new DbDrillConnectionOperation();
+//            database = dbDrillConnectionOperation.getDatabase(connection);
+//        } else if (connection.getType().equalsIgnoreCase("db.teradata")) {
+//            database = DbTeradataConnectionService.getInstance().getDatabase(connection);
+//        } else {
+//            String message = "Database type is not (yet) supported: " + connection.getType();
+//            throw new RuntimeException(message);
+//        }
+//        return database;
+//    }
 
     public HostConnection getHostConnection(Connection connection) {
         this.setMissingMandatoryFieldsList(new ArrayList<>());

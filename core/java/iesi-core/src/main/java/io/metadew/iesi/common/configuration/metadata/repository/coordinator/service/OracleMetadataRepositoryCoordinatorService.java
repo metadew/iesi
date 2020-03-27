@@ -65,13 +65,14 @@ public class OracleMetadataRepositoryCoordinatorService implements MetadataRepos
 
     public OracleDatabaseConnection getDatabaseConnection(OracleRepositoryCoordinatorDefinition oracleRepositoryCoordinatorDefinition,
                                                           RepositoryCoordinatorProfileDefinition repositoryCoordinatorProfileDefinition) {
+        OracleDatabaseConnection databaseConnection;
         if (oracleRepositoryCoordinatorDefinition.getConnection().isPresent()) {
-            return new OracleDatabaseConnection(
+            databaseConnection = new OracleDatabaseConnection(
                     oracleRepositoryCoordinatorDefinition.getConnection().get(),
                     repositoryCoordinatorProfileDefinition.getUser(),
                     FrameworkCrypto.getInstance().decryptIfNeeded(repositoryCoordinatorProfileDefinition.getPassword()));
+            oracleRepositoryCoordinatorDefinition.getSchema().ifPresent(databaseConnection::setSchema);
         } else {
-            OracleDatabaseConnection databaseConnection;
             switch (oracleRepositoryCoordinatorDefinition.getMode()) {
                 case "tns":
                     databaseConnection = new TnsAliasOracleDatabaseConnection(
@@ -94,8 +95,8 @@ public class OracleMetadataRepositoryCoordinatorService implements MetadataRepos
                 default:
                     throw new RuntimeException();
             }
-            return databaseConnection;
         }
+        return databaseConnection;
     }
 
 }

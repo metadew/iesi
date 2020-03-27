@@ -51,7 +51,7 @@ public class ExecutionControl {
     // Constructors
 
     public ExecutionControl() throws ClassNotFoundException, NoSuchMethodException,
-            InvocationTargetException, InstantiationException, IllegalAccessException, SQLException {
+            InvocationTargetException, InstantiationException, IllegalAccessException {
         this.scriptDesignTraceService = new ScriptDesignTraceService();
         this.actionDesignTraceService = new ActionDesignTraceService();
         this.executionTrace = new ExecutionTrace();

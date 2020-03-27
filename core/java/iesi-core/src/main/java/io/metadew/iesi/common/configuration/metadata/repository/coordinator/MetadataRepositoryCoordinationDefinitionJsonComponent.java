@@ -11,6 +11,11 @@ import java.io.IOException;
 import java.text.MessageFormat;
 
 public class MetadataRepositoryCoordinationDefinitionJsonComponent {
+
+    public static boolean hasConnectionUrlSet(JsonNode node) {
+        return node.hasNonNull(Field.CONNECTION_KEY.value());
+    }
+
     public enum Field {
         TYPE_KEY("type"),
         CONNECTION_KEY("connection"),

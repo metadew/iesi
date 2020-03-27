@@ -19,7 +19,6 @@ public class ExecutionRequestTask implements Runnable {
     @Override
     public void run() {
         ThreadContext.put("location", FrameworkConfiguration.getInstance().getMandatoryFrameworkFolder("logs").getAbsolutePath());
-        ThreadContext.put("fwk.code", (String) Configuration.getInstance().getMandatoryProperty("code"));
         LOGGER.info("running " + executionRequest.getMetadataKey().getId());
         ExecutionRequestMonitor.getInstance().monitor(executionRequest.getMetadataKey(), Thread.currentThread());
         ExecutionRequestExecutorService.getInstance().execute(executionRequest);

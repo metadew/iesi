@@ -12,4 +12,5 @@ iesi:
 #    mode: off
     mode: standalone
     threads:
+      size: 4
       timeout: 30

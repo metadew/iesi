@@ -1,9 +1,11 @@
 package io.metadew.iesi.metadata.definition.mapping;
 
 import io.metadew.iesi.metadata.definition.Transformation;
+import lombok.Data;
 
 import java.util.List;
 
+@Data
 public class Mapping {
 
     private long id;

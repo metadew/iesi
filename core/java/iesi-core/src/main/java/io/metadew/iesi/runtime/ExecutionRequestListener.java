@@ -22,8 +22,9 @@ public class ExecutionRequestListener implements Runnable {
     private boolean keepRunning = true;
 
     public ExecutionRequestListener() {
-        int threadSize = Configuration.getInstance().getProperty("server.threads")
-                .map(settingPath -> Integer.parseInt((String) settingPath))
+        int threadSize = Configuration.getInstance()
+                .getProperty("server.threads.size")
+                .map(settingPath -> (Integer) settingPath)
                 .orElse(4);
         log.info(MessageFormat.format("starting listener with thread pool size {0}", threadSize));
 
@@ -36,7 +37,6 @@ public class ExecutionRequestListener implements Runnable {
 
     public void run() {
         ThreadContext.put("location", FrameworkConfiguration.getInstance().getMandatoryFrameworkFolder("logs").getAbsolutePath());
-        ThreadContext.put("fwk.code", (String) Configuration.getInstance().getMandatoryProperty("code"));
         try {
             while (keepRunning) {
                 pollNewRequests();

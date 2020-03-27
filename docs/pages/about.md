@@ -19,14 +19,13 @@ Feel free to get in touch via our [Github](https://github.com/metadew/iesi) or o
 
 # Current committers
 
-|Name|Organization|
-|---|---|
-|Robbe Berrevoets|Accenture|
-|Thomas Vandendijk|Accenture|
-|Gerrit Van Gelder|Accenture|
+* Robbe Berrevoets
+* Thomas Vandendijk
+* Gerrit Van Gelder
+* Peter Billen
 
 # Past committers
 
-* Peter Billen
 * Jonas Joostens
 * Sam Roose
+* Francois Heliodore

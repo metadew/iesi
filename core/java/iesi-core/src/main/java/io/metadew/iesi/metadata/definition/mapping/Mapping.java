@@ -1,11 +1,15 @@
 package io.metadew.iesi.metadata.definition.mapping;
 
 import io.metadew.iesi.metadata.definition.Transformation;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Mapping {
 
     private long id;
@@ -14,10 +18,5 @@ public class Mapping {
     private String description;
     private MappingVersion version;
     private List<Transformation> transformations;
-
-    public List<Transformation> getTransformations() {
-        return transformations;
-    }
-
 
 }

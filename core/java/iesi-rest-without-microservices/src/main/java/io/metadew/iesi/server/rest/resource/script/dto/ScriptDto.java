@@ -3,13 +3,13 @@ package io.metadew.iesi.server.rest.resource.script.dto;
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.metadata.definition.script.ScriptParameter;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
-import org.springframework.hateoas.ResourceSupport;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class ScriptDto extends ResourceSupport {
+public class ScriptDto extends RepresentationModel<ScriptDto> {
 
     private String name;
     private String description;

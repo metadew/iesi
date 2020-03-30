@@ -4,12 +4,12 @@ import io.metadew.iesi.metadata.definition.component.Component;
 import io.metadew.iesi.metadata.definition.component.ComponentAttribute;
 import io.metadew.iesi.metadata.definition.component.ComponentParameter;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
-import org.springframework.hateoas.ResourceSupport;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.util.List;
 import java.util.Objects;
 
-public class ComponentDto extends ResourceSupport {
+public class ComponentDto extends RepresentationModel<ComponentDto> {
 
     private String type;
     private String name;
@@ -18,7 +18,8 @@ public class ComponentDto extends ResourceSupport {
     private List<ComponentParameter> parameters;
     private List<ComponentAttribute> attributes;
 
-    public ComponentDto() {}
+    public ComponentDto() {
+    }
 
     public ComponentDto(String type, String name, String description, ComponentVersionDto version,
                         List<ComponentParameter> parameters, List<ComponentAttribute> attributes) {

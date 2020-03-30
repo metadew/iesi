@@ -7,17 +7,17 @@ import io.metadew.iesi.server.rest.resource.execution_request.dto.ExecutionReque
 import io.metadew.iesi.server.rest.resource.script_execution_request.resource.ScriptExecutionRequestDtoResourceAssembler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
-import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
+import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
 
 import java.text.MessageFormat;
 import java.util.stream.Collectors;
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Component
-public class ExecutionRequestDtoResourceAssembler extends ResourceAssemblerSupport<ExecutionRequest, ExecutionRequestDto> {
+public class ExecutionRequestDtoResourceAssembler extends RepresentationModelAssemblerSupport<ExecutionRequest, ExecutionRequestDto> {
 
     private final ScriptExecutionRequestDtoResourceAssembler scriptExecutionRequestDtoResourceAssembler;
 
@@ -28,7 +28,7 @@ public class ExecutionRequestDtoResourceAssembler extends ResourceAssemblerSuppo
     }
 
     @Override
-    public ExecutionRequestDto toResource(ExecutionRequest executionRequest) {
+    public ExecutionRequestDto toModel(ExecutionRequest executionRequest) {
         ExecutionRequestDto executionRequestDto = convertToDto(executionRequest);
         Link selfLink = linkTo(methodOn(ExecutionRequestController.class).getById(executionRequestDto.getExecutionRequestId()))
                 .withSelfRel();
@@ -42,7 +42,7 @@ public class ExecutionRequestDtoResourceAssembler extends ResourceAssemblerSuppo
                     executionRequest.getName(), executionRequest.getDescription(), executionRequest.getScope(),
                     executionRequest.getContext(), executionRequest.getEmail(), executionRequest.getExecutionRequestStatus(),
                     executionRequest.getScriptExecutionRequests().stream()
-                            .map(scriptExecutionRequestDtoResourceAssembler::toResource)
+                            .map(scriptExecutionRequestDtoResourceAssembler::toModel)
                             .collect(Collectors.toList()));
         } else {
             throw new RuntimeException(MessageFormat.format("Cannot convert ExecutionRequest of type {0} to DTO", executionRequest.getClass().getSimpleName()));

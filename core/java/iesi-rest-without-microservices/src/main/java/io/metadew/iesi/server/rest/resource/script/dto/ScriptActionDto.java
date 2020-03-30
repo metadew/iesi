@@ -1,15 +1,14 @@
 package io.metadew.iesi.server.rest.resource.script.dto;
 
 import io.metadew.iesi.metadata.definition.action.Action;
-import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.action.key.ActionKey;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
-import org.springframework.hateoas.ResourceSupport;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ScriptActionDto extends ResourceSupport {
+public class ScriptActionDto extends RepresentationModel<ScriptActionDto> {
 
     private int retries;
     private String iteration;

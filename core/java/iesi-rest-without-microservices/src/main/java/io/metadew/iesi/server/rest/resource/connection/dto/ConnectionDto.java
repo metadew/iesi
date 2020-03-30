@@ -5,11 +5,11 @@ import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.hateoas.ResourceSupport;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.util.List;
 
-public class ConnectionDto extends ResourceSupport {
+public class ConnectionDto extends RepresentationModel<ConnectionDto> {
 
     @Setter private String name;
     @Getter @Setter private String type;

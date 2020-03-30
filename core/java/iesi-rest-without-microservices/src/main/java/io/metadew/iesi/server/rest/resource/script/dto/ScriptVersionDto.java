@@ -1,9 +1,9 @@
 package io.metadew.iesi.server.rest.resource.script.dto;
 
 import io.metadew.iesi.metadata.definition.script.ScriptVersion;
-import org.springframework.hateoas.ResourceSupport;
+import org.springframework.hateoas.RepresentationModel;
 
-public class ScriptVersionDto extends ResourceSupport {
+public class ScriptVersionDto extends RepresentationModel<ScriptVersionDto> {
 
     private long number;
     private String description;

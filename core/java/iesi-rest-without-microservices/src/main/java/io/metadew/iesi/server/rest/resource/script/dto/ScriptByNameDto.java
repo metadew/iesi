@@ -1,10 +1,10 @@
 package io.metadew.iesi.server.rest.resource.script.dto;
 
-import org.springframework.hateoas.ResourceSupport;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.util.List;
 
-public class ScriptByNameDto extends ResourceSupport {
+public class ScriptByNameDto extends RepresentationModel<ScriptByNameDto> {
 
     private String name;
     private String description;

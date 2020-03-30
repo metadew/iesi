@@ -2,9 +2,9 @@ package io.metadew.iesi.server.rest.resource.component.dto;
 
 import io.metadew.iesi.metadata.definition.component.ComponentVersion;
 import io.metadew.iesi.metadata.definition.component.key.ComponentVersionKey;
-import org.springframework.hateoas.ResourceSupport;
+import org.springframework.hateoas.RepresentationModel;
 
-public class ComponentVersionDto extends ResourceSupport {
+public class ComponentVersionDto extends RepresentationModel<ComponentVersionDto> {
 
     private long number;
     private String description;

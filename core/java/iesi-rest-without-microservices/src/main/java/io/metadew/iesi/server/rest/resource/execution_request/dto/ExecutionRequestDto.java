@@ -4,9 +4,9 @@ import io.metadew.iesi.metadata.definition.execution.*;
 import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequestBuilderException;
-import io.metadew.iesi.server.rest.resource.Dto;
 import io.metadew.iesi.server.rest.resource.script_execution_request.dto.ScriptExecutionRequestDto;
 import lombok.*;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @Setter
 @ToString
 @EqualsAndHashCode(callSuper = false)
-public class ExecutionRequestDto extends Dto {
+public class ExecutionRequestDto extends RepresentationModel<ExecutionRequestDto> {
 
     private String executionRequestId;
     private LocalDateTime requestTimestamp;

@@ -2,11 +2,11 @@ package io.metadew.iesi.server.rest.resource.connection.dto;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.hateoas.ResourceSupport;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.util.List;
 
-public class ConnectionByNameDto extends ResourceSupport {
+public class ConnectionByNameDto extends RepresentationModel<ConnectionByNameDto> {
 
     @Setter private String name;
     @Getter @Setter private String type;

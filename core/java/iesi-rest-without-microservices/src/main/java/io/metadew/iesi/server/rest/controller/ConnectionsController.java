@@ -52,21 +52,21 @@ public class ConnectionsController {
         List<Connection> connections = connectionConfiguration.getAll();
         return new HalMultipleEmbeddedResource<>(connections.stream()
                 .filter(distinctByKey(Connection::getName))
-                .map(connection -> connectionGlobalDtoResourceAssembler.toResource(Collections.singletonList(connection)))
+                .map(connection -> connectionGlobalDtoResourceAssembler.toModel(Collections.singletonList(connection)))
                 .collect(Collectors.toList()));
     }
 
     @GetMapping("/{name}")
     public ConnectionByNameDto getByName(@PathVariable String name) {
         List<Connection> connections = connectionConfiguration.getByName(name);
-        return connectionByNameDtoResourceAssembler.toResource(connections);
+        return connectionByNameDtoResourceAssembler.toModel(connections);
     }
 
     @GetMapping("/{name}/{environment}")
     public ConnectionDto get(@PathVariable String name, @PathVariable String environment) throws MetadataDoesNotExistException {
         Optional<Connection> connection = connectionConfiguration.get(new ConnectionKey(name, environment));
         return connection
-                .map(connectionDtoResourceAssembler::toResource)
+                .map(connectionDtoResourceAssembler::toModel)
                 .orElseThrow(() -> new MetadataDoesNotExistException(new ConnectionKey(name, environment)));
     }
 
@@ -74,7 +74,7 @@ public class ConnectionsController {
     public ResponseEntity<ConnectionDto> post(@Valid @RequestBody ConnectionDto connectionDto) {
         try {
             connectionConfiguration.insert(connectionDto.convertToEntity());
-            return ResponseEntity.ok(connectionDtoResourceAssembler.toResource(connectionDto.convertToEntity()));
+            return ResponseEntity.ok(connectionDtoResourceAssembler.toModel(connectionDto.convertToEntity()));
         } catch (MetadataAlreadyExistsException e) {
             e.printStackTrace();
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
@@ -87,7 +87,7 @@ public class ConnectionsController {
         HalMultipleEmbeddedResource<ConnectionDto> halMultipleEmbeddedResource = new HalMultipleEmbeddedResource<>();
         for (ConnectionDto connectionDto : connectionDtos) {
             connectionConfiguration.update(connectionDto.convertToEntity());
-            ConnectionDto updatedConnectionDto = connectionDtoResourceAssembler.toResource(connectionDto.convertToEntity());
+            ConnectionDto updatedConnectionDto = connectionDtoResourceAssembler.toModel(connectionDto.convertToEntity());
             halMultipleEmbeddedResource.embedResource(updatedConnectionDto);
         }
         return halMultipleEmbeddedResource;
@@ -99,7 +99,7 @@ public class ConnectionsController {
             throw new DataBadRequestException(name);
         }
         connectionConfiguration.update(connectionDto.convertToEntity());
-        return connectionDtoResourceAssembler.toResource(connectionDto.convertToEntity());
+        return connectionDtoResourceAssembler.toModel(connectionDto.convertToEntity());
     }
 
     @DeleteMapping("")

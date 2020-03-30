@@ -5,11 +5,11 @@ import io.metadew.iesi.metadata.definition.action.key.ActionParameterKey;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.hateoas.ResourceSupport;
+import org.springframework.hateoas.RepresentationModel;
 
 @Getter
 @Setter
-public class ScriptActionParameterDto extends ResourceSupport {
+public class ScriptActionParameterDto extends RepresentationModel<ScriptActionParameterDto> {
 
     private String name;
     private String value;

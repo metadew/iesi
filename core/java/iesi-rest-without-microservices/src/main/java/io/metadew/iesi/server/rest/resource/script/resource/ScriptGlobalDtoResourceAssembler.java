@@ -5,16 +5,16 @@ import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.server.rest.controller.ScriptController;
 import io.metadew.iesi.server.rest.resource.script.dto.ScriptGlobalDto;
 import org.modelmapper.ModelMapper;
-import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
+import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Component
-public class ScriptGlobalDtoResourceAssembler extends ResourceAssemblerSupport<List<Script>, ScriptGlobalDto> {
+public class ScriptGlobalDtoResourceAssembler extends RepresentationModelAssemblerSupport<List<Script>, ScriptGlobalDto> {
 
     private final ModelMapper modelMapper;
 
@@ -24,7 +24,7 @@ public class ScriptGlobalDtoResourceAssembler extends ResourceAssemblerSupport<L
     }
 
     @Override
-    public ScriptGlobalDto toResource(List<Script> scripts) {
+    public ScriptGlobalDto toModel(List<Script> scripts) {
         ScriptGlobalDto scriptGlobalDto = convertToDto(scripts);
         scriptGlobalDto.add(linkTo(methodOn(ScriptController.class)
                 .getByName(scriptGlobalDto.getName()))

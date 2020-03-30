@@ -3,17 +3,17 @@ package io.metadew.iesi.server.rest.resource.script.resource;
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.server.rest.controller.ScriptController;
 import io.metadew.iesi.server.rest.resource.script.dto.ScriptByNameDto;
-import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
+import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Component
-public class ScriptByNameDtoAssembler extends ResourceAssemblerSupport<List<Script>, ScriptByNameDto> {
+public class ScriptByNameDtoAssembler extends RepresentationModelAssemblerSupport<List<Script>, ScriptByNameDto> {
 
 
     public ScriptByNameDtoAssembler() {
@@ -21,7 +21,7 @@ public class ScriptByNameDtoAssembler extends ResourceAssemblerSupport<List<Scri
     }
 
     @Override
-    public ScriptByNameDto toResource(List<Script> scripts) {
+    public ScriptByNameDto toModel(List<Script> scripts) {
         ScriptByNameDto scriptDto = convertToDto(scripts);
         scriptDto.add(linkTo(methodOn(ScriptController.class)
                 .getByName(scriptDto.getName()))

@@ -18,8 +18,8 @@ import java.text.MessageFormat;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping("/execution_request")
@@ -40,14 +40,14 @@ public class ExecutionRequestController {
         return new HalMultipleEmbeddedResource<>(executionRequestConfiguration.getAll()
                 .stream()
                 .parallel()
-                .map(executionRequestDtoResourceAssembler::toResource)
+                .map(executionRequestDtoResourceAssembler::toModel)
                 .collect(Collectors.toList()));
     }
 
     @GetMapping("/{id}")
     public ExecutionRequestDto getById(@PathVariable String id) {
         return executionRequestConfiguration.get(new ExecutionRequestKey(id))
-                .map(executionRequestDtoResourceAssembler::toResource)
+                .map(executionRequestDtoResourceAssembler::toModel)
                 .orElseThrow(() -> new RuntimeException(MessageFormat.format("Cannot find ExecutionRequest {0}", id)));
     }
 
@@ -56,7 +56,7 @@ public class ExecutionRequestController {
         try {
             ExecutionRequest executionRequest = executionRequestDto.convertToNewEntity();
             executionRequestConfiguration.insert(executionRequest);
-            return executionRequestDtoResourceAssembler.toResource(executionRequest);
+            return executionRequestDtoResourceAssembler.toModel(executionRequest);
         } catch (ExecutionRequestBuilderException e) {
             throw new RuntimeException(e);
         }
@@ -79,7 +79,7 @@ public class ExecutionRequestController {
     @PutMapping("/{id}")
     public ExecutionRequestDto put(@PathVariable String id, @RequestBody ExecutionRequestDto executionRequestDto) throws MetadataDoesNotExistException {
         executionRequestConfiguration.update(executionRequestDto.convertToEntity());
-        return executionRequestDtoResourceAssembler.toResource(executionRequestDto.convertToEntity());
+        return executionRequestDtoResourceAssembler.toModel(executionRequestDto.convertToEntity());
     }
 
     @DeleteMapping("/{id}")

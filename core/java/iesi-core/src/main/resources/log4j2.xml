@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="WARN">
     <Appenders>
-        <File fileName="${ctx:location}/${ctx:fwk.code}.log" name="default" append="true">
+        <File fileName="logs/iesi.log" name="default" append="true">
             <PatternLayout>
                 <Pattern>%d %-5p [%c{1.}] - %m%n</Pattern>
             </PatternLayout>
@@ -9,14 +9,14 @@
         <Routing name="elasticSearchFileBeat">
             <Routes pattern="$${marker:}">
                 <Route key="${marker:}">
-                    <File fileName="${ctx:location}/filebeat.log" name="script" append="true">
+                    <File fileName="logs/filebeat.log" name="script" append="true">
                         <PatternLayout>
                             <Pattern>%d %-5p [%c{1.}] - %m%n</Pattern>
                         </PatternLayout>
                     </File>
                 </Route>
                 <Route>
-                    <File fileName="${ctx:location}/filebeat/${marker:}.log" name="filebeat-${marker:}" append="false">
+                    <File fileName="logs/filebeat/${marker:}.log" name="filebeat-${marker:}" append="false">
                         <PatternLayout>
                             <Pattern>%d %-5p [%c{1.}] - %m%n</Pattern>
                         </PatternLayout>
@@ -27,14 +27,14 @@
         <Routing name="scriptExecution">
             <Routes pattern="$${ctx:runId}">
                 <Route key="${ctx:runId}">
-                    <File fileName="${ctx:location}/${ctx:fwk.code}.log" name="script" append="true">
+                    <File fileName="logs/iesi.log" name="script" append="true">
                         <PatternLayout>
                             <Pattern>%d %-5p [%c{1.}] - %m%n</Pattern>
                         </PatternLayout>
                     </File>
                 </Route>
                 <Route>
-                    <File fileName="${ctx:location}/${ctx:runId}/script.log" name="script-${ctx:runId}" append="false">
+                    <File fileName="logs/${ctx:runId}/script.log" name="script-${ctx:runId}" append="false">
                         <PatternLayout>
                             <Pattern>%d %-5p [%c{1.}] - %m%n</Pattern>
                         </PatternLayout>
@@ -45,14 +45,14 @@
         <Routing name="repository">
             <Routes pattern="$${ctx:runId}">
                 <Route key="${ctx:runId}">
-                    <File fileName="${ctx:location}/${ctx:fwk.code}.log" name="repository" append="true">
+                    <File fileName="logs/iesi.log" name="repository" append="true">
                         <PatternLayout>
                             <Pattern>%d %-5p [%c{1.}] - %m%n</Pattern>
                         </PatternLayout>
                     </File>
                 </Route>
                 <Route>
-                    <File fileName="${ctx:location}/${ctx:runId}/repository.log" name="repository-${ctx:runId}" append="false">
+                    <File fileName="logs/${ctx:runId}/repository.log" name="repository-${ctx:runId}" append="false">
                         <PatternLayout>
                             <Pattern>%d %-5p [%c{1.}] - %m%n</Pattern>
                         </PatternLayout>
@@ -63,14 +63,14 @@
         <Routing name="queries">
             <Routes pattern="$${ctx:runId}">
                 <Route key="${ctx:runId}">
-                    <File fileName="${ctx:location}/SQL.log" name="queries" append="true">
+                    <File fileName="logs/SQL.log" name="queries" append="true">
                         <PatternLayout>
                             <Pattern>%d %-5p [%c{1.}] - %m%n</Pattern>
                         </PatternLayout>
                     </File>
                 </Route>
                 <Route>
-                    <File fileName="${ctx:location}/${ctx:runId}/SQL.log" name="queries-${ctx:runId}" append="false">
+                    <File fileName="logs/${ctx:runId}/SQL.log" name="queries-${ctx:runId}" append="false">
                         <PatternLayout>
                             <Pattern>%d %-5p [%c{1.}] - %m%n</Pattern>
                         </PatternLayout>

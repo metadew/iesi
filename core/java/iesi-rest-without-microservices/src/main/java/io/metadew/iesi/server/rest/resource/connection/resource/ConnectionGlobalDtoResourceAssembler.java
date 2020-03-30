@@ -4,16 +4,16 @@ import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.server.rest.controller.ConnectionsController;
 import io.metadew.iesi.server.rest.resource.connection.dto.ConnectionGlobalDto;
 import org.modelmapper.ModelMapper;
-import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
+import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Component
-public class ConnectionGlobalDtoResourceAssembler extends ResourceAssemblerSupport<List<Connection>, ConnectionGlobalDto> {
+public class ConnectionGlobalDtoResourceAssembler extends RepresentationModelAssemblerSupport<List<Connection>, ConnectionGlobalDto> {
 
     private final ModelMapper modelMapper;
 
@@ -23,7 +23,7 @@ public class ConnectionGlobalDtoResourceAssembler extends ResourceAssemblerSuppo
     }
 
     @Override
-    public ConnectionGlobalDto toResource(List<Connection> connections) {
+    public ConnectionGlobalDto toModel(List<Connection> connections) {
         ConnectionGlobalDto connectionGlobalDto = convertToDto(connections);
         connectionGlobalDto.add(linkTo(methodOn(ConnectionsController.class)
                 .getByName(connectionGlobalDto.getName()))

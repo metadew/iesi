@@ -10,30 +10,30 @@ import io.metadew.iesi.server.rest.resource.script.dto.ScriptActionParameterDto;
 import io.metadew.iesi.server.rest.resource.script.dto.ScriptDto;
 import io.metadew.iesi.server.rest.resource.script.dto.ScriptVersionDto;
 import org.springframework.hateoas.Link;
-import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
+import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Component
-public class ScriptDtoResourceAssembler extends ResourceAssemblerSupport<Script, ScriptDto> {
+public class ScriptDtoResourceAssembler extends RepresentationModelAssemblerSupport<Script, ScriptDto> {
 
     public ScriptDtoResourceAssembler() {
         super(ScriptController.class, ScriptDto.class);
     }
 
     @Override
-    public ScriptDto toResource(Script script) {
+    public ScriptDto toModel(Script script) {
         ScriptDto scriptByNameDto = convertToDto(script);
         Link selfLink = linkTo(methodOn(ScriptController.class).get(script.getName(), script.getVersion().getNumber()))
                 .withRel("script:" + scriptByNameDto.getName() + "-" + scriptByNameDto.getVersion().getNumber());
         scriptByNameDto.add(selfLink);
-        Link versionLink = linkTo(methodOn(ScriptController.class).executeScript(null, scriptByNameDto.getName(), scriptByNameDto.getVersion().getNumber()))
-                .withRel("script");
-        scriptByNameDto.add(versionLink);
+//        Link versionLink = linkTo(methodOn(ScriptController.class).executeScript(null, scriptByNameDto.getName(), scriptByNameDto.getVersion().getNumber()))
+//                .withRel("script");
+//        scriptByNameDto.add(versionLink);
         return scriptByNameDto;
     }
 

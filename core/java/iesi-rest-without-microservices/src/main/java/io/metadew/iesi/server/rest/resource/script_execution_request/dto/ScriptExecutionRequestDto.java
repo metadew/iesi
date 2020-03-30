@@ -3,8 +3,8 @@ package io.metadew.iesi.server.rest.resource.script_execution_request.dto;
 import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
 import io.metadew.iesi.metadata.definition.execution.script.*;
 import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionRequestKey;
-import io.metadew.iesi.server.rest.resource.Dto;
 import lombok.*;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.util.List;
 import java.util.Map;
@@ -14,7 +14,7 @@ import java.util.Map;
 @Setter
 @ToString
 @EqualsAndHashCode(callSuper = false)
-public class ScriptExecutionRequestDto extends Dto {
+public class ScriptExecutionRequestDto extends RepresentationModel<ScriptExecutionRequestDto> {
 
     private String scriptExecutionRequestId;
     private String executionRequestId;

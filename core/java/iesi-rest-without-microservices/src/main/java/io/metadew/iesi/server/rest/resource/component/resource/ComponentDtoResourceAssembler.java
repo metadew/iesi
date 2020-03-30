@@ -5,20 +5,20 @@ import io.metadew.iesi.server.rest.controller.ComponentsController;
 import io.metadew.iesi.server.rest.resource.component.dto.ComponentDto;
 import io.metadew.iesi.server.rest.resource.component.dto.ComponentVersionDto;
 import org.springframework.hateoas.Link;
-import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
+import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @org.springframework.stereotype.Component
-public class ComponentDtoResourceAssembler extends ResourceAssemblerSupport<Component, ComponentDto> {
+public class ComponentDtoResourceAssembler extends RepresentationModelAssemblerSupport<Component, ComponentDto> {
 
     public ComponentDtoResourceAssembler() {
         super(ComponentsController.class, ComponentDto.class);
     }
 
     @Override
-    public ComponentDto toResource(Component component) {
+    public ComponentDto toModel(Component component) {
         ComponentDto componentDto = convertToDto(component);
         Link selfLink = linkTo(methodOn(ComponentsController.class).get(component.getName(),
                 component.getVersion().getMetadataKey().getComponentKey().getVersionNumber()))

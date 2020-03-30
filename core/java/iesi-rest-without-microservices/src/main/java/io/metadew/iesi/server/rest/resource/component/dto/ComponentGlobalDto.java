@@ -1,8 +1,8 @@
 package io.metadew.iesi.server.rest.resource.component.dto;
 
-import org.springframework.hateoas.ResourceSupport;
+import org.springframework.hateoas.RepresentationModel;
 
-public class ComponentGlobalDto extends ResourceSupport {
+public class ComponentGlobalDto extends RepresentationModel<ComponentGlobalDto> {
 
     private String type;
     private String name;

@@ -4,8 +4,8 @@ import io.metadew.iesi.framework.configuration.ScriptRunStatus;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecution;
 import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionKey;
 import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionRequestKey;
-import io.metadew.iesi.server.rest.resource.Dto;
 import lombok.*;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.time.LocalDateTime;
 
@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Setter
 @ToString
 @EqualsAndHashCode(callSuper = false)
-public class ScriptExecutionDto extends Dto {
+public class ScriptExecutionDto extends RepresentationModel<ScriptExecutionDto> {
 
     private String scriptExecutionId;
     private ScriptRunStatus scriptRunStatus;

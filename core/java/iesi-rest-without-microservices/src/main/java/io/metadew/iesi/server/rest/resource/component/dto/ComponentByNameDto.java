@@ -1,10 +1,10 @@
 package io.metadew.iesi.server.rest.resource.component.dto;
 
-import org.springframework.hateoas.ResourceSupport;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.util.List;
 
-public class ComponentByNameDto extends ResourceSupport {
+public class ComponentByNameDto extends RepresentationModel<ComponentByNameDto> {
 
     private String type;
     private String name;

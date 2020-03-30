@@ -4,11 +4,11 @@ import io.metadew.iesi.metadata.definition.environment.Environment;
 import io.metadew.iesi.metadata.definition.environment.EnvironmentParameter;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.hateoas.ResourceSupport;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.util.List;
 
-public class EnvironmentDto extends ResourceSupport {
+public class EnvironmentDto extends RepresentationModel<EnvironmentDto> {
     @Getter @Setter private String name;
     @Getter @Setter private String description;
     @Getter @Setter private List<EnvironmentParameter> parameters;

@@ -2,12 +2,12 @@ package io.metadew.iesi.server.rest.resource.impersonation.dto;
 
 
 import io.metadew.iesi.metadata.definition.impersonation.Impersonation;
-import org.springframework.hateoas.ResourceSupport;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ImpersonationDto extends ResourceSupport {
+public class ImpersonationDto extends RepresentationModel<ImpersonationDto> {
     private String name;
     private String description;
     private List<ImpersonationParameterDto> parameters;

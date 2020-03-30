@@ -49,7 +49,7 @@ public class OracleMetadataRepositoryCoordinatorService implements MetadataRepos
         }
         if (oracleRepositoryCoordinatorDefinition.getReader() != null) {
             OracleDatabaseConnection h2DatabaseConnection = getDatabaseConnection(oracleRepositoryCoordinatorDefinition,
-                    oracleRepositoryCoordinatorDefinition.getWriter());
+                    oracleRepositoryCoordinatorDefinition.getReader());
             OracleDatabase h2Database = new OracleDatabase(h2DatabaseConnection);
             oracleRepositoryCoordinatorDefinition.getSchema().ifPresent(h2Database::setSchema);
             databases.put("reader", h2Database);

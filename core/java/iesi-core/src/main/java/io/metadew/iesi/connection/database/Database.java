@@ -137,7 +137,6 @@ public abstract class Database {
         Connection connection = getConnection();
         try {
             CachedRowSet cachedRowSet = databaseConnection.executeQuery(query, connection);
-            connection.commit();
             releaseConnection(connection);
             return cachedRowSet;
         } catch (SQLException e) {
@@ -187,7 +186,6 @@ public abstract class Database {
         Connection connection = getConnection();
         try {
             CachedRowSet cachedRowSet = databaseConnection.executeQueryLimitRows(query, limit, connection);
-            connection.commit();
             releaseConnection(connection);
             return cachedRowSet;
         } catch (SQLException e) {

@@ -36,7 +36,6 @@ public class ExecutionRequestListener implements Runnable {
     }
 
     public void run() {
-        ThreadContext.put("location", FrameworkConfiguration.getInstance().getMandatoryFrameworkFolder("logs").getAbsolutePath());
         try {
             while (keepRunning) {
                 pollNewRequests();

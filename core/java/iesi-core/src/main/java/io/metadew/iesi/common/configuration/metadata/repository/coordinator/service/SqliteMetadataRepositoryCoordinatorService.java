@@ -1,11 +1,11 @@
 package io.metadew.iesi.common.configuration.metadata.repository.coordinator.service;
 
+import io.metadew.iesi.common.FrameworkControl;
+import io.metadew.iesi.common.configuration.metadata.repository.coordinator.RepositoryCoordinatorProfileDefinition;
+import io.metadew.iesi.common.configuration.metadata.repository.coordinator.SQLiteRepositoryCoordinatorDefinition;
 import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.SqliteDatabase;
 import io.metadew.iesi.connection.database.connection.sqlite.SqliteDatabaseConnection;
-import io.metadew.iesi.common.configuration.metadata.repository.coordinator.RepositoryCoordinatorProfileDefinition;
-import io.metadew.iesi.common.configuration.metadata.repository.coordinator.SQLiteRepositoryCoordinatorDefinition;
-import io.metadew.iesi.common.FrameworkControl;
 import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
 
 import java.util.HashMap;

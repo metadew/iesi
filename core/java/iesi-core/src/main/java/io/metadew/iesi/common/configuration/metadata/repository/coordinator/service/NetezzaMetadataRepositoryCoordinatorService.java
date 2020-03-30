@@ -47,7 +47,7 @@ public class NetezzaMetadataRepositoryCoordinatorService implements MetadataRepo
         }
         if (mssqlRepositoryCoordinatorDefinition.getReader() != null) {
             NetezzaDatabaseConnection mssqlDatabaseConnection = getDatabaseConnection(mssqlRepositoryCoordinatorDefinition,
-                    mssqlRepositoryCoordinatorDefinition.getWriter());
+                    mssqlRepositoryCoordinatorDefinition.getReader());
             NetezzaDatabase mssqlDatabase = new NetezzaDatabase(mssqlDatabaseConnection);
             mssqlRepositoryCoordinatorDefinition.getSchema().ifPresent(mssqlDatabase::setSchema);
             databases.put("reader", mssqlDatabase);

@@ -49,7 +49,7 @@ public class H2MetadataRepositoryCoordinatorService implements MetadataRepositor
         }
         if (h2RepositoryCoordinatorDefinition.getReader() != null) {
             H2DatabaseConnection h2DatabaseConnection = getDatabaseConnection(h2RepositoryCoordinatorDefinition,
-                    h2RepositoryCoordinatorDefinition.getWriter());
+                    h2RepositoryCoordinatorDefinition.getReader());
             H2Database h2Database = new H2Database(h2DatabaseConnection);
             h2RepositoryCoordinatorDefinition.getSchema().ifPresent(h2Database::setSchema);
             databases.put("reader", h2Database);

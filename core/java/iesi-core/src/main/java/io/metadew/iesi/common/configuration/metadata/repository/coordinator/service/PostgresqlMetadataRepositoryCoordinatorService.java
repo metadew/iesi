@@ -30,7 +30,7 @@ public class PostgresqlMetadataRepositoryCoordinatorService implements MetadataR
         Map<String, Database> databases = new HashMap<>();
         if (postgresqlRepositoryCoordinatorDefinition.getOwner() != null) {
             PostgresqlDatabaseConnection databaseConnection = getDatabaseConnection(postgresqlRepositoryCoordinatorDefinition,
-                    postgresqlRepositoryCoordinatorDefinition.getOwner());
+                    postgresqlRepositoryCoordinatorDefinition.getReader());
             PostgresqlDatabase postgresqlDatabase = new PostgresqlDatabase(databaseConnection);
             postgresqlRepositoryCoordinatorDefinition.getSchema().ifPresent(postgresqlDatabase::setSchema);
             databases.put("owner", postgresqlDatabase);

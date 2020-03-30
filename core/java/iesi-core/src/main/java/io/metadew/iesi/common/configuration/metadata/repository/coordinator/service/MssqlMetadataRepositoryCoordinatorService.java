@@ -47,7 +47,7 @@ public class MssqlMetadataRepositoryCoordinatorService implements MetadataReposi
         }
         if (mssqlRepositoryCoordinatorDefinition.getReader() != null) {
             MssqlDatabaseConnection mssqlDatabaseConnection = getDatabaseConnection(mssqlRepositoryCoordinatorDefinition,
-                    mssqlRepositoryCoordinatorDefinition.getWriter());
+                    mssqlRepositoryCoordinatorDefinition.getReader());
             MssqlDatabase mssqlDatabase = new MssqlDatabase(mssqlDatabaseConnection);
             mssqlRepositoryCoordinatorDefinition.getSchema().ifPresent(mssqlDatabase::setSchema);
             databases.put("reader", mssqlDatabase);

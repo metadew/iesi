@@ -14,6 +14,7 @@ import io.metadew.iesi.server.rest.resource.component.dto.ComponentGlobalDto;
 import io.metadew.iesi.server.rest.resource.component.resource.ComponentDtoResourceAssembler;
 import io.metadew.iesi.server.rest.resource.component.resource.ComponentGetByNameDtoAssembler;
 import io.metadew.iesi.server.rest.resource.component.resource.ComponentGlobalDtoResourceAssembler;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +31,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
+@Tag(name = "components", description = "Everything about components")
 @RequestMapping("/components")
 public class ComponentsController {
 

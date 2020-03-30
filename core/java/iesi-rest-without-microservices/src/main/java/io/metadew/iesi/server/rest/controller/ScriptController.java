@@ -22,6 +22,7 @@ import io.metadew.iesi.server.rest.resource.script.dto.ScriptGlobalDto;
 import io.metadew.iesi.server.rest.resource.script.resource.ScriptByNameDtoAssembler;
 import io.metadew.iesi.server.rest.resource.script.resource.ScriptDtoResourceAssembler;
 import io.metadew.iesi.server.rest.resource.script.resource.ScriptGlobalDtoResourceAssembler;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +38,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
+@Tag(name = "scripts", description = "Everything about scripts")
 @RequestMapping("/scripts")
 public class ScriptController {
 

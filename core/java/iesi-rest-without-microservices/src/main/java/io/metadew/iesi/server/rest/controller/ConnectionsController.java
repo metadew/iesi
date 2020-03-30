@@ -13,6 +13,7 @@ import io.metadew.iesi.server.rest.resource.connection.dto.ConnectionGlobalDto;
 import io.metadew.iesi.server.rest.resource.connection.resource.ConnectionByNameDtoResourceAssembler;
 import io.metadew.iesi.server.rest.resource.connection.resource.ConnectionDtoResourceAssembler;
 import io.metadew.iesi.server.rest.resource.connection.resource.ConnectionGlobalDtoResourceAssembler;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +29,7 @@ import java.util.stream.Collectors;
 import static io.metadew.iesi.server.rest.helper.Filter.distinctByKey;
 
 @RestController
+@Tag(name = "connections", description = "Everything about connections")
 @RequestMapping("/connections")
 public class ConnectionsController {
 

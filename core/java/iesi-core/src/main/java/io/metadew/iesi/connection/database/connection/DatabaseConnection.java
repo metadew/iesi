@@ -71,7 +71,7 @@ public abstract class DatabaseConnection {
         // Remove illegal characters at the end
         query = this.removeIllgegalCharactersForSingleQuery(query);
         Statement statement = connection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-        log.info(connectionURL + ":" + query);
+        log.info(connectionURL + ":" + userName + ":" +query);
         ResultSet resultSet = statement.executeQuery(query);
         CachedRowSet crs = RowSetProvider.newFactory().createCachedRowSet();
         crs.populate(resultSet);
@@ -96,7 +96,7 @@ public abstract class DatabaseConnection {
                 ResultSet.CONCUR_READ_ONLY);
         statement.setMaxRows(limit);
 
-        log.info(connectionURL + ":" + query);
+        log.info(connectionURL + ":" + userName + ":" +query);
         ResultSet rs = statement.executeQuery(query);
         CachedRowSet crs = RowSetProvider.newFactory().createCachedRowSet();
         crs.populate(rs);
@@ -183,7 +183,7 @@ public abstract class DatabaseConnection {
         // Remove illegal characters at the end
         query = this.removeIllgegalCharactersForSingleQuery(query);
         // query = prepareQuery(query);
-        log.info(connectionURL + ":" + query);
+        log.info(connectionURL + ":" + userName + ":" +query);
 
         Statement statement = connection.createStatement();
         statement.executeUpdate(query);
@@ -201,7 +201,7 @@ public abstract class DatabaseConnection {
         for (String query : queries) {
             query = this.removeIllgegalCharactersForSingleQuery(query);
             // query = prepareQuery(query);
-            log.info(connectionURL + ":" + query);
+            log.info(connectionURL + ":" + userName + ":" +query);
             statement.addBatch(query);
         }
         statement.executeBatch();

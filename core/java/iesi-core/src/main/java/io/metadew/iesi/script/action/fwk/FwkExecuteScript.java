@@ -128,7 +128,8 @@ public class FwkExecuteScript {
 
         // Script script = ScriptConfiguration.getInstance().get(this.getScriptName().getValue());
         Script script = scriptVersion
-                .map(version -> ScriptConfiguration.getInstance().get(new ScriptKey(IdentifierTools.getScriptIdentifier(scriptName), version))
+                .map(version -> ScriptConfiguration.getInstance()
+                        .get(new ScriptKey(IdentifierTools.getScriptIdentifier(scriptName), version))
                         .orElseThrow(() -> new RuntimeException(MessageFormat.format("No implementation for script {0}-{1} found", scriptName, version))))
                 .orElse(ScriptConfiguration.getInstance().getLatestVersion(scriptName)
                         .orElseThrow(() -> new RuntimeException(MessageFormat.format("No implementation for script {0} found", scriptName))));

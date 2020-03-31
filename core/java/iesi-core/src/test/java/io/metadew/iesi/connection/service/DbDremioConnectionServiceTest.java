@@ -29,6 +29,7 @@ public class DbDremioConnectionServiceTest {
         DatabaseConnectionHandlerImpl databaseConnectionHandler = PowerMockito.mock(DatabaseConnectionHandlerImpl.class);
         Whitebox.setInternalState(DatabaseConnectionHandlerImpl.class, "INSTANCE", databaseConnectionHandler);
         Mockito.doReturn(null).when(databaseConnectionHandler).getConnection(any());
+        
     }
 
     @Test

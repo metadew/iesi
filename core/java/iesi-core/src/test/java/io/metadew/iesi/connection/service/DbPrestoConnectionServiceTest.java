@@ -4,7 +4,6 @@ import io.metadew.iesi.connection.database.DatabaseHandlerImpl;
 import io.metadew.iesi.connection.database.PrestoDatabase;
 import io.metadew.iesi.connection.database.connection.DatabaseConnectionHandlerImpl;
 import io.metadew.iesi.connection.database.connection.presto.PrestoDatabaseConnection;
-import io.metadew.iesi.connection.operation.DbPrestoConnectionService;
 import io.metadew.iesi.framework.crypto.FrameworkCrypto;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
@@ -59,7 +58,7 @@ class DbPrestoConnectionServiceTest {
                 "schema",
                 "user",
                 "password"), "");
-        Assert.assertEquals(prestoDatabaseExpected, DbPrestoConnectionService.getInstance().getDatabase(connection));
+        Assert.assertEquals(prestoDatabaseExpected, DatabaseHandlerImpl.getInstance().getDatabase(connection));
     }
 
     @Test
@@ -80,7 +79,7 @@ class DbPrestoConnectionServiceTest {
                 "schema",
                 "user",
                 "encrypted_password"), "");
-        Assert.assertEquals(prestoDatabaseExpected, DbPrestoConnectionService.getInstance().getDatabase(connection));
+        Assert.assertEquals(prestoDatabaseExpected, DatabaseHandlerImpl.getInstance().getDatabase(connection));
     }
 
     @Test
@@ -94,7 +93,7 @@ class DbPrestoConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "user"), "user"),
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "password"), "password"))
                         .collect(Collectors.toList()));
-        assertThrows(RuntimeException.class, () -> DbPrestoConnectionService.getInstance().getDatabase(connection),
+        assertThrows(RuntimeException.class, () -> DatabaseHandlerImpl.getInstance().getDatabase(connection),
                 MessageFormat.format("Connection {0} does not contain mandatory parameter 'host'", connection));
     }
 
@@ -109,7 +108,7 @@ class DbPrestoConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "user"), "user"),
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "password"), "password"))
                         .collect(Collectors.toList()));
-        assertThrows(RuntimeException.class, () -> DbPrestoConnectionService.getInstance().getDatabase(connection),
+        assertThrows(RuntimeException.class, () -> DatabaseHandlerImpl.getInstance().getDatabase(connection),
                 MessageFormat.format("Connection {0} does not contain mandatory parameter 'port'", connection));
     }
 
@@ -124,7 +123,7 @@ class DbPrestoConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "user"), "user"),
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "password"), "password"))
                         .collect(Collectors.toList()));
-        assertThrows(RuntimeException.class, () -> DbPrestoConnectionService.getInstance().getDatabase(connection),
+        assertThrows(RuntimeException.class, () -> DatabaseHandlerImpl.getInstance().getDatabase(connection),
                 MessageFormat.format("Connection {0} does not contain mandatory parameter 'schema'", connection));
     }
 
@@ -139,7 +138,7 @@ class DbPrestoConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "user"), "user"),
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "password"), "password"))
                         .collect(Collectors.toList()));
-        assertThrows(RuntimeException.class, () -> DbPrestoConnectionService.getInstance().getDatabase(connection),
+        assertThrows(RuntimeException.class, () -> DatabaseHandlerImpl.getInstance().getDatabase(connection),
                 MessageFormat.format("Connection {0} does not contain mandatory parameter 'catalog'", connection));
     }
 
@@ -154,7 +153,7 @@ class DbPrestoConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "schema"), "schema"),
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "password"), "password"))
                         .collect(Collectors.toList()));
-        assertThrows(RuntimeException.class, () -> DbPrestoConnectionService.getInstance().getDatabase(connection),
+        assertThrows(RuntimeException.class, () -> DatabaseHandlerImpl.getInstance().getDatabase(connection),
                 MessageFormat.format("Connection {0} does not contain mandatory parameter 'user'", connection));
     }
 
@@ -169,7 +168,7 @@ class DbPrestoConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "schema"), "schema"),
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "user"), "user"))
                         .collect(Collectors.toList()));
-        assertThrows(RuntimeException.class, () -> DbPrestoConnectionService.getInstance().getDatabase(connection),
+        assertThrows(RuntimeException.class, () -> DatabaseHandlerImpl.getInstance().getDatabase(connection),
                 MessageFormat.format("Connection {0} does not contain mandatory parameter 'password'", connection));
     }
 

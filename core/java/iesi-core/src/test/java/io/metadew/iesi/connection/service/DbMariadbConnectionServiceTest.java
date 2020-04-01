@@ -1,9 +1,9 @@
 package io.metadew.iesi.connection.service;
 
+import io.metadew.iesi.connection.database.DatabaseHandlerImpl;
 import io.metadew.iesi.connection.database.MariadbDatabase;
 import io.metadew.iesi.connection.database.connection.DatabaseConnectionHandlerImpl;
 import io.metadew.iesi.connection.database.connection.mariadb.MariadbDatabaseConnection;
-import io.metadew.iesi.connection.operation.DbMariadbConnectionService;
 import io.metadew.iesi.framework.crypto.FrameworkCrypto;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
@@ -53,7 +53,7 @@ public class DbMariadbConnectionServiceTest {
                         .collect(Collectors.toList()));
 
         MariadbDatabase mariadbDatabase = new MariadbDatabase(new MariadbDatabaseConnection("host", 1, "database", "user", "password"));
-        assertEquals(mariadbDatabase, DbMariadbConnectionService.getInstance().getDatabase(connection));
+        assertEquals(mariadbDatabase, DatabaseHandlerImpl.getInstance().getDatabase(connection));
     }
 
     @Test
@@ -66,7 +66,7 @@ public class DbMariadbConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "user"), "user"),
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "password"), "password"))
                         .collect(Collectors.toList()));
-        assertThrows(RuntimeException.class, () -> DbMariadbConnectionService.getInstance().getDatabase(connection),
+        assertThrows(RuntimeException.class, () -> DatabaseHandlerImpl.getInstance().getDatabase(connection),
                 MessageFormat.format("Connection {0} does not contain mandatory parameter 'host'", connection));
     }
     @Test
@@ -81,7 +81,7 @@ public class DbMariadbConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "password"), FrameworkCrypto.getInstance().encrypt("encrypted_password")))
                         .collect(Collectors.toList()));
         MariadbDatabase mariadbDatabase = new MariadbDatabase(new MariadbDatabaseConnection("host", 1, "database", "user", "encrypted_password"));
-        assertEquals(mariadbDatabase, DbMariadbConnectionService.getInstance().getDatabase(connection));
+        assertEquals(mariadbDatabase, DatabaseHandlerImpl.getInstance().getDatabase(connection));
     }
 
     @Test
@@ -94,7 +94,7 @@ public class DbMariadbConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "user"), "user"),
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "password"), "password"))
                         .collect(Collectors.toList()));
-        assertThrows(RuntimeException.class, () -> DbMariadbConnectionService.getInstance().getDatabase(connection),
+        assertThrows(RuntimeException.class, () -> DatabaseHandlerImpl.getInstance().getDatabase(connection),
                 MessageFormat.format("Connection {0} does not contain mandatory parameter 'port'", connection));
     }
 
@@ -108,7 +108,7 @@ public class DbMariadbConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "user"), "user"),
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "password"), "password"))
                         .collect(Collectors.toList()));
-        assertThrows(RuntimeException.class, () -> DbMariadbConnectionService.getInstance().getDatabase(connection),
+        assertThrows(RuntimeException.class, () -> DatabaseHandlerImpl.getInstance().getDatabase(connection),
                 MessageFormat.format("Connection {0} does not contain mandatory parameter 'database'", connection));
     }
 
@@ -122,7 +122,7 @@ public class DbMariadbConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "database"), "database"),
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "password"), "password"))
                         .collect(Collectors.toList()));
-        assertThrows(RuntimeException.class, () -> DbMariadbConnectionService.getInstance().getDatabase(connection),
+        assertThrows(RuntimeException.class, () -> DatabaseHandlerImpl.getInstance().getDatabase(connection),
                 MessageFormat.format("Connection {0} does not contain mandatory parameter 'user'", connection));
     }
 
@@ -136,7 +136,7 @@ public class DbMariadbConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "database"), "database"),
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "user"), "user"))
                         .collect(Collectors.toList()));
-        assertThrows(RuntimeException.class, () -> DbMariadbConnectionService.getInstance().getDatabase(connection),
+        assertThrows(RuntimeException.class, () -> DatabaseHandlerImpl.getInstance().getDatabase(connection),
                 MessageFormat.format("Connection {0} does not contain mandatory parameter 'password'", connection));
     }
 }

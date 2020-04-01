@@ -1,9 +1,9 @@
 package io.metadew.iesi.connection.service;
 
+import io.metadew.iesi.connection.database.DatabaseHandlerImpl;
 import io.metadew.iesi.connection.database.Db2Database;
 import io.metadew.iesi.connection.database.connection.DatabaseConnectionHandlerImpl;
 import io.metadew.iesi.connection.database.connection.db2.Db2DatabaseConnection;
-import io.metadew.iesi.connection.operation.DbDb2ConnectionService;
 import io.metadew.iesi.framework.crypto.FrameworkCrypto;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
@@ -52,7 +52,7 @@ public class DbDb2ConnectionServiceTest {
                         .collect(Collectors.toList()));
         Db2Database db2Database = new Db2Database(new Db2DatabaseConnection(
                 "host", 1, "database", "user", "password"),"");
-        assertEquals(db2Database, DbDb2ConnectionService.getInstance().getDatabase(connection));
+        assertEquals(db2Database, DatabaseHandlerImpl.getInstance().getDatabase(connection));
     }
     @Test
     void getDatabaseWithEncryptedPasswordTest() {
@@ -67,7 +67,7 @@ public class DbDb2ConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "password"), FrameworkCrypto.getInstance().encrypt("encrypted_password")))
                         .collect(Collectors.toList()));
         Db2Database db2Database = new Db2Database(new Db2DatabaseConnection("host", 1, "database", "user", "encrypted_password"),"schema");
-        assertEquals(db2Database, DbDb2ConnectionService.getInstance().getDatabase(connection));
+        assertEquals(db2Database, DatabaseHandlerImpl.getInstance().getDatabase(connection));
     }
 
     @Test
@@ -80,7 +80,7 @@ public class DbDb2ConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "user"), "user"),
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "password"), "password"))
                         .collect(Collectors.toList()));
-        assertThrows(RuntimeException.class, () -> DbDb2ConnectionService.getInstance().getDatabase(connection),
+        assertThrows(RuntimeException.class, () -> DatabaseHandlerImpl.getInstance().getDatabase(connection),
                 MessageFormat.format("Connection {0} does not contain mandatory parameter 'host'", connection));
     }
 
@@ -94,7 +94,7 @@ public class DbDb2ConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "user"), "user"),
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "password"), "password"))
                         .collect(Collectors.toList()));
-        assertThrows(RuntimeException.class, () -> DbDb2ConnectionService.getInstance().getDatabase(connection),
+        assertThrows(RuntimeException.class, () -> DatabaseHandlerImpl.getInstance().getDatabase(connection),
                 MessageFormat.format("Connection {0} does not contain mandatory parameter 'port'", connection));
     }
 
@@ -108,7 +108,7 @@ public class DbDb2ConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "user"), "user"),
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "password"), "password"))
                         .collect(Collectors.toList()));
-        assertThrows(RuntimeException.class, () -> DbDb2ConnectionService.getInstance().getDatabase(connection),
+        assertThrows(RuntimeException.class, () -> DatabaseHandlerImpl.getInstance().getDatabase(connection),
                 MessageFormat.format("Connection {0} does not contain mandatory parameter 'database'", connection));
     }
 
@@ -122,7 +122,7 @@ public class DbDb2ConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "database"), "database"),
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "password"), "password"))
                         .collect(Collectors.toList()));
-        assertThrows(RuntimeException.class, () -> DbDb2ConnectionService.getInstance().getDatabase(connection),
+        assertThrows(RuntimeException.class, () -> DatabaseHandlerImpl.getInstance().getDatabase(connection),
                 MessageFormat.format("Connection {0} does not contain mandatory parameter 'user'", connection));
     }
 
@@ -136,7 +136,7 @@ public class DbDb2ConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "database"), "database"),
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "user"), "user"))
                         .collect(Collectors.toList()));
-        assertThrows(RuntimeException.class, () -> DbDb2ConnectionService.getInstance().getDatabase(connection),
+        assertThrows(RuntimeException.class, () -> DatabaseHandlerImpl.getInstance().getDatabase(connection),
                 MessageFormat.format("Connection {0} does not contain mandatory parameter 'password'", connection));
     }
 

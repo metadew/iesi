@@ -156,7 +156,7 @@ public class WfaExecuteQueryPing {
                 .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
                 .get();
         ConnectionOperation connectionOperation = new ConnectionOperation();
-        Database database = connectionOperation.getDatabase(connection);
+        Database database = DatabaseHandlerImpl.getInstance().getDatabase(connection);
 
         // Run the action
         int i = 1;

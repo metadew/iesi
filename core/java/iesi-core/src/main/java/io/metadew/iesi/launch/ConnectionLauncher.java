@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.DatabaseHandlerImpl;
 import io.metadew.iesi.connection.database.sql.SqlScriptResult;
-import io.metadew.iesi.connection.operation.ConnectionOperation;
 import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
@@ -97,9 +96,8 @@ public class ConnectionLauncher {
             ObjectMapper objectMapper = new ObjectMapper();
             Connection connection = objectMapper.convertValue(dataObjectOperation.getDataObject(), Connection.class);
             // TODO rework getting the connection
-            ConnectionOperation connectionOperation = new ConnectionOperation();
-            Database database = connectionOperation.getDatabase(connection);
 
+            Database database = DatabaseHandlerImpl.getInstance().getDatabase(connection);
             if (database == null) {
                 throw new RuntimeException("Error establishing DB connection");
             }

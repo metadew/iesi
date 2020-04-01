@@ -160,9 +160,8 @@ public class SqlExecuteQuery {
         Connection connection = ConnectionConfiguration.getInstance()
                 .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
                 .get();
-        ConnectionOperation connectionOperation = new ConnectionOperation();
-        Database database = connectionOperation.getDatabase(connection);
 
+        Database database = DatabaseHandlerImpl.getInstance().getDatabase(connection);
         if (database == null) {
             throw new RuntimeException("Error establishing DB connection");
         }

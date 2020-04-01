@@ -1,9 +1,9 @@
 package io.metadew.iesi.connection.service;
 
+import io.metadew.iesi.connection.database.DatabaseHandlerImpl;
 import io.metadew.iesi.connection.database.TeradataDatabase;
 import io.metadew.iesi.connection.database.connection.DatabaseConnectionHandlerImpl;
 import io.metadew.iesi.connection.database.connection.teradata.TeradataDatabaseConnection;
-import io.metadew.iesi.connection.operation.DbTeradataConnectionService;
 import io.metadew.iesi.framework.crypto.FrameworkCrypto;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
@@ -51,7 +51,7 @@ class DbTeradataConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "password"), "password"))
                         .collect(Collectors.toList()));
         TeradataDatabase teradataDatabaseExpected = new TeradataDatabase(new TeradataDatabaseConnection("host", 1, "database", "user", "password"));
-        assertEquals(teradataDatabaseExpected, DbTeradataConnectionService.getInstance().getDatabase(connection));
+        assertEquals(teradataDatabaseExpected, DatabaseHandlerImpl.getInstance().getDatabase(connection));
     }
     @Test
     void getDatabaseWithEncryptedPasswordTest() {
@@ -65,7 +65,7 @@ class DbTeradataConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "password"), FrameworkCrypto.getInstance().encrypt("encrypted_password")))
                         .collect(Collectors.toList()));
         TeradataDatabase teradataDatabaseExpected = new TeradataDatabase(new TeradataDatabaseConnection("host", 1, "database", "user", "encrypted_password"));
-        assertEquals(teradataDatabaseExpected, DbTeradataConnectionService.getInstance().getDatabase(connection));
+        assertEquals(teradataDatabaseExpected, DatabaseHandlerImpl.getInstance().getDatabase(connection));
     }
 
     @Test
@@ -78,7 +78,7 @@ class DbTeradataConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "user"), "user"),
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "password"), "password"))
                         .collect(Collectors.toList()));
-        assertThrows(RuntimeException.class, () -> DbTeradataConnectionService.getInstance().getDatabase(connection),
+        assertThrows(RuntimeException.class, () -> DatabaseHandlerImpl.getInstance().getDatabase(connection),
                 MessageFormat.format("Connection {0} does not contain mandatory parameter 'host'", connection));
     }
 
@@ -92,7 +92,7 @@ class DbTeradataConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "user"), "user"),
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "password"), "password"))
                         .collect(Collectors.toList()));
-        assertThrows(RuntimeException.class, () -> DbTeradataConnectionService.getInstance().getDatabase(connection),
+        assertThrows(RuntimeException.class, () -> DatabaseHandlerImpl.getInstance().getDatabase(connection),
                 MessageFormat.format("Connection {0} does not contain mandatory parameter 'port'", connection));
     }
 
@@ -106,7 +106,7 @@ class DbTeradataConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "user"), "user"),
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "password"), "password"))
                         .collect(Collectors.toList()));
-        assertThrows(RuntimeException.class, () -> DbTeradataConnectionService.getInstance().getDatabase(connection),
+        assertThrows(RuntimeException.class, () -> DatabaseHandlerImpl.getInstance().getDatabase(connection),
                 MessageFormat.format("Connection {0} does not contain mandatory parameter 'database'", connection));
     }
 
@@ -120,7 +120,7 @@ class DbTeradataConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "database"), "database"),
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "password"), "password"))
                         .collect(Collectors.toList()));
-        assertThrows(RuntimeException.class, () -> DbTeradataConnectionService.getInstance().getDatabase(connection),
+        assertThrows(RuntimeException.class, () -> DatabaseHandlerImpl.getInstance().getDatabase(connection),
                 MessageFormat.format("Connection {0} does not contain mandatory parameter 'user'", connection));
     }
 
@@ -134,7 +134,7 @@ class DbTeradataConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "database"), "database"),
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "user"), "user"))
                         .collect(Collectors.toList()));
-        assertThrows(RuntimeException.class, () -> DbTeradataConnectionService.getInstance().getDatabase(connection),
+        assertThrows(RuntimeException.class, () -> DatabaseHandlerImpl.getInstance().getDatabase(connection),
                 MessageFormat.format("Connection {0} does not contain mandatory parameter 'password'", connection));
     }
 

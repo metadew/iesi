@@ -1,9 +1,9 @@
 package io.metadew.iesi.connection.service;
 
+import io.metadew.iesi.connection.database.DatabaseHandlerImpl;
 import io.metadew.iesi.connection.database.MssqlDatabase;
 import io.metadew.iesi.connection.database.connection.DatabaseConnectionHandlerImpl;
 import io.metadew.iesi.connection.database.connection.mssql.MssqlDatabaseConnection;
-import io.metadew.iesi.connection.operation.DbMssqlConnectionService;
 import io.metadew.iesi.framework.crypto.FrameworkCrypto;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
@@ -52,7 +52,7 @@ public class DbMssqlConnectionServiceTest {
                         .collect(Collectors.toList()));
 
         MssqlDatabase mssqlDatabase = new MssqlDatabase(new MssqlDatabaseConnection("host", 1, "database", "user", "password"),"schema");
-        assertEquals(mssqlDatabase, DbMssqlConnectionService.getInstance().getDatabase(connection));
+        assertEquals(mssqlDatabase, DatabaseHandlerImpl.getInstance().getDatabase(connection));
     }
 
     @Test
@@ -68,7 +68,7 @@ public class DbMssqlConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "password"), FrameworkCrypto.getInstance().encrypt("encrypted_password")))
                         .collect(Collectors.toList()));
         MssqlDatabase mssqlDatabase = new MssqlDatabase(new MssqlDatabaseConnection("host", 1, "database", "user", "encrypted_password"),"");
-        assertEquals(mssqlDatabase, DbMssqlConnectionService.getInstance().getDatabase(connection));
+        assertEquals(mssqlDatabase, DatabaseHandlerImpl.getInstance().getDatabase(connection));
     }
 
     @Test
@@ -81,7 +81,7 @@ public class DbMssqlConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "user"), "user"),
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "password"), "password"))
                         .collect(Collectors.toList()));
-        assertThrows(RuntimeException.class, () -> DbMssqlConnectionService.getInstance().getDatabase(connection),
+        assertThrows(RuntimeException.class, () -> DatabaseHandlerImpl.getInstance().getDatabase(connection),
                 MessageFormat.format("Connection {0} does not contain mandatory parameter 'host'", connection));
     }
 
@@ -95,7 +95,7 @@ public class DbMssqlConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "user"), "user"),
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "password"), "password"))
                         .collect(Collectors.toList()));
-        assertThrows(RuntimeException.class, () -> DbMssqlConnectionService.getInstance().getDatabase(connection),
+        assertThrows(RuntimeException.class, () -> DatabaseHandlerImpl.getInstance().getDatabase(connection),
                 MessageFormat.format("Connection {0} does not contain mandatory parameter 'port'", connection));
     }
 
@@ -109,7 +109,7 @@ public class DbMssqlConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "user"), "user"),
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "password"), "password"))
                         .collect(Collectors.toList()));
-        assertThrows(RuntimeException.class, () -> DbMssqlConnectionService.getInstance().getDatabase(connection),
+        assertThrows(RuntimeException.class, () -> DatabaseHandlerImpl.getInstance().getDatabase(connection),
                 MessageFormat.format("Connection {0} does not contain mandatory parameter 'database'", connection));
     }
 
@@ -123,7 +123,7 @@ public class DbMssqlConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "database"), "database"),
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "password"), "password"))
                         .collect(Collectors.toList()));
-        assertThrows(RuntimeException.class, () -> DbMssqlConnectionService.getInstance().getDatabase(connection),
+        assertThrows(RuntimeException.class, () -> DatabaseHandlerImpl.getInstance().getDatabase(connection),
                 MessageFormat.format("Connection {0} does not contain mandatory parameter 'user'", connection));
     }
 
@@ -137,7 +137,7 @@ public class DbMssqlConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "database"), "database"),
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "user"), "user"))
                         .collect(Collectors.toList()));
-        assertThrows(RuntimeException.class, () -> DbMssqlConnectionService.getInstance().getDatabase(connection),
+        assertThrows(RuntimeException.class, () -> DatabaseHandlerImpl.getInstance().getDatabase(connection),
                 MessageFormat.format("Connection {0} does not contain mandatory parameter 'password'", connection));
     }
 

@@ -2,12 +2,10 @@ package io.metadew.iesi.script.operation;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.connection.database.Database;
-import io.metadew.iesi.connection.database.DatabaseHandler;
 import io.metadew.iesi.connection.database.DatabaseHandlerImpl;
 import io.metadew.iesi.connection.database.connection.DatabaseConnection;
 import io.metadew.iesi.connection.database.connection.DatabaseConnectionHandlerImpl;
 import io.metadew.iesi.connection.database.connection.sqlite.SqliteDatabaseConnection;
-import io.metadew.iesi.connection.operation.ConnectionOperation;
 import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.configuration.repository.RepositoryConfiguration;

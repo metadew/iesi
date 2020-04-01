@@ -7,6 +7,9 @@ public class MysqlDatabaseServiceImpl extends DatabaseServiceImpl<MysqlDatabase>
 
     private static MysqlDatabaseServiceImpl INSTANCE;
 
+    private static final String keyword= "db.mysql";
+
+
     public synchronized static MysqlDatabaseServiceImpl getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new MysqlDatabaseServiceImpl();
@@ -23,7 +26,7 @@ public class MysqlDatabaseServiceImpl extends DatabaseServiceImpl<MysqlDatabase>
 
     @Override
     public String keyword() {
-        return null;
+        return keyword;
     }
 
     @Override

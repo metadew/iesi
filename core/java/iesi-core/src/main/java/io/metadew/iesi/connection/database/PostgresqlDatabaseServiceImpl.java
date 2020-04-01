@@ -7,6 +7,9 @@ public class PostgresqlDatabaseServiceImpl extends SchemaDatabaseServiceImpl<Pos
 
     private static PostgresqlDatabaseServiceImpl INSTANCE;
 
+    private static final String keyword= "db.postgresql";
+
+
     public synchronized static PostgresqlDatabaseServiceImpl getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new PostgresqlDatabaseServiceImpl();
@@ -23,7 +26,7 @@ public class PostgresqlDatabaseServiceImpl extends SchemaDatabaseServiceImpl<Pos
 
     @Override
     public String keyword() {
-        return null;
+        return keyword;
     }
 
     @Override

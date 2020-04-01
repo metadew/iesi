@@ -64,8 +64,8 @@ public class ExecutionControl {
     @SuppressWarnings("unchecked")
     private void initializeExecutionRuntime(String runId) throws ClassNotFoundException,
             NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-        if (Configuration.getInstance().getProperty("script.execution.runtime").isPresent()) {
-            Class classRef = Class.forName((String) Configuration.getInstance().getProperty("script.execution.runtime").get());
+        if (Configuration.getInstance().getProperty("iesi.script.execution.runtime").isPresent()) {
+            Class classRef = Class.forName((String) Configuration.getInstance().getProperty("iesi.script.execution.runtime").get());
             Class[] initParams = {ExecutionControl.class, String.class};
             Constructor constructor = classRef.getConstructor(initParams);
             this.executionRuntime = (ExecutionRuntime) constructor.newInstance(this, runId);

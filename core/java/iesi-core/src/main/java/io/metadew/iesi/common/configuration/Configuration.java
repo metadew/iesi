@@ -16,10 +16,9 @@ import java.util.*;
 @Log4j2
 @Getter
 public class Configuration {
+
     private static final String iesiKeyword = "iesi";
-
     private static Configuration INSTANCE;
-
     private HashMap<String, Object> properties;
 
     public synchronized static Configuration getInstance() {
@@ -40,7 +39,11 @@ public class Configuration {
     }
 
     public Optional<Object> getProperty(String key) {
-        return getProperty(key, properties);
+        if (key.startsWith(iesiKeyword + ".")) {
+            return getProperty(key.substring(iesiKeyword.length() + 1), properties);
+        } else {
+            return Optional.empty();
+        }
     }
 
     @SuppressWarnings("unchecked")

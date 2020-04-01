@@ -172,7 +172,7 @@ public class SocketTransmitMessage {
             LocalDateTime endDateTime;
             if (timeout == null) {
                 endDateTime = LocalDateTime.now()
-                        .plus((Integer) Configuration.getInstance().getMandatoryProperty("actions.socket.transmitMessage.timeout.default"),
+                        .plus((Integer) Configuration.getInstance().getMandatoryProperty("iesi.actions.socket.transmitMessage.timeout.default"),
                                 ChronoUnit.SECONDS);
             } else {
                 endDateTime = LocalDateTime.now().plus(timeout, ChronoUnit.SECONDS);

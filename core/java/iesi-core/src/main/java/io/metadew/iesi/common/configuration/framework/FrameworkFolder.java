@@ -16,7 +16,7 @@ public class FrameworkFolder {
     private String permissions;
 
     public String getAbsolutePath() {
-        return Configuration.getInstance().getMandatoryProperty("home") + path;
+        return Configuration.getInstance().getMandatoryProperty("iesi.home") + path;
     }
 
 }

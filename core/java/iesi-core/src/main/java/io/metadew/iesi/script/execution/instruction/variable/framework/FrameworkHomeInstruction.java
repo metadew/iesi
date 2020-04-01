@@ -16,7 +16,7 @@ public class FrameworkHomeInstruction implements VariableInstruction {
 
     @Override
     public String generateOutput() {
-        return FilenameUtils.normalize((String) Configuration.getInstance().getProperty("home")
+        return FilenameUtils.normalize((String) Configuration.getInstance().getProperty("iesi.home")
                 .orElseThrow(() -> new RuntimeException("No value found for 'home'")));
     }
 

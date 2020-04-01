@@ -23,7 +23,7 @@ public class ExecutionRequestListener implements Runnable {
 
     public ExecutionRequestListener() {
         int threadSize = Configuration.getInstance()
-                .getProperty("server.threads.size")
+                .getProperty("iesi.server.threads.size")
                 .map(settingPath -> (Integer) settingPath)
                 .orElse(4);
         log.info(MessageFormat.format("starting listener with thread pool size {0}", threadSize));

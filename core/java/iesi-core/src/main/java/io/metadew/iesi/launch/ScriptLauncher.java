@@ -172,7 +172,7 @@ public class ScriptLauncher {
         // Server mode
         String serverMode = "off";
         try {
-            serverMode = Configuration.getInstance().getProperty("server.mode")
+            serverMode = Configuration.getInstance().getProperty("iesi.server.mode")
                     .map(settingPath -> (String) settingPath)
                     .orElse("off")
                     .toLowerCase();
@@ -202,7 +202,7 @@ public class ScriptLauncher {
         } else if (serverMode.equalsIgnoreCase("standalone")) {
             System.out.println("RequestID=" + executionRequest.getMetadataKey().getId());
         } else {
-            throw new RuntimeException("unknown setting for " + Configuration.getInstance().getMandatoryProperty("server.mode"));
+            throw new RuntimeException("unknown setting for " + Configuration.getInstance().getMandatoryProperty("iesi.server.mode"));
         }
 
         FrameworkInstance.getInstance().shutdown();

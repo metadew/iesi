@@ -40,7 +40,7 @@ public class ExecutionRequestMonitor implements Runnable {
     private ExecutionRequestMonitor() {
         // TODO: Create server configuration
         this.timeout = Configuration.getInstance()
-                .getProperty("server.threads.timeout")
+                .getProperty("iesi.server.threads.timeout")
                 .map(settingPath -> new Long((Integer) settingPath))
                 .orElse(60L);
         this.executionRequestThreadMap = new ConcurrentHashMap<>();

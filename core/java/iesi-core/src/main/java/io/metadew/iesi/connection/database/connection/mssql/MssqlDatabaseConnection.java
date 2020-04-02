@@ -13,7 +13,7 @@ public class MssqlDatabaseConnection extends SchemaDatabaseConnection {
     private static String type = "mssql";
 
     public MssqlDatabaseConnection(String connectionURL, String userName, String userPassword) {
-        super(type, connectionURL, userName, userPassword);
+        super(type, connectionURL, userName, userPassword, null);
     }
 
 
@@ -23,7 +23,7 @@ public class MssqlDatabaseConnection extends SchemaDatabaseConnection {
 
     public MssqlDatabaseConnection(String hostName, int portNumber, String databaseName, String userName,
                                    String userPassword) {
-        super(type, getConnectionUrl(hostName, portNumber, databaseName), userName, userPassword);
+        this(getConnectionUrl(hostName, portNumber, databaseName), userName, userPassword);
     }
 
     public static String getConnectionUrl(String hostName, int portNumber, String databaseName) {

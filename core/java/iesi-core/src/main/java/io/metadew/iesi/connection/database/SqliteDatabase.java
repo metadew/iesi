@@ -9,21 +9,21 @@ import java.sql.SQLException;
 public class SqliteDatabase extends Database {
 
     public SqliteDatabase(SqliteDatabaseConnection databaseConnection) {
-        super(databaseConnection, 0, 0);
+        super(databaseConnection, 1, 1);
     }
 
     public synchronized Connection getConnection() {
         return getDatabaseConnection().getConnection();
     }
 
-    public boolean releaseConnection(Connection connection) {
-        try {
-            connection.close();
-            return true;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
+//    public void releaseConnection(Connection connection) {
+//        try {
+//            connection.close();
+//            return true;
+//        } catch (SQLException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 
 
 

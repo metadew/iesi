@@ -1,7 +1,9 @@
 package io.metadew.iesi.connection.database.connection;
 
+import com.zaxxer.hikari.HikariConfig;
 import io.metadew.iesi.connection.database.sql.SqlScriptResult;
 import io.metadew.iesi.connection.operation.database.ScriptRunner;
+import lombok.Data;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 
@@ -10,6 +12,7 @@ import javax.sql.rowset.RowSetProvider;
 import java.io.*;
 import java.sql.*;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Connection object for databases. This is extended depending on the database
@@ -18,20 +21,32 @@ import java.util.List;
  * @author peter.billen
  */
 @Log4j2
+@Data
 public abstract class DatabaseConnection {
 
-    @Getter
     private String type;
-    @Getter
     private String connectionURL;
     private String userName;
     private String userPassword;
+    private String connectionInitSql;
 
-    public DatabaseConnection(String type, String connectionURL, String userName, String userPassword) {
+    public DatabaseConnection(String type, String connectionURL, String userName, String userPassword, String connectionInitSql) {
         this.type = type;
         this.connectionURL = connectionURL;
         this.userName = userName;
         this.userPassword = userPassword;
+        this.connectionInitSql = connectionInitSql;
+    }
+
+    public HikariConfig configure(HikariConfig hikariConfig) {
+        hikariConfig.setJdbcUrl(getConnectionURL());
+        hikariConfig.setUsername(getUserName());
+        hikariConfig.setPassword(getUserPassword());
+        hikariConfig.setAutoCommit(false);
+        if (getConnectionInitSql() != null) {
+            hikariConfig.setConnectionInitSql(getConnectionInitSql());
+        }
+        return hikariConfig;
     }
 
     public abstract String getDriver();

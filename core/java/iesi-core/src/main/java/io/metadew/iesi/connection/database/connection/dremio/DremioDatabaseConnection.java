@@ -12,15 +12,15 @@ public class DremioDatabaseConnection extends SchemaDatabaseConnection {
     private static String type = "dremio";
 
     public DremioDatabaseConnection(String connectionURL, String userName, String userPassword) {
-        super(type, connectionURL, userName, userPassword);
+        super(type, connectionURL, userName, userPassword, null);
     }
 
     public DremioDatabaseConnection(String connectionURL, String userName, String userPassword, String schema) {
-        super(type, connectionURL, userName, userPassword, schema);
+        super(type, connectionURL, userName, userPassword, null, schema);
     }
 
     public DremioDatabaseConnection(String hostName, int portNumber, String connectionMode, String clusterName, String schemaName, String userName, String userPassword) {
-        super(type, getConnectionUrl(hostName, portNumber, connectionMode, clusterName, schemaName, userName, userPassword), userName, userPassword);
+        this(getConnectionUrl(hostName, portNumber, connectionMode, clusterName, schemaName, userName, userPassword), userName, userPassword);
     }
 
     private static String getConnectionUrl(String hostName, int portNumber, String connectionMode, String clusterName, String schemaName, String userName, String userPassword) {

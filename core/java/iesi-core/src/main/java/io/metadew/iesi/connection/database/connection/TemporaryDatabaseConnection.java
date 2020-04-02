@@ -8,7 +8,7 @@ package io.metadew.iesi.connection.database.connection;
 public class TemporaryDatabaseConnection extends DatabaseConnection {
 
     public TemporaryDatabaseConnection(String type, String connectionURL, String userName, String userPassword) {
-        super(type, connectionURL, userName, userPassword);
+        super(type, connectionURL, userName, userPassword, null);
     }
 
     @Override

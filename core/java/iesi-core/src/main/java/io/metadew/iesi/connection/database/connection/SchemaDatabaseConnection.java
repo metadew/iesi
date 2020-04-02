@@ -1,5 +1,6 @@
 package io.metadew.iesi.connection.database.connection;
 
+import com.zaxxer.hikari.HikariConfig;
 import lombok.Setter;
 
 import java.util.Optional;
@@ -15,12 +16,24 @@ public abstract class SchemaDatabaseConnection extends DatabaseConnection {
     @Setter
     private String schema;
 
-    public SchemaDatabaseConnection(String type, String connectionURL, String userName, String userPassword) {
-        super(type, connectionURL, userName, userPassword);
+    public HikariConfig configure(HikariConfig hikariConfig) {
+        hikariConfig.setJdbcUrl(getConnectionURL());
+        hikariConfig.setUsername(getUserName());
+        hikariConfig.setPassword(getUserPassword());
+        hikariConfig.setAutoCommit(false);
+        if (getConnectionInitSql() != null) {
+            hikariConfig.setConnectionInitSql(getConnectionInitSql());
+        }
+        getSchema().ifPresent(hikariConfig::setSchema);
+        return hikariConfig;
+    }
+
+    public SchemaDatabaseConnection(String type, String connectionURL, String userName, String userPassword, String connectionInitSql) {
+        super(type, connectionURL, userName, userPassword, connectionInitSql);
         this.schema = null;
     }
-    public SchemaDatabaseConnection(String type, String connectionURL, String userName, String userPassword, String schema) {
-        super(type, connectionURL, userName, userPassword);
+    public SchemaDatabaseConnection(String type, String connectionURL, String userName, String userPassword, String connectionInitSql, String schema) {
+        super(type, connectionURL, userName, userPassword, connectionInitSql);
         this.schema = schema;
     }
 

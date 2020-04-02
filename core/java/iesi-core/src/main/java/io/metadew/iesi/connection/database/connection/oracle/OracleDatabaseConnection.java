@@ -1,5 +1,6 @@
 package io.metadew.iesi.connection.database.connection.oracle;
 
+import com.zaxxer.hikari.HikariConfig;
 import io.metadew.iesi.connection.database.connection.SchemaDatabaseConnection;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,13 +22,24 @@ public class OracleDatabaseConnection extends SchemaDatabaseConnection {
     private static String type = "oracle";
 
     public OracleDatabaseConnection(String connectionURL, String userName, String userPassword) {
-        super(type, connectionURL, userName, userPassword);
+        super(type, connectionURL, userName, userPassword, "alter session set nls_timestamp_format='YYYY-MM-DD\"T\" HH24:MI:SS:FF'");
         System.getProperties().setProperty("oracle.jdbc.J2EE13Compliant", "true");
     }
 
     public OracleDatabaseConnection(String connectionURL, String userName, String userPassword, String schema) {
-        super(type, connectionURL, userName, userPassword, schema);
+        super(connectionURL, userName, userPassword, "alter session set nls_timestamp_format='YYYY-MM-DD\"T\" HH24:MI:SS:FF' schema=" + schema + "", schema);
         System.getProperties().setProperty("oracle.jdbc.J2EE13Compliant", "true");
+    }
+
+    @Override
+    public HikariConfig configure(HikariConfig hikariConfig) {
+        hikariConfig.setJdbcUrl(getConnectionURL());
+        hikariConfig.setUsername(getUserName());
+        hikariConfig.setPassword(getUserPassword());
+        hikariConfig.setAutoCommit(false);
+        hikariConfig.setConnectionInitSql(getSchema().map(s -> "alter session set nls_timestamp_format='YYYY-MM-DD\"T\" HH24:MI:SS:FF' current_schema=" + s)
+                .orElse("alter session set nls_timestamp_format='YYYY-MM-DD\"T\" HH24:MI:SS:FF'"));
+        return hikariConfig;
     }
 
     public static String getConnectionUrl(String hostName, int portNumber, String serviceName, String tnsAlias) {

@@ -7,6 +7,8 @@ public class NetezzaDatabaseServiceImpl extends SchemaDatabaseServiceImpl<Netezz
 
     private static NetezzaDatabaseServiceImpl INSTANCE;
 
+    private static final String keyword= "db.netezza";
+
     public synchronized static NetezzaDatabaseServiceImpl getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new NetezzaDatabaseServiceImpl();
@@ -23,7 +25,7 @@ public class NetezzaDatabaseServiceImpl extends SchemaDatabaseServiceImpl<Netezz
 
     @Override
     public String keyword() {
-        return null;
+        return keyword;
     }
 
     @Override

@@ -2,7 +2,6 @@ package io.metadew.iesi.script.action.sql;
 
 import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.DatabaseHandlerImpl;
-import io.metadew.iesi.connection.operation.ConnectionOperation;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
@@ -87,9 +86,7 @@ public class SqlExecuteStatement {
         // Get Connection
         Connection connection = ConnectionConfiguration.getInstance().get(new ConnectionKey(connectionName, executionControl.getEnvName()))
                 .orElseThrow(() -> new RuntimeException("Cannot find connection " + connectionName));
-        ConnectionOperation connectionOperation = new ConnectionOperation();
-        Database database = connectionOperation.getDatabase(connection);
-
+        Database database = DatabaseHandlerImpl.getInstance().getDatabase(connection);
         if (database == null) {
             throw new RuntimeException("Error establishing DB connection");
         }

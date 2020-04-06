@@ -10,6 +10,9 @@ public class SqliteDatabaseServiceImpl extends DatabaseServiceImpl<SqliteDatabas
 
     private static SqliteDatabaseServiceImpl INSTANCE;
 
+    private static final String keyword= "db.sqlite";
+
+
     public synchronized static SqliteDatabaseServiceImpl getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new SqliteDatabaseServiceImpl();
@@ -26,7 +29,7 @@ public class SqliteDatabaseServiceImpl extends DatabaseServiceImpl<SqliteDatabas
 
     @Override
     public String keyword() {
-        return null;
+        return keyword;
     }
 
     public Connection getConnection(SqliteDatabase sqliteDatabase) {

@@ -1,6 +1,7 @@
 package io.metadew.iesi.connection.database.connection;
 
 import io.metadew.iesi.connection.database.sql.SqlScriptResult;
+import io.metadew.iesi.data.generation.configuration.Time;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.IOException;
@@ -50,4 +51,5 @@ public interface DatabaseConnectionService<T extends DatabaseConnection> {
     public PreparedStatement createPreparedStatement(T databaseConnection, Connection connection, String sqlStatement) throws SQLException;
 
     public Class<T> appliesTo();
+
 }

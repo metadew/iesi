@@ -2,7 +2,6 @@ package io.metadew.iesi.script.action.sql;
 
 import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.DatabaseHandlerImpl;
-import io.metadew.iesi.connection.operation.ConnectionOperation;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.text.Text;
@@ -106,9 +105,7 @@ public class SqlEvaluateResult {
         Connection connection = ConnectionConfiguration.getInstance()
                 .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
                 .get();
-        ConnectionOperation connectionOperation = new ConnectionOperation();
-        Database database = connectionOperation.getDatabase(connection);
-
+        Database database = DatabaseHandlerImpl.getInstance().getDatabase(connection);
         // Run the action
         CachedRowSet crs;
         crs = DatabaseHandlerImpl.getInstance().executeQueryLimitRows(database, query, 10);

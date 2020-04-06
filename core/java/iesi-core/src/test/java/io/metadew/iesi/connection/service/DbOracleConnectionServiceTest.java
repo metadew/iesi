@@ -1,11 +1,11 @@
 package io.metadew.iesi.connection.service;
 
+import io.metadew.iesi.connection.database.DatabaseHandlerImpl;
 import io.metadew.iesi.connection.database.OracleDatabase;
 import io.metadew.iesi.connection.database.connection.DatabaseConnectionHandlerImpl;
 import io.metadew.iesi.connection.database.connection.oracle.OracleDatabaseConnection;
 import io.metadew.iesi.connection.database.connection.oracle.ServiceNameOracleDatabaseConnection;
 import io.metadew.iesi.connection.database.connection.oracle.TnsAliasOracleDatabaseConnection;
-import io.metadew.iesi.connection.operation.DbOracleConnectionService;
 import io.metadew.iesi.framework.crypto.FrameworkCrypto;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
@@ -55,7 +55,7 @@ class DbOracleConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "schema"), "schema"))
                         .collect(Collectors.toList()));
         OracleDatabase oracleDatabaseExpected = new OracleDatabase(new ServiceNameOracleDatabaseConnection("host", 1, "service", "user",  "password", "schema"),"schema");
-        assertEquals(oracleDatabaseExpected, DbOracleConnectionService.getInstance().getDatabase(connection));
+        assertEquals(oracleDatabaseExpected, DatabaseHandlerImpl.getInstance().getDatabase(connection));
     }
 
     @Test
@@ -73,7 +73,7 @@ class DbOracleConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "schema"), "schema"))
                         .collect(Collectors.toList()));
         OracleDatabase oracleDatabaseExpected = new OracleDatabase(new TnsAliasOracleDatabaseConnection("host", 1, "tnsAlias", "user",  "password", "schema"),"schema");
-        assertEquals(oracleDatabaseExpected, DbOracleConnectionService.getInstance().getDatabase(connection));
+        assertEquals(oracleDatabaseExpected, DatabaseHandlerImpl.getInstance().getDatabase(connection));
     }
 
     @Test
@@ -88,7 +88,7 @@ class DbOracleConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "schema"), "schema"))
                         .collect(Collectors.toList()));
         OracleDatabase oracleDatabaseExpected = new OracleDatabase(new OracleDatabaseConnection("connectionUrl", "user",  "password"),"schema");
-        assertEquals(oracleDatabaseExpected, DbOracleConnectionService.getInstance().getDatabase(connection));
+        assertEquals(oracleDatabaseExpected, DatabaseHandlerImpl.getInstance().getDatabase(connection));
     }
 
     @Test
@@ -106,7 +106,7 @@ class DbOracleConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "schema"), "schema"))
                         .collect(Collectors.toList()));
         OracleDatabase oracleDatabaseExpected = new OracleDatabase(new TnsAliasOracleDatabaseConnection("host", 1, "tnsAlias","user",  "encrypted_password", "schema"),"schema");
-        assertEquals(oracleDatabaseExpected, DbOracleConnectionService.getInstance().getDatabase(connection));
+        assertEquals(oracleDatabaseExpected, DatabaseHandlerImpl.getInstance().getDatabase(connection));
     }
 
     @Test
@@ -124,7 +124,7 @@ class DbOracleConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "schema"), "schema"))
                         .collect(Collectors.toList()));
         OracleDatabase oracleDatabaseExpected = new OracleDatabase(new ServiceNameOracleDatabaseConnection("host", 1, "service","user",  "encrypted_password", "schema"),"schema");
-        assertEquals(oracleDatabaseExpected, DbOracleConnectionService.getInstance().getDatabase(connection));
+        assertEquals(oracleDatabaseExpected, DatabaseHandlerImpl.getInstance().getDatabase(connection));
     }
 
     @Test
@@ -139,9 +139,9 @@ class DbOracleConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "schema"), "schema"))
                         .collect(Collectors.toList()));
         OracleDatabase oracleDatabaseExpected = new OracleDatabase(new OracleDatabaseConnection("connectionUrl", "user",  "encrypted_password"),"schema");
-        assertEquals(oracleDatabaseExpected, DbOracleConnectionService.getInstance().getDatabase(connection));
+        assertEquals(oracleDatabaseExpected, DatabaseHandlerImpl.getInstance().getDatabase(connection));
     }
-    
+
     @Test
     void getDatabaseMissingHost() {
         Connection connection = new Connection(new ConnectionKey("test", "tst"),
@@ -155,7 +155,7 @@ class DbOracleConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "password"), "password"),
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "schema"), "schema"))
                         .collect(Collectors.toList()));
-        assertThrows(RuntimeException.class, () -> DbOracleConnectionService.getInstance().getDatabase(connection),
+        assertThrows(RuntimeException.class, () -> DatabaseHandlerImpl.getInstance().getDatabase(connection),
                 MessageFormat.format("Connection {0} does not contain mandatory parameter 'host'", connection));
     }
 
@@ -172,7 +172,7 @@ class DbOracleConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "password"), "password"),
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "schema"), "schema"))
                         .collect(Collectors.toList()));
-        assertThrows(RuntimeException.class, () -> DbOracleConnectionService.getInstance().getDatabase(connection),
+        assertThrows(RuntimeException.class, () -> DatabaseHandlerImpl.getInstance().getDatabase(connection),
                 MessageFormat.format("Connection {0} does not contain mandatory parameter 'port'", connection));
     }
 
@@ -190,7 +190,7 @@ class DbOracleConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "password"), "password"),
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "schema"), "schema"))
                         .collect(Collectors.toList()));
-        assertThrows(RuntimeException.class, () -> DbOracleConnectionService.getInstance().getDatabase(connection),
+        assertThrows(RuntimeException.class, () -> DatabaseHandlerImpl.getInstance().getDatabase(connection),
                 MessageFormat.format("Connection {0} does not contain mandatory parameter 'user'", connection));
     }
 
@@ -207,7 +207,7 @@ class DbOracleConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "user"), "user"),
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "schema"), "schema"))
                         .collect(Collectors.toList()));
-        assertThrows(RuntimeException.class, () -> DbOracleConnectionService.getInstance().getDatabase(connection),
+        assertThrows(RuntimeException.class, () -> DatabaseHandlerImpl.getInstance().getDatabase(connection),
                 MessageFormat.format("Connection {0} does not contain mandatory parameter 'password'", connection));
     }
 
@@ -224,7 +224,7 @@ class DbOracleConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "password"), "password"),
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "schema"), "schema"))
                         .collect(Collectors.toList()));
-        assertThrows(RuntimeException.class, () -> DbOracleConnectionService.getInstance().getDatabase(connection),
+        assertThrows(RuntimeException.class, () -> DatabaseHandlerImpl.getInstance().getDatabase(connection),
                 MessageFormat.format("Oracle database {0} does not know mode 'mode'", connection));
     }
 
@@ -241,7 +241,7 @@ class DbOracleConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "password"), "password"),
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "schema"), "schema"))
                         .collect(Collectors.toList()));
-        assertThrows(RuntimeException.class, () -> DbOracleConnectionService.getInstance().getDatabase(connection),
+        assertThrows(RuntimeException.class, () -> DatabaseHandlerImpl.getInstance().getDatabase(connection),
                 MessageFormat.format("Oracle database {0} does not know mode 'tnsAlias'", connection));
     }
 
@@ -258,7 +258,7 @@ class DbOracleConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "password"), "password"),
                         new ConnectionParameter(new ConnectionParameterKey("test", "tst", "schema"), "schema"))
                         .collect(Collectors.toList()));
-        assertThrows(RuntimeException.class, () -> DbOracleConnectionService.getInstance().getDatabase(connection),
+        assertThrows(RuntimeException.class, () -> DatabaseHandlerImpl.getInstance().getDatabase(connection),
                 MessageFormat.format("Oracle database {0} does not know mode 'tnsAlias'", connection));
     }
 }

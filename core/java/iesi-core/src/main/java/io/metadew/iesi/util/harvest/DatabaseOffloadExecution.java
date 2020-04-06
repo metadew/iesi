@@ -31,12 +31,11 @@ public class DatabaseOffloadExecution {
         Connection sourceConnection = ConnectionConfiguration.getInstance()
                 .get(new ConnectionKey(sourceConnectionName, sourceEnvironmentName))
                 .get();
-        Database sourceDatabase = connectionOperation.getDatabase(sourceConnection);
+        Database sourceDatabase = DatabaseHandlerImpl.getInstance().getDatabase(sourceConnection);
         Connection targetConnection = ConnectionConfiguration.getInstance()
                 .get(new ConnectionKey(targetConnectionName, targetEnvironmentName))
                 .get();
-        Database targetDatabase = connectionOperation.getDatabase(targetConnection);
-
+        Database targetDatabase = DatabaseHandlerImpl.getInstance().getDatabase(targetConnection);
         CachedRowSet crs = null;
         crs = DatabaseHandlerImpl.getInstance().executeQuery(sourceDatabase, sqlStatement);
 

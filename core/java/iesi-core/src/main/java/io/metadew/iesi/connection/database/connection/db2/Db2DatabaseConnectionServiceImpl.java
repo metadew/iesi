@@ -27,4 +27,5 @@ public class Db2DatabaseConnectionServiceImpl extends SchemaDatabaseConnectionSe
     public Class<Db2DatabaseConnection> appliesTo() {
         return Db2DatabaseConnection.class;
     }
+
 }

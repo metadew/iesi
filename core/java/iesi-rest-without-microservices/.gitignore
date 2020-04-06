@@ -4,6 +4,7 @@ src/main/resources/iesikey.p12
 HELP.md
 /target/
 /out/
+/logs/
 /classes/
 !.mvn/wrapper/maven-wrapper.jar
 iesi-home.conf

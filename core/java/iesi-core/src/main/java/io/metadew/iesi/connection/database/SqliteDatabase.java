@@ -9,7 +9,12 @@ import java.sql.SQLException;
 public class SqliteDatabase extends Database {
 
     public SqliteDatabase(SqliteDatabaseConnection databaseConnection) {
-        super(databaseConnection, 1, 1);
+        super(databaseConnection);
+    }
+
+    @Override
+    public boolean isInitializeConnectionPool() {
+        return false;
     }
 
     public synchronized Connection getConnection() {
@@ -24,7 +29,6 @@ public class SqliteDatabase extends Database {
 //            throw new RuntimeException(e);
 //        }
 //    }
-
 
 
     @Override

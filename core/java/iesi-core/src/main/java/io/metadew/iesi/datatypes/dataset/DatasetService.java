@@ -22,4 +22,6 @@ public interface DatasetService<T extends Dataset> extends DataTypeService<T> {
 
     public KeyValueDataset getByNameAndLabels(String name, List<String> labels, ExecutionRuntime executionRuntime) throws IOException;
 
+    public void shutdown(T dataset);
+
 }

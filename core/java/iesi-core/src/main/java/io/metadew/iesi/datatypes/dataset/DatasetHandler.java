@@ -36,7 +36,12 @@ public class DatasetHandler {
     }
 
     @SuppressWarnings("unchecked")
-    public Dataset getByNameAndLabels(String name, List<String> labels, ExecutionRuntime executionRuntime) throws IOException {
+    public void shutdown(Dataset dataset) {
+        getDatasetService(dataset).shutdown(dataset);
+    }
+
+    @SuppressWarnings("unchecked")
+    public Dataset getByNameAndLabels(String name, List<String> labels, ExecutionRuntime executionRuntime) {
         return KeyValueDatasetService.getInstance().getByNameAndLabels(name, labels, executionRuntime);
     }
 

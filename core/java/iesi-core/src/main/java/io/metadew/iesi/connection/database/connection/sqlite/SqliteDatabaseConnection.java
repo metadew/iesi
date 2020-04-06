@@ -1,5 +1,6 @@
 package io.metadew.iesi.connection.database.connection.sqlite;
 
+import com.zaxxer.hikari.HikariConfig;
 import io.metadew.iesi.connection.database.connection.DatabaseConnection;
 
 import java.util.regex.Matcher;
@@ -27,6 +28,13 @@ public class SqliteDatabaseConnection extends DatabaseConnection {
 
     public static String getConnectionUrl(String fileName) {
         return "jdbc:sqlite:" + fileName;
+    }
+
+    public HikariConfig configure(HikariConfig hikariConfig) {
+        super.configure(hikariConfig);
+        hikariConfig.setConnectionTestQuery("select 1");
+        hikariConfig.setDriverClassName(getDriver());
+        return hikariConfig;
     }
 
 

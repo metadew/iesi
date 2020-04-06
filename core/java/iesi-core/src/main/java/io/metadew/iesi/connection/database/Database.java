@@ -16,7 +16,10 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public abstract class Database {
@@ -24,23 +27,35 @@ public abstract class Database {
     private static final int DEFAULT_INITIAL_POOL_SIZE = 4;
     private static final int DEFAULT_MAX_POOL_SIZE = 8;
     private static final Logger LOGGER = LogManager.getLogger();
+    private final int initialPoolSize;
+    private final int maximalPoolSize;
 
     private DatabaseConnection databaseConnection;
     private HikariDataSource connectionPool;
 
     public Database(DatabaseConnection databaseConnection) {
         this.databaseConnection = databaseConnection;
-        HikariConfig hikariConfig = new HikariConfig();
-        hikariConfig.setPoolName(UUID.randomUUID().toString());
-        hikariConfig.setMaximumPoolSize(DEFAULT_MAX_POOL_SIZE);
-        hikariConfig.setMinimumIdle(DEFAULT_INITIAL_POOL_SIZE);
-        hikariConfig.setAutoCommit(false);
-        databaseConnection.configure(hikariConfig);
-        connectionPool = new HikariDataSource(hikariConfig);
+        this.maximalPoolSize = DEFAULT_MAX_POOL_SIZE;
+        this.initialPoolSize = DEFAULT_INITIAL_POOL_SIZE;
+        if (isInitializeConnectionPool()) {
+            initializeConnectionPool(databaseConnection);
+        }
+    }
+
+    public boolean isInitializeConnectionPool() {
+        return true;
     }
 
     public Database(DatabaseConnection databaseConnection, int initialPoolSize, int maximalPoolSize) {
         this.databaseConnection = databaseConnection;
+        this.initialPoolSize = initialPoolSize;
+        this.maximalPoolSize = maximalPoolSize;
+        if (isInitializeConnectionPool()) {
+            initializeConnectionPool(databaseConnection);
+        }
+    }
+
+    private void initializeConnectionPool(DatabaseConnection databaseConnection) {
         HikariConfig hikariConfig = new HikariConfig();
         hikariConfig.setPoolName(UUID.randomUUID().toString());
         hikariConfig.setMaximumPoolSize(maximalPoolSize);
@@ -69,7 +84,9 @@ public abstract class Database {
     }
 
     public void shutdown() {
-        connectionPool.close();
+        if (connectionPool != null) {
+            connectionPool.close();
+        }
     }
 
     public abstract String getSystemTimestampExpression();

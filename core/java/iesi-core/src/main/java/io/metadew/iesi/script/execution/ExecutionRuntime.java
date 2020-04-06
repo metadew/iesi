@@ -71,7 +71,7 @@ public class ExecutionRuntime {
         // Create cache folder
         this.runCacheFolderName = FrameworkConfiguration.getInstance().getFrameworkFolder("run.cache")
                 .map(FrameworkFolder::getAbsolutePath)
-                .orElseThrow(() -> new RuntimeException("no definition found for run.cache"))+ File.separator + runId;
+                .orElseThrow(() -> new RuntimeException("no definition found for run.cache")) + File.separator + runId;
         // FolderTools.createFolder(runCacheFolderName);
         this.runtimeVariableConfiguration = new RuntimeVariableConfiguration(this.runCacheFolderName);
         this.iterationVariableConfiguration = new IterationVariableConfiguration(this.runCacheFolderName, true);
@@ -93,9 +93,11 @@ public class ExecutionRuntime {
     }
 
     public void terminate() {
-        for (StageOperation stageOperation : stageOperationMap.values()) {
-            stageOperation.doCleanup();
-        }
+        datasetMap.values()
+                .forEach(dataset -> DatasetHandler.getInstance().shutdown(dataset));
+        stageOperationMap.values()
+                .forEach(StageOperation::doCleanup);
+        datasetMap = new HashMap<>();
         stageOperationMap = new HashMap<>();
     }
 

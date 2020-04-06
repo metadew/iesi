@@ -45,15 +45,17 @@ public class ExecutionRequestExecutorService {
             } else {
                 log.info(MessageFormat.format("Executing request {0}", executionRequest.getMetadataKey().getId()));
                 executionRequestExecutor.execute(executionRequest);
-                log.info(MessageFormat.format("Processed request {0}", executionRequest.getMetadataKey().getId()));
                 executionRequest.setExecutionRequestStatus(ExecutionRequestStatus.COMPLETED);
                 ExecutionRequestConfiguration.getInstance().update(executionRequest);
+                log.info(MessageFormat.format("Processed request {0}", executionRequest.getMetadataKey().getId()));
             }
         } catch (Exception e) {
             StringWriter stackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(stackTrace));
             log.info("exception=" + e);
             log.debug("exception.stacktrace=" + stackTrace.toString());
+            executionRequest.setExecutionRequestStatus(ExecutionRequestStatus.COMPLETED);
+            ExecutionRequestConfiguration.getInstance().update(executionRequest);
         }
     }
 

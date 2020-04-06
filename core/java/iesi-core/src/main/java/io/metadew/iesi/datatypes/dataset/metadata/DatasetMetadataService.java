@@ -136,4 +136,9 @@ public class DatasetMetadataService {
                 " Values (" + inventoryId + ", \"" + filename + "\", \"" + tableName + "\")";
         datasetMetadata.getDatabase().executeUpdate(inventoryQuery);
     }
+
+    public void shutdown(DatasetMetadata datasetMetadata) {
+        datasetMetadata.getDatabase().shutdown();
+    }
+
 }

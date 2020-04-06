@@ -69,6 +69,12 @@ public class KeyValueDatasetService extends BaseDatasetService<KeyValueDataset> 
         }
     }
 
+    @Override
+    public void shutdown(KeyValueDataset dataset) {
+        dataset.getDatasetDatabase().shutdown();
+        DatasetMetadataService.getInstance().shutdown(dataset.getDatasetMetadata());
+    }
+
     @Synchronized
     public KeyValueDataset createNewDataset(String name, List<String> labels) {
         DatasetMetadata datasetMetadata = DatasetMetadataService.getInstance().getByName(name);

@@ -97,7 +97,6 @@
         </profile>
     </profiles>
 
-
     <dependencies>
         <dependency>
             <groupId>io.metadew</groupId>

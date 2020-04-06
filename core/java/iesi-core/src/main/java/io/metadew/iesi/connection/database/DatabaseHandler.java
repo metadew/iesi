@@ -1,5 +1,7 @@
 package io.metadew.iesi.connection.database;
 
+import com.zaxxer.hikari.HikariDataSource;
+import io.metadew.iesi.connection.database.connection.DatabaseConnection;
 import io.metadew.iesi.connection.database.sql.SqlScriptResult;
 import io.metadew.iesi.metadata.definition.MetadataField;
 import io.metadew.iesi.metadata.definition.MetadataTable;
@@ -7,6 +9,7 @@ import io.metadew.iesi.metadata.definition.MetadataTable;
 import javax.sql.rowset.CachedRowSet;
 import java.io.InputStream;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,9 +17,9 @@ public interface DatabaseHandler {
 
     public Database getDatabase(io.metadew.iesi.metadata.definition.connection.Connection connection);
 
-    public Connection getConnection(Database database);
+    public Connection getConnection(Database database) throws SQLException;
 
-    public boolean releaseConnection(Database database, Connection connection);
+    public void releaseConnection(Database database, Connection connection);
 
     public void shutdown(Database database);
 
@@ -48,7 +51,10 @@ public interface DatabaseHandler {
 
     public CachedRowSet executeProcedure(Database database, String sqlProcedure, String sqlParameters);
 
-    // TODO: remove
+    public boolean isInitializeConnectionPool(Database database);
+
+    public HikariDataSource createConnectionPool(Database database, DatabaseConnection databaseConnection);
+
     public String getCreateStatement(Database database, MetadataTable table, String tableNamePrefix);
 
     public String getDeleteStatement(Database database, MetadataTable table);

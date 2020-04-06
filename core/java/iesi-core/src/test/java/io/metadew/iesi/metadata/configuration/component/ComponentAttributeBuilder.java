@@ -2,6 +2,8 @@ package io.metadew.iesi.metadata.configuration.component;
 
 import io.metadew.iesi.metadata.definition.component.ComponentAttribute;
 import io.metadew.iesi.metadata.definition.component.key.ComponentAttributeKey;
+import io.metadew.iesi.metadata.definition.component.key.ComponentKey;
+import io.metadew.iesi.metadata.definition.environment.key.EnvironmentKey;
 
 public class ComponentAttributeBuilder {
 
@@ -24,7 +26,7 @@ public class ComponentAttributeBuilder {
     }
 
     public ComponentAttribute build() {
-        return new ComponentAttribute(new ComponentAttributeKey(componentId, componentVersion, environment, attributeName), value == null ? "dummy" : value);
+        return new ComponentAttribute(new ComponentAttributeKey(new ComponentKey(componentId, componentVersion), new EnvironmentKey(environment), attributeName), value == null ? "dummy" : value);
     }
 
 }

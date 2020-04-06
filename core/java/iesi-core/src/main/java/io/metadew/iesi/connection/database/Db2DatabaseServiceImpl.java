@@ -100,12 +100,12 @@ public class Db2DatabaseServiceImpl extends SchemaDatabaseServiceImpl<Db2Databas
         }
 
         // Default DtTimestamp
-        if (field.getDefaultTimestamp().trim().equalsIgnoreCase("y")) {
+        if (field.isDefaultTimestamp()) {
             fieldQuery.append(" DEFAULT CURRENT TIMESTAMP");
         }
 
         // Nullable
-        if (field.getNullable().trim().equalsIgnoreCase("n")) {
+        if (!field.isNullable()) {
             fieldQuery.append(" NOT NULL");
         }
         return fieldQuery.toString();

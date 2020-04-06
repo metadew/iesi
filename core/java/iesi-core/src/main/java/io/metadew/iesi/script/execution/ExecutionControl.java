@@ -3,12 +3,10 @@ package io.metadew.iesi.script.execution;
 import io.metadew.iesi.common.text.TextTools;
 import io.metadew.iesi.connection.elasticsearch.filebeat.DelimitedFileBeatElasticSearchConnection;
 import io.metadew.iesi.connection.tools.SQLTools;
-import io.metadew.iesi.framework.configuration.FrameworkSettingConfiguration;
-import io.metadew.iesi.framework.configuration.ScriptRunStatus;
-import io.metadew.iesi.framework.crypto.FrameworkCrypto;
-import io.metadew.iesi.framework.execution.FrameworkControl;
-import io.metadew.iesi.framework.execution.IESIMessage;
-import io.metadew.iesi.metadata.backup.BackupExecution;
+import io.metadew.iesi.common.configuration.Configuration;
+import io.metadew.iesi.common.configuration.ScriptRunStatus;
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
+import io.metadew.iesi.common.crypto.FrameworkCrypto;
 import io.metadew.iesi.metadata.configuration.action.result.ActionResultConfiguration;
 import io.metadew.iesi.metadata.configuration.action.result.ActionResultOutputConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
@@ -18,14 +16,11 @@ import io.metadew.iesi.metadata.definition.action.result.ActionResult;
 import io.metadew.iesi.metadata.definition.action.result.ActionResultOutput;
 import io.metadew.iesi.metadata.definition.action.result.key.ActionResultKey;
 import io.metadew.iesi.metadata.definition.action.result.key.ActionResultOutputKey;
-import io.metadew.iesi.metadata.definition.script.ScriptLog;
 import io.metadew.iesi.metadata.definition.script.result.ScriptResult;
 import io.metadew.iesi.metadata.definition.script.result.ScriptResultElasticSearch;
 import io.metadew.iesi.metadata.definition.script.result.ScriptResultOutput;
 import io.metadew.iesi.metadata.definition.script.result.key.ScriptResultKey;
 import io.metadew.iesi.metadata.definition.script.result.key.ScriptResultOutputKey;
-import io.metadew.iesi.metadata.execution.MetadataControl;
-import io.metadew.iesi.metadata.restore.RestoreExecution;
 import io.metadew.iesi.metadata.service.action.ActionDesignTraceService;
 import io.metadew.iesi.metadata.service.script.ScriptDesignTraceService;
 import org.apache.logging.log4j.*;
@@ -41,9 +36,7 @@ public class ExecutionControl {
     private final DelimitedFileBeatElasticSearchConnection elasticSearchConnection;
     private final ActionDesignTraceService actionDesignTraceService;
     private ExecutionRuntime executionRuntime;
-    private ExecutionLog executionLog;
     private ExecutionTrace executionTrace;
-    private ScriptLog scriptLog;
     private String runId;
     private String envName;
     private boolean actionErrorStop = false;
@@ -58,10 +51,9 @@ public class ExecutionControl {
     // Constructors
 
     public ExecutionControl() throws ClassNotFoundException, NoSuchMethodException,
-            InvocationTargetException, InstantiationException, IllegalAccessException, SQLException {
+            InvocationTargetException, InstantiationException, IllegalAccessException {
         this.scriptDesignTraceService = new ScriptDesignTraceService();
         this.actionDesignTraceService = new ActionDesignTraceService();
-        this.executionLog = new ExecutionLog();
         this.executionTrace = new ExecutionTrace();
         initializeRunId();
         initializeExecutionRuntime(runId);
@@ -71,12 +63,9 @@ public class ExecutionControl {
 
     @SuppressWarnings("unchecked")
     private void initializeExecutionRuntime(String runId) throws ClassNotFoundException,
-            NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, SQLException {
-        if (FrameworkSettingConfiguration.getInstance().getSettingPath("script.execution.runtime")
-                .map(settingsPath -> FrameworkControl.getInstance().getProperty(settingsPath).isPresent()
-                        && !FrameworkControl.getInstance().getProperty(settingsPath).get().isEmpty())
-                .orElse(false)) {
-            Class classRef = Class.forName(FrameworkControl.getInstance().getProperty(FrameworkSettingConfiguration.getInstance().getSettingPath("script.execution.runtime").get()).get());
+            NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+        if (Configuration.getInstance().getProperty("iesi.script.execution.runtime").isPresent()) {
+            Class classRef = Class.forName((String) Configuration.getInstance().getProperty("iesi.script.execution.runtime").get());
             Class[] initParams = {ExecutionControl.class, String.class};
             Constructor constructor = classRef.getConstructor(initParams);
             this.executionRuntime = (ExecutionRuntime) constructor.newInstance(this, runId);
@@ -89,10 +78,10 @@ public class ExecutionControl {
         this.envName = environmentName;
 
         // Set environment variables
-        executionRuntime.setRuntimeVariablesFromList(actionExecution, MetadataControl.getInstance()
+        executionRuntime.setRuntimeVariablesFromList(actionExecution, MetadataRepositoryConfiguration.getInstance()
                 .getConnectivityMetadataRepository()
                 .executeQuery("select env_par_nm, env_par_val from "
-                        + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("EnvironmentParameters")
+                        + MetadataRepositoryConfiguration.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("EnvironmentParameters")
                         + " where env_nm = " + SQLTools.GetStringForSQL(this.envName) + " order by env_par_nm asc, env_par_val asc", "reader"));
     }
 
@@ -105,7 +94,7 @@ public class ExecutionControl {
         Long parentProcessId = scriptExecution.getParentScriptExecution().map(ScriptExecution::getProcessId).orElse(-1L);
         ScriptResult scriptResult = new ScriptResult(new ScriptResultKey(runId, scriptExecution.getProcessId()),
                 parentProcessId,
-                scriptExecution.getScript().getId(),
+                scriptExecution.getScript().getMetadataKey().getScriptId(),
                 scriptExecution.getScript().getName(),
                 scriptExecution.getScript().getVersion().getNumber(),
                 envName,
@@ -115,10 +104,6 @@ public class ExecutionControl {
         );
         ScriptResultConfiguration.getInstance().insert(scriptResult);
 
-
-        this.scriptLog = new ScriptLog(runId, scriptExecution.getProcessId(), parentProcessId, scriptExecution.getScript().getId(),
-                scriptExecution.getScript().getVersion().getNumber(), envName, "ACTIVE", LocalDateTime.now(), null);
-        this.executionLog.setLog(scriptLog);
 
         // Trace the design of the script
         scriptDesignTraceService.trace(scriptExecution);
@@ -154,7 +139,7 @@ public class ExecutionControl {
         );
         ActionResultConfiguration.getInstance().insert(actionResult);
 
-        this.logMessage(actionExecution, "action.status=" + ScriptRunStatus.SKIPPED.value(), Level.INFO);
+        this.logMessage("action.status=" + ScriptRunStatus.SKIPPED.value(), Level.INFO);
 
     }
 
@@ -162,9 +147,6 @@ public class ExecutionControl {
 //        initializeRunId();
 //    }
 
-    public void logStart(RestoreExecution restoreExecution) {
-        initializeRunId();
-    }
 
 //    public Long getNewProcessId() {
 //        Long processId = FrameworkRuntime.getInstance().getNextProcessId();
@@ -194,9 +176,6 @@ public class ExecutionControl {
         // Only is the script is a root script, this will be cleaned
         // In other scripts, the processing variables are still valid
 
-        scriptLog.setEnd(LocalDateTime.now());
-        scriptLog.setStatus(status);
-        executionLog.setLog(this.getScriptLog());
         elasticSearchConnection.ingest(new ScriptResultElasticSearch(scriptResult));
 
         return status;
@@ -211,14 +190,6 @@ public class ExecutionControl {
         actionResult.setStatus(status);
         actionResult.setEndTimestamp(LocalDateTime.now());
         ActionResultConfiguration.getInstance().update(actionResult);
-
-    }
-
-    public void logEnd(BackupExecution backupExecution) {
-
-    }
-
-    public void logEnd(RestoreExecution restoreExecution) {
 
     }
 
@@ -241,7 +212,7 @@ public class ExecutionControl {
             scriptExecution.getExecutionMetrics().increaseSkipCount(1);
         }
 
-        logMessage(actionExecution, "action.status=" + status, Level.INFO);
+        logMessage("action.status=" + status, Level.INFO);
 
         return status;
 
@@ -266,7 +237,7 @@ public class ExecutionControl {
             status = ScriptRunStatus.WARNING.value();
         }
 
-        logMessage(scriptExecution, "script.status=" + status, Level.INFO);
+        logMessage("script.status=" + status, Level.INFO);
 
         String output = scriptExecution.getExecutionControl().getExecutionRuntime().resolveVariables("#output#");
         if (output != null && !output.isEmpty()) {
@@ -276,29 +247,13 @@ public class ExecutionControl {
         return status;
     }
 
-    public void logExecutionOutput(ScriptExecution scriptExecution, String outputName, int outputValue) {
-        logExecutionOutput(scriptExecution, outputName, Integer.toString(outputValue));
-    }
-
-    public void logExecutionOutput(ScriptExecution scriptExecution, String outputName, long outputValue) {
-        logExecutionOutput(scriptExecution, outputName, Long.toString(outputValue));
-    }
-
     public void logExecutionOutput(ScriptExecution scriptExecution, String outputName, String outputValue) {
         // Redact any encrypted values
         outputValue = FrameworkCrypto.getInstance().redact(outputValue);
         outputValue = TextTools.shortenTextForDatabase(outputValue, 2000);
-        logMessage(scriptExecution, "script.output=" + outputName + ":" + outputValue, Level.INFO);
-        ScriptResultOutput scriptResultOutput = new ScriptResultOutput(new ScriptResultOutputKey(runId, scriptExecution.getProcessId(), outputName), scriptExecution.getScript().getId(), outputValue);
+        logMessage("script.output=" + outputName + ":" + outputValue, Level.INFO);
+        ScriptResultOutput scriptResultOutput = new ScriptResultOutput(new ScriptResultOutputKey(runId, scriptExecution.getProcessId(), outputName), scriptExecution.getScript().getMetadataKey().getScriptId(), outputValue);
         ScriptResultOutputConfiguration.getInstance().insert(scriptResultOutput);
-    }
-
-    public void logExecutionOutput(ActionExecution actionExecution, String outputName, int outputValue) {
-        logExecutionOutput(actionExecution, outputName, Integer.toString(outputValue));
-    }
-
-    public void logExecutionOutput(ActionExecution actionExecution, String outputName, long outputValue) {
-        logExecutionOutput(actionExecution, outputName, Long.toString(outputValue));
     }
 
     public void logExecutionOutput(ActionExecution actionExecution, String outputName, String outputValue) {
@@ -315,7 +270,7 @@ public class ExecutionControl {
     }
 
     // Log message
-    public void logMessage(ActionExecution actionExecution, String message, Level level) {
+    public void logMessage(String message, Level level) {
 //        if (!actionExecution.getScriptExecution().isRootScript() && level == Level.INFO || level == Level.ALL) {
 //            // do not display non-root info on info level
 //            // redirect to debug level
@@ -324,19 +279,6 @@ public class ExecutionControl {
         LOGGER.log(level, SCRIPTMARKER, message);
     }
 
-    public void logMessage(IESIMessage message, Level level) {
-        LOGGER.log(level, SCRIPTMARKER, message);
-    }
-
-    public void logMessage(ScriptExecution scriptExecution, String message, Level level) {
-//        if (!scriptExecution.isRootScript() && level == Level.INFO || level == Level.ALL) {
-//            // do not display non-root info on info level
-//            // redirect to debug level
-//            level = Level.DEBUG;
-//        }
-
-        LOGGER.log(level, SCRIPTMARKER, message);
-    }
 
     public void endExecution() {
         System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
@@ -351,7 +293,7 @@ public class ExecutionControl {
     public void initializeRunId() {
         this.runId = UUID.randomUUID().toString();
         ThreadContext.put("runId", runId);
-        logMessage(new IESIMessage("exec.runid=" + runId), Level.INFO);
+        LOGGER.info("exec.runid=" + runId);
     }
 
     public String getEnvName() {
@@ -376,10 +318,6 @@ public class ExecutionControl {
 
     public Long getLastProcessId() {
         return lastProcessId;
-    }
-
-    public ScriptLog getScriptLog() {
-        return scriptLog;
     }
 
     public void setScriptExit(boolean scriptExit) {

@@ -3,9 +3,7 @@ package io.metadew.iesi.datatypes.dataset.keyvalue;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
-import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.ValueNode;
 import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.DatabaseHandlerImpl;
 import io.metadew.iesi.connection.database.SqliteDatabase;
@@ -13,13 +11,15 @@ import io.metadew.iesi.connection.database.connection.sqlite.SqliteDatabaseConne
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
-import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.array.Array;
-import io.metadew.iesi.datatypes.dataset.*;
+import io.metadew.iesi.datatypes.dataset.BaseDatasetService;
+import io.metadew.iesi.datatypes.dataset.Dataset;
+import io.metadew.iesi.datatypes.dataset.DatasetHandler;
+import io.metadew.iesi.datatypes.dataset.DatasetService;
 import io.metadew.iesi.datatypes.dataset.metadata.DatasetMetadata;
 import io.metadew.iesi.datatypes.dataset.metadata.DatasetMetadataService;
 import io.metadew.iesi.datatypes.text.Text;
-import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
+import io.metadew.iesi.common.configuration.framework.FrameworkConfiguration;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 import lombok.Synchronized;
 import lombok.extern.log4j.Log4j2;
@@ -70,6 +70,12 @@ public class KeyValueDatasetService extends BaseDatasetService<KeyValueDataset> 
         }
     }
 
+    @Override
+    public void shutdown(KeyValueDataset dataset) {
+        DatabaseHandlerImpl.getInstance().shutdown(dataset.getDatasetDatabase());
+        DatasetMetadataService.getInstance().shutdown(dataset.getDatasetMetadata());
+    }
+
     @Synchronized
     public KeyValueDataset createNewDataset(String name, List<String> labels) {
         DatasetMetadata datasetMetadata = DatasetMetadataService.getInstance().getByName(name);
@@ -80,7 +86,7 @@ public class KeyValueDatasetService extends BaseDatasetService<KeyValueDataset> 
         DatasetMetadataService.getInstance().insertDatasetLabelInformation(datasetMetadata, nextInventoryId, labels);
 
         log.debug(MessageFormat.format("creating dataset {0} for {1} at {2} table {3}", nextInventoryId, name, datasetFilename, tableName));
-        String filepath = FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath(tableName) + File.separator + "datasets"
+        String filepath = FrameworkConfiguration.getInstance().getMandatoryFrameworkFolder(tableName).getAbsolutePath() + File.separator + "datasets"
                 + File.separator + name + File.separator + tableName + File.separator + datasetFilename;
         File file = new File(filepath);
         file.setWritable(true, true);

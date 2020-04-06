@@ -1,5 +1,6 @@
 package io.metadew.iesi.connection.database.connection;
 
+import com.zaxxer.hikari.HikariConfig;
 import io.metadew.iesi.connection.database.connection.db2.Db2DatabaseConnectionServiceImpl;
 import io.metadew.iesi.connection.database.connection.dremio.DremioDatabaseConnectionServiceImpl;
 import io.metadew.iesi.connection.database.connection.drill.DrillDatabaseConnectionServiceImpl;
@@ -138,6 +139,11 @@ public class DatabaseConnectionHandlerImpl implements DatabaseConnectionHandler 
     @SuppressWarnings("unchecked")
     public SqlScriptResult executeScript(DatabaseConnection databaseConnection, InputStream inputStream, Connection connection) throws IOException, SQLException {
         return getDatabaseConnectionService(databaseConnection).executeScript(databaseConnection, inputStream, connection);
+    }
+
+    @SuppressWarnings("unchecked")
+    public HikariConfig configure(DatabaseConnection databaseConnection, HikariConfig hikariConfig) {
+        return getDatabaseConnectionService(databaseConnection).configure(databaseConnection, hikariConfig);
     }
 
     @SuppressWarnings("unchecked")

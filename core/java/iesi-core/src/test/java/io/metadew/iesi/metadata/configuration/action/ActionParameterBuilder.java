@@ -1,8 +1,6 @@
 package io.metadew.iesi.metadata.configuration.action;
 
-import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
-import io.metadew.iesi.metadata.definition.action.key.ActionKey;
 import io.metadew.iesi.metadata.definition.action.key.ActionParameterKey;
 
 import java.util.Optional;

@@ -1,31 +1,37 @@
 package io.metadew.iesi.connection.database.connection;
 
+import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
 
+
+/**
+ * Connection object for databases. This is extended depending on the database
+ * type.
+ *
+ * @author peter.billen
+ */
 @Log4j2
+@Data
 @ToString
 @EqualsAndHashCode
 public abstract class DatabaseConnection {
 
-    @Getter
     private String type;
-    @Getter
     private String connectionURL;
-    @Getter
     private String userName;
-    @Getter
     private String userPassword;
+    private String connectionInitSql;
 
-    public DatabaseConnection(String type, String connectionURL, String userName, String userPassword) {
+    public DatabaseConnection(String type, String connectionURL, String userName, String userPassword, String connectionInitSql) {
         this.type = type;
         this.connectionURL = connectionURL;
         this.userName = userName;
         this.userPassword = userPassword;
+        this.connectionInitSql = connectionInitSql;
     }
-
+//
 //    public abstract String getDriver();
 //
 //
@@ -63,7 +69,7 @@ public abstract class DatabaseConnection {
 //        // Remove illegal characters at the end
 //        query = this.removeIllgegalCharactersForSingleQuery(query);
 //        Statement statement = connection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-//        log.info(connectionURL + ":" + query);
+//        log.info(connection + ":" + connectionURL + ":" + userName + ":" + query);
 //        ResultSet resultSet = statement.executeQuery(query);
 //        CachedRowSet crs = RowSetProvider.newFactory().createCachedRowSet();
 //        crs.populate(resultSet);
@@ -88,7 +94,7 @@ public abstract class DatabaseConnection {
 //                ResultSet.CONCUR_READ_ONLY);
 //        statement.setMaxRows(limit);
 //
-//        log.info(connectionURL + ":" + query);
+//        log.info(connectionURL + ":" + userName + ":" + query);
 //        ResultSet rs = statement.executeQuery(query);
 //        CachedRowSet crs = RowSetProvider.newFactory().createCachedRowSet();
 //        crs.populate(rs);
@@ -97,6 +103,7 @@ public abstract class DatabaseConnection {
 //        statement.close();
 //
 //        return crs;
+//
 //    }
 //
 //    public CachedRowSet executeProcedure(String sqlProcedure, String sqlParameters) throws SQLException {
@@ -174,7 +181,7 @@ public abstract class DatabaseConnection {
 //        // Remove illegal characters at the end
 //        query = this.removeIllgegalCharactersForSingleQuery(query);
 //        // query = prepareQuery(query);
-//        log.info(connectionURL + ":" + query);
+//        log.info(connection + ":" + connectionURL + ":" + userName + ":" + query);
 //
 //        Statement statement = connection.createStatement();
 //        statement.executeUpdate(query);
@@ -192,7 +199,7 @@ public abstract class DatabaseConnection {
 //        for (String query : queries) {
 //            query = this.removeIllgegalCharactersForSingleQuery(query);
 //            // query = prepareQuery(query);
-//            log.info(connectionURL + ":" + query);
+//            log.info(connection + ":" + connectionURL + ":" + userName + ":" + query);
 //            statement.addBatch(query);
 //        }
 //        statement.executeBatch();

@@ -4,17 +4,12 @@ import io.metadew.iesi.connection.database.DatabaseHandlerImpl;
 import io.metadew.iesi.connection.database.H2Database;
 import io.metadew.iesi.connection.database.connection.h2.H2MemoryDatabaseConnection;
 import io.metadew.iesi.connection.tools.SQLTools;
-import io.metadew.iesi.metadata.definition.RuntimeActionCache;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.File;
 import java.sql.SQLException;
 
 public class RuntimeActionCacheConfiguration {
-
-    private static final Logger LOGGER = LogManager.getLogger();
 
     private final H2Database database;
     private final static String runCacheFileName = "runtimeActionCache.db3";
@@ -105,27 +100,6 @@ public class RuntimeActionCacheConfiguration {
             throw new RuntimeException(e);
         }
         return value;
-    }
-
-    public RuntimeActionCache getRuntimeActionCache(String runId, String type, String name) {
-        RuntimeActionCache runtimeCache = new RuntimeActionCache();
-        runtimeCache.setName(name);
-
-        String query = "select CACHE_VAL from " + PRC_RUN_CACHE
-                + " where run_id = " + SQLTools.GetStringForSQL(runId) + " and cache_typ_nm = " + SQLTools.GetStringForSQL(type) + " and cache_nm = " + SQLTools.GetStringForSQL(name) + ";";
-        CachedRowSet crs = DatabaseHandlerImpl.getInstance().executeQuery(database, query);
-        String value = "";
-        try {
-            while (crs.next()) {
-                value = crs.getString("CACHE_VAL");
-            }
-            crs.close();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-
-        runtimeCache.setValue(value);
-        return runtimeCache;
     }
 
     public void shutdown() {

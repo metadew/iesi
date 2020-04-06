@@ -3,15 +3,12 @@ package io.metadew.iesi.metadata.configuration.environment;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.environment.Environment;
-import io.metadew.iesi.metadata.definition.environment.EnvironmentParameter;
-import io.metadew.iesi.metadata.definition.environment.key.EnvironmentKey;
 import io.metadew.iesi.metadata.repository.ConnectivityMetadataRepository;
 import io.metadew.iesi.metadata.repository.RepositoryTestSetup;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -30,6 +27,7 @@ class EnvironmentConfigurationTest {
     @BeforeEach
     void setup() {
         connectivityMetadataRepository = RepositoryTestSetup.getConnectivityMetadataRepository();
+        connectivityMetadataRepository.createAllTables();
         environment1 = new EnvironmentBuilder("env1")
                 .description("description")
                 .numberOfParameters(2)

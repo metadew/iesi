@@ -2,12 +2,14 @@ package io.metadew.iesi.connection.database;
 
 import io.metadew.iesi.connection.database.connection.presto.PrestoDatabaseConnection;
 import io.metadew.iesi.metadata.definition.MetadataField;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
-/**
- * Database object for PrestoSQL
- *
- * @author peter.billen
- */
+
+@Data
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 public class PrestoDatabase extends SchemaDatabase {
 
 

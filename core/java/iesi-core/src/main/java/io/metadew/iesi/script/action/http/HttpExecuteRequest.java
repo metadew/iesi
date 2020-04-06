@@ -33,7 +33,6 @@ import java.io.StringWriter;
 import java.net.URISyntaxException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
-import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.regex.Pattern;

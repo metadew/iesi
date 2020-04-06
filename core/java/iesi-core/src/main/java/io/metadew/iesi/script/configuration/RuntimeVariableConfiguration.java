@@ -14,7 +14,6 @@ import java.util.Optional;
 
 public class RuntimeVariableConfiguration {
 
-    private final static Logger LOGGER = LogManager.getLogger();
     private final H2Database database;
     private final static String runCacheFileName = "runtimeVariables.db3";
     private final static String PRC_RUN_VAR = "PRC_RUN_VAR";

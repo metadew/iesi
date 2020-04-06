@@ -360,7 +360,7 @@ public class WfaExecuteFilePing {
         List<FileConnection> connectionsFound = new ArrayList();
         ConnectionOperation connectionOperation = new ConnectionOperation();
         HostConnection hostConnection = connectionOperation.getHostConnection(connection);
-        this.getActionExecution().getActionControl().logOutput("conn.name", connection.getName());
+        this.getActionExecution().getActionControl().logOutput("conn.name", connection.getMetadataKey().getName());
 
         try {
             JSch jsch = new JSch();

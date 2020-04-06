@@ -1,5 +1,6 @@
 package io.metadew.iesi.connection.database.connection;
 
+import com.zaxxer.hikari.HikariConfig;
 import io.metadew.iesi.connection.database.sql.SqlScriptResult;
 import io.metadew.iesi.connection.operation.database.ScriptRunner;
 import lombok.extern.log4j.Log4j2;
@@ -26,6 +27,17 @@ public abstract class DatabaseConnectionServiceImpl<T extends DatabaseConnection
             log.debug("exception.stacktrace=" + stackTrace.toString());
             throw new RuntimeException(e);
         }
+    }
+
+    public HikariConfig configure(T databaseConnection, HikariConfig hikariConfig) {
+        hikariConfig.setJdbcUrl(databaseConnection.getConnectionURL());
+        hikariConfig.setUsername(databaseConnection.getUserName());
+        hikariConfig.setPassword(databaseConnection.getUserPassword());
+        hikariConfig.setAutoCommit(false);
+        if (databaseConnection.getConnectionInitSql() != null) {
+            hikariConfig.setConnectionInitSql(databaseConnection.getConnectionInitSql());
+        }
+        return hikariConfig;
     }
 
     public String removeIllgegalCharactersForSingleQuery(T databaseConnection, String input) {

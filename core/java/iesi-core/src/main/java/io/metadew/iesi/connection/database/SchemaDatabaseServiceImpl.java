@@ -3,6 +3,8 @@ package io.metadew.iesi.connection.database;
 import io.metadew.iesi.metadata.definition.MetadataField;
 import io.metadew.iesi.metadata.definition.MetadataTable;
 
+import java.util.Map;
+
 public abstract class SchemaDatabaseServiceImpl<T extends SchemaDatabase> extends DatabaseServiceImpl<T> implements SchemaDatabaseService<T> {
 
     public String getCreateStatement(T schemaDatabase, MetadataTable table) {
@@ -12,15 +14,15 @@ public abstract class SchemaDatabaseServiceImpl<T extends SchemaDatabase> extend
 
         createQuery.append("CREATE TABLE ").append(tableName).append("\n(\n");
         int counter = 1;
-        for (MetadataField field : table.getFields()) {
+        for (Map.Entry<String, MetadataField> field : table.getFields().entrySet()) {
             if (counter > 1) {
                 createQuery.append(",\n");
             }
-            createQuery.append("\t").append(field.getName());
+            createQuery.append("\t").append(field.getKey());
 
             int tabNumber = 1;
-            if (field.getName().length() >= 8) {
-                tabNumber = (int) (4 - Math.ceil((double) field.getName().length() / 8));
+            if (field.getKey().length() >= 8) {
+                tabNumber = (int) (4 - Math.ceil((double) field.getKey().length() / 8));
             } else {
                 tabNumber = 4;
             }
@@ -29,7 +31,7 @@ public abstract class SchemaDatabaseServiceImpl<T extends SchemaDatabase> extend
                 createQuery.append("\t");
             }
 
-            createQuery.append(toQueryString(schemaDatabase, field));
+            createQuery.append(toQueryString(schemaDatabase, field.getValue()));
             /*
              * TODO create comment syntax inside subclasses returning stringbuilder rather
              * than just a boolean

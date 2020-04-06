@@ -59,7 +59,7 @@ public class DrillDatabaseServiceImpl extends SchemaDatabaseServiceImpl<DrillDat
                 triesParameter,
                 userName,
                 userPassword);
-        return new DrillDatabase(drillDatabaseConnection, "");
+        return new DrillDatabase(drillDatabaseConnection, schemaName);
     }
 
     @Override
@@ -105,12 +105,12 @@ public class DrillDatabaseServiceImpl extends SchemaDatabaseServiceImpl<DrillDat
         }
 
         // Default DtTimestamp
-        if (field.getDefaultTimestamp().trim().equalsIgnoreCase("y")) {
+        if (field.isDefaultTimestamp()) {
             fieldQuery.append(" DEFAULT CURRENT_TIMESTAMP");
         }
 
         // Nullable
-        if (field.getNullable().trim().equalsIgnoreCase("n")) {
+        if (!field.isNullable()) {
             fieldQuery.append(" NOT NULL");
         }
         return fieldQuery.toString();

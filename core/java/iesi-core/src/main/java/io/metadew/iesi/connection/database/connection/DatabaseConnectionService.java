@@ -1,5 +1,6 @@
 package io.metadew.iesi.connection.database.connection;
 
+import com.zaxxer.hikari.HikariConfig;
 import io.metadew.iesi.connection.database.sql.SqlScriptResult;
 import io.metadew.iesi.data.generation.configuration.Time;
 
@@ -47,6 +48,7 @@ public interface DatabaseConnectionService<T extends DatabaseConnection> {
 
     public SqlScriptResult executeScript(T databaseConnection, InputStream inputStream, Connection connection) throws IOException, SQLException;
 
+    public HikariConfig configure(T databaseConnection, HikariConfig hikariConfig);
     @Deprecated
     public PreparedStatement createPreparedStatement(T databaseConnection, Connection connection, String sqlStatement) throws SQLException;
 

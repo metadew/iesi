@@ -1,8 +1,10 @@
 package io.metadew.iesi.connection.database;
 
+import com.zaxxer.hikari.HikariDataSource;
+import io.metadew.iesi.common.FrameworkControl;
+import io.metadew.iesi.common.crypto.FrameworkCrypto;
+import io.metadew.iesi.connection.database.connection.DatabaseConnection;
 import io.metadew.iesi.connection.database.sql.SqlScriptResult;
-import io.metadew.iesi.framework.crypto.FrameworkCrypto;
-import io.metadew.iesi.framework.execution.FrameworkControl;
 import io.metadew.iesi.metadata.definition.MetadataField;
 import io.metadew.iesi.metadata.definition.MetadataTable;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import javax.sql.rowset.CachedRowSet;
 import java.io.InputStream;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
@@ -65,13 +68,13 @@ public class DatabaseHandlerImpl implements DatabaseHandler {
     }
 
     @SuppressWarnings("unchecked")
-    public Connection getConnection(Database database) {
+    public Connection getConnection(Database database) throws SQLException {
         return getDatabaseService(database).getConnection(database);
     }
 
     @SuppressWarnings("unchecked")
-    public boolean releaseConnection(Database database, Connection connection) {
-        return getDatabaseService(database).releaseConnection(database, connection);
+    public void releaseConnection(Database database, Connection connection) {
+        getDatabaseService(database).releaseConnection(database, connection);
     }
 
     @SuppressWarnings("unchecked")
@@ -147,6 +150,17 @@ public class DatabaseHandlerImpl implements DatabaseHandler {
     @SuppressWarnings("unchecked")
     public CachedRowSet executeProcedure(Database database, String sqlProcedure, String sqlParameters) {
         return getDatabaseService(database).executeProcedure(database, sqlProcedure, sqlParameters);
+    }
+
+    @Override
+    public boolean isInitializeConnectionPool(Database database) {
+        return getDatabaseService(database).isInitializeConnectionPool();
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public HikariDataSource createConnectionPool(Database database, DatabaseConnection databaseConnection) {
+        return getDatabaseService(database).createConnectionPool(database, databaseConnection);
     }
 
     @SuppressWarnings("unchecked")

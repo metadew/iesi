@@ -16,29 +16,31 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 @Component
 public class ConnectionByNameDtoResourceAssembler extends ResourceAssemblerSupport<List<Connection>, ConnectionByNameDto> {
 
-    private final ModelMapper modelMapper;
-
     public ConnectionByNameDtoResourceAssembler() {
         super(ConnectionsController.class, ConnectionByNameDto.class);
-        this.modelMapper = new ModelMapper();
     }
 
     @Override
     public ConnectionByNameDto toResource(List<Connection> connections) {
-        ConnectionByNameDto connectionByNameDto = convertToDto(connections);
-        for (String environment : connectionByNameDto.getEnvironments()) {
-            connectionByNameDto.add(linkTo(methodOn(ConnectionsController.class).get(connectionByNameDto.getName(), environment))
-                    .withRel("connection:"+connectionByNameDto.getName()+"-"+environment));
+        if (connections.isEmpty()) {
+            return null;
+        } else {
+            ConnectionByNameDto connectionByNameDto = convertToDto(connections);
+            for (String environment : connectionByNameDto.getEnvironments()) {
+                connectionByNameDto.add(linkTo(methodOn(ConnectionsController.class).get(connectionByNameDto.getName(), environment))
+                        .withRel("connection:" + connectionByNameDto.getName() + "-" + environment));
+            }
+            return connectionByNameDto;
         }
-        return connectionByNameDto;
     }
 
     private ConnectionByNameDto convertToDto(List<Connection> connections) {
-
-        ConnectionByNameDto connectionByNameDto = modelMapper.map(connections.get(0), ConnectionByNameDto.class);
-        connectionByNameDto.setEnvironments(connections.stream()
-                .map(Connection::getEnvironment)
-                .collect(Collectors.toList()));
-        return connectionByNameDto;
+        return new ConnectionByNameDto(
+                connections.get(0).getMetadataKey().getName(),
+                connections.get(0).getType(),
+                connections.get(0).getDescription(),
+                connections.stream()
+                        .map(connection -> connection.getMetadataKey().getEnvironmentKey().getName())
+                        .collect(Collectors.toList()));
     }
 }

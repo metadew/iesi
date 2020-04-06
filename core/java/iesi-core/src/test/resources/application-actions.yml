@@ -1,0 +1,5 @@
+iesi:
+  actions:
+    socket.transmitMessage:
+      timeout:
+        default: 2

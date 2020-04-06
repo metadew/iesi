@@ -61,35 +61,6 @@ public class IterationConfiguration {
         DatabaseHandlerImpl.getInstance().executeUpdate(database, query);
     }
 
-    public void setIterationList(String runId, String iterationList, ResultSet resultSet) {
-        try {
-            this.cleanIterationVariables(runId, iterationList);
-
-            // Iterate over the iteration sets
-            String setName = "";
-            int setNumber = 0;
-
-            ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
-            int columns = resultSetMetaData.getColumnCount();
-
-            resultSet.beforeFirst();
-            while (resultSet.next()) {
-                setNumber++;
-                setName = "auto generated iteration set " + setNumber;
-
-                // Iterate over the iteration variables
-                for (int i = 1; i < columns + 1; i++) {
-                    this.setIterationVariable(runId, -1, iterationList, -1, setName, setNumber,
-                            resultSetMetaData.getColumnName(i), resultSet.getString(i));
-                }
-            }
-            resultSet.close();
-        } catch (SQLException e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-        }
-    }
-
 
     private String truncateRuntimeVariableValue(String value) {
         if (value == null) {
@@ -215,7 +186,7 @@ public class IterationConfiguration {
         return iterationInstance;
     }
 
-    public IterationInstance hasNext(String runId, String condition)  {
+    public IterationInstance hasNext(String condition)  {
         IterationInstance iterationInstance = new IterationInstance();
 
         boolean conditionResult = true;

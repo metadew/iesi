@@ -4,7 +4,7 @@ import io.metadew.iesi.connection.database.connection.mssql.MssqlDatabaseConnect
 import io.metadew.iesi.metadata.definition.MetadataField;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 
-public class MssqlDatabaseServiceImpl extends SchemaDatabaseServiceImpl<MssqlDatabase> implements SchemaDatabaseService<MssqlDatabase>  {
+public class MssqlDatabaseServiceImpl extends SchemaDatabaseServiceImpl<MssqlDatabase> implements SchemaDatabaseService<MssqlDatabase> {
 
     private static MssqlDatabaseServiceImpl INSTANCE;
 
@@ -25,7 +25,8 @@ public class MssqlDatabaseServiceImpl extends SchemaDatabaseServiceImpl<MssqlDat
         return INSTANCE;
     }
 
-    private MssqlDatabaseServiceImpl() {}
+    private MssqlDatabaseServiceImpl() {
+    }
 
 
     @Override
@@ -34,7 +35,7 @@ public class MssqlDatabaseServiceImpl extends SchemaDatabaseServiceImpl<MssqlDat
         String userPassword = DatabaseHandlerImpl.getInstance().getMandatoryParameterWithKey(connection, passwordKey);
         String schemaName = DatabaseHandlerImpl.getInstance().getMandatoryParameterWithKey(connection, schemaKey);
         MssqlDatabaseConnection mssqlDatabaseConnection;
-        if ( DatabaseHandlerImpl.getInstance().getOptionalParameterWithKey(connection, connectionUrlKey).isPresent()) {
+        if (DatabaseHandlerImpl.getInstance().getOptionalParameterWithKey(connection, connectionUrlKey).isPresent()) {
             mssqlDatabaseConnection = new MssqlDatabaseConnection(
                     DatabaseHandlerImpl.getInstance().getOptionalParameterWithKey(connection, connectionUrlKey).get(),
                     userName,
@@ -44,14 +45,15 @@ public class MssqlDatabaseServiceImpl extends SchemaDatabaseServiceImpl<MssqlDat
         }
 
         String hostName = DatabaseHandlerImpl.getInstance().getMandatoryParameterWithKey(connection, hostKey);
-        int port = Integer.parseInt(DatabaseHandlerImpl.getInstance().getMandatoryParameterWithKey(connection,portKey));
+        int port = Integer.parseInt(DatabaseHandlerImpl.getInstance().getMandatoryParameterWithKey(connection, portKey));
         String databaseName = DatabaseHandlerImpl.getInstance().getMandatoryParameterWithKey(connection, databaseKey);
 
         mssqlDatabaseConnection = new MssqlDatabaseConnection(hostName,
                 port,
                 databaseName,
                 userName,
-                userPassword);
+                userPassword,
+                schemaName);
         return new MssqlDatabase(mssqlDatabaseConnection, schemaName);
     }
 
@@ -100,12 +102,12 @@ public class MssqlDatabaseServiceImpl extends SchemaDatabaseServiceImpl<MssqlDat
         }
 
         // Default DtTimestamp
-        if (field.getDefaultTimestamp().trim().equalsIgnoreCase("y")) {
+        if (field.isDefaultTimestamp()) {
             fieldQuery.append(" DEFAULT GETDATE()");
         }
 
         // Nullable
-        if (field.getNullable().trim().equalsIgnoreCase("n")) {
+        if (!field.isNullable()) {
             fieldQuery.append(" NOT NULL");
         }
         return fieldQuery.toString();

@@ -1,5 +1,7 @@
 package io.metadew.iesi.connection.database;
 
+import com.zaxxer.hikari.HikariDataSource;
+import io.metadew.iesi.connection.database.connection.DatabaseConnection;
 import io.metadew.iesi.connection.database.sql.SqlScriptResult;
 import io.metadew.iesi.metadata.definition.MetadataField;
 import io.metadew.iesi.metadata.definition.MetadataTable;
@@ -7,6 +9,7 @@ import io.metadew.iesi.metadata.definition.MetadataTable;
 import javax.sql.rowset.CachedRowSet;
 import java.io.InputStream;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,11 +19,15 @@ public interface DatabaseService<T extends Database> {
 
     public String keyword();
 
-    public Connection getConnection(T database);
+    public Connection getConnection(T database) throws SQLException;
 
-    public boolean releaseConnection(T database, Connection connection);
+    public HikariDataSource createConnectionPool(T database, DatabaseConnection databaseConnection);
+
+    public void releaseConnection(T database, Connection connection);
 
     public void shutdown(T database);
+
+    public boolean isInitializeConnectionPool();
 
     public String getSystemTimestampExpression(T database);
 

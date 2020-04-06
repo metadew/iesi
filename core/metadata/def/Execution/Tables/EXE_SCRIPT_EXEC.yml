@@ -1,6 +1,6 @@
 ---
 data:
-  name: EXE_SCRPT_EXEC
+  name: SCRPT_EXEC
   label: ScriptExecutions
   description: In-process runtime script requests for execution
   type: operational

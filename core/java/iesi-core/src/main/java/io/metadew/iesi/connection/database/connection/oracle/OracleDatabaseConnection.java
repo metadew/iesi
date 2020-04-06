@@ -1,7 +1,8 @@
 package io.metadew.iesi.connection.database.connection.oracle;
 
-import io.metadew.iesi.connection.database.connection.DatabaseConnection;
+import com.zaxxer.hikari.HikariConfig;
 import io.metadew.iesi.connection.database.connection.SchemaDatabaseConnection;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.apache.logging.log4j.LogManager;
@@ -13,24 +14,21 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Optional;
 
-/**
- * Connection object for Oracle databases. This class extends the default database connection object.
- *
- * @author peter.billen
- */
+
+@Data
+@ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-@ToString
 public class OracleDatabaseConnection extends SchemaDatabaseConnection {
 
     private static String type = "oracle";
 
     public OracleDatabaseConnection(String connectionURL, String userName, String userPassword) {
-        super(type, connectionURL, userName, userPassword);
+        super(type, connectionURL, userName, userPassword, "alter session set nls_timestamp_format='YYYY-MM-DD\"T\" HH24:MI:SS:FF'");
         System.getProperties().setProperty("oracle.jdbc.J2EE13Compliant", "true");
     }
 
     public OracleDatabaseConnection(String connectionURL, String userName, String userPassword, String schema) {
-        super(type, connectionURL, userName, userPassword, schema);
+        super(type, connectionURL, userName, userPassword, "alter session set nls_timestamp_format='YYYY-MM-DD\"T\" HH24:MI:SS:FF' current_schema=" + schema, schema);
         System.getProperties().setProperty("oracle.jdbc.J2EE13Compliant", "true");
     }
 

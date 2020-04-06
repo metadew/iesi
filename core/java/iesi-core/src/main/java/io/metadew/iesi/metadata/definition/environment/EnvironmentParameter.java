@@ -2,6 +2,7 @@ package io.metadew.iesi.metadata.definition.environment;
 
 
 import io.metadew.iesi.metadata.definition.Metadata;
+import io.metadew.iesi.metadata.definition.environment.key.EnvironmentKey;
 import io.metadew.iesi.metadata.definition.environment.key.EnvironmentParameterKey;
 import lombok.EqualsAndHashCode;
 
@@ -16,7 +17,7 @@ public class EnvironmentParameter extends Metadata<EnvironmentParameterKey> {
     }
 
     public EnvironmentParameter(String environmentName, String environmentParameterName, String value) {
-        super(new EnvironmentParameterKey(environmentName, environmentParameterName));
+        super(new EnvironmentParameterKey(new EnvironmentKey(environmentName), environmentParameterName));
         this.value = value;
     }
 

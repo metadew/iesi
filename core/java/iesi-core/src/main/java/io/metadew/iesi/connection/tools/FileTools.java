@@ -1,6 +1,6 @@
 package io.metadew.iesi.connection.tools;
 
-import io.metadew.iesi.framework.execution.FrameworkControl;
+import io.metadew.iesi.common.FrameworkControl;
 import org.apache.commons.io.FileUtils;
 
 import java.io.*;

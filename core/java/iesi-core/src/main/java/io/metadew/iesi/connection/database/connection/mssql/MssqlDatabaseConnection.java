@@ -1,23 +1,20 @@
 package io.metadew.iesi.connection.database.connection.mssql;
 
 import io.metadew.iesi.connection.database.connection.SchemaDatabaseConnection;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-/**
- * Connection object for Microsoft SQL databases. This class extends the default
- * database connection object.
- *
- * @author peter.billen
- */
+
+@Data
+@ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-@ToString
 public class MssqlDatabaseConnection extends SchemaDatabaseConnection {
 
     private static String type = "mssql";
 
     public MssqlDatabaseConnection(String connectionURL, String userName, String userPassword) {
-        super(type, connectionURL, userName, userPassword);
+        super(type, connectionURL, userName, userPassword, null);
     }
 
 
@@ -26,8 +23,8 @@ public class MssqlDatabaseConnection extends SchemaDatabaseConnection {
     }
 
     public MssqlDatabaseConnection(String hostName, int portNumber, String databaseName, String userName,
-                                   String userPassword) {
-        super(type, getConnectionUrl(hostName, portNumber, databaseName), userName, userPassword);
+                                   String userPassword, String schema) {
+        this(getConnectionUrl(hostName, portNumber, databaseName), userName, userPassword, schema);
     }
 
     public static String getConnectionUrl(String hostName, int portNumber, String databaseName) {

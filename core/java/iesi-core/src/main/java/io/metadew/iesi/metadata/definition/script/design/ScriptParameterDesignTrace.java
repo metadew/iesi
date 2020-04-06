@@ -14,7 +14,7 @@ public class ScriptParameterDesignTrace extends Metadata<ScriptParameterDesignTr
     }
 
     public ScriptParameterDesignTrace(String runId, Long processId, ScriptParameter scriptParameter) {
-        this(new ScriptParameterDesignTraceKey(runId, processId, scriptParameter.getName()), scriptParameter.getValue());
+        this(new ScriptParameterDesignTraceKey(runId, processId, scriptParameter.getMetadataKey().getParameterName()), scriptParameter.getValue());
     }
 
     public String getScriptParameterValue() {

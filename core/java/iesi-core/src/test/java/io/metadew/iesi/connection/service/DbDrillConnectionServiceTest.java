@@ -1,10 +1,9 @@
 package io.metadew.iesi.connection.service;
 
+import io.metadew.iesi.common.crypto.FrameworkCrypto;
 import io.metadew.iesi.connection.database.DatabaseHandlerImpl;
 import io.metadew.iesi.connection.database.DrillDatabase;
-import io.metadew.iesi.connection.database.connection.DatabaseConnectionHandlerImpl;
 import io.metadew.iesi.connection.database.connection.drill.DrillDatabaseConnection;
-import io.metadew.iesi.framework.crypto.FrameworkCrypto;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
@@ -13,7 +12,6 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.powermock.api.mockito.PowerMockito;
 import org.powermock.reflect.Whitebox;
 
 import java.text.MessageFormat;
@@ -27,15 +25,16 @@ import static org.mockito.ArgumentMatchers.any;
 public class DbDrillConnectionServiceTest {
 
     @BeforeAll
-    static void setup()  {
-        DatabaseConnectionHandlerImpl databaseConnectionHandler = PowerMockito.mock(DatabaseConnectionHandlerImpl.class);
-        Whitebox.setInternalState(DatabaseConnectionHandlerImpl.class, "INSTANCE", databaseConnectionHandler);
-        Mockito.doReturn(null).when(databaseConnectionHandler).getConnection(any());
+    static void setup() {
+        DatabaseHandlerImpl databaseConnectionHandler = DatabaseHandlerImpl.getInstance();
+        DatabaseHandlerImpl databaseConnectionHandlerSpy = Mockito.spy(databaseConnectionHandler);
+        Whitebox.setInternalState(DatabaseHandlerImpl.class, "INSTANCE", databaseConnectionHandlerSpy);
+        Mockito.doReturn(false).when(databaseConnectionHandlerSpy).isInitializeConnectionPool(any());
     }
 
     @AfterAll
     static void destroy() {
-        Whitebox.setInternalState(DatabaseConnectionHandlerImpl.class, "INSTANCE", (DatabaseConnectionHandlerImpl) null);
+        Whitebox.setInternalState(DatabaseHandlerImpl.class, "INSTANCE", (DatabaseHandlerImpl) null);
     }
 
     @Test
@@ -43,17 +42,17 @@ public class DbDrillConnectionServiceTest {
         Connection connection = new Connection(new ConnectionKey("test", "tst"),
                 "db.drill",
                 "description",
-                Stream.of(new ConnectionParameter(new ConnectionParameterKey("test", "tst", "mode"), "mode"),
-                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "cluster"), "cluster"),
-                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "directory"), "directory"),
-                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "clusterId"), "clusterId"),
-                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "schema"), "schema"),
-                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "tries"), "tries"),
-                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "user"), "user"),
-                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "password"), "password"))
+                Stream.of(new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "mode"), "mode"),
+                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "cluster"), "cluster"),
+                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "directory"), "directory"),
+                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "clusterId"), "clusterId"),
+                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "schema"), "schema"),
+                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "tries"), "tries"),
+                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "user"), "user"),
+                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "password"), "password"))
                         .collect(Collectors.toList()));
 
-        DrillDatabase drillDatabase = new DrillDatabase(new DrillDatabaseConnection("mode","cluster", "directory", "clusterId", "schema","tries","user","password"),"schema");
+        DrillDatabase drillDatabase = new DrillDatabase(new DrillDatabaseConnection("mode", "cluster", "directory", "clusterId", "schema", "tries", "user", "password"), "schema");
         assertEquals(drillDatabase, DatabaseHandlerImpl.getInstance().getDatabase(connection));
     }
 
@@ -62,17 +61,17 @@ public class DbDrillConnectionServiceTest {
         Connection connection = new Connection(new ConnectionKey("test", "tst"),
                 "db.drill",
                 "description",
-                Stream.of(new ConnectionParameter(new ConnectionParameterKey("test", "tst", "mode"), "mode"),
-                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "cluster"), "cluster"),
-                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "directory"), "directory"),
-                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "clusterId"), "clusterId"),
-                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "schema"), "schema"),
-                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "tries"), "tries"),
-                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "user"), "user"),
-                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "password"),  FrameworkCrypto.getInstance().encrypt("encrypted_password")))
+                Stream.of(new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "mode"), "mode"),
+                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "cluster"), "cluster"),
+                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "directory"), "directory"),
+                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "clusterId"), "clusterId"),
+                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "schema"), "schema"),
+                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "tries"), "tries"),
+                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "user"), "user"),
+                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "password"), FrameworkCrypto.getInstance().encrypt("encrypted_password")))
                         .collect(Collectors.toList()));
 
-        DrillDatabase drillDatabase = new DrillDatabase(new DrillDatabaseConnection("mode","cluster", "directory", "clusterId", "schema","tries","user","encrypted_password"),"schema");
+        DrillDatabase drillDatabase = new DrillDatabase(new DrillDatabaseConnection("mode", "cluster", "directory", "clusterId", "schema", "tries", "user", "encrypted_password"), "schema");
         assertEquals(drillDatabase, DatabaseHandlerImpl.getInstance().getDatabase(connection));
     }
 
@@ -81,13 +80,13 @@ public class DbDrillConnectionServiceTest {
         Connection connection = new Connection(new ConnectionKey("test", "tst"),
                 "db.drill",
                 "description",
-                Stream.of(new ConnectionParameter(new ConnectionParameterKey("test", "tst", "cluster"), "cluster"),
-                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "directory"), "directory"),
-                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "clusterId"), "clusterId"),
-                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "schema"), "schema"),
-                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "tries"), "tries"),
-                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "user"), "user"),
-                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "password"), "password"))
+                Stream.of(new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "cluster"), "cluster"),
+                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "directory"), "directory"),
+                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "clusterId"), "clusterId"),
+                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "schema"), "schema"),
+                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "tries"), "tries"),
+                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "user"), "user"),
+                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "password"), "password"))
                         .collect(Collectors.toList()));
 
 
@@ -100,13 +99,13 @@ public class DbDrillConnectionServiceTest {
         Connection connection = new Connection(new ConnectionKey("test", "tst"),
                 "db.drill",
                 "description",
-                Stream.of(new ConnectionParameter(new ConnectionParameterKey("test", "tst", "mode"), "mode"),
-                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "directory"), "directory"),
-                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "clusterId"), "clusterId"),
-                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "schema"), "schema"),
-                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "tries"), "tries"),
-                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "user"), "user"),
-                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "password"), "password"))
+                Stream.of(new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "mode"), "mode"),
+                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "directory"), "directory"),
+                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "clusterId"), "clusterId"),
+                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "schema"), "schema"),
+                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "tries"), "tries"),
+                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "user"), "user"),
+                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "password"), "password"))
                         .collect(Collectors.toList()));
 
 
@@ -119,13 +118,13 @@ public class DbDrillConnectionServiceTest {
         Connection connection = new Connection(new ConnectionKey("test", "tst"),
                 "db.drill",
                 "description",
-                Stream.of(new ConnectionParameter(new ConnectionParameterKey("test", "tst", "mode"), "mode"),
-                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "cluster"), "cluster"),
-                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "clusterId"), "clusterId"),
-                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "schema"), "schema"),
-                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "tries"), "tries"),
-                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "user"), "user"),
-                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "password"), "password"))
+                Stream.of(new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "mode"), "mode"),
+                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "cluster"), "cluster"),
+                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "clusterId"), "clusterId"),
+                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "schema"), "schema"),
+                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "tries"), "tries"),
+                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "user"), "user"),
+                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "password"), "password"))
                         .collect(Collectors.toList()));
 
 
@@ -138,13 +137,13 @@ public class DbDrillConnectionServiceTest {
         Connection connection = new Connection(new ConnectionKey("test", "tst"),
                 "db.drill",
                 "description",
-                Stream.of(new ConnectionParameter(new ConnectionParameterKey("test", "tst", "mode"), "mode"),
-                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "cluster"), "cluster"),
-                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "directory"), "directory"),
-                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "schema"), "schema"),
-                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "tries"), "tries"),
-                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "user"), "user"),
-                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "password"), "password"))
+                Stream.of(new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "mode"), "mode"),
+                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "cluster"), "cluster"),
+                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "directory"), "directory"),
+                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "schema"), "schema"),
+                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "tries"), "tries"),
+                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "user"), "user"),
+                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "password"), "password"))
                         .collect(Collectors.toList()));
 
         assertThrows(RuntimeException.class, () -> DatabaseHandlerImpl.getInstance().getDatabase(connection),
@@ -156,13 +155,13 @@ public class DbDrillConnectionServiceTest {
         Connection connection = new Connection(new ConnectionKey("test", "tst"),
                 "db.drill",
                 "description",
-                Stream.of(new ConnectionParameter(new ConnectionParameterKey("test", "tst", "mode"), "mode"),
-                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "cluster"), "cluster"),
-                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "directory"), "directory"),
-                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "clusterId"), "clusterId"),
-                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "tries"), "tries"),
-                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "user"), "user"),
-                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "password"), "password"))
+                Stream.of(new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "mode"), "mode"),
+                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "cluster"), "cluster"),
+                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "directory"), "directory"),
+                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "clusterId"), "clusterId"),
+                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "tries"), "tries"),
+                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "user"), "user"),
+                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "password"), "password"))
                         .collect(Collectors.toList()));
 
         assertThrows(RuntimeException.class, () -> DatabaseHandlerImpl.getInstance().getDatabase(connection),
@@ -174,13 +173,13 @@ public class DbDrillConnectionServiceTest {
         Connection connection = new Connection(new ConnectionKey("test", "tst"),
                 "db.drill",
                 "description",
-                Stream.of(new ConnectionParameter(new ConnectionParameterKey("test", "tst", "mode"), "mode"),
-                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "cluster"), "cluster"),
-                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "directory"), "directory"),
-                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "clusterId"), "clusterId"),
-                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "schema"), "schema"),
-                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "user"), "user"),
-                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "password"), "password"))
+                Stream.of(new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "mode"), "mode"),
+                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "cluster"), "cluster"),
+                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "directory"), "directory"),
+                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "clusterId"), "clusterId"),
+                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "schema"), "schema"),
+                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "user"), "user"),
+                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "password"), "password"))
                         .collect(Collectors.toList()));
 
         assertThrows(RuntimeException.class, () -> DatabaseHandlerImpl.getInstance().getDatabase(connection),
@@ -192,13 +191,13 @@ public class DbDrillConnectionServiceTest {
         Connection connection = new Connection(new ConnectionKey("test", "tst"),
                 "db.drill",
                 "description",
-                Stream.of(new ConnectionParameter(new ConnectionParameterKey("test", "tst", "mode"), "mode"),
-                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "cluster"), "cluster"),
-                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "directory"), "directory"),
-                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "clusterId"), "clusterId"),
-                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "schema"), "schema"),
-                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "tries"), "tries"),
-                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "password"), "password"))
+                Stream.of(new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "mode"), "mode"),
+                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "cluster"), "cluster"),
+                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "directory"), "directory"),
+                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "clusterId"), "clusterId"),
+                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "schema"), "schema"),
+                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "tries"), "tries"),
+                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "password"), "password"))
                         .collect(Collectors.toList()));
 
         assertThrows(RuntimeException.class, () -> DatabaseHandlerImpl.getInstance().getDatabase(connection),
@@ -210,13 +209,13 @@ public class DbDrillConnectionServiceTest {
         Connection connection = new Connection(new ConnectionKey("test", "tst"),
                 "db.drill",
                 "description",
-                Stream.of(new ConnectionParameter(new ConnectionParameterKey("test", "tst", "mode"), "mode"),
-                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "cluster"), "cluster"),
-                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "directory"), "directory"),
-                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "clusterId"), "clusterId"),
-                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "schema"), "schema"),
-                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "tries"), "tries"),
-                        new ConnectionParameter(new ConnectionParameterKey("test", "tst", "user"), "user"))
+                Stream.of(new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "mode"), "mode"),
+                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "cluster"), "cluster"),
+                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "directory"), "directory"),
+                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "clusterId"), "clusterId"),
+                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "schema"), "schema"),
+                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "tries"), "tries"),
+                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "user"), "user"))
                         .collect(Collectors.toList()));
 
         assertThrows(RuntimeException.class, () -> DatabaseHandlerImpl.getInstance().getDatabase(connection),

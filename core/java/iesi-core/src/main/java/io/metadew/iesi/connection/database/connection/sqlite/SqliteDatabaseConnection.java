@@ -17,11 +17,11 @@ public class SqliteDatabaseConnection extends DatabaseConnection {
     private static String type = "sqlite";
 
     public SqliteDatabaseConnection(String connectionURL, String userName, String userPassword) {
-        super(type, connectionURL, userName, userPassword);
+        super(type, connectionURL, userName, userPassword, null);
     }
 
     public SqliteDatabaseConnection(String fileName) {
-        super(type, getConnectionUrl(fileName), "", "");
+        this(getConnectionUrl(fileName), "", "");
     }
 
     public static String getConnectionUrl(String fileName) {

@@ -14,9 +14,9 @@ public class NonRouteScriptExecution extends ScriptExecution {
 
     @Override
     public void prepareExecution() {
-        getExecutionControl().logMessage(this, "script.name=" + this.getScript().getName(), Level.INFO);
-        getExecutionControl().logMessage(this, "script.version=" + this.getScript().getVersion().getNumber(), Level.INFO);
-        getExecutionControl().logMessage(this, "exec.env=" + this.getExecutionControl().getEnvName(),
+        getExecutionControl().logMessage("script.name=" + this.getScript().getName(), Level.INFO);
+        getExecutionControl().logMessage("script.version=" + this.getScript().getVersion().getNumber(), Level.INFO);
+        getExecutionControl().logMessage("exec.env=" + this.getExecutionControl().getEnvName(),
                 Level.INFO);
         this.getExecutionControl().logStart(this);
 

@@ -38,10 +38,15 @@ public class SqliteDatabaseServiceImpl extends DatabaseServiceImpl<SqliteDatabas
         }
     }
 
-    public boolean releaseConnection(SqliteDatabase sqliteDatabase, Connection connection) {
+
+    public boolean isInitializeConnectionPool() {
+        return false;
+    }
+
+
+    public void releaseConnection(SqliteDatabase sqliteDatabase, Connection connection) {
         try {
             connection.close();
-            return true;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -91,12 +96,12 @@ public class SqliteDatabaseServiceImpl extends DatabaseServiceImpl<SqliteDatabas
         }
 
         // Default DtTimestamp
-        if (field.getDefaultTimestamp().trim().equalsIgnoreCase("y")) {
+        if (field.isDefaultTimestamp()) {
             fieldQuery.append(" DEFAULT (DATETIME(CURRENT_TIMESTAMP, 'LOCALTIME'))");
         }
 
         // Nullable
-        if (field.getNullable().trim().equalsIgnoreCase("n")) {
+        if (!field.isNullable()) {
             fieldQuery.append(" NOT NULL");
         }
         return fieldQuery.toString();

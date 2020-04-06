@@ -4,7 +4,6 @@ import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsExc
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.execution.ExecutionRequestConfiguration;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequest;
-import io.metadew.iesi.metadata.definition.execution.ExecutionRequestBuilderException;
 import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
 import io.metadew.iesi.server.rest.resource.HalMultipleEmbeddedResource;
 import io.metadew.iesi.server.rest.resource.execution_request.dto.ExecutionRequestDto;
@@ -53,13 +52,9 @@ public class ExecutionRequestController {
 
     @PostMapping("")
     public ExecutionRequestDto post(@RequestBody ExecutionRequestDto executionRequestDto) throws MetadataAlreadyExistsException {
-        try {
-            ExecutionRequest executionRequest = executionRequestDto.convertToNewEntity();
-            executionRequestConfiguration.insert(executionRequest);
-            return executionRequestDtoResourceAssembler.toResource(executionRequest);
-        } catch (ExecutionRequestBuilderException e) {
-            throw new RuntimeException(e);
-        }
+        ExecutionRequest executionRequest = executionRequestDto.convertToEntity();
+        executionRequestConfiguration.insert(executionRequest);
+        return executionRequestDtoResourceAssembler.toResource(executionRequest);
     }
 
     @PutMapping("")

@@ -1,34 +1,27 @@
 package io.metadew.iesi.connection.database.connection.dremio;
 
-import io.metadew.iesi.connection.database.connection.DatabaseConnection;
 import io.metadew.iesi.connection.database.connection.SchemaDatabaseConnection;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-import java.sql.Connection;
-import java.util.Optional;
-
-/**
- * Connection object for Dremio . This class extends the default database connection object.
- *
- * @author peter.billen
- */
+@Data
+@ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-@ToString
 public class DremioDatabaseConnection extends SchemaDatabaseConnection {
 
     private static String type = "dremio";
 
     public DremioDatabaseConnection(String connectionURL, String userName, String userPassword) {
-        super(type, connectionURL, userName, userPassword);
+        super(type, connectionURL, userName, userPassword, null);
     }
 
     public DremioDatabaseConnection(String connectionURL, String userName, String userPassword, String schema) {
-        super(type, connectionURL, userName, userPassword, schema);
+        super(type, connectionURL, userName, userPassword, null, schema);
     }
 
     public DremioDatabaseConnection(String hostName, int portNumber, String connectionMode, String clusterName, String schemaName, String userName, String userPassword) {
-        super(type, getConnectionUrl(hostName, portNumber, connectionMode, clusterName, schemaName, userName, userPassword), userName, userPassword);
+        this(getConnectionUrl(hostName, portNumber, connectionMode, clusterName, schemaName, userName, userPassword), userName, userPassword);
     }
 
     private static String getConnectionUrl(String hostName, int portNumber, String connectionMode, String clusterName, String schemaName, String userName, String userPassword) {

@@ -17,6 +17,8 @@ public class RepositoryConfigurationFactory {
                         return new H2RepositoryConfiguration(configFile);
                     } else if (type.equalsIgnoreCase("mssql")) {
                         return new MssqlRepositoryConfiguration(configFile);
+                    } else if (type.equalsIgnoreCase("mysql")) {
+                        return new MysqlRepositoryConfiguration(configFile);
                     } else if (type.equalsIgnoreCase("sqlite")) {
                         return new SqliteRepositoryConfiguration(configFile);
                     } else if (type.equalsIgnoreCase("oracle")) {

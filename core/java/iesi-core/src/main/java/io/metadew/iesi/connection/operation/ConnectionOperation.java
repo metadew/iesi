@@ -400,7 +400,7 @@ public class ConnectionOperation {
 
             MysqlDatabaseConnection mysqlDatabaseConnection = new MysqlDatabaseConnection(hostName, portNumber,
                     schemaName, userName, userPassword);
-            database = new MysqlDatabase(mysqlDatabaseConnection);
+            database = new MysqlDatabase(mysqlDatabaseConnection, schemaName);
         } else if (connection.getType().equalsIgnoreCase("db.sqlite")) {
             String filePath = "";
             String fileName = "";

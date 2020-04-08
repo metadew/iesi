@@ -17,7 +17,7 @@ Next, clone the git repository for [iesi](https://github.com/metadew/iesi).
 
 ## Import external maven dependencies
 
-There are some external libraries used that are not part of maven central. These need to be imported into your local maven maven repository before continuing. From the shell inside IntelliJ, perform the instructions listed in the following [page](http://maven.apache.org/guides/mini/guide-3rd-party-jars-local.html).
+There are some external libraries used that are not part of maven central. These need to be imported into your local maven repository before continuing. From the shell inside IntelliJ, perform the instructions listed in the following [page](http://maven.apache.org/guides/mini/guide-3rd-party-jars-local.html).
 
 This process needs to be performed for all jar files in the folder build/ext.
 

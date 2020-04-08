@@ -7,7 +7,6 @@
 First, install the necessary development software on your machine:
 * IntelliJ > [link](https://www.jetbrains.com/idea)
 * IntelliJ plugins: Lomkok > [link](https://plugins.jetbrains.com/plugin/6317-lombok)
-* Hub - command line tool for git > [link](https://github.com/github/hub)
 
 Optionally, install any additional tools that facilitate your work (text editors, ...)
 
@@ -58,12 +57,12 @@ So to move forwasrd, you need to create a folder fo the instance and configurati
 
 Next, the assembly process can be started from iesi-core java project. Start the AssemblyLauncher - `io.metadew.iesi.launch.AssemblyLauncher` - with the following program arguments:
 ```
--repository [/path/to/iesi] 
--development [/path/to/iesi] 
--sandbox [/path/to/workspace] 
--instance [instance] 
--version [version] 
--configuration [configuration] 
+-repository [/path/to/iesi]
+-development [/path/to/iesi]
+-sandbox [/path/to/workspace]
+-instance [instance]
+-version [version]
+-configuration [configuration]
 -distribution
 ```
 

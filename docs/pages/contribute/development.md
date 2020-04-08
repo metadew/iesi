@@ -40,7 +40,7 @@ Build using maven goal `clean install`
 
 ### iesi-rest-without-microservices
 
-Build using maven goal `clean package project-info-reports:dependencies`
+Build using maven goal `clean install project-info-reports:dependencies`
 
 ## Create workspace
 

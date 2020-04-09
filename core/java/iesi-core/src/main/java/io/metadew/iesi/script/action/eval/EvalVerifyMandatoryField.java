@@ -155,7 +155,7 @@ public class EvalVerifyMandatoryField {
         // Get Connection
         Connection connection = ConnectionConfiguration.getInstance().get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName())).get();
         ConnectionOperation connectionOperation = new ConnectionOperation();
-        Database database = connectionOperation.getDatabase(connection);
+        Database database = connectionOperation.getDatabase();
 
         // Run the action
         this.getTestQueries(schemaName, tableName, fieldName, evaluationFieldName, evaluationFieldValue, isMandatory);

@@ -9,22 +9,26 @@ import java.sql.SQLException;
 public class SqliteDatabase extends Database {
 
     public SqliteDatabase(SqliteDatabaseConnection databaseConnection) {
-        super(databaseConnection, 0, 0);
+        super(databaseConnection);
+    }
+
+    @Override
+    public boolean isInitializeConnectionPool() {
+        return false;
     }
 
     public synchronized Connection getConnection() {
         return getDatabaseConnection().getConnection();
     }
 
-    public boolean releaseConnection(Connection connection) {
-        try {
-            connection.close();
-            return true;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
+//    public void releaseConnection(Connection connection) {
+//        try {
+//            connection.close();
+//            return true;
+//        } catch (SQLException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 
 
     @Override
@@ -69,12 +73,12 @@ public class SqliteDatabase extends Database {
         }
 
         // Default DtTimestamp
-        if (field.getDefaultTimestamp().trim().equalsIgnoreCase("y")) {
+        if (field.isDefaultTimestamp()) {
             fieldQuery.append(" DEFAULT (DATETIME(CURRENT_TIMESTAMP, 'LOCALTIME'))");
         }
 
         // Nullable
-        if (field.getNullable().trim().equalsIgnoreCase("n")) {
+        if (!field.isNullable()) {
             fieldQuery.append(" NOT NULL");
         }
         return fieldQuery.toString();

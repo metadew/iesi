@@ -13,11 +13,6 @@ public class FileToTransfer {
         this.setAttributes(attributes);
     }
 
-    // Getters and Setters
-    public String getLongName() {
-        return longName;
-    }
-
     public void setLongName(String longName) {
         this.longName = longName;
     }

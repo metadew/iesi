@@ -1,0 +1,47 @@
+---
+data:
+  name: SCRPT_EXEC_REQ_PAR
+  label: ScriptExecutionRequestParameters
+  description: In-process runtime script requests for execution
+  type: operational
+  category: execution
+  migrate: Y
+  migrationKey: NA
+  fields:
+  - name: ID
+    description: Unique identifier for the script execution request parameter id
+    order: '1'
+    type: string
+    length: '255'
+    nullable: N
+    defaultTimestamp: ''
+    primaryKey: true
+  - name: SCRIPT_EXEC_REQ_ID
+    description: Unique identifier for the script execution request id
+    order: '1'
+    type: string
+    length: '255'
+    nullable: N
+    defaultTimestamp: ''
+  - name: NAME
+    description: name
+    order: '1'
+    type: string
+    length: '255'
+    nullable: N
+    defaultTimestamp: ''
+  - name: VALUE
+    description: value
+    order: '1'
+    type: string
+    length: '255'
+    nullable: N
+    defaultTimestamp: ''
+  - name: LOAD_TMS
+    description: Load timestamp indicating when the record was inserted in the table
+    order: '15'
+    type: timestamp
+    length: '0'
+    nullable: N
+    defaultTimestamp: Y
+type: MetadataTable

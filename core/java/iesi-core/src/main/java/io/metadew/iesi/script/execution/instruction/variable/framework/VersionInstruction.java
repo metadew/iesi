@@ -1,6 +1,6 @@
 package io.metadew.iesi.script.execution.instruction.variable.framework;
 
-import io.metadew.iesi.framework.configuration.FrameworkSettings;
+import io.metadew.iesi.common.configuration.FrameworkSettings;
 import io.metadew.iesi.script.execution.instruction.variable.VariableInstruction;
 
 

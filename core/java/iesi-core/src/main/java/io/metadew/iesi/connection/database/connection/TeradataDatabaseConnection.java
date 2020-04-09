@@ -10,12 +10,12 @@ public class TeradataDatabaseConnection extends DatabaseConnection {
     private static String type = "teradata";
 
     public TeradataDatabaseConnection(String connectionURL, String userName, String userPassword) {
-        super(type, connectionURL, userName, userPassword);
+        super(type, connectionURL, userName, userPassword, null);
     }
 
     public TeradataDatabaseConnection(String hostName, int portNumber, String databaseName, String userName,
                                       String userPassword) {
-        super(type, "jdbc:teradata://" + hostName + "/" + "DATABASE=" + databaseName, userName, userPassword);
+        this("jdbc:teradata://" + hostName + "/" + "DATABASE=" + databaseName, userName, userPassword);
     }
 
 

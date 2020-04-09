@@ -1,5 +1,7 @@
 package io.metadew.iesi.connection.database;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import io.metadew.iesi.connection.database.connection.DatabaseConnection;
 import io.metadew.iesi.connection.database.sql.SqlScriptResult;
 import io.metadew.iesi.metadata.definition.MetadataField;
@@ -14,9 +16,10 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public abstract class Database {
@@ -24,85 +27,65 @@ public abstract class Database {
     private static final int DEFAULT_INITIAL_POOL_SIZE = 4;
     private static final int DEFAULT_MAX_POOL_SIZE = 8;
     private static final Logger LOGGER = LogManager.getLogger();
+    private final int initialPoolSize;
+    private final int maximalPoolSize;
 
     private DatabaseConnection databaseConnection;
-    private int initialPoolSize;
-    private int maximalPoolSize;
-    private List<Connection> connectionPool;
-    private List<Connection> usedConnections = new ArrayList<>();
-    private final Object connectionPoolLock = new Object();
+    private HikariDataSource connectionPool;
 
     public Database(DatabaseConnection databaseConnection) {
         this.databaseConnection = databaseConnection;
-        initialPoolSize = DEFAULT_INITIAL_POOL_SIZE;
-        maximalPoolSize = DEFAULT_MAX_POOL_SIZE;
-        connectionPool = new ArrayList<>(initialPoolSize);
-        for (int i = 0; i < initialPoolSize; i++) {
-            connectionPool.add(databaseConnection.getConnection());
+        this.maximalPoolSize = DEFAULT_MAX_POOL_SIZE;
+        this.initialPoolSize = DEFAULT_INITIAL_POOL_SIZE;
+        if (isInitializeConnectionPool()) {
+            initializeConnectionPool(databaseConnection);
         }
+    }
+
+    public boolean isInitializeConnectionPool() {
+        return true;
     }
 
     public Database(DatabaseConnection databaseConnection, int initialPoolSize, int maximalPoolSize) {
         this.databaseConnection = databaseConnection;
         this.initialPoolSize = initialPoolSize;
         this.maximalPoolSize = maximalPoolSize;
-        connectionPool = new ArrayList<>(initialPoolSize);
-        for (int i = 0; i < initialPoolSize; i++) {
-            connectionPool.add(databaseConnection.getConnection());
+        if (isInitializeConnectionPool()) {
+            initializeConnectionPool(databaseConnection);
         }
     }
 
-    public Connection getConnection() {
-        synchronized (this.connectionPoolLock) {
-            if (connectionPool.isEmpty()) {
-                if (usedConnections.size() < maximalPoolSize) {
-                    connectionPool.add(databaseConnection.getConnection());
-                } else {
-                    throw new RuntimeException("Maximum pool size reached, no available connections!");
-                }
-            }
-            Connection connection = connectionPool.remove(connectionPool.size() - 1);
-            usedConnections.add(connection);
-            return connection;
-        }
+    private void initializeConnectionPool(DatabaseConnection databaseConnection) {
+        HikariConfig hikariConfig = new HikariConfig();
+        hikariConfig.setPoolName(UUID.randomUUID().toString());
+        hikariConfig.setMaximumPoolSize(maximalPoolSize);
+        hikariConfig.setMinimumIdle(initialPoolSize);
+        hikariConfig.setAutoCommit(false);
+        databaseConnection.configure(hikariConfig);
+        connectionPool = new HikariDataSource(hikariConfig);
     }
 
-    public boolean releaseConnection(Connection connection) {
-        synchronized (this.connectionPoolLock) {
+    public Connection getConnection() throws SQLException {
+        return connectionPool.getConnection();
+    }
+
+    public void releaseConnection(Connection connection) {
+        if (connection != null) {
             try {
-                if (connectionPool.size() > initialPoolSize) {
-                    connection.close();
-                } else {
-                    connectionPool.add(connection);
-                }
-                return usedConnections.remove(connection);
+                connection.close();
             } catch (SQLException e) {
                 StringWriter stackTrace = new StringWriter();
                 e.printStackTrace(new PrintWriter(stackTrace));
-                LOGGER.info("exception=" + e);
-                LOGGER.debug("exception.stacktrace=" + stackTrace.toString());
-                LOGGER.debug("sql.exception.db=" + databaseConnection.getConnectionURL());
+                LOGGER.info("sql.exception=" + e);
+                LOGGER.debug("sql.exception.stacktrace=" + stackTrace.toString());
                 throw new RuntimeException(e);
             }
         }
     }
 
     public void shutdown() {
-        try {
-            for (int i = 0; i < usedConnections.size(); i++) {
-                releaseConnection(usedConnections.get(0));
-            }
-            for (Connection c : connectionPool) {
-                c.close();
-            }
-            connectionPool.clear();
-        } catch (SQLException e) {
-            StringWriter stackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(stackTrace));
-            LOGGER.info("exception=" + e);
-            LOGGER.debug("exception.stacktrace=" + stackTrace.toString());
-            LOGGER.debug("sql.exception.db=" + databaseConnection.getConnectionURL());
-            throw new RuntimeException(e);
+        if (connectionPool != null) {
+            connectionPool.close();
         }
     }
 
@@ -115,11 +98,11 @@ public abstract class Database {
     }
 
     public void executeUpdate(String query) {
-        Connection connection = getConnection();
+        Connection connection = null;
         try {
+            connection = getConnection();
             this.databaseConnection.executeUpdate(query, connection);
             connection.commit();
-            releaseConnection(connection);
         } catch (SQLException e) {
             StringWriter stackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(stackTrace));
@@ -127,18 +110,18 @@ public abstract class Database {
             LOGGER.debug("sql.exception.stacktrace=" + stackTrace.toString());
             LOGGER.debug("sql.exception.db=" + databaseConnection.getConnectionURL());
             LOGGER.debug("sql.exception.query=" + query);
-            releaseConnection(connection);
             throw new RuntimeException(e);
+        } finally {
+            releaseConnection(connection);
         }
     }
 
     public CachedRowSet executeQuery(String query) {
-        Connection connection = getConnection();
+        Connection connection = null;
+        CachedRowSet cachedRowSet;
         try {
-            CachedRowSet cachedRowSet = databaseConnection.executeQuery(query, connection);
-            connection.commit();
-            releaseConnection(connection);
-            return cachedRowSet;
+            connection = getConnection();
+            cachedRowSet = databaseConnection.executeQuery(query, connection);
         } catch (SQLException e) {
             StringWriter stackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(stackTrace));
@@ -146,25 +129,28 @@ public abstract class Database {
             LOGGER.debug("exception.stacktrace=" + stackTrace.toString());
             LOGGER.debug("sql.exception.db=" + databaseConnection.getConnectionURL());
             LOGGER.debug("sql.exception.query=" + query);
-            releaseConnection(connection);
             throw new RuntimeException(e);
+        } finally {
+            releaseConnection(connection);
         }
+        return cachedRowSet;
     }
 
     public void executeBatch(List<String> queries) {
-        Connection connection = getConnection();
+        Connection connection = null;
         try {
+            connection = getConnection();
             databaseConnection.executeBatch(queries, connection);
             connection.commit();
-            releaseConnection(connection);
         } catch (SQLException e) {
             StringWriter stackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(stackTrace));
             LOGGER.info("exception=" + e);
             LOGGER.debug("exception.stacktrace=" + stackTrace.toString());
             LOGGER.debug("exception.sql=" + databaseConnection.getConnectionURL());
-            releaseConnection(connection);
             throw new RuntimeException(e);
+        } finally {
+            releaseConnection(connection);
         }
     }
 
@@ -183,12 +169,11 @@ public abstract class Database {
     }
 
     public CachedRowSet executeQueryLimitRows(String query, int limit) {
-        Connection connection = getConnection();
+        Connection connection = null;
+        CachedRowSet cachedRowSet;
         try {
-            CachedRowSet cachedRowSet = databaseConnection.executeQueryLimitRows(query, limit, connection);
-            connection.commit();
-            releaseConnection(connection);
-            return cachedRowSet;
+            connection = getConnection();
+            cachedRowSet = databaseConnection.executeQueryLimitRows(query, limit, connection);
         } catch (SQLException e) {
             StringWriter stackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(stackTrace));
@@ -196,9 +181,11 @@ public abstract class Database {
             LOGGER.debug("exception.stacktrace=" + stackTrace.toString());
             LOGGER.debug("sql.exception.db=" + databaseConnection.getConnectionURL());
             LOGGER.debug("sql.exception.query=" + query);
-            releaseConnection(connection);
             throw new RuntimeException(e);
+        } finally {
+            releaseConnection(connection);
         }
+        return cachedRowSet;
     }
 
     public CachedRowSet executeQueryLimitRows(String query, int limit, Connection connection) {
@@ -216,21 +203,23 @@ public abstract class Database {
     }
 
     public SqlScriptResult executeScript(String filename) {
-        Connection connection = getConnection();
+        Connection connection = null;
+        SqlScriptResult sqlScriptResult;
         try {
-            SqlScriptResult sqlScriptResult = databaseConnection.executeScript(filename, connection);
+            connection = getConnection();
+            sqlScriptResult = databaseConnection.executeScript(filename, connection);
             connection.commit();
-            releaseConnection(connection);
-            return sqlScriptResult;
         } catch (SQLException | IOException e) {
             StringWriter stackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(stackTrace));
             LOGGER.info("exception=" + e);
             LOGGER.debug("exception.stacktrace=" + stackTrace.toString());
             LOGGER.debug("sql.exception.db=" + databaseConnection.getConnectionURL());
-            releaseConnection(connection);
             throw new RuntimeException(e);
+        } finally {
+            releaseConnection(connection);
         }
+        return sqlScriptResult;
     }
 
     public SqlScriptResult executeScript(String filename, Connection connection) {
@@ -247,21 +236,23 @@ public abstract class Database {
     }
 
     public SqlScriptResult executeScript(InputStream inputStream) {
-        Connection connection = getConnection();
+        Connection connection = null;
+        SqlScriptResult sqlScriptResult;
         try {
-            SqlScriptResult sqlScriptResult = databaseConnection.executeScript(inputStream, connection);
+            connection = getConnection();
+            sqlScriptResult = databaseConnection.executeScript(inputStream, connection);
             connection.commit();
-            releaseConnection(connection);
-            return sqlScriptResult;
         } catch (SQLException | IOException e) {
             StringWriter stackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(stackTrace));
             LOGGER.info("exception=" + e);
             LOGGER.debug("exception.stacktrace=" + stackTrace.toString());
             LOGGER.debug("sql.exception.db=" + databaseConnection.getConnectionURL());
-            releaseConnection(connection);
             throw new RuntimeException(e);
+        } finally {
+            releaseConnection(connection);
         }
+        return sqlScriptResult;
     }
 
     public SqlScriptResult executeScript(InputStream inputStream, Connection connection) {
@@ -278,21 +269,23 @@ public abstract class Database {
     }
 
     public CachedRowSet executeProcedure(String sqlProcedure, String sqlParameters) {
-        Connection connection = getConnection();
+        Connection connection = null;
+        CachedRowSet cachedRowSet;
         try {
-            CachedRowSet cachedRowSet = databaseConnection.executeProcedure(sqlProcedure, sqlParameters, connection);
+            connection = getConnection();
+            cachedRowSet = databaseConnection.executeProcedure(sqlProcedure, sqlParameters, connection);
             connection.commit();
-            releaseConnection(connection);
-            return cachedRowSet;
         } catch (SQLException e) {
             StringWriter stackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(stackTrace));
             LOGGER.info("exception=" + e);
             LOGGER.debug("exception.stacktrace=" + stackTrace.toString());
             LOGGER.debug("sql.exception.db=" + databaseConnection.getConnectionURL());
-            releaseConnection(connection);
             throw new RuntimeException(e);
+        } finally {
+            releaseConnection(connection);
         }
+        return cachedRowSet;
     }
 
     // TODO: remove
@@ -303,15 +296,15 @@ public abstract class Database {
 
         createQuery.append("CREATE TABLE ").append(tableName).append("\n(\n");
         int counter = 1;
-        for (MetadataField field : table.getFields()) {
+        for (Map.Entry<String, MetadataField> field : table.getFields().entrySet()) {
             if (counter > 1) {
                 createQuery.append(",\n");
             }
-            createQuery.append("\t").append(field.getName());
+            createQuery.append("\t").append(field.getKey());
 
             int tabNumber = 1;
-            if (field.getName().length() >= 8) {
-                tabNumber = (int) (4 - Math.ceil((double) field.getName().length() / 8));
+            if (field.getKey().length() >= 8) {
+                tabNumber = (int) (4 - Math.ceil((double) field.getKey().length() / 8));
             } else {
                 tabNumber = 4;
             }
@@ -320,7 +313,7 @@ public abstract class Database {
                 createQuery.append("\t");
             }
 
-            createQuery.append(toQueryString(field));
+            createQuery.append(toQueryString(field.getValue()));
             /*
              * TODO create comment syntax inside subclasses returning stringbuilder rather
              * than just a boolean
@@ -353,15 +346,15 @@ public abstract class Database {
         String tableName = table.getName();
         createQuery.append("CREATE TABLE ").append(tableName).append("\n(\n");
         int counter = 1;
-        for (MetadataField field : table.getFields()) {
+        for (Map.Entry<String, MetadataField> field : table.getFields().entrySet()) {
             if (counter > 1) {
                 createQuery.append(",\n");
             }
-            createQuery.append("\t").append(field.getName());
+            createQuery.append("\t").append(field.getKey());
 
             int tabNumber = 1;
-            if (field.getName().length() >= 8) {
-                tabNumber = (int) (4 - Math.ceil((double) field.getName().length() / 8));
+            if (field.getKey().length() >= 8) {
+                tabNumber = (int) (4 - Math.ceil((double) field.getKey().length() / 8));
             } else {
                 tabNumber = 4;
             }
@@ -370,7 +363,7 @@ public abstract class Database {
                 createQuery.append("\t");
             }
 
-            createQuery.append(toQueryString(field));
+            createQuery.append(toQueryString(field.getValue()));
             /*
              * TODO create comment syntax inside subclasses returning stringbuilder rather
              * than just a boolean
@@ -392,13 +385,13 @@ public abstract class Database {
     }
 
     Optional<String> getPrimaryKeyConstraints(MetadataTable metadataTable) {
-        List<MetadataField> primaryKeyMetadataFields = metadataTable.getFields().stream()
-                .filter(MetadataField::isPrimaryKey)
-                .collect(Collectors.toList());
+        Map<String, MetadataField> primaryKeyMetadataFields = metadataTable.getFields().entrySet().stream()
+                .filter(entry -> entry.getValue().isPrimaryKey())
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         if (primaryKeyMetadataFields.isEmpty()) {
             return Optional.empty();
         } else {
-            return Optional.of("CONSTRAINT pk_" + metadataTable.getName() + " PRIMARY KEY (" + primaryKeyMetadataFields.stream().map(MetadataField::getName).collect(Collectors.joining(", ")) + ")");
+            return Optional.of("CONSTRAINT pk_" + metadataTable.getName() + " PRIMARY KEY (" + String.join(", ", primaryKeyMetadataFields.keySet()) + ")");
         }
     }
 

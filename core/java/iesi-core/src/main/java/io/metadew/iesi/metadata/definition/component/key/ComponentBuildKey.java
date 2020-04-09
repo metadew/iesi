@@ -4,7 +4,7 @@ import io.metadew.iesi.metadata.definition.key.MetadataKey;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 @Data
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = false)
 public class ComponentBuildKey extends MetadataKey {
     private final String componentId;
     private final long componentVersionNb;

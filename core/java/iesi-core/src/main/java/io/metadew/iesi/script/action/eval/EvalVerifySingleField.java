@@ -154,7 +154,7 @@ public class EvalVerifySingleField {
                 .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
                 .get();
         ConnectionOperation connectionOperation = new ConnectionOperation();
-        Database database = connectionOperation.getDatabase(connection);
+        Database database = connectionOperation.getDatabase();
 
         // Run the action
         this.getTestQueries(schemaName, tableName, fieldName, checkName, checkValue);

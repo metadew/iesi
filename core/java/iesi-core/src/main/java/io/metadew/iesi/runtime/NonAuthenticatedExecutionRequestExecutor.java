@@ -5,8 +5,6 @@ import io.metadew.iesi.metadata.definition.execution.ExecutionRequestStatus;
 import io.metadew.iesi.metadata.definition.execution.NonAuthenticatedExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequest;
 import io.metadew.iesi.runtime.script.ScriptExecutorService;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public class NonAuthenticatedExecutionRequestExecutor implements ExecutionRequestExecutor<NonAuthenticatedExecutionRequest> {
 
@@ -29,7 +27,7 @@ public class NonAuthenticatedExecutionRequestExecutor implements ExecutionReques
 
     @Override
     public void execute(NonAuthenticatedExecutionRequest executionRequest) {
-        executionRequest.updateExecutionRequestStatus(ExecutionRequestStatus.ACCEPTED);
+        executionRequest.setExecutionRequestStatus(ExecutionRequestStatus.ACCEPTED);
         ExecutionRequestConfiguration.getInstance().update(executionRequest);
 
         for (ScriptExecutionRequest scriptExecutionRequest : executionRequest.getScriptExecutionRequests()) {

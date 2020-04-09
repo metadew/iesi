@@ -1,11 +1,6 @@
 package io.metadew.iesi.connection.database.connection.netezza;
 
-import io.metadew.iesi.connection.database.connection.DatabaseConnection;
 import io.metadew.iesi.connection.database.connection.SchemaDatabaseConnection;
-
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Optional;
 
 /**
  * Connection object for Netezza databases. This class extends the default database connection object.
@@ -17,15 +12,15 @@ public class NetezzaDatabaseConnection extends SchemaDatabaseConnection {
     private static String type = "netezza";
 
     public NetezzaDatabaseConnection(String connectionURL, String userName, String userPassword) {
-        super(type, connectionURL, userName, userPassword);
+        super(type, connectionURL, userName, userPassword, null);
     }
 
     public NetezzaDatabaseConnection(String connectionURL, String userName, String userPassword, String schema) {
-        super(type, connectionURL, userName, userPassword, schema);
+        super(type, connectionURL, userName, userPassword, null, schema);
     }
 
     public NetezzaDatabaseConnection(String hostName, int portNumber, String databaseName, String userName, String userPassword) {
-        super(type, getConnectionUrl(hostName, portNumber, databaseName), userName, userPassword);
+        this(getConnectionUrl(hostName, portNumber, databaseName), userName, userPassword);
     }
 
     public static String getConnectionUrl(String hostName, int portNumber, String databaseName) {

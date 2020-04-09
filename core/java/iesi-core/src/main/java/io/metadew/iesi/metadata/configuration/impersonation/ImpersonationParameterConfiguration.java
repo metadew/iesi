@@ -5,6 +5,7 @@ import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.impersonation.ImpersonationParameter;
+import io.metadew.iesi.metadata.definition.impersonation.key.ImpersonationKey;
 import io.metadew.iesi.metadata.definition.impersonation.key.ImpersonationParameterKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.logging.log4j.LogManager;
@@ -52,7 +53,7 @@ public class ImpersonationParameterConfiguration extends Configuration<Impersona
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
             while (cachedRowSet.next()) {
                 impersonationParameters.add(new ImpersonationParameter(new ImpersonationParameterKey(
-                        cachedRowSet.getString("IMP_NM"),
+                        new ImpersonationKey(cachedRowSet.getString("IMP_NM")),
                         cachedRowSet.getString("CONN_NM")),
                         cachedRowSet.getString("CONN_IMP_NM"),
                         cachedRowSet.getString("CONN_IMP_DSC")));
@@ -94,7 +95,7 @@ public class ImpersonationParameterConfiguration extends Configuration<Impersona
         String query =  "INSERT INTO " + getMetadataRepository().getTableNameByLabel("ImpersonationParameters") +
                 " (IMP_NM, CONN_NM, CONN_IMP_NM, CONN_IMP_DSC) VALUES (" +
                 SQLTools.GetStringForSQL(impersonationName) + "," +
-                SQLTools.GetStringForSQL(impersonationParameter.getConnection()) + "," +
+                SQLTools.GetStringForSQL(impersonationParameter.getMetadataKey().getParameterName()) + "," +
                 SQLTools.GetStringForSQL(impersonationParameter.getImpersonatedConnection()) +  "," +
                 SQLTools.GetStringForSQL(impersonationParameter.getDescription()) + ");";
         return query;
@@ -110,7 +111,7 @@ public class ImpersonationParameterConfiguration extends Configuration<Impersona
         sql += "(";
         sql += SQLTools.GetStringForSQL(impersonationName);
         sql += ",";
-        sql += SQLTools.GetStringForSQL(this.getImpersonationParameter().getConnection());
+        sql += SQLTools.GetStringForSQL(this.getImpersonationParameter().getMetadataKey().getParameterName());
         sql += ",";
         sql += SQLTools.GetStringForSQL(this.getImpersonationParameter().getImpersonatedConnection());
         sql += ",";
@@ -126,7 +127,8 @@ public class ImpersonationParameterConfiguration extends Configuration<Impersona
             String queryImpersonationParameter = "select IMP_NM, CONN_NM, CONN_IMP_NM, CONN_IMP_DSC from " + getMetadataRepository().getTableNameByLabel("ImpersonationParameters")
                     + " where IMP_NM = '" + impersonationName + "' and CONN_NM = '" + impersonationParameterName + "'";
             CachedRowSet crsImpersonationParameter = getMetadataRepository().executeQuery(queryImpersonationParameter, "reader");
-            ImpersonationParameterKey impersonationParameterKey = new ImpersonationParameterKey(impersonationName, impersonationParameterName);
+            ImpersonationParameterKey impersonationParameterKey = new ImpersonationParameterKey(
+                    new ImpersonationKey(impersonationName), impersonationParameterName);
             if (crsImpersonationParameter.size() == 0) {
                 return Optional.empty();
             } else if (crsImpersonationParameter.size() > 1) {

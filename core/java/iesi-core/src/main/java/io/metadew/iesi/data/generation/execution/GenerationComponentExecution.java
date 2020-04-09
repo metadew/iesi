@@ -25,6 +25,18 @@ public abstract class GenerationComponentExecution {
         return this.getGenerationTools().getStringTools().camelToSnake(this.getClass().getSimpleName());
     }
 
+    protected <K extends GenerationComponentExecution> K getComponent(Class<K> klass) {
+        try {
+            return klass.getConstructor(GenerationDataExecution.class).newInstance(execution);
+        } catch (InstantiationException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            throw new IllegalArgumentException("Unsupported component '" + klass + "'", e);
+        }
+    }
+
+    protected String getSeparator() {
+        return (String) execution.get("separator");
+    }
+
     protected String fetch(String key) {
         String[] keys = key.split("\\.");
 
@@ -66,10 +78,6 @@ public abstract class GenerationComponentExecution {
         }
     }
 
-    protected String getSeparator() {
-        return (String) execution.get("separator");
-    }
-
     @SuppressWarnings({"unchecked", "rawtypes"})
     protected String sampleFromList(List options) {
         Object option = this.getGenerationTools().getRandomTools().sample(options);
@@ -90,15 +98,6 @@ public abstract class GenerationComponentExecution {
             throw new UnsupportedOperationException("Unsupported method '" + listKey + "'");
         }
         return list;
-    }
-
-    protected <K extends GenerationComponentExecution> K getComponent(Class<K> klass) {
-        try {
-            return klass.getConstructor(GenerationDataExecution.class).newInstance(execution);
-        } catch (InstantiationException | NoSuchMethodException |
-                IllegalAccessException | InvocationTargetException e) {
-            throw new IllegalArgumentException("Unsupported component '" + klass + "'", e);
-        }
     }
 
     private String callMethod(String methodKey) {

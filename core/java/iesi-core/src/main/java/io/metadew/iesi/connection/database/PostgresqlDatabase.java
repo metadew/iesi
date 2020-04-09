@@ -8,6 +8,10 @@ public class PostgresqlDatabase extends SchemaDatabase {
     public PostgresqlDatabase(PostgresqlDatabaseConnection databaseConnection, String schema) {
         super(databaseConnection, schema);
     }
+
+    public PostgresqlDatabase(PostgresqlDatabaseConnection databaseConnection) {
+        super(databaseConnection);
+    }
     
     @Override
     public String getSystemTimestampExpression() {
@@ -53,12 +57,12 @@ public class PostgresqlDatabase extends SchemaDatabase {
         }
 
         // Default DtTimestamp
-        if (field.getDefaultTimestamp().trim().equalsIgnoreCase("y")) {
+        if (field.isDefaultTimestamp()) {
             fieldQuery.append(" DEFAULT CURRENT_TIMESTAMP");
         }
 
         // Nullable
-        if (field.getNullable().trim().equalsIgnoreCase("n")) {
+        if (!field.isNullable()) {
             fieldQuery.append(" NOT NULL");
         }
         return fieldQuery.toString();

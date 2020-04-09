@@ -1,6 +1,5 @@
 package io.metadew.iesi.script.action.java;
 
-import io.metadew.iesi.connection.java.operation.JarOperation;
 import io.metadew.iesi.connection.tools.HostConnectionTools;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.text.Text;
@@ -111,8 +110,8 @@ public class JavaParseJar {
         	String filePath = fileName;
         	if (!path.isEmpty()) filePath = path + File.separator + fileName;
         	
-            JarOperation jarOperation = new JarOperation();
-            jarOperation.getJavaArchiveDefinition(filePath);
+            // JarOperation jarOperation = new JarOperation();
+            // jarOperation.getJavaArchiveDefinition(filePath);
         } else {
 
         }

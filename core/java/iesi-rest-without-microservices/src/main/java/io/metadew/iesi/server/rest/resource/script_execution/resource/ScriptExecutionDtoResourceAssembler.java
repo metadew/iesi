@@ -23,8 +23,8 @@ public  class ScriptExecutionDtoResourceAssembler extends ResourceAssemblerSuppo
     private ScriptExecutionDto convertToDto(ScriptExecution scriptExecutionRequest) {
         return new ScriptExecutionDto(scriptExecutionRequest.getMetadataKey().getId(),
                 scriptExecutionRequest.getScriptExecutionRequestKey().getId(),
-                scriptExecutionRequest.getScriptRunStatus(),
                 scriptExecutionRequest.getRunId(),
+                scriptExecutionRequest.getScriptRunStatus(),
                 scriptExecutionRequest.getStartTimestamp(),
                 scriptExecutionRequest.getEndTimestamp());
     }

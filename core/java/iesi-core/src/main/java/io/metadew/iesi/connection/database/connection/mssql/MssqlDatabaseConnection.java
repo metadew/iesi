@@ -1,11 +1,6 @@
 package io.metadew.iesi.connection.database.connection.mssql;
 
-import io.metadew.iesi.connection.database.connection.DatabaseConnection;
 import io.metadew.iesi.connection.database.connection.SchemaDatabaseConnection;
-
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Optional;
 
 /**
  * Connection object for Microsoft SQL databases. This class extends the default
@@ -18,7 +13,7 @@ public class MssqlDatabaseConnection extends SchemaDatabaseConnection {
     private static String type = "mssql";
 
     public MssqlDatabaseConnection(String connectionURL, String userName, String userPassword) {
-        super(type, connectionURL, userName, userPassword);
+        super(type, connectionURL, userName, userPassword, null);
     }
 
 
@@ -28,7 +23,7 @@ public class MssqlDatabaseConnection extends SchemaDatabaseConnection {
 
     public MssqlDatabaseConnection(String hostName, int portNumber, String databaseName, String userName,
                                    String userPassword) {
-        super(type, getConnectionUrl(hostName, portNumber, databaseName), userName, userPassword);
+        this(getConnectionUrl(hostName, portNumber, databaseName), userName, userPassword);
     }
 
     public static String getConnectionUrl(String hostName, int portNumber, String databaseName) {

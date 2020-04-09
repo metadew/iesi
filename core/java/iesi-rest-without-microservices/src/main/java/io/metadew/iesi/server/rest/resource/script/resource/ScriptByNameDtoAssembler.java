@@ -22,16 +22,20 @@ public class ScriptByNameDtoAssembler extends ResourceAssemblerSupport<List<Scri
 
     @Override
     public ScriptByNameDto toResource(List<Script> scripts) {
-        ScriptByNameDto scriptDto = convertToDto(scripts);
-        scriptDto.add(linkTo(methodOn(ScriptController.class)
-                .getByName(scriptDto.getName()))
-                .withSelfRel());
-        scriptDto.getVersions().forEach(
-                version -> scriptDto.add(linkTo(methodOn(ScriptController.class)
-                        .get(scriptDto.getName(), version))
-                        .withRel("version:" + version))
-        );
-        return scriptDto;
+        if (scripts.isEmpty()) {
+            return null;
+        } else {
+            ScriptByNameDto scriptDto = convertToDto(scripts);
+            scriptDto.add(linkTo(methodOn(ScriptController.class)
+                    .getByName(scriptDto.getName()))
+                    .withSelfRel());
+            scriptDto.getVersions().forEach(
+                    version -> scriptDto.add(linkTo(methodOn(ScriptController.class)
+                            .get(scriptDto.getName(), version))
+                            .withRel("version:" + version))
+            );
+            return scriptDto;
+        }
     }
 
     private ScriptByNameDto convertToDto(List<Script> scripts) {

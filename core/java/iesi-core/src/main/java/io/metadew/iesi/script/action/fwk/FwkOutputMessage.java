@@ -127,10 +127,10 @@ public class FwkOutputMessage {
         messages.forEach(message -> {
             if (message.trim().isEmpty()) {
                 GenerationObjectExecution generationObjectExecution = new GenerationObjectExecution();
-                this.getExecutionControl().logMessage(this.getActionExecution(),
+                this.getExecutionControl().logMessage(
                         "action.message=" + generationObjectExecution.getMotd().message(), level);
             } else {
-                this.getExecutionControl().logMessage(this.getActionExecution(),
+                this.getExecutionControl().logMessage(
                         "action.message=" + message, level);
             }
             this.getActionExecution().getActionControl().increaseSuccessCount();

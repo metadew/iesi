@@ -5,7 +5,6 @@ import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistExce
 import io.metadew.iesi.metadata.definition.component.ComponentAttribute;
 import io.metadew.iesi.metadata.repository.DesignMetadataRepository;
 import io.metadew.iesi.metadata.repository.RepositoryTestSetup;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,6 +30,7 @@ class ComponentAttributeConfigurationTest {
     @BeforeEach
     void setup() {
         this.designMetadataRepository = RepositoryTestSetup.getDesignMetadataRepository();
+        designMetadataRepository.createAllTables();
         componentAttribute1 = new ComponentAttributeBuilder("1", 1, "env1",
                 "attribute name 1")
                 .value("test")

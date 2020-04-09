@@ -1,13 +1,10 @@
 package io.metadew.iesi.datatypes.text;
 
 import com.fasterxml.jackson.databind.node.*;
-import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Matchers.anyString;

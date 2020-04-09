@@ -1,0 +1,24 @@
+iesi:
+  metadata:
+    component-types:
+      default:
+        description: Default component type
+        parameters: {}
+      http.request:
+        description: Http request component type
+        parameters:
+          url:
+            description: url
+            type: string
+            mandatory: true
+            encrypted: false
+          queryParam:
+            description: queryParam
+            type: string
+            mandatory: false
+            encrypted: false
+          header:
+            description: header
+            type: string
+            mandatory: false
+            encrypted: false

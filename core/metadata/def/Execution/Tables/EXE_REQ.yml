@@ -1,6 +1,6 @@
 ---
 data:
-  name: EXE_REQ
+  name: REQ
   label: ExecutionRequests
   description: In-process runtime requests for execution
   type: operational

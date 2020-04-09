@@ -85,7 +85,7 @@ public abstract class ScriptExecution {
 
 					while (retryCounter <= action.getRetries() && actionExecution.getActionControl().getExecutionMetrics().getErrorCount() > 0) {
 						if (action.getErrorStop()) {
-							executionControl.logMessage(this, "action.error -> retries.ignore", Level.INFO);
+							executionControl.logMessage("action.error -> retries.ignore", Level.INFO);
 							executionControl.setActionErrorStop(true);
 							break;
 						} else if (!iterationExecution.isIterationOff() && iterationExecution.getIterationOperation().getIteration().getInterrupt().equalsIgnoreCase("y")
@@ -94,7 +94,7 @@ public abstract class ScriptExecution {
 						}
 
 						actionExecution.initialize();
-						executionControl.logMessage(this, "action.retry." + retryCounter, Level.INFO);
+						executionControl.logMessage("action.retry." + retryCounter, Level.INFO);
 						actionExecution.execute(iterationExecution.getIterationInstance());
 						retryCounter++;
 					}
@@ -106,19 +106,19 @@ public abstract class ScriptExecution {
 				}
 
 				if (action.getType().equalsIgnoreCase("fwk.exitScript")) {
-					executionControl.logMessage(this, "script.exit", Level.INFO);
+					executionControl.logMessage("script.exit", Level.INFO);
 					executionControl.setScriptExit(true);
 					break;
 				}
 
 				if (!actionExecution.isExecuted()) {
 					executionMetrics.increaseWarningCount(1);
-					executionControl.logMessage(this, "action.warning -> iteration.condition.block",
+					executionControl.logMessage("action.warning -> iteration.condition.block",
 							Level.INFO);
 				}
 
 				if (actionExecution.getActionControl().getExecutionMetrics().getErrorCount() > 0 && action.getErrorStop()) {
-					executionControl.logMessage(this, "action.error -> script.stop", Level.INFO);
+					executionControl.logMessage("action.error -> script.stop", Level.INFO);
 					executionControl.setActionErrorStop(true);
 					break;
 				}
@@ -183,7 +183,7 @@ public abstract class ScriptExecution {
 						.mergeExecutionMetrics(completedScriptExecution.getExecutionMetrics());
 			} catch (ExecutionException e) {
 				Throwable cause = e.getCause();
-				this.getExecutionControl().logMessage(this, "route.error=" + cause, Level.INFO);
+				this.getExecutionControl().logMessage("route.error=" + cause, Level.INFO);
 				continue;
 			}
 		}
@@ -197,16 +197,8 @@ public abstract class ScriptExecution {
 		return executionControl;
 	}
 
-	public void setExecutionControl(ExecutionControl executionControl) {
-		this.executionControl = executionControl;
-	}
-
 	public Long getProcessId() {
 		return processId;
-	}
-
-	public void setProcessId(Long processId) {
-		this.processId = processId;
 	}
 
 
@@ -216,14 +208,6 @@ public abstract class ScriptExecution {
 
 	public Optional<ScriptExecution> getParentScriptExecution() {
 		return Optional.ofNullable(parentScriptExecution);
-	}
-
-	public ActionSelectOperation getActionSelectOperation() {
-		return actionSelectOperation;
-	}
-
-	public void setActionSelectOperation(ActionSelectOperation actionSelectOperation) {
-		this.actionSelectOperation = actionSelectOperation;
 	}
 
 	public String getResult() {
@@ -242,11 +226,7 @@ public abstract class ScriptExecution {
         return script;
     }
 
-    public void setScript(Script script) {
-        this.script = script;
-    }
-
-    public String getEnvironment() {
+	public String getEnvironment() {
 		return environment;
 	}
 

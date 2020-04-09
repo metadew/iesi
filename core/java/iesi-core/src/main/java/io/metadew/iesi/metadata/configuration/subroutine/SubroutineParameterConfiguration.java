@@ -1,8 +1,8 @@
 package io.metadew.iesi.metadata.configuration.subroutine;
 
 import io.metadew.iesi.connection.tools.SQLTools;
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.metadata.definition.subroutine.SubroutineParameter;
-import io.metadew.iesi.metadata.execution.MetadataControl;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
@@ -25,7 +25,7 @@ public class SubroutineParameterConfiguration {
     public String getInsertStatement(String subroutineName) {
         String sql = "";
 
-        sql += "INSERT INTO " + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("SubroutineParameters");
+        sql += "INSERT INTO " + MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository().getTableNameByLabel("SubroutineParameters");
         sql += " (SRT_NM, SRT_PAR_NM, SRT_PAR_VAL) ";
         sql += "VALUES ";
         sql += "(";
@@ -43,9 +43,9 @@ public class SubroutineParameterConfiguration {
     public SubroutineParameter getSubroutineParameter(String subroutineName, String subroutineParameterName) {
         SubroutineParameter subroutineParameter = new SubroutineParameter();
         CachedRowSet crsSubroutineParameter = null;
-        String querySubroutineParameter = "select SRT_NM, SRT_PAR_NM, SRT_PAR_VAL from " + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("SubroutineParameters")
+        String querySubroutineParameter = "select SRT_NM, SRT_PAR_NM, SRT_PAR_VAL from " + MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository().getTableNameByLabel("SubroutineParameters")
                 + " where SRT_NM = '" + subroutineName + "' and SRT_PAR_NM = '" + subroutineParameterName + "'";
-        crsSubroutineParameter = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(querySubroutineParameter, "reader");
+        crsSubroutineParameter = MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository().executeQuery(querySubroutineParameter, "reader");
         try {
             while (crsSubroutineParameter.next()) {
                 subroutineParameter.setName(subroutineParameterName);

@@ -61,10 +61,10 @@ public class ConnectionJsonComponent {
 
             jsonGenerator.writeObjectFieldStart(MetadataJsonComponent.Field.DATA_KEY.value());
 
-            jsonGenerator.writeStringField(Field.NAME_KEY.value(), connection.getName());
+            jsonGenerator.writeStringField(Field.NAME_KEY.value(), connection.getMetadataKey().getName());
             jsonGenerator.writeStringField(Field.CONNECTION_TYPE_KEY.value(), connection.getType());
             jsonGenerator.writeStringField(Field.DESCRIPTION_KEY.value(), connection.getDescription());
-            jsonGenerator.writeStringField(Field.ENVIRONMENT_KEY.value(), connection.getEnvironment());
+            jsonGenerator.writeStringField(Field.ENVIRONMENT_KEY.value(), connection.getMetadataKey().getEnvironmentKey().getName());
             jsonGenerator.writeArrayFieldStart(Field.PARAMETERS_KEY.value());
             for (ConnectionParameter connectionParameter : connection.getParameters()) {
                 jsonGenerator.writeStartObject();

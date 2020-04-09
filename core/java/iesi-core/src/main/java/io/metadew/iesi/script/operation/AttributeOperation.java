@@ -1,6 +1,6 @@
 package io.metadew.iesi.script.operation;
 
-import io.metadew.iesi.metadata.execution.MetadataControl;
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import org.apache.logging.log4j.Level;
@@ -40,23 +40,23 @@ public class AttributeOperation {
         String query = "";
         if (this.getType().equals("component")) {
             query = "select a.comp_id, a.comp_att_nm, a.comp_att_val from "
-                    + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("ComponentAttributes")
+                    + MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository().getTableNameByLabel("ComponentAttributes")
                     + " a inner join "
-                    + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("Components")
+                    + MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository().getTableNameByLabel("Components")
                     + " b on a.comp_id = b.comp_id where b.comp_nm = '" + this.getName() + "'";
         }
 
         // Set attribute values
         CachedRowSet crs = null;
-        this.getExecutionControl().logMessage(this.getActionExecution(), "component.name=" + name, Level.DEBUG);
-        crs = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(query, "reader");
+        this.getExecutionControl().logMessage("component.name=" + name, Level.DEBUG);
+        crs = MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository().executeQuery(query, "reader");
         try {
             while (crs.next()) {
                 String key = crs.getString("COMP_ATT_NM");
                 String value = crs.getString("COMP_ATT_VAL");
                 properties.put(key, value);
-                this.getExecutionControl().logMessage(this.getActionExecution(), "attribute.name=" + key, Level.DEBUG);
-                this.getExecutionControl().logMessage(this.getActionExecution(), "attribute.name=" + value, Level.DEBUG);
+                this.getExecutionControl().logMessage("attribute.name=" + key, Level.DEBUG);
+                this.getExecutionControl().logMessage("attribute.name=" + value, Level.DEBUG);
             }
             crs.close();
         } catch (SQLException e) {
@@ -71,9 +71,6 @@ public class AttributeOperation {
     }
 
     // Getters and setters
-    private Properties getProperties() {
-        return properties;
-    }
 
     private void setProperties(Properties properties) {
         this.properties = properties;

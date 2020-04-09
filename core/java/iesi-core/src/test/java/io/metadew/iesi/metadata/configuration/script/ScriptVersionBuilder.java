@@ -1,11 +1,11 @@
 package io.metadew.iesi.metadata.configuration.script;
 
-import io.metadew.iesi.metadata.definition.script.ScriptParameter;
 import io.metadew.iesi.metadata.definition.script.ScriptVersion;
-import io.metadew.iesi.metadata.definition.script.key.ScriptParameterKey;
+import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.metadata.definition.script.key.ScriptVersionKey;
 
 import java.util.Optional;
+
 
 public class ScriptVersionBuilder {
 
@@ -24,7 +24,7 @@ public class ScriptVersionBuilder {
     }
 
     public ScriptVersion build() {
-        return new ScriptVersion(new ScriptVersionKey(scriptId, versionNumber), getDescription().orElse("dummy"));
+        return new ScriptVersion(new ScriptVersionKey(new ScriptKey(scriptId, versionNumber)), getDescription().orElse("dummy"));
     }
 
     public Optional<String> getDescription() {

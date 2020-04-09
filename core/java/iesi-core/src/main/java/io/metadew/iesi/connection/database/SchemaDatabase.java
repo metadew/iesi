@@ -3,9 +3,12 @@ package io.metadew.iesi.connection.database;
 import io.metadew.iesi.connection.database.connection.SchemaDatabaseConnection;
 import io.metadew.iesi.metadata.definition.MetadataField;
 import io.metadew.iesi.metadata.definition.MetadataTable;
+import lombok.Setter;
 
+import java.util.Map;
 import java.util.Optional;
 
+@Setter
 public abstract class SchemaDatabase extends Database {
 
     private String schema;
@@ -37,15 +40,15 @@ public abstract class SchemaDatabase extends Database {
 
         createQuery.append("CREATE TABLE ").append(tableName).append("\n(\n");
         int counter = 1;
-        for (MetadataField field : table.getFields()) {
+        for (Map.Entry<String, MetadataField> field : table.getFields().entrySet()) {
             if (counter > 1) {
                 createQuery.append(",\n");
             }
-            createQuery.append("\t").append(field.getName());
+            createQuery.append("\t").append(field.getKey());
 
             int tabNumber = 1;
-            if (field.getName().length() >= 8) {
-                tabNumber = (int) (4 - Math.ceil((double) field.getName().length() / 8));
+            if (field.getKey().length() >= 8) {
+                tabNumber = (int) (4 - Math.ceil((double) field.getKey().length() / 8));
             } else {
                 tabNumber = 4;
             }
@@ -54,11 +57,11 @@ public abstract class SchemaDatabase extends Database {
                 createQuery.append("\t");
             }
 
-            createQuery.append(toQueryString(field));
+            createQuery.append(toQueryString(field.getValue()));
 			/*
 			 * TODO create comment syntax inside subclasses returning stringbuilder rather
 			 * than just a boolean
-			 * 
+			 *
 			 * if (addComments() && field.getDescription().isPresent()) {
 			 * fieldComments.append("\nCOMMENT ON COLUMN ").append(tableName).append(".").
 			 * append(field.getScriptName())

@@ -7,7 +7,6 @@ import io.metadew.iesi.script.operation.IterationOperation;
 public class IterationExecution {
 
     private ExecutionControl executionControl;
-    private ActionExecution actionExecution;
     private long iterationNumber;
     private IterationOperation iterationOperation;
     private IterationConfiguration iterationConfiguration;
@@ -25,7 +24,6 @@ public class IterationExecution {
     public void initialize(ExecutionControl executionControl,
                            ActionExecution actionExecution, String iterationName)  {
         this.setExecutionControl(executionControl);
-        this.setActionExecution(actionExecution);
         this.setIterationName(iterationName);
         this.setIterationOperation(
                 this.getExecutionControl().getExecutionRuntime().getIterationOperation(this.getIterationName()));
@@ -71,7 +69,6 @@ public class IterationExecution {
                         .hasNext(this.getExecutionControl().getRunId(), this.getIterationNumber()));
             } else if (this.getIterationType().equalsIgnoreCase("condition")) {
                 this.setIterationInstance(this.getIterationConfiguration().hasNext(
-                        this.getExecutionControl().getRunId(),
                         this.getIterationOperation().getIteration().getCondition()));
             } else if (this.getIterationType().equalsIgnoreCase("list")) {
                 this.setIterationInstance(this.getIterationConfiguration().hasNextListItem(
@@ -142,14 +139,6 @@ public class IterationExecution {
 
     public void setIterationName(String iterationName) {
         this.iterationName = iterationName;
-    }
-
-    public ActionExecution getActionExecution() {
-        return actionExecution;
-    }
-
-    public void setActionExecution(ActionExecution actionExecution) {
-        this.actionExecution = actionExecution;
     }
 
     public IterationInstance getIterationInstance() {

@@ -2,7 +2,7 @@ package io.metadew.iesi.script.operation;
 
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
-import io.metadew.iesi.framework.crypto.FrameworkCrypto;
+import io.metadew.iesi.common.crypto.FrameworkCrypto;
 import io.metadew.iesi.metadata.definition.component.ComponentAttribute;
 import io.metadew.iesi.metadata.definition.component.ComponentParameter;
 import io.metadew.iesi.script.execution.ActionExecution;
@@ -41,16 +41,16 @@ public class HttpRequestComponentParameterService {
     }
 
     public DataType getParameterValue(ComponentParameter componentParameter, List<ComponentAttribute> componentAttributes, ActionExecution actionExecution)  {
-        executionControl.logMessage(actionExecution, "component.param " + componentParameter.getName() + ": " + componentParameter.getValue(), Level.DEBUG);
+        executionControl.logMessage("component.param " + componentParameter.getMetadataKey().getParameterName() + ": " + componentParameter.getValue(), Level.DEBUG);
         return getParameterValue(componentParameter.getValue(), componentAttributes, actionExecution);
     }
 
     public boolean isHeader(ComponentParameter componentParameter) {
-        return componentParameter.getName().startsWith("header");
+        return componentParameter.getMetadataKey().getParameterName().startsWith("header");
     }
 
     public boolean isQueryParameter(ComponentParameter componentParameter) {
-        return componentParameter.getName().startsWith("queryparam");
+        return componentParameter.getMetadataKey().getParameterName().startsWith("queryparam");
     }
 
     public Map<String, DataType> getHeader(ComponentParameter componentParameter, List<ComponentAttribute> componentAttributes, ActionExecution actionExecution)  {
@@ -77,10 +77,6 @@ public class HttpRequestComponentParameterService {
 
     public ExecutionControl getExecutionControl() {
         return executionControl;
-    }
-
-    public void setExecutionControl(ExecutionControl executionControl) {
-        this.executionControl = executionControl;
     }
 
 }

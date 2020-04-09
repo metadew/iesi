@@ -88,7 +88,7 @@ public class SqlSetRuntimeVariables {
         Connection connection = ConnectionConfiguration.getInstance().get(new ConnectionKey(connectionName, this.executionControl.getEnvName()))
                 .orElseThrow(() -> new RuntimeException("Could not find connection " + connectionName));
         ConnectionOperation connectionOperation = new ConnectionOperation();
-        Database database = connectionOperation.getDatabase(connection);
+        Database database = connectionOperation.getDatabase();
 
         // Run the action
         CachedRowSet sqlResultSet = database.executeQuery(query);

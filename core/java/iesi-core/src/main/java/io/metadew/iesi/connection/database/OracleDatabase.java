@@ -8,6 +8,9 @@ public class OracleDatabase extends SchemaDatabase {
     public OracleDatabase(OracleDatabaseConnection databaseConnection, String schema) {
         super(databaseConnection, schema);
     }
+    public OracleDatabase(OracleDatabaseConnection databaseConnection) {
+        super(databaseConnection);
+    }
     public OracleDatabase(OracleDatabaseConnection databaseConnection, int initialPoolSize, int maximalPoolSize, String schema) {
         super(databaseConnection, initialPoolSize, maximalPoolSize, schema);
     }
@@ -54,12 +57,12 @@ public class OracleDatabase extends SchemaDatabase {
         }
 
         // Default DtTimestamp
-        if (field.getDefaultTimestamp().trim().equalsIgnoreCase("y")) {
+        if (field.isDefaultTimestamp()) {
             fieldQuery.append(" DEFAULT systimestamp");
         }
 
         // Nullable
-        if (field.getNullable().trim().equalsIgnoreCase("n")) {
+        if (!field.isNullable()) {
             fieldQuery.append(" NOT NULL");
         }
         return fieldQuery.toString();

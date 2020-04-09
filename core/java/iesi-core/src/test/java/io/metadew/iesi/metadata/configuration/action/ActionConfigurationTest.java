@@ -34,6 +34,7 @@ class ActionConfigurationTest {
     @BeforeEach
     void setup() {
         designMetadataRepository = RepositoryTestSetup.getDesignMetadataRepository();
+        designMetadataRepository.createAllTables();
 
         action1 = new ActionBuilder("1", 1, "1")
                 .numberOfParameters(2)
@@ -56,7 +57,7 @@ class ActionConfigurationTest {
 
     @Test
     void actionNotExistsTest() {
-        ActionKey nonExistActionKey = new ActionKey("non_exist", 2, "non");
+        ActionKey nonExistActionKey = new ActionKey(new ScriptKey("non_exist", 2L), "non");
         assertFalse(ActionConfiguration.getInstance().exists(nonExistActionKey));
     }
 

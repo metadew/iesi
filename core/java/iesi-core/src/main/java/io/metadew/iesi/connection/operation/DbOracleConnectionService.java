@@ -1,7 +1,6 @@
 package io.metadew.iesi.connection.operation;
 
 import io.metadew.iesi.connection.database.OracleDatabase;
-import io.metadew.iesi.metadata.definition.connection.Connection;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -19,7 +18,7 @@ public class DbOracleConnectionService {
     private DbOracleConnectionService() {
     }
 
-    public OracleDatabase getDatabase(Connection connection)  {
+    public OracleDatabase getDatabase()  {
         return null;
     }
 

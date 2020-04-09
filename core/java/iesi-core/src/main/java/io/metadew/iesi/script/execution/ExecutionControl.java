@@ -258,15 +258,12 @@ public class ExecutionControl {
 
     public void logExecutionOutput(ActionExecution actionExecution, String outputName, String outputValue) {
         // Redact any encrypted values
-        outputValue = FrameworkCrypto.getInstance().redact(outputValue);
-        // TODO: why shorten?
-        outputValue = TextTools.shortenTextForDatabase(outputValue, 2000);
-
+        //outputValue = FrameworkCrypto.getInstance().redact(outputValue);
+        //outputValue = TextTools.shortenTextForDatabase(outputValue, 2000);
         ActionResultOutput actionResultOutput = new ActionResultOutput(
                 new ActionResultOutputKey(runId, actionExecution.getProcessId(), actionExecution.getAction().getMetadataKey().getActionId(), outputName),
                 outputValue);
         ActionResultOutputConfiguration.getInstance().insert(actionResultOutput);
-
     }
 
     // Log message

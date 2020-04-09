@@ -1,10 +1,10 @@
 package io.metadew.iesi.datatypes.dataset.metadata;
 
+import io.metadew.iesi.common.configuration.framework.FrameworkConfiguration;
+import io.metadew.iesi.common.configuration.framework.FrameworkFolder;
 import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.SqliteDatabase;
 import io.metadew.iesi.connection.database.connection.sqlite.SqliteDatabaseConnection;
-import io.metadew.iesi.common.configuration.framework.FrameworkConfiguration;
-import io.metadew.iesi.common.configuration.framework.FrameworkFolder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +13,6 @@ import java.io.File;
 
 @Getter
 @EqualsAndHashCode
-@RequiredArgsConstructor
 public class DatasetMetadata {
 
     private final String datasetName;
@@ -25,7 +24,12 @@ public class DatasetMetadata {
                 FrameworkConfiguration.getInstance().getFrameworkFolder("data")
                         .map(FrameworkFolder::getAbsolutePath)
                         .orElseThrow(() -> new RuntimeException("no definition found for data")) + File.separator + "datasets"
-                + File.separator + datasetName + File.separator + "metadata" + File.separator + "metadata.db3"));
+                        + File.separator + datasetName + File.separator + "metadata" + File.separator + "metadata.db3"));
+    }
+
+    public DatasetMetadata(String datasetName, Database database) {
+        this.datasetName = datasetName;
+        this.database = database;
     }
 
 }

@@ -20,6 +20,8 @@ import io.metadew.iesi.datatypes.dataset.metadata.DatasetMetadata;
 import io.metadew.iesi.datatypes.dataset.metadata.DatasetMetadataService;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.common.configuration.framework.FrameworkConfiguration;
+import io.metadew.iesi.metadata.definition.MetadataField;
+import io.metadew.iesi.metadata.definition.MetadataTable;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 import lombok.Synchronized;
 import lombok.extern.log4j.Log4j2;
@@ -34,11 +36,18 @@ import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Log4j2
 public class KeyValueDatasetService extends BaseDatasetService<KeyValueDataset> implements DatasetService<KeyValueDataset> {
 
     private static KeyValueDatasetService INSTANCE;
+
+    private MetadataTable metadataTable = new MetadataTable("data", "dataset", "dataset", "dataset",
+            Stream.of(
+                    new AbstractMap.SimpleEntry<>("key", new MetadataField("key", 1, "string", 2000, false, false, true)),
+                    new AbstractMap.SimpleEntry<>("value", new MetadataField("key", 1, "string", 2000, false, false, true))
+            ).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
 
     public synchronized static KeyValueDatasetService getInstance() {
         if (INSTANCE == null) {
@@ -97,8 +106,9 @@ public class KeyValueDatasetService extends BaseDatasetService<KeyValueDataset> 
         }
         DatasetMetadataService.getInstance().insertDatasetDatabaseInformation(datasetMetadata, nextInventoryId, datasetFilename, tableName);
         Database database = new SqliteDatabase(new SqliteDatabaseConnection(filepath));
-        String create = "CREATE TABLE " + SQLTools.GetStringForSQLTable(tableName) + " (key TEXT, value TEXT)";
-        DatabaseHandlerImpl.getInstance().executeUpdate(database, create);
+        DatabaseHandlerImpl.getInstance().createTable(database, metadataTable);
+        // String create = "CREATE TABLE " + SQLTools.GetStringForSQLTable(tableName) + " (key TEXT, value TEXT)";
+        // DatabaseHandlerImpl.getInstance().executeUpdate(database, create);
         return new KeyValueDataset(name, labels, datasetMetadata, database, tableName);
     }
 
@@ -165,7 +175,7 @@ public class KeyValueDatasetService extends BaseDatasetService<KeyValueDataset> 
         }
     }
 
-    public void write(KeyValueDataset dataset, ObjectNode jsonNode, ExecutionRuntime executionRuntime) throws IOException {
+    public void write(KeyValueDataset dataset, JsonNode jsonNode, ExecutionRuntime executionRuntime) throws IOException {
         DataTypeHandler.getInstance().resolve(dataset, null, jsonNode, executionRuntime);
     }
 

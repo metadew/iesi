@@ -60,6 +60,8 @@ public class DatabaseHandlerImpl implements DatabaseHandler {
                 SqliteDatabaseServiceImpl.getInstance());
         databaseServiceMap.put(new ClassStringPair(TeradataDatabaseServiceImpl.getInstance().keyword(), TeradataDatabaseServiceImpl.getInstance().appliesTo()),
                 TeradataDatabaseServiceImpl.getInstance());
+        databaseServiceMap.put(new ClassStringPair(TemporaryDatabaseServiceImpl.getInstance().keyword(), TemporaryDatabaseServiceImpl.getInstance().appliesTo()),
+                TemporaryDatabaseServiceImpl.getInstance());
     }
 
     @Override

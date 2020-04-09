@@ -3,7 +3,6 @@ package io.metadew.iesi.script.action.http;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.metadew.iesi.connection.http.*;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.array.Array;
@@ -172,13 +171,11 @@ public class HttpExecuteRequest {
         HttpResponse httpResponse;
         if (getProxyConnection().isPresent()) {
             httpResponse = httpRequestService.send(httpRequest, proxyConnection);
-        }else {
+        } else {
             httpResponse = httpRequestService.send(httpRequest);
         }
         outputResponse(httpResponse);
-        // Parsing entity
         writeResponseToOutputDataset(httpResponse);
-        // Check error code
         checkStatusCode(httpResponse);
         return true;
     }
@@ -329,7 +326,6 @@ public class HttpExecuteRequest {
     }
 
     private void writeResponseToOutputDataset(HttpResponse httpResponse) {
-        // TODO: how to handle multiple content-types
         List<Header> contentTypeHeaders = httpResponse.getHeaders().stream()
                 .filter(header -> header.getName().equals(HttpHeaders.CONTENT_TYPE))
                 .collect(Collectors.toList());
@@ -353,11 +349,11 @@ public class HttpExecuteRequest {
 
     private void writeTextPlainResponseToOutputDataset(HttpResponse httpResponse) {
         getOutputDataset().ifPresent(dataset -> {
-            DatasetHandler.getInstance().clean(dataset, getExecutionControl().getExecutionRuntime());
+            DatasetHandler.getInstance().clean(dataset, executionControl.getExecutionRuntime());
             DatasetHandler.getInstance().setDataItem(dataset, "response", new Text(httpResponse.getEntityString().orElse("")));
         });
         getRawOutputDataset().ifPresent(dataset -> {
-            DatasetHandler.getInstance().clean(dataset, getExecutionControl().getExecutionRuntime());
+            DatasetHandler.getInstance().clean(dataset, executionControl.getExecutionRuntime());
             DatasetHandler.getInstance().setDataItem(dataset, "response", new Text(httpResponse.getEntityString().orElse("")));
         });
     }
@@ -366,16 +362,15 @@ public class HttpExecuteRequest {
         if (httpResponse.getEntityString().isPresent()) {
             try {
                 JsonNode jsonNode = new ObjectMapper().readTree(httpResponse.getEntityString().get());
-                setRuntimeVariable(jsonNode, setRuntimeVariables);
-                // TODO: flip raw/normal if ready to migrate
+                //setRuntimeVariable(jsonNode, setRuntimeVariables);
                 getOutputDataset().ifPresent(dataset -> {
-                    DatasetHandler.getInstance().clean(dataset, getExecutionControl().getExecutionRuntime());
+                    DatasetHandler.getInstance().clean(dataset, executionControl.getExecutionRuntime());
                     KeyValueDatasetService.getInstance().writeRawJSON(dataset, jsonNode);
                 });
                 getRawOutputDataset().ifPresent(dataset -> {
-                    DatasetHandler.getInstance().clean(dataset, getExecutionControl().getExecutionRuntime());
+                    DatasetHandler.getInstance().clean(dataset, executionControl.getExecutionRuntime());
                     try {
-                        KeyValueDatasetService.getInstance().write(dataset, (ObjectNode) jsonNode, executionControl.getExecutionRuntime());
+                        KeyValueDatasetService.getInstance().write(dataset, jsonNode, executionControl.getExecutionRuntime());
                     } catch (IOException e) {
                         StringWriter StackTrace = new StringWriter();
                         e.printStackTrace(new PrintWriter(StackTrace));
@@ -421,36 +416,19 @@ public class HttpExecuteRequest {
         setRuntimeVariable(jsonNode, "");
     }
 
-    public ExecutionControl getExecutionControl() {
-        return executionControl;
-    }
-
-    public void setExecutionControl(ExecutionControl executionControl) {
-        this.executionControl = executionControl;
-    }
-
-    public ActionExecution getActionExecution() {
-        return actionExecution;
-    }
-
-    public void setActionExecution(ActionExecution actionExecution) {
-        this.actionExecution = actionExecution;
-    }
 
     public HashMap<String, ActionParameterOperation> getActionParameterOperationMap() {
         return actionParameterOperationMap;
     }
 
-    public void setActionParameterOperationMap(HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
-        this.actionParameterOperationMap = actionParameterOperationMap;
-    }
-
     private Optional<KeyValueDataset> getOutputDataset() {
         return Optional.ofNullable(outputDataset);
     }
+
     private Optional<List<String>> getExpectedStatusCodes() {
         return Optional.ofNullable(expectedStatusCodes);
     }
+
     private Optional<ProxyConnection> getProxyConnection() {
         return Optional.ofNullable(proxyConnection);
     }

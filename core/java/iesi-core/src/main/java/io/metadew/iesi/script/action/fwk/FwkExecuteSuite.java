@@ -178,7 +178,7 @@ public class FwkExecuteSuite {
         // *********************************************************
         // Get repository
         ConnectionOperation connectionOperation = new ConnectionOperation();
-        ArtifactoryConnection artifactoryConnection = connectionOperation.getArtifactoryConnection();
+        ArtifactoryConnection artifactoryConnection = connectionOperation.getArtifactoryConnection(connection);
 
         // Compile asset path
         String resolvedRepositoryAssetPath = "";

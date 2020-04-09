@@ -27,18 +27,6 @@ public abstract class DatabaseServiceImpl<T extends Database> implements Databas
 
     public Connection getConnection(T database) throws SQLException {
         return database.getConnectionPool().getConnection();
-//        synchronized (database.getConnectionPoolLock()) {
-//            if (database.getConnectionPool().isEmpty()) {
-//                if (database.getUsedConnections().size() < database.getMaximalPoolSize()) {
-//                    database.getConnectionPool().add(DatabaseConnectionHandlerImpl.getInstance().getConnection(database.getDatabaseConnection()));
-//                } else {
-//                    throw new RuntimeException("Maximum pool size reached, no available connections!");
-//                }
-//            }
-//            Connection connection = database.getConnectionPool().remove(database.getConnectionPool().size() - 1);
-//            database.getUsedConnections().add(connection);
-//            return connection;
-//        }
     }
 
     public void releaseConnection(T database, Connection connection) {
@@ -53,18 +41,6 @@ public abstract class DatabaseServiceImpl<T extends Database> implements Databas
                 throw new RuntimeException(e);
             }
         }
-//        synchronized (database.getConnectionPoolLock()) {
-//            try {
-//                if (database.getConnectionPool().size() > database.getInitialPoolSize()) {
-//                    connection.close();
-//                } else {
-//                    database.getConnectionPool().add(connection);
-//                }
-//                return database.getUsedConnections().remove(connection);
-//            } catch (SQLException e) {
-//                throw new RuntimeException(e);
-//            }
-//        }
     }
 
     public HikariDataSource createConnectionPool(T database, DatabaseConnection databaseConnection) {

@@ -57,9 +57,4 @@ private static String getConnectionUrl(String connectionMode, String clusterName
 		return connectionUrl.toString();
 	}
 
-	@Override
-	public String getDriver() {
-		return "org.apache.drill.jdbc.Driver";
-	}
-
 }

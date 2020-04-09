@@ -1,12 +1,14 @@
 package io.metadew.iesi.connection.database.connection.postgresql;
 
 import io.metadew.iesi.connection.database.connection.SchemaDatabaseConnection;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
-/**
- * Connection object for Postgresql databases. This class extends the default database connection object.
- *
- * @author peter.billen
- */
+
+@Data
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
 public class PostgresqlDatabaseConnection extends SchemaDatabaseConnection {
 
     private static String type = "postgresql";
@@ -39,11 +41,6 @@ public class PostgresqlDatabaseConnection extends SchemaDatabaseConnection {
         }
 
         return connectionUrl.toString();
-    }
-
-    @Override
-    public String getDriver() {
-        return "org.postgresql.Driver";
     }
 
 }

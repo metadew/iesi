@@ -7,6 +7,12 @@ import io.metadew.iesi.connection.database.connection.SchemaDatabaseConnection;
  *
  * @author peter.billen
  */
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+@Data
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
 public class PrestoDatabaseConnection extends SchemaDatabaseConnection {
 
     private static String type = "presto";
@@ -20,7 +26,7 @@ public class PrestoDatabaseConnection extends SchemaDatabaseConnection {
     }
 
     public PrestoDatabaseConnection(String hostName, int portNumber, String catalogName, String schemaName, String userName, String userPassword) {
-        this(getConnectionUrl(hostName, portNumber, catalogName, schemaName, userName, userPassword), userName, userPassword);
+        this(getConnectionUrl(hostName, portNumber, catalogName, schemaName, userName, userPassword), userName, userPassword, schemaName);
     }
 
     private static String getConnectionUrl(String hostName, int portNumber, String catalogName, String schemaName, String userName, String userPassword) {
@@ -43,11 +49,6 @@ public class PrestoDatabaseConnection extends SchemaDatabaseConnection {
         }
 
         return connectionUrl.toString();
-    }
-
-    @Override
-    public String getDriver() {
-        return "io.prestosql.jdbc.PrestoDriver";
     }
 
 }

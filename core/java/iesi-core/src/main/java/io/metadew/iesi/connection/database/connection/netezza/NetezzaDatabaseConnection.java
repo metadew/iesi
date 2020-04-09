@@ -1,12 +1,13 @@
 package io.metadew.iesi.connection.database.connection.netezza;
 
 import io.metadew.iesi.connection.database.connection.SchemaDatabaseConnection;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
-/**
- * Connection object for Netezza databases. This class extends the default database connection object.
- *
- * @author peter.billen
- */
+@Data
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
 public class NetezzaDatabaseConnection extends SchemaDatabaseConnection {
 
     private static String type = "netezza";
@@ -38,11 +39,6 @@ public class NetezzaDatabaseConnection extends SchemaDatabaseConnection {
         }
 
         return connectionUrl.toString();
-    }
-
-    @Override
-    public String getDriver() {
-        return "org.netezza.Driver";
     }
 
 }

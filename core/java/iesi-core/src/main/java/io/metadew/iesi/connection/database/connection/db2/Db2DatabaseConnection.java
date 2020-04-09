@@ -1,13 +1,13 @@
 package io.metadew.iesi.connection.database.connection.db2;
 
 import io.metadew.iesi.connection.database.connection.SchemaDatabaseConnection;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
-/**
- * Connection object for IBM DB2 databases. This class extends the default
- * database connection object.
- *
- * @author peter.billen
- */
+@Data
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
 public class Db2DatabaseConnection extends SchemaDatabaseConnection {
 
     private static String type = "db2";
@@ -40,11 +40,6 @@ public class Db2DatabaseConnection extends SchemaDatabaseConnection {
         }
 
         return connectionUrl.toString();
-    }
-
-    @Override
-    public String getDriver() {
-        return "com.ibm.db2.jcc.DB2Driver";
     }
 
 }

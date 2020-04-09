@@ -1,5 +1,6 @@
 package io.metadew.iesi.script.configuration;
 
+import io.metadew.iesi.connection.database.DatabaseHandlerImpl;
 import io.metadew.iesi.connection.database.H2Database;
 import io.metadew.iesi.connection.database.connection.h2.H2MemoryDatabaseConnection;
 import io.metadew.iesi.connection.tools.SQLTools;
@@ -41,14 +42,27 @@ public class IterationVariableConfiguration {
                 + "PRC_ID INT NOT NULL, LIST_ID INT NOT NULL, LIST_NM VARCHAR(200) NOT NULL,"
                 + "SET_ID INT NOT NULL, SET_NM TEXT NOT NULL, ORDER_NB INT NOT NULL,"
                 + "VAR_NM VARCHAR(200) NOT NULL,VAR_VAL VARCHAR("+RUNTIME_VAR_VALUE_MAX_LENGTH+"));";
-        database.executeUpdate(query);
+        DatabaseHandlerImpl.getInstance().executeUpdate(database, query);
+    }
+
+    // Methods
+    public void cleanIterationVariables(String runId)  {
+        String query = "delete from " + PRC_ITERATION_VAR + " where RUN_ID = " + SQLTools.GetStringForSQL(runId) + ";";
+        DatabaseHandlerImpl.getInstance().executeUpdate(database, query);
+    }
+
+    public void cleanIterationVariables(String runId, long processId)  {
+        String query = "delete from " + PRC_ITERATION_VAR
+                + " where RUN_ID = " + SQLTools.GetStringForSQL(runId)
+                + " and PRC_ID = " + SQLTools.GetStringForSQL(processId) + ";";
+        DatabaseHandlerImpl.getInstance().executeUpdate(database, query);
     }
 
     public void cleanIterationVariables(String runId, String iterationList)  {
         String query = "delete from " + PRC_ITERATION_VAR
                 + " where RUN_ID = " + SQLTools.GetStringForSQL(runId)
                 + " and LIST_NM = " + SQLTools.GetStringForSQL(iterationList) + ";";
-        database.executeUpdate(query);
+        DatabaseHandlerImpl.getInstance().executeUpdate(database, query);
     }
 
     public void setIterationList(String runId, String iterationList, ResultSet resultSet)  {
@@ -92,16 +106,15 @@ public class IterationVariableConfiguration {
                 + SQLTools.GetStringForSQL(order) + ","
                 + SQLTools.GetStringForSQL(name) + ","
                 + SQLTools.GetStringForSQL(value) + ");";
-        database.executeUpdate(query);
+        DatabaseHandlerImpl.getInstance().executeUpdate(database, query);
 
     }
-
 
     public CachedRowSet getIterationList(String runId, String name)  {
         String query = "select run_id, prc_id, list_id, list_nm, set_id, set_nm, order_nb, var_nm, var_val from "
                 + PRC_ITERATION_VAR + " where run_id = " + SQLTools.GetStringForSQL(runId) + " and list_nm = " + SQLTools.GetStringForSQL(name)
                 + " order by order_nb asc, var_nm asc";
-        return database.executeQuery(query);
+        return DatabaseHandlerImpl.getInstance().executeQuery(database, query);
     }
 
 }

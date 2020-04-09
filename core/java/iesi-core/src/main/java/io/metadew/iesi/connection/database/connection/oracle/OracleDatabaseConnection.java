@@ -2,6 +2,9 @@ package io.metadew.iesi.connection.database.connection.oracle;
 
 import com.zaxxer.hikari.HikariConfig;
 import io.metadew.iesi.connection.database.connection.SchemaDatabaseConnection;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -11,14 +14,12 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Optional;
 
-/**
- * Connection object for Oracle databases. This class extends the default database connection object.
- *
- * @author peter.billen
- */
+
+@Data
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
 public class OracleDatabaseConnection extends SchemaDatabaseConnection {
 
-    private static Logger LOGGER = LogManager.getLogger();
     private static String type = "oracle";
 
     public OracleDatabaseConnection(String connectionURL, String userName, String userPassword) {
@@ -27,19 +28,8 @@ public class OracleDatabaseConnection extends SchemaDatabaseConnection {
     }
 
     public OracleDatabaseConnection(String connectionURL, String userName, String userPassword, String schema) {
-        super(connectionURL, userName, userPassword, "alter session set nls_timestamp_format='YYYY-MM-DD\"T\" HH24:MI:SS:FF' schema=" + schema + "", schema);
+        super(type, connectionURL, userName, userPassword, "alter session set nls_timestamp_format='YYYY-MM-DD\"T\" HH24:MI:SS:FF' current_schema=" + schema, schema);
         System.getProperties().setProperty("oracle.jdbc.J2EE13Compliant", "true");
-    }
-
-    @Override
-    public HikariConfig configure(HikariConfig hikariConfig) {
-        hikariConfig.setJdbcUrl(getConnectionURL());
-        hikariConfig.setUsername(getUserName());
-        hikariConfig.setPassword(getUserPassword());
-        hikariConfig.setAutoCommit(false);
-        hikariConfig.setConnectionInitSql(getSchema().map(s -> "alter session set nls_timestamp_format='YYYY-MM-DD\"T\" HH24:MI:SS:FF' current_schema=" + s)
-                .orElse("alter session set nls_timestamp_format='YYYY-MM-DD\"T\" HH24:MI:SS:FF'"));
-        return hikariConfig;
     }
 
     public static String getConnectionUrl(String hostName, int portNumber, String serviceName, String tnsAlias) {
@@ -73,30 +63,4 @@ public class OracleDatabaseConnection extends SchemaDatabaseConnection {
         return connectionUrl.toString();
     }
 
-
-    @Override
-    public String getDriver() {
-        return "oracle.jdbc.driver.OracleDriver";
-    }
-
-    public Connection getConnection() {
-        try {
-            Connection connection = super.getConnection();
-            Optional<String> schema = getSchema();
-            if (schema.isPresent()) {
-                LOGGER.info(getConnectionURL() + ":setting schema to " + schema.get());
-                connection.createStatement()
-                        .execute("alter session set current_schema=" + schema.get());
-                // connection.setSchema(schema.get());
-            }
-            connection.createStatement().execute("alter session set nls_timestamp_format='YYYY-MM-DD\"T\" HH24:MI:SS:FF'");
-            return connection;
-        } catch (SQLException e) {
-            StringWriter stackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(stackTrace));
-            LOGGER.info("exception=" + e);
-            LOGGER.debug("exception.stacktrace=" + stackTrace.toString());
-            throw new RuntimeException(e);
-        }
-    }
 }

@@ -1,5 +1,6 @@
 package io.metadew.iesi.script.configuration;
 
+import io.metadew.iesi.connection.database.DatabaseHandlerImpl;
 import io.metadew.iesi.connection.database.H2Database;
 import io.metadew.iesi.connection.database.connection.h2.H2MemoryDatabaseConnection;
 import io.metadew.iesi.connection.tools.SQLTools;
@@ -27,21 +28,21 @@ public class RuntimeVariableConfiguration {
                 "VAR_NM VARCHAR(200) NOT NULL," +
                 "VAR_VAL VARCHAR("+RUNTIME_VAR_VALUE_MAX_LENGTH+")" +
                 ")";
-        database.executeUpdate(query);
+        DatabaseHandlerImpl.getInstance().executeUpdate(database, query);
     }
 
     // Methods
     public void cleanRuntimeVariables(String runId) {
         String query = "delete from " + PRC_RUN_VAR
                 + " where RUN_ID = " + SQLTools.GetStringForSQL(runId) + ";";
-        database.executeUpdate(query);
+        DatabaseHandlerImpl.getInstance().executeUpdate(database, query);
     }
 
     public void cleanRuntimeVariables(String runId, long processId) {
         String query = "delete from " + PRC_RUN_VAR
                 + " where RUN_ID = " + SQLTools.GetStringForSQL(runId)
                 + " and PRC_ID = " + SQLTools.GetStringForSQL(processId) + ";";
-        database.executeUpdate(query);
+        DatabaseHandlerImpl.getInstance().executeUpdate(database, query);
     }
 
     public void setRuntimeVariable(String runId, Long processId, String name, String value) {
@@ -52,13 +53,13 @@ public class RuntimeVariableConfiguration {
                     + " where run_id = " + SQLTools.GetStringForSQL(runId)
                     + " and prc_id = " + SQLTools.GetStringForSQL(processId)
                     + " and var_nm = " + SQLTools.GetStringForSQL(name) + ";";
-            CachedRowSet crs = database.executeQuery(query);
+            CachedRowSet crs = DatabaseHandlerImpl.getInstance().executeQuery(database, query);
 
             // if so, the previous values will be deleted
             if (crs.size() > 0) {
                 String deleteQuery = "delete from " + PRC_RUN_VAR
                         + " where run_id = " + SQLTools.GetStringForSQL(runId) + " and prc_id = " + SQLTools.GetStringForSQL(processId) + " and var_nm = " + SQLTools.GetStringForSQL(name) + ";";
-                database.executeUpdate(deleteQuery);
+                DatabaseHandlerImpl.getInstance().executeUpdate(database, deleteQuery);
             }
             crs.close();
         } catch (SQLException e) {
@@ -71,7 +72,7 @@ public class RuntimeVariableConfiguration {
                 + SQLTools.GetStringForSQL(processId) + ","
                 + SQLTools.GetStringForSQL(name) + ","
                 + SQLTools.GetStringForSQL(value) + ");";
-        database.executeUpdate(insertQuery);
+        DatabaseHandlerImpl.getInstance().executeUpdate(database, insertQuery);
     }
 
     private String truncateRuntimeVariableValue(String value) {
@@ -86,7 +87,7 @@ public class RuntimeVariableConfiguration {
         try {
             String query = "select VAR_VAL from " + PRC_RUN_VAR
                     + " where run_id = " + SQLTools.GetStringForSQL(runId) + " and var_nm = " + SQLTools.GetStringForSQL(name) + " ORDER BY prc_id DESC;";
-            CachedRowSet crs = database.executeQuery(query);
+            CachedRowSet crs = DatabaseHandlerImpl.getInstance().executeQuery(database, query);
             if (crs.size() == 0) {
                 return Optional.empty();
             }
@@ -103,7 +104,7 @@ public class RuntimeVariableConfiguration {
     }
 
     public void shutdown() {
-        database.shutdown();
+        DatabaseHandlerImpl.getInstance().shutdown(database);
     }
 
 }

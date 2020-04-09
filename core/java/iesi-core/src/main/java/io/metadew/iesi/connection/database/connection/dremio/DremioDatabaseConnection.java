@@ -1,12 +1,13 @@
 package io.metadew.iesi.connection.database.connection.dremio;
 
 import io.metadew.iesi.connection.database.connection.SchemaDatabaseConnection;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
-/**
- * Connection object for Dremio . This class extends the default database connection object.
- *
- * @author peter.billen
- */
+@Data
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
 public class DremioDatabaseConnection extends SchemaDatabaseConnection {
 
     private static String type = "dremio";
@@ -54,9 +55,5 @@ public class DremioDatabaseConnection extends SchemaDatabaseConnection {
         return connectionUrl.toString();
     }
 
-    @Override
-    public String getDriver() {
-        return "com.dremio.jdbc.Driver";
-    }
 
 }

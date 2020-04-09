@@ -1,6 +1,8 @@
 package io.metadew.iesi.connection;
 
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -23,11 +25,8 @@ import java.util.stream.Collectors;
 
 import static org.jfrog.artifactory.client.model.impl.RepositoryTypeImpl.LOCAL;
 
-/**
- * Connection object for an Artifactory repository
- *
- * @author peter.billen
- */
+@Data
+@AllArgsConstructor
 public class ArtifactoryConnection {
 
     private String connectionURL;

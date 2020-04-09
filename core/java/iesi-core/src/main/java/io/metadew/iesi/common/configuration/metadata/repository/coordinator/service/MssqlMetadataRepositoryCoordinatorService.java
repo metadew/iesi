@@ -69,7 +69,8 @@ public class MssqlMetadataRepositoryCoordinatorService implements MetadataReposi
                     mssqlRepositoryCoordinatorDefinition.getPort(),
                     mssqlRepositoryCoordinatorDefinition.getDatabase(),
                     repositoryCoordinatorProfileDefinition.getUser(),
-                    FrameworkCrypto.getInstance().decryptIfNeeded(repositoryCoordinatorProfileDefinition.getPassword())
+                    FrameworkCrypto.getInstance().decryptIfNeeded(repositoryCoordinatorProfileDefinition.getPassword()),
+                    mssqlRepositoryCoordinatorDefinition.getSchema().orElse(null)
             );
         }
     }

@@ -11,8 +11,4 @@ public class TemporaryDatabaseConnection extends DatabaseConnection {
         super(type, connectionURL, userName, userPassword, null);
     }
 
-    @Override
-    public String getDriver() {
-        return "";
-    }
 }

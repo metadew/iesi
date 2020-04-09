@@ -10,29 +10,4 @@ public class MysqlDatabase extends Database {
         super(databaseConnection);
     }
 
-    @Override
-    public String getSystemTimestampExpression() {
-        return "CURRENT_TIMESTAMP";
-    }
-
-    @Override
-    public String getAllTablesQuery(String pattern) {
-        return null;
-    }
-
-    @Override
-    public String createQueryExtras() {
-        return null;
-    }
-
-    @Override
-    public boolean addComments() {
-        return false;
-    }
-
-    @Override
-    public String toQueryString(MetadataField field) {
-        return null;
-    }
-
 }

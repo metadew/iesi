@@ -1,6 +1,8 @@
 package io.metadew.iesi.datatypes.dataset.metadata;
 
 import io.metadew.iesi.connection.database.Database;
+import io.metadew.iesi.connection.database.DatabaseHandler;
+import io.metadew.iesi.connection.database.DatabaseHandlerImpl;
 import io.metadew.iesi.connection.database.SqliteDatabase;
 import io.metadew.iesi.connection.database.connection.sqlite.SqliteDatabaseConnection;
 import io.metadew.iesi.connection.tools.SQLTools;
@@ -41,7 +43,7 @@ public class DatasetMetadataService {
         try {
             String query = "SELECT DATASET_INV_ID FROM CFG_DATASET_LBL WHERE DATASET_LBL_VAL in (" + labels.stream().map(SQLTools::GetStringForSQL).collect(Collectors.joining(",")) +
                     ") GROUP BY DATASET_INV_ID HAVING COUNT(DISTINCT DATASET_LBL_VAL) = " + labels.size() + ";";
-            CachedRowSet cachedRowSet = datasetMetadata.getDatabase().executeQuery(query);
+            CachedRowSet cachedRowSet = DatabaseHandlerImpl.getInstance().executeQuery(datasetMetadata.getDatabase(), query);
             if (cachedRowSet.size() == 0) {
                 return Optional.empty();
             } else if (cachedRowSet.size() > 1) {
@@ -61,7 +63,7 @@ public class DatasetMetadataService {
     public Database getDatasetDatabase(DatasetMetadata datasetMetadata, long id) {
         try {
             String query = "select DATASET_FILE_NM, DATASET_TABLE_NM from CFG_DATASET_INV where DATASET_INV_ID = " + id;
-            CachedRowSet cachedRowSetFileTable = datasetMetadata.getDatabase().executeQuery(query);
+            CachedRowSet cachedRowSetFileTable = DatabaseHandlerImpl.getInstance().executeQuery(datasetMetadata.getDatabase(), query);
 
 
             if (cachedRowSetFileTable.size() == 0) {
@@ -84,7 +86,7 @@ public class DatasetMetadataService {
     public String getTableName(DatasetMetadata datasetMetadata, long id) {
         try {
             String query = "select DATASET_FILE_NM, DATASET_TABLE_NM from CFG_DATASET_INV where DATASET_INV_ID = " + id;
-            CachedRowSet cachedRowSetFileTable = datasetMetadata.getDatabase().executeQuery(query);
+            CachedRowSet cachedRowSetFileTable = DatabaseHandlerImpl.getInstance().executeQuery(datasetMetadata.getDatabase(), query);
 
 
             if (cachedRowSetFileTable.size() == 0) {
@@ -108,7 +110,7 @@ public class DatasetMetadataService {
     public void insertDatasetLabelInformation(DatasetMetadata datasetMetadata, int datasetInventoryId, List<String> labels) {
         String labelQuery = "insert into CFG_DATASET_LBL (DATASET_INV_ID, DATASET_LBL_VAL) VALUES ("
                 + SQLTools.GetStringForSQL(datasetInventoryId) + ", {0})";
-        labels.forEach(label -> datasetMetadata.getDatabase().executeUpdate(MessageFormat.format(labelQuery, SQLTools.GetStringForSQL(label))));
+        labels.forEach(label -> DatabaseHandlerImpl.getInstance().executeUpdate(datasetMetadata.getDatabase(), MessageFormat.format(labelQuery, SQLTools.GetStringForSQL(label))));
     }
 
     @Synchronized
@@ -116,7 +118,7 @@ public class DatasetMetadataService {
         try {
             String latestInventoryIdQuery = "select max(DATASET_INV_ID) as LATEST_INVENTORY_ID from (SELECT DATASET_INV_ID FROM CFG_DATASET_INV " +
                     "UNION ALL SELECT DATASET_INV_ID FROM CFG_DATASET_LBL);";
-            CachedRowSet cachedRowSet = datasetMetadata.getDatabase().executeQuery(latestInventoryIdQuery);
+            CachedRowSet cachedRowSet = DatabaseHandlerImpl.getInstance().executeQuery(datasetMetadata.getDatabase(), latestInventoryIdQuery);
             int inventoryId;
             if (cachedRowSet.size() == 0) {
                 inventoryId = 0;
@@ -134,11 +136,11 @@ public class DatasetMetadataService {
     public void insertDatasetDatabaseInformation(DatasetMetadata datasetMetadata, int inventoryId, String filename, String tableName) {
         String inventoryQuery = "insert into CFG_DATASET_INV (DATASET_INV_ID, DATASET_FILE_NM, DATASET_TABLE_NM)" +
                 " Values (" + inventoryId + ", \"" + filename + "\", \"" + tableName + "\")";
-        datasetMetadata.getDatabase().executeUpdate(inventoryQuery);
+        DatabaseHandlerImpl.getInstance().executeUpdate(datasetMetadata.getDatabase(), inventoryQuery);
     }
 
     public void shutdown(DatasetMetadata datasetMetadata) {
-        datasetMetadata.getDatabase().shutdown();
+        DatabaseHandlerImpl.getInstance().shutdown(datasetMetadata.getDatabase());
     }
 
 }

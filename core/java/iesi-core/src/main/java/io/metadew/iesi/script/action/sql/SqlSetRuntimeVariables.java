@@ -1,7 +1,7 @@
 package io.metadew.iesi.script.action.sql;
 
 import io.metadew.iesi.connection.database.Database;
-import io.metadew.iesi.connection.operation.ConnectionOperation;
+import io.metadew.iesi.connection.database.DatabaseHandlerImpl;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
@@ -87,11 +87,10 @@ public class SqlSetRuntimeVariables {
         // Get Connection
         Connection connection = ConnectionConfiguration.getInstance().get(new ConnectionKey(connectionName, this.executionControl.getEnvName()))
                 .orElseThrow(() -> new RuntimeException("Could not find connection " + connectionName));
-        ConnectionOperation connectionOperation = new ConnectionOperation();
-        Database database = connectionOperation.getDatabase();
 
+        Database database = DatabaseHandlerImpl.getInstance().getDatabase(connection);
         // Run the action
-        CachedRowSet sqlResultSet = database.executeQuery(query);
+        CachedRowSet sqlResultSet = DatabaseHandlerImpl.getInstance().executeQuery(database, query);
         this.executionControl.getExecutionRuntime().setRuntimeVariables(actionExecution, sqlResultSet);
         actionExecution.getActionControl().increaseSuccessCount();
         return true;

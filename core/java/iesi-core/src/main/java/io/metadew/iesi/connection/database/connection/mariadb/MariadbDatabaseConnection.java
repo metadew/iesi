@@ -22,11 +22,6 @@ public class MariadbDatabaseConnection extends DatabaseConnection {
 		this(getConnectionUrl(hostName, portNumber, databaseName), userName, userPassword);
 	}
 
-	@Override
-	public String getDriver() {
-		return "org.mariadb.jdbc.Driver";
-	}
-
 	public static String getConnectionUrl(String hostName, int portNumber, String databaseName) {
 		StringBuilder connectionUrl = new StringBuilder();
 		connectionUrl.append("jdbc:mariadb://");

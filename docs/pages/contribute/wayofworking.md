@@ -38,9 +38,9 @@ This is where you be the best you can be and do your magic.
 Once finished, create a pull request from the feature/bug branch into the develop branch using Hub.
 
 ```
-hub pull-request -i [issue-number]
+hub pull-request -b develop -i [issue-number]
 ```
 
-Afterwards, make sure to edit the pull request and modify the default branch from `master` to `develop`.
+The `-b develop` option ensures that the pull request is performed against the `develop` branch instead of the default `master` branch.
 
 Finally, follow-up on the review of the pull request and provide any feedback / updates as needed.

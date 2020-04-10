@@ -2,6 +2,13 @@ package io.metadew.iesi.connection.database.connection.mysql;
 
 import io.metadew.iesi.connection.database.connection.DatabaseConnection;
 import io.metadew.iesi.connection.database.connection.SchemaDatabaseConnection;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  * Connection object for MySQL databases. This class extends the default database connection object.
@@ -10,6 +17,7 @@ import io.metadew.iesi.connection.database.connection.SchemaDatabaseConnection;
  */
 public class MysqlDatabaseConnection extends SchemaDatabaseConnection {
 
+    private static Logger LOGGER = LogManager.getLogger();
     private static String type = "mysql";
 
     public MysqlDatabaseConnection(String connectionURL, String userName, String userPassword) {
@@ -41,5 +49,20 @@ public class MysqlDatabaseConnection extends SchemaDatabaseConnection {
     @Override
     public String getDriver() {
         return "com.mysql.jdbc.Driver";
+    }
+
+    public Connection getConnection() {
+        try {
+            Connection connection = super.getConnection();
+            //Setting this sql_mode to avoid issues with zero dates
+            connection.createStatement().execute("SET SQL_MODE='ALLOW_INVALID_DATES';");
+            return connection;
+        } catch (SQLException e) {
+            StringWriter stackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTrace));
+            LOGGER.info("exception=" + e);
+            LOGGER.debug("exception.stacktrace=" + stackTrace.toString());
+            throw new RuntimeException(e);
+        }
     }
 }

@@ -296,6 +296,7 @@ public abstract class Database {
     }
 
     // TODO: remove
+    @Deprecated
     public String getCreateStatement(MetadataTable table, String tableNamePrefix) {
         StringBuilder createQuery = new StringBuilder();
         // StringBuilder fieldComments = new StringBuilder();
@@ -308,7 +309,6 @@ public abstract class Database {
                 createQuery.append(",\n");
             }
             createQuery.append("\t").append(field.getName());
-
             int tabNumber = 1;
             if (field.getName().length() >= 8) {
                 tabNumber = (int) (4 - Math.ceil((double) field.getName().length() / 8));
@@ -347,6 +347,7 @@ public abstract class Database {
         return "drop table " + table.getName() + ";";
     }
 
+    //TODO: review
     public String getCreateStatement(MetadataTable table) {
         StringBuilder createQuery = new StringBuilder();
         // StringBuilder fieldComments = new StringBuilder();
@@ -357,11 +358,13 @@ public abstract class Database {
             if (counter > 1) {
                 createQuery.append(",\n");
             }
-            createQuery.append("\t").append(field.getName());
+
+            String fieldName=toFieldName(field);
+            createQuery.append("\t").append(fieldName);
 
             int tabNumber = 1;
-            if (field.getName().length() >= 8) {
-                tabNumber = (int) (4 - Math.ceil((double) field.getName().length() / 8));
+            if (fieldName.length() >= 8) {
+                tabNumber = (int) (4 - Math.ceil((double) fieldName.length() / 8));
             } else {
                 tabNumber = 4;
             }
@@ -398,7 +401,7 @@ public abstract class Database {
         if (primaryKeyMetadataFields.isEmpty()) {
             return Optional.empty();
         } else {
-            return Optional.of("CONSTRAINT pk_" + metadataTable.getName() + " PRIMARY KEY (" + primaryKeyMetadataFields.stream().map(MetadataField::getName).collect(Collectors.joining(", ")) + ")");
+            return Optional.of(toPrimaryKeyConstraint(metadataTable, primaryKeyMetadataFields));
         }
     }
 
@@ -418,7 +421,11 @@ public abstract class Database {
 
     public abstract boolean addComments();
 
+    public abstract String toFieldName(MetadataField field);
+
     public abstract String toQueryString(MetadataField field);
+
+    public abstract String toPrimaryKeyConstraint(MetadataTable metadataTable, List<MetadataField> primaryKeyMetadataFields);
 
     protected DatabaseConnection getDatabaseConnection() {
         return databaseConnection;

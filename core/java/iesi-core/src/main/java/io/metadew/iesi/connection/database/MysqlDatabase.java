@@ -2,6 +2,10 @@ package io.metadew.iesi.connection.database;
 
 import io.metadew.iesi.connection.database.connection.mysql.MysqlDatabaseConnection;
 import io.metadew.iesi.metadata.definition.MetadataField;
+import io.metadew.iesi.metadata.definition.MetadataTable;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class MysqlDatabase extends SchemaDatabase {
 
@@ -17,7 +21,19 @@ public class MysqlDatabase extends SchemaDatabase {
 
     @Override
     public String getAllTablesQuery(String pattern) {
-        return null;
+        return "select table_schema as \"OWNER\", table_name as \"TABLE_NAME\" from information_schema.tables where"
+                + getSchema().map(schema -> " table_schema = '" + schema + "' and").orElse("")
+                + " table_name like '"
+                + pattern
+                + "%' order by table_name asc";
+    }
+    @Override
+    public String toFieldName(MetadataField field) {
+        StringBuilder result = new StringBuilder();
+        result.append("`");
+        result.append(field.getName());
+        result.append("`");
+        return result.toString();
     }
 
     @Override
@@ -49,6 +65,11 @@ public class MysqlDatabase extends SchemaDatabase {
             fieldQuery.append(" NOT NULL");
         }
         return fieldQuery.toString();
+    }
+
+    @Override
+    public String toPrimaryKeyConstraint(MetadataTable metadataTable, List<MetadataField> primaryKeyMetadataFields) {
+        return "PRIMARY KEY (" + primaryKeyMetadataFields.stream().map(MetadataField::getName).collect(Collectors.joining(", ")) + ")";
     }
 
     @Override

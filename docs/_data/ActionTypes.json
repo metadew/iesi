@@ -17,71 +17,6 @@
   "type" : "ActionType"
 }, {
   "data" : {
-    "name" : "cli.executeCommand",
-    "className" : "io.metadew.iesi.script.action.cli.CliExecuteCommand",
-    "description" : "Run a Shell Command",
-    "parameters" : [ {
-      "name" : "path",
-      "description" : "Path where to run the command from",
-      "type" : "string",
-      "mandatory" : "N",
-      "encrypted" : "N",
-      "subroutine" : "",
-      "impersonate" : "N"
-    }, {
-      "name" : "command",
-      "description" : "Command to run",
-      "type" : "string",
-      "mandatory" : "Y",
-      "encrypted" : "N",
-      "subroutine" : "command",
-      "impersonate" : "N"
-    }, {
-      "name" : "setRuntimeVariables",
-      "description" : "Flag indicating if environment variables will be set as a runtime variable",
-      "type" : "string",
-      "mandatory" : "N",
-      "encrypted" : "N",
-      "subroutine" : "",
-      "impersonate" : "N"
-    }, {
-      "name" : "setRuntimeVariablesPrefix",
-      "description" : "Prefix that will be used when retrieving or setting the variables",
-      "type" : "string",
-      "mandatory" : "N",
-      "encrypted" : "N",
-      "subroutine" : "",
-      "impersonate" : "N"
-    }, {
-      "name" : "setRuntimeVariablesMode",
-      "description" : "Mode used to retrieve or set the variables",
-      "type" : "string",
-      "mandatory" : "N",
-      "encrypted" : "N",
-      "subroutine" : "",
-      "impersonate" : "N"
-    }, {
-      "name" : "output",
-      "description" : "Will be used to store the system output",
-      "type" : "string",
-      "mandatory" : "N",
-      "encrypted" : "N",
-      "subroutine" : "",
-      "impersonate" : "N"
-    }, {
-      "name" : "connection",
-      "description" : "Connection where to run the shell command",
-      "type" : "string",
-      "mandatory" : "Y",
-      "encrypted" : "N",
-      "subroutine" : "",
-      "impersonate" : "Y"
-    } ],
-    "status" : "stable"
-  },
-  "type" : "ActionType"
-}, {
-  "data" : {
     "name" : "conn.isAlive",
     "className" : "io.metadew.iesi.script.action.conn.ConnIsAlive",
     "description" : "Verify if the connection can be reached",
@@ -1325,55 +1260,6 @@
   "type" : "ActionType"
 }, {
   "data" : {
-    "name" : "socket.transmitMessage",
-    "className" : "io.metadew.iesi.script.action.socket.SocketTransmitMessage",
-    "description" : "Execute a socket message transfer",
-    "parameters" : [ {
-      "name" : "socket",
-      "description" : "Name of socket connection",
-      "type" : "string",
-      "mandatory" : "Y",
-      "encrypted" : "N",
-      "subroutine" : "",
-      "impersonate" : "N"
-    }, {
-      "name" : "message",
-      "description" : "Message to transmit",
-      "type" : "string",
-      "mandatory" : "Y",
-      "encrypted" : "N",
-      "subroutine" : "",
-      "impersonate" : "N"
-    }, {
-      "name" : "protocol",
-      "description" : "What protocol to use (TCP/UDP)",
-      "type" : "string",
-      "mandatory" : "Y",
-      "encrypted" : "N",
-      "subroutine" : "",
-      "impersonate" : "N"
-    }, {
-      "name" : "output",
-      "description" : "Reference name of the output dataset",
-      "type" : "string",
-      "mandatory" : "N",
-      "encrypted" : "N",
-      "subroutine" : "",
-      "impersonate" : "N"
-    }, {
-      "name" : "timeout",
-      "description" : "timeout value to wait for response",
-      "type" : "string",
-      "mandatory" : "N",
-      "encrypted" : "N",
-      "subroutine" : "",
-      "impersonate" : "N"
-    } ],
-    "status" : "stable"
-  },
-  "type" : "ActionType"
-}, {
-  "data" : {
     "name" : "sql.defineDataset",
     "className" : "io.metadew.iesi.script.action.sql.SqlDefineDataset",
     "description" : "Define a SQL dataset",
@@ -1781,6 +1667,120 @@
       "impersonate" : "N"
     } ],
     "status" : "experimental"
+  },
+  "type" : "ActionType"
+}, {
+  "data" : {
+    "name" : "cli.executeCommand",
+    "className" : "io.metadew.iesi.script.action.cli.CliExecuteCommand",
+    "description" : "Run a Shell Command",
+    "parameters" : [ {
+      "name" : "path",
+      "description" : "Path where to run the command from",
+      "type" : "string",
+      "mandatory" : "N",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
+    }, {
+      "name" : "command",
+      "description" : "Command to run",
+      "type" : "string",
+      "mandatory" : "Y",
+      "encrypted" : "N",
+      "subroutine" : "command",
+      "impersonate" : "N"
+    }, {
+      "name" : "setRuntimeVariables",
+      "description" : "Flag indicating if environment variables will be set as a runtime variable",
+      "type" : "string",
+      "mandatory" : "N",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
+    }, {
+      "name" : "setRuntimeVariablesPrefix",
+      "description" : "Prefix that will be used when retrieving or setting the variables",
+      "type" : "string",
+      "mandatory" : "N",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
+    }, {
+      "name" : "setRuntimeVariablesMode",
+      "description" : "Mode used to retrieve or set the variables",
+      "type" : "string",
+      "mandatory" : "N",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
+    }, {
+      "name" : "output",
+      "description" : "Will be used to store the system output",
+      "type" : "string",
+      "mandatory" : "N",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
+    }, {
+      "name" : "connection",
+      "description" : "Connection where to run the shell command",
+      "type" : "string",
+      "mandatory" : "Y",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "Y"
+    } ],
+    "status" : "stable"
+  },
+  "type" : "ActionType"
+}, {
+  "data" : {
+    "name" : "socket.transmitMessage",
+    "className" : "io.metadew.iesi.script.action.socket.SocketTransmitMessage",
+    "description" : "Execute a socket message transfer",
+    "parameters" : [ {
+      "name" : "socket",
+      "description" : "Name of socket connection",
+      "type" : "string",
+      "mandatory" : "Y",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
+    }, {
+      "name" : "message",
+      "description" : "Message to transmit",
+      "type" : "string",
+      "mandatory" : "Y",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
+    }, {
+      "name" : "protocol",
+      "description" : "What protocol to use (TCP/UDP)",
+      "type" : "string",
+      "mandatory" : "Y",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
+    }, {
+      "name" : "output",
+      "description" : "Reference name of the output dataset",
+      "type" : "string",
+      "mandatory" : "N",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
+    }, {
+      "name" : "timeout",
+      "description" : "timeout value to wait for response",
+      "type" : "string",
+      "mandatory" : "N",
+      "encrypted" : "N",
+      "subroutine" : "",
+      "impersonate" : "N"
+    } ],
+    "status" : "stable"
   },
   "type" : "ActionType"
 } ]

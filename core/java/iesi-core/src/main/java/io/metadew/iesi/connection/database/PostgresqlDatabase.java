@@ -2,6 +2,9 @@ package io.metadew.iesi.connection.database;
 
 import io.metadew.iesi.connection.database.connection.postgresql.PostgresqlDatabaseConnection;
 import io.metadew.iesi.metadata.definition.MetadataField;
+import io.metadew.iesi.metadata.definition.MetadataTable;
+
+import java.util.List;
 
 public class PostgresqlDatabase extends SchemaDatabase {
 
@@ -62,6 +65,16 @@ public class PostgresqlDatabase extends SchemaDatabase {
             fieldQuery.append(" NOT NULL");
         }
         return fieldQuery.toString();
+    }
+
+    @Override
+    public String toPrimaryKeyConstraint(MetadataTable metadataTable, List<MetadataField> primaryKeyMetadataFields) {return ""; }
+
+    @Override
+    public String toFieldName(MetadataField field) {
+        StringBuilder result = new StringBuilder();
+        result.append(field.getName());
+        return result.toString();
     }
 
 }

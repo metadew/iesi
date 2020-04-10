@@ -2,6 +2,10 @@ package io.metadew.iesi.connection.database;
 
 import io.metadew.iesi.connection.database.connection.oracle.OracleDatabaseConnection;
 import io.metadew.iesi.metadata.definition.MetadataField;
+import io.metadew.iesi.metadata.definition.MetadataTable;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class OracleDatabase extends SchemaDatabase {
 
@@ -65,4 +69,15 @@ public class OracleDatabase extends SchemaDatabase {
         return fieldQuery.toString();
     }
 
+    @Override
+    public String toPrimaryKeyConstraint(MetadataTable metadataTable, List<MetadataField> primaryKeyMetadataFields) {
+        return "CONSTRAINT pk_" + metadataTable.getName() + " PRIMARY KEY (" + primaryKeyMetadataFields.stream().map(MetadataField::getName).collect(Collectors.joining(", ")) + ")";
+    }
+
+    @Override
+    public String toFieldName(MetadataField field) {
+        StringBuilder result = new StringBuilder();
+        result.append(field.getName());
+        return result.toString();
+    }
 }

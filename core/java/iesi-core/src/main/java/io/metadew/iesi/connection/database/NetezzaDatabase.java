@@ -2,6 +2,9 @@ package io.metadew.iesi.connection.database;
 
 import io.metadew.iesi.connection.database.connection.netezza.NetezzaDatabaseConnection;
 import io.metadew.iesi.metadata.definition.MetadataField;
+import io.metadew.iesi.metadata.definition.MetadataTable;
+
+import java.util.List;
 
 public class NetezzaDatabase extends SchemaDatabase {
 
@@ -65,4 +68,13 @@ public class NetezzaDatabase extends SchemaDatabase {
         return fieldQuery.toString();
     }
 
+    @Override
+    public String toPrimaryKeyConstraint(MetadataTable metadataTable, List<MetadataField> primaryKeyMetadataFields) {return ""; }
+
+    @Override
+    public String toFieldName(MetadataField field) {
+        StringBuilder result = new StringBuilder();
+        result.append(field.getName());
+        return result.toString();
+    }
 }

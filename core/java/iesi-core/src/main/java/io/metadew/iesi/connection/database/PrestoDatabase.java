@@ -2,6 +2,9 @@ package io.metadew.iesi.connection.database;
 
 import io.metadew.iesi.connection.database.connection.presto.PrestoDatabaseConnection;
 import io.metadew.iesi.metadata.definition.MetadataField;
+import io.metadew.iesi.metadata.definition.MetadataTable;
+
+import java.util.List;
 
 /**
  * Database object for PrestoSQL
@@ -70,4 +73,13 @@ public class PrestoDatabase extends SchemaDatabase {
         return fieldQuery.toString();
     }
 
+    @Override
+    public String toPrimaryKeyConstraint(MetadataTable metadataTable, List<MetadataField> primaryKeyMetadataFields) {return ""; }
+
+    @Override
+    public String toFieldName(MetadataField field) {
+        StringBuilder result = new StringBuilder();
+        result.append(field.getName());
+        return result.toString();
+    }
 }

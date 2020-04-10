@@ -2,9 +2,11 @@ package io.metadew.iesi.connection.database;
 
 import io.metadew.iesi.connection.database.connection.sqlite.SqliteDatabaseConnection;
 import io.metadew.iesi.metadata.definition.MetadataField;
+import io.metadew.iesi.metadata.definition.MetadataTable;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 
 public class SqliteDatabase extends Database {
 
@@ -80,5 +82,14 @@ public class SqliteDatabase extends Database {
         return fieldQuery.toString();
     }
 
+    @Override
+    public String toPrimaryKeyConstraint(MetadataTable metadataTable, List<MetadataField> primaryKeyMetadataFields) {return ""; }
+
+    @Override
+    public String toFieldName(MetadataField field) {
+        StringBuilder result = new StringBuilder();
+        result.append(field.getName());
+        return result.toString();
+    }
 
 }

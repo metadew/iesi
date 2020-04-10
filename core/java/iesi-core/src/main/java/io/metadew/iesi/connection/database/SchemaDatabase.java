@@ -41,11 +41,12 @@ public abstract class SchemaDatabase extends Database {
             if (counter > 1) {
                 createQuery.append(",\n");
             }
-            createQuery.append("\t").append(field.getName());
+            String fieldName=toFieldName(field);
+            createQuery.append("\t").append(fieldName);
 
             int tabNumber = 1;
-            if (field.getName().length() >= 8) {
-                tabNumber = (int) (4 - Math.ceil((double) field.getName().length() / 8));
+            if (fieldName.length() >= 8) {
+                tabNumber = (int) (4 - Math.ceil((double) fieldName.length() / 8));
             } else {
                 tabNumber = 4;
             }

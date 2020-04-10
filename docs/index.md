@@ -57,7 +57,7 @@ Our framework can run on Linux/Unix, Mac and Windows systems.
 |IBM DB2|![red](/{{site.repository}}/images/icons/red-dot.png)|![green](/{{site.repository}}/images/icons/green-dot.png)|![red](/{{site.repository}}/images/icons/red-dot.png)|
 |Maria DB|![red](/{{site.repository}}/images/icons/red-dot.png)|![green](/{{site.repository}}/images/icons/green-dot.png)|![red](/{{site.repository}}/images/icons/red-dot.png)|
 |Microsoft SQL Server|![green](/{{site.repository}}/images/icons/green-dot.png)|![green](/{{site.repository}}/images/icons/green-dot.png)|![red](/{{site.repository}}/images/icons/red-dot.png)|
-|MySQL|![red](/{{site.repository}}/images/icons/red-dot.png)|![green](/{{site.repository}}/images/icons/green-dot.png)|![red](/{{site.repository}}/images/icons/red-dot.png)|
+|MySQL|![green](/{{site.repository}}/images/icons/green-dot.png)|![green](/{{site.repository}}/images/icons/green-dot.png)|![red](/{{site.repository}}/images/icons/red-dot.png)|
 |Netezza|![green](/{{site.repository}}/images/icons/green-dot.png)|![green](/{{site.repository}}/images/icons/green-dot.png)|![red](/{{site.repository}}/images/icons/red-dot.png)|
 |Oracle|![green](/{{site.repository}}/images/icons/green-dot.png)|![green](/{{site.repository}}/images/icons/green-dot.png)|![yellow](/{{site.repository}}/images/icons/yellow-dot.png)|
 |Postgresql|![green](/{{site.repository}}/images/icons/green-dot.png)|![green](/{{site.repository}}/images/icons/green-dot.png)|![red](/{{site.repository}}/images/icons/red-dot.png)|

@@ -13,7 +13,7 @@
     <packaging>${packaging.type}</packaging>
     <groupId>io.metadew.iesi</groupId>
     <artifactId>iesi-rest</artifactId>
-    <version>0.4.0</version>
+    <version>0.4.0-7973d09</version>
     <name>IesiRestApplicationWithoutMicroServices</name>
     <description>IESI REST API</description>
 
@@ -101,7 +101,7 @@
         <dependency>
             <groupId>io.metadew</groupId>
             <artifactId>iesi-core</artifactId>
-            <version>0.4.0</version>
+            <version>0.4.0-7973d09</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

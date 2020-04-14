@@ -83,7 +83,9 @@ public abstract class DatabaseServiceImpl<T extends Database> implements Databas
             log.debug("sql.exception.query=" + query);
             throw new RuntimeException(e);
         } finally {
-            releaseConnection(database, connection);
+            if (connection != null) {
+                releaseConnection(database, connection);
+            }
         }
     }
 
@@ -102,7 +104,9 @@ public abstract class DatabaseServiceImpl<T extends Database> implements Databas
             log.debug("sql.exception.query=" + query);
             throw new RuntimeException(e);
         } finally {
-            releaseConnection(database, connection);
+            if (connection != null) {
+                releaseConnection(database, connection);
+            }
         }
         return cachedRowSet;
     }
@@ -121,7 +125,9 @@ public abstract class DatabaseServiceImpl<T extends Database> implements Databas
             log.debug("exception.sql=" + database.getDatabaseConnection().getConnectionURL());
             throw new RuntimeException(e);
         } finally {
-            releaseConnection(database, connection);
+            if (connection != null) {
+                releaseConnection(database, connection);
+            }
         }
     }
 
@@ -154,7 +160,9 @@ public abstract class DatabaseServiceImpl<T extends Database> implements Databas
             log.debug("sql.exception.query=" + query);
             throw new RuntimeException(e);
         } finally {
-            releaseConnection(database, connection);
+            if (connection != null) {
+                releaseConnection(database, connection);
+            }
         }
         return cachedRowSet;
     }
@@ -188,7 +196,9 @@ public abstract class DatabaseServiceImpl<T extends Database> implements Databas
             log.debug("sql.exception.db=" + database.getDatabaseConnection().getConnectionURL());
             throw new RuntimeException(e);
         } finally {
-            releaseConnection(database, connection);
+            if (connection != null) {
+                releaseConnection(database, connection);
+            }
         }
         return sqlScriptResult;
     }
@@ -221,7 +231,9 @@ public abstract class DatabaseServiceImpl<T extends Database> implements Databas
             log.debug("sql.exception.db=" + database.getDatabaseConnection().getConnectionURL());
             throw new RuntimeException(e);
         } finally {
-            releaseConnection(database, connection);
+            if (connection != null) {
+                releaseConnection(database, connection);
+            }
         }
         return sqlScriptResult;
     }
@@ -254,7 +266,9 @@ public abstract class DatabaseServiceImpl<T extends Database> implements Databas
             log.debug("sql.exception.db=" + database.getDatabaseConnection().getConnectionURL());
             throw new RuntimeException(e);
         } finally {
-            releaseConnection(database, connection);
+            if (connection != null) {
+                releaseConnection(database, connection);
+            }
         }
         return cachedRowSet;
     }

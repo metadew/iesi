@@ -1,13 +1,14 @@
-package io.metadew.iesi.connection.http;
+package io.metadew.iesi.connection.http.request;
 
+import io.metadew.iesi.connection.http.ProxyConnection;
+import io.metadew.iesi.connection.http.response.HttpResponse;
+import lombok.extern.log4j.Log4j2;
 import org.apache.http.HttpHost;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.DefaultProxyRoutePlanner;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import javax.net.ssl.*;
 import java.io.IOException;
@@ -15,9 +16,19 @@ import java.net.Socket;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 
-public class HttpRequestService {
+@Log4j2
+public class HttpRequestService implements IHttpRequestService {
 
-    private static Logger LOGGER = LogManager.getLogger();
+    private static HttpRequestService INSTANCE;
+
+    public synchronized static HttpRequestService getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new HttpRequestService();
+        }
+        return INSTANCE;
+    }
+
+    private HttpRequestService() {}
 
     public HttpResponse send(HttpRequest httpRequest) throws IOException, KeyManagementException, NoSuchAlgorithmException {
         CloseableHttpClient httpClient = noSSLCertificateVerification();
@@ -121,7 +132,7 @@ public class HttpRequestService {
         // create an SSL Socket Factory to use the SSLContext with the trust self signed certificate strategy
         // and allow all hosts verifier.
         SSLConnectionSocketFactory connectionFactory = new SSLConnectionSocketFactory(sslContext, allowAllHosts);
-        LOGGER.info("Adding proxy: "+ proxyConnection.getHostName() + ":" + proxyConnection.getPort());
+        log.debug("Adding proxy: " + proxyConnection.getHostName() + ":" + proxyConnection.getPort());
         HttpHost proxy = new HttpHost(proxyConnection.getHostName(), proxyConnection.getPort());
         DefaultProxyRoutePlanner routePlanner = new DefaultProxyRoutePlanner(proxy);
         // finally create the HttpClient using HttpClient factory methods and assign the ssl socket factory

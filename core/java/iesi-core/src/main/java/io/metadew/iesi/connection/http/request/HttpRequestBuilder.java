@@ -1,4 +1,4 @@
-package io.metadew.iesi.connection.http;
+package io.metadew.iesi.connection.http.request;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.HttpGet;

@@ -14,7 +14,7 @@ One way to get the Terraform code and apply it is by getting the code from git a
 * your configuration remains separate from the git repository and can be fetched in any relevant way (private configuration control for instance)
 * new templates can be refreshed using the assembler script having the configuration automatically applied to it
 
-**Important** The assemble script removes all providers and state information if the option is set to remove the instance. 
+**Important** The assemble script removes all providers and state information if the option is set to remove the instance.
 
 ### Get the git repository
 
@@ -44,3 +44,5 @@ Next, the assembly process can be started from the shell script that can be foun
 After completion, the Terraform code will be assembled to `[workspace]/[instance]`
 
 Now, you can run Terraform as required to deploy your GCP infrastructure. However, remain careful not to destroy your Terraform state by running the assembly with the remove instance flag. For more information on Terraform state management, have a look [here](https://www.terraform.io/docs/commands/state/index.html).
+
+As a best practice, you can organize your state management using [Terraform backends](https://www.terraform.io/docs/backends/index.html).

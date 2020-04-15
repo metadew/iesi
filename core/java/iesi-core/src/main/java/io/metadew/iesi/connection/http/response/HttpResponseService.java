@@ -22,13 +22,15 @@ public class HttpResponseService implements IHttpResponseService {
     }
 
     public void writeToDataset(HttpResponse httpResponse, KeyValueDataset dataset, ExecutionRuntime executionRuntime) throws IOException {
-        DatasetHandler.getInstance().setDataItem(dataset, "status", new Text(httpResponse.getStatusLine().toString()));
+        DatasetHandler.getInstance().setDataItem(dataset, "protocol", new Text(httpResponse.getProtocolVersion().getProtocol()));
+        DatasetHandler.getInstance().setDataItem(dataset, "protocol.version.major", new Text(String.valueOf(httpResponse.getProtocolVersion().getMajor())));
+        DatasetHandler.getInstance().setDataItem(dataset, "protocol.version.minor", new Text(String.valueOf(httpResponse.getProtocolVersion().getMinor())));
         DatasetHandler.getInstance().setDataItem(dataset, "status.code", new Text(String.valueOf(httpResponse.getStatusLine().getStatusCode())));
-        int headerCounter = 1;
-            DatasetHandler.getInstance().setDataItem(dataset, "header, " + headerCounter, new Array(
-                    httpResponse.getHeaders().stream()
-                    .map(header -> new Text(header.getName() + ":" + header.getValue()))
-                    .collect(Collectors.toList())));
+        DatasetHandler.getInstance().setDataItem(dataset, "status.reason", new Text(String.valueOf(httpResponse.getStatusLine().getReasonPhrase())));
+        DatasetHandler.getInstance().setDataItem(dataset, "headers", new Array(
+                httpResponse.getHeaders().stream()
+                        .map(header -> new Text(header.getName() + ":" + header.getValue()))
+                        .collect(Collectors.toList())));
         HttpResponseEntityHandler.getInstance().writeToDataset(httpResponse, dataset, "body", executionRuntime);
     }
 

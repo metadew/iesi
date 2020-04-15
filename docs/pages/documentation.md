@@ -84,3 +84,4 @@
 * [Modules](/{{site.repository}}/pages/modules/modules.html)
   * [SQL Insert](/{{site.repository}}/pages/modules/sqlinsert/sqlinsert.html)
 * [How to contribute](/{{site.repository}}/pages/contribute/contribute.html)
+  * [How to setup a development machine](/{{site.repository}}/pages/contribute/development.html)

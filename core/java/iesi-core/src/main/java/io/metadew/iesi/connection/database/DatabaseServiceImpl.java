@@ -83,7 +83,9 @@ public abstract class DatabaseServiceImpl<T extends Database> implements Databas
             log.debug("sql.exception.query=" + query);
             throw new RuntimeException(e);
         } finally {
-            releaseConnection(database, connection);
+            if (connection != null) {
+                releaseConnection(database, connection);
+            }
         }
     }
 
@@ -102,7 +104,9 @@ public abstract class DatabaseServiceImpl<T extends Database> implements Databas
             log.debug("sql.exception.query=" + query);
             throw new RuntimeException(e);
         } finally {
-            releaseConnection(database, connection);
+            if (connection != null) {
+                releaseConnection(database, connection);
+            }
         }
         return cachedRowSet;
     }
@@ -121,7 +125,9 @@ public abstract class DatabaseServiceImpl<T extends Database> implements Databas
             log.debug("exception.sql=" + database.getDatabaseConnection().getConnectionURL());
             throw new RuntimeException(e);
         } finally {
-            releaseConnection(database, connection);
+            if (connection != null) {
+                releaseConnection(database, connection);
+            }
         }
     }
 
@@ -154,7 +160,9 @@ public abstract class DatabaseServiceImpl<T extends Database> implements Databas
             log.debug("sql.exception.query=" + query);
             throw new RuntimeException(e);
         } finally {
-            releaseConnection(database, connection);
+            if (connection != null) {
+                releaseConnection(database, connection);
+            }
         }
         return cachedRowSet;
     }
@@ -188,7 +196,9 @@ public abstract class DatabaseServiceImpl<T extends Database> implements Databas
             log.debug("sql.exception.db=" + database.getDatabaseConnection().getConnectionURL());
             throw new RuntimeException(e);
         } finally {
-            releaseConnection(database, connection);
+            if (connection != null) {
+                releaseConnection(database, connection);
+            }
         }
         return sqlScriptResult;
     }
@@ -221,7 +231,9 @@ public abstract class DatabaseServiceImpl<T extends Database> implements Databas
             log.debug("sql.exception.db=" + database.getDatabaseConnection().getConnectionURL());
             throw new RuntimeException(e);
         } finally {
-            releaseConnection(database, connection);
+            if (connection != null) {
+                releaseConnection(database, connection);
+            }
         }
         return sqlScriptResult;
     }
@@ -254,7 +266,9 @@ public abstract class DatabaseServiceImpl<T extends Database> implements Databas
             log.debug("sql.exception.db=" + database.getDatabaseConnection().getConnectionURL());
             throw new RuntimeException(e);
         } finally {
-            releaseConnection(database, connection);
+            if (connection != null) {
+                releaseConnection(database, connection);
+            }
         }
         return cachedRowSet;
     }
@@ -314,8 +328,7 @@ public abstract class DatabaseServiceImpl<T extends Database> implements Databas
     public String getCreateStatement(T database, MetadataTable table) {
         StringBuilder createQuery = new StringBuilder();
         // StringBuilder fieldComments = new StringBuilder();
-        String tableName = table.getName();
-        createQuery.append("CREATE TABLE ").append(tableName).append("\n(\n");
+        createQuery.append("CREATE TABLE ").append(table.getName()).append("\n(\n");
         int counter = 1;
         for (Map.Entry<String, MetadataField> field : table.getFields().entrySet()) {
             if (counter > 1) {
@@ -354,6 +367,7 @@ public abstract class DatabaseServiceImpl<T extends Database> implements Databas
 
         return createQuery.toString();
     }
+
     public Optional<String> getPrimaryKeyConstraints(T database, MetadataTable metadataTable) {
         Map<String, MetadataField> primaryKeyMetadataFields = metadataTable.getFields().entrySet().stream()
                 .filter(entry -> entry.getValue().isPrimaryKey())

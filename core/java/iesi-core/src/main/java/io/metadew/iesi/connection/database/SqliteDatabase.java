@@ -4,7 +4,7 @@ import io.metadew.iesi.connection.database.connection.sqlite.SqliteDatabaseConne
 
 public class SqliteDatabase extends Database {
 
-    private Object connectionPoolLock;
+    private Object connectionPoolLock = new Object();
 
     public SqliteDatabase(SqliteDatabaseConnection databaseConnection) {
         super(databaseConnection);

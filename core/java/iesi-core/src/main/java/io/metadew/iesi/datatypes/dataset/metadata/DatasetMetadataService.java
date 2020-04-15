@@ -1,12 +1,11 @@
 package io.metadew.iesi.datatypes.dataset.metadata;
 
+import io.metadew.iesi.common.configuration.framework.FrameworkConfiguration;
 import io.metadew.iesi.connection.database.Database;
-import io.metadew.iesi.connection.database.DatabaseHandler;
 import io.metadew.iesi.connection.database.DatabaseHandlerImpl;
 import io.metadew.iesi.connection.database.SqliteDatabase;
 import io.metadew.iesi.connection.database.connection.sqlite.SqliteDatabaseConnection;
 import io.metadew.iesi.connection.tools.SQLTools;
-import io.metadew.iesi.common.configuration.framework.FrameworkConfiguration;
 import lombok.Synchronized;
 import lombok.extern.log4j.Log4j2;
 
@@ -17,6 +16,7 @@ import java.text.MessageFormat;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
 @Log4j2
 public class DatasetMetadataService {
 

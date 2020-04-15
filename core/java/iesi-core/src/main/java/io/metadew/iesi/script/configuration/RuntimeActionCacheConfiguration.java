@@ -37,18 +37,6 @@ public class RuntimeActionCacheConfiguration {
         }
     }
 
-    // Methods
-    public void cleanRuntimeCache(String runId) {
-        String query = "delete from " + PRC_RUN_CACHE + " where RUN_ID = " + SQLTools.GetStringForSQL(runId) + ";";
-        DatabaseHandlerImpl.getInstance().executeUpdate(database, query);
-    }
-
-    public void cleanRuntimeCache(String runId, long processId) {
-        String query = "delete from " + PRC_RUN_CACHE
-                + " where RUN_ID = " + SQLTools.GetStringForSQL(runId) + " and PRC_ID = " + SQLTools.GetStringForSQL(processId) + ";";
-        DatabaseHandlerImpl.getInstance().executeUpdate(database, query);
-    }
-
     public void setRuntimeCache(String runId, Long processId, String type, String name, String value) {
         // Verify if name already exists
         value = truncateRuntimeVariableValue(value);

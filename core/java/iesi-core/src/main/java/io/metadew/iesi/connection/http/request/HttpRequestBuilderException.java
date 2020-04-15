@@ -1,4 +1,4 @@
-package io.metadew.iesi.connection.http;
+package io.metadew.iesi.connection.http.request;
 
 public class HttpRequestBuilderException extends Exception {
 

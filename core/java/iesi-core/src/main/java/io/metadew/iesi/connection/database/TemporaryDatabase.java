@@ -1,6 +1,6 @@
 package io.metadew.iesi.connection.database;
 
-import io.metadew.iesi.connection.database.connection.TemporaryDatabaseConnection;
+import io.metadew.iesi.connection.database.connection.temporary.TemporaryDatabaseConnection;
 
 public class TemporaryDatabase extends Database {
 

@@ -61,6 +61,9 @@
   * Configuration files
   * [Environment strategy](/{{site.repository}}/pages/deploy/environmentstrategy.html)
   * [Connectors](/{{site.repository}}/pages/deploy/connectors.html)
+  * Google Cloud Platform (GCP)
+    * [Getting started](/{{site.repository}}/pages/deploy/gcp/deploy-on-gcp.html)
+    * [Applying Terraform code](/{{site.repository}}/pages/deploy/gcp/apply-terraform-code.html)
 * [Understand the framework](/{{site.repository}}/pages/understand/understand.html)
   * [Legend tables](/{{site.repository}}/pages/understand/legend.html)
   * [Important highlights](/{{site.repository}}/pages/understand/highlights.html)

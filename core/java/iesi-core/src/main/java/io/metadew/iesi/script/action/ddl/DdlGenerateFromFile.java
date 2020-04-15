@@ -3,7 +3,6 @@ package io.metadew.iesi.script.action.ddl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.DatabaseHandlerImpl;
-import io.metadew.iesi.connection.database.tools.DatabaseTools;
 import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.text.Text;
@@ -170,7 +169,8 @@ public class DdlGenerateFromFile {
     private boolean executeQuery(String inputPath, String inputFile, String outputType, String outputPath, String outputFile) throws InterruptedException{
 
     	// TODO - fix for schema databases (dummy database connection)
-    	Database database = DatabaseTools.getDatabase("io.metadew.iesi.connection.database.SqliteDatabase");
+    	Database database = null;
+    	//DatabaseTools.getDatabase("io.metadew.iesi.connection.database.SqliteDatabase");
     	
     	ObjectMapper objectMapper = new ObjectMapper();
     	DataObjectOperation dataObjectOperation = new DataObjectOperation(inputFile);

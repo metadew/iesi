@@ -13,7 +13,7 @@
     <packaging>${packaging.type}</packaging>
     <groupId>io.metadew.iesi</groupId>
     <artifactId>iesi-rest</artifactId>
-    <version>0.3.0</version>
+    <version>0.4.0</version>
     <name>IesiRestApplicationWithoutMicroServices</name>
     <description>IESI REST API</description>
 
@@ -101,7 +101,7 @@
         <dependency>
             <groupId>io.metadew</groupId>
             <artifactId>iesi-core</artifactId>
-            <version>0.3.0</version>
+            <version>0.4.0</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -209,18 +209,6 @@
             <artifactId>modelmapper</artifactId>
             <version>2.3.0</version>
         </dependency>
-        <!-- commented to correct build issues from repo
-        <dependency>
-            <groupId>com.oracle</groupId>
-            <artifactId>ucp</artifactId>
-            <version>11.2</version>
-        </dependency>
-        <dependency>
-            <groupId>com.oracle</groupId>
-            <artifactId>ojdbc6</artifactId>
-            <version>11.2</version>
-        </dependency>
-        -->
     </dependencies>
 
 

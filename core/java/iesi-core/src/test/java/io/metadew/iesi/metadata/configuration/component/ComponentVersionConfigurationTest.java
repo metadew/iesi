@@ -29,6 +29,7 @@ class ComponentVersionConfigurationTest {
     @BeforeEach
     void setup() {
         this.designMetadataRepository = RepositoryTestSetup.getDesignMetadataRepository();
+        designMetadataRepository.createAllTables();
         componentVersion1 = new ComponentVersionBuilder("1", 1)
                 .description("test")
                 .build();

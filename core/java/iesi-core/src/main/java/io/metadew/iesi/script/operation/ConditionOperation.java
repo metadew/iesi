@@ -33,10 +33,6 @@ public class ConditionOperation {
         jexl.setSilent(false);
     }
 
-    public ConditionOperation() {
-
-    }
-
     public ConditionOperation(ActionExecution actionExecution, String inputValue)  {
         this.setActionExecution(actionExecution);
         this.setExecutionControl(actionExecution.getExecutionControl());
@@ -104,10 +100,6 @@ public class ConditionOperation {
                 break;
         }
         return result;
-    }
-
-    public String getInputValue() {
-        return inputValue;
     }
 
     public void setInputValue(String inputValue)  {

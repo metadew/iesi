@@ -14,8 +14,8 @@ public class AuthenticatedExecutionRequest extends ExecutionRequest {
 
     public AuthenticatedExecutionRequest(ExecutionRequestKey executionRequestKey, LocalDateTime requestTimestamp, String name, String description,
                                          String email, String scope, String context, ExecutionRequestStatus executionRequestStatus, List<ScriptExecutionRequest> scriptExecutionRequests,
-                                         String space, String user, String password) {
-        super(executionRequestKey, requestTimestamp, name, description, email, scope, context, executionRequestStatus, scriptExecutionRequests);
+                                         List<ExecutionRequestLabel> executionRequestLabels, String space, String user, String password) {
+        super(executionRequestKey, requestTimestamp, name, description, email, scope, context, executionRequestStatus, scriptExecutionRequests, executionRequestLabels);
         this.space = space;
         this.user = user;
         this.password = password;

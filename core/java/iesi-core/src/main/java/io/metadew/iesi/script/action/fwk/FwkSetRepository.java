@@ -111,8 +111,8 @@ public class FwkSetRepository {
         List<String> repositoryInstanceLabels = convertRepositoryInstanceLabels(getRepositoryInstanceLabels().getValue());
 
         // Run the action
-        this.getExecutionControl().getExecutionRuntime().setRepository(this.getExecutionControl(), repositoryReferenceName,
-                repositoryName, repositoryInstanceName, String.join(",", repositoryInstanceLabels));
+        //this.getExecutionControl().getExecutionRuntime().setRepository(this.getExecutionControl(), repositoryReferenceName,
+        //        repositoryName, repositoryInstanceName, String.join(",", repositoryInstanceLabels));
 
         this.getActionExecution().getActionControl().increaseSuccessCount();
 

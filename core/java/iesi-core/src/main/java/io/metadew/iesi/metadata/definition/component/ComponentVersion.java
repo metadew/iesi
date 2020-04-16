@@ -2,11 +2,15 @@ package io.metadew.iesi.metadata.definition.component;
 
 import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.component.key.ComponentVersionKey;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Data
+@ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 public class ComponentVersion extends Metadata<ComponentVersionKey> {
 
@@ -17,23 +21,6 @@ public class ComponentVersion extends Metadata<ComponentVersionKey> {
         super(componentVersionKey);
         this.description = description;
         this.builds = new ArrayList<>();
-    }
-
-    //Getters and Setters
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public List<ComponentBuild> getBuilds() {
-        return builds;
-    }
-
-    public void setBuilds(List<ComponentBuild> builds) {
-        this.builds = builds;
     }
 
 }

@@ -11,9 +11,4 @@ public class ImpersonationParameterKey extends MetadataKey {
     private final ImpersonationKey impersonationKey;
     private final String parameterName;
 
-    public ImpersonationParameterKey(String impersonationName, String parameterName) {
-        this.impersonationKey = new ImpersonationKey(impersonationName);
-        this.parameterName = parameterName;
-    }
-
 }

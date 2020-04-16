@@ -1,32 +1,29 @@
 package io.metadew.iesi.connection.database.connection.postgresql;
 
-import io.metadew.iesi.connection.database.connection.DatabaseConnection;
 import io.metadew.iesi.connection.database.connection.SchemaDatabaseConnection;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Optional;
 
-/**
- * Connection object for Postgresql databases. This class extends the default database connection object.
- *
- * @author peter.billen
- */
+@Data
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
 public class PostgresqlDatabaseConnection extends SchemaDatabaseConnection {
 
     private static String type = "postgresql";
 
     public PostgresqlDatabaseConnection(String connectionURL, String userName, String userPassword) {
-        super(type, connectionURL, userName, userPassword);
+        super(type, connectionURL, userName, userPassword, null);
     }
 
     public PostgresqlDatabaseConnection(String connectionURL, String userName, String userPassword, String schema) {
-        super(type, connectionURL, userName, userPassword, schema);
+        super(type, connectionURL, userName, userPassword, null, schema);
     }
 
     public PostgresqlDatabaseConnection(String hostName, int portNumber, String databaseName, String userName,
                                         String userPassword) {
-        super(type, getConnectionUrl(hostName, portNumber, databaseName), userName, userPassword);
+        this(getConnectionUrl(hostName, portNumber, databaseName), userName, userPassword);
     }
 
     public static String getConnectionUrl(String hostName, int portNumber, String databaseName) {
@@ -44,11 +41,6 @@ public class PostgresqlDatabaseConnection extends SchemaDatabaseConnection {
         }
 
         return connectionUrl.toString();
-    }
-
-    @Override
-    public String getDriver() {
-        return "org.postgresql.Driver";
     }
 
 }

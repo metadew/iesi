@@ -1,9 +1,11 @@
 src/main/resources/iesi.p12
 src/main/resources/iesikey.p12
+/logs/
 
 HELP.md
 /target/
 /out/
+/logs/
 /classes/
 !.mvn/wrapper/maven-wrapper.jar
 iesi-home.conf

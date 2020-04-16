@@ -41,19 +41,19 @@ public class HttpRequestComponentService {
         }
 
         DataType uri = request.getParameters().stream()
-                .filter(componentParameter -> componentParameter.getName().equalsIgnoreCase("url"))
+                .filter(componentParameter -> componentParameter.getMetadataKey().getParameterName().equalsIgnoreCase("url"))
                 .findFirst()
                 .map(componentParameter -> httpRequestComponentParameterService.getParameterValue(componentParameter, request.getAttributes(), actionExecution))
                 .orElseThrow(() -> new RuntimeException("No url defined in http request"));
 
         Map<String, DataType> headers = request.getParameters().stream()
-                .filter(componentParameter -> componentParameter.getName().startsWith("header"))
+                .filter(componentParameter -> componentParameter.getMetadataKey().getParameterName().startsWith("header"))
                 .map(componentParameter -> httpRequestComponentParameterService.getHeader(componentParameter, request.getAttributes(), actionExecution))
                 .flatMap(m->m.entrySet().stream())
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
         Map<String, DataType> queryParameters = request.getParameters().stream()
-                .filter(componentParameter -> componentParameter.getName().startsWith("queryparam"))
+                .filter(componentParameter -> componentParameter.getMetadataKey().getParameterName().startsWith("queryparam"))
                 .map(componentParameter -> httpRequestComponentParameterService.getQueryParameter(componentParameter, request.getAttributes(), actionExecution))
                 .flatMap(m->m.entrySet().stream())
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
@@ -66,14 +66,6 @@ public class HttpRequestComponentService {
         Component request = ComponentConfiguration.getInstance().get(new ComponentKey(requestComponentName, requestComponentVersion))
                 .orElseThrow(() -> new RuntimeException(MessageFormat.format("component.notfound=no component exists with name {0}.", requestComponentName)));
         return transform(request, actionExecution);
-    }
-
-    public ExecutionControl getExecutionControl() {
-        return executionControl;
-    }
-
-    public void setExecutionControl(ExecutionControl executionControl) {
-        this.executionControl = executionControl;
     }
 
 }

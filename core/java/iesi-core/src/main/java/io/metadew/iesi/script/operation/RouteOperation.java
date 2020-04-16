@@ -14,19 +14,6 @@ public class RouteOperation {
     private ActionParameterOperation destination;
     private Script script;
 
-    public RouteOperation() {
-
-    }
-
-    // Getters and Setters
-    public ActionParameterOperation getCondition() {
-        return condition;
-    }
-
-    public void setCondition(ActionParameterOperation condition) {
-        this.condition = condition;
-    }
-
     public ActionParameterOperation getDestination() {
         return destination;
     }

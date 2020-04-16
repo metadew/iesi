@@ -24,6 +24,6 @@ You can contribute in many ways:
 * Improve the documentation
 * Showcase your own automations
 
-## Clone the repository
+## Getting started
 
-We will be adding more details soon...
+* [How to setup a development machine](/{{site.repository}}/pages/contribute/development.html)

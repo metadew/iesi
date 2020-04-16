@@ -1,11 +1,9 @@
 package io.metadew.iesi.metadata.configuration.impersonation;
 
 import io.metadew.iesi.connection.tools.SQLTools;
-import io.metadew.iesi.framework.configuration.FrameworkObjectConfiguration;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
-import io.metadew.iesi.metadata.definition.ListObject;
 import io.metadew.iesi.metadata.definition.impersonation.Impersonation;
 import io.metadew.iesi.metadata.definition.impersonation.ImpersonationParameter;
 import io.metadew.iesi.metadata.definition.impersonation.key.ImpersonationKey;
@@ -94,7 +92,7 @@ public class ImpersonationConfiguration extends Configuration<Impersonation, Imp
                         .executeQuery(queryImpersonationParameters, "reader");
                 List<ImpersonationParameter> impersonationParameterList = getAllLinkedImpersonationParameters(impersonationName);
                 crsImpersonationParameters.close();
-                impersonation = new Impersonation(impersonationName, description, impersonationParameterList);
+                impersonation = new Impersonation(new ImpersonationKey(impersonationName), description, impersonationParameterList);
             }
             crsImpersonation.close();
         } catch (SQLException e) {
@@ -111,7 +109,8 @@ public class ImpersonationConfiguration extends Configuration<Impersonation, Imp
         CachedRowSet crsImpersonationParameters = getMetadataRepository().executeQuery(selectQuery, "reader");
         try {
             while (crsImpersonationParameters.next()) {
-                ImpersonationParameterKey impersonationParameterKey = new ImpersonationParameterKey(impersonationName,
+                ImpersonationParameterKey impersonationParameterKey = new ImpersonationParameterKey(
+                        new ImpersonationKey(impersonationName),
                         crsImpersonationParameters.getString("CONN_NM"));
                 impersonationParameters.add(new ImpersonationParameter(impersonationParameterKey,
                         crsImpersonationParameters.getString("CONN_IMP_NM"),
@@ -149,7 +148,7 @@ public class ImpersonationConfiguration extends Configuration<Impersonation, Imp
         String queryImpersonation = "select * from "
                 + getMetadataRepository().getTableNameByLabel("Impersonations")
                 + " where IMP_NM = '"
-                + impersonation.getName() + "'";
+                + impersonation.getMetadataKey().getName() + "'";
 
         CachedRowSet crsEnvironment = getMetadataRepository().executeQuery(queryImpersonation, "reader");
         return crsEnvironment.size() == 1;
@@ -195,7 +194,7 @@ public class ImpersonationConfiguration extends Configuration<Impersonation, Imp
             ImpersonationParameterConfiguration.getInstance().insert(impersonationParameter);
         }
         String query = "INSERT INTO " + getMetadataRepository().getTableNameByLabel("Impersonations") + " (IMP_NM, IMP_DSC) VALUES (" +
-                SQLTools.GetStringForSQL(impersonation.getName()) + "," +
+                SQLTools.GetStringForSQL(impersonation.getMetadataKey().getName()) + "," +
                 SQLTools.GetStringForSQL(impersonation.getDescription()) + ");";
         getMetadataRepository().executeUpdate(query);
     }
@@ -221,10 +220,10 @@ public class ImpersonationConfiguration extends Configuration<Impersonation, Imp
         ImpersonationParameterConfiguration impersonationParameterConfiguration = ImpersonationParameterConfiguration.getInstance();
         List<String> queries = new ArrayList<>();
         queries.add("INSERT INTO " + getMetadataRepository().getTableNameByLabel("Impersonations") + " (IMP_NM, IMP_DSC) VALUES (" +
-                SQLTools.GetStringForSQL(impersonation.getName()) + "," +
+                SQLTools.GetStringForSQL(impersonation.getMetadataKey().getName()) + "," +
                 SQLTools.GetStringForSQL(impersonation.getDescription()) + ");");
         for (ImpersonationParameter impersonationParameter : impersonation.getParameters()) {
-            queries.add(impersonationParameterConfiguration.getInsertStatement(impersonation.getName(), impersonationParameter));
+            queries.add(impersonationParameterConfiguration.getInsertStatement(impersonation.getMetadataKey().getName(), impersonationParameter));
         }
         return queries;
     }
@@ -241,7 +240,7 @@ public class ImpersonationConfiguration extends Configuration<Impersonation, Imp
             if (!result.equalsIgnoreCase(""))
                 result += "\n";
 
-            result += impersonationParameterConfiguration.getInsertStatement(impersonation.getName(), impersonationParameter);
+            result += impersonationParameterConfiguration.getInsertStatement(impersonation.getMetadataKey().getName(), impersonationParameter);
         }
 
         return result;
@@ -255,12 +254,12 @@ public class ImpersonationConfiguration extends Configuration<Impersonation, Imp
 
         sql += "DELETE FROM " + getMetadataRepository().getTableNameByLabel("Impersonations");
         sql += " WHERE IMP_NM = "
-                + SQLTools.GetStringForSQL(this.getImpersonation().getName());
+                + SQLTools.GetStringForSQL(this.getImpersonation().getMetadataKey().getName());
         sql += ";";
         sql += "\n";
         sql += "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ImpersonationParameters");
         sql += " WHERE IMP_NM = "
-                + SQLTools.GetStringForSQL(this.getImpersonation().getName());
+                + SQLTools.GetStringForSQL(this.getImpersonation().getMetadataKey().getName());
         sql += ";";
         sql += "\n";
 
@@ -280,14 +279,14 @@ public class ImpersonationConfiguration extends Configuration<Impersonation, Imp
         sql += " (IMP_NM, IMP_DSC) ";
         sql += "VALUES ";
         sql += "(";
-        sql += SQLTools.GetStringForSQL(this.getImpersonation().getName());
+        sql += SQLTools.GetStringForSQL(this.getImpersonation().getMetadataKey().getName());
         sql += ",";
         sql += SQLTools.GetStringForSQL(this.getImpersonation().getDescription());
         sql += ")";
         sql += ";";
 
         // add Parameters
-        String sqlParameters = this.getParameterInsertStatements(this.getImpersonation().getName());
+        String sqlParameters = this.getParameterInsertStatements(this.getImpersonation().getMetadataKey().getName());
         if (!sqlParameters.equalsIgnoreCase("")) {
             sql += "\n";
             sql += sqlParameters;
@@ -311,29 +310,6 @@ public class ImpersonationConfiguration extends Configuration<Impersonation, Imp
         }
 
         return result;
-    }
-
-    public ListObject getImpersonations() {
-        List<Impersonation> impersonationList = new ArrayList<>();
-        CachedRowSet crs = null;
-        String query = "select IMP_NM from " + getMetadataRepository().getTableNameByLabel("Impersonations")
-                + " order by IMP_NM ASC";
-        crs = getMetadataRepository().executeQuery(query, "reader");
-        ImpersonationConfiguration impersonationConfiguration = new ImpersonationConfiguration();
-        try {
-            String impersonationName = "";
-            while (crs.next()) {
-                impersonationName = crs.getString("IMP_NM");
-                impersonationConfiguration.getImpersonation(impersonationName).ifPresent(impersonationList::add);
-            }
-            crs.close();
-        } catch (SQLException e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-            throw new RuntimeException(e);
-        }
-        // new Impersonation("dummy", "dummy",  null) because code wants an object instead of a class
-        return new ListObject(FrameworkObjectConfiguration.getFrameworkObjectType(new Impersonation("dummy", "dummy", null)), impersonationList);
     }
 
     // Exists

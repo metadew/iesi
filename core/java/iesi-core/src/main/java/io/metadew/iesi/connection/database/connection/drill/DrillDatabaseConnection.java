@@ -13,15 +13,15 @@ public class DrillDatabaseConnection extends SchemaDatabaseConnection {
 	private static String type = "drill";
 
 	public DrillDatabaseConnection(String connectionURL, String userName, String userPassword) {
-		super(type, connectionURL, userName, userPassword);
+		super(type, connectionURL, userName, userPassword, null);
 	}
 
 	public DrillDatabaseConnection(String connectionURL, String userName, String userPassword, String schema) {
-		super(type, connectionURL, userName, userPassword, schema);
+		super(type, connectionURL, userName, userPassword, null, schema);
 	}
 
 	public DrillDatabaseConnection(String connectionMode, String clusterNames, String directoryName, String clusterId, String schemaName, String triesParameter, String userName, String userPassword) {
-		super(type, getConnectionUrl(connectionMode, clusterNames, directoryName, clusterId, schemaName, triesParameter), userName, userPassword);
+		this(getConnectionUrl(connectionMode, clusterNames, directoryName, clusterId, schemaName, triesParameter), userName, userPassword);
 	}
 	
 private static String getConnectionUrl(String connectionMode, String clusterNames, String directoryName, String clusterId, String schemaName, String triesParameter) {
@@ -55,11 +55,6 @@ private static String getConnectionUrl(String connectionMode, String clusterName
 		}
 
 		return connectionUrl.toString();
-	}
-
-	@Override
-	public String getDriver() {
-		return "org.apache.drill.jdbc.Driver";
 	}
 
 }

@@ -3,15 +3,12 @@ package io.metadew.iesi.metadata.configuration.connection;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.connection.Connection;
-import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
-import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.metadata.repository.ConnectivityMetadataRepository;
 import io.metadew.iesi.metadata.repository.RepositoryTestSetup;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
 import java.util.Optional;
 
 import static junit.framework.TestCase.assertEquals;
@@ -42,6 +39,7 @@ class ConnectionConfigurationTest {
                 .build();
 
         connectivityMetadataRepository = RepositoryTestSetup.getConnectivityMetadataRepository();
+        connectivityMetadataRepository.createAllTables();
     }
 
     @AfterEach

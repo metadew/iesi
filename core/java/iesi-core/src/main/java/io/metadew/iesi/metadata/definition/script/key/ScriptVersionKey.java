@@ -10,8 +10,4 @@ public class ScriptVersionKey extends MetadataKey {
 
     private final ScriptKey scriptKey;
 
-    public ScriptVersionKey(String scriptId, long versionNumber) {
-        this.scriptKey = new ScriptKey(scriptId, versionNumber);
-    }
-
 }

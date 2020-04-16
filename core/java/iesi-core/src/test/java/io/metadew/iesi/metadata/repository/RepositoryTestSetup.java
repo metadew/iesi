@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.H2Database;
 import io.metadew.iesi.connection.database.connection.h2.H2MemoryDatabaseConnection;
+import io.metadew.iesi.common.configuration.Configuration;
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.metadata.definition.DataObject;
 import io.metadew.iesi.metadata.definition.MetadataObject;
 import io.metadew.iesi.metadata.definition.MetadataTable;
@@ -27,17 +29,19 @@ public class RepositoryTestSetup {
     private static final String CONNECTIVITY_OBJECTS = "io.metadew.iesi.metadata/ConnectivityObjects.json";
 
     public static DesignMetadataRepository getDesignMetadataRepository() {
-        DesignMetadataRepository designMetadataRepository = new DesignMetadataRepository("", getRepositoryCoordinator(), "", "",
-                getMetadataObjects(DESIGN_OBJECTS), getMetadataTables(DESIGN_TABLES));
-        designMetadataRepository.createAllTables();
-        return designMetadataRepository;
+        Configuration.getInstance();
+//        DesignMetadataRepository designMetadataRepository = new DesignMetadataRepository("", getRepositoryCoordinator(), "", "",
+//                getMetadataObjects(DESIGN_OBJECTS), getMetadataTables(DESIGN_TABLES));
+//        designMetadataRepository.createAllTables();
+        return MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository();
     }
 
     public static ConnectivityMetadataRepository getConnectivityMetadataRepository() {
-        ConnectivityMetadataRepository connectivityMetadataRepository = new ConnectivityMetadataRepository("", getRepositoryCoordinator(), "", "",
-                getMetadataObjects(CONNECTIVITY_OBJECTS), getMetadataTables(CONNECTIVITY_TABLES));
-        connectivityMetadataRepository.createAllTables();
-        return connectivityMetadataRepository;
+        Configuration.getInstance();
+//        ConnectivityMetadataRepository connectivityMetadataRepository = new ConnectivityMetadataRepository("", getRepositoryCoordinator(), "", "",
+//                getMetadataObjects(CONNECTIVITY_OBJECTS), getMetadataTables(CONNECTIVITY_TABLES));
+//        connectivityMetadataRepository.createAllTables();
+        return MetadataRepositoryConfiguration.getInstance().getConnectivityMetadataRepository();
     }
 
     private static List<MetadataTable> getMetadataTables(String tableDefinitions) {
@@ -49,13 +53,13 @@ public class RepositoryTestSetup {
         DataObjectOperation dataObjectOperation = new DataObjectOperation(objectsAbsolutePath);
         dataObjectOperation.parseFile();
         //
-        for (DataObject dataObject : dataObjectOperation.getDataObjects()) {
-            if (dataObject.getType().equalsIgnoreCase("metadatatable")) {
-                MetadataTable metadataTable = objectMapper.convertValue(dataObject.getData(), MetadataTable.class);
-                metadataTable.setName(metadataTable.getName());
-                metadataTables.add(metadataTable);
-            }
-        }
+//        for (DataObject dataObject : dataObjectOperation.getDataObjects()) {
+//            if (dataObject.getType().equalsIgnoreCase("metadatatable")) {
+//                MetadataTable metadataTable = objectMapper.convertValue(dataObject.getData(), MetadataTable.class);
+//                metadataTable.setName(metadataTable.getName());
+//                metadataTables.add(metadataTable);
+//            }
+//        }
         return metadataTables;
     }
 

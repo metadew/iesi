@@ -22,7 +22,7 @@ public class ActionRuntime {
     }
 
     // Methods
-    public void initActionCache(String actionName, String runCacheFolderName) {
+    public void initActionCache(String runCacheFolderName) {
         this.runCacheFolderName = runCacheFolderName + File.separator + processId;
         // FolderTools.createFolder(this.runCacheFolderName);
         this.runtimeActionCacheConfiguration = new RuntimeActionCacheConfiguration(this.runCacheFolderName);
@@ -110,10 +110,6 @@ public class ActionRuntime {
         return runCacheFolderName;
     }
 
-    public void setRunCacheFolderName(String runCacheFolderName) {
-        this.runCacheFolderName = runCacheFolderName;
-    }
-
     public String getRunId() {
         return runId;
     }
@@ -126,20 +122,12 @@ public class ActionRuntime {
         return runtimeActionCacheConfiguration;
     }
 
-    public void setRuntimeActionCacheConfiguration(RuntimeActionCacheConfiguration runtimeActionCacheConfiguration) {
-        this.runtimeActionCacheConfiguration = runtimeActionCacheConfiguration;
-    }
-
     public List<RouteOperation> getRouteOperations() {
         return routeOperations;
     }
 
     public void setRouteOperations(List<RouteOperation> routeOperations) {
         this.routeOperations = routeOperations;
-    }
-
-    public Long getProcessId() {
-        return processId;
     }
 
     public void setProcessId(Long processId) {

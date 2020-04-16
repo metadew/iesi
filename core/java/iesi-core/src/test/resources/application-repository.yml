@@ -1,0 +1,83 @@
+# configurations related to the metadata repository
+iesi:
+  metadata:
+    repository:
+      # category can be: general, design, connectivity, trace, result.
+      # each category should define its own type and definition
+      - categories:
+          - general
+        # scope:
+        name:
+        instance:
+
+        # type of database: sqlite, h2, mssql, netezza, oracle, postgresql
+        coordinator:
+          type: h2
+          mode: memory
+          database: test;DB_CLOSE_DELAY=-1
+          owner:
+            user: ""
+            password: ""
+
+#          type: h2
+#          mode: embedded
+#          file:
+#          schema:
+#          host:
+#          port:
+#          owner:
+#            name:
+#            password:
+#          reader:
+#            name:
+#            password:
+#          writer:
+#            name:
+#            password:
+
+#          type: mssql
+#          database: 
+#          host: 
+#          port: 
+#          schema: 
+#          name: 
+#          owner:
+#            name:
+#            password:
+#          reader:
+#            name:
+#            password:
+#          writer:
+#            name:
+#            password:
+
+#          type: netezza
+#          host: 
+#          name: 
+#          port: 
+#          schema: 
+#          owner:
+#            name:
+#            password:
+#          reader:
+#            name:
+#            password:
+#          writer:
+#            name:
+#            password:
+
+#          type: postgresql
+#          host: 
+#          name: 
+#          port: 
+#          reader: 
+#          schema: 
+#          owner:
+#            name:
+#            password:
+#          reader:
+#            name:
+#            password:
+#          writer:
+#            name:
+#            password:

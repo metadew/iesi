@@ -68,8 +68,8 @@ public class ScriptParameterConfiguration extends Configuration<ScriptParameter,
         try {
             while (crs.next()) {
                 ScriptParameterKey scriptParameterKey = new ScriptParameterKey(
-                        crs.getString("SCRIPT_ID"),
-                        crs.getLong("SCRIPT_VRS_NB"),
+                        new ScriptKey(crs.getString("SCRIPT_ID"),
+                        crs.getLong("SCRIPT_VRS_NB")),
                         crs.getString("SCRIPT_PAR_NM"));
                 scriptParameters.add(new ScriptParameter(
                         scriptParameterKey,
@@ -144,8 +144,8 @@ public class ScriptParameterConfiguration extends Configuration<ScriptParameter,
         try {
             while (crs.next()) {
                 ScriptParameterKey scriptParameterKey = new ScriptParameterKey(
-                        crs.getString("SCRIPT_ID"),
-                        crs.getLong("SCRIPT_VRS_NB"),
+                        new ScriptKey(crs.getString("SCRIPT_ID"),
+                        crs.getLong("SCRIPT_VRS_NB")),
                         crs.getString("SCRIPT_PAR_NM"));
                 scriptParameters.add(new ScriptParameter(
                         scriptParameterKey,

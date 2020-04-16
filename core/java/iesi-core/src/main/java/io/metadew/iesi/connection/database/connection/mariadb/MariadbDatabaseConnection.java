@@ -14,17 +14,12 @@ public class MariadbDatabaseConnection extends DatabaseConnection {
 	private static String type = "mariadb";
 
 	public MariadbDatabaseConnection(String connectionURL, String userName, String userPassword) {
-		super(type, connectionURL, userName, userPassword);
+		super(type, connectionURL, userName, userPassword, null);
 	}
 
 	public MariadbDatabaseConnection(String hostName, int portNumber, String databaseName, String userName,
 			String userPassword) {
-		super(type, getConnectionUrl(hostName, portNumber, databaseName), userName, userPassword);
-	}
-
-	@Override
-	public String getDriver() {
-		return "org.mariadb.jdbc.Driver";
+		this(getConnectionUrl(hostName, portNumber, databaseName), userName, userPassword);
 	}
 
 	public static String getConnectionUrl(String hostName, int portNumber, String databaseName) {

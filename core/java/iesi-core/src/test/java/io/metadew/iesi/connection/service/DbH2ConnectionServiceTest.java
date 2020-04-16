@@ -1,12 +1,12 @@
 package io.metadew.iesi.connection.service;
 
 import io.metadew.iesi.common.crypto.FrameworkCrypto;
-import io.metadew.iesi.connection.database.DatabaseHandlerImpl;
-import io.metadew.iesi.connection.database.H2Database;
-import io.metadew.iesi.connection.database.connection.h2.H2DatabaseConnection;
-import io.metadew.iesi.connection.database.connection.h2.H2EmbeddedDatabaseConnection;
-import io.metadew.iesi.connection.database.connection.h2.H2MemoryDatabaseConnection;
-import io.metadew.iesi.connection.database.connection.h2.H2ServerDatabaseConnection;
+import io.metadew.iesi.connection.database.DatabaseHandler;
+import io.metadew.iesi.connection.database.h2.H2Database;
+import io.metadew.iesi.connection.database.h2.H2DatabaseConnection;
+import io.metadew.iesi.connection.database.h2.H2EmbeddedDatabaseConnection;
+import io.metadew.iesi.connection.database.h2.H2MemoryDatabaseConnection;
+import io.metadew.iesi.connection.database.h2.H2ServerDatabaseConnection;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
@@ -29,15 +29,15 @@ public class DbH2ConnectionServiceTest {
 
     @BeforeAll
     static void setup() {
-        DatabaseHandlerImpl databaseConnectionHandler = DatabaseHandlerImpl.getInstance();
-        DatabaseHandlerImpl databaseConnectionHandlerSpy = Mockito.spy(databaseConnectionHandler);
-        Whitebox.setInternalState(DatabaseHandlerImpl.class, "INSTANCE", databaseConnectionHandlerSpy);
+        DatabaseHandler databaseConnectionHandler = DatabaseHandler.getInstance();
+        DatabaseHandler databaseConnectionHandlerSpy = Mockito.spy(databaseConnectionHandler);
+        Whitebox.setInternalState(DatabaseHandler.class, "INSTANCE", databaseConnectionHandlerSpy);
         Mockito.doReturn(false).when(databaseConnectionHandlerSpy).isInitializeConnectionPool(any());
     }
 
     @AfterAll
     static void destroy() {
-        Whitebox.setInternalState(DatabaseHandlerImpl.class, "INSTANCE", (DatabaseHandlerImpl) null);
+        Whitebox.setInternalState(DatabaseHandler.class, "INSTANCE", (DatabaseHandler) null);
     }
 
     @Test
@@ -53,7 +53,7 @@ public class DbH2ConnectionServiceTest {
                         .collect(Collectors.toList()));
         H2Database h2Database = new H2Database(new H2EmbeddedDatabaseConnection(
                 "file", "user", "password"), "schema");
-        assertEquals(h2Database, DatabaseHandlerImpl.getInstance().getDatabase(connection));
+        assertEquals(h2Database, DatabaseHandler.getInstance().getDatabase(connection));
     }
 
     @Test
@@ -71,7 +71,7 @@ public class DbH2ConnectionServiceTest {
                         .collect(Collectors.toList()));
         H2Database h2Database = new H2Database(new H2ServerDatabaseConnection(
                 "host", 1, "file", "user", "password"), "schema");
-        assertEquals(h2Database, DatabaseHandlerImpl.getInstance().getDatabase(connection));
+        assertEquals(h2Database, DatabaseHandler.getInstance().getDatabase(connection));
     }
 
     @Test
@@ -87,7 +87,7 @@ public class DbH2ConnectionServiceTest {
                         .collect(Collectors.toList()));
         H2Database h2Database = new H2Database(new H2MemoryDatabaseConnection(
                 "database", "user", "password"), "schema");
-        assertEquals(h2Database, DatabaseHandlerImpl.getInstance().getDatabase(connection));
+        assertEquals(h2Database, DatabaseHandler.getInstance().getDatabase(connection));
     }
 
     @Test
@@ -102,7 +102,7 @@ public class DbH2ConnectionServiceTest {
                         .collect(Collectors.toList()));
         H2Database h2Database = new H2Database(new H2DatabaseConnection(
                 "connectionURL", "user", "encrypted_password"), "schema");
-        assertEquals(h2Database, DatabaseHandlerImpl.getInstance().getDatabase(connection));
+        assertEquals(h2Database, DatabaseHandler.getInstance().getDatabase(connection));
     }
 
     @Test
@@ -115,7 +115,7 @@ public class DbH2ConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "schema"), "schema"),
                         new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "password"), "password"))
                         .collect(Collectors.toList()));
-        assertThrows(RuntimeException.class, () -> DatabaseHandlerImpl.getInstance().getDatabase(connection),
+        assertThrows(RuntimeException.class, () -> DatabaseHandler.getInstance().getDatabase(connection),
                 MessageFormat.format("Connection {0} does not contain mandatory parameter 'user'", connection));
     }
 
@@ -129,7 +129,7 @@ public class DbH2ConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "user"), "user"),
                         new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "password"), "password"))
                         .collect(Collectors.toList()));
-        assertThrows(RuntimeException.class, () -> DatabaseHandlerImpl.getInstance().getDatabase(connection),
+        assertThrows(RuntimeException.class, () -> DatabaseHandler.getInstance().getDatabase(connection),
                 MessageFormat.format("Connection {0} does not contain mandatory parameter 'user'", connection));
     }
 
@@ -143,7 +143,7 @@ public class DbH2ConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "user"), "user"),
                         new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "schema"), "schema"))
                         .collect(Collectors.toList()));
-        assertThrows(RuntimeException.class, () -> DatabaseHandlerImpl.getInstance().getDatabase(connection),
+        assertThrows(RuntimeException.class, () -> DatabaseHandler.getInstance().getDatabase(connection),
                 MessageFormat.format("Connection {0} does not contain mandatory parameter 'user'", connection));
     }
 }

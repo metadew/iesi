@@ -6,6 +6,18 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import io.metadew.iesi.common.configuration.metadata.repository.coordinator.mssql.MssqlMetadataRepositoryCoordinationDefinitionJsonComponent;
+import io.metadew.iesi.common.configuration.metadata.repository.coordinator.mssql.MssqlMetadataRepositoryCoordinatorDefinition;
+import io.metadew.iesi.common.configuration.metadata.repository.coordinator.h2.H2MetadataRepositoryCoordinationDefinitionJsonComponent;
+import io.metadew.iesi.common.configuration.metadata.repository.coordinator.h2.H2MetadataRepositoryCoordinatorDefinition;
+import io.metadew.iesi.common.configuration.metadata.repository.coordinator.netezza.NetezzaMetadataRepositoryCoordinationDefinitionJsonComponent;
+import io.metadew.iesi.common.configuration.metadata.repository.coordinator.netezza.NetezzaMetadataRepositoryCoordinatorDefinition;
+import io.metadew.iesi.common.configuration.metadata.repository.coordinator.oracle.OracleMetadataRepositoryCoordinationDefinitionJsonComponent;
+import io.metadew.iesi.common.configuration.metadata.repository.coordinator.oracle.OracleMetadataRepositoryCoordinatorDefinition;
+import io.metadew.iesi.common.configuration.metadata.repository.coordinator.postgresql.PostgresqlMetadataRepositoryCoordinationDefinitionJsonComponent;
+import io.metadew.iesi.common.configuration.metadata.repository.coordinator.postgresql.PostgresqlMetadataRepositoryCoordinatorDefinition;
+import io.metadew.iesi.common.configuration.metadata.repository.coordinator.sqlite.SQLiteMetadataRepositoryCoordinatorDefinition;
+import io.metadew.iesi.common.configuration.metadata.repository.coordinator.sqlite.SqliteMetadataRepositoryCoordinationDefinitionJsonComponent;
 
 import java.io.IOException;
 import java.text.MessageFormat;
@@ -21,7 +33,8 @@ public class MetadataRepositoryCoordinationDefinitionJsonComponent {
         CONNECTION_KEY("connection"),
         OWNER_KEY("owner"),
         READER_KEY("reader"),
-        WRITER_KEY("writer");
+        WRITER_KEY("writer"),
+        INIT_SQL("init_sql");
 
         private final String label;
 
@@ -34,45 +47,49 @@ public class MetadataRepositoryCoordinationDefinitionJsonComponent {
         }
     }
 
-    public static class Deserializer extends JsonDeserializer<RepositoryCoordinatorDefinition> {
+    public static class Deserializer extends JsonDeserializer<MetadataRepositoryCoordinatorDefinition> {
 
         @Override
-        public RepositoryCoordinatorDefinition deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
+        public MetadataRepositoryCoordinatorDefinition deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
             JsonNode node = jsonParser.getCodec().readTree(jsonParser);
             String type = node.get(Field.TYPE_KEY.value()).asText();
             if (type.equalsIgnoreCase(SqliteMetadataRepositoryCoordinationDefinitionJsonComponent.Field.TYPE.value())) {
-                return jsonParser.getCodec().treeToValue(node, SQLiteRepositoryCoordinatorDefinition.class);
+                return jsonParser.getCodec().treeToValue(node, SQLiteMetadataRepositoryCoordinatorDefinition.class);
             } else if (type.equalsIgnoreCase(PostgresqlMetadataRepositoryCoordinationDefinitionJsonComponent.Field.TYPE.value())) {
-                return jsonParser.getCodec().treeToValue(node, PostgresqlRepositoryCoordinatorDefinition.class);
+                return jsonParser.getCodec().treeToValue(node, PostgresqlMetadataRepositoryCoordinatorDefinition.class);
             } else if (type.equalsIgnoreCase(OracleMetadataRepositoryCoordinationDefinitionJsonComponent.Field.TYPE.value())) {
-                return jsonParser.getCodec().treeToValue(node, OracleRepositoryCoordinatorDefinition.class);
+                return jsonParser.getCodec().treeToValue(node, OracleMetadataRepositoryCoordinatorDefinition.class);
             } else if (type.equalsIgnoreCase(NetezzaMetadataRepositoryCoordinationDefinitionJsonComponent.Field.TYPE.value())) {
-                return jsonParser.getCodec().treeToValue(node, NetezzaRepositoryCoordinatorDefinition.class);
+                return jsonParser.getCodec().treeToValue(node, NetezzaMetadataRepositoryCoordinatorDefinition.class);
             } else if (type.equalsIgnoreCase(MssqlMetadataRepositoryCoordinationDefinitionJsonComponent.Field.TYPE.value())) {
-                return jsonParser.getCodec().treeToValue(node, MssqlRepositoryCoordinatorDefinition.class);
+                return jsonParser.getCodec().treeToValue(node, MssqlMetadataRepositoryCoordinatorDefinition.class);
             } else if (type.equalsIgnoreCase(H2MetadataRepositoryCoordinationDefinitionJsonComponent.Field.TYPE.value())) {
-                return jsonParser.getCodec().treeToValue(node, H2RepositoryCoordinatorDefinition.class);
+                return jsonParser.getCodec().treeToValue(node, H2MetadataRepositoryCoordinatorDefinition.class);
             } else {
                 throw JsonMappingException.from(jsonParser, MessageFormat.format("Cannot deserialize RepositoryCoordinatorDefinition object of type {0}", type));
             }
         }
     }
 
-    public static void setDefaultInformation(RepositoryCoordinatorDefinition repositoryCoordinatorDefinition, JsonNode jsonNode, JsonParser jsonParser) throws JsonProcessingException {
+    public static void setDefaultInformation(MetadataRepositoryCoordinatorDefinition metadataRepositoryCoordinatorDefinition, JsonNode jsonNode, JsonParser jsonParser) throws JsonProcessingException {
         // Mandatory
-        repositoryCoordinatorDefinition.setType(jsonNode.get(Field.TYPE_KEY.value()).asText());
+        metadataRepositoryCoordinatorDefinition.setType(jsonNode.get(Field.TYPE_KEY.value()).asText());
         // Optional
         if (jsonNode.hasNonNull(Field.CONNECTION_KEY.value())) {
-            repositoryCoordinatorDefinition.setConnection(jsonNode.get(Field.CONNECTION_KEY.value()).asText());
+            metadataRepositoryCoordinatorDefinition.setConnection(jsonNode.get(Field.CONNECTION_KEY.value()).asText());
         }
         if (jsonNode.hasNonNull(Field.OWNER_KEY.value())) {
-            repositoryCoordinatorDefinition.setOwner(jsonParser.getCodec().treeToValue(jsonNode.get(Field.OWNER_KEY.value()), RepositoryCoordinatorProfileDefinition.class));
+            metadataRepositoryCoordinatorDefinition.setOwner(jsonParser.getCodec().treeToValue(jsonNode.get(Field.OWNER_KEY.value()), MetadataRepositoryCoordinatorProfileDefinition.class));
         }
         if (jsonNode.hasNonNull(Field.WRITER_KEY.value())) {
-            repositoryCoordinatorDefinition.setWriter(jsonParser.getCodec().treeToValue(jsonNode.get(Field.WRITER_KEY.value()), RepositoryCoordinatorProfileDefinition.class));
+            metadataRepositoryCoordinatorDefinition.setWriter(jsonParser.getCodec().treeToValue(jsonNode.get(Field.WRITER_KEY.value()), MetadataRepositoryCoordinatorProfileDefinition.class));
         }
         if (jsonNode.hasNonNull(Field.READER_KEY.value())) {
-            repositoryCoordinatorDefinition.setReader(jsonParser.getCodec().treeToValue(jsonNode.get(Field.READER_KEY.value()), RepositoryCoordinatorProfileDefinition.class));
+            metadataRepositoryCoordinatorDefinition.setReader(jsonParser.getCodec().treeToValue(jsonNode.get(Field.READER_KEY.value()), MetadataRepositoryCoordinatorProfileDefinition.class));
+        }
+
+        if (jsonNode.hasNonNull(Field.INIT_SQL.value())) {
+            metadataRepositoryCoordinatorDefinition.setInitSql(jsonNode.get(Field.INIT_SQL.value()).asText());
         }
     }
 

@@ -5,10 +5,13 @@ import com.google.pubsub.v1.PushConfig;
 import com.google.pubsub.v1.ProjectSubscriptionName;
 import com.google.pubsub.v1.TopicName;
 
+import java.io.IOException;
+
 public class Subscription {
 
     private Topic topic;
     private String name;
+    private ProjectSubscriptionName subscriptionName;
 
     public Topic getTopic() {
         return topic;
@@ -26,39 +29,38 @@ public class Subscription {
         return name;
     }
 
+    public ProjectSubscriptionName getSubscriptionName() {
+        return subscriptionName;
+    }
+
+    public void setSubscriptionName(ProjectSubscriptionName subscriptionName) {
+        this.subscriptionName = subscriptionName;
+    }
+
     public Subscription(Topic topic, String name) {
         this.setName(name);
         this.setTopic(topic);
+        this.setSubscriptionName(ProjectSubscriptionName.of(this.getTopic().getProject(), this.getName()));
     }
 
-    public void create() {
-        TopicName topic = TopicName.of(this.getTopic().getProject(), this.getTopic().getName());
-        ProjectSubscriptionName subscription = ProjectSubscriptionName.of(this.getTopic().getProject(), this.getName());
+    public void create() throws IOException {
         try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
-            subscriptionAdminClient.createSubscription(subscription, topic, PushConfig.getDefaultInstance(), 20);
-        } catch (Exception e) {
-            throw new RuntimeException("Subscription creation failed for: " + this.getName());
+            subscriptionAdminClient.createSubscription(this.getSubscriptionName(), this.getTopic().getTopicName(), PushConfig.getDefaultInstance(), 0);
         }
     }
 
-    public void delete() {
-        TopicName topic = TopicName.of(this.getTopic().getProject(), this.getTopic().getName());
-        ProjectSubscriptionName subscription = ProjectSubscriptionName.of(this.getTopic().getProject(), this.getName());
+    public void delete() throws IOException {
         try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
-            subscriptionAdminClient.deleteSubscription(subscription);
-        } catch (Exception e) {
-            throw new RuntimeException("Subscription deletion failed for: " + this.getName());
+            subscriptionAdminClient.deleteSubscription(this.getSubscriptionName());
         }
     }
 
     public boolean exists() {
         boolean result = false;
-        TopicName topic = TopicName.of(this.getTopic().getProject(), this.getTopic().getName());
-        ProjectSubscriptionName subscription = ProjectSubscriptionName.of(this.getTopic().getProject(), this.getName());
         try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
-            subscriptionAdminClient.getSubscription(subscription);
+            subscriptionAdminClient.getSubscription(this.getSubscriptionName());
             result = true;
-        } catch (Exception e) {
+        } catch (Exception e) { 
             result = false;
         }
         return result;

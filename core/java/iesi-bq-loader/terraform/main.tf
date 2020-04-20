@@ -7,6 +7,12 @@ provider "google" {
 }
 
 module "pubsub" {
-source = "./pubsub"
-project=var.project
+  source = "./pubsub"
+  project=var.project
+}
+
+module "bigquery" {
+  source = "./bigquery"
+  project= var.project
+  location=""
 }

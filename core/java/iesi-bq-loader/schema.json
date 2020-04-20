@@ -1,0 +1,20 @@
+[
+  {
+    "description": "quarter",
+    "mode": "REQUIRED",
+    "name": "qtr",
+    "type": "STRING"
+  },
+  {
+    "description": "sales representative",
+    "mode": "NULLABLE",
+    "name": "rep",
+    "type": "STRING"
+  },
+  {
+    "description": "total sales",
+    "mode": "NULLABLE",
+    "name": "sales",
+    "type": "FLOAT"
+  }
+]

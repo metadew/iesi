@@ -18,6 +18,13 @@ The architecture is based on a publish/subscribe pattern where the Big Query Loa
 
 ## Deploying the solution
 
+### API
+
+Make sure that the following [Google Cloud Plaform APIs](https://cloud.google.com/apis/dashboard) are enabled for the project that you are deploying to:
+
+* [Cloud Pubsub API](https://cloud.google.com/apis/api/pubsub.googleapis.com/overview)
+* [BigQuery API](https://cloud.google.com/apis/api/bigquery.googleapis.com/overview)
+
 ### Credentials
 
 for terraform

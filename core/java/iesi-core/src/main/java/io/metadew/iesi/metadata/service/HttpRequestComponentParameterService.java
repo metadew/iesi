@@ -1,4 +1,4 @@
-package io.metadew.iesi.script.operation;
+package io.metadew.iesi.metadata.service;
 
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
@@ -13,36 +13,37 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Operation that manages the parameters for http requests that have been defined as components.
- *
- * @author peter.billen
- */
 public class HttpRequestComponentParameterService {
 
-    private ExecutionControl executionControl;
 
-    public HttpRequestComponentParameterService(ExecutionControl executionControl) {
-        this.executionControl = executionControl;
+    private static HttpRequestComponentParameterService INSTANCE;
+
+    public synchronized static HttpRequestComponentParameterService getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new HttpRequestComponentParameterService();
+        }
+        return INSTANCE;
     }
 
-    private DataType getParameterValue(String value, List<ComponentAttribute> componentAttributes, ActionExecution actionExecution)  {
+    private HttpRequestComponentParameterService() {
+    }
+
+    private DataType getParameterValue(String value, List<ComponentAttribute> componentAttributes, ActionExecution actionExecution, ExecutionControl executionControl)  {
         // Resolve attributes
         value = executionControl.getExecutionRuntime().resolveComponentTypeVariables(value, componentAttributes, executionControl.getEnvName());
         // Resolve concept lookups
         // TODO: newly added variable resolvement, should be
         value = executionControl.getExecutionRuntime().resolveVariables(actionExecution, value);
-        value = this.getExecutionControl().getExecutionRuntime().resolveConceptLookup(
-                value).getValue();
+        value = executionControl.getExecutionRuntime().resolveConceptLookup(value).getValue();
         value = executionControl.getExecutionRuntime().resolveVariables(actionExecution, value);
         // Resolve internal encryption
         value = FrameworkCrypto.getInstance().resolve(value);
         return DataTypeHandler.getInstance().resolve(value, executionControl.getExecutionRuntime());
     }
 
-    public DataType getParameterValue(ComponentParameter componentParameter, List<ComponentAttribute> componentAttributes, ActionExecution actionExecution)  {
+    public DataType getParameterValue(ComponentParameter componentParameter, List<ComponentAttribute> componentAttributes, ActionExecution actionExecution, ExecutionControl executionControl)  {
         executionControl.logMessage("component.param " + componentParameter.getMetadataKey().getParameterName() + ": " + componentParameter.getValue(), Level.DEBUG);
-        return getParameterValue(componentParameter.getValue(), componentAttributes, actionExecution);
+        return getParameterValue(componentParameter.getValue(), componentAttributes, actionExecution, executionControl);
     }
 
     public boolean isHeader(ComponentParameter componentParameter) {
@@ -53,30 +54,26 @@ public class HttpRequestComponentParameterService {
         return componentParameter.getMetadataKey().getParameterName().startsWith("queryparam");
     }
 
-    public Map<String, DataType> getHeader(ComponentParameter componentParameter, List<ComponentAttribute> componentAttributes, ActionExecution actionExecution)  {
+    public Map<String, DataType> getHeader(ComponentParameter componentParameter, List<ComponentAttribute> componentAttributes, ActionExecution actionExecution, ExecutionControl executionControl)  {
         Map<String, DataType> header = new HashMap<>();
         if (isHeader(componentParameter)) {
             header.put(componentParameter.getValue().split(",", 2)[0],
-                    getParameterValue(componentParameter.getValue().split(",", 2)[1], componentAttributes, actionExecution));
+                    getParameterValue(componentParameter.getValue().split(",", 2)[1], componentAttributes, actionExecution, executionControl));
             return header;
         } else {
             throw new RuntimeException();
         }
     }
 
-    public Map<String, DataType> getQueryParameter(ComponentParameter componentParameter, List<ComponentAttribute> componentAttributes, ActionExecution actionExecution)  {
+    public Map<String, DataType> getQueryParameter(ComponentParameter componentParameter, List<ComponentAttribute> componentAttributes, ActionExecution actionExecution, ExecutionControl executionControl)  {
         Map<String, DataType> header = new HashMap<>();
         if (isQueryParameter(componentParameter)) {
             header.put(componentParameter.getValue().split(",", 2)[0],
-                    getParameterValue(componentParameter.getValue().split(",", 2)[1], componentAttributes, actionExecution));
+                    getParameterValue(componentParameter.getValue().split(",", 2)[1], componentAttributes, actionExecution, executionControl));
             return header;
         } else {
             throw new RuntimeException();
         }
-    }
-
-    public ExecutionControl getExecutionControl() {
-        return executionControl;
     }
 
 }

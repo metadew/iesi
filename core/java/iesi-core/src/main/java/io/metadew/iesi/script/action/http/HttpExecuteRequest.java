@@ -18,11 +18,11 @@ import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistExce
 import io.metadew.iesi.metadata.definition.HttpRequestComponent;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
+import io.metadew.iesi.metadata.service.HttpRequestComponentService;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
-import io.metadew.iesi.script.operation.HttpRequestComponentService;
 import org.apache.http.entity.ContentType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -43,7 +43,6 @@ public class HttpExecuteRequest {
 
     private static Logger LOGGER = LogManager.getLogger();
 
-    private HttpRequestComponentService httpRequestComponentService;
     private ActionExecution actionExecution;
     private ExecutionControl executionControl;
     // Parameters
@@ -82,7 +81,6 @@ public class HttpExecuteRequest {
         this.executionControl = executionControl;
         this.actionExecution = actionExecution;
         this.actionParameterOperationMap = new HashMap<>();
-        this.httpRequestComponentService = new HttpRequestComponentService(executionControl);
     }
 
     public void prepare() throws URISyntaxException, HttpRequestBuilderException, IOException, MetadataDoesNotExistException {
@@ -123,7 +121,8 @@ public class HttpExecuteRequest {
         actionParameterOperationMap.put(expectedStatusCodesKey, expectedStatusCodesActionParameterOperation);
         actionParameterOperationMap.put(proxyKey, proxyActionParameterOperation);
 
-        HttpRequestComponent httpRequestComponent = httpRequestComponentService.getHttpRequestComponent(convertHttpRequestName(requestNameActionParameterOperation.getValue()), actionExecution);
+        HttpRequestComponent httpRequestComponent = HttpRequestComponentService.getInstance()
+                .getHttpRequestComponent(convertHttpRequestName(requestNameActionParameterOperation.getValue()), actionExecution, executionControl);
         HttpRequestBuilder httpRequestBuilder = new HttpRequestBuilder()
                 .type(convertHttpRequestType(requestTypeActionParameterOperation.getValue()))
                 .uri(httpRequestComponent.getUri())
@@ -326,69 +325,6 @@ public class HttpExecuteRequest {
             actionExecution.getActionControl().increaseErrorCount();
         }
     }
-
-//    private void writeResponseToOutputDataset(HttpResponse httpResponse) {
-//        List<Header> contentTypeHeaders = httpResponse.getHeaders().stream()
-//                .filter(header -> header.getName().equals(HttpHeaders.CONTENT_TYPE))
-//                .collect(Collectors.toList());
-//        if (contentTypeHeaders.size() > 1) {
-//            actionExecution.getActionControl().logWarning("content-type",
-//                    MessageFormat.format("Http response contains multiple headers ({0}) defining the content type", contentTypeHeaders.size()));
-//        } else if (contentTypeHeaders.size() == 0) {
-//            actionExecution.getActionControl().logWarning("content-type", "Http response contains no header defining the content type. Assuming text/plain");
-//            writeTextPlainResponseToOutputDataset(httpResponse);
-//        }
-//
-//        if (contentTypeHeaders.stream().anyMatch(header -> header.getValue().contains(ContentType.APPLICATION_JSON.getMimeType()))) {
-//            writeJSONResponseToOutputDataset(httpResponse);
-//        } else if (contentTypeHeaders.stream().anyMatch(header -> header.getValue().contains(ContentType.TEXT_PLAIN.getMimeType()))) {
-//            writeTextPlainResponseToOutputDataset(httpResponse);
-//        } else {
-//            actionExecution.getActionControl().logWarning("content-type", "Http response contains unsupported content-type header. Response will be written to dataset as plain text.");
-//            writeTextPlainResponseToOutputDataset(httpResponse);
-//        }
-//    }
-//
-//    private void writeTextPlainResponseToOutputDataset(HttpResponse httpResponse) {
-//        getOutputDataset().ifPresent(dataset -> {
-//            DatasetHandler.getInstance().clean(dataset, executionControl.getExecutionRuntime());
-//            DatasetHandler.getInstance().setDataItem(dataset, "response", new Text(httpResponse.getEntityString().orElse("")));
-//        });
-//        getRawOutputDataset().ifPresent(dataset -> {
-//            DatasetHandler.getInstance().clean(dataset, executionControl.getExecutionRuntime());
-//            DatasetHandler.getInstance().setDataItem(dataset, "response", new Text(httpResponse.getEntityString().orElse("")));
-//        });
-//    }
-//
-//    private void writeJSONResponseToOutputDataset(HttpResponse httpResponse) {
-//        if (httpResponse.getEntityString().isPresent()) {
-//            try {
-//                JsonNode jsonNode = new ObjectMapper().readTree(httpResponse.getEntityString().get());
-//                //setRuntimeVariable(jsonNode, setRuntimeVariables);
-//                getOutputDataset().ifPresent(dataset -> {
-//                    DatasetHandler.getInstance().clean(dataset, executionControl.getExecutionRuntime());
-//                    KeyValueDatasetService.getInstance().writeRawJSON(dataset, jsonNode);
-//                });
-//                getRawOutputDataset().ifPresent(dataset -> {
-//                    DatasetHandler.getInstance().clean(dataset, executionControl.getExecutionRuntime());
-//                    try {
-//                        KeyValueDatasetService.getInstance().write(dataset, jsonNode, executionControl.getExecutionRuntime());
-//                    } catch (IOException e) {
-//                        StringWriter StackTrace = new StringWriter();
-//                        e.printStackTrace(new PrintWriter(StackTrace));
-//                        actionExecution.getActionControl().logOutput("json.exception", e.getMessage());
-//                        actionExecution.getActionControl().logOutput("json.stacktrace", StackTrace.toString());
-//                    }
-//                });
-//            } catch (IOException e) {
-//                StringWriter StackTrace = new StringWriter();
-//                e.printStackTrace(new PrintWriter(StackTrace));
-//                actionExecution.getActionControl().logOutput("json.exception", e.getMessage());
-//                actionExecution.getActionControl().logOutput("json.stacktrace", StackTrace.toString());
-//            }
-//        }
-//    }
-
 
     private void setRuntimeVariable(JsonNode jsonNode, String keyPrefix) {
         if (setRuntimeVariables) {

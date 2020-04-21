@@ -10,7 +10,6 @@ import lombok.Synchronized;
 import lombok.extern.log4j.Log4j2;
 
 import javax.sql.rowset.CachedRowSet;
-import java.io.File;
 import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.List;
@@ -29,13 +28,19 @@ public class DatasetMetadataService {
         }
         return INSTANCE;
     }
-    
-    private DatasetMetadataService() {}
+
+    private DatasetMetadataService() {
+    }
 
     public DatasetMetadata getByName(String datasetName) {
         return new DatasetMetadata(datasetName, new SqliteDatabase(new SqliteDatabaseConnection(
-                FrameworkConfiguration.getInstance().getMandatoryFrameworkFolder("data").getAbsolutePath() + File.separator + "datasets"
-                + File.separator + datasetName + File.separator + "metadata" + File.separator + "metadata.db3")));
+                FrameworkConfiguration.getInstance()
+                        .getMandatoryFrameworkFolder("data")
+                        .getAbsolutePath()
+                        .resolve("datasets")
+                        .resolve(datasetName)
+                        .resolve("metadata")
+                        .resolve("metadata.db3"))));
     }
 
 
@@ -74,8 +79,12 @@ public class DatasetMetadataService {
                         "Returning first occurrence.", id));
             }
             cachedRowSetFileTable.next();
-            Database database = new SqliteDatabase(new SqliteDatabaseConnection(FrameworkConfiguration.getInstance().getMandatoryFrameworkFolder("data").getAbsolutePath() + File.separator + "datasets"
-                    + File.separator + datasetMetadata.getDatasetName() + File.separator + "data" + File.separator + cachedRowSetFileTable.getString("DATASET_FILE_NM")));
+            Database database = new SqliteDatabase(new SqliteDatabaseConnection(FrameworkConfiguration.getInstance()
+                    .getMandatoryFrameworkFolder("data")
+                    .getAbsolutePath().resolve("datasets")
+                    .resolve(datasetMetadata.getDatasetName())
+                    .resolve("data")
+                    .resolve(cachedRowSetFileTable.getString("DATASET_FILE_NM"))));
             cachedRowSetFileTable.close();
             return database;
         } catch (SQLException e) {

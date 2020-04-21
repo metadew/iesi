@@ -32,6 +32,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.nio.file.Path;
 import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.*;
@@ -95,9 +96,12 @@ public class KeyValueDatasetService extends DatasetService<KeyValueDataset> impl
         DatasetMetadataService.getInstance().insertDatasetLabelInformation(datasetMetadata, nextInventoryId, labels);
 
         log.debug(MessageFormat.format("creating dataset {0} for {1} at {2} table {3}", nextInventoryId, name, datasetFilename, tableName));
-        String filepath = FrameworkConfiguration.getInstance().getMandatoryFrameworkFolder(tableName).getAbsolutePath() + File.separator + "datasets"
-                + File.separator + name + File.separator + tableName + File.separator + datasetFilename;
-        File file = new File(filepath);
+        Path filepath = FrameworkConfiguration.getInstance().getMandatoryFrameworkFolder(tableName).getAbsolutePath()
+                .resolve("datasets")
+                .resolve(name)
+                .resolve(tableName)
+                .resolve(datasetFilename);
+        File file = filepath.toFile();
         file.setWritable(true, true);
         try {
             FileUtils.touch(file);
@@ -105,7 +109,7 @@ public class KeyValueDatasetService extends DatasetService<KeyValueDataset> impl
             throw new RuntimeException(e);
         }
         DatasetMetadataService.getInstance().insertDatasetDatabaseInformation(datasetMetadata, nextInventoryId, datasetFilename, tableName);
-        Database database = new SqliteDatabase(new SqliteDatabaseConnection(filepath));
+        Database database = new SqliteDatabase(new SqliteDatabaseConnection(filepath.toString()));
         DatabaseHandler.getInstance().createTable(database, metadataTable);
         // String create = "CREATE TABLE " + SQLTools.GetStringForSQLTable(tableName) + " (key TEXT, value TEXT)";
         // DatabaseHandlerImpl.getInstance().executeUpdate(database, create);

@@ -9,6 +9,7 @@ import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.commons.cli.*;
 import org.apache.logging.log4j.ThreadContext;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.text.MessageFormat;
@@ -17,7 +18,7 @@ import java.util.List;
 
 public class MetadataLauncher {
 
-    public static void main(String[] args) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, ParseException, SQLException {
+    public static void main(String[] args) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, ParseException, SQLException, IOException {
         ThreadContext.clearAll();
 
         Options options = new Options().addOption(new Option("help", "print this message"))

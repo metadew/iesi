@@ -5,6 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -15,8 +18,10 @@ public class FrameworkFolder {
     private String description;
     private String permissions;
 
-    public String getAbsolutePath() {
-        return Configuration.getInstance().getMandatoryProperty("iesi.home") + path;
+    public Path getAbsolutePath() {
+        return Paths.get((String) Configuration.getInstance()
+                .getMandatoryProperty("iesi.home"))
+                .resolve(path);
     }
 
 }

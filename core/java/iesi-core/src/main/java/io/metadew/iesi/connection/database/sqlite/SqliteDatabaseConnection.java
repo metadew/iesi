@@ -2,6 +2,7 @@ package io.metadew.iesi.connection.database.sqlite;
 
 import io.metadew.iesi.connection.database.connection.DatabaseConnection;
 
+import java.nio.file.Path;
 import java.util.regex.Pattern;
 
 /**
@@ -22,6 +23,10 @@ public class SqliteDatabaseConnection extends DatabaseConnection {
 
     public SqliteDatabaseConnection(String fileName) {
         this(getConnectionUrl(fileName), "", "");
+    }
+
+    public SqliteDatabaseConnection(Path fileName) {
+        this(getConnectionUrl(fileName.toString()), "", "");
     }
 
     public static String getConnectionUrl(String fileName) {

@@ -1,7 +1,8 @@
-package io.metadew.iesi.script.operation;
+package io.metadew.iesi.metadata.service;
 
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.metadata.configuration.component.ComponentConfiguration;
+import io.metadew.iesi.metadata.configuration.script.design.ScriptVersionDesignTraceConfiguration;
 import io.metadew.iesi.metadata.definition.HttpRequestComponent;
 import io.metadew.iesi.metadata.definition.component.Component;
 import io.metadew.iesi.metadata.definition.component.key.ComponentKey;
@@ -13,29 +14,28 @@ import java.text.MessageFormat;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-/**
- * Operation that manages http requests that have been defined as components.
- *
- * @author peter.billen
- */
 public class HttpRequestComponentService {
 
-    private HttpRequestComponentParameterService httpRequestComponentParameterService;
-    private ExecutionControl executionControl;
+    private static HttpRequestComponentService INSTANCE;
 
-    public HttpRequestComponentService(ExecutionControl executionControl) {
-        this.executionControl = executionControl;
-        this.httpRequestComponentParameterService = new HttpRequestComponentParameterService(executionControl);
+    public synchronized static HttpRequestComponentService getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new HttpRequestComponentService();
+        }
+        return INSTANCE;
     }
 
-    public HttpRequestComponent getHttpRequestComponent(String requestComponentName, ActionExecution actionExecution) {
+    private HttpRequestComponentService() {
+    }
+
+    public HttpRequestComponent getHttpRequestComponent(String requestComponentName, ActionExecution actionExecution, ExecutionControl executionControl) {
         Component request = ComponentConfiguration.getInstance().get(IdentifierTools.getComponentIdentifier(requestComponentName))
                 .orElseThrow(() -> new RuntimeException(MessageFormat.format("component.notfound=no component exists with name {0}.", requestComponentName)));
-        return transform(request, actionExecution);
+        return transform(request, actionExecution, executionControl);
 
     }
 
-    private HttpRequestComponent transform(Component request, ActionExecution actionExecution) {
+    private HttpRequestComponent transform(Component request, ActionExecution actionExecution, ExecutionControl executionControl) {
         if (!request.getType().equalsIgnoreCase("http.request")) {
             throw new RuntimeException(MessageFormat.format("Component ''http.request'' not of type 'http.request' but type {0}", request.getType()));
         }
@@ -43,18 +43,18 @@ public class HttpRequestComponentService {
         DataType uri = request.getParameters().stream()
                 .filter(componentParameter -> componentParameter.getMetadataKey().getParameterName().equalsIgnoreCase("url"))
                 .findFirst()
-                .map(componentParameter -> httpRequestComponentParameterService.getParameterValue(componentParameter, request.getAttributes(), actionExecution))
+                .map(componentParameter -> HttpRequestComponentParameterService.getInstance().getParameterValue(componentParameter, request.getAttributes(), actionExecution, executionControl))
                 .orElseThrow(() -> new RuntimeException("No url defined in http request"));
 
         Map<String, DataType> headers = request.getParameters().stream()
                 .filter(componentParameter -> componentParameter.getMetadataKey().getParameterName().startsWith("header"))
-                .map(componentParameter -> httpRequestComponentParameterService.getHeader(componentParameter, request.getAttributes(), actionExecution))
+                .map(componentParameter -> HttpRequestComponentParameterService.getInstance().getHeader(componentParameter, request.getAttributes(), actionExecution, executionControl))
                 .flatMap(m->m.entrySet().stream())
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
         Map<String, DataType> queryParameters = request.getParameters().stream()
                 .filter(componentParameter -> componentParameter.getMetadataKey().getParameterName().startsWith("queryparam"))
-                .map(componentParameter -> httpRequestComponentParameterService.getQueryParameter(componentParameter, request.getAttributes(), actionExecution))
+                .map(componentParameter -> HttpRequestComponentParameterService.getInstance().getQueryParameter(componentParameter, request.getAttributes(), actionExecution, executionControl))
                 .flatMap(m->m.entrySet().stream())
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
@@ -62,10 +62,10 @@ public class HttpRequestComponentService {
     }
 
 
-    public HttpRequestComponent getHttpRequestComponent(String requestComponentName, Long requestComponentVersion, ActionExecution actionExecution) {
+    public HttpRequestComponent getHttpRequestComponent(String requestComponentName, Long requestComponentVersion, ActionExecution actionExecution, ExecutionControl executionControl) {
         Component request = ComponentConfiguration.getInstance().get(new ComponentKey(requestComponentName, requestComponentVersion))
                 .orElseThrow(() -> new RuntimeException(MessageFormat.format("component.notfound=no component exists with name {0}.", requestComponentName)));
-        return transform(request, actionExecution);
+        return transform(request, actionExecution, executionControl);
     }
 
 }

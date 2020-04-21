@@ -80,6 +80,7 @@ public class ActionParameterOperation {
         // TODO: list resolvement to a data type
         // Keep input value with orginal entry
         this.inputValue = inputValue;
+        executionControl.logMessage("action.param=" + name + ":" + inputValue, Level.DEBUG);
 
         // Start manipulation with lookups
         // Look up inside action perimeter
@@ -92,12 +93,11 @@ public class ActionParameterOperation {
         value = new Text(inputValue);
 
         resolvedInputValue = lookupSubroutine(resolvedInputValue);
-        executionControl.logMessage("action.param=" + name + ":" + resolvedInputValue, Level.DEBUG);
         resolvedInputValue = executionControl.getExecutionRuntime().resolveConceptLookup(resolvedInputValue).getValue();
 
         // perform lookup again after cross concept lookup
         resolvedInputValue = executionControl.getExecutionRuntime().resolveVariables(actionExecution, resolvedInputValue);
-
+        executionControl.logMessage("action.param.resolved=" + name + ":" + resolvedInputValue, Level.DEBUG);
         String decryptedInputValue = FrameworkCrypto.getInstance().resolve(resolvedInputValue);
 
         // Impersonate
@@ -112,7 +112,7 @@ public class ActionParameterOperation {
         }
 
         // Resolve to data type
-        value = DataTypeHandler.getInstance().resolve(resolvedInputValue, executionRuntime);
+        value = DataTypeHandler.getInstance().resolve(decryptedInputValue, executionRuntime);
     }
 
 }

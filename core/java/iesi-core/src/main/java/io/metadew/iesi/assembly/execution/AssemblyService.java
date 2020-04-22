@@ -41,7 +41,7 @@ public class AssemblyService {
         loadLicenses(versionHomePath);
         loadMavenDependencies(versionHomePath);
         loadRestLicenses(versionHomePath);
-        loadRestDependencies(versionHomePath);
+        //loadRestDependencies(versionHomePath);
         loadAssets(versionHomePath);
     }
 

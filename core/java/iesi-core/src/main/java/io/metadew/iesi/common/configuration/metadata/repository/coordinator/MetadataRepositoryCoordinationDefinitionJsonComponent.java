@@ -10,6 +10,9 @@ import io.metadew.iesi.common.configuration.metadata.repository.coordinator.mssq
 import io.metadew.iesi.common.configuration.metadata.repository.coordinator.mssql.MssqlMetadataRepositoryCoordinatorDefinition;
 import io.metadew.iesi.common.configuration.metadata.repository.coordinator.h2.H2MetadataRepositoryCoordinationDefinitionJsonComponent;
 import io.metadew.iesi.common.configuration.metadata.repository.coordinator.h2.H2MetadataRepositoryCoordinatorDefinition;
+import io.metadew.iesi.common.configuration.metadata.repository.coordinator.mysql.MysqlMetadataRepositoryCoordinationDefinitionJsonComponent;
+import io.metadew.iesi.common.configuration.metadata.repository.coordinator.mysql.MysqlMetadataRepositoryCoordinatorDefinition;
+import io.metadew.iesi.common.configuration.metadata.repository.coordinator.mysql.MysqlMetadataRepositoryCoordinatorService;
 import io.metadew.iesi.common.configuration.metadata.repository.coordinator.netezza.NetezzaMetadataRepositoryCoordinationDefinitionJsonComponent;
 import io.metadew.iesi.common.configuration.metadata.repository.coordinator.netezza.NetezzaMetadataRepositoryCoordinatorDefinition;
 import io.metadew.iesi.common.configuration.metadata.repository.coordinator.oracle.OracleMetadataRepositoryCoordinationDefinitionJsonComponent;
@@ -65,6 +68,8 @@ public class MetadataRepositoryCoordinationDefinitionJsonComponent {
                 return jsonParser.getCodec().treeToValue(node, MssqlMetadataRepositoryCoordinatorDefinition.class);
             } else if (type.equalsIgnoreCase(H2MetadataRepositoryCoordinationDefinitionJsonComponent.Field.TYPE.value())) {
                 return jsonParser.getCodec().treeToValue(node, H2MetadataRepositoryCoordinatorDefinition.class);
+            } else if (type.equalsIgnoreCase(MysqlMetadataRepositoryCoordinationDefinitionJsonComponent.Field.TYPE.value())) {
+                return jsonParser.getCodec().treeToValue(node, MysqlMetadataRepositoryCoordinatorDefinition.class);
             } else {
                 throw JsonMappingException.from(jsonParser, MessageFormat.format("Cannot deserialize RepositoryCoordinatorDefinition object of type {0}", type));
             }

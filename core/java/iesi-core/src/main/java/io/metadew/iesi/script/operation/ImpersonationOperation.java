@@ -1,16 +1,9 @@
 package io.metadew.iesi.script.operation;
 
-import io.metadew.iesi.metadata.configuration.impersonation.ImpersonationConfiguration;
-import io.metadew.iesi.metadata.definition.impersonation.Impersonation;
-import io.metadew.iesi.metadata.definition.impersonation.ImpersonationParameter;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Optional;
 
 /**
  * Operation to manage impersonations of connection during script execution.
@@ -20,36 +13,10 @@ import java.util.Optional;
 public class ImpersonationOperation {
 
     private HashMap<String, String> impersonationMap;
-    private static final Logger LOGGER = LogManager.getLogger();
 
     // Constructors
     public ImpersonationOperation() {
         impersonationMap = new HashMap<String, String>();
-    }
-
-    // Methods
-    public void setImpersonation(String impersonationName) {
-        if (!impersonationName.trim().equalsIgnoreCase("")) {
-            ImpersonationConfiguration impersonationConfiguration = ImpersonationConfiguration.getInstance();
-            Optional<Impersonation> impersonation = impersonationConfiguration.getImpersonation(impersonationName);
-
-
-            if (!impersonation.isPresent()) {
-                LOGGER.info("impersonation.notfound=" + impersonationName);
-            } else {
-                if (impersonation.get().getParameters() == null) {
-                    LOGGER.info("impersonation.conn.notfound=" + impersonationName);
-                } else {
-                    for (ImpersonationParameter impersonationParameter : impersonation.get().getParameters()) {
-                        this.setImpersonation(impersonationParameter.getConnection(), impersonationParameter.getImpersonatedConnection());
-                    }
-                }
-            }
-        }
-    }
-
-    public void setImpersonationCustom(String impersonationCustom) {
-        this.loadCustomInput(impersonationCustom);
     }
 
     public void loadCustomInput(String input) {

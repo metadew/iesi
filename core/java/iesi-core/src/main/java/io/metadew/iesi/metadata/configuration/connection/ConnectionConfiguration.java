@@ -159,10 +159,9 @@ public class ConnectionConfiguration extends Configuration<Connection, Connectio
 
     public List<Connection> getByName(String connectionName) {
         List<Connection> connections = new ArrayList<>();
-        CachedRowSet crsConnection;
         String queryConnection = "select CONN_NM, CONN_TYP_NM, CONN_DSC from " + getMetadataRepository().getTableNameByLabel("Connections")
                 + " where CONN_NM = " + SQLTools.GetStringForSQL(connectionName) + ";";
-        crsConnection = getMetadataRepository().executeQuery(queryConnection, "reader");
+        CachedRowSet crsConnection = getMetadataRepository().executeQuery(queryConnection, "reader");
 
         try {
             crsConnection.next();
@@ -182,10 +181,7 @@ public class ConnectionConfiguration extends Configuration<Connection, Connectio
                         .ifPresent(connections::add);
             }
         } catch (SQLException e) {
-            StringWriter stackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(stackTrace));
-            LOGGER.warn("exeption=" + e.getMessage());
-            LOGGER.info("exception.stacktrace=" + stackTrace.toString());
+            throw new RuntimeException(e);
         }
         return connections;
     }
@@ -252,6 +248,6 @@ public class ConnectionConfiguration extends Configuration<Connection, Connectio
         getMetadataRepository().executeUpdate("UPDATE " + getMetadataRepository().getTableNameByLabel("Connections") +
                 " SET CONN_TYP_NM = " + SQLTools.GetStringForSQL(connection.getType()) +
                 " , CONN_DSC = " + SQLTools.GetStringForSQL(connection.getDescription()) +
-                " WHERE CONN_NM = " + SQLTools.GetStringForSQL(connection.getName()) + ";");
+                " WHERE CONN_NM = " + SQLTools.GetStringForSQL(connection.getMetadataKey().getName()) + ";");
     }
 }

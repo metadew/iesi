@@ -1,45 +1,27 @@
 package io.metadew.iesi.server.rest.resource.script.dto;
 
 import io.metadew.iesi.metadata.definition.script.ScriptVersion;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import org.springframework.hateoas.RepresentationModel;
 
+@Data
+@EqualsAndHashCode(callSuper = false)
+@AllArgsConstructor
+@NoArgsConstructor
 public class ScriptVersionDto extends RepresentationModel<ScriptVersionDto> {
 
     private long number;
     private String description;
 
-    public ScriptVersionDto() {}
-
-
-    public ScriptVersionDto(long number, String description) {
-        super();
-        this.number = number;
-        this.description = description;
-    }
-
-    public ScriptVersion convertToEntity() {
-        //TODO: Why is script id passed
-        return new ScriptVersion(
-                null, number, description);
+    public ScriptVersion convertToEntity(String scriptId) {
+        return new ScriptVersion(scriptId, number, description);
     }
 
     public static ScriptVersionDto convertToDto(ScriptVersion scriptVersion) {
         return new ScriptVersionDto(scriptVersion.getNumber(), scriptVersion.getDescription());
     }
 
-    public long getNumber() {
-        return number;
-    }
-
-    public void setNumber(long number) {
-        this.number = number;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
 }

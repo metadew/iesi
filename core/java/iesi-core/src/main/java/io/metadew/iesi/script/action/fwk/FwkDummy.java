@@ -57,7 +57,7 @@ public class FwkDummy {
     }
 
     private boolean executeOperation() throws InterruptedException {
-        this.getExecutionControl().logMessage(this.getActionExecution(), "Not doing anything", Level.TRACE);
+        this.getExecutionControl().logMessage("Not doing anything", Level.TRACE);
         this.getActionExecution().getActionControl().increaseSuccessCount();
         return true;
     }

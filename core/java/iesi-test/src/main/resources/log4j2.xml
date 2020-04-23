@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="WARN">
     <Appenders>
-        <File fileName="${ctx:location}/${ctx:fwk.code}.log" name="default" append="true">
+        <File fileName="${ctx:location}/iesi.log" name="default" append="true">
             <PatternLayout>
                 <Pattern>%d %-5p [%c{1.}] - %m%n</Pattern>
             </PatternLayout>
@@ -27,7 +27,7 @@
         <Routing name="scriptExecution">
             <Routes pattern="$${ctx:runId}">
                 <Route key="${ctx:runId}">
-                    <File fileName="${ctx:location}/${ctx:fwk.code}.log" name="script" append="true">
+                    <File fileName="${ctx:location}/iesi.log" name="script" append="true">
                         <PatternLayout>
                             <Pattern>%d %-5p [%c{1.}] - %m%n</Pattern>
                         </PatternLayout>
@@ -45,7 +45,7 @@
         <Routing name="repository">
             <Routes pattern="$${ctx:runId}">
                 <Route key="${ctx:runId}">
-                    <File fileName="${ctx:location}/${ctx:fwk.code}.log" name="repository" append="true">
+                    <File fileName="${ctx:location}/iesi.log" name="repository" append="true">
                         <PatternLayout>
                             <Pattern>%d %-5p [%c{1.}] - %m%n</Pattern>
                         </PatternLayout>

@@ -70,9 +70,8 @@ public class ComponentAttributeConfiguration extends Configuration<ComponentAttr
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
             while (cachedRowSet.next()) {
                 ComponentAttributeKey componentAttributeKey = new ComponentAttributeKey(
-                        cachedRowSet.getString("COMP_ID"),
-                        cachedRowSet.getLong("COMP_VRS_NB"),
-                        cachedRowSet.getString("ENV_NM"),
+                        new ComponentKey(cachedRowSet.getString("COMP_ID"), cachedRowSet.getLong("COMP_VRS_NB")),
+                        new EnvironmentKey(cachedRowSet.getString("ENV_NM")),
                         cachedRowSet.getString("COMP_ATT_NM"));
                 componentBuilds.add(new ComponentAttribute(
                         componentAttributeKey,
@@ -132,9 +131,8 @@ public class ComponentAttributeConfiguration extends Configuration<ComponentAttr
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
             while (cachedRowSet.next()) {
                 ComponentAttributeKey componentAttributeKey = new ComponentAttributeKey(
-                        cachedRowSet.getString("COMP_ID"),
-                        cachedRowSet.getLong("COMP_VRS_NB"),
-                        cachedRowSet.getString("ENV_NM"),
+                        new ComponentKey(cachedRowSet.getString("COMP_ID"), cachedRowSet.getLong("COMP_VRS_NB")),
+                        new EnvironmentKey(cachedRowSet.getString("ENV_NM")),
                         cachedRowSet.getString("COMP_ATT_NM"));
                 componentBuilds.add(new ComponentAttribute(
                         componentAttributeKey,
@@ -156,9 +154,8 @@ public class ComponentAttributeConfiguration extends Configuration<ComponentAttr
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
             while (cachedRowSet.next()) {
                 ComponentAttributeKey componentAttributeKey = new ComponentAttributeKey(
-                        cachedRowSet.getString("COMP_ID"),
-                        cachedRowSet.getLong("COMP_VRS_NB"),
-                        cachedRowSet.getString("ENV_NM"),
+                        new ComponentKey(cachedRowSet.getString("COMP_ID"), cachedRowSet.getLong("COMP_VRS_NB")),
+                        new EnvironmentKey(cachedRowSet.getString("ENV_NM")),
                         cachedRowSet.getString("COMP_ATT_NM"));
                 componentBuilds.add(new ComponentAttribute(
                         componentAttributeKey,
@@ -184,11 +181,11 @@ public class ComponentAttributeConfiguration extends Configuration<ComponentAttr
     }
 
     public void deleteByComponentAndEnvironment(ComponentKey componentKey, EnvironmentKey environmentKey) {
-            String query = "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ComponentAttributes") +
-                    " WHERE COMP_ID = " + SQLTools.GetStringForSQL(componentKey.getId()) +
-                    " AND COMP_VRS_NB = " + SQLTools.GetStringForSQL(componentKey.getVersionNumber()) +
-                    " AND ENV_NM = " + SQLTools.GetStringForSQL(environmentKey.getName()) + ";";
-            getMetadataRepository().executeUpdate(query);
+        String query = "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ComponentAttributes") +
+                " WHERE COMP_ID = " + SQLTools.GetStringForSQL(componentKey.getId()) +
+                " AND COMP_VRS_NB = " + SQLTools.GetStringForSQL(componentKey.getVersionNumber()) +
+                " AND ENV_NM = " + SQLTools.GetStringForSQL(environmentKey.getName()) + ";";
+        getMetadataRepository().executeUpdate(query);
     }
 
     public void deleteAll() {

@@ -158,7 +158,7 @@ public class CliExecuteCommand {
 
         if (isOnLocalhost) {
             shellCommandResult = hostConnection.executeLocalCommand(shellPath,
-                    shellCommand, shellCommandSettings);
+                    shellCommand);
         } else {
             shellCommandResult = hostConnection.executeRemoteCommand(shellPath,
                     shellCommand, shellCommandSettings);

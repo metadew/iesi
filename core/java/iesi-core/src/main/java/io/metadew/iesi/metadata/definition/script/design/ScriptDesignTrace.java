@@ -21,7 +21,7 @@ public class ScriptDesignTrace extends Metadata<ScriptDesignTraceKey> {
     }
 
     public ScriptDesignTrace(String runId, Long processId, Long parentProcessId, Script script) {
-        this(new ScriptDesignTraceKey(runId, processId), script.getId(), parentProcessId, script.getName(), script.getDescription());
+        this(new ScriptDesignTraceKey(runId, processId), script.getMetadataKey().getScriptId(), parentProcessId, script.getName(), script.getDescription());
     }
 
     public Long getParentProcessId() {

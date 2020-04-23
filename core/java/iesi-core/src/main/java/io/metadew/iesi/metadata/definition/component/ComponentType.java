@@ -1,41 +1,19 @@
 package io.metadew.iesi.metadata.definition.component;
 
-import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+import java.util.Map;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class ComponentType {
 
     private String name;
     private String description;
-    private List<ComponentTypeParameter> parameters;
+    private Map<String, ComponentTypeParameter> parameters;
 
-    //Constructors
-    public ComponentType() {
-
-    }
-
-    //Getters and Setters
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public List<ComponentTypeParameter> getParameters() {
-        return parameters;
-    }
-
-    public void setParameters(List<ComponentTypeParameter> parameters) {
-        this.parameters = parameters;
-    }
 
 }

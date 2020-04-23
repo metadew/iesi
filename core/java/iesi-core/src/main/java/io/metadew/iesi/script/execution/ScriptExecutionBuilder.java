@@ -115,7 +115,7 @@ public class ScriptExecutionBuilder {
                         getActionSelectOperation().orElse(new ActionSelectOperation("")),
                         new RootStrategy()
                 );
-            } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException | SQLException e) {
+            } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
                 throw new ScriptExecutionBuildException(e);
             }
         } else {
@@ -153,7 +153,7 @@ public class ScriptExecutionBuilder {
                     getActionSelectOperation().orElse(new ActionSelectOperation("")),
                     root ? new RootStrategy() : new NonRootStrategy()
             );
-        } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException | SQLException e) {
+        } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
             throw new ScriptExecutionBuildException(e);
         }
     }

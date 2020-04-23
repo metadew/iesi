@@ -2,9 +2,7 @@ package io.metadew.iesi.datatypes.dataset;
 
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
-import io.metadew.iesi.datatypes.DataTypeService;
 import io.metadew.iesi.datatypes.array.Array;
-import io.metadew.iesi.datatypes.dataset.keyvalue.KeyValueDataset;
 import io.metadew.iesi.datatypes.dataset.keyvalue.KeyValueDatasetService;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
@@ -38,7 +36,12 @@ public class DatasetHandler {
     }
 
     @SuppressWarnings("unchecked")
-    public Dataset getByNameAndLabels(String name, List<String> labels, ExecutionRuntime executionRuntime) throws IOException {
+    public void shutdown(Dataset dataset) {
+        getDatasetService(dataset).shutdown(dataset);
+    }
+
+    @SuppressWarnings("unchecked")
+    public Dataset getByNameAndLabels(String name, List<String> labels, ExecutionRuntime executionRuntime) {
         return KeyValueDatasetService.getInstance().getByNameAndLabels(name, labels, executionRuntime);
     }
 

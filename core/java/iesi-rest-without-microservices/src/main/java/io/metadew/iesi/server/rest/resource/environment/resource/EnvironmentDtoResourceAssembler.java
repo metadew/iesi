@@ -1,12 +1,16 @@
 package io.metadew.iesi.server.rest.resource.environment.resource;
 
 import io.metadew.iesi.metadata.definition.environment.Environment;
+import io.metadew.iesi.metadata.definition.environment.EnvironmentParameter;
 import io.metadew.iesi.server.rest.controller.EnvironmentsController;
 import io.metadew.iesi.server.rest.resource.environment.dto.EnvironmentDto;
+import io.metadew.iesi.server.rest.resource.environment.dto.EnvironmentParameterDto;
 import org.modelmapper.ModelMapper;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
+
+import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -34,9 +38,14 @@ public  class EnvironmentDtoResourceAssembler extends RepresentationModelAssembl
     }
 
     private EnvironmentDto convertToDto(Environment environment) {
-        if (environment == null) {
-            throw new IllegalArgumentException("Environments have to be non empty");
-        }
-        return new EnvironmentDto(environment.getName(), environment.getDescription(),environment.getParameters());
+        return new EnvironmentDto(environment.getName(), environment.getDescription(),
+                environment.getParameters()
+                        .stream()
+                        .map(this::convertToDto)
+                        .collect(Collectors.toList()));
+    }
+
+    private EnvironmentParameterDto convertToDto(EnvironmentParameter environmentParameter) {
+        return new EnvironmentParameterDto(environmentParameter.getName(), environmentParameter.getValue());
     }
 }

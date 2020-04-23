@@ -1,6 +1,7 @@
 package io.metadew.iesi.metadata.configuration.script;
 
 import io.metadew.iesi.metadata.definition.script.ScriptParameter;
+import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.metadata.definition.script.key.ScriptParameterKey;
 
 import java.util.Optional;
@@ -24,7 +25,7 @@ public class ScriptParameterBuilder {
     }
 
     public ScriptParameter build() {
-        return new ScriptParameter(new ScriptParameterKey(scriptId, scriptVersionNumber, parameterName), getValue().orElse("dummy"));
+        return new ScriptParameter(new ScriptParameterKey(new ScriptKey(scriptId, scriptVersionNumber), parameterName), getValue().orElse("dummy"));
     }
 
     private Optional<String> getValue() {

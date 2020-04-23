@@ -3,7 +3,6 @@ package io.metadew.iesi.server.rest.resource.connection.resource;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.server.rest.controller.ConnectionsController;
 import io.metadew.iesi.server.rest.resource.connection.dto.ConnectionByNameDto;
-import org.modelmapper.ModelMapper;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
 
@@ -16,11 +15,8 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @Component
 public class ConnectionByNameDtoResourceAssembler extends RepresentationModelAssemblerSupport<List<Connection>, ConnectionByNameDto> {
 
-    private final ModelMapper modelMapper;
-
     public ConnectionByNameDtoResourceAssembler() {
         super(ConnectionsController.class, ConnectionByNameDto.class);
-        this.modelMapper = new ModelMapper();
     }
 
     @Override
@@ -35,11 +31,12 @@ public class ConnectionByNameDtoResourceAssembler extends RepresentationModelAss
     }
 
     private ConnectionByNameDto convertToDto(List<Connection> connections) {
-
-        ConnectionByNameDto connectionByNameDto = modelMapper.map(connections.get(0), ConnectionByNameDto.class);
-        connectionByNameDto.setEnvironments(connections.stream()
-                .map(Connection::getEnvironment)
-                .collect(Collectors.toList()));
-        return connectionByNameDto;
+        return new ConnectionByNameDto(
+                connections.get(0).getMetadataKey().getName(),
+                connections.get(0).getType(),
+                connections.get(0).getDescription(),
+                connections.stream()
+                        .map(connection -> connection.getMetadataKey().getEnvironmentKey().getName())
+                        .collect(Collectors.toList()));
     }
 }

@@ -1,6 +1,8 @@
 package io.metadew.iesi.connection;
 
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -23,11 +25,8 @@ import java.util.stream.Collectors;
 
 import static org.jfrog.artifactory.client.model.impl.RepositoryTypeImpl.LOCAL;
 
-/**
- * Connection object for an Artifactory repository
- *
- * @author peter.billen
- */
+@Data
+@AllArgsConstructor
 public class ArtifactoryConnection {
 
     private String connectionURL;
@@ -40,22 +39,6 @@ public class ArtifactoryConnection {
     private static String fileUploadToLocation = "ex_fold1/ex_upload_1.txt";
     private static String fileDownloadToLocation = "ex_download_1.txt";
 
-    // Constructor
-    public ArtifactoryConnection() {
-        this("", "", null, "");
-
-    }
-
-    public ArtifactoryConnection(String connectionUrl, String userName, String userPassword) {
-        this(connectionUrl, userName, userPassword, "");
-    }
-
-    public ArtifactoryConnection(String connectionUrl, String userName, String userPassword, String repositoryName) {
-        this.connectionURL = connectionUrl;
-        this.userName = userName;
-        this.userPassword = userPassword;
-        this.repositoryName = repositoryName;
-    }
 
     public boolean downloadArtifact(String sourceFilePath, String targetFilePath) {
         Artifactory artifactory = ArtifactoryClientBuilder.create().setUrl(this.getConnectionURL())
@@ -224,31 +207,16 @@ public class ArtifactoryConnection {
         return connectionURL;
     }
 
-    public void setConnectionURL(String connectionURL) {
-        this.connectionURL = connectionURL;
-    }
-
     public String getUserName() {
         return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
     }
 
     public String getUserPassword() {
         return userPassword;
     }
 
-    public void setUserPassword(String userPassword) {
-        this.userPassword = userPassword;
-    }
-
     public String getRepositoryName() {
         return repositoryName;
     }
 
-    public void setRepositoryName(String repositoryName) {
-        this.repositoryName = repositoryName;
-    }
 }

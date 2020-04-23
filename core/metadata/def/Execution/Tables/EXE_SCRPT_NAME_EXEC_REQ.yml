@@ -8,7 +8,7 @@ data:
   migrate: Y
   migrationKey: NA
   fields:
-  - name: EXEC_REQUEST_ID
+  - name: ID
     description: Unique identifier for the script request item
     order: '1'
     type: string

@@ -31,18 +31,6 @@ public class ScriptResult extends Metadata<ScriptResultKey> {
 		this.endTimestamp = endTimestamp;
 	}
 
-	public ScriptResult(String runId, Long processId, Long parentProcessId, String scriptId, String scriptName, Long scriptVersion, String environment, String status, LocalDateTime startTimestamp, LocalDateTime endTimestamp) {
-		super(new ScriptResultKey(runId, processId));
-		this.parentProcessId = parentProcessId;
-		this.scriptId = scriptId;
-		this.scriptName = scriptName;
-		this.scriptVersion = scriptVersion;
-		this.environment = environment;
-		this.status = status;
-		this.startTimestamp = startTimestamp;
-		this.endTimestamp = endTimestamp;
-	}
-
 	// Getters and Setters
 	public String getScriptName() {
 		return scriptName;
@@ -78,10 +66,6 @@ public class ScriptResult extends Metadata<ScriptResultKey> {
 
 	public void setStatus(String status) {
 		this.status = status;
-	}
-
-	public void setStartTimestamp(LocalDateTime startTimestamp) {
-		this.startTimestamp = startTimestamp;
 	}
 
 	public void setEndTimestamp(LocalDateTime endTimestamp) {

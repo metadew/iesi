@@ -2,72 +2,30 @@ package io.metadew.iesi.server.rest.resource.connection.dto;
 
 
 import io.metadew.iesi.metadata.definition.connection.Connection;
-import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import org.springframework.hateoas.RepresentationModel;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
+@Data
+@EqualsAndHashCode(callSuper = false)
+@AllArgsConstructor
+@NoArgsConstructor
 public class ConnectionDto extends RepresentationModel<ConnectionDto> {
 
-    @Setter private String name;
-    @Getter @Setter private String type;
-    @Getter @Setter private String description;
-    @Setter private String environment;
-    @Getter @Setter private List<ConnectionParameter> parameters;
-
-    public ConnectionDto() {}
-
-    public ConnectionDto(String name, String type, String description, String environment, List<ConnectionParameter> parameters) {
-        this.name = name;
-        this.type = type;
-        this.description = description;
-        this.environment = environment;
-        this.parameters = parameters;
-    }
+    private String name;
+    private String type;
+    private String description;
+    private String environment;
+    private List<ConnectionParameterDto> parameters;
 
     public Connection convertToEntity() {
-        return new Connection(name, type, description, environment, parameters);
+        return new Connection(name, type, description, environment,
+                parameters.stream().map(parameter -> parameter.convertToEntity(name, environment)).collect(Collectors.toList()));
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public String getEnvironment() {
-        return environment;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public void setEnvironment(String environment) {
-        this.environment = environment;
-    }
-
-    public List<ConnectionParameter> getParameters() {
-        return parameters;
-    }
-
-    public void setParameters(List<ConnectionParameter> parameters) {
-        this.parameters = parameters;
-    }
 }

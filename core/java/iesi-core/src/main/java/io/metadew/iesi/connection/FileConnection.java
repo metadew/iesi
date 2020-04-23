@@ -14,18 +14,6 @@ public class FileConnection {
     private String attributes;
     private boolean directory;
 
-    public FileConnection(String filePath, String fileName, String longName, String extension, String attributes, boolean directory) {
-        this.filePath = filePath;
-        this.fileName = fileName;
-        this.longName = longName;
-        this.extension = extension;
-        this.attributes = attributes;
-        this.directory = directory;
-    }
-
-    public FileConnection() {
-    }
-
     // Getters and Setters
     public String getFilePath() {
         return filePath;
@@ -43,24 +31,12 @@ public class FileConnection {
         this.fileName = fileName;
     }
 
-    public String getLongName() {
-        return longName;
-    }
-
     public void setLongName(String longName) {
         this.longName = longName;
     }
 
-    public String getExtension() {
-        return extension;
-    }
-
     public void setExtension(String extension) {
         this.extension = extension;
-    }
-
-    public String getAttributes() {
-        return attributes;
     }
 
     public void setAttributes(String attributes) {

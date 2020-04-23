@@ -210,10 +210,10 @@ public class ComponentConfiguration extends Configuration<Component, ComponentKe
     }
 
     private Optional<String> getInsertStatement(Component component) {
-        if (!existsById(component.getId())) {
+        if (!existsById(component.getMetadataKey().getId())) {
             return Optional.of("INSERT INTO " + getMetadataRepository().getTableNameByLabel("Components") +
                     " (COMP_ID, COMP_TYP_NM, COMP_NM, COMP_DSC) VALUES (" +
-                    SQLTools.GetStringForSQL(component.getId()) + "," +
+                    SQLTools.GetStringForSQL(component.getMetadataKey().getId()) + "," +
                     SQLTools.GetStringForSQL(component.getType()) + "," +
                     SQLTools.GetStringForSQL(component.getName()) + "," +
                     SQLTools.GetStringForSQL(component.getDescription()) + ");");
@@ -253,6 +253,6 @@ public class ComponentConfiguration extends Configuration<Component, ComponentKe
                 " SET COMP_TYP_NM = " + SQLTools.GetStringForSQL(component.getType()) + "," +
                 " COMP_NM = " + SQLTools.GetStringForSQL(component.getName()) + "," +
                 " COMP_DSC = " + SQLTools.GetStringForSQL(component.getDescription()) +
-                " WHERE COMP_ID = " + SQLTools.GetStringForSQL(component.getId()) + ";");
+                " WHERE COMP_ID = " + SQLTools.GetStringForSQL(component.getMetadataKey().getId()) + ";");
     }
 }

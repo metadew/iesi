@@ -19,8 +19,4 @@ public class ActionResultOutput extends Metadata<ActionResultOutputKey> {
         return value;
     }
 
-    public void setValue(String value) {
-        this.value = value;
-    }
-
 }

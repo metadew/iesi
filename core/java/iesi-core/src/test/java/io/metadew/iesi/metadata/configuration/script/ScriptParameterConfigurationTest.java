@@ -22,6 +22,7 @@ class ScriptParameterConfigurationTest {
     @BeforeEach
     void setup() {
         designMetadataRepository = RepositoryTestSetup.getDesignMetadataRepository();
+        designMetadataRepository.createAllTables();
         scriptParameter1 = new ScriptParameterBuilder("1", 1, "parameter1")
                 .value("parameter value")
                 .build();

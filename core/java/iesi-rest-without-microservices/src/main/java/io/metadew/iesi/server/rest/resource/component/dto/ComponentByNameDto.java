@@ -1,57 +1,23 @@
 package io.metadew.iesi.server.rest.resource.component.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import org.springframework.hateoas.RepresentationModel;
 
 import java.util.List;
 
+
+@Data
+@EqualsAndHashCode(callSuper = false)
+@AllArgsConstructor
+@NoArgsConstructor
 public class ComponentByNameDto extends RepresentationModel<ComponentByNameDto> {
 
-    private String type;
     private String name;
+    private String type;
     private String description;
     private List<Long> versions;
-
-    public ComponentByNameDto() {}
-
-    public ComponentByNameDto(String name, String type, String description, List<Long> versions) {
-        this.name = name;
-        this.type = type;
-        this.description = description;
-        this.versions = versions;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public void setVersions(List<Long> versions) {
-        this.versions = versions;
-    }
-
-    public List<Long> getVersions() {
-        return versions;
-    }
-
-
 
 }

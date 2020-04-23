@@ -44,7 +44,7 @@ public class ImpersonationController {
     public HalMultipleEmbeddedResource<ImpersonationDto> getAll() {
         List<Impersonation> impersonations = impersonationConfiguration.getAllImpersonations();
         return new HalMultipleEmbeddedResource<>(impersonations.stream()
-                .filter(distinctByKey(Impersonation::getName))
+                .filter(distinctByKey(impersonation -> impersonation.getMetadataKey().getName()))
                 .map(impersonation -> impersonatonDtoResourceAssembler.toModel(impersonation))
                 .collect(Collectors.toList()));
     }

@@ -1,7 +1,7 @@
 package io.metadew.iesi.script.action.eval;
 
 import io.metadew.iesi.connection.database.Database;
-import io.metadew.iesi.connection.operation.ConnectionOperation;
+import io.metadew.iesi.connection.database.DatabaseHandlerImpl;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
@@ -154,9 +154,7 @@ public class EvalVerifyMandatoryField {
     private boolean verifyMandatoryField(String databaseName, String schemaName, String tableName, String fieldName, String evaluationFieldName, String evaluationFieldValue, boolean isMandatory, String connectionName) throws SQLException, InterruptedException {
         // Get Connection
         Connection connection = ConnectionConfiguration.getInstance().get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName())).get();
-        ConnectionOperation connectionOperation = new ConnectionOperation();
-        Database database = connectionOperation.getDatabase(connection);
-
+        Database database = DatabaseHandlerImpl.getInstance().getDatabase(connection);
         // Run the action
         this.getTestQueries(schemaName, tableName, fieldName, evaluationFieldName, evaluationFieldValue, isMandatory);
         long successTotal = 0;
@@ -164,7 +162,7 @@ public class EvalVerifyMandatoryField {
         CachedRowSet cachedRowSet;
 
         // Success
-        cachedRowSet = database.executeQuery(this.getSqlSuccess());
+        cachedRowSet = DatabaseHandlerImpl.getInstance().executeQuery(database, this.getSqlSuccess());
         while (cachedRowSet.next()) {
             successTotal = cachedRowSet.getLong("RES_SUC");
         }
@@ -172,7 +170,7 @@ public class EvalVerifyMandatoryField {
         this.getActionExecution().getActionControl().logOutput("pass", Long.toString(successTotal));
 
         // Error
-        cachedRowSet = database.executeQuery(this.getSqlError());
+        cachedRowSet = DatabaseHandlerImpl.getInstance().executeQuery(database, this.getSqlError());
         while (cachedRowSet.next()) {
             errorTotal = cachedRowSet.getLong("RES_ERR");
         }

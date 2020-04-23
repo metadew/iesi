@@ -22,7 +22,4 @@ public class RunIdInstruction implements VariableInstruction {
         return "run.id";
     }
 
-    public ExecutionControl getExecutionControl() {
-        return executionControl;
-    }
 }

@@ -1,9 +1,11 @@
 package io.metadew.iesi.server.rest.resource.execution_request.resource;
 
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequest;
+import io.metadew.iesi.metadata.definition.execution.ExecutionRequestLabel;
 import io.metadew.iesi.metadata.definition.execution.NonAuthenticatedExecutionRequest;
 import io.metadew.iesi.server.rest.controller.ExecutionRequestController;
 import io.metadew.iesi.server.rest.resource.execution_request.dto.ExecutionRequestDto;
+import io.metadew.iesi.server.rest.resource.execution_request.dto.ExecutionRequestLabelDto;
 import io.metadew.iesi.server.rest.resource.script_execution_request.resource.ScriptExecutionRequestDtoResourceAssembler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
@@ -43,9 +45,16 @@ public class ExecutionRequestDtoResourceAssembler extends RepresentationModelAss
                     executionRequest.getContext(), executionRequest.getEmail(), executionRequest.getExecutionRequestStatus(),
                     executionRequest.getScriptExecutionRequests().stream()
                             .map(scriptExecutionRequestDtoResourceAssembler::toModel)
+                            .collect(Collectors.toList()),
+                    executionRequest.getExecutionRequestLabels().stream()
+                            .map(this::convertToDto)
                             .collect(Collectors.toList()));
         } else {
             throw new RuntimeException(MessageFormat.format("Cannot convert ExecutionRequest of type {0} to DTO", executionRequest.getClass().getSimpleName()));
         }
+    }
+
+    private ExecutionRequestLabelDto convertToDto(ExecutionRequestLabel executionRequestLabel) {
+        return new ExecutionRequestLabelDto(executionRequestLabel.getName(), executionRequestLabel.getValue());
     }
 }

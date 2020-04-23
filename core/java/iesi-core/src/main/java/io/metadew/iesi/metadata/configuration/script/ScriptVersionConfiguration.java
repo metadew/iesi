@@ -5,6 +5,7 @@ import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.script.ScriptVersion;
+import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.metadata.definition.script.key.ScriptVersionKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.logging.log4j.LogManager;
@@ -71,8 +72,8 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
         try {
             while (crs.next()) {
                 ScriptVersionKey scriptVersionKey = new ScriptVersionKey(
-                        crs.getString("SCRIPT_ID"),
-                        crs.getLong("SCRIPT_VRS_NB"));
+                        new ScriptKey(crs.getString("SCRIPT_ID"),
+                        crs.getLong("SCRIPT_VRS_NB")));
                 scriptVersions.add(new ScriptVersion(
                         scriptVersionKey,
                         crs.getString("SCRIPT_VRS_DSC")));
@@ -129,7 +130,7 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
                 crsScriptVersion.next();
                 long latestScriptVersion = crsScriptVersion.getLong("MAX_VRS_NB");
                 crsScriptVersion.close();
-                return get(new ScriptVersionKey(scriptId, latestScriptVersion));
+                return get(new ScriptVersionKey(new ScriptKey(scriptId, latestScriptVersion)));
             }
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();

@@ -3,8 +3,6 @@ package io.metadew.iesi.script.action.sql;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
-import io.metadew.iesi.metadata.definition.dataset.Dataset;
-import io.metadew.iesi.metadata.definition.dataset.DatasetParameter;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
@@ -15,9 +13,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 public class SqlDefineDataset {
 
@@ -98,22 +94,22 @@ public class SqlDefineDataset {
     }
 
     private boolean execute(String referenceName, String statement, String identifier) throws InterruptedException {
-        Dataset dataset = new Dataset();
-        dataset.setType("sql");
-        dataset.setName(referenceName);
-
-        // Parameters
-        List<DatasetParameter> datasetParameters = new ArrayList<>();
-        DatasetParameter datasetParameter = new DatasetParameter();
-        datasetParameter.setName("statement");
-        datasetParameter.setValue(statement);
-        datasetParameters.add(datasetParameter);
-
-        datasetParameter.setName("identifier");
-        datasetParameter.setValue(identifier);
-        datasetParameters.add(datasetParameter);
-
-        dataset.setParameters(datasetParameters);
+//        Dataset dataset = new Dataset();
+//        dataset.setType("sql");
+//        dataset.setName(referenceName);
+//
+//        // Parameters
+//        List<DatasetParameter> datasetParameters = new ArrayList<>();
+//        DatasetParameter datasetParameter = new DatasetParameter();
+//        datasetParameter.setName("statement");
+//        datasetParameter.setValue(statement);
+//        datasetParameters.add(datasetParameter);
+//
+//        datasetParameter.setName("identifier");
+//        datasetParameter.setValue(identifier);
+//        datasetParameters.add(datasetParameter);
+//
+//        dataset.setParameters(datasetParameters);
 
         // this.getExecutionControl().getExecutionRuntime().setKeyValueDataset(referenceName, dataset);
 

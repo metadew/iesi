@@ -20,6 +20,7 @@ import org.apache.commons.cli.*;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.logging.log4j.ThreadContext;
 
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -29,7 +30,7 @@ import java.util.*;
  */
 public class ScriptLauncher {
 
-    public static void main(String[] args) throws ScriptExecutionRequestBuilderException, ExecutionRequestBuilderException, ParseException {
+    public static void main(String[] args) throws ScriptExecutionRequestBuilderException, ExecutionRequestBuilderException, ParseException, IOException {
         ThreadContext.clearAll();
 
         Options options = new Options()

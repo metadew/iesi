@@ -1,0 +1,15 @@
+iesi:
+  commandline:
+    display:
+      runtime:
+        variable: N
+  guard:
+    authenticate: N
+#  script:
+#    execution:
+#       runtime: ''
+  server:
+#    mode: off
+    mode: standalone
+    threads:
+      timeout: 30

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
-import io.metadew.iesi.datatypes.DataTypeService;
+import io.metadew.iesi.datatypes.IDataTypeService;
 import io.metadew.iesi.datatypes.dataset.keyvalue.KeyValueDataset;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 import lombok.extern.log4j.Log4j2;
@@ -14,7 +14,7 @@ import java.text.MessageFormat;
 import java.util.List;
 import java.util.stream.Collectors;
 @Log4j2
-public class ArrayService implements DataTypeService<Array> {
+public class ArrayService implements IDataTypeService<Array> {
 
     private static ArrayService INSTANCE;
 

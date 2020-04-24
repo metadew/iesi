@@ -24,13 +24,13 @@ iesi:
 #          host:
 #          port:
 #          owner:
-#            name:
+#            user:
 #            password:
 #          reader:
-#            name:
+#            user:
 #            password:
 #          writer:
-#            name:
+#            user:
 #            password:
 
 #          type: mssql
@@ -40,13 +40,13 @@ iesi:
 #          schema: 
 #          name: 
 #          owner:
-#            name:
+#            user:
 #            password:
 #          reader:
-#            name:
+#            user:
 #            password:
 #          writer:
-#            name:
+#            user:
 #            password:
 
 #          type: netezza
@@ -55,13 +55,13 @@ iesi:
 #          port: 
 #          schema: 
 #          owner:
-#            name:
+#            user:
 #            password:
 #          reader:
-#            name:
+#            user:
 #            password:
 #          writer:
-#            name:
+#            user:
 #            password:
 
 #          type: postgresql
@@ -71,13 +71,13 @@ iesi:
 #          reader: 
 #          schema: 
 #          owner:
-#            name:
+#            user:
 #            password:
 #          reader:
-#            name:
+#            user:
 #            password:
 #          writer:
-#            name:
+#            user:
 #            password:
 
 #          type: mysql
@@ -86,11 +86,11 @@ iesi:
 #          port:
 #          schema:
 #          owner:
-#            name:
+#            user:
 #            password:
 #          reader:
-#            name:
+#            user:
 #            password:
 #          writer:
-#            name:
+#            user:
 #            password:

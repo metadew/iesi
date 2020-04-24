@@ -5,22 +5,18 @@ import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionReque
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequestParameter;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptNameExecutionRequest;
 import io.metadew.iesi.server.rest.controller.ExecutionRequestController;
-import io.metadew.iesi.server.rest.controller.ScriptExecutionController;
 import io.metadew.iesi.server.rest.resource.script_execution_request.dto.ScriptExecutionRequestDto;
 import io.metadew.iesi.server.rest.resource.script_execution_request.dto.ScriptExecutionRequestImpersonationDto;
 import io.metadew.iesi.server.rest.resource.script_execution_request.dto.ScriptExecutionRequestParameterDto;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.Link;
-import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
+import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
-
 @Component
-public class ScriptExecutionRequestDtoResourceAssembler extends ResourceAssemblerSupport<ScriptExecutionRequest, ScriptExecutionRequestDto> {
+public  class ScriptExecutionRequestDtoResourceAssembler extends RepresentationModelAssemblerSupport<ScriptExecutionRequest, ScriptExecutionRequestDto> {
+
 
     @Autowired
     public ScriptExecutionRequestDtoResourceAssembler() {
@@ -28,12 +24,8 @@ public class ScriptExecutionRequestDtoResourceAssembler extends ResourceAssemble
     }
 
     @Override
-    public ScriptExecutionRequestDto toResource(ScriptExecutionRequest scriptExecutionRequest) {
-        ScriptExecutionRequestDto scriptExecutionRequestDto = convertToDto(scriptExecutionRequest);
-        Link selfLink = linkTo(methodOn(ScriptExecutionController.class).getAll(scriptExecutionRequest.getMetadataKey().getId()))
-                .withRel("result");
-        scriptExecutionRequestDto.add(selfLink);
-        return scriptExecutionRequestDto;
+    public ScriptExecutionRequestDto toModel(ScriptExecutionRequest scriptExecutionRequest) {
+        return convertToDto(scriptExecutionRequest);
     }
 
     private ScriptExecutionRequestDto convertToDto(ScriptExecutionRequest scriptExecutionRequest) {

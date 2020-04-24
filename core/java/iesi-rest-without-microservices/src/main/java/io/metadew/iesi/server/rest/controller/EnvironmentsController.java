@@ -12,6 +12,7 @@ import io.metadew.iesi.server.rest.resource.HalMultipleEmbeddedResource;
 import io.metadew.iesi.server.rest.resource.connection.resource.ConnectionDtoResourceAssembler;
 import io.metadew.iesi.server.rest.resource.environment.dto.EnvironmentDto;
 import io.metadew.iesi.server.rest.resource.environment.resource.EnvironmentDtoResourceAssembler;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,10 +23,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static io.metadew.iesi.server.rest.helper.Filter.distinctByKey;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
+@Tag(name = "environments", description = "Everything about environments")
 @RequestMapping("/environments")
 public class EnvironmentsController {
 
@@ -48,14 +50,14 @@ public class EnvironmentsController {
         List<Environment> environments = environmentConfiguration.getAll();
         return new HalMultipleEmbeddedResource<EnvironmentDto>(
                 environments.stream().filter(distinctByKey(Environment::getName))
-                        .map(environment -> environmentDtoResourceAssembler.toResource(environment))
+                        .map(environment -> environmentDtoResourceAssembler.toModel(environment))
                         .collect(Collectors.toList()));
     }
 
     @GetMapping("/{name}")
     public EnvironmentDto getByName(@PathVariable String name) throws MetadataDoesNotExistException {
         return environmentConfiguration.get(new EnvironmentKey(name))
-                .map(environment -> environmentDtoResourceAssembler.toResource(environment))
+                .map(environment -> environmentDtoResourceAssembler.toModel(environment))
                 .orElseThrow(() -> new MetadataDoesNotExistException(new EnvironmentKey(name)));
     }
 
@@ -63,7 +65,7 @@ public class EnvironmentsController {
     @PostMapping("")
     public EnvironmentDto post(@Valid @RequestBody EnvironmentDto environment) throws MetadataAlreadyExistsException {
         environmentConfiguration.insert(environment.convertToEntity());
-        return environmentDtoResourceAssembler.toResource(environment.convertToEntity());
+        return environmentDtoResourceAssembler.toModel(environment.convertToEntity());
     }
 
     @PutMapping("")
@@ -88,7 +90,7 @@ public class EnvironmentsController {
             throw new DataBadRequestException(null);
         }
         environmentConfiguration.update(environment.convertToEntity());
-        return environmentDtoResourceAssembler.toResource(environment.convertToEntity());
+        return environmentDtoResourceAssembler.toModel(environment.convertToEntity());
 
     }
 
@@ -96,7 +98,7 @@ public class EnvironmentsController {
     public HalMultipleEmbeddedResource getConnections(@PathVariable String name) {
         List<Connection> result = connectionConfiguration.getByEnvironment(name);
         return new HalMultipleEmbeddedResource<>(result.stream()
-                .map(connectionDtoResourceAssembler::toResource)
+                .map(connectionDtoResourceAssembler::toModel)
                 .collect(Collectors.toList()));
 
     }

@@ -45,15 +45,17 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
-        http.headers().httpStrictTransportSecurity().disable().and()
+        http.csrf()
+                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
+        http.requestMatcher(EndpointRequest.toAnyEndpoint())
+                .formLogin().permitAll();
+        http.headers().httpStrictTransportSecurity()
+                .disable().and()
                 .httpBasic().and()
                 .formLogin().and()
                 .authorizeRequests().anyRequest().authenticated();
-        http.requestMatcher(EndpointRequest.toAnyEndpoint())
-                .authorizeRequests()
-                .anyRequest().authenticated()
-                .and().formLogin().permitAll();
+//                .and()
+//                .authorizeRequests().anyRequest().authenticated();
     }
 
 }

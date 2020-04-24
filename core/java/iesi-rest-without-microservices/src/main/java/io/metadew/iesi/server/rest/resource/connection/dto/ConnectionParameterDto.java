@@ -3,14 +3,13 @@ package io.metadew.iesi.server.rest.resource.connection.dto;
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionParameterKey;
-import io.metadew.iesi.server.rest.resource.Dto;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import org.springframework.hateoas.RepresentationModel;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class ConnectionParameterDto extends Dto {
+public class ConnectionParameterDto extends RepresentationModel<ConnectionParameterDto> {
 
     private final String name;
     private final String value;

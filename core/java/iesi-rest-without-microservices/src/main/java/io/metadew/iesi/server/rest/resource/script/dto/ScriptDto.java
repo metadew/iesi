@@ -7,7 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.springframework.hateoas.ResourceSupport;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
 @NoArgsConstructor
-public class ScriptDto extends ResourceSupport {
+public class ScriptDto extends RepresentationModel<ScriptDto> {
 
     private String name;
     private String description;
@@ -26,8 +26,12 @@ public class ScriptDto extends ResourceSupport {
     private List<ScriptLabelDto> labels;
 
     public Script convertToEntity() {
-        return new Script(new ScriptKey(IdentifierTools.getScriptIdentifier(name), version.convertToEntity(IdentifierTools.getScriptIdentifier(name)).getNumber()),
-                name, description,  version.convertToEntity(IdentifierTools.getScriptIdentifier(name)),
+        return new Script(
+                new ScriptKey(IdentifierTools.getScriptIdentifier(name),
+                        version.convertToEntity(IdentifierTools.getScriptIdentifier(name)).getNumber()),
+                name,
+                description,
+                version.convertToEntity(IdentifierTools.getScriptIdentifier(name)),
                 parameters.stream()
                         .map(parameter -> parameter.convertToEntity(new ScriptKey(IdentifierTools.getScriptIdentifier(name), version.getNumber())))
                         .collect(Collectors.toList()),

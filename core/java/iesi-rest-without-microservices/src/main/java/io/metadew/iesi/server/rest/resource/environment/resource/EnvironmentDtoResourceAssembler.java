@@ -7,16 +7,16 @@ import io.metadew.iesi.server.rest.resource.environment.dto.EnvironmentDto;
 import io.metadew.iesi.server.rest.resource.environment.dto.EnvironmentParameterDto;
 import org.modelmapper.ModelMapper;
 import org.springframework.hateoas.Link;
-import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
+import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Component
-public class EnvironmentDtoResourceAssembler extends ResourceAssemblerSupport<Environment, EnvironmentDto> {
+public  class EnvironmentDtoResourceAssembler extends RepresentationModelAssemblerSupport<Environment, EnvironmentDto> {
 
     private final ModelMapper modelMapper;
 
@@ -26,7 +26,7 @@ public class EnvironmentDtoResourceAssembler extends ResourceAssemblerSupport<En
     }
 
     @Override
-    public EnvironmentDto toResource(Environment environment) {
+    public EnvironmentDto toModel(Environment environment) {
         EnvironmentDto environmentDto = convertToDto(environment);
         Link selfLink = linkTo(methodOn(EnvironmentsController.class).getByName(environmentDto.getName()))
                 .withSelfRel();

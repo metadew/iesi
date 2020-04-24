@@ -22,7 +22,7 @@ public class TraceMetadataRepository extends MetadataRepository {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public TraceMetadataRepository(String name, String instanceName, RepositoryCoordinator repositoryCoordinator){
+    public TraceMetadataRepository(String instanceName, RepositoryCoordinator repositoryCoordinator){
         super(instanceName, repositoryCoordinator);
         ScriptDesignTraceConfiguration.getInstance().init(this);
         ScriptVersionDesignTraceConfiguration.getInstance().init(this);

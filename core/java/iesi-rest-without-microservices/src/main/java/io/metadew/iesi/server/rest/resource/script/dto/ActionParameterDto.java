@@ -6,14 +6,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.springframework.hateoas.ResourceSupport;
+import org.springframework.hateoas.RepresentationModel;
 
 
 @Data
 @EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
 @NoArgsConstructor
-public class ActionParameterDto extends ResourceSupport {
+public class ActionParameterDto extends RepresentationModel<ActionParameterDto> {
 
     private String name;
     private String value;

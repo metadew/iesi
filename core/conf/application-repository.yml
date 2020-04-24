@@ -6,9 +6,7 @@ iesi:
       # each category should define its own type and definition
       - categories:
           - general
-        # scope:
-        name:
-        instance:
+        # instance:
 
         # type of database: sqlite, h2, mssql, netezza, oracle, postgresql
         coordinator:

@@ -35,7 +35,6 @@ public class FrameworkRuntime {
 
 
 	public void terminate() {
-		//FolderTools.deleteFolder(this.getRunCacheFolderName(), true);
 	}
 
 	public Path getLocalHostChallengeFileName() {

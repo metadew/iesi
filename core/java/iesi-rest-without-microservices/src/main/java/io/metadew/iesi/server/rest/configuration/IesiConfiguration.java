@@ -11,28 +11,23 @@ import io.metadew.iesi.metadata.configuration.execution.script.ScriptExecutionCo
 import io.metadew.iesi.metadata.configuration.impersonation.ImpersonationConfiguration;
 import io.metadew.iesi.metadata.configuration.script.ScriptConfiguration;
 import io.metadew.iesi.runtime.ExecutionRequestExecutorService;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.annotation.Order;
 
-import java.sql.SQLException;
+import java.io.IOException;
 
 @Configuration
 public class IesiConfiguration {
 
-    @Value("${iesi.home}")
-    private String frameworkHome;
-
     @Bean
     @Order(0)
-    public FrameworkInstance frameworkInstance() {
+    public FrameworkInstance frameworkInstance() throws IOException {
         io.metadew.iesi.common.configuration.Configuration.getInstance();
         MetadataConfiguration.getInstance();
         return FrameworkInstance.getInstance();
     }
-
 
     @Bean
     @DependsOn("frameworkInstance")

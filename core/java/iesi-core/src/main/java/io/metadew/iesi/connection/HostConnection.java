@@ -121,7 +121,7 @@ public class HostConnection {
         // Check if execution can be performed as being on localhost
         if (this.getAllowLocalhostExecution().equalsIgnoreCase("y")) {
             try {
-                if (this.localhostFileExists(FrameworkRuntime.getInstance().getLocalHostChallengeFileName())) {
+                if (this.localhostFileExists(FrameworkRuntime.getInstance().getLocalHostChallengeFileName().toString())) {
                     result = true;
                 } else {
                     result = false;

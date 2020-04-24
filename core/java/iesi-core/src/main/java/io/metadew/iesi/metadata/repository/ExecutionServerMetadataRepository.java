@@ -8,7 +8,7 @@ import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
 
 public class ExecutionServerMetadataRepository extends MetadataRepository {
 
-    public ExecutionServerMetadataRepository(String name, String instanceName, RepositoryCoordinator repositoryCoordinator) {
+    public ExecutionServerMetadataRepository(String instanceName, RepositoryCoordinator repositoryCoordinator) {
         super(instanceName, repositoryCoordinator);
         ExecutionRequestConfiguration.getInstance().init(this);
         ScriptExecutionRequestConfiguration.getInstance().init(this);

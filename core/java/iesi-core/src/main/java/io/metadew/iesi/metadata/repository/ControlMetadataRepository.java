@@ -13,7 +13,7 @@ import java.text.MessageFormat;
 public class ControlMetadataRepository extends MetadataRepository {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public ControlMetadataRepository(String name, String instanceName, RepositoryCoordinator repositoryCoordinator) {
+    public ControlMetadataRepository(String instanceName, RepositoryCoordinator repositoryCoordinator) {
         super(instanceName, repositoryCoordinator);
     }
 

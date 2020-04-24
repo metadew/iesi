@@ -1,7 +1,7 @@
 package io.metadew.iesi.script.action.sql;
 
 import io.metadew.iesi.connection.database.Database;
-import io.metadew.iesi.connection.database.DatabaseHandlerImpl;
+import io.metadew.iesi.connection.database.DatabaseHandler;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
@@ -103,9 +103,9 @@ public class SqlSetIterationVariables {
         // Get Connection
         Connection connection = ConnectionConfiguration.getInstance().get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
                 .get();
-        Database database = DatabaseHandlerImpl.getInstance().getDatabase(connection);
+        Database database = DatabaseHandler.getInstance().getDatabase(connection);
         // Run the action
-        CachedRowSet sqlResultSet = DatabaseHandlerImpl.getInstance().executeQuery(database, query);
+        CachedRowSet sqlResultSet = DatabaseHandler.getInstance().executeQuery(database, query);
         this.getExecutionControl().getExecutionRuntime().setIterationVariables(listName, sqlResultSet);
         this.getActionExecution().getActionControl().increaseSuccessCount();
 

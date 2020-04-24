@@ -7,7 +7,7 @@ spring:
   profiles:
     active: http
   datasource:
-    url: jdbc:h2:~/token
+    url: jdbc:h2:./token
     schema: classpath:schema.sql
     data: classpath:data.sql
     driverClassName: org.h2.Driver

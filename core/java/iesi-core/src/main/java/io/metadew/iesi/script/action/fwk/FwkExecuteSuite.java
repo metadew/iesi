@@ -201,7 +201,10 @@ public class FwkExecuteSuite {
         resolvedRepositoryAssetPath += buildAsset;
 
         // Check folder structure
-        String rootSuiteFolder = FrameworkConfiguration.getInstance().getMandatoryFrameworkFolder("run.cache").getAbsolutePath() + File.separator + "suites";
+        String rootSuiteFolder = FrameworkConfiguration.getInstance().getMandatoryFrameworkFolder("run.cache")
+                .getAbsolutePath()
+                .resolve("suites")
+                .toString();
         FolderTools.createFolder(rootSuiteFolder);
         String rootComponentFolder = rootSuiteFolder + File.separator + this.getComponentName().getValue();
         FolderTools.createFolder(rootComponentFolder);

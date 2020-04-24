@@ -2,7 +2,6 @@ package io.metadew.iesi.script.execution;
 
 import io.metadew.iesi.common.FrameworkControl;
 import io.metadew.iesi.common.configuration.framework.FrameworkConfiguration;
-import io.metadew.iesi.common.configuration.framework.FrameworkFolder;
 import io.metadew.iesi.connection.r.RWorkspace;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.data.generation.execution.GenerationObjectExecution;
@@ -27,7 +26,6 @@ import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.File;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -69,9 +67,11 @@ public class ExecutionRuntime {
         this.runId = runId;
 
         // Create cache folder
-        this.runCacheFolderName = FrameworkConfiguration.getInstance().getFrameworkFolder("run.cache")
-                .map(FrameworkFolder::getAbsolutePath)
-                .orElseThrow(() -> new RuntimeException("no definition found for run.cache")) + File.separator + runId;
+        this.runCacheFolderName = FrameworkConfiguration.getInstance()
+                .getMandatoryFrameworkFolder("run.cache")
+                .getAbsolutePath()
+                .resolve(runId)
+                .toString();
         // FolderTools.createFolder(runCacheFolderName);
         this.runtimeVariableConfiguration = new RuntimeVariableConfiguration(this.runCacheFolderName);
         this.iterationVariableConfiguration = new IterationVariableConfiguration(this.runCacheFolderName, true);

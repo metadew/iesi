@@ -1,7 +1,7 @@
 package io.metadew.iesi.script.action.wfa;
 
 import io.metadew.iesi.connection.database.Database;
-import io.metadew.iesi.connection.database.DatabaseHandlerImpl;
+import io.metadew.iesi.connection.database.DatabaseHandler;
 import io.metadew.iesi.connection.operation.ConnectionOperation;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.datatypes.DataType;
@@ -156,7 +156,7 @@ public class WfaExecuteQueryPing {
                 .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
                 .get();
         ConnectionOperation connectionOperation = new ConnectionOperation();
-        Database database = DatabaseHandlerImpl.getInstance().getDatabase(connection);
+        Database database = DatabaseHandler.getInstance().getDatabase(connection);
 
         // Run the action
         int i = 1;
@@ -253,7 +253,7 @@ public class WfaExecuteQueryPing {
 
     private boolean doneWaiting(Database database, String query, boolean hasResult, boolean setRuntimeVariables) {
         CachedRowSet crs;
-        crs = DatabaseHandlerImpl.getInstance().executeQuery(database, query);
+        crs = DatabaseHandler.getInstance().executeQuery(database, query);
         if (SQLTools.getRowCount(crs) > 0) {
             if (hasResult) {
                 this.setRuntimeVariable(crs, setRuntimeVariables);

@@ -1,11 +1,9 @@
 package io.metadew.iesi.script.configuration;
 
-import io.metadew.iesi.connection.database.DatabaseHandlerImpl;
-import io.metadew.iesi.connection.database.H2Database;
-import io.metadew.iesi.connection.database.connection.h2.H2MemoryDatabaseConnection;
+import io.metadew.iesi.connection.database.DatabaseHandler;
+import io.metadew.iesi.connection.database.h2.H2Database;
+import io.metadew.iesi.connection.database.h2.H2MemoryDatabaseConnection;
 import io.metadew.iesi.connection.tools.SQLTools;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.File;
@@ -28,21 +26,21 @@ public class RuntimeVariableConfiguration {
                 "VAR_NM VARCHAR(200) NOT NULL," +
                 "VAR_VAL VARCHAR("+RUNTIME_VAR_VALUE_MAX_LENGTH+")" +
                 ")";
-        DatabaseHandlerImpl.getInstance().executeUpdate(database, query);
+        DatabaseHandler.getInstance().executeUpdate(database, query);
     }
 
     // Methods
     public void cleanRuntimeVariables(String runId) {
         String query = "delete from " + PRC_RUN_VAR
                 + " where RUN_ID = " + SQLTools.GetStringForSQL(runId) + ";";
-        DatabaseHandlerImpl.getInstance().executeUpdate(database, query);
+        DatabaseHandler.getInstance().executeUpdate(database, query);
     }
 
     public void cleanRuntimeVariables(String runId, long processId) {
         String query = "delete from " + PRC_RUN_VAR
                 + " where RUN_ID = " + SQLTools.GetStringForSQL(runId)
                 + " and PRC_ID = " + SQLTools.GetStringForSQL(processId) + ";";
-        DatabaseHandlerImpl.getInstance().executeUpdate(database, query);
+        DatabaseHandler.getInstance().executeUpdate(database, query);
     }
 
     public void setRuntimeVariable(String runId, Long processId, String name, String value) {
@@ -53,13 +51,13 @@ public class RuntimeVariableConfiguration {
                     + " where run_id = " + SQLTools.GetStringForSQL(runId)
                     + " and prc_id = " + SQLTools.GetStringForSQL(processId)
                     + " and var_nm = " + SQLTools.GetStringForSQL(name) + ";";
-            CachedRowSet crs = DatabaseHandlerImpl.getInstance().executeQuery(database, query);
+            CachedRowSet crs = DatabaseHandler.getInstance().executeQuery(database, query);
 
             // if so, the previous values will be deleted
             if (crs.size() > 0) {
                 String deleteQuery = "delete from " + PRC_RUN_VAR
                         + " where run_id = " + SQLTools.GetStringForSQL(runId) + " and prc_id = " + SQLTools.GetStringForSQL(processId) + " and var_nm = " + SQLTools.GetStringForSQL(name) + ";";
-                DatabaseHandlerImpl.getInstance().executeUpdate(database, deleteQuery);
+                DatabaseHandler.getInstance().executeUpdate(database, deleteQuery);
             }
             crs.close();
         } catch (SQLException e) {
@@ -72,7 +70,7 @@ public class RuntimeVariableConfiguration {
                 + SQLTools.GetStringForSQL(processId) + ","
                 + SQLTools.GetStringForSQL(name) + ","
                 + SQLTools.GetStringForSQL(value) + ");";
-        DatabaseHandlerImpl.getInstance().executeUpdate(database, insertQuery);
+        DatabaseHandler.getInstance().executeUpdate(database, insertQuery);
     }
 
     private String truncateRuntimeVariableValue(String value) {
@@ -87,7 +85,7 @@ public class RuntimeVariableConfiguration {
         try {
             String query = "select VAR_VAL from " + PRC_RUN_VAR
                     + " where run_id = " + SQLTools.GetStringForSQL(runId) + " and var_nm = " + SQLTools.GetStringForSQL(name) + " ORDER BY prc_id DESC;";
-            CachedRowSet crs = DatabaseHandlerImpl.getInstance().executeQuery(database, query);
+            CachedRowSet crs = DatabaseHandler.getInstance().executeQuery(database, query);
             if (crs.size() == 0) {
                 return Optional.empty();
             }
@@ -104,7 +102,7 @@ public class RuntimeVariableConfiguration {
     }
 
     public void shutdown() {
-        DatabaseHandlerImpl.getInstance().shutdown(database);
+        DatabaseHandler.getInstance().shutdown(database);
     }
 
 }

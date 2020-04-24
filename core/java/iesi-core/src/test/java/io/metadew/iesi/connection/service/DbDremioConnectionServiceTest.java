@@ -1,9 +1,9 @@
 package io.metadew.iesi.connection.service;
 
 import io.metadew.iesi.common.crypto.FrameworkCrypto;
-import io.metadew.iesi.connection.database.DatabaseHandlerImpl;
-import io.metadew.iesi.connection.database.DremioDatabase;
-import io.metadew.iesi.connection.database.connection.dremio.DremioDatabaseConnection;
+import io.metadew.iesi.connection.database.DatabaseHandler;
+import io.metadew.iesi.connection.database.dremio.DremioDatabase;
+import io.metadew.iesi.connection.database.dremio.DremioDatabaseConnection;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
@@ -26,15 +26,15 @@ public class DbDremioConnectionServiceTest {
 
     @BeforeAll
     static void setup() {
-        DatabaseHandlerImpl databaseConnectionHandler = DatabaseHandlerImpl.getInstance();
-        DatabaseHandlerImpl databaseConnectionHandlerSpy = Mockito.spy(databaseConnectionHandler);
-        Whitebox.setInternalState(DatabaseHandlerImpl.class, "INSTANCE", databaseConnectionHandlerSpy);
+        DatabaseHandler databaseConnectionHandler = DatabaseHandler.getInstance();
+        DatabaseHandler databaseConnectionHandlerSpy = Mockito.spy(databaseConnectionHandler);
+        Whitebox.setInternalState(DatabaseHandler.class, "INSTANCE", databaseConnectionHandlerSpy);
         Mockito.doReturn(false).when(databaseConnectionHandlerSpy).isInitializeConnectionPool(any());
     }
 
     @AfterAll
     static void destroy() {
-        Whitebox.setInternalState(DatabaseHandlerImpl.class, "INSTANCE", (DatabaseHandlerImpl) null);
+        Whitebox.setInternalState(DatabaseHandler.class, "INSTANCE", (DatabaseHandler) null);
     }
 
     @Test
@@ -51,7 +51,7 @@ public class DbDremioConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "password"), "password"))
                         .collect(Collectors.toList()));
         DremioDatabase dremioDatabase = new DremioDatabase(new DremioDatabaseConnection("host", 1, "zookeeper", "cluster", "schema", "user", "password"), "schema");
-        assertEquals(dremioDatabase, DatabaseHandlerImpl.getInstance().getDatabase(connection));
+        assertEquals(dremioDatabase, DatabaseHandler.getInstance().getDatabase(connection));
     }
 
     @Test
@@ -68,7 +68,7 @@ public class DbDremioConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "password"), "password"))
                         .collect(Collectors.toList()));
         DremioDatabase dremioDatabase = new DremioDatabase(new DremioDatabaseConnection("host", 1, "direct", "cluster", "schema", "user", "password"), "schema");
-        assertEquals(dremioDatabase, DatabaseHandlerImpl.getInstance().getDatabase(connection));
+        assertEquals(dremioDatabase, DatabaseHandler.getInstance().getDatabase(connection));
     }
 
     @Test
@@ -84,7 +84,7 @@ public class DbDremioConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "user"), "user"),
                         new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "password"), "password"))
                         .collect(Collectors.toList()));
-        assertThrows(RuntimeException.class, () -> DatabaseHandlerImpl.getInstance().getDatabase(connection),
+        assertThrows(RuntimeException.class, () -> DatabaseHandler.getInstance().getDatabase(connection),
                 MessageFormat.format("Connection {0} does not contain mandatory parameter 'mode'", connection));
     }
 
@@ -102,7 +102,7 @@ public class DbDremioConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "password"), FrameworkCrypto.getInstance().encrypt("encrypted_password")))
                         .collect(Collectors.toList()));
         DremioDatabase dremioDatabase = new DremioDatabase(new DremioDatabaseConnection("host", 1, "direct", "cluster", "schema", "user", "encrypted_password"), "schema");
-        assertEquals(dremioDatabase, DatabaseHandlerImpl.getInstance().getDatabase(connection));
+        assertEquals(dremioDatabase, DatabaseHandler.getInstance().getDatabase(connection));
     }
 
     @Test
@@ -117,7 +117,7 @@ public class DbDremioConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "user"), "user"),
                         new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "password"), "password"))
                         .collect(Collectors.toList()));
-        assertThrows(RuntimeException.class, () -> DatabaseHandlerImpl.getInstance().getDatabase(connection),
+        assertThrows(RuntimeException.class, () -> DatabaseHandler.getInstance().getDatabase(connection),
                 MessageFormat.format("Connection {0} does not contain mandatory parameter 'host'", connection));
     }
 
@@ -133,7 +133,7 @@ public class DbDremioConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "user"), "user"),
                         new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "password"), "password"))
                         .collect(Collectors.toList()));
-        assertThrows(RuntimeException.class, () -> DatabaseHandlerImpl.getInstance().getDatabase(connection),
+        assertThrows(RuntimeException.class, () -> DatabaseHandler.getInstance().getDatabase(connection),
                 MessageFormat.format("Connection {0} does not contain mandatory parameter 'port'", connection));
     }
 
@@ -149,7 +149,7 @@ public class DbDremioConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "user"), "user"),
                         new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "password"), "password"))
                         .collect(Collectors.toList()));
-        assertThrows(RuntimeException.class, () -> DatabaseHandlerImpl.getInstance().getDatabase(connection),
+        assertThrows(RuntimeException.class, () -> DatabaseHandler.getInstance().getDatabase(connection),
                 MessageFormat.format("Connection {0} does not contain mandatory parameter 'mode'", connection));
     }
 
@@ -164,7 +164,7 @@ public class DbDremioConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "user"), "user"),
                         new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "password"), "password"))
                         .collect(Collectors.toList()));
-        assertThrows(RuntimeException.class, () -> DatabaseHandlerImpl.getInstance().getDatabase(connection),
+        assertThrows(RuntimeException.class, () -> DatabaseHandler.getInstance().getDatabase(connection),
                 MessageFormat.format("Connection {0} does not contain mandatory parameter 'cluster'", connection));
     }
 
@@ -179,7 +179,7 @@ public class DbDremioConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "user"), "user"),
                         new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "password"), "password"))
                         .collect(Collectors.toList()));
-        assertThrows(RuntimeException.class, () -> DatabaseHandlerImpl.getInstance().getDatabase(connection),
+        assertThrows(RuntimeException.class, () -> DatabaseHandler.getInstance().getDatabase(connection),
                 MessageFormat.format("Connection {0} does not contain mandatory parameter 'schema'", connection));
     }
 
@@ -194,7 +194,7 @@ public class DbDremioConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "schema"), "schema"),
                         new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "password"), "password"))
                         .collect(Collectors.toList()));
-        assertThrows(RuntimeException.class, () -> DatabaseHandlerImpl.getInstance().getDatabase(connection),
+        assertThrows(RuntimeException.class, () -> DatabaseHandler.getInstance().getDatabase(connection),
                 MessageFormat.format("Connection {0} does not contain mandatory parameter 'user'", connection));
     }
 
@@ -209,7 +209,7 @@ public class DbDremioConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "schema"), "schema"),
                         new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "user"), "user"))
                         .collect(Collectors.toList()));
-        assertThrows(RuntimeException.class, () -> DatabaseHandlerImpl.getInstance().getDatabase(connection),
+        assertThrows(RuntimeException.class, () -> DatabaseHandler.getInstance().getDatabase(connection),
                 MessageFormat.format("Connection {0} does not contain mandatory parameter 'password'", connection));
     }
 }

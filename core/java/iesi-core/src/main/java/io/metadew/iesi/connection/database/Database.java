@@ -27,8 +27,8 @@ public abstract class Database {
         this.databaseConnection = databaseConnection;
         this.maximalPoolSize = DEFAULT_MAX_POOL_SIZE;
         this.initialPoolSize = DEFAULT_INITIAL_POOL_SIZE;
-        if (DatabaseHandlerImpl.getInstance().isInitializeConnectionPool(this)) {
-            this.connectionPool = DatabaseHandlerImpl.getInstance().createConnectionPool(this, databaseConnection);;
+        if (DatabaseHandler.getInstance().isInitializeConnectionPool(this)) {
+            this.connectionPool = DatabaseHandler.getInstance().createConnectionPool(this, databaseConnection);;
         }
     }
 
@@ -36,8 +36,8 @@ public abstract class Database {
         this.databaseConnection = databaseConnection;
         this.initialPoolSize = initialPoolSize;
         this.maximalPoolSize = maximalPoolSize;
-        if (DatabaseHandlerImpl.getInstance().isInitializeConnectionPool(this)) {
-            this.connectionPool = DatabaseHandlerImpl.getInstance().createConnectionPool(this, databaseConnection);;
+        if (DatabaseHandler.getInstance().isInitializeConnectionPool(this)) {
+            this.connectionPool = DatabaseHandler.getInstance().createConnectionPool(this, databaseConnection);;
         }
     }
 

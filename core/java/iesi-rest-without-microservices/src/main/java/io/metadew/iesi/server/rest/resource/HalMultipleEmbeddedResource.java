@@ -3,13 +3,13 @@ package io.metadew.iesi.server.rest.resource;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import org.springframework.hateoas.ResourceSupport;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @JsonPropertyOrder({"_embedded", "_links"})
-public class HalMultipleEmbeddedResource<T extends ResourceSupport> extends ResourceSupport {
+public class HalMultipleEmbeddedResource<T extends RepresentationModel> extends RepresentationModel {
 
     private List<T> embeddedResources;
 

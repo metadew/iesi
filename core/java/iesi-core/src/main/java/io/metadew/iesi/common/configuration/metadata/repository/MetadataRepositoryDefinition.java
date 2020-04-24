@@ -12,7 +12,6 @@ import java.util.List;
 @AllArgsConstructor
 public class MetadataRepositoryDefinition {
 
-    private String name;
     private String instance;
     private List<String> categories;
     private MetadataRepositoryCoordinatorDefinition coordinator;

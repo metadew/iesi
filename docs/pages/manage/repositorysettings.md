@@ -34,7 +34,7 @@ iesi:
 ```
 
 ### Metdata Repository Database types
-Currently IESI supports the following metadata repositories:
+Currently IESI supports the following database technologies as metadata repositories:
 * H2
 * SQLite
 * MsSql
@@ -44,4 +44,13 @@ Currently IESI supports the following metadata repositories:
 
 ### Advanced configuration
 
-**Work in progress**
+You can provide an SQL query that will be executed first when opening a JDBC connection to the database using the `init_sql` parameter.
+
+```yaml
+...
+        coordinator:
+          type: h2
+          init_sql: alter session set ...
+          connection: jdbc:h2:~/repository
+...
+```

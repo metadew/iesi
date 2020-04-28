@@ -1,10 +1,9 @@
 package io.metadew.iesi.script.operation;
 
-import io.metadew.iesi.connection.database.connection.sqlite.SqliteDatabaseConnection;
+import io.metadew.iesi.common.configuration.framework.FrameworkConfiguration;
+import io.metadew.iesi.connection.database.sqlite.SqliteDatabaseConnection;
 import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.connection.tools.FolderTools;
-import io.metadew.iesi.common.configuration.framework.FrameworkConfiguration;
-import io.metadew.iesi.common.configuration.framework.FrameworkFolder;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
@@ -27,9 +26,11 @@ public class StageOperation {
         this.setStageName(stageName);
         this.setStageCleanup(StageCleanup);
 
-        String stageFolderName = FrameworkConfiguration.getInstance().getFrameworkFolder("run.tmp")
-                .map(FrameworkFolder::getAbsolutePath)
-                .orElseThrow(() -> new RuntimeException("no definition found for run.tmp")) + File.separator + "stage";
+        String stageFolderName = FrameworkConfiguration.getInstance()
+                .getMandatoryFrameworkFolder("run.tmp")
+                .getAbsolutePath()
+                .resolve("stage")
+                .toString();
         FolderTools.createFolder(stageFolderName);
         this.setStageFileName(this.getStageName() + ".db3");
         this.setStageFilePath(FilenameUtils.normalize(stageFolderName + File.separator + this.getStageFileName()));

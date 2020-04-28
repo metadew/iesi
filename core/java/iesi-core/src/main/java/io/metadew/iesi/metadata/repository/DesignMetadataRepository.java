@@ -22,8 +22,8 @@ import java.util.stream.Collectors;
 public class DesignMetadataRepository extends MetadataRepository {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public DesignMetadataRepository(String name, String scope, RepositoryCoordinator repositoryCoordinator) {
-        super(scope, repositoryCoordinator);
+    public DesignMetadataRepository(String instance, RepositoryCoordinator repositoryCoordinator) {
+        super(instance, repositoryCoordinator);
         ScriptConfiguration.getInstance().init(this);
         ComponentConfiguration.getInstance().init(this);
     }

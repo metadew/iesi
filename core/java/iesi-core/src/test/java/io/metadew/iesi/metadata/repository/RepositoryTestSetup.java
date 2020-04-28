@@ -2,8 +2,8 @@ package io.metadew.iesi.metadata.repository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.connection.database.Database;
-import io.metadew.iesi.connection.database.H2Database;
-import io.metadew.iesi.connection.database.connection.h2.H2MemoryDatabaseConnection;
+import io.metadew.iesi.connection.database.h2.H2Database;
+import io.metadew.iesi.connection.database.h2.H2MemoryDatabaseConnection;
 import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.metadata.definition.DataObject;

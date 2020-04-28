@@ -8,14 +8,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.springframework.hateoas.ResourceSupport;
-
+import org.springframework.hateoas.RepresentationModel;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
 @NoArgsConstructor
-public class ImpersonationParameterDto extends ResourceSupport {
+public class ImpersonationParameterDto extends RepresentationModel<ImpersonationParameterDto> {
 
     private String connection;
     private String impersonation;

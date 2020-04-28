@@ -14,6 +14,7 @@ import io.metadew.iesi.server.rest.resource.component.dto.ComponentGlobalDto;
 import io.metadew.iesi.server.rest.resource.component.resource.ComponentDtoResourceAssembler;
 import io.metadew.iesi.server.rest.resource.component.resource.ComponentGetByNameDtoAssembler;
 import io.metadew.iesi.server.rest.resource.component.resource.ComponentGlobalDtoResourceAssembler;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,10 +27,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static io.metadew.iesi.server.rest.helper.Filter.distinctByKey;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
+@Tag(name = "components", description = "Everything about components")
 @RequestMapping("/components")
 public class ComponentsController {
 
@@ -53,28 +55,28 @@ public class ComponentsController {
         List<Component> components = componentConfiguration.getAll();
         return new HalMultipleEmbeddedResource<>(components.stream()
                 .filter(distinctByKey(Component::getName))
-                .map(component -> componentGlobalDtoResourceAssembler.toResource(Collections.singletonList(component)))
+                .map(component -> componentGlobalDtoResourceAssembler.toModel(Collections.singletonList(component)))
                 .collect(Collectors.toList()));
     }
 
     @GetMapping("/{name}")
     public ComponentByNameDto getByName(@PathVariable String name) {
         List<Component> component = componentConfiguration.getByID(IdentifierTools.getComponentIdentifier(name));
-        return componentGetByNameGetDtoAssembler.toResource(component);
+        return componentGetByNameGetDtoAssembler.toModel(component);
     }
 
     @GetMapping("/{name}/{version}")
     public ComponentDto get(@PathVariable String name, @PathVariable Long version) throws MetadataDoesNotExistException {
         Component component = componentConfiguration.get(new ComponentKey(IdentifierTools.getComponentIdentifier(name), version)).
                 orElseThrow(() -> new MetadataDoesNotExistException(new ComponentKey(IdentifierTools.getComponentIdentifier(name), version)));
-        return componentDtoResourceAssembler.toResource(component);
+        return componentDtoResourceAssembler.toModel(component);
     }
 
     @PostMapping("/")
     public ComponentDto post(@Valid @RequestBody ComponentDto component) {
         try {
             componentConfiguration.insert(component.convertToEntity());
-            return componentDtoResourceAssembler.toResource(component.convertToEntity());
+            return componentDtoResourceAssembler.toModel(component.convertToEntity());
         } catch (MetadataAlreadyExistsException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                     "Component " + component.getName() + " already exists");
@@ -104,7 +106,7 @@ public class ComponentsController {
             throw new DataBadRequestException(version);
         }
         componentConfiguration.update(component.convertToEntity());
-        return componentDtoResourceAssembler.toResource(component.convertToEntity());
+        return componentDtoResourceAssembler.toModel(component.convertToEntity());
 
     }
 

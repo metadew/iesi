@@ -3,22 +3,23 @@ package io.metadew.iesi.server.rest.resource.component.resource;
 import io.metadew.iesi.metadata.definition.component.Component;
 import io.metadew.iesi.server.rest.controller.ComponentsController;
 import io.metadew.iesi.server.rest.resource.component.dto.ComponentGlobalDto;
-import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
+import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 
 import java.util.List;
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @org.springframework.stereotype.Component
-public class ComponentGlobalDtoResourceAssembler extends ResourceAssemblerSupport<List<Component>, ComponentGlobalDto> {
+public class ComponentGlobalDtoResourceAssembler extends RepresentationModelAssemblerSupport<List<Component>, ComponentGlobalDto> {
+
 
     public ComponentGlobalDtoResourceAssembler() {
         super(ComponentsController.class, ComponentGlobalDto.class);
     }
 
     @Override
-    public ComponentGlobalDto toResource(List<Component> components) {
+    public ComponentGlobalDto toModel(List<Component> components) {
         if (components.isEmpty()) {
             return null;
         } else {

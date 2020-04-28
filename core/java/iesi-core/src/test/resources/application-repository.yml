@@ -81,3 +81,18 @@ iesi:
 #          writer:
 #            name:
 #            password:
+
+#          type: mysql
+#          host:
+#          name:
+#          port:
+#          schema:
+#          owner:
+#            name:
+#            password:
+#          reader:
+#            name:
+#            password:
+#          writer:
+#            name:
+#            password:

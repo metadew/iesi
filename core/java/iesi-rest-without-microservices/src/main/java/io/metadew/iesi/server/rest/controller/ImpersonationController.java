@@ -10,6 +10,7 @@ import io.metadew.iesi.server.rest.error.DataBadRequestException;
 import io.metadew.iesi.server.rest.resource.HalMultipleEmbeddedResource;
 import io.metadew.iesi.server.rest.resource.impersonation.dto.ImpersonationDto;
 import io.metadew.iesi.server.rest.resource.impersonation.resource.ImpersonatonDtoResourceAssembler;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,10 +21,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static io.metadew.iesi.server.rest.helper.Filter.distinctByKey;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
+@Tag(name = "impersonations", description = "Everything about impersonations")
 @RequestMapping("/impersonations")
 public class ImpersonationController {
 
@@ -43,21 +45,21 @@ public class ImpersonationController {
         List<Impersonation> impersonations = impersonationConfiguration.getAllImpersonations();
         return new HalMultipleEmbeddedResource<>(impersonations.stream()
                 .filter(distinctByKey(impersonation -> impersonation.getMetadataKey().getName()))
-                .map(impersonation -> impersonatonDtoResourceAssembler.toResource(impersonation))
+                .map(impersonation -> impersonatonDtoResourceAssembler.toModel(impersonation))
                 .collect(Collectors.toList()));
     }
 
     @GetMapping("/{name}")
     public ImpersonationDto get(@PathVariable String name) throws MetadataDoesNotExistException {
         return impersonationConfiguration.getImpersonation(name)
-                .map(impersonation -> impersonatonDtoResourceAssembler.toResource(impersonation))
+                .map(impersonation -> impersonatonDtoResourceAssembler.toModel(impersonation))
                 .orElseThrow(() -> new MetadataDoesNotExistException(new ImpersonationKey(name)));
     }
 
     @PostMapping("")
     public ImpersonationDto post(@Valid @RequestBody ImpersonationDto impersonationDto) throws MetadataAlreadyExistsException {
         impersonationConfiguration.insertImpersonation(impersonationDto.convertToEntity());
-        return impersonatonDtoResourceAssembler.toResource(impersonationDto.convertToEntity());
+        return impersonatonDtoResourceAssembler.toModel(impersonationDto.convertToEntity());
     }
 
     @PutMapping("")
@@ -83,7 +85,7 @@ public class ImpersonationController {
             throw new DataBadRequestException(name);
         }
         impersonationConfiguration.updateImpersonation(impersonation.convertToEntity());
-        return impersonatonDtoResourceAssembler.toResource(impersonation.convertToEntity());
+        return impersonatonDtoResourceAssembler.toModel(impersonation.convertToEntity());
 
     }
 

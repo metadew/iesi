@@ -8,16 +8,16 @@ import io.metadew.iesi.server.rest.resource.connection.dto.ConnectionDto;
 import io.metadew.iesi.server.rest.resource.connection.dto.ConnectionParameterDto;
 import org.modelmapper.ModelMapper;
 import org.springframework.hateoas.Link;
-import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
+import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Component
-public class ConnectionDtoResourceAssembler extends ResourceAssemblerSupport<Connection, ConnectionDto> {
+public class ConnectionDtoResourceAssembler extends RepresentationModelAssemblerSupport<Connection, ConnectionDto> {
 
     private ModelMapper modelMapper;
 
@@ -27,7 +27,7 @@ public class ConnectionDtoResourceAssembler extends ResourceAssemblerSupport<Con
     }
 
     @Override
-    public ConnectionDto toResource(Connection connection) {
+    public ConnectionDto toModel(Connection connection) {
         ConnectionDto connectionDto = convertToDto(connection);
         Link selfLink = linkTo(methodOn(ConnectionsController.class)
                 .get(connection.getMetadataKey().getName(), connection.getMetadataKey().getEnvironmentKey().getName()))

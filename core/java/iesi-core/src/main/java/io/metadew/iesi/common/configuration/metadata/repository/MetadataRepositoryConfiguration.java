@@ -3,7 +3,6 @@ package io.metadew.iesi.common.configuration.metadata.repository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.configuration.metadata.MetadataConfiguration;
-import io.metadew.iesi.common.configuration.metadata.repository.service.MetadataRepositoryServiceImpl;
 import io.metadew.iesi.metadata.repository.*;
 import lombok.extern.log4j.Log4j2;
 
@@ -82,7 +81,7 @@ public class MetadataRepositoryConfiguration {
 
     private void convertConfigurations() {
         for (MetadataRepositoryDefinition metadataRepositoryDefinition : metadataRepositoryDefinitions) {
-            metadataRepositories.addAll(MetadataRepositoryServiceImpl.getInstance().convert(metadataRepositoryDefinition));
+            metadataRepositories.addAll(MetadataRepositoryService.getInstance().convert(metadataRepositoryDefinition));
         }
     }
 

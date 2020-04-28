@@ -12,6 +12,7 @@ iesi:
 
         # type of database: sqlite, h2, mssql, netezza, oracle, postgresql
         coordinator:
+          # init_sql: alter  current....
           type: h2
           mode: memory
           database: test;DB_CLOSE_DELAY=-1
@@ -70,8 +71,22 @@ iesi:
 #          host: 
 #          name: 
 #          port: 
-#          reader: 
-#          schema: 
+#          schema:
+#          owner:
+#            name:
+#            password:
+#          reader:
+#            name:
+#            password:
+#          writer:
+#            name:
+#            password:
+
+#          type: mysql
+#          host:
+#          name:
+#          port:
+#          schema:
 #          owner:
 #            name:
 #            password:

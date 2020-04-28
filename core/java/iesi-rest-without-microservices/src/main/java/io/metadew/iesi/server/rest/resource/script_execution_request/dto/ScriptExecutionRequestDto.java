@@ -1,24 +1,23 @@
 package io.metadew.iesi.server.rest.resource.script_execution_request.dto;
 
 import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
-import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequestStatus;
-import io.metadew.iesi.metadata.definition.execution.script.ScriptNameExecutionRequest;
+import io.metadew.iesi.metadata.definition.execution.script.*;
 import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionRequestKey;
-import io.metadew.iesi.server.rest.resource.Dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
-
 
 @Data
 @EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
 @NoArgsConstructor
-public class ScriptExecutionRequestDto extends Dto {
+public class ScriptExecutionRequestDto extends RepresentationModel<ScriptExecutionRequestDto> {
 
     private String scriptExecutionRequestId;
     private String executionRequestId;
@@ -39,4 +38,22 @@ public class ScriptExecutionRequestDto extends Dto {
         );
     }
 
+    public ScriptExecutionRequest convertToNewEntity(String executionRequestId) throws ScriptExecutionRequestBuilderException {
+        String uuid = UUID.randomUUID().toString();
+        return new ScriptExecutionRequestBuilder()
+                .scriptExecutionRequestKey(new ScriptExecutionRequestKey(uuid))
+                .mode("script")
+                .executionRequestKey(new ExecutionRequestKey(executionRequestId))
+                .environment(environment)
+                .exit(exit)
+                .impersonations(impersonations.stream()
+                        .map(scriptExecutionRequestImpersonationDto -> scriptExecutionRequestImpersonationDto.convertToEntity(new ScriptExecutionRequestKey(uuid)))
+                        .collect(Collectors.toList()))
+                .parameters(parameters.stream()
+                        .map(scriptExecutionRequestParameterDto -> scriptExecutionRequestParameterDto.convertToEntity(new ScriptExecutionRequestKey(uuid)))
+                        .collect(Collectors.toList()))
+                .scriptName(scriptName)
+                .scriptVersion(scriptVersion)
+                .build();
+    }
 }

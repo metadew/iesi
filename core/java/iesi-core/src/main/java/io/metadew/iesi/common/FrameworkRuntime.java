@@ -1,21 +1,17 @@
 package io.metadew.iesi.common;
 
-import io.metadew.iesi.common.properties.PropertiesTools;
-import io.metadew.iesi.connection.tools.FileTools;
-import io.metadew.iesi.connection.tools.FolderTools;
 import io.metadew.iesi.common.configuration.framework.FrameworkConfiguration;
-import org.apache.commons.io.FilenameUtils;
 
-import java.io.File;
-import java.util.Properties;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.UUID;
 
 public class FrameworkRuntime {
 
-	private String localHostChallengeFileName;
-
 	private static FrameworkRuntime INSTANCE;
-
+	private Path localHostChallengePath;
 	public synchronized static FrameworkRuntime getInstance() {
 		if (INSTANCE == null) {
 			INSTANCE = new FrameworkRuntime();
@@ -25,31 +21,24 @@ public class FrameworkRuntime {
 
 	private FrameworkRuntime() {}
 
-	public void init() {
-		String runCacheFolderName = FrameworkConfiguration.getInstance().getMandatoryFrameworkFolder("run.cache").getAbsolutePath();
-		FolderTools.createFolder(runCacheFolderName);
-
-		String runSpoolFolderName = runCacheFolderName + File.separator + "spool";
-		FolderTools.createFolder(runSpoolFolderName);
-
+	public void init() throws IOException {
+		Path runCacheFolderName = FrameworkConfiguration.getInstance()
+				.getMandatoryFrameworkFolder("run.cache")
+				.getAbsolutePath();
+		Files.createDirectories(runCacheFolderName);
+		Files.createDirectories(runCacheFolderName.resolve("spool"));
 		String localHostChallenge = UUID.randomUUID().toString();
-		this.localHostChallengeFileName = FilenameUtils.normalize(runCacheFolderName + File.separator + localHostChallenge + ".fwk");
-		FileTools.appendToFile(localHostChallengeFileName, "", "localhost.challenge=" + localHostChallenge);
-
-		// Initialize process id
-		String processIdFileName = FilenameUtils.normalize(runCacheFolderName + File.separator + "processId.fwk");
-		Properties processIdProperties = new Properties();
-		processIdProperties.put("processId", "-1");
-		PropertiesTools.setProperties(processIdFileName, processIdProperties);
+		localHostChallengePath = runCacheFolderName.resolve(localHostChallenge + ".fwk");
+		Files.createFile(localHostChallengePath);
+		Files.write(runCacheFolderName.resolve(localHostChallenge + ".fwk"), ("localhost.challenge=" + localHostChallenge).getBytes(StandardCharsets.UTF_8));
 	}
 
 
 	public void terminate() {
-		//FolderTools.deleteFolder(this.getRunCacheFolderName(), true);
 	}
 
-	public String getLocalHostChallengeFileName() {
-		return localHostChallengeFileName;
+	public Path getLocalHostChallengeFileName() {
+		return localHostChallengePath;
 	}
 
 }

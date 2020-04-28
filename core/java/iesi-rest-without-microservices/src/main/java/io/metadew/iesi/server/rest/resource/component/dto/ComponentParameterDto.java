@@ -3,13 +3,13 @@ package io.metadew.iesi.server.rest.resource.component.dto;
 import io.metadew.iesi.metadata.definition.component.ComponentParameter;
 import io.metadew.iesi.metadata.definition.component.key.ComponentKey;
 import io.metadew.iesi.metadata.definition.component.key.ComponentParameterKey;
-import io.metadew.iesi.server.rest.resource.Dto;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.springframework.hateoas.RepresentationModel;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class ComponentParameterDto extends Dto {
+public class ComponentParameterDto extends RepresentationModel<ComponentParameterDto> {
 
     private final String name;
     private final String value;

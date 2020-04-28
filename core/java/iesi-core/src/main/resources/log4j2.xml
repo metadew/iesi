@@ -1,6 +1,83 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="WARN">
     <Appenders>
+        <File fileName="logs/iesi.log" name="default" append="true">
+            <PatternLayout>
+                <Pattern>%d %-5p [%c{1.}] - %m%n</Pattern>
+            </PatternLayout>
+        </File>
+        <Routing name="elasticSearchFileBeat">
+            <Routes pattern="$${marker:}">
+                <Route key="${marker:}">
+                    <File fileName="logs/filebeat.log" name="script" append="true">
+                        <PatternLayout>
+                            <Pattern>%d %-5p [%c{1.}] - %m%n</Pattern>
+                        </PatternLayout>
+                    </File>
+                </Route>
+                <Route>
+                    <File fileName="logs/filebeat/${marker:}.log" name="filebeat-${marker:}" append="false">
+                        <PatternLayout>
+                            <Pattern>%d %-5p [%c{1.}] - %m%n</Pattern>
+                        </PatternLayout>
+                    </File>
+                </Route>
+            </Routes>
+        </Routing>
+        <Routing name="scriptExecution">
+            <Routes pattern="$${ctx:runId}">
+                <Route key="${ctx:runId}">
+                    <File fileName="logs/iesi.log" name="script" append="true">
+                        <PatternLayout>
+                            <Pattern>%d %-5p [%c{1.}] - %m%n</Pattern>
+                        </PatternLayout>
+                    </File>
+                </Route>
+                <Route>
+                    <File fileName="logs/${ctx:runId}/script.log" name="script-${ctx:runId}" append="false">
+                        <PatternLayout>
+                            <Pattern>%d %-5p [%c{1.}] - %m%n</Pattern>
+                        </PatternLayout>
+                    </File>
+                </Route>
+            </Routes>
+        </Routing>
+        <Routing name="repository">
+            <Routes pattern="$${ctx:runId}">
+                <Route key="${ctx:runId}">
+                    <File fileName="logs/iesi.log" name="repository" append="true">
+                        <PatternLayout>
+                            <Pattern>%d %-5p [%c{1.}] - %m%n</Pattern>
+                        </PatternLayout>
+                    </File>
+                </Route>
+                <Route>
+                    <File fileName="logs/${ctx:runId}/repository.log" name="repository-${ctx:runId}" append="false">
+                        <PatternLayout>
+                            <Pattern>%d %-5p [%c{1.}] - %m%n</Pattern>
+                        </PatternLayout>
+                    </File>
+                </Route>
+            </Routes>
+        </Routing>
+        <Routing name="queries">
+            <Routes pattern="$${ctx:runId}">
+                <Route key="${ctx:runId}">
+                    <File fileName="logs/SQL.log" name="queries" append="true">
+                        <PatternLayout>
+                            <Pattern>%d %-5p [%c{1.}] - %m%n</Pattern>
+                        </PatternLayout>
+                    </File>
+                </Route>
+                <Route>
+                    <File fileName="logs/${ctx:runId}/SQL.log" name="queries-${ctx:runId}" append="false">
+                        <PatternLayout>
+                            <Pattern>%d %-5p [%c{1.}] - %m%n</Pattern>
+                        </PatternLayout>
+                    </File>
+                </Route>
+            </Routes>
+        </Routing>
         <Console name="STDOUT" target="SYSTEM_OUT">
             <PatternLayout pattern="%d %-5p [%c{1.}] - %m%n" />i
         </Console>

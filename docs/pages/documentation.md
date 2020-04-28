@@ -16,11 +16,11 @@
 	* [Execute script using a parameter list](/{{site.repository}}/pages/tutorial/executescriptusingparameterlist.html)
   * Always useful to know or refresh
     * Define a script and its actions
-    * [Load configuration](/{{site.repository}}/pages/tutorial/loadconfiguration.html)  
-	* [Execute script](/{{site.repository}}/pages/tutorial/executescript.html)  
+    * [Load configuration](/{{site.repository}}/pages/tutorial/loadconfiguration.html)
+	* [Execute script](/{{site.repository}}/pages/tutorial/executescript.html)
   * Working with environments
-    * [Define an environment to execute a script on](/{{site.repository}}/pages/tutorial/environments/environments.1.html)  
-	* [Change the environment during execution of a script](/{{site.repository}}/pages/tutorial/environments/environments.2.html)  
+    * [Define an environment to execute a script on](/{{site.repository}}/pages/tutorial/environments/environments.1.html)
+	* [Change the environment during execution of a script](/{{site.repository}}/pages/tutorial/environments/environments.2.html)
   * Working with parameters
     * [Define a parameter from the command line](/{{site.repository}}/pages/tutorial/parameters/parameters.1.html)
 	* [Define a parameter inside a script](/{{site.repository}}/pages/tutorial/parameters/parameters.2.html)
@@ -28,9 +28,9 @@
 	* [Load a parameter file when executing a script](/{{site.repository}}/pages/tutorial/parameters/parameters.3.html)
 	* Load a parameter file inside a script
   * Working with conditions
-    * [Conditional action execution](/{{site.repository}}/pages/tutorial/conditions/conditionalactionexecution.html)  
+    * [Conditional action execution](/{{site.repository}}/pages/tutorial/conditions/conditionalactionexecution.html)
   * Working with iterations
-    * [Create a first iteration](/{{site.repository}}/pages/tutorial/iterations/createfirstiteration.html)  
+    * [Create a first iteration](/{{site.repository}}/pages/tutorial/iterations/createfirstiteration.html)
   * Do more with...
     * [Shell commands](/{{site.repository}}/pages/domore/shellcommands.html)
 * [Define the system landscape](/{{site.repository}}/pages/define/define.html)
@@ -82,3 +82,4 @@
   * Create a plugin
 * [How to contribute](/{{site.repository}}/pages/contribute/contribute.html)
   * [How to setup a development machine](/{{site.repository}}/pages/contribute/development.html)
+  * [Way of working for contributions](/{{site.repository}}/pages/contribute/wayofworking.html)

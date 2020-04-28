@@ -1,5 +1,5 @@
 {% include navigation.html %}
 
-# Plugin Configuration
+# Action Configuration
 
 **Work in Progress**

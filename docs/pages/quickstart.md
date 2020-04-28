@@ -23,6 +23,8 @@ More details can be found [here](/{{site.repository}}/pages/download.html).
 
 * The framework requires at least Java 8. It is tested against build 1.8.0_181-b13 but has previously run against many builds. 
 * The java command is available on the path and can be executed without static path. 
+* Have Notepad++ installed (or another text editor).
+* Have SQLite Browser installed (https://sqlitebrowser.org/dl/).
 
 **Uncompress package**
 

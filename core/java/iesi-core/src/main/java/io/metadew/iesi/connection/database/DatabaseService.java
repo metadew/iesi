@@ -59,7 +59,7 @@ public abstract class DatabaseService<T extends Database> implements IDatabaseSe
 
 
     public void shutdown(T database) {
-        if (database.getConnectionPool() != null) {
+        if (database.getConnectionPool() != null && !database.getConnectionPool().isClosed()) {
             database.getConnectionPool().close();
         }
     }

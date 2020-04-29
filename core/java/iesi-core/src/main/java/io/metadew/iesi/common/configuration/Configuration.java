@@ -36,6 +36,9 @@ public class Configuration {
         log.debug("configuration after configuration file loading: " + properties);
         loadSystemVariables();
         log.debug("configuration after system variable loading: " + properties);
+        if (!getProperty("iesi.home").isPresent()) {
+            properties.put("home", Paths.get("..").toString());
+        }
     }
 
     public Optional<Object> getProperty(String key) {

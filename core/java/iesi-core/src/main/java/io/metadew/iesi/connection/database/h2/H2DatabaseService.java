@@ -33,7 +33,8 @@ public class H2DatabaseService extends SchemaDatabaseService<H2Database> impleme
         return INSTANCE;
     }
 
-    private H2DatabaseService() {}
+    private H2DatabaseService() {
+    }
 
     public H2Database getDatabase(Connection connection) {
         String userName = DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, userKey);
@@ -145,8 +146,10 @@ public class H2DatabaseService extends SchemaDatabaseService<H2Database> impleme
     }
 
     public void shutdown(H2Database h2Database) {
-        executeUpdate(h2Database, "drop all objects delete files");
-        super.shutdown(h2Database);
+        if (h2Database.getConnectionPool() != null && !h2Database.getConnectionPool().isClosed()) {
+            executeUpdate(h2Database, "drop all objects delete files");
+            super.shutdown(h2Database);
+        }
     }
 
 

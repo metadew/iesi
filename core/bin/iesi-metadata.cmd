@@ -1,21 +1,10 @@
 @echo off
 call set CURRENT_DIR="%CD%"
-call set SCRIPT_DIR=%~dp0
-
 setLocal EnableDelayedExpansion
 
-cd !SCRIPT_DIR!
-
-call iesi-setenv.cmd
-
 call set LIB_DIR="%CD%\..\lib"
+cd !LIB_DIR!
 
-Set CLASSPATH=*
-
-set CLASSPATH=!CLASSPATH!;%LIB_DIR%\*
-
-set CLASSPATH=!CLASSPATH!
-
-java -cp !CLASSPATH! io.metadew.iesi.launch.MetadataLauncher %*
+java -cp %LIB_DIR%\* io.metadew.iesi.launch.MetadataLauncher %*
 
 cd !CURRENT_DIR!

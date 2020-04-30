@@ -15,7 +15,6 @@
     * [Create first connection](/{{site.repository}}/pages/tutorial/createfirstconnection.html)
 	* [Execute script using a parameter list](/{{site.repository}}/pages/tutorial/executescriptusingparameterlist.html)
   * Always useful to know or refresh
-    * [Display the version of the framework](/{{site.repository}}/pages/tutorial/displayframeworkversion.html)
     * Define a script and its actions
     * [Load configuration](/{{site.repository}}/pages/tutorial/loadconfiguration.html)
 	* [Execute script](/{{site.repository}}/pages/tutorial/executescript.html)
@@ -56,7 +55,6 @@
 * [Manage the framework](/{{site.repository}}/pages/manage/manage.html)
   * [Framework settings file](/{{site.repository}}/pages/manage/frameworksettings.html)
   * [Repository settings file](/{{site.repository}}/pages/manage/repositorysettings.html)
-* [Secure the framework](/{{site.repository}}/pages/secure/secure.html)
 * [Deploy the framework](/{{site.repository}}/pages/deploy/deploy.html)
   * Configuration files
   * [Environment strategy](/{{site.repository}}/pages/deploy/environmentstrategy.html)
@@ -76,16 +74,12 @@
     * Subroutines
 	* Users
   * Data Model
-    * [Catalog data model](/{{site.repository}}/pages/understand/datamodel/catalog.html)
     * [Connectivity data model](/{{site.repository}}/pages/understand/datamodel/connectivity.html)
-    * [Control data model](/{{site.repository}}/pages/understand/datamodel/control.html)
     * [design data model](/{{site.repository}}/pages/understand/datamodel/design.html)
     * [result data model](/{{site.repository}}/pages/understand/datamodel/result.html)
     * [trace data model](/{{site.repository}}/pages/understand/datamodel/trace.html)
 * Extend the framework
   * Create a plugin
-* [Modules](/{{site.repository}}/pages/modules/modules.html)
-  * [SQL Insert](/{{site.repository}}/pages/modules/sqlinsert/sqlinsert.html)
 * [How to contribute](/{{site.repository}}/pages/contribute/contribute.html)
   * [How to setup a development machine](/{{site.repository}}/pages/contribute/development.html)
   * [Way of working for contributions](/{{site.repository}}/pages/contribute/wayofworking.html)

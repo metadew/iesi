@@ -34,19 +34,24 @@ But first, some configuration steps need to be completed.
 ## Configure for first use 
 The solution uses a repository to manage configuration and results. 
 
-First, open `conf/iesi-repository.conf` and complete the necessary configuration. 
+First, open `conf/application-repository.yml` and complete the necessary configuration. 
 While different types of repository can be used, we will use the most basic option, a local SQLite database. 
-```
-iesi.metadata.repository.type=SQLITE 
-iesi.metadata.repository.category=general
-iesi.metadata.repository.sqlite.file=c:/path.to.your.database/database.db3
+```yaml
+iesi:
+  metadata:
+    repository:
+      - categories:
+          - general
+        coordinator:
+          type: sqlite
+          file: c:/path.to.your.database/database.db3
 ```
 
 Next, the configuration repository will need to be created. Open a command window or shell: 
 * navigate to the `bin` folder
 * all configuration management is via the `bin/iesi-metadata.sh` (or `iesi-metadata.cmd` on Windows) command [![info](/{{site.repository}}/images/icons/question-dot.png)](/{{site.repository}}/pages/operate/operate.html)
 
-```
+```bash
 bin/iesi-metadata.sh -create -type general
 ```
 
@@ -89,7 +94,7 @@ The two configurations that are crucial to get started are the environments and 
 Basic execution of a script is done via the `bin/iesi-launch.sh` (or `bin/iesi-launch.cmd` on Windows) command providing 
 the `script` and `environment` option: execute a script on a given environment. 
 
-```
+```bash
 bin/iesi-launch.sh -script <arg> -env <arg>
 ```
 

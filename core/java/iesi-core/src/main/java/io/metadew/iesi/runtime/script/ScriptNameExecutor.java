@@ -15,12 +15,14 @@ import io.metadew.iesi.metadata.definition.script.result.key.ScriptResultKey;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.execution.ScriptExecutionBuilder;
+import lombok.extern.log4j.Log4j2;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Log4j2
 public class ScriptNameExecutor implements ScriptExecutor<ScriptNameExecutionRequest> {
 
     private static ScriptNameExecutor INSTANCE;
@@ -68,7 +70,6 @@ public class ScriptNameExecutor implements ScriptExecutor<ScriptNameExecutionReq
                         scriptExecutionRequest.getMetadataKey(), scriptExecution.getExecutionControl().getRunId(),
                         ScriptRunStatus.RUNNING, LocalDateTime.now(), null);
         ScriptExecutionConfiguration.getInstance().insert(scriptExecution1);
-
         scriptExecution.execute();
         scriptExecution1.updateScriptRunStatus(ScriptResultConfiguration.getInstance().get(new ScriptResultKey(scriptExecution1.getRunId(), -1L))
                 .map(scriptResult -> ScriptRunStatus.valueOf(scriptResult.getStatus()))

@@ -9,7 +9,7 @@ It is mandatory to define the root location of the IESI installation. This locat
 
 ```yaml
 iesi:
-  home: C:/Users/robbe.berrevoets/IESISandbox/0.4.0/b1
+  home: <path_to_iesi_installation>
   ...
 ```
 

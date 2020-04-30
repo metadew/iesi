@@ -29,7 +29,7 @@ The IESI installation can be run in server mode. If server mode is disabled, scr
 
 Server mode is set by the `server.mode` key (`off` for disabled, `standalone` for enabled). If server mode is enabled, the following configuration has to be defined:
 * `server.threads.size`: the maximum number of concurrent executions of scripts
-* `server.threads.timeout`: the maximum duration (in minutes) a script can run. If the this time threshold is exceeded, the script execution is aborted.
+* `server.threads.timeout`: the maximum duration (in minutes) a script can run. If this time threshold is exceeded, the script execution is aborted.
 
 ```yaml
 iesi:

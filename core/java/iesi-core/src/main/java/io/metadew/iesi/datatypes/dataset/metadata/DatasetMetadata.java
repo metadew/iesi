@@ -22,7 +22,8 @@ public class DatasetMetadata {
                         .resolve("datasets")
                         .resolve(datasetName)
                         .resolve("metadata")
-                        .resolve("metadata.db3")));
+                        .resolve("metadata.db3"),
+                null));
     }
 
     public DatasetMetadata(String datasetName, Database database) {

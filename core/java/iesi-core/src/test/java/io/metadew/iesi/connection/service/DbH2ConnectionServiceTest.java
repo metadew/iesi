@@ -52,7 +52,7 @@ public class DbH2ConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "password"), "password"))
                         .collect(Collectors.toList()));
         H2Database h2Database = new H2Database(new H2EmbeddedDatabaseConnection(
-                "file", "user", "password"), "schema");
+                "file", "user", "password", null, "schema"), "schema");
         assertEquals(h2Database, DatabaseHandler.getInstance().getDatabase(connection));
     }
 
@@ -70,7 +70,7 @@ public class DbH2ConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "password"), "password"))
                         .collect(Collectors.toList()));
         H2Database h2Database = new H2Database(new H2ServerDatabaseConnection(
-                "host", 1, "file", "user", "password"), "schema");
+                "host", 1, "file", "user", "password", null, "schema"), "schema");
         assertEquals(h2Database, DatabaseHandler.getInstance().getDatabase(connection));
     }
 
@@ -86,7 +86,7 @@ public class DbH2ConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "password"), "password"))
                         .collect(Collectors.toList()));
         H2Database h2Database = new H2Database(new H2MemoryDatabaseConnection(
-                "database", "user", "password"), "schema");
+                "database", "user", "password", null, "schema"), "schema");
         assertEquals(h2Database, DatabaseHandler.getInstance().getDatabase(connection));
     }
 
@@ -101,7 +101,7 @@ public class DbH2ConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "password"), FrameworkCrypto.getInstance().encrypt("encrypted_password")))
                         .collect(Collectors.toList()));
         H2Database h2Database = new H2Database(new H2DatabaseConnection(
-                "connectionURL", "user", "encrypted_password"), "schema");
+                "connectionURL", "user", "encrypted_password", null, "schema"), "schema");
         assertEquals(h2Database, DatabaseHandler.getInstance().getDatabase(connection));
     }
 

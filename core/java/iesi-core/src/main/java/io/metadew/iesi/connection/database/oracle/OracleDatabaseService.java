@@ -44,6 +44,7 @@ public class OracleDatabaseService extends SchemaDatabaseService<OracleDatabase>
                     DatabaseHandler.getInstance().getOptionalParameterWithKey(connection, connectionUrlKey).get(),
                     userName,
                     userPassword,
+                    null,
                     schemaName);
             return new OracleDatabase(oracleDatabaseConnection, schemaName);
         }
@@ -58,6 +59,7 @@ public class OracleDatabaseService extends SchemaDatabaseService<OracleDatabase>
                         DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, tnsAliasKey),
                         userName,
                         userPassword,
+                        null,
                         schemaName);
                 return new OracleDatabase(oracleDatabaseConnection, schemaName);
             case serviceModeKey:
@@ -67,6 +69,7 @@ public class OracleDatabaseService extends SchemaDatabaseService<OracleDatabase>
                         DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, serviceKey),
                         userName,
                         userPassword,
+                        null,
                         schemaName);
                 return new OracleDatabase(oracleDatabaseConnection, schemaName);
             default:

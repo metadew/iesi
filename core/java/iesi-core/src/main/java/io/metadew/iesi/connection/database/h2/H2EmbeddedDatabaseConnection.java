@@ -9,11 +9,11 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 public class H2EmbeddedDatabaseConnection extends H2DatabaseConnection {
 
-    public H2EmbeddedDatabaseConnection(String filePath, String userName, String userPassword) {
-        super("jdbc:h2:file:"+filePath, userName, userPassword);
+    public H2EmbeddedDatabaseConnection(String filePath, String userName, String userPassword, String initSql) {
+        super("jdbc:h2:file:"+filePath, userName, userPassword, initSql);
     }
 
-    public H2EmbeddedDatabaseConnection(String filePath, String userName, String userPassword, String schema) {
-        super("jdbc:h2:file:"+filePath, userName, userPassword, schema);
+    public H2EmbeddedDatabaseConnection(String filePath, String userName, String userPassword, String initSql, String schema) {
+        super("jdbc:h2:file:"+filePath, userName, userPassword, initSql, schema);
     }
 }

@@ -18,7 +18,7 @@ public class RuntimeActionCacheConfiguration {
 
     // Constructors
     public RuntimeActionCacheConfiguration(String runCacheFolderName) {
-        this.database = new H2Database(new H2MemoryDatabaseConnection(runCacheFolderName + File.separator + runCacheFileName, "sa", ""));
+        this.database = new H2Database(new H2MemoryDatabaseConnection(runCacheFolderName + File.separator + runCacheFileName, "sa", "", null));
         String query = "CREATE TABLE " + PRC_RUN_CACHE + " (" +
                 "RUN_ID VARCHAR(200) NOT NULL," +
                 "PRC_ID INT NOT NULL," +

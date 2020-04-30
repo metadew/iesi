@@ -46,6 +46,7 @@ public class H2DatabaseService extends SchemaDatabaseService<H2Database> impleme
                     DatabaseHandler.getInstance().getOptionalParameterWithKey(connection, connectionUrlKey).get(),
                     userName,
                     userPassword,
+                    null,
                     schemaName);
             return new H2Database(h2DatabaseConnection, schemaName);
         }
@@ -56,6 +57,7 @@ public class H2DatabaseService extends SchemaDatabaseService<H2Database> impleme
                         DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, fileKey),
                         userName,
                         userPassword,
+                        null,
                         schemaName);
                 return new H2Database(h2DatabaseConnection, schemaName);
             case serverModeKey:
@@ -67,6 +69,7 @@ public class H2DatabaseService extends SchemaDatabaseService<H2Database> impleme
                         DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, fileKey),
                         userName,
                         userPassword,
+                        null,
                         schemaName);
                 return new H2Database(h2DatabaseConnection, schemaName);
             case memoryModeKey:
@@ -74,6 +77,7 @@ public class H2DatabaseService extends SchemaDatabaseService<H2Database> impleme
                         DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, databaseKey),
                         userName,
                         userPassword,
+                        null,
                         schemaName);
                 return new H2Database(h2DatabaseConnection, schemaName);
             default:

@@ -89,7 +89,7 @@ public class RepositoryTestSetup {
     }
 
     private static Database getDatabase() {
-        return new H2Database(new H2MemoryDatabaseConnection(DB_NAME, DB_USER, DB_PASSWORD));
+        return new H2Database(new H2MemoryDatabaseConnection(DB_NAME, DB_USER, DB_PASSWORD, null, null));
     }
 
 }

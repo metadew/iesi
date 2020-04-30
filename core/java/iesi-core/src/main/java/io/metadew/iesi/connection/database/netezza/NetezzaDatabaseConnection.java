@@ -12,16 +12,20 @@ public class NetezzaDatabaseConnection extends SchemaDatabaseConnection {
 
     private static String type = "netezza";
 
-    public NetezzaDatabaseConnection(String connectionURL, String userName, String userPassword) {
-        super(type, connectionURL, userName, userPassword, null);
+    public NetezzaDatabaseConnection(String connectionURL, String userName, String userPassword, String initSql) {
+        super(type, connectionURL, userName, userPassword, initSql);
     }
 
-    public NetezzaDatabaseConnection(String connectionURL, String userName, String userPassword, String schema) {
-        super(type, connectionURL, userName, userPassword, null, schema);
+    public NetezzaDatabaseConnection(String connectionURL, String userName, String userPassword, String initSql, String schema) {
+        super(type, connectionURL, userName, userPassword, initSql, schema);
     }
 
-    public NetezzaDatabaseConnection(String hostName, int portNumber, String databaseName, String userName, String userPassword) {
-        this(getConnectionUrl(hostName, portNumber, databaseName), userName, userPassword);
+    public NetezzaDatabaseConnection(String hostName, int portNumber, String databaseName, String userName, String userPassword, String initSql) {
+        this(getConnectionUrl(hostName, portNumber, databaseName), userName, userPassword, initSql);
+    }
+
+    public NetezzaDatabaseConnection(String hostName, int portNumber, String databaseName, String userName, String userPassword, String initSql, String schema) {
+        this(getConnectionUrl(hostName, portNumber, databaseName), userName, userPassword, initSql, schema);
     }
 
     public static String getConnectionUrl(String hostName, int portNumber, String databaseName) {

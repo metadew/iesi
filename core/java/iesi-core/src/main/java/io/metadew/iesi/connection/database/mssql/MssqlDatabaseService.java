@@ -42,6 +42,7 @@ public class MssqlDatabaseService extends SchemaDatabaseService<MssqlDatabase> i
                     DatabaseHandler.getInstance().getOptionalParameterWithKey(connection, connectionUrlKey).get(),
                     userName,
                     userPassword,
+                    null,
                     schemaName);
             return new MssqlDatabase(mssqlDatabaseConnection, schemaName);
         }
@@ -55,6 +56,7 @@ public class MssqlDatabaseService extends SchemaDatabaseService<MssqlDatabase> i
                 databaseName,
                 userName,
                 userPassword,
+                null,
                 schemaName);
         return new MssqlDatabase(mssqlDatabaseConnection, schemaName);
     }

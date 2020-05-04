@@ -21,7 +21,8 @@ public class FrameworkFolder {
     public Path getAbsolutePath() {
         return Paths.get((String) Configuration.getInstance()
                 .getMandatoryProperty("iesi.home"))
-                .resolve(path);
+                .resolve(path)
+                .toAbsolutePath();
     }
 
 }

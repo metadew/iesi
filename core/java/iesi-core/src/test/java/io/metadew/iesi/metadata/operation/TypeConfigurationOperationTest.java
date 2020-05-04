@@ -1,7 +1,7 @@
 //package io.metadew.iesi.metadata.operation;
 //
-//import io.metadew.iesi.framework.configuration.FrameworkConfiguration;
-//import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
+//import io.metadew.iesi.common.configuration.FrameworkConfiguration;
+//import io.metadew.iesi.common.configuration.FrameworkFolderConfiguration;
 //import io.metadew.iesi.framework.execution.FrameworkExecution;
 //import org.junit.jupiter.api.Test;
 //import org.junit.jupiter.api.extension.ExtendWith;

@@ -1,7 +1,6 @@
 package io.metadew.iesi.runtime;
 
-import io.metadew.iesi.framework.configuration.FrameworkSettingConfiguration;
-import io.metadew.iesi.framework.execution.FrameworkControl;
+import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.execution.ExecutionRequestConfiguration;
 import io.metadew.iesi.metadata.configuration.execution.script.ScriptExecutionRequestConfiguration;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequest;
@@ -10,7 +9,6 @@ import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequestStatus;
 import io.metadew.iesi.metadata.definition.key.MetadataKey;
-import lombok.EqualsAndHashCode;
 import lombok.extern.log4j.Log4j2;
 
 import java.io.PrintWriter;
@@ -40,9 +38,10 @@ public class ExecutionRequestMonitor implements Runnable {
     }
 
     private ExecutionRequestMonitor() {
-        this.timeout = FrameworkSettingConfiguration.getInstance().getSettingPath("server.threads.timeout")
-                .map(settingPath -> Long.parseLong(FrameworkControl.getInstance().getProperty(settingPath)
-                        .orElseThrow(() -> new RuntimeException("no value set for server.threads.timeout"))))
+        // TODO: Create server configuration
+        this.timeout = Configuration.getInstance()
+                .getProperty("iesi.server.threads.timeout")
+                .map(settingPath -> new Long((Integer) settingPath))
                 .orElse(60L);
         this.executionRequestThreadMap = new ConcurrentHashMap<>();
     }
@@ -110,7 +109,7 @@ public class ExecutionRequestMonitor implements Runnable {
     }
 
     private void markAborted(ScriptExecutionRequest scriptExecutionRequest) {
-        scriptExecutionRequest.updateScriptExecutionRequestStatus(ScriptExecutionRequestStatus.ABORTED);
+        scriptExecutionRequest.setScriptExecutionRequestStatus(ScriptExecutionRequestStatus.ABORTED);
     }
 
     private boolean isTerminated(ExecutionRequestKey executionRequestKey) {
@@ -128,12 +127,12 @@ public class ExecutionRequestMonitor implements Runnable {
         for (ExecutionRequestKey executionRequestKey : executionRequestThreadMap.keySet()) {
             ExecutionRequestConfiguration.getInstance().get(executionRequestKey)
                     .ifPresent(executionRequest -> {
-                        executionRequest.updateExecutionRequestStatus(ExecutionRequestStatus.KILLED);
+                        executionRequest.setExecutionRequestStatus(ExecutionRequestStatus.KILLED);
                         ExecutionRequestConfiguration.getInstance().update(executionRequest);
                     });
             ScriptExecutionRequestConfiguration.getInstance().getByExecutionRequest(executionRequestKey)
                     .forEach(scriptExecutionRequest -> {
-                        scriptExecutionRequest.updateScriptExecutionRequestStatus(ScriptExecutionRequestStatus.ABORTED);
+                        scriptExecutionRequest.setScriptExecutionRequestStatus(ScriptExecutionRequestStatus.ABORTED);
                         ScriptExecutionRequestConfiguration.getInstance().update(scriptExecutionRequest);
                     });
         }

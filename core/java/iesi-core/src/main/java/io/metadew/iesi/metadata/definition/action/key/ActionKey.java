@@ -14,9 +14,4 @@ public class ActionKey extends MetadataKey {
     private final ScriptKey scriptKey;
     private final String actionId;
 
-    public ActionKey(String scriptId, long scriptVersionNumber, String actionId) {
-        this.scriptKey = new ScriptKey(scriptId, scriptVersionNumber);
-        this.actionId = actionId;
-    }
-
 }

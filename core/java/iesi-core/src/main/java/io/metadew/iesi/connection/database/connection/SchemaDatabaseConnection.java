@@ -1,26 +1,26 @@
 package io.metadew.iesi.connection.database.connection;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.util.Optional;
 
-/**
- * Connection object for databases. This is extended depending on the database
- * type.
- *
- * @author peter.billen
- */
+@Data
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
 public abstract class SchemaDatabaseConnection extends DatabaseConnection {
 
     @Setter
     private String schema;
 
-    public SchemaDatabaseConnection(String type, String connectionURL, String userName, String userPassword) {
-        super(type, connectionURL, userName, userPassword);
+    public SchemaDatabaseConnection(String type, String connectionURL, String userName, String userPassword, String connectionInitSql) {
+        super(type, connectionURL, userName, userPassword, connectionInitSql);
         this.schema = null;
     }
-    public SchemaDatabaseConnection(String type, String connectionURL, String userName, String userPassword, String schema) {
-        super(type, connectionURL, userName, userPassword);
+    public SchemaDatabaseConnection(String type, String connectionURL, String userName, String userPassword, String connectionInitSql, String schema) {
+        super(type, connectionURL, userName, userPassword, connectionInitSql);
         this.schema = schema;
     }
 

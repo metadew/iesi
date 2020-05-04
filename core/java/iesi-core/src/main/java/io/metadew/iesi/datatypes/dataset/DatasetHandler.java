@@ -2,9 +2,7 @@ package io.metadew.iesi.datatypes.dataset;
 
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
-import io.metadew.iesi.datatypes.DataTypeService;
 import io.metadew.iesi.datatypes.array.Array;
-import io.metadew.iesi.datatypes.dataset.keyvalue.KeyValueDataset;
 import io.metadew.iesi.datatypes.dataset.keyvalue.KeyValueDatasetService;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
@@ -18,7 +16,7 @@ import java.util.*;
 public class DatasetHandler {
 
     private static DatasetHandler INSTANCE;
-    private Map<Class<? extends Dataset>, DatasetService> datasetServiceMap;
+    private Map<Class<? extends Dataset>, IDatasetService> datasetServiceMap;
 
     public synchronized static DatasetHandler getInstance() {
         if (INSTANCE == null) {
@@ -38,7 +36,12 @@ public class DatasetHandler {
     }
 
     @SuppressWarnings("unchecked")
-    public Dataset getByNameAndLabels(String name, List<String> labels, ExecutionRuntime executionRuntime) throws IOException {
+    public void shutdown(Dataset dataset) {
+        getDatasetService(dataset).shutdown(dataset);
+    }
+
+    @SuppressWarnings("unchecked")
+    public Dataset getByNameAndLabels(String name, List<String> labels, ExecutionRuntime executionRuntime) {
         return KeyValueDatasetService.getInstance().getByNameAndLabels(name, labels, executionRuntime);
     }
 
@@ -60,8 +63,8 @@ public class DatasetHandler {
         getDatasetService(dataset).setDataItem(dataset, key, value);
     }
 
-    private DatasetService getDatasetService(Dataset dataset) {
-        DatasetService datasetService = datasetServiceMap.get(dataset.getClass());
+    private IDatasetService getDatasetService(Dataset dataset) {
+        IDatasetService datasetService = datasetServiceMap.get(dataset.getClass());
         if (datasetService == null) {
             throw new RuntimeException("No dataset service found to handle dataset of type " + dataset.getClass().getSimpleName());
         } else {

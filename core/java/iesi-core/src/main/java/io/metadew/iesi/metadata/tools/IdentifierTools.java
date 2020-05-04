@@ -14,14 +14,6 @@ public final class IdentifierTools {
         return DigestUtils.sha256Hex(input);
     }
 
-    public static String getFeatureIdentifier(String input) {
-        return DigestUtils.sha256Hex(input);
-    }
-
-    public static String getScenarioIdentifier(String input) {
-        return DigestUtils.sha256Hex(input);
-    }
-
     public static String getComponentIdentifier(String input) {
         return DigestUtils.sha256Hex(input);
     }

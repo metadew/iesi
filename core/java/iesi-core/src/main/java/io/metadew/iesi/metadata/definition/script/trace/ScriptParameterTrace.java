@@ -15,7 +15,7 @@ public class ScriptParameterTrace extends Metadata<ScriptParameterTraceKey> {
     }
 
     public ScriptParameterTrace(String runId, Long processId, ScriptParameter scriptParameter) {
-        this(new ScriptParameterTraceKey(runId, processId, scriptParameter.getName()), scriptParameter.getValue());
+        this(new ScriptParameterTraceKey(runId, processId, scriptParameter.getMetadataKey().getParameterName()), scriptParameter.getValue());
     }
 
     public String getScriptParameterValue() {

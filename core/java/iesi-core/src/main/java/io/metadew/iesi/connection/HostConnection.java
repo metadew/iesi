@@ -5,14 +5,13 @@ import io.metadew.iesi.connection.host.LinuxHostUserInfo;
 import io.metadew.iesi.connection.host.ShellCommandResult;
 import io.metadew.iesi.connection.host.ShellCommandSettings;
 import io.metadew.iesi.connection.operation.ConnectionOperation;
-import io.metadew.iesi.framework.execution.FrameworkRuntime;
+import io.metadew.iesi.common.FrameworkRuntime;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import org.apache.commons.io.IOUtils;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,25 +41,6 @@ public class HostConnection {
     public HostConnection() {
         this("", "", -1, "", null, "", "Y", "", "Y",
                 "", "", "");
-    }
-
-    public HostConnection(String type, String hostName, int portNumber, String userName, String userPassword, String tempPath,
-                          String terminalFlag, String jumphostConnectionName, String allowLocalhostExecution,
-                          String outputSystemOutput, String outputReturnCode, String outputRuntimeVariablesOutput,
-                          List<String> systemOutputKeywordList) {
-        this.type = type;
-        this.hostName = hostName;
-        this.portNumber = portNumber;
-        this.userName = userName;
-        this.userPassword = userPassword;
-        this.tempPath = tempPath;
-        this.terminalFlag = terminalFlag;
-        this.jumphostConnectionName = jumphostConnectionName;
-        this.allowLocalhostExecution = allowLocalhostExecution;
-        this.outputSystemOutput = outputSystemOutput;
-        this.outputReturnCode = outputReturnCode;
-        this.outputRuntimeVariablesOutput = outputRuntimeVariablesOutput;
-        this.systemOutputKeywordList = systemOutputKeywordList;
     }
 
     public HostConnection(String type, String hostName, int portNumber, String userName, String userPassword, String tempPath,
@@ -141,7 +121,7 @@ public class HostConnection {
         // Check if execution can be performed as being on localhost
         if (this.getAllowLocalhostExecution().equalsIgnoreCase("y")) {
             try {
-                if (this.localhostFileExists(FrameworkRuntime.getInstance().getLocalHostChallengeFileName())) {
+                if (this.localhostFileExists(FrameworkRuntime.getInstance().getLocalHostChallengeFileName().toString())) {
                     result = true;
                 } else {
                     result = false;
@@ -193,8 +173,7 @@ public class HostConnection {
 
     }
 
-    public ShellCommandResult executeLocalCommand(String shellPath, String shellCommand,
-                                                  ShellCommandSettings shellCommandSettings) {
+    public ShellCommandResult executeLocalCommand(String shellPath, String shellCommand) {
         String executionShellPath = "";
         String executionShellCommand = "";
         this.formatCommand("");
@@ -378,320 +357,6 @@ public class HostConnection {
 
     }
 
-    public ShellCommandResult executeRemoteCommandExec1(String shellPath, String shellCommand,
-                                                        ShellCommandSettings shellCommandSettings) {
-        String compiledShellCommand = "";
-        String executionShellPath = "";
-        String executionShellCommand = "";
-
-        compiledShellCommand += "echo SHELL_RUN_CMD";
-        compiledShellCommand += " && ";
-        compiledShellCommand += shellCommand;
-        compiledShellCommand += " && ";
-        compiledShellCommand += "SHELL_RUN_CMD_RC=$?";
-        compiledShellCommand += " && ";
-        compiledShellCommand += "echo SHELL_RUN_CMD_RC";
-        compiledShellCommand += " && ";
-        compiledShellCommand += "echo $SHELL_RUN_CMD_RC";
-
-        if (shellCommandSettings.getSetRunVar()) {
-            compiledShellCommand += " && ";
-            compiledShellCommand += "echo SHELL_RUN_CMD_RUN_VAR";
-            compiledShellCommand += " && ";
-            compiledShellCommand += "set";
-        }
-
-        // CompiledShellCommand
-        if (shellPath == null)
-            shellPath = "";
-        executionShellPath = shellPath.trim();
-        if (executionShellPath.equalsIgnoreCase("")) {
-            executionShellCommand = compiledShellCommand;
-        } else {
-            executionShellCommand = "cd " + executionShellPath + " && " + compiledShellCommand;
-        }
-
-        // Execution
-        int rc = -1;
-        String systemOutput = "";
-        String errorOutput = "";
-        try {
-
-            JSch jsch = new JSch();
-            jsch.removeAllIdentity();
-
-            // Defines number of tries made in background for validating credentials
-            JSch.setConfig("MaxAuthTries", "1");
-            Session session = jsch.getSession(this.getUserName(), this.getHostName(), this.getPortNumber());
-            session.setConfig("StrictHostKeyChecking", "no");
-            UserInfo ui = new LinuxHostUserInfo(this.getUserPassword());
-            session.setUserInfo(ui);
-            session.connect();
-            Channel channel = session.openChannel("exec");
-
-            if (this.getTerminalFlag().equalsIgnoreCase("y")) {
-                ((ChannelExec) channel).setPty(true);
-            } else {
-                ((ChannelExec) channel).setPty(false);
-            }
-
-            ((ChannelExec) channel).setCommand(executionShellCommand);
-            channel.setInputStream(null);
-            ((ChannelExec) channel).setErrStream(System.err);
-            InputStream in = channel.getInputStream();
-            channel.connect();
-
-            systemOutput = "";
-            byte[] tmp = new byte[1024];
-            while (true) {
-                while (in.available() > 0) {
-                    int i = in.read(tmp, 0, 1024);
-                    if (i < 0)
-                        break;
-                    systemOutput = systemOutput + new String(tmp, 0, i);
-                    // No screen output
-                    // System.out.print(new String(tmp, 0, i));
-                }
-                if (channel.isClosed()) {
-                    if (in.available() > 0)
-                        continue;
-                    rc = channel.getExitStatus();
-                    break;
-                }
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e.getMessage(), e);
-                }
-            }
-
-            channel.disconnect();
-            session.disconnect();
-        } catch (IOException | JSchException e) {
-            throw new RuntimeException(e.getMessage(), e);
-        }
-
-        if (rc == 0) {
-            this.splitOutput(systemOutput);
-            return new ShellCommandResult(Integer.parseInt(this.getOutputReturnCode()), this.getOutputSystemOutput(),
-                    errorOutput, this.getOutputRuntimeVariablesOutput());
-        } else {
-            return new ShellCommandResult(rc, systemOutput, errorOutput);
-        }
-
-    }
-
-    public ShellCommandResult executeRemoteCommandExec2(String shellPath, String shellCommand,
-                                                        ShellCommandSettings shellCommandSettings) throws InterruptedException {
-        String compiledShellCommand = "";
-        String executionShellPath = "";
-        String executionShellCommand = "";
-
-        compiledShellCommand += "echo SHELL_RUN_CMD";
-        compiledShellCommand += " && ";
-        compiledShellCommand += shellCommand;
-        compiledShellCommand += " && ";
-        compiledShellCommand += "SHELL_RUN_CMD_RC=$?";
-        compiledShellCommand += " && ";
-        compiledShellCommand += "echo SHELL_RUN_CMD_RC";
-        compiledShellCommand += " && ";
-        compiledShellCommand += "echo $SHELL_RUN_CMD_RC";
-
-        if (shellCommandSettings.getSetRunVar()) {
-            compiledShellCommand += " && ";
-            compiledShellCommand += "echo SHELL_RUN_CMD_RUN_VAR";
-            compiledShellCommand += " && ";
-            compiledShellCommand += "set";
-        }
-
-        // CompiledShellCommand
-        if (shellPath == null)
-            shellPath = "";
-        executionShellPath = shellPath.trim();
-        if (executionShellPath.equalsIgnoreCase("")) {
-            executionShellCommand = compiledShellCommand;
-        } else {
-            executionShellCommand = "cd " + executionShellPath + " && " + compiledShellCommand;
-        }
-
-        // Execution
-        int rc = -1;
-        String systemOutput = "";
-        String errorOutput = "";
-        try {
-
-            JSch jsch = this.jschConnect();
-
-            Session session = null;
-            Session[] sessions = null;
-            if (this.getJumphostConnectionName().trim().equalsIgnoreCase("")) {
-                sessions = new Session[1];
-                sessions[0] = session = this.sessionConnect(jsch, this.getHostName(), this.getPortNumber(),
-                        this.getUserName(), this.getUserPassword());
-            } else {
-                String[] jumphostConnections = this.getJumphostConnectionName().split(",");
-                sessions = new Session[jumphostConnections.length + 1];
-                for (int i = 0; i <= jumphostConnections.length; i++) {
-                    String jumphostConnection = "";
-                    HostConnection hostConnection = null;
-                    if (i < jumphostConnections.length) {
-                        jumphostConnection = jumphostConnections[i];
-                        Connection connection = ConnectionConfiguration.getInstance()
-                                .get(new ConnectionKey(jumphostConnection, shellCommandSettings.getEnvironment()))
-                                .get();
-                        ConnectionOperation connectionOperation = new ConnectionOperation();
-                        hostConnection = connectionOperation.getHostConnection(connection);
-                    } else {
-                        hostConnection = this;
-                    }
-
-                    int assignedPort = -1;
-                    if (i == 0) {
-                        assignedPort = hostConnection.getPortNumber();
-                    } else {
-                        assignedPort = session.setPortForwardingL(0, hostConnection.getHostName(),
-                                hostConnection.getPortNumber());
-                    }
-                    // System.out.println("portforwarding: " + "localhost:" + assignedPort + " -> "
-                    // + dcHost.getHostName()
-                    // + ":" + assignedPort);
-
-                    if (i == 0) {
-                        sessions[i] = session = this.sessionConnect(jsch, hostConnection.getHostName(), assignedPort,
-                                hostConnection.getUserName(), hostConnection.getUserPassword());
-                    } else {
-                        sessions[i] = session = this.sessionJumpConnect(jsch, hostConnection.getHostName(),
-                                assignedPort, hostConnection.getUserName(), hostConnection.getUserPassword());
-                    }
-
-                    // System.out.println("The session has been established to " +
-                    // dcHost.getUserName() + "@" + dcHost.getHostName());
-
-                }
-
-            }
-
-            Channel channel = session.openChannel("exec");
-
-            if (this.getTerminalFlag().equalsIgnoreCase("y")) {
-                ((ChannelExec) channel).setPty(true);
-            } else {
-                ((ChannelExec) channel).setPty(false);
-            }
-
-            ((ChannelExec) channel).setCommand(executionShellCommand);
-            channel.setInputStream(null);
-            ((ChannelExec) channel).setErrStream(System.err);
-            InputStream in = channel.getInputStream();
-            channel.connect();
-
-            systemOutput = "";
-            byte[] tmp = new byte[1024];
-            while (true) {
-                while (in.available() > 0) {
-                    int i = in.read(tmp, 0, 1024);
-                    if (i < 0)
-                        break;
-                    systemOutput = systemOutput + new String(tmp, 0, i);
-                    // No screen output
-                    // System.out.print(new String(tmp, 0, i));
-                }
-                if (channel.isClosed()) {
-                    if (in.available() > 0)
-                        continue;
-                    rc = channel.getExitStatus();
-                    break;
-                }
-                Thread.sleep(1000);
-            }
-
-            channel.disconnect();
-            this.sessionDisconnect(sessions);
-        } catch (IOException | JSchException e) {
-            throw new RuntimeException(e.getMessage(), e);
-        }
-
-        if (rc == 0) {
-            this.splitOutput(systemOutput);
-            return new ShellCommandResult(Integer.parseInt(this.getOutputReturnCode()), this.getOutputSystemOutput(),
-                    errorOutput, this.getOutputRuntimeVariablesOutput());
-        } else {
-            return new ShellCommandResult(rc, systemOutput, errorOutput);
-        }
-
-    }
-
-    public ShellCommandResult executeRemoteCommandShell(String shellPath, String shellCommand,
-                                                        ShellCommandSettings shellCommandSettings) {
-
-        String executionShellPath = "";
-        String executionShellCommand = "";
-
-        if (shellPath == null)
-            shellPath = "";
-        executionShellPath = shellPath.trim();
-        if (executionShellPath.equalsIgnoreCase("")) {
-            executionShellCommand = shellCommand;
-        } else {
-            executionShellCommand = "cd " + executionShellPath + " && " + shellCommand;
-        }
-
-        //
-        int rc = -1;
-        String systemOutput = "";
-        String errorOutput = "";
-        try {
-
-            JSch jsch = new JSch();
-            Session session = jsch.getSession(this.getUserName(), this.getHostName(), this.getPortNumber());
-            session.setConfig("StrictHostKeyChecking", "no");
-            UserInfo ui = new LinuxHostUserInfo(this.getUserPassword());
-            session.setUserInfo(ui);
-            session.connect();
-            Channel channel = session.openChannel("shell");
-
-            channel.setInputStream(this.convertToInputStream(executionShellCommand + "\n exit"));
-
-            InputStream in = channel.getInputStream();
-            // OutputStream out = channel.getOutputStream();
-
-            channel.connect();
-
-            systemOutput = "";
-            byte[] tmp = new byte[1024];
-            while (true) {
-                while (in.available() > 0) {
-                    int i = in.read(tmp, 0, 1024);
-                    if (i < 0)
-                        break;
-                    systemOutput = systemOutput + new String(tmp, 0, i);
-                    // No screen output
-                    // System.out.print(new String(tmp, 0, i));
-                }
-                if (channel.isClosed()) {
-                    if (in.available() > 0)
-                        continue;
-                    rc = channel.getExitStatus();
-                    System.out.println("rc1 " + rc);
-                    break;
-                }
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e.getMessage(), e);
-                }
-            }
-
-            channel.disconnect();
-            session.disconnect();
-        } catch (IOException | JSchException e) {
-            throw new RuntimeException(e.getMessage(), e);
-        }
-
-        return new ShellCommandResult(rc, systemOutput, errorOutput);
-
-    }
-
     @SuppressWarnings("unused")
     public ShellCommandResult executeRemoteCommandShell2(String shellPath, String shellCommand,
                                                          ShellCommandSettings shellCommandSettings) {
@@ -842,23 +507,6 @@ public class HostConnection {
 
     }
 
-    public InputStream convertToInputStream(String input) {
-        String output = "";
-        try {
-            Reader inputString = new StringReader(input);
-            BufferedReader bufferedReader = new BufferedReader(inputString);
-            String readLine = "";
-            while ((readLine = bufferedReader.readLine()) != null) {
-                output += readLine;
-                output += "\n";
-            }
-            bufferedReader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return new ByteArrayInputStream(output.getBytes(StandardCharsets.UTF_8));
-    }
-
     private void splitOutput(String systemOutput) {
         BufferedReader bufReader = new BufferedReader(new StringReader(systemOutput));
         String line = null;
@@ -977,48 +625,20 @@ public class HostConnection {
         return hostName;
     }
 
-    public void setHostName(String hostName) {
-        this.hostName = hostName;
-    }
-
     public String getTerminalFlag() {
         return terminalFlag;
-    }
-
-    public void setTerminalFlag(String terminalFlag) {
-        this.terminalFlag = terminalFlag;
     }
 
     public int getPortNumber() {
         return portNumber;
     }
 
-    public void setPortNumber(int portNumber) {
-        this.portNumber = portNumber;
-    }
-
     public String getUserName() {
         return userName;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
     public String getUserPassword() {
         return userPassword;
-    }
-
-    public void setUserPassword(String userPassword) {
-        this.userPassword = userPassword;
-    }
-
-    public String getTempPath() {
-        return tempPath;
-    }
-
-    public void setTempPath(String tempPath) {
-        this.tempPath = tempPath;
     }
 
     public String getType() {
@@ -1057,24 +677,12 @@ public class HostConnection {
         return systemOutputKeywordList;
     }
 
-    public void setSystemOutputKeywordList(ArrayList<String> systemOutputKeywordList) {
-        this.systemOutputKeywordList = systemOutputKeywordList;
-    }
-
     public String getJumphostConnectionName() {
         return jumphostConnectionName;
     }
 
-    public void setJumphostConnectionName(String jumphostConnectionName) {
-        this.jumphostConnectionName = jumphostConnectionName;
-    }
-
     public String getAllowLocalhostExecution() {
         return allowLocalhostExecution;
-    }
-
-    public void setAllowLocalhostExecution(String allowLocalhostExecution) {
-        this.allowLocalhostExecution = allowLocalhostExecution;
     }
 
 }

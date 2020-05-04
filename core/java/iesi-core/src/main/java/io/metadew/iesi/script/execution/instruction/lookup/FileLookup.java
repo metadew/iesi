@@ -1,6 +1,6 @@
 package io.metadew.iesi.script.execution.instruction.lookup;
 
-import io.metadew.iesi.framework.execution.FrameworkControl;
+import io.metadew.iesi.common.FrameworkControl;
 
 import java.io.BufferedReader;
 import java.io.File;

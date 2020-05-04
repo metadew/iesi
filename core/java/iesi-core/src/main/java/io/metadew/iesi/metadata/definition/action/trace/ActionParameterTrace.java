@@ -13,10 +13,6 @@ public class ActionParameterTrace extends Metadata<ActionParameterTraceKey> {
         this.value = value;
     }
 
-    public ActionParameterTrace(String runId, Long processId, String actionId, ActionParameter actionParameter) {
-        this(new ActionParameterTraceKey(runId, processId, actionId, actionParameter.getMetadataKey().getParameterName()), actionParameter.getValue());
-    }
-
     public String getValue() {
         return value;
     }

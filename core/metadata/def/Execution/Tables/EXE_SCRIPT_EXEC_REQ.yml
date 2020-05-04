@@ -8,13 +8,14 @@ data:
   migrate: Y
   migrationKey: NA
   fields:
-  - name: EXEC_REQUEST_ID
+  - name: ID
     description: Unique identifier for the script request item
     order: '1'
     type: string
     length: '255'
     nullable: N
     defaultTimestamp: ''
+    primaryKey: true
   - name: SCRPT_REQUEST_ID
     description: Unique identifier for the script request item
     order: '1'
@@ -29,33 +30,12 @@ data:
     length: '255'
     nullable: N
     defaultTimestamp: ''
-  - name: IMPERSONATION
-    description: impersonation
-    order: '1'
-    type: string
-    length: '255'
-    nullable: Y
-    defaultTimestamp: ''
-  - name: IMPERSONATIONS
-    description: impersonation
-    order: '1'
-    type: string
-    length: '255'
-    nullable: Y
-    defaultTimestamp: ''
   - name: ENVIRONMENT
     description: Request timestamp
     order: '4'
     type: string
     length: '255'
     nullable: N
-    defaultTimestamp: ''
-  - name: PARAMETERS
-    description: PARAMETERS
-    order: '5'
-    type: string
-    length: '2000'
-    nullable: Y
     defaultTimestamp: ''
   - name: ST_NM
     description: Status

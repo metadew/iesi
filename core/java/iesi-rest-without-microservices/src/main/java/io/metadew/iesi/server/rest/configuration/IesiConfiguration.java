@@ -1,8 +1,7 @@
 package io.metadew.iesi.server.rest.configuration;
 
-import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
-import io.metadew.iesi.framework.execution.FrameworkExecutionContext;
-import io.metadew.iesi.framework.instance.FrameworkInstance;
+import io.metadew.iesi.common.FrameworkInstance;
+import io.metadew.iesi.common.configuration.metadata.MetadataConfiguration;
 import io.metadew.iesi.metadata.configuration.UserConfiguration;
 import io.metadew.iesi.metadata.configuration.component.ComponentConfiguration;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
@@ -11,41 +10,23 @@ import io.metadew.iesi.metadata.configuration.execution.ExecutionRequestConfigur
 import io.metadew.iesi.metadata.configuration.execution.script.ScriptExecutionConfiguration;
 import io.metadew.iesi.metadata.configuration.impersonation.ImpersonationConfiguration;
 import io.metadew.iesi.metadata.configuration.script.ScriptConfiguration;
-import io.metadew.iesi.metadata.definition.Context;
 import io.metadew.iesi.runtime.ExecutionRequestExecutorService;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.annotation.Order;
 
-import java.nio.file.Paths;
-import java.sql.SQLException;
+import java.io.IOException;
 
 @Configuration
 public class IesiConfiguration {
 
-    @Value("${iesi.home}")
-    private String frameworkHome;
-
     @Bean
     @Order(0)
-    public FrameworkInstance frameworkInstance(FrameworkInitializationFile frameworkInitializationFile, FrameworkExecutionContext frameworkExecutionContext) {
-        if (frameworkHome == null) {
-            FrameworkInstance.getInstance().init(frameworkInitializationFile, frameworkExecutionContext);
-        } else {
-            FrameworkInstance.getInstance().init(frameworkInitializationFile, frameworkExecutionContext, Paths.get(frameworkHome).toAbsolutePath());
-        }
+    public FrameworkInstance frameworkInstance() throws IOException {
+        io.metadew.iesi.common.configuration.Configuration.getInstance();
+        MetadataConfiguration.getInstance();
         return FrameworkInstance.getInstance();
-    }
-
-    @Bean
-    FrameworkExecutionContext frameworkExecutionContext() {
-        return new FrameworkExecutionContext(new Context("restserver", ""));
-    }
-
-    @Bean FrameworkInitializationFile frameworkInitializationFile() {
-        return new FrameworkInitializationFile(System.getProperty("iesi.ini", "iesi-conf.ini"));
     }
 
     @Bean

@@ -1,19 +1,22 @@
 package io.metadew.iesi.metadata.service.script;
 
 import io.metadew.iesi.metadata.configuration.script.design.ScriptDesignTraceConfiguration;
+import io.metadew.iesi.metadata.configuration.script.design.ScriptLabelDesignTraceConfiguration;
 import io.metadew.iesi.metadata.configuration.script.design.ScriptParameterDesignTraceConfiguration;
 import io.metadew.iesi.metadata.configuration.script.design.ScriptVersionDesignTraceConfiguration;
 import io.metadew.iesi.metadata.definition.script.Script;
+import io.metadew.iesi.metadata.definition.script.ScriptLabel;
 import io.metadew.iesi.metadata.definition.script.ScriptParameter;
 import io.metadew.iesi.metadata.definition.script.design.ScriptDesignTrace;
+import io.metadew.iesi.metadata.definition.script.design.ScriptLabelDesignTrace;
 import io.metadew.iesi.metadata.definition.script.design.ScriptParameterDesignTrace;
 import io.metadew.iesi.metadata.definition.script.design.ScriptVersionDesignTrace;
+import io.metadew.iesi.metadata.definition.script.design.key.ScriptLabelDesignTraceKey;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class ScriptDesignTraceService {
-    private static final Logger LOGGER = LogManager.getLogger();
 
     public ScriptDesignTraceService() {}
 
@@ -29,6 +32,12 @@ public class ScriptDesignTraceService {
 
         for (ScriptParameter scriptParameter : script.getParameters()) {
             ScriptParameterDesignTraceConfiguration.getInstance().insert(new ScriptParameterDesignTrace(runId, processId, scriptParameter));
+        }
+
+        for (ScriptLabel scriptLabel : script.getLabels()) {
+            ScriptLabelDesignTraceConfiguration.getInstance().insert(new ScriptLabelDesignTrace(
+                    new ScriptLabelDesignTraceKey(runId, processId, scriptLabel.getMetadataKey()), scriptLabel.getScriptKey(),
+                    scriptLabel.getName(), scriptLabel.getValue()));
         }
 
 

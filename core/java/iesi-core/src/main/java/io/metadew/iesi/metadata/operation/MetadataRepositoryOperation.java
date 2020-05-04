@@ -1,8 +1,8 @@
 package io.metadew.iesi.metadata.operation;
 
+import io.metadew.iesi.common.configuration.framework.FrameworkConfiguration;
 import io.metadew.iesi.common.text.ParsingTools;
 import io.metadew.iesi.connection.tools.FileTools;
-import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
@@ -15,15 +15,13 @@ import java.util.*;
 
 public class MetadataRepositoryOperation {
 
-    private String action;
-    private boolean generateDdl;
-
 
     private static final Logger LOGGER = LogManager.getLogger();
 
     // Constructors
 
-    public MetadataRepositoryOperation() {}
+    public MetadataRepositoryOperation() {
+    }
 
     // Methods
 //    public void cleanAllTables() {
@@ -61,10 +59,20 @@ public class MetadataRepositoryOperation {
         LOGGER.info("metadata.load.start");
 
         // Folder definition
-        String inputFolder = FilenameUtils.normalize(FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.in.new"));
-        String workFolder = FilenameUtils.normalize(FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.in.work"));
-        String errorFolder = FilenameUtils.normalize(FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.in.error"));
-        String archiveFolder = FilenameUtils.normalize(FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.in.done"));
+        String inputFolder = FrameworkConfiguration.getInstance()
+                .getMandatoryFrameworkFolder("metadata.in.new")
+                .getAbsolutePath().toString();
+        String workFolder = FrameworkConfiguration.getInstance()
+                .getMandatoryFrameworkFolder("metadata.in.work")
+                .getAbsolutePath().toString();
+        String errorFolder = FrameworkConfiguration.getInstance()
+                .getMandatoryFrameworkFolder("metadata.in.error")
+                .getAbsolutePath().toString();
+        String archiveFolder = FrameworkConfiguration.getInstance()
+                .getMandatoryFrameworkFolder("metadata.in.done")
+                .getAbsolutePath().toString();
+
+        System.out.println(inputFolder);
 
         // Load files
         if (input.trim().equalsIgnoreCase("")) {
@@ -116,8 +124,10 @@ public class MetadataRepositoryOperation {
             }
         });
 
-        for (final File file : files) {
-            this.loadConfigurationFile(metadataRepositories, file, inputFolder, workFolder, archiveFolder, errorFolder);
+        if (files != null) {
+            for (final File file : files) {
+                this.loadConfigurationFile(metadataRepositories, file, inputFolder, workFolder, archiveFolder, errorFolder);
+            }
         }
     }
 
@@ -215,7 +225,7 @@ public class MetadataRepositoryOperation {
 
 //    private void saveMetadataRepositoryDDL(String ddl) {
 //        StringBuilder targetFilePath = new StringBuilder();
-//        targetFilePath.append(FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.out.ddl"));
+//        targetFilePath.append(FrameworkConfiguration.getInstance().getFrameworkFolder(.getInstance().getFolderAbsolutePath("metadata.out.ddl"));
 //        targetFilePath.append(File.separator);
 //        targetFilePath.append(this.getMetadataRepository().getName());
 //        targetFilePath.append("_");
@@ -228,19 +238,4 @@ public class MetadataRepositoryOperation {
 //    }
 
 
-    public String getAction() {
-        return action;
-    }
-
-    public void setAction(String action) {
-        this.action = action;
-    }
-
-    public boolean isGenerateDdl() {
-        return generateDdl;
-    }
-
-    public void setGenerateDdl(boolean generateDdl) {
-        this.generateDdl = generateDdl;
-    }
 }

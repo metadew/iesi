@@ -4,7 +4,6 @@ public class GenerationTools {
 
     private MapTools mapTools;
     private NumberTools numberTools;
-    private PeriodTools periodTools;
     private RandomTools randomTools;
     private StringTools stringTools;
 
@@ -13,7 +12,6 @@ public class GenerationTools {
         this.setNumberTools(new NumberTools());
         this.setRandomTools(new RandomTools());
         this.setStringTools(new StringTools());
-
     }
 
     // Getters and Setters
@@ -31,14 +29,6 @@ public class GenerationTools {
 
     public void setNumberTools(NumberTools numberTools) {
         this.numberTools = numberTools;
-    }
-
-    public PeriodTools getPeriodTools() {
-        return periodTools;
-    }
-
-    public void setPeriodTools(PeriodTools periodTools) {
-        this.periodTools = periodTools;
     }
 
     public RandomTools getRandomTools() {

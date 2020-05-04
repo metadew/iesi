@@ -13,7 +13,6 @@ import java.util.Optional;
 
 public class ScriptOutputLookup implements LookupInstruction {
     private final ExecutionControl executionControl;
-    private static final Logger LOGGER = LogManager.getLogger();
 
     public ScriptOutputLookup(ExecutionControl executionControl) {
         this.executionControl = executionControl;

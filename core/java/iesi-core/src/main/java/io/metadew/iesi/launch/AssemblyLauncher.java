@@ -1,9 +1,9 @@
 package io.metadew.iesi.launch;
 
-import io.metadew.iesi.assembly.execution.AssemblyExecution;
-import io.metadew.iesi.framework.configuration.FrameworkConfiguration;
-import io.metadew.iesi.framework.crypto.FrameworkCrypto;
-import io.metadew.iesi.framework.execution.FrameworkControl;
+import io.metadew.iesi.assembly.execution.AssemblyService;
+import io.metadew.iesi.common.FrameworkControl;
+import io.metadew.iesi.common.configuration.Configuration;
+import io.metadew.iesi.common.crypto.FrameworkCrypto;
 import org.apache.commons.cli.*;
 
 import java.io.IOException;
@@ -20,13 +20,9 @@ public class AssemblyLauncher {
         Options options = new Options()
                 .addOption(Option.builder("help").desc("print this message").build())
                 .addOption(Option.builder("repository").hasArg().desc("set repository location").required().build())
-                .addOption(Option.builder("development").hasArg().desc("set development location").required().build())
                 .addOption(Option.builder("sandbox").hasArg().desc("set sandbox location").required().build())
                 .addOption(Option.builder("instance").hasArg().desc("provide target instance").required().build())
-                .addOption(Option.builder("version").hasArg().desc("provide target version").required().build())
-                .addOption(Option.builder("configuration").hasArg().desc("provide target configuration").required().build())
-                .addOption(Option.builder("test").desc("test assembly flag").build())
-                .addOption(Option.builder("distribution").desc("distribution flag").build());
+                .addOption(Option.builder("version").hasArg().desc("provide target version").required().build());
 
         CommandLineParser parser = new DefaultParser();
         CommandLine line = parser.parse(options, args);
@@ -77,17 +73,14 @@ public class AssemblyLauncher {
         }
 
         // FWK init
-        FrameworkConfiguration frameworkConfiguration = FrameworkConfiguration.getInstance();
-        frameworkConfiguration.initAssembly(repository);
-
+        Configuration.getInstance();
         FrameworkCrypto.getInstance();
+        FrameworkControl.getInstance();
 
-        FrameworkControl frameworkControl = FrameworkControl.getInstance();
-        frameworkControl.init("assembly");
-
-        AssemblyExecution assemblyExecution = new AssemblyExecution(repository, development, sandbox, instance,
-                version, configuration, applyConfiguration, testAssembly, distribution);
-        assemblyExecution.execute();
+//        AssemblyExecution assemblyExecution = new AssemblyExecution(repository, development, sandbox, instance,
+//                version, configuration, applyConfiguration, testAssembly, distribution);
+        AssemblyService assemblyService = new AssemblyService(repository, sandbox, instance, version);
+        assemblyService.execute();
 
     }
 

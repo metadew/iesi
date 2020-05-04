@@ -1,106 +1,45 @@
 package io.metadew.iesi.server.rest.resource.component.dto;
 
 import io.metadew.iesi.metadata.definition.component.Component;
-import io.metadew.iesi.metadata.definition.component.ComponentAttribute;
-import io.metadew.iesi.metadata.definition.component.ComponentParameter;
+import io.metadew.iesi.metadata.definition.component.key.ComponentKey;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
-import org.springframework.hateoas.ResourceSupport;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.util.List;
-import java.util.Objects;
+import java.util.stream.Collectors;
 
-public class ComponentDto extends ResourceSupport {
+
+@Data
+@EqualsAndHashCode(callSuper = false)
+@AllArgsConstructor
+@NoArgsConstructor
+public class ComponentDto extends RepresentationModel<ComponentDto> {
 
     private String type;
     private String name;
     private String description;
     private ComponentVersionDto version;
-    private List<ComponentParameter> parameters;
-    private List<ComponentAttribute> attributes;
 
-    public ComponentDto() {}
-
-    public ComponentDto(String type, String name, String description, ComponentVersionDto version,
-                        List<ComponentParameter> parameters, List<ComponentAttribute> attributes) {
-        super();
-        this.type = type;
-        this.name = name;
-        this.description = description;
-        this.version = version;
-        this.parameters = parameters;
-        this.attributes = attributes;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof ComponentDto)) return false;
-        if (!super.equals(o)) return false;
-        ComponentDto that = (ComponentDto) o;
-        return getType().equals(that.getType()) &&
-                getName().equals(that.getName()) &&
-                getDescription().equals(that.getDescription()) &&
-                getVersion().equals(that.getVersion()) &&
-                getParameters().equals(that.getParameters()) &&
-                getAttributes().equals(that.getAttributes());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), getType(), getName(), getDescription(), getVersion(), getParameters(), getAttributes());
-    }
+    private List<ComponentParameterDto> parameters;
+    private List<ComponentAttributeDto> attributes;
 
     public Component convertToEntity() {
-        return new Component(IdentifierTools.getComponentIdentifier(name),
-                type, name, description, version.convertToEntity(name), parameters, attributes);
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public ComponentVersionDto getVersion() {
-        return version;
-    }
-
-    public void setVersion(ComponentVersionDto version) {
-        this.version = version;
-    }
-
-    public List<ComponentParameter> getParameters() {
-        return parameters;
-    }
-
-    public void setParameters(List<ComponentParameter> parameters) {
-        this.parameters = parameters;
-    }
-
-    public List<ComponentAttribute> getAttributes() {
-        return attributes;
-    }
-
-    public void setAttributes(List<ComponentAttribute> attributes) {
-        this.attributes = attributes;
+        return new Component(new ComponentKey(IdentifierTools.getComponentIdentifier(name),
+                version.getNumber()),
+                type,
+                name,
+                description,
+                version.convertToEntity(IdentifierTools.getComponentIdentifier(name)),
+                parameters.stream()
+                        .map(parameter -> parameter.convertToEntity(IdentifierTools.getComponentIdentifier(name), version.getNumber()))
+                        .collect(Collectors.toList()),
+                attributes.stream()
+                        .map(attribute -> attribute.convertToEntity(IdentifierTools.getComponentIdentifier(name), version.getNumber()))
+                        .collect(Collectors.toList()));
     }
 
 }

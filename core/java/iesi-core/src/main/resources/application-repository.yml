@@ -1,0 +1,96 @@
+# configurations related to the metadata repository
+iesi:
+  metadata:
+    repository:
+      # category can be: general, design, connectivity, trace, result.
+      # each category should define its own type and definition
+      - categories:
+          - general
+        instance:
+
+        # type of database: sqlite, h2, mssql, netezza, oracle, postgresql
+        coordinator:
+          # init_sql: alter  current....
+          type: h2
+          mode: memory
+          database: test;DB_CLOSE_DELAY=-1
+          owner:
+            user: "sa"
+            password: ""
+
+#          type: h2
+#          mode: embedded
+#          file:
+#          schema:
+#          host:
+#          port:
+#          owner:
+#            user:
+#            password:
+#          reader:
+#            user:
+#            password:
+#          writer:
+#            user:
+#            password:
+
+#          type: mssql
+#          database: 
+#          host: 
+#          port: 
+#          schema: 
+#          name: 
+#          owner:
+#            user:
+#            password:
+#          reader:
+#            user:
+#            password:
+#          writer:
+#            user:
+#            password:
+
+#          type: netezza
+#          host: 
+#          name: 
+#          port: 
+#          schema: 
+#          owner:
+#            user:
+#            password:
+#          reader:
+#            user:
+#            password:
+#          writer:
+#            user:
+#            password:
+
+#          type: postgresql
+#          host: 
+#          name: 
+#          port: 
+#          schema:
+#          owner:
+#            user:
+#            password:
+#          reader:
+#            user:
+#            password:
+#          writer:
+#            user:
+#            password:
+
+#          type: mysql
+#          host:
+#          name:
+#          port:
+#          schema:
+#          owner:
+#            user:
+#            password:
+#          reader:
+#            user:
+#            password:
+#          writer:
+#            user:
+#            password:

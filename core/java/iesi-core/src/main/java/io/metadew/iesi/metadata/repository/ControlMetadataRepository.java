@@ -3,50 +3,23 @@ package io.metadew.iesi.metadata.repository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.metadata.configuration.UserConfiguration;
 import io.metadew.iesi.metadata.definition.DataObject;
-import io.metadew.iesi.metadata.definition.MetadataObject;
-import io.metadew.iesi.metadata.definition.MetadataTable;
 import io.metadew.iesi.metadata.definition.user.User;
 import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
-import java.util.List;
 
 public class ControlMetadataRepository extends MetadataRepository {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public ControlMetadataRepository(String name, String scope, String instanceName, RepositoryCoordinator repositoryCoordinator) {
-        super(name, scope, instanceName, repositoryCoordinator);
-    }
-
-    public ControlMetadataRepository(String name, String instanceName, RepositoryCoordinator repositoryCoordinator) {
-        super(name, instanceName, repositoryCoordinator);
-    }
-
-    public ControlMetadataRepository(String tablePrefix, RepositoryCoordinator repositoryCoordinator, String name, String scope,
-                                     List<MetadataObject> metadataObjects, List<MetadataTable> metadataTables) {
-        super(tablePrefix, repositoryCoordinator, name, scope, metadataObjects, metadataTables);
-    }
-
-    @Override
-    public String getDefinitionFileName() {
-        return "ControlTables.json";
-    }
-
-    @Override
-    public String getObjectDefinitionFileName() {
-        return "ControlObjects.json";
+    public ControlMetadataRepository(String instanceName, RepositoryCoordinator repositoryCoordinator) {
+        super(instanceName, repositoryCoordinator);
     }
 
     @Override
     public String getCategory() {
         return "control";
-    }
-
-    @Override
-    public String getCategoryPrefix() {
-        return "CTL";
     }
 
     @Override

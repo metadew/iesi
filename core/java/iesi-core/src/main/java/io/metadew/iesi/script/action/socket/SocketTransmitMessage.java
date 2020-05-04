@@ -1,12 +1,11 @@
 package io.metadew.iesi.script.action.socket;
 
+import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.connection.network.SocketConnection;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.dataset.Dataset;
 import io.metadew.iesi.datatypes.dataset.DatasetHandler;
 import io.metadew.iesi.datatypes.text.Text;
-import io.metadew.iesi.framework.configuration.FrameworkSettingConfiguration;
-import io.metadew.iesi.framework.execution.FrameworkControl;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
@@ -78,8 +77,8 @@ public class SocketTransmitMessage {
         }
 
         // Create parameter list
-        actionParameterOperationMap.put(socketKey, messageActionParameterOperation);
-        actionParameterOperationMap.put(messageKey, socketActionParameterOperation);
+        actionParameterOperationMap.put(socketKey, socketActionParameterOperation);
+        actionParameterOperationMap.put(messageKey, messageActionParameterOperation);
         actionParameterOperationMap.put(protocolKey, protocolActionParameterOperation);
         actionParameterOperationMap.put(outputKey, outputActionParameterOperation);
         actionParameterOperationMap.put(timeoutKey, timeoutActionParameterOperation);
@@ -172,13 +171,9 @@ public class SocketTransmitMessage {
             DatasetHandler.getInstance().clean(outputDataset, executionControl.getExecutionRuntime());
             LocalDateTime endDateTime;
             if (timeout == null) {
-                endDateTime = LocalDateTime.now().plus(
-                        FrameworkSettingConfiguration.getInstance().getSettingPath("socket.timeout.default")
-                                .map(settingPath -> FrameworkControl.getInstance().getProperty(settingPath)
-                                        .orElseThrow(() -> new RuntimeException("no value set for socket.timeout.default")))
-                                .map(Integer::parseInt)
-                                .orElseThrow(() -> new RuntimeException("No value set for socket.timeout.default")),
-                        ChronoUnit.SECONDS);
+                endDateTime = LocalDateTime.now()
+                        .plus((Integer) Configuration.getInstance().getMandatoryProperty("iesi.actions.socket.transmitMessage.timeout.default"),
+                                ChronoUnit.SECONDS);
             } else {
                 endDateTime = LocalDateTime.now().plus(timeout, ChronoUnit.SECONDS);
             }

@@ -9,6 +9,7 @@ import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
 import io.metadew.iesi.server.rest.resource.HalMultipleEmbeddedResource;
 import io.metadew.iesi.server.rest.resource.execution_request.dto.ExecutionRequestDto;
 import io.metadew.iesi.server.rest.resource.execution_request.resource.ExecutionRequestDtoResourceAssembler;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,10 +19,11 @@ import java.text.MessageFormat;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
+@Tag(name = "execution requests", description = "Everything about execution requests")
 @RequestMapping("/execution_request")
 public class ExecutionRequestController {
 
@@ -40,14 +42,14 @@ public class ExecutionRequestController {
         return new HalMultipleEmbeddedResource<>(executionRequestConfiguration.getAll()
                 .stream()
                 .parallel()
-                .map(executionRequestDtoResourceAssembler::toResource)
+                .map(executionRequestDtoResourceAssembler::toModel)
                 .collect(Collectors.toList()));
     }
 
     @GetMapping("/{id}")
     public ExecutionRequestDto getById(@PathVariable String id) {
         return executionRequestConfiguration.get(new ExecutionRequestKey(id))
-                .map(executionRequestDtoResourceAssembler::toResource)
+                .map(executionRequestDtoResourceAssembler::toModel)
                 .orElseThrow(() -> new RuntimeException(MessageFormat.format("Cannot find ExecutionRequest {0}", id)));
     }
 
@@ -56,7 +58,7 @@ public class ExecutionRequestController {
         try {
             ExecutionRequest executionRequest = executionRequestDto.convertToNewEntity();
             executionRequestConfiguration.insert(executionRequest);
-            return executionRequestDtoResourceAssembler.toResource(executionRequest);
+            return executionRequestDtoResourceAssembler.toModel(executionRequest);
         } catch (ExecutionRequestBuilderException e) {
             throw new RuntimeException(e);
         }
@@ -79,7 +81,7 @@ public class ExecutionRequestController {
     @PutMapping("/{id}")
     public ExecutionRequestDto put(@PathVariable String id, @RequestBody ExecutionRequestDto executionRequestDto) throws MetadataDoesNotExistException {
         executionRequestConfiguration.update(executionRequestDto.convertToEntity());
-        return executionRequestDtoResourceAssembler.toResource(executionRequestDto.convertToEntity());
+        return executionRequestDtoResourceAssembler.toModel(executionRequestDto.convertToEntity());
     }
 
     @DeleteMapping("/{id}")

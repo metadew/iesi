@@ -7,8 +7,6 @@ import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsExc
 import io.metadew.iesi.metadata.configuration.impersonation.ImpersonationConfiguration;
 import io.metadew.iesi.metadata.definition.DataObject;
 import io.metadew.iesi.metadata.definition.Metadata;
-import io.metadew.iesi.metadata.definition.MetadataObject;
-import io.metadew.iesi.metadata.definition.MetadataTable;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.environment.Environment;
 import io.metadew.iesi.metadata.definition.impersonation.Impersonation;
@@ -17,51 +15,20 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
-import java.util.List;
 
 public class ConnectivityMetadataRepository extends MetadataRepository {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public ConnectivityMetadataRepository(String name, String scope, String instanceName, RepositoryCoordinator repositoryCoordinator) {
-        super(name, scope, instanceName, repositoryCoordinator);
+    public ConnectivityMetadataRepository(String instanceName, RepositoryCoordinator repositoryCoordinator) {
+        super(instanceName, repositoryCoordinator);
         ConnectionConfiguration.getInstance().init(this);
         EnvironmentConfiguration.getInstance().init(this);
         ImpersonationConfiguration.getInstance().init(this);
-    }
-
-    public ConnectivityMetadataRepository(String name, String instanceName, RepositoryCoordinator repositoryCoordinator) {
-        super(name, instanceName, repositoryCoordinator);
-        ConnectionConfiguration.getInstance().init(this);
-        EnvironmentConfiguration.getInstance().init(this);
-        ImpersonationConfiguration.getInstance().init(this);
-    }
-
-    public ConnectivityMetadataRepository(String tablePrefix, RepositoryCoordinator repositoryCoordinator, String name, String scope,
-                                          List<MetadataObject> metadataObjects, List<MetadataTable> metadataTables) {
-        super(tablePrefix, repositoryCoordinator, name, scope, metadataObjects, metadataTables);
-        ConnectionConfiguration.getInstance().init(this);
-        EnvironmentConfiguration.getInstance().init(this);
-        ImpersonationConfiguration.getInstance().init(this);
-    }
-
-    @Override
-    public String getDefinitionFileName() {
-        return "ConnectivityTables.json";
-    }
-
-    @Override
-    public String getObjectDefinitionFileName() {
-        return "ConnectivityObjects.json";
     }
 
     @Override
     public String getCategory() {
         return "connectivity";
-    }
-
-    @Override
-    public String getCategoryPrefix() {
-        return "CXN";
     }
 
     @Override
@@ -87,12 +54,12 @@ public class ConnectivityMetadataRepository extends MetadataRepository {
 
     public void save(Connection connection) {
         LOGGER.info(MessageFormat.format("Inserting connection {0}-{1} into connectivity repository",
-                connection.getName(), connection.getEnvironment()));
+                connection.getMetadataKey().getName(), connection.getMetadataKey().getEnvironmentKey().getName()));
         try {
             ConnectionConfiguration.getInstance().insert(connection);
         } catch (MetadataAlreadyExistsException e1) {
             LOGGER.info(MessageFormat.format("Connection {0}-{1} already exists in connectivity repository. Updating connection {0}-{1} instead.",
-                    connection.getName(), connection.getEnvironment()));
+                    connection.getMetadataKey().getName(), connection.getMetadataKey().getEnvironmentKey().getName()));
             ConnectionConfiguration.getInstance().update(connection);
         }
     }
@@ -111,12 +78,12 @@ public class ConnectivityMetadataRepository extends MetadataRepository {
 
     public void save(Impersonation impersonation) {
         LOGGER.info(MessageFormat.format("Inserting impersonation {0} into connectivity repository",
-                impersonation.getName()));
+                impersonation.getMetadataKey().getName()));
         try {
             ImpersonationConfiguration.getInstance().insertImpersonation(impersonation);
         } catch (MetadataAlreadyExistsException e) {
             LOGGER.info(MessageFormat.format("Impersonation {0} already exists in connectivity repository. Updating impersonation {0} instead.",
-                    impersonation.getName()));
+                    impersonation.getMetadataKey().getName()));
             ImpersonationConfiguration.getInstance().updateImpersonation(impersonation);
         }
     }

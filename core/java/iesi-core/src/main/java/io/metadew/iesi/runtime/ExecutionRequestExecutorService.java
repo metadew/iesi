@@ -40,20 +40,22 @@ public class ExecutionRequestExecutorService {
             ExecutionRequestExecutor executionRequestExecutor = requestExecutorMap.get(executionRequest.getClass());
             if (executionRequestExecutor == null) {
                 log.error(MessageFormat.format("No Executor found for request type {0}", executionRequest.getClass()));
-                executionRequest.updateExecutionRequestStatus(ExecutionRequestStatus.DECLINED);
+                executionRequest.setExecutionRequestStatus(ExecutionRequestStatus.DECLINED);
                 ExecutionRequestConfiguration.getInstance().update(executionRequest);
             } else {
                 log.info(MessageFormat.format("Executing request {0}", executionRequest.getMetadataKey().getId()));
                 executionRequestExecutor.execute(executionRequest);
-
-                executionRequest.updateExecutionRequestStatus(ExecutionRequestStatus.COMPLETED);
+                executionRequest.setExecutionRequestStatus(ExecutionRequestStatus.COMPLETED);
                 ExecutionRequestConfiguration.getInstance().update(executionRequest);
+                log.info(MessageFormat.format("Processed request {0}", executionRequest.getMetadataKey().getId()));
             }
         } catch (Exception e) {
             StringWriter stackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(stackTrace));
             log.info("exception=" + e);
             log.debug("exception.stacktrace=" + stackTrace.toString());
+            executionRequest.setExecutionRequestStatus(ExecutionRequestStatus.COMPLETED);
+            ExecutionRequestConfiguration.getInstance().update(executionRequest);
         }
     }
 

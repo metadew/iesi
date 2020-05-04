@@ -1,18 +1,22 @@
 package io.metadew.iesi.server.rest.resource.environment.resource;
 
 import io.metadew.iesi.metadata.definition.environment.Environment;
+import io.metadew.iesi.metadata.definition.environment.EnvironmentParameter;
 import io.metadew.iesi.server.rest.controller.EnvironmentsController;
 import io.metadew.iesi.server.rest.resource.environment.dto.EnvironmentDto;
+import io.metadew.iesi.server.rest.resource.environment.dto.EnvironmentParameterDto;
 import org.modelmapper.ModelMapper;
 import org.springframework.hateoas.Link;
-import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
+import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+import java.util.stream.Collectors;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Component
-public  class EnvironmentDtoResourceAssembler extends ResourceAssemblerSupport<Environment, EnvironmentDto> {
+public  class EnvironmentDtoResourceAssembler extends RepresentationModelAssemblerSupport<Environment, EnvironmentDto> {
 
     private final ModelMapper modelMapper;
 
@@ -22,7 +26,7 @@ public  class EnvironmentDtoResourceAssembler extends ResourceAssemblerSupport<E
     }
 
     @Override
-    public EnvironmentDto toResource(Environment environment) {
+    public EnvironmentDto toModel(Environment environment) {
         EnvironmentDto environmentDto = convertToDto(environment);
         Link selfLink = linkTo(methodOn(EnvironmentsController.class).getByName(environmentDto.getName()))
                 .withSelfRel();
@@ -34,9 +38,14 @@ public  class EnvironmentDtoResourceAssembler extends ResourceAssemblerSupport<E
     }
 
     private EnvironmentDto convertToDto(Environment environment) {
-        if (environment == null) {
-            throw new IllegalArgumentException("Environments have to be non empty");
-        }
-        return new EnvironmentDto(environment.getName(), environment.getDescription(),environment.getParameters());
+        return new EnvironmentDto(environment.getName(), environment.getDescription(),
+                environment.getParameters()
+                        .stream()
+                        .map(this::convertToDto)
+                        .collect(Collectors.toList()));
+    }
+
+    private EnvironmentParameterDto convertToDto(EnvironmentParameter environmentParameter) {
+        return new EnvironmentParameterDto(environmentParameter.getName(), environmentParameter.getValue());
     }
 }

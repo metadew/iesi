@@ -37,20 +37,20 @@ public class ScriptExecutorService {
     public void execute(ScriptExecutionRequest scriptExecutionRequest) {
         ScriptExecutor scriptExecutor = scriptExecutorMap.get(scriptExecutionRequest.getClass());
 
-        scriptExecutionRequest.updateScriptExecutionRequestStatus(ScriptExecutionRequestStatus.SUBMITTED);
+        scriptExecutionRequest.setScriptExecutionRequestStatus(ScriptExecutionRequestStatus.SUBMITTED);
         ScriptExecutionRequestConfiguration.getInstance().update(scriptExecutionRequest);
 
         if (scriptExecutor == null) {
             LOGGER.error(MessageFormat.format("No Executor found for request type {0}", scriptExecutionRequest.getClass()));
-            scriptExecutionRequest.updateScriptExecutionRequestStatus(ScriptExecutionRequestStatus.DECLINED);
+            scriptExecutionRequest.setScriptExecutionRequestStatus(ScriptExecutionRequestStatus.DECLINED);
             ScriptExecutionRequestConfiguration.getInstance().update(scriptExecutionRequest);
         } else {
-            scriptExecutionRequest.updateScriptExecutionRequestStatus(ScriptExecutionRequestStatus.ACCEPTED);
+            scriptExecutionRequest.setScriptExecutionRequestStatus(ScriptExecutionRequestStatus.ACCEPTED);
             ScriptExecutionRequestConfiguration.getInstance().update(scriptExecutionRequest);
 
             scriptExecutor.execute(scriptExecutionRequest);
 
-            scriptExecutionRequest.updateScriptExecutionRequestStatus(ScriptExecutionRequestStatus.COMPLETED);
+            scriptExecutionRequest.setScriptExecutionRequestStatus(ScriptExecutionRequestStatus.COMPLETED);
             ScriptExecutionRequestConfiguration.getInstance().update(scriptExecutionRequest);
         }
     }

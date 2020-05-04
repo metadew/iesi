@@ -1,6 +1,7 @@
 package io.metadew.iesi.connection.tools.sql;
 
 import io.metadew.iesi.connection.database.Database;
+import io.metadew.iesi.connection.database.DatabaseHandler;
 import io.metadew.iesi.connection.tools.SQLTools;
 
 import javax.sql.rowset.CachedRowSet;
@@ -28,16 +29,16 @@ public final class SQLDataTransfer {
             // Cleaning
             if (cleanPrevious) {
                 QueryString = SQLTools.getDropStmt(name, true);
-                targetDatabase.executeUpdate(QueryString);
+                DatabaseHandler.getInstance().executeUpdate(targetDatabase, QueryString);
             }
 
             // create the dataset table if needed
             QueryString = SQLTools.getCreateStmt(rsmd, name, true);
-            targetDatabase.executeUpdate(QueryString);
+            DatabaseHandler.getInstance().executeUpdate(targetDatabase, QueryString);
 
             String temp = "";
             String sql = SQLTools.getInsertPstmt(rsmd, name);
-            liveTargetDatabaseConnection = targetDatabase.getLiveConnection();
+            liveTargetDatabaseConnection = DatabaseHandler.getInstance().getLiveConnection(targetDatabase);
             PreparedStatement preparedStatement = liveTargetDatabaseConnection.prepareStatement(sql);
 
             int crsType = crs.getType();

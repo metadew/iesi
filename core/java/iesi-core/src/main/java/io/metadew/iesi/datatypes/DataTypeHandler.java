@@ -11,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -24,7 +23,7 @@ public class DataTypeHandler {
     private final static String DatatypeStopCharacters = "}}";
     private final static Pattern DatatypePattern = Pattern.compile("\\^(?<datatype>\\w+)\\((?<arguments>.+)\\)");
 
-    private Map<ClassStringPair, DataTypeService> dataTypeServiceMap;
+    private Map<ClassStringPair, IDataTypeService> dataTypeServiceMap;
 
     private static DataTypeHandler INSTANCE;
 
@@ -73,7 +72,7 @@ public class DataTypeHandler {
         }
     }
 
-    public DataTypeService getDataTypeService(String key) {
+    public IDataTypeService getDataTypeService(String key) {
         return dataTypeServiceMap.entrySet().stream()
                 .filter(entry -> entry.getKey().keyword.equals(key))
                 .map(Map.Entry::getValue)
@@ -81,7 +80,7 @@ public class DataTypeHandler {
                 .orElseThrow(() -> new RuntimeException("Could not find DataTypeService for " + key));
     }
 
-    public DataTypeService getDataTypeService(Class clazz) {
+    public IDataTypeService getDataTypeService(Class clazz) {
         return dataTypeServiceMap.entrySet().stream()
                 .filter(entry -> entry.getKey().clazz.equals(clazz))
                 .map(Map.Entry::getValue)

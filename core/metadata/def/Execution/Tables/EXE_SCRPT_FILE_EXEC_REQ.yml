@@ -1,6 +1,6 @@
 ---
 data:
-  name: EXE_SCRPT_FL_EXEC_REQ
+  name: SCRPT_FL_EXEC_REQ
   label: ScriptFileExecutionRequests
   description: In-process runtime script requests for execution
   type: operational
@@ -8,7 +8,7 @@ data:
   migrate: Y
   migrationKey: NA
   fields:
-  - name: EXEC_REQUEST_ID
+  - name: ID
     description: Unique identifier for the script request item
     order: '1'
     type: string

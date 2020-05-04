@@ -6,8 +6,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
 import io.metadew.iesi.metadata.definition.MetadataJsonComponent;
 import io.metadew.iesi.metadata.definition.component.key.ComponentAttributeKey;
+import io.metadew.iesi.metadata.definition.component.key.ComponentKey;
 import io.metadew.iesi.metadata.definition.component.key.ComponentParameterKey;
 import io.metadew.iesi.metadata.definition.component.key.ComponentVersionKey;
+import io.metadew.iesi.metadata.definition.environment.key.EnvironmentKey;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
 
 import java.io.IOException;
@@ -65,16 +67,16 @@ public class ComponentJsonComponent {
             // component attributes
             List<ComponentAttribute> componentAttributes = new ArrayList<>();
             for (JsonNode componentAttributeNode : node.get(Field.ATTRIBUTES_KEY.value())){
-                componentAttributes.add(new ComponentAttribute(new ComponentAttributeKey(
-                        componentId,
-                        versionNumber,
-                        componentAttributeNode.get(ComponentAttributeJsonComponent.Field.NAME_KEY.value()).asText(),
-                        componentAttributeNode.get(ComponentAttributeJsonComponent.Field.ENVIRONMENT_KEY.value()).asText()),
+                componentAttributes.add(new ComponentAttribute(
+                        new ComponentAttributeKey(
+                                new ComponentKey(componentId, versionNumber),
+                                new EnvironmentKey(componentAttributeNode.get(ComponentAttributeJsonComponent.Field.ENVIRONMENT_KEY.value()).asText()),
+                                componentAttributeNode.get(ComponentAttributeJsonComponent.Field.NAME_KEY.value()).asText()),
                         componentAttributeNode.get(ComponentAttributeJsonComponent.Field.VALUE_KEY.value()).asText()));
             }
 
             return new Component(
-                    componentId,
+                    new ComponentKey(componentId, versionNumber),
                     node.get(Field.COMPONENT_TYPE_KEY.value()).asText(),
                     node.get(Field.NAME_KEY.value()).asText(),
                     node.get(Field.DESCRIPTION_KEY.value()).asText(),
@@ -92,7 +94,7 @@ public class ComponentJsonComponent {
 
             jsonGenerator.writeObjectFieldStart(MetadataJsonComponent.Field.DATA_KEY.value());
 
-            jsonGenerator.writeStringField(Field.ID_KEY.value(), component.getId());
+            jsonGenerator.writeStringField(Field.ID_KEY.value(), component.getMetadataKey().getId());
             jsonGenerator.writeStringField(Field.COMPONENT_TYPE_KEY.value(), component.getType());
             jsonGenerator.writeStringField(Field.NAME_KEY.value(), component.getName());
             jsonGenerator.writeStringField(Field.DESCRIPTION_KEY.value(), component.getDescription());
@@ -109,7 +111,7 @@ public class ComponentJsonComponent {
             jsonGenerator.writeArrayFieldStart(Field.PARAMETERS_KEY.value());
             for (ComponentParameter componentParameter : component.getParameters()) {
                 jsonGenerator.writeStartObject();
-                jsonGenerator.writeStringField(ComponentParameterJsonComponent.Field.NAME_KEY.value(), componentParameter.getName());
+                jsonGenerator.writeStringField(ComponentParameterJsonComponent.Field.NAME_KEY.value(), componentParameter.getMetadataKey().getParameterName());
                 jsonGenerator.writeStringField(ComponentParameterJsonComponent.Field.VALUE_KEY.value(), componentParameter.getValue());
                 jsonGenerator.writeEndObject();
             }
@@ -120,7 +122,7 @@ public class ComponentJsonComponent {
             jsonGenerator.writeArrayFieldStart(Field.PARAMETERS_KEY.value());
             for (ComponentAttribute componentAttribute : component.getAttributes()) {
                 jsonGenerator.writeStartObject();
-                jsonGenerator.writeStringField(ComponentAttributeJsonComponent.Field.NAME_KEY.value(), componentAttribute.getName());
+                jsonGenerator.writeStringField(ComponentAttributeJsonComponent.Field.NAME_KEY.value(), componentAttribute.getMetadataKey().getComponentAttributeName());
                 jsonGenerator.writeStringField(ComponentAttributeJsonComponent.Field.VALUE_KEY.value(), componentAttribute.getValue());
                 jsonGenerator.writeEndObject();
             }

@@ -21,7 +21,7 @@ public class ScriptTrace extends Metadata<ScriptTraceKey> {
     }
 
     public ScriptTrace(String runId, Long processId, Long parentProcessId, Script script) {
-        this(new ScriptTraceKey(runId, processId), script.getId(), parentProcessId, script.getName(), script.getDescription());
+        this(new ScriptTraceKey(runId, processId), script.getMetadataKey().getScriptId(), parentProcessId, script.getName(), script.getDescription());
     }
 
     public Long getParentProcessId() {

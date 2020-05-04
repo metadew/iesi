@@ -1,11 +1,11 @@
 package io.metadew.iesi.script.action.mod;
 
+import io.metadew.iesi.common.configuration.framework.FrameworkConfiguration;
 import io.metadew.iesi.connection.HostConnection;
 import io.metadew.iesi.connection.host.ShellCommandResult;
 import io.metadew.iesi.connection.tools.FolderTools;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.text.Text;
-import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
@@ -14,7 +14,6 @@ import io.metadew.iesi.script.operation.ActionParameterOperation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.MessageFormat;
@@ -135,8 +134,13 @@ public class ModSoapui {
         String output = this.getActionExecution().getActionControl().getActionRuntime().getRunCacheFolderName() + "soapui";
         FolderTools.createFolder(output);
 
-        String command = FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("modules") +
-                File.separator + "soapui" + File.separator + "bin" + File.separator + "iesi-soapui.cmd";
+        String command = FrameworkConfiguration.getInstance()
+                .getMandatoryFrameworkFolder("modules")
+                .getAbsolutePath()
+                .resolve("soapui")
+                .resolve("bin")
+                .resolve("iesi-soapui.cmd")
+                .toString();
         command = command + " -project " + project;
         if (!testSuite.isEmpty()) command = command + " -suite " + testSuite;
         if (!testCase.isEmpty()) command = command + " -case " + testCase;
@@ -146,8 +150,8 @@ public class ModSoapui {
         HostConnection hostConnection = new HostConnection();
         ShellCommandResult shellCommandResult = hostConnection
                 .executeLocalCommand("",
-                        command,
-                        null);
+                        command
+                );
         if (shellCommandResult.getReturnCode() == 0) {
             this.getActionExecution().getActionControl().increaseSuccessCount();
         } else {

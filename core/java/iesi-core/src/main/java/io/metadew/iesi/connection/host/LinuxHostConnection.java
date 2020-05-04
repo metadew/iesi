@@ -8,12 +8,12 @@ import io.metadew.iesi.connection.HostConnection;
  * @author peter.billen
  */
 public class LinuxHostConnection extends HostConnection {
-
     private static String type = "linux";
 
     public LinuxHostConnection(String hostName, int portNumber, String userName, String userPassword, String tempPath,
                                String terminalFlag, String jumphostConnectionName, String allowLocalhostExecution) {
         super(type, hostName, portNumber, userName, userPassword, tempPath, terminalFlag, jumphostConnectionName, allowLocalhostExecution);
     }
+
 
 }

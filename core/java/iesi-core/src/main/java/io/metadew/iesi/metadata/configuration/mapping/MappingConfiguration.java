@@ -9,12 +9,20 @@ public class MappingConfiguration {
 
     private String dataObjectType = "Mapping";
 
-    // Constructors
-    public MappingConfiguration() {
+    private static MappingConfiguration INSTANCE;
+
+    public synchronized static MappingConfiguration getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new MappingConfiguration();
+        }
+        return INSTANCE;
     }
 
+    private MappingConfiguration() {}
+
     public Mapping getMapping(String mappingName) {
-        String conf = TypeConfigurationOperation.getMappingConfigurationFile(this.getDataObjectType(), mappingName);
+        String conf = TypeConfigurationOperation.getInstance()
+                .getMappingConfigurationFile(this.getDataObjectType(), mappingName);
         DataObjectOperation dataObjectOperation = new DataObjectOperation(conf);
         ObjectMapper objectMapper = new ObjectMapper();
         return objectMapper.convertValue(dataObjectOperation.getDataObject().getData(),

@@ -24,7 +24,9 @@ public class ScriptDesignTraceService {
 
         String runId = scriptExecution.getExecutionControl().getRunId();
         long processId = scriptExecution.getProcessId();
-        long parentProcessId = scriptExecution.getParentScriptExecution().map(ScriptExecution::getProcessId).orElse(-1L);
+        long parentProcessId = scriptExecution.getParentScriptExecution()
+                .map(ScriptExecution::getProcessId)
+                .orElse(-1L);
         Script script = scriptExecution.getScript();
 
         ScriptDesignTraceConfiguration.getInstance().insert(new ScriptDesignTrace(runId, processId, parentProcessId, script));

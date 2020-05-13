@@ -43,14 +43,6 @@ public class MetadataTablesConfiguration {
 
         }
     }
-
-    public MetadataTable getMetadataTableNameByLabel(String label) {
-        return metadataTables.stream()
-                .filter(entry -> entry.getLabel().equalsIgnoreCase(label))
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("Could not find MetadataTable with label: " + label));
-    }
-
     @SuppressWarnings("unchecked")
     private boolean containsConfiguration() {
         return Configuration.getInstance().getProperties().containsKey(MetadataConfiguration.configurationKey) ||

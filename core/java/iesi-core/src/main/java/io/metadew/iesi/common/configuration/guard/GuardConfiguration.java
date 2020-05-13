@@ -37,7 +37,7 @@ public class GuardConfiguration {
 
 
     private boolean containsConfiguration() {
-        return Configuration.getInstance().getProperties().containsKey(GuardConfiguration.guardKey) ||
+        return Configuration.getInstance().getProperties().containsKey(GuardConfiguration.guardKey) &&
                 (Configuration.getInstance().getProperties().get(GuardConfiguration.guardKey) instanceof Map);
     }
 

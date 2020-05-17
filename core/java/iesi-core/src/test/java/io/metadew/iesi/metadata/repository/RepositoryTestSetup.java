@@ -29,7 +29,7 @@ public class RepositoryTestSetup {
     private static final String CONNECTIVITY_OBJECTS = "io.metadew.iesi.metadata/ConnectivityObjects.json";
 
     public static DesignMetadataRepository getDesignMetadataRepository() {
-        Configuration.getInstance();
+        Configuration configuration = Configuration.getInstance();
 //        DesignMetadataRepository designMetadataRepository = new DesignMetadataRepository("", getRepositoryCoordinator(), "", "",
 //                getMetadataObjects(DESIGN_OBJECTS), getMetadataTables(DESIGN_TABLES));
 //        designMetadataRepository.createAllTables();

@@ -33,6 +33,7 @@ public class MetadataFieldService {
     }
 
     public String truncateAccordingToConfiguration(String tableLabel, String columnName, String value) {
+        if (value == null) return null;
         MetadataField metadataField = getByTableLabelAndName(tableLabel, columnName);
         if (value.length() > metadataField.getLength()) {
             log.info("truncating value " + value + " to " + metadataField.getLength() + " characters for column " + tableLabel + "/" + columnName);

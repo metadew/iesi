@@ -1,6 +1,7 @@
 package io.metadew.iesi.server.rest.actiontypes;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.metadew.iesi.server.rest.actiontypes.parameter.ActionTypeParameterDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

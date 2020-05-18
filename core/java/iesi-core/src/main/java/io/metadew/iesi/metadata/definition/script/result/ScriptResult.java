@@ -2,9 +2,15 @@ package io.metadew.iesi.metadata.definition.script.result;
 
 import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.script.result.key.ScriptResultKey;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 
+@Data
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 public class ScriptResult extends Metadata<ScriptResultKey> {
 
 	private final Long parentProcessId;
@@ -31,44 +37,4 @@ public class ScriptResult extends Metadata<ScriptResultKey> {
 		this.endTimestamp = endTimestamp;
 	}
 
-	// Getters and Setters
-	public String getScriptName() {
-		return scriptName;
-	}
-
-	public String getScriptId() {
-		return scriptId;
-	}
-
-	public Long getParentProcessId() {
-		return parentProcessId;
-	}
-
-	public String getEnvironment() {
-		return environment;
-	}
-
-	public String getStatus() {
-		return status;
-	}
-
-	public LocalDateTime getStartTimestamp() {
-		return startTimestamp;
-	}
-
-	public LocalDateTime getEndTimestamp() {
-		return endTimestamp;
-	}
-
-	public Long getScriptVersion() {
-		return scriptVersion;
-	}
-
-	public void setStatus(String status) {
-		this.status = status;
-	}
-
-	public void setEndTimestamp(LocalDateTime endTimestamp) {
-		this.endTimestamp = endTimestamp;
-	}
 }

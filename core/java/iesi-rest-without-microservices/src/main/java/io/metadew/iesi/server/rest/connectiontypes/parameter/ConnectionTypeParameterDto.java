@@ -1,4 +1,4 @@
-package io.metadew.iesi.server.rest.actiontypes;
+package io.metadew.iesi.server.rest.connectiontypes.parameter;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
 @NoArgsConstructor
-public class ActionTypeParameterDto {
+public class ConnectionTypeParameterDto {
 
     private String name;
     private String description;

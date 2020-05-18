@@ -1,4 +1,4 @@
-package io.metadew.iesi.server.rest.connectiontypes.actiontypes;
+package io.metadew.iesi.server.rest.connectiontypes;
 
 import io.metadew.iesi.common.configuration.metadata.connectiontypes.MetadataConnectionTypesConfiguration;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@Tag(name = "actionTypes", description = "Everything about action types")
+@Tag(name = "connectionTypes", description = "Everything about connection types")
 @RequestMapping("/connection_types")
 public class ConnectionTypeController {
 

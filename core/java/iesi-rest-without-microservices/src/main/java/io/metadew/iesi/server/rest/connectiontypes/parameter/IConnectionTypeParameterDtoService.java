@@ -1,4 +1,4 @@
-package io.metadew.iesi.server.rest.connectiontypes.actiontypes;
+package io.metadew.iesi.server.rest.connectiontypes.parameter;
 
 import io.metadew.iesi.metadata.definition.connection.ConnectionTypeParameter;
 

@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @EqualsAndHashCode
 @AllArgsConstructor
@@ -14,6 +16,6 @@ public class ScriptExecutionInformation {
 
     private Long total;
     @JsonProperty("mostRecent")
-    private ScriptExecutionDto scriptExecutionDto;
+    private List<ScriptExecutionDto> scriptExecutionDto;
 
 }

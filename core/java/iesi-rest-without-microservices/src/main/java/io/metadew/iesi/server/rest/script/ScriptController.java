@@ -9,9 +9,9 @@ import io.metadew.iesi.server.rest.error.DataBadRequestException;
 import io.metadew.iesi.server.rest.resource.HalMultipleEmbeddedResource;
 import io.metadew.iesi.server.rest.script.dto.IScriptPostDtoService;
 import io.metadew.iesi.server.rest.script.dto.ScriptDto;
+import io.metadew.iesi.server.rest.script.dto.ScriptDtoModelAssembler;
 import io.metadew.iesi.server.rest.script.dto.ScriptPostDto;
 import io.metadew.iesi.server.rest.script.dto.expansions.IScriptDtoExpansionService;
-import io.metadew.iesi.server.rest.script.resource.ScriptDtoResourceAssembler;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,15 +28,15 @@ import java.util.stream.Collectors;
 public class ScriptController {
 
     private IScriptService scriptService;
-    private ScriptDtoResourceAssembler scriptDtoResourceAssembler;
+    private ScriptDtoModelAssembler scriptDtoModelAssembler;
     private IScriptPostDtoService scriptPostDtoService;
     private IScriptDtoExpansionService scriptDtoExpansionService;
 
     @Autowired
-    ScriptController(IScriptService scriptService, ScriptDtoResourceAssembler scriptDtoResourceAssembler,
+    ScriptController(IScriptService scriptService, ScriptDtoModelAssembler scriptDtoModelAssembler,
                      IScriptPostDtoService scriptPostDtoService, IScriptDtoExpansionService scriptDtoExpansionService) {
         this.scriptService = scriptService;
-        this.scriptDtoResourceAssembler = scriptDtoResourceAssembler;
+        this.scriptDtoModelAssembler = scriptDtoModelAssembler;
         this.scriptPostDtoService = scriptPostDtoService;
         this.scriptDtoExpansionService = scriptDtoExpansionService;
     }
@@ -47,7 +47,7 @@ public class ScriptController {
         return new HalMultipleEmbeddedResource<>(
                 scripts.stream()
                         .map(script -> {
-                            ScriptDto scriptDto = scriptDtoResourceAssembler.toModel(script);
+                            ScriptDto scriptDto = scriptDtoModelAssembler.toModel(script);
                             scriptDtoExpansionService.addExpansions(scriptDto, expansions);
                             return scriptDto;
                         })
@@ -59,7 +59,7 @@ public class ScriptController {
         List<Script> scripts = scriptService.getByName(name);
         return new HalMultipleEmbeddedResource<>(scripts.stream()
                 .map(script -> {
-                    ScriptDto scriptDto = scriptDtoResourceAssembler.toModel(script);
+                    ScriptDto scriptDto = scriptDtoModelAssembler.toModel(script);
                     scriptDtoExpansionService.addExpansions(scriptDto, expansions);
                     return scriptDto;
                 })
@@ -70,7 +70,7 @@ public class ScriptController {
     public ScriptDto get(@PathVariable String name, @PathVariable Long version, @RequestParam(required = false, name = "expand") List<String> expansions) throws MetadataDoesNotExistException {
         return scriptService.getByNameAndVersion(name, version)
                 .map(script -> {
-                    ScriptDto scriptDto = scriptDtoResourceAssembler.toModel(script);
+                    ScriptDto scriptDto = scriptDtoModelAssembler.toModel(script);
                     scriptDtoExpansionService.addExpansions(scriptDto, expansions);
                     return scriptDto;
                 })
@@ -80,7 +80,7 @@ public class ScriptController {
     @PostMapping("")
     public ScriptDto post(@Valid @RequestBody ScriptPostDto scriptPostDto) throws MetadataAlreadyExistsException {
         scriptService.createScript(scriptPostDto);
-        return scriptDtoResourceAssembler.toModel(scriptPostDtoService.convertToEntity(scriptPostDto));
+        return scriptDtoModelAssembler.toModel(scriptPostDtoService.convertToEntity(scriptPostDto));
     }
 
 
@@ -102,7 +102,7 @@ public class ScriptController {
             throw new DataBadRequestException(name);
         }
         scriptService.updateScript(scriptPostDto);
-        return scriptDtoResourceAssembler.toModel(scriptPostDtoService.convertToEntity(scriptPostDto));
+        return scriptDtoModelAssembler.toModel(scriptPostDtoService.convertToEntity(scriptPostDto));
 
     }
 

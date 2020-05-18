@@ -8,8 +8,10 @@ import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration
 import io.metadew.iesi.metadata.configuration.environment.EnvironmentConfiguration;
 import io.metadew.iesi.metadata.configuration.execution.ExecutionRequestConfiguration;
 import io.metadew.iesi.metadata.configuration.execution.script.ScriptExecutionConfiguration;
+import io.metadew.iesi.metadata.configuration.execution.script.ScriptExecutionRequestConfiguration;
 import io.metadew.iesi.metadata.configuration.impersonation.ImpersonationConfiguration;
 import io.metadew.iesi.metadata.configuration.script.ScriptConfiguration;
+import io.metadew.iesi.metadata.configuration.script.result.ScriptResultConfiguration;
 import io.metadew.iesi.runtime.ExecutionRequestExecutorService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -58,8 +60,20 @@ public class IesiConfiguration {
     public ScriptConfiguration scriptConfiguration() {
         return ScriptConfiguration.getInstance();
     }
-    @Bean
 
+    @Bean
+    @DependsOn("frameworkInstance")
+    public ScriptResultConfiguration scriptResultConfiguration() {
+        return ScriptResultConfiguration.getInstance();
+    }
+
+    @Bean
+    @DependsOn("frameworkInstance")
+    public ScriptExecutionRequestConfiguration scriptExecutionRequestConfiguration() {
+        return ScriptExecutionRequestConfiguration.getInstance();
+    }
+
+    @Bean
     @DependsOn("frameworkInstance")
     public ScriptExecutionConfiguration scriptExecutionConfiguration() {
         return ScriptExecutionConfiguration.getInstance();

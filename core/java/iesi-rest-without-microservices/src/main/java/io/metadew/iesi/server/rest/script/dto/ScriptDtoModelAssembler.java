@@ -1,4 +1,4 @@
-package io.metadew.iesi.server.rest.script.resource;
+package io.metadew.iesi.server.rest.script.dto;
 
 
 import io.metadew.iesi.metadata.definition.script.Script;
@@ -14,12 +14,12 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Component
-public class ScriptDtoResourceAssembler extends RepresentationModelAssemblerSupport<Script, ScriptDto> {
+public class ScriptDtoModelAssembler extends RepresentationModelAssemblerSupport<Script, ScriptDto> {
 
     private IScriptDtoService scriptDtoService;
 
     @Autowired
-    public ScriptDtoResourceAssembler(IScriptDtoService scriptDtoService) {
+    public ScriptDtoModelAssembler(IScriptDtoService scriptDtoService) {
         super(ScriptController.class, ScriptDto.class);
         this.scriptDtoService = scriptDtoService;
     }

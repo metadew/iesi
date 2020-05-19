@@ -152,7 +152,8 @@ public class ScriptResultConfiguration extends Configuration<ScriptResult, Scrip
 
     public Optional<ScriptResult> getMostRecentScriptResult(String environment, String scriptName, Long scriptVersion) {
         try {
-            String query = "SELECT RUN_ID, PRC_ID, PARENT_PRC_ID, SCRIPT_ID, SCRIPT_NM, SCRIPT_VRS_NB, ENV_NM, ST_NM, STRT_TMS, END_TMS FROM GETA.IESI_03_RES_SCRIPT where " +
+            String query = "SELECT RUN_ID, PRC_ID, PARENT_PRC_ID, SCRIPT_ID, SCRIPT_NM, SCRIPT_VRS_NB, ENV_NM, ST_NM, STRT_TMS," +
+                    " END_TMS FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptResults") + " where " +
                     " SCRIPT_NM = " + SQLTools.GetStringForSQL(scriptName) +
                     " and SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(scriptVersion) +
                     " and env_nm = " + SQLTools.GetStringForSQL(environment) +

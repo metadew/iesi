@@ -7,8 +7,8 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-@EqualsAndHashCode(callSuper = true)
-public class Text extends DataType {
+@EqualsAndHashCode
+public class Text implements DataType {
 
     private final String string;
 

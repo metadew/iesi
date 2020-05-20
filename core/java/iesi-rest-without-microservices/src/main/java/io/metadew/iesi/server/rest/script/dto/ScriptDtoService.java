@@ -10,6 +10,7 @@ import io.metadew.iesi.server.rest.script.dto.version.IScriptVersionDtoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -19,14 +20,17 @@ public class ScriptDtoService implements IScriptDtoService {
     private IScriptLabelDtoService scriptLabelDtoService;
     private IScriptActionDtoService scriptActionDtoService;
     private IScriptVersionDtoService scriptVersionDtoService;
+    private IScriptDtoRepository scriptDtoRepository;
 
     @Autowired
     public ScriptDtoService(IScriptParameterDtoService scriptParameterDtoService, IScriptLabelDtoService scriptLabelDtoService,
-                            IScriptActionDtoService scriptActionDtoService, IScriptVersionDtoService scriptVersionDtoService) {
+                            IScriptActionDtoService scriptActionDtoService, IScriptVersionDtoService scriptVersionDtoService,
+                            IScriptDtoRepository scriptDtoRepository) {
         this.scriptActionDtoService = scriptActionDtoService;
         this.scriptLabelDtoService = scriptLabelDtoService;
         this.scriptParameterDtoService = scriptParameterDtoService;
         this.scriptVersionDtoService = scriptVersionDtoService;
+        this.scriptDtoRepository = scriptDtoRepository;
     }
 
     public Script convertToEntity(ScriptDto scriptDto) {
@@ -56,5 +60,19 @@ public class ScriptDtoService implements IScriptDtoService {
                 null,
                 null);
     }
+
+
+    public List<ScriptDto> getAll() {
+        return scriptDtoRepository.getAll();
+    }
+
+    public List<ScriptDto> getByName(String name) {
+        return scriptDtoRepository.getByName(name);
+    }
+
+    public List<ScriptDto> getByNameAndVersion(String name, long version) {
+        return scriptDtoRepository.getByNameAndVersion(name, version);
+    }
+
 
 }

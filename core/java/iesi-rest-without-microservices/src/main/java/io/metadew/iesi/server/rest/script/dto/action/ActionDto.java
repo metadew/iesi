@@ -29,15 +29,19 @@ public class ActionDto extends RepresentationModel<ActionDto> {
     private boolean errorExpected;
     private boolean errorStop;
     private int retries;
-    private List<ActionParameterDto>  parameters;
+    private List<ActionParameterDto> parameters;
 
-    public Action convertToEntity(String scriptId, long version){
+    public Action convertToEntity(String scriptId, long version) {
         return new Action(new ActionKey(new ScriptKey(scriptId, version), IdentifierTools.getActionIdentifier(name)),
                 number, type, this.name, description, component, condition, iteration, errorExpected ? "y" : "n",
                 errorStop ? "y" : "n", Integer.toString(retries), parameters.stream()
                 .map(parameter -> parameter.convertToEntity(scriptId, version, IdentifierTools.getActionIdentifier(name)))
                 .collect(Collectors.toList()));
 
+    }
+
+    public void addActionParameterDto(ActionParameterDto actionParameterDto) {
+        parameters.add(actionParameterDto);
     }
 
 }

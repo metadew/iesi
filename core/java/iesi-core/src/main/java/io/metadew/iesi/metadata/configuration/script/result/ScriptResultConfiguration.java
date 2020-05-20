@@ -152,15 +152,15 @@ public class ScriptResultConfiguration extends Configuration<ScriptResult, Scrip
 
     public Optional<ScriptResult> getMostRecentScriptResult(String environment, String scriptName, Long scriptVersion) {
         try {
-            String query = "SELECT RUN_ID, PRC_ID, PARENT_PRC_ID, SCRIPT_ID, SCRIPT_NM, SCRIPT_VRS_NB, ENV_NM, ST_NM, STRT_TMS," +
-                    " END_TMS FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptResults") + " where " +
-                    " SCRIPT_NM = " + SQLTools.GetStringForSQL(scriptName) +
-                    " and SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(scriptVersion) +
-                    " and env_nm = " + SQLTools.GetStringForSQL(environment) +
-                    " and STRT_TMS = (SELECT MAX(STRT_TMS) FROM GETA.IESI_03_RES_SCRIPT where " +
-                    " SCRIPT_NM = " + SQLTools.GetStringForSQL(scriptName) +
-                    " and SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(scriptVersion) +
-                    " and env_nm = " + SQLTools.GetStringForSQL(environment) + ");";
+
+            String query = "SELECT * FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptResults") +
+                    " where (SCRIPT_NM, SCRIPT_VRS_NB, ENV_NM, STRT_TMS) in (" +
+                    " SELECT SCRIPT_NM, SCRIPT_VRS_NB, ENV_NM, MAX(STRT_TMS)" +
+                    " FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptResults") +
+                    " where SCRIPT_NM = " + SQLTools.GetStringForSQL(scriptName) + "," +
+                    " SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(scriptVersion) + "," +
+                    " ENV_NM = " + SQLTools.GetStringForSQL(environment) +
+                    " group by SCRIPT_NM, SCRIPT_VRS_NB, ENV_NM)" + ");";
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
             if (cachedRowSet.size() == 0) {
                 return Optional.empty();
@@ -177,6 +177,34 @@ public class ScriptResultConfiguration extends Configuration<ScriptResult, Scrip
                     SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("STRT_TMS")),
                     SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("END_TMS"))
             ));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<ScriptResult> getMostRecentScriptResults() {
+        try {
+            List<ScriptResult> scriptResults = new ArrayList<>();
+            String query = "SELECT * FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptResults") +
+                    " where (SCRIPT_NM, SCRIPT_VRS_NB, ENV_NM, STRT_TMS) in (" +
+                    " SELECT SCRIPT_NM, SCRIPT_VRS_NB, ENV_NM, MAX(STRT_TMS)" +
+                    " FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptResults") +
+                    " group by SCRIPT_NM, SCRIPT_VRS_NB, ENV_NM)" + ");";
+            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
+            while (cachedRowSet.next()) {
+                scriptResults.add(new ScriptResult(new ScriptResultKey(
+                        cachedRowSet.getString("RUN_ID"),
+                        cachedRowSet.getLong("PRC_ID")),
+                        cachedRowSet.getLong("PARENT_PRC_ID"),
+                        cachedRowSet.getString("SCRIPT_ID"),
+                        cachedRowSet.getString("SCRIPT_NM"),
+                        cachedRowSet.getLong("SCRIPT_VRS_NB"),
+                        cachedRowSet.getString("ENV_NM"),
+                        cachedRowSet.getString("ST_NM"),
+                        SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("STRT_TMS")),
+                        SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("END_TMS"))));
+            }
+            return scriptResults;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

@@ -35,4 +35,12 @@ public class ScriptDto extends RepresentationModel<ScriptDto> {
     @JsonProperty("scheduling")
     private ScriptSchedulingInformation scriptSchedulingInformation;
 
+    public void addActionDto(ActionDto actionDto) {
+        actions.add(actionDto);
+    }
+
+    public void addScriptLabelDto(ScriptLabelDto scriptLabelDto) {
+        labels.add(scriptLabelDto);
+    }
+
 }

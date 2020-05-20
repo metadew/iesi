@@ -2,6 +2,8 @@ package io.metadew.iesi.server.rest.script.dto;
 
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
+import io.metadew.iesi.metadata.definition.action.key.ActionKey;
+import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.server.rest.script.dto.action.ActionDto;
 import io.metadew.iesi.server.rest.script.dto.action.ActionParameterDto;
 import io.metadew.iesi.server.rest.script.dto.label.ScriptLabelDto;
@@ -10,33 +12,52 @@ import io.metadew.iesi.server.rest.script.dto.version.ScriptVersionDto;
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ScriptDtoRepository implements IScriptDtoRepository {
 
     public List<ScriptDto> getAll(List<String> expansions) {
         try {
-            List<ScriptDto> scriptDtos = new ArrayList<>();
-
+            Map<ScriptKey, ScriptDto> scriptDtos = new HashMap<>();
+            Map<ActionKey, ActionDto> actionDtos = new HashMap<>();
             String query = "Select " +
-                    "script_design.SCRIPT_ID, script_design.SCRIPT_NM, script_design.SCRIPT_DSC, script_design.SCRIPT_TYP_NM, " +
-                    "script_version.SCRIPT_VRS_NB, script_version.SCRIPT_VRS_DSC, " +
-                    "labels.NAME, labels.VALUE," +
-                    (expansions.contains("execution") ? getExecutionExpansionSelect() : "") +
-                    "actions.ACTION_ID, actions.ACTION_NB, actions.ACTION_NM, actions.ACTION_DSC, actions.ACTION_TYP_NM, actions.CONDITION_VAL, actions.EXP_ERR_FL, actions.STOP_ERR_FL " +
-                    "action_parameters.ACTION_PAR_NM, action_parameters.ACTION_PAR_VAL" +
-                    "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts") + " script_design " +
+                    "script.SCRIPT_ID, script.SCRIPT_NM, script.SCRIPT_DSC, script.SCRIPT_TYP_NM, script_version.SCRIPT_VRS_NB, script_version.SCRIPT_VRS_DSC, 0 INFO_TYPE, " +
+                    "script_label.NAME LABEL_NAME, script_label.VALUE LABEL_VALUE, null ACTION_ID, null ACTION_NM, null ACTION_NB, null ACTION_DSC, null ACTION_TYP_NM, " +
+                    "null CONDITION_VAL, null EXP_ERR_FL, null STOP_ERR_FL, null ACTION_PAR_NM, null ACTION_PAR_VAL " +
+                    "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts") + " script " +
                     "inner join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptVersions") + " script_version " +
-                    "on script_design.SCRIPT_ID=script_version.SCRIPT_ID " +
-                    (expansions.contains("execution") ? getExecutionExpansionJoins() : "") +
-                    "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptLabels") + " labels " +
-                    "on a.SCRIPT_ID = labels.SCRIPT_ID and b.SCRIPT_VRS_NB = labels.SCRIPT_VRS_NB" +
-                    "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Actions") + " actions " +
-                    "on script_design.SCRIPT_ID = actions.SCRIPT_ID and script_version.SCRIPT_VRS_NB = actions.SCRIPT_VRS_NB" +
-                    "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ActionParameters") + " action_parameters " +
-                    "on script_design.SCRIPT_ID = action_parameters.SCRIPT_ID and script_version.SCRIPT_VRS_NB = action_parameters.SCRIPT_VRS_NB and actions.ACTION_ID = action_parameters.ACTION_ID" +
-                    "order by script_design.SCRIPT_ID, script_version.SCRIPT_VRS_NB, labels.NAME, actions.ACTION_NB, action_parameters.ACTION_PAR_NM" +
-                    (expansions.contains("execution") ? "," + getExecutionExpansionOrderBy() : "") + ";";
+                    "on script.SCRIPT_ID=script_version.SCRIPT_ID" +
+                    "inner join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptLabels") + " script_label " +
+                    "on script.SCRIPT_ID = script_label.SCRIPT_ID and script_version.SCRIPT_VRS_NB = script_label.SCRIPT_VRS_NB " +
+                    "union all" +
+                    "Select " + "script.SCRIPT_ID, script.SCRIPT_NM, script.SCRIPT_DSC, script.SCRIPT_TYP_NM, script_version.SCRIPT_VRS_NB, script_version.SCRIPT_VRS_DSC, 1 INFO_TYPE, " +
+                    "null, null, action.ACTION_ID,action.ACTION_NM, action.ACTION_NB, action.ACTION_DSC, action.ACTION_TYP_NM, action.CONDITION_VAL, action.EXP_ERR_FL, action.STOP_ERR_FL, " +
+                    "action_parameter.ACTION_PAR_NM, action_parameter.ACTION_PAR_VAL " +
+                    "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts") + " script " +
+                    "inner join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptVersions") + " script_version " +
+                    "on script.SCRIPT_ID=script_version.SCRIPT_ID" +
+                    "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Actions") + " action " +
+                    "on script.SCRIPT_ID = action.SCRIPT_ID and script_version.SCRIPT_VRS_NB = action.SCRIPT_VRS_NB " +
+                    "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ActionParameters") + " action_parameter " +
+                    "on script.SCRIPT_ID = action_parameter.SCRIPT_ID and script_version.SCRIPT_VRS_NB = action_parameter.SCRIPT_VRS_NB and action.ACTION_ID = action_parameter.ACTION_ID" + ";";
+//            String query = "Select " +
+//                    "script_design.SCRIPT_ID, script_design.SCRIPT_NM, script_design.SCRIPT_DSC, script_design.SCRIPT_TYP_NM, " +
+//                    "script_version.SCRIPT_VRS_NB, script_version.SCRIPT_VRS_DSC, " +
+//                    "labels.NAME, labels.VALUE," +
+//                    "actions.ACTION_ID, actions.ACTION_NB, actions.ACTION_NM, actions.ACTION_DSC, actions.ACTION_TYP_NM, actions.CONDITION_VAL, actions.EXP_ERR_FL, actions.STOP_ERR_FL " +
+//                    "action_parameters.ACTION_PAR_NM, action_parameters.ACTION_PAR_VAL" +
+//                    "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts") + " script_design " +
+//                    "inner join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptVersions") + " script_version " +
+//                    "on script_design.SCRIPT_ID=script_version.SCRIPT_ID " +
+//                    "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptLabels") + " labels " +
+//                    "on a.SCRIPT_ID = labels.SCRIPT_ID and b.SCRIPT_VRS_NB = labels.SCRIPT_VRS_NB" +
+//                    "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Actions") + " actions " +
+//                    "on script_design.SCRIPT_ID = actions.SCRIPT_ID and script_version.SCRIPT_VRS_NB = actions.SCRIPT_VRS_NB" +
+//                    "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ActionParameters") + " action_parameters " +
+//                    "on script_design.SCRIPT_ID = action_parameters.SCRIPT_ID and script_version.SCRIPT_VRS_NB = action_parameters.SCRIPT_VRS_NB and actions.ACTION_ID = action_parameters.ACTION_ID" +
+//                    "order by script_design.SCRIPT_ID, script_version.SCRIPT_VRS_NB, labels.NAME, actions.ACTION_NB, action_parameters.ACTION_PAR_NM" + ";";
             // TODO: how to handle split repositories?
             CachedRowSet cachedRowSet = MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository().executeQuery(query, "reader");
             ScriptDto scriptDto = null;

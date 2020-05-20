@@ -55,8 +55,9 @@ public class HttpResponseEntityHandler implements IHttpResponseEntityHandler {
         if (contentType == null) {
             log.warn("content-type: Http response contains no header defining the content type. Assuming text/plain");
             TextPlainHttpResponseEntityService.getInstance().writeToDataset(new TextPlainHttpResponseEntityStrategy(httpResponse), dataset, key, executionRuntime);
+        } else {
+            getHttpResponseEntityService(contentType).writeToDataset(httpResponse, dataset, key, executionRuntime);
         }
-        getHttpResponseEntityService(contentType).writeToDataset(httpResponse, dataset, key, executionRuntime);
     }
 
     private IHttpResponseEntityService getHttpResponseEntityService(ContentType contentType) {

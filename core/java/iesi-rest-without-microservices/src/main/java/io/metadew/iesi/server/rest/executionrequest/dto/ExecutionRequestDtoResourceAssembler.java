@@ -1,12 +1,10 @@
-package io.metadew.iesi.server.rest.executionrequest.resource;
+package io.metadew.iesi.server.rest.executionrequest.dto;
 
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequestLabel;
 import io.metadew.iesi.metadata.definition.execution.NonAuthenticatedExecutionRequest;
 import io.metadew.iesi.server.rest.executionrequest.ExecutionRequestController;
-import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDto;
-import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestLabelDto;
-import io.metadew.iesi.server.rest.executionrequest.script.resource.ScriptExecutionRequestDtoResourceAssembler;
+import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRequestDtoResourceAssembler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;

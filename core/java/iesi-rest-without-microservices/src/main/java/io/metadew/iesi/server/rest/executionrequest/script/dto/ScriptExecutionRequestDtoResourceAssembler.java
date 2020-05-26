@@ -1,4 +1,4 @@
-package io.metadew.iesi.server.rest.executionrequest.script.resource;
+package io.metadew.iesi.server.rest.executionrequest.script.dto;
 
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequestImpersonation;

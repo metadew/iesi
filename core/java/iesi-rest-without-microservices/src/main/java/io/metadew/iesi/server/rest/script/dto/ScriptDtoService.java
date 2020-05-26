@@ -10,7 +10,9 @@ import io.metadew.iesi.server.rest.script.dto.version.IScriptVersionDtoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -63,15 +65,29 @@ public class ScriptDtoService implements IScriptDtoService {
 
 
     public List<ScriptDto> getAll() {
-        return scriptDtoRepository.getAll();
+        return getAll(new ArrayList<>());
+    }
+
+    @Override
+    public List<ScriptDto> getAll(List<String> expansions) {
+        return scriptDtoRepository.getAll(expansions);
     }
 
     public List<ScriptDto> getByName(String name) {
-        return scriptDtoRepository.getByName(name);
+        return getByName(name, new ArrayList<>());
     }
 
-    public List<ScriptDto> getByNameAndVersion(String name, long version) {
-        return scriptDtoRepository.getByNameAndVersion(name, version);
+    public List<ScriptDto> getByName(String name, List<String> expansions) {
+        return scriptDtoRepository.getByName(name, expansions);
+    }
+
+    public Optional<ScriptDto> getByNameAndVersion(String name, long version) {
+        return getByNameAndVersion(name, version, new ArrayList<>());
+    }
+
+    @Override
+    public Optional<ScriptDto> getByNameAndVersion(String name, long version, List<String> expansions) {
+        return scriptDtoRepository.getByNameAndVersion(name, version, expansions);
     }
 
 

@@ -6,7 +6,7 @@ import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistExce
 import io.metadew.iesi.metadata.definition.impersonation.Impersonation;
 import io.metadew.iesi.server.rest.error.DataBadRequestException;
 import io.metadew.iesi.server.rest.impersonation.dto.ImpersonationDto;
-import io.metadew.iesi.server.rest.impersonation.resource.ImpersonatonDtoResourceAssembler;
+import io.metadew.iesi.server.rest.impersonation.dto.ImpersonatonDtoResourceAssembler;
 import io.metadew.iesi.server.rest.resource.HalMultipleEmbeddedResource;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;

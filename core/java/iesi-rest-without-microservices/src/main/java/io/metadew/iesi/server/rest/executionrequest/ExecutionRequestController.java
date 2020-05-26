@@ -4,7 +4,7 @@ import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsExc
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequestBuilderException;
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDto;
-import io.metadew.iesi.server.rest.executionrequest.resource.ExecutionRequestDtoResourceAssembler;
+import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDtoResourceAssembler;
 import io.metadew.iesi.server.rest.resource.HalMultipleEmbeddedResource;
 import io.metadew.iesi.server.rest.script.ScriptController;
 import io.swagger.v3.oas.annotations.tags.Tag;

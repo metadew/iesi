@@ -10,6 +10,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.springframework.hateoas.RepresentationModel;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,7 +30,7 @@ public class ActionDto extends RepresentationModel<ActionDto> {
     private boolean errorExpected;
     private boolean errorStop;
     private int retries;
-    private List<ActionParameterDto> parameters;
+    private List<ActionParameterDto> parameters = new ArrayList<>();
 
     public Action convertToEntity(String scriptId, long version) {
         return new Action(new ActionKey(new ScriptKey(scriptId, version), IdentifierTools.getActionIdentifier(name)),

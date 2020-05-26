@@ -14,8 +14,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class ScriptExecutionDto {
 
-    private String id;
     private String runId;
+    private String environment;
     private ScriptRunStatus runStatus;
     private LocalDateTime startTimestamp;
     private LocalDateTime endTimestamp;

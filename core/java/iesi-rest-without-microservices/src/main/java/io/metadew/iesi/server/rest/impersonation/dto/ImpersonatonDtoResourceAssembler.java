@@ -1,4 +1,4 @@
-package io.metadew.iesi.server.rest.impersonation.resource;
+package io.metadew.iesi.server.rest.impersonation.dto;
 
 import io.metadew.iesi.metadata.definition.impersonation.Impersonation;
 import io.metadew.iesi.metadata.definition.impersonation.ImpersonationParameter;

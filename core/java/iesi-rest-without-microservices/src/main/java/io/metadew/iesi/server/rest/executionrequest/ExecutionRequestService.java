@@ -5,11 +5,13 @@ import io.metadew.iesi.metadata.definition.execution.ExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequestBuilderException;
 import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDto;
+import org.springframework.stereotype.Service;
 
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Optional;
 
+@Service
 public class ExecutionRequestService implements IExecutionRequestService {
 
     private ExecutionRequestConfiguration executionRequestConfiguration;

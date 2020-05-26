@@ -1,4 +1,4 @@
-package io.metadew.iesi.server.rest.connection.resource;
+package io.metadew.iesi.server.rest.connection.dto;
 
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;

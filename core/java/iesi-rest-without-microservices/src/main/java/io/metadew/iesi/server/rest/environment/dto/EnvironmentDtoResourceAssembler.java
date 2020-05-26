@@ -1,4 +1,4 @@
-package io.metadew.iesi.server.rest.environment.resource;
+package io.metadew.iesi.server.rest.environment.dto;
 
 import io.metadew.iesi.metadata.definition.environment.Environment;
 import io.metadew.iesi.metadata.definition.environment.EnvironmentParameter;

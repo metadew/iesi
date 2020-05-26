@@ -1,4 +1,4 @@
-package io.metadew.iesi.server.rest.component.resource;
+package io.metadew.iesi.server.rest.component.dto;
 
 import io.metadew.iesi.metadata.definition.component.Component;
 import io.metadew.iesi.metadata.definition.component.ComponentAttribute;

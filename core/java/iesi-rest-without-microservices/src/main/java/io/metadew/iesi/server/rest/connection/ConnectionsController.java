@@ -5,7 +5,7 @@ import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistExce
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.server.rest.connection.dto.ConnectionDto;
-import io.metadew.iesi.server.rest.connection.resource.ConnectionDtoResourceAssembler;
+import io.metadew.iesi.server.rest.connection.dto.ConnectionDtoResourceAssembler;
 import io.metadew.iesi.server.rest.error.DataBadRequestException;
 import io.metadew.iesi.server.rest.resource.HalMultipleEmbeddedResource;
 import io.swagger.v3.oas.annotations.tags.Tag;

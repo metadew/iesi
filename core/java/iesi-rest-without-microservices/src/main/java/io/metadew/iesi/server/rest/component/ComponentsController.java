@@ -6,7 +6,7 @@ import io.metadew.iesi.metadata.definition.component.Component;
 import io.metadew.iesi.metadata.definition.component.key.ComponentKey;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
 import io.metadew.iesi.server.rest.component.dto.ComponentDto;
-import io.metadew.iesi.server.rest.component.resource.ComponentDtoResourceAssembler;
+import io.metadew.iesi.server.rest.component.dto.ComponentDtoResourceAssembler;
 import io.metadew.iesi.server.rest.error.DataBadRequestException;
 import io.metadew.iesi.server.rest.resource.HalMultipleEmbeddedResource;
 import io.swagger.v3.oas.annotations.tags.Tag;

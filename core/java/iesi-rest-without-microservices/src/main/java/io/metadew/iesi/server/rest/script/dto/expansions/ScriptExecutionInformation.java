@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -16,6 +17,10 @@ public class ScriptExecutionInformation {
 
     private Long total;
     @JsonProperty("mostRecent")
-    private List<ScriptExecutionDto> scriptExecutionDto;
+    private List<ScriptExecutionDto> scriptExecutionDtos = new ArrayList<>();
+
+    public void addScriptExecutionDto(ScriptExecutionDto scriptExecutionDto) {
+        this.scriptExecutionDtos.add(scriptExecutionDto);
+    }
 
 }

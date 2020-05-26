@@ -14,6 +14,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.springframework.hateoas.RepresentationModel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -25,9 +26,9 @@ public class ScriptDto extends RepresentationModel<ScriptDto> {
     private String name;
     private String description;
     private ScriptVersionDto version;
-    private List<ScriptParameterDto> parameters;
-    private List<ActionDto> actions;
-    private List<ScriptLabelDto> labels;
+    private List<ScriptParameterDto> parameters = new ArrayList<>();
+    private List<ActionDto> actions = new ArrayList<>();
+    private List<ScriptLabelDto> labels = new ArrayList<>();
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonProperty("execution")
     private ScriptExecutionInformation scriptExecutionInformation;

@@ -1,5 +1,6 @@
 package io.metadew.iesi.metadata.configuration.script.result;
 
+import io.metadew.iesi.common.configuration.ScriptRunStatus;
 import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
@@ -54,7 +55,7 @@ public class ScriptResultConfiguration extends Configuration<ScriptResult, Scrip
                     cachedRowSet.getString("SCRIPT_NM"),
                     cachedRowSet.getLong("SCRIPT_VRS_NB"),
                     cachedRowSet.getString("ENV_NM"),
-                    cachedRowSet.getString("ST_NM"),
+                    ScriptRunStatus.valueOf(cachedRowSet.getString("ST_NM")),
                     SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("STRT_TMS")),
                     SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("END_TMS"))
             ));
@@ -79,7 +80,7 @@ public class ScriptResultConfiguration extends Configuration<ScriptResult, Scrip
                         cachedRowSet.getString("SCRIPT_NM"),
                         cachedRowSet.getLong("SCRIPT_VRS_NB"),
                         cachedRowSet.getString("ENV_NM"),
-                        cachedRowSet.getString("ST_NM"),
+                        ScriptRunStatus.valueOf(cachedRowSet.getString("ST_NM")),
                         SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("STRT_TMS")),
                         SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("END_TMS"))));
             }
@@ -121,7 +122,7 @@ public class ScriptResultConfiguration extends Configuration<ScriptResult, Scrip
                 SQLTools.GetStringForSQL(scriptResult.getScriptName()) + "," +
                 SQLTools.GetStringForSQL(scriptResult.getScriptVersion()) + "," +
                 SQLTools.GetStringForSQL(scriptResult.getEnvironment()) + "," +
-                SQLTools.GetStringForSQL(scriptResult.getStatus()) + "," +
+                SQLTools.GetStringForSQL(scriptResult.getStatus().value()) + "," +
                 SQLTools.GetStringForSQL(scriptResult.getStartTimestamp()) + "," +
                 SQLTools.GetStringForSQL(scriptResult.getEndTimestamp()) + ");";
     }
@@ -142,7 +143,7 @@ public class ScriptResultConfiguration extends Configuration<ScriptResult, Scrip
                 "SCRIPT_NM = " + SQLTools.GetStringForSQL(scriptResult.getScriptName()) + "," +
                 "SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(scriptResult.getScriptVersion()) + "," +
                 "ENV_NM = " + SQLTools.GetStringForSQL(scriptResult.getEnvironment()) + "," +
-                "ST_NM = " + SQLTools.GetStringForSQL(scriptResult.getStatus()) + "," +
+                "ST_NM = " + SQLTools.GetStringForSQL(scriptResult.getStatus().value()) + "," +
                 "STRT_TMS = " + SQLTools.GetStringForSQL(scriptResult.getStartTimestamp()) + "," +
                 "END_TMS = " + SQLTools.GetStringForSQL(scriptResult.getEndTimestamp()) +
                 " WHERE " +
@@ -173,7 +174,7 @@ public class ScriptResultConfiguration extends Configuration<ScriptResult, Scrip
                     cachedRowSet.getString("SCRIPT_NM"),
                     cachedRowSet.getLong("SCRIPT_VRS_NB"),
                     cachedRowSet.getString("ENV_NM"),
-                    cachedRowSet.getString("ST_NM"),
+                    ScriptRunStatus.valueOf(cachedRowSet.getString("ST_NM")),
                     SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("STRT_TMS")),
                     SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("END_TMS"))
             ));
@@ -200,7 +201,7 @@ public class ScriptResultConfiguration extends Configuration<ScriptResult, Scrip
                         cachedRowSet.getString("SCRIPT_NM"),
                         cachedRowSet.getLong("SCRIPT_VRS_NB"),
                         cachedRowSet.getString("ENV_NM"),
-                        cachedRowSet.getString("ST_NM"),
+                        ScriptRunStatus.valueOf(cachedRowSet.getString("ST_NM")),
                         SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("STRT_TMS")),
                         SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("END_TMS"))));
             }

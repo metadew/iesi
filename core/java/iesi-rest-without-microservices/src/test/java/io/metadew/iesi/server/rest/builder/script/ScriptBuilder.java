@@ -5,7 +5,9 @@ import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.metadata.definition.script.ScriptLabel;
 import io.metadew.iesi.metadata.definition.script.ScriptParameter;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
+import io.metadew.iesi.metadata.tools.IdentifierTools;
 import io.metadew.iesi.server.rest.builder.action.ActionBuilder;
+import io.metadew.iesi.server.rest.builder.action.ActionParameterBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -89,6 +91,40 @@ public class ScriptBuilder {
                 new ScriptVersionBuilder(scriptId, versionNumber).build(),
                 scriptParameters,
                 actions, scriptLabels);
+    }
+
+    public static Script simpleScript(String scriptName, long version, int actionCount, int actionParameterCount, int labelCount) {
+        List<Action> actions = IntStream.range(0, actionCount)
+                .boxed()
+                .map(i -> new ActionBuilder(IdentifierTools.getScriptIdentifier(scriptName), version,"action" + i)
+                        .name("action" + i)
+                        .number(i)
+                        .type("fwk.dummy")
+                        .description("dummy action")
+                        .actionParameters(IntStream.range(0, actionParameterCount)
+                                .boxed()
+                                .map(j -> new ActionParameterBuilder(IdentifierTools.getScriptIdentifier(scriptName), version, "action" + i, "parameter" + j)
+                                        .value("value" + j)
+                                        .build())
+                                .collect(Collectors.toList()))
+                        .build())
+                .collect(Collectors.toList());
+        List<ScriptLabel> scriptLabels = IntStream.range(0, labelCount)
+                .boxed()
+                .map(i -> new ScriptLabelBuilder(IdentifierTools.getScriptIdentifier(scriptName), version,"label" + i)
+                        .value("value" + i)
+                        .build())
+                .collect(Collectors.toList());
+
+        return new Script(new ScriptKey(IdentifierTools.getScriptIdentifier(scriptName), version),
+                scriptName,
+                "dummy script",
+                new ScriptVersionBuilder(IdentifierTools.getScriptIdentifier(scriptName), version)
+                        .description("dummy version")
+                        .build(),
+                new ArrayList<>(),
+                actions,
+                scriptLabels);
     }
 
 }

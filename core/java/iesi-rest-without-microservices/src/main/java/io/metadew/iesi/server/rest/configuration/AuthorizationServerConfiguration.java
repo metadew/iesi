@@ -35,8 +35,6 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
         this.tokenStore = tokenStore;
     }
 
-    private Logger log = LoggerFactory.getLogger(AuthorizationServerConfiguration.class);
-
     @Override
     public void configure(final ClientDetailsServiceConfigurer clients) throws Exception {
         clients.jdbc(dataSource);

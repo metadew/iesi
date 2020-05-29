@@ -14,6 +14,7 @@ import io.metadew.iesi.server.rest.script.dto.expansions.ScriptSchedulingInforma
 import io.metadew.iesi.server.rest.script.dto.label.ScriptLabelDto;
 import io.metadew.iesi.server.rest.script.dto.version.ScriptVersionDto;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.sql.rowset.CachedRowSet;
@@ -23,6 +24,13 @@ import java.util.*;
 @Log4j2
 @Component
 public class ScriptDtoRepository implements IScriptDtoRepository {
+
+    private final MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+
+    @Autowired
+    public ScriptDtoRepository(MetadataRepositoryConfiguration metadataRepositoryConfiguration) {
+        this.metadataRepositoryConfiguration = metadataRepositoryConfiguration;
+    }
 
     public List<ScriptDto> getAll(List<String> expansions) {
         try {
@@ -42,8 +50,8 @@ public class ScriptDtoRepository implements IScriptDtoRepository {
                     "union all " +
                     "Select " + "script.SCRIPT_ID, script.SCRIPT_NM, script.SCRIPT_DSC, script.SCRIPT_TYP_NM, script_version.SCRIPT_VRS_NB, script_version.SCRIPT_VRS_DSC, 1 INFO_TYPE, " +
                     "null LABEL_NAME, null LABEL_VALUE, action.ACTION_ID, action.ACTION_NM, action.ACTION_NB, action.ACTION_DSC, action.ACTION_TYP_NM, action.CONDITION_VAL, action.EXP_ERR_FL, action.STOP_ERR_FL, " +
-                    "null RUN_ID, null PRC_ID, null ENV_NM, null ST_NM, null STRT_TMS, null END_TMS, " +
-                    "action_parameter.ACTION_PAR_NM, action_parameter.ACTION_PAR_VAL " +
+                    "action_parameter.ACTION_PAR_NM, action_parameter.ACTION_PAR_VAL, " +
+                    "null RUN_ID, null PRC_ID, null ENV_NM, null ST_NM, null STRT_TMS, null END_TMS " +
                     "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() + " script " +
                     "inner join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptVersions").getName() + " script_version " +
                     "on script.SCRIPT_ID=script_version.SCRIPT_ID " +
@@ -53,7 +61,7 @@ public class ScriptDtoRepository implements IScriptDtoRepository {
                     "on script.SCRIPT_ID = action_parameter.SCRIPT_ID and script_version.SCRIPT_VRS_NB = action_parameter.SCRIPT_VRS_NB and action.ACTION_ID = action_parameter.ACTION_ID" +
                     getWhereClause(null, null).orElse("") +
                     (expansions != null && expansions.contains("execution") ? getExecutionExpansionUnion(null, null) : "") + ";";
-            CachedRowSet cachedRowSet = MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository().executeQuery(query, "reader");
+            CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
             while (cachedRowSet.next()) {
                 mapRow(cachedRowSet, scriptDtos, actionDtos);
             }
@@ -96,7 +104,7 @@ public class ScriptDtoRepository implements IScriptDtoRepository {
                     getWhereClause(name, null).orElse("") +
                     (expansions != null && expansions.contains("execution") ? getExecutionExpansionUnion(name, null) : "") +
                     ";";
-            CachedRowSet cachedRowSet = MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository().executeQuery(query, "reader");
+            CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
             while (cachedRowSet.next()) {
                 mapRow(cachedRowSet, scriptDtos, actionDtos);
             }
@@ -136,7 +144,7 @@ public class ScriptDtoRepository implements IScriptDtoRepository {
                     getWhereClause(name, version).orElse("") +
                     (expansions != null && expansions.contains("execution") ? getExecutionExpansionUnion(name, version) : "") +
                     ";";
-            CachedRowSet cachedRowSet = MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository().executeQuery(query, "reader");
+            CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
             while (cachedRowSet.next()) {
                 mapRow(cachedRowSet, scriptDtos, actionDtos);
             }

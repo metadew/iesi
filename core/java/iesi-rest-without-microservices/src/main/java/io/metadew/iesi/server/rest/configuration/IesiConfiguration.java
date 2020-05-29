@@ -33,6 +33,7 @@ public class IesiConfiguration {
     }
 
     @Bean
+    @DependsOn("frameworkInstance")
     @Order(0)
     public MetadataRepositoryConfiguration metadataRepositoryConfiguration() {
         return MetadataRepositoryConfiguration.getInstance();

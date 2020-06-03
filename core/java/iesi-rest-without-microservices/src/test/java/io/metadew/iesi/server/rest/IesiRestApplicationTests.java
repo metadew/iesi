@@ -3,7 +3,7 @@
 //import io.metadew.iesi.metadata.configuration.ConnectionConfiguration;
 //import io.metadew.iesi.metadata.definition.Connection;
 //import io.metadew.iesi.metadata.definition.ConnectionParameter;
-//import io.metadew.iesi.server.rest.controller.ConnectionsController;
+//import io.metadew.iesi.server.rest.connection.ConnectionsController;
 //import org.junit.Test;
 //import org.junit.runner.RunWith;
 //import org.springframework.beans.factory.annotation.Autowired;

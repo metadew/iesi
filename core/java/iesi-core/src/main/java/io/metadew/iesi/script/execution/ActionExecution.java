@@ -23,7 +23,6 @@ public class ActionExecution {
 
 	private final static Logger LOGGER = LogManager.getLogger();
 	private final ActionPerformanceLogger actionPerformanceLogger;
-	private final ActionTypeConfiguration actionTypeConfiguration;
 	private ExecutionControl executionControl;
 	private ActionControl actionControl;
 	private ScriptExecution scriptExecution;
@@ -40,7 +39,6 @@ public class ActionExecution {
 		this.scriptExecution = scriptExecution;
 		this.action = action;
 		this.actionPerformanceLogger = new ActionPerformanceLogger();
-		this.actionTypeConfiguration = new ActionTypeConfiguration();
 	}
 
 	// Methods
@@ -75,7 +73,7 @@ public class ActionExecution {
 				this.setComponentAttributeOperation(new ComponentAttributeOperation(executionControl, this, action.getComponent().trim()));
 			}
 
-			String className = actionTypeConfiguration.getActionType(action.getType()).getClassName();
+			String className = ActionTypeConfiguration.getInstance().getActionType(action.getType()).getClassName();
 			LOGGER.debug("action.type=" + action.getType());
 
 			Class classRef = Class.forName(className);

@@ -35,6 +35,7 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
         this.tokenStore = tokenStore;
     }
 
+    // defines where to find the user details
     @Override
     public void configure(final ClientDetailsServiceConfigurer clients) throws Exception {
         clients.jdbc(dataSource);

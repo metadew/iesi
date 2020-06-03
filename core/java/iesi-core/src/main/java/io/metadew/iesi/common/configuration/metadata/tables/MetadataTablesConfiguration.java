@@ -43,20 +43,12 @@ public class MetadataTablesConfiguration {
 
         }
     }
-
-    public MetadataTable getMetadataTableNameByLabel(String label) {
-        return metadataTables.stream()
-                .filter(entry -> entry.getLabel().equalsIgnoreCase(label))
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("Could not find MetadataTable with label: " + label));
-    }
-
     @SuppressWarnings("unchecked")
     private boolean containsConfiguration() {
-        return Configuration.getInstance().getProperties().containsKey(MetadataConfiguration.configurationKey) ||
-                (Configuration.getInstance().getProperties().get(MetadataConfiguration.configurationKey) instanceof Map) ||
-                ((Map<String, Object>) Configuration.getInstance().getProperties().get(MetadataConfiguration.configurationKey)).containsKey(metadataTableKey) ||
-                ((Map<String, Object>) Configuration.getInstance().getProperties().get(MetadataConfiguration.configurationKey)).get(metadataTableKey) instanceof Map;
+        return Configuration.getInstance().getProperties().containsKey(MetadataConfiguration.configurationKey) &&
+                (Configuration.getInstance().getProperties().get(MetadataConfiguration.configurationKey) instanceof Map)&&
+                ((Map<String, Object>) Configuration.getInstance().getProperties().get(MetadataConfiguration.configurationKey)).containsKey(metadataTableKey) &&
+                ((Map<String, Object>) Configuration.getInstance().getProperties().get(MetadataConfiguration.configurationKey)).get(metadataTableKey) instanceof List;
     }
 
     public List<MetadataTable> getMetadataTables() {

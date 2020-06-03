@@ -14,7 +14,7 @@ public abstract class SchemaDatabaseConnectionService<T extends SchemaDatabaseCo
         if (schemaDatabaseConnection.getConnectionInitSql() != null) {
             hikariConfig.setConnectionInitSql(schemaDatabaseConnection.getConnectionInitSql());
         }
-        schemaDatabaseConnection.getSchema().ifPresent(hikariConfig::setSchema);
+        //schemaDatabaseConnection.getSchema().ifPresent(hikariConfig::setSchema);
         return hikariConfig;
     }
 

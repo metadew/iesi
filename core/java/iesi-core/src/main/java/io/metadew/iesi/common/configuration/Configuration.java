@@ -64,16 +64,27 @@ public class Configuration {
 
     private void loadSystemVariables() {
         Properties systemProperties = System.getProperties();
-        if (systemProperties.containsKey(iesiKeyword)) {
-            HashMap<String, Object> filteredSystemProperties = new HashMap<>();
-            filteredSystemProperties.put(iesiKeyword, systemProperties.getProperty(iesiKeyword));
-            update(properties, filteredSystemProperties, "");
-        }
+        systemProperties.entrySet().stream()
+                .filter(entry -> entry.getKey().toString().startsWith(iesiKeyword))
+                .forEach(entry -> {
+                            HashMap<String, Object> filteredSystemProperties = new HashMap<>();
+                            String[] splittedKey = entry.getKey().toString().split("\\.");
+                            HashMap<String, Object> currentHashmap = filteredSystemProperties;
+                            for (int i = 0; i < splittedKey.length - 1; i++) {
+                                HashMap<String, Object> newHashMap = new HashMap<>();
+                                currentHashmap.put(splittedKey[i], newHashMap);
+                                currentHashmap = newHashMap;
+                            }
+                            currentHashmap.put(splittedKey[splittedKey.length - 1], entry.getValue());
+                            update(properties, filteredSystemProperties, "");
+                        }
+
+                );
     }
 
     private void loadFilesystemFiles() {
         try {
-            Files.walkFileTree(Paths.get("..","conf"), new SimpleFileVisitor<Path>() {
+            Files.walkFileTree(Paths.get("..", "conf"), new SimpleFileVisitor<Path>() {
                 @Override
                 public FileVisitResult preVisitDirectory(Path path, BasicFileAttributes attrs) {
                     return FileVisitResult.CONTINUE;

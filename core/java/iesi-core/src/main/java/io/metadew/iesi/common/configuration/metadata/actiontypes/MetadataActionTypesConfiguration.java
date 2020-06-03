@@ -46,6 +46,10 @@ public class MetadataActionTypesConfiguration {
         return Optional.ofNullable(actionTypeMap.get(actionType));
     }
 
+    public Map<String, ActionType> getActionTypes() {
+        return actionTypeMap;
+    }
+
     @SuppressWarnings("unchecked")
     private boolean containsConfiguration() {
         return Configuration.getInstance().getProperties().containsKey(MetadataConfiguration.configurationKey) &&

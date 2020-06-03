@@ -101,7 +101,7 @@ public class MetadataRepositoryConfiguration {
         return Configuration.getInstance().getProperties().containsKey(MetadataConfiguration.configurationKey) &&
                 (Configuration.getInstance().getProperties().get(MetadataConfiguration.configurationKey) instanceof Map) &&
                 ((Map<String, Object>) Configuration.getInstance().getProperties().get(MetadataConfiguration.configurationKey)).containsKey(repositoryTableKey) &&
-                ((Map<String, Object>) Configuration.getInstance().getProperties().get(MetadataConfiguration.configurationKey)).get(repositoryTableKey) instanceof Map;
+                ((Map<String, Object>) Configuration.getInstance().getProperties().get(MetadataConfiguration.configurationKey)).get(repositoryTableKey) instanceof List;
     }
 
     public List<MetadataRepository> getMetadataRepositories() {

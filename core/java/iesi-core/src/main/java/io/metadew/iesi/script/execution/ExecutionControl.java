@@ -1,12 +1,12 @@
 package io.metadew.iesi.script.execution;
 
-import io.metadew.iesi.common.text.TextTools;
-import io.metadew.iesi.connection.elasticsearch.filebeat.DelimitedFileBeatElasticSearchConnection;
-import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.configuration.ScriptRunStatus;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.common.crypto.FrameworkCrypto;
+import io.metadew.iesi.common.text.TextTools;
+import io.metadew.iesi.connection.elasticsearch.filebeat.DelimitedFileBeatElasticSearchConnection;
+import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.action.result.ActionResultConfiguration;
 import io.metadew.iesi.metadata.configuration.action.result.ActionResultOutputConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
@@ -27,7 +27,6 @@ import org.apache.logging.log4j.*;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -98,7 +97,7 @@ public class ExecutionControl {
                 scriptExecution.getScript().getName(),
                 scriptExecution.getScript().getVersion().getNumber(),
                 envName,
-                "ACTIVE",
+                ScriptRunStatus.RUNNING,
                 LocalDateTime.now(),
                 null
         );
@@ -118,7 +117,7 @@ public class ExecutionControl {
                 actionExecution.getScriptExecution().getProcessId(),
                 actionExecution.getAction().getName(),
                 envName,
-                "ACTIVE",
+                ScriptRunStatus.RUNNING,
                 LocalDateTime.now(),
                 null
         );
@@ -133,7 +132,7 @@ public class ExecutionControl {
                 actionExecution.getScriptExecution().getProcessId(),
                 actionExecution.getAction().getName(),
                 envName,
-                "SKIPPED",
+                ScriptRunStatus.SKIPPED,
                 null,
                 null
         );
@@ -163,11 +162,11 @@ public class ExecutionControl {
         return lastProcessId;
     }
 
-    public String logEnd(ScriptExecution scriptExecution) {
+    public ScriptRunStatus logEnd(ScriptExecution scriptExecution) {
         ScriptResult scriptResult = ScriptResultConfiguration.getInstance().get(new ScriptResultKey(runId, scriptExecution.getProcessId()))
                 .orElseThrow(() -> new MetadataDoesNotExistException(new ScriptResultKey(runId, scriptExecution.getProcessId())));
 
-        String status = getStatus(scriptExecution);
+        ScriptRunStatus status = getStatus(scriptExecution);
         scriptResult.setStatus(status);
         scriptResult.setEndTimestamp(LocalDateTime.now());
         ScriptResultConfiguration.getInstance().update(scriptResult);
@@ -186,58 +185,58 @@ public class ExecutionControl {
         ActionResult actionResult = ActionResultConfiguration.getInstance().get(new ActionResultKey(runId, actionExecution.getProcessId(), actionExecution.getAction().getMetadataKey().getActionId()))
                 .orElseThrow(() -> new MetadataDoesNotExistException(new ScriptResultKey(runId, scriptExecution.getProcessId())));
 
-        String status = getStatus(actionExecution, scriptExecution);
+        ScriptRunStatus status = getStatus(actionExecution, scriptExecution);
         actionResult.setStatus(status);
         actionResult.setEndTimestamp(LocalDateTime.now());
         ActionResultConfiguration.getInstance().update(actionResult);
 
     }
 
-    private String getStatus(ActionExecution actionExecution, ScriptExecution scriptExecution) {
-        String status;
+    private ScriptRunStatus getStatus(ActionExecution actionExecution, ScriptExecution scriptExecution) {
+        ScriptRunStatus status;
 
         if (actionExecution.getActionControl().getExecutionMetrics().getSkipCount() == 0) {
             if (actionExecution.getActionControl().getExecutionMetrics().getErrorCount() > 0) {
-                status = ScriptRunStatus.ERROR.value();
+                status = ScriptRunStatus.ERROR;
                 scriptExecution.getExecutionMetrics().increaseErrorCount(1);
             } else if (actionExecution.getActionControl().getExecutionMetrics().getWarningCount() > 0) {
-                status = ScriptRunStatus.WARNING.value();
+                status = ScriptRunStatus.WARNING;
                 scriptExecution.getExecutionMetrics().increaseWarningCount(1);
             } else {
-                status = ScriptRunStatus.SUCCESS.value();
+                status = ScriptRunStatus.SUCCESS;
                 scriptExecution.getExecutionMetrics().increaseSuccessCount(1);
             }
         } else {
-            status = ScriptRunStatus.SKIPPED.value();
+            status = ScriptRunStatus.SKIPPED;
             scriptExecution.getExecutionMetrics().increaseSkipCount(1);
         }
 
-        logMessage("action.status=" + status, Level.INFO);
+        logMessage("action.status=" + status.value(), Level.INFO);
 
         return status;
 
     }
 
-    private String getStatus(ScriptExecution scriptExecution) {
-        String status;
+    private ScriptRunStatus getStatus(ScriptExecution scriptExecution) {
+        ScriptRunStatus status;
 
         if (actionErrorStop) {
-            status = ScriptRunStatus.STOPPED.value();
+            status = ScriptRunStatus.STOPPED;
         } else if (scriptExit) {
-            status = ScriptRunStatus.STOPPED.value();
+            status = ScriptRunStatus.STOPPED;
         } else if (scriptExecution.getExecutionMetrics().getSuccessCount() == 0
                 && scriptExecution.getExecutionMetrics().getWarningCount() == 0
                 && scriptExecution.getExecutionMetrics().getErrorCount() > 0) {
-            status = ScriptRunStatus.ERROR.value();
+            status = ScriptRunStatus.ERROR;
         } else if (scriptExecution.getExecutionMetrics().getSuccessCount() > 0
                 && scriptExecution.getExecutionMetrics().getWarningCount() == 0
                 && scriptExecution.getExecutionMetrics().getErrorCount() == 0) {
-            status = ScriptRunStatus.SUCCESS.value();
+            status = ScriptRunStatus.SUCCESS;
         } else {
-            status = ScriptRunStatus.WARNING.value();
+            status = ScriptRunStatus.WARNING;
         }
 
-        logMessage("script.status=" + status, Level.INFO);
+        logMessage("script.status=" + status.value(), Level.INFO);
 
         String output = scriptExecution.getExecutionControl().getExecutionRuntime().resolveVariables("#output#");
         if (output != null && !output.isEmpty()) {

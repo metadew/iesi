@@ -107,7 +107,7 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
                 return false;
             }
             crsScript.next();
-            return ScriptVersionConfiguration.getInstance().exists(new ScriptVersionKey(new ScriptKey(scriptKey.getScriptId(), scriptKey.getScriptVersion())));
+            return ScriptVersionConfiguration.getInstance().exists(new ScriptVersionKey(scriptKey));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

@@ -1,0 +1,36 @@
+server:
+  servlet:
+    context-path: /api
+springdoc:
+  version: '0.3.0'
+spring:
+  profiles:
+    active: http
+  datasource:
+    url: jdbc:h2:./token
+    schema: classpath:schema.sql
+    data: classpath:data.sql
+    driverClassName: org.h2.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, httptrace, metrics, mappings
+  trace:
+    http:
+      include: request-headers,response-headers,cookie-headers,principal,time-taken,authorization-header,remote-address,session-id
+
+security:
+  jwt:
+    key-store: classpath:iesikey.p12
+    key-store-password: password
+    key-pair-alias: iesi
+    key-store-type: PKCS12
+    key-pair-password: password
+
+securitykey:
+  jwt:
+    public-key: classpath:public.txt

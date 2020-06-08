@@ -35,7 +35,6 @@
         </developer>
         <developer>
             <name>Peter Billen</name>
-            <email></email>
             <organization>Accenture</organization>
             <organizationUrl>http://metadew.io</organizationUrl>
         </developer>
@@ -279,19 +278,6 @@
             <artifactId>xercesImpl</artifactId>
             <version>2.12.0</version>
         </dependency>
-        <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-module-junit4</artifactId>
-            <version>2.0.6</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-api-mockito2</artifactId>
-            <version>2.0.6</version>
-            <scope>test</scope>
-        </dependency>
-
 
         <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-log4j12 -->
         <dependency>
@@ -300,8 +286,6 @@
             <version>1.7.30</version>
             <scope>test</scope>
         </dependency>
-
-
 
     </dependencies>
 

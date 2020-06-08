@@ -9,15 +9,14 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
+
     @Autowired
     private UserConfiguration userConfiguration;
 
-    //@Autowired
-    //private PasswordEncoder passwordEncoder;
-
     @Override
     public UserDetails loadUserByUsername(String name) throws UsernameNotFoundException {
-        return userConfiguration.getUser(name)
+        return userConfiguration
+                .getUser(name)
                 .map(CustomUserDetails::new)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }

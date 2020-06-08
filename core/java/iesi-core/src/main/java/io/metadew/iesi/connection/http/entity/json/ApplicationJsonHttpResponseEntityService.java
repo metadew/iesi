@@ -44,6 +44,7 @@ public class ApplicationJsonHttpResponseEntityService implements IHttpResponseEn
                     .map(contentType -> Optional.ofNullable(contentType.getCharset())
                             .orElse(Consts.UTF_8))
                     .orElse(Consts.UTF_8);
+            log.debug("raw JSON content: " + new String(httpResponse.getEntityContent().get(), charset));
             JsonNode jsonNode = new ObjectMapper().readTree(new String(httpResponse.getEntityContent().get(), charset));
             //DatasetHandler.getInstance().clean(dataset, executionRuntime);
             DatasetHandler.getInstance().setDataItem(dataset, key, DataTypeHandler.getInstance().resolve(dataset, key, jsonNode, executionRuntime));

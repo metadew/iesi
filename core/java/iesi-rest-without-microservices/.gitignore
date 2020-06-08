@@ -46,3 +46,4 @@ iesi-home.conf
 /src/test/resources/iesi_instance/
 /src/test/resources/iesi_instance.zip
 /src/main/resources/public.txt
+token.mv.db

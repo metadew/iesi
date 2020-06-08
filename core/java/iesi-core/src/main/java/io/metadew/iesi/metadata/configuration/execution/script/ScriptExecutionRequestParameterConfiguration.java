@@ -8,6 +8,7 @@ import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionReque
 import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionRequestKey;
 import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionRequestParameterKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
+import io.metadew.iesi.metadata.service.metadata.MetadataFieldService;
 import lombok.extern.log4j.Log4j2;
 
 import javax.sql.rowset.CachedRowSet;
@@ -29,7 +30,8 @@ public class ScriptExecutionRequestParameterConfiguration extends Configuration<
         return INSTANCE;
     }
 
-    private ScriptExecutionRequestParameterConfiguration() {}
+    private ScriptExecutionRequestParameterConfiguration() {
+    }
 
     // Constructors
     public void init(MetadataRepository metadataRepository) {
@@ -100,12 +102,13 @@ public class ScriptExecutionRequestParameterConfiguration extends Configuration<
     }
 
     public String insertStatement(ScriptExecutionRequestParameter scriptExecutionRequest) {
-        return  "INSERT INTO " + getMetadataRepository().getTableNameByLabel("ScriptExecutionRequestParameters") +
+        return "INSERT INTO " + getMetadataRepository().getTableNameByLabel("ScriptExecutionRequestParameters") +
                 " (ID, SCRIPT_EXEC_REQ_ID, NAME, VALUE) VALUES (" +
                 SQLTools.GetStringForSQL(scriptExecutionRequest.getMetadataKey().getId()) + "," +
                 SQLTools.GetStringForSQL(scriptExecutionRequest.getScriptExecutionRequestKey().getId()) + ", " +
                 SQLTools.GetStringForSQL(scriptExecutionRequest.getName()) + "," +
-                SQLTools.GetStringForSQL(scriptExecutionRequest.getValue()) + ");";
+                SQLTools.GetStringForSQL(MetadataFieldService.getInstance()
+                        .truncateAccordingToConfiguration("ScriptExecutionRequestParameters", "VALUE", scriptExecutionRequest.getValue())) + ");";
     }
 
     public List<ScriptExecutionRequestParameter> getByScriptExecutionRequest(ScriptExecutionRequestKey executionRequestKey) {
@@ -155,7 +158,8 @@ public class ScriptExecutionRequestParameterConfiguration extends Configuration<
     public String updateStatement(ScriptExecutionRequestParameter scriptExecutionRequest) {
         return "UPDATE " + getMetadataRepository().getTableNameByLabel("ScriptExecutionRequestParameters") + " SET " +
                 "NAME=" + SQLTools.GetStringForSQL(scriptExecutionRequest.getName()) + "," +
-                "VALUE=" + SQLTools.GetStringForSQL(scriptExecutionRequest.getValue()) +
+                "VALUE=" + SQLTools.GetStringForSQL(MetadataFieldService.getInstance()
+                .truncateAccordingToConfiguration("ScriptExecutionRequestParameters", "VALUE", scriptExecutionRequest.getValue())) +
                 " WHERE ID = " + SQLTools.GetStringForSQL(scriptExecutionRequest.getMetadataKey().getId()) + ";";
     }
 }

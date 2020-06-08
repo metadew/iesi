@@ -1,6 +1,5 @@
 package io.metadew.iesi.connection.database.oracle;
 
-import com.zaxxer.hikari.HikariConfig;
 import io.metadew.iesi.connection.database.connection.ISchemaDatabaseConnectionService;
 import io.metadew.iesi.connection.database.connection.SchemaDatabaseConnectionService;
 import lombok.extern.log4j.Log4j2;
@@ -24,16 +23,6 @@ public class OracleDatabaseConnectionService extends SchemaDatabaseConnectionSer
     }
 
     private OracleDatabaseConnectionService() {
-    }
-
-    public HikariConfig configure(OracleDatabaseConnection oracleDatabaseConnection, HikariConfig hikariConfig) {
-        hikariConfig.setJdbcUrl(oracleDatabaseConnection.getConnectionURL());
-        hikariConfig.setUsername(oracleDatabaseConnection.getUserName());
-        hikariConfig.setPassword(oracleDatabaseConnection.getUserPassword());
-        hikariConfig.setAutoCommit(false);
-        hikariConfig.setConnectionInitSql(oracleDatabaseConnection.getSchema().map(s -> "alter session set nls_timestamp_format='YYYY-MM-DD\"T\" HH24:MI:SS:FF' current_schema=" + s)
-                .orElse("alter session set nls_timestamp_format='YYYY-MM-DD\"T\" HH24:MI:SS:FF'"));
-        return hikariConfig;
     }
 
     @Override

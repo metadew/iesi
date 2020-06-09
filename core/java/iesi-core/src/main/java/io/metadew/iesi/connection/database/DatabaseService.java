@@ -359,7 +359,10 @@ public abstract class DatabaseService<T extends Database> implements IDatabaseSe
              */
             counter++;
         }
-        getPrimaryKeyConstraints(database, table).ifPresent(primaryKeysConstraint -> createQuery.append(",\n").append(primaryKeysConstraint));
+        getPrimaryKeyConstraints(database, table)
+                .ifPresent(primaryKeysConstraint -> createQuery.append(",\n").append(primaryKeysConstraint));
+        getUniqueConstraints(table)
+                .ifPresent(primaryKeysConstraint -> createQuery.append(",\n").append(primaryKeysConstraint));
 
         createQuery.append("\n);\n");
         createQuery.append(createQueryExtras(database));
@@ -376,6 +379,17 @@ public abstract class DatabaseService<T extends Database> implements IDatabaseSe
             return Optional.empty();
         } else {
             return Optional.of("CONSTRAINT pk_" + metadataTable.getName() + " PRIMARY KEY (" + String.join(", ", primaryKeyMetadataFields.keySet()) + ")");
+        }
+    }
+
+    public Optional<String> getUniqueConstraints(MetadataTable metadataTable) {
+        Map<String, MetadataField> primaryKeyMetadataFields = metadataTable.getFields().entrySet().stream()
+                .filter(entry -> entry.getValue().isUnique())
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        if (primaryKeyMetadataFields.isEmpty()) {
+            return Optional.empty();
+        } else {
+            return Optional.of("CONSTRAINT uc_" + metadataTable.getName() + " UNIQUE  (" + String.join(", ", primaryKeyMetadataFields.keySet()) + ")");
         }
     }
 

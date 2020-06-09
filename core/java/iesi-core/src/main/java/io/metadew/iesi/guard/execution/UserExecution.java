@@ -17,7 +17,7 @@ public class UserExecution {
     // Methods
     public void createUser() {
         User user = new User();
-        user.setName(this.getInput("Enter username (name@domain.ext)"));
+        user.setUsername(this.getInput("Enter username (name@domain.ext)"));
         user.setFirstName(this.getInput("Enter first name"));
         user.setLastName(this.getInput("Enter last name"));
         System.out.println("user: " + this.getInput("dfdf"));
@@ -25,7 +25,7 @@ public class UserExecution {
 
     public User createUser(String userName) {
             User user = new User();
-            user.setName(userName);
+            user.setUsername(userName);
             user.setFirstName(this.getInput("Enter first name"));
             user.setLastName(this.getInput("Enter last name"));
             user.setActive("Y");
@@ -51,7 +51,7 @@ public class UserExecution {
     public void resetPassword(String userName) {
         try {
             User user = new User();
-            user.setName(userName);
+            user.setUsername(userName);
             user.setExpired("Y");
             user.setLocked("N");
             user.setIndividualLoginFails(0L);

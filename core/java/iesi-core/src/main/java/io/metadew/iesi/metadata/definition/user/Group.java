@@ -9,25 +9,21 @@ import java.util.List;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class User extends Metadata<UserKey> {
+public class Group extends Metadata<GroupKey> {
 
-    private String username;
-    private boolean enabled;
-    private String password;
+    private String groupName;
 
-    public User(UserKey userKey, String username, String password, boolean enabled) {
-        super(userKey);
-        this.username = username;
-        this.password = password;
-        this.enabled = enabled;
+    public Group(GroupKey groupKey, String groupName) {
+        super(groupKey);
+        this.groupName = groupName;
     }
 
     //TODO: Lazy loading of authorities and groups. When moving to Spring add as lazy loading
-    public List<Authority> getAuthorities() {
+    public List<User> getUsers() {
         return new ArrayList<>();
     }
 
-    public List<Group> getGroups() {
+    public List<User> getAuthorities() {
         return new ArrayList<>();
     }
 

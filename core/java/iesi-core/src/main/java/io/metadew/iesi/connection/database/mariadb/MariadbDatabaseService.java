@@ -70,11 +70,6 @@ public class MariadbDatabaseService extends DatabaseService<MariadbDatabase> imp
     }
 
     @Override
-    public String getCreateStatement(MariadbDatabase mariadbDatabase, MetadataTable table, String tableNamePrefix) {
-        return null;
-    }
-
-    @Override
     public String createQueryExtras(MariadbDatabase mariadbDatabase) {
         return null;
     }

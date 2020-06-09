@@ -27,13 +27,13 @@ public class UserConfiguration {
     // Delete
     public String getDeleteStatement() {
         return "DELETE FROM " + MetadataRepositoryConfiguration.getInstance().getControlMetadataRepository().getTableNameByLabel("Users") +
-                " WHERE USER_NM = " + SQLTools.GetStringForSQL(this.getUser().getName()) + ";";
+                " WHERE USER_NM = " + SQLTools.GetStringForSQL(this.getUser().getUsername()) + ";";
     }
 
     // Delete
     public String getDeleteStatement(User user) {
         return "DELETE FROM " + MetadataRepositoryConfiguration.getInstance().getControlMetadataRepository().getTableNameByLabel("Users") +
-                " WHERE USER_NM = " + SQLTools.GetStringForSQL(user.getName()) + ";";
+                " WHERE USER_NM = " + SQLTools.GetStringForSQL(user.getUsername()) + ";";
     }
 
 
@@ -42,7 +42,7 @@ public class UserConfiguration {
 
         queries.add("INSERT INTO " + MetadataRepositoryConfiguration.getInstance().getControlMetadataRepository().getTableNameByLabel("Users") +
                 " (USER_NM, USER_TYP_NM, USER_FIRST_NM, USER_LAST_NM, USER_ACT_FL, USER_PWD_HASH, USER_PWD_EXP_FL, LOGIN_FAIL_CUM_NB, LOGIN_FAIL_IND_NB, USER_LOCK_FL) VALUES (" +
-                SQLTools.GetStringForSQL(user.getName()) + "," +
+                SQLTools.GetStringForSQL(user.getUsername()) + "," +
                 SQLTools.GetStringForSQL(user.getType()) + "," +
                 SQLTools.GetStringForSQL(user.getFirstName()) + "," +
                 SQLTools.GetStringForSQL(user.getLastName()) + "," +
@@ -75,7 +75,7 @@ public class UserConfiguration {
         sql += SQLTools.GetStringForSQL(this.getUser().getIndividualLoginFails());
         sql += " WHERE ";
         sql += "USER_NM =";
-        sql += SQLTools.GetStringForSQL(this.getUser().getName());
+        sql += SQLTools.GetStringForSQL(this.getUser().getUsername());
         sql += ";";
 
         return sql;

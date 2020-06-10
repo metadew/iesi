@@ -1,5 +1,6 @@
 package io.metadew.iesi.metadata.configuration.user;
 
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
@@ -27,12 +28,14 @@ public class AuthorityConfiguration extends Configuration<Authority, AuthorityKe
     }
 
     private AuthorityConfiguration() {
+        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getControlMetadataRepository());
     }
 
     @Override
     public Optional<Authority> get(AuthorityKey metadataKey) {
         try {
-            String queryScript = "select ID, AUTHORITY from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Authorities") +
+            String queryScript = "select ID, AUTHORITY " +
+                    "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Authorities").getName() +
                     " WHERE ID=" + SQLTools.GetStringForSQL(metadataKey.getUuid().toString()) + ";";
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(queryScript, "reader");
             if (cachedRowSet.next()) {
@@ -49,7 +52,8 @@ public class AuthorityConfiguration extends Configuration<Authority, AuthorityKe
     public List<Authority> getAll() {
         List<Authority> authorities = new ArrayList<>();
         try {
-            String queryScript = "select ID, AUTHORITY from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Authorities") + ";";
+            String queryScript = "select ID, AUTHORITY " +
+                    "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Authorities").getName() + ";";
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(queryScript, "reader");
             while (cachedRowSet.next()) {
                 authorities.add(mapAuthority(cachedRowSet));
@@ -63,7 +67,7 @@ public class AuthorityConfiguration extends Configuration<Authority, AuthorityKe
     @Override
     public void delete(AuthorityKey metadataKey) {
         log.trace(MessageFormat.format("Deleting {0}.", metadataKey.toString()));
-        String deleteStatement = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Authorities") +
+        String deleteStatement = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Authorities").getName() +
                 " WHERE ID = " + SQLTools.GetStringForSQL(metadataKey.getUuid().toString()) + ";";
         getMetadataRepository().executeUpdate(deleteStatement);
     }
@@ -71,7 +75,7 @@ public class AuthorityConfiguration extends Configuration<Authority, AuthorityKe
     @Override
     public void insert(Authority metadata) {
         log.trace(MessageFormat.format("Inserting {0}.", metadata.toString()));
-        String insertStatement = "INSERT INTO FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Authorities") +
+        String insertStatement = "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Authorities").getName() +
                 " (ID, AUTHORITY) VALUES (" +
                 SQLTools.GetStringForSQL(metadata.getMetadataKey().getUuid().toString()) + ", " +
                 SQLTools.GetStringForSQL(metadata.getAuthority()) + ");";
@@ -81,7 +85,7 @@ public class AuthorityConfiguration extends Configuration<Authority, AuthorityKe
     @Override
     public void update(Authority metadata) {
         log.trace(MessageFormat.format("Updating {0}.", metadata.toString()));
-        String updateStatement = "UPDATE " + getMetadataRepository().getTableNameByLabel("Authorities") +
+        String updateStatement = "UPDATE " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Authorities").getName() +
                 " SET AUTHORITY = " + SQLTools.GetStringForSQL(metadata.getAuthority()) +
                 " WHERE ID = " + SQLTools.GetStringForSQL(metadata.getMetadataKey().getUuid().toString()) + ";";
         getMetadataRepository().executeUpdate(updateStatement);

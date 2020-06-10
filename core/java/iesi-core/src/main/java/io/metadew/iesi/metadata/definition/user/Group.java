@@ -1,6 +1,7 @@
 package io.metadew.iesi.metadata.definition.user;
 
 import io.metadew.iesi.metadata.definition.Metadata;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -13,6 +14,7 @@ public class Group extends Metadata<GroupKey> {
 
     private String groupName;
 
+    @Builder
     public Group(GroupKey groupKey, String groupName) {
         super(groupKey);
         this.groupName = groupName;

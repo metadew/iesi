@@ -1,6 +1,7 @@
 package io.metadew.iesi.metadata.definition.user;
 
 import io.metadew.iesi.metadata.definition.Metadata;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -15,6 +16,7 @@ public class User extends Metadata<UserKey> {
     private boolean enabled;
     private String password;
 
+    @Builder
     public User(UserKey userKey, String username, String password, boolean enabled) {
         super(userKey);
         this.username = username;

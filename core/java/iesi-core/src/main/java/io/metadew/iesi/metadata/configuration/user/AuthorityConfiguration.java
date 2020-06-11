@@ -91,6 +91,22 @@ public class AuthorityConfiguration extends Configuration<Authority, AuthorityKe
         getMetadataRepository().executeUpdate(updateStatement);
     }
 
+    public Optional<Authority> getByName(String name) {
+        try {
+            String queryScript = "select ID, AUTHORITY " +
+                    "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Authorities").getName() +
+                    " WHERE AUTHORITY=" + SQLTools.GetStringForSQL(name) + ";";
+            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(queryScript, "reader");
+            if (cachedRowSet.next()) {
+                return Optional.of(mapAuthority(cachedRowSet));
+            } else {
+                return Optional.empty();
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public Authority mapAuthority(CachedRowSet cachedRowSet) throws SQLException {
         return new Authority(new AuthorityKey(UUID.fromString(cachedRowSet.getString("ID"))),
                 cachedRowSet.getString("AUTHORITY"));

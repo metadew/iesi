@@ -156,6 +156,22 @@ public class GroupConfiguration extends Configuration<Group, GroupKey> {
         getMetadataRepository().executeUpdate(insertStatement);
     }
 
+    public Optional<Group> getByName(String name) {
+        try {
+            String queryScript = "select ID, GROUP_NAME " +
+                    "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Groups").getName() +
+                    " WHERE GROUP_NAME=" + SQLTools.GetStringForSQL(name) + ";";
+            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(queryScript, "reader");
+            if (cachedRowSet.next()) {
+                return Optional.of(mapGroup(cachedRowSet));
+            } else {
+                return Optional.empty();
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public Group mapGroup(CachedRowSet cachedRowSet) throws SQLException {
         return new Group(new GroupKey(UUID.fromString(cachedRowSet.getString("ID"))),
                 cachedRowSet.getString("GROUP_NAME"));

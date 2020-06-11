@@ -1,6 +1,6 @@
 package io.metadew.iesi.server.rest.user;
 
-import io.metadew.iesi.metadata.configuration.UserConfiguration;
+import io.metadew.iesi.metadata.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -11,12 +11,12 @@ import org.springframework.stereotype.Service;
 public class CustomUserDetailsService implements UserDetailsService {
 
     @Autowired
-    private UserConfiguration userConfiguration;
+    private UserService userService;
 
     @Override
     public UserDetails loadUserByUsername(String name) throws UsernameNotFoundException {
-        return userConfiguration
-                .getUser(name)
+        return userService
+                .get(name)
                 .map(CustomUserDetails::new)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }

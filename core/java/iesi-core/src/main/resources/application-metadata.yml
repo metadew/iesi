@@ -91,6 +91,24 @@ iesi:
             type: string
             length: 255
             nullable: false
+          EXPIRED:
+            description: Boolean determining if the user is activated or not
+            order: 3
+            type: string
+            length: 255
+            nullable: false
+          CREDENTIALS_EXPIRED:
+            description: Boolean determining if the user is activated or not
+            order: 3
+            type: string
+            length: 255
+            nullable: false
+          LOCKED:
+            description: Boolean determining if the user is activated or not
+            order: 3
+            type: string
+            length: 255
+            nullable: false
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
             order: 5

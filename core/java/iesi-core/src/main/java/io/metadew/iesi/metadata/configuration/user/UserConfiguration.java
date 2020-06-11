@@ -160,4 +160,20 @@ public class UserConfiguration extends Configuration<User, UserKey> {
                 SQLTools.getBooleanFromSql(cachedRowSet.getString("ENABLED")));
     }
 
+    public Optional<User> getByName(String name) {
+        try {
+            String queryScript = "select ID, USERNAME, PASSWORD, ENABLED " +
+                    "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Users").getName() +
+                    " WHERE USERNAME=" + SQLTools.GetStringForSQL(name) + ";";
+            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(queryScript, "reader");
+            if (cachedRowSet.next()) {
+                return Optional.of(mapUser(cachedRowSet));
+            } else {
+                return Optional.empty();
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }

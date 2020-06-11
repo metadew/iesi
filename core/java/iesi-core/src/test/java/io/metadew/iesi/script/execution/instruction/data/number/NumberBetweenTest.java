@@ -50,6 +50,4 @@ public class NumberBetweenTest {
         assertEquals("2000.00",numberBetween.generateOutput("1999.99879,1999.99879,2"));
     }
 
-
-
 }

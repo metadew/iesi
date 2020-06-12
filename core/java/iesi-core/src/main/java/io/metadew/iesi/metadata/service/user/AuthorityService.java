@@ -37,8 +37,12 @@ public class AuthorityService {
         AuthorityConfiguration.getInstance().update(authority);
     }
 
-    public void delete(Authority authority) {
-        AuthorityConfiguration.getInstance().delete(authority.getMetadataKey());
+    public void delete(AuthorityKey authorityKey) {
+        AuthorityConfiguration.getInstance().delete(authorityKey);
+    }
+
+    public void delete(String authority) {
+        AuthorityConfiguration.getInstance().delete(authority);
     }
 
 }

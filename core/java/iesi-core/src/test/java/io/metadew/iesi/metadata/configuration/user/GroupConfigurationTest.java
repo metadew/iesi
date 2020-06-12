@@ -56,6 +56,9 @@ class GroupConfigurationTest {
                         .build())
                 .username("user1")
                 .enabled(true)
+                .expired(false)
+                .credentialsExpired(false)
+                .locked(false)
                 .password("password1").build();
         user2 = User.builder()
                 .userKey(UserKey.builder()
@@ -63,6 +66,9 @@ class GroupConfigurationTest {
                         .build())
                 .username("user2")
                 .enabled(true)
+                .expired(false)
+                .credentialsExpired(false)
+                .locked(false)
                 .password("password2")
                 .build();
         user3 = User.builder()
@@ -71,6 +77,9 @@ class GroupConfigurationTest {
                         .build())
                 .username("user3")
                 .enabled(true)
+                .expired(false)
+                .credentialsExpired(false)
+                .locked(false)
                 .password("password3")
                 .build();
         authority1 = Authority.builder()
@@ -106,25 +115,43 @@ class GroupConfigurationTest {
     }
 
     @Test
-    void userDoesNotExistsTest() {
+    void groupDoesNotExistsTest() {
         assertThat(GroupConfiguration.getInstance().exists(new GroupKey(uuid1))).isFalse();
     }
 
     @Test
-    void userExistsTest() {
+    void groupByNameDoesNotExistsTest() {
+        assertThat(GroupConfiguration.getInstance().exists(group1.getGroupName())).isFalse();
+    }
+
+    @Test
+    void groupExistsTest() {
         GroupConfiguration.getInstance().insert(group1);
         assertThat(GroupConfiguration.getInstance().exists(new GroupKey(uuid1))).isTrue();
     }
 
     @Test
-    void userGetDoesNotExistsTest() {
+    void groupExistsByNameTest() {
+        GroupConfiguration.getInstance().insert(group1);
+        assertThat(GroupConfiguration.getInstance().exists(group1.getGroupName())).isTrue();
+    }
+
+    @Test
+    void groupGetDoesNotExistsTest() {
         assertThat(GroupConfiguration.getInstance().get(new GroupKey(uuid1))).isEmpty();
         GroupConfiguration.getInstance().insert(group1);
         assertThat(GroupConfiguration.getInstance().get(new GroupKey(uuid2))).isEmpty();
     }
 
     @Test
-    void userGetExistsTest() {
+    void groupGetByNameDoesNotExistsTest() {
+        assertThat(GroupConfiguration.getInstance().get(group1.getGroupName())).isEmpty();
+        GroupConfiguration.getInstance().insert(group1);
+        assertThat(GroupConfiguration.getInstance().get(group2.getGroupName())).isEmpty();
+    }
+
+    @Test
+    void groupGetExistsTest() {
         GroupConfiguration.getInstance().insert(group1);
         assertThat(GroupConfiguration.getInstance().get(new GroupKey(uuid1)))
                 .isPresent()
@@ -132,7 +159,15 @@ class GroupConfigurationTest {
     }
 
     @Test
-    void userInsertTest() {
+    void groupGetByNameExistsTest() {
+        GroupConfiguration.getInstance().insert(group1);
+        assertThat(GroupConfiguration.getInstance().get(group1.getGroupName()))
+                .isPresent()
+                .hasValue(group1);
+    }
+
+    @Test
+    void groupInsertTest() {
         assertThat(GroupConfiguration.getInstance().exists(new GroupKey(uuid1)))
                 .isFalse();
         GroupConfiguration.getInstance().insert(group1);
@@ -144,14 +179,14 @@ class GroupConfigurationTest {
     }
 
     @Test
-    void userInsertAlreadyExistingTest() {
+    void groupInsertAlreadyExistingTest() {
         GroupConfiguration.getInstance().insert(group1);
         assertThatThrownBy(() -> GroupConfiguration.getInstance().insert(group1))
                 .isInstanceOf(RuntimeException.class);
     }
 
     @Test
-    void userInsertMultipleUsersTest() {
+    void groupInsertMultipleUsersTest() {
         assertThat(GroupConfiguration.getInstance().exists(new GroupKey(uuid1)))
                 .isFalse();
         GroupConfiguration.getInstance().insert(group1);
@@ -174,18 +209,32 @@ class GroupConfigurationTest {
     }
 
     @Test
-    void userDeleteDoesNotExistTest() {
+    void groupDeleteDoesNotExistTest() {
         GroupConfiguration.getInstance().delete(group1.getMetadataKey());
-        //assertThatThrownBy(() -> UserConfiguration.getInstance().delete(user1.getMetadataKey()))
-        //        .isInstanceOf(RuntimeException.class);
     }
 
     @Test
-    void userDeleteTest() {
+    void groupDeleteByNameDoesNotExistTest() {
+        GroupConfiguration.getInstance().delete(group1.getGroupName());
+    }
+
+    @Test
+    void groupDeleteTest() {
         GroupConfiguration.getInstance().insert(group1);
         assertThat(GroupConfiguration.getInstance().exists(new GroupKey(uuid1)))
                 .isTrue();
         GroupConfiguration.getInstance().delete(group1.getMetadataKey());
+
+        assertThat(GroupConfiguration.getInstance().exists(new GroupKey(uuid1)))
+                .isFalse();
+    }
+
+    @Test
+    void groupDeleteByNameTest() {
+        GroupConfiguration.getInstance().insert(group1);
+        assertThat(GroupConfiguration.getInstance().exists(new GroupKey(uuid1)))
+                .isTrue();
+        GroupConfiguration.getInstance().delete(group1.getGroupName());
 
         assertThat(GroupConfiguration.getInstance().exists(new GroupKey(uuid1)))
                 .isFalse();
@@ -210,7 +259,7 @@ class GroupConfigurationTest {
 
 
     @Test
-    void userUpdateMultipleTest() {
+    void groupUpdateMultipleTest() {
         GroupConfiguration.getInstance().insert(group1);
         GroupConfiguration.getInstance().insert(group2);
         Optional<Group> fetchedUser1 = GroupConfiguration.getInstance().get(new GroupKey(uuid1));
@@ -253,6 +302,23 @@ class GroupConfigurationTest {
     }
 
     @Test
+    void getUsersByGroupName() {
+        GroupConfiguration.getInstance().insert(group1);
+        GroupConfiguration.getInstance().insert(group2);
+        UserConfiguration.getInstance().insert(user1);
+        UserConfiguration.getInstance().insert(user2);
+        UserConfiguration.getInstance().insert(user3);
+        GroupConfiguration.getInstance().addUser(group1.getMetadataKey(), user1.getMetadataKey());
+        GroupConfiguration.getInstance().addUser(group1.getMetadataKey(), user2.getMetadataKey());
+        GroupConfiguration.getInstance().addUser(group2.getMetadataKey(), user3.getMetadataKey());
+
+        assertThat(GroupConfiguration.getInstance().getUsers(group1.getGroupName()))
+                .containsOnly(user1, user2);
+        assertThat(GroupConfiguration.getInstance().getUsers(group2.getGroupName()))
+                .containsOnly(user3);
+    }
+
+    @Test
     void removeUser() {
         GroupConfiguration.getInstance().insert(group1);
         GroupConfiguration.getInstance().insert(group2);
@@ -277,6 +343,30 @@ class GroupConfigurationTest {
     }
 
     @Test
+    void removeUserByName() {
+        GroupConfiguration.getInstance().insert(group1);
+        GroupConfiguration.getInstance().insert(group2);
+        UserConfiguration.getInstance().insert(user1);
+        UserConfiguration.getInstance().insert(user2);
+        UserConfiguration.getInstance().insert(user3);
+        GroupConfiguration.getInstance().addUser(group1.getMetadataKey(), user1.getMetadataKey());
+        GroupConfiguration.getInstance().addUser(group1.getMetadataKey(), user2.getMetadataKey());
+        GroupConfiguration.getInstance().addUser(group2.getMetadataKey(), user3.getMetadataKey());
+
+        assertThat(GroupConfiguration.getInstance().getUsers(group1.getMetadataKey()))
+                .containsOnly(user1, user2);
+        assertThat(GroupConfiguration.getInstance().getUsers(group2.getMetadataKey()))
+                .containsOnly(user3);
+
+        GroupConfiguration.getInstance().removeUser(group1.getGroupName(), user1.getUsername());
+
+        assertThat(GroupConfiguration.getInstance().getUsers(group1.getMetadataKey()))
+                .containsOnly(user2);
+        assertThat(GroupConfiguration.getInstance().getUsers(group2.getMetadataKey()))
+                .containsOnly(user3);
+    }
+
+    @Test
     void removeNonExistingUser() {
         GroupConfiguration.getInstance().insert(group1);
         UserConfiguration.getInstance().insert(user1);
@@ -286,12 +376,31 @@ class GroupConfigurationTest {
     }
 
     @Test
+    void removeNonExistingUserByName() {
+        GroupConfiguration.getInstance().insert(group1);
+        UserConfiguration.getInstance().insert(user1);
+        GroupConfiguration.getInstance().addUser(group1.getGroupName(), user1.getUsername());
+
+        GroupConfiguration.getInstance().removeUser(group1.getGroupName(), user2.getUsername());
+    }
+
+    @Test
     void addAlreadyMemberUser() {
         GroupConfiguration.getInstance().insert(group1);
         UserConfiguration.getInstance().insert(user1);
         GroupConfiguration.getInstance().addUser(group1.getMetadataKey(), user1.getMetadataKey());
 
         assertThatThrownBy(() -> GroupConfiguration.getInstance().addUser(group1.getMetadataKey(), user1.getMetadataKey()))
+                .isInstanceOf(RuntimeException.class);
+    }
+
+    @Test
+    void addAlreadyMemberUserByName() {
+        GroupConfiguration.getInstance().insert(group1);
+        UserConfiguration.getInstance().insert(user1);
+        GroupConfiguration.getInstance().addUser(group1.getMetadataKey(), user1.getMetadataKey());
+
+        assertThatThrownBy(() -> GroupConfiguration.getInstance().addUser(group1.getGroupName(), user1.getUsername()))
                 .isInstanceOf(RuntimeException.class);
     }
 
@@ -309,6 +418,23 @@ class GroupConfigurationTest {
         assertThat(GroupConfiguration.getInstance().getAuthorities(group1.getMetadataKey()))
                 .containsOnly(authority1, authority2);
         assertThat(GroupConfiguration.getInstance().getAuthorities(group2.getMetadataKey()))
+                .containsOnly(authority3);
+    }
+
+    @Test
+    void getAuthoritiesByName() {
+        GroupConfiguration.getInstance().insert(group1);
+        GroupConfiguration.getInstance().insert(group2);
+        AuthorityConfiguration.getInstance().insert(authority1);
+        AuthorityConfiguration.getInstance().insert(authority2);
+        AuthorityConfiguration.getInstance().insert(authority3);
+        GroupConfiguration.getInstance().addAuthority(group1.getMetadataKey(), authority1.getMetadataKey());
+        GroupConfiguration.getInstance().addAuthority(group1.getMetadataKey(), authority2.getMetadataKey());
+        GroupConfiguration.getInstance().addAuthority(group2.getMetadataKey(), authority3.getMetadataKey());
+
+        assertThat(GroupConfiguration.getInstance().getAuthorities(group1.getGroupName()))
+                .containsOnly(authority1, authority2);
+        assertThat(GroupConfiguration.getInstance().getAuthorities(group2.getGroupName()))
                 .containsOnly(authority3);
     }
 
@@ -337,6 +463,30 @@ class GroupConfigurationTest {
     }
 
     @Test
+    void removeAuthorityByName() {
+        GroupConfiguration.getInstance().insert(group1);
+        GroupConfiguration.getInstance().insert(group2);
+        AuthorityConfiguration.getInstance().insert(authority1);
+        AuthorityConfiguration.getInstance().insert(authority2);
+        AuthorityConfiguration.getInstance().insert(authority3);
+        GroupConfiguration.getInstance().addAuthority(group1.getMetadataKey(), authority1.getMetadataKey());
+        GroupConfiguration.getInstance().addAuthority(group1.getMetadataKey(), authority2.getMetadataKey());
+        GroupConfiguration.getInstance().addAuthority(group2.getMetadataKey(), authority3.getMetadataKey());
+
+        assertThat(GroupConfiguration.getInstance().getAuthorities(group1.getMetadataKey()))
+                .containsOnly(authority1, authority2);
+        assertThat(GroupConfiguration.getInstance().getAuthorities(group2.getMetadataKey()))
+                .containsOnly(authority3);
+
+        GroupConfiguration.getInstance().removeAuthority(group1.getGroupName(), authority1.getAuthority());
+
+        assertThat(GroupConfiguration.getInstance().getAuthorities(group1.getMetadataKey()))
+                .containsOnly(authority2);
+        assertThat(GroupConfiguration.getInstance().getAuthorities(group2.getMetadataKey()))
+                .containsOnly(authority3);
+    }
+
+    @Test
     void removeNonExistingAuthority() {
         GroupConfiguration.getInstance().insert(group1);
         AuthorityConfiguration.getInstance().insert(authority1);
@@ -346,12 +496,31 @@ class GroupConfigurationTest {
     }
 
     @Test
+    void removeNonExistingAuthorityByName() {
+        GroupConfiguration.getInstance().insert(group1);
+        AuthorityConfiguration.getInstance().insert(authority1);
+        GroupConfiguration.getInstance().addAuthority(group1.getMetadataKey(), authority1.getMetadataKey());
+
+        GroupConfiguration.getInstance().removeAuthority(group1.getGroupName(), authority2.getAuthority());
+    }
+
+    @Test
     void addAlreadyAuthority() {
         GroupConfiguration.getInstance().insert(group1);
         AuthorityConfiguration.getInstance().insert(authority1);
         GroupConfiguration.getInstance().addAuthority(group1.getMetadataKey(), authority1.getMetadataKey());
 
         assertThatThrownBy(() -> GroupConfiguration.getInstance().addAuthority(group1.getMetadataKey(), authority1.getMetadataKey()))
+                .isInstanceOf(RuntimeException.class);
+    }
+
+    @Test
+    void addAlreadyAuthorityByName() {
+        GroupConfiguration.getInstance().insert(group1);
+        AuthorityConfiguration.getInstance().insert(authority1);
+        GroupConfiguration.getInstance().addAuthority(group1.getMetadataKey(), authority1.getMetadataKey());
+
+        assertThatThrownBy(() -> GroupConfiguration.getInstance().addAuthority(group1.getGroupName(), authority1.getAuthority()))
                 .isInstanceOf(RuntimeException.class);
     }
 

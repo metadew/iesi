@@ -69,6 +69,12 @@ class AuthorityConfigurationTest {
     }
 
     @Test
+    void userExistsByNameTest() {
+        AuthorityConfiguration.getInstance().insert(authority1);
+        assertThat(AuthorityConfiguration.getInstance().exists(authority1.getAuthority())).isTrue();
+    }
+
+    @Test
     void userGetDoesNotExistsTest() {
         assertThat(AuthorityConfiguration.getInstance().get(new AuthorityKey(uuid1))).isEmpty();
         AuthorityConfiguration.getInstance().insert(authority1);
@@ -76,9 +82,24 @@ class AuthorityConfigurationTest {
     }
 
     @Test
+    void userGetByNameDoesNotExistsTest() {
+        assertThat(AuthorityConfiguration.getInstance().get(new AuthorityKey(uuid1))).isEmpty();
+        AuthorityConfiguration.getInstance().insert(authority1);
+        assertThat(AuthorityConfiguration.getInstance().get(authority2.getAuthority())).isEmpty();
+    }
+
+    @Test
     void userGetExistsTest() {
         AuthorityConfiguration.getInstance().insert(authority1);
         assertThat(AuthorityConfiguration.getInstance().get(new AuthorityKey(uuid1)))
+                .isPresent()
+                .hasValue(authority1);
+    }
+
+    @Test
+    void userGetByNameExistsTest() {
+        AuthorityConfiguration.getInstance().insert(authority1);
+        assertThat(AuthorityConfiguration.getInstance().get(authority1.getAuthority()))
                 .isPresent()
                 .hasValue(authority1);
     }
@@ -128,8 +149,11 @@ class AuthorityConfigurationTest {
     @Test
     void userDeleteDoesNotExistTest() {
         AuthorityConfiguration.getInstance().delete(authority1.getMetadataKey());
-        //assertThatThrownBy(() -> UserConfiguration.getInstance().delete(user1.getMetadataKey()))
-        //        .isInstanceOf(RuntimeException.class);
+    }
+
+    @Test
+    void userDeleteByNameDoesNotExistTest() {
+        AuthorityConfiguration.getInstance().delete(authority1.getAuthority());
     }
 
     @Test
@@ -138,6 +162,17 @@ class AuthorityConfigurationTest {
         assertThat(AuthorityConfiguration.getInstance().exists(new AuthorityKey(uuid1)))
                 .isTrue();
         AuthorityConfiguration.getInstance().delete(authority1.getMetadataKey());
+
+        assertThat(AuthorityConfiguration.getInstance().exists(new AuthorityKey(uuid1)))
+                .isFalse();
+    }
+
+    @Test
+    void userDeleteByNameTest() {
+        AuthorityConfiguration.getInstance().insert(authority1);
+        assertThat(AuthorityConfiguration.getInstance().exists(new AuthorityKey(uuid1)))
+                .isTrue();
+        AuthorityConfiguration.getInstance().delete(authority1.getAuthority());
 
         assertThat(AuthorityConfiguration.getInstance().exists(new AuthorityKey(uuid1)))
                 .isFalse();

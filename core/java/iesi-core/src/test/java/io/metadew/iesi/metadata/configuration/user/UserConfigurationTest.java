@@ -44,6 +44,9 @@ class UserConfigurationTest {
                         .build())
                 .username("user1")
                 .enabled(true)
+                .expired(false)
+                .credentialsExpired(false)
+                .locked(false)
                 .password("password1").build();
         uuid2 = UUID.randomUUID();
         user2 = User.builder()
@@ -52,6 +55,9 @@ class UserConfigurationTest {
                         .build())
                 .username("user2")
                 .enabled(true)
+                .expired(false)
+                .credentialsExpired(false)
+                .locked(false)
                 .password("password3")
                 .build();
         authority1 = Authority.builder()
@@ -116,6 +122,12 @@ class UserConfigurationTest {
     }
 
     @Test
+    void userExistsByNameTest() {
+        UserConfiguration.getInstance().insert(user1);
+        assertThat(UserConfiguration.getInstance().exists(user1.getUsername())).isTrue();
+    }
+
+    @Test
     void userGetDoesNotExistsTest() {
         assertThat(UserConfiguration.getInstance().get(new UserKey(uuid1))).isEmpty();
         UserConfiguration.getInstance().insert(user1);
@@ -123,9 +135,24 @@ class UserConfigurationTest {
     }
 
     @Test
+    void userGetByNameDoesNotExistsTest() {
+        assertThat(UserConfiguration.getInstance().get(user1.getUsername())).isEmpty();
+        UserConfiguration.getInstance().insert(user1);
+        assertThat(UserConfiguration.getInstance().get(user2.getUsername())).isEmpty();
+    }
+
+    @Test
     void userGetExistsTest() {
         UserConfiguration.getInstance().insert(user1);
         assertThat(UserConfiguration.getInstance().get(new UserKey(uuid1)))
+                .isPresent()
+                .hasValue(user1);
+    }
+
+    @Test
+    void userGetByNameExistsTest() {
+        UserConfiguration.getInstance().insert(user1);
+        assertThat(UserConfiguration.getInstance().get(user1.getUsername()))
                 .isPresent()
                 .hasValue(user1);
     }
@@ -175,8 +202,11 @@ class UserConfigurationTest {
     @Test
     void userDeleteDoesNotExistTest() {
         UserConfiguration.getInstance().delete(user1.getMetadataKey());
-        //assertThatThrownBy(() -> UserConfiguration.getInstance().delete(user1.getMetadataKey()))
-        //        .isInstanceOf(RuntimeException.class);
+    }
+
+    @Test
+    void userDeleteByNameDoesNotExistTest() {
+        UserConfiguration.getInstance().delete(user1.getUsername());
     }
 
     @Test
@@ -185,6 +215,17 @@ class UserConfigurationTest {
         assertThat(UserConfiguration.getInstance().exists(new UserKey(uuid1)))
                 .isTrue();
         UserConfiguration.getInstance().delete(user1.getMetadataKey());
+
+        assertThat(UserConfiguration.getInstance().exists(new UserKey(uuid1)))
+                .isFalse();
+    }
+
+    @Test
+    void userDeleteByNameTest() {
+        UserConfiguration.getInstance().insert(user1);
+        assertThat(UserConfiguration.getInstance().exists(new UserKey(uuid1)))
+                .isTrue();
+        UserConfiguration.getInstance().delete(user1.getUsername());
 
         assertThat(UserConfiguration.getInstance().exists(new UserKey(uuid1)))
                 .isFalse();
@@ -265,6 +306,21 @@ class UserConfigurationTest {
     }
 
     @Test
+    void addAuthorityByName() {
+        UserConfiguration.getInstance().insert(user1);
+        UserConfiguration.getInstance().insert(user2);
+        AuthorityConfiguration.getInstance().insert(authority1);
+        AuthorityConfiguration.getInstance().insert(authority2);
+        UserConfiguration.getInstance().addAuthority(user1.getUsername(), authority1.getAuthority());
+        UserConfiguration.getInstance().addAuthority(user1.getUsername(), authority2.getAuthority());
+        UserConfiguration.getInstance().addAuthority(user2.getUsername(), authority2.getAuthority());
+        assertThat(UserConfiguration.getInstance().getAuthorities(user1.getMetadataKey()))
+                .containsOnly(authority1, authority2);
+        assertThat(UserConfiguration.getInstance().getAuthorities(user2.getMetadataKey()))
+                .containsOnly(authority2);
+    }
+
+    @Test
     void removeAuthority() {
         UserConfiguration.getInstance().insert(user1);
         UserConfiguration.getInstance().insert(user2);
@@ -280,6 +336,29 @@ class UserConfigurationTest {
                 .containsOnly(authority2);
 
         UserConfiguration.getInstance().removeAuthority(user1.getMetadataKey(), authority1.getMetadataKey());
+
+        assertThat(UserConfiguration.getInstance().getAuthorities(user1.getMetadataKey()))
+                .containsOnly(authority2);
+        assertThat(UserConfiguration.getInstance().getAuthorities(user2.getMetadataKey()))
+                .containsOnly(authority2);
+    }
+
+    @Test
+    void removeAuthorityByName() {
+        UserConfiguration.getInstance().insert(user1);
+        UserConfiguration.getInstance().insert(user2);
+        AuthorityConfiguration.getInstance().insert(authority1);
+        AuthorityConfiguration.getInstance().insert(authority2);
+        UserConfiguration.getInstance().addAuthority(user1.getUsername(), authority1.getAuthority());
+        UserConfiguration.getInstance().addAuthority(user1.getUsername(), authority2.getAuthority());
+        UserConfiguration.getInstance().addAuthority(user2.getUsername(), authority2.getAuthority());
+
+        assertThat(UserConfiguration.getInstance().getAuthorities(user1.getUsername()))
+                .containsOnly(authority1, authority2);
+        assertThat(UserConfiguration.getInstance().getAuthorities(user2.getUsername()))
+                .containsOnly(authority2);
+
+        UserConfiguration.getInstance().removeAuthority(user1.getUsername(), authority1.getAuthority());
 
         assertThat(UserConfiguration.getInstance().getAuthorities(user1.getMetadataKey()))
                 .containsOnly(authority2);
@@ -309,6 +388,31 @@ class UserConfigurationTest {
         assertThat(UserConfiguration.getInstance().getAuthorities(user1.getMetadataKey()))
                 .containsOnly(authority1, authority2, authority3, authority4);
         assertThat(UserConfiguration.getInstance().getAuthorities(user2.getMetadataKey()))
+                .containsOnly(authority2, authority3);
+    }
+
+    @Test
+    void getAuthoritiesByName() {
+        UserConfiguration.getInstance().insert(user1);
+        UserConfiguration.getInstance().insert(user2);
+        AuthorityConfiguration.getInstance().insert(authority1);
+        AuthorityConfiguration.getInstance().insert(authority2);
+        AuthorityConfiguration.getInstance().insert(authority3);
+        AuthorityConfiguration.getInstance().insert(authority4);
+        GroupConfiguration.getInstance().insert(group1);
+        GroupConfiguration.getInstance().insert(group2);
+        GroupConfiguration.getInstance().addAuthority(group1.getMetadataKey(), authority3.getMetadataKey());
+        GroupConfiguration.getInstance().addAuthority(group1.getMetadataKey(), authority4.getMetadataKey());
+        GroupConfiguration.getInstance().addAuthority(group2.getMetadataKey(), authority3.getMetadataKey());
+        GroupConfiguration.getInstance().addUser(group1.getMetadataKey(), user1.getMetadataKey());
+        GroupConfiguration.getInstance().addUser(group2.getMetadataKey(), user2.getMetadataKey());
+        UserConfiguration.getInstance().addAuthority(user1.getMetadataKey(), authority1.getMetadataKey());
+        UserConfiguration.getInstance().addAuthority(user1.getMetadataKey(), authority2.getMetadataKey());
+        UserConfiguration.getInstance().addAuthority(user2.getMetadataKey(), authority2.getMetadataKey());
+
+        assertThat(UserConfiguration.getInstance().getAuthorities(user1.getUsername()))
+                .containsOnly(authority1, authority2, authority3, authority4);
+        assertThat(UserConfiguration.getInstance().getAuthorities(user2.getUsername()))
                 .containsOnly(authority2, authority3);
     }
 

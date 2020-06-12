@@ -13,15 +13,22 @@ import java.util.List;
 public class User extends Metadata<UserKey> {
 
     private String username;
-    private boolean enabled;
     private String password;
+    private boolean enabled;
+    private boolean expired;
+    private boolean credentialsExpired;
+    private boolean locked;
 
     @Builder
-    public User(UserKey userKey, String username, String password, boolean enabled) {
+    public User(UserKey userKey, String username, String password, boolean enabled, boolean expired,
+                boolean credentialsExpired, boolean locked) {
         super(userKey);
         this.username = username;
         this.password = password;
         this.enabled = enabled;
+        this.expired = expired;
+        this.credentialsExpired = credentialsExpired;
+        this.locked = locked;
     }
 
     //TODO: Lazy loading of authorities and groups. When moving to Spring add as lazy loading

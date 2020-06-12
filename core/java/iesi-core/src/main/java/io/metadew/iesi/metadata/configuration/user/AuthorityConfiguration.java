@@ -48,6 +48,26 @@ public class AuthorityConfiguration extends Configuration<Authority, AuthorityKe
         }
     }
 
+    public Optional<Authority> get(String authority) {
+        try {
+            String queryScript = "select ID, AUTHORITY " +
+                    "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Authorities").getName() +
+                    " WHERE AUTHORITY=" + SQLTools.GetStringForSQL(authority) + ";";
+            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(queryScript, "reader");
+            if (cachedRowSet.next()) {
+                return Optional.of(mapAuthority(cachedRowSet));
+            } else {
+                return Optional.empty();
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public boolean exists(String authority) {
+        return get(authority).isPresent();
+    }
+
     @Override
     public List<Authority> getAll() {
         List<Authority> authorities = new ArrayList<>();
@@ -69,6 +89,12 @@ public class AuthorityConfiguration extends Configuration<Authority, AuthorityKe
         log.trace(MessageFormat.format("Deleting {0}.", metadataKey.toString()));
         String deleteStatement = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Authorities").getName() +
                 " WHERE ID = " + SQLTools.GetStringForSQL(metadataKey.getUuid().toString()) + ";";
+        getMetadataRepository().executeUpdate(deleteStatement);
+    }
+
+    public void delete(String auhtority) {
+        String deleteStatement = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Authorities").getName() +
+                " WHERE AUTHORITY = " + SQLTools.GetStringForSQL(auhtority) + ";";
         getMetadataRepository().executeUpdate(deleteStatement);
     }
 

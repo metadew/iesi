@@ -55,7 +55,7 @@ Now, [load the configuration](/{{site.repository}}/pages/tutorial/loadconfigurat
 and [execute the script](/{{site.repository}}/pages/tutorial/executescript.html). 
 
 ```bash
-bin/iesi-launch.sh -script helloparameter -env tutorial
+./iesi-launch.sh -script helloparameter -env tutorial
 ```
 
 You will notice the following output:
@@ -68,7 +68,7 @@ The fixed string is displayed but no value is displayed for the parameter. We di
 This can be done through the `-paramlist <arg>` option of the command. Let's run the following command:
 
 ```bash
-bin/iesi-launch.sh -script helloparameter -env tutorial -paramlist param1=value1
+./iesi-launch.sh -script helloparameter -env tutorial -paramlist param1=value1
 ```
 
 Now, the output reflects the value of the parameter that we provided:

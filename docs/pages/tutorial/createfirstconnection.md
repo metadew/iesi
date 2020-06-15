@@ -88,7 +88,7 @@ You should be getting used to executing scripts by now.
 You can always refresh this by having a look the following tutorial: [Execute script](/{{site.repository}}/pages/tutorial/executescript.html).
 
 ```bash
-bin/iesi-launch.sh -script helloconnection -env tutorial
+./iesi-launch.sh -script helloconnection -env tutorial
 ```
 
 The following type output will appear on the screen:

@@ -9,10 +9,10 @@
 * [Quickstart](/{{site.repository}}/pages/quickstart.html)
 * Tutorials
   * Quickstart
-    * [Create tutorial environment](/{{site.repository}}/pages/tutorial/tutorialenvironment.html)
-    * [Create Hello World script](/{{site.repository}}/pages/tutorial/helloworldscript.html)
-    * [Working with script versions](/{{site.repository}}/pages/tutorial/workingwithscriptversions.html)
-    * [Create first connection](/{{site.repository}}/pages/tutorial/createfirstconnection.html)
+    1. [Create tutorial environment](/{{site.repository}}/pages/tutorial/tutorialenvironment.html)
+    2. [Create Hello World script](/{{site.repository}}/pages/tutorial/helloworldscript.html)
+    3. [Working with script versions](/{{site.repository}}/pages/tutorial/workingwithscriptversions.html)
+    4. [Create first connection](/{{site.repository}}/pages/tutorial/createfirstconnection.html)
 	* [Execute script using a parameter list](/{{site.repository}}/pages/tutorial/executescriptusingparameterlist.html)
   * Always useful to know or refresh
     * Define a script and its actions

@@ -3,19 +3,17 @@ package io.metadew.iesi.server.rest.script.result;
 import io.metadew.iesi.metadata.configuration.script.result.ScriptResultConfiguration;
 import io.metadew.iesi.metadata.definition.script.result.ScriptResult;
 import io.metadew.iesi.metadata.definition.script.result.key.ScriptResultKey;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
-public class ScriptResultService implements IScriptResultService{
+public class ScriptResultService implements IScriptResultService {
 
     private ScriptResultConfiguration scriptResultConfiguration;
 
-    public ScriptResultService(ScriptResultConfiguration scriptResultConfiguration){
+    public ScriptResultService(ScriptResultConfiguration scriptResultConfiguration) {
         this.scriptResultConfiguration = scriptResultConfiguration;
     }
 

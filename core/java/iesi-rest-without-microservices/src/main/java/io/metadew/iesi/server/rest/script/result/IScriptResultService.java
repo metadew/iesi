@@ -1,7 +1,6 @@
 package io.metadew.iesi.server.rest.script.result;
 
 import io.metadew.iesi.metadata.definition.script.result.ScriptResult;
-import io.metadew.iesi.script.execution.instruction.variable.runtime.RunIdInstruction;
 
 import java.util.List;
 import java.util.Optional;

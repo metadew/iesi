@@ -20,11 +20,11 @@ the `script` and `environment` option: execute a script on a given environment.
 
 Linux/Mac
 ```bash
-bin/iesi-launch.sh -script <arg> -env <arg>
+./iesi-launch.sh -script <arg> -env <arg>
 ```
 Windows
 ```bash
-bin/iesi-launch.cmd -script <arg> -env <arg>
+./iesi-launch.cmd -script <arg> -env <arg>
 ```
 
 ## Recap

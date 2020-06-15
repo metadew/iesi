@@ -41,22 +41,22 @@ data:
 
 Next, we will load the configuration file into the configuration repository:
 * Copy the configuration file to the `metadata/in/new` folder
-* Navigate to the `bin` folder
-* Load the configuration file via the `bin/iesi-metadata.sh` (or `iesi-metadata.cmd` on Windows) command [![info](/{{site.repository}}/images/icons/question-dot.png)](/{{site.repository}}/pages/operate/operate.html)
+* Navigate to the `bin` folder and open the terminal (or command prompt on Windows) in this folder
+* Load the configuration file via the `./iesi-metadata.sh` (or `iesi-metadata.cmd` on Windows) command [![info](/{{site.repository}}/images/icons/question-dot.png)](/{{site.repository}}/pages/operate/operate.html)
 
 ```bash
-bin/iesi-metadata.sh -load -type general
+./iesi-metadata.sh -load -type general
 ```
 
 ## Execute the script
 
 Finally, we will execute the script:
-* Navigate to the `bin` folder
-* Execute the script via the `bin/iesi-launch.sh` (or `bin/iesi-launch.cmd` on Windows) command providing 
+* Navigate to the `bin` folder and open the terminal (or command prompt on Windows) in this folder
+* Execute the script via the `./iesi-launch.sh` (or `./iesi-launch.cmd` on Windows) command providing 
 the `script` and `environment` option: execute a script on a given environment. 
 
 ```bash
-bin/iesi-launch.sh -script helloworld -env tutorial
+./iesi-launch.sh -script helloworld -env tutorial
 ```
 
 The following type output will appear on the screen:

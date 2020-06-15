@@ -83,22 +83,22 @@ In this configuration, you will notice that
 
 Next, we will load the configuration files into the configuration repository:
 * Copy the configuration file to the `metadata/in/new` folder
-* Navigate to the `bin` folder
-* Load the configuration file via the `bin/iesi-metadata.sh` (or `iesi-metadata.cmd` on Windows) command [![info](/{{site.repository}}/images/icons/question-dot.png)](/{{site.repository}}/pages/operate/operate.html)
+* Navigate to the `bin` folder and open the terminal (or command prompt on Windows) in this folder
+* Load the configuration file via the `./iesi-metadata.sh` (or `iesi-metadata.cmd` on Windows) command [![info](/{{site.repository}}/images/icons/question-dot.png)](/{{site.repository}}/pages/operate/operate.html)
 
 ```bash
-bin/iesi-metadata.sh -load -type general
+./iesi-metadata.sh -load -type general
 ```
 
 ## Execute the scripts
 
 Finally, we will execute the scripts:
-* Navigate to the `bin` folder
-* Execute the script via the `bin/iesi-launch.sh` (or `bin/iesi-launch.cmd` on Windows) command providing 
+* Navigate to the `bin` folder and open the terminal (or command prompt on Windows) in this folder
+* Execute the script via the `./iesi-launch.sh` (or `./iesi-launch.cmd` on Windows) command providing 
 the `script` and `environment` option: execute a script on a given environment. 
 
 ```bash
-bin/iesi-launch.sh -script helloworldversion -env tutorial -version 1
+./iesi-launch.sh -script helloworldversion -env tutorial -version 1
 ```
 
 The following type output will appear on the screen. Note that version 1 is selected.
@@ -140,7 +140,7 @@ script.launcher.end
 Now, the script's second version will be executed.
 
 ```bash
-bin/iesi-launch.sh -script helloworldversion -env tutorial -version 2
+./iesi-launch.sh -script helloworldversion -env tutorial -version 2
 ```
 
 The following type output will appear on the screen. Note that version 2 is selected. The additional action is now also executed.
@@ -184,7 +184,7 @@ script.launcher.end
 If you will execute script without specifying a version, the latest version will be selected by default.
 
 ```bash
-bin/iesi-launch.sh -script helloworldversion -env tutorial
+./iesi-launch.sh -script helloworldversion -env tutorial
 ```
 
 ## Recap

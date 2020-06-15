@@ -1,13 +1,9 @@
 package io.metadew.iesi.script.execution.instruction.data.number;
 
-import io.metadew.iesi.datatypes.array.Array;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
-import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 public class NumberBetweenTest {
 

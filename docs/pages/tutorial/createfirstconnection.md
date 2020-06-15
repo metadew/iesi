@@ -87,8 +87,13 @@ Now, load the configuration into the configuration repository.
 You should be getting used to executing scripts by now. 
 You can always refresh this by having a look the following tutorial: [Execute script](/{{site.repository}}/pages/tutorial/executescript.html).
 
+Linux/Mac
 ```bash
 ./iesi-launch.sh -script helloconnection -env tutorial
+```
+Windows
+```bash
+./iesi-launch.cmd -script helloconnection -env tutorial
 ```
 
 The following type output will appear on the screen:

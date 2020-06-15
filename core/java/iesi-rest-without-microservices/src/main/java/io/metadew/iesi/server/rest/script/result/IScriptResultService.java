@@ -7,10 +7,10 @@ import java.util.Optional;
 
 public interface IScriptResultService {
 
-    public List<ScriptResult> getAll();
+    List<ScriptResult> getAll();
 
-    public Optional<List<ScriptResult>> getByRunId(String runId);
+    Optional<List<ScriptResult>> getByRunId(String runId);
 
-    public Optional<ScriptResult> getByRunIdAndProcessId(String runId, Long processId);
+    Optional<ScriptResult> getByRunIdAndProcessId(String runId, Long processId);
 
 }

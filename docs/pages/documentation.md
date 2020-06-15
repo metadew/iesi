@@ -13,7 +13,7 @@
     2. [Create Hello World script](/{{site.repository}}/pages/tutorial/helloworldscript.html)
     3. [Working with script versions](/{{site.repository}}/pages/tutorial/workingwithscriptversions.html)
     4. [Create first connection](/{{site.repository}}/pages/tutorial/createfirstconnection.html)
-	* [Execute script using a parameter list](/{{site.repository}}/pages/tutorial/executescriptusingparameterlist.html)
+    5. [Execute script using a parameter list](/{{site.repository}}/pages/tutorial/executescriptusingparameterlist.html)
   * Always useful to know or refresh
     * Define a script and its actions
     * [Load configuration](/{{site.repository}}/pages/tutorial/loadconfiguration.html)

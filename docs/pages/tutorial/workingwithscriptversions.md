@@ -86,8 +86,13 @@ Next, we will load the configuration files into the configuration repository:
 * Navigate to the `bin` folder and open the terminal (or command prompt on Windows) in this folder
 * Load the configuration file via the `./iesi-metadata.sh` (or `iesi-metadata.cmd` on Windows) command [![info](/{{site.repository}}/images/icons/question-dot.png)](/{{site.repository}}/pages/operate/operate.html)
 
+Linux/Mac
 ```bash
 ./iesi-metadata.sh -load -type general
+```
+Windows
+```bash
+./iesi-metadata.cmd -load -type general
 ```
 
 ## Execute the scripts
@@ -97,8 +102,13 @@ Finally, we will execute the scripts:
 * Execute the script via the `./iesi-launch.sh` (or `./iesi-launch.cmd` on Windows) command providing 
 the `script` and `environment` option: execute a script on a given environment. 
 
+Linux/Mac
 ```bash
 ./iesi-launch.sh -script helloworldversion -env tutorial -version 1
+```
+Windows
+```bash
+./iesi-launch.cmd -script helloworldversion -env tutorial -version 1
 ```
 
 The following type output will appear on the screen. Note that version 1 is selected.
@@ -139,8 +149,13 @@ script.launcher.end
 
 Now, the script's second version will be executed.
 
+Linux/Mac
 ```bash
 ./iesi-launch.sh -script helloworldversion -env tutorial -version 2
+```
+Windows
+```bash
+./iesi-launch.cmd -script helloworldversion -env tutorial -version 2
 ```
 
 The following type output will appear on the screen. Note that version 2 is selected. The additional action is now also executed.
@@ -183,8 +198,13 @@ script.launcher.end
 
 If you will execute script without specifying a version, the latest version will be selected by default.
 
+Linux/Mac
 ```bash
 ./iesi-launch.sh -script helloworldversion -env tutorial
+```
+Windows
+```bash
+./iesi-launch.cmd -script helloworldversion -env tutorial
 ```
 
 ## Recap

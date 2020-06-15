@@ -20,6 +20,10 @@ public class NumberBetween implements DataInstruction {
         secureRandom = new SecureRandom();
     }
 
+    // Regex : g1, g2 and g3 are the capturing group
+    // ^\s*\"?\s*(?<g1>-?\d+(?:\.\d+)?)\s*\"?\s*,\s*\"?\s*(?<g2>-?\d+(?:\.\d+)?)\s*\"?\s*(?:,\s*\"?\s*(?<g3>-?\d*(?:\.\d+)?)\s*\"?\s*)?
+    // As g3 is an optional group, the regex can't fail its match because of a bad input in g3 so we allowed the dot
+    // to capture an eventual float number and throw an error later if a dot is present
     private final Pattern INPUT_PARAMETER_PATTERN = Pattern
             .compile("^\\s*\"?\\s*(?<" + LOWER_BOUND_KEY + ">-?\\d+(?:\\.\\d+)?)\\s*\"?\\s*," +
                     "\\s*\"?\\s*(?<" + UPPER_BOUND_KEY + ">-?\\d+(?:\\.\\d+)?)\\s*\"?\\s*" +
@@ -41,6 +45,7 @@ public class NumberBetween implements DataInstruction {
         if (strNumberOfDecimals == null)
             return Double.toString(generatedNumber);
 
+        // See line 25
         if (Pattern.compile("\\.").matcher(strNumberOfDecimals).find())
             throw new IllegalArgumentException(MessageFormat.format("Illegal arguments provided to " + this.getKeyword() + ": {0}", parameters));
 

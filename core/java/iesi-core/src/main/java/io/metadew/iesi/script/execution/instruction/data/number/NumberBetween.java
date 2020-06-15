@@ -39,7 +39,7 @@ public class NumberBetween implements DataInstruction {
         double upperBound = Double.parseDouble(inputParameterMatcher.group(UPPER_BOUND_KEY));
         double generatedNumber = range(lowerBound, upperBound);
 
-        if (Objects.isNull(strNumberOfDecimals))
+        if (strNumberOfDecimals == null)
             return Double.toString(generatedNumber);
 
         if (Pattern.compile("\\.").matcher(strNumberOfDecimals).find())
@@ -50,8 +50,8 @@ public class NumberBetween implements DataInstruction {
         if (numberOfDecimals < 0)
             throw new IllegalArgumentException(MessageFormat.format("Illegal arguments provided to " + this.getKeyword() + ": {0}", parameters));
 
-        DecimalFormat decimalFormatter = getADecimalFormatter(numberOfDecimals);
-        return decimalFormatter.format(generatedNumber);
+        return getADecimalFormatter(numberOfDecimals)
+                .format(generatedNumber);
 
     }
 

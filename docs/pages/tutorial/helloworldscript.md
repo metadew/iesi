@@ -44,9 +44,16 @@ Next, we will load the configuration file into the configuration repository:
 * Navigate to the `bin` folder and open the terminal (or command prompt on Windows) in this folder
 * Load the configuration file via the `./iesi-metadata.sh` (or `iesi-metadata.cmd` on Windows) command [![info](/{{site.repository}}/images/icons/question-dot.png)](/{{site.repository}}/pages/operate/operate.html)
 
+Linux/Mac
 ```bash
 ./iesi-metadata.sh -load -type general
 ```
+Windows
+```bash
+./iesi-metadata.cmd -load -type general
+```
+
+This command saves your new `HelloWorldScript` script in the database in the backend. You will now be able to access it with the next command(s).
 
 ## Execute the script
 
@@ -55,8 +62,13 @@ Finally, we will execute the script:
 * Execute the script via the `./iesi-launch.sh` (or `./iesi-launch.cmd` on Windows) command providing 
 the `script` and `environment` option: execute a script on a given environment. 
 
+Linux/Mac
 ```bash
 ./iesi-launch.sh -script helloworld -env tutorial
+```
+Windows
+```bash
+./iesi-launch.cmd -script helloworld -env tutorial
 ```
 
 The following type output will appear on the screen:

@@ -54,8 +54,13 @@ We set the parameter `onScreen: "Y"` so that we can immediately verify the outpu
 Now, [load the configuration](/{{site.repository}}/pages/tutorial/loadconfiguration.html) into the configuration repository 
 and [execute the script](/{{site.repository}}/pages/tutorial/executescript.html). 
 
+Linux/Mac
 ```bash
 ./iesi-launch.sh -script helloparameter -env tutorial
+```
+Windows
+```bash
+./iesi-launch.cmd -script helloparameter -env tutorial
 ```
 
 You will notice the following output:
@@ -67,8 +72,13 @@ You will notice the following output:
 The fixed string is displayed but no value is displayed for the parameter. We did not pass any value to the execution. 
 This can be done through the `-paramlist <arg>` option of the command. Let's run the following command:
 
+Linux/Mac
 ```bash
 ./iesi-launch.sh -script helloparameter -env tutorial -paramlist param1=value1
+```
+Windows
+```bash
+./iesi-launch.cmd -script helloparameter -env tutorial -paramlist param1=value1
 ```
 
 Now, the output reflects the value of the parameter that we provided:
@@ -91,8 +101,13 @@ Update the script to display also a second parameter:
 [Load the configuration](/{{site.repository}}/pages/tutorial/loadconfiguration.html) into the configuration repository 
 and [execute the script](/{{site.repository}}/pages/tutorial/executescript.html). 
 
+Linux/Mac
 ```bash
 bin/iesi-launch.sh -script helloparameter -env tutorial -paramlist param1=value1,param2=value2
+```
+Windows
+```bash
+bin/iesi-launch.cmd -script helloparameter -env tutorial -paramlist param1=value1,param2=value2
 ```
 
 This leads to the following output on the screen:

@@ -21,7 +21,7 @@ public class NumberBetween implements DataInstruction {
     }
 
     // Regex : g1, g2 and g3 are the capturing group
-    // ^\s*\"?\s*(?<g1>-?\d+(?:\.\d+)?)\s*\"?\s*,\s*\"?\s*(?<g2>-?\d+(?:\.\d+)?)\s*\"?\s*(?:,\s*\"?\s*(?<g3>\D*-?\d*(?:\.\d+)?\D*?)\s*\"?\s*)?
+    // ^\s*\"?\s*(?<g1>-?\d+(?:\.\d+)?)\s*\"?\s*,\s*\"?\s*(?<g2>-?\d+(?:\.\d+)?)\s*\"?\s*(?:,\s*\"?\s*(?<g3>\D*-?\d*(?:\.\d+)?\D*?)\s*\"?\s*)?$
     // As g3 is an optional group, the regex can't fail its match because of a bad input in g3 so we allowed
     // and capture all the possible input and test it on line 51
     private final Pattern INPUT_PARAMETER_PATTERN = Pattern

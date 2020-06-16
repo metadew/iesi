@@ -51,7 +51,7 @@ public class DataInstructionRepository {
         BelgiumNationalRegisterNumber belgiumNationalRegisterNumber = new BelgiumNationalRegisterNumber();
         dataInstructions.put(belgiumNationalRegisterNumber.getKeyword(), belgiumNationalRegisterNumber);
 
-        NumberBetween numberBetween = new NumberBetween(generationObjectExecution);
+        NumberBetween numberBetween = new NumberBetween();
         dataInstructions.put(numberBetween.getKeyword(), numberBetween);
 
         TextSubstring textSubstring = new TextSubstring();

@@ -21,13 +21,13 @@ public class NumberBetween implements DataInstruction {
     }
 
     // Regex : g1, g2 and g3 are the capturing group
-    // ^\s*\"?\s*(?<g1>-?\d+(?:\.\d+)?)\s*\"?\s*,\s*\"?\s*(?<g2>-?\d+(?:\.\d+)?)\s*\"?\s*(?:,\s*\"?\s*(?<g3>-?\d*(?:\.\d+)?)\s*\"?\s*)?
-    // As g3 is an optional group, the regex can't fail its match because of a bad input in g3 so we allowed the dot
-    // to capture an eventual float number and throw an error later if a dot is present
+    // ^\s*\"?\s*(?<g1>-?\d+(?:\.\d+)?)\s*\"?\s*,\s*\"?\s*(?<g2>-?\d+(?:\.\d+)?)\s*\"?\s*(?:,\s*\"?\s*(?<g3>\D*-?\d*(?:\.\d+)?\D*?)\s*\"?\s*)?
+    // As g3 is an optional group, the regex can't fail its match because of a bad input in g3 so we allowed
+    // and capture all the possible input and test it on line 51
     private final Pattern INPUT_PARAMETER_PATTERN = Pattern
             .compile("^\\s*\"?\\s*(?<" + LOWER_BOUND_KEY + ">-?\\d+(?:\\.\\d+)?)\\s*\"?\\s*," +
                     "\\s*\"?\\s*(?<" + UPPER_BOUND_KEY + ">-?\\d+(?:\\.\\d+)?)\\s*\"?\\s*" +
-                    "(?:,\\s*\"?\\s*(?<" + NUMBER_OF_DECIMALS + ">-?\\d*(?:\\.\\d+)?)\\s*\"?\\s*)?");
+                    "(?:,\\s*\"?\\s*(?<" + NUMBER_OF_DECIMALS + ">\\D*-?\\d*(?:\\.\\d+)?\\D*?)\\s*\"?\\s*)?$");
 
     @Override
     public String generateOutput(String parameters) {
@@ -38,6 +38,8 @@ public class NumberBetween implements DataInstruction {
 
         String strNumberOfDecimals = inputParameterMatcher.group(NUMBER_OF_DECIMALS);
 
+        System.out.println(strNumberOfDecimals);
+
         double lowerBound = Double.parseDouble(inputParameterMatcher.group(LOWER_BOUND_KEY));
         double upperBound = Double.parseDouble(inputParameterMatcher.group(UPPER_BOUND_KEY));
         double generatedNumber = range(lowerBound, upperBound);
@@ -46,7 +48,7 @@ public class NumberBetween implements DataInstruction {
             return Double.toString(generatedNumber);
 
         // See line 25
-        if (Pattern.compile("\\.").matcher(strNumberOfDecimals).find())
+        if (!Pattern.compile("^\\d+$").matcher(strNumberOfDecimals).find())
             throw new IllegalArgumentException(MessageFormat.format("Illegal arguments provided to " + this.getKeyword() + ": {0}", parameters));
 
         int numberOfDecimals = Integer.parseInt(strNumberOfDecimals);

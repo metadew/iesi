@@ -10,43 +10,89 @@ public class NumberBetweenTest {
     NumberBetween numberBetween = new NumberBetween();
 
     @Test
-    void illegalInputTest() {
+    void illegalInputGeneralTest() {
 
         assertThatIllegalArgumentException()
                 .as("empty parameters should throw an IllegalArgumentException")
                 .isThrownBy(() -> numberBetween.generateOutput(""));
 
         assertThatIllegalArgumentException()
-                .as("Illegal first argument should throw an IllegalArgumentException")
-                .isThrownBy(() -> numberBetween.generateOutput(" Illegal, 5"));
+                .as("empty parameters should throw an IllegalArgumentException")
+                .isThrownBy(() -> numberBetween.generateOutput(" , "));
 
         assertThatIllegalArgumentException()
-                .as("Illegal second argument should throw an IllegalArgumentException")
-                .isThrownBy(() -> numberBetween.generateOutput(" 5, Illegal"));
+                .as("empty parameters should throw an IllegalArgumentException")
+                .isThrownBy(() -> numberBetween.generateOutput(" , , "));
+
+        assertThatIllegalArgumentException()
+                .as("Illegal argument should throw an IllegalArgumentException")
+                .isThrownBy(() -> numberBetween.generateOutput(" Illegal "));
 
         assertThatIllegalArgumentException()
                 .as("2 illegals arguments should throw an IllegalArgumentException")
                 .isThrownBy(() -> numberBetween.generateOutput(" Illegal, Illegal"));
 
         assertThatIllegalArgumentException()
+                .as("3 illegals arguments should throw an IllegalArgumentException")
+                .isThrownBy(() -> numberBetween.generateOutput(" Illegal, Illegal, Illegal"));
+
+    }
+
+    @Test
+    void illegalInput1stArgTest() {
+        assertThatIllegalArgumentException()
                 .as("Illegal first argument should throw an IllegalArgumentException")
-                .isThrownBy(() -> numberBetween.generateOutput(" Illegal, 5, 32"));
+                .isThrownBy(() -> numberBetween.generateOutput(" Illegal, 5"));
 
         assertThatIllegalArgumentException()
-                .as("Negative 3rd argument is Illegal and should throw an IllegalArgumentException")
-                .isThrownBy(() -> numberBetween.generateOutput(" 2  , 5 , -1"));
+                .as("Illegal first argument should throw an IllegalArgumentException")
+                .isThrownBy(() -> numberBetween.generateOutput(" Illegal, 5, 32"));
 
         assertThatIllegalArgumentException()
                 .as("Empty first argument is Illegal and should throw an IllegalArgumentException")
                 .isThrownBy(() -> numberBetween.generateOutput("   , 5 , 1"));
 
         assertThatIllegalArgumentException()
+                .as("\"--\" is illegal an should throw an IllegalArgumentException")
+                .isThrownBy(() -> numberBetween.generateOutput(" --1  , 2"));
+
+        assertThatIllegalArgumentException()
+                .as("lol")
+                .isThrownBy(()->numberBetween.generateOutput(" \"2Illegal\"  , \"2\" , \"2\""));
+    }
+
+    @Test
+    void illegalInput2ndArgTest() {
+        assertThatIllegalArgumentException()
+                .as("Illegal second argument should throw an IllegalArgumentException")
+                .isThrownBy(() -> numberBetween.generateOutput(" 5, Illegal"));
+
+        assertThatIllegalArgumentException()
+                .as("Empty second argument is Illegal and should throw an IllegalArgumentException")
+                .isThrownBy(() -> numberBetween.generateOutput(" 5, "));
+
+        assertThatIllegalArgumentException()
                 .as("Empty second argument is Illegal and should throw an IllegalArgumentException")
                 .isThrownBy(() -> numberBetween.generateOutput(" 5  ,  , 1"));
 
         assertThatIllegalArgumentException()
-                .as("Optional parameter initiated and left empty is an illegal argument and should throw an IllegalArgumentException")
+                .as("\"--\" is illegal an should throw an IllegalArgumentException")
+                .isThrownBy(() -> numberBetween.generateOutput(" 1  , --2"));
+
+        assertThatIllegalArgumentException()
+                .as("lol")
+                .isThrownBy(()->numberBetween.generateOutput(" \"2\"  , \"2Illegal\" , \"2\""));
+    }
+
+    @Test
+    void illegalInput3rdArgTest() {
+        assertThatIllegalArgumentException()
+                .as("Optional 3rd argument initiated and left empty is an illegal argument and should throw an IllegalArgumentException")
                 .isThrownBy(() -> numberBetween.generateOutput(" 5  , 2 ,  "));
+
+        assertThatIllegalArgumentException()
+                .as("Negative 3rd argument is Illegal and should throw an IllegalArgumentException")
+                .isThrownBy(() -> numberBetween.generateOutput(" 2  , 5 , -1"));
 
         assertThatIllegalArgumentException()
                 .as("3rd argument as a float is an illegal argument and should throw an IllegalArgumentException")
@@ -57,12 +103,40 @@ public class NumberBetweenTest {
                 .isThrownBy(() -> numberBetween.generateOutput(" 1  , 2 , 3.58 "));
 
         assertThatIllegalArgumentException()
-                .as("\"--\" is illegal an should throw an IllegalArgumentException")
-                .isThrownBy(() -> numberBetween.generateOutput(" --1  , 2"));
+                .as("3rd argument as a string is an illegal argument and should throw an IllegalArgumentException")
+                .isThrownBy(() -> numberBetween.generateOutput(" 1  , 2 , Illegal "));
 
         assertThatIllegalArgumentException()
-                .as("\"--\" is illegal an should throw an IllegalArgumentException")
-                .isThrownBy(() -> numberBetween.generateOutput(" 1  , --2"));
+                .as("3rd argument as a string is an illegal argument and should throw an IllegalArgumentException")
+                .isThrownBy(() -> numberBetween.generateOutput(" 1  , 2 , Illegal.Illegal "));
+
+        assertThatIllegalArgumentException()
+                .as("3rd argument contain string. It is an illegal argument and should throw an IllegalArgumentException")
+                .isThrownBy(() -> numberBetween.generateOutput(" 1  , 2 , 2.Illegal "));
+
+        assertThatIllegalArgumentException()
+                .as("3rd argument contain string. It is an illegal argument and should throw an IllegalArgumentException")
+                .isThrownBy(() -> numberBetween.generateOutput(" 1  , 2 , Illegal.2 "));
+
+        assertThatIllegalArgumentException()
+                .as("3rd argument is not properly formatted and should throw an IllegalArgumentException")
+                .isThrownBy(() -> numberBetween.generateOutput(" 1  , 2 , 2,0 "));
+
+        assertThatIllegalArgumentException()
+                .as("lol")
+                .isThrownBy(()->numberBetween.generateOutput(" \"2\"  , \"2\" , \"2Illegal\""));
+
+    }
+
+    @Test
+    void originalAllowedInput() {
+        assertThat(numberBetween.generateOutput(" \"2\"  , \"2\" , \"2\""))
+                .as("parameters <\"2\"  , \"2\" , \"2\"> should be allowed")
+                .isEqualTo("2.00");
+
+        assertThat(numberBetween.generateOutput(" \"2\"  , \"2\" , \"2\""))
+                .as("parameters <\"20\"  , \"20\" , \"20\"> should be allowed")
+                .isEqualTo("2.00");
 
     }
 
@@ -194,6 +268,11 @@ public class NumberBetweenTest {
                 .isNotNegative()
                 .isBetween(0.0, 10000.0);
 
+        assertThat(Double.parseDouble(numberBetween.generateOutput("\"0.0\", \"10000.0\"")))
+                .isNotNull()
+                .isNotNegative()
+                .isBetween(0.0, 10000.0);
+
     }
 
     @Test
@@ -255,6 +334,11 @@ public class NumberBetweenTest {
                 .isBetween(0.0, 1000.0);
 
         assertThat(Double.parseDouble(numberBetween.generateOutput("0.0, 10.0, 5")))
+                .isNotNull()
+                .isNotNegative()
+                .isBetween(0.0, 10.0);
+
+        assertThat(Double.parseDouble(numberBetween.generateOutput("\"0.0\", \"10.0\", \"5\"")))
                 .isNotNull()
                 .isNotNegative()
                 .isBetween(0.0, 10.0);

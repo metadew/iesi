@@ -38,8 +38,6 @@ public class NumberBetween implements DataInstruction {
 
         String strNumberOfDecimals = inputParameterMatcher.group(NUMBER_OF_DECIMALS);
 
-        System.out.println(strNumberOfDecimals);
-
         double lowerBound = Double.parseDouble(inputParameterMatcher.group(LOWER_BOUND_KEY));
         double upperBound = Double.parseDouble(inputParameterMatcher.group(UPPER_BOUND_KEY));
         double generatedNumber = range(lowerBound, upperBound);

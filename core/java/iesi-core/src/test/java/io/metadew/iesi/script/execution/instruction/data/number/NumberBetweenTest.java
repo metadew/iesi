@@ -58,7 +58,8 @@ public class NumberBetweenTest {
 
         assertThatIllegalArgumentException()
                 .as("lol")
-                .isThrownBy(()->numberBetween.generateOutput(" \"2Illegal\"  , \"2\" , \"2\""));
+                .isThrownBy(() -> numberBetween.generateOutput(" \"2Illegal\"  , \"2\" , \"2\""));
+
     }
 
     @Test
@@ -81,7 +82,8 @@ public class NumberBetweenTest {
 
         assertThatIllegalArgumentException()
                 .as("lol")
-                .isThrownBy(()->numberBetween.generateOutput(" \"2\"  , \"2Illegal\" , \"2\""));
+                .isThrownBy(() -> numberBetween.generateOutput(" \"2\"  , \"2Illegal\" , \"2\""));
+
     }
 
     @Test
@@ -124,7 +126,7 @@ public class NumberBetweenTest {
 
         assertThatIllegalArgumentException()
                 .as("lol")
-                .isThrownBy(()->numberBetween.generateOutput(" \"2\"  , \"2\" , \"2Illegal\""));
+                .isThrownBy(() -> numberBetween.generateOutput(" \"2\"  , \"2\" , \"2Illegal\""));
 
     }
 

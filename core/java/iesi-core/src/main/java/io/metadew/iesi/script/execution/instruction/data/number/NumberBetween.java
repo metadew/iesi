@@ -42,12 +42,9 @@ public class NumberBetween implements DataInstruction {
         double upperBound = Double.parseDouble(inputParameterMatcher.group(UPPER_BOUND_KEY));
         double generatedNumber = range(lowerBound, upperBound);
 
+        // no 3rd arg provided
         if (strNumberOfDecimals == null)
             return Double.toString(generatedNumber);
-
-        // See line 25
-        if (!Pattern.compile("^\\d+$").matcher(strNumberOfDecimals).find())
-            throw new IllegalArgumentException(MessageFormat.format("Illegal arguments provided to " + this.getKeyword() + ": {0}", parameters));
 
         int numberOfDecimals = Integer.parseInt(strNumberOfDecimals);
 

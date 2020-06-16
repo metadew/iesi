@@ -1,9 +1,9 @@
 package io.metadew.iesi.server.rest.configuration.security.basic;
 
+import io.metadew.iesi.server.rest.configuration.security.jwt.JWTAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -11,18 +11,26 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
 @EnableWebSecurity
-@Profile("basic")
 @Configuration
+//@Profile("security")
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
 public class BasicWebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private CustomUserDetailsManager customUserDetailsManager;
     private PasswordEncoder passwordEncoder;
+    private JWTAuthenticationFilter jwtAuthenticationFilter;
+
+    @Autowired
+    public void setJwtAuthenticationFilter(JWTAuthenticationFilter jwtAuthenticationFilter) {
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+    }
 
     @Autowired
     public void setCustomUserDetailsManager(CustomUserDetailsManager customUserDetailsManager) {
@@ -47,6 +55,11 @@ public class BasicWebSecurityConfiguration extends WebSecurityConfigurerAdapter 
         return super.authenticationManagerBean();
     }
 
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
@@ -54,9 +67,12 @@ public class BasicWebSecurityConfiguration extends WebSecurityConfigurerAdapter 
                 .and()
                 .csrf().disable()
                 .cors().disable()
+                .authorizeRequests()
+                .mvcMatchers("/users/login").permitAll()
+                .anyRequest().authenticated()
+                .and()
                 .httpBasic(withDefaults())
-                .authorizeRequests(authorize -> authorize
-                        .anyRequest().authenticated());
+                .addFilterAfter(jwtAuthenticationFilter, BasicAuthenticationFilter.class);
     }
 
 }

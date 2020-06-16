@@ -24,13 +24,12 @@ import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Component
-@Profile({"security"})
+//@Profile("security")
 @DependsOn("metadataRepositoryConfiguration")
 public class CustomUserDetailsManager implements UserDetailsManager, GroupManager {
 

@@ -1,33 +1,44 @@
-package io.metadew.iesi.server.rest.configuration;
+package io.metadew.iesi.server.rest.configuration.security.basic;
 
-import io.metadew.iesi.server.rest.user.CustomUserDetailsManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
 @EnableWebSecurity
+@Profile("basic")
 @Configuration
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
-public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
+public class BasicWebSecurityConfiguration extends WebSecurityConfigurerAdapter {
+
+    private CustomUserDetailsManager customUserDetailsManager;
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
-    private CustomUserDetailsManager customUserDetailsManager;
+    public void setCustomUserDetailsManager(CustomUserDetailsManager customUserDetailsManager) {
+        this.customUserDetailsManager = customUserDetailsManager;
+    }
+
+    @Autowired
+    public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @Override
     protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
         auth
                 .userDetailsService(customUserDetailsManager)
-                .passwordEncoder(passwordEncoder());
+                .passwordEncoder(passwordEncoder);
     }
 
     @Bean
@@ -36,28 +47,16 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
         return super.authenticationManagerBean();
     }
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
                 .csrf().disable()
                 .cors().disable()
                 .httpBasic(withDefaults())
                 .authorizeRequests(authorize -> authorize
                         .anyRequest().authenticated());
-        //http.requestMatcher(EndpointRequest.toAnyEndpoint())
-        //        .formLogin().permitAll();
-        //http.headers().httpStrictTransportSecurity()
-        //        .disable().and()
-        //        .httpBasic().and()
-        //        .formLogin().and()
-        //        .authorizeRequests().anyRequest().authenticated();
-//                .and()
-//                .authorizeRequests().anyRequest().authenticated();
     }
 
 }

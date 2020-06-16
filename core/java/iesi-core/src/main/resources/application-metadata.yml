@@ -60,6 +60,88 @@ iesi:
             length: 0
             nullable: false
             defaultTimestamp: true
+
+      - name: CTL_OAUTH_CLIENT_DETAILS
+        label: OauthClientDetails
+        description: OAuth Client Details
+        category: control
+        fields:
+          CLIENT_ID:
+            description: Id of client details
+            order: 1
+            type: string
+            length: 255
+            nullable: false
+            primaryKey: true
+          RESOURCE_IDS:
+            description: user name of the user
+            order: 1
+            type: string
+            length: 255
+            nullable: false
+            unique: true
+          CLIENT_SECRET:
+            description: hashed password of the user
+            order: 2
+            type: string
+            length: 255
+            nullable: false
+          SCOPE:
+            description: Boolean determining if the user is activated or not
+            order: 3
+            type: string
+            length: 255
+            nullable: false
+          AUTHORIZED_GRANT_TYPES:
+            description: Boolean determining if the user is activated or not
+            order: 4
+            type: string
+            length: 255
+            nullable: false
+          WEB_SERVER_REDIRECT_URI:
+            description: Boolean determining if the user is activated or not
+            order: 5
+            type: string
+            length: 255
+            nullable: false
+          AUTHORITIES:
+            description: Boolean determining if the user is activated or not
+            order: 6
+            type: string
+            length: 255
+            nullable: false
+          ACCESS_TOKEN_VALIDITY:
+            description: Boolean determining if the user is activated or not
+            order: 7
+            type: string
+            length: 255
+            nullable: false
+          REFRESH_TOKEN_VALIDITY:
+            description: Boolean determining if the user is activated or not
+            order: 8
+            type: string
+            length: 255
+            nullable: false
+          ADDITIONAL_INFORMATION:
+            description: Boolean determining if the user is activated or not
+            order: 9
+            type: string
+            length: 255
+            nullable: false
+          AUTOAPPROVE:
+            description: Boolean determining if the user is activated or not
+            order: 10
+            type: string
+            length: 255
+            nullable: false
+          LOAD_TMS:
+            description: Load timestamp indicating when the record was inserted in the table
+            order: 11
+            type: timestamp
+            length: 0
+            nullable: false
+            defaultTimestamp: true
+
       - name: CTL_USERS
         label: Users
         description: User data

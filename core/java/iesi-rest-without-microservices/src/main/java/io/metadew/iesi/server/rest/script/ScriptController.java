@@ -37,19 +37,19 @@ public class ScriptController {
     }
 
     @GetMapping("")
-    public HalMultipleEmbeddedResource<ScriptDto> getAll(@RequestParam(required = false, name = "expand") List<String> expansions) {
+    public HalMultipleEmbeddedResource<ScriptDto> getAll(@RequestParam(required = false, name = "expand", defaultValue = "") List<String> expansions) {
         List<ScriptDto> scripts = scriptDtoService.getAll(expansions);
         return new HalMultipleEmbeddedResource<>(scripts);
     }
 
     @GetMapping("/{name}")
-    public HalMultipleEmbeddedResource<ScriptDto> getByName(@PathVariable String name, @RequestParam(required = false, name = "expand") List<String> expansions) {
+    public HalMultipleEmbeddedResource<ScriptDto> getByName(@PathVariable String name, @RequestParam(required = false, name = "expand", defaultValue = "") List<String> expansions) {
         List<ScriptDto> scripts = scriptDtoService.getByName(name, expansions);
         return new HalMultipleEmbeddedResource<>(scripts);
     }
 
     @GetMapping("/{name}/{version}")
-    public ScriptDto get(@PathVariable String name, @PathVariable Long version, @RequestParam(required = false, name = "expand") List<String> expansions) throws MetadataDoesNotExistException {
+    public ScriptDto get(@PathVariable String name, @PathVariable Long version, @RequestParam(required = false, name = "expand", defaultValue = "") List<String> expansions) throws MetadataDoesNotExistException {
         return scriptDtoService.getByNameAndVersion(name, version, expansions)
                 .orElseThrow(() -> new MetadataDoesNotExistException(new ScriptKey(IdentifierTools.getScriptIdentifier(name), version)));
     }

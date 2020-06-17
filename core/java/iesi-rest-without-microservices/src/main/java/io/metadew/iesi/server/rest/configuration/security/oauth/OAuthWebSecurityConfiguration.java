@@ -1,6 +1,6 @@
 //package io.metadew.iesi.server.rest.configuration.security.oauth;
 //
-//import io.metadew.iesi.server.rest.configuration.security.basic.CustomUserDetailsManager;
+//import io.metadew.iesi.server.rest.configuration.security.jwt.CustomUserDetailsManager;
 //import org.springframework.context.annotation.Bean;
 //import org.springframework.context.annotation.Configuration;
 //import org.springframework.context.annotation.Profile;

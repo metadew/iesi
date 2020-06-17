@@ -1,4 +1,4 @@
-package io.metadew.iesi.server.rest.configuration.security.basic;
+package io.metadew.iesi.server.rest.configuration.security.jwt;
 
 import io.metadew.iesi.metadata.definition.user.Group;
 import io.metadew.iesi.metadata.definition.user.GroupKey;
@@ -18,7 +18,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.GroupManager;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Component;
@@ -29,20 +28,18 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Component
-//@Profile("security")
+@Profile("security")
 @DependsOn("metadataRepositoryConfiguration")
 public class CustomUserDetailsManager implements UserDetailsManager, GroupManager {
 
-    private final PasswordEncoder passwordEncoder;
     //TODO: move to Spring, extend JDBCUserDetailsManager. Override getXSql() methods to adhere to custom data model
     private UserService userService;
     private GroupService groupService;
 
     @Autowired
-    public CustomUserDetailsManager(UserService userService, GroupService groupService, PasswordEncoder passwordEncoder) {
+    public CustomUserDetailsManager(UserService userService, GroupService groupService) {
         this.userService = userService;
         this.groupService = groupService;
-        this.passwordEncoder = passwordEncoder;
     }
 
     @PostConstruct

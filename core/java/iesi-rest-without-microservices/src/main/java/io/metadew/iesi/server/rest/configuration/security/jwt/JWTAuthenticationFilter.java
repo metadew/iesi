@@ -1,5 +1,6 @@
 package io.metadew.iesi.server.rest.configuration.security.jwt;
 
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -12,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Component
-//@Profile("security")
+@Profile("security")
 public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
     private final JWTAuthenticationConverter jwtAuthenticationConverter;

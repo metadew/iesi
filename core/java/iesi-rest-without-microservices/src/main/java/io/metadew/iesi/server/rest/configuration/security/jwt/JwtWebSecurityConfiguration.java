@@ -1,9 +1,9 @@
-package io.metadew.iesi.server.rest.configuration.security.basic;
+package io.metadew.iesi.server.rest.configuration.security.jwt;
 
-import io.metadew.iesi.server.rest.configuration.security.jwt.JWTAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -15,13 +15,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
-import static org.springframework.security.config.Customizer.withDefaults;
-
 @EnableWebSecurity
 @Configuration
-//@Profile("security")
+@Profile("security")
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
-public class BasicWebSecurityConfiguration extends WebSecurityConfigurerAdapter {
+public class JwtWebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private CustomUserDetailsManager customUserDetailsManager;
     private PasswordEncoder passwordEncoder;
@@ -62,6 +60,7 @@ public class BasicWebSecurityConfiguration extends WebSecurityConfigurerAdapter 
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        System.out.println("Security enabled");
         http
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
@@ -71,7 +70,7 @@ public class BasicWebSecurityConfiguration extends WebSecurityConfigurerAdapter 
                 .mvcMatchers("/users/login").permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .httpBasic(withDefaults())
+//                .httpBasic(withDefaults())
                 .addFilterAfter(jwtAuthenticationFilter, BasicAuthenticationFilter.class);
     }
 

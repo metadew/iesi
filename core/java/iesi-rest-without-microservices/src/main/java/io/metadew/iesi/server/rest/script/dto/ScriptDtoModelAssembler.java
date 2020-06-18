@@ -3,8 +3,6 @@ package io.metadew.iesi.server.rest.script.dto;
 
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.server.rest.script.ScriptController;
-import io.metadew.iesi.server.rest.script.dto.IScriptDtoService;
-import io.metadew.iesi.server.rest.script.dto.ScriptDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;

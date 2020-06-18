@@ -230,15 +230,13 @@ public class ScriptResultConfiguration extends Configuration<ScriptResult, Scrip
         }
     }
 
-    public Optional<List<ScriptResult>> getByRunId(String runId) {
+    public List<ScriptResult> getByRunId(String runId) {
         try {
+            List<ScriptResult> scriptResults = new ArrayList<>();
             String queryScript = "select RUN_ID, PRC_ID, PARENT_PRC_ID, SCRIPT_ID, SCRIPT_NM, SCRIPT_VRS_NB, ENV_NM, ST_NM, " +
                     "STRT_TMS, END_TMS from " + getMetadataRepository().getTableNameByLabel("ScriptResults")
                     + " where RUN_ID = " + SQLTools.GetStringForSQL(runId) + ";";
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(queryScript, "reader");
-            if (cachedRowSet.size() == 0)
-                return Optional.empty();
-            List<ScriptResult> scriptResults = new ArrayList<>();
             while (cachedRowSet.next()) {
                 scriptResults.add(new ScriptResult(new ScriptResultKey(
                         cachedRowSet.getString("RUN_ID"),
@@ -252,7 +250,7 @@ public class ScriptResultConfiguration extends Configuration<ScriptResult, Scrip
                         SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("STRT_TMS")),
                         SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("END_TMS"))));
             }
-            return Optional.of(scriptResults);
+            return scriptResults;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

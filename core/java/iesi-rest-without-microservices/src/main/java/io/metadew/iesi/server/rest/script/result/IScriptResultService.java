@@ -9,7 +9,7 @@ public interface IScriptResultService {
 
     List<ScriptResult> getAll();
 
-    Optional<List<ScriptResult>> getByRunId(String runId);
+    List<ScriptResult> getByRunId(String runId);
 
     Optional<ScriptResult> getByRunIdAndProcessId(String runId, Long processId);
 

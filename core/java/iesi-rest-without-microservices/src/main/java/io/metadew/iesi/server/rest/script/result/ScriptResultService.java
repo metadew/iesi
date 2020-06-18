@@ -23,7 +23,7 @@ public class ScriptResultService implements IScriptResultService {
     }
 
     @Override
-    public Optional<List<ScriptResult>> getByRunId(String runId) {
+    public List<ScriptResult> getByRunId(String runId) {
         return scriptResultConfiguration.getByRunId(runId);
     }
 

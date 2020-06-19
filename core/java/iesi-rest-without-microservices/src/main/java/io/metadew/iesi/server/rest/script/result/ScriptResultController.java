@@ -2,6 +2,7 @@ package io.metadew.iesi.server.rest.script.result;
 
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.script.result.key.ScriptResultKey;
+import io.metadew.iesi.server.rest.resource.HalMultipleEmbeddedResource;
 import io.metadew.iesi.server.rest.script.result.dto.ScriptResultDto;
 import io.metadew.iesi.server.rest.script.result.dto.ScriptResultDtoModelAssembler;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -28,17 +29,17 @@ public class ScriptResultController {
     }
 
     @GetMapping
-    public List<ScriptResultDto> getAll() {
-        return scriptResultService.getAll().stream()
+    public HalMultipleEmbeddedResource<ScriptResultDto> getAll() {
+        return new HalMultipleEmbeddedResource<>(scriptResultService.getAll().stream()
                 .map(scriptResultDtoModelAssembler::toModel)
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()));
     }
 
     @GetMapping("/{runId}")
-    public List<ScriptResultDto> getByRunId(@PathVariable String runId) {
-        return scriptResultService.getByRunId(runId).stream()
+    public HalMultipleEmbeddedResource<ScriptResultDto> getByRunId(@PathVariable String runId) {
+        return new HalMultipleEmbeddedResource<>(scriptResultService.getByRunId(runId).stream()
                 .map(scriptResultDtoModelAssembler::toModel)
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()));
     }
 
     @GetMapping("/{runId}/{processId}")

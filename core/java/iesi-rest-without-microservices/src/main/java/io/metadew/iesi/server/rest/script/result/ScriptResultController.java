@@ -30,21 +30,20 @@ public class ScriptResultController {
     @GetMapping
     public List<ScriptResultDto> getAll() {
         return scriptResultService.getAll().stream()
-                .map(ScriptResultDto::new)
+                .map(scriptResultDtoModelAssembler::toModel)
                 .collect(Collectors.toList());
     }
 
     @GetMapping("/{runId}")
     public List<ScriptResultDto> getByRunId(@PathVariable String runId) {
         return scriptResultService.getByRunId(runId).stream()
-                .map(ScriptResultDto::new)
+                .map(scriptResultDtoModelAssembler::toModel)
                 .collect(Collectors.toList());
     }
 
     @GetMapping("/{runId}/{processId}")
     public ScriptResultDto getByRunIdAndProcessId(@PathVariable String runId, @PathVariable Long processId) {
         return scriptResultService.getByRunIdAndProcessId(runId, processId)
-                .map(ScriptResultDto::new)
                 .map(scriptResultDtoModelAssembler::toModel)
                 .orElseThrow(() -> new MetadataDoesNotExistException(new ScriptResultKey(runId, processId)));
     }

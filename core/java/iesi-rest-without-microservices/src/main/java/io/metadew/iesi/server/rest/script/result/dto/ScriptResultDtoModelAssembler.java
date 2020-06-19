@@ -28,7 +28,7 @@ public class ScriptResultDtoModelAssembler extends RepresentationModelAssemblerS
         return scriptResultDto;
     }
 
-    private ScriptResultDto convertToDto(ScriptResult scriptResult){
+    private ScriptResultDto convertToDto(ScriptResult scriptResult) {
         return new ScriptResultDto(scriptResult);
     }
 }

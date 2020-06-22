@@ -42,7 +42,7 @@ public class ScriptResultController {
     }
 
     @GetMapping("/{runId}/{processId}")
-    public ScriptResultDto getByRunIdAndProcessId(@PathVariable String runId, @PathVariable Long processId) {
+    public ScriptResultDto getByRunIdAndProcessId(@PathVariable String runId, @PathVariable Long processId) throws MetadataDoesNotExistException {
         return scriptResultService.getByRunIdAndProcessId(runId, processId)
                 .map(scriptResultDtoModelAssembler::toModel)
                 .orElseThrow(() -> new MetadataDoesNotExistException(new ScriptResultKey(runId, processId)));

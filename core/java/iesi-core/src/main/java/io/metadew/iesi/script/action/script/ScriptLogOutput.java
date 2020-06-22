@@ -1,12 +1,18 @@
 package io.metadew.iesi.script.action.script;
 
+import io.metadew.iesi.common.crypto.FrameworkCrypto;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.text.Text;
+import io.metadew.iesi.metadata.configuration.script.result.ScriptResultOutputConfiguration;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
+import io.metadew.iesi.metadata.definition.script.result.ScriptResultOutput;
+import io.metadew.iesi.metadata.definition.script.result.key.ScriptResultOutputKey;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
+import lombok.extern.log4j.Log4j2;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -16,13 +22,10 @@ import java.text.MessageFormat;
 import java.util.HashMap;
 
 
-/**
- * This action stores an output value as part of the script results
- *
- * @author Peter Billen
- */
+@Log4j2
 public class ScriptLogOutput {
 
+    private final ScriptExecution scriptExecution;
     private ActionExecution actionExecution;
     private ExecutionControl executionControl;
 
@@ -34,12 +37,8 @@ public class ScriptLogOutput {
 
     public ScriptLogOutput(ExecutionControl executionControl,
                            ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.init(executionControl, scriptExecution, actionExecution);
-    }
-
-    public void init(ExecutionControl executionControl,
-                     ScriptExecution scriptExecution, ActionExecution actionExecution) {
         this.executionControl = executionControl;
+        this.scriptExecution = scriptExecution;
         this.actionExecution = actionExecution;
         this.actionParameterOperationMap = new HashMap<>();
     }
@@ -85,15 +84,21 @@ public class ScriptLogOutput {
     private boolean executeOperation() throws InterruptedException {
         String name = convertOutputName(outputName.getValue());
         String value = convertOutputValue(outputValue.getValue());
-        // log the output in the script
-        executionControl.logExecutionOutput(actionExecution.getScriptExecution(), name, value);
 
         // Log the output in the action as well
         actionExecution.getActionControl().logOutput("output.name", name);
         actionExecution.getActionControl().logOutput("output.value", value);
 
-        actionExecution.getActionControl().increaseSuccessCount();
+        // log the output in the script
+        value = FrameworkCrypto.getInstance().redact(value);
+        log.info("action.output=" + name + ":" + value, Level.INFO);
+        ScriptResultOutput scriptResultOutput = new ScriptResultOutput(
+                new ScriptResultOutputKey(executionControl.getRunId(), executionControl.getProcessId(), name),
+                scriptExecution.getScript().getMetadataKey().getScriptId(),
+                value);
+        ScriptResultOutputConfiguration.getInstance().insert(scriptResultOutput);
 
+        actionExecution.getActionControl().increaseSuccessCount();
         return true;
     }
 

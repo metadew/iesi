@@ -4,7 +4,6 @@ import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.configuration.ScriptRunStatus;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.common.crypto.FrameworkCrypto;
-import io.metadew.iesi.common.text.TextTools;
 import io.metadew.iesi.connection.elasticsearch.filebeat.DelimitedFileBeatElasticSearchConnection;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.action.result.ActionResultConfiguration;
@@ -23,13 +22,18 @@ import io.metadew.iesi.metadata.definition.script.result.key.ScriptResultKey;
 import io.metadew.iesi.metadata.definition.script.result.key.ScriptResultOutputKey;
 import io.metadew.iesi.metadata.service.action.ActionDesignTraceService;
 import io.metadew.iesi.metadata.service.script.ScriptDesignTraceService;
-import org.apache.logging.log4j.*;
+import lombok.extern.log4j.Log4j2;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.Marker;
+import org.apache.logging.log4j.MarkerManager;
+import org.apache.logging.log4j.ThreadContext;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@Log4j2
 public class ExecutionControl {
 
     private final DelimitedFileBeatElasticSearchConnection elasticSearchConnection;
@@ -45,9 +49,6 @@ public class ExecutionControl {
     private Long lastProcessId;
 
     private static final Marker SCRIPTMARKER = MarkerManager.getMarker("SCRIPT");
-
-    private static final Logger LOGGER = LogManager.getLogger();
-    // Constructors
 
     public ExecutionControl() throws ClassNotFoundException, NoSuchMethodException,
             InvocationTargetException, InstantiationException, IllegalAccessException {
@@ -165,15 +166,21 @@ public class ExecutionControl {
     public ScriptRunStatus logEnd(ScriptExecution scriptExecution) {
         ScriptResult scriptResult = ScriptResultConfiguration.getInstance().get(new ScriptResultKey(runId, scriptExecution.getProcessId()))
                 .orElseThrow(() -> new MetadataDoesNotExistException(new ScriptResultKey(runId, scriptExecution.getProcessId())));
-
         ScriptRunStatus status = getStatus(scriptExecution);
+        logMessage("script.status=" + status.value(), Level.INFO);
         scriptResult.setStatus(status);
         scriptResult.setEndTimestamp(LocalDateTime.now());
         ScriptResultConfiguration.getInstance().update(scriptResult);
 
-        // Clear processing variables
-        // Only is the script is a root script, this will be cleaned
-        // In other scripts, the processing variables are still valid
+        String output = scriptExecution.getExecutionControl().getExecutionRuntime().resolveVariables("#output#");
+        if (output != null && !output.isEmpty()) {
+            try {
+                // catch error if 'output' is already outputted. To be deleted in future
+                logExecutionOutput(scriptExecution, "output", output);
+                logMessage("script.output=" + output, Level.INFO);
+            } catch (Exception ignore) {
+            }
+        }
 
         elasticSearchConnection.ingest(new ScriptResultElasticSearch(scriptResult));
 
@@ -235,30 +242,17 @@ public class ExecutionControl {
         } else {
             status = ScriptRunStatus.WARNING;
         }
-
-        logMessage("script.status=" + status.value(), Level.INFO);
-
-        String output = scriptExecution.getExecutionControl().getExecutionRuntime().resolveVariables("#output#");
-        if (output != null && !output.isEmpty()) {
-            //logMessage(scriptExecution, "script.output=" + output, Level.INFO);
-            logExecutionOutput(scriptExecution, "output", output);
-        }
         return status;
     }
 
     public void logExecutionOutput(ScriptExecution scriptExecution, String outputName, String outputValue) {
         // Redact any encrypted values
         outputValue = FrameworkCrypto.getInstance().redact(outputValue);
-        outputValue = TextTools.shortenTextForDatabase(outputValue, 2000);
-        logMessage("script.output=" + outputName + ":" + outputValue, Level.INFO);
         ScriptResultOutput scriptResultOutput = new ScriptResultOutput(new ScriptResultOutputKey(runId, scriptExecution.getProcessId(), outputName), scriptExecution.getScript().getMetadataKey().getScriptId(), outputValue);
         ScriptResultOutputConfiguration.getInstance().insert(scriptResultOutput);
     }
 
     public void logExecutionOutput(ActionExecution actionExecution, String outputName, String outputValue) {
-        // Redact any encrypted values
-        //outputValue = FrameworkCrypto.getInstance().redact(outputValue);
-        //outputValue = TextTools.shortenTextForDatabase(outputValue, 2000);
         ActionResultOutput actionResultOutput = new ActionResultOutput(
                 new ActionResultOutputKey(runId, actionExecution.getProcessId(), actionExecution.getAction().getMetadataKey().getActionId(), outputName),
                 outputValue);
@@ -267,12 +261,7 @@ public class ExecutionControl {
 
     // Log message
     public void logMessage(String message, Level level) {
-//        if (!actionExecution.getScriptExecution().isRootScript() && level == Level.INFO || level == Level.ALL) {
-//            // do not display non-root info on info level
-//            // redirect to debug level
-//            level = Level.DEBUG;
-//        }
-        LOGGER.log(level, SCRIPTMARKER, message);
+        log.log(level, SCRIPTMARKER, message);
     }
 
 
@@ -289,7 +278,7 @@ public class ExecutionControl {
     public void initializeRunId() {
         this.runId = UUID.randomUUID().toString();
         ThreadContext.put("runId", runId);
-        LOGGER.info("exec.runid=" + runId);
+        log.info("exec.runid=" + runId);
     }
 
     public String getEnvName() {

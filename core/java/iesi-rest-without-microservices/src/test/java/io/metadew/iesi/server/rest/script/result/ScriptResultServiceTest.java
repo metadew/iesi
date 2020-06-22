@@ -328,7 +328,7 @@ public class ScriptResultServiceTest {
             arrayOfScriptResult[i] = createAndInsertADummyScriptResultN(i);
 
         for (int i = 0; i < arrayOfScriptResult.length; i++) {
-            Optional<ScriptResult> requestedScriptResult = scriptResultService.getByRunIdAndProcessId(String.format("%s",i), (long) i);
+            Optional<ScriptResult> requestedScriptResult = scriptResultService.getByRunIdAndProcessId(String.format("%s", i), (long) i);
             assertThat(requestedScriptResult.isPresent())
                     .as("One ScriptResult should be returned")
                     .isTrue();

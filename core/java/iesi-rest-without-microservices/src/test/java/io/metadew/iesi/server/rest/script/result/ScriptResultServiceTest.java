@@ -46,14 +46,14 @@ public class ScriptResultServiceTest {
     @Test
     void getAllTypeReturnedTest() {
         assertThat(scriptResultService.getAll())
-                .as("The returned type should an implementation of List")
+                .as("The returned type should a List implementation")
                 .isInstanceOf(List.class);
     }
 
     @Test
     void getAllNoScriptResultTest() {
         assertThat(scriptResultService.getAll().size())
-                .as("No ScriptResult should be found")
+                .as("DB should be empty : No ScriptResult should be found")
                 .isEqualTo(0);
     }
 
@@ -119,7 +119,7 @@ public class ScriptResultServiceTest {
 
         for (ScriptResult currentScriptResult : arrayOfScriptResult)
             assertThat(scriptResultList)
-                    .as("All the inserted ScriptResults should be retrieved in this list")
+                    .as("All inserted ScriptResults should be contained in this list")
                     .contains(currentScriptResult);
     }
 
@@ -131,7 +131,7 @@ public class ScriptResultServiceTest {
         ScriptResult notInsertedScriptResult = createADummyScriptResult(50);
         List<ScriptResult> scriptResultList = scriptResultService.getAll();
         assertThat(scriptResultList)
-                .as("All the inserted ScriptResults should be retrieved")
+                .as("This ScriptResult isn't inserted and shouldn't be retrieved")
                 .doesNotContain(notInsertedScriptResult);
     }
 
@@ -145,7 +145,7 @@ public class ScriptResultServiceTest {
     @Test
     void getByRunIdNoScriptResultEmptyDBTest() {
         assertThat(scriptResultService.getByRunId("1").size())
-                .as("No ScriptResult should be found")
+                .as("DB should be empty : No ScriptResult should be found")
                 .isEqualTo(0);
     }
 
@@ -287,14 +287,13 @@ public class ScriptResultServiceTest {
 
     @Test
     void getByRunId1NegativeTestCase() {
-        ScriptResult[] arrayOfScriptResult = new ScriptResult[20];
-        for (int i = 0; i < arrayOfScriptResult.length; i++)
-            arrayOfScriptResult[i] = createAndInsertADummyScriptResultN(i, "containedId");
+        for (int i = 0; i < 20; i++)
+            createAndInsertADummyScriptResultN(i, "containedId");
 
         List<ScriptResult> scriptResultList = scriptResultService.getByRunId("notContainedId");
 
         assertThat(scriptResultList.size())
-                .as("There should be 20 retrieved ScriptResult on 20")
+                .as("There should be 0 retrieved ScriptResult on 20")
                 .isEqualTo(0);
     }
 
@@ -307,17 +306,37 @@ public class ScriptResultServiceTest {
 
     @Test
     void getByRunIdAndProcessIdEmptyDB() {
-
+        assertThat(scriptResultService.getByRunIdAndProcessId("", 1L).isPresent())
+                .as("DB should be empty : No ScriptResult should be found")
+                .isFalse();
     }
 
     @Test
     void getByRunIdAndProcessIdNoResult20SRTest() {
+        for (int i = 0; i < 20; i++)
+            createAndInsertADummyScriptResultN(i);
 
+        assertThat(scriptResultService.getByRunIdAndProcessId("notPresentRunId", 1L).isPresent())
+                .as("No ScriptResult should be found")
+                .isFalse();
     }
 
     @Test
-    void getByRunIdAndProcessId1Result20SRTest() {
+    void getByRunIdAndProcessId20SR20Tests() {
+        ScriptResult[] arrayOfScriptResult = new ScriptResult[20];
+        for (int i = 0; i < arrayOfScriptResult.length; i++)
+            arrayOfScriptResult[i] = createAndInsertADummyScriptResultN(i);
 
+        for (int i = 0; i < arrayOfScriptResult.length; i++) {
+            Optional<ScriptResult> requestedScriptResult = scriptResultService.getByRunIdAndProcessId(String.format("%s",i), (long) i);
+            assertThat(requestedScriptResult.isPresent())
+                    .as("One ScriptResult should be returned")
+                    .isTrue();
+
+            assertThat(requestedScriptResult.get())
+                    .as("The retrieved ScriptResult should be equal to the inserted one")
+                    .isEqualTo(arrayOfScriptResult[i]);
+        }
     }
 
     ScriptResult createAndInsertADummyScriptResultN(int n, String runId) {

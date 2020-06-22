@@ -26,6 +26,9 @@ import java.util.stream.Collectors;
 public abstract class DatabaseService<T extends Database> implements IDatabaseService<T> {
 
     public Connection getConnection(T database) throws SQLException {
+        if (database.getConnectionPool() == null) {
+            database.setConnectionPool(DatabaseHandler.getInstance().createConnectionPool(database, database.getDatabaseConnection()));
+        }
         return database.getConnectionPool().getConnection();
     }
 

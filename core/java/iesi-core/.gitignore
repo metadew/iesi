@@ -4,6 +4,8 @@
 *.iml
 /src/main/resources/encryption.key
 
+/metadata/out/ddl
+
 ### Eclipse template
 .metadata
 bin/
